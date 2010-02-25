@@ -66,6 +66,12 @@ public:
         fprintf(stdout, "%s: --end (duration: %g sec)\n", msMsg.c_str(), (fEndTime-mfStartTime));
     }
 
+    void printTime(int line) const
+    {
+        double fEndTime = getTime();
+        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", msMsg.c_str(), line, (fEndTime-mfStartTime));
+    }
+
 private:
     double getTime() const
     {
@@ -354,24 +360,20 @@ void fst_test_tree_build()
 
 void fst_perf_test_search(bool tree_search)
 {
-    StackPrinter __stack_printer__("::fst_perf_test_leaf_search");
+    StackPrinter __stack_printer__("fst_perf_test_leaf_search");
 
     int lower = 0, upper = 50000;
     flat_segment_tree<int, int> db(lower, upper, 0);
-    {
-        StackPrinter __stack_printer__("segment insertion");
-        for (int i = upper-1; i >= lower; --i)
-            db.insert_segment(i, i+1, i);
-    }
+    for (int i = upper-1; i >= lower; --i)
+        db.insert_segment(i, i+1, i);
+
+    int success = 0, failure = 0;
     if (tree_search)
     {
-        StackPrinter __stack_printer__("tree search");
-        {
-            StackPrinter __stack_printer__("tree construction");
-            db.build_tree();
-        }
+        fprintf(stdout, "fst_perf_test_search:   tree search\n");
+        db.build_tree();
+
         int val;
-        int success = 0, failure = 0;
         for (int i = lower; i < upper; ++i)
         {
             if (db.search_tree(i, val))
@@ -379,13 +381,11 @@ void fst_perf_test_search(bool tree_search)
             else
                 ++failure;
         }
-        cout << "search: success (" << success << ")  failure (" << failure << ")" << endl;
     }
     else
     {
-        StackPrinter __stack_printer__("leaf search");
+        fprintf(stdout, "fst_perf_test_search:   leaf search\n");
         int val;
-        int success = 0, failure = 0;
         for (int i = lower; i < upper; ++i)
         {
             if (tree_search)
@@ -403,8 +403,8 @@ void fst_perf_test_search(bool tree_search)
                     ++failure;
             }
         }
-        cout << "search: success (" << success << ")  failure (" << failure << ")" << endl;
     }
+    fprintf(stdout, "fst_perf_test_search:   success (%d)  failure (%d)\n", success, failure);
 }
 
 void fst_test_tree_search()
@@ -1191,8 +1191,9 @@ int main (int argc, char *argv[])
 //  fst_test_leaf_search();
 //  fst_test_tree_build();
 //  fst_test_tree_search();
-//  fst_perf_test_search(false);
-//  fst_perf_test_search(true);
+    fst_perf_test_search(false);
+    fst_perf_test_search(true);
+    return 0;
     fst_test_insert_search_mix();
     fst_test_shift_segment_left();
     fst_test_shift_segment_left_right_edge();
