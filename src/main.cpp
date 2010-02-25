@@ -1188,12 +1188,11 @@ int main (int argc, char *argv[])
 //  testPrioSearchTree();
 //  testPrioSearchTree2();
 //  testSegmentTree1();
-//  fst_test_leaf_search();
-//  fst_test_tree_build();
-//  fst_test_tree_search();
+    fst_test_leaf_search();
+    fst_test_tree_build();
+    fst_test_tree_search();
     fst_perf_test_search(false);
     fst_perf_test_search(true);
-    return 0;
     fst_test_insert_search_mix();
     fst_test_shift_segment_left();
     fst_test_shift_segment_left_right_edge();
