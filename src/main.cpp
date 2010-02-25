@@ -36,6 +36,7 @@
 #include <vector>
 #include <limits>
 #include <iterator>
+#include <algorithm>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 

@@ -34,7 +34,7 @@
 
 //#define DEBUG_NODE_BASE 1
 
-#define USE_INTRUSIVE_PTR 0
+#define USE_INTRUSIVE_PTR 1
 
 #if USE_INTRUSIVE_PTR
 #include <boost/intrusive_ptr.hpp>
