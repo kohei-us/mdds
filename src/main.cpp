@@ -1183,11 +1183,21 @@ void fst_test_const_iterator()
     for_each(db.begin(), db.end(), leaf_node_functor<key_type, value_type>());
 }
 
+void fst_test_insert_back()
+{
+    StackPrinter __stack_printer__("::fst_test_insert_back");
+}
+
 int main (int argc, char *argv[])
 {
-//  testPrioSearchTree();
-//  testPrioSearchTree2();
-//  testSegmentTree1();
+#if 0 // Disabled until I re-write priority search tree in a template.
+    testPrioSearchTree();
+    testPrioSearchTree2();
+    testSegmentTree1();
+#endif
+    fst_test_insert_back();
+    return 0;
+
     fst_test_leaf_search();
     fst_test_tree_build();
     fst_test_tree_search();

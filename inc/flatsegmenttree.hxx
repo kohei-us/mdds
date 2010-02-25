@@ -316,7 +316,8 @@ public:
     }
 
     /** 
-     * Insert a new segment into the tree.
+     * Insert a new segment into the tree.  It searches for the point of 
+     * insertion from the first leaf node. 
      *
      * @param start_key start value of the segment being inserted.  The value 
      *              is inclusive.
@@ -325,6 +326,13 @@ public:
      * @param val value associated with this segment.
      */
     void insert_segment(key_type start_key, key_type end_key, value_type val);
+
+    /** 
+     * Insert a new segment into the tree.  Unlike <code>insert_segment</code>,
+     * this method searches for the point of insertion from the last leaf 
+     * node toward the first.
+     */
+    void insert_segment_back(key_type start_key, key_type end_key, value_type val);
 
     /** 
      * Remove a segment specified by the start and end key values, and shift 
@@ -489,35 +497,9 @@ private:
         m_valid_tree = false;
     }
 
-    node_base_ptr get_insertion_pos_leaf(key_type key, const node_base_ptr& start_pos) const
-    {
-        node_base_ptr cur_node = start_pos;
-        while (cur_node)
-        {
-            if (key <= get_node(cur_node)->value_leaf.key)
-            {
-                // Found the insertion position.
-                return cur_node;
-            }
-            cur_node = cur_node->right;
-        }
-        return node_base_ptr();
-    }
+    node_base_ptr get_insertion_pos_leaf(key_type key, const node_base_ptr& start_pos) const;
 
-    const node* get_insertion_pos_leaf(key_type key, const node* start_pos) const
-    {
-        const node* cur_node = start_pos;
-        while (cur_node)
-        {
-            if (key <= cur_node->value_leaf.key)
-            {
-                // Found the insertion position.
-                return cur_node;
-            }
-            cur_node = get_node(cur_node->right);
-        }
-        return NULL;
-    }
+    const node* get_insertion_pos_leaf(key_type key, const node* start_pos) const;
 
     static void shift_leaf_key_left(node_base_ptr& begin_node, node_base_ptr& end_node, key_type shift_value)
     {
@@ -570,6 +552,137 @@ private:
 
 template<typename _Key, typename _Value>
 void flat_segment_tree<_Key, _Value>::insert_segment(key_type start_key, key_type end_key, value_type val)
+{
+    if (end_key < get_node(m_left_leaf)->value_leaf.key || start_key > get_node(m_right_leaf)->value_leaf.key)
+        // The new segment does not overlap the current interval.
+        return;
+
+    if (start_key < get_node(m_left_leaf)->value_leaf.key)
+        // The start value should not be smaller than the current minimum.
+        start_key = get_node(m_left_leaf)->value_leaf.key;
+
+    if (end_key > get_node(m_right_leaf)->value_leaf.key)
+        // The end value should not be larger than the current maximum.
+        end_key = get_node(m_right_leaf)->value_leaf.key;
+
+    if (start_key >= end_key)
+        return;
+
+    // Find the node with value that either equals or is greater than the
+    // start value.
+
+    node_base_ptr start_pos = get_insertion_pos_leaf(start_key, m_left_leaf);
+    if (!start_pos)
+        // Insertion position not found.  Bail out.
+        return;
+
+    node_base_ptr end_pos = get_insertion_pos_leaf(end_key, start_pos);
+    if (!end_pos)
+        end_pos = m_right_leaf;
+
+    node_base_ptr new_start_node;
+    value_type old_value;
+
+    // Set the start node.
+
+    if (get_node(start_pos)->value_leaf.key == start_key)
+    {
+        // Re-use the existing node, but save the old value for later.
+
+        if (start_pos->left && get_node(start_pos->left)->value_leaf.value == val)
+        {
+            // Extend the existing segment.
+            old_value = get_node(start_pos)->value_leaf.value;
+            new_start_node = start_pos->left;
+        }
+        else
+        {
+            // Update the value of the existing node.
+            old_value = get_node(start_pos)->value_leaf.value;
+            get_node(start_pos)->value_leaf.value = val;
+            new_start_node = start_pos;
+        }
+    }
+    else if (get_node(start_pos->left)->value_leaf.value == val)
+    {
+        // Extend the existing segment.
+        old_value = get_node(start_pos->left)->value_leaf.value;
+        new_start_node = start_pos->left;
+    }
+    else
+    {
+        // Insert a new node before the insertion position node.
+        node_base_ptr new_node(new node(true));
+        get_node(new_node)->value_leaf.key = start_key;
+        get_node(new_node)->value_leaf.value = val;
+        new_start_node = new_node;
+
+        node_base_ptr left_node = start_pos->left;
+        old_value = get_node(left_node)->value_leaf.value;
+
+        // Link to the left node.
+        link_nodes(left_node, new_node);
+
+        // Link to the right node.
+        link_nodes(new_node, start_pos);
+    }
+
+    node_base_ptr cur_node = new_start_node->right;
+    while (cur_node != end_pos)
+    {
+        // Disconnect the link between the current node and the previous node.
+        cur_node->left->right.reset();
+        cur_node->left.reset();
+        old_value = get_node(cur_node)->value_leaf.value;
+
+        cur_node = cur_node->right;
+    }
+
+    // Set the end node.
+
+    if (get_node(end_pos)->value_leaf.key == end_key)
+    {
+        // The new segment ends exactly at the end node position.
+
+        if (end_pos->right && get_node(end_pos)->value_leaf.value == val)
+        {
+            // Remove this node, and connect the new start node with the 
+            // node that comes after this node.
+            new_start_node->right = end_pos->right;
+            if (end_pos->right)
+                end_pos->right->left = new_start_node;
+            disconnect_node(end_pos.get());
+        }
+        else
+        {
+            // Just link the new segment to this node.
+            new_start_node->right = end_pos;
+            end_pos->left = new_start_node;
+        }
+    }
+    else if (old_value == val)
+    {
+        link_nodes(new_start_node, end_pos);
+    }
+    else
+    {
+        // Insert a new node before the insertion position node.
+        node_base_ptr new_node(new node(true));
+        get_node(new_node)->value_leaf.key = end_key;
+        get_node(new_node)->value_leaf.value = old_value;
+
+        // Link to the left node.
+        link_nodes(new_start_node, new_node);
+
+        // Link to the right node.
+        link_nodes(new_node, end_pos);
+    }
+
+    m_valid_tree = false;
+}
+
+template<typename _Key, typename _Value>
+void flat_segment_tree<_Key, _Value>::insert_segment_back(key_type start_key, key_type end_key, value_type val)
 {
     if (end_key < get_node(m_left_leaf)->value_leaf.key || start_key > get_node(m_right_leaf)->value_leaf.key)
         // The new segment does not overlap the current interval.
@@ -973,6 +1086,39 @@ void flat_segment_tree<_Key, _Value>::build_tree()
     clear_tree(m_root_node);
     m_root_node = ::mdds::build_tree(m_left_leaf);
     m_valid_tree = true;
+}
+
+template<typename _Key, typename _Value>
+node_base_ptr flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(key_type key, const node_base_ptr& start_pos) const
+{
+    node_base_ptr cur_node = start_pos;
+    while (cur_node)
+    {
+        if (key <= get_node(cur_node)->value_leaf.key)
+        {
+            // Found the insertion position.
+            return cur_node;
+        }
+        cur_node = cur_node->right;
+    }
+    return node_base_ptr();
+}
+
+template<typename _Key, typename _Value>
+const typename flat_segment_tree<_Key, _Value>::node* 
+flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(key_type key, const node* start_pos) const
+{
+    const node* cur_node = start_pos;
+    while (cur_node)
+    {
+        if (key <= cur_node->value_leaf.key)
+        {
+            // Found the insertion position.
+            return cur_node;
+        }
+        cur_node = get_node(cur_node->right);
+    }
+    return NULL;
 }
 
 }
