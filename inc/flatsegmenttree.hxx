@@ -346,131 +346,11 @@ public:
      */
     void shift_segment_right(key_type pos, key_type size, bool skip_start_node);
 
-    bool search(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const
-    {
-        if (key < get_node(m_left_leaf)->value_leaf.key || get_node(m_right_leaf)->value_leaf.key <= key)
-            // key value is out-of-bound.
-            return false;
+    bool search(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
-        const node* pos = get_insertion_pos_leaf(key, get_node(m_left_leaf));
-        if (pos->value_leaf.key == key)
-        {
-            value = pos->value_leaf.value;
-            if (start_key)
-                *start_key = pos->value_leaf.key;
-            if (end_key && pos->right)
-                *end_key = get_node(pos->right)->value_leaf.key;
-            return true;
-        }
-        else if (pos->left && get_node(pos->left)->value_leaf.key < key)
-        {
-            value = get_node(pos->left)->value_leaf.value;
-            if (start_key)
-                *start_key = get_node(pos->left)->value_leaf.key;
-            if (end_key)
-                *end_key = pos->value_leaf.key;
-            return true;
-        }
+    bool search_tree(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
-        return false;
-    }
-
-    bool search_tree(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const
-    {
-        if (!m_root_node || !m_valid_tree)
-        {    
-            // either tree has not been built, or is in an invalid state.
-            return false;
-        }
-
-        if (key < get_node(m_left_leaf)->value_leaf.key || get_node(m_right_leaf)->value_leaf.key <= key)
-        {    
-            // key value is out-of-bound.
-            return false;
-        }
-
-        // Descend down the tree through the last non-leaf layer.
-
-        node* cur_node = get_node(m_root_node);
-        while (true)
-        {
-            if (cur_node->left)
-            {
-                if (cur_node->left->is_leaf)
-                    break;
-
-                const nonleaf_value_type& v = get_node(cur_node->left)->value_nonleaf;
-                if (v.low <= key && key < v.high)
-                {    
-                    cur_node = get_node(cur_node->left);
-                    continue;
-                }
-            }
-            else
-            {    
-                // left child node can't be missing !
-                return false;
-            }
-
-            if (cur_node->right)
-            {
-                const nonleaf_value_type& v = get_node(cur_node->right)->value_nonleaf;
-                if (v.low <= key && key < v.high)
-                {    
-                    cur_node = get_node(cur_node->right);
-                    continue;
-                }
-            }
-            return false;
-        }
-
-        assert(cur_node->left->is_leaf && cur_node->right->is_leaf);
-
-        key_type key1 = get_node(cur_node->left)->value_leaf.key;
-        key_type key2 = get_node(cur_node->right)->value_leaf.key;
-
-        if (key1 <= key && key < key2)
-        {
-            cur_node = get_node(cur_node->left);
-        }
-        else if (key2 <= key && key < cur_node->value_nonleaf.high)
-        {
-            cur_node = get_node(cur_node->right);
-        }
-        else
-            cur_node = NULL;
-
-        if (!cur_node)
-        {    
-            return false;
-        }
-
-        value = cur_node->value_leaf.value;
-        if (start_key)
-            *start_key = cur_node->value_leaf.key;
-
-        if (end_key)
-        {
-            assert(cur_node->right);
-            if (cur_node->right)
-                *end_key = get_node(cur_node->right)->value_leaf.key;
-            else
-                // This should never happen, but just in case....
-                *end_key = get_node(m_right_leaf)->value_leaf.key;
-        }
-
-        return true;
-    }
-
-    void build_tree()
-    {
-        if (!m_left_leaf)
-            return;
-
-        clear_tree(m_root_node);
-        m_root_node = ::mdds::build_tree(m_left_leaf);
-        m_valid_tree = true;
-    }
+    void build_tree();
 
     bool is_tree_valid() const
     {
@@ -962,6 +842,137 @@ void flat_segment_tree<_Key, _Value>::shift_segment_right(key_type pos, key_type
 
     shift_leaf_key_right(cur_node, m_right_leaf, size);
     m_valid_tree = false;
+}
+
+template<typename _Key, typename _Value>
+bool flat_segment_tree<_Key, _Value>::search(
+    key_type key, value_type& value, key_type* start_key, key_type* end_key) const
+{
+    if (key < get_node(m_left_leaf)->value_leaf.key || get_node(m_right_leaf)->value_leaf.key <= key)
+        // key value is out-of-bound.
+        return false;
+
+    const node* pos = get_insertion_pos_leaf(key, get_node(m_left_leaf));
+    if (pos->value_leaf.key == key)
+    {
+        value = pos->value_leaf.value;
+        if (start_key)
+            *start_key = pos->value_leaf.key;
+        if (end_key && pos->right)
+            *end_key = get_node(pos->right)->value_leaf.key;
+        return true;
+    }
+    else if (pos->left && get_node(pos->left)->value_leaf.key < key)
+    {
+        value = get_node(pos->left)->value_leaf.value;
+        if (start_key)
+            *start_key = get_node(pos->left)->value_leaf.key;
+        if (end_key)
+            *end_key = pos->value_leaf.key;
+        return true;
+    }
+
+    return false;
+}
+
+template<typename _Key, typename _Value>
+bool flat_segment_tree<_Key, _Value>::search_tree(
+    key_type key, value_type& value, key_type* start_key, key_type* end_key) const
+{
+    if (!m_root_node || !m_valid_tree)
+    {    
+        // either tree has not been built, or is in an invalid state.
+        return false;
+    }
+
+    if (key < get_node(m_left_leaf)->value_leaf.key || get_node(m_right_leaf)->value_leaf.key <= key)
+    {    
+        // key value is out-of-bound.
+        return false;
+    }
+
+    // Descend down the tree through the last non-leaf layer.
+
+    node* cur_node = get_node(m_root_node);
+    while (true)
+    {
+        if (cur_node->left)
+        {
+            if (cur_node->left->is_leaf)
+                break;
+
+            const nonleaf_value_type& v = get_node(cur_node->left)->value_nonleaf;
+            if (v.low <= key && key < v.high)
+            {    
+                cur_node = get_node(cur_node->left);
+                continue;
+            }
+        }
+        else
+        {    
+            // left child node can't be missing !
+            return false;
+        }
+
+        if (cur_node->right)
+        {
+            const nonleaf_value_type& v = get_node(cur_node->right)->value_nonleaf;
+            if (v.low <= key && key < v.high)
+            {    
+                cur_node = get_node(cur_node->right);
+                continue;
+            }
+        }
+        return false;
+    }
+
+    assert(cur_node->left->is_leaf && cur_node->right->is_leaf);
+
+    key_type key1 = get_node(cur_node->left)->value_leaf.key;
+    key_type key2 = get_node(cur_node->right)->value_leaf.key;
+
+    if (key1 <= key && key < key2)
+    {
+        cur_node = get_node(cur_node->left);
+    }
+    else if (key2 <= key && key < cur_node->value_nonleaf.high)
+    {
+        cur_node = get_node(cur_node->right);
+    }
+    else
+        cur_node = NULL;
+
+    if (!cur_node)
+    {    
+        return false;
+    }
+
+    value = cur_node->value_leaf.value;
+    if (start_key)
+        *start_key = cur_node->value_leaf.key;
+
+    if (end_key)
+    {
+        assert(cur_node->right);
+        if (cur_node->right)
+            *end_key = get_node(cur_node->right)->value_leaf.key;
+        else
+            // This should never happen, but just in case....
+            *end_key = get_node(m_right_leaf)->value_leaf.key;
+    }
+
+    return true;
+}
+
+template<typename _Key, typename _Value>
+void flat_segment_tree<_Key, _Value>::build_tree()
+{
+    if (!m_left_leaf)
+        return;
+
+    clear_tree(m_root_node);
+    m_root_node = ::mdds::build_tree(m_left_leaf);
+    m_valid_tree = true;
 }
 
 }
