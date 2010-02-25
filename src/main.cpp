@@ -1196,12 +1196,12 @@ int main (int argc, char *argv[])
     testSegmentTree1();
 #endif
     fst_test_insert_back();
-    return 0;
+//  return 0;
 
     fst_test_leaf_search();
     fst_test_tree_build();
     fst_test_tree_search();
-    fst_perf_test_search(false);
+//  fst_perf_test_search(false);
     fst_perf_test_search(true);
     fst_test_insert_search_mix();
     fst_test_shift_segment_left();
