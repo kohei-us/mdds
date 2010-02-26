@@ -75,6 +75,29 @@ public:
         {
         }
 
+        bool equals(const node& r) const
+        {
+            if (is_leaf != r.is_leaf)
+                return false;
+
+            if (is_leaf)
+            {
+                if (value_leaf.key != r.value_leaf.key)
+                    return false;
+                if (value_leaf.value != r.value_leaf.value)
+                    return false;
+            }
+            else
+            {
+                if (value_nonleaf.low != r.value_nonleaf.low)
+                    return false;
+                if (value_nonleaf.high != r.value_nonleaf.high)
+                    return false;
+            }
+
+            return true;
+        }
+
         virtual void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
@@ -371,6 +394,40 @@ public:
         return m_valid_tree;
     }
 
+    /** 
+     * Equality between two flat_segment_tree instances is evaluated by 
+     * comparing the keys and the values of the leaf nodes only.  Neither the 
+     * non-leaf nodes nor the validity of the tree is evaluated. 
+     */
+    bool operator==(const flat_segment_tree<key_type, value_type>& r) const
+    {
+        const node* n1 = get_node(m_left_leaf);
+        const node* n2 = get_node(r.m_left_leaf);
+
+        if ((!n1 && n2) || (n1 && !n2))
+            // Either one of them is NULL;
+            return false;
+
+        while (n1)
+        {
+            if (!n2)
+                return false;
+
+            if (!n1->equals(*n2))
+                return false;
+
+            n1 = get_node(n1->right);
+            n2 = get_node(n2->right);
+        }
+
+        if (n2)
+            // n1 is NULL, but n2 is not.
+            return false;
+
+        // All leaf nodes are equal.
+        return true;
+    }
+
 #ifdef UNIT_TEST
     void dump_tree() const
     {
@@ -579,7 +636,12 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
     // Find the node with value that either equals or is greater than the
     // start value.
 
-    node_base_ptr start_pos = get_insertion_pos_leaf(start_key, m_left_leaf, forward);
+    node_base_ptr start_pos;
+    if (forward)
+        start_pos = get_insertion_pos_leaf(start_key, m_left_leaf, true);
+    else
+        start_pos = get_insertion_pos_leaf(start_key, m_right_leaf->left, false);
+
     if (!start_pos)
         // Insertion position not found.  Bail out.
         return;
@@ -999,6 +1061,6 @@ flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(key_type key, const node
     return NULL;
 }
 
-}
+} // namespace mdds
 
 #endif

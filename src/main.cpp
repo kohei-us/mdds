@@ -1183,9 +1183,37 @@ void fst_test_const_iterator()
     for_each(db.begin(), db.end(), leaf_node_functor<key_type, value_type>());
 }
 
-void fst_test_insert_back()
+template<typename key_type, typename value_type>
+void fst_test_insert_back(key_type start_key, key_type end_key, value_type default_value)
 {
     StackPrinter __stack_printer__("::fst_test_insert_back");
+    typedef flat_segment_tree<key_type, value_type> container_type;
+
+    value_type val = 0;
+
+    // insert a series of segments from the front.
+    container_type db_front(start_key, end_key, default_value);
+    for (key_type i = start_key; i < end_key - 10; ++i)
+    {
+        db_front.insert_segment(i, i+1, val);
+        if (++val > 10)
+            val = 0;
+    }
+
+    // insert the same series of segments from the back.
+    container_type db_back(start_key, end_key, default_value);
+    val = 0;
+    for (key_type i = start_key; i < end_key - 10; ++i)
+    {
+        db_back.insert_segment_back(i, i+1, val);
+        if (++val > 10)
+            val = 0;
+    }
+
+    db_front.dump_leaf_nodes();
+    db_back.dump_leaf_nodes();
+    // Now, these two must be identical.
+    assert(db_front == db_back);
 }
 
 int main (int argc, char *argv[])
@@ -1195,8 +1223,8 @@ int main (int argc, char *argv[])
     testPrioSearchTree2();
     testSegmentTree1();
 #endif
-    fst_test_insert_back();
-//  return 0;
+    fst_test_insert_back<unsigned int, unsigned short>(0, 15, 2);
+    return 0;
 
     fst_test_leaf_search();
     fst_test_tree_build();
