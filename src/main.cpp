@@ -1218,7 +1218,37 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
         cout << "start_key = " << start_key << "  end_key = " << end_key << "  default_value = " << default_value << endl;
         assert(!"Contents of the two containers are not identical!");
     }
+}
 
+void fst_perf_test_insert()
+{
+    typedef unsigned long key_type;
+    typedef int           value_type;
+    typedef flat_segment_tree<key_type, value_type> container_type;
+    key_type upper_bound = 20000;
+    {
+        StackPrinter __stack_printer__("::fst_perf_test_insert (front insertion)");
+        container_type db(0, upper_bound, 0);
+        value_type val = 0;
+        for (key_type i = 0; i < upper_bound; ++i)
+        {
+            db.insert_segment(i, i+1, val);
+            if (++val > 10)
+                val = 0;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer__("::fst_perf_test_insert (back insertion)");
+        container_type db(0, upper_bound, 0);
+        value_type val = 0;
+        for (key_type i = 0; i < upper_bound; ++i)
+        {
+            db.insert_segment_back(i, i+1, val);
+            if (++val > 10)
+                val = 0;
+        }
+    }
 }
 
 void fst_test_equality()
@@ -1293,6 +1323,7 @@ int main (int argc, char *argv[])
     // ------------------------------------------------------------------------
     // flat_segment_tree test
 
+//  fst_perf_test_insert();
     fst_test_equality();
     fst_test_back_insert();
     {
