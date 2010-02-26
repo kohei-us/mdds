@@ -1309,6 +1309,42 @@ void fst_test_back_insert()
         unsigned short v[] = {0, 1, 0, 2, 0};
         assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
     }
+
+    db.insert_segment_back(90, 120, 10);
+    {
+        unsigned int   k[] = {0, 1, 2, 3, 5, 90, 100};
+        unsigned short v[] = {0, 1, 0, 2, 0, 10};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.insert_segment_back(0, 10, 20);
+    {
+        unsigned int   k[] = {0, 10, 90, 100};
+        unsigned short v[] = {20, 0, 10};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.insert_segment_back(5, 20, 20);
+    {
+        unsigned int   k[] = {0, 20, 90, 100};
+        unsigned short v[] = {20, 0, 10};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.insert_segment_back(15, 30, 5);
+    {
+        unsigned int   k[] = {0, 15, 30, 90, 100};
+        unsigned short v[] = {20, 5,  0, 10};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.insert_segment_back(0, 1, 2);
+    {
+        unsigned int   k[] = {0,  1, 15, 30, 90, 100};
+        unsigned short v[] = {2, 20,  5,  0, 10};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
     db.dump_leaf_nodes();
 }
 
