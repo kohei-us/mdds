@@ -31,13 +31,14 @@
 #include <iostream>
 #include <utility>
 #include <cassert>
+#include <limits>
 
 #include "node.hxx"
 
 #ifdef UNIT_TEST
+#include <cstdio>
 #include <vector>
 #endif
-
 namespace mdds {
 
 template<typename _Key, typename _Value>
@@ -319,6 +320,11 @@ public:
 
         get_node(m_right_leaf)->value_leaf.key = max_val;
         m_right_leaf->left = m_left_leaf;
+
+        // We don't ever use the value of the right leaf node, but we need the
+        // value to be always the same, to make it easier to check for
+        // equality.
+        get_node(m_right_leaf)->value_leaf.value = ::std::numeric_limits<value_type>::max();
     }
 
     ~flat_segment_tree()
@@ -426,6 +432,11 @@ public:
 
         // All leaf nodes are equal.
         return true;
+    }
+
+    bool operator !=(const flat_segment_tree<key_type, value_type>& r) const
+    {
+        return !operator==(r);
     }
 
 #ifdef UNIT_TEST
@@ -562,7 +573,8 @@ private:
 
     void insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward);
 
-    node_base_ptr get_insertion_pos_leaf(key_type key, const node_base_ptr& start_pos, bool forward = true) const;
+    node_base_ptr get_insertion_pos_leaf(key_type key, const node_base_ptr& start_pos) const;
+    node_base_ptr get_insertion_pos_leaf_reverse(key_type key, const node_base_ptr& start_pos) const;
 
     const node* get_insertion_pos_leaf(key_type key, const node* start_pos) const;
 
@@ -638,15 +650,26 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
 
     node_base_ptr start_pos;
     if (forward)
-        start_pos = get_insertion_pos_leaf(start_key, m_left_leaf, true);
+    {    
+        start_pos = get_insertion_pos_leaf(start_key, m_left_leaf);
+    }
     else
-        start_pos = get_insertion_pos_leaf(start_key, m_right_leaf->left, false);
-
+    {    
+        start_pos = get_insertion_pos_leaf_reverse(start_key, m_right_leaf);
+        if (start_pos)
+            start_pos = start_pos->right;
+        else
+            start_pos = m_left_leaf;
+    }
     if (!start_pos)
+    {
         // Insertion position not found.  Bail out.
+        assert(!"Insertion position not found.  Bail out");
         return;
+    }
 
-    node_base_ptr end_pos = get_insertion_pos_leaf(end_key, start_pos, true);
+
+    node_base_ptr end_pos = get_insertion_pos_leaf(end_key, start_pos);
     if (!end_pos)
         end_pos = m_right_leaf;
 
@@ -773,7 +796,7 @@ void flat_segment_tree<_Key, _Value>::shift_segment_left(key_type start_key, key
     else
         // Get the first node with a key value equal to or greater than the 
         // start key value.  But we want to skip the leftmost node.
-        node_pos = get_insertion_pos_leaf(start_key, m_left_leaf->right, true);
+        node_pos = get_insertion_pos_leaf(start_key, m_left_leaf->right);
 
     if (!node_pos)
         return;
@@ -881,7 +904,7 @@ void flat_segment_tree<_Key, _Value>::shift_segment_right(key_type pos, key_type
 
     // Get the first node with a key value equal to or greater than the
     // start key value.  But we want to skip the leftmost node.
-    node_base_ptr cur_node = get_insertion_pos_leaf(pos, m_left_leaf->right, true);
+    node_base_ptr cur_node = get_insertion_pos_leaf(pos, m_left_leaf->right);
 
     // If the point of insertion is at an existing node position, don't 
     // shift that node but start with the one after it if that's
@@ -1029,7 +1052,7 @@ void flat_segment_tree<_Key, _Value>::build_tree()
 
 template<typename _Key, typename _Value>
 node_base_ptr flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(
-    key_type key, const node_base_ptr& start_pos, bool forward) const
+    key_type key, const node_base_ptr& start_pos) const
 {
     node_base_ptr cur_node = start_pos;
     while (cur_node)
@@ -1039,7 +1062,24 @@ node_base_ptr flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(
             // Found the insertion position.
             return cur_node;
         }
-        cur_node = forward ? cur_node->right : cur_node->left;
+        cur_node = cur_node->right;
+    }
+    return node_base_ptr();
+}
+
+template<typename _Key, typename _Value>
+node_base_ptr flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
+    key_type key, const node_base_ptr& start_pos) const
+{
+    node_base_ptr cur_node = start_pos;
+    while (cur_node)
+    {
+        if (key > get_node(cur_node)->value_leaf.key)
+        {
+            // Found the insertion position.
+            return cur_node;
+        }
+        cur_node = cur_node->left;
     }
     return node_base_ptr();
 }

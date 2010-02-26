@@ -1184,9 +1184,8 @@ void fst_test_const_iterator()
 }
 
 template<typename key_type, typename value_type>
-void fst_test_insert_back(key_type start_key, key_type end_key, value_type default_value)
+void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type default_value)
 {
-    StackPrinter __stack_printer__("::fst_test_insert_back");
     typedef flat_segment_tree<key_type, value_type> container_type;
 
     value_type val = 0;
@@ -1210,10 +1209,46 @@ void fst_test_insert_back(key_type start_key, key_type end_key, value_type defau
             val = 0;
     }
 
-    db_front.dump_leaf_nodes();
-    db_back.dump_leaf_nodes();
     // Now, these two must be identical.
-    assert(db_front == db_back);
+    if (db_front != db_back)
+    {
+        // They are not identical!
+        db_front.dump_leaf_nodes();
+        db_back.dump_leaf_nodes();
+        cout << "start_key = " << start_key << "  end_key = " << end_key << "  default_value = " << default_value << endl;
+        assert(!"Contents of the two containers are not identical!");
+    }
+
+}
+
+void fst_test_back_insert()
+{
+    StackPrinter __stack_printer__("::fst_test_back_insert");
+    typedef unsigned int   key_type;
+    typedef unsigned short value_type;
+    typedef flat_segment_tree<key_type, value_type> container_type;
+    container_type db(0, 100, 0);
+    db.insert_segment_back(1, 2, 1);
+    {
+        unsigned int   k[] = {0, 1, 2, 100};
+        unsigned short v[] = {0, 1, 0};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.insert_segment_back(3, 4, 2);
+    {
+        unsigned int   k[] = {0, 1, 2, 3, 4, 100};
+        unsigned short v[] = {0, 1, 0, 2, 0};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.insert_segment_back(4, 5, 2);
+    {
+        unsigned int   k[] = {0, 1, 2, 3, 5, 100};
+        unsigned short v[] = {0, 1, 0, 2, 0};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+    db.dump_leaf_nodes();
 }
 
 int main (int argc, char *argv[])
@@ -1223,8 +1258,31 @@ int main (int argc, char *argv[])
     testPrioSearchTree2();
     testSegmentTree1();
 #endif
-    fst_test_insert_back<unsigned int, unsigned short>(0, 15, 2);
-    return 0;
+
+    // ------------------------------------------------------------------------
+    // flat_segment_tree test
+
+    fst_test_back_insert();
+    {
+        typedef unsigned int   key_type;
+        typedef unsigned short value_type;
+        for (value_type i = 0; i <= 100; ++i)
+            fst_test_insert_front_back<key_type, value_type>(0, 100, i);
+    }
+
+    {
+        typedef int   key_type;
+        typedef short value_type;
+        for (value_type i = 0; i <= 100; ++i)
+            fst_test_insert_front_back<key_type, value_type>(0, 100, i);
+    }
+
+    {
+        typedef long         key_type;
+        typedef unsigned int value_type;
+        for (value_type i = 0; i <= 100; ++i)
+            fst_test_insert_front_back<key_type, value_type>(0, 100, i);
+    }
 
     fst_test_leaf_search();
     fst_test_tree_build();
