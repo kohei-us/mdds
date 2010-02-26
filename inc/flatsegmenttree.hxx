@@ -405,34 +405,7 @@ public:
      * comparing the keys and the values of the leaf nodes only.  Neither the 
      * non-leaf nodes nor the validity of the tree is evaluated. 
      */
-    bool operator==(const flat_segment_tree<key_type, value_type>& r) const
-    {
-        const node* n1 = get_node(m_left_leaf);
-        const node* n2 = get_node(r.m_left_leaf);
-
-        if ((!n1 && n2) || (n1 && !n2))
-            // Either one of them is NULL;
-            return false;
-
-        while (n1)
-        {
-            if (!n2)
-                return false;
-
-            if (!n1->equals(*n2))
-                return false;
-
-            n1 = get_node(n1->right);
-            n2 = get_node(n2->right);
-        }
-
-        if (n2)
-            // n1 is NULL, but n2 is not.
-            return false;
-
-        // All leaf nodes are equal.
-        return true;
-    }
+    bool operator==(const flat_segment_tree<key_type, value_type>& r) const;
 
     bool operator !=(const flat_segment_tree<key_type, value_type>& r) const
     {
@@ -1048,6 +1021,36 @@ void flat_segment_tree<_Key, _Value>::build_tree()
     clear_tree(m_root_node);
     m_root_node = ::mdds::build_tree(m_left_leaf);
     m_valid_tree = true;
+}
+
+template<typename _Key, typename _Value>
+bool flat_segment_tree<_Key, _Value>::operator==(const flat_segment_tree<key_type, value_type>& r) const
+{
+    const node* n1 = get_node(m_left_leaf);
+    const node* n2 = get_node(r.m_left_leaf);
+
+    if ((!n1 && n2) || (n1 && !n2))
+        // Either one of them is NULL;
+        return false;
+
+    while (n1)
+    {
+        if (!n2)
+            return false;
+
+        if (!n1->equals(*n2))
+            return false;
+
+        n1 = get_node(n1->right);
+        n2 = get_node(n2->right);
+    }
+
+    if (n2)
+        // n1 is NULL, but n2 is not.
+        return false;
+
+    // All leaf nodes are equal.
+    return true;
 }
 
 template<typename _Key, typename _Value>
