@@ -1221,6 +1221,37 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
 
 }
 
+void fst_test_equality()
+{
+    StackPrinter __stack_printer__("::fst_test_equality");
+    typedef unsigned long key_type;
+    typedef int           value_type;
+    typedef flat_segment_tree<key_type, value_type> container_type;
+
+    container_type db1(0, 100, 0);
+    container_type db2(0, 100, 0);
+    assert(db1 == db2);
+
+    db1.insert_segment(0, 1, 1);
+    assert(db1 != db2);
+
+    db2.insert_segment(0, 1, 1);
+    assert(db1 == db2);
+
+    db1.insert_segment(4, 10, 10);
+    db1.insert_segment(4, 10, 0);
+    assert(db1 == db2);
+
+    db1.insert_segment(20, 40, 5);
+    db1.insert_segment(30, 35, 6);
+    assert(db1 != db2);
+
+    db2.insert_segment(20, 30, 5);
+    db2.insert_segment(30, 35, 6);
+    db2.insert_segment(35, 40, 5);
+    assert(db1 == db2);
+}
+
 void fst_test_back_insert()
 {
     StackPrinter __stack_printer__("::fst_test_back_insert");
@@ -1262,6 +1293,7 @@ int main (int argc, char *argv[])
     // ------------------------------------------------------------------------
     // flat_segment_tree test
 
+    fst_test_equality();
     fst_test_back_insert();
     {
         typedef unsigned int   key_type;
