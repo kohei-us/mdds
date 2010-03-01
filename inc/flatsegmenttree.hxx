@@ -72,6 +72,21 @@ public:
         {
         }
 
+        node(const node& r) :
+            node_base(r)
+        {
+            if (is_leaf)
+            {
+                value_leaf.key = r.value_leaf.key;
+                value_leaf.value = r.value_leaf.value;
+            }
+            else
+            {
+                value_nonleaf.low = r.value_nonleaf.low;
+                value_nonleaf.high = r.value_nonleaf.high;
+            }
+        }
+
         virtual ~node()
         {
         }
@@ -147,6 +162,11 @@ public:
         virtual node_base* create_new(bool leaf) const
         {
             return new node(leaf);
+        }
+
+        virtual node_base* clone() const
+        {
+            return new node(*this);
         }
     };
 
@@ -306,43 +326,19 @@ public:
         return static_cast<node*>(base_node.get());
     }
 
-    flat_segment_tree(key_type min_val, key_type max_val, value_type init_val) :
-        m_root_node(static_cast<node*>(NULL)),
-        m_left_leaf(new node(true)),
-        m_right_leaf(new node(true)),
-        m_init_val(init_val),
-        m_valid_tree(false)
+    static node* get_node(const node_base* base_node)
     {
-        // we need to create two end nodes during initialization.
-        get_node(m_left_leaf)->value_leaf.key = min_val;
-        get_node(m_left_leaf)->value_leaf.value = init_val;
-        m_left_leaf->right = m_right_leaf;
-
-        get_node(m_right_leaf)->value_leaf.key = max_val;
-        m_right_leaf->left = m_left_leaf;
-
-        // We don't ever use the value of the right leaf node, but we need the
-        // value to be always the same, to make it easier to check for
-        // equality.
-        get_node(m_right_leaf)->value_leaf.value = ::std::numeric_limits<value_type>::max();
+        return static_cast<node*>(base_node);
     }
 
-    ~flat_segment_tree()
-    {
-        // Go through all leaf nodes, and disconnect their links.
-        node_base* cur_node = m_left_leaf.get();
-        do
-        {
-            node_base* next_node = cur_node->right.get();
-            disconnect_node(cur_node);
-            cur_node = next_node;
-        }
-        while (cur_node != m_right_leaf.get());
+    flat_segment_tree(key_type min_val, key_type max_val, value_type init_val);
 
-        disconnect_node(m_right_leaf.get());
-        clear_tree(m_root_node);
-        disconnect_node(m_root_node.get());
-    }
+    /** 
+     * Copy constructor only copies the leaf nodes.  
+     */
+    flat_segment_tree(const flat_segment_tree<key_type, value_type>& r);
+
+    ~flat_segment_tree();
 
     /** 
      * Insert a new segment into the tree.  It searches for the point of 
@@ -513,7 +509,7 @@ public:
 #endif
 
 private:
-    flat_segment_tree();
+    flat_segment_tree(); // default constructor is not allowed.
 
     void append_new_segment(key_type start_key)
     {
@@ -599,6 +595,72 @@ private:
     value_type      m_init_val;
     bool            m_valid_tree;
 };
+
+template<typename _Key, typename _Value>
+flat_segment_tree<_Key, _Value>::flat_segment_tree(key_type min_val, key_type max_val, value_type init_val) :
+    m_root_node(static_cast<node*>(NULL)),
+    m_left_leaf(new node(true)),
+    m_right_leaf(new node(true)),
+    m_init_val(init_val),
+    m_valid_tree(false)
+{
+    // we need to create two end nodes during initialization.
+    get_node(m_left_leaf)->value_leaf.key = min_val;
+    get_node(m_left_leaf)->value_leaf.value = init_val;
+    m_left_leaf->right = m_right_leaf;
+
+    get_node(m_right_leaf)->value_leaf.key = max_val;
+    m_right_leaf->left = m_left_leaf;
+
+    // We don't ever use the value of the right leaf node, but we need the
+    // value to be always the same, to make it easier to check for
+    // equality.
+    get_node(m_right_leaf)->value_leaf.value = ::std::numeric_limits<value_type>::max();
+}
+
+template<typename _Key, typename _Value>
+flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key, _Value>& r) :
+    m_root_node(static_cast<node*>(NULL)),
+    m_left_leaf(new node(static_cast<const node&>(*r.m_left_leaf))),
+    m_right_leaf(static_cast<node*>(NULL)),
+    m_init_val(r.m_init_val),
+    m_valid_tree(false)
+{
+    // Copy all the leaf nodes from the original instance.
+    node_base* src_node = r.m_left_leaf.get();
+    node_base_ptr dest_node = m_left_leaf;
+    while (true)
+    {
+        dest_node->right.reset(src_node->right->clone());
+        src_node = src_node->right.get();
+        dest_node = dest_node->right;
+
+        if (src_node == r.m_right_leaf.get())
+        {
+            // Reached the right most leaf node.  We can stop here.
+            m_right_leaf = dest_node;
+            break;
+        }
+    }
+}
+
+template<typename _Key, typename _Value>
+flat_segment_tree<_Key, _Value>::~flat_segment_tree()
+{
+    // Go through all leaf nodes, and disconnect their links.
+    node_base* cur_node = m_left_leaf.get();
+    do
+    {
+        node_base* next_node = cur_node->right.get();
+        disconnect_node(cur_node);
+        cur_node = next_node;
+    }
+    while (cur_node != m_right_leaf.get());
+
+    disconnect_node(m_right_leaf.get());
+    clear_tree(m_root_node);
+    disconnect_node(m_root_node.get());
+}
 
 template<typename _Key, typename _Value>
 void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward)

@@ -1251,6 +1251,57 @@ void fst_perf_test_insert()
     }
 }
 
+void fst_test_copy_ctor()
+{
+    typedef unsigned long key_type;
+    typedef int           value_type;
+    typedef flat_segment_tree<key_type, value_type> fst;
+
+    // Test copy construction of node first.
+
+    // Original node.
+    node_base_ptr node1(new fst::node(true));
+    fst::get_node(node1)->value_leaf.key   = 10;
+    fst::get_node(node1)->value_leaf.value = 500;
+    assert(node1->is_leaf);
+    assert(!node1->parent);
+    assert(!node1->left);
+    assert(!node1->right);
+
+    // Copy it to new node.
+    node_base_ptr node2(new fst::node(*fst::get_node(node1)));
+    assert(node2->is_leaf);
+    assert(!node2->parent);
+    assert(!node2->left);
+    assert(!node2->right);
+    assert(fst::get_node(node2)->value_leaf.key == 10);
+    assert(fst::get_node(node2)->value_leaf.value == 500);
+
+    // Changing the values of the original should not modify the second node.
+    fst::get_node(node1)->value_leaf.key   = 35;
+    fst::get_node(node1)->value_leaf.value = 200;
+    assert(fst::get_node(node2)->value_leaf.key == 10);
+    assert(fst::get_node(node2)->value_leaf.value == 500);
+
+    // Change the original node to non leaf.
+    node1->is_leaf = false;
+    fst::get_node(node1)->value_nonleaf.low  = 123;
+    fst::get_node(node1)->value_nonleaf.high = 789;
+
+    // Test the copying of non-leaf values.
+    node_base_ptr node3(new fst::node(*fst::get_node(node1)));
+    assert(!node3->is_leaf);
+    assert(!node3->parent);
+    assert(!node3->left);
+    assert(!node3->right);
+    assert(fst::get_node(node3)->value_nonleaf.low == 123);
+    assert(fst::get_node(node3)->value_nonleaf.high == 789);
+
+    // Now, test the copy construction of the flat_segment_tree.
+    fst db(0, 100, 5);
+    fst db_copied(db);
+}
+
 void fst_test_equality()
 {
     StackPrinter __stack_printer__("::fst_test_equality");
@@ -1360,6 +1411,8 @@ int main (int argc, char *argv[])
     // flat_segment_tree test
 
 //  fst_perf_test_insert();
+    fst_test_copy_ctor();
+    return 0;
     fst_test_equality();
     fst_test_back_insert();
     {

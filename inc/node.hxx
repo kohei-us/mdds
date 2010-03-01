@@ -107,6 +107,35 @@ struct node_base : public intrusive_ref_base
 #endif
     }
 
+    /** 
+     * When copying node, only the stored values should be copied. 
+     * Connections to the parent, left and right nodes must not be copied. 
+     */
+    node_base(const node_base& r) :
+        intrusive_ref_base(),
+        parent(static_cast<node_base*>(NULL)),
+        left(static_cast<node_base*>(NULL)),
+        right(static_cast<node_base*>(NULL)),
+        is_leaf(r.is_leaf)
+    {
+#ifdef DEBUG_NODE_BASE
+        ++node_instance_count;
+#endif
+    }
+
+    /** 
+     * Like the copy constructor, only the stored values should be copied. 
+     */
+    node_base& operator=(const node_base& r)
+    {
+        if (this == &r)
+            // assignment to self.
+            return *this;
+
+        is_leaf = r.is_leaf;
+        return *this;
+    }
+
     virtual ~node_base()
     {
 #ifdef DEBUG_NODE_BASE
@@ -119,6 +148,7 @@ struct node_base : public intrusive_ref_base
     virtual void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node) = 0;
     virtual void dump_value() const = 0;
     virtual node_base* create_new(bool leaf) const = 0;
+    virtual node_base* clone() const = 0;
 };
 
 template<typename _NodePtr>
