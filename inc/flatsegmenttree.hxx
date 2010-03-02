@@ -624,7 +624,7 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key,
     m_left_leaf(new node(static_cast<const node&>(*r.m_left_leaf))),
     m_right_leaf(static_cast<node*>(NULL)),
     m_init_val(r.m_init_val),
-    m_valid_tree(false)
+    m_valid_tree(false) // tree is invalid because we only copy the leaf nodes.
 {
     // Copy all the leaf nodes from the original instance.
     node_base* src_node = r.m_left_leaf.get();
@@ -632,8 +632,15 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key,
     while (true)
     {
         dest_node->right.reset(src_node->right->clone());
+
+        // Move on to the next source node.
         src_node = src_node->right.get();
+
+        // Move on to the next destination node, and have the next node point
+        // back to the previous node.
+        node_base_ptr old_node = dest_node;
         dest_node = dest_node->right;
+        dest_node->left = old_node;
 
         if (src_node == r.m_right_leaf.get())
         {

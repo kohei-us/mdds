@@ -1298,13 +1298,36 @@ void fst_test_copy_ctor()
     assert(fst::get_node(node3)->value_nonleaf.high == 789);
 
     // Now, test the copy construction of the flat_segment_tree.
+
     fst db(0, 100, 5);
     fst db_copied(db);
+    assert(db == db_copied);
+    {
+        key_type   k[] = {0, 100};
+        value_type v[] = {5};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.insert_segment(5, 10, 0);
+    db_copied.insert_segment(5, 10, 0);
+    assert(db == db_copied);
+    {
+        key_type   k[] = {0, 5, 10, 100};
+        value_type v[] = {5, 0,  5};
+        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db_copied.insert_segment(15, 20, 35);
+    assert(db != db_copied);
+    {
+        key_type   k[] = {0, 5, 10, 15, 20, 100};
+        value_type v[] = {5, 0,  5, 35,  5};
+        assert(is_leaf_nodes_valid(db_copied, k, v, ARRAY_SIZE(k)));
+    }
 }
 
 void fst_test_equality()
 {
-    StackPrinter __stack_printer__("::fst_test_equality");
     typedef unsigned long key_type;
     typedef int           value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
@@ -1411,9 +1434,8 @@ int main (int argc, char *argv[])
     // flat_segment_tree test
 
 //  fst_perf_test_insert();
-    fst_test_copy_ctor();
-    return 0;
     fst_test_equality();
+    fst_test_copy_ctor();
     fst_test_back_insert();
     {
         typedef unsigned int   key_type;
