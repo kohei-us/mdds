@@ -409,6 +409,11 @@ public:
     }
 
 #ifdef UNIT_TEST
+    node_base_ptr get_root_node() const
+    {
+        return m_root_node;
+    }
+
     void dump_tree() const
     {
         using ::std::cout;

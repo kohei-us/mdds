@@ -1299,6 +1299,7 @@ void fst_test_copy_ctor()
 
     // Now, test the copy construction of the flat_segment_tree.
 
+    // Simple copying by copy construction.
     fst db(0, 100, 5);
     fst db_copied(db);
     assert(db == db_copied);
@@ -1308,6 +1309,8 @@ void fst_test_copy_ctor()
         assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
     }
 
+    // Inserting the same segment value to both instances.  They should still
+    // be equal.
     db.insert_segment(5, 10, 0);
     db_copied.insert_segment(5, 10, 0);
     assert(db == db_copied);
@@ -1317,6 +1320,7 @@ void fst_test_copy_ctor()
         assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
     }
 
+    // Inserting a new segment only to the 2nd instance.  They should differ.
     db_copied.insert_segment(15, 20, 35);
     assert(db != db_copied);
     {
@@ -1324,6 +1328,22 @@ void fst_test_copy_ctor()
         value_type v[] = {5, 0,  5, 35,  5};
         assert(is_leaf_nodes_valid(db_copied, k, v, ARRAY_SIZE(k)));
     }
+
+    // Make sure that copying will leave the tree invalid.
+    assert(!db_copied.is_tree_valid());
+    db_copied.build_tree();
+    assert(db_copied.is_tree_valid());
+    fst db_copied_again(db_copied);
+    assert(db_copied == db_copied_again);
+    assert(!db_copied_again.is_tree_valid());
+    assert(!db_copied_again.get_root_node());
+
+    // Make sure we can still perform tree search correctly.
+    value_type answer;
+    db_copied_again.build_tree();
+    db_copied_again.search_tree(18, answer);
+    assert(db_copied_again.is_tree_valid());
+    assert(answer == 35);
 }
 
 void fst_test_equality()
