@@ -1,7 +1,9 @@
 #!/bin/bash
 
-VERSION=0.1
+VERSION=0.1.1
 DIR=mdds_$VERSION
-svn checkout http://multidimalgorithm.googlecode.com/svn/trunk/ $DIR
-find ./$DIR -name '.svn' -type d | xargs rm -r || exit 1
+hg clone https://multidimalgorithm.googlecode.com/hg/ $DIR
+rm -rf $DIR/.hg
+rm -rf $DIR/bin
+find $DIR -name '*.vp?' -type f | xargs rm -f
 tar jcvf $DIR.tar.bz2 $DIR
