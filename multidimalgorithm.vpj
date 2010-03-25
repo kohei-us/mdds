@@ -4,7 +4,7 @@
 	VendorName="SlickEdit"
 	WorkingDir="."
 	BuildSystem="vsbuild"
-	VCSProject="Subversion:">
+	VCSProject=":">
 	<Config
 		Name="Debug"
 		Type="gnuc"
@@ -220,19 +220,19 @@
 	</CustomFolders>
 	<Files AutoFolders="DirectoryView">
 		<Folder Name="inc">
-			<F N="inc/flatsegmenttree.hxx"/>
-			<F N="inc/global.hxx"/>
-			<F N="inc/node.hxx"/>
-			<F N="inc/nodecontainer.hxx"/>
-			<F N="inc/rangetree.hxx"/>
-			<F N="inc/segmenttree.hxx"/>
+			<F N="inc/flatsegmenttree.hpp"/>
+			<F N="inc/global.hpp"/>
+			<F N="inc/node.hpp"/>
+			<F N="inc/nodecontainer.hpp"/>
+			<F N="inc/rangetree.hpp"/>
+			<F N="inc/segmenttree.hpp"/>
 		</Folder>
 		<Folder Name="src">
-			<F N="src/global.cxx"/>
+			<F N="src/global.cpp"/>
 			<F N="src/main.cpp"/>
-			<F N="src/nodecontainer.cxx"/>
-			<F N="src/rangetree.cxx"/>
-			<F N="src/segmenttree.cxx"/>
+			<F N="src/nodecontainer.cpp"/>
+			<F N="src/rangetree.cpp"/>
+			<F N="src/segmenttree.cpp"/>
 		</Folder>
 	</Files>
 </Project>

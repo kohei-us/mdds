@@ -33,7 +33,7 @@
 #include <cassert>
 #include <limits>
 
-#include "node.hxx"
+#include "node.hpp"
 
 #ifdef UNIT_TEST
 #include <cstdio>

@@ -26,10 +26,10 @@
  ************************************************************************/
 
 #if 0 // Disabled until I re-write priority search tree in a template.
-#include "rangetree.hxx"
-#include "segmenttree.hxx"
+#include "rangetree.hpp"
+#include "segmenttree.hpp"
 #endif
-#include "flatsegmenttree.hxx"
+#include "flatsegmenttree.hpp"
 
 #include <list>
 #include <iostream>
