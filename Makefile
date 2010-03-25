@@ -16,7 +16,7 @@ HEADERS= \
 	$(INCDIR)/segmenttree.hpp
 
 OBJFILES= \
-	$(OBJDIR)/main.o \
+	$(OBJDIR)/flatsegmenttree_test.o \
 	$(OBJDIR)/segmenttree_test.o
 
 all: $(EXECS)
@@ -24,14 +24,14 @@ all: $(EXECS)
 pre:
 	mkdir $(OBJDIR) 2>/dev/null || /bin/true
 
-$(OBJDIR)/main.o: $(SRCDIR)/main.cpp
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/main.cpp
+$(OBJDIR)/flatsegmenttree_test.o: $(SRCDIR)/flatsegmenttree_test.cpp
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/flatsegmenttree_test.cpp
 
 $(OBJDIR)/segmenttree_test.o: $(SRCDIR)/segmenttree_test.cpp
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/segmenttree_test.cpp
 
-flatsegmenttree-test: pre $(OBJDIR)/main.o
-	$(CXX) $(LDFLAGS) $(OBJDIR)/main.o -o $@
+flatsegmenttree-test: pre $(OBJDIR)/flatsegmenttree_test.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/flatsegmenttree_test.o -o $@
 
 segmenttree-test: pre $(OBJDIR)/segmenttree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/segmenttree_test.o -o $@
