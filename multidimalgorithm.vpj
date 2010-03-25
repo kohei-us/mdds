@@ -229,6 +229,7 @@
 			<F N="inc/segmenttree_old.hpp"/>
 		</Folder>
 		<Folder Name="src">
+			<F N="src/flatsegmenttree_test.cpp"/>
 			<F N="src/global.cpp"/>
 			<F N="src/main.cpp"/>
 			<F N="src/nodecontainer.cpp"/>

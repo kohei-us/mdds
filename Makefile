@@ -30,10 +30,10 @@ $(OBJDIR)/flatsegmenttree_test.o: $(SRCDIR)/flatsegmenttree_test.cpp
 $(OBJDIR)/segmenttree_test.o: $(SRCDIR)/segmenttree_test.cpp
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/segmenttree_test.cpp
 
-flatsegmenttree-test: pre $(OBJDIR)/flatsegmenttree_test.o
+flatsegmenttree-test: pre $(OBJDIR)/flatsegmenttree_test.o $(HEADERS)
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flatsegmenttree_test.o -o $@
 
-segmenttree-test: pre $(OBJDIR)/segmenttree_test.o
+segmenttree-test: pre $(OBJDIR)/segmenttree_test.o $(HEADERS)
 	$(CXX) $(LDFLAGS) $(OBJDIR)/segmenttree_test.o -o $@
 
 test.fst: flatsegmenttree-test

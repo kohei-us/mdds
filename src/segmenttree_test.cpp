@@ -75,8 +75,12 @@ private:
 
 }
 
+void st_test_insert_segments()
+{
+}
+
 int main()
 {
-
+    st_test_insert_segments();
     return EXIT_SUCCESS;
 }
