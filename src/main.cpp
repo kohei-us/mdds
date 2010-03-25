@@ -27,7 +27,6 @@
 
 #if 0 // Disabled until I re-write priority search tree in a template.
 #include "rangetree.hpp"
-#include "segmenttree.hpp"
 #endif
 #include "flatsegmenttree.hpp"
 

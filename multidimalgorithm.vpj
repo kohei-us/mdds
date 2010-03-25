@@ -226,13 +226,15 @@
 			<F N="inc/nodecontainer.hpp"/>
 			<F N="inc/rangetree.hpp"/>
 			<F N="inc/segmenttree.hpp"/>
+			<F N="inc/segmenttree_old.hpp"/>
 		</Folder>
 		<Folder Name="src">
 			<F N="src/global.cpp"/>
 			<F N="src/main.cpp"/>
 			<F N="src/nodecontainer.cpp"/>
 			<F N="src/rangetree.cpp"/>
-			<F N="src/segmenttree.cpp"/>
+			<F N="src/segmenttree_old.cpp"/>
+			<F N="src/segmenttree_test.cpp"/>
 		</Folder>
 	</Files>
 </Project>
