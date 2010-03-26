@@ -249,6 +249,22 @@ void segment_tree<_Key, _Data>::build_tree()
             p = get_node(p->right);
         }
     }
+
+    // debug output
+    {
+        node* p = get_node(m_left_leaf);
+        while (p)
+        {
+            cout << p->value_leaf.key << ":{ ";
+            if (p->value_leaf.data_chain)
+            {
+                const data_chain_type* pchain = p->value_leaf.data_chain;
+                copy(pchain->begin(), pchain->end(), ostream_iterator<data_type*>(cout, " "));
+            }
+            cout << "}" << endl;
+            p = get_node(p->right);
+        }
+    }
 }
 
 template<typename _Key, typename _Data>
