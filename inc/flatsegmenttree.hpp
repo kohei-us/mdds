@@ -584,7 +584,7 @@ private:
             while (get_node(cur_node) != get_node(end_node))
             {
                 node_base_ptr next_node = cur_node->right;
-                disconnect_node(cur_node);
+                disconnect_node(cur_node.get());
                 cur_node = next_node;
             }
             last_node->right = end_node;
@@ -659,17 +659,7 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key,
 template<typename _Key, typename _Value>
 flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 {
-    // Go through all leaf nodes, and disconnect their links.
-    node_base* cur_node = m_left_leaf.get();
-    do
-    {
-        node_base* next_node = cur_node->right.get();
-        disconnect_node(cur_node);
-        cur_node = next_node;
-    }
-    while (cur_node != m_right_leaf.get());
-
-    disconnect_node(m_right_leaf.get());
+    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
     clear_tree(m_root_node);
     disconnect_node(m_root_node.get());
 }

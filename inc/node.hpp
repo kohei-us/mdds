@@ -151,8 +151,7 @@ struct node_base : public intrusive_ref_base
     virtual node_base* clone() const = 0;
 };
 
-template<typename _NodePtr>
-void disconnect_node(_NodePtr p)
+void disconnect_node(node_base* p)
 {
     if (!p)
         return;
@@ -161,6 +160,22 @@ void disconnect_node(_NodePtr p)
     p->right.reset();
     p->parent.reset();
 }
+
+void disconnect_leaf_nodes(node_base* left_node, node_base* right_node)
+{
+    // Go through all leaf nodes, and disconnect their links.
+    node_base* cur_node = left_node;
+    do
+    {
+        node_base* next_node = cur_node->right.get();
+        disconnect_node(cur_node);
+        cur_node = next_node;
+    }
+    while (cur_node != right_node);
+
+    disconnect_node(right_node);
+}
+
 
 template<typename _NodePtr>
 void link_nodes(_NodePtr& left, _NodePtr& right)

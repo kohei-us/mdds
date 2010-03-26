@@ -153,23 +153,17 @@ segment_tree<_Key, _Data>::segment_tree() :
 template<typename _Key, typename _Data>
 segment_tree<_Key, _Data>::~segment_tree()
 {
-    // Go through all leaf nodes, and disconnect their links.
-    node_base* cur_node = m_left_leaf.get();
-    do
-    {
-        node_base* next_node = cur_node->right.get();
-        disconnect_node(cur_node);
-        cur_node = next_node;
-    }
-    while (cur_node != m_right_leaf.get());
-
-    disconnect_node(m_right_leaf.get());
+    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 }
 
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::build_tree()
 {
     using namespace std;
+
+    if (m_valid_tree)
+        // Nothing to do.
+        return;
 
     // In 1st pass, collect unique end-point values and sort them.
     vector<key_type> keys_uniq;
@@ -227,6 +221,7 @@ void segment_tree<_Key, _Data>::build_tree()
         {
             if (p->value_leaf.key == key_beg)
             {
+                // Insertion of begin point.
                 leaf_value_type& v = p->value_leaf;
                 if (!v.data_chain)
                     v.data_chain = new data_chain_type;
@@ -234,9 +229,9 @@ void segment_tree<_Key, _Data>::build_tree()
             }
             else if (p->value_leaf.key == key_end)
             {
-                // Insert data pointer to the previous node _only when_ the
-                // value of the previous node doesn't equal the begin point
-                // value.
+                // For insertion of the end point, insert data pointer to the
+                // previous node _only when_ the value of the previous node
+                // doesn't equal the begin point value.
                 node* pprev = get_node(p->left);
                 if (pprev && pprev->value_leaf.key != key_beg)
                 {
@@ -265,6 +260,8 @@ void segment_tree<_Key, _Data>::build_tree()
             p = get_node(p->right);
         }
     }
+
+    m_valid_tree = true;
 }
 
 template<typename _Key, typename _Data>
@@ -309,6 +306,7 @@ void segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, dat
         return;
 
     m_segment_data.push_back(new segment_data(begin_key, end_key, pdata));
+    m_valid_tree = false;
 }
 
 }
