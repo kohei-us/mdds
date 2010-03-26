@@ -660,7 +660,7 @@ template<typename _Key, typename _Value>
 flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 {
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
-    clear_tree(m_root_node);
+    clear_tree(m_root_node.get());
     disconnect_node(m_root_node.get());
 }
 
@@ -1082,7 +1082,7 @@ void flat_segment_tree<_Key, _Value>::build_tree()
     if (!m_left_leaf)
         return;
 
-    clear_tree(m_root_node);
+    clear_tree(m_root_node.get());
     m_root_node = ::mdds::build_tree(m_left_leaf);
     m_valid_tree = true;
 }

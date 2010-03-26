@@ -188,8 +188,7 @@ void link_nodes(_NodePtr& left, _NodePtr& right)
  * Disconnect all non-leaf nodes so that their ref-counted instances will 
  * all get destroyed afterwards. 
  */
-template<typename _NodePtr>
-void clear_tree(const _NodePtr& node)
+void clear_tree(node_base* node)
 {
     if (!node)
         // Nothing to do.
@@ -201,9 +200,9 @@ void clear_tree(const _NodePtr& node)
         return;
     }
 
-    clear_tree(node->left);
-    clear_tree(node->right);
-    disconnect_node(node.get());
+    clear_tree(node->left.get());
+    clear_tree(node->right.get());
+    disconnect_node(node);
 }
 
 template<typename _NodePtr>
