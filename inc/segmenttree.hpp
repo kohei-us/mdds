@@ -47,6 +47,8 @@ public:
 
     struct nonleaf_value_type
     {
+        key_type low;   /// low range value (inclusive)
+        key_type high;  /// high range value (non-inclusive)
     };
 
     struct leaf_value_type
@@ -90,6 +92,33 @@ public:
 
         virtual void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
         {
+            // Parent node should carry the range of all of its child nodes.
+            if (left_node)
+                value_nonleaf.low  = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.low;
+            else
+                // Having a left node is prerequisite.
+                return;
+
+            if (right_node)
+            {    
+                if (right_node->is_leaf)
+                {
+                    // When the child nodes are leaf nodes, the upper bound
+                    // must be the value of the node that comes after the
+                    // right leaf node (if such node exists).
+
+                    if (right_node->right)
+                        value_nonleaf.high = get_node(right_node->right)->value_leaf.key;
+                    else
+                        value_nonleaf.high = get_node(right_node)->value_leaf.key;
+                }
+                else
+                {
+                    value_nonleaf.high = get_node(right_node)->value_nonleaf.high;
+                }
+            }
+            else
+                value_nonleaf.high = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.high;
         }
 
         virtual node_base* create_new(bool leaf) const
@@ -112,7 +141,7 @@ public:
             }
             else
             {
-                cout << "(*)";
+                cout << "(" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
             }
             cout << " ";
         }
