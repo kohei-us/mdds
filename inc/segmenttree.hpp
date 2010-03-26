@@ -32,6 +32,7 @@
 
 #include <vector>
 #include <list>
+#include <set>
 #include <iostream>
 #include <boost/ptr_container/ptr_vector.hpp>
 
@@ -44,11 +45,26 @@ public:
     typedef _Key        key_type;
     typedef _Data       data_type;
     typedef ::std::list<data_type*> data_chain_type;
+    typedef ::std::set<data_type*>  data_set_type;
 
+private:
+    struct segment_data
+    {
+        key_type    begin_key;
+        key_type    end_key;
+        data_type*  pdata;
+
+        segment_data(key_type _beg, key_type _end, data_type* p) :
+            begin_key(_beg), end_key(_end), pdata(p) {}
+    };
+    typedef ::boost::ptr_vector<segment_data> data_array_type;
+
+public:
     struct nonleaf_value_type
     {
         key_type low;   /// low range value (inclusive)
         key_type high;  /// high range value (non-inclusive)
+        data_set_type* data_labels;
     };
 
     struct leaf_value_type
@@ -100,7 +116,7 @@ public:
                 return;
 
             if (right_node)
-            {    
+            {
                 if (right_node->is_leaf)
                 {
                     // When the child nodes are leaf nodes, the upper bound
@@ -175,12 +191,15 @@ public:
 #endif
 
 private:
+
     static node* get_node(const node_base_ptr& base_node)
     { 
         return static_cast<node*>(base_node.get());
     }
 
     static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
+
+    void descend_tree_and_mark(node* pnode, const segment_data& data);
 
     void build_leaf_nodes();
 
@@ -205,17 +224,6 @@ private:
 #endif
 
 private:
-    struct segment_data
-    {
-        key_type    begin_key;
-        key_type    end_key;
-        data_type*  pdata;
-
-        segment_data(key_type _beg, key_type _end, data_type* p) :
-            begin_key(_beg), end_key(_end), pdata(p) {}
-    };
-
-    typedef ::boost::ptr_vector<segment_data> data_array_type;
     data_array_type m_segment_data;
 
     node_base_ptr   m_root_node;
@@ -248,7 +256,20 @@ void segment_tree<_Key, _Data>::build_tree()
     build_leaf_nodes();
     clear_tree(m_root_node.get());
     m_root_node = ::mdds::build_tree(m_left_leaf);
+    
+    // Start "inserting" all segments from the root.
+    typename data_array_type::const_iterator itr, 
+        itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
+
+    for (itr = itr_beg; itr != itr_end; ++itr)
+        descend_tree_and_mark(get_node(m_root_node), *itr);
+
     m_valid_tree = true;
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment_data& data)
+{
 }
 
 template<typename _Key, typename _Data>
