@@ -95,6 +95,7 @@ void st_test_insert_segments()
     db.insert(10, 24, &D);
     db.build_tree();
     db.dump_tree();
+    db.dump_leaf_nodes();
 }
 
 int main()

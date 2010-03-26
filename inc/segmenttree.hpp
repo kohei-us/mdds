@@ -190,6 +190,22 @@ public:
         cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
         assert(node_count == node_instance_count);
     }
+
+    void dump_leaf_nodes() const
+    {
+        using ::std::cout;
+        using ::std::endl;
+
+        cout << "------------------------------------------" << endl;
+
+        node* p = get_node(m_left_leaf);
+        while (p)
+        {
+            print_leaf_value(p->value_leaf);
+            p = get_node(p->right);
+        }
+        cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
+    }
 #endif
 
 private:
