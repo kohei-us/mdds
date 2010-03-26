@@ -75,8 +75,24 @@ private:
 
 }
 
+struct test_data
+{
+    int value;
+    test_data() : value(0) {}
+};
+
 void st_test_insert_segments()
 {
+    StackPrinter __stack_printer__("::st_test_insert_segments");
+    segment_tree<long, test_data> db;
+    test_data A, B, C;
+    A.value = 1;
+    B.value = 2;
+    C.value = 3;
+    db.insert(0, 10, &A);
+    db.insert(0,  5, &B);
+    db.insert(5, 12, &C);
+    db.build_tree();
 }
 
 int main()

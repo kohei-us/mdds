@@ -30,25 +30,25 @@
 
 #include "node.hpp"
 
+#include <vector>
+#include <iostream>
+#include <boost/ptr_container/ptr_vector.hpp>
+
 namespace mdds {
 
-template<typename _Key, typename _Value>
+template<typename _Key, typename _Data>
 class segment_tree
 {
 public:
-    typedef _Key    key_type;
-    typedef _Value  value_type;
+    typedef _Key        key_type;
+    typedef _Data       data_type;;
 
     struct nonleaf_value_type
     {
-        key_type low;   /// low range value (inclusive)
-        key_type high;  /// high range value (non-inclusive)
     };
 
     struct leaf_value_type
     {
-        key_type    key;
-        value_type  value;
     };
 
     struct node : public node_base
@@ -167,16 +167,67 @@ public:
 
     segment_tree();
     ~segment_tree();
+
+    bool is_tree_valid() const { return m_valid_tree; }
+
+    void build_tree();
+
+    void insert(key_type begin_key, key_type end_key, data_type* pdata);
+
+private:
+    struct segment_data
+    {
+        key_type    begin_key;
+        key_type    end_key;
+        data_type*  pdata;
+
+        segment_data(key_type _beg, key_type _end, data_type* p) :
+            begin_key(_beg), end_key(_end), pdata(p) {}
+    };
+
+    typedef ::boost::ptr_vector<segment_data> data_array_type;
+    data_array_type m_segment_data;
+    bool m_valid_tree:1;
 };
 
-template<typename _Key, typename _Value>
-segment_tree<_Key, _Value>::segment_tree()
+template<typename _Key, typename _Data>
+segment_tree<_Key, _Data>::segment_tree() :
+    m_valid_tree(false)
 {
 }
 
-template<typename _Key, typename _Value>
-segment_tree<_Key, _Value>::~segment_tree()
+template<typename _Key, typename _Data>
+segment_tree<_Key, _Data>::~segment_tree()
 {
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::build_tree()
+{
+    using namespace std;
+
+    vector<key_type> keys_uniq;
+    keys_uniq.reserve(m_segment_data.size()*2);
+    typename data_array_type::const_iterator itr = m_segment_data.begin(), itr_end = m_segment_data.end();
+    for (; itr != itr_end; ++itr)
+    {
+        cout << itr->begin_key << "," << itr->end_key << ": " << itr->pdata << endl;
+        keys_uniq.push_back(itr->begin_key);
+        keys_uniq.push_back(itr->end_key);
+    }
+
+    // sort and remove duplicates.
+    sort(keys_uniq.begin(), keys_uniq.end());
+    keys_uniq.erase(unique(keys_uniq.begin(), keys_uniq.end()), keys_uniq.end());
+
+    copy(keys_uniq.begin(), keys_uniq.end(), ostream_iterator<key_type>(cout, " "));
+    cout << endl;
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, data_type* pdata)
+{
+    m_segment_data.push_back(new segment_data(begin_key, end_key, pdata));
 }
 
 }
