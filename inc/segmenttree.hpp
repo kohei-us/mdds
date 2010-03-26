@@ -92,10 +92,6 @@ public:
         {
         }
 
-        virtual void dump_value() const
-        {
-        }
-
         virtual node_base* create_new(bool leaf) const
         {
             return new node(leaf);
@@ -105,6 +101,22 @@ public:
         {
             return new node(*this);
         }
+
+#if UNIT_TEST
+        virtual void dump_value() const
+        {
+            using ::std::cout;
+            if (is_leaf)
+            {
+                cout << "(" << value_leaf.key << ")";
+            }
+            else
+            {
+                cout << "(*)";
+            }
+            cout << " ";
+        }
+#endif
     };
 
     segment_tree();
@@ -115,6 +127,23 @@ public:
     void build_tree();
 
     void insert(key_type begin_key, key_type end_key, data_type* pdata);
+
+#if UNIT_TEST
+    void dump_tree() const
+    {
+        using ::std::cout;
+        using ::std::endl;
+
+        if (!m_valid_tree)
+            assert(!"attempted to dump an invalid tree!");
+
+        size_t node_count = ::mdds::dump_tree(m_root_node);
+        size_t node_instance_count = node_base::get_instance_count();
+
+        cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
+        assert(node_count == node_instance_count);
+    }
+#endif
 
 private:
     static node* get_node(const node_base_ptr& base_node)
@@ -176,6 +205,8 @@ template<typename _Key, typename _Data>
 segment_tree<_Key, _Data>::~segment_tree()
 {
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    clear_tree(m_root_node.get());
+    disconnect_node(m_root_node.get());
 }
 
 template<typename _Key, typename _Data>
@@ -186,7 +217,8 @@ void segment_tree<_Key, _Data>::build_tree()
         return;
 
     build_leaf_nodes();
-
+    clear_tree(m_root_node.get());
+    m_root_node = ::mdds::build_tree(m_left_leaf);
     m_valid_tree = true;
 }
 

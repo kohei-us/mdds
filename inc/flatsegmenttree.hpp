@@ -145,6 +145,17 @@ public:
                 value_nonleaf.high = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.high;
         }
 
+        virtual node_base* create_new(bool leaf) const
+        {
+            return new node(leaf);
+        }
+
+        virtual node_base* clone() const
+        {
+            return new node(*this);
+        }
+
+#if UNIT_TEST
         virtual void dump_value() const
         {
             using ::std::cout;
@@ -158,16 +169,7 @@ public:
             }
             cout << " ";
         }
-
-        virtual node_base* create_new(bool leaf) const
-        {
-            return new node(leaf);
-        }
-
-        virtual node_base* clone() const
-        {
-            return new node(*this);
-        }
+#endif
     };
 
 private:

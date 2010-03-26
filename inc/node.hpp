@@ -146,9 +146,11 @@ struct node_base : public intrusive_ref_base
     // These methods are specific to concrete class implementation.
 
     virtual void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node) = 0;
-    virtual void dump_value() const = 0;
     virtual node_base* create_new(bool leaf) const = 0;
     virtual node_base* clone() const = 0;
+#if UNIT_TEST
+    virtual void dump_value() const = 0;
+#endif
 };
 
 void disconnect_node(node_base* p)

@@ -231,7 +231,6 @@
 		<Folder Name="src">
 			<F N="src/flatsegmenttree_test.cpp"/>
 			<F N="src/global.cpp"/>
-			<F N="src/main.cpp"/>
 			<F N="src/nodecontainer.cpp"/>
 			<F N="src/rangetree.cpp"/>
 			<F N="src/segmenttree_old.cpp"/>
