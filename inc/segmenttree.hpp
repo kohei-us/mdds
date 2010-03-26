@@ -137,6 +137,10 @@ private:
 
     typedef ::boost::ptr_vector<segment_data> data_array_type;
     data_array_type m_segment_data;
+
+    node_base_ptr   m_root_node;
+    node_base_ptr   m_left_leaf;
+    node_base_ptr   m_right_leaf;
     bool m_valid_tree:1;
 };
 
@@ -149,6 +153,17 @@ segment_tree<_Key, _Data>::segment_tree() :
 template<typename _Key, typename _Data>
 segment_tree<_Key, _Data>::~segment_tree()
 {
+    // Go through all leaf nodes, and disconnect their links.
+    node_base* cur_node = m_left_leaf.get();
+    do
+    {
+        node_base* next_node = cur_node->right.get();
+        disconnect_node(cur_node);
+        cur_node = next_node;
+    }
+    while (cur_node != m_right_leaf.get());
+
+    disconnect_node(m_right_leaf.get());
 }
 
 template<typename _Key, typename _Data>
@@ -177,26 +192,25 @@ void segment_tree<_Key, _Data>::build_tree()
     cout << endl;
 
     // Create leaf nodes with the unique end-point values.
-    node_base_ptr left_node, right_node;
-    build_leaf_node(keys_uniq, left_node, right_node);
+    build_leaf_node(keys_uniq, m_left_leaf, m_right_leaf);
 
     // debug output.
     {
         cout << "forward: ";
-        node* node = get_node(left_node);
-        while (node)
+        node* p = get_node(m_left_leaf);
+        while (p)
         {
-            cout << node->value_leaf.key << " ";
-            node = get_node(node->right);
+            cout << p->value_leaf.key << " ";
+            p = get_node(p->right);
         }
         cout << endl;
 
         cout << "backward: ";
-        node = get_node(right_node);
-        while (node)
+        p = get_node(m_right_leaf);
+        while (p)
         {
-            cout << node->value_leaf.key << " ";
-            node = get_node(node->left);
+            cout << p->value_leaf.key << " ";
+            p = get_node(p->left);
         }
         cout << endl;
     }
@@ -204,7 +218,36 @@ void segment_tree<_Key, _Data>::build_tree()
     // In 2nd pass, "insert" each segment.
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
-        
+        key_type key_beg = itr->begin_key;
+        key_type key_end = itr->end_key;
+        data_type* pdata = itr->pdata;
+
+        node* p = get_node(m_left_leaf);
+        while (p)
+        {
+            if (p->value_leaf.key == key_beg)
+            {
+                leaf_value_type& v = p->value_leaf;
+                if (!v.data_chain)
+                    v.data_chain = new data_chain_type;
+                v.data_chain->push_back(pdata);
+            }
+            else if (p->value_leaf.key == key_end)
+            {
+                // Insert data pointer to the previous node _only when_ the
+                // value of the previous node doesn't equal the begin point
+                // value.
+                node* pprev = get_node(p->left);
+                if (pprev && pprev->value_leaf.key != key_beg)
+                {
+                    leaf_value_type& v = pprev->value_leaf;
+                    if (!v.data_chain)
+                        v.data_chain = new data_chain_type;
+                    v.data_chain->push_back(pdata);
+                }
+            }
+            p = get_node(p->right);
+        }
     }
 }
 
