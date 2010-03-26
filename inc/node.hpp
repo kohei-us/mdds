@@ -163,6 +163,9 @@ void disconnect_node(node_base* p)
 
 void disconnect_leaf_nodes(node_base* left_node, node_base* right_node)
 {
+    if (!left_node || !right_node)
+        return;
+
     // Go through all leaf nodes, and disconnect their links.
     node_base* cur_node = left_node;
     do

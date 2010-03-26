@@ -30,11 +30,11 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include <string>
 
 using namespace std;
 using namespace mdds;
 
-#include <string>
 #include <sys/time.h>
 
 namespace {
@@ -77,8 +77,7 @@ private:
 
 struct test_data
 {
-    int value;
-    test_data() : value(0) {}
+    string name; // data structure expects the data to have 'name' data member.
 };
 
 void st_test_insert_segments()
@@ -86,13 +85,16 @@ void st_test_insert_segments()
     StackPrinter __stack_printer__("::st_test_insert_segments");
     segment_tree<long, test_data> db;
     test_data A, B, C, D;
-    A.value = 1;
-    B.value = 2;
-    C.value = 3;
-    D.value = 4;
+    A.name = "A";
+    B.name = "B";
+    C.name = "C";
+    D.name = "D";
     db.insert(0, 10, &A);
+    db.build_tree();
     db.insert(0, 5, &B);
+    db.build_tree();
     db.insert(5, 12, &C);
+    db.build_tree();
     db.insert(10, 24, &D);
     db.build_tree();
 }

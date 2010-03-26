@@ -124,6 +124,26 @@ private:
 
     static void build_leaf_node(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
 
+#if UNIT_TEST
+    static void print_leaf_value(const leaf_value_type& v)
+    {
+        using namespace std;
+        cout << v.key << ":{ ";
+        if (v.data_chain)
+        {
+            const data_chain_type* pchain = v.data_chain;
+            typename data_chain_type::const_iterator itr, itr_beg = pchain->begin(), itr_end = pchain->end();
+            for (itr = itr_beg; itr != itr_end; ++itr)
+            {
+                if (itr != itr_beg)
+                    cout << ", ";
+                cout << (*itr)->name;
+            }
+        }
+        cout << " }" << endl;
+    }
+#endif
+
 private:
     struct segment_data
     {
@@ -165,13 +185,17 @@ void segment_tree<_Key, _Data>::build_tree()
         // Nothing to do.
         return;
 
+    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+
     // In 1st pass, collect unique end-point values and sort them.
     vector<key_type> keys_uniq;
     keys_uniq.reserve(m_segment_data.size()*2);
     typename data_array_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
-        cout << itr->begin_key << "," << itr->end_key << ": " << itr->pdata << endl;
+#if UNIT_TEST
+        cout << itr->begin_key << "," << itr->end_key << ": " << itr->pdata->name << endl;
+#endif
         keys_uniq.push_back(itr->begin_key);
         keys_uniq.push_back(itr->end_key);
     }
@@ -180,14 +204,17 @@ void segment_tree<_Key, _Data>::build_tree()
     sort(keys_uniq.begin(), keys_uniq.end());
     keys_uniq.erase(unique(keys_uniq.begin(), keys_uniq.end()), keys_uniq.end());
 
+#if UNIT_TEST
     // debug output.
     cout << "unique keys: ";
     copy(keys_uniq.begin(), keys_uniq.end(), ostream_iterator<key_type>(cout, " "));
     cout << endl;
+#endif
 
     // Create leaf nodes with the unique end-point values.
     build_leaf_node(keys_uniq, m_left_leaf, m_right_leaf);
 
+#if UNIT_TEST
     // debug output.
     {
         cout << "forward: ";
@@ -208,6 +235,7 @@ void segment_tree<_Key, _Data>::build_tree()
         }
         cout << endl;
     }
+#endif
 
     // In 2nd pass, "insert" each segment.
     for (itr = itr_beg; itr != itr_end; ++itr)
@@ -245,21 +273,17 @@ void segment_tree<_Key, _Data>::build_tree()
         }
     }
 
+#if UNIT_TEST
     // debug output
     {
         node* p = get_node(m_left_leaf);
         while (p)
         {
-            cout << p->value_leaf.key << ":{ ";
-            if (p->value_leaf.data_chain)
-            {
-                const data_chain_type* pchain = p->value_leaf.data_chain;
-                copy(pchain->begin(), pchain->end(), ostream_iterator<data_type*>(cout, " "));
-            }
-            cout << "}" << endl;
+            print_leaf_value(p->value_leaf);
             p = get_node(p->right);
         }
     }
+#endif
 
     m_valid_tree = true;
 }
