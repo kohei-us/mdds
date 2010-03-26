@@ -85,13 +85,15 @@ void st_test_insert_segments()
 {
     StackPrinter __stack_printer__("::st_test_insert_segments");
     segment_tree<long, test_data> db;
-    test_data A, B, C;
+    test_data A, B, C, D;
     A.value = 1;
     B.value = 2;
     C.value = 3;
+    D.value = 4;
     db.insert(0, 10, &A);
-    db.insert(0,  5, &B);
+    db.insert(0, 5, &B);
     db.insert(5, 12, &C);
+    db.insert(10, 24, &D);
     db.build_tree();
 }
 

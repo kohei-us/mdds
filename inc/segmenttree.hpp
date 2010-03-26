@@ -31,6 +31,7 @@
 #include "node.hpp"
 
 #include <vector>
+#include <list>
 #include <iostream>
 #include <boost/ptr_container/ptr_vector.hpp>
 
@@ -41,7 +42,8 @@ class segment_tree
 {
 public:
     typedef _Key        key_type;
-    typedef _Data       data_type;;
+    typedef _Data       data_type;
+    typedef ::std::list<data_type*> data_chain_type;
 
     struct nonleaf_value_type
     {
@@ -49,6 +51,8 @@ public:
 
     struct leaf_value_type
     {
+        key_type key;
+        data_chain_type* data_chain;
     };
 
     struct node : public node_base
@@ -61,25 +65,19 @@ public:
         node(bool _is_leaf) :
             node_base(_is_leaf)
         {
+            if (_is_leaf)
+                value_leaf.data_chain = NULL;
         }
 
         node(const node& r) :
             node_base(r)
         {
-            if (is_leaf)
-            {
-                value_leaf.key = r.value_leaf.key;
-                value_leaf.value = r.value_leaf.value;
-            }
-            else
-            {
-                value_nonleaf.low = r.value_nonleaf.low;
-                value_nonleaf.high = r.value_nonleaf.high;
-            }
         }
 
         virtual ~node()
         {
+            if (is_leaf)
+                delete value_leaf.data_chain;
         }
 
         bool equals(const node& r) const
@@ -87,71 +85,15 @@ public:
             if (is_leaf != r.is_leaf)
                 return false;
 
-            if (is_leaf)
-            {
-                if (value_leaf.key != r.value_leaf.key)
-                    return false;
-                if (value_leaf.value != r.value_leaf.value)
-                    return false;
-            }
-            else
-            {
-                if (value_nonleaf.low != r.value_nonleaf.low)
-                    return false;
-                if (value_nonleaf.high != r.value_nonleaf.high)
-                    return false;
-            }
-
             return true;
         }
 
         virtual void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
         {
-#if 0
-            // Parent node should carry the range of all of its child nodes.
-            if (left_node)
-                value_nonleaf.low  = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.low;
-            else
-                // Having a left node is prerequisite.
-                return;
-
-            if (right_node)
-            {    
-                if (right_node->is_leaf)
-                {
-                    // When the child nodes are leaf nodes, the upper bound
-                    // must be the value of the node that comes after the
-                    // right leaf node (if such node exists).
-
-                    if (right_node->right)
-                        value_nonleaf.high = get_node(right_node->right)->value_leaf.key;
-                    else
-                        value_nonleaf.high = get_node(right_node)->value_leaf.key;
-                }
-                else
-                {
-                    value_nonleaf.high = get_node(right_node)->value_nonleaf.high;
-                }
-            }
-            else
-                value_nonleaf.high = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.high;
-#endif
         }
 
         virtual void dump_value() const
         {
-#if 0
-            using ::std::cout;
-            if (is_leaf)
-            {
-                cout << "(" << value_leaf.key << ")";
-            }
-            else
-            {
-                cout << "(" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
-            }
-            cout << " ";
-#endif
         }
 
         virtual node_base* create_new(bool leaf) const
@@ -173,6 +115,14 @@ public:
     void build_tree();
 
     void insert(key_type begin_key, key_type end_key, data_type* pdata);
+
+private:
+    static node* get_node(const node_base_ptr& base_node)
+    { 
+        return static_cast<node*>(base_node.get());
+    }
+
+    static void build_leaf_node(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
 
 private:
     struct segment_data
@@ -206,10 +156,11 @@ void segment_tree<_Key, _Data>::build_tree()
 {
     using namespace std;
 
+    // In 1st pass, collect unique end-point values and sort them.
     vector<key_type> keys_uniq;
     keys_uniq.reserve(m_segment_data.size()*2);
-    typename data_array_type::const_iterator itr = m_segment_data.begin(), itr_end = m_segment_data.end();
-    for (; itr != itr_end; ++itr)
+    typename data_array_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
+    for (itr = itr_beg; itr != itr_end; ++itr)
     {
         cout << itr->begin_key << "," << itr->end_key << ": " << itr->pdata << endl;
         keys_uniq.push_back(itr->begin_key);
@@ -220,13 +171,84 @@ void segment_tree<_Key, _Data>::build_tree()
     sort(keys_uniq.begin(), keys_uniq.end());
     keys_uniq.erase(unique(keys_uniq.begin(), keys_uniq.end()), keys_uniq.end());
 
+    // debug output.
+    cout << "unique keys: ";
     copy(keys_uniq.begin(), keys_uniq.end(), ostream_iterator<key_type>(cout, " "));
     cout << endl;
+
+    // Create leaf nodes with the unique end-point values.
+    node_base_ptr left_node, right_node;
+    build_leaf_node(keys_uniq, left_node, right_node);
+
+    // debug output.
+    {
+        cout << "forward: ";
+        node* node = get_node(left_node);
+        while (node)
+        {
+            cout << node->value_leaf.key << " ";
+            node = get_node(node->right);
+        }
+        cout << endl;
+
+        cout << "backward: ";
+        node = get_node(right_node);
+        while (node)
+        {
+            cout << node->value_leaf.key << " ";
+            node = get_node(node->left);
+        }
+        cout << endl;
+    }
+
+    // In 2nd pass, "insert" each segment.
+    for (itr = itr_beg; itr != itr_end; ++itr)
+    {
+        
+    }
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::build_leaf_node(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right)
+{
+    if (keys.empty() || keys.size() < 2)
+        // We need at least two keys in order to build tree.
+        return;
+
+    typename ::std::vector<key_type>::const_iterator itr = keys.begin(), itr_end = keys.end();
+
+    // left-most node
+    left.reset(new node(true));
+    get_node(left)->value_leaf.key = *itr;
+
+    // move on to next.
+    left->right.reset(new node(true));
+    node_base_ptr prev_node = left;
+    node_base_ptr cur_node = left->right;
+    cur_node->left = prev_node;
+
+    for (++itr; itr != itr_end; ++itr)
+    {
+        get_node(cur_node)->value_leaf.key = *itr;
+
+        // move on to next
+        cur_node->right.reset(new node(true));
+        prev_node = cur_node;
+        cur_node = cur_node->right;
+        cur_node->left = prev_node;
+    }
+
+    // Remove the excess node.
+    prev_node->right.reset();
+    right = prev_node;
 }
 
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, data_type* pdata)
 {
+    if (begin_key >= end_key)
+        return;
+
     m_segment_data.push_back(new segment_data(begin_key, end_key, pdata));
 }
 
