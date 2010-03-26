@@ -122,7 +122,7 @@ private:
         return static_cast<node*>(base_node.get());
     }
 
-    static void build_leaf_node(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
+    static void build_leaf_nodes(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
 
 #if UNIT_TEST
     static void print_leaf_value(const leaf_value_type& v)
@@ -212,7 +212,7 @@ void segment_tree<_Key, _Data>::build_tree()
 #endif
 
     // Create leaf nodes with the unique end-point values.
-    build_leaf_node(keys_uniq, m_left_leaf, m_right_leaf);
+    build_leaf_nodes(keys_uniq, m_left_leaf, m_right_leaf);
 
 #if UNIT_TEST
     // debug output.
@@ -289,7 +289,7 @@ void segment_tree<_Key, _Data>::build_tree()
 }
 
 template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::build_leaf_node(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right)
+void segment_tree<_Key, _Data>::build_leaf_nodes(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right)
 {
     if (keys.empty() || keys.size() < 2)
         // We need at least two keys in order to build tree.
