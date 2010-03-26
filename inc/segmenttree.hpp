@@ -185,6 +185,10 @@ void segment_tree<_Key, _Data>::build_tree()
         // Nothing to do.
         return;
 
+#if UNIT_TEST
+    cout << "-------------------------------------" << endl;
+#endif
+
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 
     // In 1st pass, collect unique end-point values and sort them.
