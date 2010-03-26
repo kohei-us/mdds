@@ -24,16 +24,16 @@ all: $(EXECS)
 pre:
 	mkdir $(OBJDIR) 2>/dev/null || /bin/true
 
-$(OBJDIR)/flatsegmenttree_test.o: $(SRCDIR)/flatsegmenttree_test.cpp
+$(OBJDIR)/flatsegmenttree_test.o: $(SRCDIR)/flatsegmenttree_test.cpp $(HEADERS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/flatsegmenttree_test.cpp
 
-$(OBJDIR)/segmenttree_test.o: $(SRCDIR)/segmenttree_test.cpp
+$(OBJDIR)/segmenttree_test.o: $(SRCDIR)/segmenttree_test.cpp  $(HEADERS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/segmenttree_test.cpp
 
-flatsegmenttree-test: pre $(OBJDIR)/flatsegmenttree_test.o $(HEADERS)
+flatsegmenttree-test: pre $(OBJDIR)/flatsegmenttree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flatsegmenttree_test.o -o $@
 
-segmenttree-test: pre $(OBJDIR)/segmenttree_test.o $(HEADERS)
+segmenttree-test: pre $(OBJDIR)/segmenttree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/segmenttree_test.o -o $@
 
 test.fst: flatsegmenttree-test
