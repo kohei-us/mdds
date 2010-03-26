@@ -96,6 +96,8 @@ public:
         {
             if (is_leaf)
                 delete value_leaf.data_chain;
+            else
+                delete value_nonleaf.data_labels;
         }
 
         bool equals(const node& r) const
@@ -270,6 +272,49 @@ void segment_tree<_Key, _Data>::build_tree()
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment_data& data)
 {
+    if (!pnode)
+        return;
+
+    if (pnode->is_leaf)
+    {
+        // This is a leaf node.
+        if (pnode->value_leaf.key == data.begin_key)
+        {
+            // Insertion of begin point.
+            leaf_value_type& v = pnode->value_leaf;
+            if (!v.data_chain)
+                v.data_chain = new data_chain_type;
+            v.data_chain->push_back(data.pdata);
+        }
+        else if (pnode->value_leaf.key == data.end_key)
+        {
+            // For insertion of the end point, insert data pointer to the
+            // previous node _only when_ the value of the previous node
+            // doesn't equal the begin point value.
+            node* pprev = get_node(pnode->left);
+            if (pprev && pprev->value_leaf.key != data.begin_key)
+            {
+                leaf_value_type& v = pprev->value_leaf;
+                if (!v.data_chain)
+                    v.data_chain = new data_chain_type;
+                v.data_chain->push_back(data.pdata);
+            }
+        }
+        return;
+    }
+    
+    nonleaf_value_type& v = pnode->value_nonleaf;
+    if (v.low < data.begin_key && data.end_key < v.high)
+    {
+        // mark this non-leaf node and stop.
+        if (!v.data_labels)
+            v.data_labels = new data_set_type;
+        v.data_labels->insert(data.pdata);
+        return;
+    }
+
+    descend_tree_and_mark(get_node(pnode->left), data);
+    descend_tree_and_mark(get_node(pnode->right), data);
 }
 
 template<typename _Key, typename _Data>
@@ -333,6 +378,7 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
     }
 #endif
 
+#if 0
     // In 2nd pass, "insert" each segment.
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
@@ -379,6 +425,7 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
             p = get_node(p->right);
         }
     }
+#endif
 #endif
 }
 
