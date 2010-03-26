@@ -122,13 +122,15 @@ private:
         return static_cast<node*>(base_node.get());
     }
 
-    static void build_leaf_nodes(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
+    static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
+
+    void build_leaf_nodes();
 
 #if UNIT_TEST
     static void print_leaf_value(const leaf_value_type& v)
     {
         using namespace std;
-        cout << v.key << ":{ ";
+        cout << v.key << ": { ";
         if (v.data_chain)
         {
             const data_chain_type* pchain = v.data_chain;
@@ -179,11 +181,19 @@ segment_tree<_Key, _Data>::~segment_tree()
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::build_tree()
 {
-    using namespace std;
-
     if (m_valid_tree)
         // Nothing to do.
         return;
+
+    build_leaf_nodes();
+
+    m_valid_tree = true;
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::build_leaf_nodes()
+{
+    using namespace std;
 
 #if UNIT_TEST
     cout << "-------------------------------------" << endl;
@@ -198,7 +208,7 @@ void segment_tree<_Key, _Data>::build_tree()
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
 #if UNIT_TEST
-        cout << itr->begin_key << "," << itr->end_key << ": " << itr->pdata->name << endl;
+        cout << itr->pdata->name << ": " << itr->begin_key << "," << itr->end_key << endl;
 #endif
         keys_uniq.push_back(itr->begin_key);
         keys_uniq.push_back(itr->end_key);
@@ -216,7 +226,7 @@ void segment_tree<_Key, _Data>::build_tree()
 #endif
 
     // Create leaf nodes with the unique end-point values.
-    build_leaf_nodes(keys_uniq, m_left_leaf, m_right_leaf);
+    create_leaf_node_instances(keys_uniq, m_left_leaf, m_right_leaf);
 
 #if UNIT_TEST
     // debug output.
@@ -288,12 +298,10 @@ void segment_tree<_Key, _Data>::build_tree()
         }
     }
 #endif
-
-    m_valid_tree = true;
 }
 
 template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::build_leaf_nodes(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right)
+void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right)
 {
     if (keys.empty() || keys.size() < 2)
         // We need at least two keys in order to build tree.

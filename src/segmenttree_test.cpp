@@ -90,11 +90,8 @@ void st_test_insert_segments()
     C.name = "C";
     D.name = "D";
     db.insert(0, 10, &A);
-    db.build_tree();
     db.insert(0, 5, &B);
-    db.build_tree();
     db.insert(5, 12, &C);
-    db.build_tree();
     db.insert(10, 24, &D);
     db.build_tree();
 }
