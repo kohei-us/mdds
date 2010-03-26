@@ -155,11 +155,23 @@ public:
             using ::std::cout;
             if (is_leaf)
             {
-                cout << "(" << value_leaf.key << ")";
+                cout << "[" << value_leaf.key << "]";
             }
             else
             {
-                cout << "(" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
+                cout << "[" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
+                if (value_nonleaf.data_labels)
+                {
+                    cout << " { ";
+                    typename data_set_type::const_iterator itr, itr_beg = value_nonleaf.data_labels->begin(), itr_end = value_nonleaf.data_labels->end();
+                    for (itr = itr_beg; itr != itr_end; ++itr)
+                    {
+                        if (itr != itr_beg)
+                            cout << ", ";
+                        cout << (*itr)->name;
+                    }
+                    cout << " }";
+                }
             }
             cout << " ";
         }
@@ -320,7 +332,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment
     }
     
     nonleaf_value_type& v = pnode->value_nonleaf;
-    if (v.low < data.begin_key && data.end_key < v.high)
+    if (data.begin_key < v.low && v.high < data.end_key)
     {
         // mark this non-leaf node and stop.
         if (!v.data_labels)
