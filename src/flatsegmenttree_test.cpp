@@ -454,7 +454,7 @@ void build_and_dump(flat_segment_tree<key_type, value_type>&db)
 }
 
 template<typename key_type, typename value_type>
-bool is_leaf_nodes_valid(
+bool check_leaf_nodes(
     const flat_segment_tree<key_type, value_type>& db, 
     const key_type* keys, const value_type* values, size_t key_size)
 {
@@ -743,7 +743,7 @@ void fst_test_shift_segment_left()
     {
         int keys[] = {0, 1, 15, 25, 35, 45, 55, 100};
         int vals[] = {0, 5,  0, 10,  0, 15,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // shift with two overlapping nodes.
@@ -753,7 +753,7 @@ void fst_test_shift_segment_left()
     {
         int keys[] = {0, 1,  2, 7, 17, 27, 100};
         int vals[] = {0, 5, 10, 0, 15,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // shift with both ends at existing nodes, but no nodes in between.
@@ -763,7 +763,7 @@ void fst_test_shift_segment_left()
     {
         int keys[] = {0,  1, 6, 16, 26, 100}; 
         int vals[] = {5, 10, 0, 15,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // shift with both ends at existing nodes, no nodes in between, and
@@ -775,7 +775,7 @@ void fst_test_shift_segment_left()
     {
         int keys[] = {0,  1, 6, 100}; 
         int vals[] = {5, 10, 0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // insert two new segments for the next test....
@@ -786,7 +786,7 @@ void fst_test_shift_segment_left()
     {
         int keys[] = {0,  1, 6,  10, 20,  30, 40, 100}; 
         int vals[] = {5, 10, 0, 400,  0, 400,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // same test as the previous one, but the value of the combined segment 
@@ -797,7 +797,7 @@ void fst_test_shift_segment_left()
     {
         int keys[] = {0,  1, 6,  10, 30, 100}; 
         int vals[] = {5, 10, 0, 400,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // remove all.
@@ -818,7 +818,7 @@ void fst_test_shift_segment_left_right_edge()
     {
         int  keys[] = {0, 100};
         bool vals[] = {false};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     db.insert_segment(20, 100, true);
@@ -826,7 +826,7 @@ void fst_test_shift_segment_left_right_edge()
     {
         int  keys[] = {    0,   20, 100};
         bool vals[] = {false, true};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // This should insert a new segment at the end with the initial base value.
@@ -836,7 +836,7 @@ void fst_test_shift_segment_left_right_edge()
     {
         int  keys[] = {    0,   20,    80, 100};
         bool vals[] = {false, true, false};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // This should not modify the tree since the removed segment already has 
@@ -847,7 +847,7 @@ void fst_test_shift_segment_left_right_edge()
     {
         int  keys[] = {    0,   20,    80, 100};
         bool vals[] = {false, true, false};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // Insert a new segment at the end with the value 'true' again...
@@ -857,7 +857,7 @@ void fst_test_shift_segment_left_right_edge()
     {
         int  keys[] = {    0,   20,    80,   85, 100};
         bool vals[] = {false, true, false, true};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     db.shift_segment_left(90, 95);
@@ -866,7 +866,7 @@ void fst_test_shift_segment_left_right_edge()
     {
         int  keys[] = {    0,   20,    80,   85,    95, 100};
         bool vals[] = {false, true, false, true, false};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 }
 
@@ -880,7 +880,7 @@ void fst_test_shift_segment_left_append_new_segment()
     {
         int  keys[] = {   0, 100};
         bool vals[] = {true};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     db.shift_segment_left(10, 20);
@@ -889,7 +889,7 @@ void fst_test_shift_segment_left_append_new_segment()
     {
         int  keys[] = {   0,    90, 100};
         bool vals[] = {true, false};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     db.insert_segment(0, 10, true);
@@ -902,7 +902,7 @@ void fst_test_shift_segment_left_append_new_segment()
     {
         int  keys[] = {   0,    10,   20,    60,   80, 100};
         bool vals[] = {true, false, true, false, true};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     db.shift_segment_left(0, 70);
@@ -911,7 +911,7 @@ void fst_test_shift_segment_left_append_new_segment()
     {
         int  keys[] = {   0,    10,    30, 100};
         bool vals[] = {false, true, false};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 }
 
@@ -941,7 +941,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0,  5, 15, 25, 35, 45, 55, 65, 75, 85, 95,100};
         int vals[] = {0, 15,  1,  2,  3,  4,  5,  6,  7,  8,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // shifting position is at the lower bound, and after the shift, the upper 
@@ -953,7 +953,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
         int vals[] = {0, 15,  1,  2,  3,  4,  5,  6,  7,  8};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // Shift by some odd number.
@@ -963,7 +963,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 59, 69, 79, 89, 99, 100};
         int vals[] = {0, 15,  1,  2,  3,  4};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // Shift so that the 2nd node from the right-most node becomes the new 
@@ -974,7 +974,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 70, 80, 90, 100};
         int vals[] = {0, 15,  1,  2};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // This should remove all segments.
@@ -984,7 +984,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 100};
         int vals[] = {0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // Insert a few new segments for the next series of tests...
@@ -995,7 +995,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 5, 10, 20, 30, 100};
         int vals[] = {0, 5,  0,  5,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // Inserting at a non-node position.  This should simply extend that 
@@ -1006,7 +1006,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 5, 30, 40, 50, 100};
         int vals[] = {0, 5,  0,  5,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // Inserting at a node position.
@@ -1016,7 +1016,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 25, 50, 60, 70, 100};
         int vals[] = {0, 5,  0,  5,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // Inserting at a non-node position, pushing a node out-of-bound.
@@ -1026,7 +1026,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 25, 50, 60, 100};
         int vals[] = {0, 5,  0,  5};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
     // Inserting at a node position, pushing a node out-of-bound.
@@ -1036,7 +1036,7 @@ void fst_test_shift_segment_right_init0()
     {
         int keys[] = {0, 25, 90, 100};
         int vals[] = {0,  5,  0};
-        assert(is_leaf_nodes_valid(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 }
 
@@ -1052,7 +1052,7 @@ void fst_test_shift_segment_right_init999()
     {
         int k[] = {0, 10, 100};
         int v[] = {0, 999};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     // This should only extend the first segment.
@@ -1062,7 +1062,7 @@ void fst_test_shift_segment_right_init999()
     {
         int k[] = {0, 20, 100};
         int v[] = {0, 999};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     // Inserting at the leftmost node position should create a new segment 
@@ -1073,7 +1073,7 @@ void fst_test_shift_segment_right_init999()
     {
         int k[] = {0, 10, 30, 100};
         int v[] = {999, 0, 999};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     // Invalid shifts -- these should not invalidate the tree.
@@ -1096,7 +1096,7 @@ void fst_test_shift_segment_right_bool()
     {
         long k[] = {0, 3, 7, 1048576};
         bool v[] = {false, true, false};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.shift_segment_right(1, 1, false);
@@ -1105,7 +1105,7 @@ void fst_test_shift_segment_right_bool()
     {
         long k[] = {0, 4, 8, 1048576};
         bool v[] = {false, true, false};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 }
 
@@ -1120,7 +1120,7 @@ void fst_test_shift_segment_right_skip_start_node()
     {
         long  k[] = {0, 3, 7, 1048576};
         short v[] = {0, 5, 0};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.shift_segment_right(3, 2, true);
@@ -1129,7 +1129,7 @@ void fst_test_shift_segment_right_skip_start_node()
     {
         long  k[] = {0, 3, 9, 1048576};
         short v[] = {0, 5, 0};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 }
 
@@ -1156,7 +1156,7 @@ void fst_test_const_iterator()
     {
         unsigned int   k[] = {0, 1000};
         unsigned short v[] = {max_value};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_segment(10, 20, 10);
@@ -1166,7 +1166,7 @@ void fst_test_const_iterator()
     {
         unsigned int   k[] = {0, 10, 20, 50, 100, 300, 1000};
         unsigned short v[] = {max_value, 10, 20, max_value, 55, max_value};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
         fprintf(stdout, "fst_test_const_iterator:   leaf nodes valid\n");
 
         // Check the forward iterator's integrity.
@@ -1305,7 +1305,7 @@ void fst_test_copy_ctor()
     {
         key_type   k[] = {0, 100};
         value_type v[] = {5};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     // Inserting the same segment value to both instances.  They should still
@@ -1316,7 +1316,7 @@ void fst_test_copy_ctor()
     {
         key_type   k[] = {0, 5, 10, 100};
         value_type v[] = {5, 0,  5};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     // Inserting a new segment only to the 2nd instance.  They should differ.
@@ -1325,7 +1325,7 @@ void fst_test_copy_ctor()
     {
         key_type   k[] = {0, 5, 10, 15, 20, 100};
         value_type v[] = {5, 0,  5, 35,  5};
-        assert(is_leaf_nodes_valid(db_copied, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db_copied, k, v, ARRAY_SIZE(k)));
     }
 
     // Make sure that copying will leave the tree invalid.
@@ -1386,56 +1386,56 @@ void fst_test_back_insert()
     {
         unsigned int   k[] = {0, 1, 2, 100};
         unsigned short v[] = {0, 1, 0};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_segment_back(3, 4, 2);
     {
         unsigned int   k[] = {0, 1, 2, 3, 4, 100};
         unsigned short v[] = {0, 1, 0, 2, 0};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_segment_back(4, 5, 2);
     {
         unsigned int   k[] = {0, 1, 2, 3, 5, 100};
         unsigned short v[] = {0, 1, 0, 2, 0};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_segment_back(90, 120, 10);
     {
         unsigned int   k[] = {0, 1, 2, 3, 5, 90, 100};
         unsigned short v[] = {0, 1, 0, 2, 0, 10};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_segment_back(0, 10, 20);
     {
         unsigned int   k[] = {0, 10, 90, 100};
         unsigned short v[] = {20, 0, 10};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_segment_back(5, 20, 20);
     {
         unsigned int   k[] = {0, 20, 90, 100};
         unsigned short v[] = {20, 0, 10};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_segment_back(15, 30, 5);
     {
         unsigned int   k[] = {0, 15, 30, 90, 100};
         unsigned short v[] = {20, 5,  0, 10};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_segment_back(0, 1, 2);
     {
         unsigned int   k[] = {0,  1, 15, 30, 90, 100};
         unsigned short v[] = {2, 20,  5,  0, 10};
-        assert(is_leaf_nodes_valid(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.dump_leaf_nodes();
