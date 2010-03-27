@@ -331,6 +331,9 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment
         return;
     }
     
+    if (data.end_key < pnode->value_nonleaf.low || pnode->value_nonleaf.high <= data.begin_key)
+        return;
+
     nonleaf_value_type& v = pnode->value_nonleaf;
     if (data.begin_key < v.low && v.high < data.end_key)
     {

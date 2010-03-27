@@ -78,23 +78,22 @@ private:
 struct test_data
 {
     string name; // data structure expects the data to have 'name' data member.
+
+    test_data(const string& s) : name(s) {}
 };
 
 void st_test_insert_segments()
 {
     StackPrinter __stack_printer__("::st_test_insert_segments");
     segment_tree<long, test_data> db;
-    test_data A, B, C, D, E;
-    A.name = "A";
-    B.name = "B";
-    C.name = "C";
-    D.name = "D";
-    E.name = "E";
+    test_data A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     db.insert(0, 10, &A);
     db.insert(0, 5, &B);
     db.insert(5, 12, &C);
     db.insert(10, 24, &D);
     db.insert(4, 24, &E);
+    db.insert(0, 26, &F);
+    db.insert(12, 26, &G);
     db.build_tree();
     db.dump_tree();
     db.dump_leaf_nodes();
