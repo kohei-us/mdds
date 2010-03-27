@@ -218,6 +218,31 @@ public:
         }
         cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
     }
+
+    bool verify_keys(const ::std::vector<key_type>& key_values) const
+    {
+        node* cur_node = get_node(m_left_leaf);
+        typename ::std::vector<key_type>::const_iterator itr = key_values.begin(), itr_end = key_values.end();
+        for (; itr != itr_end; ++itr)
+        {
+            if (!cur_node)
+                // Position past the right-mode node.  Invalid.
+                return false;
+
+            if (cur_node->value_leaf.key != *itr)
+                // Key values differ.
+                return false;
+
+            cur_node = get_node(cur_node->right);
+        }
+
+        if (cur_node)
+            // At this point, we expect the current node to be at the position
+            // past the right-most node, which is NULL.
+            return false;
+
+        return true;
+    }
 #endif
 
 private:

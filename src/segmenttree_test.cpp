@@ -27,10 +27,13 @@
 
 #include "segmenttree.hpp"
 
+#include <cassert>
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
 #include <string>
+
+#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
 using namespace std;
 using namespace mdds;
@@ -78,9 +81,24 @@ private:
 template<typename key_type, typename value_type>
 void build_and_dump(segment_tree<key_type, value_type>&db)
 {
+    cout << "build and dump (start) -----------------------------------------" << endl;
     db.build_tree();
     db.dump_tree();
     db.dump_leaf_nodes();
+    cout << "build and dump (end) -------------------------------------------" << endl;
+}
+
+template<typename key_type, typename value_type>
+bool check_leaf_nodes(
+    const segment_tree<key_type, value_type>& db, 
+    const key_type* keys, size_t key_size)
+{
+    vector<key_type> keys_array;
+    keys_array.reserve(key_size);
+    for (size_t i = 0; i < key_size; ++i)
+        keys_array.push_back(keys[i]);
+
+    return db.verify_keys(keys_array);
 }
 
 struct test_data
@@ -92,10 +110,23 @@ struct test_data
 
 void st_test_insert_segments()
 {
+    typedef long key_type;
+
     StackPrinter __stack_printer__("::st_test_insert_segments");
-    segment_tree<long, test_data> db;
+    segment_tree<key_type, test_data> db;
     test_data A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+    build_and_dump(db);
+    assert(node_base::get_instance_count() == 0);
+
     db.insert(0, 10, &A);
+    build_and_dump(db);
+    assert(node_base::get_instance_count() == 3);
+
+    {
+        key_type keys[] = {0, 10}; 
+        assert(check_leaf_nodes(db, keys, ARRAY_SIZE(keys)));
+    }
+    return;
     db.insert(0, 5, &B);
     db.insert(5, 12, &C);
     db.insert(10, 24, &D);
@@ -108,5 +139,6 @@ void st_test_insert_segments()
 int main()
 {
     st_test_insert_segments();
+    fprintf(stdout, "Test finished successfully!\n");
     return EXIT_SUCCESS;
 }
