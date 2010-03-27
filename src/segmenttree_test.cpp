@@ -75,6 +75,14 @@ private:
 
 }
 
+template<typename key_type, typename value_type>
+void build_and_dump(segment_tree<key_type, value_type>&db)
+{
+    db.build_tree();
+    db.dump_tree();
+    db.dump_leaf_nodes();
+}
+
 struct test_data
 {
     string name; // data structure expects the data to have 'name' data member.
@@ -94,9 +102,7 @@ void st_test_insert_segments()
     db.insert(4, 24, &E);
     db.insert(0, 26, &F);
     db.insert(12, 26, &G);
-    db.build_tree();
-    db.dump_tree();
-    db.dump_leaf_nodes();
+    build_and_dump(db);
 }
 
 int main()
