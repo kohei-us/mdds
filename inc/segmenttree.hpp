@@ -229,6 +229,10 @@ private:
 
     static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
 
+    /** 
+     * Descend the tree from the root node, and mark appropriate nodes, both 
+     * leaf and non-leaf, based on segment's end points. 
+     */
     void descend_tree_and_mark(node* pnode, const segment_data& data);
 
     void build_leaf_nodes();
