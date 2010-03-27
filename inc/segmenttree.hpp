@@ -357,10 +357,6 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
 {
     using namespace std;
 
-#if UNIT_TEST
-    cout << "-------------------------------------" << endl;
-#endif
-
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 
     // In 1st pass, collect unique end-point values and sort them.
@@ -369,9 +365,6 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
     typename data_array_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
-#if UNIT_TEST
-        cout << itr->pdata->name << ": " << itr->begin_key << "," << itr->end_key << endl;
-#endif
         keys_uniq.push_back(itr->begin_key);
         keys_uniq.push_back(itr->end_key);
     }
@@ -380,88 +373,7 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
     sort(keys_uniq.begin(), keys_uniq.end());
     keys_uniq.erase(unique(keys_uniq.begin(), keys_uniq.end()), keys_uniq.end());
 
-#if UNIT_TEST
-    // debug output.
-    cout << "unique keys: ";
-    copy(keys_uniq.begin(), keys_uniq.end(), ostream_iterator<key_type>(cout, " "));
-    cout << endl;
-#endif
-
-    // Create leaf nodes with the unique end-point values.
     create_leaf_node_instances(keys_uniq, m_left_leaf, m_right_leaf);
-
-#if UNIT_TEST
-    // debug output.
-    {
-        cout << "forward: ";
-        node* p = get_node(m_left_leaf);
-        while (p)
-        {
-            cout << p->value_leaf.key << " ";
-            p = get_node(p->right);
-        }
-        cout << endl;
-
-        cout << "backward: ";
-        p = get_node(m_right_leaf);
-        while (p)
-        {
-            cout << p->value_leaf.key << " ";
-            p = get_node(p->left);
-        }
-        cout << endl;
-    }
-#endif
-
-#if 0
-    // In 2nd pass, "insert" each segment.
-    for (itr = itr_beg; itr != itr_end; ++itr)
-    {
-        key_type key_beg = itr->begin_key;
-        key_type key_end = itr->end_key;
-        data_type* pdata = itr->pdata;
-
-        node* p = get_node(m_left_leaf);
-        while (p)
-        {
-            if (p->value_leaf.key == key_beg)
-            {
-                // Insertion of begin point.
-                leaf_value_type& v = p->value_leaf;
-                if (!v.data_chain)
-                    v.data_chain = new data_chain_type;
-                v.data_chain->push_back(pdata);
-            }
-            else if (p->value_leaf.key == key_end)
-            {
-                // For insertion of the end point, insert data pointer to the
-                // previous node _only when_ the value of the previous node
-                // doesn't equal the begin point value.
-                node* pprev = get_node(p->left);
-                if (pprev && pprev->value_leaf.key != key_beg)
-                {
-                    leaf_value_type& v = pprev->value_leaf;
-                    if (!v.data_chain)
-                        v.data_chain = new data_chain_type;
-                    v.data_chain->push_back(pdata);
-                }
-            }
-            p = get_node(p->right);
-        }
-    }
-
-#if UNIT_TEST
-    // debug output
-    {
-        node* p = get_node(m_left_leaf);
-        while (p)
-        {
-            print_leaf_value(p->value_leaf);
-            p = get_node(p->right);
-        }
-    }
-#endif
-#endif
 }
 
 template<typename _Key, typename _Data>
