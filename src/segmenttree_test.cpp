@@ -118,7 +118,7 @@ bool check_leaf_nodes(
         ++dcid;
     }
 
-    return db.verify_keys(checks);
+    return db.verify_leaf_nodes(checks);
 }
 
 void st_test_insert_segments()

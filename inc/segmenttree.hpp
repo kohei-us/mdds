@@ -227,7 +227,7 @@ public:
         data_chain_type data_chain;
     };
 
-    bool verify_keys(const ::std::vector<leaf_node_check>& checks) const
+    bool verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const
     {
         node* cur_node = get_node(m_left_leaf);
         typename ::std::vector<leaf_node_check>::const_iterator itr = checks.begin(), itr_end = checks.end();
