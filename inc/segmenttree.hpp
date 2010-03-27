@@ -85,6 +85,8 @@ public:
         {
             if (_is_leaf)
                 value_leaf.data_chain = NULL;
+            else
+                value_nonleaf.data_labels = NULL;
         }
 
         node(const node& r) :
@@ -219,19 +221,56 @@ public:
         cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
     }
 
-    bool verify_keys(const ::std::vector<key_type>& key_values) const
+    struct leaf_node_check
+    {
+        key_type key;
+        data_chain_type data_chain;
+    };
+
+    bool verify_keys(const ::std::vector<leaf_node_check>& checks) const
     {
         node* cur_node = get_node(m_left_leaf);
-        typename ::std::vector<key_type>::const_iterator itr = key_values.begin(), itr_end = key_values.end();
+        typename ::std::vector<leaf_node_check>::const_iterator itr = checks.begin(), itr_end = checks.end();
         for (; itr != itr_end; ++itr)
         {
             if (!cur_node)
                 // Position past the right-mode node.  Invalid.
                 return false;
 
-            if (cur_node->value_leaf.key != *itr)
+            if (cur_node->value_leaf.key != itr->key)
                 // Key values differ.
                 return false;
+
+            if (itr->data_chain.empty())
+            {
+                if (cur_node->value_leaf.data_chain)
+                    // The data chain should be empty (i.e. the pointer should be NULL).
+                    return false;
+            }
+            else
+            {
+                if (!cur_node->value_leaf.data_chain)
+                    // This node should have data pointers!
+                    return false;
+
+                typename data_chain_type::const_iterator itr1 = itr->data_chain.begin();
+                typename data_chain_type::const_iterator itr1_end = itr->data_chain.end();
+                typename data_chain_type::const_iterator itr2 = cur_node->value_leaf.data_chain->begin();
+                typename data_chain_type::const_iterator itr2_end = cur_node->value_leaf.data_chain->end();
+                for (; itr1 != itr1_end; ++itr1, ++itr2)
+                {
+                    if (itr2 == itr2_end)
+                        // Data chain in the node finished early.
+                        return false;
+
+                    if (*itr1 != *itr2)
+                        // Data pointers differ.
+                        return false;
+                }
+                if (itr2 != itr2_end)
+                    // There are more data pointers in the node.
+                    return false;
+            }
 
             cur_node = get_node(cur_node->right);
         }
