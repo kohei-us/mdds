@@ -403,7 +403,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment
         return;
 
     nonleaf_value_type& v = pnode->value_nonleaf;
-    if (data.begin_key < v.low && v.high < data.end_key)
+    if (data.begin_key <= v.low && v.high < data.end_key)
     {
         // mark this non-leaf node and stop.
         if (!v.data_labels)

@@ -172,7 +172,7 @@ void st_test_insert_segments()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24};
-        data_type* data_chain[] = {&A, &B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, 0};
+        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 12);
     }
@@ -181,7 +181,7 @@ void st_test_insert_segments()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        data_type* data_chain[] = {&A, &B, &F, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, &F, 0, 0};
+        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, &F, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
     }
@@ -190,7 +190,7 @@ void st_test_insert_segments()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        data_type* data_chain[] = {&A, &B, &F, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &G, 0, &F, &G, 0, 0};
+        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &G, 0, &F, &G, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
     }
