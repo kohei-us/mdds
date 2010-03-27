@@ -199,6 +199,7 @@ void st_test_insert_segments()
 int main()
 {
     st_test_insert_segments();
+    assert(node_base::get_instance_count() == 0);
     fprintf(stdout, "Test finished successfully!\n");
     return EXIT_SUCCESS;
 }
