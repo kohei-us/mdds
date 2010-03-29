@@ -140,6 +140,40 @@ bool check_leaf_nodes(
     return db.verify_leaf_nodes(checks);
 }
 
+template<typename key_type, typename data_type>
+bool check_search_result(
+    const segment_tree<key_type, data_type>& db, 
+    key_type key, data_type** expected)
+{
+    typedef typename segment_tree<key_type, data_type>::data_chain_type data_chain_type;
+
+    data_chain_type data_chain;
+    db.search(key, data_chain);
+    data_chain.sort(test_data::sort_by_name());
+
+    size_t i = 0;
+    data_type* p = expected[i++];
+    typename data_chain_type::const_iterator itr = data_chain.begin(), itr_end = data_chain.end();
+    while (p)
+    {
+        if (itr == itr_end)
+            // data chain ended prematurely.
+            return false;
+
+        if (*itr != p)
+            // the value is not as expected.
+            return false;
+
+        p = expected[i++];
+        ++itr;
+    }
+    if (itr != itr_end)
+        // data chain is too long.
+        return false;
+
+    return true;
+}
+
 void st_test_insert_segments()
 {
     typedef long key_type;
@@ -215,8 +249,9 @@ void st_test_insert_segments()
         assert(node_base::get_instance_count() == 14);
     }
 
-    // Search tests.
-    for (key_type i = 0; i <= 26; ++i)
+    // Search tests.  Test boundary cases.
+
+    for (key_type i = -10; i <= 30; ++i)
     {
         db_type::data_chain_type data_chain;
         db.search(i, data_chain);
@@ -224,6 +259,60 @@ void st_test_insert_segments()
         cout << "search key " << i << ": ";
         for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
         cout << endl;
+    }
+
+    {
+        key_type key = -1;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 0;
+        data_type* expected[] = {&A, &B, &F, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 4;
+        data_type* expected[] = {&A, &B, &E, &F, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 5;
+        data_type* expected[] = {&A, &C, &E, &F, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 10;
+        data_type* expected[] = {&C, &D, &E, &F, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 12;
+        data_type* expected[] = {&D, &E, &G, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 24;
+        data_type* expected[] = {&F, &G, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 30;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 9999;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
     }
 }
 
