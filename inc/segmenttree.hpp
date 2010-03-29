@@ -45,7 +45,6 @@ public:
     typedef _Key        key_type;
     typedef _Data       data_type;
     typedef ::std::list<data_type*> data_chain_type;
-    typedef ::std::set<data_type*>  data_set_type;
 
 private:
     struct segment_data
@@ -64,7 +63,7 @@ public:
     {
         key_type low;   /// low range value (inclusive)
         key_type high;  /// high range value (non-inclusive)
-        data_set_type* data_labels;
+        data_chain_type* data_labels;
     };
 
     struct leaf_value_type
@@ -165,7 +164,7 @@ public:
                 if (value_nonleaf.data_labels)
                 {
                     cout << " { ";
-                    typename data_set_type::const_iterator itr, itr_beg = value_nonleaf.data_labels->begin(), itr_end = value_nonleaf.data_labels->end();
+                    typename data_chain_type::const_iterator itr, itr_beg = value_nonleaf.data_labels->begin(), itr_end = value_nonleaf.data_labels->end();
                     for (itr = itr_beg; itr != itr_end; ++itr)
                     {
                         if (itr != itr_beg)
@@ -414,8 +413,8 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment
     {
         // mark this non-leaf node and stop.
         if (!v.data_labels)
-            v.data_labels = new data_set_type;
-        v.data_labels->insert(data.pdata);
+            v.data_labels = new data_chain_type;
+        v.data_labels->push_back(data.pdata);
         return;
     }
 
