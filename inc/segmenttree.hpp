@@ -34,6 +34,7 @@
 #include <list>
 #include <iostream>
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 
 namespace mdds {
 
@@ -315,6 +316,9 @@ public:
 
 private:
 
+    typedef ::std::list<node*> node_list_type;
+    typedef ::boost::ptr_map<data_type*, node_list_type> data_node_map_type;
+
     static node* get_node(const node_base_ptr& base_node)
     { 
         return static_cast<node*>(base_node.get());
@@ -324,9 +328,10 @@ private:
 
     /** 
      * Descend the tree from the root node, and mark appropriate nodes, both 
-     * leaf and non-leaf, based on segment's end points. 
+     * leaf and non-leaf, based on segment's end points.  When marking nodes, 
+     * record their positions as a list of node pointers. 
      */
-    void descend_tree_and_mark(node* pnode, const segment_data& data);
+    void descend_tree_and_mark(node* pnode, const segment_data& data, node_list_type* plist);
 
     void build_leaf_nodes();
 
@@ -356,6 +361,7 @@ private:
 
 private:
     data_array_type m_segment_data;
+    data_node_map_type m_tagged_node_map; // stores tag locations for each segment data.
 
     node_base_ptr   m_root_node;
     node_base_ptr   m_left_leaf;
@@ -388,20 +394,26 @@ void segment_tree<_Key, _Data>::build_tree()
     typename data_array_type::const_iterator itr, 
         itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
 
+    data_node_map_type tagged_node_map;
     for (itr = itr_beg; itr != itr_end; ++itr)
-        descend_tree_and_mark(get_node(m_root_node), *itr);
+    {
+        data_type* pdata = itr->pdata;
+        ::std::pair<typename data_node_map_type::iterator, bool> r = 
+            tagged_node_map.insert(pdata, new node_list_type);
+        node_list_type* plist = r.first->second;
+        descend_tree_and_mark(get_node(m_root_node), *itr, plist);
+    }
 
+    m_tagged_node_map.swap(tagged_node_map);
     m_valid_tree = true;
 }
 
 template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment_data& data)
+void segment_tree<_Key, _Data>::descend_tree_and_mark(
+    node* pnode, const segment_data& data, node_list_type* plist)
 {
     if (!pnode)
         return;
-
-    // TODO: Build auxiliary table to keep track of marked nodes for each line
-    // segment.  We need this to support segment deletion.
 
     if (pnode->is_leaf)
     {
@@ -413,6 +425,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment
             if (!v.data_chain)
                 v.data_chain = new data_chain_type;
             v.data_chain->push_back(data.pdata);
+            plist->push_back(pnode);
         }
         else if (pnode->value_leaf.key == data.end_key)
         {
@@ -426,6 +439,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment
                 if (!v.data_chain)
                     v.data_chain = new data_chain_type;
                 v.data_chain->push_back(data.pdata);
+                plist->push_back(pnode);
             }
         }
         return;
@@ -441,11 +455,12 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment
         if (!v.data_labels)
             v.data_labels = new data_chain_type;
         v.data_labels->push_back(data.pdata);
+        plist->push_back(pnode);
         return;
     }
 
-    descend_tree_and_mark(get_node(pnode->left), data);
-    descend_tree_and_mark(get_node(pnode->right), data);
+    descend_tree_and_mark(get_node(pnode->left), data, plist);
+    descend_tree_and_mark(get_node(pnode->right), data, plist);
 }
 
 template<typename _Key, typename _Data>
