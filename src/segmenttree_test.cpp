@@ -93,6 +93,25 @@ struct test_data
     string name; // data structure expects the data to have 'name' data member.
 
     test_data(const string& s) : name(s) {}
+
+    struct ptr_printer : public unary_function<test_data*, void>
+    {
+        void operator() (const test_data* data) const
+        {
+            cout << data->name << " ";
+        }
+    };
+
+    /** 
+     * Use this to sort instances of test_data by name, in ascending order.
+     */
+    struct sort_by_name : public binary_function<test_data*, test_data*, bool>
+    {
+        bool operator() (const test_data* left, const test_data* right) const
+        {
+            return left->name < right->name;
+        }
+    };
 };
 
 template<typename key_type, typename data_type>
@@ -199,6 +218,9 @@ void st_test_insert_segments()
     // Search tests.
     db_type::data_chain_type data_chain;
     db.search(7, data_chain);
+    data_chain.sort(test_data::sort_by_name());
+    for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
+    cout << endl;
 }
 
 int main()

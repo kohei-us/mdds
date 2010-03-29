@@ -304,6 +304,8 @@ private:
 
     void descend_tree_for_search(key_type point, const node* pnode, data_chain_type& data_chain) const;
 
+    void append_data_chain(data_chain_type& data_chain, const data_chain_type* node_data) const;
+
 #if UNIT_TEST
     static void print_leaf_value(const leaf_value_type& v)
     {
@@ -513,7 +515,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 
     if (pnode->is_leaf)
     {
-        // TODO: Pick up the data.
+        append_data_chain(data_chain, pnode->value_leaf.data_chain);
         return;
     }
 
@@ -522,7 +524,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
         // Query point is out-of-range.
         return;
 
-    // TODO: Pick up the data.
+    append_data_chain(data_chain, pnode->value_nonleaf.data_labels);
 
     // Check the left child node first, then the right one.
     node* pchild = get_node(pnode->left);
@@ -557,6 +559,15 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
         assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
     }
     descend_tree_for_search(point, pchild, data_chain);
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::append_data_chain(data_chain_type& data_chain, const data_chain_type* node_data) const
+{
+    if (!node_data)
+        return;
+
+    copy(node_data->begin(), node_data->end(), back_inserter(data_chain));
 }
 
 }
