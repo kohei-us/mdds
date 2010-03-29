@@ -32,7 +32,6 @@
 
 #include <vector>
 #include <list>
-#include <set>
 #include <iostream>
 #include <boost/ptr_container/ptr_vector.hpp>
 
@@ -521,7 +520,7 @@ void segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, dat
 template<typename _Key, typename _Data>
 bool segment_tree<_Key, _Data>::search(key_type point, data_chain_type& data_chain) const
 {
-    if (m_valid_tree)
+    if (!m_valid_tree)
         // Tree is invalidated.
         return false;
 
