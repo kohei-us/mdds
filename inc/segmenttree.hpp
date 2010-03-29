@@ -182,12 +182,41 @@ public:
     segment_tree();
     ~segment_tree();
 
+    /** 
+     * Check whether or not the internal tree is in a valid state.  The tree 
+     * must be valid in order to perform searches. 
+     * 
+     * @return true if the tree is valid, false otherwise.
+     */
     bool is_tree_valid() const { return m_valid_tree; }
 
+    /** 
+     * Build or re-build tree based on the current set of segments.
+     */
     void build_tree();
 
+    /** 
+     * Insert a new segment.
+     *  
+     * @param begin_key begin point of the segment.  The value is inclusive.
+     * @param end_key end point of the segment.  The value is non-inclusive. 
+     * @param pdata pointer to the data instance associated with this segment. 
+     *               Note that <i>the caller must manage the life cycle of the
+     *               data instance</i>.
+     */
     void insert(key_type begin_key, key_type end_key, data_type* pdata);
 
+    /** 
+     * Search the tree and collect all segments that include a specified 
+     * point. 
+     *  
+     * @param point specified point value 
+     * @param data_chain doubly-linked list of data instances associated with 
+     *                   the segments that include the specified point.
+     *  
+     * @return true if the search is performed successfully, false if the 
+     *         search has ended prematurely due to error conditions.
+     */
     bool search(key_type point, data_chain_type& data_chain) const;
 
 #if UNIT_TEST
@@ -352,10 +381,6 @@ segment_tree<_Key, _Data>::~segment_tree()
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::build_tree()
 {
-    if (m_valid_tree)
-        // Nothing to do.
-        return;
-
     build_leaf_nodes();
     clear_tree(m_root_node.get());
     m_root_node = ::mdds::build_tree(m_left_leaf);
@@ -496,6 +521,10 @@ void segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, dat
 template<typename _Key, typename _Data>
 bool segment_tree<_Key, _Data>::search(key_type point, data_chain_type& data_chain) const
 {
+    if (m_valid_tree)
+        // Tree is invalidated.
+        return false;
+
     data_chain_type result;
     if (!m_root_node.get())
         // Tree doesn't exist.
