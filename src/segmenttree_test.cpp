@@ -125,9 +125,10 @@ void st_test_insert_segments()
 {
     typedef long key_type;
     typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
 
     StackPrinter __stack_printer__("::st_test_insert_segments");
-    segment_tree<key_type, data_type> db;
+    db_type db;
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     build_and_dump(db);
     assert(node_base::get_instance_count() == 0);
@@ -194,6 +195,10 @@ void st_test_insert_segments()
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
     }
+
+    // Search tests.
+    db_type::data_chain_type data_chain;
+    db.search(7, data_chain);
 }
 
 int main()

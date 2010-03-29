@@ -189,6 +189,8 @@ public:
 
     void insert(key_type begin_key, key_type end_key, data_type* pdata);
 
+    bool search(key_type point, data_chain_type& data_chain) const;
+
 #if UNIT_TEST
     void dump_tree() const
     {
@@ -301,6 +303,8 @@ private:
 
     void build_leaf_nodes();
 
+    void descend_tree_for_search(key_type point, const node* pnode, data_chain_type& data_chain) const;
+
 #if UNIT_TEST
     static void print_leaf_value(const leaf_value_type& v)
     {
@@ -370,6 +374,9 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(node* pnode, const segment
 {
     if (!pnode)
         return;
+
+    // TODO: Build auxiliary table to keep track of marked nodes for each line
+    // segment.  We need this to support segment deletion.
 
     if (pnode->is_leaf)
     {
@@ -483,6 +490,74 @@ void segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, dat
 
     m_segment_data.push_back(new segment_data(begin_key, end_key, pdata));
     m_valid_tree = false;
+}
+
+template<typename _Key, typename _Data>
+bool segment_tree<_Key, _Data>::search(key_type point, data_chain_type& data_chain) const
+{
+    data_chain_type result;
+    if (!m_root_node.get())
+        // Tree doesn't exist.
+        return false;
+
+    descend_tree_for_search(point, get_node(m_root_node), result);
+    result.swap(data_chain);
+    return true;
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, data_chain_type& data_chain) const
+{
+    if (!pnode)
+        // This should never happen, but just in case.
+        return;
+
+    if (pnode->is_leaf)
+    {
+        // TODO: Pick up the data.
+        return;
+    }
+
+    const nonleaf_value_type& v = pnode->value_nonleaf;
+    if (point < v.low || v.high <= point)
+        // Query point is out-of-range.
+        return;
+
+    // TODO: Pick up the data.
+
+    // Check the left child node first, then the right one.
+    node* pchild = get_node(pnode->left);
+    assert(pchild->is_leaf == pnode->right->is_leaf);
+    if (pchild->is_leaf)
+    {
+        // The child node are leaf nodes.
+        const leaf_value_type& vleft = pchild->value_leaf;
+        const leaf_value_type& vright = get_node(pnode->right)->value_leaf;
+        if (point < vleft.key)
+        {
+            // Out-of-range.  Nothing more to do.
+            return;
+        }
+
+        if (vright.key < point)
+            // Follow the right node.
+            pchild = get_node(pnode->right);
+    }
+    else
+    {
+        const nonleaf_value_type& vleft = pchild->value_nonleaf;
+        if (point < vleft.low)
+        {
+            // Out-of-range.  Nothing more to do.
+            return;
+        }
+        if (vleft.high <= point)
+            // Follow the right child.
+            pchild = get_node(pnode->right);
+
+        assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
+    }
+    descend_tree_for_search(point, pchild, data_chain);
 }
 
 }
