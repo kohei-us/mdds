@@ -540,7 +540,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
             return;
         }
 
-        if (vright.key < point)
+        if (vright.key <= point)
             // Follow the right node.
             pchild = get_node(pnode->right);
     }

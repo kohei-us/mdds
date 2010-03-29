@@ -216,11 +216,15 @@ void st_test_insert_segments()
     }
 
     // Search tests.
-    db_type::data_chain_type data_chain;
-    db.search(7, data_chain);
-    data_chain.sort(test_data::sort_by_name());
-    for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
-    cout << endl;
+    for (key_type i = 0; i <= 26; ++i)
+    {
+        db_type::data_chain_type data_chain;
+        db.search(i, data_chain);
+        data_chain.sort(test_data::sort_by_name());
+        cout << "search key " << i << ": ";
+        for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
+        cout << endl;
+    }
 }
 
 int main()
