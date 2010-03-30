@@ -296,6 +296,16 @@ public:
      */
     void clear();
 
+    /** 
+     * Return the number of segments currently stored in this container.
+     */
+    size_t size() const;
+
+    /** 
+     * Return whether or not the container stores any segments or none at all.
+     */
+    bool empty() const;
+
 #if UNIT_TEST
     void dump_tree() const;
     void dump_leaf_nodes() const;
@@ -638,6 +648,19 @@ void segment_tree<_Key, _Data>::clear()
     m_tagged_node_map.clear();
     m_segment_data.clear();
     clear_all_nodes();
+    m_valid_tree = false;
+}
+
+template<typename _Key, typename _Data>
+size_t segment_tree<_Key, _Data>::size() const
+{
+    return m_segment_data.size();
+}
+
+template<typename _Key, typename _Data>
+bool segment_tree<_Key, _Data>::empty() const
+{
+    return m_segment_data.empty();
 }
 
 template<typename _Key, typename _Data>

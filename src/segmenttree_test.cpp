@@ -528,11 +528,45 @@ void st_test_equality()
     }
 }
 
+void st_test_clear()
+{
+    typedef uint8_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+
+    db_type::segment_data segments[] = {
+        { 0, 10, &A},
+        { 0,  5, &B},
+        { 5, 12, &C},
+        {10, 24, &D},
+        { 4, 24, &E},
+        { 0, 26, &F},
+        {12, 26, &G},
+
+        {0, 0, NULL} // null terminated
+    };
+
+    db_type db;
+    for (size_t i = 0; segments[i].pdata; ++i)
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
+
+    assert(!db.empty());
+    assert(db.size() == 7);
+    cout << "size of db is " << db.size() << endl;
+
+    db.clear();
+    assert(db.empty());
+    assert(db.size() == 0);
+}
+
 int main()
 {
     st_test_insert_search_removal();
     st_test_copy_constructor();
     st_test_equality();
+    st_test_clear();
 
     // At this point, all of the nodes created during the test run should have
     // been destroyed.  If not, we are leaking memory.
