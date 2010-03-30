@@ -498,10 +498,35 @@ void st_test_copy_constructor()
     assert(db == db_copied_tree);
 }
 
+void st_test_equality()
+{
+    StackPrinter __stack_printer__("::st_test_equality");
+
+    typedef uint32_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+    {
+        db_type db1, db2;
+        db1.insert(0, 10, &A);
+        db2.insert(0, 10, &A);
+        assert(db1 == db2);
+        db2.insert(5, 12, &B);
+        assert(db1 != db2);
+        db1.insert(5, 12, &C);
+        assert(db1 != db2);
+        db1.remove(&C);
+        db2.remove(&B);
+        assert(db1 == db2);
+    }
+}
+
 int main()
 {
     st_test_insert_search_removal();
     st_test_copy_constructor();
+    st_test_equality();
 
     // At this point, all of the nodes created during the test run should have
     // been destroyed.  If not, we are leaking memory.

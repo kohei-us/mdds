@@ -608,17 +608,20 @@ void segment_tree<_Key, _Data>::remove(data_type* pdata)
     using namespace std;
 
     typename data_node_map_type::iterator itr = m_tagged_node_map.find(pdata);
-    if (itr == m_tagged_node_map.end())
-        // the data pointer is not stored in the tree.
-        return;
+    if (itr != m_tagged_node_map.end())
+    {
+        // Tagged node list found.  Remove all the tags from the tree nodes.
+        node_list_type* plist = itr->second;
+        if (!plist)
+            return;
 
-    node_list_type* plist = itr->second;
-    if (!plist)
-        return;
+        remove_data_from_nodes(plist, pdata);
 
-    remove_data_from_nodes(plist, pdata);
+        // Remove the tags associated with this pointer from the data set.
+        m_tagged_node_map.erase(itr);
+    }
 
-    // Remove from the segment data array too.
+    // Remove from the segment data array.
     typename segment_array_type::iterator pos = remove_if(
         m_segment_data.begin(), m_segment_data.end(), equal_to_data_ptr(pdata));
     m_segment_data.erase(pos, m_segment_data.end());
