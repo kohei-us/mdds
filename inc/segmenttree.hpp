@@ -239,7 +239,8 @@ public:
 
     /** 
      * Remove a segment by the data pointer.  This will <i>not</i> invalidate 
-     * the tree. 
+     * the tree; however, if you have removed lots of segments, you might want 
+     * to re-build the tree to shrink its size. 
      */
     void remove(data_type* pdata);
 
@@ -277,14 +278,17 @@ private:
     void descend_tree_and_mark(node* pnode, const segment_data& data, node_list_type* plist);
 
     void build_leaf_nodes();
-
     void descend_tree_for_search(key_type point, const node* pnode, data_chain_type& data_chain) const;
-
     void append_data_chain(data_chain_type& data_chain, const data_chain_type* node_data) const;
+
+    /** 
+     * Go through the list of nodes, and remove the specified data pointer 
+     * value from the nodes.
+     */
+    void remove_data_from_nodes(node_list_type* plist, const data_type* pdata);
 
 #if UNIT_TEST
     static bool has_data_pointer(const node_list_type& node_list, const data_type* pdata);
-
     static void print_leaf_value(const leaf_value_type& v);
 #endif
 
@@ -487,6 +491,36 @@ bool segment_tree<_Key, _Data>::search(key_type point, data_chain_type& data_cha
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::remove(data_type* pdata)
 {
+    typename data_node_map_type::iterator itr = m_tagged_node_map.find(pdata);
+    if (itr == m_tagged_node_map.end())
+        // the data pointer is not stored in the tree.
+        return;
+
+    node_list_type* plist = itr->second;
+    if (!plist)
+        return;
+
+    remove_data_from_nodes(plist, pdata);
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, const data_type* pdata)
+{
+    typename node_list_type::iterator itr = plist->begin(), itr_end = plist->end();
+    for (; itr != itr_end; ++itr)
+    {
+        data_chain_type* chain = NULL;
+        node* p = *itr;
+        if (p->is_leaf)
+            chain = p->value_leaf.data_chain;
+        else
+            chain = p->value_nonleaf.data_labels;
+
+        if (!chain)
+            continue;
+
+        chain->remove(pdata);
+    }
 }
 
 template<typename _Key, typename _Data>
