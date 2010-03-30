@@ -36,6 +36,10 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 
+#if UNIT_TEST
+#include <sstream>
+#endif
+
 namespace mdds {
 
 template<typename _Key, typename _Data>
@@ -153,29 +157,43 @@ public:
 #if UNIT_TEST
         virtual void dump_value() const
         {
-            using ::std::cout;
+            ::std::cout << print();
+        }
+
+        ::std::string print() const
+        {
+            ::std::ostringstream os;
             if (is_leaf)
             {
-                cout << "[" << value_leaf.key << "]";
+                os << "[" << value_leaf.key << "]";
             }
             else
             {
-                cout << "[" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
+                os << "[" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
                 if (value_nonleaf.data_labels)
                 {
-                    cout << " { ";
+                    os << " { ";
                     typename data_chain_type::const_iterator itr, itr_beg = value_nonleaf.data_labels->begin(), itr_end = value_nonleaf.data_labels->end();
                     for (itr = itr_beg; itr != itr_end; ++itr)
                     {
                         if (itr != itr_beg)
-                            cout << ", ";
-                        cout << (*itr)->name;
+                            os << ", ";
+                        os << (*itr)->name;
                     }
-                    cout << " }";
+                    os << " }";
                 }
             }
-            cout << " ";
+            os << " ";
+            return os.str();
         }
+
+        struct printer : public ::std::unary_function<const node*, void>
+        {
+            void operator() (const node* p) const
+            {
+                ::std::cout << p->print() << " ";
+            }
+        };
 #endif
     };
 
@@ -249,6 +267,22 @@ public:
             p = get_node(p->right);
         }
         cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
+    }
+
+    void verify_node_lists() const
+    {
+        using namespace std;
+
+        typename data_node_map_type::const_iterator 
+            itr = m_tagged_node_map.begin(), itr_end = m_tagged_node_map.end();
+        for (; itr != itr_end; ++itr)
+        {
+            cout << "node list " << itr->first->name << ": ";
+            const node_list_type* plist = itr->second;
+            typename node::printer func;
+            for_each(plist->begin(), plist->end(), func);
+            cout << endl;
+        }
     }
 
     struct leaf_node_check

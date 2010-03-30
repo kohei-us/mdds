@@ -193,6 +193,7 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 3);
+        db.verify_node_lists();
     }
 
     db.insert(0, 5, &B);
@@ -202,6 +203,8 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&A, &B, 0, &A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 6);
+        db.verify_node_lists();
+        return;
     }
 
     db.insert(5, 12, &C);
