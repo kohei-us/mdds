@@ -237,6 +237,12 @@ public:
      */
     bool search(key_type point, data_chain_type& data_chain) const;
 
+    /** 
+     * Remove a segment by the data pointer.  This will <i>not</i> invalidate 
+     * the tree. 
+     */
+    void remove(data_type* pdata);
+
 #if UNIT_TEST
     void dump_tree() const;
     void dump_leaf_nodes() const;
@@ -277,14 +283,20 @@ private:
     void append_data_chain(data_chain_type& data_chain, const data_chain_type* node_data) const;
 
 #if UNIT_TEST
-    bool has_data_pointer(const node_list_type& node_list, const data_type* pdata) const;
+    static bool has_data_pointer(const node_list_type& node_list, const data_type* pdata);
 
     static void print_leaf_value(const leaf_value_type& v);
 #endif
 
 private:
     data_array_type m_segment_data;
-    data_node_map_type m_tagged_node_map; // stores tag locations for each segment data.
+
+    /** 
+     * For each data pointer, it keeps track of all nodes, leaf or non-leaf, 
+     * that stores the data pointer label.  This data is used when removing 
+     * segments by the data pointer value. 
+     */
+    data_node_map_type m_tagged_node_map;
 
     node_base_ptr   m_root_node;
     node_base_ptr   m_left_leaf;
@@ -473,6 +485,11 @@ bool segment_tree<_Key, _Data>::search(key_type point, data_chain_type& data_cha
 }
 
 template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::remove(data_type* pdata)
+{
+}
+
+template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, data_chain_type& data_chain) const
 {
     if (!pnode)
@@ -652,7 +669,7 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
 }
 
 template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::has_data_pointer(const node_list_type& node_list, const data_type* pdata) const
+bool segment_tree<_Key, _Data>::has_data_pointer(const node_list_type& node_list, const data_type* pdata)
 {
     using namespace std;
 
