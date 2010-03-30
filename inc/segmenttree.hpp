@@ -399,13 +399,10 @@ private:
         cout << " }" << endl;
     }
 
-    bool has_data_pointer(const data_chain_type* chain, const data_type* pdata) const
-    {
-        return true;
-    }
-
     bool has_data_pointer(const node_list_type& node_list, const data_type* pdata) const
     {
+        using namespace std;
+
         typename node_list_type::const_iterator
             itr = node_list.begin(), itr_end = node_list.end();
 
@@ -420,7 +417,10 @@ private:
             else
                 chain = pnode->value_nonleaf.data_labels;
 
-            if (!has_data_pointer(chain, pdata))
+            if (!chain)
+                return false;
+            
+            if (find(chain->begin(), chain->end(), pdata) == chain->end())
                 return false;
         }
         return true;
