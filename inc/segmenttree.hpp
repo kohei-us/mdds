@@ -291,6 +291,11 @@ public:
      */
     void remove(data_type* pdata);
 
+    /** 
+     * Remove all segments data.
+     */
+    void clear();
+
 #if UNIT_TEST
     void dump_tree() const;
     void dump_leaf_nodes() const;
@@ -344,6 +349,8 @@ private:
      */
     void remove_data_from_nodes(node_list_type* plist, const data_type* pdata);
 
+    void clear_all_nodes();
+
 #if UNIT_TEST
     static bool has_data_pointer(const node_list_type& node_list, const data_type* pdata);
     static void print_leaf_value(const leaf_value_type& v);
@@ -383,9 +390,7 @@ segment_tree<_Key, _Data>::segment_tree(const segment_tree& r) :
 template<typename _Key, typename _Data>
 segment_tree<_Key, _Data>::~segment_tree()
 {
-    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
-    clear_tree(m_root_node.get());
-    disconnect_node(m_root_node.get());
+    clear_all_nodes();
 }
 
 template<typename _Key, typename _Data>
@@ -628,6 +633,14 @@ void segment_tree<_Key, _Data>::remove(data_type* pdata)
 }
 
 template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::clear()
+{
+    m_tagged_node_map.clear();
+    m_segment_data.clear();
+    clear_all_nodes();
+}
+
+template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, const data_type* pdata)
 {
     typename node_list_type::iterator itr = plist->begin(), itr_end = plist->end();
@@ -645,6 +658,14 @@ void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, co
 
         chain->remove(pdata);
     }
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::clear_all_nodes()
+{
+    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    clear_tree(m_root_node.get());
+    disconnect_node(m_root_node.get());
 }
 
 template<typename _Key, typename _Data>
