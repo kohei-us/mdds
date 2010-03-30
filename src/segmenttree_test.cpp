@@ -490,7 +490,11 @@ int main()
 {
     st_test_insert_search_removal();
     st_test_copy_constructor();
+
+    // At this point, all of the nodes created during the test run should have
+    // been destroyed.  If not, we are leaking memory.
     assert(node_base::get_instance_count() == 0);
+
     fprintf(stdout, "Test finished successfully!\n");
     return EXIT_SUCCESS;
 }
