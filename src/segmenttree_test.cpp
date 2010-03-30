@@ -320,6 +320,24 @@ void st_test_insert_segments()
         data_type* expected[] = {0};
         assert(check_search_result(db, key, expected));
     }
+
+    db.remove(&E);
+    db.remove(&F);
+    db.remove(&G);
+    db.dump_tree();
+    db.dump_leaf_nodes();
+
+    for (key_type i = -10; i <= 30; ++i)
+    {
+        db_type::data_chain_type data_chain;
+        db.search(i, data_chain);
+        data_chain.sort(test_data::sort_by_name());
+        cout << "search key " << i << ": ";
+        for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
+        cout << endl;
+    }
+
+    // TODO: Test search results after removal.
 }
 
 int main()

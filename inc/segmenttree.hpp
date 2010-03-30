@@ -48,7 +48,7 @@ class segment_tree
 public:
     typedef _Key        key_type;
     typedef _Data       data_type;
-    typedef ::std::list<data_type*> data_chain_type;
+    typedef ::std::list<const data_type*> data_chain_type;
 
 private:
     struct segment_data
