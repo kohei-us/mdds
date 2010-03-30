@@ -174,7 +174,7 @@ bool check_search_result(
     return true;
 }
 
-void st_test_insert_segments()
+void st_test_insert_search_removal()
 {
     typedef long key_type;
     typedef test_data data_type;
@@ -452,7 +452,7 @@ void st_test_insert_segments()
 
 int main()
 {
-    st_test_insert_segments();
+    st_test_insert_search_removal();
     assert(node_base::get_instance_count() == 0);
     fprintf(stdout, "Test finished successfully!\n");
     return EXIT_SUCCESS;
