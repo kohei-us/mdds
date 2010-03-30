@@ -321,9 +321,12 @@ void st_test_insert_segments()
         assert(check_search_result(db, key, expected));
     }
 
+    // Remove E, F and G and check search results.
+
     db.remove(&E);
     db.remove(&F);
     db.remove(&G);
+    cout << "removed: E F G" << endl;
     db.dump_tree();
     db.dump_leaf_nodes();
 
@@ -336,8 +339,115 @@ void st_test_insert_segments()
         for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
         cout << endl;
     }
+    
+    {
+        key_type key = -1;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
 
-    // TODO: Test search results after removal.
+    {
+        key_type key = 0;
+        data_type* expected[] = {&A, &B, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 4;
+        data_type* expected[] = {&A, &B, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 5;
+        data_type* expected[] = {&A, &C, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 10;
+        data_type* expected[] = {&C, &D, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 12;
+        data_type* expected[] = {&D, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 24;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 30;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 9999;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    // Re-build the tree and check the search results once again, to make sure
+    // we get the same results.
+
+    db.build_tree();
+    db.dump_tree();
+    db.dump_leaf_nodes();
+
+    {
+        key_type key = -1;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 0;
+        data_type* expected[] = {&A, &B, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 4;
+        data_type* expected[] = {&A, &B, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 5;
+        data_type* expected[] = {&A, &C, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 10;
+        data_type* expected[] = {&C, &D, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 12;
+        data_type* expected[] = {&D, 0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 24;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
+
+    {
+        key_type key = 30;
+        data_type* expected[] = {0};
+        assert(check_search_result(db, key, expected));
+    }
 }
 
 int main()
