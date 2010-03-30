@@ -477,6 +477,8 @@ void st_test_copy_constructor()
     for (size_t i = 0; segments[i].pdata; ++i)
         db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
 
+    // Copy before the tree is built.
+
     db.dump_segment_data();
     assert(db.verify_segment_data(segments));
 
@@ -484,6 +486,14 @@ void st_test_copy_constructor()
     db_copied.dump_segment_data();
     assert(db_copied.verify_segment_data(segments));
     assert(db.is_tree_valid() == db_copied.is_tree_valid());
+
+    // Copy after the tree is built.
+    db.build_tree();
+    db_type db_copied_tree(db);
+    db_copied_tree.dump_segment_data();
+    db_copied_tree.dump_tree();
+    assert(db_copied_tree.verify_segment_data(segments));
+    assert(db.is_tree_valid() == db_copied_tree.is_tree_valid());
 }
 
 int main()
