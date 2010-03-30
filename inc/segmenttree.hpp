@@ -269,7 +269,7 @@ public:
         cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
     }
 
-    void verify_node_lists() const
+    bool verify_node_lists() const
     {
         using namespace std;
 
@@ -277,12 +277,19 @@ public:
             itr = m_tagged_node_map.begin(), itr_end = m_tagged_node_map.end();
         for (; itr != itr_end; ++itr)
         {
+            // Print stored nodes.
             cout << "node list " << itr->first->name << ": ";
             const node_list_type* plist = itr->second;
+            assert(plist);
             typename node::printer func;
             for_each(plist->begin(), plist->end(), func);
             cout << endl;
+
+            // Verify that all of these nodes have the data pointer.
+            if (!has_data_pointer(*plist, itr->first))
+                return false;
         }
+        return true;
     }
 
     struct leaf_node_check
@@ -391,6 +398,33 @@ private:
         }
         cout << " }" << endl;
     }
+
+    bool has_data_pointer(const data_chain_type* chain, const data_type* pdata) const
+    {
+        return true;
+    }
+
+    bool has_data_pointer(const node_list_type& node_list, const data_type* pdata) const
+    {
+        typename node_list_type::const_iterator
+            itr = node_list.begin(), itr_end = node_list.end();
+
+        for (; itr != itr_end; ++itr)
+        {
+            // Check each node, and make sure each node has the pdata pointer
+            // listed.
+            const node* pnode = *itr;
+            const data_chain_type* chain = NULL;
+            if (pnode->is_leaf)
+                chain = pnode->value_leaf.data_chain;
+            else
+                chain = pnode->value_nonleaf.data_labels;
+
+            if (!has_data_pointer(chain, pdata))
+                return false;
+        }
+        return true;
+    }
 #endif
 
 private:
@@ -473,7 +507,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
                 if (!v.data_chain)
                     v.data_chain = new data_chain_type;
                 v.data_chain->push_back(data.pdata);
-                plist->push_back(pnode);
+                plist->push_back(pprev);
             }
         }
         return;
