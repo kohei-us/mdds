@@ -114,17 +114,6 @@ struct test_data
     };
 };
 
-template<typename key_type>
-struct test_segment
-{
-    key_type    begin_key;
-    key_type    end_key;
-    test_data*  data;
-
-    test_segment(key_type _beg, key_type _end, test_data* p) :
-        begin_key(_beg), end_key(_end), data(p) {}
-};
-
 template<typename key_type, typename data_type>
 bool check_leaf_nodes(
     const segment_tree<key_type, data_type>& db, 
@@ -473,7 +462,7 @@ void st_test_copy_constructor()
 
     db_type db;
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
-    test_segment<key_type> segments[] = {
+    db_type::segment_data segments[] = {
         { 0, 10, &A},
         { 0,  5, &B},
         { 5, 12, &C},
@@ -485,13 +474,15 @@ void st_test_copy_constructor()
         {0, 0, NULL} // null terminated
     };
 
-    for (size_t i = 0; segments[i].data; ++i)
-        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].data);
+    for (size_t i = 0; segments[i].pdata; ++i)
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
 
     db.dump_segment_data();
+    assert(db.verify_segment_data(segments));
 
     db_type db_copied(db);
     db_copied.dump_segment_data();
+    assert(db_copied.verify_segment_data(segments));
     assert(db.is_tree_valid() == db_copied.is_tree_valid());
 }
 

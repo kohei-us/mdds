@@ -38,6 +38,7 @@
 
 #if UNIT_TEST
 #include <sstream>
+#define private public // We need to expose the private members during unit test.
 #endif
 
 namespace mdds {
@@ -59,6 +60,16 @@ private:
 
         segment_data(key_type _beg, key_type _end, data_type* p) :
             begin_key(_beg), end_key(_end), pdata(p) {}
+
+        bool operator==(const segment_data& r) const
+        {
+            return begin_key == r.begin_key && end_key == r.end_key && pdata == r.pdata;
+        }
+
+        bool operator!=(const segment_data& r) const
+        {
+            return !operator==(r);
+        }
 
 #if UNIT_TEST
         struct ptr_printer : public ::std::unary_function<segment_data, void>
@@ -281,6 +292,14 @@ public:
     };
 
     bool verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const;
+
+    /** 
+     * Verify the validity of the segment data array.
+     *  
+     * @param checks null-terminated array of expected values.  The last item 
+     *               must have a NULL pdata value to terminate the array.
+     */
+    bool verify_segment_data(const segment_data* checks) const;
 #endif
 
 private:
@@ -665,8 +684,10 @@ void segment_tree<_Key, _Data>::dump_leaf_nodes() const
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::dump_segment_data() const
 {
+    using namespace std;
+    cout << "dump segment data ----------------------------------------------" << endl;
     typename segment_data::ptr_printer func;
-    ::std::for_each(m_segment_data.begin(), m_segment_data.end(), func);
+    for_each(m_segment_data.begin(), m_segment_data.end(), func);
 }
 
 template<typename _Key, typename _Data>
@@ -745,6 +766,23 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
     if (cur_node)
         // At this point, we expect the current node to be at the position
         // past the right-most node, which is NULL.
+        return false;
+
+    return true;
+}
+template<typename _Key, typename _Data>
+bool segment_tree<_Key, _Data>::verify_segment_data(const segment_data* checks) const
+{
+    typename segment_array_type::const_iterator itr = m_segment_data.begin(), itr_end = m_segment_data.end();
+    for (size_t i = 0; checks[i].pdata; ++i, ++itr)
+    {
+        if (itr == itr_end)
+            return false;
+
+        if (*itr != checks[i])
+            return false;
+    }
+    if (itr != itr_end)
         return false;
 
     return true;
