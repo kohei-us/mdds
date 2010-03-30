@@ -59,8 +59,19 @@ private:
 
         segment_data(key_type _beg, key_type _end, data_type* p) :
             begin_key(_beg), end_key(_end), pdata(p) {}
+
+#if UNIT_TEST
+        struct ptr_printer : public ::std::unary_function<segment_data, void>
+        {
+            void operator() (const segment_data& r) const
+            {
+                using namespace std;
+                cout << r.begin_key << "-" << r.end_key << ": " << r.pdata->name << endl;
+            }
+        };
+#endif
     };
-    typedef ::boost::ptr_vector<segment_data> data_array_type;
+    typedef ::boost::ptr_vector<segment_data> segment_array_type;
 
     class equal_to_data_ptr
     {
@@ -210,6 +221,7 @@ public:
     };
 
     segment_tree();
+    segment_tree(const segment_tree& r);
     ~segment_tree();
 
     /** 
@@ -259,6 +271,7 @@ public:
 #if UNIT_TEST
     void dump_tree() const;
     void dump_leaf_nodes() const;
+    void dump_segment_data() const;
     bool verify_node_lists() const;
 
     struct leaf_node_check
@@ -305,7 +318,7 @@ private:
 #endif
 
 private:
-    data_array_type m_segment_data;
+    segment_array_type m_segment_data;
 
     /** 
      * For each data pointer, it keeps track of all nodes, leaf or non-leaf, 
@@ -327,6 +340,15 @@ segment_tree<_Key, _Data>::segment_tree() :
 }
 
 template<typename _Key, typename _Data>
+segment_tree<_Key, _Data>::segment_tree(const segment_tree& r) :
+    m_segment_data(r.m_segment_data),
+    m_valid_tree(r.m_valid_tree)
+{
+    if (m_valid_tree)
+        build_tree();
+}
+
+template<typename _Key, typename _Data>
 segment_tree<_Key, _Data>::~segment_tree()
 {
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
@@ -342,7 +364,7 @@ void segment_tree<_Key, _Data>::build_tree()
     m_root_node = ::mdds::build_tree(m_left_leaf);
     
     // Start "inserting" all segments from the root.
-    typename data_array_type::const_iterator itr, 
+    typename segment_array_type::const_iterator itr, 
         itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
 
     data_node_map_type tagged_node_map;
@@ -424,7 +446,7 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
     // In 1st pass, collect unique end-point values and sort them.
     vector<key_type> keys_uniq;
     keys_uniq.reserve(m_segment_data.size()*2);
-    typename data_array_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
+    typename segment_array_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
         keys_uniq.push_back(itr->begin_key);
@@ -517,7 +539,7 @@ void segment_tree<_Key, _Data>::remove(data_type* pdata)
     remove_data_from_nodes(plist, pdata);
 
     // Remove from the segment data array too.
-    typename data_array_type::iterator pos = remove_if(
+    typename segment_array_type::iterator pos = remove_if(
         m_segment_data.begin(), m_segment_data.end(), equal_to_data_ptr(pdata));
     m_segment_data.erase(pos, m_segment_data.end());
 }
@@ -629,7 +651,7 @@ void segment_tree<_Key, _Data>::dump_leaf_nodes() const
     using ::std::cout;
     using ::std::endl;
 
-    cout << "------------------------------------------" << endl;
+    cout << "dump leaf nodes ------------------------------------------------" << endl;
 
     node* p = get_node(m_left_leaf);
     while (p)
@@ -637,7 +659,14 @@ void segment_tree<_Key, _Data>::dump_leaf_nodes() const
         print_leaf_value(p->value_leaf);
         p = get_node(p->right);
     }
-    cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
+    cout << "  node instance count = " << node_base::get_instance_count() << endl;
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::dump_segment_data() const
+{
+    typename segment_data::ptr_printer func;
+    ::std::for_each(m_segment_data.begin(), m_segment_data.end(), func);
 }
 
 template<typename _Key, typename _Data>

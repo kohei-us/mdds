@@ -114,6 +114,17 @@ struct test_data
     };
 };
 
+template<typename key_type>
+struct test_segment
+{
+    key_type    begin_key;
+    key_type    end_key;
+    test_data*  data;
+
+    test_segment(key_type _beg, key_type _end, test_data* p) :
+        begin_key(_beg), end_key(_end), data(p) {}
+};
+
 template<typename key_type, typename data_type>
 bool check_leaf_nodes(
     const segment_tree<key_type, data_type>& db, 
@@ -176,13 +187,15 @@ bool check_search_result(
 
 void st_test_insert_search_removal()
 {
+    StackPrinter __stack_printer__("::st_test_insert_segments");
+
     typedef long key_type;
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
 
-    StackPrinter __stack_printer__("::st_test_insert_segments");
     db_type db;
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+
     build_and_dump(db);
     assert(node_base::get_instance_count() == 0);
 
@@ -450,9 +463,42 @@ void st_test_insert_search_removal()
     }
 }
 
+void st_test_copy_constructor()
+{
+    StackPrinter __stack_printer__("::st_test_copy_constructor");
+
+    typedef long key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    db_type db;
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+    test_segment<key_type> segments[] = {
+        { 0, 10, &A},
+        { 0,  5, &B},
+        { 5, 12, &C},
+        {10, 24, &D},
+        { 4, 24, &E},
+        { 0, 26, &F},
+        {12, 26, &G},
+
+        {0, 0, NULL} // null terminated
+    };
+
+    for (size_t i = 0; segments[i].data; ++i)
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].data);
+
+    db.dump_segment_data();
+
+    db_type db_copied(db);
+    db_copied.dump_segment_data();
+    assert(db.is_tree_valid() == db_copied.is_tree_valid());
+}
+
 int main()
 {
     st_test_insert_search_removal();
+    st_test_copy_constructor();
     assert(node_base::get_instance_count() == 0);
     fprintf(stdout, "Test finished successfully!\n");
     return EXIT_SUCCESS;
