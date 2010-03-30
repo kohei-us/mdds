@@ -530,6 +530,8 @@ void st_test_equality()
 
 void st_test_clear()
 {
+    StackPrinter __stack_printer__("::st_test_clear");
+
     typedef uint8_t key_type;
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
@@ -573,12 +575,29 @@ void st_test_clear()
     assert(db.size() == 0);
 }
 
+void st_test_duplicate_insertion()
+{
+    StackPrinter __stack_printer__("::st_test_duplicate_insertion");
+
+    typedef short key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+
+    db_type db;
+    db.insert(0, 10, &A);
+    db.insert(0, 10, &A);
+    build_and_dump(db);
+}
+
 int main()
 {
     st_test_insert_search_removal();
     st_test_copy_constructor();
     st_test_equality();
     st_test_clear();
+    st_test_duplicate_insertion();
 
     // At this point, all of the nodes created during the test run should have
     // been destroyed.  If not, we are leaking memory.
