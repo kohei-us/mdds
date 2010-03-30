@@ -559,6 +559,18 @@ void st_test_clear()
     db.clear();
     assert(db.empty());
     assert(db.size() == 0);
+
+    // Insert the same data set once again, but this time build tree afterwards.
+    for (size_t i = 0; segments[i].pdata; ++i)
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
+
+    db.build_tree();
+    assert(!db.empty());
+    assert(db.size() == 7);
+
+    db.clear();
+    assert(db.empty());
+    assert(db.size() == 0);
 }
 
 int main()

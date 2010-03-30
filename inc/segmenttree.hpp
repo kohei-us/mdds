@@ -689,6 +689,9 @@ void segment_tree<_Key, _Data>::clear_all_nodes()
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
     clear_tree(m_root_node.get());
     disconnect_node(m_root_node.get());
+    m_left_leaf.reset();
+    m_right_leaf.reset();
+    m_root_node.reset();
 }
 
 template<typename _Key, typename _Data>
