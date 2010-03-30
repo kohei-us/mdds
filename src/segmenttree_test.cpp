@@ -193,7 +193,7 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 3);
-        db.verify_node_lists();
+        assert(db.verify_node_lists());
     }
 
     db.insert(0, 5, &B);
@@ -203,7 +203,6 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&A, &B, 0, &A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 6);
-        db.verify_node_lists();
     }
 
     db.insert(5, 12, &C);
@@ -213,7 +212,7 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 7);
-        db.verify_node_lists();
+        assert(db.verify_node_lists());
     }
 
     db.insert(10, 24, &D);
@@ -223,7 +222,7 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, &D, 0, &D, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 11);
-        db.verify_node_lists();
+        assert(db.verify_node_lists());
     }
 
     db.insert(4, 24, &E);
@@ -233,7 +232,7 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 12);
-        db.verify_node_lists();
+        assert(db.verify_node_lists());
     }
 
     db.insert(0, 26, &F);
@@ -243,7 +242,7 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, &F, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
-        db.verify_node_lists();
+        assert(db.verify_node_lists());
     }
 
     db.insert(12, 26, &G);
@@ -253,7 +252,7 @@ void st_test_insert_segments()
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &G, 0, &F, &G, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
-        db.verify_node_lists();
+        assert(db.verify_node_lists());
     }
 
     // Search tests.  Test boundary cases.
