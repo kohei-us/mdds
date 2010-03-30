@@ -238,59 +238,9 @@ public:
     bool search(key_type point, data_chain_type& data_chain) const;
 
 #if UNIT_TEST
-    void dump_tree() const
-    {
-        using ::std::cout;
-        using ::std::endl;
-
-        if (!m_valid_tree)
-            assert(!"attempted to dump an invalid tree!");
-
-        size_t node_count = ::mdds::dump_tree(m_root_node);
-        size_t node_instance_count = node_base::get_instance_count();
-
-        cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
-        assert(node_count == node_instance_count);
-    }
-
-    void dump_leaf_nodes() const
-    {
-        using ::std::cout;
-        using ::std::endl;
-
-        cout << "------------------------------------------" << endl;
-
-        node* p = get_node(m_left_leaf);
-        while (p)
-        {
-            print_leaf_value(p->value_leaf);
-            p = get_node(p->right);
-        }
-        cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
-    }
-
-    bool verify_node_lists() const
-    {
-        using namespace std;
-
-        typename data_node_map_type::const_iterator 
-            itr = m_tagged_node_map.begin(), itr_end = m_tagged_node_map.end();
-        for (; itr != itr_end; ++itr)
-        {
-            // Print stored nodes.
-            cout << "node list " << itr->first->name << ": ";
-            const node_list_type* plist = itr->second;
-            assert(plist);
-            typename node::printer func;
-            for_each(plist->begin(), plist->end(), func);
-            cout << endl;
-
-            // Verify that all of these nodes have the data pointer.
-            if (!has_data_pointer(*plist, itr->first))
-                return false;
-        }
-        return true;
-    }
+    void dump_tree() const;
+    void dump_leaf_nodes() const;
+    bool verify_node_lists() const;
 
     struct leaf_node_check
     {
@@ -298,61 +248,7 @@ public:
         data_chain_type data_chain;
     };
 
-    bool verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const
-    {
-        node* cur_node = get_node(m_left_leaf);
-        typename ::std::vector<leaf_node_check>::const_iterator itr = checks.begin(), itr_end = checks.end();
-        for (; itr != itr_end; ++itr)
-        {
-            if (!cur_node)
-                // Position past the right-mode node.  Invalid.
-                return false;
-
-            if (cur_node->value_leaf.key != itr->key)
-                // Key values differ.
-                return false;
-
-            if (itr->data_chain.empty())
-            {
-                if (cur_node->value_leaf.data_chain)
-                    // The data chain should be empty (i.e. the pointer should be NULL).
-                    return false;
-            }
-            else
-            {
-                if (!cur_node->value_leaf.data_chain)
-                    // This node should have data pointers!
-                    return false;
-
-                typename data_chain_type::const_iterator itr1 = itr->data_chain.begin();
-                typename data_chain_type::const_iterator itr1_end = itr->data_chain.end();
-                typename data_chain_type::const_iterator itr2 = cur_node->value_leaf.data_chain->begin();
-                typename data_chain_type::const_iterator itr2_end = cur_node->value_leaf.data_chain->end();
-                for (; itr1 != itr1_end; ++itr1, ++itr2)
-                {
-                    if (itr2 == itr2_end)
-                        // Data chain in the node finished early.
-                        return false;
-
-                    if (*itr1 != *itr2)
-                        // Data pointers differ.
-                        return false;
-                }
-                if (itr2 != itr2_end)
-                    // There are more data pointers in the node.
-                    return false;
-            }
-
-            cur_node = get_node(cur_node->right);
-        }
-
-        if (cur_node)
-            // At this point, we expect the current node to be at the position
-            // past the right-most node, which is NULL.
-            return false;
-
-        return true;
-    }
+    bool verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const;
 #endif
 
 private:
@@ -381,50 +277,9 @@ private:
     void append_data_chain(data_chain_type& data_chain, const data_chain_type* node_data) const;
 
 #if UNIT_TEST
-    static void print_leaf_value(const leaf_value_type& v)
-    {
-        using namespace std;
-        cout << v.key << ": { ";
-        if (v.data_chain)
-        {
-            const data_chain_type* pchain = v.data_chain;
-            typename data_chain_type::const_iterator itr, itr_beg = pchain->begin(), itr_end = pchain->end();
-            for (itr = itr_beg; itr != itr_end; ++itr)
-            {
-                if (itr != itr_beg)
-                    cout << ", ";
-                cout << (*itr)->name;
-            }
-        }
-        cout << " }" << endl;
-    }
+    bool has_data_pointer(const node_list_type& node_list, const data_type* pdata) const;
 
-    bool has_data_pointer(const node_list_type& node_list, const data_type* pdata) const
-    {
-        using namespace std;
-
-        typename node_list_type::const_iterator
-            itr = node_list.begin(), itr_end = node_list.end();
-
-        for (; itr != itr_end; ++itr)
-        {
-            // Check each node, and make sure each node has the pdata pointer
-            // listed.
-            const node* pnode = *itr;
-            const data_chain_type* chain = NULL;
-            if (pnode->is_leaf)
-                chain = pnode->value_leaf.data_chain;
-            else
-                chain = pnode->value_nonleaf.data_labels;
-
-            if (!chain)
-                return false;
-            
-            if (find(chain->begin(), chain->end(), pdata) == chain->end())
-                return false;
-        }
-        return true;
-    }
+    static void print_leaf_value(const leaf_value_type& v);
 #endif
 
 private:
@@ -680,6 +535,169 @@ void segment_tree<_Key, _Data>::append_data_chain(data_chain_type& data_chain, c
 
     copy(node_data->begin(), node_data->end(), back_inserter(data_chain));
 }
+
+#if UNIT_TEST
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::dump_tree() const
+{
+    using ::std::cout;
+    using ::std::endl;
+
+    if (!m_valid_tree)
+        assert(!"attempted to dump an invalid tree!");
+
+    size_t node_count = ::mdds::dump_tree(m_root_node);
+    size_t node_instance_count = node_base::get_instance_count();
+
+    cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
+    assert(node_count == node_instance_count);
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::dump_leaf_nodes() const
+{
+    using ::std::cout;
+    using ::std::endl;
+
+    cout << "------------------------------------------" << endl;
+
+    node* p = get_node(m_left_leaf);
+    while (p)
+    {
+        print_leaf_value(p->value_leaf);
+        p = get_node(p->right);
+    }
+    cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
+}
+
+template<typename _Key, typename _Data>
+bool segment_tree<_Key, _Data>::verify_node_lists() const
+{
+    using namespace std;
+
+    typename data_node_map_type::const_iterator 
+        itr = m_tagged_node_map.begin(), itr_end = m_tagged_node_map.end();
+    for (; itr != itr_end; ++itr)
+    {
+        // Print stored nodes.
+        cout << "node list " << itr->first->name << ": ";
+        const node_list_type* plist = itr->second;
+        assert(plist);
+        typename node::printer func;
+        for_each(plist->begin(), plist->end(), func);
+        cout << endl;
+
+        // Verify that all of these nodes have the data pointer.
+        if (!has_data_pointer(*plist, itr->first))
+            return false;
+    }
+    return true;
+}
+
+template<typename _Key, typename _Data>
+bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const
+{
+    node* cur_node = get_node(m_left_leaf);
+    typename ::std::vector<leaf_node_check>::const_iterator itr = checks.begin(), itr_end = checks.end();
+    for (; itr != itr_end; ++itr)
+    {
+        if (!cur_node)
+            // Position past the right-mode node.  Invalid.
+            return false;
+
+        if (cur_node->value_leaf.key != itr->key)
+            // Key values differ.
+            return false;
+
+        if (itr->data_chain.empty())
+        {
+            if (cur_node->value_leaf.data_chain)
+                // The data chain should be empty (i.e. the pointer should be NULL).
+                return false;
+        }
+        else
+        {
+            if (!cur_node->value_leaf.data_chain)
+                // This node should have data pointers!
+                return false;
+
+            typename data_chain_type::const_iterator itr1 = itr->data_chain.begin();
+            typename data_chain_type::const_iterator itr1_end = itr->data_chain.end();
+            typename data_chain_type::const_iterator itr2 = cur_node->value_leaf.data_chain->begin();
+            typename data_chain_type::const_iterator itr2_end = cur_node->value_leaf.data_chain->end();
+            for (; itr1 != itr1_end; ++itr1, ++itr2)
+            {
+                if (itr2 == itr2_end)
+                    // Data chain in the node finished early.
+                    return false;
+
+                if (*itr1 != *itr2)
+                    // Data pointers differ.
+                    return false;
+            }
+            if (itr2 != itr2_end)
+                // There are more data pointers in the node.
+                return false;
+        }
+
+        cur_node = get_node(cur_node->right);
+    }
+
+    if (cur_node)
+        // At this point, we expect the current node to be at the position
+        // past the right-most node, which is NULL.
+        return false;
+
+    return true;
+}
+
+template<typename _Key, typename _Data>
+bool segment_tree<_Key, _Data>::has_data_pointer(const node_list_type& node_list, const data_type* pdata) const
+{
+    using namespace std;
+
+    typename node_list_type::const_iterator
+        itr = node_list.begin(), itr_end = node_list.end();
+
+    for (; itr != itr_end; ++itr)
+    {
+        // Check each node, and make sure each node has the pdata pointer
+        // listed.
+        const node* pnode = *itr;
+        const data_chain_type* chain = NULL;
+        if (pnode->is_leaf)
+            chain = pnode->value_leaf.data_chain;
+        else
+            chain = pnode->value_nonleaf.data_labels;
+
+        if (!chain)
+            return false;
+        
+        if (find(chain->begin(), chain->end(), pdata) == chain->end())
+            return false;
+    }
+    return true;
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::print_leaf_value(const leaf_value_type& v)
+{
+    using namespace std;
+    cout << v.key << ": { ";
+    if (v.data_chain)
+    {
+        const data_chain_type* pchain = v.data_chain;
+        typename data_chain_type::const_iterator itr, itr_beg = pchain->begin(), itr_end = pchain->end();
+        for (itr = itr_beg; itr != itr_end; ++itr)
+        {
+            if (itr != itr_beg)
+                cout << ", ";
+            cout << (*itr)->name;
+        }
+    }
+    cout << " }" << endl;
+}
+#endif
 
 }
 
