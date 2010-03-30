@@ -83,6 +83,7 @@ private:
 #endif
     };
     typedef ::boost::ptr_vector<segment_data> segment_array_type;
+    typedef ::std::map<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
 
     class equal_to_data_ptr
     {
@@ -236,6 +237,17 @@ public:
     ~segment_tree();
 
     /** 
+     * Equality between two segment_tree instances is evaluated by comparing 
+     * the segments that they store.  The trees are not compared.
+     */
+    bool operator==(const segment_tree& r) const;
+
+    bool operator!=(const segment_tree& r) const
+    {
+        return !operator==(r);
+    }
+
+    /** 
      * Check whether or not the internal tree is in a valid state.  The tree 
      * must be valid in order to perform searches. 
      * 
@@ -312,6 +324,7 @@ private:
         return static_cast<node*>(base_node.get());
     }
 
+    static void create_segment_data_map(const segment_array_type& seg_array, segment_map_type& seg_map);
     static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
 
     /** 
@@ -373,6 +386,38 @@ segment_tree<_Key, _Data>::~segment_tree()
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
     clear_tree(m_root_node.get());
     disconnect_node(m_root_node.get());
+}
+
+template<typename _Key, typename _Data>
+bool segment_tree<_Key, _Data>::operator==(const segment_tree& r) const
+{
+    if (m_valid_tree != r.m_valid_tree)
+        return false;
+
+    // First, we need to re-organize the segment data so that they are sorted
+    // by the data pointer values.
+
+    segment_map_type left, right;
+    create_segment_data_map(m_segment_data, left);
+    create_segment_data_map(r.m_segment_data, right);
+    typename segment_map_type::const_iterator itr1 = left.begin(), itr1_end = left.end();
+    typename segment_map_type::const_iterator itr2 = right.begin(), itr2_end = right.end();
+
+    for (; itr1 != itr1_end; ++itr1, ++itr2)
+    {
+        if (itr2 == itr2_end)
+            return false;
+
+        if (itr1->first != itr2->first)
+            return false;
+
+        if (itr1->second != itr2->second)
+            return false;
+    }
+    if (itr2 != itr2_end)
+        return false;
+
+    return true;
 }
 
 template<typename _Key, typename _Data>
@@ -477,6 +522,22 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
     keys_uniq.erase(unique(keys_uniq.begin(), keys_uniq.end()), keys_uniq.end());
 
     create_leaf_node_instances(keys_uniq, m_left_leaf, m_right_leaf);
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::create_segment_data_map(const segment_array_type& seg_array, segment_map_type& seg_map)
+{
+    segment_map_type seg_map_local;
+    typename segment_array_type::const_iterator itr = seg_array.begin(), itr_end = seg_array.end();
+    for (; itr != itr_end; ++itr)
+    {
+        ::std::pair<key_type, key_type> range;
+        range.first = itr->begin_key;
+        range.second = itr->end_key;
+        seg_map_local.insert(
+            typename segment_map_type::value_type(itr->pdata, range));
+    }
+    seg_map.swap(seg_map_local);
 }
 
 template<typename _Key, typename _Data>

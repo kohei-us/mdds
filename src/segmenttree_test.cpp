@@ -486,6 +486,7 @@ void st_test_copy_constructor()
     db_copied.dump_segment_data();
     assert(db_copied.verify_segment_data(segments));
     assert(db.is_tree_valid() == db_copied.is_tree_valid());
+    assert(db == db_copied);
 
     // Copy after the tree is built.
     db.build_tree();
@@ -494,6 +495,7 @@ void st_test_copy_constructor()
     db_copied_tree.dump_tree();
     assert(db_copied_tree.verify_segment_data(segments));
     assert(db.is_tree_valid() == db_copied_tree.is_tree_valid());
+    assert(db == db_copied_tree);
 }
 
 int main()
