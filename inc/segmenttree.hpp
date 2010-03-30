@@ -62,6 +62,18 @@ private:
     };
     typedef ::boost::ptr_vector<segment_data> data_array_type;
 
+    class equal_to_data_ptr
+    {
+    public:
+        equal_to_data_ptr(data_type* pdata) : m_pdata(pdata) {}
+        bool operator() (const segment_data& seg) const
+        {
+            return seg.pdata == m_pdata;
+        }
+    private:
+        data_type* m_pdata;
+    };
+
 public:
     struct nonleaf_value_type
     {
@@ -491,6 +503,8 @@ bool segment_tree<_Key, _Data>::search(key_type point, data_chain_type& data_cha
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::remove(data_type* pdata)
 {
+    using namespace std;
+
     typename data_node_map_type::iterator itr = m_tagged_node_map.find(pdata);
     if (itr == m_tagged_node_map.end())
         // the data pointer is not stored in the tree.
@@ -501,6 +515,11 @@ void segment_tree<_Key, _Data>::remove(data_type* pdata)
         return;
 
     remove_data_from_nodes(plist, pdata);
+
+    // Remove from the segment data array too.
+    typename data_array_type::iterator pos = remove_if(
+        m_segment_data.begin(), m_segment_data.end(), equal_to_data_ptr(pdata));
+    m_segment_data.erase(pos, m_segment_data.end());
 }
 
 template<typename _Key, typename _Data>
