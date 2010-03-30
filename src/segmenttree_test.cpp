@@ -519,6 +519,12 @@ void st_test_equality()
         db1.remove(&C);
         db2.remove(&B);
         assert(db1 == db2);
+        db1.insert(4, 20, &D);
+        db2.insert(4, 20, &D);
+        assert(db1 == db2);
+        db1.insert(3, 12, &E);
+        db2.insert(3, 15, &E);
+        assert(db1 != db2);
     }
 }
 
