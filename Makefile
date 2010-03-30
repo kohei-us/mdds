@@ -42,6 +42,9 @@ test.fst: flatsegmenttree-test
 test.st: segmenttree-test
 	./segmenttree-test
 
+test.st.mem: segmenttree-test
+	valgrind --tool=memcheck --leak-check=full ./segmenttree-test
+
 clean:
 	rm -rf $(OBJDIR)
 	rm $(EXECS)
