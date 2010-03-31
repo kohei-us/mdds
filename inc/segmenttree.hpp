@@ -85,18 +85,6 @@ private:
     };
 #endif
 
-    class equal_to_data_ptr
-    {
-    public:
-        equal_to_data_ptr(data_type* pdata) : m_pdata(pdata) {}
-        bool operator() (const segment_data& seg) const
-        {
-            return seg.pdata == m_pdata;
-        }
-    private:
-        data_type* m_pdata;
-    };
-
 public:
     struct nonleaf_value_type
     {
@@ -346,7 +334,7 @@ private:
      * leaf and non-leaf, based on segment's end points.  When marking nodes, 
      * record their positions as a list of node pointers. 
      */
-    void descend_tree_and_mark(node* pnode, const segment_data& data, node_list_type* plist);
+    void descend_tree_and_mark(node* pnode, data_type* pdata, key_type begin_key, key_type end_key, node_list_type* plist);
 
     void build_leaf_nodes();
     void descend_tree_for_search(key_type point, const node* pnode, data_chain_type& data_chain) const;
@@ -450,8 +438,7 @@ void segment_tree<_Key, _Data>::build_tree()
             tagged_node_map.insert(pdata, new node_list_type);
         node_list_type* plist = r.first->second;
 
-        segment_data segdata(itr->second.first, itr->second.second, pdata);
-        descend_tree_and_mark(get_node(m_root_node), segdata, plist);
+        descend_tree_and_mark(get_node(m_root_node), pdata, itr->second.first, itr->second.second, plist);
     }
 
     m_tagged_node_map.swap(tagged_node_map);
@@ -460,7 +447,7 @@ void segment_tree<_Key, _Data>::build_tree()
 
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::descend_tree_and_mark(
-    node* pnode, const segment_data& data, node_list_type* plist)
+    node* pnode, data_type* pdata, key_type begin_key, key_type end_key, node_list_type* plist)
 {
     if (!pnode)
         return;
@@ -468,49 +455,49 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
     if (pnode->is_leaf)
     {
         // This is a leaf node.
-        if (pnode->value_leaf.key == data.begin_key)
+        if (pnode->value_leaf.key == begin_key)
         {
             // Insertion of begin point.
             leaf_value_type& v = pnode->value_leaf;
             if (!v.data_chain)
                 v.data_chain = new data_chain_type;
-            v.data_chain->push_back(data.pdata);
+            v.data_chain->push_back(pdata);
             plist->push_back(pnode);
         }
-        else if (pnode->value_leaf.key == data.end_key)
+        else if (pnode->value_leaf.key == end_key)
         {
             // For insertion of the end point, insert data pointer to the
             // previous node _only when_ the value of the previous node
             // doesn't equal the begin point value.
             node* pprev = get_node(pnode->left);
-            if (pprev && pprev->value_leaf.key != data.begin_key)
+            if (pprev && pprev->value_leaf.key != begin_key)
             {
                 leaf_value_type& v = pprev->value_leaf;
                 if (!v.data_chain)
                     v.data_chain = new data_chain_type;
-                v.data_chain->push_back(data.pdata);
+                v.data_chain->push_back(pdata);
                 plist->push_back(pprev);
             }
         }
         return;
     }
     
-    if (data.end_key < pnode->value_nonleaf.low || pnode->value_nonleaf.high <= data.begin_key)
+    if (end_key < pnode->value_nonleaf.low || pnode->value_nonleaf.high <= begin_key)
         return;
 
     nonleaf_value_type& v = pnode->value_nonleaf;
-    if (data.begin_key <= v.low && v.high < data.end_key)
+    if (begin_key <= v.low && v.high < end_key)
     {
         // mark this non-leaf node and stop.
         if (!v.data_labels)
             v.data_labels = new data_chain_type;
-        v.data_labels->push_back(data.pdata);
+        v.data_labels->push_back(pdata);
         plist->push_back(pnode);
         return;
     }
 
-    descend_tree_and_mark(get_node(pnode->left), data, plist);
-    descend_tree_and_mark(get_node(pnode->right), data, plist);
+    descend_tree_and_mark(get_node(pnode->left), pdata, begin_key, end_key, plist);
+    descend_tree_and_mark(get_node(pnode->right), pdata, begin_key, end_key, plist);
 }
 
 template<typename _Key, typename _Data>
