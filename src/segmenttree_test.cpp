@@ -150,6 +150,15 @@ bool check_search_result(
     data_chain_type data_chain;
     db.search(key, data_chain);
     data_chain.sort(test_data::sort_by_name());
+    cout << "data chain returned: ";
+    {
+        typename data_chain_type::const_iterator itr = data_chain.begin(), itr_end = data_chain.end();
+        for (; itr != itr_end; ++itr)
+        {
+            cout << (*itr)->name << " ";
+        }
+    }
+    cout << endl;
 
     size_t i = 0;
     data_type* p = expected[i++];
@@ -202,7 +211,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 5, 10};
-        data_type* data_chain[] = {&A, &B, 0, &A, 0, 0};
+        data_type* data_chain[] = {&B, &A, 0, &A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 6);
     }
@@ -211,7 +220,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 5, 10, 12};
-        data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, 0, 0};
+        data_type* data_chain[] = {&B, &A, 0, &C, &A, 0, &C, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 7);
         assert(db.verify_node_lists());
@@ -221,7 +230,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 5, 10, 12, 24};
-        data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, &D, 0, &D, 0, 0};
+        data_type* data_chain[] = {&B, &A, 0, &C, &A, 0, &D, &C, 0, &D, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 11);
         assert(db.verify_node_lists());
@@ -231,7 +240,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24};
-        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, 0};
+        data_type* data_chain[] = {&B, 0, &E, &B, 0, &C, &A, 0, &D, &C, 0, &E, &D, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 12);
         assert(db.verify_node_lists());
@@ -241,7 +250,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, &F, 0, 0};
+        data_type* data_chain[] = {&B, 0, &E, &B, 0, &C, &A, 0, &D, &C, 0, &E, &D, 0, &F, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
         assert(db.verify_node_lists());
@@ -251,7 +260,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &G, 0, &F, &G, 0, 0};
+        data_type* data_chain[] = {&B, 0, &E, &B, 0, &C, &A, 0, &D, &C, 0, &G, &E, &D, 0, &G, &F, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
         assert(db.verify_node_lists());
@@ -474,17 +483,24 @@ void st_test_copy_constructor()
         {0, 0, NULL} // null terminated
     };
 
+    db_type::segment_map_type checks;
     for (size_t i = 0; segments[i].pdata; ++i)
+    {    
         db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
+        pair<key_type, key_type> range;
+        range.first = segments[i].begin_key;
+        range.second = segments[i].end_key;
+        checks.insert(db_type::segment_map_type::value_type(segments[i].pdata, range));
+    }
 
     // Copy before the tree is built.
 
     db.dump_segment_data();
-    assert(db.verify_segment_data(segments));
+    assert(db.verify_segment_data(checks));
 
     db_type db_copied(db);
     db_copied.dump_segment_data();
-    assert(db_copied.verify_segment_data(segments));
+    assert(db_copied.verify_segment_data(checks));
     assert(db.is_tree_valid() == db_copied.is_tree_valid());
     assert(db == db_copied);
 
@@ -493,7 +509,7 @@ void st_test_copy_constructor()
     db_type db_copied_tree(db);
     db_copied_tree.dump_segment_data();
     db_copied_tree.dump_tree();
-    assert(db_copied_tree.verify_segment_data(segments));
+    assert(db_copied_tree.verify_segment_data(checks));
     assert(db.is_tree_valid() == db_copied_tree.is_tree_valid());
     assert(db == db_copied_tree);
 }
