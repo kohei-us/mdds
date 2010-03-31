@@ -615,8 +615,21 @@ void st_test_duplicate_insertion()
     build_and_dump(db);
 }
 
+void st_test_perf_insertion()
+{
+    StackPrinter __stack_printer__("::st_test_perf_insertion");
+
+    typedef uint32_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    db_type db;
+}
+
 int main()
 {
+    st_test_perf_insertion();
+    return;
     st_test_insert_search_removal();
     st_test_copy_constructor();
     st_test_equality();
