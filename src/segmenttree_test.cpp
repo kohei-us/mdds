@@ -621,7 +621,8 @@ void st_test_duplicate_insertion()
 
 /** 
  * When the number of segments is not a multiple of 2, it creates a tree 
- * where the right side becomes "cut off". 
+ * where the right side becomes "cut off".  Make sure the search works 
+ * correctly under those conditions. 
  */
 void st_test_search_on_uneven_tree()
 {
