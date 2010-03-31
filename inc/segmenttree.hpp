@@ -33,6 +33,8 @@
 #include <vector>
 #include <list>
 #include <iostream>
+#include <unordered_map>
+
 #include <boost/ptr_container/ptr_map.hpp>
 
 #if UNIT_TEST
@@ -52,7 +54,7 @@ public:
 
 private:
 
-    typedef ::std::map<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
+    typedef ::std::unordered_map<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
 
 #if UNIT_TEST
     struct segment_data
@@ -856,7 +858,20 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
 template<typename _Key, typename _Data>
 bool segment_tree<_Key, _Data>::verify_segment_data(const segment_map_type& checks) const
 {
-    return m_segment_data == checks;
+    typename segment_map_type::const_iterator itr1 = checks.begin(), itr1_end = checks.end();
+    typename segment_map_type::const_iterator itr2 = m_segment_data.begin(), itr2_end = m_segment_data.end();
+    for (; itr1 != itr1_end; ++itr1, ++itr2)
+    {
+        if (itr2 == itr2_end)
+            return false;
+
+        if (*itr1 != *itr2)
+            return false;
+    }
+    if (itr2 != itr2_end)
+        return false;
+
+    return true;
 }
 
 template<typename _Key, typename _Data>

@@ -31,12 +31,16 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include <sstream>
 #include <string>
+
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
 using namespace std;
 using namespace mdds;
+using namespace boost;
 
 #include <sys/time.h>
 
@@ -623,13 +627,35 @@ void st_test_perf_insertion()
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
 
+    key_type data_count = 1000000;
+
+    // First, create test data instances and store them into a vector.
+    ptr_vector<test_data> data_store;
+    data_store.reserve(data_count);
+    for (key_type i = 0; i < data_count; ++i)
+    {
+        ostringstream os;
+        os << hex << i;
+        data_store.push_back(new test_data(os.str()));
+    }
+
+    cout << data_count << " data array created" << endl;
+    __stack_printer__.printTime(__LINE__);
+
     db_type db;
+    for (key_type i = 0; i < data_count; ++i)
+    {
+        test_data* p = &data_store[i];
+        db.insert(0, i, p);
+    }
+    cout << data_count << " data array inserted into segment tree" << endl;
+    __stack_printer__.printTime(__LINE__);
 }
 
 int main()
 {
     st_test_perf_insertion();
-    return;
+    return EXIT_SUCCESS;
     st_test_insert_search_removal();
     st_test_copy_constructor();
     st_test_equality();
