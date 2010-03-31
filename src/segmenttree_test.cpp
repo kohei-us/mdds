@@ -656,8 +656,16 @@ void st_test_perf_insertion()
     __stack_printer__.printTime(__LINE__);
 
     db_type::data_chain_type result;
+    db.search(0, result);
+    cout << "search performed at 0" << endl;
+    __stack_printer__.printTime(__LINE__);
+
     db.search(data_count/2, result);
-    cout << "single search performed" << endl;
+    cout << "search performed at data_count/2" << endl;
+    __stack_printer__.printTime(__LINE__);
+
+    db.search(data_count-1, result);
+    cout << "search performed at data_count-1" << endl;
     __stack_printer__.printTime(__LINE__);
 }
 

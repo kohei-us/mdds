@@ -46,6 +46,6 @@ test.st.mem: segmenttree-test
 	valgrind --tool=memcheck --leak-check=full ./segmenttree-test
 
 clean:
-	rm -rf $(OBJDIR)
-	rm $(EXECS)
+	rm -rf $(OBJDIR) 2>/dev/null || /bin/true
+	rm $(EXECS) 2>/dev/null || /bin/true
 
