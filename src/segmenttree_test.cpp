@@ -631,54 +631,53 @@ void st_test_perf_insertion()
 
     // First, create test data instances and store them into a vector.
     ptr_vector<test_data> data_store;
-    data_store.reserve(data_count);
-    for (key_type i = 0; i < data_count; ++i)
     {
-        ostringstream os;
-        os << hex << i;
-        data_store.push_back(new test_data(os.str()));
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: data array creation");
+        data_store.reserve(data_count);
+        for (key_type i = 0; i < data_count; ++i)
+        {
+            ostringstream os;
+            os << hex << i;
+            data_store.push_back(new test_data(os.str()));
+        }    
     }
-
-    cout << data_count << " data array created" << endl;
-    __stack_printer__.printTime(__LINE__);
 
     db_type db;
-    for (key_type i = 0; i < data_count; ++i)
     {
-        test_data* p = &data_store[i];
-        db.insert(0, i, p);
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: data array insertion into segment tree");
+        for (key_type i = 0; i < data_count; ++i)
+        {
+            test_data* p = &data_store[i];
+            db.insert(0, i, p);
+        }
     }
-    cout << data_count << " data array inserted into segment tree" << endl;
-    __stack_printer__.printTime(__LINE__);
 
-    db.build_tree();
-    cout << "tree built" << endl;
-    __stack_printer__.printTime(__LINE__);
-
-    db_type::data_chain_type result;
-    db.search(0, result);
-    cout << "search performed at 0 (result: " << result.size() << ")" << endl;
-    __stack_printer__.printTime(__LINE__);
-
-    db.search(data_count/2, result);
-    cout << "search performed at data_count/2 (result: " << result.size() << ")" << endl;
-    __stack_printer__.printTime(__LINE__);
-
-    db.search(data_count-1, result);
-    cout << "search performed at data_count-1 (result: " << result.size() <<  ")" << endl;
-    __stack_printer__.printTime(__LINE__);
-
-    for (key_type i = 0; i < data_count; ++i)
     {
-        test_data* p = &data_store[i];
-        db.remove(p);
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: build tree");
+        db.build_tree();
     }
-    cout << "removed " << data_count << " items" << endl;
-    __stack_printer__.printTime(__LINE__);
 
-    db.clear();
-    cout << "data array cleared" << endl;
-    __stack_printer__.printTime(__LINE__);
+    {
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: perform three searches");
+        db_type::data_chain_type result;
+        db.search(0, result);
+        db.search(data_count/2, result);
+        db.search(data_count-1, result);
+    }
+
+    {
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: segment removal");
+        for (key_type i = 0; i < data_count; ++i)
+        {
+            test_data* p = &data_store[i];
+            db.remove(p);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: clear");
+        db.clear();
+    }
 }
 
 int main()
