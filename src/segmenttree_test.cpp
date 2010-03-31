@@ -142,7 +142,7 @@ bool check_leaf_nodes(
         data_type* p = data_chain[dcid];
         while (p)
         {    
-            c.data_chain.push_back(p);
+            c.data_chain.insert(p);
             p = data_chain[++dcid];
         }
         checks.push_back(c);
@@ -162,7 +162,9 @@ bool check_search_result(
     typedef typename segment_tree<key_type, data_type>::data_chain_type data_chain_type;
     data_chain_type data_chain;
     db.search(key, data_chain);
-    data_chain.sort(test_data::sort_by_name());
+    list<const data_type*> test;
+    copy(data_chain.begin(), data_chain.end(), back_inserter(test));
+    test.sort(test_data::sort_by_name());
 
     cout << "data chain returned: ";
     for_each(data_chain.begin(), data_chain.end(), test_data::name_printer());
@@ -170,7 +172,7 @@ bool check_search_result(
 
     size_t i = 0;
     data_type* p = expected[i++];
-    typename data_chain_type::const_iterator itr = data_chain.begin(), itr_end = data_chain.end();
+    typename list<const data_type*>::const_iterator itr = test.begin(), itr_end = test.end();
     while (p)
     {
         if (itr == itr_end)
@@ -280,7 +282,6 @@ void st_test_insert_search_removal()
     {
         db_type::data_chain_type data_chain;
         db.search(i, data_chain);
-        data_chain.sort(test_data::sort_by_name());
         cout << "search key " << i << ": ";
         for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
         cout << endl;
@@ -353,7 +354,6 @@ void st_test_insert_search_removal()
     {
         db_type::data_chain_type data_chain;
         db.search(i, data_chain);
-        data_chain.sort(test_data::sort_by_name());
         cout << "search key " << i << ": ";
         for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
         cout << endl;
@@ -627,7 +627,7 @@ void st_test_perf_insertion()
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
 
-    key_type data_count = 100000;
+    key_type data_count = 1000000;
 
     // First, create test data instances and store them into a vector.
     ptr_vector<test_data> data_store;

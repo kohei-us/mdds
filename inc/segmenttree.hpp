@@ -33,6 +33,7 @@
 #include <vector>
 #include <list>
 #include <iostream>
+#include <unordered_set>
 #include <unordered_map>
 
 #include <boost/ptr_container/ptr_map.hpp>
@@ -50,7 +51,7 @@ class segment_tree
 public:
     typedef _Key        key_type;
     typedef _Data       data_type;
-    typedef ::std::list<const data_type*> data_chain_type;
+    typedef ::std::unordered_set<const data_type*> data_chain_type;
 
 private:
 
@@ -463,7 +464,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
             leaf_value_type& v = pnode->value_leaf;
             if (!v.data_chain)
                 v.data_chain = new data_chain_type;
-            v.data_chain->push_back(pdata);
+            v.data_chain->insert(pdata);
             plist->push_back(pnode);
         }
         else if (pnode->value_leaf.key == end_key)
@@ -477,7 +478,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
                 leaf_value_type& v = pprev->value_leaf;
                 if (!v.data_chain)
                     v.data_chain = new data_chain_type;
-                v.data_chain->push_back(pdata);
+                v.data_chain->insert(pdata);
                 plist->push_back(pprev);
             }
         }
@@ -493,7 +494,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
         // mark this non-leaf node and stop.
         if (!v.data_labels)
             v.data_labels = new data_chain_type;
-        v.data_labels->push_back(pdata);
+        v.data_labels->insert(pdata);
         plist->push_back(pnode);
         return;
     }
@@ -657,7 +658,7 @@ void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, co
         if (!chain)
             continue;
 
-        chain->remove(pdata);
+        chain->erase(pdata);
     }
 }
 
@@ -733,7 +734,9 @@ void segment_tree<_Key, _Data>::append_data_chain(data_chain_type& data_chain, c
     if (!node_data)
         return;
 
-    copy(node_data->begin(), node_data->end(), back_inserter(data_chain));
+    typename data_chain_type::const_iterator itr = node_data->begin(), itr_end = node_data->end();
+    for (; itr != itr_end; ++itr)
+        data_chain.insert(*itr);
 }
 
 #if UNIT_TEST
@@ -836,11 +839,20 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
             data_chain_type chain1 = itr->data_chain;
             data_chain_type chain2 = *cur_node->value_leaf.data_chain;
 
-            // Sort both chains before comparing them.
-            chain1.sort();
-            chain2.sort();
+            if (chain1.size() != chain2.size())
+                return false;
 
-            if (chain1 != chain2)
+            ::std::vector<const data_type*> test1, test2;
+            test1.reserve(chain1.size());
+            test2.reserve(chain2.size());
+            copy(chain1.begin(), chain1.end(), back_inserter(test1));
+            copy(chain2.begin(), chain2.end(), back_inserter(test2));
+
+            // Sort both arrays before comparing them.
+            sort(test1.begin(), test1.end());
+            sort(test2.begin(), test2.end());
+
+            if (test1 != test2)
                 return false;
         }
 
