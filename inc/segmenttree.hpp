@@ -695,21 +695,27 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 
     // Check the left child node first, then the right one.
     node* pchild = get_node(pnode->left);
-    assert(pchild->is_leaf == pnode->right->is_leaf);
+    if (!pchild)
+        return;
+
+    assert(pnode->right.get() ? pchild->is_leaf == pnode->right->is_leaf : true);
     if (pchild->is_leaf)
     {
         // The child node are leaf nodes.
         const leaf_value_type& vleft = pchild->value_leaf;
-        const leaf_value_type& vright = get_node(pnode->right)->value_leaf;
         if (point < vleft.key)
         {
             // Out-of-range.  Nothing more to do.
             return;
         }
 
-        if (vright.key <= point)
-            // Follow the right node.
-            pchild = get_node(pnode->right);
+        if (pnode->right.get())
+        {
+            const leaf_value_type& vright = get_node(pnode->right)->value_leaf;    
+            if (vright.key <= point)
+                // Follow the right node.
+                pchild = get_node(pnode->right);
+        }
     }
     else
     {
@@ -719,7 +725,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
             // Out-of-range.  Nothing more to do.
             return;
         }
-        if (vleft.high <= point)
+        if (vleft.high <= point && pnode->right.get())
             // Follow the right child.
             pchild = get_node(pnode->right);
 

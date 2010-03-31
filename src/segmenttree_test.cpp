@@ -627,7 +627,7 @@ void st_test_perf_insertion()
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
 
-    key_type data_count = 1000000;
+    key_type data_count = 100000;
 
     // First, create test data instances and store them into a vector.
     ptr_vector<test_data> data_store;
@@ -641,6 +641,7 @@ void st_test_perf_insertion()
             data_store.push_back(new test_data(os.str()));
         }    
     }
+    assert(data_store.size() == data_count);
 
     db_type db;
     {
@@ -648,14 +649,16 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < data_count; ++i)
         {
             test_data* p = &data_store[i];
-            db.insert(0, i, p);
+            db.insert(0, i+1, p);
         }
     }
+    assert(db.size() == data_count);
 
     {
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: build tree");
         db.build_tree();
     }
+    assert(db.is_tree_valid());
 
     {
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: perform three searches");
@@ -673,6 +676,8 @@ void st_test_perf_insertion()
             db.remove(p);
         }
     }
+    assert(db.empty());
+    assert(db.size() == 0);
 
     {
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: clear");
@@ -682,13 +687,13 @@ void st_test_perf_insertion()
 
 int main()
 {
-    st_test_perf_insertion();
-    return EXIT_SUCCESS;
     st_test_insert_search_removal();
     st_test_copy_constructor();
     st_test_equality();
     st_test_clear();
     st_test_duplicate_insertion();
+
+    st_test_perf_insertion();
 
     // At this point, all of the nodes created during the test run should have
     // been destroyed.  If not, we are leaking memory.
