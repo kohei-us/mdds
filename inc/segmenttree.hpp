@@ -860,6 +860,7 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
 
     return true;
 }
+
 template<typename _Key, typename _Data>
 bool segment_tree<_Key, _Data>::verify_segment_data(const segment_map_type& checks) const
 {

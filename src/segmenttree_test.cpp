@@ -606,8 +606,12 @@ void st_test_duplicate_insertion()
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
     db_type db;
-    db.insert(0, 10, &A);
-    db.insert(0, 10, &A);
+    assert( db.insert(0, 10, &A));
+    assert(!db.insert(0, 10, &A));
+    assert(!db.insert(2, 30, &A));
+    assert( db.insert(0, 10, &B));
+    db.remove(&A);
+    assert( db.insert(2, 30, &A));
     build_and_dump(db);
 }
 
