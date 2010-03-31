@@ -33,7 +33,6 @@
 #include <vector>
 #include <list>
 #include <iostream>
-#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 
 #if UNIT_TEST
