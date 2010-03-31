@@ -650,6 +650,15 @@ void st_test_perf_insertion()
     }
     cout << data_count << " data array inserted into segment tree" << endl;
     __stack_printer__.printTime(__LINE__);
+
+    db.build_tree();
+    cout << "tree built" << endl;
+    __stack_printer__.printTime(__LINE__);
+
+    db_type::data_chain_type result;
+    db.search(data_count/2, result);
+    cout << "single search performed" << endl;
+    __stack_printer__.printTime(__LINE__);
 }
 
 int main()
