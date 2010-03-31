@@ -619,6 +619,52 @@ void st_test_duplicate_insertion()
     build_and_dump(db);
 }
 
+/** 
+ * When the number of segments is not a multiple of 2, it creates a tree 
+ * where the right side becomes "cut off". 
+ */
+void st_test_search_on_uneven_tree()
+{
+    StackPrinter __stack_printer__("::st_test_search_on_uneven_tree");
+
+    typedef int16_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    for (key_type data_count = 10; data_count < 20; ++data_count)
+    {
+        ptr_vector<test_data> data_store;
+        data_store.reserve(data_count);
+        for (key_type i = 0; i < data_count; ++i)
+        {
+            ostringstream os;
+            os << hex << showbase << i;
+            data_store.push_back(new test_data(os.str()));
+        }    
+        assert(data_store.size() == static_cast<size_t>(data_count));
+    
+        db_type db;
+        for (key_type i = 0; i < data_count; ++i)
+        {
+            test_data* p = &data_store[i];
+            db.insert(0, i+1, p);
+        }
+        assert(db.size() == static_cast<size_t>(data_count));
+        
+        db.build_tree();
+
+        db_type::data_chain_type result;
+        for (key_type i = -1; i < data_count+1; ++i)
+        {
+            bool success = db.search(i, result);
+            assert(success);
+            cout << "search key: " << i << "  result: ";
+            for_each(result.begin(), result.end(), test_data::name_printer());
+            cout << endl;
+        }
+    }
+}
+
 void st_test_perf_insertion()
 {
     StackPrinter __stack_printer__("::st_test_perf_insertion");
@@ -692,6 +738,7 @@ int main()
     st_test_equality();
     st_test_clear();
     st_test_duplicate_insertion();
+    st_test_search_on_uneven_tree();
 
     st_test_perf_insertion();
 
