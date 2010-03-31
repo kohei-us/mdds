@@ -674,7 +674,7 @@ void st_test_perf_insertion()
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
 
-    key_type data_count = 100000;
+    key_type data_count = 5000;
 
     // First, create test data instances and store them into a vector.
     ptr_vector<test_data> data_store;
@@ -708,11 +708,10 @@ void st_test_perf_insertion()
     assert(db.is_tree_valid());
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: perform three searches");
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: search");
         db_type::data_chain_type result;
-        db.search(0, result);
-        db.search(data_count/2, result);
-        db.search(data_count-1, result);
+        for (key_type i = 0; i < data_count; ++i)
+            db.search(i, result);
     }
 
     {
@@ -734,12 +733,12 @@ void st_test_perf_insertion()
 
 int main()
 {
-    st_test_insert_search_removal();
-    st_test_copy_constructor();
-    st_test_equality();
-    st_test_clear();
-    st_test_duplicate_insertion();
-    st_test_search_on_uneven_tree();
+//  st_test_insert_search_removal();
+//  st_test_copy_constructor();
+//  st_test_equality();
+//  st_test_clear();
+//  st_test_duplicate_insertion();
+//  st_test_search_on_uneven_tree();
 
     st_test_perf_insertion();
 
