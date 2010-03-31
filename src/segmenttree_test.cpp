@@ -627,7 +627,7 @@ void st_test_perf_insertion()
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
 
-    key_type data_count = 1000000;
+    key_type data_count = 100000;
 
     // First, create test data instances and store them into a vector.
     ptr_vector<test_data> data_store;
@@ -666,6 +666,18 @@ void st_test_perf_insertion()
 
     db.search(data_count-1, result);
     cout << "search performed at data_count-1 (result: " << result.size() <<  ")" << endl;
+    __stack_printer__.printTime(__LINE__);
+
+    for (key_type i = 0; i < data_count; ++i)
+    {
+        test_data* p = &data_store[i];
+        db.remove(p);
+    }
+    cout << "removed " << data_count << " items" << endl;
+    __stack_printer__.printTime(__LINE__);
+
+    db.clear();
+    cout << "data array cleared" << endl;
     __stack_printer__.printTime(__LINE__);
 }
 
