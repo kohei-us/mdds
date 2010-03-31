@@ -215,7 +215,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 5, 10};
-        data_type* data_chain[] = {&B, &A, 0, &A, 0, 0};
+        data_type* data_chain[] = {&A, &B, 0, &A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 6);
     }
@@ -224,7 +224,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 5, 10, 12};
-        data_type* data_chain[] = {&B, &A, 0, &C, &A, 0, &C, 0, 0};
+        data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 7);
         assert(db.verify_node_lists());
@@ -234,7 +234,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 5, 10, 12, 24};
-        data_type* data_chain[] = {&B, &A, 0, &C, &A, 0, &D, &C, 0, &D, 0, 0};
+        data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, &D, 0, &D, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 11);
         assert(db.verify_node_lists());
@@ -244,7 +244,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24};
-        data_type* data_chain[] = {&B, 0, &E, &B, 0, &C, &A, 0, &D, &C, 0, &E, &D, 0, 0};
+        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 12);
         assert(db.verify_node_lists());
@@ -254,7 +254,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        data_type* data_chain[] = {&B, 0, &E, &B, 0, &C, &A, 0, &D, &C, 0, &E, &D, 0, &F, 0, 0};
+        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, &F, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
         assert(db.verify_node_lists());
@@ -264,7 +264,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        data_type* data_chain[] = {&B, 0, &E, &B, 0, &C, &A, 0, &D, &C, 0, &G, &E, &D, 0, &G, &F, 0, 0};
+        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &G, 0, &F, &G, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(node_base::get_instance_count() == 14);
         assert(db.verify_node_lists());

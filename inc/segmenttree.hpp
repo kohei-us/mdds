@@ -831,22 +831,14 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
                 // This node should have data pointers!
                 return false;
 
-            typename data_chain_type::const_iterator itr1 = itr->data_chain.begin();
-            typename data_chain_type::const_iterator itr1_end = itr->data_chain.end();
-            typename data_chain_type::const_iterator itr2 = cur_node->value_leaf.data_chain->begin();
-            typename data_chain_type::const_iterator itr2_end = cur_node->value_leaf.data_chain->end();
-            for (; itr1 != itr1_end; ++itr1, ++itr2)
-            {
-                if (itr2 == itr2_end)
-                    // Data chain in the node finished early.
-                    return false;
+            data_chain_type chain1 = itr->data_chain;
+            data_chain_type chain2 = *cur_node->value_leaf.data_chain;
 
-                if (*itr1 != *itr2)
-                    // Data pointers differ.
-                    return false;
-            }
-            if (itr2 != itr2_end)
-                // There are more data pointers in the node.
+            // Sort both chains before comparing them.
+            chain1.sort();
+            chain2.sort();
+
+            if (chain1 != chain2)
                 return false;
         }
 
