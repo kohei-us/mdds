@@ -112,6 +112,14 @@ struct test_data
             return left->name < right->name;
         }
     };
+
+    struct name_printer : public unary_function<test_data*, void>
+    {
+        void operator() (const test_data* p) const
+        {
+            cout << p->name << " ";
+        }
+    };
 };
 
 template<typename key_type, typename data_type>
@@ -145,19 +153,15 @@ bool check_search_result(
     const segment_tree<key_type, data_type>& db, 
     key_type key, data_type** expected)
 {
-    typedef typename segment_tree<key_type, data_type>::data_chain_type data_chain_type;
+    cout << "search key: " << key << " ";
 
+    typedef typename segment_tree<key_type, data_type>::data_chain_type data_chain_type;
     data_chain_type data_chain;
     db.search(key, data_chain);
     data_chain.sort(test_data::sort_by_name());
+
     cout << "data chain returned: ";
-    {
-        typename data_chain_type::const_iterator itr = data_chain.begin(), itr_end = data_chain.end();
-        for (; itr != itr_end; ++itr)
-        {
-            cout << (*itr)->name << " ";
-        }
-    }
+    for_each(data_chain.begin(), data_chain.end(), test_data::name_printer());
     cout << endl;
 
     size_t i = 0;
