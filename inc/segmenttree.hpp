@@ -51,7 +51,8 @@ class segment_tree
 public:
     typedef _Key        key_type;
     typedef _Data       data_type;
-    typedef ::std::unordered_set<const data_type*> data_chain_type;
+//  typedef ::std::unordered_set<const data_type*> data_chain_type;
+    typedef ::std::vector<const data_type*> data_chain_type;
     typedef ::std::vector<const data_type*> search_result_type;
 
 private:
@@ -349,6 +350,7 @@ private:
      * value from the nodes.
      */
     void remove_data_from_nodes(node_list_type* plist, const data_type* pdata);
+    void remove_data_from_chain(data_chain_type& chain, const data_type* pdata);
 
     void clear_all_nodes();
 
@@ -465,7 +467,8 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
             leaf_value_type& v = pnode->value_leaf;
             if (!v.data_chain)
                 v.data_chain = new data_chain_type;
-            v.data_chain->insert(pdata);
+//          v.data_chain->insert(pdata);
+            v.data_chain->push_back(pdata);
             plist->push_back(pnode);
         }
         else if (pnode->value_leaf.key == end_key)
@@ -479,7 +482,8 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
                 leaf_value_type& v = pprev->value_leaf;
                 if (!v.data_chain)
                     v.data_chain = new data_chain_type;
-                v.data_chain->insert(pdata);
+//              v.data_chain->insert(pdata);
+                v.data_chain->push_back(pdata);
                 plist->push_back(pprev);
             }
         }
@@ -495,7 +499,8 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
         // mark this non-leaf node and stop.
         if (!v.data_labels)
             v.data_labels = new data_chain_type;
-        v.data_labels->insert(pdata);
+//      v.data_labels->insert(pdata);
+        v.data_labels->push_back(pdata);
         plist->push_back(pnode);
         return;
     }
@@ -659,7 +664,18 @@ void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, co
         if (!chain)
             continue;
 
-        chain->erase(pdata);
+        remove_data_from_chain(*chain, pdata);
+    }
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::remove_data_from_chain(data_chain_type& chain, const data_type* pdata)
+{
+    typename data_chain_type::iterator itr = ::std::find(chain.begin(), chain.end(), pdata);
+    if (itr != chain.end())
+    {
+        *itr = chain.back();
+        chain.pop_back();
     }
 }
 
