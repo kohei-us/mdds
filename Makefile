@@ -36,6 +36,9 @@ flatsegmenttree-test: pre $(OBJDIR)/flatsegmenttree_test.o
 segmenttree-test: pre $(OBJDIR)/segmenttree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/segmenttree_test.o -o $@
 
+stlperf-test: pre $(SRCDIR)/stlperf_test.cpp
+	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
+
 test.fst: flatsegmenttree-test
 	./flatsegmenttree-test
 
@@ -44,6 +47,9 @@ test.st: segmenttree-test
 
 test.st.mem: segmenttree-test
 	valgrind --tool=memcheck --leak-check=full ./segmenttree-test
+
+test.stl: stlperf-test
+	./stlperf-test
 
 clean:
 	rm -rf $(OBJDIR) 2>/dev/null || /bin/true
