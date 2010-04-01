@@ -159,8 +159,8 @@ bool check_search_result(
 {
     cout << "search key: " << key << " ";
 
-    typedef typename segment_tree<key_type, data_type>::data_chain_type data_chain_type;
-    data_chain_type data_chain;
+    typedef typename segment_tree<key_type, data_type>::search_result_type search_result_type;
+    search_result_type data_chain;
     db.search(key, data_chain);
     list<const data_type*> test;
     copy(data_chain.begin(), data_chain.end(), back_inserter(test));
@@ -280,7 +280,7 @@ void st_test_insert_search_removal()
 
     for (key_type i = -10; i <= 30; ++i)
     {
-        db_type::data_chain_type data_chain;
+        db_type::search_result_type data_chain;
         db.search(i, data_chain);
         cout << "search key " << i << ": ";
         for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
@@ -352,7 +352,7 @@ void st_test_insert_search_removal()
 
     for (key_type i = -10; i <= 30; ++i)
     {
-        db_type::data_chain_type data_chain;
+        db_type::search_result_type data_chain;
         db.search(i, data_chain);
         cout << "search key " << i << ": ";
         for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
@@ -654,7 +654,7 @@ void st_test_search_on_uneven_tree()
         
         db.build_tree();
 
-        db_type::data_chain_type result;
+        db_type::search_result_type result;
         for (key_type i = -1; i < data_count+1; ++i)
         {
             bool success = db.search(i, result);
@@ -709,7 +709,7 @@ void st_test_perf_insertion()
 
     {
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: search");
-        db_type::data_chain_type result;
+        db_type::search_result_type result;
         for (key_type i = 0; i < data_count; ++i)
             db.search(i, result);
     }
@@ -733,12 +733,12 @@ void st_test_perf_insertion()
 
 int main()
 {
-//  st_test_insert_search_removal();
-//  st_test_copy_constructor();
-//  st_test_equality();
-//  st_test_clear();
-//  st_test_duplicate_insertion();
-//  st_test_search_on_uneven_tree();
+    st_test_insert_search_removal();
+    st_test_copy_constructor();
+    st_test_equality();
+    st_test_clear();
+    st_test_duplicate_insertion();
+    st_test_search_on_uneven_tree();
 
     st_test_perf_insertion();
 

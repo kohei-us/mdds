@@ -52,6 +52,7 @@ public:
     typedef _Key        key_type;
     typedef _Data       data_type;
     typedef ::std::unordered_set<const data_type*> data_chain_type;
+    typedef ::std::vector<const data_type*> search_result_type;
 
 private:
 
@@ -273,7 +274,7 @@ public:
      * @return true if the search is performed successfully, false if the 
      *         search has ended prematurely due to error conditions.
      */
-    bool search(key_type point, data_chain_type& data_chain) const;
+    bool search(key_type point, search_result_type& data_chain) const;
 
     /** 
      * Remove a segment by the data pointer.  This will <i>not</i> invalidate 
@@ -340,8 +341,8 @@ private:
     void descend_tree_and_mark(node* pnode, data_type* pdata, key_type begin_key, key_type end_key, node_list_type* plist);
 
     void build_leaf_nodes();
-    void descend_tree_for_search(key_type point, const node* pnode, data_chain_type& data_chain) const;
-    void append_data_chain(data_chain_type& data_chain, const data_chain_type* node_data) const;
+    void descend_tree_for_search(key_type point, const node* pnode, search_result_type& data_chain) const;
+    void append_search_result(search_result_type& data_chain, const data_chain_type* node_data) const;
 
     /** 
      * Go through the list of nodes, and remove the specified data pointer 
@@ -582,17 +583,17 @@ bool segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, dat
 }
 
 template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::search(key_type point, data_chain_type& data_chain) const
+bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& data_chain) const
 {
     if (!m_valid_tree)
         // Tree is invalidated.
         return false;
 
-    data_chain_type result;
     if (!m_root_node.get())
         // Tree doesn't exist.
         return false;
 
+    search_result_type result;
     descend_tree_for_search(point, get_node(m_root_node), result);
     result.swap(data_chain);
     return true;
@@ -674,7 +675,7 @@ void segment_tree<_Key, _Data>::clear_all_nodes()
 }
 
 template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, data_chain_type& data_chain) const
+void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, search_result_type& data_chain) const
 {
     if (!pnode)
         // This should never happen, but just in case.
@@ -682,7 +683,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 
     if (pnode->is_leaf)
     {
-        append_data_chain(data_chain, pnode->value_leaf.data_chain);
+        append_search_result(data_chain, pnode->value_leaf.data_chain);
         return;
     }
 
@@ -691,7 +692,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
         // Query point is out-of-range.
         return;
 
-    append_data_chain(data_chain, pnode->value_nonleaf.data_labels);
+    append_search_result(data_chain, pnode->value_nonleaf.data_labels);
 
     // Check the left child node first, then the right one.
     node* pchild = get_node(pnode->left);
@@ -735,14 +736,14 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 }
 
 template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::append_data_chain(data_chain_type& data_chain, const data_chain_type* node_data) const
+void segment_tree<_Key, _Data>::append_search_result(search_result_type& data_chain, const data_chain_type* node_data) const
 {
     if (!node_data)
         return;
 
     typename data_chain_type::const_iterator itr = node_data->begin(), itr_end = node_data->end();
     for (; itr != itr_end; ++itr)
-        data_chain.insert(*itr);
+        data_chain.push_back(*itr);
 }
 
 #if UNIT_TEST
