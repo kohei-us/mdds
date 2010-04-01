@@ -674,7 +674,7 @@ void st_test_perf_insertion()
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
 
-    key_type data_count = 5000;
+    key_type data_count = 10000;
 
     // First, create test data instances and store them into a vector.
     ptr_vector<test_data> data_store;

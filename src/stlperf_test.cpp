@@ -29,6 +29,8 @@
 #include <unordered_set>
 #include <set>
 #include <list>
+#include <algorithm>
+#include <cassert>
 
 #include <stdio.h>
 #include <string>
@@ -76,45 +78,109 @@ private:
 
 int main()
 {
-    size_t store_size = 50000000;
+    size_t store_size = 100000;
     {
         StackPrinter __stack_printer__("vector non-reserved");
-        string* ptr = 0x00000000;
         vector<void*> store;
-        for (size_t i = 0; i < store_size; ++i)
-            store.push_back(ptr++);
+        {
+            StackPrinter __stack_printer2__("  push_back");
+            string* ptr = 0x00000000;
+            for (size_t i = 0; i < store_size; ++i)
+                store.push_back(ptr++);
+        }
+        {
+            StackPrinter __stack_printer2__("  find and pop_back");
+            string* ptr = 0x00000000;
+            for (size_t i = 0; i < store_size; ++i)
+            {
+                vector<void*>::iterator itr = find(store.begin(), store.end(), ptr);
+                if (itr != store.end())
+                {
+                    *itr = store.back();
+                    store.pop_back();
+                }
+                ++ptr;
+            }
+        }
+        assert(store.empty());
     }
 
     {
         StackPrinter __stack_printer__("vector reserved");
-        string* ptr = 0x00000000;
         vector<void*> store;
-        store.reserve(store_size);
-        for (size_t i = 0; i < store_size; ++i)
-            store.push_back(ptr++);
+        {
+            StackPrinter __stack_printer2__("  push_back");
+            string* ptr = 0x00000000;
+            store.reserve(store_size);
+            for (size_t i = 0; i < store_size; ++i)
+                store.push_back(ptr++);
+        }
+        {
+            StackPrinter __stack_printer2__("  find and pop_back");
+            string* ptr = 0x00000000;
+            for (size_t i = 0; i < store_size; ++i)
+            {
+                vector<void*>::iterator itr = find(store.begin(), store.end(), ptr);
+                if (itr != store.end())
+                {
+                    *itr = store.back();
+                    store.pop_back();
+                }
+                ++ptr;
+            }
+        }
+        assert(store.empty());
     }
 
     {
         StackPrinter __stack_printer__("list");
-        string* ptr = 0x00000000;
         list<void*> store;
-        for (size_t i = 0; i < store_size; ++i)
-            store.push_back(ptr++);
+        {
+            StackPrinter __stack_printer2__("  push_back");
+            string* ptr = 0x00000000;
+            ++ptr;
+            for (size_t i = 0; i < store_size; ++i)
+                store.push_back(ptr++);
+        }
+        {
+            StackPrinter __stack_printer2__("  remove");
+            string* ptr = 0x00000000;
+            for (size_t i = 0; i < store_size; ++i)
+                store.remove(ptr++);
+        }
     }
 
     {
         StackPrinter __stack_printer__("set");
-        string* ptr = 0x00000000;
         set<void*> store;   
-        for (size_t i = 0; i < store_size; ++i)
-            store.insert(ptr++);
+        {
+            StackPrinter __stack_printer2__("  insert");
+            string* ptr = 0x00000000;
+            for (size_t i = 0; i < store_size; ++i)
+                store.insert(ptr++);
+        }
+        {
+            StackPrinter __stack_printer2__("  erase");
+            string* ptr = 0x00000000;
+            for (size_t i = 0; i < store_size; ++i)
+                store.erase(ptr++);
+        }
     }
 
     {
         StackPrinter __stack_printer__("unordered set");
-        string* ptr = 0x00000000;
         unordered_set<void*> store;
-        for (size_t i = 0; i < store_size; ++i)
-            store.insert(ptr++);
+        {
+            StackPrinter __stack_printer2__("  insert");
+            string* ptr = 0x00000000;
+            for (size_t i = 0; i < store_size; ++i)
+                store.insert(ptr++);
+        }
+        {
+            StackPrinter __stack_printer2__("  erase");
+            string* ptr = 0x00000000;
+            for (size_t i = 0; i < store_size; ++i)
+                store.erase(ptr++);
+        }
     }
 }
