@@ -268,13 +268,13 @@ public:
      * point. 
      *  
      * @param point specified point value 
-     * @param data_chain doubly-linked list of data instances associated with 
+     * @param result doubly-linked list of data instances associated with 
      *                   the segments that include the specified point.
      *  
      * @return true if the search is performed successfully, false if the 
      *         search has ended prematurely due to error conditions.
      */
-    bool search(key_type point, search_result_type& data_chain) const;
+    bool search(key_type point, search_result_type& result) const;
 
     /** 
      * Remove a segment by the data pointer.  This will <i>not</i> invalidate 
@@ -583,7 +583,7 @@ bool segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, dat
 }
 
 template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& data_chain) const
+bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& result) const
 {
     if (!m_valid_tree)
         // Tree is invalidated.
@@ -593,9 +593,9 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& data_
         // Tree doesn't exist.
         return false;
 
-    search_result_type result;
-    descend_tree_for_search(point, get_node(m_root_node), result);
-    result.swap(data_chain);
+    search_result_type _result;
+    descend_tree_for_search(point, get_node(m_root_node), _result);
+    _result.swap(result);
     return true;
 }
 
