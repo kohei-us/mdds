@@ -74,16 +74,12 @@ private:
 
 }
 
-struct fake
-{
-};
-
 int main()
 {
     size_t store_size = 50000000;
     {
         StackPrinter __stack_printer__("vector non-reserved");
-        fake* ptr = 0x000000000;
+        string* ptr = 0x000000000;
         vector<void*> store;
         for (size_t i = 0; i < store_size; ++i)
             store.push_back(ptr++);
@@ -91,7 +87,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("vector reserved");
-        fake* ptr = 0x000000000;
+        string* ptr = 0x000000000;
         vector<void*> store;
         store.reserve(store_size);
         for (size_t i = 0; i < store_size; ++i)
@@ -100,7 +96,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("list");
-        fake* ptr = 0x000000000;
+        string* ptr = 0x000000000;
         list<void*> store;
         for (size_t i = 0; i < store_size; ++i)
             store.push_back(ptr++);
@@ -108,7 +104,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("set");
-        fake* ptr = 0x000000000;
+        string* ptr = 0x000000000;
         set<void*> store;   
         for (size_t i = 0; i < store_size; ++i)
             store.insert(ptr++);
@@ -116,7 +112,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("unordered set");
-        fake* ptr = 0x000000000;
+        string* ptr = 0x000000000;
         unordered_set<void*> store;
         for (size_t i = 0; i < store_size; ++i)
             store.insert(ptr++);

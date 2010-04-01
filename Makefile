@@ -8,7 +8,8 @@ LDFLAGS=
 
 EXECS= \
 	flatsegmenttree-test \
-	segmenttree-test
+	segmenttree-test \
+	stlperf-test
 
 HEADERS= \
 	$(INCDIR)/node.hpp \
