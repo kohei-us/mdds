@@ -79,7 +79,7 @@ int main()
     size_t store_size = 50000000;
     {
         StackPrinter __stack_printer__("vector non-reserved");
-        string* ptr = 0x000000000;
+        string* ptr = 0x00000000;
         vector<void*> store;
         for (size_t i = 0; i < store_size; ++i)
             store.push_back(ptr++);
@@ -87,7 +87,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("vector reserved");
-        string* ptr = 0x000000000;
+        string* ptr = 0x00000000;
         vector<void*> store;
         store.reserve(store_size);
         for (size_t i = 0; i < store_size; ++i)
@@ -96,7 +96,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("list");
-        string* ptr = 0x000000000;
+        string* ptr = 0x00000000;
         list<void*> store;
         for (size_t i = 0; i < store_size; ++i)
             store.push_back(ptr++);
@@ -104,7 +104,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("set");
-        string* ptr = 0x000000000;
+        string* ptr = 0x00000000;
         set<void*> store;   
         for (size_t i = 0; i < store_size; ++i)
             store.insert(ptr++);
@@ -112,7 +112,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("unordered set");
-        string* ptr = 0x000000000;
+        string* ptr = 0x00000000;
         unordered_set<void*> store;
         for (size_t i = 0; i < store_size; ++i)
             store.insert(ptr++);
