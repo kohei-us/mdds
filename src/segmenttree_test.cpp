@@ -729,15 +729,14 @@ void st_test_perf_insertion()
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 100 segment removals");
-        for (key_type i = 0; i < 100; ++i)
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 10000 segment removals");
+        for (key_type i = 0; i < 10000; ++i)
         {
             test_data* p = &data_store[i];
             db.remove(p);
         }
     }
-//  assert(db.empty());
-//  assert(db.size() == 0);
+    assert(db.size() == data_count - 10000);
 
     {
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: clear");
