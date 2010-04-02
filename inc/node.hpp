@@ -40,9 +40,7 @@ namespace mdds {
 size_t node_instance_count = 0;
 #endif
 
-struct node_base;
-typedef ::boost::intrusive_ptr<node_base> node_base_ptr;
-
+template<typename _NodePtr, typename _NodeType>
 struct node_base
 {
     static size_t get_instance_count()
@@ -55,16 +53,13 @@ struct node_base
     }
     size_t          refcount;
 
-    node_base_ptr   parent; /// parent node
-    node_base_ptr   left;   /// left child node or previous sibling if it's a leaf node.
-    node_base_ptr   right;  /// right child node or next sibling if it's aleaf node.
+    _NodePtr   parent; /// parent node
+    _NodePtr   left;   /// left child node or previous sibling if it's a leaf node.
+    _NodePtr   right;  /// right child node or next sibling if it's aleaf node.
     bool            is_leaf;
 
     node_base(bool _is_leaf) :
         refcount(0),
-        parent(static_cast<node_base*>(NULL)),
-        left(static_cast<node_base*>(NULL)),
-        right(static_cast<node_base*>(NULL)),
         is_leaf(_is_leaf)
     {
 #ifdef DEBUG_NODE_BASE
@@ -78,9 +73,6 @@ struct node_base
      */
     node_base(const node_base& r) :
         refcount(0),
-        parent(static_cast<node_base*>(NULL)),
-        left(static_cast<node_base*>(NULL)),
-        right(static_cast<node_base*>(NULL)),
         is_leaf(r.is_leaf)
     {
 #ifdef DEBUG_NODE_BASE

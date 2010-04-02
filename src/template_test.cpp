@@ -27,10 +27,17 @@
 
 #include "segmenttree.hpp"
 
+#include <string>
+
 using namespace std;
 using namespace mdds;
 
+struct test_data
+{
+    ::std::string name;
+};
+
 int main()
 {
-    segment_tree<uint32_t, void> db;
+    segment_tree<uint32_t, test_data> db;
 }

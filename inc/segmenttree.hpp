@@ -103,7 +103,10 @@ public:
         data_chain_type* data_chain;
     };
 
-    struct node : public node_base
+    struct node;
+    typedef ::boost::intrusive_ptr<node> node_ptr;
+
+    struct node : public node_base<node_ptr, node>
     {
         union {
             nonleaf_value_type  value_nonleaf;
@@ -111,7 +114,7 @@ public:
         };
 
         node(bool _is_leaf) :
-            node_base(_is_leaf)
+            node_base<node_ptr, node>(_is_leaf)
         {
             if (_is_leaf)
                 value_leaf.data_chain = NULL;
@@ -120,13 +123,13 @@ public:
         }
 
         node(const node& r) :
-            node_base(r)
+            node_base<node_ptr, node>(r)
         {
         }
 
         virtual ~node()
         {
-            if (is_leaf)
+            if (this->is_leaf)
                 delete value_leaf.data_chain;
             else
                 delete value_nonleaf.data_labels;
@@ -134,13 +137,13 @@ public:
 
         bool equals(const node& r) const
         {
-            if (is_leaf != r.is_leaf)
+            if (this->is_leaf != r.is_leaf)
                 return false;
 
             return true;
         }
 
-        void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
+        void fill_nonleaf_value(const node_ptr& left_node, const node_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -190,7 +193,7 @@ public:
         ::std::string print() const
         {
             ::std::ostringstream os;
-            if (is_leaf)
+            if (this->is_leaf)
             {
                 os << "[" << value_leaf.key << "]";
             }
@@ -326,12 +329,12 @@ private:
     typedef ::std::vector<node*> node_list_type;
     typedef ::boost::ptr_map<data_type*, node_list_type> data_node_map_type;
 
-    static node* get_node(const node_base_ptr& base_node)
+    static node* get_node(const node_ptr& base_node)
     { 
         return static_cast<node*>(base_node.get());
     }
 
-    static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right);
+    static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right);
 
     /** 
      * Descend the tree from the root node, and mark appropriate nodes, both 
@@ -368,9 +371,9 @@ private:
      */
     data_node_map_type m_tagged_node_map;
 
-    node_base_ptr   m_root_node;
-    node_base_ptr   m_left_leaf;
-    node_base_ptr   m_right_leaf;
+    node_ptr   m_root_node;
+    node_ptr   m_left_leaf;
+    node_ptr   m_right_leaf;
     bool m_valid_tree:1;
 };
 
@@ -429,7 +432,7 @@ void segment_tree<_Key, _Data>::build_tree()
 {
     build_leaf_nodes();
     clear_tree(get_node(m_root_node));
-    m_root_node = ::mdds::build_tree<node_base_ptr, node>(m_left_leaf);
+    m_root_node = ::mdds::build_tree<node_ptr, node>(m_left_leaf);
     
     // Start "inserting" all segments from the root.
     typename segment_map_type::const_iterator itr, 
@@ -531,7 +534,7 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
 }
 
 template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<key_type>& keys, node_base_ptr& left, node_base_ptr& right)
+void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right)
 {
     if (keys.empty() || keys.size() < 2)
         // We need at least two keys in order to build tree.
@@ -545,8 +548,8 @@ void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<k
 
     // move on to next.
     left->right.reset(new node(true));
-    node_base_ptr prev_node = left;
-    node_base_ptr cur_node = left->right;
+    node_ptr prev_node = left;
+    node_ptr cur_node = left->right;
     cur_node->left = prev_node;
 
     for (++itr; itr != itr_end; ++itr)
@@ -770,8 +773,8 @@ void segment_tree<_Key, _Data>::dump_tree() const
         assert(!"attempted to dump an invalid tree!");
 
     cout << "dump tree ------------------------------------------------------" << endl;
-    size_t node_count = ::mdds::dump_tree<node_base_ptr, node>(get_node(m_root_node));
-    size_t node_instance_count = node_base::get_instance_count();
+    size_t node_count = ::mdds::dump_tree<node_ptr, node>(get_node(m_root_node));
+    size_t node_instance_count = node_base<node_ptr, node>::get_instance_count();
 
     cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
 }
@@ -790,7 +793,7 @@ void segment_tree<_Key, _Data>::dump_leaf_nodes() const
         print_leaf_value(p->value_leaf);
         p = get_node(p->right);
     }
-    cout << "  node instance count = " << node_base::get_instance_count() << endl;
+    cout << "  node instance count = " << node_base<node_ptr, node>::get_instance_count() << endl;
 }
 
 template<typename _Key, typename _Data>

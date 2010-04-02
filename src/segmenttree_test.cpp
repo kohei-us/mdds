@@ -206,7 +206,7 @@ void st_test_insert_search_removal()
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
     build_and_dump(db);
-    assert(node_base::get_instance_count() == 0);
+    assert(db_type::node::get_instance_count() == 0);
 
     db.insert(0, 10, &A);
     build_and_dump(db);
@@ -214,7 +214,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 10};
         data_type* data_chain[] = {&A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(node_base::get_instance_count() == 3);
+        assert(db_type::node::get_instance_count() == 3);
         assert(db.verify_node_lists());
     }
 
@@ -224,7 +224,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 5, 10};
         data_type* data_chain[] = {&A, &B, 0, &A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(node_base::get_instance_count() == 6);
+        assert(db_type::node::get_instance_count() == 6);
     }
 
     db.insert(5, 12, &C);
@@ -233,7 +233,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 5, 10, 12};
         data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(node_base::get_instance_count() == 7);
+        assert(db_type::node::get_instance_count() == 7);
         assert(db.verify_node_lists());
     }
 
@@ -243,7 +243,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 5, 10, 12, 24};
         data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, &D, 0, &D, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(node_base::get_instance_count() == 11);
+        assert(db_type::node::get_instance_count() == 11);
         assert(db.verify_node_lists());
     }
 
@@ -253,7 +253,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 4, 5, 10, 12, 24};
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(node_base::get_instance_count() == 12);
+        assert(db_type::node::get_instance_count() == 12);
         assert(db.verify_node_lists());
     }
 
@@ -263,7 +263,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, &F, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(node_base::get_instance_count() == 14);
+        assert(db_type::node::get_instance_count() == 14);
         assert(db.verify_node_lists());
     }
 
@@ -273,7 +273,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &G, 0, &F, &G, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(node_base::get_instance_count() == 14);
+        assert(db_type::node::get_instance_count() == 14);
         assert(db.verify_node_lists());
     }
 
@@ -782,7 +782,8 @@ int main(int argc, char** argv)
 
     // At this point, all of the nodes created during the test run should have
     // been destroyed.  If not, we are leaking memory.
-    assert(node_base::get_instance_count() == 0);
+    typedef segment_tree<uint32_t, void> db_type;
+    assert(db_type::node::get_instance_count() == 0);
 
     fprintf(stdout, "Test finished successfully!\n");
     return EXIT_SUCCESS;
