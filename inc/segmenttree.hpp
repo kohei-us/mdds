@@ -140,7 +140,7 @@ public:
             return true;
         }
 
-        virtual void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
+        void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -429,7 +429,7 @@ void segment_tree<_Key, _Data>::build_tree()
 {
     build_leaf_nodes();
     clear_tree(get_node(m_root_node));
-    m_root_node = ::mdds::build_tree(m_left_leaf);
+    m_root_node = ::mdds::build_tree<node_base_ptr, node>(m_left_leaf);
     
     // Start "inserting" all segments from the root.
     typename segment_map_type::const_iterator itr, 

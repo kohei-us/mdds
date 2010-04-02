@@ -110,7 +110,6 @@ struct node_base
 
     // These methods are specific to concrete class implementation.
 
-    virtual void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node) = 0;
     virtual node_base* create_new(bool leaf) const = 0;
     virtual node_base* clone() const = 0;
 #if UNIT_TEST
@@ -191,7 +190,7 @@ void clear_tree(_NodePtr node)
     disconnect_node(node);
 }
 
-template<typename _NodePtr>
+template<typename _NodePtr, typename _NodeType>
 _NodePtr make_parent_node(const _NodePtr& node1, const _NodePtr& node2)
 {
     _NodePtr parent_node(node1->create_new(false));
@@ -203,38 +202,11 @@ _NodePtr make_parent_node(const _NodePtr& node1, const _NodePtr& node2)
         parent_node->right = node2;
     }
 
-    parent_node->fill_nonleaf_value(node1, node2);
+    static_cast<_NodeType*>(parent_node.get())->fill_nonleaf_value(node1, node2);
     return parent_node;
 }
 
-template<typename _NodePtr>
-_NodePtr build_tree(const _NodePtr& left_leaf_node)
-{
-    if (!left_leaf_node)
-        // The left leaf node is empty.  Nothing to build.
-        return _NodePtr();
-
-    _NodePtr node1, node2;
-    node1 = left_leaf_node;
-
-    ::std::list<_NodePtr> node_list;
-    while (true)
-    {
-        node2 = node1->right;
-        _NodePtr parent_node = make_parent_node(node1, node2);
-        node_list.push_back(parent_node);
-        
-        if (!node2 || !node2->right)
-            // no more nodes.  Break out of the loop.
-            break;
-
-        node1 = node2->right;
-    }
-
-    return build_tree_non_leaf(node_list);
-}
-
-template<typename _NodePtr>
+template<typename _NodePtr, typename _NodeType>
 _NodePtr build_tree_non_leaf(const ::std::list<_NodePtr>& node_list)
 {
     size_t node_count = node_list.size();
@@ -254,7 +226,7 @@ _NodePtr build_tree_non_leaf(const ::std::list<_NodePtr>& node_list)
         node_pair[even_itr] = *itr;
         if (even_itr)
         {
-            _NodePtr parent_node = make_parent_node(node_pair[0], node_pair[1]);
+            _NodePtr parent_node = make_parent_node<_NodePtr, _NodeType>(node_pair[0], node_pair[1]);
             node_pair[0].reset();
             node_pair[1].reset();
             new_node_list.push_back(parent_node);
@@ -264,14 +236,41 @@ _NodePtr build_tree_non_leaf(const ::std::list<_NodePtr>& node_list)
     if (node_pair[0])
     {
         // Un-paired node still needs a parent...
-        _NodePtr parent_node = make_parent_node(node_pair[0], _NodePtr());
+        _NodePtr parent_node = make_parent_node<_NodePtr, _NodeType>(node_pair[0], _NodePtr());
         node_pair[0].reset();
         node_pair[1].reset();
         new_node_list.push_back(parent_node);
     }
 
     // Move up one level, and do the same procedure until the root node is reached.
-    return build_tree_non_leaf(new_node_list);
+    return build_tree_non_leaf<_NodePtr, _NodeType>(new_node_list);
+}
+
+template<typename _NodePtr, typename _NodeType>
+_NodePtr build_tree(const _NodePtr& left_leaf_node)
+{
+    if (!left_leaf_node)
+        // The left leaf node is empty.  Nothing to build.
+        return _NodePtr();
+
+    _NodePtr node1, node2;
+    node1 = left_leaf_node;
+
+    ::std::list<_NodePtr> node_list;
+    while (true)
+    {
+        node2 = node1->right;
+        _NodePtr parent_node = make_parent_node<_NodePtr, _NodeType>(node1, node2);
+        node_list.push_back(parent_node);
+        
+        if (!node2 || !node2->right)
+            // no more nodes.  Break out of the loop.
+            break;
+
+        node1 = node2->right;
+    }
+
+    return build_tree_non_leaf<_NodePtr, _NodeType>(node_list);
 }
 
 #ifdef UNIT_TEST
