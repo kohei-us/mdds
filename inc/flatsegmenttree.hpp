@@ -412,7 +412,7 @@ public:
         if (!m_valid_tree)
             assert(!"attempted to dump an invalid tree!");
 
-        size_t node_count = ::mdds::dump_tree<node_ptr, node>(m_root_node);
+        size_t node_count = ::mdds::dump_tree(m_root_node);
         size_t node_instance_count = node_base<node_ptr, node>::get_instance_count();
 
         cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
