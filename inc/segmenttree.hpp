@@ -174,7 +174,7 @@ public:
         }
 
 #ifdef UNIT_TEST
-        virtual void dump_value() const
+        void dump_value() const
         {
             ::std::cout << print();
         }

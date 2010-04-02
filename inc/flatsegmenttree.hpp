@@ -149,7 +149,7 @@ public:
         }
 
 #ifdef UNIT_TEST
-        virtual void dump_value() const
+        void dump_value() const
         {
             using ::std::cout;
             if (this->is_leaf)
