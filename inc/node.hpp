@@ -110,8 +110,6 @@ struct node_base
 
     // These methods are specific to concrete class implementation.
 
-    virtual node_base* create_new(bool leaf) const = 0;
-    virtual node_base* clone() const = 0;
 #if UNIT_TEST
     virtual void dump_value() const = 0;
 #endif
@@ -193,7 +191,7 @@ void clear_tree(_NodePtr node)
 template<typename _NodePtr, typename _NodeType>
 _NodePtr make_parent_node(const _NodePtr& node1, const _NodePtr& node2)
 {
-    _NodePtr parent_node(node1->create_new(false));
+    _NodePtr parent_node(static_cast<_NodeType*>(node1.get())->create_new(false));
     node1->parent = parent_node;
     parent_node->left = node1;
     if (node2)

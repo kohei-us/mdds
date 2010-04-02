@@ -145,7 +145,7 @@ public:
                 value_nonleaf.high = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.high;
         }
 
-        virtual node_base* create_new(bool leaf) const
+        virtual node* create_new(bool leaf) const
         {
             return new node(leaf);
         }
