@@ -20,15 +20,18 @@ OBJFILES= \
 	$(OBJDIR)/flatsegmenttree_test.o \
 	$(OBJDIR)/segmenttree_test.o
 
+DEPENDS= \
+	$(HEADERS)
+
 all: $(EXECS)
 
 pre:
 	mkdir $(OBJDIR) 2>/dev/null || /bin/true
 
-$(OBJDIR)/flatsegmenttree_test.o: $(SRCDIR)/flatsegmenttree_test.cpp $(HEADERS)
+$(OBJDIR)/flatsegmenttree_test.o: $(SRCDIR)/flatsegmenttree_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/flatsegmenttree_test.cpp
 
-$(OBJDIR)/segmenttree_test.o: $(SRCDIR)/segmenttree_test.cpp  $(HEADERS)
+$(OBJDIR)/segmenttree_test.o: $(SRCDIR)/segmenttree_test.cpp  $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/segmenttree_test.cpp
 
 flatsegmenttree-test: pre $(OBJDIR)/flatsegmenttree_test.o
