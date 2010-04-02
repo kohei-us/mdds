@@ -307,9 +307,9 @@ size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int leve
 
         if (p->left)
         {
-            newList.push_back(p->left);
+            newList.push_back(static_cast<_NodePtr>(p->left.get()));
             if (p->right)
-                newList.push_back(p->right);
+                newList.push_back(static_cast<_NodePtr>(p->right.get()));
         }
     }
     cout << endl;
