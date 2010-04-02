@@ -137,7 +137,7 @@ void disconnect_leaf_nodes(_NodePtr left_node, _NodePtr right_node)
     _NodePtr cur_node = left_node;
     do
     {
-        _NodePtr next_node = static_cast<_NodePtr>(cur_node->right.get());
+        _NodePtr next_node = cur_node->right.get();
         disconnect_node(cur_node);
         cur_node = next_node;
     }
@@ -187,7 +187,7 @@ _NodePtr make_parent_node(const _NodePtr& node1, const _NodePtr& node2)
         parent_node->right = node2;
     }
 
-    static_cast<_NodeType*>(parent_node.get())->fill_nonleaf_value(node1, node2);
+    parent_node->fill_nonleaf_value(node1, node2);
     return parent_node;
 }
 
@@ -284,16 +284,16 @@ size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int leve
             continue;
         }
 
-        static_cast<_NodeType*>(p.get())->dump_value();
+        p->dump_value();
 
         if (p->is_leaf)
             continue;
 
         if (p->left)
         {
-            newList.push_back(static_cast<_NodePtr>(p->left.get()));
+            newList.push_back(p->left.get());
             if (p->right)
-                newList.push_back(static_cast<_NodePtr>(p->right.get()));
+                newList.push_back(p->right.get());
         }
     }
     cout << endl;
