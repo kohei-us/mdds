@@ -351,19 +351,24 @@ public:
      * segment) to left.  Note that the start and end positions of the segment 
      * being removed <b>must</b> be within the base segment span.
      *
-     * @param start start position of the segment being removed.
-     * @param end end position of the segment being removed. 
+     * @param start_key start position of the segment being removed.
+     * @param end_key end position of the segment being removed. 
      */
-    void shift_segment_left(key_type start_key, key_type end_key);
+    void shift_left(key_type start_key, key_type end_key);
 
     /** 
      * Shift all segments that occur at or after the specified start position 
      * to right by the size specified.
      *
      * @param pos position where the right-shift occurs.
-     * @param size amount of shift (must be greater than 0)
+     * @param size amount of shift (must be greater than 0) 
+     * @param skip_start_node if true, and the specified position is at an 
+     *                        existing node position, that node will
+     *                        <i>not</i> be shifted.  This argument has no
+     *                        effect if the position specified does not
+     *                        coincide with any of the existing nodes.
      */
-    void shift_segment_right(key_type pos, key_type size, bool skip_start_node);
+    void shift_right(key_type pos, key_type size, bool skip_start_node);
 
     bool search(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
@@ -792,7 +797,7 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
 }
 
 template<typename _Key, typename _Value>
-void flat_segment_tree<_Key, _Value>::shift_segment_left(key_type start_key, key_type end_key)
+void flat_segment_tree<_Key, _Value>::shift_left(key_type start_key, key_type end_key)
 {
     if (start_key >= end_key)
         return;
@@ -886,7 +891,7 @@ void flat_segment_tree<_Key, _Value>::shift_segment_left(key_type start_key, key
 }
 
 template<typename _Key, typename _Value>
-void flat_segment_tree<_Key, _Value>::shift_segment_right(key_type pos, key_type size, bool skip_start_node)
+void flat_segment_tree<_Key, _Value>::shift_right(key_type pos, key_type size, bool skip_start_node)
 {
     if (size <= 0)
         return;

@@ -669,23 +669,23 @@ void fst_test_shift_segment_left()
 
     // invalid segment ranges -- these should not modify the state of the 
     // tree, hence the tree should remain valid.
-    db.shift_segment_left(5, 0);
+    db.shift_left(5, 0);
     assert(db.is_tree_valid());
 
-    db.shift_segment_left(95, 120);
+    db.shift_left(95, 120);
     assert(db.is_tree_valid());
 
-    db.shift_segment_left(105, 120);
+    db.shift_left(105, 120);
     assert(db.is_tree_valid());
 
-    db.shift_segment_left(-10, -5);
+    db.shift_left(-10, -5);
     assert(db.is_tree_valid());
 
-    db.shift_segment_left(-10, 5);
+    db.shift_left(-10, 5);
     assert(db.is_tree_valid());
 
     // shift without removing nodes (including the lower bound).
-    db.shift_segment_left(0, 5);
+    db.shift_left(0, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -702,7 +702,7 @@ void fst_test_shift_segment_left()
     }
 
     // shift without removing nodes (not including the lower bound).
-    db.shift_segment_left(1, 6);
+    db.shift_left(1, 6);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -720,7 +720,7 @@ void fst_test_shift_segment_left()
 
     // shift without removing nodes (the upper bound of the removed segment 
     // coincides with a node).
-    db.shift_segment_left(5, 10);
+    db.shift_left(5, 10);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -737,7 +737,7 @@ void fst_test_shift_segment_left()
     }
 
     // shift with one overlapping node.
-    db.shift_segment_left(1, 11);
+    db.shift_left(1, 11);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -747,7 +747,7 @@ void fst_test_shift_segment_left()
     }
 
     // shift with two overlapping nodes.
-    db.shift_segment_left(2, 30);
+    db.shift_left(2, 30);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -757,7 +757,7 @@ void fst_test_shift_segment_left()
     }
 
     // shift with both ends at existing nodes, but no nodes in between.
-    db.shift_segment_left(0, 1);
+    db.shift_left(0, 1);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -769,7 +769,7 @@ void fst_test_shift_segment_left()
     // shift with both ends at existing nodes, no nodes in between, and
     // removing the segment results in two consecutive segments with identical
     // value.  The segments should get combined into one.
-    db.shift_segment_left(16, 26);
+    db.shift_left(16, 26);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -791,7 +791,7 @@ void fst_test_shift_segment_left()
 
     // same test as the previous one, but the value of the combined segment 
     // differs from the value of the rightmost leaf node.
-    db.shift_segment_left(20, 30);
+    db.shift_left(20, 30);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -801,7 +801,7 @@ void fst_test_shift_segment_left()
     }
 
     // remove all.
-    db.shift_segment_left(0, 100);
+    db.shift_left(0, 100);
     assert(!db.is_tree_valid());
     build_and_dump(db);
 }
@@ -813,7 +813,7 @@ void fst_test_shift_segment_left_right_edge()
     build_and_dump(db);
 
     // This should not change the tree state.
-    db.shift_segment_left(2, 100);
+    db.shift_left(2, 100);
     build_and_dump(db);
     {
         int  keys[] = {0, 100};
@@ -830,7 +830,7 @@ void fst_test_shift_segment_left_right_edge()
     }
 
     // This should insert a new segment at the end with the initial base value.
-    db.shift_segment_left(80, 100);
+    db.shift_left(80, 100);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -841,7 +841,7 @@ void fst_test_shift_segment_left_right_edge()
 
     // This should not modify the tree since the removed segment already has 
     // the initial base value.
-    db.shift_segment_left(85, 100);
+    db.shift_left(85, 100);
     assert(db.is_tree_valid()); // tree must still be valid.
     build_and_dump(db);
     {
@@ -860,7 +860,7 @@ void fst_test_shift_segment_left_right_edge()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    db.shift_segment_left(90, 95);
+    db.shift_left(90, 95);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -883,7 +883,7 @@ void fst_test_shift_segment_left_append_new_segment()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    db.shift_segment_left(10, 20);
+    db.shift_left(10, 20);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -905,7 +905,7 @@ void fst_test_shift_segment_left_append_new_segment()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    db.shift_segment_left(0, 70);
+    db.shift_left(0, 70);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -935,7 +935,7 @@ void fst_test_shift_segment_right_init0()
     // shifting position is at the lower bound.  The leftmost segment has a 
     // non-zero value which needs to be preserved after the shift by adding a
     // new node.
-    db.shift_segment_right(0, 5, false);
+    db.shift_right(0, 5, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -947,7 +947,7 @@ void fst_test_shift_segment_right_init0()
     // shifting position is at the lower bound, and after the shift, the upper 
     // bound of the last non-zero segment (10) becomes the upper bound of the
     // global range.
-    db.shift_segment_right(0, 5, false);
+    db.shift_right(0, 5, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -957,7 +957,7 @@ void fst_test_shift_segment_right_init0()
     }
 
     // Shift by some odd number.
-    db.shift_segment_right(0, 49, false);
+    db.shift_right(0, 49, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -968,7 +968,7 @@ void fst_test_shift_segment_right_init0()
 
     // Shift so that the 2nd node from the right-most node becomes the new 
     // right-most node.
-    db.shift_segment_right(0, 11, false);
+    db.shift_right(0, 11, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -978,7 +978,7 @@ void fst_test_shift_segment_right_init0()
     }
 
     // This should remove all segments.
-    db.shift_segment_right(0, 30, false);
+    db.shift_right(0, 30, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1000,7 +1000,7 @@ void fst_test_shift_segment_right_init0()
 
     // Inserting at a non-node position.  This should simply extend that 
     // segment and shift all the others.
-    db.shift_segment_right(6, 20, false);
+    db.shift_right(6, 20, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1010,7 +1010,7 @@ void fst_test_shift_segment_right_init0()
     }
 
     // Inserting at a node position.
-    db.shift_segment_right(5, 20, false);
+    db.shift_right(5, 20, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1020,7 +1020,7 @@ void fst_test_shift_segment_right_init0()
     }
 
     // Inserting at a non-node position, pushing a node out-of-bound.
-    db.shift_segment_right(65, 40, false);
+    db.shift_right(65, 40, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1030,7 +1030,7 @@ void fst_test_shift_segment_right_init0()
     }
 
     // Inserting at a node position, pushing a node out-of-bound.
-    db.shift_segment_right(50, 40, false);
+    db.shift_right(50, 40, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1056,7 +1056,7 @@ void fst_test_shift_segment_right_init999()
     }
 
     // This should only extend the first segment.
-    db.shift_segment_right(1, 10, false);
+    db.shift_right(1, 10, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1067,7 +1067,7 @@ void fst_test_shift_segment_right_init999()
 
     // Inserting at the leftmost node position should create a new segment 
     // with a default value of 999.
-    db.shift_segment_right(0, 10, false);
+    db.shift_right(0, 10, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1077,13 +1077,13 @@ void fst_test_shift_segment_right_init999()
     }
 
     // Invalid shifts -- these should not invalidate the tree.
-    db.shift_segment_right(-10, 10, false);
+    db.shift_right(-10, 10, false);
     assert(db.is_tree_valid());
 
-    db.shift_segment_right(100, 10, false);
+    db.shift_right(100, 10, false);
     assert(db.is_tree_valid());
 
-    db.shift_segment_right(0, 0, false);
+    db.shift_right(0, 0, false);
     assert(db.is_tree_valid());
 }
 
@@ -1099,7 +1099,7 @@ void fst_test_shift_segment_right_bool()
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.shift_segment_right(1, 1, false);
+    db.shift_right(1, 1, false);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1123,7 +1123,7 @@ void fst_test_shift_segment_right_skip_start_node()
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.shift_segment_right(3, 2, true);
+    db.shift_right(3, 2, true);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
