@@ -770,7 +770,7 @@ void segment_tree<_Key, _Data>::dump_tree() const
         assert(!"attempted to dump an invalid tree!");
 
     cout << "dump tree ------------------------------------------------------" << endl;
-    size_t node_count = ::mdds::dump_tree(get_node(m_root_node));
+    size_t node_count = ::mdds::dump_tree<node_base_ptr, node>(get_node(m_root_node));
     size_t node_instance_count = node_base::get_instance_count();
 
     cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;

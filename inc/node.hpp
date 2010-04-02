@@ -272,7 +272,7 @@ _NodePtr build_tree(const _NodePtr& left_leaf_node)
 }
 
 #ifdef UNIT_TEST
-template<typename _NodePtr>
+template<typename _NodePtr, typename _NodeType>
 size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int level)
 {
     using ::std::cout;
@@ -312,12 +312,12 @@ size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int leve
     cout << endl;
 
     if (!newList.empty())
-        node_count += dump_tree_layer(newList, level+1);
+        node_count += dump_tree_layer<_NodePtr, _NodeType>(newList, level+1);
 
     return node_count;
 }
 
-template<typename _NodePtr>
+template<typename _NodePtr, typename _NodeType>
 size_t dump_tree(_NodePtr root_node)
 {
     if (!root_node)
@@ -325,7 +325,7 @@ size_t dump_tree(_NodePtr root_node)
 
     ::std::list<_NodePtr> node_list;
     node_list.push_back(root_node);
-    return dump_tree_layer(node_list, 0);
+    return dump_tree_layer<_NodePtr, _NodeType>(node_list, 0);
 }
 #endif
 

@@ -150,7 +150,7 @@ public:
             return new node(leaf);
         }
 
-        virtual node_base* clone() const
+        virtual node* clone() const
         {
             return new node(*this);
         }
@@ -424,7 +424,7 @@ public:
         if (!m_valid_tree)
             assert(!"attempted to dump an invalid tree!");
 
-        size_t node_count = ::mdds::dump_tree(m_root_node);
+        size_t node_count = ::mdds::dump_tree<node_base_ptr, node>(m_root_node);
         size_t node_instance_count = node_base::get_instance_count();
 
         cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
@@ -638,7 +638,7 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key,
     node_base_ptr dest_node = m_left_leaf;
     while (true)
     {
-        dest_node->right.reset(src_node->right->clone());
+        dest_node->right.reset(get_node(src_node->right)->clone());
 
         // Move on to the next source node.
         src_node = src_node->right.get();
