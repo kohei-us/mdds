@@ -32,28 +32,20 @@
 #include <list>
 #include <cassert>
 
-#define USE_INTRUSIVE_PTR 1
-
-#if USE_INTRUSIVE_PTR
 #include <boost/intrusive_ptr.hpp>
-#else
-#include <boost/shared_ptr.hpp>
-#endif
 
 namespace mdds {
 
 struct intrusive_ref_base
 {
-#if USE_INTRUSIVE_PTR
     size_t _refcount;
 
     intrusive_ref_base() :
         _refcount(0) {}
-#endif
+
     virtual ~intrusive_ref_base() {}
 };
 
-#if USE_INTRUSIVE_PTR
 inline void intrusive_ptr_add_ref(intrusive_ref_base* p)
 {
     ++p->_refcount;
@@ -65,18 +57,13 @@ inline void intrusive_ptr_release(intrusive_ref_base* p)
     if (!p->_refcount)
         delete p;
 }
-#endif
 
 #ifdef DEBUG_NODE_BASE
 size_t node_instance_count = 0;
 #endif
 
 struct node_base;
-#if USE_INTRUSIVE_PTR
 typedef ::boost::intrusive_ptr<node_base> node_base_ptr;
-#else
-typedef ::boost::shared_ptr<node_base> node_base_ptr;
-#endif
 
 struct node_base : public intrusive_ref_base
 {
