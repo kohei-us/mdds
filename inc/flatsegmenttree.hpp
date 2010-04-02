@@ -90,7 +90,7 @@ public:
             }
         }
 
-        virtual ~node()
+        void dispose()
         {
         }
 

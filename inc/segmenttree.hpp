@@ -127,7 +127,7 @@ public:
         {
         }
 
-        virtual ~node()
+        void dispose()
         {
             if (this->is_leaf)
                 delete value_leaf.data_chain;

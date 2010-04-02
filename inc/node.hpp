@@ -93,11 +93,12 @@ struct node_base
         return *this;
     }
 
-    virtual ~node_base()
+    ~node_base()
     {
 #ifdef DEBUG_NODE_BASE
         --node_instance_count;
 #endif
+        static_cast<_NodeType*>(this)->dispose();
     }
 };
 
