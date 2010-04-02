@@ -479,17 +479,15 @@ void st_test_copy_constructor()
 
     db_type db;
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
-    db_type::segment_data segments[] = {
-        { 0, 10, &A},
-        { 0,  5, &B},
-        { 5, 12, &C},
-        {10, 24, &D},
-        { 4, 24, &E},
-        { 0, 26, &F},
-        {12, 26, &G},
-
-        {0, 0, NULL} // null terminated
-    };
+    vector<db_type::segment_data> segments;
+    segments.push_back(db_type::segment_data( 0, 10, &A));
+    segments.push_back(db_type::segment_data( 0,  5, &B));
+    segments.push_back(db_type::segment_data( 5, 12, &C));
+    segments.push_back(db_type::segment_data(10, 24, &D));
+    segments.push_back(db_type::segment_data( 4, 24, &E));
+    segments.push_back(db_type::segment_data( 0, 26, &F));
+    segments.push_back(db_type::segment_data(12, 26, &G));
+    segments.push_back(db_type::segment_data(0, 0, NULL)); // null-terminated
 
     db_type::segment_map_type checks;
     for (size_t i = 0; segments[i].pdata; ++i)
@@ -562,17 +560,15 @@ void st_test_clear()
 
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
-    db_type::segment_data segments[] = {
-        { 0, 10, &A},
-        { 0,  5, &B},
-        { 5, 12, &C},
-        {10, 24, &D},
-        { 4, 24, &E},
-        { 0, 26, &F},
-        {12, 26, &G},
-
-        {0, 0, NULL} // null terminated
-    };
+    vector<db_type::segment_data> segments;
+    segments.push_back(db_type::segment_data( 0, 10, &A));
+    segments.push_back(db_type::segment_data( 0,  5, &B));
+    segments.push_back(db_type::segment_data( 5, 12, &C));
+    segments.push_back(db_type::segment_data(10, 24, &D));
+    segments.push_back(db_type::segment_data( 4, 24, &E));
+    segments.push_back(db_type::segment_data( 0, 26, &F));
+    segments.push_back(db_type::segment_data(12, 26, &G));
+    segments.push_back(db_type::segment_data(0, 0, NULL)); // null-terminated
 
     db_type db;
     for (size_t i = 0; segments[i].pdata; ++i)
