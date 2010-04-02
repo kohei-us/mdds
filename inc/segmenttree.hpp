@@ -428,7 +428,7 @@ template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::build_tree()
 {
     build_leaf_nodes();
-    clear_tree(m_root_node.get());
+    clear_tree(get_node(m_root_node));
     m_root_node = ::mdds::build_tree(m_left_leaf);
     
     // Start "inserting" all segments from the root.
@@ -511,7 +511,7 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
 {
     using namespace std;
 
-    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    disconnect_leaf_nodes(get_node(m_left_leaf), get_node(m_right_leaf));
 
     // In 1st pass, collect unique end-point values and sort them.
     vector<key_type> keys_uniq;
@@ -679,9 +679,9 @@ void segment_tree<_Key, _Data>::remove_data_from_chain(data_chain_type& chain, c
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::clear_all_nodes()
 {
-    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
-    clear_tree(m_root_node.get());
-    disconnect_node(m_root_node.get());
+    disconnect_leaf_nodes(get_node(m_left_leaf), get_node(m_right_leaf));
+    clear_tree(get_node(m_root_node));
+    disconnect_node(get_node(m_root_node));
     m_left_leaf.reset();
     m_right_leaf.reset();
     m_root_node.reset();

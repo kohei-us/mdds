@@ -118,12 +118,14 @@ struct node_base
 #endif
 };
 
-inline void intrusive_ptr_add_ref(node_base* p)
+template<typename _NodePtr>
+inline void intrusive_ptr_add_ref(_NodePtr p)
 {
     ++p->refcount;
 }
 
-inline void intrusive_ptr_release(node_base* p)
+template<typename _NodePtr>
+inline void intrusive_ptr_release(_NodePtr p)
 {
     --p->refcount;
     if (!p->refcount)
@@ -151,7 +153,7 @@ void disconnect_leaf_nodes(_NodePtr left_node, _NodePtr right_node)
     _NodePtr cur_node = left_node;
     do
     {
-        _NodePtr next_node = cur_node->right.get();
+        _NodePtr next_node = static_cast<_NodePtr>(cur_node->right.get());
         disconnect_node(cur_node);
         cur_node = next_node;
     }
@@ -159,7 +161,6 @@ void disconnect_leaf_nodes(_NodePtr left_node, _NodePtr right_node)
 
     disconnect_node(right_node);
 }
-
 
 template<typename _NodePtr>
 void link_nodes(_NodePtr& left, _NodePtr& right)
@@ -320,7 +321,7 @@ size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int leve
 }
 
 template<typename _NodePtr>
-size_t dump_tree(const _NodePtr& root_node)
+size_t dump_tree(_NodePtr root_node)
 {
     if (!root_node)
         return 0;
