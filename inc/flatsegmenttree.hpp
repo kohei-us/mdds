@@ -340,17 +340,17 @@ public:
      *            not inclusive.
      * @param val value associated with this segment.
      */
-    void insert_segment(key_type start_key, key_type end_key, value_type val)
+    void insert_front(key_type start_key, key_type end_key, value_type val)
     {
         insert_segment_impl(start_key, end_key, val, true);
     }
 
     /** 
-     * Insert a new segment into the tree.  Unlike <code>insert_segment</code>,
-     * this method searches for the point of insertion from the last leaf 
-     * node toward the first.
+     * Insert a new segment into the tree.  Unlike 
+     * the <code>insert_front</code>, this method searches for the point of 
+     * insertion from the last leaf node toward the first. 
      */
-    void insert_segment_back(key_type start_key, key_type end_key, value_type val)
+    void insert_back(key_type start_key, key_type end_key, value_type val)
     {
         insert_segment_impl(start_key, end_key, val, false);
     }

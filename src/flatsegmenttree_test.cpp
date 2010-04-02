@@ -220,7 +220,7 @@ void testSegmentTree1()
     {
         cout << "inserting segment into tree: " << points[i].low << " - " << points[i].high << " ("
              << points[i].name->what() << ")" << endl;
-        db.insert_segment(points[i].low, points[i].high, points[i].name);
+        db.insert_front(points[i].low, points[i].high, points[i].name);
     }
 
     db.build();
@@ -252,7 +252,7 @@ void fst_test_leaf_search()
         {
             int start = i*5;
             int end = start + 5;
-            int_ranges.insert_segment(start, end, i);
+            int_ranges.insert_front(start, end, i);
         }
         int_ranges.dump_leaf_nodes();
     }
@@ -260,15 +260,15 @@ void fst_test_leaf_search()
     {
         printTitle("Merge test 1");
         flat_segment_tree<int, int> merge_test(0, 100, -1);
-        merge_test.insert_segment(10, 20, 5);
+        merge_test.insert_front(10, 20, 5);
         merge_test.dump_leaf_nodes();
-        merge_test.insert_segment(15, 30, 5);
+        merge_test.insert_front(15, 30, 5);
         merge_test.dump_leaf_nodes();
-        merge_test.insert_segment(30, 50, 5);
+        merge_test.insert_front(30, 50, 5);
         merge_test.dump_leaf_nodes();
-        merge_test.insert_segment(8, 11, 5);
+        merge_test.insert_front(8, 11, 5);
         merge_test.dump_leaf_nodes();
-        merge_test.insert_segment(5, 8, 5);
+        merge_test.insert_front(5, 8, 5);
         merge_test.dump_leaf_nodes();
     }
 
@@ -277,25 +277,25 @@ void fst_test_leaf_search()
         flat_segment_tree<int, int> merge_test(0, 100, -1);
 
         // This should not change the node configuration.
-        merge_test.insert_segment(10, 90, -1);
+        merge_test.insert_front(10, 90, -1);
         merge_test.dump_leaf_nodes();
 
         for (int i = 10; i <= 80; i += 10)
-            merge_test.insert_segment(i, i+10, i);
+            merge_test.insert_front(i, i+10, i);
         merge_test.dump_leaf_nodes();
-        merge_test.insert_segment(10, 90, -1);
-        merge_test.dump_leaf_nodes();
-
-        for (int i = 10; i <= 80; i += 10)
-            merge_test.insert_segment(i, i+10, i);
-        merge_test.dump_leaf_nodes();
-        merge_test.insert_segment(8, 92, -1);
+        merge_test.insert_front(10, 90, -1);
         merge_test.dump_leaf_nodes();
 
         for (int i = 10; i <= 80; i += 10)
-            merge_test.insert_segment(i, i+10, i);
+            merge_test.insert_front(i, i+10, i);
         merge_test.dump_leaf_nodes();
-        merge_test.insert_segment(12, 88, 25);
+        merge_test.insert_front(8, 92, -1);
+        merge_test.dump_leaf_nodes();
+
+        for (int i = 10; i <= 80; i += 10)
+            merge_test.insert_front(i, i+10, i);
+        merge_test.dump_leaf_nodes();
+        merge_test.insert_front(12, 88, 25);
         merge_test.dump_leaf_nodes();
     }
 
@@ -306,7 +306,7 @@ void fst_test_leaf_search()
         {
             int key = i*10;
             int val = i*5;
-            db.insert_segment(key, key+10, val);
+            db.insert_front(key, key+10, val);
         }
         db.dump_leaf_nodes();
         for (int i = 0; i <= 100; ++i)
@@ -340,7 +340,7 @@ void fst_test_tree_build()
         {
             StackPrinter __stack_printer__("::fst_test_tree_build insertion");
             for (int i = lower; i < upper; i+=delta)
-                db.insert_segment(i, i+delta, i*2);
+                db.insert_front(i, i+delta, i*2);
         }
         db.dump_leaf_nodes();
     
@@ -364,7 +364,7 @@ void fst_perf_test_search(bool tree_search)
     int lower = 0, upper = 50000;
     flat_segment_tree<int, int> db(lower, upper, 0);
     for (int i = upper-1; i >= lower; --i)
-        db.insert_segment(i, i+1, i);
+        db.insert_front(i, i+1, i);
 
     int success = 0, failure = 0;
     if (tree_search)
@@ -412,7 +412,7 @@ void fst_test_tree_search()
     int lower = 0, upper = 200, delta = 5;
     flat_segment_tree<int, int> db(lower, upper, 0);
     for (int i = lower; i < upper; i += delta)
-        db.insert_segment(i, i+delta, i);
+        db.insert_front(i, i+delta, i);
 
     db.build_tree();
     db.dump_tree();
@@ -604,7 +604,7 @@ void fst_test_insert_search_mix()
     test_single_tree_search(db, 0, 0, 0, 100);
     test_single_tree_search(db, 99, 0, 0, 100);
 
-    db.insert_segment(0, 10, 1);
+    db.insert_front(0, 10, 1);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == 6);
@@ -614,7 +614,7 @@ void fst_test_insert_search_mix()
     test_single_tree_search(db, 9, 1, 0, 10);
     test_single_tree_search(db, 10, 0, 10, 100);
 
-    db.insert_segment(0, 100, 0);
+    db.insert_front(0, 100, 0);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == 3);
@@ -622,8 +622,8 @@ void fst_test_insert_search_mix()
     test_single_tree_search(db, 0, 0, 0, 100);
     test_single_tree_search(db, 99, 0, 0, 100);
 
-    db.insert_segment(10, 20, 5);
-    db.insert_segment(30, 40, 5);
+    db.insert_front(10, 20, 5);
+    db.insert_front(30, 40, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == 12);
@@ -633,7 +633,7 @@ void fst_test_insert_search_mix()
     test_single_tree_search(db, 30, 5, 30, 40);
     test_single_tree_search(db, 40, 0, 40, 100);
 
-    db.insert_segment(18, 22, 6);
+    db.insert_front(18, 22, 6);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == 14);
@@ -642,14 +642,14 @@ void fst_test_insert_search_mix()
     test_single_tree_search(db, 22, 0, 22, 30);
     test_single_tree_search(db, 30, 5, 30, 40);
 
-    db.insert_segment(19, 30, 5);
+    db.insert_front(19, 30, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == 12);
     assert(db.is_tree_valid());
     test_single_tree_search(db, 19, 5, 19, 40);
 
-    db.insert_segment(-100, 500, 999);
+    db.insert_front(-100, 500, 999);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == 3);
@@ -662,9 +662,9 @@ void fst_test_shift_segment_left()
     StackPrinter __stack_printer__("fst_test_shift_segment_left");
     typedef flat_segment_tree<int, int> db_type;
     db_type db(0, 100, 0);
-    db.insert_segment(20, 40, 5);
-    db.insert_segment(50, 60, 10);
-    db.insert_segment(70, 80, 15);
+    db.insert_front(20, 40, 5);
+    db.insert_front(50, 60, 10);
+    db.insert_front(70, 80, 15);
     build_and_dump(db);
 
     // invalid segment ranges -- these should not modify the state of the 
@@ -779,8 +779,8 @@ void fst_test_shift_segment_left()
     }
 
     // insert two new segments for the next test....
-    db.insert_segment(10, 20, 400);
-    db.insert_segment(30, 40, 400);
+    db.insert_front(10, 20, 400);
+    db.insert_front(30, 40, 400);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -821,7 +821,7 @@ void fst_test_shift_segment_left_right_edge()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    db.insert_segment(20, 100, true);
+    db.insert_front(20, 100, true);
     build_and_dump(db);
     {
         int  keys[] = {    0,   20, 100};
@@ -851,7 +851,7 @@ void fst_test_shift_segment_left_right_edge()
     }
 
     // Insert a new segment at the end with the value 'true' again...
-    db.insert_segment(85, 100, true);
+    db.insert_front(85, 100, true);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -874,7 +874,7 @@ void fst_test_shift_segment_left_append_new_segment()
 {
     StackPrinter __stack_printer__("fst_test_shift_segment_left_append_new_segment");
     flat_segment_tree<int, bool> db(0, 100, false);
-    db.insert_segment(0, 100, true);
+    db.insert_front(0, 100, true);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -892,11 +892,11 @@ void fst_test_shift_segment_left_append_new_segment()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    db.insert_segment(0, 10, true);
-    db.insert_segment(10, 20, false);
-    db.insert_segment(20, 60, true);
-    db.insert_segment(60, 80, false);
-    db.insert_segment(80, 100, true);
+    db.insert_front(0, 10, true);
+    db.insert_front(10, 20, false);
+    db.insert_front(20, 60, true);
+    db.insert_front(60, 80, false);
+    db.insert_front(80, 100, true);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -920,15 +920,15 @@ void fst_test_shift_segment_right_init0()
     StackPrinter __stack_printer__("fst_test_shift_segment_right_init0");
 
     flat_segment_tree<int, int> db(0, 100, 0);
-    db.insert_segment(0,  10,  15);
-    db.insert_segment(10, 20,  1);
-    db.insert_segment(20, 30,  2);
-    db.insert_segment(30, 40,  3);
-    db.insert_segment(40, 50,  4);
-    db.insert_segment(50, 60,  5);
-    db.insert_segment(60, 70,  6);
-    db.insert_segment(70, 80,  7);
-    db.insert_segment(80, 90,  8);
+    db.insert_front(0,  10,  15);
+    db.insert_front(10, 20,  1);
+    db.insert_front(20, 30,  2);
+    db.insert_front(30, 40,  3);
+    db.insert_front(40, 50,  4);
+    db.insert_front(50, 60,  5);
+    db.insert_front(60, 70,  6);
+    db.insert_front(70, 80,  7);
+    db.insert_front(80, 90,  8);
     assert(!db.is_tree_valid());
     build_and_dump(db);
 
@@ -988,8 +988,8 @@ void fst_test_shift_segment_right_init0()
     }
 
     // Insert a few new segments for the next series of tests...
-    db.insert_segment(5, 10, 5);
-    db.insert_segment(20, 30, 5);
+    db.insert_front(5, 10, 5);
+    db.insert_front(20, 30, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1046,7 +1046,7 @@ void fst_test_shift_segment_right_init999()
 
     // Initialize the tree with a default value of 999.
     flat_segment_tree<int, int> db(0, 100, 999);
-    db.insert_segment(0, 10, 0);
+    db.insert_front(0, 10, 0);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1090,7 +1090,7 @@ void fst_test_shift_segment_right_init999()
 void fst_test_shift_segment_right_bool()
 {
     flat_segment_tree<long, bool> db(0, 1048576, false);
-    db.insert_segment(3, 7, true);
+    db.insert_front(3, 7, true);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1114,7 +1114,7 @@ void fst_test_shift_segment_right_skip_start_node()
     StackPrinter __stack_printer__("fst_test_shift_segment_right_skip_start_node");
 
     flat_segment_tree<long, short> db(0, 1048576, 0);
-    db.insert_segment(3, 7, 5);
+    db.insert_front(3, 7, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
@@ -1159,9 +1159,9 @@ void fst_test_const_iterator()
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.insert_segment(10, 20, 10);
-    db.insert_segment(20, 50, 20);
-    db.insert_segment(100, 300, 55);
+    db.insert_front(10, 20, 10);
+    db.insert_front(20, 50, 20);
+    db.insert_front(100, 300, 55);
     build_and_dump(db);
     {
         unsigned int   k[] = {0, 10, 20, 50, 100, 300, 1000};
@@ -1193,7 +1193,7 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
     container_type db_front(start_key, end_key, default_value);
     for (key_type i = start_key; i < end_key - 10; ++i)
     {
-        db_front.insert_segment(i, i+1, val);
+        db_front.insert_front(i, i+1, val);
         if (++val > 10)
             val = 0;
     }
@@ -1203,7 +1203,7 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
     val = 0;
     for (key_type i = start_key; i < end_key - 10; ++i)
     {
-        db_back.insert_segment_back(i, i+1, val);
+        db_back.insert_back(i, i+1, val);
         if (++val > 10)
             val = 0;
     }
@@ -1231,7 +1231,7 @@ void fst_perf_test_insert()
         value_type val = 0;
         for (key_type i = 0; i < upper_bound; ++i)
         {
-            db.insert_segment(i, i+1, val);
+            db.insert_front(i, i+1, val);
             if (++val > 10)
                 val = 0;
         }
@@ -1243,7 +1243,7 @@ void fst_perf_test_insert()
         value_type val = 0;
         for (key_type i = 0; i < upper_bound; ++i)
         {
-            db.insert_segment_back(i, i+1, val);
+            db.insert_back(i, i+1, val);
             if (++val > 10)
                 val = 0;
         }
@@ -1310,8 +1310,8 @@ void fst_test_copy_ctor()
 
     // Inserting the same segment value to both instances.  They should still
     // be equal.
-    db.insert_segment(5, 10, 0);
-    db_copied.insert_segment(5, 10, 0);
+    db.insert_front(5, 10, 0);
+    db_copied.insert_front(5, 10, 0);
     assert(db == db_copied);
     {
         key_type   k[] = {0, 5, 10, 100};
@@ -1320,7 +1320,7 @@ void fst_test_copy_ctor()
     }
 
     // Inserting a new segment only to the 2nd instance.  They should differ.
-    db_copied.insert_segment(15, 20, 35);
+    db_copied.insert_front(15, 20, 35);
     assert(db != db_copied);
     {
         key_type   k[] = {0, 5, 10, 15, 20, 100};
@@ -1355,23 +1355,23 @@ void fst_test_equality()
     container_type db2(0, 100, 0);
     assert(db1 == db2);
 
-    db1.insert_segment(0, 1, 1);
+    db1.insert_front(0, 1, 1);
     assert(db1 != db2);
 
-    db2.insert_segment(0, 1, 1);
+    db2.insert_front(0, 1, 1);
     assert(db1 == db2);
 
-    db1.insert_segment(4, 10, 10);
-    db1.insert_segment(4, 10, 0);
+    db1.insert_front(4, 10, 10);
+    db1.insert_front(4, 10, 0);
     assert(db1 == db2);
 
-    db1.insert_segment(20, 40, 5);
-    db1.insert_segment(30, 35, 6);
+    db1.insert_front(20, 40, 5);
+    db1.insert_front(30, 35, 6);
     assert(db1 != db2);
 
-    db2.insert_segment(20, 30, 5);
-    db2.insert_segment(30, 35, 6);
-    db2.insert_segment(35, 40, 5);
+    db2.insert_front(20, 30, 5);
+    db2.insert_front(30, 35, 6);
+    db2.insert_front(35, 40, 5);
     assert(db1 == db2);
 }
 
@@ -1382,56 +1382,56 @@ void fst_test_back_insert()
     typedef unsigned short value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
     container_type db(0, 100, 0);
-    db.insert_segment_back(1, 2, 1);
+    db.insert_back(1, 2, 1);
     {
         unsigned int   k[] = {0, 1, 2, 100};
         unsigned short v[] = {0, 1, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.insert_segment_back(3, 4, 2);
+    db.insert_back(3, 4, 2);
     {
         unsigned int   k[] = {0, 1, 2, 3, 4, 100};
         unsigned short v[] = {0, 1, 0, 2, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.insert_segment_back(4, 5, 2);
+    db.insert_back(4, 5, 2);
     {
         unsigned int   k[] = {0, 1, 2, 3, 5, 100};
         unsigned short v[] = {0, 1, 0, 2, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.insert_segment_back(90, 120, 10);
+    db.insert_back(90, 120, 10);
     {
         unsigned int   k[] = {0, 1, 2, 3, 5, 90, 100};
         unsigned short v[] = {0, 1, 0, 2, 0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.insert_segment_back(0, 10, 20);
+    db.insert_back(0, 10, 20);
     {
         unsigned int   k[] = {0, 10, 90, 100};
         unsigned short v[] = {20, 0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.insert_segment_back(5, 20, 20);
+    db.insert_back(5, 20, 20);
     {
         unsigned int   k[] = {0, 20, 90, 100};
         unsigned short v[] = {20, 0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.insert_segment_back(15, 30, 5);
+    db.insert_back(15, 30, 5);
     {
         unsigned int   k[] = {0, 15, 30, 90, 100};
         unsigned short v[] = {20, 5,  0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    db.insert_segment_back(0, 1, 2);
+    db.insert_back(0, 1, 2);
     {
         unsigned int   k[] = {0,  1, 15, 30, 90, 100};
         unsigned short v[] = {2, 20,  5,  0, 10};
