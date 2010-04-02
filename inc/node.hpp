@@ -107,12 +107,6 @@ struct node_base
         --node_instance_count;
 #endif
     }
-
-    // These methods are specific to concrete class implementation.
-
-#if UNIT_TEST
-    virtual void dump_value() const = 0;
-#endif
 };
 
 template<typename _NodePtr>
@@ -297,7 +291,7 @@ size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int leve
             continue;
         }
 
-        p->dump_value();
+        static_cast<_NodeType*>(p.get())->dump_value();
 
         if (p->is_leaf)
             continue;
