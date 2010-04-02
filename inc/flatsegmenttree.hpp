@@ -311,18 +311,6 @@ public:
         return const_reverse_iterator(this, true);
     }
 
-    /** 
-     * Get a pointer of concrete node type from the base pointer.
-     *
-     * @param base_node base node pointer (ref-counted)
-     * 
-     * @return raw pointer of concrete node type
-     */
-    static node* get_node(const node_ptr& base_node)
-    {
-        return static_cast<node*>(base_node.get());
-    }
-
     flat_segment_tree(key_type min_val, key_type max_val, value_type init_val);
 
     /** 

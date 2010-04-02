@@ -1260,41 +1260,41 @@ void fst_test_copy_ctor()
 
     // Original node.
     fst::node_ptr node1(new fst::node(true));
-    fst::get_node(node1)->value_leaf.key   = 10;
-    fst::get_node(node1)->value_leaf.value = 500;
+    node1->value_leaf.key   = 10;
+    node1->value_leaf.value = 500;
     assert(node1->is_leaf);
     assert(!node1->parent);
     assert(!node1->left);
     assert(!node1->right);
 
     // Copy it to new node.
-    fst::node_ptr node2(new fst::node(*fst::get_node(node1)));
+    fst::node_ptr node2(new fst::node(*node1));
     assert(node2->is_leaf);
     assert(!node2->parent);
     assert(!node2->left);
     assert(!node2->right);
-    assert(fst::get_node(node2)->value_leaf.key == 10);
-    assert(fst::get_node(node2)->value_leaf.value == 500);
+    assert(node2->value_leaf.key == 10);
+    assert(node2->value_leaf.value == 500);
 
     // Changing the values of the original should not modify the second node.
-    fst::get_node(node1)->value_leaf.key   = 35;
-    fst::get_node(node1)->value_leaf.value = 200;
-    assert(fst::get_node(node2)->value_leaf.key == 10);
-    assert(fst::get_node(node2)->value_leaf.value == 500);
+    node1->value_leaf.key   = 35;
+    node1->value_leaf.value = 200;
+    assert(node2->value_leaf.key == 10);
+    assert(node2->value_leaf.value == 500);
 
     // Change the original node to non leaf.
     node1->is_leaf = false;
-    fst::get_node(node1)->value_nonleaf.low  = 123;
-    fst::get_node(node1)->value_nonleaf.high = 789;
+    node1->value_nonleaf.low  = 123;
+    node1->value_nonleaf.high = 789;
 
     // Test the copying of non-leaf values.
-    fst::node_ptr node3(new fst::node(*fst::get_node(node1)));
+    fst::node_ptr node3(new fst::node(*node1));
     assert(!node3->is_leaf);
     assert(!node3->parent);
     assert(!node3->left);
     assert(!node3->right);
-    assert(fst::get_node(node3)->value_nonleaf.low == 123);
-    assert(fst::get_node(node3)->value_nonleaf.high == 789);
+    assert(node3->value_nonleaf.low == 123);
+    assert(node3->value_nonleaf.high == 789);
 
     // Now, test the copy construction of the flat_segment_tree.
 
