@@ -38,7 +38,9 @@
 #ifdef UNIT_TEST
 #include <cstdio>
 #include <vector>
+#define private public // We need to expose the private members during unit test.
 #endif
+
 namespace mdds {
 
 template<typename _Key, typename _Value>
@@ -48,6 +50,7 @@ public:
     typedef _Key    key_type;
     typedef _Value  value_type;
 
+private:
     struct nonleaf_value_type
     {
         key_type low;   /// low range value (inclusive)
@@ -165,7 +168,6 @@ public:
 #endif
     };
 
-private:
     class const_iterator_base
     {
     public:

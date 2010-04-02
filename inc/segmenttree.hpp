@@ -88,7 +88,6 @@ private:
     };
 #endif
 
-public:
     struct nonleaf_value_type
     {
         key_type low;   /// low range value (inclusive)
@@ -216,6 +215,7 @@ public:
 #endif
     };
 
+public:
     segment_tree();
     segment_tree(const segment_tree& r);
     ~segment_tree();
