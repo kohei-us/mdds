@@ -174,16 +174,6 @@ public:
                 value_nonleaf.high = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.high;
         }
 
-        virtual node* create_new(bool leaf) const
-        {
-            return new node(leaf);
-        }
-
-        virtual node* clone() const
-        {
-            return new node(*this);
-        }
-
 #ifdef UNIT_TEST
         virtual void dump_value() const
         {

@@ -148,16 +148,6 @@ public:
                 value_nonleaf.high = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.high;
         }
 
-        node* create_new(bool leaf) const
-        {
-            return new node(leaf);
-        }
-
-        node* clone() const
-        {
-            return new node(*this);
-        }
-
 #ifdef UNIT_TEST
         virtual void dump_value() const
         {
@@ -636,7 +626,7 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key,
     node_ptr dest_node = m_left_leaf;
     while (true)
     {
-        dest_node->right.reset(get_node(src_node->right)->clone());
+        dest_node->right.reset(new node(*src_node->right));
 
         // Move on to the next source node.
         src_node = src_node->right.get();
