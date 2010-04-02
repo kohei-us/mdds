@@ -56,7 +56,7 @@ test.st: segmenttree-test
 	./segmenttree-test func
 
 test.st.mem: segmenttree-test
-	valgrind --tool=memcheck --leak-check=full ./segmenttree-test
+	valgrind --tool=memcheck --leak-check=full ./segmenttree-test func
 
 test.stl: stlperf-test
 	./stlperf-test
