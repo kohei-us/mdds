@@ -145,7 +145,7 @@ private:
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
-                value_nonleaf.low  = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.low;
+                value_nonleaf.low  = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.low;
             else
                 // Having a left node is prerequisite.
                 return;
@@ -159,17 +159,17 @@ private:
                     // right leaf node (if such node exists).
 
                     if (right_node->right)
-                        value_nonleaf.high = get_node(right_node->right)->value_leaf.key;
+                        value_nonleaf.high = right_node->right->value_leaf.key;
                     else
-                        value_nonleaf.high = get_node(right_node)->value_leaf.key;
+                        value_nonleaf.high = right_node->value_leaf.key;
                 }
                 else
                 {
-                    value_nonleaf.high = get_node(right_node)->value_nonleaf.high;
+                    value_nonleaf.high = right_node->value_nonleaf.high;
                 }
             }
             else
-                value_nonleaf.high = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.high;
+                value_nonleaf.high = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.high;
         }
 
 #ifdef UNIT_TEST
@@ -318,11 +318,6 @@ private:
     typedef ::std::vector<node*> node_list_type;
     typedef ::boost::ptr_map<data_type*, node_list_type> data_node_map_type;
 
-    static node* get_node(const node_ptr& base_node)
-    { 
-        return static_cast<node*>(base_node.get());
-    }
-
     static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right);
 
     /** 
@@ -420,7 +415,7 @@ template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::build_tree()
 {
     build_leaf_nodes();
-    clear_tree(get_node(m_root_node));
+    clear_tree(m_root_node.get());
     m_root_node = ::mdds::build_tree<node_ptr, node>(m_left_leaf);
     
     // Start "inserting" all segments from the root.
@@ -436,7 +431,7 @@ void segment_tree<_Key, _Data>::build_tree()
         node_list_type* plist = r.first->second;
         plist->reserve(10);
 
-        descend_tree_and_mark(get_node(m_root_node), pdata, itr->second.first, itr->second.second, plist);
+        descend_tree_and_mark(m_root_node.get(), pdata, itr->second.first, itr->second.second, plist);
     }
 
     m_tagged_node_map.swap(tagged_node_map);
@@ -467,7 +462,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
             // For insertion of the end point, insert data pointer to the
             // previous node _only when_ the value of the previous node
             // doesn't equal the begin point value.
-            node* pprev = get_node(pnode->left);
+            node* pprev = pnode->left.get();
             if (pprev && pprev->value_leaf.key != begin_key)
             {
                 leaf_value_type& v = pprev->value_leaf;
@@ -494,8 +489,8 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
         return;
     }
 
-    descend_tree_and_mark(get_node(pnode->left), pdata, begin_key, end_key, plist);
-    descend_tree_and_mark(get_node(pnode->right), pdata, begin_key, end_key, plist);
+    descend_tree_and_mark(pnode->left.get(), pdata, begin_key, end_key, plist);
+    descend_tree_and_mark(pnode->right.get(), pdata, begin_key, end_key, plist);
 }
 
 template<typename _Key, typename _Data>
@@ -503,7 +498,7 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
 {
     using namespace std;
 
-    disconnect_leaf_nodes(get_node(m_left_leaf), get_node(m_right_leaf));
+    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 
     // In 1st pass, collect unique end-point values and sort them.
     vector<key_type> keys_uniq;
@@ -533,7 +528,7 @@ void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<k
 
     // left-most node
     left.reset(new node(true));
-    get_node(left)->value_leaf.key = *itr;
+    left->value_leaf.key = *itr;
 
     // move on to next.
     left->right.reset(new node(true));
@@ -543,7 +538,7 @@ void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<k
 
     for (++itr; itr != itr_end; ++itr)
     {
-        get_node(cur_node)->value_leaf.key = *itr;
+        cur_node->value_leaf.key = *itr;
 
         // move on to next
         cur_node->right.reset(new node(true));
@@ -588,7 +583,7 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
         return false;
 
     search_result_type _result;
-    descend_tree_for_search(point, get_node(m_root_node), _result);
+    descend_tree_for_search(point, m_root_node.get(), _result);
     _result.swap(result);
     return true;
 }
@@ -671,9 +666,9 @@ void segment_tree<_Key, _Data>::remove_data_from_chain(data_chain_type& chain, c
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::clear_all_nodes()
 {
-    disconnect_leaf_nodes(get_node(m_left_leaf), get_node(m_right_leaf));
-    clear_tree(get_node(m_root_node));
-    disconnect_node(get_node(m_root_node));
+    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    clear_tree(m_root_node.get());
+    disconnect_node(m_root_node.get());
     m_left_leaf.reset();
     m_right_leaf.reset();
     m_root_node.reset();
@@ -700,7 +695,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
     append_search_result(data_chain, pnode->value_nonleaf.data_labels);
 
     // Check the left child node first, then the right one.
-    node* pchild = get_node(pnode->left);
+    node* pchild = pnode->left.get();
     if (!pchild)
         return;
 
@@ -717,10 +712,10 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 
         if (pnode->right.get())
         {
-            const leaf_value_type& vright = get_node(pnode->right)->value_leaf;    
+            const leaf_value_type& vright = pnode->right->value_leaf;    
             if (vright.key <= point)
                 // Follow the right node.
-                pchild = get_node(pnode->right);
+                pchild = pnode->right.get();
         }
     }
     else
@@ -733,7 +728,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
         }
         if (vleft.high <= point && pnode->right.get())
             // Follow the right child.
-            pchild = get_node(pnode->right);
+            pchild = pnode->right.get();
 
         assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
     }
@@ -762,7 +757,7 @@ void segment_tree<_Key, _Data>::dump_tree() const
         assert(!"attempted to dump an invalid tree!");
 
     cout << "dump tree ------------------------------------------------------" << endl;
-    size_t node_count = ::mdds::dump_tree<node_ptr>(get_node(m_root_node));
+    size_t node_count = ::mdds::dump_tree<node_ptr>(m_root_node.get());
     size_t node_instance_count = node_base<node_ptr, node>::get_instance_count();
 
     cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
@@ -776,11 +771,11 @@ void segment_tree<_Key, _Data>::dump_leaf_nodes() const
 
     cout << "dump leaf nodes ------------------------------------------------" << endl;
 
-    node* p = get_node(m_left_leaf);
+    node* p = m_left_leaf.get();
     while (p)
     {
         print_leaf_value(p->value_leaf);
-        p = get_node(p->right);
+        p = p->right.get();
     }
     cout << "  node instance count = " << node_base<node_ptr, node>::get_instance_count() << endl;
 }
@@ -824,7 +819,7 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
 {
     using namespace std;
 
-    node* cur_node = get_node(m_left_leaf);
+    node* cur_node = m_left_leaf.get();
     typename ::std::vector<leaf_node_check>::const_iterator itr = checks.begin(), itr_end = checks.end();
     for (; itr != itr_end; ++itr)
     {
@@ -868,7 +863,7 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
                 return false;
         }
 
-        cur_node = get_node(cur_node->right);
+        cur_node = cur_node->right.get();
     }
 
     if (cur_node)
