@@ -50,7 +50,7 @@ test.fst.mem: flatsegmenttree-test
 	valgrind --tool=memcheck --leak-check=full ./flatsegmenttree-test
 
 test.st: segmenttree-test
-	./segmenttree-test
+	./segmenttree-test func
 
 test.st.mem: segmenttree-test
 	valgrind --tool=memcheck --leak-check=full ./segmenttree-test
