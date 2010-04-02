@@ -205,8 +205,8 @@ _NodePtr build_tree_non_leaf(const ::std::list<_NodePtr>& node_list)
     ::std::list<_NodePtr> new_node_list;
     _NodePtr node_pair[2];
     typename ::std::list<_NodePtr>::const_iterator itr    = node_list.begin();
-    typename ::std::list<_NodePtr>::const_iterator itrEnd = node_list.end();
-    for (bool even_itr = false; itr != itrEnd; ++itr, even_itr = !even_itr)
+    typename ::std::list<_NodePtr>::const_iterator itr_end = node_list.end();
+    for (bool even_itr = false; itr != itr_end; ++itr, even_itr = !even_itr)
     {
         node_pair[even_itr] = *itr;
         if (even_itr)
