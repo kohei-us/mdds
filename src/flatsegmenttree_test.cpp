@@ -595,11 +595,11 @@ bool is_iterator_valid(
 void fst_test_insert_search_mix()
 {
     StackPrinter __stack_printer__("fst_test_insert_search_mix");
-
-    flat_segment_tree<int, int> db(0, 100, 0);
+    typedef flat_segment_tree<int, int> db_type;
+    db_type db(0, 100, 0);
 
     build_and_dump(db);
-    assert(node_base::get_instance_count() == 3);
+    assert(db_type::node::get_instance_count() == 3);
     assert(db.is_tree_valid());
     test_single_tree_search(db, 0, 0, 0, 100);
     test_single_tree_search(db, 99, 0, 0, 100);
@@ -607,7 +607,7 @@ void fst_test_insert_search_mix()
     db.insert_segment(0, 10, 1);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(node_base::get_instance_count() == 6);
+    assert(db_type::node::get_instance_count() == 6);
     assert(db.is_tree_valid());
     test_single_tree_search(db, 0, 1, 0, 10);
     test_single_tree_search(db, 5, 1, 0, 10);
@@ -617,7 +617,7 @@ void fst_test_insert_search_mix()
     db.insert_segment(0, 100, 0);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(node_base::get_instance_count() == 3);
+    assert(db_type::node::get_instance_count() == 3);
     assert(db.is_tree_valid());
     test_single_tree_search(db, 0, 0, 0, 100);
     test_single_tree_search(db, 99, 0, 0, 100);
@@ -626,7 +626,7 @@ void fst_test_insert_search_mix()
     db.insert_segment(30, 40, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(node_base::get_instance_count() == 12);
+    assert(db_type::node::get_instance_count() == 12);
     assert(db.is_tree_valid());
     test_single_tree_search(db, 10, 5, 10, 20);
     test_single_tree_search(db, 20, 0, 20, 30);
@@ -636,7 +636,7 @@ void fst_test_insert_search_mix()
     db.insert_segment(18, 22, 6);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(node_base::get_instance_count() == 14);
+    assert(db_type::node::get_instance_count() == 14);
     assert(db.is_tree_valid());
     test_single_tree_search(db, 18, 6, 18, 22);
     test_single_tree_search(db, 22, 0, 22, 30);
@@ -645,14 +645,14 @@ void fst_test_insert_search_mix()
     db.insert_segment(19, 30, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(node_base::get_instance_count() == 12);
+    assert(db_type::node::get_instance_count() == 12);
     assert(db.is_tree_valid());
     test_single_tree_search(db, 19, 5, 19, 40);
 
     db.insert_segment(-100, 500, 999);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(node_base::get_instance_count() == 3);
+    assert(db_type::node::get_instance_count() == 3);
     assert(db.is_tree_valid());
     test_single_tree_search(db, 30, 999, 0, 100);
 }
@@ -660,8 +660,8 @@ void fst_test_insert_search_mix()
 void fst_test_shift_segment_left()
 {
     StackPrinter __stack_printer__("fst_test_shift_segment_left");
-
-    flat_segment_tree<int, int> db(0, 100, 0);
+    typedef flat_segment_tree<int, int> db_type;
+    db_type db(0, 100, 0);
     db.insert_segment(20, 40, 5);
     db.insert_segment(50, 60, 10);
     db.insert_segment(70, 80, 15);
@@ -1259,7 +1259,7 @@ void fst_test_copy_ctor()
     // Test copy construction of node first.
 
     // Original node.
-    node_base_ptr node1(new fst::node(true));
+    fst::node_ptr node1(new fst::node(true));
     fst::get_node(node1)->value_leaf.key   = 10;
     fst::get_node(node1)->value_leaf.value = 500;
     assert(node1->is_leaf);
@@ -1268,7 +1268,7 @@ void fst_test_copy_ctor()
     assert(!node1->right);
 
     // Copy it to new node.
-    node_base_ptr node2(new fst::node(*fst::get_node(node1)));
+    fst::node_ptr node2(new fst::node(*fst::get_node(node1)));
     assert(node2->is_leaf);
     assert(!node2->parent);
     assert(!node2->left);
@@ -1288,7 +1288,7 @@ void fst_test_copy_ctor()
     fst::get_node(node1)->value_nonleaf.high = 789;
 
     // Test the copying of non-leaf values.
-    node_base_ptr node3(new fst::node(*fst::get_node(node1)));
+    fst::node_ptr node3(new fst::node(*fst::get_node(node1)));
     assert(!node3->is_leaf);
     assert(!node3->parent);
     assert(!node3->left);

@@ -60,7 +60,10 @@ public:
         value_type  value;
     };
 
-    struct node : public node_base
+    struct node;
+    typedef ::boost::intrusive_ptr<node> node_ptr;
+
+    struct node : public node_base<node_ptr, node>
     {
         union {
             nonleaf_value_type  value_nonleaf;
@@ -68,14 +71,14 @@ public:
         };
 
         node(bool _is_leaf) :
-            node_base(_is_leaf)
+            node_base<node_ptr, node>(_is_leaf)
         {
         }
 
         node(const node& r) :
-            node_base(r)
+            node_base<node_ptr, node>(r)
         {
-            if (is_leaf)
+            if (this->is_leaf)
             {
                 value_leaf.key = r.value_leaf.key;
                 value_leaf.value = r.value_leaf.value;
@@ -93,10 +96,10 @@ public:
 
         bool equals(const node& r) const
         {
-            if (is_leaf != r.is_leaf)
+            if (this->is_leaf != r.is_leaf)
                 return false;
 
-            if (is_leaf)
+            if (this->is_leaf)
             {
                 if (value_leaf.key != r.value_leaf.key)
                     return false;
@@ -114,7 +117,7 @@ public:
             return true;
         }
 
-        void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
+        void fill_nonleaf_value(const node_ptr& left_node, const node_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -159,7 +162,7 @@ public:
         virtual void dump_value() const
         {
             using ::std::cout;
-            if (is_leaf)
+            if (this->is_leaf)
             {
                 cout << "(" << value_leaf.key << ")";
             }
@@ -323,14 +326,9 @@ public:
      * 
      * @return raw pointer of concrete node type
      */
-    static node* get_node(const node_base_ptr& base_node)
+    static node* get_node(const node_ptr& base_node)
     {
         return static_cast<node*>(base_node.get());
-    }
-
-    static node* get_node(const node_base* base_node)
-    {
-        return static_cast<node*>(base_node);
     }
 
     flat_segment_tree(key_type min_val, key_type max_val, value_type init_val);
@@ -411,7 +409,7 @@ public:
     }
 
 #ifdef UNIT_TEST
-    node_base_ptr get_root_node() const
+    node_ptr get_root_node() const
     {
         return m_root_node;
     }
@@ -424,8 +422,8 @@ public:
         if (!m_valid_tree)
             assert(!"attempted to dump an invalid tree!");
 
-        size_t node_count = ::mdds::dump_tree<node_base_ptr, node>(m_root_node);
-        size_t node_instance_count = node_base::get_instance_count();
+        size_t node_count = ::mdds::dump_tree<node_ptr, node>(m_root_node);
+        size_t node_instance_count = node_base<node_ptr, node>::get_instance_count();
 
         cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
         assert(node_count == node_instance_count);
@@ -438,7 +436,7 @@ public:
 
         cout << "------------------------------------------" << endl;
 
-        node_base_ptr cur_node = m_left_leaf;
+        node_ptr cur_node = m_left_leaf;
         long node_id = 0;
         while (cur_node)
         {
@@ -447,7 +445,7 @@ public:
                 << endl;
             cur_node = cur_node->right;
         }
-        cout << endl << "  node instance count = " << node_base::get_instance_count() << endl;
+        cout << endl << "  node instance count = " << node_base<node_ptr, node>::get_instance_count() << endl;
     }
 
     /** 
@@ -537,7 +535,7 @@ private:
             // new segment.
             return;
 
-        node_base_ptr new_node(new node(true));
+        node_ptr new_node(new node(true));
         get_node(new_node)->value_leaf.key   = start_key;
         get_node(new_node)->value_leaf.value = m_init_val;
         new_node->left = m_right_leaf->left;
@@ -549,12 +547,12 @@ private:
 
     void insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward);
 
-    node_base_ptr get_insertion_pos_leaf(key_type key, const node_base_ptr& start_pos) const;
-    node_base_ptr get_insertion_pos_leaf_reverse(key_type key, const node_base_ptr& start_pos) const;
+    node_ptr get_insertion_pos_leaf(key_type key, const node_ptr& start_pos) const;
+    node_ptr get_insertion_pos_leaf_reverse(key_type key, const node_ptr& start_pos) const;
 
     const node* get_insertion_pos_leaf(key_type key, const node* start_pos) const;
 
-    static void shift_leaf_key_left(node_base_ptr& begin_node, node_base_ptr& end_node, key_type shift_value)
+    static void shift_leaf_key_left(node_ptr& begin_node, node_ptr& end_node, key_type shift_value)
     {
         node* cur_node_p = get_node(begin_node);
         node* end_node_p = get_node(end_node);
@@ -565,7 +563,7 @@ private:
         }
     }
 
-    static void shift_leaf_key_right(node_base_ptr& cur_node, node_base_ptr& end_node, key_type shift_value)
+    static void shift_leaf_key_right(node_ptr& cur_node, node_ptr& end_node, key_type shift_value)
     {
         key_type end_node_key = get_node(end_node)->value_leaf.key;
         while (get_node(cur_node) != get_node(end_node))
@@ -582,10 +580,10 @@ private:
             // Remove all nodes that follows, and connect the previous node
             // with the end node.
 
-            node_base_ptr last_node = cur_node->left;
+            node_ptr last_node = cur_node->left;
             while (get_node(cur_node) != get_node(end_node))
             {
-                node_base_ptr next_node = cur_node->right;
+                node_ptr next_node = cur_node->right;
                 disconnect_node(get_node(cur_node));
                 cur_node = next_node;
             }
@@ -596,9 +594,9 @@ private:
     }
 
 private:
-    node_base_ptr   m_root_node;
-    node_base_ptr   m_left_leaf;
-    node_base_ptr   m_right_leaf;
+    node_ptr   m_root_node;
+    node_ptr   m_left_leaf;
+    node_ptr   m_right_leaf;
     value_type      m_init_val;
     bool            m_valid_tree;
 };
@@ -634,8 +632,8 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key,
     m_valid_tree(false) // tree is invalid because we only copy the leaf nodes.
 {
     // Copy all the leaf nodes from the original instance.
-    node_base* src_node = r.m_left_leaf.get();
-    node_base_ptr dest_node = m_left_leaf;
+    node* src_node = r.m_left_leaf.get();
+    node_ptr dest_node = m_left_leaf;
     while (true)
     {
         dest_node->right.reset(get_node(src_node->right)->clone());
@@ -645,7 +643,7 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key,
 
         // Move on to the next destination node, and have the next node point
         // back to the previous node.
-        node_base_ptr old_node = dest_node;
+        node_ptr old_node = dest_node;
         dest_node = dest_node->right;
         dest_node->left = old_node;
 
@@ -687,7 +685,7 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
     // Find the node with value that either equals or is greater than the
     // start value.
 
-    node_base_ptr start_pos;
+    node_ptr start_pos;
     if (forward)
     {    
         start_pos = get_insertion_pos_leaf(start_key, m_left_leaf);
@@ -708,11 +706,11 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
     }
 
 
-    node_base_ptr end_pos = get_insertion_pos_leaf(end_key, start_pos);
+    node_ptr end_pos = get_insertion_pos_leaf(end_key, start_pos);
     if (!end_pos)
         end_pos = m_right_leaf;
 
-    node_base_ptr new_start_node;
+    node_ptr new_start_node;
     value_type old_value;
 
     // Set the start node.
@@ -744,12 +742,12 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
     else
     {
         // Insert a new node before the insertion position node.
-        node_base_ptr new_node(new node(true));
+        node_ptr new_node(new node(true));
         get_node(new_node)->value_leaf.key = start_key;
         get_node(new_node)->value_leaf.value = val;
         new_start_node = new_node;
 
-        node_base_ptr left_node = start_pos->left;
+        node_ptr left_node = start_pos->left;
         old_value = get_node(left_node)->value_leaf.value;
 
         // Link to the left node.
@@ -759,7 +757,7 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
         link_nodes(new_node, start_pos);
     }
 
-    node_base_ptr cur_node = new_start_node->right;
+    node_ptr cur_node = new_start_node->right;
     while (cur_node != end_pos)
     {
         // Disconnect the link between the current node and the previous node.
@@ -799,7 +797,7 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
     else
     {
         // Insert a new node before the insertion position node.
-        node_base_ptr new_node(new node(true));
+        node_ptr new_node(new node(true));
         get_node(new_node)->value_leaf.key = end_key;
         get_node(new_node)->value_leaf.value = old_value;
 
@@ -829,7 +827,7 @@ void flat_segment_tree<_Key, _Value>::shift_segment_left(key_type start_key, key
         // invalid key value.
         return;
 
-    node_base_ptr node_pos;
+    node_ptr node_pos;
     if (left_leaf_key == start_key)
         node_pos = m_left_leaf;
     else
@@ -875,13 +873,13 @@ void flat_segment_tree<_Key, _Value>::shift_segment_left(key_type start_key, key
     // Move the first node to the starting position, and from there search
     // for the first node whose key value is greater than the end value.
     get_node(node_pos)->value_leaf.key = start_key;
-    node_base_ptr start_pos = node_pos;
+    node_ptr start_pos = node_pos;
     node_pos = node_pos->right;
     value_type last_seg_value = get_node(start_pos)->value_leaf.value;
     while (get_node(node_pos) != get_node(m_right_leaf) && get_node(node_pos)->value_leaf.key <= end_key)
     {
         last_seg_value = get_node(node_pos)->value_leaf.value;
-        node_base_ptr next = node_pos->right;
+        node_ptr next = node_pos->right;
         disconnect_node(get_node(node_pos));
         node_pos = next;
     }
@@ -921,14 +919,14 @@ void flat_segment_tree<_Key, _Value>::shift_segment_right(key_type pos, key_type
     {
         // Position is at the leftmost node.  Shift all the other nodes, 
         // and insert a new node at (pos + size) position.
-        node_base_ptr cur_node = m_left_leaf->right;
+        node_ptr cur_node = m_left_leaf->right;
         shift_leaf_key_right(cur_node, m_right_leaf, size);
 
         if (get_node(m_left_leaf)->value_leaf.value != m_init_val)
         {
             // The leftmost leaf node has a non-initial value.  We need to
             // insert a new node to carry that value after the shift.
-            node_base_ptr new_node(new node(true));
+            node_ptr new_node(new node(true));
             get_node(new_node)->value_leaf.key = pos + size;
             get_node(new_node)->value_leaf.value = get_node(m_left_leaf)->value_leaf.value;
             get_node(m_left_leaf)->value_leaf.value = m_init_val;
@@ -943,7 +941,7 @@ void flat_segment_tree<_Key, _Value>::shift_segment_right(key_type pos, key_type
 
     // Get the first node with a key value equal to or greater than the
     // start key value.  But we want to skip the leftmost node.
-    node_base_ptr cur_node = get_insertion_pos_leaf(pos, m_left_leaf->right);
+    node_ptr cur_node = get_insertion_pos_leaf(pos, m_left_leaf->right);
 
     // If the point of insertion is at an existing node position, don't 
     // shift that node but start with the one after it if that's
@@ -1085,7 +1083,7 @@ void flat_segment_tree<_Key, _Value>::build_tree()
         return;
 
     clear_tree(m_root_node.get());
-    m_root_node = ::mdds::build_tree<node_base_ptr, node>(m_left_leaf);
+    m_root_node = ::mdds::build_tree<node_ptr, node>(m_left_leaf);
     m_valid_tree = true;
 }
 
@@ -1120,10 +1118,11 @@ bool flat_segment_tree<_Key, _Value>::operator==(const flat_segment_tree<key_typ
 }
 
 template<typename _Key, typename _Value>
-node_base_ptr flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(
-    key_type key, const node_base_ptr& start_pos) const
+typename flat_segment_tree<_Key, _Value>::node_ptr
+flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(
+    key_type key, const node_ptr& start_pos) const
 {
-    node_base_ptr cur_node = start_pos;
+    node_ptr cur_node = start_pos;
     while (cur_node)
     {
         if (key <= get_node(cur_node)->value_leaf.key)
@@ -1133,14 +1132,15 @@ node_base_ptr flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(
         }
         cur_node = cur_node->right;
     }
-    return node_base_ptr();
+    return node_ptr();
 }
 
 template<typename _Key, typename _Value>
-node_base_ptr flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
-    key_type key, const node_base_ptr& start_pos) const
+typename flat_segment_tree<_Key, _Value>::node_ptr
+flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
+    key_type key, const node_ptr& start_pos) const
 {
-    node_base_ptr cur_node = start_pos;
+    node_ptr cur_node = start_pos;
     while (cur_node)
     {
         if (key > get_node(cur_node)->value_leaf.key)
@@ -1150,7 +1150,7 @@ node_base_ptr flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
         }
         cur_node = cur_node->left;
     }
-    return node_base_ptr();
+    return node_ptr();
 }
 
 template<typename _Key, typename _Value>
