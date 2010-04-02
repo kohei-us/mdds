@@ -32,8 +32,6 @@
 #include <list>
 #include <cassert>
 
-//#define DEBUG_NODE_BASE 1
-
 #define USE_INTRUSIVE_PTR 1
 
 #if USE_INTRUSIVE_PTR

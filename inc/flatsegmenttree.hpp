@@ -155,7 +155,7 @@ public:
             return new node(*this);
         }
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
         virtual void dump_value() const
         {
             using ::std::cout;

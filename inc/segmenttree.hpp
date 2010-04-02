@@ -38,7 +38,7 @@
 
 #include <boost/ptr_container/ptr_map.hpp>
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
 #include <sstream>
 #define private public // We need to expose the private members during unit test.
 #endif
@@ -58,7 +58,7 @@ private:
 
     typedef ::std::unordered_map<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
     struct segment_data
     {
         key_type    begin_key;
@@ -181,7 +181,7 @@ public:
             return new node(*this);
         }
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
         virtual void dump_value() const
         {
             ::std::cout << print();
@@ -298,7 +298,7 @@ public:
      */
     bool empty() const;
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
     void dump_tree() const;
     void dump_leaf_nodes() const;
     void dump_segment_data() const;
@@ -323,7 +323,7 @@ public:
 
 private:
 
-    typedef ::std::list<node*> node_list_type;
+    typedef ::std::vector<node*> node_list_type;
     typedef ::boost::ptr_map<data_type*, node_list_type> data_node_map_type;
 
     static node* get_node(const node_base_ptr& base_node)
@@ -353,7 +353,7 @@ private:
 
     void clear_all_nodes();
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
     static bool has_data_pointer(const node_list_type& node_list, const data_type* pdata);
     static void print_leaf_value(const leaf_value_type& v);
 #endif
@@ -442,6 +442,7 @@ void segment_tree<_Key, _Data>::build_tree()
         ::std::pair<typename data_node_map_type::iterator, bool> r = 
             tagged_node_map.insert(pdata, new node_list_type);
         node_list_type* plist = r.first->second;
+        plist->reserve(10);
 
         descend_tree_and_mark(get_node(m_root_node), pdata, itr->second.first, itr->second.second, plist);
     }
@@ -758,7 +759,7 @@ void segment_tree<_Key, _Data>::append_search_result(search_result_type& data_ch
         data_chain.push_back(*itr);
 }
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::dump_tree() const
 {
