@@ -234,6 +234,7 @@
 			<F N="src/rangetree.cpp"/>
 			<F N="src/segmenttree_test.cpp"/>
 			<F N="src/stlperf_test.cpp"/>
+			<F N="src/template_test.cpp"/>
 		</Folder>
 		<F
 			N="Makefile"

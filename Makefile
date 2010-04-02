@@ -40,6 +40,9 @@ segmenttree-test: pre $(OBJDIR)/segmenttree_test.o
 stlperf-test: pre $(SRCDIR)/stlperf_test.cpp
 	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
 
+$(OBJDIR)/template_test.o: $(SRCDIR)/template_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/template_test.cpp
+
 test.fst: flatsegmenttree-test
 	./flatsegmenttree-test
 
