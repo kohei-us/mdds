@@ -43,6 +43,9 @@ stlperf-test: pre $(SRCDIR)/stlperf_test.cpp
 test.fst: flatsegmenttree-test
 	./flatsegmenttree-test
 
+test.fst.mem: flatsegmenttree-test
+	valgrind --tool=memcheck --leak-check=full ./flatsegmenttree-test
+
 test.st: segmenttree-test
 	./segmenttree-test
 

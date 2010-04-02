@@ -36,28 +36,6 @@
 
 namespace mdds {
 
-struct intrusive_ref_base
-{
-    size_t _refcount;
-
-    intrusive_ref_base() :
-        _refcount(0) {}
-
-    virtual ~intrusive_ref_base() {}
-};
-
-inline void intrusive_ptr_add_ref(intrusive_ref_base* p)
-{
-    ++p->_refcount;
-}
-
-inline void intrusive_ptr_release(intrusive_ref_base* p)
-{
-    --p->_refcount;
-    if (!p->_refcount)
-        delete p;
-}
-
 #ifdef DEBUG_NODE_BASE
 size_t node_instance_count = 0;
 #endif
@@ -65,7 +43,7 @@ size_t node_instance_count = 0;
 struct node_base;
 typedef ::boost::intrusive_ptr<node_base> node_base_ptr;
 
-struct node_base : public intrusive_ref_base
+struct node_base
 {
     static size_t get_instance_count()
     {
@@ -75,13 +53,15 @@ struct node_base : public intrusive_ref_base
         return 0;
 #endif
     }
+    size_t          refcount;
+
     node_base_ptr   parent; /// parent node
     node_base_ptr   left;   /// left child node or previous sibling if it's a leaf node.
     node_base_ptr   right;  /// right child node or next sibling if it's aleaf node.
     bool            is_leaf;
 
-    node_base(bool _is_leaf) : 
-        intrusive_ref_base(),
+    node_base(bool _is_leaf) :
+        refcount(0),
         parent(static_cast<node_base*>(NULL)),
         left(static_cast<node_base*>(NULL)),
         right(static_cast<node_base*>(NULL)),
@@ -97,7 +77,7 @@ struct node_base : public intrusive_ref_base
      * Connections to the parent, left and right nodes must not be copied. 
      */
     node_base(const node_base& r) :
-        intrusive_ref_base(),
+        refcount(0),
         parent(static_cast<node_base*>(NULL)),
         left(static_cast<node_base*>(NULL)),
         right(static_cast<node_base*>(NULL)),
@@ -137,6 +117,18 @@ struct node_base : public intrusive_ref_base
     virtual void dump_value() const = 0;
 #endif
 };
+
+inline void intrusive_ptr_add_ref(node_base* p)
+{
+    ++p->refcount;
+}
+
+inline void intrusive_ptr_release(node_base* p)
+{
+    --p->refcount;
+    if (!p->refcount)
+        delete p;
+}
 
 void disconnect_node(node_base* p)
 {
