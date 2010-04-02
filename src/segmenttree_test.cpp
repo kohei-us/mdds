@@ -33,6 +33,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstring>
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
@@ -740,16 +741,44 @@ void st_test_perf_insertion()
     }
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    st_test_insert_search_removal();
-    st_test_copy_constructor();
-    st_test_equality();
-    st_test_clear();
-    st_test_duplicate_insertion();
-    st_test_search_on_uneven_tree();
+    bool test_func = false;
+    bool test_perf = false;
+    if (argc > 1)
+    {
+        for (int i = 1; i < argc; ++i)
+        {
+            if (!strncmp(argv[i], "func", 4))
+                test_func = true;
+            else if (!strncmp(argv[i], "perf", 4))
+                test_perf = true;
+            else
+            {
+                cout << "unknown argument: " << argv[i] << endl;
+                return EXIT_FAILURE;
+            }
+        }
+    }
+    else
+    {
+        cout << "please specify test categories: [perf, func]" << endl;
+        return EXIT_FAILURE;
+    }
+    if (test_func)
+    {
+        st_test_insert_search_removal();
+        st_test_copy_constructor();
+        st_test_equality();
+        st_test_clear();
+        st_test_duplicate_insertion();
+        st_test_search_on_uneven_tree();
+    }
 
-    st_test_perf_insertion();
+    if (test_perf)
+    {
+        st_test_perf_insertion();
+    }
 
     // At this point, all of the nodes created during the test run should have
     // been destroyed.  If not, we are leaking memory.
