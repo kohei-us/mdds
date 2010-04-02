@@ -114,7 +114,7 @@ public:
             return true;
         }
 
-        virtual void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
+        void fill_nonleaf_value(const node_base_ptr& left_node, const node_base_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -145,12 +145,12 @@ public:
                 value_nonleaf.high = left_node->is_leaf ? get_node(left_node)->value_leaf.key : get_node(left_node)->value_nonleaf.high;
         }
 
-        virtual node* create_new(bool leaf) const
+        node* create_new(bool leaf) const
         {
             return new node(leaf);
         }
 
-        virtual node* clone() const
+        node* clone() const
         {
             return new node(*this);
         }
