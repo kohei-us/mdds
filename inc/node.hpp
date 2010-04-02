@@ -130,7 +130,8 @@ inline void intrusive_ptr_release(node_base* p)
         delete p;
 }
 
-void disconnect_node(node_base* p)
+template<typename _NodePtr>
+void disconnect_node(_NodePtr p)
 {
     if (!p)
         return;
@@ -140,16 +141,17 @@ void disconnect_node(node_base* p)
     p->parent.reset();
 }
 
-void disconnect_leaf_nodes(node_base* left_node, node_base* right_node)
+template<typename _NodePtr>
+void disconnect_leaf_nodes(_NodePtr left_node, _NodePtr right_node)
 {
     if (!left_node || !right_node)
         return;
 
     // Go through all leaf nodes, and disconnect their links.
-    node_base* cur_node = left_node;
+    _NodePtr cur_node = left_node;
     do
     {
-        node_base* next_node = cur_node->right.get();
+        _NodePtr next_node = cur_node->right.get();
         disconnect_node(cur_node);
         cur_node = next_node;
     }
@@ -170,7 +172,8 @@ void link_nodes(_NodePtr& left, _NodePtr& right)
  * Disconnect all non-leaf nodes so that their ref-counted instances will 
  * all get destroyed afterwards. 
  */
-void clear_tree(node_base* node)
+template<typename _NodePtr>
+void clear_tree(_NodePtr node)
 {
     if (!node)
         // Nothing to do.
