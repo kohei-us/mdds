@@ -1,0 +1,4 @@
+mdds 0.1.2
+
+  * implemented segment tree.
+  * node_base class is now without virtual methods to avoid vtable generation.
