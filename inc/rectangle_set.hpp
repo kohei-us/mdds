@@ -168,6 +168,9 @@ void rectangle_set<_Key,_Data>::remove(data_type* data)
 template<typename _Key, typename _Data>
 void rectangle_set<_Key,_Data>::clear()
 {
+    m_outer_segments.clear();
+    m_outer_map.clear();
+    m_dataset.clear();
 }
 
 template<typename _Key, typename _Data>
