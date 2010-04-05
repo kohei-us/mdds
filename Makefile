@@ -13,6 +13,7 @@ EXECS= \
 
 HEADERS= \
 	$(INCDIR)/node.hpp \
+	$(INCDIR)/global.hpp \
 	$(INCDIR)/flatsegmenttree.hpp \
 	$(INCDIR)/segmenttree.hpp \
 	$(INCDIR)/rectangle_set.hpp

@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2008-2009 Kohei Yoshida
+ * Copyright (c) 2008-2010 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,27 +25,26 @@
  *
  ************************************************************************/
 
-#ifndef GLOBAL_HXX
-#define GLOBAL_HXX
+#ifndef __MDDS_GLOBAL_HPP__
+#define __MDDS_GLOBAL_HPP__
 
-#include <boost/shared_ptr.hpp>
 #include <exception>
+#include <string>
 
 namespace mdds {
 
-typedef int IntX;
-typedef int IntY;
-
-template<typename T>
-bool empty(const ::boost::shared_ptr<T>& ptr)
-{
-    return !ptr.get();
-}
-
-class TreeLockedException : public ::std::exception
+class general_error : public ::std::exception
 {
 public:
-    virtual const char * what() const throw();
+    general_error(const ::std::string& msg) : m_msg(msg) {}
+    virtual ~general_error() throw() {}
+
+    virtual const char* what() const throw()
+    {
+        return m_msg.c_str();
+    }
+private:
+    ::std::string m_msg;
 };
 
 }
