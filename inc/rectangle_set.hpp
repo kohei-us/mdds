@@ -54,8 +54,18 @@ private:
 
         rectangle(key_type _x1, key_type _y1, key_type _x2, key_type _y2) :
             x1(_x1), y1(_y1), x2(_x2), y2(_y2) {}
+
+        bool operator== (const rectangle& r) const
+        {
+            return x1 == r.x1 && y1 == r.y1 && x2 == r.x2 && y2 == r.y2;
+        }
+
+        bool operator!= (const rectangle& r) const
+        {
+            return !operator==(r);
+        }
     };
-    typedef ::std::unordered_map<data_type*, rectangle>    dataset_type;
+    typedef ::std::unordered_map<const data_type*, rectangle>    dataset_type;
 
     typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type>  outer_type;
@@ -85,20 +95,21 @@ public:
 private:
 #ifdef UNIT_TEST
     void dump_rectangles() const;
+    bool verify_rectangles(const dataset_type& expected) const;
 #endif
 
 private:
 
     /** 
      * This data member stores pointers to the inner segment tree instances 
-     * associated with outer intervals.  Used during searches.
+     * associated with outer intervals.  Used for searches only.
      */
-    outer_type              m_outer_segments;
+    outer_type m_outer_segments;
 
     /**
      * This data member owns the inner segment_tree instances.
      */
-    inner_segment_map_type  m_outer_map;
+    inner_segment_map_type m_outer_map;
 
     /** 
      * Used to keep track of currently stored data instances, to prevent 
@@ -162,14 +173,21 @@ template<typename _Key, typename _Data>
 bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_type& result) const
 {
     typename outer_type::search_result_type inner_trees;
+    if (!m_outer_segments.is_tree_valid())
+        m_outer_segments.build_tree();
+
     if (!m_outer_segments.search(x, inner_trees))
         return false;
 
     typename outer_type::search_result_type::iterator itr_tree = inner_trees.begin(), itr_tree_end = inner_trees.end();
     for (; itr_tree != itr_tree_end; ++itr_tree)
     {
+        inner_type& inner_tree = itr_tree->second;
+        if (!inner_tree.is_tree_valid())
+            inner_tree.build_tree();
+
         // Search all relevant inner trees and aggregate results.
-        if (!itr_tree->second.search(y, result))
+        if (!inner_tree.search(y, result))
             return false;
     }
     return true;
@@ -219,7 +237,6 @@ bool rectangle_set<_Key,_Data>::empty() const
     return m_dataset.empty();
 }
 
-
 #ifdef UNIT_TEST
 template<typename _Key, typename _Data>
 void rectangle_set<_Key,_Data>::dump_rectangles() const
@@ -234,6 +251,30 @@ void rectangle_set<_Key,_Data>::dump_rectangles() const
             << "(" << rect.x1 << "," << rect.y1 << "," << rect.x2 << "," << rect.y2 << ")" 
             << endl;
     }
+}
+
+template<typename _Key, typename _Data>
+bool rectangle_set<_Key,_Data>::verify_rectangles(const dataset_type& expected) const
+{
+    if (m_dataset.size() != expected.size())
+        // Data sizes differ.
+        return false;
+
+    typename dataset_type::const_iterator itr_data = m_dataset.begin(), itr_data_end = m_dataset.end();
+    for (; itr_data != itr_data_end; ++itr_data)
+    {
+        const data_type* data = itr_data->first;
+        typename dataset_type::const_iterator itr_test = expected.find(data);
+        if (itr_test == expected.end())
+            // Pointer in one container but not in the other.
+            return false;
+
+        if (itr_data->second != itr_test->second)
+            // Rectangle positions and/or sizes differ.
+            return false;
+    }
+
+    return true;
 }
 #endif
 

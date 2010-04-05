@@ -89,10 +89,26 @@ struct range
         x1(_x1), y1(_y1), x2(_x2), y2(_y2), name(_name) {}
 };
 
-template<typename _ValueType, typename _DataType>
-void insert_range(rectangle_set<_ValueType, _DataType>& db, range<_ValueType>& range)
+template<typename _Key, typename _Data>
+void insert_range(rectangle_set<_Key, _Data>& db, range<_Key>& range)
 {
     db.insert(range.x1, range.y1, range.x2, range.y2, &range);
+}
+
+template<typename _SetType>
+bool check_rectangles(const _SetType& db, const typename _SetType::data_type** expected)
+{
+    typename _SetType::dataset_type test;
+    size_t i = 0;
+    const typename _SetType::data_type* data = expected[i++];
+    while (data)
+    {
+        typename _SetType::rectangle rect(data->x1, data->y1, data->x2, data->y2);
+        test.insert(typename _SetType::dataset_type::value_type(data, rect));
+        data = expected[i++];
+    }
+
+    return db.verify_rectangles(test);
 }
 
 void rect_test_insertion()
@@ -104,10 +120,17 @@ void rect_test_insertion()
     set_type db;
     range_type A(0, 0, 1,  1, "A");
     range_type B(2, 2, 5, 10, "B");
+    range_type C(0, 1, 2,  2, "C");
 
     insert_range(db, A);
     insert_range(db, B);
+    insert_range(db, C);
     db.dump_rectangles();
+
+    {
+        const set_type::data_type* expected[] = {&A, &B, &C, 0};
+        assert(check_rectangles(db, expected));
+    }
 }
 
 int main(int argc, char** argv)
