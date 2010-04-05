@@ -123,7 +123,7 @@ bool check_size(const _SetType& db, size_t size_expected)
     return true;
 }
 
-void rect_test_insertion()
+void rect_test_insertion_removal()
 {
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
@@ -159,6 +159,7 @@ void rect_test_insertion()
         assert(check_size(db, 6));
     }
 
+    // Duplicate insertion should *not* create new entries.
     insert_range(db, A);
     insert_range(db, C);
     insert_range(db, E);
@@ -168,10 +169,46 @@ void rect_test_insertion()
         assert(check_rectangles(db, expected));
         assert(check_size(db, 6));
     }
+
+    // Start removing rectangles.
+
+    db.remove(&E);
+    db.dump_rectangles();
+    {
+        const set_type::data_type* expected[] = {&A, &B, &C, &D, &F, 0};
+        assert(check_rectangles(db, expected));
+        assert(check_size(db, 5));
+    }
+
+    db.remove(&E);
+    db.dump_rectangles();
+    {
+        const set_type::data_type* expected[] = {&A, &B, &C, &D, &F, 0};
+        assert(check_rectangles(db, expected));
+        assert(check_size(db, 5));
+    }
+    db.remove(&A);
+    db.remove(&B);
+    db.remove(&C);
+    db.dump_rectangles();
+    {
+        const set_type::data_type* expected[] = {&D, &F, 0};
+        assert(check_rectangles(db, expected));
+        assert(check_size(db, 2));
+    }
+
+    db.remove(&D);
+    db.remove(&F);
+    db.dump_rectangles();
+    {
+        const set_type::data_type* expected[] = {0};
+        assert(check_rectangles(db, expected));
+        assert(check_size(db, 0));
+    }
 }
 
 int main(int argc, char** argv)
 {
-    rect_test_insertion();
+    rect_test_insertion_removal();
     fprintf(stdout, "Test finished successfully!\n");
 }

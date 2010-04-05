@@ -243,6 +243,12 @@ void rectangle_set<_Key,_Data>::dump_rectangles() const
 {
     using namespace std;
     cout << "dump rectangles ------------------------------------------------" << endl;
+    if (m_dataset.empty())
+    {
+        cout << "No rectangles in the data set." << endl;
+        return;
+    }
+
     typename dataset_type::const_iterator itr = m_dataset.begin(), itr_end = m_dataset.end();
     for (; itr != itr_end; ++itr)
     {
