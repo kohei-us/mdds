@@ -96,6 +96,14 @@ struct range
                 << "," << p->x2 << "," << p->y2 << ")" << endl;
         }
     };
+
+    struct sort_by_name : public binary_function<range, range, void>
+    {
+        bool operator() (const range* left, const range* right) const
+        {
+            return left->name < right->name;
+        }
+    };
 };
 
 template<typename _Key, typename _Data>
@@ -130,6 +138,14 @@ bool check_size(const _SetType& db, size_t size_expected)
         return false;
 
     return true;
+}
+
+template<typename _SetType>
+void print_search_result(typename _SetType::search_result_type& result)
+{
+    sort(result.begin(), result.end(), typename _SetType::data_type::sort_by_name());
+    cout << "search result --------------------------------------------------" << endl;
+    for_each(result.begin(), result.end(), typename _SetType::data_type::printer());
 }
 
 void rect_test_insertion_removal()
@@ -247,9 +263,7 @@ void rect_test_search()
     y = 0;
     bool success = db.search(x, y, result);
     assert(success);
-
-    cout << "search result --------------------------------------------------" << endl;
-    for_each(result.begin(), result.end(), range<value_type>::printer());
+    print_search_result<set_type>(result);
 }
 
 int main(int argc, char** argv)
