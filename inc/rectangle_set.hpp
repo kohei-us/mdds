@@ -212,6 +212,12 @@ void rectangle_set<_Key,_Data>::remove(data_type* data)
     // Remove data from the inner segment tree.
     inner_type* inner_tree = itr_seg->second;
     inner_tree->remove(data);
+    if (inner_tree->empty())
+    {
+        // This inner tree is now empty.  Erase it.
+        m_outer_segments.remove(inner_tree);
+        m_outer_map.erase(itr_seg);
+    }
 
     // Remove it from the data set as well.
     m_dataset.erase(data);
