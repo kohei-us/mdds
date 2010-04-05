@@ -153,6 +153,9 @@ bool check_leaf_nodes(
     return db.verify_leaf_nodes(checks);
 }
 
+/** 
+ * Run the search and check the search result.
+ */
 template<typename key_type, typename data_type>
 bool check_search_result(
     const segment_tree<key_type, data_type>& db, 
@@ -169,6 +172,50 @@ bool check_search_result(
 
     cout << "data chain returned: ";
     for_each(data_chain.begin(), data_chain.end(), test_data::name_printer());
+    cout << endl;
+
+    size_t i = 0;
+    data_type* p = expected[i++];
+    typename list<const data_type*>::const_iterator itr = test.begin(), itr_end = test.end();
+    while (p)
+    {
+        if (itr == itr_end)
+            // data chain ended prematurely.
+            return false;
+
+        if (*itr != p)
+            // the value is not as expected.
+            return false;
+
+        p = expected[i++];
+        ++itr;
+    }
+    if (itr != itr_end)
+        // data chain is too long.
+        return false;
+
+    return true;
+}
+
+/** 
+ * Only check the search result against expected result set.  The caller 
+ * needs to run search and pass the result to this function. 
+ */
+template<typename key_type, typename data_type>
+bool check_search_result_only(
+    const segment_tree<key_type, data_type>& db, 
+    const typename segment_tree<key_type, data_type>::search_result_type& result,
+    key_type key, data_type** expected)
+{
+    cout << "search key: " << key << " ";
+
+    typedef typename segment_tree<key_type, data_type>::search_result_type search_result_type;
+    list<const data_type*> test;
+    copy(result.begin(), result.end(), back_inserter(test));
+    test.sort(test_data::sort_by_name());
+
+    cout << "search result (sorted): ";
+    for_each(test.begin(), test.end(), test_data::name_printer());
     cout << endl;
 
     size_t i = 0;
@@ -741,6 +788,65 @@ void st_test_perf_insertion()
     }
 }
 
+void st_test_aggregated_search_results()
+{
+    StackPrinter __stack_printer__("::st_test_aggregated_search_results");
+
+    typedef uint16_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+
+    vector<db_type::segment_data> segments;
+    segments.push_back(db_type::segment_data( 0, 10, &A));
+    segments.push_back(db_type::segment_data( 0,  5, &B));
+    segments.push_back(db_type::segment_data( 5, 12, &C));
+    segments.push_back(db_type::segment_data(10, 24, &D));
+    segments.push_back(db_type::segment_data( 4, 24, &E));
+    segments.push_back(db_type::segment_data( 0, 26, &F));
+    segments.push_back(db_type::segment_data(12, 26, &G));
+    segments.push_back(db_type::segment_data(0, 0, NULL)); // null-terminated
+
+    db_type db;
+    for (size_t i = 0; segments[i].pdata; ++i)
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
+
+    db.dump_segment_data();
+    db.build_tree();
+
+    db_type::search_result_type result;
+    {
+        key_type key = 0;
+        db.search(key, result);
+        data_type* expected[] = {&A, &B, &F, 0};
+        assert(check_search_result_only(db, result, key, expected));
+    }
+
+    {
+        key_type key = 10;
+        db.search(key, result);
+        // Note the duplicated F's in the search result.
+        data_type* expected[] = {&A, &B, &C, &D, &E, &F, &F, 0};
+        assert(check_search_result_only(db, result, key, expected));
+    }
+
+    {
+        key_type key = 5;
+        db.search(key, result);
+        data_type* expected[] = {&A, &A, &B, &C, &C, &D, &E, &E, &F, &F, &F, 0};
+        assert(check_search_result_only(db, result, key, expected));
+    }
+
+    {
+        result.clear(); // clear the accumulated result set.
+        key_type key = 5;
+        db.search(key, result);
+        data_type* expected[] = {&A, &C, &E, &F, 0};
+        assert(check_search_result_only(db, result, key, expected));
+    }
+}
+
 int main(int argc, char** argv)
 {
     bool test_func = false;
@@ -773,6 +879,7 @@ int main(int argc, char** argv)
         st_test_clear();
         st_test_duplicate_insertion();
         st_test_search_on_uneven_tree();
+        st_test_aggregated_search_results();
     }
 
     if (test_perf)
