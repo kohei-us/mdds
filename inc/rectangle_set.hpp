@@ -165,6 +165,13 @@ bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_typ
     if (!m_outer_segments.search(x, inner_trees))
         return false;
 
+    typename outer_type::search_result_type::iterator itr_tree = inner_trees.begin(), itr_tree_end = inner_trees.end();
+    for (; itr_tree != itr_tree_end; ++itr_tree)
+    {
+        // Search all relevant inner trees and aggregate results.
+        if (!itr_tree->second.search(y, result))
+            return false;
+    }
     return true;
 }
 
