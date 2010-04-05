@@ -31,6 +31,7 @@
 #include "segmenttree.hpp"
 #include "global.hpp"
 
+#include <unordered_set>
 #include <boost/ptr_container/ptr_map.hpp>
 
 namespace mdds {
@@ -46,7 +47,7 @@ public:
     rectangle_set(const rectangle_set& r);
     ~rectangle_set();
 
-    void insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
+    bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
 
 private:
 #ifdef UNIT_TEST
@@ -54,6 +55,7 @@ private:
 #endif
 
 private:
+    typedef ::std::unordered_set<data_type*>    dataset_type;
     typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type>  outer_type;
 
@@ -70,6 +72,13 @@ private:
      * This data member owns the inner segment_tree instances.
      */
     inner_segment_map_type  m_outer_map;
+
+    /** 
+     * Used to keep track of currently stored data instances, to prevent 
+     * insertion of duplicates.  Duplicates are defined as data objects having 
+     * identical pointer value. 
+     */
+    dataset_type m_dataset;
 };
 
 template<typename _Key, typename _Data>
@@ -88,8 +97,12 @@ rectangle_set<_Key,_Data>::~rectangle_set()
 }
 
 template<typename _Key, typename _Data>
-void rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data)
+bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data)
 {
+    // Make sure this is not a duplicate.
+    if (m_dataset.find(data) != m_dataset.end())
+        return false;
+
     // Check if internal x1 - x2 is already stored.
     interval_type outer_interval = interval_type(x1, x2);
     typename inner_segment_map_type::iterator itr = m_outer_map.find(outer_interval);
@@ -113,12 +126,18 @@ void rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
 
     inner_type* inner_tree = itr->second;
     inner_tree->insert(y1, y2, data);
+    m_dataset.insert(data);
+
+    return true;
 }
 
 #ifdef UNIT_TEST
 template<typename _Key, typename _Data>
 void rectangle_set<_Key,_Data>::dump_rectangles() const
 {
+    using namespace std;
+    cout << "dump rectangles ------------------------------------------------" << endl;
+
 }
 #endif
 

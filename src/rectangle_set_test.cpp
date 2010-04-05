@@ -100,9 +100,11 @@ void rect_test_insertion()
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
     typedef rectangle_set<value_type, range_type> set_type;
+
     set_type db;
     range_type A(0, 0, 1,  1, "A");
     range_type B(2, 2, 5, 10, "B");
+
     insert_range(db, A);
     insert_range(db, B);
     db.dump_rectangles();
