@@ -43,7 +43,28 @@ class rectangle_set
 public:
     typedef _Key    key_type;
     typedef _Data   data_type;
-    typedef ::std::vector<const data_type*> search_result_type;
+
+private:
+    struct rectangle
+    {
+        key_type x1;
+        key_type y1;
+        key_type x2;
+        key_type y2;
+
+        rectangle(key_type _x1, key_type _y1, key_type _x2, key_type _y2) :
+            x1(_x1), y1(_y1), x2(_x2), y2(_y2) {}
+    };
+    typedef ::std::unordered_map<data_type*, rectangle>    dataset_type;
+
+    typedef segment_tree<key_type, data_type>   inner_type;
+    typedef segment_tree<key_type, inner_type>  outer_type;
+
+    typedef ::std::pair<key_type, key_type>             interval_type;
+    typedef ::boost::ptr_map<interval_type, inner_type> inner_segment_map_type;
+
+public:
+    typedef typename inner_type::search_result_type search_result_type;
 
     rectangle_set();
     rectangle_set(const rectangle_set& r);
@@ -67,23 +88,6 @@ private:
 #endif
 
 private:
-    struct rectangle
-    {
-        key_type x1;
-        key_type y1;
-        key_type x2;
-        key_type y2;
-
-        rectangle(key_type _x1, key_type _y1, key_type _x2, key_type _y2) :
-            x1(_x1), y1(_y1), x2(_x2), y2(_y2) {}
-    };
-    typedef ::std::unordered_map<data_type*, rectangle>    dataset_type;
-
-    typedef segment_tree<key_type, data_type>   inner_type;
-    typedef segment_tree<key_type, inner_type>  outer_type;
-
-    typedef ::std::pair<key_type, key_type>             interval_type;
-    typedef ::boost::ptr_map<interval_type, inner_type> inner_segment_map_type;
 
     /** 
      * This data member stores pointers to the inner segment tree instances 
@@ -157,6 +161,10 @@ bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
 template<typename _Key, typename _Data>
 bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_type& result) const
 {
+    typename outer_type::search_result_type inner_trees;
+    if (!m_outer_segments.search(x, inner_trees))
+        return false;
+
     return true;
 }
 
