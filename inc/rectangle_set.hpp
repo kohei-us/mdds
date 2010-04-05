@@ -31,7 +31,8 @@
 #include "segmenttree.hpp"
 #include "global.hpp"
 
-#include <unordered_set>
+#include <vector>
+#include <unordered_map>
 #include <boost/ptr_container/ptr_map.hpp>
 
 namespace mdds {
@@ -42,6 +43,7 @@ class rectangle_set
 public:
     typedef _Key    key_type;
     typedef _Data   data_type;
+    typedef ::std::vector<const data_type*> search_result_type;
 
     rectangle_set();
     rectangle_set(const rectangle_set& r);
@@ -49,13 +51,26 @@ public:
 
     bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
 
+    bool search(key_type x, key_type y, search_result_type& result) const;
+
 private:
 #ifdef UNIT_TEST
     void dump_rectangles() const;
 #endif
 
 private:
-    typedef ::std::unordered_set<data_type*>    dataset_type;
+    struct rectangle
+    {
+        key_type x1;
+        key_type y1;
+        key_type x2;
+        key_type y2;
+
+        rectangle(key_type _x1, key_type _y1, key_type _x2, key_type _y2) :
+            x1(_x1), y1(_y1), x2(_x2), y2(_y2) {}
+    };
+    typedef ::std::unordered_map<data_type*, rectangle>    dataset_type;
+
     typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type>  outer_type;
 
@@ -126,8 +141,14 @@ bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
 
     inner_type* inner_tree = itr->second;
     inner_tree->insert(y1, y2, data);
-    m_dataset.insert(data);
+    m_dataset.insert(typename dataset_type::value_type(data, rectangle(x1, y1, x2, y2)));
 
+    return true;
+}
+
+template<typename _Key, typename _Data>
+bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_type& result) const
+{
     return true;
 }
 
@@ -137,7 +158,14 @@ void rectangle_set<_Key,_Data>::dump_rectangles() const
 {
     using namespace std;
     cout << "dump rectangles ------------------------------------------------" << endl;
-
+    typename dataset_type::const_iterator itr = m_dataset.begin(), itr_end = m_dataset.end();
+    for (; itr != itr_end; ++itr)
+    {
+        const rectangle& rect = itr->second;
+        cout << itr->first->name << ": (x1,y1,x2,y2) = "
+            << "(" << rect.x1 << "," << rect.y1 << "," << rect.x2 << "," << rect.y2 << ")" 
+            << endl;
+    }
 }
 #endif
 
