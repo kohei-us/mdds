@@ -82,7 +82,7 @@ public:
 
     bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
 
-    bool search(key_type x, key_type y, search_result_type& result) const;
+    bool search(key_type x, key_type y, search_result_type& result);
 
     void remove(data_type* data);
 
@@ -170,7 +170,7 @@ bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
 }
 
 template<typename _Key, typename _Data>
-bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_type& result) const
+bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_type& result)
 {
     typename outer_type::search_result_type inner_trees;
     if (!m_outer_segments.is_tree_valid())
@@ -182,12 +182,12 @@ bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_typ
     typename outer_type::search_result_type::iterator itr_tree = inner_trees.begin(), itr_tree_end = inner_trees.end();
     for (; itr_tree != itr_tree_end; ++itr_tree)
     {
-        inner_type& inner_tree = itr_tree->second;
-        if (!inner_tree.is_tree_valid())
-            inner_tree.build_tree();
+        inner_type* inner_tree = const_cast<inner_type*>(*itr_tree);
+        if (!inner_tree->is_tree_valid())
+            inner_tree->build_tree();
 
         // Search all relevant inner trees and aggregate results.
-        if (!inner_tree.search(y, result))
+        if (!inner_tree->search(y, result))
             return false;
     }
     return true;

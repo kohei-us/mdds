@@ -87,6 +87,15 @@ struct range
 
     range(value_type _x1, value_type _y1, value_type _x2, value_type _y2, const string& _name) : 
         x1(_x1), y1(_y1), x2(_x2), y2(_y2), name(_name) {}
+
+    struct printer : public unary_function<range, void>
+    {
+        void operator() (const range* p) const
+        {
+            cout << p->name << ": (x1,y1,x2,y2) = (" << p->x1 << "," << p->y1 
+                << "," << p->x2 << "," << p->y2 << ")" << endl;
+        }
+    };
 };
 
 template<typename _Key, typename _Data>
@@ -207,8 +216,45 @@ void rect_test_insertion_removal()
     }
 }
 
+void rect_test_search()
+{
+    StackPrinter __stack_printer__("::rect_test_search");
+    typedef uint32_t value_type;
+    typedef range<value_type> range_type;
+    typedef rectangle_set<value_type, range_type> set_type;
+
+    range_type A(0, 0,   1,   1, "A");
+    range_type B(2, 2,   5,  10, "B");
+    range_type C(0, 1,   2,   2, "C");
+    range_type D(3, 3,   5,   5, "D");
+    range_type E(3, 4,   5,  15, "E");
+    range_type F(0, 3,  15,  15, "F");
+    range_type G(0, 0, 100, 100, "G");
+
+    set_type db;
+    insert_range(db, A);
+    insert_range(db, B);
+    insert_range(db, C);
+    insert_range(db, D);
+    insert_range(db, E);
+    insert_range(db, F);
+    insert_range(db, G);
+    db.dump_rectangles();
+
+    set_type::search_result_type result;
+    value_type x, y;
+    x = 0;
+    y = 0;
+    bool success = db.search(x, y, result);
+    assert(success);
+
+    cout << "search result --------------------------------------------------" << endl;
+    for_each(result.begin(), result.end(), range<value_type>::printer());
+}
+
 int main(int argc, char** argv)
 {
     rect_test_insertion_removal();
+    rect_test_search();
     fprintf(stdout, "Test finished successfully!\n");
 }
