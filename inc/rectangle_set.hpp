@@ -163,6 +163,25 @@ bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_typ
 template<typename _Key, typename _Data>
 void rectangle_set<_Key,_Data>::remove(data_type* data)
 {
+    typename dataset_type::iterator itr_data = m_dataset.find(data);
+    if (itr_data == m_dataset.end())
+        // The data is not stored in this data structure.
+        return;
+
+    const rectangle& rect = itr_data->second;
+
+    // Find the corresponding inner segment tree for this outer interval.
+    interval_type outer(rect.x1, rect.x2);
+    typename inner_segment_map_type::iterator itr_seg = m_outer_map.find(outer);
+    if (itr_seg == m_outer_map.end())
+        throw general_error("inconsistent internal state: failed to find an internal segment tree for an existing interval.");
+
+    // Remove data from the inner segment tree.
+    inner_type* inner_tree = itr_seg->second;
+    inner_tree->remove(data);
+
+    // Remove it from the data set as well.
+    m_dataset.erase(data);
 }
 
 template<typename _Key, typename _Data>
