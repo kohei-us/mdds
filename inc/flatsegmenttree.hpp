@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_FLATSEGMENTTREE_HXX__
-#define __MDDS_FLATSEGMENTTREE_HXX__
+#ifndef __MDDS_FLATSEGMENTTREE_HPP__
+#define __MDDS_FLATSEGMENTTREE_HPP__
 
 #include <iostream>
 #include <utility>

@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __SEGMENTTREE_HPP__
-#define __SEGMENTTREE_HPP__
+#ifndef __MDDS_SEGMENTTREE_HPP__
+#define __MDDS_SEGMENTTREE_HPP__
 
 #include "node.hpp"
 
