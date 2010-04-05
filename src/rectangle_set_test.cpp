@@ -25,6 +25,8 @@
  *
  ************************************************************************/
 
+#include "rectangle_set.hpp"
+
 #include <iostream>
 
 #include <stdio.h>
@@ -70,8 +72,44 @@ private:
 }
 
 using namespace std;
+using namespace mdds;
+
+template<typename _ValueType>
+struct range
+{
+    typedef _ValueType value_type;
+
+    value_type x1;
+    value_type y1;
+    value_type x2;
+    value_type y2;
+    string name;
+
+    range(value_type _x1, value_type _y1, value_type _x2, value_type _y2, const string& _name) : 
+        x1(_x1), y1(_y1), x2(_x2), y2(_y2), name(_name) {}
+};
+
+template<typename _ValueType, typename _DataType>
+void insert_range(rectangle_set<_ValueType, _DataType>& db, range<_ValueType>& range)
+{
+    db.insert(range.x1, range.y1, range.x2, range.y2, &range);
+}
+
+void rect_test_insertion()
+{
+    typedef uint32_t value_type;
+    typedef range<value_type> range_type;
+    typedef rectangle_set<value_type, range_type> set_type;
+    set_type db;
+    range_type A(0, 0, 1,  1, "A");
+    range_type B(2, 2, 5, 10, "B");
+    insert_range(db, A);
+    insert_range(db, B);
+    db.dump_rectangles();
+}
 
 int main(int argc, char** argv)
 {
+    rect_test_insertion();
     fprintf(stdout, "Test finished successfully!\n");
 }

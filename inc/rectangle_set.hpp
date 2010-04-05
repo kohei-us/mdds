@@ -25,12 +25,65 @@
  *
  ************************************************************************/
 
-#ifndef __RECTANGLE_SET_HPP__
-#define __RECTANGLE_SET_HPP__
+#ifndef __MDDS_RECTANGLE_SET_HPP__
+#define __MDDS_RECTANGLE_SET_HPP__
+
+#include "segmenttree.hpp"
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace mdds {
 
+template<typename _Key, typename _Data>
+class rectangle_set
+{
+public:
+    typedef _Key    key_type;
+    typedef _Data   data_type;
 
+    rectangle_set();
+    rectangle_set(const rectangle_set& r);
+    ~rectangle_set();
+
+    void insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
+
+private:
+#ifdef UNIT_TEST
+    void dump_rectangles() const;
+#endif
+
+private:
+    typedef segment_tree<key_type, data_type>   inner_type;
+    typedef segment_tree<key_type, inner_type>  outer_type;
+    outer_type m_outer_segments;
+
+};
+
+template<typename _Key, typename _Data>
+rectangle_set<_Key,_Data>::rectangle_set()
+{
+}
+
+template<typename _Key, typename _Data>
+rectangle_set<_Key,_Data>::rectangle_set(const rectangle_set& r)
+{
+}
+
+template<typename _Key, typename _Data>
+rectangle_set<_Key,_Data>::~rectangle_set()
+{
+}
+
+template<typename _Key, typename _Data>
+void rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data)
+{
+}
+
+#ifdef UNIT_TEST
+template<typename _Key, typename _Data>
+void rectangle_set<_Key,_Data>::dump_rectangles() const
+{
+}
+#endif
 
 }
 
