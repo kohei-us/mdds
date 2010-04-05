@@ -111,6 +111,18 @@ bool check_rectangles(const _SetType& db, const typename _SetType::data_type** e
     return db.verify_rectangles(test);
 }
 
+template<typename _SetType>
+bool check_size(const _SetType& db, size_t size_expected)
+{
+    if (db.size() != size_expected)
+        return false;
+
+    if (db.empty() != (size_expected == 0))
+        return false;
+
+    return true;
+}
+
 void rect_test_insertion()
 {
     typedef uint32_t value_type;
@@ -118,18 +130,43 @@ void rect_test_insertion()
     typedef rectangle_set<value_type, range_type> set_type;
 
     set_type db;
-    range_type A(0, 0, 1,  1, "A");
-    range_type B(2, 2, 5, 10, "B");
-    range_type C(0, 1, 2,  2, "C");
+    assert(check_size(db, 0));
+
+    range_type A(0, 0,  1,  1, "A");
+    range_type B(2, 2,  5, 10, "B");
+    range_type C(0, 1,  2,  2, "C");
+    range_type D(3, 3,  5,  5, "D");
+    range_type E(3, 4,  5, 15, "E");
+    range_type F(0, 3, 15, 15, "F");
 
     insert_range(db, A);
     insert_range(db, B);
     insert_range(db, C);
     db.dump_rectangles();
-
     {
         const set_type::data_type* expected[] = {&A, &B, &C, 0};
         assert(check_rectangles(db, expected));
+        assert(check_size(db, 3));
+    }
+
+    insert_range(db, D);
+    insert_range(db, E);
+    insert_range(db, F);
+    db.dump_rectangles();
+    {
+        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, 0};
+        assert(check_rectangles(db, expected));
+        assert(check_size(db, 6));
+    }
+
+    insert_range(db, A);
+    insert_range(db, C);
+    insert_range(db, E);
+    db.dump_rectangles();
+    {
+        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, 0};
+        assert(check_rectangles(db, expected));
+        assert(check_size(db, 6));
     }
 }
 
