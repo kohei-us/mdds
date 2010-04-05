@@ -14,11 +14,13 @@ EXECS= \
 HEADERS= \
 	$(INCDIR)/node.hpp \
 	$(INCDIR)/flatsegmenttree.hpp \
-	$(INCDIR)/segmenttree.hpp
+	$(INCDIR)/segmenttree.hpp \
+	$(INCDIR)/rectangle_set.hpp
 
 OBJFILES= \
 	$(OBJDIR)/flatsegmenttree_test.o \
-	$(OBJDIR)/segmenttree_test.o
+	$(OBJDIR)/segmenttree_test.o \
+	$(OBJDIR)/rectangle_set_test.o
 
 DEPENDS= \
 	$(HEADERS)
@@ -34,11 +36,17 @@ $(OBJDIR)/flatsegmenttree_test.o: $(SRCDIR)/flatsegmenttree_test.cpp $(DEPENDS)
 $(OBJDIR)/segmenttree_test.o: $(SRCDIR)/segmenttree_test.cpp  $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/segmenttree_test.cpp
 
+$(OBJDIR)/rectangle_set_test.o: $(SRCDIR)/rectangle_set_test.cpp  $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/rectangle_set_test.cpp
+
 flatsegmenttree-test: pre $(OBJDIR)/flatsegmenttree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flatsegmenttree_test.o -o $@
 
 segmenttree-test: pre $(OBJDIR)/segmenttree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/segmenttree_test.o -o $@
+
+rectangle-set-test: pre $(OBJDIR)/rectangle_set_test.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/rectangle_set_test.o -o $@
 
 stlperf-test: pre $(SRCDIR)/stlperf_test.cpp
 	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
@@ -48,6 +56,9 @@ $(OBJDIR)/template_test.o: $(SRCDIR)/template_test.cpp $(DEPENDS)
 
 test.fst: flatsegmenttree-test
 	./flatsegmenttree-test
+
+test.recset: rectangle-set-test
+	./rectangle-set-test
 
 test.fst.mem: flatsegmenttree-test
 	valgrind --tool=memcheck --leak-check=full ./flatsegmenttree-test

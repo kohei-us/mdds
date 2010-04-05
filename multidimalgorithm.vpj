@@ -225,6 +225,7 @@
 			<F N="inc/node.hpp"/>
 			<F N="inc/nodecontainer.hpp"/>
 			<F N="inc/rangetree.hpp"/>
+			<F N="inc/rectangle_set.hpp"/>
 			<F N="inc/segmenttree.hpp"/>
 		</Folder>
 		<Folder Name="src">
@@ -232,6 +233,7 @@
 			<F N="src/global.cpp"/>
 			<F N="src/nodecontainer.cpp"/>
 			<F N="src/rangetree.cpp"/>
+			<F N="src/rectangle_set_test.cpp"/>
 			<F N="src/segmenttree_test.cpp"/>
 			<F N="src/stlperf_test.cpp"/>
 			<F N="src/template_test.cpp"/>
