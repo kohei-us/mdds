@@ -53,6 +53,14 @@ public:
 
     bool search(key_type x, key_type y, search_result_type& result) const;
 
+    void remove(data_type* data);
+
+    void clear();
+
+    size_t size() const;
+
+    bool empty() const;
+
 private:
 #ifdef UNIT_TEST
     void dump_rectangles() const;
@@ -151,6 +159,29 @@ bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_typ
 {
     return true;
 }
+
+template<typename _Key, typename _Data>
+void rectangle_set<_Key,_Data>::remove(data_type* data)
+{
+}
+
+template<typename _Key, typename _Data>
+void rectangle_set<_Key,_Data>::clear()
+{
+}
+
+template<typename _Key, typename _Data>
+size_t rectangle_set<_Key,_Data>::size() const
+{
+    return m_dataset.size();
+}
+
+template<typename _Key, typename _Data>
+bool rectangle_set<_Key,_Data>::empty() const
+{
+    return m_dataset.empty();
+}
+
 
 #ifdef UNIT_TEST
 template<typename _Key, typename _Data>
