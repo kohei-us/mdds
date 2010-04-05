@@ -262,6 +262,11 @@ public:
      * @param point specified point value 
      * @param result doubly-linked list of data instances associated with 
      *                   the segments that include the specified point.
+     *                   <i>Note that the search result gets appended to the
+     *                   list; the list will not get emptied on each
+     *                   search.</i>  It is caller's responsibility to empty
+     *                   the list before passing it to this method in case the
+     *                   caller so desires.
      *  
      * @return true if the search is performed successfully, false if the 
      *         search has ended prematurely due to error conditions.
@@ -582,9 +587,7 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
         // Tree doesn't exist.
         return false;
 
-    search_result_type _result;
-    descend_tree_for_search(point, m_root_node.get(), _result);
-    _result.swap(result);
+    descend_tree_for_search(point, m_root_node.get(), result);
     return true;
 }
 

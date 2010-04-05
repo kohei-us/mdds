@@ -651,9 +651,9 @@ void st_test_search_on_uneven_tree()
         
         db.build_tree();
 
-        db_type::search_result_type result;
         for (key_type i = -1; i < data_count+1; ++i)
         {
+            db_type::search_result_type result;
             bool success = db.search(i, result);
             assert(success);
             cout << "search key: " << i << "  result: ";
