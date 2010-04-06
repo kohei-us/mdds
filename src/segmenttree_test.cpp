@@ -918,7 +918,6 @@ void st_test_search_on_empty_set()
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
 
-    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     db_type db;
     db.build_tree();
 
