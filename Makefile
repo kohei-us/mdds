@@ -59,7 +59,7 @@ test.fst: flatsegmenttree-test
 	./flatsegmenttree-test
 
 test.recset: rectangle-set-test
-	./rectangle-set-test
+	./rectangle-set-test func
 
 test.recset.mem: rectangle-set-test
 	valgrind --tool=memcheck --leak-check=full ./rectangle-set-test
