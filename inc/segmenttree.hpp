@@ -50,11 +50,11 @@ class segment_tree
 public:
     typedef _Key        key_type;
     typedef _Data       data_type;
-    typedef ::std::vector<const data_type*> data_chain_type;
-    typedef ::std::vector<const data_type*> search_result_type;
+    typedef ::std::vector<data_type*> search_result_type;
 
 private:
 
+    typedef ::std::vector<data_type*> data_chain_type;
     typedef ::std::unordered_map<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
 
 #ifdef UNIT_TEST
