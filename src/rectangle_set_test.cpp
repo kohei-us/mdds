@@ -28,6 +28,8 @@
 #include "rectangle_set.hpp"
 
 #include <iostream>
+#include <sstream>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <stdio.h>
 #include <string>
@@ -73,6 +75,7 @@ private:
 
 using namespace std;
 using namespace mdds;
+using ::boost::ptr_vector;
 
 template<typename _ValueType>
 struct range
@@ -667,9 +670,160 @@ void rect_test_equality()
     assert(db1 == db2);
 }
 
-void rect_test_perf_insertion()
+void rect_test_perf_insertion_fixed_x()
 {
-    StackPrinter __stack_printer__("::rect_test_perf_insertion");
+    StackPrinter __stack_printer__("::rect_test_perf_insertion_fixed_x");
+    typedef size_t value_type;
+    typedef range<value_type> range_type;
+    typedef rectangle_set<value_type, const range_type> set_type;
+
+    size_t data_count = 1000000;
+    cout << "data count: " << data_count << endl;
+
+    set_type db;
+    ptr_vector<range_type> data_store;
+    data_store.reserve(data_count);
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion range instance creation");
+        for (size_t i = 0; i < data_count; ++i)
+        {
+            ostringstream os;
+            os << hex << i;
+            data_store.push_back(new range_type(0, 0, 10, i+1, os.str()));
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion data insertion");
+        for (size_t i = 0; i < data_count; ++i)
+            insert_range(db, data_store[i]);
+    }
+    assert(db.size() == data_count);
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result_type result;
+            db.search(0, 0, result);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (without build_tree overhead)");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result_type result;
+            db.search(0, 0, result);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with median hits");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result_type result;
+            db.search(0, data_count/2, result);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with no hits");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result_type result;
+            db.search(0, data_count+1, result);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer__("::rect_test_perf_insertion 10000 removals");
+        for (size_t i = 0; i < 10000; ++i)
+            db.remove(&data_store[i]);
+    }
+
+    {
+        StackPrinter __stack_printer__("::rect_test_perf_insertion clearing set");
+        db.clear();
+    }
+}
+
+void rect_test_perf_insertion_fixed_y()
+{
+    StackPrinter __stack_printer__("::rect_test_perf_insertion_fixed_y");
+    typedef size_t value_type;
+    typedef range<value_type> range_type;
+    typedef rectangle_set<value_type, const range_type> set_type;
+
+    size_t data_count = 100000;
+    cout << "data count: " << data_count << endl;
+
+    set_type db;
+    ptr_vector<range_type> data_store;
+    data_store.reserve(data_count);
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion range instance creation");
+        for (size_t i = 0; i < data_count; ++i)
+        {
+            ostringstream os;
+            os << hex << i;
+            data_store.push_back(new range_type(0, 0, i+1, 10, os.str()));
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion data insertion");
+        for (size_t i = 0; i < data_count; ++i)
+            insert_range(db, data_store[i]);
+    }
+    assert(db.size() == data_count);
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result_type result;
+            db.search(0, 0, result);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (without build_tree overhead)");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result_type result;
+            db.search(0, 0, result);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with median hits");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result_type result;
+            db.search(0, data_count/2, result);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with no hits");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result_type result;
+            db.search(0, data_count+1, result);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer__("::rect_test_perf_insertion 10000 removals");
+        for (size_t i = 0; i < 10000; ++i)
+            db.remove(&data_store[i]);
+    }
+
+    {
+        StackPrinter __stack_printer__("::rect_test_perf_insertion clearing set");
+        db.clear();
+    }
 }
 
 int main(int argc, char** argv)
@@ -707,7 +861,8 @@ int main(int argc, char** argv)
 
     if (test_perf)
     {
-        rect_test_perf_insertion();
+        rect_test_perf_insertion_fixed_x();
+        rect_test_perf_insertion_fixed_y();
     }
 
     fprintf(stdout, "Test finished successfully!\n");

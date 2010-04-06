@@ -61,6 +61,9 @@ test.fst: flatsegmenttree-test
 test.recset: rectangle-set-test
 	./rectangle-set-test func
 
+test.recset.perf: rectangle-set-test
+	./rectangle-set-test perf
+
 test.recset.mem: rectangle-set-test
 	valgrind --tool=memcheck --leak-check=full ./rectangle-set-test
 
