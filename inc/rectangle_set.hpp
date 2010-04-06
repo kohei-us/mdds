@@ -164,6 +164,8 @@ rectangle_set<_Key,_Data>::~rectangle_set()
 template<typename _Key, typename _Data>
 rectangle_set<_Key,_Data>& rectangle_set<_Key,_Data>::operator= (const rectangle_set& r)
 {
+    clear(); // Don't forget to clear the internal state beforehands.
+
     m_inner_map = r.m_inner_map;
     m_dataset = r.m_dataset;
     build_outer_segment_tree();
@@ -179,7 +181,7 @@ bool rectangle_set<_Key,_Data>::operator== (const rectangle_set& r) const
     typename dataset_type::const_iterator itr = m_dataset.begin(), itr_end = m_dataset.end();
     for (; itr != itr_end; ++itr)
     {
-        typename dataset_type::const_iterator itr_rhs = r.m_dataset.find(*itr);
+        typename dataset_type::const_iterator itr_rhs = r.m_dataset.find(itr->first);
         if (itr_rhs == r.m_dataset.end())
             return false;
 
