@@ -910,6 +910,26 @@ void st_test_dense_tree_search()
     }
 }
 
+void st_test_search_on_empty_set()
+{
+    StackPrinter __stack_printer__("::st_test_search_on_empty_set");
+
+    typedef uint16_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+    db_type db;
+    db.build_tree();
+
+    // Search on an empty set should still be considered a success as long as
+    // the tree is built beforehand.
+    db_type::search_result_type result;
+    bool success = db.search(0, result);
+    assert(success);
+    assert(result.empty());
+}
+
 int main(int argc, char** argv)
 {
     bool test_func = false;
@@ -944,6 +964,7 @@ int main(int argc, char** argv)
         st_test_search_on_uneven_tree();
         st_test_aggregated_search_results();
         st_test_dense_tree_search();
+        st_test_search_on_empty_set();
     }
 
     if (test_perf)
