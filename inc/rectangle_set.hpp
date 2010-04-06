@@ -92,6 +92,16 @@ public:
     rectangle_set(const rectangle_set& r);
     ~rectangle_set();
 
+    rectangle_set& operator= (const rectangle_set& r);
+
+    /** 
+     * Equality between two instances of rectangle_set is evaluated based on 
+     * the stored rectangle instances; their pointer values and geometries.
+     */
+    bool operator== (const rectangle_set& r) const;
+
+    bool operator!= (const rectangle_set& r) const { return !operator==(r); }
+
     bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
 
     bool search(key_type x, key_type y, search_result_type& result);
@@ -105,6 +115,8 @@ public:
     bool empty() const;
 
 private:
+    void build_outer_segment_tree();
+
 #ifdef UNIT_TEST
     void dump_rectangles() const;
     bool verify_rectangles(const dataset_type& expected) const;
@@ -141,20 +153,41 @@ rectangle_set<_Key,_Data>::rectangle_set(const rectangle_set& r) :
     m_inner_map(r.m_inner_map),
     m_dataset(r.m_dataset)
 {
-    // Re-construct the outer segment tree from the authoritative inner tree 
-    // map.
-    typename inner_segment_map_type::iterator itr = m_inner_map.begin(), itr_end = m_inner_map.end();
-    for (; itr != itr_end; ++itr)
-    {
-        const interval_type& interval = itr->first;
-        inner_type* tree = itr->second;
-        m_outer_segments.insert(interval.first, interval.second, tree);
-    }
+    build_outer_segment_tree();
 }
 
 template<typename _Key, typename _Data>
 rectangle_set<_Key,_Data>::~rectangle_set()
 {
+}
+
+template<typename _Key, typename _Data>
+rectangle_set<_Key,_Data>& rectangle_set<_Key,_Data>::operator= (const rectangle_set& r)
+{
+    m_inner_map = r.m_inner_map;
+    m_dataset = r.m_dataset;
+    build_outer_segment_tree();
+    return *this;
+}
+
+template<typename _Key, typename _Data>
+bool rectangle_set<_Key,_Data>::operator== (const rectangle_set& r) const
+{
+    if (m_dataset.size() != r.m_dataset.size())
+        return false;
+
+    typename dataset_type::const_iterator itr = m_dataset.begin(), itr_end = m_dataset.end();
+    for (; itr != itr_end; ++itr)
+    {
+        typename dataset_type::const_iterator itr_rhs = r.m_dataset.find(*itr);
+        if (itr_rhs == r.m_dataset.end())
+            return false;
+
+        if (itr->second != itr_rhs->second)
+            return false;
+    }
+
+    return true;
 }
 
 template<typename _Key, typename _Data>
@@ -264,6 +297,20 @@ template<typename _Key, typename _Data>
 bool rectangle_set<_Key,_Data>::empty() const
 {
     return m_dataset.empty();
+}
+
+template<typename _Key, typename _Data>
+void rectangle_set<_Key,_Data>::build_outer_segment_tree()
+{
+    // Re-construct the outer segment tree from the authoritative inner tree 
+    // map.
+    typename inner_segment_map_type::iterator itr = m_inner_map.begin(), itr_end = m_inner_map.end();
+    for (; itr != itr_end; ++itr)
+    {
+        const interval_type& interval = itr->first;
+        inner_type* tree = itr->second;
+        m_outer_segments.insert(interval.first, interval.second, tree);
+    }
 }
 
 #ifdef UNIT_TEST

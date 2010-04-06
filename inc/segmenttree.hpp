@@ -226,10 +226,7 @@ public:
      */
     bool operator==(const segment_tree& r) const;
 
-    bool operator!=(const segment_tree& r) const
-    {
-        return !operator==(r);
-    }
+    bool operator!=(const segment_tree& r) const { return !operator==(r); }
 
     /** 
      * Check whether or not the internal tree is in a valid state.  The tree 
