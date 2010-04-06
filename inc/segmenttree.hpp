@@ -453,16 +453,7 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
     if (pnode->is_leaf)
     {
         // This is a leaf node.
-        if (pnode->value_leaf.key == begin_key)
-        {
-            // Insertion of begin point.
-            leaf_value_type& v = pnode->value_leaf;
-            if (!v.data_chain)
-                v.data_chain = new data_chain_type;
-            v.data_chain->push_back(pdata);
-            plist->push_back(pnode);
-        }
-        else if (begin_key <= pnode->value_leaf.key && pnode->value_leaf.key < end_key)
+        if (begin_key <= pnode->value_leaf.key && pnode->value_leaf.key < end_key)
         {
             leaf_value_type& v = pnode->value_leaf;
             if (!v.data_chain)
