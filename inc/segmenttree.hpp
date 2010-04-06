@@ -462,20 +462,13 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
             v.data_chain->push_back(pdata);
             plist->push_back(pnode);
         }
-        else if (pnode->value_leaf.key == end_key)
+        else if (begin_key <= pnode->value_leaf.key && pnode->value_leaf.key < end_key)
         {
-            // For insertion of the end point, insert data pointer to the
-            // previous node _only when_ the value of the previous node
-            // doesn't equal the begin point value.
-            node* pprev = pnode->left.get();
-            if (pprev && pprev->value_leaf.key != begin_key)
-            {
-                leaf_value_type& v = pprev->value_leaf;
-                if (!v.data_chain)
-                    v.data_chain = new data_chain_type;
-                v.data_chain->push_back(pdata);
-                plist->push_back(pprev);
-            }
+            leaf_value_type& v = pnode->value_leaf;
+            if (!v.data_chain)
+                v.data_chain = new data_chain_type;
+            v.data_chain->push_back(pdata);
+            plist->push_back(pnode);
         }
         return;
     }

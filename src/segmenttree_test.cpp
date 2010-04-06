@@ -170,8 +170,8 @@ bool check_search_result(
     copy(data_chain.begin(), data_chain.end(), back_inserter(test));
     test.sort(test_data::sort_by_name());
 
-    cout << "data chain returned: ";
-    for_each(data_chain.begin(), data_chain.end(), test_data::name_printer());
+    cout << "search result (sorted): ";
+    for_each(test.begin(), test.end(), test_data::name_printer());
     cout << endl;
 
     size_t i = 0;
@@ -308,7 +308,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, &F, 0, 0};
+        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &F, 0, &F, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == 14);
         assert(db.verify_node_lists());
@@ -318,7 +318,7 @@ void st_test_insert_search_removal()
     build_and_dump(db);
     {
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &G, 0, &F, &G, 0, 0};
+        data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &F, &G, 0, &F, &G, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == 14);
         assert(db.verify_node_lists());
@@ -367,7 +367,7 @@ void st_test_insert_search_removal()
 
     {
         key_type key = 12;
-        data_type* expected[] = {&D, &E, &G, 0};
+        data_type* expected[] = {&D, &E, &F, &G, 0};
         assert(check_search_result(db, key, expected));
     }
 
@@ -847,6 +847,69 @@ void st_test_aggregated_search_results()
     }
 }
 
+void st_test_dense_tree_search()
+{
+    StackPrinter __stack_printer__("::st_test_dense_tree_search");
+
+    typedef uint16_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+    db_type db;
+    db.insert(0, 1, &A);
+    db.insert(0, 2, &B);
+    db.insert(0, 3, &C);
+    db.insert(0, 4, &D);
+    db.insert(0, 5, &E);
+    db.insert(0, 6, &F);
+    db.insert(0, 7, &G);
+    db.build_tree();
+    db.dump_tree();
+    db.dump_leaf_nodes();
+
+    {
+        db_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        bool success = check_search_result<key_type, data_type>(db, 0, expected);
+        assert(success);
+    }
+    {
+        db_type::data_type* expected[] = {&B, &C, &D, &E, &F, &G, 0};
+        bool success = check_search_result<key_type, data_type>(db, 1, expected);
+        assert(success);
+    }
+    {
+        db_type::data_type* expected[] = {&C, &D, &E, &F, &G, 0};
+        bool success = check_search_result<key_type, data_type>(db, 2, expected);
+        assert(success);
+    }
+    {
+        db_type::data_type* expected[] = {&D, &E, &F, &G, 0};
+        bool success = check_search_result<key_type, data_type>(db, 3, expected);
+        assert(success);
+    }
+    {
+        db_type::data_type* expected[] = {&E, &F, &G, 0};
+        bool success = check_search_result<key_type, data_type>(db, 4, expected);
+        assert(success);
+    }
+    {
+        db_type::data_type* expected[] = {&F, &G, 0};
+        bool success = check_search_result<key_type, data_type>(db, 5, expected);
+        assert(success);
+    }
+    {
+        db_type::data_type* expected[] = {&G, 0};
+        bool success = check_search_result<key_type, data_type>(db, 6, expected);
+        assert(success);
+    }
+    {
+        db_type::data_type* expected[] = {0};
+        bool success = check_search_result<key_type, data_type>(db, 7, expected);
+        assert(success);
+    }
+}
+
 int main(int argc, char** argv)
 {
     bool test_func = false;
@@ -880,6 +943,7 @@ int main(int argc, char** argv)
         st_test_duplicate_insertion();
         st_test_search_on_uneven_tree();
         st_test_aggregated_search_results();
+        st_test_dense_tree_search();
     }
 
     if (test_perf)
