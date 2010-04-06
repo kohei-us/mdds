@@ -652,6 +652,19 @@ void rect_test_equality()
     assert(db1 != db2);
     insert_range(db2, A);
     assert(db1 == db2);
+
+    db1.clear();
+    db2.clear();
+    assert(db1 == db2);
+
+    // Store the same object address but with different geometries.
+    db1.insert(0, 0, 2, 2, &A);
+    db2.insert(3, 3, 6, 6, &A);
+    assert(db1 != db2);
+
+    db2.remove(&A);
+    db2.insert(0, 0, 2, 2, &A);
+    assert(db1 == db2);
 }
 
 int main(int argc, char** argv)
