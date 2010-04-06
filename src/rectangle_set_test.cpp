@@ -474,7 +474,7 @@ void rect_test_copy_constructor()
     db_copied.clear();
     check_size(db_copied, 0);
     {
-        // Hits all rectangles.
+        // There is no rectangle left, hence the search result should be empty.
         const set_type::data_type* expected[] = {0};
         assert(check_search_result<set_type>(db_copied, 0, 0, expected));
     }
