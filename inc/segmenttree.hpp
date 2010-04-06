@@ -568,8 +568,9 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
         return false;
 
     if (!m_root_node.get())
-        // Tree doesn't exist.
-        return false;
+        // Tree doesn't exist.  Since the tree is flagged valid, this means no
+        // segments have been inserted.
+        return true;
 
     descend_tree_for_search(point, m_root_node.get(), result);
     return true;

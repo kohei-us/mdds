@@ -156,7 +156,10 @@ bool check_search_result(_SetType& db,
     typename _SetType::search_result_type result, test;
     bool success = db.search(x, y, result);
     if (!success)
+    {
+        cout << "search failed" << endl;
         return false;
+    }
 
     sort(result.begin(), result.end(), typename _SetType::data_type::sort_by_name());
     print_search_result<_SetType>(x, y, result);
@@ -174,9 +177,11 @@ bool check_search_result(_SetType& db,
 
 void rect_test_insertion_removal()
 {
+    StackPrinter __stack_printer__("::rect_test_insertion_removal");
+
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, range_type> set_type;
+    typedef rectangle_set<value_type, const range_type> set_type;
 
     set_type db;
     assert(check_size(db, 0));
@@ -261,7 +266,7 @@ void rect_test_search()
     StackPrinter __stack_printer__("::rect_test_search");
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, range_type> set_type;
+    typedef rectangle_set<value_type, const range_type> set_type;
 
     range_type A(0, 0, 1, 1, "A");
     range_type B(0, 0, 2, 2, "B");
@@ -272,6 +277,11 @@ void rect_test_search()
     range_type G(0, 0, 7, 7, "G");
 
     set_type db;
+    {
+        // Search before any data is inserted.
+        const set_type::data_type* expected[] = {0};
+        assert(check_search_result<set_type>(db, 0, 0, expected));
+    }
     insert_range(db, A);
     insert_range(db, B);
     insert_range(db, C);
@@ -386,9 +396,122 @@ void rect_test_search()
     }
 }
 
+void rect_test_copy_constructor()
+{
+    StackPrinter __stack_printer__("::rect_test_copy_constructor");
+    typedef int16_t value_type;
+    typedef range<value_type> range_type;
+    typedef rectangle_set<value_type, const range_type> set_type;
+
+    range_type A(0, 0, 1, 1, "A");
+    range_type B(0, 0, 2, 2, "B");
+    range_type C(0, 0, 3, 3, "C");
+    range_type D(0, 0, 4, 4, "D");
+    range_type E(0, 0, 5, 5, "E");
+    range_type F(0, 0, 6, 6, "F");
+    range_type G(0, 0, 7, 7, "G");
+
+    set_type db;
+    insert_range(db, A);
+    insert_range(db, B);
+    insert_range(db, C);
+    insert_range(db, D);
+    insert_range(db, E);
+    insert_range(db, F);
+    insert_range(db, G);
+    set_type db_copied(db);
+    check_size(db, 7);
+    check_size(db_copied, 7);
+    db_copied.dump_rectangles();
+
+    {
+        // Hits all rectangles.
+        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        assert(check_search_result<set_type>(db_copied, 0, 0, expected));
+    }
+    {
+        const set_type::data_type* expected[] = {&B, &C, &D, &E, &F, &G, 0};
+        assert(check_search_result<set_type>(db_copied, 0, 1, expected));
+        assert(check_search_result<set_type>(db_copied, 1, 0, expected));
+        assert(check_search_result<set_type>(db_copied, 1, 1, expected));
+    }
+    {
+        const set_type::data_type* expected[] = {&C, &D, &E, &F, &G, 0};
+        assert(check_search_result<set_type>(db_copied, 0, 2, expected));
+        assert(check_search_result<set_type>(db_copied, 2, 0, expected));
+        assert(check_search_result<set_type>(db_copied, 2, 2, expected));
+    }
+    {
+        const set_type::data_type* expected[] = {&D, &E, &F, &G, 0};
+        assert(check_search_result<set_type>(db_copied, 0, 3, expected));
+        assert(check_search_result<set_type>(db_copied, 3, 0, expected));
+        assert(check_search_result<set_type>(db_copied, 3, 3, expected));
+    }
+    {
+        const set_type::data_type* expected[] = {&E, &F, &G, 0};
+        assert(check_search_result<set_type>(db_copied, 0, 4, expected));
+        assert(check_search_result<set_type>(db_copied, 4, 0, expected));
+        assert(check_search_result<set_type>(db_copied, 4, 4, expected));
+    }
+    {
+        const set_type::data_type* expected[] = {&F, &G, 0};
+        assert(check_search_result<set_type>(db_copied, 0, 5, expected));
+        assert(check_search_result<set_type>(db_copied, 5, 0, expected));
+        assert(check_search_result<set_type>(db_copied, 5, 5, expected));
+    }
+    {
+        const set_type::data_type* expected[] = {&G, 0};
+        assert(check_search_result<set_type>(db_copied, 0, 6, expected));
+        assert(check_search_result<set_type>(db_copied, 6, 0, expected));
+        assert(check_search_result<set_type>(db_copied, 6, 6, expected));
+    }
+    {
+        const set_type::data_type* expected[] = {0};
+        assert(check_search_result<set_type>(db_copied, 0, 7, expected));
+        assert(check_search_result<set_type>(db_copied, 7, 0, expected));
+        assert(check_search_result<set_type>(db_copied, 7, 7, expected));
+    }
+    db_copied.clear();
+    check_size(db_copied, 0);
+    {
+        // Hits all rectangles.
+        const set_type::data_type* expected[] = {0};
+        assert(check_search_result<set_type>(db_copied, 0, 0, expected));
+    }
+
+    // Insert a new set of ranges to the copied instance.
+    range_type A1(0, 0, 1, 1, "A1");
+    range_type B1(0, 0, 2, 2, "B1");
+    range_type C1(0, 0, 3, 3, "C1");
+    range_type D1(0, 0, 4, 4, "D1");
+    range_type E1(0, 0, 5, 5, "E1");
+    range_type F1(0, 0, 6, 6, "F1");
+    range_type G1(0, 0, 7, 7, "G1");
+    insert_range(db_copied, A1);
+    insert_range(db_copied, B1);
+    insert_range(db_copied, C1);
+    insert_range(db_copied, D1);
+    insert_range(db_copied, E1);
+    insert_range(db_copied, F1);
+    insert_range(db_copied, G1);
+    db_copied.dump_rectangles();
+    {
+        const set_type::data_type* expected[] = {&A1, &B1, &C1, &D1, &E1, &F1, &G1, 0};
+        assert(check_search_result<set_type>(db_copied, 0, 0, expected));
+    }
+
+    {
+        // Check against the origintal dataset, to ensure modification of the 
+        // copy does not modify the original.
+        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        assert(check_search_result<set_type>(db, 0, 0, expected));
+    }
+}
+
 int main(int argc, char** argv)
 {
     rect_test_insertion_removal();
     rect_test_search();
+    rect_test_copy_constructor();
     fprintf(stdout, "Test finished successfully!\n");
 }

@@ -55,6 +55,18 @@ private:
         rectangle(key_type _x1, key_type _y1, key_type _x2, key_type _y2) :
             x1(_x1), y1(_y1), x2(_x2), y2(_y2) {}
 
+        rectangle(const rectangle& r) :
+            x1(r.x1), y1(r.y1), x2(r.x2), y2(r.y2) {}
+
+        rectangle& operator= (const rectangle& r)
+        {
+            x1 = r.x1;
+            y1 = r.y1;
+            x2 = r.x2;
+            y2 = r.y2;
+            return *this;
+        }
+
         bool operator== (const rectangle& r) const
         {
             return x1 == r.x1 && y1 == r.y1 && x2 == r.x2 && y2 == r.y2;
@@ -65,7 +77,7 @@ private:
             return !operator==(r);
         }
     };
-    typedef ::std::unordered_map<const data_type*, rectangle>    dataset_type;
+    typedef ::std::unordered_map<data_type*, rectangle>    dataset_type;
 
     typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type>  outer_type;
@@ -102,14 +114,14 @@ private:
 
     /** 
      * This data member stores pointers to the inner segment tree instances 
-     * associated with outer intervals.  Used for searches only.
+     * associated with outer intervals.  Used to speed up searches.
      */
     outer_type m_outer_segments;
 
     /**
      * This data member owns the inner segment_tree instances.
      */
-    inner_segment_map_type m_outer_map;
+    inner_segment_map_type m_inner_map;
 
     /** 
      * Used to keep track of currently stored data instances, to prevent 
@@ -125,8 +137,19 @@ rectangle_set<_Key,_Data>::rectangle_set()
 }
 
 template<typename _Key, typename _Data>
-rectangle_set<_Key,_Data>::rectangle_set(const rectangle_set& r)
+rectangle_set<_Key,_Data>::rectangle_set(const rectangle_set& r) :
+    m_inner_map(r.m_inner_map),
+    m_dataset(r.m_dataset)
 {
+    // Re-construct the outer segment tree from the authoritative inner tree 
+    // map.
+    typename inner_segment_map_type::iterator itr = m_inner_map.begin(), itr_end = m_inner_map.end();
+    for (; itr != itr_end; ++itr)
+    {
+        const interval_type& interval = itr->first;
+        inner_type* tree = itr->second;
+        m_outer_segments.insert(interval.first, interval.second, tree);
+    }
 }
 
 template<typename _Key, typename _Data>
@@ -141,15 +164,15 @@ bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
     if (m_dataset.find(data) != m_dataset.end())
         return false;
 
-    // Check if internal x1 - x2 is already stored.
+    // Check if interval x1 - x2 is already stored.
     interval_type outer_interval = interval_type(x1, x2);
-    typename inner_segment_map_type::iterator itr = m_outer_map.find(outer_interval);
-    if (itr == m_outer_map.end())
+    typename inner_segment_map_type::iterator itr = m_inner_map.find(outer_interval);
+    if (itr == m_inner_map.end())
     {
         // this interval has not yet been stored.  Create a new inner segment 
         // tree instance for this interval.
         ::std::pair<typename inner_segment_map_type::iterator, bool> r =
-            m_outer_map.insert(outer_interval, new inner_type);
+            m_inner_map.insert(outer_interval, new inner_type);
         if (!r.second)
             throw general_error("inner segment tree insertion failed.");
 
@@ -182,7 +205,7 @@ bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_typ
     typename outer_type::search_result_type::iterator itr_tree = inner_trees.begin(), itr_tree_end = inner_trees.end();
     for (; itr_tree != itr_tree_end; ++itr_tree)
     {
-        inner_type* inner_tree = const_cast<inner_type*>(*itr_tree);
+        inner_type* inner_tree = *itr_tree;
         if (!inner_tree->is_tree_valid())
             inner_tree->build_tree();
 
@@ -205,8 +228,8 @@ void rectangle_set<_Key,_Data>::remove(data_type* data)
 
     // Find the corresponding inner segment tree for this outer interval.
     interval_type outer(rect.x1, rect.x2);
-    typename inner_segment_map_type::iterator itr_seg = m_outer_map.find(outer);
-    if (itr_seg == m_outer_map.end())
+    typename inner_segment_map_type::iterator itr_seg = m_inner_map.find(outer);
+    if (itr_seg == m_inner_map.end())
         throw general_error("inconsistent internal state: failed to find an internal segment tree for an existing interval.");
 
     // Remove data from the inner segment tree.
@@ -216,7 +239,7 @@ void rectangle_set<_Key,_Data>::remove(data_type* data)
     {
         // This inner tree is now empty.  Erase it.
         m_outer_segments.remove(inner_tree);
-        m_outer_map.erase(itr_seg);
+        m_inner_map.erase(itr_seg);
     }
 
     // Remove it from the data set as well.
@@ -227,7 +250,7 @@ template<typename _Key, typename _Data>
 void rectangle_set<_Key,_Data>::clear()
 {
     m_outer_segments.clear();
-    m_outer_map.clear();
+    m_inner_map.clear();
     m_dataset.clear();
 }
 
