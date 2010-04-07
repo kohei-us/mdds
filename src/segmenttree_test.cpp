@@ -768,7 +768,7 @@ void st_test_perf_insertion()
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_result_iterator itr = db.search(0), itr_end = db.search_result_end();
+            db_type::search_result_iterator itr = db.search(0), itr_end = itr.get_end_pos();
             for (; itr != itr_end; ++itr)
                 test = *itr;
         }
@@ -790,7 +790,7 @@ void st_test_perf_insertion()
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_result_iterator itr = db.search(data_count/2), itr_end = db.search_result_end();
+            db_type::search_result_iterator itr = db.search(data_count/2), itr_end = itr.get_end_pos();
             for (; itr != itr_end; ++itr)
                 test = *itr;
         }
@@ -812,7 +812,7 @@ void st_test_perf_insertion()
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_result_iterator itr = db.search(data_count), itr_end = db.search_result_end();
+            db_type::search_result_iterator itr = db.search(data_count), itr_end = itr.get_end_pos();
             for (; itr != itr_end; ++itr)
                 test = *itr;
         }
@@ -997,22 +997,25 @@ void st_test_search_iterator()
 
     db_type::search_result_iterator itr;
     db_type::search_result_iterator itr_beg = db.search(0);
-    db_type::search_result_iterator itr_end = db.search_result_end();
+    db_type::search_result_iterator itr_end = itr_beg.get_end_pos();
     cout << "Iterate through the search results." << endl;
     for (itr = itr_beg; itr != itr_end; ++itr)
-        cout << (*itr)->name << endl;
+        cout << (*itr)->name << " ";
+    cout << endl;
 
     cout << "Do it again." << endl;
     for (itr = itr_beg; itr != itr_end; ++itr)
-        cout << (*itr)->name << endl;
+        cout << (*itr)->name << " ";
+    cout << endl;
 
     cout << "Iterate backwards" << endl;
     do
     {
         --itr;
-        cout << (*itr)->name << endl;
+        cout << (*itr)->name << " ";
     }
     while (itr != itr_beg);
+    cout << endl;
 }
 
 int main(int argc, char** argv)

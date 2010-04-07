@@ -323,7 +323,27 @@ public:
             return &(*m_cur_pos_in_chain);
         }
 
+        search_result_iterator get_end_pos() const
+        {
+            search_result_iterator itr(*this);
+            itr.move_to_end();
+            return itr;
+        }
+
     private:
+        void move_to_end()
+        {
+            m_end_pos = true;
+            if (!mp_res_chains)
+                // Empty data set.
+                return;
+
+            m_cur_chain = mp_res_chains->end();
+            --m_cur_chain;
+            m_cur_pos_in_chain = (*m_cur_chain)->end();
+            --m_cur_pos_in_chain;
+        }
+
         void init()
         {
             if (!mp_res_chains)
@@ -408,8 +428,6 @@ public:
     bool search(key_type point, search_result_type& result) const;
 
     search_result_iterator search(key_type point) const;
-
-    search_result_iterator search_result_end() const;
 
     /** 
      * Remove a segment by the data pointer.  This will <i>not</i> invalidate 
@@ -726,13 +744,6 @@ segment_tree<_Key, _Data>::search(key_type point) const
     descend_tree_for_search(point, m_root_node.get(), result);
     result.init();
     return result;
-}
-
-template<typename _Key, typename _Data>
-typename segment_tree<_Key, _Data>::search_result_iterator
-segment_tree<_Key, _Data>::search_result_end() const
-{
-    return search_result_iterator();
 }
 
 template<typename _Key, typename _Data>
