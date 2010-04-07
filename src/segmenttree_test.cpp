@@ -751,25 +751,71 @@ void st_test_perf_insertion()
     }
     assert(db.is_tree_valid());
 
+    const test_data* test;
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 100 searches with max results");
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results");
         db_type::search_result_type result;
-        for (key_type i = 0; i < 100; ++i)
+        for (key_type i = 0; i < 200; ++i)
+        {
             db.search(0, result);
+            db_type::search_result_type::const_iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 100 searches with median results");
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results (iterator)");
+        for (key_type i = 0; i < 200; ++i)
+        {
+            db_type::search_result_iterator itr = db.search(0), itr_end = db.search_result_end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results");
         db_type::search_result_type result;
-        for (key_type i = 0; i < 100; ++i)
+        for (key_type i = 0; i < 200; ++i)
+        {
             db.search(data_count/2, result);
+            db_type::search_result_type::const_iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 100 searches with empty results");
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results (iterator)");
+        for (key_type i = 0; i < 200; ++i)
+        {
+            db_type::search_result_iterator itr = db.search(data_count/2), itr_end = db.search_result_end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results");
         db_type::search_result_type result;
-        for (key_type i = 0; i < 100; ++i)
+        for (key_type i = 0; i < 200; ++i)
+        {
             db.search(data_count, result);
+            db_type::search_result_type::const_iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results (iterator)");
+        for (key_type i = 0; i < 200; ++i)
+        {
+            db_type::search_result_iterator itr = db.search(data_count), itr_end = db.search_result_end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
     }
 
     {
@@ -949,9 +995,10 @@ void st_test_search_iterator()
     db.dump_tree();
     db.dump_leaf_nodes();
 
-    db_type::search_result_iterator itr = db.search(0);
+    db_type::search_result_iterator itr;
+    db_type::search_result_iterator itr_beg = db.search(0);
     db_type::search_result_iterator itr_end = db.search_result_end();
-    for (; itr != itr_end; ++itr)
+    for (itr = itr_beg; itr != itr_end; ++itr)
     {
         cout << (*itr)->name << endl;
     }
