@@ -234,11 +234,11 @@ public:
                 mp_res_chains(p), m_end_pos(true) {}
 
         public:
-            typedef ::std::bidirectional_iterator_tag iterator_category;
-            typedef typename data_chain_type::value_type value_type;
-            typedef typename data_chain_type::pointer pointer;
-            typedef typename data_chain_type::reference reference;
-            typedef ptrdiff_t difference_type;
+            typedef ::std::bidirectional_iterator_tag           iterator_category;
+            typedef typename data_chain_type::value_type        value_type;
+            typedef typename data_chain_type::pointer           pointer;
+            typedef typename data_chain_type::reference         reference;
+            typedef typename data_chain_type::difference_type   difference_type;
 
             iterator() : 
                 mp_res_chains(static_cast<res_chains_type*>(NULL)), m_end_pos(true) {}
