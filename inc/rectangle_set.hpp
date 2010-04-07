@@ -44,7 +44,11 @@ public:
     typedef _Key    key_type;
     typedef _Data   data_type;
 
+#ifdef UNIT_TEST
+public:
+#else
 private:
+#endif
     struct rectangle
     {
         key_type x1;
@@ -78,7 +82,7 @@ private:
         }
     };
     typedef ::std::unordered_map<data_type*, rectangle>    dataset_type;
-
+private:
     typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type>  outer_type;
 
@@ -118,6 +122,7 @@ private:
     void build_outer_segment_tree();
 
 #ifdef UNIT_TEST
+public:
     void dump_rectangles() const;
     bool verify_rectangles(const dataset_type& expected) const;
 #endif

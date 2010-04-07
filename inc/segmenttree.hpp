@@ -35,11 +35,12 @@
 #include <iostream>
 #include <unordered_map>
 
+#include <boost/shared_ptr.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 
 #ifdef UNIT_TEST
 #include <sstream>
-#define private public // We need to expose the private members during unit test.
+//#define private public // We need to expose the private members during unit test.
 #endif
 
 namespace mdds {
@@ -51,11 +52,6 @@ public:
     typedef _Key        key_type;
     typedef _Data       data_type;
     typedef ::std::vector<data_type*> search_result_type;
-
-private:
-
-    typedef ::std::vector<data_type*> data_chain_type;
-    typedef ::std::unordered_map<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
 
 #ifdef UNIT_TEST
     struct segment_data
@@ -88,11 +84,19 @@ private:
     };
 #endif
 
+#ifdef UNIT_TEST
+public:
+#else
+private:
+#endif
+    typedef ::std::vector<data_type*> data_chain_type;
+    typedef ::std::unordered_map<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
+
     struct nonleaf_value_type
     {
         key_type low;   /// low range value (inclusive)
         key_type high;  /// high range value (non-inclusive)
-        data_chain_type* data_labels;
+        data_chain_type* data_chain;
     };
 
     struct leaf_value_type
@@ -117,7 +121,7 @@ private:
             if (_is_leaf)
                 value_leaf.data_chain = NULL;
             else
-                value_nonleaf.data_labels = NULL;
+                value_nonleaf.data_chain = NULL;
         }
 
         node(const node& r) :
@@ -130,7 +134,7 @@ private:
             if (this->is_leaf)
                 delete value_leaf.data_chain;
             else
-                delete value_nonleaf.data_labels;
+                delete value_nonleaf.data_chain;
         }
 
         bool equals(const node& r) const
@@ -188,10 +192,10 @@ private:
             else
             {
                 os << "[" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
-                if (value_nonleaf.data_labels)
+                if (value_nonleaf.data_chain)
                 {
                     os << " { ";
-                    typename data_chain_type::const_iterator itr, itr_beg = value_nonleaf.data_labels->begin(), itr_end = value_nonleaf.data_labels->end();
+                    typename data_chain_type::const_iterator itr, itr_beg = value_nonleaf.data_chain->begin(), itr_end = value_nonleaf.data_chain->end();
                     for (itr = itr_beg; itr != itr_end; ++itr)
                     {
                         if (itr != itr_beg)
@@ -216,6 +220,120 @@ private:
     };
 
 public:
+    class search_result_iterator
+    {
+        friend class segment_tree<_Key,_Data>;
+
+        typedef ::std::vector<data_chain_type*> res_chains_type;
+    public:
+        search_result_iterator() : 
+            mp_res_chains(static_cast<res_chains_type*>(NULL)), m_end_pos(true) {}
+
+        search_result_iterator(const search_result_iterator& r) :
+            mp_res_chains(r.mp_res_chains), 
+            m_cur_chain(r.m_cur_chain), 
+            m_cur_data(r.m_cur_data), 
+            m_end_pos(r.m_end_pos) {}
+
+        search_result_iterator& operator= (const search_result_iterator& r)
+        {
+            mp_res_chains = r.mp_res_chains;
+            m_cur_chain = r.m_cur_chain;
+            m_cur_data = r.m_cur_data;
+            m_end_pos = r.m_end_pos;
+            return *this;
+        }
+
+        typename data_chain_type::value_type* operator++ ()
+        {
+            if (m_end_pos)
+                return NULL;
+
+            ++m_cur_data;
+            if (m_cur_data == (*m_cur_chain)->end())
+            {
+                ++m_cur_chain;
+                if (m_cur_chain == mp_res_chains->end())
+                {
+                    m_end_pos = true;
+                    return NULL;
+                }
+                m_cur_data = (*m_cur_chain)->begin();
+            }
+
+            return &(*m_cur_data);
+        }
+
+        typename data_chain_type::value_type* operator-- ()
+        {
+            if (m_cur_data == (*m_cur_chain)->begin())
+            {
+                if (m_cur_chain == mp_res_chains->begin())
+                    // Already at the first data chain.
+                    return NULL;
+                --m_cur_chain;
+                m_cur_data = (*m_cur_chain)->end();
+            }
+            --m_cur_data;
+            m_end_pos = false;
+            return &(*m_cur_data);
+        }
+
+        bool operator== (const search_result_iterator& r) const
+        {
+            if (m_end_pos && r.m_end_pos)
+                // Both are at end position.
+                return true;
+
+            return mp_res_chains.get() == r.mp_res_chains.get() && 
+                m_cur_chain == r.m_cur_chain && m_cur_data == r.m_cur_data &&
+                m_end_pos == r.m_end_pos;
+        }
+
+        bool operator!= (const search_result_iterator& r) const { return !operator==(r); }
+
+        typename data_chain_type::value_type& operator*()
+        {
+            return *m_cur_data;
+        }
+
+        typename data_chain_type::value_type* operator->()
+        {
+            return &(*m_cur_data);
+        }
+
+    private:
+        void init()
+        {
+            if (!mp_res_chains || mp_res_chains->empty())
+            {
+                m_end_pos = true;
+                return;
+            }
+            m_end_pos = false;
+            m_cur_chain = mp_res_chains->begin();
+            m_cur_data = (*m_cur_chain)->begin();
+        }
+
+        void push_back_chain(data_chain_type* chain)
+        {
+            if (!chain)
+                return;
+
+            if (!mp_res_chains)
+                mp_res_chains.reset(new res_chains_type);
+            mp_res_chains->push_back(chain);
+        }
+
+    private:
+        ::boost::shared_ptr<res_chains_type>    mp_res_chains;
+
+        typename res_chains_type::iterator  m_cur_chain;
+        typename data_chain_type::iterator  m_cur_data;
+
+        bool m_end_pos:1;
+    };
+
     segment_tree();
     segment_tree(const segment_tree& r);
     ~segment_tree();
@@ -269,6 +387,10 @@ public:
      *         search has ended prematurely due to error conditions.
      */
     bool search(key_type point, search_result_type& result) const;
+
+    search_result_iterator search(key_type point) const;
+
+    search_result_iterator search_result_end() const;
 
     /** 
      * Remove a segment by the data pointer.  This will <i>not</i> invalidate 
@@ -331,6 +453,7 @@ private:
 
     void build_leaf_nodes();
     void descend_tree_for_search(key_type point, const node* pnode, search_result_type& data_chain) const;
+    void descend_tree_for_search(key_type point, const node* pnode, search_result_iterator& result_itr) const;
     void append_search_result(search_result_type& data_chain, const data_chain_type* node_data) const;
 
     /** 
@@ -468,9 +591,9 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
     if (begin_key <= v.low && v.high < end_key)
     {
         // mark this non-leaf node and stop.
-        if (!v.data_labels)
-            v.data_labels = new data_chain_type;
-        v.data_labels->push_back(pdata);
+        if (!v.data_chain)
+            v.data_chain = new data_chain_type;
+        v.data_chain->push_back(pdata);
         plist->push_back(pnode);
         return;
     }
@@ -574,6 +697,26 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
 }
 
 template<typename _Key, typename _Data>
+typename segment_tree<_Key, _Data>::search_result_iterator
+segment_tree<_Key, _Data>::search(key_type point) const
+{
+    search_result_iterator result;
+    if (!m_valid_tree || !m_root_node.get())
+        return result;
+
+    descend_tree_for_search(point, m_root_node.get(), result);
+    result.init();
+    return result;
+}
+
+template<typename _Key, typename _Data>
+typename segment_tree<_Key, _Data>::search_result_iterator
+segment_tree<_Key, _Data>::search_result_end() const
+{
+    return search_result_iterator();
+}
+
+template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::remove(data_type* pdata)
 {
     using namespace std;
@@ -628,7 +771,7 @@ void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, co
         if (p->is_leaf)
             chain = p->value_leaf.data_chain;
         else
-            chain = p->value_nonleaf.data_labels;
+            chain = p->value_nonleaf.data_chain;
 
         if (!chain)
             continue;
@@ -677,7 +820,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
         // Query point is out-of-range.
         return;
 
-    append_search_result(data_chain, pnode->value_nonleaf.data_labels);
+    append_search_result(data_chain, pnode->value_nonleaf.data_chain);
 
     // Check the left child node first, then the right one.
     node* pchild = pnode->left.get();
@@ -718,6 +861,67 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
         assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
     }
     descend_tree_for_search(point, pchild, data_chain);
+}
+
+template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, search_result_iterator& result_itr) const
+{
+    if (!pnode)
+        // This should never happen, but just in case.
+        return;
+
+    if (pnode->is_leaf)
+    {
+        result_itr.push_back_chain(pnode->value_leaf.data_chain);
+        return;
+    }
+
+    const nonleaf_value_type& v = pnode->value_nonleaf;
+    if (point < v.low || v.high <= point)
+        // Query point is out-of-range.
+        return;
+
+    result_itr.push_back_chain(pnode->value_nonleaf.data_chain);
+
+    // Check the left child node first, then the right one.
+    node* pchild = pnode->left.get();
+    if (!pchild)
+        return;
+
+    assert(pnode->right.get() ? pchild->is_leaf == pnode->right->is_leaf : true);
+    if (pchild->is_leaf)
+    {
+        // The child node are leaf nodes.
+        const leaf_value_type& vleft = pchild->value_leaf;
+        if (point < vleft.key)
+        {
+            // Out-of-range.  Nothing more to do.
+            return;
+        }
+
+        if (pnode->right.get())
+        {
+            const leaf_value_type& vright = pnode->right->value_leaf;    
+            if (vright.key <= point)
+                // Follow the right node.
+                pchild = pnode->right.get();
+        }
+    }
+    else
+    {
+        const nonleaf_value_type& vleft = pchild->value_nonleaf;
+        if (point < vleft.low)
+        {
+            // Out-of-range.  Nothing more to do.
+            return;
+        }
+        if (vleft.high <= point && pnode->right.get())
+            // Follow the right child.
+            pchild = pnode->right.get();
+
+        assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
+    }
+    descend_tree_for_search(point, pchild, result_itr);
 }
 
 template<typename _Key, typename _Data>
@@ -895,7 +1099,7 @@ bool segment_tree<_Key, _Data>::has_data_pointer(const node_list_type& node_list
         if (pnode->is_leaf)
             chain = pnode->value_leaf.data_chain;
         else
-            chain = pnode->value_nonleaf.data_labels;
+            chain = pnode->value_nonleaf.data_chain;
 
         if (!chain)
             return false;

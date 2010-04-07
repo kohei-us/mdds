@@ -929,6 +929,34 @@ void st_test_search_on_empty_set()
     assert(result.empty());
 }
 
+void st_test_search_iterator()
+{
+    StackPrinter __stack_printer__("::st_test_search_iterator");
+    typedef uint16_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+    
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+    db_type db;
+    db.insert(0, 1, &A);
+    db.insert(0, 2, &B);
+    db.insert(0, 3, &C);
+    db.insert(0, 4, &D);
+    db.insert(0, 5, &E);
+    db.insert(0, 6, &F);
+    db.insert(0, 7, &G);
+    db.build_tree();
+    db.dump_tree();
+    db.dump_leaf_nodes();
+
+    db_type::search_result_iterator itr = db.search(0);
+    db_type::search_result_iterator itr_end = db.search_result_end();
+    for (; itr != itr_end; ++itr)
+    {
+        cout << (*itr)->name << endl;
+    }
+}
+
 int main(int argc, char** argv)
 {
     bool test_func = false;
@@ -964,6 +992,7 @@ int main(int argc, char** argv)
         st_test_aggregated_search_results();
         st_test_dense_tree_search();
         st_test_search_on_empty_set();
+        st_test_search_iterator();
     }
 
     if (test_perf)

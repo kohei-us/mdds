@@ -38,7 +38,6 @@
 #ifdef UNIT_TEST
 #include <cstdio>
 #include <vector>
-#define private public // We need to expose the private members during unit test.
 #endif
 
 namespace mdds {
@@ -62,7 +61,9 @@ private:
         key_type    key;
         value_type  value;
     };
-
+#ifdef UNIT_TEST
+public:
+#endif
     struct node;
     typedef ::boost::intrusive_ptr<node> node_ptr;
 
@@ -168,6 +169,7 @@ private:
 #endif
     };
 
+private:
     class const_iterator_base
     {
     public:
