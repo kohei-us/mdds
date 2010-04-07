@@ -375,14 +375,14 @@ public:
 
         typename search_result::iterator begin()
         {
-            search_result::iterator itr(mp_res_chains);
+            typename search_result::iterator itr(mp_res_chains);
             itr.move_to_front();
             return itr;
         }
 
         typename search_result::iterator end()
         {
-            search_result::iterator itr(mp_res_chains);
+            typename search_result::iterator itr(mp_res_chains);
             itr.move_to_end();
             return itr;
         }
