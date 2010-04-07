@@ -153,27 +153,9 @@ bool check_leaf_nodes(
     return db.verify_leaf_nodes(checks);
 }
 
-/** 
- * Run the search and check the search result.
- */
-template<typename key_type, typename data_type>
-bool check_search_result(
-    const segment_tree<key_type, data_type>& db, 
-    key_type key, data_type** expected)
+template<typename data_type>
+bool check_against_expected(const list<const data_type*>& test, data_type** expected)
 {
-    cout << "search key: " << key << " ";
-
-    typedef typename segment_tree<key_type, data_type>::search_result_type search_result_type;
-    search_result_type data_chain;
-    db.search(key, data_chain);
-    list<const data_type*> test;
-    copy(data_chain.begin(), data_chain.end(), back_inserter(test));
-    test.sort(test_data::sort_by_name());
-
-    cout << "search result (sorted): ";
-    for_each(test.begin(), test.end(), test_data::name_printer());
-    cout << endl;
-
     size_t i = 0;
     data_type* p = expected[i++];
     typename list<const data_type*>::const_iterator itr = test.begin(), itr_end = test.end();
@@ -218,27 +200,43 @@ bool check_search_result_only(
     for_each(test.begin(), test.end(), test_data::name_printer());
     cout << endl;
 
-    size_t i = 0;
-    data_type* p = expected[i++];
-    typename list<const data_type*>::const_iterator itr = test.begin(), itr_end = test.end();
-    while (p)
-    {
-        if (itr == itr_end)
-            // data chain ended prematurely.
-            return false;
+    return check_against_expected(test, expected);
+}
 
-        if (*itr != p)
-            // the value is not as expected.
-            return false;
+/** 
+ * Run the search and check the search result.
+ */
+template<typename key_type, typename data_type>
+bool check_search_result(
+    const segment_tree<key_type, data_type>& db, 
+    key_type key, data_type** expected)
+{
+    cout << "search key: " << key << " ";
 
-        p = expected[i++];
-        ++itr;
-    }
-    if (itr != itr_end)
-        // data chain is too long.
-        return false;
+    typedef typename segment_tree<key_type, data_type>::search_result_type search_result_type;
+    search_result_type data_chain;
+    db.search(key, data_chain);
+    return check_search_result_only(db, data_chain, key, expected);
+}
 
-    return true;
+template<typename key_type, typename data_type>
+bool check_search_result_iterator(
+    const segment_tree<key_type, data_type>& db, 
+    key_type key, data_type** expected)
+{
+    cout << "search key: " << key << " ";
+
+    typedef segment_tree<key_type, data_type> db_type;
+    typename db_type::search_result result = db.search(key);
+    list<const data_type*> test;
+    copy(result.begin(), result.end(), back_inserter(test));
+    test.sort(test_data::sort_by_name());
+
+    cout << "search result (sorted): ";
+    for_each(test.begin(), test.end(), test_data::name_printer());
+    cout << endl;
+
+    return check_against_expected(test, expected);
 }
 
 void st_test_insert_search_removal()
@@ -978,7 +976,7 @@ void st_test_search_on_empty_set()
     assert(result.empty());
 }
 
-void st_test_search_iterator()
+void st_test_search_iterator_basic()
 {
     StackPrinter __stack_printer__("::st_test_search_iterator");
     typedef uint16_t key_type;
@@ -1031,6 +1029,67 @@ void st_test_search_iterator()
     cout << endl;
 }
 
+void st_test_search_iterator_result_check()
+{
+    StackPrinter __stack_printer__("::st_test_search_iterator_result_check");
+
+    typedef uint16_t key_type;
+    typedef test_data data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+    
+    data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
+    db_type db;
+    db.insert(0, 1, &A);
+    db.insert(0, 2, &B);
+    db.insert(0, 3, &C);
+    db.insert(0, 4, &D);
+    db.insert(0, 5, &E);
+    db.insert(0, 6, &F);
+    db.insert(0, 7, &G);
+    db.build_tree();
+
+    {
+        data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        bool success = check_search_result_iterator<key_type, data_type>(db, 0, expected);
+        assert(success);
+    }
+    {
+        data_type* expected[] = {&B, &C, &D, &E, &F, &G, 0};
+        bool success = check_search_result_iterator<key_type, data_type>(db, 1, expected);
+        assert(success);
+    }
+    {
+        data_type* expected[] = {&C, &D, &E, &F, &G, 0};
+        bool success = check_search_result_iterator<key_type, data_type>(db, 2, expected);
+        assert(success);
+    }
+    {
+        data_type* expected[] = {&D, &E, &F, &G, 0};
+        bool success = check_search_result_iterator<key_type, data_type>(db, 3, expected);
+        assert(success);
+    }
+    {
+        data_type* expected[] = {&E, &F, &G, 0};
+        bool success = check_search_result_iterator<key_type, data_type>(db, 4, expected);
+        assert(success);
+    }
+    {
+        data_type* expected[] = {&F, &G, 0};
+        bool success = check_search_result_iterator<key_type, data_type>(db, 5, expected);
+        assert(success);
+    }
+    {
+        data_type* expected[] = {&G, 0};
+        bool success = check_search_result_iterator<key_type, data_type>(db, 6, expected);
+        assert(success);
+    }
+    {
+        data_type* expected[] = {0};
+        bool success = check_search_result_iterator<key_type, data_type>(db, 7, expected);
+        assert(success);
+    }
+}
+
 int main(int argc, char** argv)
 {
     bool test_func = false;
@@ -1066,7 +1125,8 @@ int main(int argc, char** argv)
         st_test_aggregated_search_results();
         st_test_dense_tree_search();
         st_test_search_on_empty_set();
-        st_test_search_iterator();
+        st_test_search_iterator_basic();
+        st_test_search_iterator_result_check();
     }
 
     if (test_perf)

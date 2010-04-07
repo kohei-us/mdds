@@ -50,6 +50,7 @@ class segment_tree
 public:
     typedef _Key        key_type;
     typedef _Data       data_type;
+    typedef size_t      size_type;
     typedef ::std::vector<data_type*> search_result_type;
 
 #ifdef UNIT_TEST
@@ -231,7 +232,14 @@ public:
         private:
             iterator(const res_chains_ptr& p) :
                 mp_res_chains(p), m_end_pos(true) {}
+
         public:
+            typedef ::std::bidirectional_iterator_tag iterator_category;
+            typedef typename data_chain_type::value_type value_type;
+            typedef typename data_chain_type::pointer pointer;
+            typedef typename data_chain_type::reference reference;
+            typedef ptrdiff_t difference_type;
+
             iterator() : 
                 mp_res_chains(static_cast<res_chains_type*>(NULL)), m_end_pos(true) {}
 
