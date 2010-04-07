@@ -1016,6 +1016,15 @@ void st_test_search_iterator()
     }
     while (itr != itr_beg);
     cout << endl;
+
+    cout << "Get the last item from the end position." << endl;
+    itr = itr_end;
+    --itr;
+    cout << (*itr)->name << endl;
+
+    cout << "Use for_each to print names." << endl;
+    for_each(itr_beg, itr_end, test_data::ptr_printer());
+    cout << endl;
 }
 
 int main(int argc, char** argv)
