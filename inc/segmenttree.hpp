@@ -373,14 +373,14 @@ public:
         search_result(const search_result& r) :
             mp_res_chains(r.mp_res_chains) {}
 
-        search_result::iterator begin()
+        typename search_result::iterator begin()
         {
             search_result::iterator itr(mp_res_chains);
             itr.move_to_front();
             return itr;
         }
 
-        search_result::iterator end()
+        typename search_result::iterator end()
         {
             search_result::iterator itr(mp_res_chains);
             itr.move_to_end();
