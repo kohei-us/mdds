@@ -245,10 +245,7 @@ public:
 
         typename data_chain_type::value_type* operator++ ()
         {
-            if (!mp_res_chains)
-                return NULL;
-
-            if (m_end_pos)
+            if (m_end_pos || !mp_res_chains)
                 return NULL;
 
             // When reaching the end position, the internal iterators still 
@@ -256,22 +253,23 @@ public:
             // This is why we need to make copies of the iterators, and copy
             // them back once done.
 
-            typename res_chains_type::iterator cur_chain = m_cur_chain;
-            typename data_chain_type::iterator cur_data = m_cur_pos_in_chain;
+            typename data_chain_type::iterator cur_pos_in_chain = m_cur_pos_in_chain;
 
-            ++cur_data;
-            if (cur_data == (*cur_chain)->end())
+            if (++cur_pos_in_chain == (*m_cur_chain)->end())
             {
+                // End of current chain.  Inspect the next chain if exists.
+                typename res_chains_type::iterator cur_chain = m_cur_chain;
                 ++cur_chain;
                 if (cur_chain == mp_res_chains->end())
                 {
                     m_end_pos = true;
                     return NULL;
                 }
-                cur_data = (*cur_chain)->begin();
+                m_cur_chain = cur_chain;
+                m_cur_pos_in_chain = (*m_cur_chain)->begin();
             }
-            m_cur_chain = cur_chain;
-            m_cur_pos_in_chain = cur_data;
+            else
+                ++m_cur_pos_in_chain;
 
             return &(*m_cur_pos_in_chain);
         }
