@@ -245,8 +245,9 @@ public:
 
         typename data_chain_type::value_type* operator++ ()
         {
-            if (m_end_pos || !mp_res_chains)
-                return NULL;
+            // We don't check for end position flag for performance reasons.
+            // The caller is responsible for making sure not to increment past
+            // end position.
 
             // When reaching the end position, the internal iterators still 
             // need to be pointing at the last item before the end position.
