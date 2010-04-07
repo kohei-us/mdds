@@ -40,7 +40,6 @@
 
 #ifdef UNIT_TEST
 #include <sstream>
-//#define private public // We need to expose the private members during unit test.
 #endif
 
 namespace mdds {
@@ -232,51 +231,74 @@ public:
         search_result_iterator(const search_result_iterator& r) :
             mp_res_chains(r.mp_res_chains), 
             m_cur_chain(r.m_cur_chain), 
-            m_cur_data(r.m_cur_data), 
+            m_cur_pos_in_chain(r.m_cur_pos_in_chain), 
             m_end_pos(r.m_end_pos) {}
 
         search_result_iterator& operator= (const search_result_iterator& r)
         {
             mp_res_chains = r.mp_res_chains;
             m_cur_chain = r.m_cur_chain;
-            m_cur_data = r.m_cur_data;
+            m_cur_pos_in_chain = r.m_cur_pos_in_chain;
             m_end_pos = r.m_end_pos;
             return *this;
         }
 
         typename data_chain_type::value_type* operator++ ()
         {
+            if (!mp_res_chains)
+                return NULL;
+
             if (m_end_pos)
                 return NULL;
 
-            ++m_cur_data;
-            if (m_cur_data == (*m_cur_chain)->end())
+            // When reaching the end position, the internal iterators still 
+            // need to be pointing at the last item before the end position.
+            // This is why we need to make copies of the iterators, and copy
+            // them back once done.
+
+            typename res_chains_type::iterator cur_chain = m_cur_chain;
+            typename data_chain_type::iterator cur_data = m_cur_pos_in_chain;
+
+            ++cur_data;
+            if (cur_data == (*cur_chain)->end())
             {
-                ++m_cur_chain;
-                if (m_cur_chain == mp_res_chains->end())
+                ++cur_chain;
+                if (cur_chain == mp_res_chains->end())
                 {
                     m_end_pos = true;
                     return NULL;
                 }
-                m_cur_data = (*m_cur_chain)->begin();
+                cur_data = (*cur_chain)->begin();
             }
+            m_cur_chain = cur_chain;
+            m_cur_pos_in_chain = cur_data;
 
-            return &(*m_cur_data);
+            return &(*m_cur_pos_in_chain);
         }
 
         typename data_chain_type::value_type* operator-- ()
         {
-            if (m_cur_data == (*m_cur_chain)->begin())
+            if (!mp_res_chains)
+                return NULL;
+
+            if (m_end_pos)
+            {
+                m_end_pos = false;
+                return &(*m_cur_pos_in_chain);
+            }
+
+            if (m_cur_pos_in_chain == (*m_cur_chain)->begin())
             {
                 if (m_cur_chain == mp_res_chains->begin())
-                    // Already at the first data chain.
+                {
+                    // Already at the first data chain.  Don't move the iterator position.
                     return NULL;
+                }
                 --m_cur_chain;
-                m_cur_data = (*m_cur_chain)->end();
+                m_cur_pos_in_chain = (*m_cur_chain)->end();
             }
-            --m_cur_data;
-            m_end_pos = false;
-            return &(*m_cur_data);
+            --m_cur_pos_in_chain;
+            return &(*m_cur_pos_in_chain);
         }
 
         bool operator== (const search_result_iterator& r) const
@@ -286,7 +308,7 @@ public:
                 return true;
 
             return mp_res_chains.get() == r.mp_res_chains.get() && 
-                m_cur_chain == r.m_cur_chain && m_cur_data == r.m_cur_data &&
+                m_cur_chain == r.m_cur_chain && m_cur_pos_in_chain == r.m_cur_pos_in_chain &&
                 m_end_pos == r.m_end_pos;
         }
 
@@ -294,30 +316,30 @@ public:
 
         typename data_chain_type::value_type& operator*()
         {
-            return *m_cur_data;
+            return *m_cur_pos_in_chain;
         }
 
         typename data_chain_type::value_type* operator->()
         {
-            return &(*m_cur_data);
+            return &(*m_cur_pos_in_chain);
         }
 
     private:
         void init()
         {
-            if (!mp_res_chains || mp_res_chains->empty())
+            if (!mp_res_chains)
             {
                 m_end_pos = true;
                 return;
             }
             m_end_pos = false;
             m_cur_chain = mp_res_chains->begin();
-            m_cur_data = (*m_cur_chain)->begin();
+            m_cur_pos_in_chain = (*m_cur_chain)->begin();
         }
 
         void push_back_chain(data_chain_type* chain)
         {
-            if (!chain)
+            if (!chain || chain->empty())
                 return;
 
             if (!mp_res_chains)
@@ -327,10 +349,8 @@ public:
 
     private:
         ::boost::shared_ptr<res_chains_type>    mp_res_chains;
-
         typename res_chains_type::iterator  m_cur_chain;
-        typename data_chain_type::iterator  m_cur_data;
-
+        typename data_chain_type::iterator  m_cur_pos_in_chain;
         bool m_end_pos:1;
     };
 

@@ -73,6 +73,9 @@ test.fst.mem: flatsegmenttree-test
 test.st: segmenttree-test
 	./segmenttree-test func
 
+test.st.perf: segmenttree-test
+	./segmenttree-test perf
+
 test.st.mem: segmenttree-test
 	valgrind --tool=memcheck --leak-check=full ./segmenttree-test func
 
