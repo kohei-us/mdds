@@ -272,7 +272,7 @@ public:
             else
                 ++m_cur_pos_in_chain;
 
-            return &(*m_cur_pos_in_chain);
+            return operator->();
         }
 
         typename data_chain_type::value_type* operator-- ()
@@ -297,7 +297,7 @@ public:
                 m_cur_pos_in_chain = (*m_cur_chain)->end();
             }
             --m_cur_pos_in_chain;
-            return &(*m_cur_pos_in_chain);
+            return operator->();
         }
 
         bool operator== (const search_result_iterator& r) const
