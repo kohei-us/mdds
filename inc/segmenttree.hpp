@@ -317,10 +317,6 @@ public:
 
             bool operator== (const iterator& r) const
             {
-                if (m_end_pos && r.m_end_pos)
-                    // Both are at end position.
-                    return true;
-
                 return mp_res_chains.get() == r.mp_res_chains.get() && 
                     m_cur_chain == r.m_cur_chain && m_cur_pos_in_chain == r.m_cur_pos_in_chain &&
                     m_end_pos == r.m_end_pos;
