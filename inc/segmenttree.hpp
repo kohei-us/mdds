@@ -219,143 +219,174 @@ private:
     };
 
 public:
-    class search_result_iterator
+    class search_result
     {
         friend class segment_tree<_Key,_Data>;
-
-        typedef ::std::vector<data_chain_type*> res_chains_type;
+        typedef ::std::vector<data_chain_type*>         res_chains_type;
+        typedef ::boost::shared_ptr<res_chains_type>    res_chains_ptr;
     public:
-        search_result_iterator() : 
-            mp_res_chains(static_cast<res_chains_type*>(NULL)), m_end_pos(true) {}
-
-        search_result_iterator(const search_result_iterator& r) :
-            mp_res_chains(r.mp_res_chains), 
-            m_cur_chain(r.m_cur_chain), 
-            m_cur_pos_in_chain(r.m_cur_pos_in_chain), 
-            m_end_pos(r.m_end_pos) {}
-
-        search_result_iterator& operator= (const search_result_iterator& r)
+        class iterator
         {
-            mp_res_chains = r.mp_res_chains;
-            m_cur_chain = r.m_cur_chain;
-            m_cur_pos_in_chain = r.m_cur_pos_in_chain;
-            m_end_pos = r.m_end_pos;
-            return *this;
-        }
+            friend class segment_tree<_Key,_Data>::search_result;
+        private:
+            iterator(const res_chains_ptr& p) :
+                mp_res_chains(p), m_end_pos(true) {}
+        public:
+            iterator() : 
+                mp_res_chains(static_cast<res_chains_type*>(NULL)), m_end_pos(true) {}
 
-        typename data_chain_type::value_type* operator++ ()
-        {
-            // We don't check for end position flag for performance reasons.
-            // The caller is responsible for making sure not to increment past
-            // end position.
+            iterator(const iterator& r) :
+                mp_res_chains(r.mp_res_chains), 
+                m_cur_chain(r.m_cur_chain), 
+                m_cur_pos_in_chain(r.m_cur_pos_in_chain), 
+                m_end_pos(r.m_end_pos) {}
 
-            // When reaching the end position, the internal iterators still 
-            // need to be pointing at the last item before the end position.
-            // This is why we need to make copies of the iterators, and copy
-            // them back once done.
-
-            typename data_chain_type::iterator cur_pos_in_chain = m_cur_pos_in_chain;
-
-            if (++cur_pos_in_chain == (*m_cur_chain)->end())
+            iterator& operator= (const iterator& r)
             {
-                // End of current chain.  Inspect the next chain if exists.
-                typename res_chains_type::iterator cur_chain = m_cur_chain;
-                ++cur_chain;
-                if (cur_chain == mp_res_chains->end())
-                {
-                    m_end_pos = true;
-                    return NULL;
-                }
-                m_cur_chain = cur_chain;
-                m_cur_pos_in_chain = (*m_cur_chain)->begin();
+                mp_res_chains = r.mp_res_chains;
+                m_cur_chain = r.m_cur_chain;
+                m_cur_pos_in_chain = r.m_cur_pos_in_chain;
+                m_end_pos = r.m_end_pos;
+                return *this;
             }
-            else
-                ++m_cur_pos_in_chain;
 
-            return operator->();
-        }
-
-        typename data_chain_type::value_type* operator-- ()
-        {
-            if (!mp_res_chains)
-                return NULL;
-
-            if (m_end_pos)
+            typename data_chain_type::value_type* operator++ ()
             {
-                m_end_pos = false;
+                // We don't check for end position flag for performance reasons.
+                // The caller is responsible for making sure not to increment past
+                // end position.
+
+                // When reaching the end position, the internal iterators still 
+                // need to be pointing at the last item before the end position.
+                // This is why we need to make copies of the iterators, and copy
+                // them back once done.
+
+                typename data_chain_type::iterator cur_pos_in_chain = m_cur_pos_in_chain;
+
+                if (++cur_pos_in_chain == (*m_cur_chain)->end())
+                {
+                    // End of current chain.  Inspect the next chain if exists.
+                    typename res_chains_type::iterator cur_chain = m_cur_chain;
+                    ++cur_chain;
+                    if (cur_chain == mp_res_chains->end())
+                    {
+                        m_end_pos = true;
+                        return NULL;
+                    }
+                    m_cur_chain = cur_chain;
+                    m_cur_pos_in_chain = (*m_cur_chain)->begin();
+                }
+                else
+                    ++m_cur_pos_in_chain;
+
+                return operator->();
+            }
+
+            typename data_chain_type::value_type* operator-- ()
+            {
+                if (!mp_res_chains)
+                    return NULL;
+
+                if (m_end_pos)
+                {
+                    m_end_pos = false;
+                    return &(*m_cur_pos_in_chain);
+                }
+
+                if (m_cur_pos_in_chain == (*m_cur_chain)->begin())
+                {
+                    if (m_cur_chain == mp_res_chains->begin())
+                    {
+                        // Already at the first data chain.  Don't move the iterator position.
+                        return NULL;
+                    }
+                    --m_cur_chain;
+                    m_cur_pos_in_chain = (*m_cur_chain)->end();
+                }
+                --m_cur_pos_in_chain;
+                return operator->();
+            }
+
+            bool operator== (const iterator& r) const
+            {
+                if (m_end_pos && r.m_end_pos)
+                    // Both are at end position.
+                    return true;
+
+                return mp_res_chains.get() == r.mp_res_chains.get() && 
+                    m_cur_chain == r.m_cur_chain && m_cur_pos_in_chain == r.m_cur_pos_in_chain &&
+                    m_end_pos == r.m_end_pos;
+            }
+
+            bool operator!= (const iterator& r) const { return !operator==(r); }
+
+            typename data_chain_type::value_type& operator*()
+            {
+                return *m_cur_pos_in_chain;
+            }
+
+            typename data_chain_type::value_type* operator->()
+            {
                 return &(*m_cur_pos_in_chain);
             }
 
-            if (m_cur_pos_in_chain == (*m_cur_chain)->begin())
+        private:
+            void move_to_front()
             {
-                if (m_cur_chain == mp_res_chains->begin())
+                if (!mp_res_chains)
                 {
-                    // Already at the first data chain.  Don't move the iterator position.
-                    return NULL;
+                    // Empty data set.
+                    m_end_pos = true;
+                    return;
                 }
+
+                // We assume that there is at least one chain list, and no 
+                // empty chain list exists.  So, skip the check.
+                m_cur_chain = mp_res_chains->begin();
+                m_cur_pos_in_chain = (*m_cur_chain)->begin();
+                m_end_pos = false;
+            }
+
+            void move_to_end()
+            {
+                m_end_pos = true;
+                if (!mp_res_chains)
+                    // Empty data set.
+                    return;
+
+                m_cur_chain = mp_res_chains->end();
                 --m_cur_chain;
                 m_cur_pos_in_chain = (*m_cur_chain)->end();
+                --m_cur_pos_in_chain;
             }
-            --m_cur_pos_in_chain;
-            return operator->();
-        }
 
-        bool operator== (const search_result_iterator& r) const
+        private:
+            res_chains_ptr mp_res_chains;
+            typename res_chains_type::iterator  m_cur_chain;
+            typename data_chain_type::iterator  m_cur_pos_in_chain;
+            bool m_end_pos:1;
+        };
+
+        search_result() :
+            mp_res_chains(static_cast<res_chains_type*>(NULL)) {}
+
+        search_result(const search_result& r) :
+            mp_res_chains(r.mp_res_chains) {}
+
+        search_result::iterator begin()
         {
-            if (m_end_pos && r.m_end_pos)
-                // Both are at end position.
-                return true;
-
-            return mp_res_chains.get() == r.mp_res_chains.get() && 
-                m_cur_chain == r.m_cur_chain && m_cur_pos_in_chain == r.m_cur_pos_in_chain &&
-                m_end_pos == r.m_end_pos;
-        }
-
-        bool operator!= (const search_result_iterator& r) const { return !operator==(r); }
-
-        typename data_chain_type::value_type& operator*()
-        {
-            return *m_cur_pos_in_chain;
-        }
-
-        typename data_chain_type::value_type* operator->()
-        {
-            return &(*m_cur_pos_in_chain);
-        }
-
-        search_result_iterator get_end_pos() const
-        {
-            search_result_iterator itr(*this);
-            itr.move_to_end();
+            search_result::iterator itr(mp_res_chains);
+            itr.move_to_front();
             return itr;
         }
 
+        search_result::iterator end()
+        {
+            search_result::iterator itr(mp_res_chains);
+            itr.move_to_end();
+            return itr;
+        }
     private:
-        void move_to_end()
-        {
-            m_end_pos = true;
-            if (!mp_res_chains)
-                // Empty data set.
-                return;
-
-            m_cur_chain = mp_res_chains->end();
-            --m_cur_chain;
-            m_cur_pos_in_chain = (*m_cur_chain)->end();
-            --m_cur_pos_in_chain;
-        }
-
-        void init()
-        {
-            if (!mp_res_chains)
-            {
-                m_end_pos = true;
-                return;
-            }
-            m_end_pos = false;
-            m_cur_chain = mp_res_chains->begin();
-            m_cur_pos_in_chain = (*m_cur_chain)->begin();
-        }
-
         void push_back_chain(data_chain_type* chain)
         {
             if (!chain || chain->empty())
@@ -367,10 +398,7 @@ public:
         }
 
     private:
-        ::boost::shared_ptr<res_chains_type>    mp_res_chains;
-        typename res_chains_type::iterator  m_cur_chain;
-        typename data_chain_type::iterator  m_cur_pos_in_chain;
-        bool m_end_pos:1;
+        res_chains_ptr  mp_res_chains;
     };
 
     segment_tree();
@@ -427,7 +455,7 @@ public:
      */
     bool search(key_type point, search_result_type& result) const;
 
-    search_result_iterator search(key_type point) const;
+    search_result search(key_type point) const;
 
     /** 
      * Remove a segment by the data pointer.  This will <i>not</i> invalidate 
@@ -490,7 +518,7 @@ private:
 
     void build_leaf_nodes();
     void descend_tree_for_search(key_type point, const node* pnode, search_result_type& data_chain) const;
-    void descend_tree_for_search(key_type point, const node* pnode, search_result_iterator& result_itr) const;
+    void descend_tree_for_search(key_type point, const node* pnode, search_result& result) const;
     void append_search_result(search_result_type& data_chain, const data_chain_type* node_data) const;
 
     /** 
@@ -734,15 +762,14 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
 }
 
 template<typename _Key, typename _Data>
-typename segment_tree<_Key, _Data>::search_result_iterator
+typename segment_tree<_Key, _Data>::search_result
 segment_tree<_Key, _Data>::search(key_type point) const
 {
-    search_result_iterator result;
+    search_result result;
     if (!m_valid_tree || !m_root_node.get())
         return result;
 
     descend_tree_for_search(point, m_root_node.get(), result);
-    result.init();
     return result;
 }
 
@@ -894,7 +921,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 }
 
 template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, search_result_iterator& result_itr) const
+void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, search_result& result) const
 {
     if (!pnode)
         // This should never happen, but just in case.
@@ -902,7 +929,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 
     if (pnode->is_leaf)
     {
-        result_itr.push_back_chain(pnode->value_leaf.data_chain);
+        result.push_back_chain(pnode->value_leaf.data_chain);
         return;
     }
 
@@ -911,7 +938,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
         // Query point is out-of-range.
         return;
 
-    result_itr.push_back_chain(pnode->value_nonleaf.data_chain);
+    result.push_back_chain(pnode->value_nonleaf.data_chain);
 
     // Check the left child node first, then the right one.
     node* pchild = pnode->left.get();
@@ -951,7 +978,7 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 
         assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
     }
-    descend_tree_for_search(point, pchild, result_itr);
+    descend_tree_for_search(point, pchild, result);
 }
 
 template<typename _Key, typename _Data>

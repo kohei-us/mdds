@@ -768,7 +768,8 @@ void st_test_perf_insertion()
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_result_iterator itr = db.search(0), itr_end = itr.get_end_pos();
+            db_type::search_result result = db.search(0);
+            db_type::search_result::iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
                 test = *itr;
         }
@@ -790,7 +791,8 @@ void st_test_perf_insertion()
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_result_iterator itr = db.search(data_count/2), itr_end = itr.get_end_pos();
+            db_type::search_result result = db.search(data_count/2);
+            db_type::search_result::iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
                 test = *itr;
         }
@@ -812,7 +814,8 @@ void st_test_perf_insertion()
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_result_iterator itr = db.search(data_count), itr_end = itr.get_end_pos();
+            db_type::search_result result = db.search(data_count);
+            db_type::search_result::iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
                 test = *itr;
         }
@@ -995,9 +998,10 @@ void st_test_search_iterator()
     db.dump_tree();
     db.dump_leaf_nodes();
 
-    db_type::search_result_iterator itr;
-    db_type::search_result_iterator itr_beg = db.search(0);
-    db_type::search_result_iterator itr_end = itr_beg.get_end_pos();
+    db_type::search_result result = db.search(0);
+    db_type::search_result::iterator itr;
+    db_type::search_result::iterator itr_beg = result.begin();
+    db_type::search_result::iterator itr_end = result.end();
     cout << "Iterate through the search results." << endl;
     for (itr = itr_beg; itr != itr_end; ++itr)
         cout << (*itr)->name << " ";
