@@ -700,12 +700,16 @@ void rect_test_perf_insertion_fixed_x()
     }
     assert(db.size() == data_count);
 
+    const range_type* test = NULL;
     {
         StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
             db.search(0, 0, result);
+            set_type::search_result_type::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
         }
     }
 
@@ -715,6 +719,20 @@ void rect_test_perf_insertion_fixed_x()
         {
             set_type::search_result_type result;
             db.search(0, 0, result);
+            set_type::search_result_type::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result result = db.search(0, 0);
+            set_type::search_result::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
         }
     }
 
@@ -724,6 +742,20 @@ void rect_test_perf_insertion_fixed_x()
         {
             set_type::search_result_type result;
             db.search(0, data_count/2, result);
+            set_type::search_result_type::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result result = db.search(0, data_count/2);
+            set_type::search_result::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
         }
     }
 
@@ -733,6 +765,20 @@ void rect_test_perf_insertion_fixed_x()
         {
             set_type::search_result_type result;
             db.search(0, data_count+1, result);
+            set_type::search_result_type::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result result = db.search(0, data_count+1);
+            set_type::search_result::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
         }
     }
 
@@ -778,12 +824,16 @@ void rect_test_perf_insertion_fixed_y()
     }
     assert(db.size() == data_count);
 
+    const range_type* test = NULL;
     {
         StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
             db.search(0, 0, result);
+            set_type::search_result_type::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
         }
     }
 
@@ -793,6 +843,20 @@ void rect_test_perf_insertion_fixed_y()
         {
             set_type::search_result_type result;
             db.search(0, 0, result);
+            set_type::search_result_type::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result result = db.search(0, 0);
+            set_type::search_result::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
         }
     }
 
@@ -802,6 +866,20 @@ void rect_test_perf_insertion_fixed_y()
         {
             set_type::search_result_type result;
             db.search(0, data_count/2, result);
+            set_type::search_result_type::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result result = db.search(0, data_count/2);
+            set_type::search_result::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
         }
     }
 
@@ -811,6 +889,20 @@ void rect_test_perf_insertion_fixed_y()
         {
             set_type::search_result_type result;
             db.search(0, data_count+1, result);
+            set_type::search_result_type::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        for (size_t i = 0; i < 500; ++i)
+        {
+            set_type::search_result result = db.search(0, data_count+1);
+            set_type::search_result::iterator itr = result.begin(), itr_end = result.end();
+            for (; itr != itr_end; ++itr)
+                test = *itr;
         }
     }
 
