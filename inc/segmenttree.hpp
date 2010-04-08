@@ -47,6 +47,73 @@ namespace mdds {
 template<typename _Key, typename _Data>
 class rectangle_set;
 
+template<typename _TreeType, typename _Inserter>
+void descend_tree_for_search(typename _TreeType::key_type point, const typename _TreeType::node* pnode, _Inserter& result)
+{
+    typedef typename _TreeType::key_type key_type;
+    typedef typename _TreeType::node node;
+    typedef typename _TreeType::nonleaf_value_type nonleaf_value_type;
+    typedef typename _TreeType::leaf_value_type leaf_value_type;
+    typedef _Inserter inserter_type;
+
+    if (!pnode)
+        // This should never happen, but just in case.
+        return;
+
+    if (pnode->is_leaf)
+    {
+        result(pnode->value_leaf.data_chain);
+        return;
+    }
+
+    const nonleaf_value_type& v = pnode->value_nonleaf;
+    if (point < v.low || v.high <= point)
+        // Query point is out-of-range.
+        return;
+
+    result(pnode->value_nonleaf.data_chain);
+
+    // Check the left child node first, then the right one.
+    node* pchild = pnode->left.get();
+    if (!pchild)
+        return;
+
+    assert(pnode->right.get() ? pchild->is_leaf == pnode->right->is_leaf : true);
+    if (pchild->is_leaf)
+    {
+        // The child node are leaf nodes.
+        const leaf_value_type& vleft = pchild->value_leaf;
+        if (point < vleft.key)
+        {
+            // Out-of-range.  Nothing more to do.
+            return;
+        }
+
+        if (pnode->right.get())
+        {
+            const leaf_value_type& vright = pnode->right->value_leaf;    
+            if (vright.key <= point)
+                // Follow the right node.
+                pchild = pnode->right.get();
+        }
+    }
+    else
+    {
+        const nonleaf_value_type& vleft = pchild->value_nonleaf;
+        if (point < vleft.low)
+        {
+            // Out-of-range.  Nothing more to do.
+            return;
+        }
+        if (vleft.high <= point && pnode->right.get())
+            // Follow the right child.
+            pchild = pnode->right.get();
+
+        assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
+    }
+    ::mdds::descend_tree_for_search<_TreeType, _Inserter>(point, pchild, result);
+}
+
 template<typename _Key, typename _Data>
 class segment_tree
 {
@@ -446,6 +513,38 @@ public:
         }
     };
 
+    class search_result_vector_inserter : public ::std::unary_function<data_chain_type*, void>
+    {
+    public:
+        search_result_vector_inserter(search_result_type& result) : m_result(result) {}
+        void operator() (data_chain_type* node_data)
+        {
+            if (!node_data)
+                return;
+
+            typename data_chain_type::const_iterator itr = node_data->begin(), itr_end = node_data->end();
+            for (; itr != itr_end; ++itr)
+                m_result.push_back(*itr);   
+        }
+    private:
+        search_result_type& m_result;
+    };
+
+    class search_result_inserter : public ::std::unary_function<data_chain_type*, void>
+    {
+    public:
+        search_result_inserter(search_result_base& result) : m_result(result) {}
+        void operator() (data_chain_type* node_data)
+        {
+            if (!node_data)
+                return;
+            
+            m_result.push_back_chain(node_data);
+        }
+    private:
+        search_result_base& m_result;
+    };
+
     segment_tree();
     segment_tree(const segment_tree& r);
     ~segment_tree();
@@ -566,9 +665,6 @@ private:
     void descend_tree_and_mark(node* pnode, data_type* pdata, key_type begin_key, key_type end_key, node_list_type* plist);
 
     void build_leaf_nodes();
-    void descend_tree_for_search(key_type point, const node* pnode, search_result_type& data_chain) const;
-    void descend_tree_for_search(key_type point, const node* pnode, search_result_base& result) const;
-    void append_search_result(search_result_type& data_chain, const data_chain_type* node_data) const;
 
     /** 
      * Go through the list of nodes, and remove the specified data pointer 
@@ -806,7 +902,8 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
         // segments have been inserted.
         return true;
 
-    descend_tree_for_search(point, m_root_node.get(), result);
+    search_result_vector_inserter result_inserter(result);
+    ::mdds::descend_tree_for_search<segment_tree<_Key,_Data> >(point, m_root_node.get(), result_inserter);
     return true;
 }
 
@@ -818,7 +915,8 @@ segment_tree<_Key, _Data>::search(key_type point) const
     if (!m_valid_tree || !m_root_node.get())
         return result;
 
-    descend_tree_for_search(point, m_root_node.get(), result);
+    search_result_inserter result_inserter(result);
+    ::mdds::descend_tree_for_search<segment_tree<_Key, _Data> >(point, m_root_node.get(), result_inserter);
     return result;
 }
 
@@ -828,7 +926,8 @@ void segment_tree<_Key, _Data>::search(key_type point, search_result_base& resul
     if (!m_valid_tree || !m_root_node.get())
         return;
 
-    descend_tree_for_search(point, m_root_node.get(), result);
+    search_result_inserter result_inserter(result);
+    ::mdds::descend_tree_for_search<segment_tree<_Key, _Data> >(point, m_root_node.get(), result_inserter);
 }
 
 template<typename _Key, typename _Data>
@@ -915,140 +1014,6 @@ void segment_tree<_Key, _Data>::clear_all_nodes()
     m_left_leaf.reset();
     m_right_leaf.reset();
     m_root_node.reset();
-}
-
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, search_result_type& data_chain) const
-{
-    if (!pnode)
-        // This should never happen, but just in case.
-        return;
-
-    if (pnode->is_leaf)
-    {
-        append_search_result(data_chain, pnode->value_leaf.data_chain);
-        return;
-    }
-
-    const nonleaf_value_type& v = pnode->value_nonleaf;
-    if (point < v.low || v.high <= point)
-        // Query point is out-of-range.
-        return;
-
-    append_search_result(data_chain, pnode->value_nonleaf.data_chain);
-
-    // Check the left child node first, then the right one.
-    node* pchild = pnode->left.get();
-    if (!pchild)
-        return;
-
-    assert(pnode->right.get() ? pchild->is_leaf == pnode->right->is_leaf : true);
-    if (pchild->is_leaf)
-    {
-        // The child node are leaf nodes.
-        const leaf_value_type& vleft = pchild->value_leaf;
-        if (point < vleft.key)
-        {
-            // Out-of-range.  Nothing more to do.
-            return;
-        }
-
-        if (pnode->right.get())
-        {
-            const leaf_value_type& vright = pnode->right->value_leaf;    
-            if (vright.key <= point)
-                // Follow the right node.
-                pchild = pnode->right.get();
-        }
-    }
-    else
-    {
-        const nonleaf_value_type& vleft = pchild->value_nonleaf;
-        if (point < vleft.low)
-        {
-            // Out-of-range.  Nothing more to do.
-            return;
-        }
-        if (vleft.high <= point && pnode->right.get())
-            // Follow the right child.
-            pchild = pnode->right.get();
-
-        assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
-    }
-    descend_tree_for_search(point, pchild, data_chain);
-}
-
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::descend_tree_for_search(
-    key_type point, const node* pnode, search_result_base& result) const
-{
-    if (!pnode)
-        // This should never happen, but just in case.
-        return;
-
-    if (pnode->is_leaf)
-    {
-        result.push_back_chain(pnode->value_leaf.data_chain);
-        return;
-    }
-
-    const nonleaf_value_type& v = pnode->value_nonleaf;
-    if (point < v.low || v.high <= point)
-        // Query point is out-of-range.
-        return;
-
-    result.push_back_chain(pnode->value_nonleaf.data_chain);
-
-    // Check the left child node first, then the right one.
-    node* pchild = pnode->left.get();
-    if (!pchild)
-        return;
-
-    assert(pnode->right.get() ? pchild->is_leaf == pnode->right->is_leaf : true);
-    if (pchild->is_leaf)
-    {
-        // The child node are leaf nodes.
-        const leaf_value_type& vleft = pchild->value_leaf;
-        if (point < vleft.key)
-        {
-            // Out-of-range.  Nothing more to do.
-            return;
-        }
-
-        if (pnode->right.get())
-        {
-            const leaf_value_type& vright = pnode->right->value_leaf;    
-            if (vright.key <= point)
-                // Follow the right node.
-                pchild = pnode->right.get();
-        }
-    }
-    else
-    {
-        const nonleaf_value_type& vleft = pchild->value_nonleaf;
-        if (point < vleft.low)
-        {
-            // Out-of-range.  Nothing more to do.
-            return;
-        }
-        if (vleft.high <= point && pnode->right.get())
-            // Follow the right child.
-            pchild = pnode->right.get();
-
-        assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
-    }
-    descend_tree_for_search(point, pchild, result);
-}
-
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::append_search_result(search_result_type& data_chain, const data_chain_type* node_data) const
-{
-    if (!node_data)
-        return;
-
-    typename data_chain_type::const_iterator itr = node_data->begin(), itr_end = node_data->end();
-    for (; itr != itr_end; ++itr)
-        data_chain.push_back(*itr);
 }
 
 #ifdef UNIT_TEST
