@@ -45,8 +45,12 @@
 namespace mdds {
 
 template<typename _Key, typename _Data>
+class rectangle_set;
+
+template<typename _Key, typename _Data>
 class segment_tree
 {
+    friend class rectangle_set<_Key, _Data>;
 public:
     typedef _Key        key_type;
     typedef _Data       data_type;
@@ -219,12 +223,52 @@ private:
 #endif
     };
 
-public:
-    class search_result
+private:
+    class search_result_base
     {
+    public:
         friend class segment_tree<_Key,_Data>;
         typedef ::std::vector<data_chain_type*>         res_chains_type;
         typedef ::boost::shared_ptr<res_chains_type>    res_chains_ptr;
+    public:
+        search_result_base() :
+            mp_res_chains(static_cast<res_chains_type*>(NULL)) {}
+
+        search_result_base(const search_result_base& r) :
+            mp_res_chains(r.mp_res_chains) {}
+
+        size_t size() const
+        {
+            size_t combined = 0;
+            typename res_chains_type::const_iterator 
+                itr = mp_res_chains->begin(), itr_end = mp_res_chains->end();
+            for (; itr != itr_end; ++itr)
+                combined += (*itr)->size();
+            return combined;
+        }
+
+    private:
+        void push_back_chain(data_chain_type* chain)
+        {
+            if (!chain || chain->empty())
+                return;
+
+            if (!mp_res_chains)
+                mp_res_chains.reset(new res_chains_type);
+            mp_res_chains->push_back(chain);
+        }
+
+    res_chains_ptr& get_res_chains() { return mp_res_chains; }
+
+    private:
+        res_chains_ptr  mp_res_chains;
+    };
+public:
+
+    class search_result : public search_result_base
+    {
+        typedef typename search_result_base::res_chains_type res_chains_type;
+        typedef typename search_result_base::res_chains_ptr res_chains_ptr;
     public:
         class iterator
         {
@@ -371,38 +415,19 @@ public:
             bool m_end_pos:1;
         };
 
-        search_result() :
-            mp_res_chains(static_cast<res_chains_type*>(NULL)) {}
-
-        search_result(const search_result& r) :
-            mp_res_chains(r.mp_res_chains) {}
-
         typename search_result::iterator begin()
         {
-            typename search_result::iterator itr(mp_res_chains);
+            typename search_result::iterator itr(search_result_base::get_res_chains());
             itr.move_to_front();
             return itr;
         }
 
         typename search_result::iterator end()
         {
-            typename search_result::iterator itr(mp_res_chains);
+            typename search_result::iterator itr(search_result_base::get_res_chains());
             itr.move_to_end();
             return itr;
         }
-    private:
-        void push_back_chain(data_chain_type* chain)
-        {
-            if (!chain || chain->empty())
-                return;
-
-            if (!mp_res_chains)
-                mp_res_chains.reset(new res_chains_type);
-            mp_res_chains->push_back(chain);
-        }
-
-    private:
-        res_chains_ptr  mp_res_chains;
     };
 
     segment_tree();
@@ -507,6 +532,10 @@ public:
 #endif
 
 private:
+    /** 
+     * To be called from rectangle_set.
+     */
+    void search(key_type point, search_result_base& result) const;
 
     typedef ::std::vector<node*> node_list_type;
     typedef ::boost::ptr_map<data_type*, node_list_type> data_node_map_type;
@@ -522,7 +551,7 @@ private:
 
     void build_leaf_nodes();
     void descend_tree_for_search(key_type point, const node* pnode, search_result_type& data_chain) const;
-    void descend_tree_for_search(key_type point, const node* pnode, search_result& result) const;
+    void descend_tree_for_search(key_type point, const node* pnode, search_result_base& result) const;
     void append_search_result(search_result_type& data_chain, const data_chain_type* node_data) const;
 
     /** 
@@ -778,6 +807,15 @@ segment_tree<_Key, _Data>::search(key_type point) const
 }
 
 template<typename _Key, typename _Data>
+void segment_tree<_Key, _Data>::search(key_type point, search_result_base& result) const
+{
+    if (!m_valid_tree || !m_root_node.get())
+        return;
+
+    descend_tree_for_search(point, m_root_node.get(), result);
+}
+
+template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::remove(data_type* pdata)
 {
     using namespace std;
@@ -925,7 +963,8 @@ void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const no
 }
 
 template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::descend_tree_for_search(key_type point, const node* pnode, search_result& result) const
+void segment_tree<_Key, _Data>::descend_tree_for_search(
+    key_type point, const node* pnode, search_result_base& result) const
 {
     if (!pnode)
         // This should never happen, but just in case.

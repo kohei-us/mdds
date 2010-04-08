@@ -92,6 +92,20 @@ private:
 public:
     typedef typename inner_type::search_result_type search_result_type;
 
+    class search_result : public segment_tree<_Key,_Data>::search_result_base
+    {
+    public:
+        search_result() :
+            segment_tree<_Key,_Data>::search_result_base()
+        {
+        }
+
+        search_result(const search_result& r) :
+            segment_tree<_Key,_Data>::search_result_base(r)
+        {
+        }
+    };
+
     rectangle_set();
     rectangle_set(const rectangle_set& r);
     ~rectangle_set();
@@ -109,6 +123,8 @@ public:
     bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
 
     bool search(key_type x, key_type y, search_result_type& result);
+
+    search_result search(key_type x, key_type y);
 
     void remove(data_type* data);
 
@@ -254,6 +270,31 @@ bool rectangle_set<_Key,_Data>::search(key_type x, key_type y, search_result_typ
             return false;
     }
     return true;
+}
+
+template<typename _Key, typename _Data>
+typename rectangle_set<_Key,_Data>::search_result
+rectangle_set<_Key,_Data>::search(key_type x, key_type y)
+{
+    search_result result;
+    typename outer_type::search_result_type inner_trees;
+    if (!m_outer_segments.is_tree_valid())
+        m_outer_segments.build_tree();
+
+    if (!m_outer_segments.search(x, inner_trees))
+        return result;
+
+    typename outer_type::search_result_type::iterator itr_tree = inner_trees.begin(), itr_tree_end = inner_trees.end();
+    for (; itr_tree != itr_tree_end; ++itr_tree)
+    {
+        inner_type* inner_tree = *itr_tree;
+        if (!inner_tree->is_tree_valid())
+            inner_tree->build_tree();
+
+        // Search all relevant inner trees and aggregate results.
+        inner_tree->search(y, result);
+    }
+    return result;
 }
 
 template<typename _Key, typename _Data>

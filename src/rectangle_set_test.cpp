@@ -826,6 +826,37 @@ void rect_test_perf_insertion_fixed_y()
     }
 }
 
+void rect_test_search_result_iterator()
+{
+    StackPrinter __stack_printer__("::rect_test_search_result_iterator");
+
+    typedef uint32_t value_type;
+    typedef range<value_type> range_type;
+    typedef rectangle_set<value_type, const range_type> set_type;
+
+    range_type A(0, 0, 1, 1, "A");
+    range_type B(0, 0, 2, 2, "B");
+    range_type C(0, 0, 3, 3, "C");
+    range_type D(0, 0, 4, 4, "D");
+    range_type E(0, 0, 5, 5, "E");
+    range_type F(0, 0, 6, 6, "F");
+    range_type G(0, 0, 7, 7, "G");
+
+    set_type db;
+    insert_range(db, A);
+    insert_range(db, B);
+    insert_range(db, C);
+    insert_range(db, D);
+    insert_range(db, E);
+    insert_range(db, F);
+    insert_range(db, G);
+    db.dump_rectangles();
+    check_size(db, 7);
+
+    set_type::search_result result = db.search(0, 0);
+    cout << "result size: " << result.size() << endl;
+}
+
 int main(int argc, char** argv)
 {
     bool test_func = false;
@@ -857,6 +888,7 @@ int main(int argc, char** argv)
         rect_test_copy_constructor();
         rect_test_assignment();
         rect_test_equality();
+        rect_test_search_result_iterator();
     }
 
     if (test_perf)
