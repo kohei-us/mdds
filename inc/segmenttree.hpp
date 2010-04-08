@@ -599,6 +599,15 @@ public:
      */
     bool search(key_type point, search_result_type& result) const;
 
+    /** 
+     * Search the tree and collect all segments that include a specified 
+     * point. 
+     *
+     * @param point specified point value 
+     *  
+     * @return object containing the result of the search, which can be 
+     *         accessed via iterator.
+     */
     search_result search(key_type point) const;
 
     /** 

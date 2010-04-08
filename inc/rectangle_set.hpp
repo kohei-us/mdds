@@ -170,7 +170,7 @@ public:
     bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
 
     /** 
-     * Search the tree and collect all rectangles that contains a given point.
+     * Search and collect all rectangles that contains a given point.
      *  
      * @param x x coordinate of a query point.
      * @param y y coordinate of a query point.
@@ -180,14 +180,42 @@ public:
      */
     bool search(key_type x, key_type y, search_result_type& result);
 
+    /** 
+     * Search and collect all rectangles containing a given point.
+     *  
+     * @param x x coordinate of a query point.
+     * @param y y coordinate of a query point. 
+     * 
+     * @return object containing the result of the search, which can be 
+     *         accessed via iterator.
+     */
     search_result search(key_type x, key_type y);
 
+    /** 
+     * Remove a rectangle instance pointed to by a given pointer.
+     *
+     * @param data pointer that points to the rectangle instance you wish to 
+     *             remove from the set.
+     */
     void remove(data_type* data);
 
+    /** 
+     * Clear all rectangles stored in the set.
+     */
     void clear();
 
+    /** 
+     * Return the number of rectangles currently stored in the set.
+     * 
+     * @return number of stored rectangles.
+     */
     size_t size() const;
 
+    /** 
+     * Check whether or not the set is empty.
+     * 
+     * @return true if the set is empty, false otherwise.
+     */
     bool empty() const;
 
 private:
