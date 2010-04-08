@@ -235,45 +235,7 @@ private:
         typedef ::std::vector<data_chain_type*>         res_chains_type;
         typedef ::boost::shared_ptr<res_chains_type>    res_chains_ptr;
     public:
-        search_result_base() :
-            mp_res_chains(static_cast<res_chains_type*>(NULL)) {}
 
-        search_result_base(const search_result_base& r) :
-            mp_res_chains(r.mp_res_chains) {}
-
-        size_t size() const
-        {
-            size_t combined = 0;
-            typename res_chains_type::const_iterator 
-                itr = mp_res_chains->begin(), itr_end = mp_res_chains->end();
-            for (; itr != itr_end; ++itr)
-                combined += (*itr)->size();
-            return combined;
-        }
-
-        void push_back_chain(data_chain_type* chain)
-        {
-            if (!chain || chain->empty())
-                return;
-
-            if (!mp_res_chains)
-                mp_res_chains.reset(new res_chains_type);
-            mp_res_chains->push_back(chain);
-        }
-
-    res_chains_ptr& get_res_chains() { return mp_res_chains; }
-
-    private:
-        res_chains_ptr  mp_res_chains;
-    };
-
-public:
-
-    class search_result : public search_result_base
-    {
-        typedef typename search_result_base::res_chains_type res_chains_type;
-        typedef typename search_result_base::res_chains_ptr res_chains_ptr;
-    public:
         class iterator
         {
             friend class segment_tree<_Key,_Data>::search_result;
@@ -418,6 +380,44 @@ public:
             typename data_chain_type::iterator  m_cur_pos_in_chain;
             bool m_end_pos:1;
         };
+
+        search_result_base() :
+            mp_res_chains(static_cast<res_chains_type*>(NULL)) {}
+
+        search_result_base(const search_result_base& r) :
+            mp_res_chains(r.mp_res_chains) {}
+
+        size_t size() const
+        {
+            size_t combined = 0;
+            typename res_chains_type::const_iterator 
+                itr = mp_res_chains->begin(), itr_end = mp_res_chains->end();
+            for (; itr != itr_end; ++itr)
+                combined += (*itr)->size();
+            return combined;
+        }
+
+        void push_back_chain(data_chain_type* chain)
+        {
+            if (!chain || chain->empty())
+                return;
+
+            if (!mp_res_chains)
+                mp_res_chains.reset(new res_chains_type);
+            mp_res_chains->push_back(chain);
+        }
+
+    res_chains_ptr& get_res_chains() { return mp_res_chains; }
+
+    private:
+        res_chains_ptr  mp_res_chains;
+    };
+
+public:
+
+    class search_result : public search_result_base
+    {
+    public:
 
         typename search_result::iterator begin()
         {
