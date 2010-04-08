@@ -92,16 +92,16 @@ private:
 public:
     typedef typename inner_type::search_result_type search_result_type;
 
-    class search_result : public segment_tree<_Key,_Data>::search_result_base
+    class search_result : public inner_type::search_result_base
     {
     public:
         search_result() :
-            segment_tree<_Key,_Data>::search_result_base()
+            inner_type::search_result_base()
         {
         }
 
         search_result(const search_result& r) :
-            segment_tree<_Key,_Data>::search_result_base(r)
+            inner_type::search_result_base(r)
         {
         }
     };
