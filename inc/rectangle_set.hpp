@@ -95,6 +95,157 @@ public:
     class search_result : public inner_type::search_result_base
     {
     public:
+        typedef typename inner_type::search_result_base::res_chains_type res_chains_type;
+        typedef typename inner_type::search_result_base::res_chains_ptr res_chains_ptr;
+        typedef typename inner_type::data_chain_type data_chain_type;
+
+    public:
+
+        class iterator
+        {
+            friend class rectangle_set<_Key,_Data>::search_result;
+        private:
+            iterator(const res_chains_ptr& p) :
+                mp_res_chains(p), m_end_pos(true) {}
+
+        public:
+            typedef ::std::bidirectional_iterator_tag           iterator_category;
+            typedef typename data_chain_type::value_type        value_type;
+            typedef typename data_chain_type::pointer           pointer;
+            typedef typename data_chain_type::reference         reference;
+            typedef typename data_chain_type::difference_type   difference_type;
+
+            iterator() : 
+                mp_res_chains(static_cast<res_chains_type*>(NULL)), m_end_pos(true) {}
+
+            iterator(const iterator& r) :
+                mp_res_chains(r.mp_res_chains), 
+                m_cur_chain(r.m_cur_chain), 
+                m_cur_pos_in_chain(r.m_cur_pos_in_chain), 
+                m_end_pos(r.m_end_pos) {}
+
+            iterator& operator= (const iterator& r)
+            {
+                mp_res_chains = r.mp_res_chains;
+                m_cur_chain = r.m_cur_chain;
+                m_cur_pos_in_chain = r.m_cur_pos_in_chain;
+                m_end_pos = r.m_end_pos;
+                return *this;
+            }
+
+            typename data_chain_type::value_type* operator++ ()
+            {
+                // We don't check for end position flag for performance reasons.
+                // The caller is responsible for making sure not to increment past
+                // end position.
+
+                // When reaching the end position, the internal iterators still 
+                // need to be pointing at the last item before the end position.
+                // This is why we need to make copies of the iterators, and copy
+                // them back once done.
+
+                typename data_chain_type::iterator cur_pos_in_chain = m_cur_pos_in_chain;
+
+                if (++cur_pos_in_chain == (*m_cur_chain)->end())
+                {
+                    // End of current chain.  Inspect the next chain if exists.
+                    typename res_chains_type::iterator cur_chain = m_cur_chain;
+                    ++cur_chain;
+                    if (cur_chain == mp_res_chains->end())
+                    {
+                        m_end_pos = true;
+                        return NULL;
+                    }
+                    m_cur_chain = cur_chain;
+                    m_cur_pos_in_chain = (*m_cur_chain)->begin();
+                }
+                else
+                    ++m_cur_pos_in_chain;
+
+                return operator->();
+            }
+
+            typename data_chain_type::value_type* operator-- ()
+            {
+                if (!mp_res_chains)
+                    return NULL;
+
+                if (m_end_pos)
+                {
+                    m_end_pos = false;
+                    return &(*m_cur_pos_in_chain);
+                }
+
+                if (m_cur_pos_in_chain == (*m_cur_chain)->begin())
+                {
+                    if (m_cur_chain == mp_res_chains->begin())
+                    {
+                        // Already at the first data chain.  Don't move the iterator position.
+                        return NULL;
+                    }
+                    --m_cur_chain;
+                    m_cur_pos_in_chain = (*m_cur_chain)->end();
+                }
+                --m_cur_pos_in_chain;
+                return operator->();
+            }
+
+            bool operator== (const iterator& r) const
+            {
+                return mp_res_chains.get() == r.mp_res_chains.get() && 
+                    m_cur_chain == r.m_cur_chain && m_cur_pos_in_chain == r.m_cur_pos_in_chain &&
+                    m_end_pos == r.m_end_pos;
+            }
+
+            bool operator!= (const iterator& r) const { return !operator==(r); }
+
+            typename data_chain_type::value_type& operator*()
+            {
+                return *m_cur_pos_in_chain;
+            }
+
+            typename data_chain_type::value_type* operator->()
+            {
+                return &(*m_cur_pos_in_chain);
+            }
+
+        private:
+            void move_to_front()
+            {
+                if (!mp_res_chains)
+                {
+                    // Empty data set.
+                    m_end_pos = true;
+                    return;
+                }
+
+                // We assume that there is at least one chain list, and no 
+                // empty chain list exists.  So, skip the check.
+                m_cur_chain = mp_res_chains->begin();
+                m_cur_pos_in_chain = (*m_cur_chain)->begin();
+                m_end_pos = false;
+            }
+
+            void move_to_end()
+            {
+                m_end_pos = true;
+                if (!mp_res_chains)
+                    // Empty data set.
+                    return;
+
+                m_cur_chain = mp_res_chains->end();
+                --m_cur_chain;
+                m_cur_pos_in_chain = (*m_cur_chain)->end();
+                --m_cur_pos_in_chain;
+            }
+
+        private:
+            res_chains_ptr mp_res_chains;
+            typename res_chains_type::iterator  m_cur_chain;
+            typename data_chain_type::iterator  m_cur_pos_in_chain;
+            bool m_end_pos:1;
+        };
+
         search_result() :
             inner_type::search_result_base()
         {
@@ -103,6 +254,22 @@ public:
         search_result(const search_result& r) :
             inner_type::search_result_base(r)
         {
+        }
+
+        typename search_result::iterator begin()
+        {
+            typename search_result::iterator itr(
+                inner_type::search_result_base::get_res_chains());
+            itr.move_to_front();
+            return itr;
+        }
+
+        typename search_result::iterator end()
+        {
+            typename search_result::iterator itr(
+                inner_type::search_result_base::get_res_chains());
+            itr.move_to_end();
+            return itr;
         }
     };
 

@@ -855,6 +855,7 @@ void rect_test_search_result_iterator()
 
     set_type::search_result result = db.search(0, 0);
     cout << "result size: " << result.size() << endl;
+    for_each(result.begin(), result.end(), range_type::printer());
 }
 
 int main(int argc, char** argv)
