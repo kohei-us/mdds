@@ -92,6 +92,11 @@ private:
 public:
     typedef typename inner_type::search_result_type search_result_type;
 
+    /** 
+     * Most of the implementation of search_result and its iterator is in 
+     * segment_tree since the iteration logic is identical & depends on 
+     * segment_tree internals. 
+     */
     class search_result : public inner_type::search_result_base
     {
     public:
@@ -110,15 +115,8 @@ public:
             iterator() : inner_type::iterator_base() {}
         };
 
-        search_result() :
-            inner_type::search_result_base()
-        {
-        }
-
-        search_result(const search_result& r) :
-            inner_type::search_result_base(r)
-        {
-        }
+        search_result() : inner_type::search_result_base() {}
+        search_result(const search_result& r) : inner_type::search_result_base(r) {}
 
         typename search_result::iterator begin()
         {
