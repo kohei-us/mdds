@@ -224,10 +224,14 @@ private:
     };
 
 private:
+
+    /** 
+     * This base class takes care of collecting data chain pointers during 
+     * tree descend for search.
+     */
     class search_result_base
     {
     public:
-        friend class segment_tree<_Key,_Data>;
         typedef ::std::vector<data_chain_type*>         res_chains_type;
         typedef ::boost::shared_ptr<res_chains_type>    res_chains_ptr;
     public:
@@ -247,7 +251,6 @@ private:
             return combined;
         }
 
-    private:
         void push_back_chain(data_chain_type* chain)
         {
             if (!chain || chain->empty())
@@ -263,6 +266,7 @@ private:
     private:
         res_chains_ptr  mp_res_chains;
     };
+
 public:
 
     class search_result : public search_result_base
