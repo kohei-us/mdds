@@ -94,7 +94,7 @@ public:
 
     /** 
      * Most of the implementation of search_result and its iterator is in 
-     * segment_tree since the iteration logic is identical & depends on 
+     * segment_tree since the iteration logic is identical & depends on the
      * segment_tree internals. 
      */
     class search_result : public inner_type::search_result_base
@@ -149,8 +149,35 @@ public:
 
     bool operator!= (const rectangle_set& r) const { return !operator==(r); }
 
+    /** 
+     * Insert a new rectangle (and data associated with it) into the set. 
+     * Note that insertion of duplicate data instance is not allowed.  A data 
+     * is considered a duplicate if its pointer value is identical to one of 
+     * the data instances already stored within.  Also note that <i>the end
+     * point of a rectangle is non-inclusive; a rectangle of (x1,y1) - (x2,y2) 
+     * means that the rectangle spans x1 <= x < x2 and y1 <= y < y2.</i> 
+     *  
+     * @param x1 lower x coordinate of the rectangle.  Inclusive.
+     * @param y1 lower y coordinate of the rectangle.  Inclusive.
+     * @param x2 upper x coordinate of the rectangle.  Non-inclusive.
+     * @param y2 upper y coordinate of the rectangle.  Non-inclusive.
+     * @param data pointer to data instance associated with this rectangle. 
+     *             <i>Note that the caller is responsible for managing the
+     *             life cycle of the data instance</i>.
+     * 
+     * @return true if a rectangle successfully inserted, false otherwise.
+     */
     bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
 
+    /** 
+     * Search the tree and collect all rectangles that contains a given point.
+     *  
+     * @param x x coordinate of a query point.
+     * @param y y coordinate of a query point.
+     * @param result array of pointers to rectangle instances.
+     * 
+     * @return true if the search is successful, false otherwise.
+     */
     bool search(key_type x, key_type y, search_result_type& result);
 
     search_result search(key_type x, key_type y);

@@ -1,4 +1,17 @@
+  * other general performance improvements.
+
+  * lots of code cleanups.
+
+  * support for search result iterator in segment_tree and 
+    rectangle_set, for better search performance.  
+
+  * implemented rectnagle_set.
+
+  * fixed lots of bugs in the segment_tree implementation.
+
 mdds 0.1.2
 
-  * implemented segment tree.
-  * node_base class is now without virtual methods to avoid vtable generation.
+  * implemented segment_tree.
+
+  * node_base class is now without virtual methods to avoid vtable 
+    generation.  
