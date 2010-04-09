@@ -17,6 +17,10 @@ Authors:
     Kohei Yoshida <kyoshida@novell.com>
 
 %package        devel
+Url:            http://code.google.com/p/multidimalgorithm/
+License:        MIT/X11
+Packager:       Kohei Yoshida  <kyoshida@novell.com>
+Group:          Development/Libraries/C++
 Summary:        A collection of multi-dimensional data structure and indexing algorithm. 
 %description    devel
 A collection of multi-dimensional data structure and indexing algorithm. 
@@ -44,12 +48,12 @@ install -d %buildroot/usr/share/mdds-%version
 rm -rf %buildroot
 
 %files devel
-%doc AUTHORS NEWS README
 %defattr(-,root,root)
 %dir /usr/include/mdds
 %dir /usr/share/mdds-%version
 %dir /usr/share/mdds-%version/src
 %dir /usr/share/doc/packages/mdds-%version
+%doc AUTHORS NEWS README
 /usr/include/mdds/*.hpp
 /usr/share/mdds-%version/src/*.cpp
 /usr/share/doc/packages/mdds-%version/*
