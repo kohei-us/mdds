@@ -8,6 +8,7 @@ Source:         mdds_0.2.0.tar.bz2
 Group:          Development/Libraries/C++
 Summary:        A collection of multi-dimensional data structure and indexing algorithm. 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+Requires:       boost-devel >= 1.39
 
 %description
 A collection of multi-dimensional data structure and indexing algorithm. 
@@ -34,15 +35,15 @@ Authors:
 
 %build
 mkdir -p %buildroot/usr/include/mdds
-mkdir -p %buildroot/usr/share/mdds-%version/src
-mkdir -p %buildroot/usr/share/doc/packages/mdds-%version
+mkdir -p %buildroot/usr/share/mdds-devel/src
+mkdir -p %buildroot/usr/share/doc/packages/mdds-devel
 cp inc/*.hpp %buildroot/usr/include/mdds/
-cp src/*.cpp %buildroot/usr/share/mdds-%version/src/
-cp AUTHORS NEWS README %buildroot/usr/share/doc/packages/mdds-%version/
+cp src/*.cpp %buildroot/usr/share/mdds-devel/src/
+cp AUTHORS NEWS README %buildroot/usr/share/doc/packages/mdds-devel/
 
 %install
 install -d %buildroot/usr/include/mdds
-install -d %buildroot/usr/share/mdds-%version
+install -d %buildroot/usr/share/mdds-devel
 
 %clean
 rm -rf %buildroot
@@ -50,13 +51,13 @@ rm -rf %buildroot
 %files devel
 %defattr(-,root,root)
 %dir /usr/include/mdds
-%dir /usr/share/mdds-%version
-%dir /usr/share/mdds-%version/src
-%dir /usr/share/doc/packages/mdds-%version
+%dir /usr/share/mdds-devel
+%dir /usr/share/mdds-devel/src
+%dir /usr/share/doc/packages/mdds-devel
 %doc AUTHORS NEWS README
 /usr/include/mdds/*.hpp
-/usr/share/mdds-%version/src/*.cpp
-/usr/share/doc/packages/mdds-%version/*
+/usr/share/mdds-devel/src/*.cpp
+
 
 %changelog
 * Fri Apr 9 2010 kyoshida@novell.com
