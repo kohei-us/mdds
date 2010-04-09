@@ -31,9 +31,10 @@ Authors:
 %build
 mkdir -p %buildroot/usr/include/mdds
 mkdir -p %buildroot/usr/share/mdds-%version/src
+mkdir -p %buildroot/usr/share/doc/packages/mdds-%version
 cp inc/*.hpp %buildroot/usr/include/mdds/
 cp src/*.cpp %buildroot/usr/share/mdds-%version/src/
-cp AUTHORS NEWS README %buildroot/usr/share/mdds-%version/
+cp AUTHORS NEWS README %buildroot/usr/share/doc/packages/mdds-%version/
 
 %install
 install -d %buildroot/usr/include/mdds
@@ -47,10 +48,11 @@ rm -rf %buildroot
 %defattr(-,root,root)
 %dir /usr/include/mdds
 %dir /usr/share/mdds-%version
-
+%dir /usr/share/mdds-%version/src
+%dir /usr/share/doc/packages/mdds-%version
 /usr/include/mdds/*.hpp
-/usr/share/mdds-%version/*
-
+/usr/share/mdds-%version/src/*.cpp
+/usr/share/doc/packages/mdds-%version/*
 
 %changelog
 * Fri Apr 9 2010 kyoshida@novell.com
