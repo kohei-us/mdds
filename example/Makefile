@@ -28,11 +28,14 @@
 CPPFLAGS=-I../inc -Wall -Os -std=c++0x
 
 EXEC= \
-	segment_tree
+	segment_tree \
+	rectangle_set
 
 all: $(EXEC)
 
 segment_tree: segment_tree.cpp
+
+rectangle_set: rectangle_set.cpp
 
 clean:
 	rm -f $(EXEC)
