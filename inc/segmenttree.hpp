@@ -312,6 +312,9 @@ private:
         size_t size() const
         {
             size_t combined = 0;
+            if (!mp_res_chains)
+                return combined;
+
             typename res_chains_type::const_iterator 
                 itr = mp_res_chains->begin(), itr_end = mp_res_chains->end();
             for (; itr != itr_end; ++itr)
