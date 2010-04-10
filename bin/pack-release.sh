@@ -6,5 +6,6 @@ hg clone https://multidimalgorithm.googlecode.com/hg/ $DIR
 rm -rf $DIR/.hg
 rm -f $DIR/.hgtags
 rm -rf $DIR/bin
+rm -rf $DIR/misc
 find $DIR -name '*.vp?' -type f | xargs rm -f
 tar jcvf $DIR.tar.bz2 $DIR
