@@ -220,17 +220,18 @@
 	</CustomFolders>
 	<Files AutoFolders="DirectoryView">
 		<Folder Name="inc">
-			<F N="inc/flatsegmenttree.hpp"/>
-			<F N="inc/global.hpp"/>
-			<F N="inc/node.hpp"/>
+			<Folder Name="mdds">
+				<F N="inc/mdds/flatsegmenttree.hpp"/>
+				<F N="inc/mdds/global.hpp"/>
+				<F N="inc/mdds/node.hpp"/>
+				<F N="inc/mdds/rectangle_set.hpp"/>
+				<F N="inc/mdds/segmenttree.hpp"/>
+			</Folder>
 			<F N="inc/nodecontainer.hpp"/>
 			<F N="inc/rangetree.hpp"/>
-			<F N="inc/rectangle_set.hpp"/>
-			<F N="inc/segmenttree.hpp"/>
 		</Folder>
 		<Folder Name="src">
 			<F N="src/flatsegmenttree_test.cpp"/>
-			<F N="src/global.cpp"/>
 			<F N="src/nodecontainer.cpp"/>
 			<F N="src/rangetree.cpp"/>
 			<F N="src/rectangle_set_test.cpp"/>

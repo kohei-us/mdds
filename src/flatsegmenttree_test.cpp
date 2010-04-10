@@ -28,7 +28,7 @@
 #if 0 // Disabled until I re-write priority search tree in a template.
 #include "rangetree.hpp"
 #endif
-#include "flatsegmenttree.hpp"
+#include "mdds/flatsegmenttree.hpp"
 
 #include <list>
 #include <iostream>

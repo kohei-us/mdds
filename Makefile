@@ -12,11 +12,11 @@ EXECS= \
 	stlperf-test
 
 HEADERS= \
-	$(INCDIR)/node.hpp \
-	$(INCDIR)/global.hpp \
-	$(INCDIR)/flatsegmenttree.hpp \
-	$(INCDIR)/segmenttree.hpp \
-	$(INCDIR)/rectangle_set.hpp
+	$(INCDIR)/mdds/node.hpp \
+	$(INCDIR)/mdds/global.hpp \
+	$(INCDIR)/mdds/flatsegmenttree.hpp \
+	$(INCDIR)/mdds/segmenttree.hpp \
+	$(INCDIR)/mdds/rectangle_set.hpp
 
 OBJFILES= \
 	$(OBJDIR)/flatsegmenttree_test.o \

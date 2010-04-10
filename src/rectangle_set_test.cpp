@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-#include "rectangle_set.hpp"
+#include "mdds/rectangle_set.hpp"
 
 #include <iostream>
 #include <sstream>

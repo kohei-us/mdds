@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-#include "segmenttree.hpp"
+#include "mdds/segmenttree.hpp"
 
 #include <cassert>
 #include <cstdlib>
