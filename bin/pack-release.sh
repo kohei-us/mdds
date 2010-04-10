@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=0.2.0
+VERSION=0.2.1
 DIR=mdds_$VERSION
 hg clone https://multidimalgorithm.googlecode.com/hg/ $DIR
 rm -rf $DIR/.hg
