@@ -7,14 +7,6 @@ using namespace std;
 
 typedef ::mdds::flat_segment_tree<long, int> fst_type;
 
-struct string_printer : public unary_function<string*, void>
-{
-    void operator() (const string* p) const
-    {
-        cout << "search hit: " << *p << endl;
-    }
-};
-
 int main()
 {
     // Define the begin and end points of the whole segment, and the default 
