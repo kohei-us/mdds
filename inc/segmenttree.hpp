@@ -47,13 +47,13 @@ namespace mdds {
 template<typename _Key, typename _Data>
 class rectangle_set;
 
-template<typename _TreeType, typename _Inserter>
-void descend_tree_for_search(typename _TreeType::key_type point, const typename _TreeType::node* pnode, _Inserter& result)
+template<typename _Key, typename _Node, typename _NonLeaf, typename _Leaf, typename _Inserter>
+void descend_tree_for_search(_Key point, const _Node* pnode, _Inserter& result)
 {
-    typedef typename _TreeType::key_type key_type;
-    typedef typename _TreeType::node node;
-    typedef typename _TreeType::nonleaf_value_type nonleaf_value_type;
-    typedef typename _TreeType::leaf_value_type leaf_value_type;
+    typedef _Key key_type;
+    typedef _Node node;
+    typedef _NonLeaf nonleaf_value_type;
+    typedef _Leaf leaf_value_type;
     typedef _Inserter inserter_type;
 
     if (!pnode)
@@ -111,7 +111,7 @@ void descend_tree_for_search(typename _TreeType::key_type point, const typename 
 
         assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
     }
-    ::mdds::descend_tree_for_search<_TreeType, _Inserter>(point, pchild, result);
+    ::mdds::descend_tree_for_search<_Key, _Node, _NonLeaf, _Leaf, _Inserter>(point, pchild, result);
 }
 
 template<typename _Key, typename _Data>
@@ -912,7 +912,12 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
         return true;
 
     search_result_vector_inserter result_inserter(result);
-    ::mdds::descend_tree_for_search<segment_tree<_Key,_Data> >(point, m_root_node.get(), result_inserter);
+    typedef segment_tree<_Key,_Data> tree_type;
+    ::mdds::descend_tree_for_search<
+        typename tree_type::key_type,
+        typename tree_type::node, typename tree_type::nonleaf_value_type, 
+        typename tree_type::leaf_value_type, search_result_vector_inserter>(
+            point, m_root_node.get(), result_inserter);
     return true;
 }
 
@@ -925,7 +930,12 @@ segment_tree<_Key, _Data>::search(key_type point) const
         return result;
 
     search_result_inserter result_inserter(result);
-    ::mdds::descend_tree_for_search<segment_tree<_Key, _Data> >(point, m_root_node.get(), result_inserter);
+    typedef segment_tree<_Key,_Data> tree_type;
+    ::mdds::descend_tree_for_search<
+        typename tree_type::key_type,
+        typename tree_type::node, typename tree_type::nonleaf_value_type, 
+        typename tree_type::leaf_value_type, search_result_inserter>(
+            point, m_root_node.get(), result_inserter);
     return result;
 }
 
@@ -936,7 +946,12 @@ void segment_tree<_Key, _Data>::search(key_type point, search_result_base& resul
         return;
 
     search_result_inserter result_inserter(result);
-    ::mdds::descend_tree_for_search<segment_tree<_Key, _Data> >(point, m_root_node.get(), result_inserter);
+    typedef segment_tree<_Key,_Data> tree_type;
+    ::mdds::descend_tree_for_search<
+        typename tree_type::key_type,
+        typename tree_type::node, typename tree_type::nonleaf_value_type, 
+        typename tree_type::leaf_value_type, search_result_inserter>(
+            point, m_root_node.get(), result_inserter);
 }
 
 template<typename _Key, typename _Data>
