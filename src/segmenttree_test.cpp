@@ -1090,6 +1090,20 @@ void st_test_search_iterator_result_check()
     }
 }
 
+/** 
+ * When calling search() on empty tree, even without calling build_tree() 
+ * should still return a valid search_result instance with a size of 0.
+ */
+void st_test_empty_result_set()
+{
+    StackPrinter __stack_printer__("::st_test_empty_result_set");
+    typedef segment_tree<long, string> db_type;
+    db_type db;
+    db_type::search_result result = db.search(0);
+    cout << "size of empty result set: " << result.size() << endl;
+    assert(result.size() == 0);
+}
+
 int main(int argc, char** argv)
 {
     bool test_func = false;
@@ -1127,6 +1141,7 @@ int main(int argc, char** argv)
         st_test_search_on_empty_set();
         st_test_search_iterator_basic();
         st_test_search_iterator_result_check();
+        st_test_empty_result_set();
     }
 
     if (test_perf)
