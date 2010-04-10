@@ -1,3 +1,12 @@
+mdds 0.2.1
+
+  * added example files on how to use these data structures.
+
+  * fixed a bug in segment_tree::search_result object, to make it work 
+    with empty result set.  
+
+  * fixed segment_tree to make it really usable outside of unit test code.
+
 mdds 0.2.0
 
   * other general performance improvements.
