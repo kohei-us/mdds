@@ -219,29 +219,35 @@
 			Filters=""/>
 	</CustomFolders>
 	<Files AutoFolders="DirectoryView">
+		<Folder Name="example">
+			<F N="example/flat_segment_tree.cpp"/>
+			<F N="example/rectangle_set.cpp"/>
+			<F N="example/segment_tree.cpp"/>
+		</Folder>
 		<Folder Name="inc">
 			<Folder Name="mdds">
-				<F N="inc/mdds/flatsegmenttree.hpp"/>
+				<F N="inc/mdds/flat_segment_tree.hpp"/>
 				<F N="inc/mdds/global.hpp"/>
 				<F N="inc/mdds/node.hpp"/>
+				<F N="inc/mdds/point_quad_tree.hpp"/>
 				<F N="inc/mdds/rectangle_set.hpp"/>
-				<F N="inc/mdds/segmenttree.hpp"/>
+				<F N="inc/mdds/segment_tree.hpp"/>
 			</Folder>
 			<F N="inc/nodecontainer.hpp"/>
 			<F N="inc/rangetree.hpp"/>
 		</Folder>
 		<Folder Name="src">
-			<F N="src/flatsegmenttree_test.cpp"/>
+			<F N="src/flat_segment_tree_test.cpp"/>
 			<F N="src/nodecontainer.cpp"/>
+			<F N="src/point_quad_tree_test.cpp"/>
 			<F N="src/rangetree.cpp"/>
 			<F N="src/rectangle_set_test.cpp"/>
-			<F N="src/segmenttree_test.cpp"/>
+			<F N="src/segment_tree_test.cpp"/>
 			<F N="src/stlperf_test.cpp"/>
 			<F N="src/template_test.cpp"/>
 		</Folder>
 		<F
 			N="Makefile"
 			Type="Makefile"/>
-		<F N="NEWS"/>
 	</Files>
 </Project>
