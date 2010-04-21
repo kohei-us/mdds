@@ -28,6 +28,8 @@
 #ifndef __MDDS_POINT_QUAD_TREE_HPP__
 #define __MDDS_POINT_QUAD_TREE_HPP__
 
+#include <cstdlib>
+
 namespace mdds {
 
 template<typename _Key, typename _Data>
@@ -47,6 +49,7 @@ point_quad_tree<_Key,_Data>::point_quad_tree()
 {
 }
 
+template<typename _Key, typename _Data>
 point_quad_tree<_Key,_Data>::~point_quad_tree()
 {
 }

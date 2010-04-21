@@ -43,6 +43,9 @@ $(OBJDIR)/segment_tree_test.o: $(SRCDIR)/segment_tree_test.cpp  $(DEPENDS)
 $(OBJDIR)/rectangle_set_test.o: $(SRCDIR)/rectangle_set_test.cpp  $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/rectangle_set_test.cpp
 
+$(OBJDIR)/point_quad_tree_test.o: $(SRCDIR)/point_quad_tree_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/point_quad_tree_test.cpp
+
 flat_segment_tree_test: pre $(OBJDIR)/flat_segment_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flat_segment_tree_test.o -o $@
 
@@ -51,6 +54,9 @@ segment_tree_test: pre $(OBJDIR)/segment_tree_test.o
 
 rectangle_set_test: pre $(OBJDIR)/rectangle_set_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/rectangle_set_test.o -o $@
+
+point_quad_tree_test: pre $(OBJDIR)/point_quad_tree_test.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/point_quad_tree_test.o -o $@
 
 stlperf_test: pre $(SRCDIR)/stlperf_test.cpp
 	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
@@ -63,6 +69,9 @@ test.fst: flat_segment_tree_test
 
 test.recset: rectangle_set_test
 	./rectangle_set_test func
+
+test.pqt: point_quad_tree_test
+	./point_quad_tree_test
 
 test.recset.perf: rectangle-set_test
 	./rectangle_set_test perf
