@@ -28,6 +28,8 @@
 #ifndef __MDDS_POINT_QUAD_TREE_HPP__
 #define __MDDS_POINT_QUAD_TREE_HPP__
 
+#include "mdds/quad_node.hpp"
+
 #include <cstdlib>
 
 namespace mdds {
@@ -40,12 +42,31 @@ public:
     typedef _Data   data_type;
     typedef size_t  size_type;
 
+    struct node;
+    typedef ::boost::intrusive_ptr<node> node_ptr;
+
+    struct node : quad_node_base<node_ptr, node>
+    {
+        data_type* data;
+        node(bool _is_leaf) :
+            quad_node_base<node_ptr, node>(_is_leaf),
+            data(NULL) {}
+
+        void dispose()
+        {
+        }
+    };
+
     point_quad_tree();
     ~point_quad_tree();
+
+private:
+    node_ptr    m_root;
 };
 
 template<typename _Key, typename _Data>
-point_quad_tree<_Key,_Data>::point_quad_tree()
+point_quad_tree<_Key,_Data>::point_quad_tree() :
+    m_root(NULL)
 {
 }
 
