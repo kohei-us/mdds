@@ -1,5 +1,5 @@
 
-#include <mdds/flatsegmenttree.hpp>
+#include <mdds/flat_segment_tree.hpp>
 #include <string>
 #include <iostream>
 

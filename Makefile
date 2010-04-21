@@ -34,7 +34,7 @@ all: $(EXECS)
 pre:
 	mkdir $(OBJDIR) 2>/dev/null || /bin/true
 
-$(OBJDIR)/flat_segmentt_ree_test.o: $(SRCDIR)/flat_segment_tree_test.cpp $(DEPENDS)
+$(OBJDIR)/flat_segment_tree_test.o: $(SRCDIR)/flat_segment_tree_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/flat_segment_tree_test.cpp
 
 $(OBJDIR)/segment_tree_test.o: $(SRCDIR)/segment_tree_test.cpp  $(DEPENDS)

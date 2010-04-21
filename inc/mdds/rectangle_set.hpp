@@ -28,7 +28,7 @@
 #ifndef __MDDS_RECTANGLE_SET_HPP__
 #define __MDDS_RECTANGLE_SET_HPP__
 
-#include "segmenttree.hpp"
+#include "segment_tree.hpp"
 #include "global.hpp"
 
 #include <vector>

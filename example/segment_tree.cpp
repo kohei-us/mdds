@@ -1,5 +1,5 @@
 
-#include <mdds/segmenttree.hpp>
+#include <mdds/segment_tree.hpp>
 #include <string>
 #include <iostream>
 

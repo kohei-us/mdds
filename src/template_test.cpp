@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-#include "segmenttree.hpp"
+#include "segment_tree.hpp"
 
 #include <string>
 
