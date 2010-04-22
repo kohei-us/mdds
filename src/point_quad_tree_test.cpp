@@ -78,6 +78,14 @@ void pqt_test()
 {
     StackPrinter __stack_printer__("::pqt_test");
     point_quad_tree<uint16_t, string> db;
+
+    string chicago("Chicago");
+    string denver("Denver");
+    string mobile("Mobile");
+
+    db.insert(35, 42, &chicago);
+    db.insert( 5, 45, &denver);
+    db.insert(52, 10, &mobile);
 }
 
 int main()

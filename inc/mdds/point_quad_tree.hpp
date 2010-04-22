@@ -31,6 +31,7 @@
 #include "mdds/quad_node.hpp"
 
 #include <cstdlib>
+#include <cassert>
 
 namespace mdds {
 
@@ -45,11 +46,11 @@ public:
     struct node;
     typedef ::boost::intrusive_ptr<node> node_ptr;
 
-    struct node : quad_node_base<node_ptr, node>
+    struct node : quad_node_base<node_ptr, node, key_type>
     {
         data_type* data;
-        node(bool _is_leaf) :
-            quad_node_base<node_ptr, node>(_is_leaf),
+        node(key_type _x, key_type _y) :
+            quad_node_base<node_ptr, node, key_type>(_x, _y),
             data(NULL) {}
 
         void dispose()
@@ -59,6 +60,8 @@ public:
 
     point_quad_tree();
     ~point_quad_tree();
+
+    void insert(key_type x, key_type y, data_type* data);
 
 private:
     node_ptr    m_root;
@@ -73,6 +76,75 @@ point_quad_tree<_Key,_Data>::point_quad_tree() :
 template<typename _Key, typename _Data>
 point_quad_tree<_Key,_Data>::~point_quad_tree()
 {
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data)
+{
+    if (!m_root)
+    {
+        // The very first node.
+        m_root.reset(new node(x, y));
+        m_root->data = data;
+        return;
+    }
+
+    node_ptr cur_node = m_root;
+    while (true)
+    {
+        if (cur_node->x == x && cur_node->y == y)
+        {
+            // Replace the current data with this, and we are done!
+            cur_node->data = data;
+            return;
+        }        
+        node_quadrant_t quad = cur_node->get_quadrant(x, y);
+        switch (quad)
+        {
+            case quad_north_east:
+                if (cur_node->northeast)
+                    cur_node = cur_node->northeast;
+                else
+                {
+                    cur_node->northeast.reset(new node(x, y));
+                    cur_node->northeast->parent = cur_node;
+                    return;
+                }
+                break;
+            case quad_north_west:
+                if (cur_node->northwest)
+                    cur_node = cur_node->northwest;
+                else
+                {
+                    cur_node->northwest.reset(new node(x, y));
+                    cur_node->northwest->parent = cur_node;
+                    return;
+                }
+                break;
+            case quad_south_east:
+                if (cur_node->southeast)
+                    cur_node = cur_node->southeast;
+                else
+                {
+                    cur_node->southeast.reset(new node(x, y));
+                    cur_node->southeast->parent = cur_node;
+                    return;
+                }
+                break;
+            case quad_south_west:
+                if (cur_node->southwest)
+                    cur_node = cur_node->southwest;
+                else
+                {
+                    cur_node->southwest.reset(new node(x, y));
+                    cur_node->southwest->parent = cur_node;
+                    return;
+                }
+                break;
+            default:
+                throw general_error("unknown quadrant");
+        }
+    }
 }
 
 }

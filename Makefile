@@ -15,6 +15,7 @@ EXECS= \
 
 HEADERS= \
 	$(INCDIR)/mdds/node.hpp \
+	$(INCDIR)/mdds/quad_node.hpp \
 	$(INCDIR)/mdds/global.hpp \
 	$(INCDIR)/mdds/flat_segment_tree.hpp \
 	$(INCDIR)/mdds/point_quad_tree.hpp \

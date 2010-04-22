@@ -28,6 +28,8 @@
 #ifndef __MDDS_QUAD_NODE_HPP__
 #define __MDDS_QUAD_NODE_HPP__
 
+#include "mdds/global.hpp"
+
 #include <boost/intrusive_ptr.hpp>
 
 namespace mdds {
@@ -36,7 +38,15 @@ namespace mdds {
 size_t node_instance_count = 0;
 #endif
 
-template<typename _NodePtr, typename _NodeType>
+enum node_quadrant_t
+{
+    quad_north_east,
+    quad_north_west,
+    quad_south_east,
+    quad_south_west
+};
+
+template<typename _NodePtr, typename _NodeType, typename _Key>
 struct quad_node_base
 {    
 #ifdef DEBUG_NODE_BASE
@@ -45,18 +55,30 @@ struct quad_node_base
         return node_instance_count;
     }
 #endif
+    typedef _Key        key_type;
+    typedef _NodePtr    node_ptr;
+    typedef _NodeType   node_type;
+
     size_t      refcount;
 
-    _NodePtr    parent;
-    _NodePtr    northeast;
-    _NodePtr    northwest;
-    _NodePtr    southeast;
-    _NodePtr    southwest;
-    bool        is_leaf;
+    node_ptr    parent;
+    node_ptr    northeast;
+    node_ptr    northwest;
+    node_ptr    southeast;
+    node_ptr    southwest;
 
-    quad_node_base(bool _is_leaf) :
+    key_type    x;
+    key_type    y;
+
+    quad_node_base(key_type _x, key_type _y) :
         refcount(0),
-        is_leaf(_is_leaf)
+        parent(NULL),
+        northeast(NULL),
+        northwest(NULL),
+        southeast(NULL),
+        southwest(NULL),
+        x(_x), 
+        y(_y)
     {
 #ifdef DEBUG_NODE_BASE
         ++node_instance_count;
@@ -69,7 +91,13 @@ struct quad_node_base
      */
     quad_node_base(const quad_node_base& r) :
         refcount(0),
-        is_leaf(r.is_leaf)
+        parent(NULL),
+        northeast(NULL),
+        northwest(NULL),
+        southeast(NULL),
+        southwest(NULL),
+        x(r.x), 
+        y(r.y)
     {
 #ifdef DEBUG_NODE_BASE
         ++node_instance_count;
@@ -85,7 +113,8 @@ struct quad_node_base
             // assignment to self.
             return *this;
 
-        is_leaf = r.is_leaf;
+        x = r.x;
+        y = r.y;
         return *this;
     }
 
@@ -94,7 +123,41 @@ struct quad_node_base
 #ifdef DEBUG_NODE_BASE
         --node_instance_count;
 #endif
-        static_cast<_NodeType*>(this)->dispose();
+        static_cast<node_type*>(this)->dispose();
+    }
+
+    /**
+     * Return the quadrant of specified point in reference to this node.
+     * 
+     * @return quadrant where the other node is located in reference to this 
+     *         node.
+     */
+    node_quadrant_t get_quadrant(key_type other_x, key_type other_y) const
+    {
+        if (other_x < x)
+            // west
+            return other_y < y ? quad_north_west : quad_south_west;
+
+        // east
+        return other_y < y ? quad_north_east : quad_south_west;
+    }
+
+    node_ptr get_quadrant_node(key_type other_x, key_type other_y)
+    {
+        node_quadrant_t quad = get_quadrant(other_x, other_y);
+        switch (quad)
+        {
+            case quad_north_east:
+                return northeast;
+            case quad_north_west:
+                return northwest;
+            case quad_south_east:
+                return southeast;
+            case quad_south_west:
+                return southwest;
+            default:
+                throw general_error("unknown quadrant type");
+        }
     }
 };
 
