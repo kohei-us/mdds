@@ -33,6 +33,8 @@
 #include <cstdlib>
 #include <cassert>
 #include <iostream>
+#include <fstream>
+#include <string>
 
 namespace mdds {
 
@@ -64,10 +66,10 @@ public:
 
     void insert(key_type x, key_type y, data_type* data);
 
-    void dump_tree() const;
+    void dump_tree(const ::std::string& fpath) const;
 
 private:
-    void dump_node(const node* p) const;
+    void dump_node(const node* p, ::std::ofstream& file) const;
 
 private:
     node_ptr    m_root;
@@ -155,51 +157,52 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
 }
 
 template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::dump_tree() const
+void point_quad_tree<_Key,_Data>::dump_tree(const ::std::string& fpath) const
 {
-    dump_node(m_root.get());
+    using namespace std;
+    ofstream file(fpath.c_str());
+    file << "<svg width=\"12cm\" height=\"12cm\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
+    dump_node(m_root.get(), file);
+    file << "</svg>" << endl;
+}
+
+template<typename _NodePtr>
+void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr end)
+{
+    using namespace std;
+    file << "<g stroke=\"green\">" << endl;
+    file << "<line x1=\"" << start->x << "\" y1=\"" << start->y << "\" x2=\"" 
+        << end->x << "\" y2=\"" << end->y << "\" stroke-width=\"0.5\"/>" << endl;
+    file << "</g>" << endl;
 }
 
 template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::dump_node(const node* p) const
+void point_quad_tree<_Key,_Data>::dump_node(const node* p, ::std::ofstream& file) const
 {
     using namespace std;
 
     if (!p)
         return;
 
-    cout << "node: " << *p->data << " (" << p->x << "," << p->y << ")" << endl;
+    file << "<circle cx=\"" << p->x << "\" cy=\"" << p->y << "\" r=\"0.5\""
+        << " fill=\"black\" stroke=\"black\"/>" << endl;
 
-    cout << "NW: ";
     if (p->northwest)
-        cout << *p->northwest->data << "  ";
-    else
-        cout << "(null)" << "  ";
+        draw_svg_arrow<const node*>(file, p, p->northwest.get());
 
-    cout << "NE: ";
     if (p->northeast)
-        cout << *p->northeast->data << "  ";
-    else
-        cout << "(null)" << "  ";
+        draw_svg_arrow<const node*>(file, p, p->northeast.get());
 
-    cout << "SW: ";
     if (p->southwest)
-        cout << *p->southwest->data << "  ";
-    else
-        cout << "(null)" << "  ";
+        draw_svg_arrow<const node*>(file, p, p->southwest.get());
 
-    cout << "SE: ";
     if (p->southeast)
-        cout << *p->southeast->data << "  ";
-    else
-        cout << "(null)" << "  ";
+        draw_svg_arrow<const node*>(file, p, p->southeast.get());
 
-    cout << endl;
-
-    dump_node(p->northeast.get());
-    dump_node(p->northwest.get());
-    dump_node(p->southeast.get());
-    dump_node(p->southwest.get());
+    dump_node(p->northeast.get(), file);
+    dump_node(p->northwest.get(), file);
+    dump_node(p->southeast.get(), file);
+    dump_node(p->southwest.get(), file);
 }
 
 }
