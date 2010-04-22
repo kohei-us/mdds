@@ -32,6 +32,7 @@
 
 #include <cstdlib>
 #include <cassert>
+#include <iostream>
 
 namespace mdds {
 
@@ -49,9 +50,9 @@ public:
     struct node : quad_node_base<node_ptr, node, key_type>
     {
         data_type* data;
-        node(key_type _x, key_type _y) :
+        node(key_type _x, key_type _y, data_type* _data) :
             quad_node_base<node_ptr, node, key_type>(_x, _y),
-            data(NULL) {}
+            data(_data) {}
 
         void dispose()
         {
@@ -62,6 +63,11 @@ public:
     ~point_quad_tree();
 
     void insert(key_type x, key_type y, data_type* data);
+
+    void dump_tree() const;
+
+private:
+    void dump_node(const node* p) const;
 
 private:
     node_ptr    m_root;
@@ -84,8 +90,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
     if (!m_root)
     {
         // The very first node.
-        m_root.reset(new node(x, y));
-        m_root->data = data;
+        m_root.reset(new node(x, y, data));
         return;
     }
 
@@ -97,7 +102,8 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
             // Replace the current data with this, and we are done!
             cur_node->data = data;
             return;
-        }        
+        }
+
         node_quadrant_t quad = cur_node->get_quadrant(x, y);
         switch (quad)
         {
@@ -106,7 +112,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
                     cur_node = cur_node->northeast;
                 else
                 {
-                    cur_node->northeast.reset(new node(x, y));
+                    cur_node->northeast.reset(new node(x, y, data));
                     cur_node->northeast->parent = cur_node;
                     return;
                 }
@@ -116,7 +122,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
                     cur_node = cur_node->northwest;
                 else
                 {
-                    cur_node->northwest.reset(new node(x, y));
+                    cur_node->northwest.reset(new node(x, y, data));
                     cur_node->northwest->parent = cur_node;
                     return;
                 }
@@ -126,7 +132,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
                     cur_node = cur_node->southeast;
                 else
                 {
-                    cur_node->southeast.reset(new node(x, y));
+                    cur_node->southeast.reset(new node(x, y, data));
                     cur_node->southeast->parent = cur_node;
                     return;
                 }
@@ -136,7 +142,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
                     cur_node = cur_node->southwest;
                 else
                 {
-                    cur_node->southwest.reset(new node(x, y));
+                    cur_node->southwest.reset(new node(x, y, data));
                     cur_node->southwest->parent = cur_node;
                     return;
                 }
@@ -145,6 +151,55 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
                 throw general_error("unknown quadrant");
         }
     }
+    assert(!"This should never be reached.");
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::dump_tree() const
+{
+    dump_node(m_root.get());
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::dump_node(const node* p) const
+{
+    using namespace std;
+
+    if (!p)
+        return;
+
+    cout << "node: " << *p->data << " (" << p->x << "," << p->y << ")" << endl;
+
+    cout << "NW: ";
+    if (p->northwest)
+        cout << *p->northwest->data << "  ";
+    else
+        cout << "(null)" << "  ";
+
+    cout << "NE: ";
+    if (p->northeast)
+        cout << *p->northeast->data << "  ";
+    else
+        cout << "(null)" << "  ";
+
+    cout << "SW: ";
+    if (p->southwest)
+        cout << *p->southwest->data << "  ";
+    else
+        cout << "(null)" << "  ";
+
+    cout << "SE: ";
+    if (p->southeast)
+        cout << *p->southeast->data << "  ";
+    else
+        cout << "(null)" << "  ";
+
+    cout << endl;
+
+    dump_node(p->northeast.get());
+    dump_node(p->northwest.get());
+    dump_node(p->southeast.get());
+    dump_node(p->southwest.get());
 }
 
 }
