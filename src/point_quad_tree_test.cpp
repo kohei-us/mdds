@@ -82,10 +82,12 @@ void pqt_test()
     string A("A");
     string B("B");
     string C("C");
+    string D("D");
 
     db.insert(35, 42, &A);
     db.insert( 5, 45, &B);
     db.insert(52, 10, &C);
+    db.insert(80,  5, &D);
 
     db.dump_tree();
 }
