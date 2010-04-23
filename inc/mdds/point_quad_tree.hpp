@@ -66,10 +66,28 @@ public:
 
     void insert(key_type x, key_type y, data_type* data);
 
+    /**
+     * Perform region search (aka window search), that is, find all points 
+     * that fall within specified rectangular region. 
+     *  
+     * @param x1 left coordinate of the search region 
+     * @param y1 top coordinate of the search region 
+     * @param x2 right coordinate of the search region 
+     * @param y2 bottom coordinate of the search region 
+     */
+    void search_region(key_type x1, key_type y1, key_type x2, key_type y2) const;
+
+    void remove(data_type* data);
+
     void dump_tree_svg(const ::std::string& fpath) const;
 
 private:
-    void dump_node(const node* p, ::std::ofstream& file) const;
+    search_region_space_t get_search_region_space(
+        const node_ptr& node, key_type x1, key_type y1, key_type x2, key_type y2) const;
+
+    void search_region_node(const node* p, key_type x1, key_type y1, key_type x2, key_type y2) const;
+
+    void dump_node_svg(const node* p, ::std::ofstream& file) const;
 
 private:
     node_ptr    m_root;
@@ -119,7 +137,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
         node_quadrant_t quad = cur_node->get_quadrant(x, y);
         switch (quad)
         {
-            case quad_north_east:
+            case quad_northeast:
                 if (cur_node->northeast)
                     cur_node = cur_node->northeast;
                 else
@@ -129,7 +147,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
                     return;
                 }
                 break;
-            case quad_north_west:
+            case quad_northwest:
                 if (cur_node->northwest)
                     cur_node = cur_node->northwest;
                 else
@@ -139,7 +157,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
                     return;
                 }
                 break;
-            case quad_south_east:
+            case quad_southeast:
                 if (cur_node->southeast)
                     cur_node = cur_node->southeast;
                 else
@@ -149,7 +167,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
                     return;
                 }
                 break;
-            case quad_south_west:
+            case quad_southwest:
                 if (cur_node->southwest)
                     cur_node = cur_node->southwest;
                 else
@@ -164,6 +182,72 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
         }
     }
     assert(!"This should never be reached.");
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2, key_type y2) const
+{
+    using namespace std;
+    cout << "search region: (" << x1 << "," << y1 << ") - (" << x2 << "," << y2 << ")" << endl;
+    const node* p = m_root.get();
+    search_region_node(p, x1, y1, x2, y2);
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::search_region_node(const node* p, key_type x1, key_type y1, key_type x2, key_type y2) const
+{
+    using namespace std;
+
+    if (!p)
+        return;
+
+    search_region_space_t region = ::mdds::get_search_region_space(p, x1, y1, x2, y2);
+    
+    switch (region)
+    {
+        case region_center:
+            cout << *p->data << " (" << p->x << "," << p->y << ")" << endl;
+            search_region_node(p->northeast.get(), x1, y1, x2, y2);
+            search_region_node(p->northwest.get(), x1, y1, x2, y2);
+            search_region_node(p->southeast.get(), x1, y1, x2, y2);
+            search_region_node(p->southwest.get(), x1, y1, x2, y2);
+            break;
+        case region_east:
+            search_region_node(p->northwest.get(), x1, y1, x2, y2);
+            search_region_node(p->southwest.get(), x1, y1, x2, y2);
+            break;
+        case region_north:
+            search_region_node(p->southeast.get(), x1, y1, x2, y2);
+            search_region_node(p->southwest.get(), x1, y1, x2, y2);
+            break;
+        case region_northeast:
+            search_region_node(p->southwest.get(), x1, y1, x2, y2);
+            break;
+        case region_northwest:
+            search_region_node(p->southeast.get(), x1, y1, x2, y2);
+            break;
+        case region_south:
+            search_region_node(p->northeast.get(), x1, y1, x2, y2);
+            search_region_node(p->northwest.get(), x1, y1, x2, y2);
+            break;
+        case region_southeast:
+            search_region_node(p->northwest.get(), x1, y1, x2, y2);
+            break;
+        case region_southwest:
+            search_region_node(p->northeast.get(), x1, y1, x2, y2);
+            break;
+        case region_west:
+            search_region_node(p->northeast.get(), x1, y1, x2, y2);
+            search_region_node(p->southeast.get(), x1, y1, x2, y2);
+            break;
+        default:
+            throw general_error("unknown search region");
+    }
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::remove(data_type* data)
+{
 }
 
 template<typename _Key, typename _Data>
@@ -184,7 +268,7 @@ void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) cons
     
     file << "<path d=\"M 0 0 L 0 " << m_yrange.second + 10 << "\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
     file << "<path d=\"M 0 0 L " << m_xrange.second + 10 << " 0\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
-    dump_node(m_root.get(), file);
+    dump_node_svg(m_root.get(), file);
     file << "</svg>" << endl;
 }
 
@@ -199,7 +283,7 @@ void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr 
 }
 
 template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::dump_node(const node* p, ::std::ofstream& file) const
+void point_quad_tree<_Key,_Data>::dump_node_svg(const node* p, ::std::ofstream& file) const
 {
     using namespace std;
 
@@ -223,10 +307,10 @@ void point_quad_tree<_Key,_Data>::dump_node(const node* p, ::std::ofstream& file
     if (p->southeast)
         draw_svg_arrow<const node*>(file, p, p->southeast.get());
 
-    dump_node(p->northeast.get(), file);
-    dump_node(p->northwest.get(), file);
-    dump_node(p->southeast.get(), file);
-    dump_node(p->southwest.get(), file);
+    dump_node_svg(p->northeast.get(), file);
+    dump_node_svg(p->northwest.get(), file);
+    dump_node_svg(p->southeast.get(), file);
+    dump_node_svg(p->southwest.get(), file);
 }
 
 }

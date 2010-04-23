@@ -40,10 +40,23 @@ size_t node_instance_count = 0;
 
 enum node_quadrant_t
 {
-    quad_north_east,
-    quad_north_west,
-    quad_south_east,
-    quad_south_west
+    quad_northeast,
+    quad_northwest,
+    quad_southeast,
+    quad_southwest
+};
+
+enum search_region_space_t
+{
+    region_northwest,
+    region_north,
+    region_northeast,
+    region_east,
+    region_southeast,
+    region_south,
+    region_southwest,
+    region_west,
+    region_center
 };
 
 template<typename _NodePtr, typename _NodeType, typename _Key>
@@ -136,10 +149,10 @@ struct quad_node_base
     {
         if (other_x < x)
             // west
-            return other_y < y ? quad_north_west : quad_south_west;
+            return other_y < y ? quad_northwest : quad_southwest;
 
         // east
-        return other_y < y ? quad_north_east : quad_south_east;
+        return other_y < y ? quad_northeast : quad_southeast;
     }
 
     node_ptr get_quadrant_node(key_type other_x, key_type other_y)
@@ -147,13 +160,13 @@ struct quad_node_base
         node_quadrant_t quad = get_quadrant(other_x, other_y);
         switch (quad)
         {
-            case quad_north_east:
+            case quad_northeast:
                 return northeast;
-            case quad_north_west:
+            case quad_northwest:
                 return northwest;
-            case quad_south_east:
+            case quad_southeast:
                 return southeast;
-            case quad_south_west:
+            case quad_southwest:
                 return southwest;
             default:
                 throw general_error("unknown quadrant type");
@@ -186,6 +199,59 @@ void disconnect_node(_NodePtr p)
     p->northwest.reset();
     p->southeast.reset();
     p->southwest.reset();
+}
+
+template<typename _NodeType, typename _Key>
+search_region_space_t get_search_region_space(
+    _NodeType* p, _Key x1, _Key y1, _Key x2, _Key y2)
+{
+    typedef _Key key_type;
+
+    key_type x = p->x, y = p->y;
+    if (x < x1)
+    {
+        // western region
+        if (y < y1)
+        {
+            return region_northwest;
+        }
+        else if (y1 <= y && y < y2)
+        {
+            return region_west;
+        }
+
+        assert(y2 <= y);
+        return region_southwest;
+    }
+    else if (x1 <= x && x < x2)
+    {
+        // central region
+        if (y < y1)
+        {
+            return region_north;
+        }
+        else if (y1 <= y && y < y2)
+        {
+            return region_center;
+        }
+
+        assert(y2 <= y);
+        return region_south;
+    }
+    
+    // eastern region
+    assert(x2 <= x);
+    if (y < y1)
+    {
+        return region_northeast;
+    }
+    else if (y1 <= y && y < y2)
+    {
+        return region_east;
+    }
+    
+    assert(y2 <= y);
+    return region_southeast;
 }
 
 }

@@ -84,14 +84,22 @@ void pqt_test()
     string C("C");
     string D("D");
     string E("E");
+    string F("F");
+    string G("G");
+    string H("H");
 
     db.insert(35, 42, &A);
     db.insert( 5, 45, &B);
     db.insert(52, 10, &C);
     db.insert(80,  5, &D);
     db.insert(40, 50, &E);
+    db.insert(10, 10, &F);
+    db.insert(20, 20, &G);
+    db.insert(60, 60, &H);
 
     db.dump_tree_svg("./obj/test.svg");
+
+    db.search_region(10, 10, 60, 20);
 }
 
 int main()
