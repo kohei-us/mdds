@@ -161,7 +161,17 @@ void point_quad_tree<_Key,_Data>::dump_tree(const ::std::string& fpath) const
 {
     using namespace std;
     ofstream file(fpath.c_str());
-    file << "<svg width=\"12cm\" height=\"12cm\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
+    file << "<svg width=\"14cm\" height=\"14cm\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
+    file << "<defs>"
+         << "  <marker id=\"Triangle\""
+         << "    viewBox=\"0 0 10 10\" refX=\"10\" refY=\"5\" "
+         << "    markerUnits=\"strokeWidth\" fill=\"red\""
+         << "    markerWidth=\"8\" markerHeight=\"6\""
+         << "    orient=\"auto\">"
+         << "    <path d=\"M 0 0 L 10 5 L 0 10 z\" />"
+         << "  </marker>"
+         << "</defs>" << endl;
+
     dump_node(m_root.get(), file);
     file << "</svg>" << endl;
 }
@@ -170,7 +180,7 @@ template<typename _NodePtr>
 void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr end)
 {
     using namespace std;
-    file << "<g stroke=\"green\">" << endl;
+    file << "<g stroke=\"red\" marker-end=\"url(#Triangle)\">" << endl;
     file << "<line x1=\"" << start->x << "\" y1=\"" << start->y << "\" x2=\"" 
         << end->x << "\" y2=\"" << end->y << "\" stroke-width=\"0.5\"/>" << endl;
     file << "</g>" << endl;
@@ -186,6 +196,8 @@ void point_quad_tree<_Key,_Data>::dump_node(const node* p, ::std::ofstream& file
 
     file << "<circle cx=\"" << p->x << "\" cy=\"" << p->y << "\" r=\"0.5\""
         << " fill=\"black\" stroke=\"black\"/>" << endl;
+    file << "<text x=\"" << p->x + 1 << "\" y=\"" << p->y + 6 << "\" font-size=\"5\" fill=\"black\">"
+        << *p->data << " (" << p->x << "," << p->y << ")</text>" << endl;
 
     if (p->northwest)
         draw_svg_arrow<const node*>(file, p, p->northwest.get());
