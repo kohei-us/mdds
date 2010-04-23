@@ -28,6 +28,7 @@
 #include "mdds/point_quad_tree.hpp"
 
 #include <cstdint>
+#include <algorithm>
 
 #include <stdio.h>
 #include <string>
@@ -74,10 +75,18 @@ private:
 using namespace std;
 using namespace mdds;
 
+struct data_printer : public unary_function<string*, void>
+{
+    void operator() (const string* p)
+    {
+        cout << *p << " ";
+    }
+};
 void pqt_test()
 {
     StackPrinter __stack_printer__("::pqt_test");
-    point_quad_tree<uint16_t, string> db;
+    typedef point_quad_tree<uint16_t, string> db_type;
+    db_type db;
 
     string A("A");
     string B("B");
@@ -99,7 +108,19 @@ void pqt_test()
 
     db.dump_tree_svg("./obj/test.svg");
 
-    db.search_region(10, 10, 60, 20);
+    db_type::data_array_type result;
+    db.search_region(10, 10, 60, 20, result);
+    cout << "search region: (10, 10, 60, 20)" << endl;
+    cout << "result: ";
+    for_each(result.begin(), result.end(), data_printer());
+    cout << endl;
+
+    result.clear();
+    db.search_region(10, 10, 61, 61, result);
+    cout << "search region: (10, 10, 61, 61)" << endl;
+    cout << "result: ";
+    for_each(result.begin(), result.end(), data_printer());
+    cout << endl;
 }
 
 int main()
