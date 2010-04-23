@@ -139,7 +139,7 @@ struct quad_node_base
             return other_y < y ? quad_north_west : quad_south_west;
 
         // east
-        return other_y < y ? quad_north_east : quad_south_west;
+        return other_y < y ? quad_north_east : quad_south_east;
     }
 
     node_ptr get_quadrant_node(key_type other_x, key_type other_y)

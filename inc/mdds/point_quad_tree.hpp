@@ -73,11 +73,16 @@ private:
 
 private:
     node_ptr    m_root;
+
+    ::std::pair<key_type, key_type> m_xrange;
+    ::std::pair<key_type, key_type> m_yrange;
 };
 
 template<typename _Key, typename _Data>
 point_quad_tree<_Key,_Data>::point_quad_tree() :
-    m_root(NULL)
+    m_root(NULL),
+    m_xrange(0,0),
+    m_yrange(0,0)
 {
 }
 
@@ -89,6 +94,11 @@ point_quad_tree<_Key,_Data>::~point_quad_tree()
 template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data)
 {
+    m_xrange.first  = ::std::min(m_xrange.first,  x);
+    m_xrange.second = ::std::max(m_xrange.second, x);
+    m_yrange.first  = ::std::min(m_yrange.first,  y);
+    m_yrange.second = ::std::max(m_yrange.second, y);
+
     if (!m_root)
     {
         // The very first node.
@@ -161,17 +171,19 @@ void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) cons
 {
     using namespace std;
     ofstream file(fpath.c_str());
-    file << "<svg width=\"14cm\" height=\"14cm\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
+    file << "<svg width=\"14cm\" height=\"14cm\" viewBox=\"-2 -2 202 202\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
     file << "<defs>"
          << "  <marker id=\"Triangle\""
          << "    viewBox=\"0 0 10 10\" refX=\"10\" refY=\"5\" "
-         << "    markerUnits=\"strokeWidth\" fill=\"red\""
+         << "    markerUnits=\"strokeWidth\""
          << "    markerWidth=\"8\" markerHeight=\"6\""
          << "    orient=\"auto\">"
          << "    <path d=\"M 0 0 L 10 5 L 0 10 z\" />"
          << "  </marker>"
          << "</defs>" << endl;
-
+    
+    file << "<path d=\"M 0 0 L 0 " << m_yrange.second + 10 << "\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
+    file << "<path d=\"M 0 0 L " << m_xrange.second + 10 << " 0\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
     dump_node(m_root.get(), file);
     file << "</svg>" << endl;
 }

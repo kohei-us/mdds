@@ -83,11 +83,13 @@ void pqt_test()
     string B("B");
     string C("C");
     string D("D");
+    string E("E");
 
     db.insert(35, 42, &A);
     db.insert( 5, 45, &B);
     db.insert(52, 10, &C);
     db.insert(80,  5, &D);
+    db.insert(40, 50, &E);
 
     db.dump_tree_svg("./obj/test.svg");
 }
