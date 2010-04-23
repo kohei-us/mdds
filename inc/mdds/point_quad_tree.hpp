@@ -66,7 +66,7 @@ public:
 
     void insert(key_type x, key_type y, data_type* data);
 
-    void dump_tree(const ::std::string& fpath) const;
+    void dump_tree_svg(const ::std::string& fpath) const;
 
 private:
     void dump_node(const node* p, ::std::ofstream& file) const;
@@ -157,7 +157,7 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data
 }
 
 template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::dump_tree(const ::std::string& fpath) const
+void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) const
 {
     using namespace std;
     ofstream file(fpath.c_str());

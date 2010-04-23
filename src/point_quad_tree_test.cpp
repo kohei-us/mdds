@@ -89,7 +89,7 @@ void pqt_test()
     db.insert(52, 10, &C);
     db.insert(80,  5, &D);
 
-    db.dump_tree("./obj/test.svg");
+    db.dump_tree_svg("./obj/test.svg");
 }
 
 int main()
