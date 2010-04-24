@@ -37,6 +37,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/shared_ptr.hpp>
+
 namespace mdds {
 
 template<typename _Key, typename _Data>
@@ -63,6 +65,25 @@ public:
         }
     };
 
+    struct point
+    {
+        key_type x;
+        key_type y;
+        point(key_type _x, key_type _y) : x(_x), y(_y) {}
+    };
+
+    class search_result
+    {
+        typedef ::std::vector<const node*>          res_nodes_type;
+        typedef ::boost::shared_ptr<res_nodes_type> res_nodes_ptr;
+    public:
+        search_result() : m_res_nodes(static_cast<res_nodes_type*>(NULL)) {}
+        search_result(const search_result& r) : m_res_nodes(r.m_res_nodes) {}
+
+    private:
+        res_nodes_ptr m_res_nodes;
+    };
+
     point_quad_tree();
     ~point_quad_tree();
 
@@ -78,6 +99,8 @@ public:
      * @param y2 bottom coordinate of the search region 
      */
     void search_region(key_type x1, key_type y1, key_type x2, key_type y2, data_array_type& result) const;
+
+    search_result search_region(key_type x1, key_type y1, key_type x2, key_type y2) const;
 
     void remove(data_type* data);
 
@@ -192,6 +215,16 @@ void point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_ty
     using namespace std;
     const node* p = m_root.get();
     search_region_node(p, x1, y1, x2, y2, result);
+}
+
+template<typename _Key, typename _Data>
+typename point_quad_tree<_Key,_Data>::search_result
+point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2, key_type y2) const
+{
+    using namespace std;
+    search_result result;
+    const node* p = m_root.get();
+    return result;
 }
 
 template<typename _Key, typename _Data>

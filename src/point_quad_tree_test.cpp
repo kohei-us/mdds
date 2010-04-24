@@ -108,19 +108,23 @@ void pqt_test()
 
     db.dump_tree_svg("./obj/test.svg");
 
-    db_type::data_array_type result;
-    db.search_region(10, 10, 60, 20, result);
-    cout << "search region: (10, 10, 60, 20)" << endl;
-    cout << "result: ";
-    for_each(result.begin(), result.end(), data_printer());
-    cout << endl;
+    {
+        db_type::data_array_type result;
+        db.search_region(10, 10, 60, 20, result);
+        cout << "search region: (10, 10, 60, 20)" << endl;
+        cout << "result: ";
+        for_each(result.begin(), result.end(), data_printer());
+        cout << endl;
+    
+        result.clear();
+        db.search_region(10, 10, 61, 61, result);
+        cout << "search region: (10, 10, 61, 61)" << endl;
+        cout << "result: ";
+        for_each(result.begin(), result.end(), data_printer());
+        cout << endl;
+    }
 
-    result.clear();
-    db.search_region(10, 10, 61, 61, result);
-    cout << "search region: (10, 10, 61, 61)" << endl;
-    cout << "result: ";
-    for_each(result.begin(), result.end(), data_printer());
-    cout << endl;
+    db_type::search_result result = db.search_region(10, 10, 60, 20);
 }
 
 int main()
