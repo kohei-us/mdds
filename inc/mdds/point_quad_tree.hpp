@@ -107,9 +107,6 @@ public:
     void dump_tree_svg(const ::std::string& fpath) const;
 
 private:
-    search_region_space_t get_search_region_space(
-        const node_ptr& node, key_type x1, key_type y1, key_type x2, key_type y2) const;
-
     void search_region_node(const node* p, key_type x1, key_type y1, key_type x2, key_type y2, data_array_type& result) const;
 
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
