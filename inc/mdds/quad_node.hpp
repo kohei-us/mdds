@@ -194,11 +194,31 @@ void disconnect_node(_NodePtr p)
     if (!p)
         return;
 
+    if (p->northeast)
+    {
+        disconnect_node(p->northeast);
+        p->northeast.reset();
+    }
+
+    if (p->northwest)
+    {
+        disconnect_node(p->northwest);
+        p->northwest.reset();
+    }
+
+    if (p->southeast)
+    {
+        disconnect_node(p->southeast);
+        p->southeast.reset();
+    }
+
+    if (p->southwest)
+    {
+        disconnect_node(p->southwest);
+        p->southwest.reset();
+    }
+
     p->parent.reset();
-    p->northeast.reset();
-    p->northwest.reset();
-    p->southeast.reset();
-    p->southwest.reset();
 }
 
 template<typename _NodeType, typename _Key>

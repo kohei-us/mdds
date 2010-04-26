@@ -74,6 +74,9 @@ test.recset: rectangle_set_test
 test.pqt: point_quad_tree_test
 	./point_quad_tree_test
 
+test.pqt.mem: point_quad_tree_test
+	valgrind --tool=memcheck --leak-check=full ./point_quad_tree_test
+
 test.recset.perf: rectangle-set_test
 	./rectangle_set_test perf
 

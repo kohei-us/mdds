@@ -334,6 +334,7 @@ private:
         search_result& m_result;
     };
 
+    void clear_all_nodes();
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
 
 private:
@@ -354,6 +355,7 @@ point_quad_tree<_Key,_Data>::point_quad_tree() :
 template<typename _Key, typename _Data>
 point_quad_tree<_Key,_Data>::~point_quad_tree()
 {
+    clear_all_nodes();
 }
 
 template<typename _Key, typename _Data>
@@ -487,6 +489,13 @@ void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr 
     file << "<line x1=\"" << start->x << "\" y1=\"" << start->y << "\" x2=\"" 
         << end->x << "\" y2=\"" << end->y << "\" stroke-width=\"0.5\"/>" << endl;
     file << "</g>" << endl;
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::clear_all_nodes()
+{
+    ::mdds::disconnect_node(m_root);
+    m_root.reset();
 }
 
 template<typename _Key, typename _Data>
