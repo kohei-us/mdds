@@ -41,6 +41,60 @@
 
 namespace mdds {
 
+template<typename _Key, typename _NodeType, typename _Inserter>
+void search_region_node(
+    const _NodeType* p, _Key x1, _Key y1, _Key x2, _Key y2, _Inserter& result)
+{
+    using namespace std;
+
+    if (!p)
+        return;
+
+    search_region_space_t region = ::mdds::get_search_region_space(p, x1, y1, x2, y2);
+    
+    switch (region)
+    {
+        case region_center:
+            result(p);
+            search_region_node(p->northeast.get(), x1, y1, x2, y2, result);
+            search_region_node(p->northwest.get(), x1, y1, x2, y2, result);
+            search_region_node(p->southeast.get(), x1, y1, x2, y2, result);
+            search_region_node(p->southwest.get(), x1, y1, x2, y2, result);
+            break;
+        case region_east:
+            search_region_node(p->northwest.get(), x1, y1, x2, y2, result);
+            search_region_node(p->southwest.get(), x1, y1, x2, y2, result);
+            break;
+        case region_north:
+            search_region_node(p->southeast.get(), x1, y1, x2, y2, result);
+            search_region_node(p->southwest.get(), x1, y1, x2, y2, result);
+            break;
+        case region_northeast:
+            search_region_node(p->southwest.get(), x1, y1, x2, y2, result);
+            break;
+        case region_northwest:
+            search_region_node(p->southeast.get(), x1, y1, x2, y2, result);
+            break;
+        case region_south:
+            search_region_node(p->northeast.get(), x1, y1, x2, y2, result);
+            search_region_node(p->northwest.get(), x1, y1, x2, y2, result);
+            break;
+        case region_southeast:
+            search_region_node(p->northwest.get(), x1, y1, x2, y2, result);
+            break;
+        case region_southwest:
+            search_region_node(p->northeast.get(), x1, y1, x2, y2, result);
+            break;
+        case region_west:
+            search_region_node(p->northeast.get(), x1, y1, x2, y2, result);
+            search_region_node(p->southeast.get(), x1, y1, x2, y2, result);
+            break;
+        default:
+            throw general_error("unknown search region");
+    }
+}
+
+
 template<typename _Key, typename _Data>
 class point_quad_tree
 {
@@ -107,7 +161,18 @@ public:
     void dump_tree_svg(const ::std::string& fpath) const;
 
 private:
-    void search_region_node(const node* p, key_type x1, key_type y1, key_type x2, key_type y2, data_array_type& result) const;
+    class array_inserter : public ::std::unary_function<const node*, void>
+    {
+    public:
+        array_inserter(data_array_type& result) : m_result(result) {}
+
+        void operator() (const node* p)
+        {
+            m_result.push_back(p->data);
+        }
+    private:
+        data_array_type& m_result;
+    };
 
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
 
@@ -211,7 +276,8 @@ void point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_ty
 {
     using namespace std;
     const node* p = m_root.get();
-    search_region_node(p, x1, y1, x2, y2, result);
+    array_inserter _inserter(result);
+    ::mdds::search_region_node(p, x1, y1, x2, y2, _inserter);
 }
 
 template<typename _Key, typename _Data>
@@ -222,59 +288,6 @@ point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2
     search_result result;
     const node* p = m_root.get();
     return result;
-}
-
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::search_region_node(
-    const node* p, key_type x1, key_type y1, key_type x2, key_type y2, data_array_type& result) const
-{
-    using namespace std;
-
-    if (!p)
-        return;
-
-    search_region_space_t region = ::mdds::get_search_region_space(p, x1, y1, x2, y2);
-    
-    switch (region)
-    {
-        case region_center:
-            result.push_back(p->data);
-            search_region_node(p->northeast.get(), x1, y1, x2, y2, result);
-            search_region_node(p->northwest.get(), x1, y1, x2, y2, result);
-            search_region_node(p->southeast.get(), x1, y1, x2, y2, result);
-            search_region_node(p->southwest.get(), x1, y1, x2, y2, result);
-            break;
-        case region_east:
-            search_region_node(p->northwest.get(), x1, y1, x2, y2, result);
-            search_region_node(p->southwest.get(), x1, y1, x2, y2, result);
-            break;
-        case region_north:
-            search_region_node(p->southeast.get(), x1, y1, x2, y2, result);
-            search_region_node(p->southwest.get(), x1, y1, x2, y2, result);
-            break;
-        case region_northeast:
-            search_region_node(p->southwest.get(), x1, y1, x2, y2, result);
-            break;
-        case region_northwest:
-            search_region_node(p->southeast.get(), x1, y1, x2, y2, result);
-            break;
-        case region_south:
-            search_region_node(p->northeast.get(), x1, y1, x2, y2, result);
-            search_region_node(p->northwest.get(), x1, y1, x2, y2, result);
-            break;
-        case region_southeast:
-            search_region_node(p->northwest.get(), x1, y1, x2, y2, result);
-            break;
-        case region_southwest:
-            search_region_node(p->northeast.get(), x1, y1, x2, y2, result);
-            break;
-        case region_west:
-            search_region_node(p->northeast.get(), x1, y1, x2, y2, result);
-            search_region_node(p->southeast.get(), x1, y1, x2, y2, result);
-            break;
-        default:
-            throw general_error("unknown search region");
-    }
 }
 
 template<typename _Key, typename _Data>
