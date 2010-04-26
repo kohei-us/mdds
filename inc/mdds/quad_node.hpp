@@ -189,32 +189,32 @@ inline void intrusive_ptr_release(_NodePtr p)
 }
 
 template<typename _NodePtr>
-void disconnect_node(_NodePtr p)
+void disconnect_all_nodes(_NodePtr p)
 {
     if (!p)
         return;
 
     if (p->northeast)
     {
-        disconnect_node(p->northeast);
+        disconnect_all_nodes(p->northeast);
         p->northeast.reset();
     }
 
     if (p->northwest)
     {
-        disconnect_node(p->northwest);
+        disconnect_all_nodes(p->northwest);
         p->northwest.reset();
     }
 
     if (p->southeast)
     {
-        disconnect_node(p->southeast);
+        disconnect_all_nodes(p->southeast);
         p->southeast.reset();
     }
 
     if (p->southwest)
     {
-        disconnect_node(p->southwest);
+        disconnect_all_nodes(p->southwest);
         p->southwest.reset();
     }
 

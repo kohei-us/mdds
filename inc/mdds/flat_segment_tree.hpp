@@ -571,7 +571,7 @@ private:
             while (cur_node.get() != end_node.get())
             {
                 node_ptr next_node = cur_node->right;
-                disconnect_node(cur_node.get());
+                disconnect_all_nodes(cur_node.get());
                 cur_node = next_node;
             }
             last_node->right = end_node;
@@ -648,7 +648,7 @@ flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 {
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
     clear_tree(m_root_node.get());
-    disconnect_node(m_root_node.get());
+    disconnect_all_nodes(m_root_node.get());
 }
 
 template<typename _Key, typename _Value>
@@ -768,7 +768,7 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
             new_start_node->right = end_pos->right;
             if (end_pos->right)
                 end_pos->right->left = new_start_node;
-            disconnect_node(end_pos.get());
+            disconnect_all_nodes(end_pos.get());
         }
         else
         {
@@ -867,7 +867,7 @@ void flat_segment_tree<_Key, _Value>::shift_left(key_type start_key, key_type en
     {
         last_seg_value = node_pos->value_leaf.value;
         node_ptr next = node_pos->right;
-        disconnect_node(node_pos.get());
+        disconnect_all_nodes(node_pos.get());
         node_pos = next;
     }
 
@@ -881,7 +881,7 @@ void flat_segment_tree<_Key, _Value>::shift_left(key_type start_key, key_type en
         // node.
         start_pos->left->right = start_pos->right;
         start_pos->right->left = start_pos->left;
-        disconnect_node(start_pos.get());
+        disconnect_all_nodes(start_pos.get());
     }
 
     shift_leaf_key_left(node_pos, m_right_leaf, segment_size);

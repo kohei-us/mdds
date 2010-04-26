@@ -117,7 +117,7 @@ inline void intrusive_ptr_release(_NodePtr p)
 }
 
 template<typename _NodePtr>
-void disconnect_node(_NodePtr p)
+void disconnect_all_nodes(_NodePtr p)
 {
     if (!p)
         return;
@@ -138,12 +138,12 @@ void disconnect_leaf_nodes(_NodePtr left_node, _NodePtr right_node)
     do
     {
         _NodePtr next_node = cur_node->right.get();
-        disconnect_node(cur_node);
+        disconnect_all_nodes(cur_node);
         cur_node = next_node;
     }
     while (cur_node != right_node);
 
-    disconnect_node(right_node);
+    disconnect_all_nodes(right_node);
 }
 
 template<typename _NodePtr>
@@ -172,7 +172,7 @@ void clear_tree(_NodePtr node)
 
     clear_tree(node->left.get());
     clear_tree(node->right.get());
-    disconnect_node(node);
+    disconnect_all_nodes(node);
 }
 
 template<typename _NodePtr, typename _NodeType>

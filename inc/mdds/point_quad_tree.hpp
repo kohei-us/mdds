@@ -494,7 +494,7 @@ void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr 
 template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::clear_all_nodes()
 {
-    ::mdds::disconnect_node(m_root);
+    ::mdds::disconnect_all_nodes(m_root);
     m_root.reset();
 }
 
