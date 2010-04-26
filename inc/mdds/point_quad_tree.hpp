@@ -98,6 +98,9 @@ void search_region_node(
 template<typename _Key, typename _Data>
 class point_quad_tree
 {
+private:
+    class search_result_inserter;
+
 public:
     typedef _Key    key_type;
     typedef _Data   data_type;
@@ -124,18 +127,162 @@ public:
         key_type x;
         key_type y;
         point(key_type _x, key_type _y) : x(_x), y(_y) {}
+        point() : x(0), y(0) {}
     };
 
     class search_result
     {
+        friend class search_result_inserter;
+
         typedef ::std::vector<const node*>          res_nodes_type;
         typedef ::boost::shared_ptr<res_nodes_type> res_nodes_ptr;
     public:
-        search_result() : m_res_nodes(static_cast<res_nodes_type*>(NULL)) {}
-        search_result(const search_result& r) : m_res_nodes(r.m_res_nodes) {}
+
+        class const_iterator
+        {
+            friend class point_quad_tree<_Key,_Data>::search_result;
+            typedef typename point_quad_tree<_Key,_Data>::point point;
+            typedef typename point_quad_tree<_Key,_Data>::data_type data_type;
+
+        public:
+            const_iterator(res_nodes_ptr& ptr) : mp_res_nodes(ptr), m_end_pos(false) {}
+
+            const_iterator(const const_iterator& r) :
+                mp_res_nodes(r.mp_res_nodes),
+                m_cur_pos(r.m_cur_pos),
+                m_end_pos(r.m_end_pos) {}
+
+            const_iterator& operator= (const const_iterator& r)
+            {
+                mp_res_nodes = r.mp_res_nodes;
+                m_cur_pos = r.m_cur_pos;
+                m_end_pos = r.m_end_pos;
+                return *this;
+            }
+
+            bool operator== (const const_iterator& r) const
+            {
+                return mp_res_nodes.get() == r.mp_res_nodes.get() && 
+                    m_cur_pos == r.m_cur_pos && m_end_pos == r.m_end_pos;
+            }
+
+            bool operator!= (const const_iterator& r) const
+            {
+                return !operator==(r);
+            }
+
+            const ::std::pair<point, const data_type*>& operator*() const
+            {
+                return m_cur_value;
+            }
+
+            const ::std::pair<point, const data_type*>* operator->() const
+            {
+                return get_current_value();
+            }
+
+            const ::std::pair<point, const data_type*>* operator++()
+            {
+                // The only difference between the last data position and the 
+                // end iterator position must be the value of m_end_pos;
+                // m_cur_pos needs to point to the last data position even
+                // when the iterator is at the end-of-iterator position.
+
+                typename res_nodes_type::const_iterator cur_pos = m_cur_pos;
+                if (++cur_pos == mp_res_nodes->end())
+                {
+                    m_end_pos = true;
+                    return NULL;
+                }
+                m_cur_pos = cur_pos;
+                update_current_value();
+                return operator->();
+            }
+
+            const ::std::pair<point, const data_type*>* operator--()
+            {
+                if (m_end_pos)
+                {
+                    m_end_pos = false;
+                    return get_current_value();
+                }
+                --m_cur_pos;
+                update_current_value();
+                return get_current_value();
+            }
+
+        private:
+            void move_to_front()
+            {
+                if (!mp_res_nodes)
+                {
+                    // Empty data set.
+                    m_end_pos = true;
+                    return;
+                }
+
+                m_cur_pos = mp_res_nodes->begin();
+                m_end_pos = false;
+                update_current_value();
+            }
+
+            void move_to_end()
+            {
+                m_end_pos = true;
+                if (!mp_res_nodes)
+                    // Empty data set.
+                    return;
+
+                m_cur_pos = mp_res_nodes->end();
+                --m_cur_pos; // Keep the position at the last data position.
+            }
+
+            void update_current_value()
+            {
+                const node* p = *m_cur_pos;
+                m_cur_value.first = point(p->x, p->y);
+                m_cur_value.second = p->data;
+            }
+
+            const ::std::pair<point, const data_type*>* get_current_value() const
+            {
+                return &m_cur_value;
+            }
+
+        private:
+            res_nodes_ptr mp_res_nodes;
+            typename res_nodes_type::const_iterator m_cur_pos;
+            ::std::pair<point, const data_type*> m_cur_value;
+            bool m_end_pos:1;
+        };
+
+        search_result() : mp_res_nodes(static_cast<res_nodes_type*>(NULL)) {}
+        search_result(const search_result& r) : mp_res_nodes(r.mp_res_nodes) {}
+
+    typename search_result::const_iterator begin()
+    {
+        typename search_result::const_iterator itr(mp_res_nodes);
+        itr.move_to_front();
+        return itr;
+    }
+
+    typename search_result::const_iterator end()
+    {
+        typename search_result::const_iterator itr(mp_res_nodes);
+        itr.move_to_end();
+        return itr;
+    }
 
     private:
-        res_nodes_ptr m_res_nodes;
+        void push_back(const node* p)
+        {
+            if (!mp_res_nodes)
+                mp_res_nodes.reset(new res_nodes_type);
+            mp_res_nodes->push_back(p);
+        }
+
+    private:
+        res_nodes_ptr mp_res_nodes;
     };
 
     point_quad_tree();
@@ -172,6 +319,19 @@ private:
         }
     private:
         data_array_type& m_result;
+    };
+
+    class search_result_inserter : public ::std::unary_function<const node*, void>
+    {
+    public:
+        search_result_inserter(search_result& result) : m_result(result) {}
+
+        void operator() (const node* p)
+        {
+            m_result.push_back(p);
+        }
+    private:
+        search_result& m_result;
     };
 
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
@@ -287,6 +447,8 @@ point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2
     using namespace std;
     search_result result;
     const node* p = m_root.get();
+    search_result_inserter _inserter(result);
+    ::mdds::search_region_node(p, x1, y1, x2, y2, _inserter);
     return result;
 }
 

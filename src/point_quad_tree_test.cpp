@@ -82,6 +82,16 @@ struct data_printer : public unary_function<string*, void>
         cout << *p << " ";
     }
 };
+
+template<typename _DbType>
+struct search_result_printer : public unary_function<pair<typename _DbType::point, typename _DbType::data_type*>, void>
+{
+    void operator() (const pair<const typename _DbType::point, const typename _DbType::data_type*>& r) const
+    {
+        cout << "  (x=" << r.first.x << ", y=" << r.first.y << ", value='" << *r.second << "')" << endl;
+    }
+};
+
 void pqt_test()
 {
     StackPrinter __stack_printer__("::pqt_test");
@@ -125,6 +135,14 @@ void pqt_test()
     }
 
     db_type::search_result result = db.search_region(10, 10, 60, 20);
+    db_type::search_result::const_iterator itr = result.begin(), itr_end = result.end();
+    cout << "result: " << endl;
+    for_each(result.begin(), result.end(), search_result_printer<db_type>());
+
+    result = db.search_region(10, 10, 61, 61);
+    itr = result.begin(), itr_end = result.end();
+    cout << "result: " << endl;
+    for_each(result.begin(), result.end(), search_result_printer<db_type>());
 }
 
 int main()
