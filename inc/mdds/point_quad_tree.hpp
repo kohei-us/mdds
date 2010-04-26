@@ -259,19 +259,19 @@ public:
         search_result() : mp_res_nodes(static_cast<res_nodes_type*>(NULL)) {}
         search_result(const search_result& r) : mp_res_nodes(r.mp_res_nodes) {}
 
-    typename search_result::const_iterator begin()
-    {
-        typename search_result::const_iterator itr(mp_res_nodes);
-        itr.move_to_front();
-        return itr;
-    }
-
-    typename search_result::const_iterator end()
-    {
-        typename search_result::const_iterator itr(mp_res_nodes);
-        itr.move_to_end();
-        return itr;
-    }
+        typename search_result::const_iterator begin()
+        {
+            typename search_result::const_iterator itr(mp_res_nodes);
+            itr.move_to_front();
+            return itr;
+        }
+    
+        typename search_result::const_iterator end()
+        {
+            typename search_result::const_iterator itr(mp_res_nodes);
+            itr.move_to_end();
+            return itr;
+        }
 
     private:
         void push_back(const node* p)
