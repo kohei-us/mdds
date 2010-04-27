@@ -578,8 +578,8 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
 {
     using namespace std;
 
-    // Now, try to get a replacement candidate in each quadrant.
-    node_distance dx_node, dy_node;
+    // Try to get a replacement candidate in each quadrant.
+    node_distance dx_node, dy_node, min_city_block_node;
 
     // northeast
     if (delete_node->northeast)
@@ -599,6 +599,9 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
             dx_node = node_distance(quad_northeast, dx, repl_node);
         if (!dy_node.node || dy_node.dist > dy)
             dy_node = node_distance(quad_northeast, dy, repl_node);
+
+        if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
+            min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
     }
     else
         cout << "no candidate in northeast" << endl;
@@ -621,6 +624,9 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
             dx_node = node_distance(quad_northwest, dx, repl_node);
         if (!dy_node.node || dy_node.dist > dy)
             dy_node = node_distance(quad_northwest, dy, repl_node);
+
+        if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
+            min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
     }
     else
         cout << "no candidate in northwest" << endl;
@@ -643,6 +649,9 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
             dx_node = node_distance(quad_southwest, dx, repl_node);
         if (!dy_node.node || dy_node.dist > dy)
             dy_node = node_distance(quad_southwest, dy, repl_node);
+
+        if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
+            min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
     }
     else
         cout << "no candidate in southwest" << endl;
@@ -665,9 +674,14 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
             dx_node = node_distance(quad_southeast, dx, repl_node);
         if (!dy_node.node || dy_node.dist > dy)
             dy_node = node_distance(quad_southeast, dy, repl_node);
+
+        if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
+            min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
     }
     else
         cout << "no candidate in southeast" << endl;
+
+    // Check Criterion 1.
 
     if (dx_node.node)
         cout << "node closest to x axis: " << *dx_node.node->data << " (dx=" << dx_node.dist << ")" << endl;
@@ -682,6 +696,14 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
     }
     else
         cout << "unable to find node that satisfies Criterion 1." << endl;
+
+    // Move on to Criterion 2.
+
+    if (min_city_block_node.node)
+    {
+        cout << "node that satisfies Criterion 2: " << *min_city_block_node.node->data << " (dist=" << min_city_block_node.dist << ")" << endl;
+        return min_city_block_node.node;
+    }
 
     return node_ptr();
 }
