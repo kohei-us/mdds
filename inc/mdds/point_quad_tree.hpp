@@ -382,6 +382,8 @@ private:
     void set_new_root(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
                       node_ptr& quad_root, reinsert_tree_array_type& insert_list);
 
+    void reinsert_tree(node_ptr& dest, node_quadrant_t quad, node_ptr& root);
+
     void clear_all_nodes();
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
 
@@ -534,7 +536,8 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     ensure_order(yrange);
     reinsert_tree_array_type insert_list;
 
-    // Adjust the quadrants adjacent to the quadrant where the replacement node resides.
+    // Adjust the quadrants adjacent to the quadrant where the replacement
+    // node resides.
     switch (repl_quad)
     {
         case quad_northeast:
@@ -573,8 +576,69 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     }
 
     // Reinsert all child nodes from the replacement node into the node to be 
-    // deleted.
-    
+    // deleted.    
+    switch (repl_quad)
+    {
+        case quad_northeast:
+        case quad_southwest:
+        {
+            node_ptr root = repl_node->northwest;
+            repl_node->northwest.reset();
+            reinsert_tree(delete_node, quad_northwest, root);
+            
+            root = repl_node->southeast;
+            repl_node->southeast.reset();
+            reinsert_tree(delete_node, quad_southeast, root);
+        }
+        break;
+        case quad_northwest:
+        case quad_southeast:
+        {
+            node_ptr root = repl_node->northeast;
+            repl_node->northeast.reset();
+            reinsert_tree(delete_node, quad_northeast, root);
+            
+            root = repl_node->southwest;
+            repl_node->southwest.reset();
+            reinsert_tree(delete_node, quad_southwest, root);
+        }
+        break;
+        case quad_unspecified:
+        default:
+            throw general_error("quadrant for the replacement node is unspecified.");
+    }
+
+    // Finally, replace the node to be removed with the replacement node.
+    delete_node->x = repl_node->x;
+    delete_node->y = repl_node->y;
+    delete_node->data = repl_node->data;
+
+    delete_node->parent = repl_node->parent;
+    repl_node->parent.reset();
+
+    switch (repl_quad)
+    {
+        case quad_northeast:
+            delete_node->northeast = repl_node->northeast;
+            repl_node->northeast.reset();
+            break;
+        case quad_northwest:
+            delete_node->northwest = repl_node->northwest;
+            repl_node->northwest.reset();
+            break;
+        case quad_southeast:
+            delete_node->southeast = repl_node->southeast;
+            repl_node->southeast.reset();
+            break;
+        case quad_southwest:
+            delete_node->southwest = repl_node->southwest;
+            repl_node->southwest.reset();
+            break;
+        case quad_unspecified:
+            break;
+        default:
+            ;
+    }
 }
 
 template<typename _Key, typename _Data>
@@ -799,6 +863,11 @@ template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::set_new_root(
     const key_range_type& hatched_xrange, const key_range_type& hatched_yrange, 
     node_ptr& quad_root, reinsert_tree_array_type& insert_list)
+{
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_quadrant_t quad, node_ptr& root)
 {
 }
 
