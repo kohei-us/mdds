@@ -185,9 +185,8 @@ struct quad_node_base
         return other_y < y ? quad_northeast : quad_southeast;
     }
 
-    node_ptr get_quadrant_node(key_type other_x, key_type other_y)
+    node_ptr& get_quadrant_node(node_quadrant_t quad) const
     {
-        node_quadrant_t quad = get_quadrant(other_x, other_y);
         switch (quad)
         {
             case quad_northeast:
@@ -201,6 +200,13 @@ struct quad_node_base
             default:
                 throw general_error("unknown quadrant type");
         }
+        return node_ptr();
+    }
+
+    node_ptr& get_quadrant_node(key_type other_x, key_type other_y) const
+    {
+        node_quadrant_t quad = get_quadrant(other_x, other_y);
+        return get_quadrant_node(quad);
     }
 };
 

@@ -876,11 +876,63 @@ void point_quad_tree<_Key,_Data>::set_new_root(
 template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_ptr& root)
 {
+    assert(dest); // Destination node should not be null.
+
+    if (!root)
+        // Nothing to re-insert.  Bail out.
+        return;
+
 }
 
 template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_quadrant_t quad, node_ptr& root)
 {
+    if (!root)
+        // Nothing to re-insert.  Bail out.
+        return;
+    
+    switch (quad)
+    {
+        case quad_northeast:
+            if (dest->northeast)
+                reinsert_tree(dest->northeast, root);
+            else
+            {
+                dest->northeast = root;
+                root->parent = dest;
+            }
+            break;
+        case quad_northwest:
+            if (dest->northwest)
+                reinsert_tree(dest->northwest, root);
+            else
+            {
+                dest->northwest = root;
+                root->parent = dest;
+            }
+            break;
+        case quad_southeast:
+            if (dest->southeast)
+                reinsert_tree(dest->southeast, root);
+            else
+            {
+                dest->southeast = root;
+                root->parent = dest;
+            }
+            break;
+        case quad_southwest:
+            if (dest->southwest)
+                reinsert_tree(dest->southwest, root);
+            else
+            {
+                dest->southwest = root;
+                root->parent = dest;
+            }
+            break;
+        case quad_unspecified:
+        default:
+            throw general_error("reinsert_tree: quadrant unspecified");
+    }
 }
 
 template<typename _Key, typename _Data>
