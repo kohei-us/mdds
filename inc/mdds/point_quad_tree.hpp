@@ -334,6 +334,8 @@ private:
         search_result& m_result;
     };
 
+    node_ptr find_node(key_type x, key_type y) const;
+
     void clear_all_nodes();
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
 
@@ -458,48 +460,9 @@ template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
 {
     using namespace std;
-
-    if (!m_root)
+    node_ptr delete_node = find_node(x, y);
+    if (!delete_node)
         return;
-
-    // First, find the node to be removed.
-    
-    node_ptr delete_node = m_root;
-    while (true)
-    {
-        if (delete_node->x == x && delete_node->y == y)
-        {
-            // Found the node to be removed.  Break out.
-            break;
-        }
-
-        node_quadrant_t quad = delete_node->get_quadrant(x, y);
-        switch (quad)
-        {
-            case quad_northeast:
-                if (!delete_node->northeast)
-                    return;
-                delete_node = delete_node->northeast;
-                break;
-            case quad_northwest:
-                if (!delete_node->northwest)
-                    return;
-                delete_node = delete_node->northwest;
-                break;
-            case quad_southeast:
-                if (!delete_node->southeast)
-                    return;
-                delete_node = delete_node->southeast;
-                break;
-            case quad_southwest:
-                if (!delete_node->southwest)
-                    return;
-                delete_node = delete_node->southwest;
-                break;
-            default:
-                throw general_error("unknown quadrant");
-        }
-    }
 
     cout << "found the node to be removed at " << delete_node->x << "," << delete_node->y << " (" << *delete_node->data << ")" << endl;
 
@@ -584,6 +547,49 @@ void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr 
     file << "<line x1=\"" << start->x << "\" y1=\"" << start->y << "\" x2=\"" 
         << end->x << "\" y2=\"" << end->y << "\" stroke-width=\"0.5\"/>" << endl;
     file << "</g>" << endl;
+}
+
+template<typename _Key, typename _Data>
+typename point_quad_tree<_Key,_Data>::node_ptr
+point_quad_tree<_Key,_Data>::find_node(key_type x, key_type y) const
+{
+    node_ptr cur_node = m_root;
+    while (cur_node)
+    {
+        if (cur_node->x == x && cur_node->y == y)
+        {
+            // Found the node.
+            return cur_node;
+        }
+
+        node_quadrant_t quad = cur_node->get_quadrant(x, y);
+        switch (quad)
+        {
+            case quad_northeast:
+                if (!cur_node->northeast)
+                    return node_ptr();
+                cur_node = cur_node->northeast;
+                break;
+            case quad_northwest:
+                if (!cur_node->northwest)
+                    return node_ptr();
+                cur_node = cur_node->northwest;
+                break;
+            case quad_southeast:
+                if (!cur_node->southeast)
+                    return node_ptr();
+                cur_node = cur_node->southeast;
+                break;
+            case quad_southwest:
+                if (!cur_node->southwest)
+                    return node_ptr();
+                cur_node = cur_node->southwest;
+                break;
+            default:
+                throw general_error("unknown quadrant");
+        }
+    }
+    return node_ptr();
 }
 
 template<typename _Key, typename _Data>
