@@ -41,6 +41,13 @@
 
 namespace mdds {
 
+template<typename _PairType>
+void ensure_order(_PairType& v)
+{
+    if (v.first > v.second)
+        ::std::swap(v.first, v.second);
+}
+
 template<typename _Key, typename _NodeType, typename _Inserter>
 void search_region_node(
     const _NodeType* p, _Key x1, _Key y1, _Key x2, _Key y2, _Inserter& result)
@@ -107,6 +114,7 @@ public:
     typedef size_t  size_type;
     typedef ::std::vector<data_type*> data_array_type;
 
+private:
     struct node;
     typedef ::boost::intrusive_ptr<node> node_ptr;
 
@@ -138,6 +146,10 @@ public:
         }
     };
 
+    typedef ::std::vector<node_ptr> reinsert_tree_array_type;
+    typedef ::std::pair<key_type, key_type> key_range_type;
+
+public:
     struct point
     {
         key_type x;
@@ -364,14 +376,20 @@ private:
     node_ptr find_node(key_type x, key_type y) const;
     node_ptr find_replacement_node(key_type x, key_type y, const node_ptr& delete_node) const;
 
+    void adjust_quad(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
+                     node_ptr& quad_root, reinsert_tree_array_type& insert_list);
+
+    void set_new_root(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
+                      node_ptr& quad_root, reinsert_tree_array_type& insert_list);
+
     void clear_all_nodes();
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
 
 private:
     node_ptr    m_root;
 
-    ::std::pair<key_type, key_type> m_xrange;
-    ::std::pair<key_type, key_type> m_yrange;
+    key_range_type m_xrange;
+    key_range_type m_yrange;
 };
 
 template<typename _Key, typename _Data>
@@ -504,6 +522,59 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     }
 
     node_ptr repl_node = find_replacement_node(x, y, delete_node);
+    if (!repl_node)
+        // Non-leaf node should have at least one replacement candidate.
+        throw general_error("failed to find a replacement candidate node.");
+
+    node_quadrant_t repl_quad = delete_node->get_quadrant(repl_node->x, repl_node->y);
+    
+    key_range_type xrange(delete_node->x, repl_node->x);
+    key_range_type yrange(delete_node->y, repl_node->y);
+    ensure_order(xrange);
+    ensure_order(yrange);
+    reinsert_tree_array_type insert_list;
+
+    // Adjust the quadrants adjacent to the quadrant where the replacement node resides.
+    switch (repl_quad)
+    {
+        case quad_northeast:
+        case quad_southwest:
+            adjust_quad(xrange, yrange, delete_node->northwest, insert_list);
+            adjust_quad(xrange, yrange, delete_node->southeast, insert_list);
+            break;
+        case quad_northwest:
+        case quad_southeast:
+            adjust_quad(xrange, yrange, delete_node->northeast, insert_list);
+            adjust_quad(xrange, yrange, delete_node->southwest, insert_list);
+            break;
+        case quad_unspecified:
+        default:
+            throw general_error("quadrant for the replacement node is unspecified.");
+    }
+
+    // Now, adjust the quadrant where the replacement node is.
+    switch (repl_quad)
+    {
+        case quad_northeast:
+            set_new_root(xrange, yrange, delete_node->northeast, insert_list);
+            break;
+        case quad_northwest:
+            set_new_root(xrange, yrange, delete_node->northeast, insert_list);
+            break;
+        case quad_southeast:
+            set_new_root(xrange, yrange, delete_node->northeast, insert_list);
+            break;
+        case quad_southwest:
+            set_new_root(xrange, yrange, delete_node->northeast, insert_list);
+            break;
+        case quad_unspecified:
+        default:
+            throw general_error("quadrant for the replacement node is unspecified.");
+    }
+
+    // Reinsert all child nodes from the replacement node into the node to be 
+    // deleted.
+    
 }
 
 template<typename _Key, typename _Data>
@@ -715,6 +786,20 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
     }
 
     return node_ptr();
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::adjust_quad(
+    const key_range_type& hatched_xrange, const key_range_type& hatched_yrange, 
+    node_ptr& quad_root, reinsert_tree_array_type& insert_list)
+{
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::set_new_root(
+    const key_range_type& hatched_xrange, const key_range_type& hatched_yrange, 
+    node_ptr& quad_root, reinsert_tree_array_type& insert_list)
+{
 }
 
 template<typename _Key, typename _Data>

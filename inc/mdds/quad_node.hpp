@@ -60,6 +60,25 @@ enum search_region_space_t
     region_center
 };
 
+node_quadrant_t opposite(node_quadrant_t quad)
+{
+    switch (quad)
+    {
+        case quad_northeast:
+            return quad_southwest;
+        case quad_northwest:
+            return quad_southeast;
+        case quad_southeast:
+            return quad_northwest;
+        case quad_southwest:
+            return quad_northeast;
+        case quad_unspecified:
+        default:
+            ;
+    }
+    return quad_unspecified;
+}
+
 template<typename _NodePtr, typename _NodeType, typename _Key>
 struct quad_node_base
 {    
