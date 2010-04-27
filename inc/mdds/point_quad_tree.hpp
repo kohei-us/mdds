@@ -362,6 +362,7 @@ private:
     };
 
     node_ptr find_node(key_type x, key_type y) const;
+    node_ptr find_replacement_node(key_type x, key_type y, const node_ptr& delete_node) const;
 
     void clear_all_nodes();
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
@@ -493,6 +494,90 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
 
     cout << "found the node to be removed at " << delete_node->x << "," << delete_node->y << " (" << *delete_node->data << ")" << endl;
 
+    node_ptr repl_node = find_replacement_node(x, y, delete_node);
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) const
+{
+    using namespace std;
+    ofstream file(fpath.c_str());
+    file << "<svg width=\"24cm\" height=\"24cm\" viewBox=\"-2 -2 202 202\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
+    file << "<defs>"
+         << "  <marker id=\"Triangle\""
+         << "    viewBox=\"0 0 10 10\" refX=\"10\" refY=\"5\" "
+         << "    markerUnits=\"strokeWidth\""
+         << "    markerWidth=\"6\" markerHeight=\"4\""
+         << "    orient=\"auto\">"
+         << "    <path d=\"M 0 0 L 10 5 L 0 10 z\" />"
+         << "  </marker>"
+         << "</defs>" << endl;
+    
+    file << "<path d=\"M 0 0 L 0 " << m_yrange.second + 10 << "\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
+    file << "<path d=\"M 0 0 L " << m_xrange.second + 10 << " 0\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
+    dump_node_svg(m_root.get(), file);
+    file << "</svg>" << endl;
+}
+
+template<typename _NodePtr>
+void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr end)
+{
+    using namespace std;
+    file << "<g stroke=\"red\" marker-end=\"url(#Triangle)\">" << endl;
+    file << "<line x1=\"" << start->x << "\" y1=\"" << start->y << "\" x2=\"" 
+        << end->x << "\" y2=\"" << end->y << "\" stroke-width=\"0.5\"/>" << endl;
+    file << "</g>" << endl;
+}
+
+template<typename _Key, typename _Data>
+typename point_quad_tree<_Key,_Data>::node_ptr
+point_quad_tree<_Key,_Data>::find_node(key_type x, key_type y) const
+{
+    node_ptr cur_node = m_root;
+    while (cur_node)
+    {
+        if (cur_node->x == x && cur_node->y == y)
+        {
+            // Found the node.
+            return cur_node;
+        }
+
+        node_quadrant_t quad = cur_node->get_quadrant(x, y);
+        switch (quad)
+        {
+            case quad_northeast:
+                if (!cur_node->northeast)
+                    return node_ptr();
+                cur_node = cur_node->northeast;
+                break;
+            case quad_northwest:
+                if (!cur_node->northwest)
+                    return node_ptr();
+                cur_node = cur_node->northwest;
+                break;
+            case quad_southeast:
+                if (!cur_node->southeast)
+                    return node_ptr();
+                cur_node = cur_node->southeast;
+                break;
+            case quad_southwest:
+                if (!cur_node->southwest)
+                    return node_ptr();
+                cur_node = cur_node->southwest;
+                break;
+            default:
+                throw general_error("unknown quadrant");
+        }
+    }
+    return node_ptr();
+}
+
+template<typename _Key, typename _Data>
+typename point_quad_tree<_Key,_Data>::node_ptr
+point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const node_ptr& delete_node) const
+{
+    using namespace std;
+
     // Now, try to get a replacement candidate in each quadrant.
     node_distance dx_node, dy_node;
 
@@ -593,83 +678,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     if (dx_node.node == dy_node.node && ((dx_node.quad == quad_northwest) || (dx_node.quad == quad_southeast)))
     {
         cout << "node that satisfies Criterion 1: " << *dx_node.node->data << endl;
+        return dx_node.node;
     }
     else
         cout << "unable to find node that satisfies Criterion 1." << endl;
-}
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) const
-{
-    using namespace std;
-    ofstream file(fpath.c_str());
-    file << "<svg width=\"24cm\" height=\"24cm\" viewBox=\"-2 -2 202 202\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
-    file << "<defs>"
-         << "  <marker id=\"Triangle\""
-         << "    viewBox=\"0 0 10 10\" refX=\"10\" refY=\"5\" "
-         << "    markerUnits=\"strokeWidth\""
-         << "    markerWidth=\"6\" markerHeight=\"4\""
-         << "    orient=\"auto\">"
-         << "    <path d=\"M 0 0 L 10 5 L 0 10 z\" />"
-         << "  </marker>"
-         << "</defs>" << endl;
-    
-    file << "<path d=\"M 0 0 L 0 " << m_yrange.second + 10 << "\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
-    file << "<path d=\"M 0 0 L " << m_xrange.second + 10 << " 0\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
-    dump_node_svg(m_root.get(), file);
-    file << "</svg>" << endl;
-}
-
-template<typename _NodePtr>
-void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr end)
-{
-    using namespace std;
-    file << "<g stroke=\"red\" marker-end=\"url(#Triangle)\">" << endl;
-    file << "<line x1=\"" << start->x << "\" y1=\"" << start->y << "\" x2=\"" 
-        << end->x << "\" y2=\"" << end->y << "\" stroke-width=\"0.5\"/>" << endl;
-    file << "</g>" << endl;
-}
-
-template<typename _Key, typename _Data>
-typename point_quad_tree<_Key,_Data>::node_ptr
-point_quad_tree<_Key,_Data>::find_node(key_type x, key_type y) const
-{
-    node_ptr cur_node = m_root;
-    while (cur_node)
-    {
-        if (cur_node->x == x && cur_node->y == y)
-        {
-            // Found the node.
-            return cur_node;
-        }
-
-        node_quadrant_t quad = cur_node->get_quadrant(x, y);
-        switch (quad)
-        {
-            case quad_northeast:
-                if (!cur_node->northeast)
-                    return node_ptr();
-                cur_node = cur_node->northeast;
-                break;
-            case quad_northwest:
-                if (!cur_node->northwest)
-                    return node_ptr();
-                cur_node = cur_node->northwest;
-                break;
-            case quad_southeast:
-                if (!cur_node->southeast)
-                    return node_ptr();
-                cur_node = cur_node->southeast;
-                break;
-            case quad_southwest:
-                if (!cur_node->southwest)
-                    return node_ptr();
-                cur_node = cur_node->southwest;
-                break;
-            default:
-                throw general_error("unknown quadrant");
-        }
-    }
     return node_ptr();
 }
 
