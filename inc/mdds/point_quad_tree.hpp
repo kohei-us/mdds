@@ -303,7 +303,7 @@ public:
 
     search_result search_region(key_type x1, key_type y1, key_type x2, key_type y2) const;
 
-    void remove(data_type* data);
+    void remove(key_type x, key_type y);
 
     void dump_tree_svg(const ::std::string& fpath) const;
 
@@ -455,8 +455,103 @@ point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2
 }
 
 template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::remove(data_type* data)
+void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
 {
+    using namespace std;
+
+    if (!m_root)
+        return;
+
+    // First, find the node to be removed.
+    
+    node_ptr delete_node = m_root;
+    while (true)
+    {
+        if (delete_node->x == x && delete_node->y == y)
+        {
+            // Found the node to be removed.  Break out.
+            break;
+        }
+
+        node_quadrant_t quad = delete_node->get_quadrant(x, y);
+        switch (quad)
+        {
+            case quad_northeast:
+                if (!delete_node->northeast)
+                    return;
+                delete_node = delete_node->northeast;
+                break;
+            case quad_northwest:
+                if (!delete_node->northwest)
+                    return;
+                delete_node = delete_node->northwest;
+                break;
+            case quad_southeast:
+                if (!delete_node->southeast)
+                    return;
+                delete_node = delete_node->southeast;
+                break;
+            case quad_southwest:
+                if (!delete_node->southwest)
+                    return;
+                delete_node = delete_node->southwest;
+                break;
+            default:
+                throw general_error("unknown quadrant");
+        }
+    }
+
+    cout << "found the node to be removed at " << delete_node->x << "," << delete_node->y << " (" << *delete_node->data << ")" << endl;
+
+    // Now, try to get a replacement candidate in each quadrant.
+    
+    // northeast
+    if (delete_node->northeast)
+    {
+        node_ptr repl_node = delete_node->northeast;
+        while (repl_node->southwest)
+            repl_node = repl_node->southwest;
+
+        cout << "northeast candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+    }
+    else
+        cout << "no candidate in northeast" << endl;
+
+    // northwest
+    if (delete_node->northwest)
+    {
+        node_ptr repl_node = delete_node->northwest;
+        while (repl_node->southeast)
+            repl_node = repl_node->southeast;
+
+        cout << "northwest candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+    }
+    else
+        cout << "no candidate in northwest" << endl;
+
+    // southwest
+    if (delete_node->southwest)
+    {
+        node_ptr repl_node = delete_node->southwest;
+        while (repl_node->northeast)
+            repl_node = repl_node->northeast;
+
+        cout << "southwest candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+    }
+    else
+        cout << "no candidate in southwest" << endl;
+
+    // southeast
+    if (delete_node->southeast)
+    {
+        node_ptr repl_node = delete_node->southeast;
+        while (repl_node->northwest)
+            repl_node = repl_node->northwest;
+
+        cout << "southeast candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+    }
+    else
+        cout << "no candidate in southeast" << endl;
 }
 
 template<typename _Key, typename _Data>
@@ -464,12 +559,12 @@ void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) cons
 {
     using namespace std;
     ofstream file(fpath.c_str());
-    file << "<svg width=\"14cm\" height=\"14cm\" viewBox=\"-2 -2 202 202\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
+    file << "<svg width=\"24cm\" height=\"24cm\" viewBox=\"-2 -2 202 202\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
     file << "<defs>"
          << "  <marker id=\"Triangle\""
          << "    viewBox=\"0 0 10 10\" refX=\"10\" refY=\"5\" "
          << "    markerUnits=\"strokeWidth\""
-         << "    markerWidth=\"8\" markerHeight=\"6\""
+         << "    markerWidth=\"6\" markerHeight=\"4\""
          << "    orient=\"auto\">"
          << "    <path d=\"M 0 0 L 10 5 L 0 10 z\" />"
          << "  </marker>"
@@ -506,9 +601,9 @@ void point_quad_tree<_Key,_Data>::dump_node_svg(const node* p, ::std::ofstream& 
     if (!p)
         return;
 
-    file << "<circle cx=\"" << p->x << "\" cy=\"" << p->y << "\" r=\"0.5\""
+    file << "<circle cx=\"" << p->x << "\" cy=\"" << p->y << "\" r=\"0.3\""
         << " fill=\"black\" stroke=\"black\"/>" << endl;
-    file << "<text x=\"" << p->x + 1 << "\" y=\"" << p->y + 6 << "\" font-size=\"5\" fill=\"black\">"
+    file << "<text x=\"" << p->x + 1 << "\" y=\"" << p->y + 3 << "\" font-size=\"3\" fill=\"black\">"
         << *p->data << " (" << p->x << "," << p->y << ")</text>" << endl;
 
     if (p->northwest)
