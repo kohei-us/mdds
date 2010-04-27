@@ -148,6 +148,7 @@ void pqt_test()
     cout << "result: " << endl;
     for_each(result.begin(), result.end(), search_result_printer<db_type>());
 
+    db.remove(20, 20);
     db.remove(40, 50);
     db.dump_tree_svg("./obj/test-remove.svg");
 }

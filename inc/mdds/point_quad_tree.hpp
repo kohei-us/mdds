@@ -494,6 +494,15 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
 
     cout << "found the node to be removed at " << delete_node->x << "," << delete_node->y << " (" << *delete_node->data << ")" << endl;
 
+    // Check if this is a leaf node, in which case we can just delete it 
+    // without further processing.
+    if (delete_node->leaf())
+    {
+        disconnect_node_from_parent(delete_node);
+        delete_node.reset();
+        return;
+    }
+
     node_ptr repl_node = find_replacement_node(x, y, delete_node);
 }
 

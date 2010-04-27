@@ -118,6 +118,11 @@ struct quad_node_base
 #endif
     }
 
+    bool leaf() const
+    {
+        return !northeast && !northwest && !southeast && !southwest;
+    }
+
     bool operator==(const quad_node_base& r) const
     {
         return x == r.x && y == r.y;
@@ -192,6 +197,34 @@ inline void intrusive_ptr_release(_NodePtr p)
     --p->refcount;
     if (!p->refcount)
         delete p;
+}
+
+template<typename _NodePtr>
+void disconnect_node_from_parent(_NodePtr p)
+{
+    if (!p || !p->parent)
+        // Nothing to do.
+        return;
+
+    _NodePtr& parent = p->parent;
+    if (parent->northeast && parent->northeast == p)
+    {
+        parent->northeast.reset();
+    }
+    else if (parent->northwest && parent->northwest == p)
+    {
+        parent->northwest.reset();
+    }
+    else if (parent->southwest && parent->southwest == p)
+    {
+        parent->southwest.reset();
+    }
+    else if (parent->southeast && parent->southeast == p)
+    {
+        parent->southeast.reset();
+    }
+    else
+        throw general_error("parent node doesn't lead to the deleted node.");
 }
 
 template<typename _NodePtr>
