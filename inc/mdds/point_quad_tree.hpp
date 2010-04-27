@@ -334,6 +334,14 @@ private:
         search_result& m_result;
     };
 
+    struct node_distance
+    {
+        key_type dist;
+        node_ptr node;
+        node_distance() : dist(0), node(NULL) {}
+        node_distance(key_type _dist, const node_ptr& _node) : dist(_dist), node(_node) {}
+    };
+
     node_ptr find_node(key_type x, key_type y) const;
 
     void clear_all_nodes();
@@ -467,7 +475,8 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     cout << "found the node to be removed at " << delete_node->x << "," << delete_node->y << " (" << *delete_node->data << ")" << endl;
 
     // Now, try to get a replacement candidate in each quadrant.
-    
+    node_distance dx_node, dy_node;
+
     // northeast
     if (delete_node->northeast)
     {
@@ -481,6 +490,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         key_type dx = repl_node->x - x;
         key_type dy = y - repl_node->y;
         cout << "  dx = " << dx << ", dy = " << dy << endl;
+
+        if (!dx_node.node || dx_node.dist > dx)
+            dx_node = node_distance(dx, repl_node);
+        if (!dy_node.node || dy_node.dist > dy)
+            dy_node = node_distance(dy, repl_node);
     }
     else
         cout << "no candidate in northeast" << endl;
@@ -498,6 +512,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         key_type dx = x - repl_node->x;
         key_type dy = y - repl_node->y;
         cout << "  dx = " << dx << ", dy = " << dy << endl;
+
+        if (!dx_node.node || dx_node.dist > dx)
+            dx_node = node_distance(dx, repl_node);
+        if (!dy_node.node || dy_node.dist > dy)
+            dy_node = node_distance(dy, repl_node);
     }
     else
         cout << "no candidate in northwest" << endl;
@@ -515,6 +534,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         key_type dx = x - repl_node->x;
         key_type dy = repl_node->y - y;
         cout << "  dx = " << dx << ", dy = " << dy << endl;
+
+        if (!dx_node.node || dx_node.dist > dx)
+            dx_node = node_distance(dx, repl_node);
+        if (!dy_node.node || dy_node.dist > dy)
+            dy_node = node_distance(dy, repl_node);
     }
     else
         cout << "no candidate in southwest" << endl;
@@ -532,9 +556,20 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         key_type dx = repl_node->x - x;
         key_type dy = repl_node->y - y;
         cout << "  dx = " << dx << ", dy = " << dy << endl;
+
+        if (!dx_node.node || dx_node.dist > dx)
+            dx_node = node_distance(dx, repl_node);
+        if (!dy_node.node || dy_node.dist > dy)
+            dy_node = node_distance(dy, repl_node);
     }
     else
         cout << "no candidate in southeast" << endl;
+
+    if (dx_node.node)
+        cout << "node closest to x axis: " << *dx_node.node->data << " (dx=" << dx_node.dist << ")" << endl;
+
+    if (dy_node.node)
+        cout << "node closest to y axis: " << *dy_node.node->data << " (dy=" << dy_node.dist << ")" << endl;
 }
 
 template<typename _Key, typename _Data>
