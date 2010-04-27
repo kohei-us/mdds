@@ -382,6 +382,7 @@ private:
     void set_new_root(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
                       node_ptr& quad_root, reinsert_tree_array_type& insert_list);
 
+    void reinsert_tree(node_ptr& dest, node_ptr& root);
     void reinsert_tree(node_ptr& dest, node_quadrant_t quad, node_ptr& root);
 
     void clear_all_nodes();
@@ -641,6 +642,10 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
 
     // Lastly, re-insert all those trees that have been cut during the quad 
     // adjustment into the new root.
+    typename reinsert_tree_array_type::iterator 
+        itr = insert_list.begin(), itr_end = insert_list.end();
+    for (; itr != itr_end; ++itr)
+        reinsert_tree(delete_node, *itr);
 }
 
 template<typename _Key, typename _Data>
@@ -865,6 +870,11 @@ template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::set_new_root(
     const key_range_type& hatched_xrange, const key_range_type& hatched_yrange, 
     node_ptr& quad_root, reinsert_tree_array_type& insert_list)
+{
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_ptr& root)
 {
 }
 
