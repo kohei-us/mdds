@@ -43,7 +43,8 @@ enum node_quadrant_t
     quad_northeast,
     quad_northwest,
     quad_southeast,
-    quad_southwest
+    quad_southwest,
+    quad_unspecified
 };
 
 enum search_region_space_t
@@ -115,6 +116,11 @@ struct quad_node_base
 #ifdef DEBUG_NODE_BASE
         ++node_instance_count;
 #endif
+    }
+
+    bool operator==(const quad_node_base& r) const
+    {
+        return x == r.x && y == r.y;
     }
 
     /** 

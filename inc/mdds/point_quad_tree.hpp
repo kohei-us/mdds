@@ -117,8 +117,24 @@ public:
             quad_node_base<node_ptr, node, key_type>(_x, _y),
             data(_data) {}
 
+        node(const node& r) :
+            quad_node_base<node_ptr, node, key_type>(r),
+            data(r.data) {}
+
         void dispose()
         {
+        }
+
+        bool operator== (const node& r) const
+        {
+            return quad_node_base<node_ptr, node, key_type>::operator ==(r) && data == r.data;
+        }
+
+        node& operator= (const node& r)
+        {
+            quad_node_base<node_ptr, node, key_type>::operator=(r);
+            data = r.data;
+            return *this;
         }
     };
 
@@ -336,10 +352,13 @@ private:
 
     struct node_distance
     {
-        key_type dist;
-        node_ptr node;
-        node_distance() : dist(0), node(NULL) {}
-        node_distance(key_type _dist, const node_ptr& _node) : dist(_dist), node(_node) {}
+        node_quadrant_t quad;
+        key_type        dist;
+        node_ptr        node;
+
+        node_distance() : quad(quad_unspecified), dist(0), node(NULL) {}
+        node_distance(node_quadrant_t _quad, key_type _dist, const node_ptr& _node) : 
+            quad(_quad), dist(_dist), node(_node) {}
     };
 
     node_ptr find_node(key_type x, key_type y) const;
@@ -492,9 +511,9 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         cout << "  dx = " << dx << ", dy = " << dy << endl;
 
         if (!dx_node.node || dx_node.dist > dx)
-            dx_node = node_distance(dx, repl_node);
+            dx_node = node_distance(quad_northeast, dx, repl_node);
         if (!dy_node.node || dy_node.dist > dy)
-            dy_node = node_distance(dy, repl_node);
+            dy_node = node_distance(quad_northeast, dy, repl_node);
     }
     else
         cout << "no candidate in northeast" << endl;
@@ -514,9 +533,9 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         cout << "  dx = " << dx << ", dy = " << dy << endl;
 
         if (!dx_node.node || dx_node.dist > dx)
-            dx_node = node_distance(dx, repl_node);
+            dx_node = node_distance(quad_northwest, dx, repl_node);
         if (!dy_node.node || dy_node.dist > dy)
-            dy_node = node_distance(dy, repl_node);
+            dy_node = node_distance(quad_northwest, dy, repl_node);
     }
     else
         cout << "no candidate in northwest" << endl;
@@ -536,9 +555,9 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         cout << "  dx = " << dx << ", dy = " << dy << endl;
 
         if (!dx_node.node || dx_node.dist > dx)
-            dx_node = node_distance(dx, repl_node);
+            dx_node = node_distance(quad_southwest, dx, repl_node);
         if (!dy_node.node || dy_node.dist > dy)
-            dy_node = node_distance(dy, repl_node);
+            dy_node = node_distance(quad_southwest, dy, repl_node);
     }
     else
         cout << "no candidate in southwest" << endl;
@@ -558,9 +577,9 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         cout << "  dx = " << dx << ", dy = " << dy << endl;
 
         if (!dx_node.node || dx_node.dist > dx)
-            dx_node = node_distance(dx, repl_node);
+            dx_node = node_distance(quad_southeast, dx, repl_node);
         if (!dy_node.node || dy_node.dist > dy)
-            dy_node = node_distance(dy, repl_node);
+            dy_node = node_distance(quad_southeast, dy, repl_node);
     }
     else
         cout << "no candidate in southeast" << endl;
@@ -570,6 +589,13 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
 
     if (dy_node.node)
         cout << "node closest to y axis: " << *dy_node.node->data << " (dy=" << dy_node.dist << ")" << endl;
+
+    if (dx_node.node == dy_node.node && ((dx_node.quad == quad_northwest) || (dx_node.quad == quad_southeast)))
+    {
+        cout << "node that satisfies Criterion 1: " << *dx_node.node->data << endl;
+    }
+    else
+        cout << "unable to find node that satisfies Criterion 1." << endl;
 }
 
 template<typename _Key, typename _Data>
