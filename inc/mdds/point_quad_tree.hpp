@@ -476,6 +476,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
             repl_node = repl_node->southwest;
 
         cout << "northeast candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+
+        // Calculate its distance to each of the borders.
+        key_type dx = repl_node->x - x;
+        key_type dy = y - repl_node->y;
+        cout << "  dx = " << dx << ", dy = " << dy << endl;
     }
     else
         cout << "no candidate in northeast" << endl;
@@ -488,6 +493,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
             repl_node = repl_node->southeast;
 
         cout << "northwest candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+
+        // Calculate its distance to each of the borders.
+        key_type dx = x - repl_node->x;
+        key_type dy = y - repl_node->y;
+        cout << "  dx = " << dx << ", dy = " << dy << endl;
     }
     else
         cout << "no candidate in northwest" << endl;
@@ -500,6 +510,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
             repl_node = repl_node->northeast;
 
         cout << "southwest candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+
+        // Calculate its distance to each of the borders.
+        key_type dx = x - repl_node->x;
+        key_type dy = repl_node->y - y;
+        cout << "  dx = " << dx << ", dy = " << dy << endl;
     }
     else
         cout << "no candidate in southwest" << endl;
@@ -512,6 +527,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
             repl_node = repl_node->northwest;
 
         cout << "southeast candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+
+        // Calculate its distance to each of the borders.
+        key_type dx = repl_node->x - x;
+        key_type dy = repl_node->y - y;
+        cout << "  dx = " << dx << ", dy = " << dy << endl;
     }
     else
         cout << "no candidate in southeast" << endl;
