@@ -635,10 +635,12 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
             repl_node->southwest.reset();
             break;
         case quad_unspecified:
-            break;
         default:
-            ;
+            throw general_error("quadrant for the replacement node is unspecified.");
     }
+
+    // Lastly, re-insert all those trees that have been cut during the quad 
+    // adjustment into the new root.
 }
 
 template<typename _Key, typename _Data>
