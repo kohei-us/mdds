@@ -128,6 +128,7 @@ void pqt_test()
     db.insert(39, 78, &M);
     db.insert(72, 52, &N);
 
+    cout << "node count = " << get_node_instance_count() << endl;
     db.dump_tree_svg("./obj/test.svg");
 
     {
@@ -164,4 +165,5 @@ void pqt_test()
 int main()
 {
     pqt_test();
+    assert(get_node_instance_count() == 0);
 }

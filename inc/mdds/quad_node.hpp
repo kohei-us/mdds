@@ -36,6 +36,10 @@ namespace mdds {
 
 #ifdef DEBUG_NODE_BASE
 size_t node_instance_count = 0;
+size_t get_node_instance_count()
+{
+    return node_instance_count;
+}
 #endif
 
 /**
@@ -111,12 +115,6 @@ node_quadrant_t opposite(node_quadrant_t quad)
 template<typename _NodePtr, typename _NodeType, typename _Key>
 struct quad_node_base
 {    
-#ifdef DEBUG_NODE_BASE
-    static size_t get_instance_count()
-    {
-        return node_instance_count;
-    }
-#endif
     typedef _Key        key_type;
     typedef _NodePtr    node_ptr;
     typedef _NodeType   node_type;
