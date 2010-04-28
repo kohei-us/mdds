@@ -380,7 +380,7 @@ private:
                      node_ptr quad_root, direction_t dir, reinsert_tree_array_type& insert_list);
 
     void set_new_root(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
-                      node_ptr& quad_root, reinsert_tree_array_type& insert_list);
+                      node_ptr& quad_root, node_quadrant_t dir, reinsert_tree_array_type& insert_list);
 
     void insert_node(node_ptr& dest, node_ptr& node);
     void reinsert_tree(node_ptr& dest, node_ptr& root);
@@ -567,16 +567,16 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     switch (repl_quad)
     {
         case quad_northeast:
-            set_new_root(xrange, yrange, delete_node->northeast, insert_list);
+            set_new_root(xrange, yrange, delete_node->northeast, quad_southwest, insert_list);
             break;
         case quad_northwest:
-            set_new_root(xrange, yrange, delete_node->northeast, insert_list);
+            set_new_root(xrange, yrange, delete_node->northeast, quad_southeast, insert_list);
             break;
         case quad_southeast:
-            set_new_root(xrange, yrange, delete_node->northeast, insert_list);
+            set_new_root(xrange, yrange, delete_node->northeast, quad_northwest, insert_list);
             break;
         case quad_southwest:
-            set_new_root(xrange, yrange, delete_node->northeast, insert_list);
+            set_new_root(xrange, yrange, delete_node->northeast, quad_northeast, insert_list);
             break;
         case quad_unspecified:
         default:
@@ -915,8 +915,34 @@ void point_quad_tree<_Key,_Data>::adjust_quad(
 template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::set_new_root(
     const key_range_type& hatched_xrange, const key_range_type& hatched_yrange, 
-    node_ptr& quad_root, reinsert_tree_array_type& insert_list)
+    node_ptr& quad_root, node_quadrant_t dir, reinsert_tree_array_type& insert_list)
 {
+    node_ptr cur_node = quad_root;
+    while (cur_node)
+    {
+        switch (dir)
+        {
+            case quad_northeast:
+                adjust_quad(hatched_xrange, hatched_yrange, cur_node->southeast, dir_east, insert_list);
+                adjust_quad(hatched_xrange, hatched_yrange, cur_node->northwest, dir_north, insert_list);
+                break;
+            case quad_northwest:
+                adjust_quad(hatched_xrange, hatched_yrange, cur_node->northeast, dir_north, insert_list);
+                adjust_quad(hatched_xrange, hatched_yrange, cur_node->southwest, dir_west, insert_list);
+                break;
+            case quad_southeast:
+                adjust_quad(hatched_xrange, hatched_yrange, cur_node->northeast, dir_east, insert_list);
+                adjust_quad(hatched_xrange, hatched_yrange, cur_node->southwest, dir_south, insert_list);
+                break;
+            case quad_southwest:
+                adjust_quad(hatched_xrange, hatched_yrange, cur_node->northwest, dir_west, insert_list);
+                adjust_quad(hatched_xrange, hatched_yrange, cur_node->southeast, dir_south, insert_list);
+                break;
+            default:
+                throw general_error("unspecified quadrant");
+        }
+        cur_node = cur_node->get_quadrant_node(dir);
+    }
 }
 
 template<typename _Key, typename _Data>
