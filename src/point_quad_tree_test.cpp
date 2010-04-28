@@ -111,6 +111,7 @@ void pqt_test()
     string K("K");
     string L("L");
     string M("M");
+    string N("N");
 
     db.insert(25, 32, &A);
     db.insert( 5, 45, &B);
@@ -125,6 +126,7 @@ void pqt_test()
     db.insert(26, 52, &K);
     db.insert(38, 68, &L);
     db.insert(39, 78, &M);
+    db.insert(72, 52, &N);
 
     db.dump_tree_svg("./obj/test.svg");
 

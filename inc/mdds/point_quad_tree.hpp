@@ -377,7 +377,7 @@ private:
     node_ptr find_replacement_node(key_type x, key_type y, const node_ptr& delete_node) const;
 
     void adjust_quad(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
-                     node_ptr& quad_root, reinsert_tree_array_type& insert_list);
+                     node_ptr quad_root, direction_t dir, reinsert_tree_array_type& insert_list);
 
     void set_new_root(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
                       node_ptr& quad_root, reinsert_tree_array_type& insert_list);
@@ -543,14 +543,20 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     switch (repl_quad)
     {
         case quad_northeast:
+            adjust_quad(xrange, yrange, delete_node->northwest, dir_south, insert_list);
+            adjust_quad(xrange, yrange, delete_node->southeast, dir_west, insert_list);
+            break;
         case quad_southwest:
-            adjust_quad(xrange, yrange, delete_node->northwest, insert_list);
-            adjust_quad(xrange, yrange, delete_node->southeast, insert_list);
+            adjust_quad(xrange, yrange, delete_node->northwest, dir_east, insert_list);
+            adjust_quad(xrange, yrange, delete_node->southeast, dir_north, insert_list);
+            break;
+        case quad_southeast:
+            adjust_quad(xrange, yrange, delete_node->northeast, dir_west, insert_list);
+            adjust_quad(xrange, yrange, delete_node->southwest, dir_north, insert_list);
             break;
         case quad_northwest:
-        case quad_southeast:
-            adjust_quad(xrange, yrange, delete_node->northeast, insert_list);
-            adjust_quad(xrange, yrange, delete_node->southwest, insert_list);
+            adjust_quad(xrange, yrange, delete_node->northeast, dir_south, insert_list);
+            adjust_quad(xrange, yrange, delete_node->southwest, dir_east, insert_list);
             break;
         case quad_unspecified:
         default:
@@ -863,8 +869,47 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
 template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::adjust_quad(
     const key_range_type& hatched_xrange, const key_range_type& hatched_yrange, 
-    node_ptr& quad_root, reinsert_tree_array_type& insert_list)
+    node_ptr quad_root, direction_t dir, reinsert_tree_array_type& insert_list)
 {
+    using namespace std;
+
+    if (!quad_root)
+        return;
+
+    cout << "adjust_quad: checking " << *quad_root->data << " (" << quad_root->x << "," << quad_root->y << ")" << endl;
+
+    if ((hatched_xrange.first <= quad_root->x && quad_root->x <= hatched_xrange.second) ||
+        (hatched_yrange.first <= quad_root->y && quad_root->y <= hatched_yrange.second))
+    {
+        cout << "  " << *quad_root->data << " is in the hatched region" << endl;
+        // Insert the whole tree, including the root, into the insert list.
+        disconnect_node_from_parent(quad_root);
+        quad_root->parent.reset();
+        insert_list.push_back(quad_root);
+        return;
+    }
+
+    switch (dir)
+    {
+        case dir_east:
+            adjust_quad(hatched_xrange, hatched_yrange, quad_root->northeast, dir_east, insert_list);
+            adjust_quad(hatched_xrange, hatched_yrange, quad_root->southeast, dir_east, insert_list);
+            break;
+        case dir_north:
+            adjust_quad(hatched_xrange, hatched_yrange, quad_root->northeast, dir_north, insert_list);
+            adjust_quad(hatched_xrange, hatched_yrange, quad_root->northwest, dir_north, insert_list);
+            break;
+        case dir_south:
+            adjust_quad(hatched_xrange, hatched_yrange, quad_root->southeast, dir_south, insert_list);
+            adjust_quad(hatched_xrange, hatched_yrange, quad_root->southwest, dir_south, insert_list);
+            break;
+        case dir_west:
+            adjust_quad(hatched_xrange, hatched_yrange, quad_root->northwest, dir_west, insert_list);
+            adjust_quad(hatched_xrange, hatched_yrange, quad_root->southwest, dir_west, insert_list);
+            break;
+        default:
+            ;
+    }
 }
 
 template<typename _Key, typename _Data>

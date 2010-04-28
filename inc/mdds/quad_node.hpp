@@ -38,6 +38,11 @@ namespace mdds {
 size_t node_instance_count = 0;
 #endif
 
+/**
+ *   NW | NE
+ * -----|-----
+ *   SW | SE
+ */
 enum node_quadrant_t
 {
     quad_northeast,
@@ -47,6 +52,13 @@ enum node_quadrant_t
     quad_unspecified
 };
 
+/** 
+ *  NW  |  N  | NE
+ * -----|-----|----- 
+ *   W  |  C  |  E
+ * -----|-----|----- 
+ *  SW  |  S  | SE
+ */
 enum search_region_space_t
 {
     region_northwest,
@@ -58,6 +70,23 @@ enum search_region_space_t
     region_southwest,
     region_west,
     region_center
+};
+
+/** 
+ *        N 
+ *        |
+ *        |
+ * W -----+----- E
+ *        |
+ *        |
+ *        S
+ */ 
+enum direction_t
+{
+    dir_north,
+    dir_west,
+    dir_south,
+    dir_east
 };
 
 node_quadrant_t opposite(node_quadrant_t quad)
@@ -299,42 +328,42 @@ search_region_space_t get_search_region_space(
         {
             return region_northwest;
         }
-        else if (y1 <= y && y < y2)
+        else if (y1 <= y && y <= y2)
         {
             return region_west;
         }
 
-        assert(y2 <= y);
+        assert(y2 < y);
         return region_southwest;
     }
-    else if (x1 <= x && x < x2)
+    else if (x1 <= x && x <= x2)
     {
         // central region
         if (y < y1)
         {
             return region_north;
         }
-        else if (y1 <= y && y < y2)
+        else if (y1 <= y && y <= y2)
         {
             return region_center;
         }
 
-        assert(y2 <= y);
+        assert(y2 < y);
         return region_south;
     }
     
     // eastern region
-    assert(x2 <= x);
+    assert(x2 < x);
     if (y < y1)
     {
         return region_northeast;
     }
-    else if (y1 <= y && y < y2)
+    else if (y1 <= y && y <= y2)
     {
         return region_east;
     }
     
-    assert(y2 <= y);
+    assert(y2 < y);
     return region_southeast;
 }
 
