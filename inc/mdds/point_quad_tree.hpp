@@ -382,6 +382,7 @@ private:
     void set_new_root(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
                       node_ptr& quad_root, reinsert_tree_array_type& insert_list);
 
+    void insert_node(node_ptr& dest, node_ptr& node);
     void reinsert_tree(node_ptr& dest, node_ptr& root);
     void reinsert_tree(node_ptr& dest, node_quadrant_t quad, node_ptr& root);
 
@@ -874,6 +875,70 @@ void point_quad_tree<_Key,_Data>::set_new_root(
 }
 
 template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::insert_node(node_ptr& dest, node_ptr& node)
+{
+    node_ptr cur_node = dest;
+    while (true)
+    {
+        if (cur_node->x == node->x && cur_node->y == node->y)
+        {
+            // When inserting a node instance directly (likely as part of tree
+            // re-insertion), we are not supposed to have another node at
+            // identical position.
+            throw general_error("node with identical position encountered.");
+        }
+
+        node_quadrant_t quad = cur_node->get_quadrant(node->x, node->y);
+        switch (quad)
+        {
+            case quad_northeast:
+                if (cur_node->northeast)
+                    cur_node = cur_node->northeast;
+                else
+                {
+                    cur_node->northeast = node;
+                    node->parent = cur_node;
+                    return;
+                }
+                break;
+            case quad_northwest:
+                if (cur_node->northwest)
+                    cur_node = cur_node->northwest;
+                else
+                {
+                    cur_node->northwest = node;
+                    node->parent = cur_node;
+                    return;
+                }
+                break;
+            case quad_southeast:
+                if (cur_node->southeast)
+                    cur_node = cur_node->southeast;
+                else
+                {
+                    cur_node->southeast = node;
+                    node->parent = cur_node;
+                    return;
+                }
+                break;
+            case quad_southwest:
+                if (cur_node->southwest)
+                    cur_node = cur_node->southwest;
+                else
+                {
+                    cur_node->southwest = node;
+                    node->parent = cur_node;
+                    return;
+                }
+                break;
+            default:
+                throw general_error("unknown quadrant");
+        }
+    }
+    assert(!"This should never be reached.");
+}
+
+template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_ptr& root)
 {
     assert(dest); // Destination node should not be null.
@@ -882,6 +947,29 @@ void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_ptr& root)
         // Nothing to re-insert.  Bail out.
         return;
 
+    if (root->northeast)
+    {
+        reinsert_tree(dest, root->northeast);
+        root->northeast.reset();
+    }
+    if (root->northwest)
+    {
+        reinsert_tree(dest, root->northwest);
+        root->northwest.reset();
+    }
+    if (root->southeast)
+    {
+        reinsert_tree(dest, root->southeast);
+        root->southeast.reset();
+    }
+    if (root->southwest)
+    {
+        reinsert_tree(dest, root->southwest);
+        root->southwest.reset();
+    }
+
+    root->parent.reset();
+    insert_node(dest, root);
 }
 
 template<typename _Key, typename _Data>
