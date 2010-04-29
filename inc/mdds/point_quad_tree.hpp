@@ -555,17 +555,17 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         case quad_northwest:
             adjust_quad(xrange, yrange, delete_node->northeast, dir_south, insert_list);
             adjust_quad(xrange, yrange, delete_node->southwest, dir_east, insert_list);
-            set_new_root(xrange, yrange, delete_node->northeast, quad_southeast, insert_list);
+            set_new_root(xrange, yrange, delete_node->northwest, quad_southeast, insert_list);
             break;
         case quad_southeast:
             adjust_quad(xrange, yrange, delete_node->northeast, dir_west, insert_list);
             adjust_quad(xrange, yrange, delete_node->southwest, dir_north, insert_list);
-            set_new_root(xrange, yrange, delete_node->northeast, quad_northwest, insert_list);
+            set_new_root(xrange, yrange, delete_node->southeast, quad_northwest, insert_list);
             break;
         case quad_southwest:
             adjust_quad(xrange, yrange, delete_node->northwest, dir_east, insert_list);
             adjust_quad(xrange, yrange, delete_node->southeast, dir_north, insert_list);
-            set_new_root(xrange, yrange, delete_node->northeast, quad_northeast, insert_list);
+            set_new_root(xrange, yrange, delete_node->southwest, quad_northeast, insert_list);
             break;
         case quad_unspecified:
         default:
