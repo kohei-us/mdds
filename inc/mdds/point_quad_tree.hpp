@@ -376,6 +376,10 @@ private:
     node_ptr find_node(key_type x, key_type y) const;
     node_ptr find_replacement_node(key_type x, key_type y, const node_ptr& delete_node) const;
 
+    void find_candidate_in_quad(key_type x, key_type y, 
+             node_distance& dx_node, node_distance& dy_node, node_distance& min_city_block_node,
+             const node_ptr& delete_node, node_quadrant_t quad) const;
+
     void adjust_quad(const key_range_type& hatched_xrange, const key_range_type& hatched_yrange,
                      node_ptr quad_root, direction_t dir, reinsert_tree_array_type& insert_list);
 
@@ -739,105 +743,21 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
     // Try to get a replacement candidate in each quadrant.
     node_distance dx_node, dy_node, min_city_block_node;
 
-    // northeast
-    if (delete_node->northeast)
-    {
-        node_ptr repl_node = delete_node->northeast;
-        while (repl_node->southwest)
-            repl_node = repl_node->southwest;
+    cout << "northeast" << endl;
+    find_candidate_in_quad(
+        x, y, dx_node, dy_node, min_city_block_node, delete_node, quad_northeast);
 
-        cout << "northeast candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+    cout << "northwest" << endl;
+    find_candidate_in_quad(
+        x, y, dx_node, dy_node, min_city_block_node, delete_node, quad_northwest);
 
-        // Calculate its distance to each of the borders.
-        key_type dx = repl_node->x - x;
-        key_type dy = y - repl_node->y;
-        cout << "  dx = " << dx << ", dy = " << dy << endl;
+    cout << "southwest" << endl;
+    find_candidate_in_quad(
+        x, y, dx_node, dy_node, min_city_block_node, delete_node, quad_southwest);
 
-        if (!dx_node.node || dx_node.dist > dx)
-            dx_node = node_distance(quad_northeast, dx, repl_node);
-        if (!dy_node.node || dy_node.dist > dy)
-            dy_node = node_distance(quad_northeast, dy, repl_node);
-
-        if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
-            min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
-    }
-    else
-        cout << "no candidate in northeast" << endl;
-
-    // northwest
-    if (delete_node->northwest)
-    {
-        node_ptr repl_node = delete_node->northwest;
-        while (repl_node->southeast)
-            repl_node = repl_node->southeast;
-
-        cout << "northwest candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
-
-        // Calculate its distance to each of the borders.
-        key_type dx = x - repl_node->x;
-        key_type dy = y - repl_node->y;
-        cout << "  dx = " << dx << ", dy = " << dy << endl;
-
-        if (!dx_node.node || dx_node.dist > dx)
-            dx_node = node_distance(quad_northwest, dx, repl_node);
-        if (!dy_node.node || dy_node.dist > dy)
-            dy_node = node_distance(quad_northwest, dy, repl_node);
-
-        if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
-            min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
-    }
-    else
-        cout << "no candidate in northwest" << endl;
-
-    // southwest
-    if (delete_node->southwest)
-    {
-        node_ptr repl_node = delete_node->southwest;
-        while (repl_node->northeast)
-            repl_node = repl_node->northeast;
-
-        cout << "southwest candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
-
-        // Calculate its distance to each of the borders.
-        key_type dx = x - repl_node->x;
-        key_type dy = repl_node->y - y;
-        cout << "  dx = " << dx << ", dy = " << dy << endl;
-
-        if (!dx_node.node || dx_node.dist > dx)
-            dx_node = node_distance(quad_southwest, dx, repl_node);
-        if (!dy_node.node || dy_node.dist > dy)
-            dy_node = node_distance(quad_southwest, dy, repl_node);
-
-        if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
-            min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
-    }
-    else
-        cout << "no candidate in southwest" << endl;
-
-    // southeast
-    if (delete_node->southeast)
-    {
-        node_ptr repl_node = delete_node->southeast;
-        while (repl_node->northwest)
-            repl_node = repl_node->northwest;
-
-        cout << "southeast candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
-
-        // Calculate its distance to each of the borders.
-        key_type dx = repl_node->x - x;
-        key_type dy = repl_node->y - y;
-        cout << "  dx = " << dx << ", dy = " << dy << endl;
-
-        if (!dx_node.node || dx_node.dist > dx)
-            dx_node = node_distance(quad_southeast, dx, repl_node);
-        if (!dy_node.node || dy_node.dist > dy)
-            dy_node = node_distance(quad_southeast, dy, repl_node);
-
-        if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
-            min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
-    }
-    else
-        cout << "no candidate in southeast" << endl;
+    cout << "southeast" << endl;
+    find_candidate_in_quad(
+        x, y, dx_node, dy_node, min_city_block_node, delete_node, quad_southeast);
 
     // Check Criterion 1.
 
@@ -864,6 +784,42 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
     }
 
     return node_ptr();
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::find_candidate_in_quad(
+    key_type x, key_type y, 
+    node_distance& dx_node, node_distance& dy_node, node_distance& min_city_block_node,
+    const node_ptr& delete_node, node_quadrant_t quad) const
+{
+    using namespace std;
+
+    node_ptr repl_node = delete_node->get_quadrant_node(quad);
+    if (!repl_node)
+    {
+        // No candidate in this quadrant.
+        cout << "  no candidate in this quadrant" << endl;
+        return;
+    }
+
+    node_quadrant_t oppo_quad = opposite(quad);
+    while (repl_node->has_quadrant_node(oppo_quad))
+        repl_node = repl_node->get_quadrant_node(oppo_quad);
+
+    cout << "  candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+
+    // Calculate its distance to each of the borders.
+    key_type dx = repl_node->x > x ? repl_node->x - x : x - repl_node->x;
+    key_type dy = repl_node->y > y ? repl_node->y - y : y - repl_node->y;
+    cout << "  dx = " << dx << ", dy = " << dy << endl;
+
+    if (!dx_node.node || dx_node.dist > dx)
+        dx_node = node_distance(quad, dx, repl_node);
+    if (!dy_node.node || dy_node.dist > dy)
+        dy_node = node_distance(quad, dy, repl_node);
+
+    if (!min_city_block_node.node || min_city_block_node.dist > (dx + dy))
+        min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
 }
 
 template<typename _Key, typename _Data>

@@ -212,6 +212,24 @@ struct quad_node_base
         return other_y < y ? quad_northeast : quad_southeast;
     }
 
+    bool has_quadrant_node(node_quadrant_t quad) const
+    {
+        switch (quad)
+        {
+            case quad_northeast:
+                return northeast.get();
+            case quad_northwest:
+                return northwest.get();
+            case quad_southeast:
+                return southeast.get();
+            case quad_southwest:
+                return southwest.get();
+            default:
+                throw general_error("unknown quadrant type");
+        }
+        return false;
+    }
+
     node_ptr get_quadrant_node(node_quadrant_t quad) const
     {
         switch (quad)
