@@ -573,7 +573,7 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     }
 
     // Reinsert all child nodes from the replacement node into the node to be 
-    // deleted.    
+    // "deleted".    
     switch (repl_quad)
     {
         case quad_northeast:
@@ -610,6 +610,7 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     delete_node->y = repl_node->y;
     delete_node->data = repl_node->data;
 
+    // Reset the parent node.
     delete_node->parent = repl_node->parent;
     repl_node->parent.reset();
 
