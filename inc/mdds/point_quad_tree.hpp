@@ -542,44 +542,29 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     ensure_order(yrange);
     reinsert_tree_array_type insert_list;
 
-    // Adjust the quadrants adjacent to the quadrant where the replacement
-    // node resides.
+    // Call the quadrant where the replacement node is quadrant I.  Adjust the
+    // quadrants adjacent to quadrant I first, then adjust quadrant I
+    // afterwards.
     switch (repl_quad)
     {
         case quad_northeast:
             adjust_quad(xrange, yrange, delete_node->northwest, dir_south, insert_list);
             adjust_quad(xrange, yrange, delete_node->southeast, dir_west, insert_list);
-            break;
-        case quad_southwest:
-            adjust_quad(xrange, yrange, delete_node->northwest, dir_east, insert_list);
-            adjust_quad(xrange, yrange, delete_node->southeast, dir_north, insert_list);
-            break;
-        case quad_southeast:
-            adjust_quad(xrange, yrange, delete_node->northeast, dir_west, insert_list);
-            adjust_quad(xrange, yrange, delete_node->southwest, dir_north, insert_list);
+            set_new_root(xrange, yrange, delete_node->northeast, quad_southwest, insert_list);
             break;
         case quad_northwest:
             adjust_quad(xrange, yrange, delete_node->northeast, dir_south, insert_list);
             adjust_quad(xrange, yrange, delete_node->southwest, dir_east, insert_list);
-            break;
-        case quad_unspecified:
-        default:
-            throw general_error("quadrant for the replacement node is unspecified.");
-    }
-
-    // Now, adjust the quadrant where the replacement node is.
-    switch (repl_quad)
-    {
-        case quad_northeast:
-            set_new_root(xrange, yrange, delete_node->northeast, quad_southwest, insert_list);
-            break;
-        case quad_northwest:
             set_new_root(xrange, yrange, delete_node->northeast, quad_southeast, insert_list);
             break;
         case quad_southeast:
+            adjust_quad(xrange, yrange, delete_node->northeast, dir_west, insert_list);
+            adjust_quad(xrange, yrange, delete_node->southwest, dir_north, insert_list);
             set_new_root(xrange, yrange, delete_node->northeast, quad_northwest, insert_list);
             break;
         case quad_southwest:
+            adjust_quad(xrange, yrange, delete_node->northwest, dir_east, insert_list);
+            adjust_quad(xrange, yrange, delete_node->southeast, dir_north, insert_list);
             set_new_root(xrange, yrange, delete_node->northeast, quad_northeast, insert_list);
             break;
         case quad_unspecified:
