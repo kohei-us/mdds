@@ -168,6 +168,8 @@ void pqt_test_insertion()
     StackPrinter __stack_printer__("::pqt_test_insertion");
     typedef point_quad_tree<int32_t, string> db_type;
     db_type db;
+    assert(db.empty());
+
     vector<db_type::node_data> stored_data;
 
     string A("A");

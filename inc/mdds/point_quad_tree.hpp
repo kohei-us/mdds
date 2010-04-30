@@ -333,6 +333,8 @@ public:
 
     void remove(key_type x, key_type y);
 
+    bool empty() const;
+
     void dump_tree_svg(const ::std::string& fpath) const;
 
 #ifdef UNIT_TEST
@@ -666,6 +668,12 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         itr = insert_list.begin(), itr_end = insert_list.end();
     for (; itr != itr_end; ++itr)
         reinsert_tree(delete_node, *itr);
+}
+
+template<typename _Key, typename _Data>
+bool point_quad_tree<_Key,_Data>::empty() const
+{
+    return (m_root.get() == NULL);
 }
 
 template<typename _Key, typename _Data>
