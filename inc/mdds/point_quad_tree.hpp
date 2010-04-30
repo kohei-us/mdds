@@ -335,6 +335,25 @@ public:
 
     void dump_tree_svg(const ::std::string& fpath) const;
 
+#ifdef UNIT_TEST
+    /**
+     * Data stored in each node.  Used for verification of data stored in tree 
+     * during unit testing. 
+     */
+    struct node_data
+    {
+        key_type    x;
+        key_type    y;
+        data_type*  data;
+        node_data(key_type _x, key_type _y, data_type* _data) :
+            x(_x), y(_y), data(_data) {}
+        node_data(const node_data& r) : 
+            x(r.x), y(r.y), data(r.data) {}
+    };
+
+    void get_all_stored_data(::std::vector<node_data>& stored_data) const;
+#endif
+
 private:
     class array_inserter : public ::std::unary_function<const node*, void>
     {
@@ -393,6 +412,9 @@ private:
     void clear_all_nodes();
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
 
+#ifdef UNIT_TEST
+    void get_all_stored_data(const node* p, ::std::vector<node_data>& stored_data) const;
+#endif
 private:
     node_ptr    m_root;
 
@@ -516,6 +538,7 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     using namespace std;
     node_ptr delete_node = find_node(x, y);
     if (!delete_node)
+        // No node exists at this coordinate.
         return;
 
     cout << "found the node to be removed at " << delete_node->x << "," << delete_node->y << " (" << *delete_node->data << ")" << endl;
@@ -665,6 +688,30 @@ void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) cons
     file << "<path d=\"M 0 0 L " << m_xrange.second + 10 << " 0\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
     dump_node_svg(m_root.get(), file);
     file << "</svg>" << endl;
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::get_all_stored_data(::std::vector<node_data>& stored_data) const
+{
+    stored_data.clear();
+    if (!m_root)
+        return;
+
+    get_all_stored_data(m_root.get(), stored_data);
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::get_all_stored_data(const node* p, ::std::vector<node_data>& stored_data) const
+{
+    if (!p)
+        return;
+
+    stored_data.push_back(node_data(p->x, p->y, p->data));
+
+    get_all_stored_data(p->northeast.get(), stored_data);
+    get_all_stored_data(p->northwest.get(), stored_data);
+    get_all_stored_data(p->southeast.get(), stored_data);
+    get_all_stored_data(p->southwest.get(), stored_data);
 }
 
 template<typename _NodePtr>

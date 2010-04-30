@@ -29,6 +29,7 @@
 
 #include <cstdint>
 #include <algorithm>
+#include <vector>
 
 #include <stdio.h>
 #include <string>
@@ -92,7 +93,7 @@ struct search_result_printer : public unary_function<pair<typename _DbType::poin
     }
 };
 
-void pqt_test()
+void pqt_test_basic()
 {
     StackPrinter __stack_printer__("::pqt_test");
     typedef point_quad_tree<uint16_t, string> db_type;
@@ -162,8 +163,22 @@ void pqt_test()
     db.dump_tree_svg("./obj/test-remove.svg");
 }
 
+void pqt_test_insertion()
+{
+    StackPrinter __stack_printer__("::pqt_test_insertion");
+    typedef point_quad_tree<int32_t, string> db_type;
+    db_type db;
+    vector<db_type::node_data> stored_data;
+
+    string A("A");
+    db.insert(0, 0, &A);
+    db.get_all_stored_data(stored_data);
+    cout << "size = " << stored_data.size() << endl;
+}
+
 int main()
 {
-    pqt_test();
+    pqt_test_basic();
+    pqt_test_insertion();
     assert(get_node_instance_count() == 0);
 }
