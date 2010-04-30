@@ -169,13 +169,16 @@ void pqt_test_insertion()
     typedef point_quad_tree<int32_t, string> db_type;
     db_type db;
     assert(db.empty());
+    assert(db.size() == 0);
 
     vector<db_type::node_data> stored_data;
 
     string A("A");
     db.insert(0, 0, &A);
     db.get_all_stored_data(stored_data);
-    cout << "size = " << stored_data.size() << endl;
+    assert(stored_data.size() == 1);
+    assert(db.size() == 1);
+    assert(!db.empty());
 }
 
 int main()

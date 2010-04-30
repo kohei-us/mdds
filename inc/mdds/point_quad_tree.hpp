@@ -335,6 +335,8 @@ public:
 
     bool empty() const;
 
+    size_t size() const;
+
     void dump_tree_svg(const ::std::string& fpath) const;
 
 #ifdef UNIT_TEST
@@ -413,6 +415,8 @@ private:
 
     void clear_all_nodes();
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
+
+    void count_all_nodes(const node* p, size_t& node_count) const;
 
 #ifdef UNIT_TEST
     void get_all_stored_data(const node* p, ::std::vector<node_data>& stored_data) const;
@@ -677,6 +681,14 @@ bool point_quad_tree<_Key,_Data>::empty() const
 }
 
 template<typename _Key, typename _Data>
+size_t point_quad_tree<_Key,_Data>::size() const
+{
+    size_t node_count = 0;
+    count_all_nodes(m_root.get(), node_count);
+    return node_count;
+}
+
+template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) const
 {
     using namespace std;
@@ -706,6 +718,20 @@ void point_quad_tree<_Key,_Data>::get_all_stored_data(::std::vector<node_data>& 
         return;
 
     get_all_stored_data(m_root.get(), stored_data);
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::count_all_nodes(const node* p, size_t& node_count) const
+{
+    if (!p)
+        return;
+
+    ++node_count;
+
+    count_all_nodes(p->northeast.get(), node_count);
+    count_all_nodes(p->northwest.get(), node_count);
+    count_all_nodes(p->southeast.get(), node_count);
+    count_all_nodes(p->southwest.get(), node_count);
 }
 
 template<typename _Key, typename _Data>
