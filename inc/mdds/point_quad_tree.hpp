@@ -353,6 +353,28 @@ public:
             x(_x), y(_y), data(_data) {}
         node_data(const node_data& r) : 
             x(r.x), y(r.y), data(r.data) {}
+
+        bool operator== (const node_data& r) const
+        {
+            return (x == r.x) && (y == r.y) && (data == r.data);
+        }
+
+        bool operator!= (const node_data& r) const
+        {
+            return !operator==(r);
+        }
+
+        struct sorter : public ::std::binary_function<node_data, node_data, bool>
+        {
+            bool operator() (const node_data& left, const node_data& right) const
+            {
+                if (left.x != right.x)
+                    return left.x < right.x;
+                if (left.y != right.y)
+                    return left.y < right.y;
+                return left.data < right.data;
+            }
+        };
     };
 
     void get_all_stored_data(::std::vector<node_data>& stored_data) const;

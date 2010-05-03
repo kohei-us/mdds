@@ -30,6 +30,8 @@
 #include <cstdint>
 #include <algorithm>
 #include <vector>
+#include <sstream>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <stdio.h>
 #include <string>
@@ -75,6 +77,7 @@ private:
 
 using namespace std;
 using namespace mdds;
+using ::boost::ptr_vector;
 
 struct data_printer : public unary_function<string*, void>
 {
@@ -92,6 +95,33 @@ struct search_result_printer : public unary_function<pair<typename _DbType::poin
         cout << "  (x=" << r.first.x << ", y=" << r.first.y << ", value='" << *r.second << "')" << endl;
     }
 };
+
+template<typename _DbType>
+bool verify_stored_data(
+    const vector<typename _DbType::node_data>& stored_data, const vector<typename _DbType::node_data>& verify_data)
+{
+    typedef vector<typename _DbType::node_data> node_array_type;
+
+    node_array_type v1 = stored_data, v2 = verify_data;
+    sort(v1.begin(), v1.end(), typename _DbType::node_data::sorter());
+    sort(v2.begin(), v2.end(), typename _DbType::node_data::sorter());
+
+    typename node_array_type::const_iterator 
+        itr1 = v1.begin(), itr1_end = v1.end(), itr2 = v2.begin(), itr2_end = v2.end();
+
+    for (; itr1 != itr1_end; ++itr1, ++itr2)
+    {
+        if (itr2 == itr2_end)
+            return false;
+
+        if (*itr1 != *itr2)
+            return false;
+    }
+    if (itr2 != itr2_end)
+        return false;
+
+    return true;
+}
 
 void pqt_test_basic()
 {
@@ -170,15 +200,36 @@ void pqt_test_insertion()
     db_type db;
     assert(db.empty());
     assert(db.size() == 0);
+    ptr_vector<string> data_store;
+    data_store.reserve(100);
+    for (size_t i = 0; i < 100; ++i)
+    {
+        ostringstream os;
+        os << hex << i;
+        data_store.push_back(new string(os.str()));
+    }
 
-    vector<db_type::node_data> stored_data;
+    vector<db_type::node_data> verify_data;
 
-    string A("A");
-    db.insert(0, 0, &A);
-    db.get_all_stored_data(stored_data);
-    assert(stored_data.size() == 1);
-    assert(db.size() == 1);
-    assert(!db.empty());
+    for (size_t i = 0; i < 10; ++i)
+    {
+        for (size_t j = 0; j < 10; ++j)
+        {
+            size_t index = i*10 + j;
+            string* data_ptr = &data_store[index];
+            cout << "inserting '" << *data_ptr << "' at (" << i << "," << j << ")" << endl;
+            db.insert(i, j, data_ptr);
+            verify_data.push_back(db_type::node_data(i, j, data_ptr));
+
+            vector<db_type::node_data> stored_data;
+            db.get_all_stored_data(stored_data);
+            assert(stored_data.size() == (index+1));
+            assert(db.size() == (index+1));
+            assert(!db.empty());
+            bool success = verify_stored_data<db_type>(stored_data, verify_data);
+            assert(success);
+        }
+    }
 }
 
 int main()
