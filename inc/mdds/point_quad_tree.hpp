@@ -339,9 +339,17 @@ public:
 
     size_t size() const;
 
+    bool operator== (const point_quad_tree& r) const;
+
+    bool operator!= (const point_quad_tree& r) const { return !operator== (r); }
+
     void dump_tree_svg(const ::std::string& fpath) const;
 
 #ifdef UNIT_TEST
+public:
+#else
+private:
+#endif
     /**
      * Data stored in each node.  Used for verification of data stored in tree 
      * during unit testing. 
@@ -379,8 +387,9 @@ public:
         };
     };
 
+    static bool equals(::std::vector<node_data>& v1, ::std::vector<node_data>& v2);
+
     void get_all_stored_data(::std::vector<node_data>& stored_data) const;
-#endif
 
 private:
     class array_inserter : public ::std::unary_function<const node*, void>
@@ -723,6 +732,15 @@ size_t point_quad_tree<_Key,_Data>::size() const
 }
 
 template<typename _Key, typename _Data>
+bool point_quad_tree<_Key,_Data>::operator== (const point_quad_tree& r) const
+{
+    ::std::vector<node_data> v1, v2;
+    get_all_stored_data(v1);
+    r.get_all_stored_data(v2);
+    return equals(v1, v2);
+}
+
+template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) const
 {
     using namespace std;
@@ -783,6 +801,34 @@ void point_quad_tree<_Key,_Data>::dump_node_svg(const node* p, ::std::ofstream& 
     dump_node_svg(p->northwest.get(), file);
     dump_node_svg(p->southeast.get(), file);
     dump_node_svg(p->southwest.get(), file);
+}
+
+template<typename _Key, typename _Data>
+bool point_quad_tree<_Key,_Data>::equals(::std::vector<node_data>& v1, ::std::vector<node_data>& v2)
+{
+    using namespace std;
+
+    if (v1.size() != v2.size())
+        return false;
+
+    sort(v1.begin(), v1.end(), typename node_data::sorter());
+    sort(v2.begin(), v2.end(), typename node_data::sorter());
+    
+    typename vector<node_data>::const_iterator 
+        itr1 = v1.begin(), itr1_end = v1.end(), itr2 = v2.begin(), itr2_end = v2.end();
+
+    for (; itr1 != itr1_end; ++itr1, ++itr2)
+    {
+        if (itr2 == itr2_end)
+            return false;
+
+        if (*itr1 != *itr2)
+            return false;
+    }
+    if (itr2 != itr2_end)
+        return false;
+
+    return true;
 }
 
 template<typename _Key, typename _Data>

@@ -103,24 +103,7 @@ bool verify_stored_data(
     typedef vector<typename _DbType::node_data> node_array_type;
 
     node_array_type v1 = stored_data, v2 = verify_data;
-    sort(v1.begin(), v1.end(), typename _DbType::node_data::sorter());
-    sort(v2.begin(), v2.end(), typename _DbType::node_data::sorter());
-
-    typename node_array_type::const_iterator 
-        itr1 = v1.begin(), itr1_end = v1.end(), itr2 = v2.begin(), itr2_end = v2.end();
-
-    for (; itr1 != itr1_end; ++itr1, ++itr2)
-    {
-        if (itr2 == itr2_end)
-            return false;
-
-        if (*itr1 != *itr2)
-            return false;
-    }
-    if (itr2 != itr2_end)
-        return false;
-
-    return true;
+    return _DbType::equals(v1, v2);
 }
 
 void pqt_test_basic()
@@ -261,9 +244,16 @@ void pqt_test_insertion()
     }
 }
 
+void pqt_test_remove_root()
+{
+    StackPrinter __stack_printer__("::pqt_test_remove_root");
+
+}
+
 int main()
 {
     pqt_test_basic();
     pqt_test_insertion();
+    pqt_test_remove_root();
     assert(get_node_instance_count() == 0);
 }
