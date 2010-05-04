@@ -238,7 +238,7 @@ void pqt_test_insertion()
     }
     db.dump_tree_svg("./obj/pqt_test_insertion.svg");
 
-    // Remove dta one by one, and check the size after each removal.
+    // Remove data one by one, and check the size after each removal.
     size_t node_count = 100;
     for (int32_t i = 0; i < 10; ++i)
     {
