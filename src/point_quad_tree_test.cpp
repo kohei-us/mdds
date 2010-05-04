@@ -198,8 +198,12 @@ void pqt_test_insertion()
     StackPrinter __stack_printer__("::pqt_test_insertion");
     typedef point_quad_tree<int32_t, string> db_type;
     db_type db;
+
+    // Check its empty-ness...
     assert(db.empty());
     assert(db.size() == 0);
+
+    // Create all data instances.
     ptr_vector<string> data_store;
     data_store.reserve(100);
     for (size_t i = 0; i < 100; ++i)
@@ -211,6 +215,7 @@ void pqt_test_insertion()
 
     vector<db_type::node_data> verify_data;
 
+    // Insert data one by one, and verify each insertion.
     for (int32_t i = 0; i < 10; ++i)
     {
         for (int32_t j = 0; j < 10; ++j)
@@ -232,6 +237,21 @@ void pqt_test_insertion()
         }
     }
     db.dump_tree_svg("./obj/pqt_test_insertion.svg");
+
+    // Remove dta one by one, and check the size after each removal.
+    size_t node_count = 100;
+    for (int32_t i = 0; i < 10; ++i)
+    {
+        for (int32_t j = 0; j < 10; ++j)
+        {
+            int32_t x = i*10 + 1, y = j*10 + 1;
+            cout << "removing node at (" << x << "," << y << ")" << endl;
+            db.remove(x, y);
+            size_t n = db.size();
+            cout << "size after removal: " << n << endl;
+            assert(--node_count == n);
+        }
+    }
 }
 
 int main()

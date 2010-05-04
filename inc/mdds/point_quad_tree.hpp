@@ -575,7 +575,11 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
     // without further processing.
     if (delete_node->leaf())
     {
-        disconnect_node_from_parent(delete_node);
+        cout << "deleting a leaf node." << endl;
+        if (delete_node.get() == m_root.get())
+            m_root.reset();
+        else
+            disconnect_node_from_parent(delete_node);
         delete_node.reset();
         return;
     }
