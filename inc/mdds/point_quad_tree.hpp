@@ -333,6 +333,8 @@ public:
 
     void remove(key_type x, key_type y);
 
+    void clear();
+
     bool empty() const;
 
     size_t size() const;
@@ -698,6 +700,12 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         itr = insert_list.begin(), itr_end = insert_list.end();
     for (; itr != itr_end; ++itr)
         reinsert_tree(delete_node, *itr);
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::clear()
+{
+    clear_all_nodes();
 }
 
 template<typename _Key, typename _Data>

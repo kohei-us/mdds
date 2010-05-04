@@ -159,6 +159,8 @@ void pqt_test_basic()
     db.insert(39, 78, &M);
     db.insert(72, 52, &N);
 
+    assert(db.size() == 14);
+
     cout << "node count = " << get_node_instance_count() << endl;
     db.dump_tree_svg("./obj/test.svg");
 
@@ -190,7 +192,12 @@ void pqt_test_basic()
 
     db.remove(20, 20);
     db.remove(40, 50);
+    assert(db.size() == 12);
     db.dump_tree_svg("./obj/test-remove.svg");
+
+    db.clear();
+    assert(db.empty());
+    assert(db.size() == 0);
 }
 
 void pqt_test_insertion()
