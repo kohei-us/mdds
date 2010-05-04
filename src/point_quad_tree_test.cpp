@@ -205,21 +205,22 @@ void pqt_test_insertion()
     for (size_t i = 0; i < 100; ++i)
     {
         ostringstream os;
-        os << hex << i;
+        os << "0x" << hex << i;
         data_store.push_back(new string(os.str()));
     }
 
     vector<db_type::node_data> verify_data;
 
-    for (size_t i = 0; i < 10; ++i)
+    for (int32_t i = 0; i < 10; ++i)
     {
-        for (size_t j = 0; j < 10; ++j)
+        for (int32_t j = 0; j < 10; ++j)
         {
+            int32_t x = i*10 + 1, y = j*10 + 1;
             size_t index = i*10 + j;
             string* data_ptr = &data_store[index];
-            cout << "inserting '" << *data_ptr << "' at (" << i << "," << j << ")" << endl;
-            db.insert(i, j, data_ptr);
-            verify_data.push_back(db_type::node_data(i, j, data_ptr));
+            cout << "inserting '" << *data_ptr << "' at (" << x << "," << y << ")" << endl;
+            db.insert(x, y, data_ptr);
+            verify_data.push_back(db_type::node_data(x, y, data_ptr));
 
             vector<db_type::node_data> stored_data;
             db.get_all_stored_data(stored_data);
@@ -230,6 +231,7 @@ void pqt_test_insertion()
             assert(success);
         }
     }
+    db.dump_tree_svg("./obj/pqt_test_insertion.svg");
 }
 
 int main()

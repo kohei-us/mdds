@@ -715,21 +715,62 @@ void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) cons
 {
     using namespace std;
     ofstream file(fpath.c_str());
-    file << "<svg width=\"24cm\" height=\"24cm\" viewBox=\"-2 -2 202 202\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
+    file << "<svg width=\"60cm\" height=\"60cm\" viewBox=\"-2 -2 202 202\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" << endl;
     file << "<defs>"
          << "  <marker id=\"Triangle\""
          << "    viewBox=\"0 0 10 10\" refX=\"10\" refY=\"5\" "
          << "    markerUnits=\"strokeWidth\""
-         << "    markerWidth=\"6\" markerHeight=\"4\""
+         << "    markerWidth=\"9\" markerHeight=\"6\""
          << "    orient=\"auto\">"
          << "    <path d=\"M 0 0 L 10 5 L 0 10 z\" />"
          << "  </marker>"
          << "</defs>" << endl;
     
-    file << "<path d=\"M 0 0 L 0 " << m_yrange.second + 10 << "\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
-    file << "<path d=\"M 0 0 L " << m_xrange.second + 10 << " 0\" stroke=\"blue\" stroke-width=\"0.5\" marker-end=\"url(#Triangle)\"/>" << endl;
+    file << "<path d=\"M 0 0 L 0 " << m_yrange.second + 1 << "\" stroke=\"blue\" stroke-width=\"0.2\" marker-end=\"url(#Triangle)\"/>" << endl;
+    file << "<path d=\"M 0 0 L " << m_xrange.second + 1 << " 0\" stroke=\"blue\" stroke-width=\"0.2\" marker-end=\"url(#Triangle)\"/>" << endl;
     dump_node_svg(m_root.get(), file);
     file << "</svg>" << endl;
+}
+
+template<typename _NodePtr>
+void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr end)
+{
+    using namespace std;
+    file << "<g stroke=\"red\" marker-end=\"url(#Triangle)\">" << endl;
+    file << "<line x1=\"" << start->x << "\" y1=\"" << start->y << "\" x2=\"" 
+        << end->x << "\" y2=\"" << end->y << "\" stroke-width=\"0.2\"/>" << endl;
+    file << "</g>" << endl;
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::dump_node_svg(const node* p, ::std::ofstream& file) const
+{
+    using namespace std;
+
+    if (!p)
+        return;
+
+    file << "<circle cx=\"" << p->x << "\" cy=\"" << p->y << "\" r=\"0.1\""
+        << " fill=\"black\" stroke=\"black\"/>" << endl;
+    file << "<text x=\"" << p->x + 1 << "\" y=\"" << p->y + 2 << "\" font-size=\"1.2\" fill=\"black\">"
+        << *p->data << " (" << p->x << "," << p->y << ")</text>" << endl;
+
+    if (p->northwest)
+        draw_svg_arrow<const node*>(file, p, p->northwest.get());
+
+    if (p->northeast)
+        draw_svg_arrow<const node*>(file, p, p->northeast.get());
+
+    if (p->southwest)
+        draw_svg_arrow<const node*>(file, p, p->southwest.get());
+
+    if (p->southeast)
+        draw_svg_arrow<const node*>(file, p, p->southeast.get());
+
+    dump_node_svg(p->northeast.get(), file);
+    dump_node_svg(p->northwest.get(), file);
+    dump_node_svg(p->southeast.get(), file);
+    dump_node_svg(p->southwest.get(), file);
 }
 
 template<typename _Key, typename _Data>
@@ -768,16 +809,6 @@ void point_quad_tree<_Key,_Data>::get_all_stored_data(const node* p, ::std::vect
     get_all_stored_data(p->northwest.get(), stored_data);
     get_all_stored_data(p->southeast.get(), stored_data);
     get_all_stored_data(p->southwest.get(), stored_data);
-}
-
-template<typename _NodePtr>
-void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr end)
-{
-    using namespace std;
-    file << "<g stroke=\"red\" marker-end=\"url(#Triangle)\">" << endl;
-    file << "<line x1=\"" << start->x << "\" y1=\"" << start->y << "\" x2=\"" 
-        << end->x << "\" y2=\"" << end->y << "\" stroke-width=\"0.5\"/>" << endl;
-    file << "</g>" << endl;
 }
 
 template<typename _Key, typename _Data>
@@ -1144,37 +1175,6 @@ void point_quad_tree<_Key,_Data>::clear_all_nodes()
 {
     ::mdds::disconnect_all_nodes(m_root);
     m_root.reset();
-}
-
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::dump_node_svg(const node* p, ::std::ofstream& file) const
-{
-    using namespace std;
-
-    if (!p)
-        return;
-
-    file << "<circle cx=\"" << p->x << "\" cy=\"" << p->y << "\" r=\"0.3\""
-        << " fill=\"black\" stroke=\"black\"/>" << endl;
-    file << "<text x=\"" << p->x + 1 << "\" y=\"" << p->y + 3 << "\" font-size=\"3\" fill=\"black\">"
-        << *p->data << " (" << p->x << "," << p->y << ")</text>" << endl;
-
-    if (p->northwest)
-        draw_svg_arrow<const node*>(file, p, p->northwest.get());
-
-    if (p->northeast)
-        draw_svg_arrow<const node*>(file, p, p->northeast.get());
-
-    if (p->southwest)
-        draw_svg_arrow<const node*>(file, p, p->southwest.get());
-
-    if (p->southeast)
-        draw_svg_arrow<const node*>(file, p, p->southeast.get());
-
-    dump_node_svg(p->northeast.get(), file);
-    dump_node_svg(p->northwest.get(), file);
-    dump_node_svg(p->southeast.get(), file);
-    dump_node_svg(p->southwest.get(), file);
 }
 
 }
