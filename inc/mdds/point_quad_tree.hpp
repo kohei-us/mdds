@@ -532,17 +532,12 @@ private:
     void insert_node(node_ptr& dest, node_ptr& node);
     void reinsert_tree(node_ptr& dest, node_ptr& root);
     void reinsert_tree(node_ptr& dest, node_quadrant_t quad, node_ptr& root);
-
     void clear_all_nodes();
     void dump_node_svg(const node* p, ::std::ofstream& file) const;
-
     void count_all_nodes(const node* p, size_t& node_count) const;
-
     void insert_data_from(const point_quad_tree& r);
-
-#ifdef UNIT_TEST
     void get_all_stored_data(const node* p, ::std::vector<node_data>& stored_data) const;
-#endif
+
 private:
     node_ptr    m_root;
 
