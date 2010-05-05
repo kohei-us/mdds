@@ -173,7 +173,7 @@ void pqt_test_basic()
     assert(db.size() == 0);
 }
 
-void pqt_test_insertion()
+void pqt_test_insertion_removal()
 {
     StackPrinter __stack_printer__("::pqt_test_insertion");
     typedef point_quad_tree<int32_t, string> db_type;
@@ -366,13 +366,46 @@ void pqt_test_assignment()
     assert(success);
 }
 
+void pqt_test_swap()
+{
+    StackPrinter __stack_printer__("::pqt_test_swap");
+    typedef point_quad_tree<int32_t, string> db_type;
+    db_type db1, db2;
+    string A("A");
+    string B("B");
+    string C("C");
+    string D("D");
+    string E("E");
+    string F("F");
+
+    db1.insert(0, 10, &A);
+    db1.insert(2, 5, &B);
+    db1.insert(-10, 2, &C);
+    db1.insert(5, 7, &D);
+    vector<db_type::node_data> expected;
+    expected.push_back(db_type::node_data(0, 10, &A));
+    expected.push_back(db_type::node_data(2, 5, &B));
+    expected.push_back(db_type::node_data(-10, 2, &C));
+    expected.push_back(db_type::node_data(5, 7, &D));
+    bool success = db1.verify_data(expected);
+    assert(success);
+    assert(db2.empty());
+
+    db1.swap(db2);
+    assert(db1.empty());
+    assert(!db2.empty());
+    success = db2.verify_data(expected);
+    assert(success);
+}
+
 int main()
 {
     pqt_test_basic();
-    pqt_test_insertion();
+    pqt_test_insertion_removal();
     pqt_test_remove_root();
     pqt_test_equality();
     pqt_test_assignment();
+    pqt_test_swap();
     assert(get_node_instance_count() == 0);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
