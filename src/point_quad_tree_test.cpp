@@ -96,16 +96,6 @@ struct search_result_printer : public unary_function<pair<typename _DbType::poin
     }
 };
 
-template<typename _DbType>
-bool verify_stored_data(
-    const vector<typename _DbType::node_data>& stored_data, const vector<typename _DbType::node_data>& verify_data)
-{
-    typedef vector<typename _DbType::node_data> node_array_type;
-
-    node_array_type v1 = stored_data, v2 = verify_data;
-    return _DbType::equals(v1, v2);
-}
-
 void pqt_test_basic()
 {
     StackPrinter __stack_printer__("::pqt_test");
@@ -203,7 +193,7 @@ void pqt_test_insertion()
         data_store.push_back(new string(os.str()));
     }
 
-    vector<db_type::node_data> verify_data;
+    vector<db_type::node_data> expected;
 
     // Insert data one by one, and verify each insertion.
     for (int32_t i = 0; i < 10; ++i)
@@ -215,14 +205,14 @@ void pqt_test_insertion()
             string* data_ptr = &data_store[index];
             cout << "inserting '" << *data_ptr << "' at (" << x << "," << y << ")" << endl;
             db.insert(x, y, data_ptr);
-            verify_data.push_back(db_type::node_data(x, y, data_ptr));
+            expected.push_back(db_type::node_data(x, y, data_ptr));
 
             vector<db_type::node_data> stored_data;
             db.get_all_stored_data(stored_data);
             assert(stored_data.size() == (index+1));
             assert(db.size() == (index+1));
             assert(!db.empty());
-            bool success = verify_stored_data<db_type>(stored_data, verify_data);
+            bool success = db.verify_data(expected);
             assert(success);
         }
     }
@@ -263,27 +253,25 @@ void pqt_test_remove_root()
     db.insert(0, 20, &SW);
     db.dump_tree_svg("./obj/pqt_test_remove_root-1.svg");
 
-    vector<db_type::node_data> verify_data, stored_data;
-    verify_data.push_back(db_type::node_data(10, 10, &O));
-    verify_data.push_back(db_type::node_data(20, 0, &NE));
-    verify_data.push_back(db_type::node_data(0, 0, &NW));
-    verify_data.push_back(db_type::node_data(20, 20, &SE));
-    verify_data.push_back(db_type::node_data(0, 20, &SW));
-    db.get_all_stored_data(stored_data);
-    bool success = db_type::equals(verify_data, stored_data);
+    vector<db_type::node_data> expected;
+    expected.push_back(db_type::node_data(10, 10, &O));
+    expected.push_back(db_type::node_data(20, 0, &NE));
+    expected.push_back(db_type::node_data(0, 0, &NW));
+    expected.push_back(db_type::node_data(20, 20, &SE));
+    expected.push_back(db_type::node_data(0, 20, &SW));
+    bool success = db.verify_data(expected);
     assert(success);
     assert(db.size() == 5);
 
     // Now, remove the root node.
     db.remove(10, 10);
     db.dump_tree_svg("./obj/pqt_test_remove_root-2.svg");
-    db.get_all_stored_data(stored_data);
-    verify_data.clear();
-    verify_data.push_back(db_type::node_data(20, 0, &NE));
-    verify_data.push_back(db_type::node_data(0, 0, &NW));
-    verify_data.push_back(db_type::node_data(20, 20, &SE));
-    verify_data.push_back(db_type::node_data(0, 20, &SW));
-    success = db_type::equals(verify_data, stored_data);
+    expected.clear();
+    expected.push_back(db_type::node_data(20, 0, &NE));
+    expected.push_back(db_type::node_data(0, 0, &NW));
+    expected.push_back(db_type::node_data(20, 20, &SE));
+    expected.push_back(db_type::node_data(0, 20, &SW));
+    success = db.verify_data(expected);
     assert(success);
     assert(db.size() == 4);
 }
@@ -339,12 +327,44 @@ void pqt_test_equality()
     assert(db1 == db2);
 }
 
+void pqt_test_assignment()
+{
+    StackPrinter __stack_printer__("::pqt_test_assignment");
+    typedef point_quad_tree<int32_t, string> db_type;
+    db_type db1, db2;
+    string A("A");
+    string B("B");
+    string C("C");
+    string D("D");
+    string E("E");
+    string F("F");
+
+    db1.insert(0, 10, &A);
+    db1.insert(2, 5, &B);
+    db1.insert(-10, 2, &C);
+    db1.insert(5, 7, &D);
+    vector<db_type::node_data> expected;
+    expected.push_back(db_type::node_data(0, 10, &A));
+    expected.push_back(db_type::node_data(2, 5, &B));
+    expected.push_back(db_type::node_data(-10, 2, &C));
+    expected.push_back(db_type::node_data(5, 7, &D));
+    bool success = db1.verify_data(expected);
+    assert(success);
+
+    db2 = db1;
+    success = db2.verify_data(expected);
+    assert(success);
+    success = db1.verify_data(expected);
+    assert(success);
+}
+
 int main()
 {
     pqt_test_basic();
     pqt_test_insertion();
     pqt_test_remove_root();
     pqt_test_equality();
+    pqt_test_assignment();
     assert(get_node_instance_count() == 0);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

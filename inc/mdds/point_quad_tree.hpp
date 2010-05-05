@@ -395,6 +395,8 @@ private:
 
     static bool equals(::std::vector<node_data>& v1, ::std::vector<node_data>& v2);
 
+    bool verify_data(::std::vector<node_data>& expected) const;
+
     void get_all_stored_data(::std::vector<node_data>& stored_data) const;
 
     void dump_tree_svg(const ::std::string& fpath) const;
@@ -925,6 +927,14 @@ void point_quad_tree<_Key,_Data>::insert_data_from(const point_quad_tree& r)
     vector<node_data> all_data;
     r.get_all_stored_data(all_data);
     for_each(all_data.begin(), all_data.end(), data_inserter(*this));
+}
+
+template<typename _Key, typename _Data>
+bool point_quad_tree<_Key,_Data>::verify_data(::std::vector<node_data>& expected) const
+{
+    ::std::vector<node_data> stored;
+    get_all_stored_data(stored);
+    return equals(stored, expected);
 }
 
 template<typename _Key, typename _Data>
