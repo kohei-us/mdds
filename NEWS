@@ -1,3 +1,7 @@
+mdds 0.3.0
+
+  * implemented point_quad_tree.
+
 mdds 0.2.1
 
   * added example files on how to use these data structures.
