@@ -314,13 +314,15 @@ public:
     };
 
     point_quad_tree();
+    point_quad_tree(const point_quad_tree& r);
     ~point_quad_tree();
 
     void insert(key_type x, key_type y, data_type* data);
 
     /**
      * Perform region search (aka window search), that is, find all points 
-     * that fall within specified rectangular region. 
+     * that fall within specified rectangular region.  The boundaries are 
+     * inclusive.
      *  
      * @param x1 left coordinate of the search region 
      * @param y1 top coordinate of the search region 
@@ -339,11 +341,11 @@ public:
 
     size_t size() const;
 
+    point_quad_tree& operator= (const point_quad_tree& r);
+
     bool operator== (const point_quad_tree& r) const;
 
     bool operator!= (const point_quad_tree& r) const { return !operator== (r); }
-
-    void dump_tree_svg(const ::std::string& fpath) const;
 
 #ifdef UNIT_TEST
 public:
@@ -391,6 +393,8 @@ private:
 
     void get_all_stored_data(::std::vector<node_data>& stored_data) const;
 
+    void dump_tree_svg(const ::std::string& fpath) const;
+
 private:
     class array_inserter : public ::std::unary_function<const node*, void>
     {
@@ -416,6 +420,19 @@ private:
         }
     private:
         search_result& m_result;
+    };
+
+    class data_inserter : public ::std::unary_function<node_data, void>
+    {
+    public:
+        data_inserter(point_quad_tree& db) : m_db(db) {}
+
+        void operator() (const node_data& v)
+        {
+            m_db.insert(v.x, v.y, v.data);
+        }
+    private:
+        point_quad_tree& m_db;
     };
 
     struct node_distance
@@ -451,6 +468,8 @@ private:
 
     void count_all_nodes(const node* p, size_t& node_count) const;
 
+    void insert_data_from(const point_quad_tree& r);
+
 #ifdef UNIT_TEST
     void get_all_stored_data(const node* p, ::std::vector<node_data>& stored_data) const;
 #endif
@@ -467,6 +486,15 @@ point_quad_tree<_Key,_Data>::point_quad_tree() :
     m_xrange(0,0),
     m_yrange(0,0)
 {
+}
+
+template<typename _Key, typename _Data>
+point_quad_tree<_Key,_Data>::point_quad_tree(const point_quad_tree& r) :
+    m_root(NULL),
+    m_xrange(0,0),
+    m_yrange(0,0)
+{
+    insert_data_from(r);
 }
 
 template<typename _Key, typename _Data>
@@ -732,6 +760,16 @@ size_t point_quad_tree<_Key,_Data>::size() const
 }
 
 template<typename _Key, typename _Data>
+point_quad_tree<_Key,_Data>& point_quad_tree<_Key,_Data>::operator= (const point_quad_tree& r)
+{
+    m_xrange = key_range_type(0, 0);
+    m_yrange = key_range_type(0, 0);
+    clear_all_nodes();
+    insert_data_from(r);
+    return *this;
+}
+
+template<typename _Key, typename _Data>
 bool point_quad_tree<_Key,_Data>::operator== (const point_quad_tree& r) const
 {
     ::std::vector<node_data> v1, v2;
@@ -853,6 +891,15 @@ void point_quad_tree<_Key,_Data>::count_all_nodes(const node* p, size_t& node_co
     count_all_nodes(p->northwest.get(), node_count);
     count_all_nodes(p->southeast.get(), node_count);
     count_all_nodes(p->southwest.get(), node_count);
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::insert_data_from(const point_quad_tree& r)
+{
+    using namespace std;
+    vector<node_data> all_data;
+    r.get_all_stored_data(all_data);
+    for_each(all_data.begin(), all_data.end(), data_inserter(*this));
 }
 
 template<typename _Key, typename _Data>

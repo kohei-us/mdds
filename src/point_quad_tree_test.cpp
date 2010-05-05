@@ -346,4 +346,6 @@ int main()
     pqt_test_remove_root();
     pqt_test_equality();
     assert(get_node_instance_count() == 0);
+    cout << "Test finished successfully!" << endl;
+    return EXIT_SUCCESS;
 }
