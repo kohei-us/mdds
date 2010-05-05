@@ -398,6 +398,64 @@ void pqt_test_swap()
     assert(success);
 }
 
+template<typename _DbType>
+bool verify_find(
+    const _DbType& db, 
+    typename _DbType::key_type x, typename _DbType::key_type y, 
+    const typename _DbType::data_type* data)
+{
+    const typename _DbType::data_type* found = db.find(x, y);
+    if (found)
+        cout << "found at (" << x << "," << y << "): " << *found << endl;
+    else
+        cout << "nothing found at (" << x << "," << y << ")" << endl;
+
+    return found && (found == data);
+}
+
+void pqt_test_find()
+{
+    StackPrinter __stack_printer__("::pqt_test_find");
+    typedef point_quad_tree<int32_t, string> db_type;
+    db_type db;
+    string A("A");
+    string B("B");
+    string C("C");
+    string D("D");
+    string E("E");
+    string F("F");
+    db.insert(92, 27, &A);
+    db.insert(53, 26, &B);
+    db.insert(69, 18, &C);
+    db.insert(0, 78, &D);
+    db.insert(17, 7, &E);
+    db.insert(91, 88, &F);
+    assert(db.size() == 6);
+    db.dump_tree_svg("obj/pqt_test_find.svg");
+
+    bool check;
+    check = verify_find(db, 92, 27, &A);
+    assert(check);
+    check = verify_find(db, 53, 26, &B);
+    assert(check);
+    check = verify_find(db, 69, 18, &C);
+    assert(check);
+    check = verify_find(db, 0, 78, &D);
+    assert(check);
+    check = verify_find(db, 17, 7, &E);
+    assert(check);
+    check = verify_find(db, 91, 88, &F);
+    assert(check);
+
+    // Check for non-existent data.
+    check = verify_find(db, 34, 86, &A);
+    assert(!check);
+    check = verify_find(db, -1, 7, &A);
+    assert(!check);
+    check = verify_find(db, 91, 27, &A);
+    assert(!check);
+}
+
 int main()
 {
     pqt_test_basic();
@@ -406,6 +464,7 @@ int main()
     pqt_test_equality();
     pqt_test_assignment();
     pqt_test_swap();
+    pqt_test_find();
     assert(get_node_instance_count() == 0);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
