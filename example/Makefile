@@ -30,7 +30,8 @@ CPPFLAGS=-I../inc -Wall -Os -std=c++0x
 EXEC= \
 	segment_tree \
 	flat_segment_tree \
-	rectangle_set
+	rectangle_set \
+	point_quad_tree
 
 all: $(EXEC)
 
@@ -39,6 +40,8 @@ segment_tree: segment_tree.cpp
 flat_segment_tree: flat_segment_tree.cpp
 
 rectangle_set: rectangle_set.cpp
+
+point_quad_tree: point_quad_tree.cpp
 
 clean:
 	rm -f $(EXEC)
