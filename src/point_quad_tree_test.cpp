@@ -288,10 +288,62 @@ void pqt_test_remove_root()
     assert(db.size() == 4);
 }
 
+void pqt_test_equality()
+{
+    StackPrinter __stack_printer__("::pqt_test_equality");
+
+    typedef point_quad_tree<int32_t, string> db_type;
+    db_type db1, db2;
+
+    string A("A");
+    string B("B");
+    string C("C");
+    string D("D");
+    string E("E");
+    string F("F");
+
+    assert(db1 == db2); // both are empty.
+    
+    db1.insert(0, 0, &A);
+    db2.insert(0, 0, &A);
+    assert(db1 == db2);
+    db1.remove(0, 0);
+    assert(db1 != db2);
+    db1.insert(0, 0, &B);
+    assert(db1 != db2);
+    db2.insert(0, 0, &B); // B overwrites A.
+    assert(db1 == db2); // Both should have B at (0,0).
+    db1.insert(1, 1, &C);
+    db2.insert(2, 2, &C);
+    assert(db1 != db2);
+    db1.insert(2, 2, &C);
+    db2.insert(1, 1, &C);
+    assert(db1 == db2);
+
+    // Inserting data in different orders should make no difference in equality.
+    db1.insert(1, 3, &D);
+    db1.insert(1, 4, &E);
+    db1.insert(1, 5, &F);
+
+    db2.insert(1, 5, &F);
+    db2.insert(1, 4, &E);
+    db2.insert(1, 3, &D);
+    assert(db1 == db2);
+    db1.remove(1, 4);
+    db2.remove(1, 4);
+    assert(db1 == db2);
+
+    // Make them empty again.
+    db1.clear();
+    db2.clear();
+    assert(db1 == db2);
+}
+
 int main()
 {
     pqt_test_basic();
     pqt_test_insertion();
     pqt_test_remove_root();
+    pqt_test_equality();
     assert(get_node_instance_count() == 0);
 }
