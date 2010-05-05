@@ -333,7 +333,11 @@ public:
 
     search_result search_region(key_type x1, key_type y1, key_type x2, key_type y2) const;
 
+    data_type* find(key_type x, key_type y) const;
+
     void remove(key_type x, key_type y);
+
+    void swap(point_quad_tree& r);
 
     void clear();
 
@@ -447,6 +451,7 @@ private:
     };
 
     node_ptr find_node(key_type x, key_type y) const;
+    const node* find_node_ptr(key_type x, key_type y) const;
     node_ptr find_replacement_node(key_type x, key_type y, const node_ptr& delete_node) const;
 
     void find_candidate_in_quad(key_type x, key_type y, 
@@ -600,6 +605,14 @@ point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2
 }
 
 template<typename _Key, typename _Data>
+typename point_quad_tree<_Key,_Data>::data_type* 
+point_quad_tree<_Key,_Data>::find(key_type x, key_type y) const
+{
+    const node* p = find_node_ptr(x, y);
+    return p ? p->data : NULL;
+}
+
+template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
 {
     using namespace std;
@@ -737,6 +750,18 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         itr = insert_list.begin(), itr_end = insert_list.end();
     for (; itr != itr_end; ++itr)
         reinsert_tree(delete_node, *itr);
+}
+
+template<typename _Key, typename _Data>
+void point_quad_tree<_Key,_Data>::swap(point_quad_tree& r)
+{
+    // Swap the root nodes.
+    node_ptr temp = m_root;
+    m_root = r.m_root;
+    r.m_root = temp;
+
+    m_xrange.swap(r.m_xrange);
+    m_yrange.swap(r.m_yrange);
 }
 
 template<typename _Key, typename _Data>
@@ -957,6 +982,49 @@ point_quad_tree<_Key,_Data>::find_node(key_type x, key_type y) const
         }
     }
     return node_ptr();
+}
+
+template<typename _Key, typename _Data>
+const typename point_quad_tree<_Key,_Data>::node*
+point_quad_tree<_Key,_Data>::find_node_ptr(key_type x, key_type y) const
+{
+    const node* cur_node = m_root.get();
+    while (cur_node)
+    {
+        if (cur_node->x == x && cur_node->y == y)
+        {
+            // Found the node.
+            return cur_node;
+        }
+
+        node_quadrant_t quad = cur_node->get_quadrant(x, y);
+        switch (quad)
+        {
+            case quad_northeast:
+                if (!cur_node->northeast)
+                    return NULL;
+                cur_node = cur_node->northeast.get();
+                break;
+            case quad_northwest:
+                if (!cur_node->northwest)
+                    return NULL;
+                cur_node = cur_node->northwest.get();
+                break;
+            case quad_southeast:
+                if (!cur_node->southeast)
+                    return NULL;
+                cur_node = cur_node->southeast.get();
+                break;
+            case quad_southwest:
+                if (!cur_node->southwest)
+                    return NULL;
+                cur_node = cur_node->southwest.get();
+                break;
+            default:
+                throw general_error("unknown quadrant");
+        }
+    }
+    return NULL;
 }
 
 template<typename _Key, typename _Data>
