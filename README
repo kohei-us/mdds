@@ -36,6 +36,11 @@ instance, if a rectangle ranges from (x=2, y=2) to (x=10, y=20), then
 a 2-dimension point A (x,y) is said to be inside that rectangle only 
 when 2 <= x < 10 and 2 <= y < 20.
 
+Point Quad Tree
+
+Point quad tree stores 2-dimensional points and provides an efficient 
+way to query all points within specified rectangular region.  
+
 HOWTO
 
 Please take a look at simple example files under the 'example' 
