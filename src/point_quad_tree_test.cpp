@@ -356,6 +356,14 @@ void pqt_test_assignment()
     assert(success);
     success = db1.verify_data(expected);
     assert(success);
+
+    db2.insert(12, 45, &E);
+    db2.insert(20, 42, &F);
+    success = db2.verify_data(expected); // This should fail.
+    assert(!success);
+    db2 = db1; // Assign once again.
+    success = db2.verify_data(expected); // This now should succeed.
+    assert(success);
 }
 
 int main()
