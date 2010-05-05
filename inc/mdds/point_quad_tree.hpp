@@ -317,6 +317,17 @@ public:
     point_quad_tree(const point_quad_tree& r);
     ~point_quad_tree();
 
+    /**
+     * Insert a new data at specified coordinates.  It overwrites existing
+     * data in case one exists at the specified coordinates.
+     * 
+     * @param x x coordinate of new data position
+     * @param y y coordinate of new data position
+     * @param data pointer to data being inserted.  The client data is
+     *             expected to manage the life time of inserted data; this
+     *             data structure does not manage the life cycle of inserted
+     *             data.
+     */
     void insert(key_type x, key_type y, data_type* data);
 
     /**
@@ -328,21 +339,71 @@ public:
      * @param y1 top coordinate of the search region 
      * @param x2 right coordinate of the search region 
      * @param y2 bottom coordinate of the search region 
+     * @param result this array will contain all data found without specified 
+     *               region.
      */
     void search_region(key_type x1, key_type y1, key_type x2, key_type y2, data_array_type& result) const;
 
+    /**
+     * Perform region search (aka window search), that is, find all points 
+     * that fall within specified rectangular region.  The boundaries are 
+     * inclusive.
+     *  
+     * @param x1 left coordinate of the search region 
+     * @param y1 top coordinate of the search region 
+     * @param x2 right coordinate of the search region 
+     * @param y2 bottom coordinate of the search region 
+     *  
+     * @return search result object containing all data found within the 
+     *         specified region.
+     */
     search_result search_region(key_type x1, key_type y1, key_type x2, key_type y2) const;
 
+    /**
+     * Find data at specified coordinates.  If no data exists at the specified 
+     * coordinates, this method returns NULL. 
+     *  
+     * @param x x coordinate 
+     * @param y y coordinate 
+     * 
+     * @return pointer to data found at the specified coordinates, or NULL if 
+     *         no data is found at the coordinates.
+     */
     data_type* find(key_type x, key_type y) const;
 
+    /**
+     * Remove data from specified coordinates.  This method does nothing if
+     * not data exists at the specified coordinates.
+     * 
+     * @param x x coordinate
+     * @param y y coordinate
+     */
     void remove(key_type x, key_type y);
 
+    /**
+     * Swap the internal state with another instance.
+     * 
+     * @param r another instance to swap internals with.
+     */
     void swap(point_quad_tree& r);
 
+    /**
+     * Remove all stored data.
+     */
     void clear();
 
+    /**
+     * Check whether or not the container is empty. 
+     * 
+     * @return bool true if empty, false otherwise.
+     */
     bool empty() const;
 
+    /**
+     * Get the number of stored data. 
+     * 
+     * @return the number of data currently stored in the container.
+     */
     size_t size() const;
 
     point_quad_tree& operator= (const point_quad_tree& r);
@@ -757,11 +818,7 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
 template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::swap(point_quad_tree& r)
 {
-    // Swap the root nodes.
-    node_ptr temp = m_root;
-    m_root = r.m_root;
-    r.m_root = temp;
-
+    m_root.swap(r.m_root);
     m_xrange.swap(r.m_xrange);
     m_yrange.swap(r.m_yrange);
 }
