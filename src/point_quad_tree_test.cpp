@@ -246,8 +246,46 @@ void pqt_test_insertion()
 
 void pqt_test_remove_root()
 {
-    StackPrinter __stack_printer__("::pqt_test_remove_root");
+    StackPrinter __stack_printer__("::pqt_test_remove_root");    
+    typedef point_quad_tree<int32_t, string> db_type;
+    string O("O");
+    string NW("NW");
+    string NE("NE");
+    string SW("SW");
+    string SE("SE");
+    db_type db;
 
+    // Insert all data and verify their storage.
+    db.insert(10, 10, &O);
+    db.insert(20, 0, &NE);
+    db.insert(0, 0, &NW);
+    db.insert(20, 20, &SE);
+    db.insert(0, 20, &SW);
+    db.dump_tree_svg("./obj/pqt_test_remove_root-1.svg");
+
+    vector<db_type::node_data> verify_data, stored_data;
+    verify_data.push_back(db_type::node_data(10, 10, &O));
+    verify_data.push_back(db_type::node_data(20, 0, &NE));
+    verify_data.push_back(db_type::node_data(0, 0, &NW));
+    verify_data.push_back(db_type::node_data(20, 20, &SE));
+    verify_data.push_back(db_type::node_data(0, 20, &SW));
+    db.get_all_stored_data(stored_data);
+    bool success = db_type::equals(verify_data, stored_data);
+    assert(success);
+    assert(db.size() == 5);
+
+    // Now, remove the root node.
+    db.remove(10, 10);
+    db.dump_tree_svg("./obj/pqt_test_remove_root-2.svg");
+    db.get_all_stored_data(stored_data);
+    verify_data.clear();
+    verify_data.push_back(db_type::node_data(20, 0, &NE));
+    verify_data.push_back(db_type::node_data(0, 0, &NW));
+    verify_data.push_back(db_type::node_data(20, 20, &SE));
+    verify_data.push_back(db_type::node_data(0, 20, &SW));
+    success = db_type::equals(verify_data, stored_data);
+    assert(success);
+    assert(db.size() == 4);
 }
 
 int main()
