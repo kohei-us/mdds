@@ -175,7 +175,7 @@ void pqt_test_basic()
 
 void pqt_test_insertion_removal()
 {
-    StackPrinter __stack_printer__("::pqt_test_insertion");
+    StackPrinter __stack_printer__("::pqt_test_insertion_removal");
     typedef point_quad_tree<int32_t, string> db_type;
     db_type db;
 
@@ -225,10 +225,9 @@ void pqt_test_insertion_removal()
         for (int32_t j = 0; j < 10; ++j)
         {
             int32_t x = i*10 + 1, y = j*10 + 1;
-            cout << "removing node at (" << x << "," << y << ")" << endl;
             db.remove(x, y);
             size_t n = db.size();
-            cout << "size after removal: " << n << endl;
+            cout << "removing node at (" << x << "," << y << ")  " << "size after removal: " << n << endl;
             assert(--node_count == n);
         }
     }

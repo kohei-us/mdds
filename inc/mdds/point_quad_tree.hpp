@@ -39,6 +39,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#define DEBUG_POINT_QUAD_TREE 0
+
 namespace mdds {
 
 template<typename _PairType>
@@ -684,13 +686,17 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         // No node exists at this coordinate.
         return;
 
+#if DEBUG_POINT_QUAD_TREE
     cout << "found the node to be removed at " << delete_node->x << "," << delete_node->y << " (" << *delete_node->data << ")" << endl;
+#endif
 
     // Check if this is a leaf node, in which case we can just delete it 
     // without further processing.
     if (delete_node->leaf())
     {
+#if DEBUG_POINT_QUAD_TREE
         cout << "deleting a leaf node." << endl;
+#endif
         if (delete_node.get() == m_root.get())
             m_root.reset();
         else
@@ -1103,43 +1109,61 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
     // Try to get a replacement candidate in each quadrant.
     node_distance dx_node, dy_node, min_city_block_node;
 
+#if DEBUG_POINT_QUAD_TREE
     cout << "northeast" << endl;
+#endif        
     find_candidate_in_quad(
         x, y, dx_node, dy_node, min_city_block_node, delete_node, quad_northeast);
 
+#if DEBUG_POINT_QUAD_TREE
     cout << "northwest" << endl;
+#endif        
     find_candidate_in_quad(
         x, y, dx_node, dy_node, min_city_block_node, delete_node, quad_northwest);
 
+#if DEBUG_POINT_QUAD_TREE
     cout << "southwest" << endl;
+#endif        
     find_candidate_in_quad(
         x, y, dx_node, dy_node, min_city_block_node, delete_node, quad_southwest);
 
+#if DEBUG_POINT_QUAD_TREE
     cout << "southeast" << endl;
+#endif        
     find_candidate_in_quad(
         x, y, dx_node, dy_node, min_city_block_node, delete_node, quad_southeast);
 
     // Check Criterion 1.
 
+#if DEBUG_POINT_QUAD_TREE
     if (dx_node.node)
         cout << "node closest to x axis: " << *dx_node.node->data << " (dx=" << dx_node.dist << ")" << endl;
 
     if (dy_node.node)
         cout << "node closest to y axis: " << *dy_node.node->data << " (dy=" << dy_node.dist << ")" << endl;
+#endif        
 
     if (dx_node.node == dy_node.node && ((dx_node.quad == quad_northwest) || (dx_node.quad == quad_southeast)))
     {
+#if DEBUG_POINT_QUAD_TREE
         cout << "node that satisfies Criterion 1: " << *dx_node.node->data << endl;
+#endif                
         return dx_node.node;
     }
     else
+    {
+#if DEBUG_POINT_QUAD_TREE
         cout << "unable to find node that satisfies Criterion 1." << endl;
+#endif                
+    }
 
     // Move on to Criterion 2.
 
     if (min_city_block_node.node)
     {
+#if DEBUG_POINT_QUAD_TREE
         cout << "node that satisfies Criterion 2: " << *min_city_block_node.node->data << " (dist=" << min_city_block_node.dist << ")" << endl;
+#endif                
         return min_city_block_node.node;
     }
 
@@ -1158,7 +1182,9 @@ void point_quad_tree<_Key,_Data>::find_candidate_in_quad(
     if (!repl_node)
     {
         // No candidate in this quadrant.
+#if DEBUG_POINT_QUAD_TREE
         cout << "  no candidate in this quadrant" << endl;
+#endif                
         return;
     }
 
@@ -1166,12 +1192,16 @@ void point_quad_tree<_Key,_Data>::find_candidate_in_quad(
     while (repl_node->has_quadrant_node(oppo_quad))
         repl_node = repl_node->get_quadrant_node(oppo_quad);
 
+#if DEBUG_POINT_QUAD_TREE
     cout << "  candidate: " << repl_node->x << "," << repl_node->y << " (" << *repl_node->data << ")" << endl;
+#endif        
 
     // Calculate its distance to each of the borders.
     key_type dx = repl_node->x > x ? repl_node->x - x : x - repl_node->x;
     key_type dy = repl_node->y > y ? repl_node->y - y : y - repl_node->y;
+#if DEBUG_POINT_QUAD_TREE
     cout << "  dx = " << dx << ", dy = " << dy << endl;
+#endif        
 
     if (!dx_node.node || dx_node.dist > dx)
         dx_node = node_distance(quad, dx, repl_node);
@@ -1192,12 +1222,16 @@ void point_quad_tree<_Key,_Data>::adjust_quad(
     if (!quad_root)
         return;
 
+#if DEBUG_POINT_QUAD_TREE
     cout << "adjust_quad: checking " << *quad_root->data << " (" << quad_root->x << "," << quad_root->y << ")" << endl;
+#endif        
 
     if ((hatched_xrange.first <= quad_root->x && quad_root->x <= hatched_xrange.second) ||
         (hatched_yrange.first <= quad_root->y && quad_root->y <= hatched_yrange.second))
     {
+#if DEBUG_POINT_QUAD_TREE
         cout << "  " << *quad_root->data << " is in the hatched region" << endl;
+#endif                
         // Insert the whole tree, including the root, into the insert list.
         disconnect_node_from_parent(quad_root);
         quad_root->parent.reset();
