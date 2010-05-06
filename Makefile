@@ -10,6 +10,7 @@ EXECS= \
 	flat_segment_tree_test \
 	segment_tree_test \
 	point_quad_tree_test \
+	quad_type_matrix \
 	rectangle_set_test \
 	stlperf_test
 
@@ -20,12 +21,8 @@ HEADERS= \
 	$(INCDIR)/mdds/flat_segment_tree.hpp \
 	$(INCDIR)/mdds/point_quad_tree.hpp \
 	$(INCDIR)/mdds/segment_tree.hpp \
+	$(INCDIR)/mdds/quad_type_matrix.hpp \
 	$(INCDIR)/mdds/rectangle_set.hpp
-
-OBJFILES= \
-	$(OBJDIR)/flat_segment_tree_test.o \
-	$(OBJDIR)/segment_tree_test.o \
-	$(OBJDIR)/rectangle_set_test.o
 
 DEPENDS= \
 	$(HEADERS)
@@ -47,6 +44,9 @@ $(OBJDIR)/rectangle_set_test.o: $(SRCDIR)/rectangle_set_test.cpp  $(DEPENDS)
 $(OBJDIR)/point_quad_tree_test.o: $(SRCDIR)/point_quad_tree_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/point_quad_tree_test.cpp
 
+$(OBJDIR)/quad_type_matrix_test.o: $(SRCDIR)/quad_type_matrix_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/quad_type_matrix_test.cpp
+
 flat_segment_tree_test: pre $(OBJDIR)/flat_segment_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flat_segment_tree_test.o -o $@
 
@@ -59,6 +59,9 @@ rectangle_set_test: pre $(OBJDIR)/rectangle_set_test.o
 point_quad_tree_test: pre $(OBJDIR)/point_quad_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/point_quad_tree_test.o -o $@
 
+quad_type_matrix_test: pre $(OBJDIR)/quad_type_matrix_test.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/quad_type_matrix_test.o -o $@
+
 stlperf_test: pre $(SRCDIR)/stlperf_test.cpp
 	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
 
@@ -68,8 +71,8 @@ $(OBJDIR)/template_test.o: $(SRCDIR)/template_test.cpp $(DEPENDS)
 test.fst: flat_segment_tree_test
 	./flat_segment_tree_test
 
-test.recset: rectangle_set_test
-	./rectangle_set_test func
+test.fst.mem: flat_segment_tree_test
+	valgrind --tool=memcheck --leak-check=full ./flat_segment_tree_test
 
 test.pqt: point_quad_tree_test
 	./point_quad_tree_test
@@ -77,14 +80,14 @@ test.pqt: point_quad_tree_test
 test.pqt.mem: point_quad_tree_test
 	valgrind --tool=memcheck --leak-check=full ./point_quad_tree_test
 
+test.recset: rectangle_set_test
+	./rectangle_set_test func
+
 test.recset.perf: rectangle-set_test
 	./rectangle_set_test perf
 
 test.recset.mem: rectangle_set_test
 	valgrind --tool=memcheck --leak-check=full ./rectangle-set_test func
-
-test.fst.mem: flat_segment_tree_test
-	valgrind --tool=memcheck --leak-check=full ./flat_segment_tree_test
 
 test.st: segment_tree_test
 	./segment_tree_test func
@@ -94,6 +97,9 @@ test.st.perf: segment_tree_test
 
 test.st.mem: segment_tree_test
 	valgrind --tool=memcheck --leak-check=full ./segment_tree_test func
+
+test.qtm: quad_type_matrix_test
+	./quad_type_matrix_test
 
 test.stl: stlperf_test
 	./stlperf_test

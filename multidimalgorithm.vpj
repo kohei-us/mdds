@@ -232,6 +232,7 @@
 				<F N="inc/mdds/node.hpp"/>
 				<F N="inc/mdds/point_quad_tree.hpp"/>
 				<F N="inc/mdds/quad_node.hpp"/>
+				<F N="inc/mdds/quad_type_matrix.hpp"/>
 				<F N="inc/mdds/rectangle_set.hpp"/>
 				<F N="inc/mdds/segment_tree.hpp"/>
 			</Folder>
@@ -242,6 +243,7 @@
 			<F N="src/flat_segment_tree_test.cpp"/>
 			<F N="src/nodecontainer.cpp"/>
 			<F N="src/point_quad_tree_test.cpp"/>
+			<F N="src/quad_type_matrix_test.cpp"/>
 			<F N="src/rangetree.cpp"/>
 			<F N="src/rectangle_set_test.cpp"/>
 			<F N="src/segment_tree_test.cpp"/>
