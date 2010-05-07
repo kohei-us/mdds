@@ -81,6 +81,8 @@ public:
     size_t size_cols() const;
 
     void resize(key_type row, key_type col);
+    void clear();
+    bool empty();
 
 #ifdef UNIT_TEST
     void dump() const;
@@ -156,6 +158,8 @@ private:
         virtual size_t cols() const = 0;
 
         virtual void resize(key_type row, key_type col) = 0;
+        virtual void clear() = 0;
+        virtual bool empty() = 0;
     };
 
     /**
@@ -263,6 +267,16 @@ private:
             }
         }
 
+        virtual void clear()
+        {
+            m_rows.clear();
+        }
+
+        virtual bool empty()
+        {
+            return m_rows.empty();
+        }
+
     private:
 
         /**
@@ -359,6 +373,18 @@ template<typename _Key, typename _String>
 void quad_type_matrix<_Key,_String>::resize(key_type row, key_type col)
 {
     mp_storage->resize(row, col);
+}
+
+template<typename _Key, typename _String>
+void quad_type_matrix<_Key,_String>::clear()
+{
+    mp_storage->clear();
+}
+
+template<typename _Key, typename _String>
+bool quad_type_matrix<_Key,_String>::empty()
+{
+    return mp_storage->empty();
 }
 
 #ifdef UNIT_TEST
