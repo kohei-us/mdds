@@ -33,6 +33,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 
 namespace mdds {
 
@@ -108,6 +109,25 @@ private:
         };
 
         element() : m_type(element_empty) {}
+        element(const element& r) : m_type(r.m_type)
+        {
+            switch (m_type)
+            {
+                case element_boolean:
+                    m_boolean = r.m_boolean;
+                    break;
+                case element_numeric:
+                    m_numeric = r.m_numeric;
+                    break;
+                case element_string:
+                    mp_string = new string_type(*r.mp_string);
+                    break;
+                case element_empty:
+                default:
+                    ;
+            }
+        }
+
         explicit element(double v) : m_type(element_numeric), m_numeric(v) {}
         explicit element(bool v) : m_type(element_boolean), m_boolean(v) {}
         explicit element(string_type* p) : m_type(element_string), mp_string(p) {}
@@ -319,33 +339,87 @@ private:
 
     class storage_sparse : public storage_base
     {
+        typedef ::boost::ptr_map<size_t, element>  row_type;
+        typedef ::boost::ptr_map<size_t, row_type> rows_type;
+
     public:
+        storage_sparse(size_t rows, size_t cols) : 
+            m_row_size(rows), m_col_size(cols) {}
+
         virtual element & get_element(size_t row, size_t col)
         {
+            typename rows_type::iterator itr = m_rows.find(row);
+            if (itr == m_rows.end())
+            {
+                // Insert a brand-new row.
+                ::std::pair<typename rows_type::iterator, bool> r = m_rows.insert(row, new row_type);
+                if (!r.second)
+                    throw matrix_error("failed to insert a new row instance into storage_sparse.");
+                itr = r.first;
+            }
+
+            row_type& row_store = *itr->second;
+            typename row_type::iterator itr_elem = row_store.find(col);
+            if (itr_elem == row_store.end())
+            {
+                // Insert a new element at this column position.
+                ::std::pair<typename row_type::iterator, bool> r = row_store.insert(col, new element);
+                if (!r.second)
+                    throw matrix_error("failed to insert a new element instance.");
+                itr_elem = r.first;
+            }
+            return *itr_elem->second;
         }
 
         virtual matrix_element_t get_type(size_t row, size_t col) const
         {
+            typename rows_type::const_iterator itr = m_rows.find(row);
+            if (itr == m_rows.end())
+                return element_empty;
+
+            const row_type& row_store = *itr->second;
+            typename row_type::const_iterator itr_elem = row_store.find(col);
+            if (itr_elem == row_store.end())
+                return element_empty;
+
+            return itr_elem->second->m_type;
         }
 
         virtual double get_numeric(size_t row, size_t col) const
         {
+            matrix_element_t elem_type = get_type(row, col);
+            if (elem_type != element_numeric)
+                throw matrix_error("element type is not numeric.");
+
+            return get_non_empty_element(row, col).m_numeric;
         }
 
         virtual string_type get_string(size_t row, size_t col) const
         {
+            matrix_element_t elem_type = get_type(row, col);
+            if (elem_type != element_string)
+                throw matrix_error("element type is not string.");
+
+            return *get_non_empty_element(row, col).mp_string;
         }
 
         virtual bool get_boolean(size_t row, size_t col) const
         {
+            matrix_element_t elem_type = get_type(row, col);
+            if (elem_type != element_boolean)
+                throw matrix_error("element type is not string.");
+
+            return get_non_empty_element(row, col).m_boolean;
         }
 
         virtual size_t rows() const
         {
+            return m_row_size;
         }
 
         virtual size_t cols() const
         {
+            return m_col_size;
         }
 
         virtual void resize(size_t row, size_t col)
@@ -354,11 +428,32 @@ private:
 
         virtual void clear()
         {
+            m_rows.clear();
         }
 
         virtual bool empty()
         {
+            return m_rows.empty();
         }
+
+    private:
+        const element& get_non_empty_element(size_t row, size_t col) const
+        {
+            typename rows_type::const_iterator itr = m_rows.find(row);
+            if (itr == m_rows.end())
+                throw matrix_error("element is empty, where a non-empty element was expected.");
+
+            const row_type& row_store = *itr->second;
+            typename row_type::const_iterator itr_elem = row_store.find(col);
+            if (itr_elem == row_store.end())
+                throw matrix_error("element is empty, where a non-empty element was expected.");
+            return *itr_elem->second;
+        }
+
+    private:
+        rows_type   m_rows;
+        size_t      m_row_size;
+        size_t      m_col_size;
     };
 
 private:
@@ -376,8 +471,8 @@ quad_type_matrix<_String>::create_storage(size_t rows, size_t cols, matrix_densi
     {
         case matrix_density_filled:
             return new storage_filled(rows, cols);
-//      case matrix_density_sparse:
-//          return new storage_sparse(rows, cols);
+        case matrix_density_sparse:
+            return new storage_sparse(rows, cols);
         default:
             throw matrix_error("unknown density type");
     }

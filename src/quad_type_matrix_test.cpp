@@ -121,6 +121,7 @@ void qtm_test_resize(matrix_density_t density)
 int main()
 {
     qtm_test_resize(matrix_density_filled);
+    qtm_test_resize(matrix_density_sparse);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
