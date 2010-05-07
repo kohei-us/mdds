@@ -50,6 +50,12 @@ enum matrix_element_t
     element_string 
 };
 
+class matrix_error : public ::mdds::general_error
+{
+public:
+    matrix_error(const ::std::string& msg) : general_error(msg) {}
+};
+
 /**
  * This data structure represents a matrix where each individual element may
  * be of one of four types: value, boolean, string, or empty.
@@ -58,12 +64,6 @@ template<typename _Key, typename _String>
 class quad_type_matrix
 {
 public:
-    class matrix_error : public ::mdds::general_error
-    {
-    public:
-        matrix_error(const ::std::string& msg) : general_error(msg) {}
-    };
-
     typedef _Key        key_type;
     typedef _String     string_type;
     typedef size_t      size_type;
