@@ -228,6 +228,13 @@ private:
 
         virtual void resize(key_type row, key_type col)
         {
+            if (!row || !col)
+            {
+                // Empty the matrix.
+                m_rows.clear();
+                return;
+            }
+
             size_t cur_rows = rows(), cur_cols = cols();
 
             if (row > cur_rows)

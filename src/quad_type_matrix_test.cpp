@@ -110,6 +110,11 @@ void qtm_test_resize()
     mx.dump();
     assert(mx.size_rows() == 3);
     assert(mx.size_cols() == 3);
+
+    mx.resize(0, 0);
+    mx.dump();
+    assert(mx.size_rows() == 0);
+    assert(mx.size_cols() == 0);
 }
 
 int main()
