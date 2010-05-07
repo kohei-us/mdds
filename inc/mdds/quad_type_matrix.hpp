@@ -56,11 +56,17 @@ public:
 
     enum data_density_type
     {
-        data_filled,
-        data_sparse
+        data_density_filled,
+        data_density_sparse
     };
 
-    enum element_type { elem_empty, elem_numeric, elem_boolean, elem_string };
+    enum element_type
+    { 
+        element_empty, 
+        element_numeric, 
+        element_boolean, 
+        element_string 
+    };
 
     quad_type_matrix();
     quad_type_matrix(key_type rows, key_type cols);
@@ -70,6 +76,8 @@ public:
     void set_boolean(key_type row, key_type col, bool val);
     void set_string(key_type row, key_type col, string_type* str);
     void set_empty(key_type row, key_type col);
+
+    void resize(key_type row, key_type col);
 
 #ifdef UNIT_TEST
     void dump() const;
@@ -87,45 +95,45 @@ private:
             string_type* mp_string;
         };
 
-        element() : m_type(elem_empty) {}
-        explicit element(double v) : m_type(elem_numeric), m_numeric(v) {}
-        explicit element(bool v) : m_type(elem_boolean), m_boolean(v) {}
-        explicit element(string_type* p) : m_type(elem_string), mp_string(p) {}
+        element() : m_type(element_empty) {}
+        explicit element(double v) : m_type(element_numeric), m_numeric(v) {}
+        explicit element(bool v) : m_type(element_boolean), m_boolean(v) {}
+        explicit element(string_type* p) : m_type(element_string), mp_string(p) {}
 
         ~element()
         {
-            if (m_type == elem_string)
+            if (m_type == element_string)
                 delete mp_string;
         }
 
         void set_empty()
         {
-            if (m_type == elem_string)
+            if (m_type == element_string)
                 delete mp_string;
-            m_type = elem_empty;
+            m_type = element_empty;
         }
 
         void set_numeric(double val)
         {
-            if (m_type == elem_string)
+            if (m_type == element_string)
                 delete mp_string;
-            m_type = elem_numeric;
+            m_type = element_numeric;
             m_numeric = val;
         }
 
         void set_boolean(bool val)
         {
-            if (m_type == elem_string)
+            if (m_type == element_string)
                 delete mp_string;
-            m_type = elem_boolean;
+            m_type = element_boolean;
             m_boolean = val;
         }
 
         void set_string(string_type* str)
         {
-            if (m_type == elem_string)
+            if (m_type == element_string)
                 delete mp_string;
-            m_type = elem_string;
+            m_type = element_string;
             mp_string = str;
         }
     };
@@ -143,6 +151,8 @@ private:
 
         virtual size_t rows() const = 0;
         virtual size_t cols() const = 0;
+
+        virtual void resize(key_type row, key_type col) = 0;
     };
 
     /**
@@ -152,6 +162,9 @@ private:
      */
     class storage_filled : public storage_base
     {
+        typedef ::boost::ptr_vector<element>  row_type;
+        typedef ::boost::ptr_vector<row_type> rows_type;
+
     public:
         storage_filled(key_type rows, key_type cols)
         {
@@ -159,10 +172,7 @@ private:
             for (key_type i = 0; i < rows; ++i)
             {
                 m_rows.push_back(new row_type);
-                row_type& row = m_rows.back();
-                row.reserve(cols);
-                for (key_type j = 0; j < cols; ++j)
-                    row.push_back(new element(static_cast<double>(0.0)));
+                init_row(m_rows.back(), cols);
             }
         }
 
@@ -179,7 +189,7 @@ private:
         virtual double get_numeric(key_type row, key_type col) const
         {
             const element& elem = m_rows.at(row).at(col);
-            if (elem.m_type != elem_numeric)
+            if (elem.m_type != element_numeric)
                 throw matrix_error("element type is not numeric.");
 
             return elem.m_numeric;
@@ -188,7 +198,7 @@ private:
         virtual string_type get_string(key_type row, key_type col) const
         {
             const element& elem = m_rows.at(row).at(col);
-            if (elem.m_type != elem_string)
+            if (elem.m_type != element_string)
                 throw matrix_error("element type is not string.");
 
             return *elem.mp_string;
@@ -197,7 +207,7 @@ private:
         virtual bool get_boolean(key_type row, key_type col) const
         {
             const element& elem = m_rows.at(row).at(col);
-            if (elem.m_type != elem_boolean)
+            if (elem.m_type != element_boolean)
                 throw matrix_error("element type is not boolean.");
 
             return elem.m_boolean;
@@ -213,9 +223,66 @@ private:
             return m_rows.empty() ? 0 : m_rows[0].size();
         }
 
+        virtual void resize(key_type row, key_type col)
+        {
+            size_t cur_rows = rows(), cur_cols = cols();
+
+            if (row > cur_rows)
+            {
+                // Insert extra rows...
+                size_t new_row_count = cur_rows - static_cast<size_t>(row);
+                m_rows.reserve(row);
+                for (size_t i = 0; i < new_row_count; ++i)
+                {
+                    m_rows.push_back(new row_type);
+                    init_row(m_rows.back(), col);
+                }
+
+                resize_rows(cur_rows-1, cur_cols, col);
+            }
+            else if (cur_rows > row)
+            {
+                // Remove rows to new size.
+                m_rows.resize(row);
+                resize_rows(row-1, cur_cols, col);
+            }
+            else
+            {
+                assert(cur_rows == row);
+                resize_rows(cur_rows-1, cur_cols, col);
+            }
+        }
+
     private:
-        typedef ::boost::ptr_vector<element>  row_type;
-        typedef ::boost::ptr_vector<row_type> rows_type;
+
+        /**
+         * Resize rows to a new column size, from row 0 up to specified upper 
+         * row. 
+         */
+        void resize_rows(size_t upper_row, size_t cur_cols, size_t new_cols)
+        {
+            for (size_t i = 0; i <= upper_row; ++i)
+            {
+                // Resize pre-existing rows to new column size.
+                if (new_cols > cur_cols)
+                {
+                    size_t new_col_count = new_cols - cur_cols;
+                    for (size_t j = 0; j < new_col_count; ++j)
+                        m_rows[i].push_back(new element(static_cast<double>(0.0)));
+                }
+                else if (new_cols < cur_cols)
+                    m_rows[i].resize(new_cols);
+            }
+        }
+
+        static void init_row(row_type& row, size_t col_size)
+        {
+            row.reserve(col_size);
+            for (key_type j = 0; j < col_size; ++j)
+                row.push_back(new element(static_cast<double>(0.0)));
+        }
+
+    private:
         rows_type m_rows;
     };
 
@@ -266,6 +333,12 @@ void quad_type_matrix<_Key,_String>::set_empty(key_type row, key_type col)
     mp_storage->get_element(row, col).set_empty();
 }
 
+template<typename _Key, typename _String>
+void quad_type_matrix<_Key,_String>::resize(key_type row, key_type col)
+{
+    mp_storage->resize(row, col);
+}
+
 #ifdef UNIT_TEST
 template<typename _Key, typename _String>
 void quad_type_matrix<_Key,_String>::dump() const
@@ -284,16 +357,16 @@ void quad_type_matrix<_Key,_String>::dump() const
             cout << "(col " << j << ": ";
             switch (etype)
             {
-                case elem_boolean:
+                case element_boolean:
                     cout << boolalpha << mp_storage->get_boolean(i, j) << noboolalpha;
                     break;
-                case elem_empty:
+                case element_empty:
                     cout << "-";
                     break;
-                case elem_numeric:
+                case element_numeric:
                     cout << mp_storage->get_numeric(i, j);
                     break;
-                case elem_string:
+                case element_string:
                     cout << mp_storage->get_string(i, j);
                     break;
                 default:
