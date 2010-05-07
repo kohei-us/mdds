@@ -337,6 +337,10 @@ private:
         rows_type m_rows;
     };
 
+    /**
+     * This storage stores only non-empty elements; all the other non-stored
+     * elements are regarded as empty elements.
+     */
     class storage_sparse : public storage_base
     {
         typedef ::boost::ptr_map<size_t, element>  row_type;
@@ -424,6 +428,32 @@ private:
 
         virtual void resize(size_t row, size_t col)
         {
+            // Resizing a sparse matrix need to modify the data only when 
+            // shrinking.
+
+            if (m_row_size > row)
+            {
+                // Remove all rows where the row index is greater than or 
+                // equal to 'row'.
+                typename rows_type::iterator itr = m_rows.lower_bound(row);
+                m_rows.erase(itr, m_rows.end());
+            }
+
+            if (m_col_size > col)
+            {
+                typename rows_type::iterator itr = m_rows.begin(), itr_end = m_rows.end();
+                for (; itr != itr_end; ++itr)
+                {
+                    // Now, remove all columns where the column index is 
+                    // greater than or equal to 'col'.
+                    row_type& row = *itr->second;
+                    typename row_type::iterator itr_elem = row.lower_bound(col);
+                    row.erase(itr_elem, row.end());
+                }
+            }
+
+            m_row_size = row;
+            m_col_size = col;
         }
 
         virtual void clear()
