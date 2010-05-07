@@ -27,6 +27,7 @@
 
 #include "mdds/quad_type_matrix.hpp"
 
+#include <sstream>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -118,10 +119,101 @@ void qtm_test_resize(matrix_density_t density)
     assert(mx.empty());
 }
 
+void qtm_test_filled()
+{
+    StackPrinter __stack_printer__("::qtm_test_filled");
+    typedef quad_type_matrix<string> mx_type;
+    mx_type mx(5, 5, matrix_density_filled);
+    mx.dump();
+    assert(mx.size_rows() == 5);
+    assert(mx.size_cols() == 5);
+    assert(!mx.empty());
+
+    // Make sure all elements have been initialized to 0.0.
+    for (size_t i = 0; i < 5; ++i)
+    {
+        for (size_t j = 0; j < 5; ++j)
+        {
+            matrix_element_t elem_type = mx.get_type(i, j);
+            assert(elem_type == element_numeric);
+            double val = mx.get_numeric(i, j);
+            assert(val == 0.0);
+        }
+    }
+
+    // Insert strings into all elements.
+    for (size_t i = 0; i < 5; ++i)
+    {
+        for (size_t j = 0; j < 5; ++j)
+        {
+            ostringstream os;
+            os << "(" << i << "," << j << ")";
+            mx.set_string(i, j, new string(os.str()));
+        }
+    }
+    mx.dump();
+
+    for (size_t i = 0; i < 5; ++i)
+    {
+        for (size_t j = 0; j < 5; ++j)
+        {
+            matrix_element_t elem_type = mx.get_type(i, j);
+            assert(elem_type == element_string);
+            string s = mx.get_string(i, j);
+            cout << s << " ";
+        }
+        cout << endl;
+    }
+
+    // Now, boolean values.  Note that these operations should de-aloocate all
+    // previously stored strings.
+    for (size_t i = 0; i < 5; ++i)
+    {
+        for (size_t j = 0; j < 5; ++j)
+        {
+            bool b = (i+j)%2 ? true : false;
+            mx.set_boolean(i, j, b);
+        }
+    }
+    mx.dump();
+
+    for (size_t i = 0; i < 5; ++i)
+    {
+        for (size_t j = 0; j < 5; ++j)
+        {
+            matrix_element_t elem_type = mx.get_type(i, j);
+            assert(elem_type == element_boolean);
+            bool stored = mx.get_boolean(i, j);
+            bool expected = (i+j)%2 ? true : false;
+            assert(stored == expected);
+        }
+    }
+
+    // Make all elements empty.
+    for (size_t i = 0; i < 5; ++i)
+    {
+        for (size_t j = 0; j < 5; ++j)
+        {
+            mx.set_empty(i, j);
+        }
+    }
+    mx.dump();
+
+    for (size_t i = 0; i < 5; ++i)
+    {
+        for (size_t j = 0; j < 5; ++j)
+        {
+            matrix_element_t elem_type = mx.get_type(i, j);
+            assert(elem_type == element_empty);
+        }
+    }
+}
+
 int main()
 {
     qtm_test_resize(matrix_density_filled);
     qtm_test_resize(matrix_density_sparse);
+    qtm_test_filled();
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
