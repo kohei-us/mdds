@@ -82,6 +82,9 @@ void qtm_test_basic()
     typedef quad_type_matrix<size_t, string> mx_type;
     mx_type mx(3, 3);
     mx.dump();
+    assert(mx.size_rows() == 3);
+    assert(mx.size_cols() == 3);
+
     mx.set_string(0, 0, new string("test"));
     mx.set_numeric(0, 1, 2.3);
     mx.set_boolean(1, 1, false);
@@ -90,6 +93,10 @@ void qtm_test_basic()
     mx.set_empty(2, 1);
     mx.set_empty(2, 2);
     mx.dump();
+    mx.resize(6, 4);
+    mx.dump();
+    assert(mx.size_rows() == 6);
+    assert(mx.size_cols() == 4);
 }
 
 int main()

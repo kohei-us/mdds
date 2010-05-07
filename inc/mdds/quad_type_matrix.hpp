@@ -77,6 +77,9 @@ public:
     void set_string(key_type row, key_type col, string_type* str);
     void set_empty(key_type row, key_type col);
 
+    size_t size_rows() const;
+    size_t size_cols() const;
+
     void resize(key_type row, key_type col);
 
 #ifdef UNIT_TEST
@@ -230,7 +233,7 @@ private:
             if (row > cur_rows)
             {
                 // Insert extra rows...
-                size_t new_row_count = cur_rows - static_cast<size_t>(row);
+                size_t new_row_count = row - cur_rows;
                 m_rows.reserve(row);
                 for (size_t i = 0; i < new_row_count; ++i)
                 {
@@ -331,6 +334,18 @@ template<typename _Key, typename _String>
 void quad_type_matrix<_Key,_String>::set_empty(key_type row, key_type col)
 {
     mp_storage->get_element(row, col).set_empty();
+}
+
+template<typename _Key, typename _String>
+size_t quad_type_matrix<_Key,_String>::size_rows() const
+{
+    return mp_storage->rows();
+}
+
+template<typename _Key, typename _String>
+size_t quad_type_matrix<_Key,_String>::size_cols() const
+{
+    return mp_storage->cols();
 }
 
 template<typename _Key, typename _String>
