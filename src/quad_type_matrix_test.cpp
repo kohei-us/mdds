@@ -76,7 +76,7 @@ private:
 using namespace std;
 using namespace mdds;
 
-void qtm_test_basic()
+void qtm_test_resize()
 {
     StackPrinter __stack_printer__("::qtm_test_basic");
     typedef quad_type_matrix<size_t, string> mx_type;
@@ -97,11 +97,24 @@ void qtm_test_basic()
     mx.dump();
     assert(mx.size_rows() == 6);
     assert(mx.size_cols() == 4);
+    mx.resize(6, 6);
+    mx.dump();
+    assert(mx.size_rows() == 6);
+    assert(mx.size_cols() == 6);
+    mx.resize(3, 6);
+    mx.dump();
+    assert(mx.size_rows() == 3);
+    assert(mx.size_cols() == 6);
+
+    mx.resize(3, 3);
+    mx.dump();
+    assert(mx.size_rows() == 3);
+    assert(mx.size_cols() == 3);
 }
 
 int main()
 {
-    qtm_test_basic();
+    qtm_test_resize();
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
