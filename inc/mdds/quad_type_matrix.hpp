@@ -79,7 +79,15 @@ public:
 
     size_t size_rows() const;
     size_t size_cols() const;
-
+    
+    /**
+     * Resize the matrix to specified size.  This method supports resizing to
+     * zero-sized matrix; however, either specifying the row or column size to
+     * zero will resize the matrix to 0 x 0.
+     * 
+     * @param row new row size
+     * @param col new column size
+     */
     void resize(key_type row, key_type col);
     void clear();
     bool empty();
