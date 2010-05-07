@@ -45,10 +45,10 @@ enum matrix_density_t
 
 enum matrix_element_t
 { 
-    element_empty, 
-    element_numeric, 
-    element_boolean, 
-    element_string 
+    element_empty   = 0, 
+    element_numeric = 1, 
+    element_boolean = 2, 
+    element_string  = 3 
 };
 
 class matrix_error : public ::mdds::general_error
@@ -105,7 +105,7 @@ public:
 private:
     struct element
     {
-        matrix_element_t m_type;
+        matrix_element_t m_type:2;
 
         union
         {
