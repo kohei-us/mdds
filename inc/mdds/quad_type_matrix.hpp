@@ -36,6 +36,20 @@
 
 namespace mdds {
 
+enum matrix_data_density_t
+{
+    data_density_filled,
+    data_density_sparse
+};
+
+enum matrix_element_t
+{ 
+    element_empty, 
+    element_numeric, 
+    element_boolean, 
+    element_string 
+};
+
 /**
  * This data structure represents a matrix where each individual element may
  * be of one of four types: value, boolean, string, or empty.
@@ -53,20 +67,6 @@ public:
     typedef _Key        key_type;
     typedef _String     string_type;
     typedef size_t      size_type;
-
-    enum data_density_type
-    {
-        data_density_filled,
-        data_density_sparse
-    };
-
-    enum element_type
-    { 
-        element_empty, 
-        element_numeric, 
-        element_boolean, 
-        element_string 
-    };
 
     quad_type_matrix();
     quad_type_matrix(key_type rows, key_type cols);
@@ -99,7 +99,7 @@ public:
 private:
     struct element
     {
-        element_type m_type;
+        matrix_element_t m_type;
 
         union
         {
@@ -156,7 +156,7 @@ private:
     public:
         virtual element& get_element(key_type row, key_type col) = 0;
 
-        virtual element_type get_type(key_type row, key_type col) const = 0;
+        virtual matrix_element_t get_type(key_type row, key_type col) const = 0;
 
         virtual double get_numeric(key_type row, key_type col) const = 0;
         virtual string_type get_string(key_type row, key_type col) const = 0;
@@ -196,7 +196,7 @@ private:
             return m_rows.at(row).at(col);
         }
 
-        virtual element_type get_type(key_type row, key_type col) const
+        virtual matrix_element_t get_type(key_type row, key_type col) const
         {
             return m_rows.at(row).at(col).m_type;
         }
@@ -407,7 +407,7 @@ void quad_type_matrix<_Key,_String>::dump() const
         cout << "row " << i << ": ";
         for (size_t j = 0; j < cols; ++j)
         {
-            element_type etype = mp_storage->get_type(i, j);
+            matrix_element_t etype = mp_storage->get_type(i, j);
             if (j > 0)
                 cout << ", ";
             cout << "(col " << j << ": ";
@@ -423,7 +423,7 @@ void quad_type_matrix<_Key,_String>::dump() const
                     cout << mp_storage->get_numeric(i, j);
                     break;
                 case element_string:
-                    cout << mp_storage->get_string(i, j);
+                    cout << "'" << mp_storage->get_string(i, j) << "'";
                     break;
                 default:
                     ;
