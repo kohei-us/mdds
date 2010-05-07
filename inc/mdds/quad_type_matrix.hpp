@@ -67,8 +67,8 @@ public:
     typedef _String     string_type;
     typedef size_t      size_type;
 
-    quad_type_matrix();
-    quad_type_matrix(size_t rows, size_t cols);
+    quad_type_matrix(matrix_density_t density);
+    quad_type_matrix(size_t rows, size_t cols, matrix_density_t density);
     ~quad_type_matrix();
 
     void set_numeric(size_t row, size_t col, double val);
@@ -317,21 +317,85 @@ private:
         rows_type m_rows;
     };
 
+    class storage_sparse : public storage_base
+    {
+    public:
+        virtual element & get_element(size_t row, size_t col)
+        {
+        }
+
+        virtual matrix_element_t get_type(size_t row, size_t col) const
+        {
+        }
+
+        virtual double get_numeric(size_t row, size_t col) const
+        {
+        }
+
+        virtual string_type get_string(size_t row, size_t col) const
+        {
+        }
+
+        virtual bool get_boolean(size_t row, size_t col) const
+        {
+        }
+
+        virtual size_t rows() const
+        {
+        }
+
+        virtual size_t cols() const
+        {
+        }
+
+        virtual void resize(size_t row, size_t col)
+        {
+        }
+
+        virtual void clear()
+        {
+        }
+
+        virtual bool empty()
+        {
+        }
+    };
+
 private:
-    storage_filled* mp_storage;
+    static storage_base* create_storage(size_t rows, size_t cols, matrix_density_t density);
+
+private:
+    storage_base* mp_storage;
 };
 
 template<typename _String>
-quad_type_matrix<_String>::quad_type_matrix() :
-    mp_storage(NULL)
+typename quad_type_matrix<_String>::storage_base*
+quad_type_matrix<_String>::create_storage(size_t rows, size_t cols, matrix_density_t density)
 {
+    switch (density)
+    {
+        case matrix_density_filled:
+            return new storage_filled(rows, cols);
+//      case matrix_density_sparse:
+//          return new storage_sparse(rows, cols);
+        default:
+            throw matrix_error("unknown density type");
+    }
+    return NULL;
 }
 
 template<typename _String>
-quad_type_matrix<_String>::quad_type_matrix(size_t rows, size_t cols) :
+quad_type_matrix<_String>::quad_type_matrix(matrix_density_t density) :
     mp_storage(NULL)
 {
-    mp_storage = new storage_filled(rows, cols);
+    mp_storage = create_storage(0, 0, density);
+}
+
+template<typename _String>
+quad_type_matrix<_String>::quad_type_matrix(size_t rows, size_t cols, matrix_density_t density) :
+    mp_storage(NULL)
+{
+    mp_storage = create_storage(rows, cols, density);
 }
 
 template<typename _String>

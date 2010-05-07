@@ -76,11 +76,11 @@ private:
 using namespace std;
 using namespace mdds;
 
-void qtm_test_resize()
+void qtm_test_resize(matrix_density_t density)
 {
     StackPrinter __stack_printer__("::qtm_test_basic");
     typedef quad_type_matrix<string> mx_type;
-    mx_type mx(3, 3);
+    mx_type mx(3, 3, density);
     mx.dump();
     assert(mx.size_rows() == 3);
     assert(mx.size_cols() == 3);
@@ -120,7 +120,7 @@ void qtm_test_resize()
 
 int main()
 {
-    qtm_test_resize();
+    qtm_test_resize(matrix_density_filled);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
