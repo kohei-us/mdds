@@ -66,6 +66,8 @@ public:
     quad_type_matrix(key_type rows, key_type cols);
     ~quad_type_matrix();
 
+    void dump() const;
+
 private:
     struct element
     {
@@ -96,7 +98,8 @@ private:
 
     /**
      * This storage creates instance for every single element, even for the
-     * empty elements.
+     * empty elements.  The constructor initializes all elements to numeric 
+     * type having a value of 0. 
      */
     class storage_filled : public storage_base
     {
@@ -110,20 +113,7 @@ private:
                 row_type& row = m_rows.back();
                 row.reserve(cols);
                 for (key_type j = 0; j < cols; ++j)
-                    row.push_back(new element);
-            }
-        }
-
-        explicit storage_filled(key_type rows, key_type cols, double init_val)
-        {
-            m_rows.reserve(rows);
-            for (key_type i = 0; i < rows; ++i)
-            {
-                m_rows.push_back(new row_type);
-                row_type& row = m_rows.back();
-                row.reserve(cols);
-                for (key_type j = 0; j < cols; ++j)
-                    row.push_back(new element(init_val));
+                    row.push_back(new element(static_cast<double>(0.0)));
             }
         }
 
@@ -159,6 +149,16 @@ private:
             return elem.m_boolean;
         }
 
+        size_t rows() const
+        {
+            return m_rows.size();
+        }
+
+        size_t cols() const
+        {
+            return m_rows.empty() ? 0 : m_rows[0].size();
+        }
+
     private:
         typedef ::boost::ptr_vector<element>  row_type;
         typedef ::boost::ptr_vector<row_type> rows_type;
@@ -179,13 +179,20 @@ template<typename _Key, typename _String>
 quad_type_matrix<_Key,_String>::quad_type_matrix(key_type rows, key_type cols) :
     mp_storage(NULL)
 {
-    mp_storage = new storage_filled(rows, cols, 0.0);
+    mp_storage = new storage_filled(rows, cols);
 }
 
 template<typename _Key, typename _String>
 quad_type_matrix<_Key,_String>::~quad_type_matrix()
 {
     delete mp_storage;
+}
+
+template<typename _Key, typename _String>
+void quad_type_matrix<_Key,_String>::dump() const
+{
+    using namespace std;
+    cout << "rows: " << mp_storage->rows() << "  cols: " << mp_storage->cols() << endl;
 }
 
 }

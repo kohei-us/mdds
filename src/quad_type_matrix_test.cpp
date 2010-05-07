@@ -81,6 +81,7 @@ void qtm_test_basic()
     StackPrinter __stack_printer__("::qtm_test_basic");
     typedef quad_type_matrix<size_t, string> mx_type;
     mx_type mx(3, 3);
+    mx.dump();
 }
 
 int main()
