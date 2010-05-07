@@ -444,6 +444,12 @@ private:
 
         virtual void resize(size_t row, size_t col)
         {
+            if (!row || !col)
+            {
+                clear();
+                return;
+            }
+
             // Resizing a sparse matrix need to modify the data only when 
             // shrinking.
 
@@ -475,11 +481,17 @@ private:
         virtual void clear()
         {
             m_rows.clear();
+            m_row_size = 0;
+            m_col_size = 0;
         }
 
         virtual bool empty()
         {
-            return m_rows.empty();
+            // If one of row and column sizes are zero, the other size must be
+            // zero, and vise versa.
+            assert((!m_row_size && !m_col_size) || (m_row_size && m_col_size));
+
+            return m_row_size == 0 && m_col_size == 0;
         }
 
     private:

@@ -119,25 +119,39 @@ void qtm_test_resize(matrix_density_t density)
     assert(mx.empty());
 }
 
-void qtm_test_filled()
+void qtm_test_value_store(matrix_density_t density)
 {
     StackPrinter __stack_printer__("::qtm_test_filled");
     typedef quad_type_matrix<string> mx_type;
-    mx_type mx(5, 5, matrix_density_filled);
+    mx_type mx(5, 5, density);
     mx.dump();
     assert(mx.size_rows() == 5);
     assert(mx.size_cols() == 5);
     assert(!mx.empty());
 
-    // Make sure all elements have been initialized to 0.0.
+    // Make sure all elements have been initialized properly according to the 
+    // matrix type.
     for (size_t i = 0; i < 5; ++i)
     {
         for (size_t j = 0; j < 5; ++j)
         {
             matrix_element_t elem_type = mx.get_type(i, j);
-            assert(elem_type == element_numeric);
-            double val = mx.get_numeric(i, j);
-            assert(val == 0.0);
+            switch (density)
+            {
+                case matrix_density_filled:
+                {
+                    // filled matrices are initialized to numeric elements 
+                    // having a value of 0.
+                    assert(elem_type == element_numeric);
+                    double val = mx.get_numeric(i, j);
+                    assert(val == 0.0);
+                }
+                break;
+                case matrix_density_sparse:
+                    // sparse matrices are initialized to empty elements.
+                    assert(elem_type == element_empty);
+                break;
+            }
         }
     }
 
@@ -213,7 +227,8 @@ int main()
 {
     qtm_test_resize(matrix_density_filled);
     qtm_test_resize(matrix_density_sparse);
-    qtm_test_filled();
+    qtm_test_value_store(matrix_density_filled);
+    qtm_test_value_store(matrix_density_sparse);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
