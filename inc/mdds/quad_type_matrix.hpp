@@ -132,6 +132,17 @@ private:
 
     class storage_base
     {
+    public:
+        virtual element& get_element(key_type row, key_type col) = 0;
+
+        virtual element_type get_type(key_type row, key_type col) const = 0;
+
+        virtual double get_numeric(key_type row, key_type col) const = 0;
+        virtual string_type get_string(key_type row, key_type col) const = 0;
+        virtual bool get_boolean(key_type row, key_type col) const = 0;
+
+        virtual size_t rows() const = 0;
+        virtual size_t cols() const = 0;
     };
 
     /**
@@ -155,17 +166,17 @@ private:
             }
         }
 
-        element& get_element(key_type row, key_type col)
+        virtual element& get_element(key_type row, key_type col)
         {
             return m_rows.at(row).at(col);
         }
 
-        element_type get_type(key_type row, key_type col) const
+        virtual element_type get_type(key_type row, key_type col) const
         {
             return m_rows.at(row).at(col).m_type;
         }
 
-        double get_numeric(key_type row, key_type col) const
+        virtual double get_numeric(key_type row, key_type col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != elem_numeric)
@@ -174,7 +185,7 @@ private:
             return elem.m_numeric;
         }
 
-        string_type get_string(key_type row, key_type col) const
+        virtual string_type get_string(key_type row, key_type col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != elem_string)
@@ -183,7 +194,7 @@ private:
             return *elem.mp_string;
         }
 
-        bool get_boolean(key_type row, key_type col) const
+        virtual bool get_boolean(key_type row, key_type col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != elem_boolean)
@@ -192,12 +203,12 @@ private:
             return elem.m_boolean;
         }
 
-        size_t rows() const
+        virtual size_t rows() const
         {
             return m_rows.size();
         }
 
-        size_t cols() const
+        virtual size_t cols() const
         {
             return m_rows.empty() ? 0 : m_rows[0].size();
         }
