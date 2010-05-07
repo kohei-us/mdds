@@ -60,22 +60,21 @@ public:
  * This data structure represents a matrix where each individual element may
  * be of one of four types: value, boolean, string, or empty.
  */
-template<typename _Key, typename _String>
+template<typename _String>
 class quad_type_matrix
 {
 public:
-    typedef _Key        key_type;
     typedef _String     string_type;
     typedef size_t      size_type;
 
     quad_type_matrix();
-    quad_type_matrix(key_type rows, key_type cols);
+    quad_type_matrix(size_t rows, size_t cols);
     ~quad_type_matrix();
 
-    void set_numeric(key_type row, key_type col, double val);
-    void set_boolean(key_type row, key_type col, bool val);
-    void set_string(key_type row, key_type col, string_type* str);
-    void set_empty(key_type row, key_type col);
+    void set_numeric(size_t row, size_t col, double val);
+    void set_boolean(size_t row, size_t col, bool val);
+    void set_string(size_t row, size_t col, string_type* str);
+    void set_empty(size_t row, size_t col);
 
     size_t size_rows() const;
     size_t size_cols() const;
@@ -88,7 +87,7 @@ public:
      * @param row new row size
      * @param col new column size
      */
-    void resize(key_type row, key_type col);
+    void resize(size_t row, size_t col);
     void clear();
     bool empty();
 
@@ -154,18 +153,18 @@ private:
     class storage_base
     {
     public:
-        virtual element& get_element(key_type row, key_type col) = 0;
+        virtual element& get_element(size_t row, size_t col) = 0;
 
-        virtual matrix_element_t get_type(key_type row, key_type col) const = 0;
+        virtual matrix_element_t get_type(size_t row, size_t col) const = 0;
 
-        virtual double get_numeric(key_type row, key_type col) const = 0;
-        virtual string_type get_string(key_type row, key_type col) const = 0;
-        virtual bool get_boolean(key_type row, key_type col) const = 0;
+        virtual double get_numeric(size_t row, size_t col) const = 0;
+        virtual string_type get_string(size_t row, size_t col) const = 0;
+        virtual bool get_boolean(size_t row, size_t col) const = 0;
 
         virtual size_t rows() const = 0;
         virtual size_t cols() const = 0;
 
-        virtual void resize(key_type row, key_type col) = 0;
+        virtual void resize(size_t row, size_t col) = 0;
         virtual void clear() = 0;
         virtual bool empty() = 0;
     };
@@ -181,27 +180,27 @@ private:
         typedef ::boost::ptr_vector<row_type> rows_type;
 
     public:
-        storage_filled(key_type rows, key_type cols)
+        storage_filled(size_t rows, size_t cols)
         {
             m_rows.reserve(rows);
-            for (key_type i = 0; i < rows; ++i)
+            for (size_t i = 0; i < rows; ++i)
             {
                 m_rows.push_back(new row_type);
                 init_row(m_rows.back(), cols);
             }
         }
 
-        virtual element& get_element(key_type row, key_type col)
+        virtual element& get_element(size_t row, size_t col)
         {
             return m_rows.at(row).at(col);
         }
 
-        virtual matrix_element_t get_type(key_type row, key_type col) const
+        virtual matrix_element_t get_type(size_t row, size_t col) const
         {
             return m_rows.at(row).at(col).m_type;
         }
 
-        virtual double get_numeric(key_type row, key_type col) const
+        virtual double get_numeric(size_t row, size_t col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != element_numeric)
@@ -210,7 +209,7 @@ private:
             return elem.m_numeric;
         }
 
-        virtual string_type get_string(key_type row, key_type col) const
+        virtual string_type get_string(size_t row, size_t col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != element_string)
@@ -219,7 +218,7 @@ private:
             return *elem.mp_string;
         }
 
-        virtual bool get_boolean(key_type row, key_type col) const
+        virtual bool get_boolean(size_t row, size_t col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != element_boolean)
@@ -238,7 +237,7 @@ private:
             return m_rows.empty() ? 0 : m_rows[0].size();
         }
 
-        virtual void resize(key_type row, key_type col)
+        virtual void resize(size_t row, size_t col)
         {
             if (!row || !col)
             {
@@ -310,7 +309,7 @@ private:
         static void init_row(row_type& row, size_t col_size)
         {
             row.reserve(col_size);
-            for (key_type j = 0; j < col_size; ++j)
+            for (size_t j = 0; j < col_size; ++j)
                 row.push_back(new element(static_cast<double>(0.0)));
         }
 
@@ -322,82 +321,82 @@ private:
     storage_filled* mp_storage;
 };
 
-template<typename _Key, typename _String>
-quad_type_matrix<_Key,_String>::quad_type_matrix() :
+template<typename _String>
+quad_type_matrix<_String>::quad_type_matrix() :
     mp_storage(NULL)
 {
 }
 
-template<typename _Key, typename _String>
-quad_type_matrix<_Key,_String>::quad_type_matrix(key_type rows, key_type cols) :
+template<typename _String>
+quad_type_matrix<_String>::quad_type_matrix(size_t rows, size_t cols) :
     mp_storage(NULL)
 {
     mp_storage = new storage_filled(rows, cols);
 }
 
-template<typename _Key, typename _String>
-quad_type_matrix<_Key,_String>::~quad_type_matrix()
+template<typename _String>
+quad_type_matrix<_String>::~quad_type_matrix()
 {
     delete mp_storage;
 }
 
-template<typename _Key, typename _String>
-void quad_type_matrix<_Key,_String>::set_numeric(key_type row, key_type col, double val)
+template<typename _String>
+void quad_type_matrix<_String>::set_numeric(size_t row, size_t col, double val)
 {
     mp_storage->get_element(row, col).set_numeric(val);
 }
 
-template<typename _Key, typename _String>
-void quad_type_matrix<_Key,_String>::set_boolean(key_type row, key_type col, bool val)
+template<typename _String>
+void quad_type_matrix<_String>::set_boolean(size_t row, size_t col, bool val)
 {
     mp_storage->get_element(row, col).set_boolean(val);
 }
 
-template<typename _Key, typename _String>
-void quad_type_matrix<_Key,_String>::set_string(key_type row, key_type col, string_type* str)
+template<typename _String>
+void quad_type_matrix<_String>::set_string(size_t row, size_t col, string_type* str)
 {
     mp_storage->get_element(row, col).set_string(str);
 }
 
-template<typename _Key, typename _String>
-void quad_type_matrix<_Key,_String>::set_empty(key_type row, key_type col)
+template<typename _String>
+void quad_type_matrix<_String>::set_empty(size_t row, size_t col)
 {
     mp_storage->get_element(row, col).set_empty();
 }
 
-template<typename _Key, typename _String>
-size_t quad_type_matrix<_Key,_String>::size_rows() const
+template<typename _String>
+size_t quad_type_matrix<_String>::size_rows() const
 {
     return mp_storage->rows();
 }
 
-template<typename _Key, typename _String>
-size_t quad_type_matrix<_Key,_String>::size_cols() const
+template<typename _String>
+size_t quad_type_matrix<_String>::size_cols() const
 {
     return mp_storage->cols();
 }
 
-template<typename _Key, typename _String>
-void quad_type_matrix<_Key,_String>::resize(key_type row, key_type col)
+template<typename _String>
+void quad_type_matrix<_String>::resize(size_t row, size_t col)
 {
     mp_storage->resize(row, col);
 }
 
-template<typename _Key, typename _String>
-void quad_type_matrix<_Key,_String>::clear()
+template<typename _String>
+void quad_type_matrix<_String>::clear()
 {
     mp_storage->clear();
 }
 
-template<typename _Key, typename _String>
-bool quad_type_matrix<_Key,_String>::empty()
+template<typename _String>
+bool quad_type_matrix<_String>::empty()
 {
     return mp_storage->empty();
 }
 
 #ifdef UNIT_TEST
-template<typename _Key, typename _String>
-void quad_type_matrix<_Key,_String>::dump() const
+template<typename _String>
+void quad_type_matrix<_String>::dump() const
 {
     using namespace std;
     size_t rows = mp_storage->rows(), cols = mp_storage->cols();

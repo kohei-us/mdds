@@ -79,7 +79,7 @@ using namespace mdds;
 void qtm_test_resize()
 {
     StackPrinter __stack_printer__("::qtm_test_basic");
-    typedef quad_type_matrix<size_t, string> mx_type;
+    typedef quad_type_matrix<string> mx_type;
     mx_type mx(3, 3);
     mx.dump();
     assert(mx.size_rows() == 3);
