@@ -72,6 +72,12 @@ public:
     quad_type_matrix(size_t rows, size_t cols, matrix_density_t density);
     ~quad_type_matrix();
 
+    matrix_element_t get_type(size_t row, size_t col) const;
+
+    double get_numeric(size_t row, size_t col) const;
+    bool get_boolean(size_t row, size_t col) const;
+    string_type get_string(size_t row, size_t col) const;
+
     void set_numeric(size_t row, size_t col, double val);
     void set_boolean(size_t row, size_t col, bool val);
     void set_string(size_t row, size_t col, string_type* str);
@@ -527,6 +533,31 @@ template<typename _String>
 quad_type_matrix<_String>::~quad_type_matrix()
 {
     delete mp_storage;
+}
+
+template<typename _String>
+matrix_element_t quad_type_matrix<_String>::get_type(size_t row, size_t col) const
+{
+    return mp_storage->get_type(row, col);
+}
+
+template<typename _String>
+double quad_type_matrix<_String>::get_numeric(size_t row, size_t col) const
+{
+    return mp_storage->get_numeric(row, col);
+}
+
+template<typename _String>
+bool quad_type_matrix<_String>::get_boolean(size_t row, size_t col) const
+{
+    return mp_storage->get_boolean(row, col);
+}
+
+template<typename _String>
+typename quad_type_matrix<_String>::string_type
+quad_type_matrix<_String>::get_string(size_t row, size_t col) const
+{
+    return mp_storage->get_string(row, col);
 }
 
 template<typename _String>
