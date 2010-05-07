@@ -44,10 +44,10 @@ template<typename _Key, typename _String>
 class quad_type_matrix
 {
 public:
-    class wrong_element_type : public ::mdds::general_error
+    class matrix_error : public ::mdds::general_error
     {
     public:
-        wrong_element_type(const ::std::string& msg) : general_error(msg) {}
+        matrix_error(const ::std::string& msg) : general_error(msg) {}
     };
 
     typedef _Key        key_type;
@@ -65,6 +65,11 @@ public:
     quad_type_matrix();
     quad_type_matrix(key_type rows, key_type cols);
     ~quad_type_matrix();
+
+    void set_numeric(key_type row, key_type col, double val);
+    void set_boolean(key_type row, key_type col, bool val);
+    void set_string(key_type row, key_type col, string_type* str);
+    void set_empty(key_type row, key_type col);
 
 #ifdef UNIT_TEST
     void dump() const;
@@ -91,6 +96,37 @@ private:
         {
             if (m_type == elem_string)
                 delete mp_string;
+        }
+
+        void set_empty()
+        {
+            if (m_type == elem_string)
+                delete mp_string;
+            m_type = elem_empty;
+        }
+
+        void set_numeric(double val)
+        {
+            if (m_type == elem_string)
+                delete mp_string;
+            m_type = elem_numeric;
+            m_numeric = val;
+        }
+
+        void set_boolean(bool val)
+        {
+            if (m_type == elem_string)
+                delete mp_string;
+            m_type = elem_boolean;
+            m_boolean = val;
+        }
+
+        void set_string(string_type* str)
+        {
+            if (m_type == elem_string)
+                delete mp_string;
+            m_type = elem_string;
+            mp_string = str;
         }
     };
 
@@ -119,6 +155,11 @@ private:
             }
         }
 
+        element& get_element(key_type row, key_type col)
+        {
+            return m_rows.at(row).at(col);
+        }
+
         element_type get_type(key_type row, key_type col) const
         {
             return m_rows.at(row).at(col).m_type;
@@ -128,7 +169,7 @@ private:
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != elem_numeric)
-                throw wrong_element_type("element type is not numeric.");
+                throw matrix_error("element type is not numeric.");
 
             return elem.m_numeric;
         }
@@ -137,7 +178,7 @@ private:
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != elem_string)
-                throw wrong_element_type("element type is not string.");
+                throw matrix_error("element type is not string.");
 
             return *elem.mp_string;
         }
@@ -146,7 +187,7 @@ private:
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != elem_boolean)
-                throw wrong_element_type("element type is not boolean.");
+                throw matrix_error("element type is not boolean.");
 
             return elem.m_boolean;
         }
@@ -190,6 +231,30 @@ quad_type_matrix<_Key,_String>::~quad_type_matrix()
     delete mp_storage;
 }
 
+template<typename _Key, typename _String>
+void quad_type_matrix<_Key,_String>::set_numeric(key_type row, key_type col, double val)
+{
+    mp_storage->get_element(row, col).set_numeric(val);
+}
+
+template<typename _Key, typename _String>
+void quad_type_matrix<_Key,_String>::set_boolean(key_type row, key_type col, bool val)
+{
+    mp_storage->get_element(row, col).set_boolean(val);
+}
+
+template<typename _Key, typename _String>
+void quad_type_matrix<_Key,_String>::set_string(key_type row, key_type col, string_type* str)
+{
+    mp_storage->get_element(row, col).set_string(str);
+}
+
+template<typename _Key, typename _String>
+void quad_type_matrix<_Key,_String>::set_empty(key_type row, key_type col)
+{
+    mp_storage->get_element(row, col).set_empty();
+}
+
 #ifdef UNIT_TEST
 template<typename _Key, typename _String>
 void quad_type_matrix<_Key,_String>::dump() const
@@ -204,25 +269,26 @@ void quad_type_matrix<_Key,_String>::dump() const
         {
             element_type etype = mp_storage->get_type(i, j);
             if (j > 0)
-                cout << "| ";
-            cout << "col " << j << ": ";
+                cout << ", ";
+            cout << "(col " << j << ": ";
             switch (etype)
             {
                 case elem_boolean:
-                    cout << mp_storage->get_boolean(i, j) << " [boolean] ";
+                    cout << boolalpha << mp_storage->get_boolean(i, j) << noboolalpha;
                     break;
                 case elem_empty:
-                    cout << "[empty] ";
+                    cout << "-";
                     break;
                 case elem_numeric:
-                    cout << mp_storage->get_numeric(i, j) << " [numeric] ";
+                    cout << mp_storage->get_numeric(i, j);
                     break;
                 case elem_string:
-                    cout << mp_storage->get_string(i, j) << " [string] ";
+                    cout << mp_storage->get_string(i, j);
                     break;
                 default:
                     ;
             }
+            cout << ")";
         }
         cout << endl;
     }
