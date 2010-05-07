@@ -66,7 +66,9 @@ public:
     quad_type_matrix(key_type rows, key_type cols);
     ~quad_type_matrix();
 
+#ifdef UNIT_TEST
     void dump() const;
+#endif
 
 private:
     struct element
@@ -188,12 +190,44 @@ quad_type_matrix<_Key,_String>::~quad_type_matrix()
     delete mp_storage;
 }
 
+#ifdef UNIT_TEST
 template<typename _Key, typename _String>
 void quad_type_matrix<_Key,_String>::dump() const
 {
     using namespace std;
+    size_t rows = mp_storage->rows(), cols = mp_storage->cols();
     cout << "rows: " << mp_storage->rows() << "  cols: " << mp_storage->cols() << endl;
+    for (size_t i = 0; i < rows; ++i)
+    {
+        cout << "row " << i << ": ";
+        for (size_t j = 0; j < cols; ++j)
+        {
+            element_type etype = mp_storage->get_type(i, j);
+            if (j > 0)
+                cout << "| ";
+            cout << "col " << j << ": ";
+            switch (etype)
+            {
+                case elem_boolean:
+                    cout << mp_storage->get_boolean(i, j) << " [boolean] ";
+                    break;
+                case elem_empty:
+                    cout << "[empty] ";
+                    break;
+                case elem_numeric:
+                    cout << mp_storage->get_numeric(i, j) << " [numeric] ";
+                    break;
+                case elem_string:
+                    cout << mp_storage->get_string(i, j) << " [string] ";
+                    break;
+                default:
+                    ;
+            }
+        }
+        cout << endl;
+    }
 }
+#endif
 
 }
 

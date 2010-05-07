@@ -101,6 +101,9 @@ test.st.mem: segment_tree_test
 test.qtm: quad_type_matrix_test
 	./quad_type_matrix_test
 
+test.qtm.mem: quad_type_matrix_test
+	valgrind --tool=memcheck --leak-check=full ./quad_type_matrix_test func
+
 test.stl: stlperf_test
 	./stlperf_test
 
