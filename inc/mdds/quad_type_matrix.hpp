@@ -179,6 +179,8 @@ private:
     class storage_base
     {
     public:
+        virtual ~storage_base() {}
+
         virtual element& get_element(size_t row, size_t col) = 0;
 
         virtual matrix_element_t get_type(size_t row, size_t col) const = 0;
@@ -214,6 +216,10 @@ private:
                 m_rows.push_back(new row_type);
                 init_row(m_rows.back(), cols);
             }
+        }
+
+        virtual ~storage_filled()
+        {
         }
 
         virtual element& get_element(size_t row, size_t col)
@@ -355,6 +361,10 @@ private:
     public:
         storage_sparse(size_t rows, size_t cols) : 
             m_row_size(rows), m_col_size(cols) {}
+
+        virtual ~storage_sparse()
+        {
+        }
 
         virtual element & get_element(size_t row, size_t col)
         {
