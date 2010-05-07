@@ -36,10 +36,10 @@
 
 namespace mdds {
 
-enum matrix_data_density_t
+enum matrix_density_t
 {
-    data_density_filled,
-    data_density_sparse
+    matrix_density_filled,
+    matrix_density_sparse
 };
 
 enum matrix_element_t
