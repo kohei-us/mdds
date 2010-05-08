@@ -222,13 +222,9 @@ private:
         }
 
         storage_filled(const storage_filled& r) :
-            m_rows(r.m_rows)
-        {
-        }
+            m_rows(r.m_rows) {}
 
-        virtual ~storage_filled()
-        {
-        }
+        virtual ~storage_filled() {}
 
         virtual element& get_element(size_t row, size_t col)
         {
@@ -378,9 +374,7 @@ private:
         storage_sparse(const storage_sparse& r) :
             m_rows(r.m_rows), m_row_size(r.m_row_size), m_col_size(r.m_col_size) {}
 
-        virtual ~storage_sparse()
-        {
-        }
+        virtual ~storage_sparse() {}
 
         virtual element & get_element(size_t row, size_t col)
         {
