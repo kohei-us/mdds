@@ -88,6 +88,14 @@ public:
     size_t size_cols() const;
     
     /**
+     * It populates the passed matrix object with the transpose of stored
+     * matrix data.  The passed matrix object will inherit the same backend
+     * storage as the original matrix object in case the storage types of the
+     * two matrix objects differ.
+     */
+    void transpose(quad_type_matrix& r);
+
+    /**
      * Resize the matrix to specified size.  This method supports resizing to
      * zero-sized matrix; however, either specifying the row or column size to
      * zero will resize the matrix to 0 x 0.
@@ -194,6 +202,7 @@ private:
         virtual size_t rows() const = 0;
         virtual size_t cols() const = 0;
 
+        virtual void transpose() = 0;
         virtual void resize(size_t row, size_t col) = 0;
         virtual void clear() = 0;
         virtual bool empty() = 0;
@@ -272,6 +281,10 @@ private:
         virtual size_t cols() const
         {
             return m_rows.empty() ? 0 : m_rows[0].size();
+        }
+
+        virtual void transpose()
+        {
         }
 
         virtual void resize(size_t row, size_t col)
@@ -451,6 +464,10 @@ private:
         virtual size_t cols() const
         {
             return m_col_size;
+        }
+
+        virtual void transpose()
+        {
         }
 
         virtual void resize(size_t row, size_t col)
@@ -638,6 +655,14 @@ template<typename _String>
 size_t quad_type_matrix<_String>::size_cols() const
 {
     return mp_storage->cols();
+}
+
+template<typename _String>
+void quad_type_matrix<_String>::transpose(quad_type_matrix& r)
+{
+    delete r.mp_storage;
+    r.mp_storage = mp_storage->clone();
+    r.mp_storage->transpose();
 }
 
 template<typename _String>
