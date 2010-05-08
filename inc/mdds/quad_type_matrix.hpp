@@ -98,6 +98,7 @@ public:
     void resize(size_t row, size_t col);
     void clear();
     bool empty();
+    void swap(quad_type_matrix& r);
 
 #ifdef UNIT_TEST
     void dump() const;
@@ -655,6 +656,12 @@ template<typename _String>
 bool quad_type_matrix<_String>::empty()
 {
     return mp_storage->empty();
+}
+
+template<typename _String>
+void quad_type_matrix<_String>::swap(quad_type_matrix& r)
+{
+    ::std::swap(mp_storage, r.mp_storage);
 }
 
 #ifdef UNIT_TEST

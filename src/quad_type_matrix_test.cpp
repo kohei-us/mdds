@@ -79,7 +79,7 @@ using namespace mdds;
 
 void qtm_test_resize(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::qtm_test_basic");
+    StackPrinter __stack_printer__("::qtm_test_resize");
     typedef quad_type_matrix<string> mx_type;
     mx_type mx(3, 3, density);
     mx.dump();
@@ -179,8 +179,8 @@ void qtm_test_value_store(matrix_density_t density)
         cout << endl;
     }
 
-    // Now, boolean values.  Note that these operations should de-aloocate all
-    // previously stored strings.
+    // Now, boolean values.  Note that these operations should de-alloocate
+    // all previously stored strings.
     for (size_t i = 0; i < 5; ++i)
     {
         for (size_t j = 0; j < 5; ++j)
