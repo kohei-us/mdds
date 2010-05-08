@@ -70,6 +70,7 @@ public:
 
     quad_type_matrix(matrix_density_t density);
     quad_type_matrix(size_t rows, size_t cols, matrix_density_t density);
+    quad_type_matrix(const quad_type_matrix& r);
     ~quad_type_matrix();
 
     matrix_element_t get_type(size_t row, size_t col) const;
@@ -195,6 +196,8 @@ private:
         virtual void resize(size_t row, size_t col) = 0;
         virtual void clear() = 0;
         virtual bool empty() = 0;
+
+        virtual storage_base* clone() const = 0;
     };
 
     /**
@@ -216,6 +219,11 @@ private:
                 m_rows.push_back(new row_type);
                 init_row(m_rows.back(), cols);
             }
+        }
+
+        storage_filled(const storage_filled& r) :
+            m_rows(r.m_rows)
+        {
         }
 
         virtual ~storage_filled()
@@ -316,6 +324,11 @@ private:
             return m_rows.empty();
         }
 
+        virtual storage_base* clone() const
+        {
+            return new storage_filled(*this);
+        }
+
     private:
 
         /**
@@ -361,6 +374,9 @@ private:
     public:
         storage_sparse(size_t rows, size_t cols) : 
             m_row_size(rows), m_col_size(cols) {}
+
+        storage_sparse(const storage_sparse& r) :
+            m_rows(r.m_rows), m_row_size(r.m_row_size), m_col_size(r.m_col_size) {}
 
         virtual ~storage_sparse()
         {
@@ -494,6 +510,11 @@ private:
             return m_row_size == 0 && m_col_size == 0;
         }
 
+        virtual storage_base* clone() const
+        {
+            return new storage_sparse(*this);
+        }
+
     private:
         const element& get_non_empty_element(size_t row, size_t col) const
         {
@@ -549,6 +570,12 @@ quad_type_matrix<_String>::quad_type_matrix(size_t rows, size_t cols, matrix_den
     mp_storage(NULL)
 {
     mp_storage = create_storage(rows, cols, density);
+}
+
+template<typename _String>
+quad_type_matrix<_String>::quad_type_matrix(const quad_type_matrix& r) :
+    mp_storage(r.mp_storage->clone())
+{
 }
 
 template<typename _String>
