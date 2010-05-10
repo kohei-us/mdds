@@ -387,6 +387,8 @@ void qtm_test_transpose(matrix_density_t density)
         mx_type mx, mx_trans;
         mx.transpose(mx_trans);
         print_transposed_mx(mx, mx_trans);
+        bool success = verify_transposed_matrix(mx, mx_trans);
+        assert(success);
     }
 }
 
