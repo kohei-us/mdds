@@ -269,8 +269,7 @@ private:
 
     /**
      * This storage creates instance for every single element, even for the
-     * empty elements.  The constructor initializes all elements to numeric 
-     * type having a value of 0. 
+     * empty elements. 
      */
     class storage_filled : public storage_base
     {
@@ -460,8 +459,7 @@ private:
     };
 
     /**
-     * This storage stores only non-empty elements; all the other non-stored
-     * elements are regarded as empty elements.
+     * This storage stores only non-empty elements. 
      */
     class storage_sparse : public storage_base
     {
