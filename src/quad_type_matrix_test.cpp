@@ -290,6 +290,7 @@ int main()
     qtm_test_value_store(matrix_density_filled);
     qtm_test_value_store(matrix_density_sparse);
     qtm_test_transpose(matrix_density_filled);
+    qtm_test_transpose(matrix_density_sparse);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
