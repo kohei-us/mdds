@@ -91,12 +91,30 @@ public:
     typedef _String     string_type;
     typedef size_t      size_type;
 
+    /**
+     * Default constructor.
+     */
     quad_type_matrix();
+
+    /**
+     * Construct an empty matrix with specified density type.
+     */
     quad_type_matrix(matrix_density_t density);
+
+    /**
+     * Construct a matrix of specified size with specified density type. 
+     */
     quad_type_matrix(size_t rows, size_t cols, matrix_density_t density);
+
     quad_type_matrix(const quad_type_matrix& r);
     ~quad_type_matrix();
 
+    /**
+     * Get the type of element specified by its position.  The type can be one 
+     * of empty, string, numeric, or boolean. 
+     * 
+     * @return element type.
+     */
     matrix_element_t get_type(size_t row, size_t col) const;
 
     double get_numeric(size_t row, size_t col) const;
@@ -108,6 +126,12 @@ public:
     void set_string(size_t row, size_t col, string_type* str);
     void set_empty(size_t row, size_t col);
 
+    /**
+     * Return the size of matrix as a pair.  The first value is the row size,
+     * while the second value is the column size.
+     * 
+     * @return matrix size as a value pair.
+     */
     ::std::pair<size_t,size_t> size() const;
     
     /**
