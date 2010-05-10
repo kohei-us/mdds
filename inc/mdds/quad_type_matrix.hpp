@@ -68,6 +68,7 @@ public:
     typedef _String     string_type;
     typedef size_t      size_type;
 
+    quad_type_matrix();
     quad_type_matrix(matrix_density_t density);
     quad_type_matrix(size_t rows, size_t cols, matrix_density_t density);
     quad_type_matrix(const quad_type_matrix& r);
@@ -519,6 +520,8 @@ private:
             using namespace std;
 
             rows_type trans;
+
+            // First, pick up the positions of all non-empty elements.
             vector<elem_pos_type> filled_elems;
             typename rows_type::const_iterator itr_row = m_rows.begin(), itr_row_end = m_rows.end();
             for (; itr_row != itr_row_end; ++itr_row)
@@ -532,15 +535,18 @@ private:
                     filled_elems.push_back(elem_pos_type(itr_col->first, row_idx));
                 }
             }
-
+            // Sort by row index first, then by column index.
             sort(filled_elems.begin(), filled_elems.end(), elem_pos_sorter());
-            typename vector<elem_pos_type>::const_iterator itr_pos = filled_elems.begin(), itr_pos_end = filled_elems.end();
+
+            // Iterate through the non-empty element positions and perform 
+            // transposition.
+            typename vector<elem_pos_type>::const_iterator 
+                itr_pos = filled_elems.begin(), itr_pos_end = filled_elems.end();
             while (itr_pos != itr_pos_end)
             {
                 // First item of the new row.
                 size_t row_idx = itr_pos->first;
                 size_t col_idx = itr_pos->second;
-                cout << row_idx << "," << col_idx << endl;
                 pair<typename rows_type::iterator, bool> r = trans.insert(row_idx, new row_type);
                 if (!r.second)
                     throw matrix_error("failed to insert a new row instance during transposition.");
@@ -556,7 +562,6 @@ private:
                 for (++itr_pos; itr_pos != itr_pos_end && itr_pos->first == row_idx; ++itr_pos)
                 {
                     col_idx = itr_pos->second;
-                    cout << row_idx << "," << col_idx << endl;
                     r2 = row.insert(col_idx, new element(m_rows[col_idx][row_idx]));
                     if (!r2.second)
                         throw matrix_error("afiled to insert a new element instance during transposition.");
@@ -564,6 +569,7 @@ private:
             }
 
             m_rows.swap(trans);
+            ::std::swap(m_row_size, m_col_size);
         }
 
         virtual void resize(size_t row, size_t col)
@@ -664,6 +670,13 @@ quad_type_matrix<_String>::create_storage(size_t rows, size_t cols, matrix_densi
             throw matrix_error("unknown density type");
     }
     return NULL;
+}
+
+template<typename _String>
+quad_type_matrix<_String>::quad_type_matrix() :
+    mp_storage(NULL)
+{
+    mp_storage = create_storage(0, 0, matrix_density_filled);
 }
 
 template<typename _String>

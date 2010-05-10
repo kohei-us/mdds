@@ -77,9 +77,67 @@ private:
 using namespace std;
 using namespace mdds;
 
+string get_mx_density_name(matrix_density_t dens)
+{
+    switch (dens)
+    {
+        case matrix_density_filled:
+            return "density filled";
+        case matrix_density_sparse:
+            return "density sparse";
+        default:
+            ;
+    }
+    return "unknown density";
+}
+
+void print_mx_density_type(matrix_density_t dens)
+{
+    cout << "matrix density type: " << get_mx_density_name(dens) << endl;
+}
+
+template<typename _Mx>
+bool verify_transposed_matrix(const _Mx& original, const _Mx& transposed)
+{
+    size_t row_size = original.size_rows(), col_size = original.size_cols();
+    if (row_size != transposed.size_cols() || col_size != transposed.size_rows())
+        return false;
+
+    for (size_t row = 0; row < row_size; ++row)
+    {
+        for (size_t col = 0; col < col_size; ++col)
+        {
+            matrix_element_t elem_type = original.get_type(row, col);
+            if (elem_type != transposed.get_type(col, row))
+                return false;
+
+            switch (elem_type)
+            {
+                case element_boolean:
+                    if (original.get_boolean(row, col) != transposed.get_boolean(col, row))
+                        return false;
+                    break;
+                case element_numeric:
+                    if (original.get_numeric(row, col) != transposed.get_numeric(col, row))
+                        return false;
+                    break;
+                case element_string:
+                    if (original.get_string(row, col) != transposed.get_string(col, row))
+                        return false;
+                    break;
+                case element_empty:
+                default:
+                    ;
+            }
+        }
+    }
+    return true;
+}
+
 void qtm_test_resize(matrix_density_t density)
 {
     StackPrinter __stack_printer__("::qtm_test_resize");
+    print_mx_density_type(density);
     typedef quad_type_matrix<string> mx_type;
     mx_type mx(3, 3, density);
     mx.dump();
@@ -122,6 +180,7 @@ void qtm_test_resize(matrix_density_t density)
 void qtm_test_value_store(matrix_density_t density)
 {
     StackPrinter __stack_printer__("::qtm_test_value_store");
+    print_mx_density_type(density);
     typedef quad_type_matrix<string> mx_type;
     mx_type mx(5, 5, density);
     mx.dump();
@@ -224,46 +283,18 @@ void qtm_test_value_store(matrix_density_t density)
 }
 
 template<typename _Mx>
-bool verify_transposed_matrix(const _Mx& original, const _Mx& transposed)
+void print_transposed_mx(const _Mx& original, const _Mx& transposed)
 {
-    size_t row_size = original.size_rows(), col_size = original.size_cols();
-    if (row_size != transposed.size_cols() || col_size != transposed.size_rows())
-        return false;
-
-    for (size_t row = 0; row < row_size; ++row)
-    {
-        for (size_t col = 0; col < col_size; ++col)
-        {
-            matrix_element_t elem_type = original.get_type(row, col);
-            if (elem_type != transposed.get_type(col, row))
-                return false;
-
-            switch (elem_type)
-            {
-                case element_boolean:
-                    if (original.get_boolean(row, col) != transposed.get_boolean(col, row))
-                        return false;
-                    break;
-                case element_numeric:
-                    if (original.get_numeric(row, col) != transposed.get_numeric(col, row))
-                        return false;
-                    break;
-                case element_string:
-                    if (original.get_string(row, col) != transposed.get_string(col, row))
-                        return false;
-                    break;
-                case element_empty:
-                default:
-                    ;
-            }
-        }
-    }
-    return true;
+    cout << "original matrix:" << endl;
+    original.dump();
+    cout << "transposed matrix:" << endl;
+    transposed.dump();
 }
 
 void qtm_test_transpose(matrix_density_t density)
 {
     StackPrinter __stack_printer__("::qtm_test_transpose");
+    print_mx_density_type(density);
     typedef quad_type_matrix<string> mx_type;
 
     {
@@ -275,14 +306,34 @@ void qtm_test_transpose(matrix_density_t density)
         mx.set_numeric(1, 0, 2);
         mx.set_numeric(2, 0, 2);
         mx.set_numeric(2, 1, 2);
-        cout << "original matrix:" << endl;
-        mx.dump();
-        mx_type mx_trans(0, 0, density);
+        mx_type mx_trans;
         mx.transpose(mx_trans);
-        cout << "transposed matrix:" << endl;
-        mx_trans.dump();
+        print_transposed_mx(mx, mx_trans);
         bool success = verify_transposed_matrix(mx, mx_trans);
         assert(success);
+    }
+
+    {
+        // Non-square matrix.
+        mx_type mx(5, 3, density);
+        mx.set_numeric(0, 0, 10);
+        mx.set_boolean(1, 0, true);
+        mx.set_boolean(2, 0, false);
+        mx.set_numeric(3, 0, 23);
+        mx.set_string(3, 2, new string("test"));
+        mx.set_empty(4, 0);
+        mx_type mx_trans;
+        mx.transpose(mx_trans);
+        print_transposed_mx(mx, mx_trans);
+        bool success = verify_transposed_matrix(mx, mx_trans);
+        assert(success);
+    }
+
+    {
+        // Empty matrix.
+        mx_type mx, mx_trans;
+        mx.transpose(mx_trans);
+        print_transposed_mx(mx, mx_trans);
     }
 }
 
