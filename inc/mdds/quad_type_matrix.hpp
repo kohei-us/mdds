@@ -51,6 +51,12 @@ enum matrix_element_t
     element_string  = 3 
 };
 
+enum matrix_empty_element_t
+{
+    matrix_empty_element_zero,
+    matrix_empty_element_empty
+};
+
 class matrix_error : public ::mdds::general_error
 {
 public:
@@ -214,6 +220,9 @@ private:
     class storage_base
     {
     public:
+        storage_base(matrix_empty_element_t init) : m_init_type(init) {}
+        storage_base(const storage_base& r) : m_init_type(r.m_init_type) {}
+
         virtual ~storage_base() {}
 
         virtual element& get_element(size_t row, size_t col) = 0;
@@ -233,6 +242,12 @@ private:
         virtual bool empty() = 0;
 
         virtual storage_base* clone() const = 0;
+
+    protected:
+        matrix_empty_element_t get_init_type() const { return m_init_type; }
+
+    private:
+        matrix_empty_element_t m_init_type;
     };
 
     /**
@@ -246,7 +261,8 @@ private:
         typedef ::boost::ptr_vector<row_type> rows_type;
 
     public:
-        storage_filled(size_t rows, size_t cols)
+        storage_filled(size_t rows, size_t cols) :
+            storage_base(matrix_empty_element_zero)
         {
             m_rows.reserve(rows);
             for (size_t i = 0; i < rows; ++i)
@@ -257,6 +273,7 @@ private:
         }
 
         storage_filled(const storage_filled& r) :
+            storage_base(r),
             m_rows(r.m_rows) {}
 
         virtual ~storage_filled() {}
@@ -391,18 +408,34 @@ private:
                 {
                     size_t new_col_count = new_cols - cur_cols;
                     for (size_t j = 0; j < new_col_count; ++j)
-                        m_rows[i].push_back(new element(static_cast<double>(0.0)));
+                        insert_new_elem(m_rows[i]);
                 }
                 else if (new_cols < cur_cols)
                     m_rows[i].resize(new_cols);
             }
         }
 
-        static void init_row(row_type& row, size_t col_size)
+        void init_row(row_type& row, size_t col_size)
         {
             row.reserve(col_size);
             for (size_t j = 0; j < col_size; ++j)
-                row.push_back(new element(static_cast<double>(0.0)));
+                insert_new_elem(row);
+        }
+
+        void insert_new_elem(row_type& row)
+        {
+            matrix_empty_element_t init_type = storage_base::get_init_type();
+            switch (init_type)
+            {
+                case matrix_empty_element_zero:
+                    row.push_back(new element(static_cast<double>(0.0)));
+                break;
+                case matrix_empty_element_empty:
+                    row.push_back(new element);
+                break;
+                default:
+                    throw matrix_error("unknown init type.");
+            }
         }
 
     private:
@@ -420,10 +453,25 @@ private:
 
     public:
         storage_sparse(size_t rows, size_t cols) : 
-            m_row_size(rows), m_col_size(cols) {}
+            storage_base(matrix_empty_element_empty),
+            m_row_size(rows), m_col_size(cols)
+        {
+            switch (storage_base::get_init_type())
+            {
+                case matrix_empty_element_zero:
+                    m_empty_elem.m_type = element_numeric;
+                    m_empty_elem.m_numeric = 0.0;
+                default:
+                    m_empty_elem.m_type = element_empty;
+            }
+        }
 
         storage_sparse(const storage_sparse& r) :
-            m_rows(r.m_rows), m_row_size(r.m_row_size), m_col_size(r.m_col_size) {}
+            storage_base(r),
+            m_rows(r.m_rows), 
+            m_empty_elem(r.m_empty_elem), 
+            m_row_size(r.m_row_size), 
+            m_col_size(r.m_col_size) {}
 
         virtual ~storage_sparse() {}
 
@@ -456,12 +504,12 @@ private:
         {
             typename rows_type::const_iterator itr = m_rows.find(row);
             if (itr == m_rows.end())
-                return element_empty;
+                return m_empty_elem.m_type;
 
             const row_type& row_store = *itr->second;
             typename row_type::const_iterator itr_elem = row_store.find(col);
             if (itr_elem == row_store.end())
-                return element_empty;
+                return m_empty_elem.m_type;
 
             return itr_elem->second->m_type;
         }
@@ -634,17 +682,18 @@ private:
         {
             typename rows_type::const_iterator itr = m_rows.find(row);
             if (itr == m_rows.end())
-                throw matrix_error("element is empty, where a non-empty element was expected.");
+                return m_empty_elem;
 
             const row_type& row_store = *itr->second;
             typename row_type::const_iterator itr_elem = row_store.find(col);
             if (itr_elem == row_store.end())
-                throw matrix_error("element is empty, where a non-empty element was expected.");
+                return m_empty_elem;
             return *itr_elem->second;
         }
 
     private:
         rows_type   m_rows;
+        element     m_empty_elem;
         size_t      m_row_size;
         size_t      m_col_size;
     };
