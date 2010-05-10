@@ -108,8 +108,7 @@ public:
     void set_string(size_t row, size_t col, string_type* str);
     void set_empty(size_t row, size_t col);
 
-    size_t size_rows() const;
-    size_t size_cols() const;
+    ::std::pair<size_t,size_t> size() const;
     
     /**
      * It populates the passed matrix object with the transpose of stored
@@ -824,15 +823,10 @@ void quad_type_matrix<_String>::set_empty(size_t row, size_t col)
 }
 
 template<typename _String>
-size_t quad_type_matrix<_String>::size_rows() const
+::std::pair<size_t,size_t> quad_type_matrix<_String>::size() const
 {
-    return mp_storage->rows();
-}
-
-template<typename _String>
-size_t quad_type_matrix<_String>::size_cols() const
-{
-    return mp_storage->cols();
+    ::std::pair<size_t,size_t> size_pair(mp_storage->rows(), mp_storage->cols());
+    return size_pair;
 }
 
 template<typename _String>

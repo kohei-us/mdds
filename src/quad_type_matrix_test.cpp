@@ -118,13 +118,13 @@ void print_mx_density_type(matrix_density_t dens)
 template<typename _Mx>
 bool verify_transposed_matrix(const _Mx& original, const _Mx& transposed)
 {
-    size_t row_size = original.size_rows(), col_size = original.size_cols();
-    if (row_size != transposed.size_cols() || col_size != transposed.size_rows())
+    pair<size_t, size_t> mx_size = original.size(), mx_size_trans = transposed.size();
+    if (mx_size.first != mx_size_trans.second || mx_size.second != mx_size_trans.first)
         return false;
 
-    for (size_t row = 0; row < row_size; ++row)
+    for (size_t row = 0; row < mx_size.first; ++row)
     {
-        for (size_t col = 0; col < col_size; ++col)
+        for (size_t col = 0; col < mx_size.second; ++col)
         {
             matrix_element_t elem_type = original.get_type(row, col);
             if (elem_type != transposed.get_type(col, row))
@@ -156,10 +156,10 @@ bool verify_transposed_matrix(const _Mx& original, const _Mx& transposed)
 template<typename _Mx>
 bool verify_init_zero(const _Mx& mx)
 {
-    size_t row_size = mx.size_rows(), col_size = mx.size_cols();
-    for (size_t row = 0; row < row_size; ++row)
+    pair<size_t,size_t> mxsize = mx.size();
+    for (size_t row = 0; row < mxsize.first; ++row)
     {
-        for (size_t col = 0; col < col_size; ++col)
+        for (size_t col = 0; col < mxsize.second; ++col)
         {
             if (mx.get_type(row, col) != element_numeric)
                 return false;
@@ -173,10 +173,10 @@ bool verify_init_zero(const _Mx& mx)
 template<typename _Mx>
 bool verify_init_empty(const _Mx& mx)
 {
-    size_t row_size = mx.size_rows(), col_size = mx.size_cols();
-    for (size_t row = 0; row < row_size; ++row)
+    pair<size_t,size_t> mxsize = mx.size();
+    for (size_t row = 0; row < mxsize.first; ++row)
     {
-        for (size_t col = 0; col < col_size; ++col)
+        for (size_t col = 0; col < mxsize.second; ++col)
         {
             if (mx.get_type(row, col) != element_empty)
                 return false;
@@ -190,10 +190,12 @@ void qtm_test_resize(matrix_density_t density)
     StackPrinter __stack_printer__("::qtm_test_resize");
     print_mx_density_type(density);
     typedef quad_type_matrix<string> mx_type;
+    pair<size_t,size_t> mxsize;
     mx_type mx(3, 3, density);
     mx.dump();
-    assert(mx.size_rows() == 3);
-    assert(mx.size_cols() == 3);
+    mxsize = mx.size();
+    assert(mxsize.first == 3);
+    assert(mxsize.second == 3);
 
     mx.set_string(0, 0, new string("test"));
     mx.set_numeric(0, 1, 2.3);
@@ -205,26 +207,31 @@ void qtm_test_resize(matrix_density_t density)
     mx.dump();
     mx.resize(6, 4);
     mx.dump();
-    assert(mx.size_rows() == 6);
-    assert(mx.size_cols() == 4);
+    mxsize = mx.size();
+    assert(mxsize.first == 6);
+    assert(mxsize.second == 4);
     mx.resize(6, 6);
     mx.dump();
-    assert(mx.size_rows() == 6);
-    assert(mx.size_cols() == 6);
+    mxsize = mx.size();
+    assert(mxsize.first == 6);
+    assert(mxsize.second == 6);
     mx.resize(3, 6);
     mx.dump();
-    assert(mx.size_rows() == 3);
-    assert(mx.size_cols() == 6);
+    mxsize = mx.size();
+    assert(mxsize.first == 3);
+    assert(mxsize.second == 6);
 
     mx.resize(3, 3);
     mx.dump();
-    assert(mx.size_rows() == 3);
-    assert(mx.size_cols() == 3);
+    mxsize = mx.size();
+    assert(mxsize.first == 3);
+    assert(mxsize.second == 3);
 
     mx.resize(0, 0);
     mx.dump();
-    assert(mx.size_rows() == 0);
-    assert(mx.size_cols() == 0);
+    mxsize = mx.size();
+    assert(mxsize.first == 0);
+    assert(mxsize.second == 0);
     assert(mx.empty());
 }
 
@@ -235,8 +242,9 @@ void qtm_test_value_store(matrix_density_t density)
     typedef quad_type_matrix<string> mx_type;
     mx_type mx(5, 5, density);
     mx.dump();
-    assert(mx.size_rows() == 5);
-    assert(mx.size_cols() == 5);
+    pair<size_t,size_t> mxsize = mx.size();
+    assert(mxsize.first == 5);
+    assert(mxsize.second == 5);
     assert(!mx.empty());
 
     // Make sure all elements have been initialized properly according to the 
