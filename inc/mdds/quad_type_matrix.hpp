@@ -39,8 +39,10 @@ namespace mdds {
 
 enum matrix_density_t
 {
-    matrix_density_filled,
-    matrix_density_sparse
+    matrix_density_filled_zero,
+    matrix_density_filled_empty,
+    matrix_density_sparse_zero,
+    matrix_density_sparse_empty
 };
 
 enum matrix_element_t
@@ -51,10 +53,10 @@ enum matrix_element_t
     element_string  = 3 
 };
 
-enum matrix_empty_element_t
+enum matrix_init_element_t
 {
-    matrix_empty_element_zero,
-    matrix_empty_element_empty
+    matrix_init_element_zero,
+    matrix_init_element_empty
 };
 
 class matrix_error : public ::mdds::general_error
@@ -62,6 +64,21 @@ class matrix_error : public ::mdds::general_error
 public:
     matrix_error(const ::std::string& msg) : general_error(msg) {}
 };
+
+matrix_init_element_t get_init_element_type(matrix_density_t density)
+{
+    switch (density)
+    {
+        case matrix_density_filled_empty:
+        case matrix_density_sparse_empty:
+            return matrix_init_element_empty;
+        case matrix_density_filled_zero:
+        case matrix_density_sparse_zero:
+            return matrix_init_element_zero;
+        default:
+            throw matrix_error("unknown matrix density type.");
+    }
+}
 
 /**
  * This data structure represents a matrix where each individual element may
@@ -220,7 +237,7 @@ private:
     class storage_base
     {
     public:
-        storage_base(matrix_empty_element_t init) : m_init_type(init) {}
+        storage_base(matrix_init_element_t init) : m_init_type(init) {}
         storage_base(const storage_base& r) : m_init_type(r.m_init_type) {}
 
         virtual ~storage_base() {}
@@ -244,10 +261,10 @@ private:
         virtual storage_base* clone() const = 0;
 
     protected:
-        matrix_empty_element_t get_init_type() const { return m_init_type; }
+        matrix_init_element_t get_init_type() const { return m_init_type; }
 
     private:
-        matrix_empty_element_t m_init_type;
+        matrix_init_element_t m_init_type;
     };
 
     /**
@@ -261,8 +278,8 @@ private:
         typedef ::boost::ptr_vector<row_type> rows_type;
 
     public:
-        storage_filled(size_t rows, size_t cols) :
-            storage_base(matrix_empty_element_zero)
+        storage_filled(size_t rows, size_t cols, matrix_init_element_t init_type) :
+            storage_base(init_type)
         {
             m_rows.reserve(rows);
             for (size_t i = 0; i < rows; ++i)
@@ -424,13 +441,13 @@ private:
 
         void insert_new_elem(row_type& row)
         {
-            matrix_empty_element_t init_type = storage_base::get_init_type();
+            matrix_init_element_t init_type = storage_base::get_init_type();
             switch (init_type)
             {
-                case matrix_empty_element_zero:
+                case matrix_init_element_zero:
                     row.push_back(new element(static_cast<double>(0.0)));
                 break;
-                case matrix_empty_element_empty:
+                case matrix_init_element_empty:
                     row.push_back(new element);
                 break;
                 default:
@@ -452,15 +469,16 @@ private:
         typedef ::boost::ptr_map<size_t, row_type> rows_type;
 
     public:
-        storage_sparse(size_t rows, size_t cols) : 
-            storage_base(matrix_empty_element_empty),
+        storage_sparse(size_t rows, size_t cols, matrix_init_element_t init_type) : 
+            storage_base(init_type),
             m_row_size(rows), m_col_size(cols)
         {
             switch (storage_base::get_init_type())
             {
-                case matrix_empty_element_zero:
+                case matrix_init_element_zero:
                     m_empty_elem.m_type = element_numeric;
                     m_empty_elem.m_numeric = 0.0;
+                break;
                 default:
                     m_empty_elem.m_type = element_empty;
             }
@@ -711,10 +729,14 @@ quad_type_matrix<_String>::create_storage(size_t rows, size_t cols, matrix_densi
 {
     switch (density)
     {
-        case matrix_density_filled:
-            return new storage_filled(rows, cols);
-        case matrix_density_sparse:
-            return new storage_sparse(rows, cols);
+        case matrix_density_filled_zero:
+            return new storage_filled(rows, cols, matrix_init_element_zero);
+        case matrix_density_filled_empty:
+            return new storage_filled(rows, cols, matrix_init_element_empty);
+        case matrix_density_sparse_zero:
+            return new storage_sparse(rows, cols, matrix_init_element_zero);
+        case matrix_density_sparse_empty:
+            return new storage_sparse(rows, cols, matrix_init_element_empty);
         default:
             throw matrix_error("unknown density type");
     }
@@ -725,7 +747,7 @@ template<typename _String>
 quad_type_matrix<_String>::quad_type_matrix() :
     mp_storage(NULL)
 {
-    mp_storage = create_storage(0, 0, matrix_density_filled);
+    mp_storage = create_storage(0, 0, matrix_density_filled_zero);
 }
 
 template<typename _String>

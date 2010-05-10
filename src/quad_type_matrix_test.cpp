@@ -77,14 +77,33 @@ private:
 using namespace std;
 using namespace mdds;
 
+typedef void (test_func_type)(matrix_density_t);
+
+/**
+ * Run specified test on all matrix density types.
+ *  
+ * @param func function pointer to the test function to be performed.
+ */
+void run_tests(test_func_type* func)
+{
+    func(matrix_density_filled_zero);
+    func(matrix_density_filled_empty);
+    func(matrix_density_sparse_zero);
+    func(matrix_density_sparse_empty);
+}
+
 string get_mx_density_name(matrix_density_t dens)
 {
     switch (dens)
     {
-        case matrix_density_filled:
-            return "density filled";
-        case matrix_density_sparse:
-            return "density sparse";
+        case matrix_density_filled_zero:
+            return "density filled with zero base elements";
+        case matrix_density_filled_empty:
+            return "density filled with empty base elements";
+        case matrix_density_sparse_zero:
+            return "density sparse with zero base elements";
+        case matrix_density_sparse_empty:
+            return "density sparse with empty base elements";
         default:
             ;
     }
@@ -129,6 +148,38 @@ bool verify_transposed_matrix(const _Mx& original, const _Mx& transposed)
                 default:
                     ;
             }
+        }
+    }
+    return true;
+}
+
+template<typename _Mx>
+bool verify_init_zero(const _Mx& mx)
+{
+    size_t row_size = mx.size_rows(), col_size = mx.size_cols();
+    for (size_t row = 0; row < row_size; ++row)
+    {
+        for (size_t col = 0; col < col_size; ++col)
+        {
+            if (mx.get_type(row, col) != element_numeric)
+                return false;
+            if (mx.get_numeric(row, col) != 0.0)
+                return false;
+        }
+    }
+    return true;
+}
+
+template<typename _Mx>
+bool verify_init_empty(const _Mx& mx)
+{
+    size_t row_size = mx.size_rows(), col_size = mx.size_cols();
+    for (size_t row = 0; row < row_size; ++row)
+    {
+        for (size_t col = 0; col < col_size; ++col)
+        {
+            if (mx.get_type(row, col) != element_empty)
+                return false;
         }
     }
     return true;
@@ -197,7 +248,8 @@ void qtm_test_value_store(matrix_density_t density)
             matrix_element_t elem_type = mx.get_type(i, j);
             switch (density)
             {
-                case matrix_density_filled:
+                case matrix_density_filled_zero:
+                case matrix_density_sparse_zero:
                 {
                     // filled matrices are initialized to numeric elements 
                     // having a value of 0.
@@ -206,7 +258,8 @@ void qtm_test_value_store(matrix_density_t density)
                     assert(val == 0.0);
                 }
                 break;
-                case matrix_density_sparse:
+                case matrix_density_filled_empty:
+                case matrix_density_sparse_empty:
                     // sparse matrices are initialized to empty elements.
                     assert(elem_type == element_empty);
                 break;
@@ -337,14 +390,45 @@ void qtm_test_transpose(matrix_density_t density)
     }
 }
 
+void qtm_test_initial_elements()
+{
+    StackPrinter __stack_printer__("::qtm_test_initial_elements");
+    typedef quad_type_matrix<string> mx_type;
+    {
+        mx_type mx(3, 3, matrix_density_filled_zero);
+        mx.dump();
+        bool success = verify_init_zero(mx);
+        assert(success);
+    }
+
+    {
+        mx_type mx(3, 3, matrix_density_filled_empty);
+        mx.dump();
+        bool success = verify_init_empty(mx);
+        assert(success);
+    }
+
+    {
+        mx_type mx(3, 3, matrix_density_sparse_zero);
+        mx.dump();
+        bool success = verify_init_zero(mx);
+        assert(success);
+    }
+
+    {
+        mx_type mx(3, 3, matrix_density_sparse_empty);
+        mx.dump();
+        bool success = verify_init_empty(mx);
+        assert(success);
+    }
+}
+
 int main()
 {
-    qtm_test_resize(matrix_density_filled);
-    qtm_test_resize(matrix_density_sparse);
-    qtm_test_value_store(matrix_density_filled);
-    qtm_test_value_store(matrix_density_sparse);
-    qtm_test_transpose(matrix_density_filled);
-    qtm_test_transpose(matrix_density_sparse);
+    qtm_test_initial_elements();
+    run_tests(qtm_test_resize);
+    run_tests(qtm_test_value_store);
+    run_tests(qtm_test_transpose);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
