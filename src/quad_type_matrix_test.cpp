@@ -223,6 +223,44 @@ void qtm_test_value_store(matrix_density_t density)
     }
 }
 
+template<typename _Mx>
+bool verify_transposed_matrix(const _Mx& original, const _Mx& transposed)
+{
+    size_t row_size = original.size_rows(), col_size = original.size_cols();
+    if (row_size != transposed.size_cols() || col_size != transposed.size_rows())
+        return false;
+
+    for (size_t row = 0; row < row_size; ++row)
+    {
+        for (size_t col = 0; col < col_size; ++col)
+        {
+            matrix_element_t elem_type = original.get_type(row, col);
+            if (elem_type != transposed.get_type(col, row))
+                return false;
+
+            switch (elem_type)
+            {
+                case element_boolean:
+                    if (original.get_boolean(row, col) != transposed.get_boolean(col, row))
+                        return false;
+                    break;
+                case element_numeric:
+                    if (original.get_numeric(row, col) != transposed.get_numeric(col, row))
+                        return false;
+                    break;
+                case element_string:
+                    if (original.get_string(row, col) != transposed.get_string(col, row))
+                        return false;
+                    break;
+                case element_empty:
+                default:
+                    ;
+            }
+        }
+    }
+    return true;
+}
+
 void qtm_test_transpose(matrix_density_t density)
 {
     StackPrinter __stack_printer__("::qtm_test_transpose");
@@ -241,7 +279,8 @@ void qtm_test_transpose(matrix_density_t density)
     mx.transpose(mx_trans);
     cout << "transposed matrix:" << endl;
     mx_trans.dump();
-
+    bool success = verify_transposed_matrix(mx, mx_trans);
+    assert(success);
 }
 
 int main()

@@ -151,6 +151,27 @@ private:
         explicit element(bool v) : m_type(element_boolean), m_boolean(v) {}
         explicit element(string_type* p) : m_type(element_string), mp_string(p) {}
 
+        bool operator== (const element& r) const
+        {
+            if (m_type != r.m_type)
+                return false;
+
+            switch (m_type)
+            {
+                case element_boolean:
+                    return m_boolean == r.m_boolean;
+                case element_numeric:
+                    return m_numeric == r.m_numeric;
+                case element_string:
+                    return *mp_string == *r.mp_string;
+                case element_empty:
+                default:
+                    ;
+            }
+
+            return true;
+        }
+
         ~element()
         {
             if (m_type == element_string)
