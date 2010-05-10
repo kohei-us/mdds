@@ -502,8 +502,68 @@ private:
             return m_col_size;
         }
 
+        typedef ::std::pair<size_t, size_t> elem_pos_type;
+
+        struct elem_pos_sorter : ::std::binary_function<elem_pos_type, elem_pos_type, bool>
+        {
+            bool operator() (const elem_pos_type& left, const elem_pos_type& right) const
+            {
+                if (left.first != right.first)
+                    return left.first < right.first;
+                return left.second < right.second;
+            }
+        };
+
         virtual void transpose()
         {
+            using namespace std;
+
+            rows_type trans;
+            vector<elem_pos_type> filled_elems;
+            typename rows_type::const_iterator itr_row = m_rows.begin(), itr_row_end = m_rows.end();
+            for (; itr_row != itr_row_end; ++itr_row)
+            {
+                size_t row_idx = itr_row->first;
+                const row_type& row = *itr_row->second;
+                typename row_type::const_iterator itr_col = row.begin(), itr_col_end = row.end();
+                for (; itr_col != itr_col_end; ++itr_col)
+                {
+                    // Be sure to swap the row and column indices.
+                    filled_elems.push_back(elem_pos_type(itr_col->first, row_idx));
+                }
+            }
+
+            sort(filled_elems.begin(), filled_elems.end(), elem_pos_sorter());
+            typename vector<elem_pos_type>::const_iterator itr_pos = filled_elems.begin(), itr_pos_end = filled_elems.end();
+            while (itr_pos != itr_pos_end)
+            {
+                // First item of the new row.
+                size_t row_idx = itr_pos->first;
+                size_t col_idx = itr_pos->second;
+                cout << row_idx << "," << col_idx << endl;
+                pair<typename rows_type::iterator, bool> r = trans.insert(row_idx, new row_type);
+                if (!r.second)
+                    throw matrix_error("failed to insert a new row instance during transposition.");
+
+                typename rows_type::iterator itr_row = r.first;
+                row_type& row = *itr_row->second;
+                pair<typename row_type::iterator, bool> r2 = 
+                    row.insert(col_idx, new element(m_rows[col_idx][row_idx]));
+                if (!r2.second)
+                    throw matrix_error("afiled to insert a new element instance during transposition.");
+
+                // Keep iterating until we get a different row index.
+                for (++itr_pos; itr_pos != itr_pos_end && itr_pos->first == row_idx; ++itr_pos)
+                {
+                    col_idx = itr_pos->second;
+                    cout << row_idx << "," << col_idx << endl;
+                    r2 = row.insert(col_idx, new element(m_rows[col_idx][row_idx]));
+                    if (!r2.second)
+                        throw matrix_error("afiled to insert a new element instance during transposition.");
+                }
+            }
+
+            m_rows.swap(trans);
         }
 
         virtual void resize(size_t row, size_t col)

@@ -266,21 +266,24 @@ void qtm_test_transpose(matrix_density_t density)
     StackPrinter __stack_printer__("::qtm_test_transpose");
     typedef quad_type_matrix<string> mx_type;
 
-    mx_type mx(3, 3, density);
-    mx.set_numeric(0, 1, 1);
-    mx.set_numeric(0, 2, 1);
-    mx.set_numeric(1, 2, 1);
-    mx.set_numeric(1, 0, 2);
-    mx.set_numeric(2, 0, 2);
-    mx.set_numeric(2, 1, 2);
-    cout << "original matrix:" << endl;
-    mx.dump();
-    mx_type mx_trans(0, 0, density);
-    mx.transpose(mx_trans);
-    cout << "transposed matrix:" << endl;
-    mx_trans.dump();
-    bool success = verify_transposed_matrix(mx, mx_trans);
-    assert(success);
+    {
+        // Transposition of square matrix.
+        mx_type mx(3, 3, density);
+        mx.set_numeric(0, 1, 1);
+        mx.set_numeric(0, 2, 1);
+        mx.set_numeric(1, 2, 1);
+        mx.set_numeric(1, 0, 2);
+        mx.set_numeric(2, 0, 2);
+        mx.set_numeric(2, 1, 2);
+        cout << "original matrix:" << endl;
+        mx.dump();
+        mx_type mx_trans(0, 0, density);
+        mx.transpose(mx_trans);
+        cout << "transposed matrix:" << endl;
+        mx_trans.dump();
+        bool success = verify_transposed_matrix(mx, mx_trans);
+        assert(success);
+    }
 }
 
 int main()
