@@ -91,7 +91,10 @@ public:
      * It populates the passed matrix object with the transpose of stored
      * matrix data.  The passed matrix object will inherit the same backend
      * storage as the original matrix object in case the storage types of the
-     * two matrix objects differ.
+     * two matrix objects differ.  The passed matrix object will also get 
+     * automatically re-sized in order to fit the transposed matrix data. 
+     *  
+     * @param r passed matrix object to store the transposed matrix data in. 
      */
     void transpose(quad_type_matrix& r);
 
@@ -285,6 +288,18 @@ private:
 
         virtual void transpose()
         {
+            rows_type trans_mx;
+            size_t row_size = rows(), col_size = cols();
+            trans_mx.reserve(col_size);
+            for (size_t col = 0; col < col_size; ++col)
+            {
+                trans_mx.push_back(new row_type);
+                row_type& trans_row = trans_mx.back();
+                trans_row.reserve(row_size);
+                for (size_t row = 0; row < row_size; ++row)
+                    trans_row.push_back(new element(m_rows[row][col]));
+            }
+            m_rows.swap(trans_mx);
         }
 
         virtual void resize(size_t row, size_t col)
