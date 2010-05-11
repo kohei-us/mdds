@@ -302,7 +302,7 @@ private:
         virtual void transpose() = 0;
         virtual void resize(size_t row, size_t col) = 0;
         virtual void clear() = 0;
-        virtual bool numeric() const = 0;
+        virtual bool numeric() = 0;
         virtual bool empty() const = 0;
 
         virtual storage_base* clone() const = 0;
@@ -325,7 +325,9 @@ private:
 
     public:
         storage_filled(size_t rows, size_t cols, matrix_init_element_t init_type) :
-            storage_base(init_type)
+            storage_base(init_type),
+            m_numeric(false),
+            m_valid(false)
         {
             m_rows.reserve(rows);
             for (size_t i = 0; i < rows; ++i)
@@ -337,12 +339,15 @@ private:
 
         storage_filled(const storage_filled& r) :
             storage_base(r),
-            m_rows(r.m_rows) {}
+            m_rows(r.m_rows),
+            m_numeric(r.m_numeric),
+            m_valid(r.m_valid) {}
 
         virtual ~storage_filled() {}
 
         virtual element& get_element(size_t row, size_t col)
         {
+            m_valid = false;
             return m_rows.at(row).at(col);
         }
 
@@ -409,6 +414,7 @@ private:
 
         virtual void resize(size_t row, size_t col)
         {
+            m_valid = false;
             if (!row || !col)
             {
                 // Empty the matrix.
@@ -447,11 +453,34 @@ private:
         virtual void clear()
         {
             m_rows.clear();
+            m_valid = true;
+            m_numeric = false;
         }
 
-        virtual bool numeric() const
+        virtual bool numeric()
         {
-            return false;
+            if (m_valid)
+                return m_numeric;
+
+            typename rows_type::const_iterator itr_row = m_rows.begin(), itr_row_end = m_rows.end();
+            for (; itr_row != itr_row_end; ++itr_row)
+            {
+                typename row_type::const_iterator itr_col = itr_row->begin(), itr_col_end = itr_row->end();
+                for (; itr_col != itr_col_end; ++itr_col)
+                {
+                    matrix_element_t elem_type = itr_col->m_type;
+                    if (elem_type != element_numeric && elem_type != element_boolean)
+                    {
+                        m_numeric = false;
+                        m_valid = true;
+                        return m_numeric;
+                    }
+                }
+            }
+
+            m_numeric = true;
+            m_valid = true;
+            return m_numeric;
         }
 
         virtual bool empty() const
@@ -511,6 +540,8 @@ private:
 
     private:
         rows_type m_rows;
+        bool m_numeric:1;
+        bool m_valid:1;
     };
 
     /**
@@ -524,7 +555,8 @@ private:
     public:
         storage_sparse(size_t rows, size_t cols, matrix_init_element_t init_type) : 
             storage_base(init_type),
-            m_row_size(rows), m_col_size(cols)
+            m_row_size(rows), m_col_size(cols),
+            m_numeric(rows && cols), m_valid(true)
         {
             switch (storage_base::get_init_type())
             {
@@ -534,6 +566,7 @@ private:
                 break;
                 default:
                     m_empty_elem.m_type = element_empty;
+                    m_numeric = false;
             }
         }
 
@@ -548,6 +581,11 @@ private:
 
         virtual element & get_element(size_t row, size_t col)
         {
+            if (row >= m_row_size || col >= m_col_size)
+                throw matrix_error("specified element is out-of-bound.");
+
+            m_valid = false;
+
             typename rows_type::iterator itr = m_rows.find(row);
             if (itr == m_rows.end())
             {
@@ -698,6 +736,8 @@ private:
 
         virtual void resize(size_t row, size_t col)
         {
+            m_valid = false;
+
             if (!row || !col)
             {
                 clear();
@@ -737,11 +777,48 @@ private:
             m_rows.clear();
             m_row_size = 0;
             m_col_size = 0;
+            m_valid = true;
+            m_numeric = false;
         }
 
-        virtual bool numeric() const
+        virtual bool numeric()
         {
-            return false;
+            if (m_valid)
+                return m_numeric;
+
+            size_t non_empty_count = 0;
+            typename rows_type::const_iterator itr_row = m_rows.begin(), itr_row_end = m_rows.end();
+            for (; itr_row != itr_row_end; ++itr_row)
+            {
+                const row_type& row = *itr_row->second;
+                non_empty_count += row.size();
+                assert(row.size() <= m_col_size);
+                typename row_type::const_iterator itr_col = row.begin(), itr_col_end = row.end();
+                for (; itr_col != itr_col_end; ++itr_col)
+                {
+                    const element& elem = *itr_col->second;
+                    if (elem.m_type != element_numeric || elem.m_type != element_boolean)
+                    {
+                        m_valid = true;
+                        m_numeric = false;
+                        return m_numeric;
+                    }
+                }
+            }
+
+            // All non-empty elements are numeric.
+
+            size_t total_elem_count = m_row_size * m_col_size;
+            assert(non_empty_count <= total_elem_count);
+            if (total_elem_count != non_empty_count)
+                // Matrix is not fully populated.
+                m_numeric = (storage_base::get_init_type() == matrix_init_element_zero);
+            else
+                // Matrix is fully populated.
+                m_numeric = true;
+
+            m_valid = true;
+            return m_numeric;
         }
 
         virtual bool empty() const
@@ -750,7 +827,7 @@ private:
             // zero, and vise versa.
             assert((!m_row_size && !m_col_size) || (m_row_size && m_col_size));
 
-            return m_row_size == 0 && m_col_size == 0;
+            return m_row_size == 0 || m_col_size == 0;
         }
 
         virtual storage_base* clone() const
@@ -777,6 +854,8 @@ private:
         element     m_empty_elem;
         size_t      m_row_size;
         size_t      m_col_size;
+        bool        m_numeric:1;
+        bool        m_valid:1;
     };
 
 private:
