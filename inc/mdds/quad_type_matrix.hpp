@@ -161,11 +161,20 @@ public:
     void clear();
 
     /**
+     * Check whether or not this matrix is numeric.  A numeric matrix contains 
+     * only numeric or boolean elements. 
+     * 
+     * @return true if the matrix contains only numeric or boolean elements, 
+     *         or false otherwise.
+     */
+    bool numeric() const;
+
+    /**
      * Check whether or not this matrix is empty. 
      * 
      * @return true if this matrix is empty, or false otherwise.
      */
-    bool empty();
+    bool empty() const;
 
     /**
      * Swap the content of the matrix with another instance.
@@ -293,7 +302,8 @@ private:
         virtual void transpose() = 0;
         virtual void resize(size_t row, size_t col) = 0;
         virtual void clear() = 0;
-        virtual bool empty() = 0;
+        virtual bool numeric() const = 0;
+        virtual bool empty() const = 0;
 
         virtual storage_base* clone() const = 0;
 
@@ -402,7 +412,7 @@ private:
             if (!row || !col)
             {
                 // Empty the matrix.
-                m_rows.clear();
+                clear();
                 return;
             }
 
@@ -439,7 +449,12 @@ private:
             m_rows.clear();
         }
 
-        virtual bool empty()
+        virtual bool numeric() const
+        {
+            return false;
+        }
+
+        virtual bool empty() const
         {
             return m_rows.empty();
         }
@@ -724,7 +739,12 @@ private:
             m_col_size = 0;
         }
 
-        virtual bool empty()
+        virtual bool numeric() const
+        {
+            return false;
+        }
+
+        virtual bool empty() const
         {
             // If one of row and column sizes are zero, the other size must be
             // zero, and vise versa.
@@ -896,7 +916,13 @@ void quad_type_matrix<_String>::clear()
 }
 
 template<typename _String>
-bool quad_type_matrix<_String>::empty()
+bool quad_type_matrix<_String>::numeric() const
+{
+    return mp_storage->numeric();
+}
+
+template<typename _String>
+bool quad_type_matrix<_String>::empty() const
 {
     return mp_storage->empty();
 }
