@@ -783,6 +783,8 @@ private:
 
         virtual bool numeric()
         {
+            using namespace std;
+
             if (m_valid)
                 return m_numeric;
 
@@ -797,7 +799,7 @@ private:
                 for (; itr_col != itr_col_end; ++itr_col)
                 {
                     const element& elem = *itr_col->second;
-                    if (elem.m_type != element_numeric || elem.m_type != element_boolean)
+                    if (elem.m_type != element_numeric && elem.m_type != element_boolean)
                     {
                         m_valid = true;
                         m_numeric = false;
@@ -808,14 +810,15 @@ private:
 
             // All non-empty elements are numeric.
 
-            size_t total_elem_count = m_row_size * m_col_size;
-            assert(non_empty_count <= total_elem_count);
-            if (total_elem_count != non_empty_count)
-                // Matrix is not fully populated.
-                m_numeric = (storage_base::get_init_type() == matrix_init_element_zero);
-            else
-                // Matrix is fully populated.
+            matrix_init_element_t init_type = storage_base::get_init_type();
+            if (init_type == matrix_init_element_zero)
                 m_numeric = true;
+            else
+            {    
+                size_t total_elem_count = m_row_size * m_col_size;
+                assert(non_empty_count <= total_elem_count);
+                m_numeric = total_elem_count == non_empty_count;
+            }
 
             m_valid = true;
             return m_numeric;
