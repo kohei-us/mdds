@@ -154,8 +154,22 @@ public:
      * @param col new column size
      */
     void resize(size_t row, size_t col);
+
+    /**
+     * Empty the matrix.
+     */
     void clear();
+
+    /**
+     * Check whether or not this matrix is empty. 
+     * 
+     * @return true if this matrix is empty, or false otherwise.
+     */
     bool empty();
+
+    /**
+     * Swap the content of the matrix with another instance.
+     */
     void swap(quad_type_matrix& r);
 
 #ifdef UNIT_TEST
