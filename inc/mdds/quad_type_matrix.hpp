@@ -324,16 +324,16 @@ private:
         typedef ::boost::ptr_vector<row_type> rows_type;
 
     public:
-        storage_filled(size_t rows, size_t cols, matrix_init_element_t init_type) :
+        storage_filled(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
             storage_base(init_type),
             m_numeric(false),
             m_valid(false)
         {
-            m_rows.reserve(rows);
-            for (size_t i = 0; i < rows; ++i)
+            m_rows.reserve(_rows);
+            for (size_t i = 0; i < _rows; ++i)
             {
                 m_rows.push_back(new row_type);
-                init_row(m_rows.back(), cols);
+                init_row(m_rows.back(), _cols);
             }
         }
 
@@ -553,10 +553,10 @@ private:
         typedef ::boost::ptr_map<size_t, row_type> rows_type;
 
     public:
-        storage_sparse(size_t rows, size_t cols, matrix_init_element_t init_type) : 
+        storage_sparse(size_t _rows, size_t _cols, matrix_init_element_t init_type) : 
             storage_base(init_type),
-            m_row_size(rows), m_col_size(cols),
-            m_numeric(rows && cols), m_valid(true)
+            m_row_size(_rows), m_col_size(_cols),
+            m_numeric(_rows && _cols), m_valid(true)
         {
             switch (storage_base::get_init_type())
             {
@@ -685,16 +685,18 @@ private:
 
             // First, pick up the positions of all non-empty elements.
             vector<elem_pos_type> filled_elems;
-            typename rows_type::const_iterator itr_row = m_rows.begin(), itr_row_end = m_rows.end();
-            for (; itr_row != itr_row_end; ++itr_row)
             {
-                size_t row_idx = itr_row->first;
-                const row_type& row = *itr_row->second;
-                typename row_type::const_iterator itr_col = row.begin(), itr_col_end = row.end();
-                for (; itr_col != itr_col_end; ++itr_col)
+                typename rows_type::const_iterator itr_row = m_rows.begin(), itr_row_end = m_rows.end();
+                for (; itr_row != itr_row_end; ++itr_row)
                 {
-                    // Be sure to swap the row and column indices.
-                    filled_elems.push_back(elem_pos_type(itr_col->first, row_idx));
+                    size_t row_idx = itr_row->first;
+                    const row_type& row = *itr_row->second;
+                    typename row_type::const_iterator itr_col = row.begin(), itr_col_end = row.end();
+                    for (; itr_col != itr_col_end; ++itr_col)
+                    {
+                        // Be sure to swap the row and column indices.
+                        filled_elems.push_back(elem_pos_type(itr_col->first, row_idx));
+                    }
                 }
             }
             // Sort by row index first, then by column index.
@@ -762,9 +764,9 @@ private:
                 {
                     // Now, remove all columns where the column index is 
                     // greater than or equal to 'col'.
-                    row_type& row = *itr->second;
-                    typename row_type::iterator itr_elem = row.lower_bound(col);
-                    row.erase(itr_elem, row.end());
+                    row_type& row_container = *itr->second;
+                    typename row_type::iterator itr_elem = row_container.lower_bound(col);
+                    row_container.erase(itr_elem, row_container.end());
                 }
             }
 
