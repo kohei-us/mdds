@@ -365,8 +365,8 @@ void qtm_test_transpose(matrix_density_t density)
         mx.set_numeric(1, 0, 2);
         mx.set_numeric(2, 0, 2);
         mx.set_numeric(2, 1, 2);
-        mx_type mx_trans;
-        mx.transpose(mx_trans);
+        mx_type mx_trans(mx);
+        mx_trans.transpose();
         print_transposed_mx(mx, mx_trans);
         bool success = verify_transposed_matrix(mx, mx_trans);
         assert(success);
@@ -381,8 +381,8 @@ void qtm_test_transpose(matrix_density_t density)
         mx.set_numeric(3, 0, 23);
         mx.set_string(3, 2, new string("test"));
         mx.set_empty(4, 0);
-        mx_type mx_trans;
-        mx.transpose(mx_trans);
+        mx_type mx_trans(mx);
+        mx_trans.transpose();
         print_transposed_mx(mx, mx_trans);
         bool success = verify_transposed_matrix(mx, mx_trans);
         assert(success);
@@ -391,7 +391,7 @@ void qtm_test_transpose(matrix_density_t density)
     {
         // Empty matrix.
         mx_type mx, mx_trans;
-        mx.transpose(mx_trans);
+        mx_trans.transpose();
         print_transposed_mx(mx, mx_trans);
         bool success = verify_transposed_matrix(mx, mx_trans);
         assert(success);

@@ -134,16 +134,24 @@ public:
      */
     ::std::pair<size_t,size_t> size() const;
     
-    /**
-     * It populates the passed matrix object with the transpose of stored
-     * matrix data.  The passed matrix object will inherit the same backend
-     * storage as the original matrix object in case the storage types of the
-     * two matrix objects differ.  The passed matrix object will also get 
-     * automatically re-sized in order to fit the transposed matrix data. 
+    /** 
+     * Transpose the stored matrix data. 
      *  
-     * @param r passed matrix object to store the transposed matrix data in. 
+     * @return reference to this matrix instance. 
      */
-    void transpose(quad_type_matrix& r);
+    quad_type_matrix& transpose();
+
+    /**
+     * Assign values from the passed matrix instance.  If the size of the
+     * passed matrix is smaller, then the element values are assigned by their
+     * positions, while the rest of the elements that fall outside the size of
+     * the passed matrix instance will remain unmodified.  If the size of the
+     * pass matrix instance is larger, then only the elements within the size
+     * of this matrix instance will get assigned.
+     * 
+     * @param r passed matrix object to assign element values from.
+     */
+    void assign(quad_type_matrix& r);
 
     /**
      * Resize the matrix to specified size.  This method supports resizing to
@@ -980,11 +988,16 @@ template<typename _String>
 }
 
 template<typename _String>
-void quad_type_matrix<_String>::transpose(quad_type_matrix& r)
+quad_type_matrix<_String>&
+quad_type_matrix<_String>::transpose()
 {
-    delete r.mp_storage;
-    r.mp_storage = mp_storage->clone();
-    r.mp_storage->transpose();
+    mp_storage->transpose();
+    return *this;
+}
+
+template<typename _String>
+void quad_type_matrix<_String>::assign(quad_type_matrix& r)
+{
 }
 
 template<typename _String>
