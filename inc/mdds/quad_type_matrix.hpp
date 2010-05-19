@@ -90,6 +90,7 @@ class quad_type_matrix
 public:
     typedef _String     string_type;
     typedef size_t      size_type;
+    typedef ::std::pair<size_type, size_type> size_pair_type;
 
     /**
      * Default constructor.
@@ -138,7 +139,7 @@ public:
      * 
      * @return matrix size as a value pair.
      */
-    ::std::pair<size_t,size_t> size() const;
+    size_pair_type size() const;
     
     /** 
      * Transpose the stored matrix data. 
@@ -1043,9 +1044,10 @@ void quad_type_matrix<_String>::set(size_t row, size_t col, string_type* str)
 }
 
 template<typename _String>
-::std::pair<size_t,size_t> quad_type_matrix<_String>::size() const
+typename quad_type_matrix<_String>::size_pair_type
+quad_type_matrix<_String>::size() const
 {
-    ::std::pair<size_t,size_t> size_pair(mp_storage->rows(), mp_storage->cols());
+    size_pair_type size_pair(mp_storage->rows(), mp_storage->cols());
     return size_pair;
 }
 
