@@ -126,6 +126,10 @@ public:
     void set_string(size_t row, size_t col, string_type* str);
     void set_empty(size_t row, size_t col);
 
+    void set(size_t row, size_t col, double val);
+    void set(size_t row, size_t col, bool val);
+    void set(size_t row, size_t col, string_type* str);
+
     /**
      * Return the size of matrix as a pair.  The first value is the row size,
      * while the second value is the column size.
@@ -1003,6 +1007,24 @@ template<typename _String>
 void quad_type_matrix<_String>::set_empty(size_t row, size_t col)
 {
     mp_storage->get_element(row, col).set_empty();
+}
+
+template<typename _String>
+void quad_type_matrix<_String>::set(size_t row, size_t col, double val)
+{
+    set_numeric(row, col, val);
+}
+
+template<typename _String>
+void quad_type_matrix<_String>::set(size_t row, size_t col, bool val)
+{
+    set_boolean(row, col, val);
+}
+
+template<typename _String>
+void quad_type_matrix<_String>::set(size_t row, size_t col, string_type* str)
+{
+    set_string(row, col, str);
 }
 
 template<typename _String>

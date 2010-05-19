@@ -538,10 +538,10 @@ void qtm_test_assign(matrix_density_t dens1, matrix_density_t dens2)
 
     // Assigning from a smaller matrix to a bigger one.
     mx_type mx1(5, 5, dens1), mx2(2, 2, dens2);
-    mx2.set_numeric(0, 0, 1.2);
-    mx2.set_boolean(1, 1, true);
-    mx2.set_string(0, 1, new string("test"));
-    mx2.set_string(1, 0, new string("foo"));
+    mx2.set(0, 0, 1.2);
+    mx2.set(1, 1, true);
+    mx2.set(0, 1, new string("test"));
+    mx2.set(1, 0, new string("foo"));
     cout << "matrix 1:" << endl;
     mx1.dump();
     cout << "matrix 2:" << endl;
@@ -561,10 +561,10 @@ void qtm_test_assign(matrix_density_t dens1, matrix_density_t dens2)
     assert(success);
 
     // from a larger matrix to a smaller one.
-    mx1.set_string(0, 0, new string("test1"));
-    mx2.set_string(0, 0, new string("test2"));
-    mx2.set_boolean(4, 4, true);
-    mx2.set_boolean(7, 7, false);
+    mx1.set(0, 0, new string("test1"));
+    mx2.set(0, 0, new string("test2"));
+    mx2.set(4, 4, true);
+    mx2.set(7, 7, false);
     mx1.assign(mx2);
     cout << "matrix 1 after assign:" << endl;
     mx1.dump();
