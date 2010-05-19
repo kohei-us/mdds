@@ -109,6 +109,8 @@ public:
     quad_type_matrix(const quad_type_matrix& r);
     ~quad_type_matrix();
 
+    quad_type_matrix& operator= (const quad_type_matrix& r);
+
     /**
      * Get the type of element specified by its position.  The type can be one 
      * of empty, string, numeric, or boolean. 
@@ -958,6 +960,19 @@ template<typename _String>
 quad_type_matrix<_String>::~quad_type_matrix()
 {
     delete mp_storage;
+}
+
+template<typename _String>
+quad_type_matrix<_String>&
+quad_type_matrix<_String>::operator= (const quad_type_matrix& r)
+{
+    if (this == &r)
+        // self assignment.
+        return *this;
+
+    delete mp_storage;
+    mp_storage = r.mp_storage->clone();
+    return *this;
 }
 
 template<typename _String>
