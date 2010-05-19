@@ -186,6 +186,42 @@ bool verify_init_empty(const _Mx& mx)
     return true;
 }
 
+template<typename _Mx>
+bool verify_assign(const _Mx& mx1, const _Mx& mx2)
+{
+    size_t row_count = min(mx1.size().first,  mx2.size().first);
+    size_t col_count = min(mx1.size().second, mx2.size().second);
+    for (size_t i = 0; i < row_count; ++i)
+    {
+        for (size_t j = 0; j < col_count; ++j)
+        {
+            matrix_element_t elem_type = mx1.get_type(i, j);
+            if (elem_type != mx2.get_type(i, j))
+                return false;
+            
+            switch (elem_type)
+            {
+                case element_boolean:
+                    if (mx1.get_boolean(i, j) != mx2.get_boolean(i, j))
+                        return false;
+                    break;
+                case element_numeric:
+                    if (mx1.get_numeric(i, j) != mx2.get_numeric(i, j))
+                        return false;
+                    break;
+                case element_string:
+                    if (mx1.get_string(i, j) != mx2.get_string(i, j))
+                        return false;
+                    break;
+                case element_empty:
+                default:
+                    ;
+            }
+        }
+    }
+    return true;
+}
+
 void qtm_test_resize(matrix_density_t density)
 {
     StackPrinter __stack_printer__("::qtm_test_resize");
@@ -494,6 +530,57 @@ void qtm_test_numeric_matrix()
     }
 }
 
+void qtm_test_assign(matrix_density_t dens1, matrix_density_t dens2)
+{
+    StackPrinter __stack_printer__("::qtm_test_assign");
+    print_mx_density_type(dens1);
+    print_mx_density_type(dens2);
+
+    // Assigning from a smaller matrix to a bigger one.
+    mx_type mx1(5, 5, dens1), mx2(2, 2, dens2);
+    mx2.set_numeric(0, 0, 1.2);
+    mx2.set_boolean(1, 1, true);
+    mx2.set_string(0, 1, new string("test"));
+    mx2.set_string(1, 0, new string("foo"));
+    cout << "matrix 1:" << endl;
+    mx1.dump();
+    cout << "matrix 2:" << endl;
+    mx2.dump();
+    mx1.assign(mx2);
+    cout << "matrix 1 after assign:" << endl;
+    mx1.dump();
+
+    bool success = verify_assign(mx1, mx2);
+    assert(success);
+
+    mx2.resize(8, 8);
+    mx2.assign(mx1);
+    cout << "matrix 2 after resize and assign:" << endl;
+    mx2.dump();
+    success = verify_assign(mx1, mx2);
+    assert(success);
+
+    // from a larger matrix to a smaller one.
+    mx1.set_string(0, 0, new string("test1"));
+    mx2.set_string(0, 0, new string("test2"));
+    mx2.set_boolean(4, 4, true);
+    mx2.set_boolean(7, 7, false);
+    mx1.assign(mx2);
+    cout << "matrix 1 after assign:" << endl;
+    mx1.dump();
+    success = verify_assign(mx1, mx2);
+    assert(success);
+
+    // self assignment (should be no-op).
+    mx1.assign(mx1);
+    success = verify_assign(mx1, mx1);
+    assert(success);
+
+    mx2.assign(mx2);
+    success = verify_assign(mx2, mx2);
+    assert(success);
+}
+
 int main()
 {
     run_tests_on_all_density_types(qtm_test_resize);
@@ -501,6 +588,10 @@ int main()
     run_tests_on_all_density_types(qtm_test_transpose);
     qtm_test_initial_elements();
     qtm_test_numeric_matrix();
+    qtm_test_assign(matrix_density_filled_zero, matrix_density_filled_zero);
+    qtm_test_assign(matrix_density_filled_empty, matrix_density_filled_zero);
+    qtm_test_assign(matrix_density_filled_zero, matrix_density_filled_empty);
+    qtm_test_assign(matrix_density_filled_empty, matrix_density_filled_empty);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }

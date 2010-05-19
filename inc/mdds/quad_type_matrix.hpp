@@ -250,6 +250,31 @@ private:
             return true;
         }
 
+        element& operator= (const element& r)
+        {
+            if (m_type == element_string)
+                delete mp_string;
+
+            m_type = r.m_type;
+
+            switch (m_type)
+            {
+                case element_boolean:
+                    m_boolean = r.m_boolean;
+                    break;
+                case element_numeric:
+                    m_numeric = r.m_numeric;
+                    break;
+                case element_string:
+                    mp_string = new string_type(*r.mp_string);
+                    break;
+                case element_empty:
+                default:
+                    ;
+            }   
+            return *this;
+        }
+
         ~element()
         {
             if (m_type == element_string)
@@ -998,6 +1023,15 @@ quad_type_matrix<_String>::transpose()
 template<typename _String>
 void quad_type_matrix<_String>::assign(quad_type_matrix& r)
 {
+    if (this == &r)
+        // assignment to self.
+        return;
+
+    size_t row_count = ::std::min(mp_storage->rows(), r.mp_storage->rows());
+    size_t col_count = ::std::min(mp_storage->cols(), r.mp_storage->cols());
+    for (size_t i = 0; i < row_count; ++i)
+        for (size_t j = 0; j < col_count; ++j)
+            mp_storage->get_element(i, j) = r.mp_storage->get_element(i, j);
 }
 
 template<typename _String>
