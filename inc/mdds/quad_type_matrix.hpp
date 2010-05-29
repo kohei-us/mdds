@@ -29,6 +29,7 @@
 #define __MDDS_QUAD_TYPE_MATRIX_HPP__
 
 #include "mdds/global.hpp"
+#include "mdds/hash_container/map.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -84,11 +85,12 @@ matrix_init_element_t get_init_element_type(matrix_density_t density)
  * This data structure represents a matrix where each individual element may
  * be of one of four types: value, boolean, string, or empty.
  */
-template<typename _String>
+template<typename _String, typename _Flag>
 class quad_type_matrix
 {
 public:
     typedef _String     string_type;
+    typedef _Flag       flag_type;
     typedef size_t      size_type;
     typedef ::std::pair<size_type, size_type> size_pair_type;
 
@@ -132,6 +134,9 @@ public:
     void set(size_t row, size_t col, double val);
     void set(size_t row, size_t col, bool val);
     void set(size_t row, size_t col, string_type* str);
+
+    void set_flag(size_t row, size_t col, flag_type flag);
+    flag_type get_flag(size_t row, size_t col) const;
 
     /**
      * Return the size of matrix as a pair.  The first value is the row size,
@@ -201,6 +206,35 @@ public:
 #endif
 
 private:
+    typedef _mdds_unordered_map_type<size_pair_type, flag_type> flag_store_type;
+
+    class flag_storage
+    {
+    public:
+        void set_flag(size_t row, size_t col, flag_type flag)
+        {
+            size_pair_type pos = size_pair_type(row, col);
+            typename flag_store_type::iterator itr = m_flags.find(pos);
+            if (itr == m_flags.end())
+            {
+                // flag not stored for this position.
+                ::std::pair<typename flag_store_type::iterator, bool> r = 
+                    m_flags.insert(flag_store_type::value_type(pos, flag));
+                return;
+            }
+            itr->second = flag;
+        }
+
+        flag_type get_flag(size_t row, size_t col)
+        {
+            size_pair_type pos = size_pair_type(row, col);
+            typename flag_store_type::iterator itr = m_flags.find(pos);
+            return itr == m_flags.end() ? static_cast<flag_type>(0) : itr->second;
+        }
+    private:
+        flag_store_type m_flags;
+    };
+
     struct element
     {
         matrix_element_t m_type:2;
@@ -347,11 +381,14 @@ private:
 
         virtual storage_base* clone() const = 0;
 
+        flag_storage& get_flag_storage() { return m_flags; }
+
     protected:
         matrix_init_element_t get_init_type() const { return m_init_type; }
 
     private:
         matrix_init_element_t m_init_type;
+        flag_storage m_flags;
     };
 
     /**
@@ -910,9 +947,9 @@ private:
     storage_base* mp_storage;
 };
 
-template<typename _String>
-typename quad_type_matrix<_String>::storage_base*
-quad_type_matrix<_String>::create_storage(size_t rows, size_t cols, matrix_density_t density)
+template<typename _String, typename _Flag>
+typename quad_type_matrix<_String,_Flag>::storage_base*
+quad_type_matrix<_String,_Flag>::create_storage(size_t rows, size_t cols, matrix_density_t density)
 {
     switch (density)
     {
@@ -930,42 +967,42 @@ quad_type_matrix<_String>::create_storage(size_t rows, size_t cols, matrix_densi
     return NULL;
 }
 
-template<typename _String>
-quad_type_matrix<_String>::quad_type_matrix() :
+template<typename _String, typename _Flag>
+quad_type_matrix<_String,_Flag>::quad_type_matrix() :
     mp_storage(NULL)
 {
     mp_storage = create_storage(0, 0, matrix_density_filled_zero);
 }
 
-template<typename _String>
-quad_type_matrix<_String>::quad_type_matrix(matrix_density_t density) :
+template<typename _String, typename _Flag>
+quad_type_matrix<_String,_Flag>::quad_type_matrix(matrix_density_t density) :
     mp_storage(NULL)
 {
     mp_storage = create_storage(0, 0, density);
 }
 
-template<typename _String>
-quad_type_matrix<_String>::quad_type_matrix(size_t rows, size_t cols, matrix_density_t density) :
+template<typename _String, typename _Flag>
+quad_type_matrix<_String,_Flag>::quad_type_matrix(size_t rows, size_t cols, matrix_density_t density) :
     mp_storage(NULL)
 {
     mp_storage = create_storage(rows, cols, density);
 }
 
-template<typename _String>
-quad_type_matrix<_String>::quad_type_matrix(const quad_type_matrix& r) :
+template<typename _String, typename _Flag>
+quad_type_matrix<_String,_Flag>::quad_type_matrix(const quad_type_matrix& r) :
     mp_storage(r.mp_storage->clone())
 {
 }
 
-template<typename _String>
-quad_type_matrix<_String>::~quad_type_matrix()
+template<typename _String, typename _Flag>
+quad_type_matrix<_String,_Flag>::~quad_type_matrix()
 {
     delete mp_storage;
 }
 
-template<typename _String>
-quad_type_matrix<_String>&
-quad_type_matrix<_String>::operator= (const quad_type_matrix& r)
+template<typename _String, typename _Flag>
+quad_type_matrix<_String,_Flag>&
+quad_type_matrix<_String,_Flag>::operator= (const quad_type_matrix& r)
 {
     if (this == &r)
         // self assignment.
@@ -976,91 +1013,104 @@ quad_type_matrix<_String>::operator= (const quad_type_matrix& r)
     return *this;
 }
 
-template<typename _String>
-matrix_element_t quad_type_matrix<_String>::get_type(size_t row, size_t col) const
+template<typename _String, typename _Flag>
+matrix_element_t quad_type_matrix<_String,_Flag>::get_type(size_t row, size_t col) const
 {
     return mp_storage->get_type(row, col);
 }
 
-template<typename _String>
-double quad_type_matrix<_String>::get_numeric(size_t row, size_t col) const
+template<typename _String, typename _Flag>
+double quad_type_matrix<_String,_Flag>::get_numeric(size_t row, size_t col) const
 {
     return mp_storage->get_numeric(row, col);
 }
 
-template<typename _String>
-bool quad_type_matrix<_String>::get_boolean(size_t row, size_t col) const
+template<typename _String, typename _Flag>
+bool quad_type_matrix<_String,_Flag>::get_boolean(size_t row, size_t col) const
 {
     return mp_storage->get_boolean(row, col);
 }
 
-template<typename _String>
-const typename quad_type_matrix<_String>::string_type*
-quad_type_matrix<_String>::get_string(size_t row, size_t col) const
+template<typename _String, typename _Flag>
+const typename quad_type_matrix<_String,_Flag>::string_type*
+quad_type_matrix<_String,_Flag>::get_string(size_t row, size_t col) const
 {
     return mp_storage->get_string(row, col);
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::set_numeric(size_t row, size_t col, double val)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::set_numeric(size_t row, size_t col, double val)
 {
     mp_storage->get_element(row, col).set_numeric(val);
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::set_boolean(size_t row, size_t col, bool val)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::set_boolean(size_t row, size_t col, bool val)
 {
     mp_storage->get_element(row, col).set_boolean(val);
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::set_string(size_t row, size_t col, string_type* str)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::set_string(size_t row, size_t col, string_type* str)
 {
     mp_storage->get_element(row, col).set_string(str);
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::set_empty(size_t row, size_t col)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::set_flag(size_t row, size_t col, flag_type flag)
+{
+    mp_storage->get_flag_storage().set_flag(row, col, flag);
+}
+
+template<typename _String, typename _Flag>
+typename quad_type_matrix<_String,_Flag>::flag_type
+quad_type_matrix<_String,_Flag>::get_flag(size_t row, size_t col) const
+{
+    return mp_storage->get_flag_storage().get_flag(row, col);
+}
+
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::set_empty(size_t row, size_t col)
 {
     mp_storage->get_element(row, col).set_empty();
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::set(size_t row, size_t col, double val)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::set(size_t row, size_t col, double val)
 {
     set_numeric(row, col, val);
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::set(size_t row, size_t col, bool val)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::set(size_t row, size_t col, bool val)
 {
     set_boolean(row, col, val);
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::set(size_t row, size_t col, string_type* str)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::set(size_t row, size_t col, string_type* str)
 {
     set_string(row, col, str);
 }
 
-template<typename _String>
-typename quad_type_matrix<_String>::size_pair_type
-quad_type_matrix<_String>::size() const
+template<typename _String, typename _Flag>
+typename quad_type_matrix<_String,_Flag>::size_pair_type
+quad_type_matrix<_String,_Flag>::size() const
 {
     size_pair_type size_pair(mp_storage->rows(), mp_storage->cols());
     return size_pair;
 }
 
-template<typename _String>
-quad_type_matrix<_String>&
-quad_type_matrix<_String>::transpose()
+template<typename _String, typename _Flag>
+quad_type_matrix<_String,_Flag>&
+quad_type_matrix<_String,_Flag>::transpose()
 {
     mp_storage->transpose();
     return *this;
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::assign(quad_type_matrix& r)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::assign(quad_type_matrix& r)
 {
     if (this == &r)
         // assignment to self.
@@ -1073,39 +1123,39 @@ void quad_type_matrix<_String>::assign(quad_type_matrix& r)
             mp_storage->get_element(i, j) = r.mp_storage->get_element(i, j);
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::resize(size_t row, size_t col)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::resize(size_t row, size_t col)
 {
     mp_storage->resize(row, col);
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::clear()
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::clear()
 {
     mp_storage->clear();
 }
 
-template<typename _String>
-bool quad_type_matrix<_String>::numeric() const
+template<typename _String, typename _Flag>
+bool quad_type_matrix<_String,_Flag>::numeric() const
 {
     return mp_storage->numeric();
 }
 
-template<typename _String>
-bool quad_type_matrix<_String>::empty() const
+template<typename _String, typename _Flag>
+bool quad_type_matrix<_String,_Flag>::empty() const
 {
     return mp_storage->empty();
 }
 
-template<typename _String>
-void quad_type_matrix<_String>::swap(quad_type_matrix& r)
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::swap(quad_type_matrix& r)
 {
     ::std::swap(mp_storage, r.mp_storage);
 }
 
 #ifdef UNIT_TEST
-template<typename _String>
-void quad_type_matrix<_String>::dump() const
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::dump() const
 {
     using namespace std;
     size_t rows = mp_storage->rows(), cols = mp_storage->cols();

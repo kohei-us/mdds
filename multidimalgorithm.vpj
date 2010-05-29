@@ -227,6 +227,9 @@
 		</Folder>
 		<Folder Name="inc">
 			<Folder Name="mdds">
+				<Folder Name="hash_container">
+					<F N="inc/mdds/hash_container/map.hpp"/>
+				</Folder>
 				<F N="inc/mdds/flat_segment_tree.hpp"/>
 				<F N="inc/mdds/global.hpp"/>
 				<F N="inc/mdds/node.hpp"/>
