@@ -3,15 +3,16 @@ Version:        0.3.0
 Release:        1
 Url:            http://code.google.com/p/multidimalgorithm/
 License:        MIT/X11
-Packager:       Kohei Yoshida  <kyoshida@novell.com>
 Source:         mdds_0.3.0.tar.bz2
-Group:          Development/Libraries/C++
-Summary:        A collection of multi-dimensional data structure and indexing algorithm. 
+Group:          Development/Libraries/C and C++
+Summary:        A collection of multi-dimensional data structure and indexing algorithm
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Requires:       boost-devel >= 1.39
 
 %description
-A collection of multi-dimensional data structure and indexing algorithm. 
+This library provides a collection of multi-dimensional data structure and indexing
+algorithm.  All data structures are available as C++ templates, hence this is a 
+header-only library, with no shared library to link against.
 
 Authors:
 --------
@@ -20,11 +21,12 @@ Authors:
 %package        devel
 Url:            http://code.google.com/p/multidimalgorithm/
 License:        MIT/X11
-Packager:       Kohei Yoshida  <kyoshida@novell.com>
-Group:          Development/Libraries/C++
-Summary:        A collection of multi-dimensional data structure and indexing algorithm. 
+Group:          Development/Libraries/C and C++
+Summary:        A collection of multi-dimensional data structure and indexing algorithm
 %description    devel
-A collection of multi-dimensional data structure and indexing algorithm. 
+This library provides a collection of multi-dimensional data structure and indexing
+algorithm.  All data structures are available as C++ templates, hence this is a 
+header-only library, with no shared library to link against.
 
 Authors:
 --------
@@ -34,6 +36,10 @@ Authors:
 %setup -q -n %{name}_%{version}
 
 %build
+
+%check
+
+%install
 mkdir -p %buildroot/usr/include/mdds
 mkdir -p %buildroot/usr/share/mdds-devel/src
 mkdir -p %buildroot/usr/share/mdds-devel/example
@@ -43,8 +49,6 @@ cp Makefile %buildroot/usr/share/mdds-devel/
 cp src/*.cpp %buildroot/usr/share/mdds-devel/src/
 cp example/* %buildroot/usr/share/mdds-devel/example/
 cp AUTHORS NEWS README %buildroot/usr/share/doc/packages/mdds-devel/
-
-%install
 install -d %buildroot/usr/include/mdds
 install -d %buildroot/usr/share/mdds-devel
 install -d %buildroot/usr/share/doc/packages/mdds-devel
