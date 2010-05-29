@@ -68,6 +68,8 @@ stlperf_test: pre $(SRCDIR)/stlperf_test.cpp
 $(OBJDIR)/template_test.o: $(SRCDIR)/template_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/template_test.cpp
 
+test: test.fst test.pqt test.recset test.st
+
 test.fst: flat_segment_tree_test
 	./flat_segment_tree_test
 
