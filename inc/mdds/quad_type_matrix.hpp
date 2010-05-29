@@ -122,7 +122,7 @@ public:
 
     double get_numeric(size_t row, size_t col) const;
     bool get_boolean(size_t row, size_t col) const;
-    string_type get_string(size_t row, size_t col) const;
+    const string_type* get_string(size_t row, size_t col) const;
 
     void set_numeric(size_t row, size_t col, double val);
     void set_boolean(size_t row, size_t col, bool val);
@@ -333,7 +333,7 @@ private:
         virtual matrix_element_t get_type(size_t row, size_t col) const = 0;
 
         virtual double get_numeric(size_t row, size_t col) const = 0;
-        virtual string_type get_string(size_t row, size_t col) const = 0;
+        virtual const string_type* get_string(size_t row, size_t col) const = 0;
         virtual bool get_boolean(size_t row, size_t col) const = 0;
 
         virtual size_t rows() const = 0;
@@ -408,13 +408,13 @@ private:
             return elem.m_numeric;
         }
 
-        virtual string_type get_string(size_t row, size_t col) const
+        virtual const string_type* get_string(size_t row, size_t col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != element_string)
                 throw matrix_error("element type is not string.");
 
-            return *elem.mp_string;
+            return elem.mp_string;
         }
 
         virtual bool get_boolean(size_t row, size_t col) const
@@ -677,13 +677,13 @@ private:
             return elem.m_numeric;
         }
 
-        virtual string_type get_string(size_t row, size_t col) const
+        virtual const string_type* get_string(size_t row, size_t col) const
         {
             matrix_element_t elem_type = get_type(row, col);
             if (elem_type != element_string)
                 throw matrix_error("element type is not string.");
 
-            return *get_non_empty_element(row, col).mp_string;
+            return get_non_empty_element(row, col).mp_string;
         }
 
         virtual bool get_boolean(size_t row, size_t col) const
@@ -995,7 +995,7 @@ bool quad_type_matrix<_String>::get_boolean(size_t row, size_t col) const
 }
 
 template<typename _String>
-typename quad_type_matrix<_String>::string_type
+const typename quad_type_matrix<_String>::string_type*
 quad_type_matrix<_String>::get_string(size_t row, size_t col) const
 {
     return mp_storage->get_string(row, col);

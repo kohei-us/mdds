@@ -142,7 +142,7 @@ bool verify_transposed_matrix(const _Mx& original, const _Mx& transposed)
                         return false;
                     break;
                 case element_string:
-                    if (original.get_string(row, col) != transposed.get_string(col, row))
+                    if (*original.get_string(row, col) != *transposed.get_string(col, row))
                         return false;
                     break;
                 case element_empty:
@@ -210,7 +210,7 @@ bool verify_assign(const _Mx& mx1, const _Mx& mx2)
                         return false;
                     break;
                 case element_string:
-                    if (mx1.get_string(i, j) != mx2.get_string(i, j))
+                    if (*mx1.get_string(i, j) != *mx2.get_string(i, j))
                         return false;
                     break;
                 case element_empty:
@@ -337,7 +337,7 @@ void qtm_test_value_store(matrix_density_t density)
         {
             matrix_element_t elem_type = mx.get_type(i, j);
             assert(elem_type == element_string);
-            string s = mx.get_string(i, j);
+            string s = *mx.get_string(i, j);
             cout << s << " ";
         }
         cout << endl;
