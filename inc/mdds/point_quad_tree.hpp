@@ -327,10 +327,7 @@ public:
      * 
      * @param x x coordinate of new data position
      * @param y y coordinate of new data position
-     * @param data pointer to data being inserted.  The client data is
-     *             expected to manage the life time of inserted data; this
-     *             data structure does not manage the life cycle of inserted
-     *             data.
+     * @param data data being inserted at the specified coordinates.
      */
     void insert(key_type x, key_type y, data_type data);
 
@@ -365,13 +362,13 @@ public:
 
     /**
      * Find data at specified coordinates.  If no data exists at the specified 
-     * coordinates, this method returns NULL. 
+     * coordinates, this method throws a 
+     * <code>point_quad_tree::data_not_found</code> exception.
      *  
      * @param x x coordinate 
      * @param y y coordinate 
      * 
-     * @return data found at the specified coordinates, or NULL if no data is
-     *         found at the coordinates.
+     * @return data found at the specified coordinates.
      */
     data_type find(key_type x, key_type y) const;
 
