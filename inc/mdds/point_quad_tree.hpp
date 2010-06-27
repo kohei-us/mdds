@@ -114,7 +114,9 @@ public:
     typedef _Key    key_type;
     typedef _Data   data_type;
     typedef size_t  size_type;
-    typedef ::std::vector<data_type*> data_array_type;
+    typedef ::std::vector<data_type> data_array_type;
+
+    class data_not_found : public ::std::exception {};
 
 private:
     struct node;
@@ -122,8 +124,8 @@ private:
 
     struct node : quad_node_base<node_ptr, node, key_type>
     {
-        data_type* data;
-        node(key_type _x, key_type _y, data_type* _data) :
+        data_type data;
+        node(key_type _x, key_type _y, data_type _data) :
             quad_node_base<node_ptr, node, key_type>(_x, _y),
             data(_data) {}
 
@@ -201,17 +203,17 @@ public:
                 return !operator==(r);
             }
 
-            const ::std::pair<point, const data_type*>& operator*() const
+            const ::std::pair<point, data_type>& operator*() const
             {
                 return m_cur_value;
             }
 
-            const ::std::pair<point, const data_type*>* operator->() const
+            const ::std::pair<point, data_type>* operator->() const
             {
                 return get_current_value();
             }
 
-            const ::std::pair<point, const data_type*>* operator++()
+            const ::std::pair<point, data_type>* operator++()
             {
                 // The only difference between the last data position and the 
                 // end iterator position must be the value of m_end_pos;
@@ -229,7 +231,7 @@ public:
                 return operator->();
             }
 
-            const ::std::pair<point, const data_type*>* operator--()
+            const ::std::pair<point, const data_type>* operator--()
             {
                 if (m_end_pos)
                 {
@@ -274,7 +276,7 @@ public:
                 m_cur_value.second = p->data;
             }
 
-            const ::std::pair<point, const data_type*>* get_current_value() const
+            const ::std::pair<point, data_type>* get_current_value() const
             {
                 return &m_cur_value;
             }
@@ -282,7 +284,7 @@ public:
         private:
             res_nodes_ptr mp_res_nodes;
             typename res_nodes_type::const_iterator m_cur_pos;
-            ::std::pair<point, const data_type*> m_cur_value;
+            ::std::pair<point, data_type> m_cur_value;
             bool m_end_pos:1;
         };
 
@@ -330,7 +332,7 @@ public:
      *             data structure does not manage the life cycle of inserted
      *             data.
      */
-    void insert(key_type x, key_type y, data_type* data);
+    void insert(key_type x, key_type y, data_type data);
 
     /**
      * Perform region search (aka window search), that is, find all points 
@@ -368,14 +370,14 @@ public:
      * @param x x coordinate 
      * @param y y coordinate 
      * 
-     * @return pointer to data found at the specified coordinates, or NULL if 
-     *         no data is found at the coordinates.
+     * @return data found at the specified coordinates, or NULL if no data is
+     *         found at the coordinates.
      */
-    data_type* find(key_type x, key_type y) const;
+    data_type find(key_type x, key_type y) const;
 
     /**
-     * Remove data from specified coordinates.  This method does nothing if
-     * not data exists at the specified coordinates.
+     * Remove data from specified coordinates.  This method does nothing if no 
+     * data exists at the specified coordinates. 
      * 
      * @param x x coordinate
      * @param y y coordinate
@@ -427,8 +429,8 @@ private:
     {
         key_type    x;
         key_type    y;
-        data_type*  data;
-        node_data(key_type _x, key_type _y, data_type* _data) :
+        data_type  data;
+        node_data(key_type _x, key_type _y, data_type _data) :
             x(_x), y(_y), data(_data) {}
         node_data(const node_data& r) : 
             x(r.x), y(r.y), data(r.data) {}
@@ -569,7 +571,7 @@ point_quad_tree<_Key,_Data>::~point_quad_tree()
 }
 
 template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type* data)
+void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type data)
 {
     m_xrange.first  = ::std::min(m_xrange.first,  x);
     m_xrange.second = ::std::max(m_xrange.second, x);
@@ -665,11 +667,13 @@ point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2
 }
 
 template<typename _Key, typename _Data>
-typename point_quad_tree<_Key,_Data>::data_type* 
+typename point_quad_tree<_Key,_Data>::data_type 
 point_quad_tree<_Key,_Data>::find(key_type x, key_type y) const
 {
     const node* p = find_node_ptr(x, y);
-    return p ? p->data : NULL;
+    if (!p)
+        throw data_not_found();
+    return p->data;
 }
 
 template<typename _Key, typename _Data>

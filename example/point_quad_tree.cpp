@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-    typedef ::mdds::point_quad_tree<double, string> db_type;
+    typedef ::mdds::point_quad_tree<double, const string*> db_type;
     db_type db;
     
     string chicago("Chicago");

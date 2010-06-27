@@ -88,9 +88,9 @@ struct data_printer : public unary_function<string*, void>
 };
 
 template<typename _DbType>
-struct search_result_printer : public unary_function<pair<typename _DbType::point, typename _DbType::data_type*>, void>
+struct search_result_printer : public unary_function<pair<typename _DbType::point, typename _DbType::data_type>, void>
 {
-    void operator() (const pair<const typename _DbType::point, const typename _DbType::data_type*>& r) const
+    void operator() (const pair<const typename _DbType::point, const typename _DbType::data_type>& r) const
     {
         cout << "  (x=" << r.first.x << ", y=" << r.first.y << ", value='" << *r.second << "')" << endl;
     }
@@ -99,7 +99,7 @@ struct search_result_printer : public unary_function<pair<typename _DbType::poin
 void pqt_test_basic()
 {
     StackPrinter __stack_printer__("::pqt_test");
-    typedef point_quad_tree<uint16_t, string> db_type;
+    typedef point_quad_tree<uint16_t, const string*> db_type;
     db_type db;
 
     string A("A");
@@ -176,7 +176,7 @@ void pqt_test_basic()
 void pqt_test_insertion_removal()
 {
     StackPrinter __stack_printer__("::pqt_test_insertion_removal");
-    typedef point_quad_tree<int32_t, string> db_type;
+    typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db;
 
     // Check its empty-ness...
@@ -202,7 +202,7 @@ void pqt_test_insertion_removal()
         {
             int32_t x = i*10 + 1, y = j*10 + 1;
             size_t index = i*10 + j;
-            string* data_ptr = &data_store[index];
+            const string* data_ptr = &data_store[index];
             cout << "inserting '" << *data_ptr << "' at (" << x << "," << y << ")" << endl;
             db.insert(x, y, data_ptr);
             expected.push_back(db_type::node_data(x, y, data_ptr));
@@ -236,7 +236,7 @@ void pqt_test_insertion_removal()
 void pqt_test_remove_root()
 {
     StackPrinter __stack_printer__("::pqt_test_remove_root");    
-    typedef point_quad_tree<int32_t, string> db_type;
+    typedef point_quad_tree<int32_t, const string*> db_type;
     string O("O");
     string NW("NW");
     string NE("NE");
@@ -279,7 +279,7 @@ void pqt_test_equality()
 {
     StackPrinter __stack_printer__("::pqt_test_equality");
 
-    typedef point_quad_tree<int32_t, string> db_type;
+    typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db1, db2;
 
     string A("A");
@@ -329,7 +329,7 @@ void pqt_test_equality()
 void pqt_test_assignment()
 {
     StackPrinter __stack_printer__("::pqt_test_assignment");
-    typedef point_quad_tree<int32_t, string> db_type;
+    typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db1, db2;
     string A("A");
     string B("B");
@@ -368,7 +368,7 @@ void pqt_test_assignment()
 void pqt_test_swap()
 {
     StackPrinter __stack_printer__("::pqt_test_swap");
-    typedef point_quad_tree<int32_t, string> db_type;
+    typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db1, db2;
     string A("A");
     string B("B");
@@ -401,21 +401,26 @@ template<typename _DbType>
 bool verify_find(
     const _DbType& db, 
     typename _DbType::key_type x, typename _DbType::key_type y, 
-    const typename _DbType::data_type* data)
+    const typename _DbType::data_type data)
 {
-    const typename _DbType::data_type* found = db.find(x, y);
-    if (found)
-        cout << "found at (" << x << "," << y << "): " << *found << endl;
-    else
+    try
+    {
+        typename _DbType::data_type found = db.find(x, y);
+        cout << "found at (" << x << "," << y << "): " << found << endl;
+        if (found == data)
+            return true;
+    }
+    catch (const typename _DbType::data_not_found&)
+    {
         cout << "nothing found at (" << x << "," << y << ")" << endl;
-
-    return found && (found == data);
+    }
+    return false;
 }
 
 void pqt_test_find()
 {
     StackPrinter __stack_printer__("::pqt_test_find");
-    typedef point_quad_tree<int32_t, string> db_type;
+    typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db;
     string A("A");
     string B("B");
