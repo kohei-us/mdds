@@ -36,7 +36,7 @@ namespace mdds {
 
 #ifdef DEBUG_NODE_BASE
 size_t node_instance_count = 0;
-size_t get_node_instance_count()
+inline size_t get_node_instance_count()
 {
     return node_instance_count;
 }
@@ -93,7 +93,7 @@ enum direction_t
     dir_east
 };
 
-node_quadrant_t opposite(node_quadrant_t quad)
+inline node_quadrant_t opposite(node_quadrant_t quad)
 {
     switch (quad)
     {
