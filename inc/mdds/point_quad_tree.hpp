@@ -133,9 +133,7 @@ private:
             quad_node_base<node_ptr, node, key_type>(r),
             data(r.data) {}
 
-        void dispose()
-        {
-        }
+        void dispose() {}
 
         bool operator== (const node& r) const
         {
