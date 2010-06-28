@@ -443,6 +443,11 @@ public:
      */
     size_t size() const;
 
+    /**
+     * Get read-only access to the internal quad node tree. 
+     * 
+     * @return root node
+     */
     node_access get_node_access() const;
 
     point_quad_tree& operator= (const point_quad_tree& r);
