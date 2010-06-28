@@ -211,6 +211,9 @@ private:
     class flag_storage
     {
     public:
+        flag_storage() {}
+        flag_storage(const flag_storage& r) : m_flags(r.m_flags) {}
+
         void set_flag(size_t row, size_t col, flag_type flag)
         {
             size_pair_type pos = size_pair_type(row, col);
