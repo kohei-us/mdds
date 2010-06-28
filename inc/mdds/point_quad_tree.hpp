@@ -497,8 +497,8 @@ private:
 
     bool verify_data(::std::vector<node_data>& expected) const;
 
-    bool verify_node_iterator(const node_access& itr) const;
-    static bool verify_node_iterator(const node_access& itr, const node* p);
+    bool verify_node_iterator(const node_access& nac) const;
+    static bool verify_node_iterator(const node_access& nac, const node* p);
 
     void get_all_stored_data(::std::vector<node_data>& stored_data) const;
 
@@ -1045,27 +1045,27 @@ bool point_quad_tree<_Key,_Data>::verify_data(::std::vector<node_data>& expected
 }
 
 template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& itr) const
+bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& nac) const
 {
-    return verify_node_iterator(itr, m_root.get());
+    return verify_node_iterator(nac, m_root.get());
 }
 
 template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& itr, const node* p)
+bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& nac, const node* p)
 {
-    if (!itr)
+    if (!nac)
         return (p == NULL);
 
     if (!p)
         return false;
 
-    if (!verify_node_iterator(itr.northeast(), p->northeast.get()))
+    if (!verify_node_iterator(nac.northeast(), p->northeast.get()))
         return false;
-    if (!verify_node_iterator(itr.northwest(), p->northwest.get()))
+    if (!verify_node_iterator(nac.northwest(), p->northwest.get()))
         return false;
-    if (!verify_node_iterator(itr.southeast(), p->southeast.get()))
+    if (!verify_node_iterator(nac.southeast(), p->southeast.get()))
         return false;
-    if (!verify_node_iterator(itr.southwest(), p->southwest.get()))
+    if (!verify_node_iterator(nac.southwest(), p->southwest.get()))
         return false;
 
     return true;
