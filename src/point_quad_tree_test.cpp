@@ -460,6 +460,38 @@ void pqt_test_find()
     assert(!check);
 }
 
+void pqt_test_node_iterator()
+{
+    StackPrinter __stack_printer__("::pqt_test_node_iterator");
+    typedef point_quad_tree<int32_t, const string*> db_type;
+    db_type db;
+    db_type::node_iterator itr = db.get_node_iterator();
+    assert(!itr);
+    string A("A");
+    string B("B");
+    string C("C");
+    string D("D");
+    string E("E");
+    string F("F");
+    db.insert(92, 27, &A);
+    db.insert(53, 26, &B);
+    db.insert(69, 18, &C);
+    db.insert(0, 78, &D);
+    db.insert(17, 7, &E);
+    db.insert(91, 88, &F);
+    assert(db.size() == 6);
+
+    itr = db.get_node_iterator();
+    // Test root node.
+    assert(itr);
+    assert(itr.x() == 92);
+    assert(itr.y() == 27);
+    assert(itr.data() == &A);
+
+    bool success = db.verify_node_iterator(itr);
+    assert(success);
+}
+
 int main()
 {
     pqt_test_basic();
@@ -469,6 +501,7 @@ int main()
     pqt_test_assignment();
     pqt_test_swap();
     pqt_test_find();
+    pqt_test_node_iterator();
     assert(get_node_instance_count() == 0);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

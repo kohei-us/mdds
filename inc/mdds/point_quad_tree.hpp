@@ -166,13 +166,25 @@ public:
         node_iterator southeast() const { return node_iterator(mp->southeast.get()); }
         node_iterator southwest() const { return node_iterator(mp->southwest.get()); }
 
-        operator bool() const { return mp != NULL; }
+        data_type data() const { return mp->data; }
+        key_type x() const { return mp->x; }
+        key_type y() const { return mp->y; }
 
-    private:
+        operator bool() const { return mp != NULL; }
+        bool operator== (const node_iterator& r) const { return mp == r.mp; }
+
+        node_iterator& operator= (const node_iterator& r)
+        {
+            mp = r.mp;
+            return *this;
+        }
+
         node_iterator() : mp(NULL) {}
-        node_iterator(const node* p) : mp(p) {}
         node_iterator(const node_iterator& r) : mp(r.mp) {}
         ~node_iterator() {}
+
+    private:
+        node_iterator(const node* p) : mp(p) {}
 
     private:
         const node* mp;
@@ -484,6 +496,9 @@ private:
     static bool equals(::std::vector<node_data>& v1, ::std::vector<node_data>& v2);
 
     bool verify_data(::std::vector<node_data>& expected) const;
+
+    bool verify_node_iterator(const node_iterator& itr) const;
+    static bool verify_node_iterator(const node_iterator& itr, const node* p);
 
     void get_all_stored_data(::std::vector<node_data>& stored_data) const;
 
@@ -1027,6 +1042,33 @@ bool point_quad_tree<_Key,_Data>::verify_data(::std::vector<node_data>& expected
     ::std::vector<node_data> stored;
     get_all_stored_data(stored);
     return equals(stored, expected);
+}
+
+template<typename _Key, typename _Data>
+bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_iterator& itr) const
+{
+    return verify_node_iterator(itr, m_root.get());
+}
+
+template<typename _Key, typename _Data>
+bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_iterator& itr, const node* p)
+{
+    if (!itr)
+        return (p == NULL);
+
+    if (!p)
+        return false;
+
+    if (!verify_node_iterator(itr.northeast(), p->northeast.get()))
+        return false;
+    if (!verify_node_iterator(itr.northwest(), p->northwest.get()))
+        return false;
+    if (!verify_node_iterator(itr.southeast(), p->southeast.get()))
+        return false;
+    if (!verify_node_iterator(itr.southwest(), p->southwest.get()))
+        return false;
+
+    return true;
 }
 
 template<typename _Key, typename _Data>
