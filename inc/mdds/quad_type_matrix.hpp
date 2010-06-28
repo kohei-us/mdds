@@ -163,7 +163,7 @@ public:
      * 
      * @param r passed matrix object to assign element values from.
      */
-    void assign(quad_type_matrix& r);
+    void assign(const quad_type_matrix& r);
 
     /**
      * Resize the matrix to specified size.  This method supports resizing to
@@ -1110,7 +1110,7 @@ quad_type_matrix<_String,_Flag>::transpose()
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::assign(quad_type_matrix& r)
+void quad_type_matrix<_String,_Flag>::assign(const quad_type_matrix& r)
 {
     if (this == &r)
         // assignment to self.
