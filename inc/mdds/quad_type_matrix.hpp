@@ -154,6 +154,8 @@ public:
      */
     flag_type get_flag(size_t row, size_t col) const;
 
+    void clear_flag(size_t row, size_t cols);
+
     /**
      * Return the size of matrix as a pair.  The first value is the row size,
      * while the second value is the column size.
@@ -227,7 +229,8 @@ private:
     {
         size_t operator() (const size_pair_type& val) const
         {
-            return 0;
+            size_t n = val.first + (val.second << 8);
+            return n;
         }
     };
     typedef _mdds_unordered_map_type<size_pair_type, flag_type, size_pair_type_hash> flag_store_type;
@@ -258,6 +261,15 @@ private:
             typename flag_store_type::iterator itr = m_flags.find(pos);
             return itr == m_flags.end() ? static_cast<flag_type>(0) : itr->second;
         }
+
+        void clear_flag(size_t row, size_t col)
+        {
+            size_pair_type pos = size_pair_type(row, col);
+            typename flag_store_type::iterator itr = m_flags.find(pos);
+            if (itr != m_flags.end())
+                // Flag is stored at this position.  Remove it.
+                m_flags.erase(itr);
+        }
 #if UNIT_TEST
         void dump() const
         {
@@ -274,7 +286,7 @@ private:
             {
                 const size_pair_type& pos = itr->first;
                 flag_type val = itr->second;
-                cout << "(row=" << pos.first << ",col=" << pos.second << ") = 0x" << hex << val << endl;
+                cout << "(row=" << pos.first << ",col=" << pos.second << ") = 0x" << hex << static_cast<size_t>(val) << endl;
             }
         }
 #endif
@@ -1114,6 +1126,12 @@ typename quad_type_matrix<_String,_Flag>::flag_type
 quad_type_matrix<_String,_Flag>::get_flag(size_t row, size_t col) const
 {
     return mp_storage->get_flag_storage().get_flag(row, col);
+}
+
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::clear_flag(size_t row, size_t col)
+{
+    return mp_storage->get_flag_storage().clear_flag(row, col);
 }
 
 template<typename _String, typename _Flag>

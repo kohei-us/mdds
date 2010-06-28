@@ -639,6 +639,12 @@ void qtm_test_flag_storage(matrix_density_t density)
     mx_type::flag_type flag = 0x01;
     mx.set_flag(0, 0, flag);
     mx.dump_flags();
+    flag |= 0xF0;
+    mx.set_flag(0, 0, flag);
+    mx.set_flag(2, 1, flag);
+    mx.dump_flags();
+    mx.clear_flag(0, 0);
+    mx.dump_flags();
 }
 
 int main()
