@@ -77,7 +77,7 @@ private:
 using namespace std;
 using namespace mdds;
 
-typedef quad_type_matrix<string, char> mx_type;
+typedef quad_type_matrix<string, uint8_t> mx_type;
 typedef void (test_func_type)(matrix_density_t);
 
 /**
@@ -628,6 +628,19 @@ void qtm_test_assignment(matrix_density_t density)
     assert(mx2.empty());
 }
 
+void qtm_test_flag_storage(matrix_density_t density)
+{
+    StackPrinter __stack_printer__("::qtm_test_flag_storage");
+    print_mx_density_type(density);
+    mx_type mx(3, 3, density);
+    mx.dump();
+    mx.dump_flags();
+
+    mx_type::flag_type flag = 0x01;
+    mx.set_flag(0, 0, flag);
+    mx.dump_flags();
+}
+
 int main()
 {
     run_tests_on_all_density_types(qtm_test_resize);
@@ -641,6 +654,8 @@ int main()
     qtm_test_assign(matrix_density_filled_empty, matrix_density_filled_zero);
     qtm_test_assign(matrix_density_filled_zero, matrix_density_filled_empty);
     qtm_test_assign(matrix_density_filled_empty, matrix_density_filled_empty);
+
+    run_tests_on_all_density_types(qtm_test_flag_storage);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }

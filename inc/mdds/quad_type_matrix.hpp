@@ -135,7 +135,23 @@ public:
     void set(size_t row, size_t col, bool val);
     void set(size_t row, size_t col, string_type* str);
 
+    /**
+     * Set flag value at specified position.
+     * 
+     * @param row row position
+     * @param col column position
+     * @param flag_type flag value
+     */
     void set_flag(size_t row, size_t col, flag_type flag);
+
+    /**
+     * Get flag value at specified position. 
+     *  
+     * @param row row position 
+     * @param col column position 
+     * 
+     * @return flag value stored at specified position
+     */
     flag_type get_flag(size_t row, size_t col) const;
 
     /**
@@ -203,10 +219,18 @@ public:
 
 #ifdef UNIT_TEST
     void dump() const;
+    void dump_flags() const;
 #endif
 
 private:
-    typedef _mdds_unordered_map_type<size_pair_type, flag_type> flag_store_type;
+    struct size_pair_type_hash
+    {
+        size_t operator() (const size_pair_type& val) const
+        {
+            return 0;
+        }
+    };
+    typedef _mdds_unordered_map_type<size_pair_type, flag_type, size_pair_type_hash> flag_store_type;
 
     class flag_storage
     {
@@ -222,7 +246,7 @@ private:
             {
                 // flag not stored for this position.
                 ::std::pair<typename flag_store_type::iterator, bool> r = 
-                    m_flags.insert(flag_store_type::value_type(pos, flag));
+                    m_flags.insert(typename flag_store_type::value_type(pos, flag));
                 return;
             }
             itr->second = flag;
@@ -234,6 +258,26 @@ private:
             typename flag_store_type::iterator itr = m_flags.find(pos);
             return itr == m_flags.end() ? static_cast<flag_type>(0) : itr->second;
         }
+#if UNIT_TEST
+        void dump() const
+        {
+            using namespace std;
+            if (m_flags.empty())
+            {
+                cout << "no flags stored" << endl;
+                return;
+            }
+
+            cout << "flags stored:" << endl;
+            typename flag_store_type::const_iterator itr = m_flags.begin(), itr_end = m_flags.end();
+            for (; itr != itr_end; ++itr)
+            {
+                const size_pair_type& pos = itr->first;
+                flag_type val = itr->second;
+                cout << "(row=" << pos.first << ",col=" << pos.second << ") = 0x" << hex << val << endl;
+            }
+        }
+#endif
     private:
         flag_store_type m_flags;
     };
@@ -361,7 +405,7 @@ private:
     {
     public:
         storage_base(matrix_init_element_t init) : m_init_type(init) {}
-        storage_base(const storage_base& r) : m_init_type(r.m_init_type) {}
+        storage_base(const storage_base& r) : m_init_type(r.m_init_type), m_flags(r.m_flags) {}
 
         virtual ~storage_base() {}
 
@@ -1193,6 +1237,12 @@ void quad_type_matrix<_String,_Flag>::dump() const
         }
         cout << endl;
     }
+}
+
+template<typename _String, typename _Flag>
+void quad_type_matrix<_String,_Flag>::dump_flags() const
+{
+    mp_storage->get_flag_storage().dump();
 }
 #endif
 
