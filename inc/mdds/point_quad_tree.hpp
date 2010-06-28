@@ -152,6 +152,32 @@ private:
     typedef ::std::pair<key_type, key_type> key_range_type;
 
 public:
+
+    /**
+     * Node wrapper to allow read-only access to the internal quad node
+     * structure.
+     */
+    class node_iterator
+    {
+        friend class point_quad_tree<_Key,_Data>;
+    public:
+        node_iterator northeast() const { return node_iterator(mp->northeast.get()); }
+        node_iterator northwest() const { return node_iterator(mp->northwest.get()); }
+        node_iterator southeast() const { return node_iterator(mp->southeast.get()); }
+        node_iterator southwest() const { return node_iterator(mp->southwest.get()); }
+
+        operator bool() const { return mp != NULL; }
+
+    private:
+        node_iterator() : mp(NULL) {}
+        node_iterator(const node* p) : mp(p) {}
+        node_iterator(const node_iterator& r) : mp(r.mp) {}
+        ~node_iterator() {}
+
+    private:
+        const node* mp;
+    };
+
     struct point
     {
         key_type x;
@@ -404,6 +430,8 @@ public:
      * @return the number of data currently stored in the container.
      */
     size_t size() const;
+
+    node_iterator get_node_iterator() const;
 
     point_quad_tree& operator= (const point_quad_tree& r);
 
@@ -841,6 +869,13 @@ size_t point_quad_tree<_Key,_Data>::size() const
     size_t node_count = 0;
     count_all_nodes(m_root.get(), node_count);
     return node_count;
+}
+
+template<typename _Key, typename _Data>
+typename point_quad_tree<_Key,_Data>::node_iterator
+point_quad_tree<_Key,_Data>::get_node_iterator() const
+{
+    return node_iterator(m_root.get());
 }
 
 template<typename _Key, typename _Data>
