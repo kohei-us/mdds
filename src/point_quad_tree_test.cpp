@@ -460,9 +460,9 @@ void pqt_test_find()
     assert(!check);
 }
 
-void pqt_test_node_iterator()
+void pqt_test_node_access()
 {
-    StackPrinter __stack_printer__("::pqt_test_node_iterator");
+    StackPrinter __stack_printer__("::pqt_test_node_access");
     typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db;
     db_type::node_access nac = db.get_node_access();
@@ -501,7 +501,7 @@ int main()
     pqt_test_assignment();
     pqt_test_swap();
     pqt_test_find();
-    pqt_test_node_iterator();
+    pqt_test_node_access();
     assert(get_node_instance_count() == 0);
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
