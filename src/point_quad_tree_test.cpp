@@ -465,7 +465,7 @@ void pqt_test_node_iterator()
     StackPrinter __stack_printer__("::pqt_test_node_iterator");
     typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db;
-    db_type::node_iterator itr = db.get_node_iterator();
+    db_type::node_access itr = db.get_node_access();
     assert(!itr);
     string A("A");
     string B("B");
@@ -481,7 +481,7 @@ void pqt_test_node_iterator()
     db.insert(91, 88, &F);
     assert(db.size() == 6);
 
-    itr = db.get_node_iterator();
+    itr = db.get_node_access();
     // Test root node.
     assert(itr);
     assert(itr.x() == 92);

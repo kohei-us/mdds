@@ -157,34 +157,34 @@ public:
      * Node wrapper to allow read-only access to the internal quad node
      * structure.
      */
-    class node_iterator
+    class node_access
     {
         friend class point_quad_tree<_Key,_Data>;
     public:
-        node_iterator northeast() const { return node_iterator(mp->northeast.get()); }
-        node_iterator northwest() const { return node_iterator(mp->northwest.get()); }
-        node_iterator southeast() const { return node_iterator(mp->southeast.get()); }
-        node_iterator southwest() const { return node_iterator(mp->southwest.get()); }
+        node_access northeast() const { return node_access(mp->northeast.get()); }
+        node_access northwest() const { return node_access(mp->northwest.get()); }
+        node_access southeast() const { return node_access(mp->southeast.get()); }
+        node_access southwest() const { return node_access(mp->southwest.get()); }
 
         data_type data() const { return mp->data; }
         key_type x() const { return mp->x; }
         key_type y() const { return mp->y; }
 
         operator bool() const { return mp != NULL; }
-        bool operator== (const node_iterator& r) const { return mp == r.mp; }
+        bool operator== (const node_access& r) const { return mp == r.mp; }
 
-        node_iterator& operator= (const node_iterator& r)
+        node_access& operator= (const node_access& r)
         {
             mp = r.mp;
             return *this;
         }
 
-        node_iterator() : mp(NULL) {}
-        node_iterator(const node_iterator& r) : mp(r.mp) {}
-        ~node_iterator() {}
+        node_access() : mp(NULL) {}
+        node_access(const node_access& r) : mp(r.mp) {}
+        ~node_access() {}
 
     private:
-        node_iterator(const node* p) : mp(p) {}
+        node_access(const node* p) : mp(p) {}
 
     private:
         const node* mp;
@@ -443,7 +443,7 @@ public:
      */
     size_t size() const;
 
-    node_iterator get_node_iterator() const;
+    node_access get_node_access() const;
 
     point_quad_tree& operator= (const point_quad_tree& r);
 
@@ -497,8 +497,8 @@ private:
 
     bool verify_data(::std::vector<node_data>& expected) const;
 
-    bool verify_node_iterator(const node_iterator& itr) const;
-    static bool verify_node_iterator(const node_iterator& itr, const node* p);
+    bool verify_node_iterator(const node_access& itr) const;
+    static bool verify_node_iterator(const node_access& itr, const node* p);
 
     void get_all_stored_data(::std::vector<node_data>& stored_data) const;
 
@@ -887,10 +887,10 @@ size_t point_quad_tree<_Key,_Data>::size() const
 }
 
 template<typename _Key, typename _Data>
-typename point_quad_tree<_Key,_Data>::node_iterator
-point_quad_tree<_Key,_Data>::get_node_iterator() const
+typename point_quad_tree<_Key,_Data>::node_access
+point_quad_tree<_Key,_Data>::get_node_access() const
 {
-    return node_iterator(m_root.get());
+    return node_access(m_root.get());
 }
 
 template<typename _Key, typename _Data>
@@ -1045,13 +1045,13 @@ bool point_quad_tree<_Key,_Data>::verify_data(::std::vector<node_data>& expected
 }
 
 template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_iterator& itr) const
+bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& itr) const
 {
     return verify_node_iterator(itr, m_root.get());
 }
 
 template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_iterator& itr, const node* p)
+bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& itr, const node* p)
 {
     if (!itr)
         return (p == NULL);
