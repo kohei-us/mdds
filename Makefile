@@ -85,11 +85,11 @@ test.pqt.mem: point_quad_tree_test
 test.recset: rectangle_set_test
 	./rectangle_set_test func
 
-test.recset.perf: rectangle-set_test
+test.recset.perf: rectangle_set_test
 	./rectangle_set_test perf
 
 test.recset.mem: rectangle_set_test
-	valgrind --tool=memcheck --leak-check=full ./rectangle-set_test func
+	valgrind --tool=memcheck --leak-check=full ./rectangle_set_test func
 
 test.st: segment_tree_test
 	./segment_tree_test func
