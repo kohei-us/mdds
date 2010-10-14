@@ -109,6 +109,10 @@ test.qtm.mem: quad_type_matrix_test
 test.stl: stlperf_test
 	./stlperf_test
 
+install:
+	@echo installing to @PREFIX@/include/mdds ....
+	@echo Please be patient.
+
 clean:
 	rm -rf $(OBJDIR) 2>/dev/null || /bin/true
 	rm $(EXECS) 2>/dev/null || /bin/true
