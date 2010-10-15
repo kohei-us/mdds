@@ -7,6 +7,7 @@ Source:         mdds_0.3.1.tar.bz2
 Group:          Development/Libraries/C and C++
 Summary:        A collection of multi-dimensional data structure and indexing algorithm
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildRequires:  gcc-c++, libstdc++-devel, boost-devel 
 Requires:       boost-devel >= 1.39
 
 %description
@@ -23,21 +24,26 @@ Url:            http://code.google.com/p/multidimalgorithm/
 License:        MIT/X11
 Group:          Development/Libraries/C and C++
 Summary:        A collection of multi-dimensional data structure and indexing algorithm
+
 %description    devel
 This library provides a collection of multi-dimensional data structure and indexing
-algorithm.  All data structures are available as C++ templates, hence this is a 
+algorithms.  All data structures are available as C++ templates, hence this is a 
 header-only library, with no shared library to link against.
 
 Authors:
 --------
     Kohei Yoshida <kyoshida@novell.com>
 
+%define _docdir %{_defaultdocdir}/mdds-devel
+
 %prep
 %setup -q -n %{name}_%{version}
 
 %build
 ./configure --prefix=%buildroot/usr
+
 %check
+make check
 
 %install
 make install
@@ -47,24 +53,8 @@ rm -rf %buildroot
 
 %files devel
 %defattr(-,root,root)
-%dir /usr/include/mdds
-%dir /usr/include/mdds/hash_container
-%dir /usr/share/mdds-devel
-%dir /usr/share/mdds-devel/example
-%dir /usr/share/doc/packages/mdds-devel
-%doc AUTHORS NEWS README
-/usr/include/mdds/*.hpp
-/usr/include/mdds/hash_container/*.hpp
-/usr/share/mdds-devel/example/*
+%{_includedir}/mdds  
+%{_datadir}/mdds-devel/example  
+%doc %{_docdir}/*  
 
 %changelog
-* Thu Oct 14 2010 kyoshida@novell.com
-- Updated to version 0.3.1.
-* Fri May 5 2010 kyoshida@novell.com
-- Updated to version 0.3.0.
-* Fri Apr 9 2010 kyoshida@novell.com
-- Updated to version 0.2.1.
-* Fri Apr 9 2010 kyoshida@novell.com
-- Initial package version 0.2.0.
-
-  

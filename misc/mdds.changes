@@ -1,0 +1,30 @@
+-------------------------------------------------------------------
+Thu Oct 14 2010 kyoshida@novell.com
+
+- Updated to version 0.3.1.
+
+-------------------------------------------------------------------
+Mon May 31 11:08:58 UTC 2010 - pth@suse.de
+
+- Add install target to makefile.
+- Add check target to makefile.
+- Don't install code for tests.
+- Remove -I../inc from Makefile for examles.
+- Move changelog to mdds.changes.
+
+-------------------------------------------------------------------
+Fri May 5 2010 kyoshida@novell.com
+
+- Updated to version 0.3.0.
+
+-------------------------------------------------------------------
+Fri Apr 9 2010 kyoshida@novell.com
+
+- Updated to version 0.2.1.
+
+-------------------------------------------------------------------
+Fri Apr 9 2010 kyoshida@novell.com
+
+- Initial package version 0.2.0.
+
+
