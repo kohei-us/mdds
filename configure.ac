@@ -2,9 +2,9 @@ AC_INIT(mdds, 0.3.1, kohei.yoshida@gmail.com)
 
 AC_ARG_WITH(hash-container,
 [
-  --with-hash-container   specify the type of hash containers to use.  
-                          Supported types are: boost, c++0x, or stlport.  
-                          c++0x is used if unspecified.
+  --with-hash-container   specify the type of hash containers to use in test 
+                          programs.  Supported types are: boost, c++0x, or 
+                          stlport.  c++0x is used if unspecified.
 
                           With c++0x, we assume that unordered_map and 
                           unordered_set are available under the std namespace,
