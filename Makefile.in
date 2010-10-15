@@ -26,6 +26,21 @@ HEADERS= \
 DEPENDS= \
 	$(HEADERS)
 
+TESTS = \
+	test.fst \
+	test.recset \
+	test.pqt \
+	test.st
+
+TESTS_MEM = \
+	test.pqt.mem \
+	test.recset.mem \
+	test.fst.mem \
+	test.st.mem
+
+# You may add $(TESTS_MEM) if valgrind is available on your platform
+ALL_TESTS = $(TESTS)
+
 nothing:
 	@echo There is nothing to build since this is a header-only library.
 
@@ -69,8 +84,6 @@ stlperf_test: pre $(SRCDIR)/stlperf_test.cpp
 
 $(OBJDIR)/template_test.o: $(SRCDIR)/template_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/template_test.cpp
-
-test: test.fst test.pqt test.recset test.st
 
 test.fst: flat_segment_tree_test
 	./flat_segment_tree_test
@@ -122,6 +135,8 @@ install:
 	cp $(SRCDIR)/*.cpp @PREFIX@/share/mdds-devel/src/
 	cp example/* @PREFIX@/share/mdds-devel/example/
 	cp AUTHORS NEWS README @PREFIX@/share/doc/packages/mdds-devel/
+
+check: $(ALL_TESTS)
 
 clean:
 	rm -rf $(OBJDIR) 2>/dev/null || /bin/true
