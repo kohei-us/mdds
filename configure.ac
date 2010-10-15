@@ -27,4 +27,23 @@ AC_SUBST(PREFIX)
 AC_MSG_CHECKING([hash container type])
 AC_MSG_RESULT([$with_hash_container])
 
+OBJDIR=./obj
+SRCDIR=./src
+INCDIR=./inc
+AC_SUBST(OBJDIR)
+AC_SUBST(SRCDIR)
+AC_SUBST(INCDIR)
+
+CPPFLAGS="-I$INCDIR -DDEBUG_NODE_BASE -DUNIT_TEST -Wall -Os -g -pedantic-errors"
+if test $with_hash_container = stlport; then
+  CPPFLAGS="$CPPFLAGS -DMDDS_HASH_CONTAINER_STLPORT"
+elif test $with_hash_container = boost; then
+  CPPFLAGS="$CPPFLAGS -DMDDS_HASH_CONTAINER_BOOST"
+else
+  CPPFLAGS="$CPPFLAGS -std=c++0x"
+fi
+  
+
+AC_SUBST(CPPFLAGS)
+
 AC_OUTPUT(Makefile)

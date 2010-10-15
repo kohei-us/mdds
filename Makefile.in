@@ -1,9 +1,9 @@
 
-OBJDIR=./obj
-SRCDIR=./src
-INCDIR=./inc
+OBJDIR=@OBJDIR@
+SRCDIR=@SRCDIR@
+INCDIR=@INCDIR@
 
-CPPFLAGS=-I$(INCDIR) -DDEBUG_NODE_BASE -DUNIT_TEST -Wall -Os -g -pedantic-errors -std=c++0x
+CPPFLAGS=@CPPFLAGS@
 LDFLAGS=
 
 EXECS= \
@@ -11,8 +11,7 @@ EXECS= \
 	segment_tree_test \
 	point_quad_tree_test \
 	quad_type_matrix_test \
-	rectangle_set_test \
-	stlperf_test
+	rectangle_set_test
 
 HEADERS= \
 	$(INCDIR)/mdds/node.hpp \
