@@ -50,14 +50,11 @@ rm -rf %buildroot
 %dir /usr/include/mdds
 %dir /usr/include/mdds/hash_container
 %dir /usr/share/mdds-devel
-%dir /usr/share/mdds-devel/src
 %dir /usr/share/mdds-devel/example
 %dir /usr/share/doc/packages/mdds-devel
 %doc AUTHORS NEWS README
 /usr/include/mdds/*.hpp
 /usr/include/mdds/hash_container/*.hpp
-/usr/share/mdds-devel/Makefile
-/usr/share/mdds-devel/src/*.cpp
 /usr/share/mdds-devel/example/*
 
 %changelog

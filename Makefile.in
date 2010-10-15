@@ -124,17 +124,15 @@ test.qtm.mem: quad_type_matrix_test
 test.stl: stlperf_test
 	./stlperf_test
 
-install:
-	@echo installing to @PREFIX@/include/mdds ....
-	mkdir -p @PREFIX@/include/mdds
-	mkdir -p @PREFIX@/share/mdds-devel/src
-	mkdir -p @PREFIX@/share/mdds-devel/example
-	mkdir -p @PREFIX@/share/doc/packages/mdds-devel/
-	cp -R $(INCDIR)/mdds @PREFIX@/include/
-	cp Makefile @PREFIX@/share/mdds-devel/
-	cp $(SRCDIR)/*.cpp @PREFIX@/share/mdds-devel/src/
-	cp example/* @PREFIX@/share/mdds-devel/example/
-	cp AUTHORS NEWS README @PREFIX@/share/doc/packages/mdds-devel/
+install: $(HEADERS)
+	install -d @PREFIX@/include/mdds
+	install -d @PREFIX@/include/mdds/hash_container
+	install -d @PREFIX@/share/mdds-devel/example
+	install -d @PREFIX@/share/doc/packages/mdds-devel/
+	install -m 644 -t @PREFIX@/include/mdds $(INCDIR)/mdds/*.hpp
+	install -m 644 -t @PREFIX@/include/mdds/hash_container $(INCDIR)/mdds/hash_container/*.hpp
+	install -m 644 -t @PREFIX@/share/mdds-devel/example/ example/*
+	install -m 644 -t @PREFIX@/share/doc/packages/mdds-devel/ AUTHORS NEWS README
 
 check: $(ALL_TESTS)
 
