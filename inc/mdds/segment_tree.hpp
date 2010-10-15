@@ -29,11 +29,12 @@
 #define __MDDS_SEGMENTTREE_HPP__
 
 #include "node.hpp"
+#include "hash_container/map.hpp"
 
 #include <vector>
 #include <list>
 #include <iostream>
-#include <unordered_map>
+#include <map>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
@@ -161,7 +162,8 @@ public:
 private:
 #endif
     typedef ::std::vector<data_type*> data_chain_type;
-    typedef ::std::unordered_map<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
+    typedef _mdds_unordered_map_type<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
+    typedef ::std::map<data_type*, ::std::pair<key_type, key_type> >               sorted_segment_map_type;
 
     struct nonleaf_value_type
     {
@@ -735,11 +737,11 @@ bool segment_tree<_Key, _Data>::operator==(const segment_tree& r) const
     if (m_valid_tree != r.m_valid_tree)
         return false;
 
-    // First, we need to re-organize the segment data so that they are sorted
-    // by the data pointer values.
-
-    typename segment_map_type::const_iterator itr1 = m_segment_data.begin(), itr1_end = m_segment_data.end();
-    typename segment_map_type::const_iterator itr2 = r.m_segment_data.begin(), itr2_end = r.m_segment_data.end();
+    // Sort the data by key values first.
+    sorted_segment_map_type seg1(m_segment_data.begin(), m_segment_data.end());
+    sorted_segment_map_type seg2(r.m_segment_data.begin(), r.m_segment_data.end());
+    typename sorted_segment_map_type::const_iterator itr1 = seg1.begin(), itr1_end = seg1.end();
+    typename sorted_segment_map_type::const_iterator itr2 = seg2.begin(), itr2_end = seg2.end();
 
     for (; itr1 != itr1_end; ++itr1, ++itr2)
     {
@@ -1174,8 +1176,12 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
 template<typename _Key, typename _Data>
 bool segment_tree<_Key, _Data>::verify_segment_data(const segment_map_type& checks) const
 {
-    typename segment_map_type::const_iterator itr1 = checks.begin(), itr1_end = checks.end();
-    typename segment_map_type::const_iterator itr2 = m_segment_data.begin(), itr2_end = m_segment_data.end();
+    // Sort the data by key values first.
+    sorted_segment_map_type seg1(checks.begin(), checks.end());
+    sorted_segment_map_type seg2(m_segment_data.begin(), m_segment_data.end());
+
+    typename sorted_segment_map_type::const_iterator itr1 = seg1.begin(), itr1_end = seg1.end();
+    typename sorted_segment_map_type::const_iterator itr2 = seg2.begin(), itr2_end = seg2.end();
     for (; itr1 != itr1_end; ++itr1, ++itr2)
     {
         if (itr2 == itr2_end)

@@ -28,10 +28,16 @@
 #ifndef __MDDS_HASH_CONTAINER_MAP_HPP__
 #define __MDDS_HASH_CONTAINER_MAP_HPP__
 
-#ifdef _MDDS_HASH_CONTAINER_COMPAT
+#if defined (MDDS_HASH_CONTAINER_STLPORT)
+// stlport
 #include <hash_map>
 #define _mdds_unordered_map_type ::std::hash_map
+#elif defined (MDDS_HASH_CONTAINER_BOOST)
+// boost
+#include <boost/unordered_map.hpp>
+#define _mdds_unordered_map_type ::boost::unordered_map
 #else
+// c++0x
 #include <unordered_map>
 #define _mdds_unordered_map_type ::std::unordered_map
 #endif

@@ -30,9 +30,9 @@
 
 #include "segment_tree.hpp"
 #include "global.hpp"
+#include "hash_container/map.hpp"
 
 #include <vector>
-#include <unordered_map>
 #include <boost/ptr_container/ptr_map.hpp>
 
 namespace mdds {
@@ -81,7 +81,7 @@ private:
             return !operator==(r);
         }
     };
-    typedef ::std::unordered_map<data_type*, rectangle>    dataset_type;
+    typedef _mdds_unordered_map_type<data_type*, rectangle>    dataset_type;
 private:
     typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type>  outer_type;

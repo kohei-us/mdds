@@ -27,11 +27,11 @@
 
 #include "mdds/point_quad_tree.hpp"
 
-#include <cstdint>
 #include <algorithm>
 #include <vector>
 #include <sstream>
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/cstdint.hpp>
 
 #include <stdio.h>
 #include <string>
@@ -78,6 +78,7 @@ private:
 using namespace std;
 using namespace mdds;
 using ::boost::ptr_vector;
+using ::boost::uint16_t;
 
 struct data_printer : public unary_function<string*, void>
 {

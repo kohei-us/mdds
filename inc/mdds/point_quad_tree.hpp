@@ -867,8 +867,8 @@ template<typename _Key, typename _Data>
 void point_quad_tree<_Key,_Data>::swap(point_quad_tree& r)
 {
     m_root.swap(r.m_root);
-    m_xrange.swap(r.m_xrange);
-    m_yrange.swap(r.m_yrange);
+    ::std::swap(m_xrange, r.m_xrange);
+    ::std::swap(m_yrange, r.m_yrange);
 }
 
 template<typename _Key, typename _Data>
