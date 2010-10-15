@@ -55,6 +55,7 @@ rm -rf %buildroot
 %dir /usr/share/doc/packages/mdds-devel
 %doc AUTHORS NEWS README
 /usr/include/mdds/*.hpp
+/usr/include/mdds/hash_container/*.hpp
 /usr/share/mdds-devel/Makefile
 /usr/share/mdds-devel/src/*.cpp
 /usr/share/mdds-devel/example/*
