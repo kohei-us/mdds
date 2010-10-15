@@ -111,7 +111,15 @@ test.stl: stlperf_test
 
 install:
 	@echo installing to @PREFIX@/include/mdds ....
-	@echo Please be patient.
+	mkdir -p @PREFIX@/include/mdds
+	mkdir -p @PREFIX@/share/mdds-devel/src
+	mkdir -p @PREFIX@/share/mdds-devel/example
+	mkdir -p @PREFIX@/share/doc/packages/mdds-devel/
+	cp inc/mdds/*.hpp @PREFIX@/include/mdds/
+	cp Makefile @PREFIX@/share/mdds-devel/
+	cp src/*.cpp @PREFIX@/share/mdds-devel/src/
+	cp example/* @PREFIX@/share/mdds-devel/example/
+	cp AUTHORS NEWS README @PREFIX@/share/doc/packages/mdds-devel/
 
 clean:
 	rm -rf $(OBJDIR) 2>/dev/null || /bin/true

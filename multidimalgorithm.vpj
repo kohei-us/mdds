@@ -254,7 +254,7 @@
 			<F N="src/template_test.cpp"/>
 		</Folder>
 		<F
-			N="Makefile"
+			N="Makefile.in"
 			Type="Makefile"/>
 	</Files>
 </Project>
