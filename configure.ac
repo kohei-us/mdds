@@ -29,7 +29,7 @@ AC_MSG_RESULT([$with_hash_container])
 
 OBJDIR=./obj
 SRCDIR=./src
-INCDIR=./inc
+INCDIR=./include
 AC_SUBST(OBJDIR)
 AC_SUBST(SRCDIR)
 AC_SUBST(INCDIR)
