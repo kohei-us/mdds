@@ -1,3 +1,8 @@
+mdds 0.3.1
+
+  * added support for boost::unordered_map (boost) and std::hash_map 
+    (stlport) in addition to C++0x's std::unordered_map.
+
 mdds 0.3.0
 
   * implemented point_quad_tree.
