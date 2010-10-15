@@ -36,22 +36,11 @@ Authors:
 %setup -q -n %{name}_%{version}
 
 %build
-
+./configure --prefix=%buildroot/usr
 %check
 
 %install
-mkdir -p %buildroot/usr/include/mdds
-mkdir -p %buildroot/usr/share/mdds-devel/src
-mkdir -p %buildroot/usr/share/mdds-devel/example
-mkdir -p %buildroot/usr/share/doc/packages/mdds-devel
-cp inc/mdds/*.hpp %buildroot/usr/include/mdds/
-cp Makefile %buildroot/usr/share/mdds-devel/
-cp src/*.cpp %buildroot/usr/share/mdds-devel/src/
-cp example/* %buildroot/usr/share/mdds-devel/example/
-cp AUTHORS NEWS README %buildroot/usr/share/doc/packages/mdds-devel/
-install -d %buildroot/usr/include/mdds
-install -d %buildroot/usr/share/mdds-devel
-install -d %buildroot/usr/share/doc/packages/mdds-devel
+make install
 
 %clean
 rm -rf %buildroot
@@ -59,6 +48,7 @@ rm -rf %buildroot
 %files devel
 %defattr(-,root,root)
 %dir /usr/include/mdds
+%dir /usr/include/mdds/hash_container
 %dir /usr/share/mdds-devel
 %dir /usr/share/mdds-devel/src
 %dir /usr/share/mdds-devel/example
@@ -70,6 +60,8 @@ rm -rf %buildroot
 /usr/share/mdds-devel/example/*
 
 %changelog
+* Thu Oct 14 2010 kyoshida@novell.com
+- Updated to version 0.3.1.
 * Fri May 5 2010 kyoshida@novell.com
 - Updated to version 0.3.0.
 * Fri Apr 9 2010 kyoshida@novell.com
