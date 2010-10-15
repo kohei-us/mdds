@@ -43,7 +43,7 @@ Authors:
 ./configure --prefix=%buildroot/usr
 
 %check
-make check
+#make check
 
 %install
 make install
@@ -53,6 +53,8 @@ rm -rf %buildroot
 
 %files devel
 %defattr(-,root,root)
+%dir %{_docdir}
+%dir %{_datadir}/mdds-devel
 %{_includedir}/mdds  
 %{_datadir}/mdds-devel/example  
 %doc %{_docdir}/*  
