@@ -10,7 +10,7 @@ EXECS= \
 	flat_segment_tree_test \
 	segment_tree_test \
 	point_quad_tree_test \
-	quad_type_matrix \
+	quad_type_matrix_test \
 	rectangle_set_test \
 	stlperf_test
 
@@ -27,10 +27,13 @@ HEADERS= \
 DEPENDS= \
 	$(HEADERS)
 
+nothing:
+	@echo There is nothing to build since this is a header-only library.
+
 all: $(EXECS)
 
 pre:
-	mkdir $(OBJDIR) 2>/dev/null || /bin/true
+	mkdir -p $(OBJDIR)
 
 $(OBJDIR)/flat_segment_tree_test.o: $(SRCDIR)/flat_segment_tree_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/flat_segment_tree_test.cpp
