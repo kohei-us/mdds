@@ -247,10 +247,12 @@ void qtm_test_resize(matrix_density_t density)
         mxsize = mx.size();
         assert(mxsize.first == 1);
         assert(mxsize.second == 1);
+        // Back to an empty matrix again.
         mx.resize(0, 0);
         mxsize = mx.size();
         assert(mxsize.first == 0);
         assert(mxsize.second == 0);
+        // Resize to a non-square matrix.
         mx.resize(5, 10);
         mxsize = mx.size();
         assert(mxsize.first == 5);
