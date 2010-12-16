@@ -225,22 +225,22 @@
 			<F N="example/rectangle_set.cpp"/>
 			<F N="example/segment_tree.cpp"/>
 		</Folder>
-		<Folder Name="inc">
+		<Folder Name="include">
 			<Folder Name="mdds">
 				<Folder Name="hash_container">
-					<F N="inc/mdds/hash_container/map.hpp"/>
+					<F N="include/mdds/hash_container/map.hpp"/>
 				</Folder>
-				<F N="inc/mdds/flat_segment_tree.hpp"/>
-				<F N="inc/mdds/global.hpp"/>
-				<F N="inc/mdds/node.hpp"/>
-				<F N="inc/mdds/point_quad_tree.hpp"/>
-				<F N="inc/mdds/quad_node.hpp"/>
-				<F N="inc/mdds/quad_type_matrix.hpp"/>
-				<F N="inc/mdds/rectangle_set.hpp"/>
-				<F N="inc/mdds/segment_tree.hpp"/>
+				<F N="include/mdds/flat_segment_tree.hpp"/>
+				<F N="include/mdds/global.hpp"/>
+				<F N="include/mdds/node.hpp"/>
+				<F N="include/mdds/point_quad_tree.hpp"/>
+				<F N="include/mdds/quad_node.hpp"/>
+				<F N="include/mdds/quad_type_matrix.hpp"/>
+				<F N="include/mdds/rectangle_set.hpp"/>
+				<F N="include/mdds/segment_tree.hpp"/>
 			</Folder>
-			<F N="inc/nodecontainer.hpp"/>
-			<F N="inc/rangetree.hpp"/>
+			<F N="include/nodecontainer.hpp"/>
+			<F N="include/rangetree.hpp"/>
 		</Folder>
 		<Folder Name="src">
 			<F N="src/flat_segment_tree_test.cpp"/>
@@ -253,8 +253,5 @@
 			<F N="src/stlperf_test.cpp"/>
 			<F N="src/template_test.cpp"/>
 		</Folder>
-		<F
-			N="Makefile.in"
-			Type="Makefile"/>
 	</Files>
 </Project>
