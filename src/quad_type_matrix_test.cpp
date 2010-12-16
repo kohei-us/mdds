@@ -236,6 +236,27 @@ void qtm_test_resize(matrix_density_t density)
     StackPrinter __stack_printer__("::qtm_test_resize");
     print_mx_density_type(density);
     pair<size_t,size_t> mxsize;
+
+    {
+        // Start with an empty matrix, and resize into a non-empty one.
+        mx_type mx(0, 0, density);
+        mxsize = mx.size();
+        assert(mxsize.first == 0);
+        assert(mxsize.second == 0);
+        mx.resize(1, 1);
+        mxsize = mx.size();
+        assert(mxsize.first == 1);
+        assert(mxsize.second == 1);
+        mx.resize(0, 0);
+        mxsize = mx.size();
+        assert(mxsize.first == 0);
+        assert(mxsize.second == 0);
+        mx.resize(5, 10);
+        mxsize = mx.size();
+        assert(mxsize.first == 5);
+        assert(mxsize.second == 10);
+    }
+
     mx_type mx(3, 3, density);
     mx.dump();
     mxsize = mx.size();

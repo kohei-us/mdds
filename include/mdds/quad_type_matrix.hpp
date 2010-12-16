@@ -560,6 +560,20 @@ private:
 
             size_t cur_rows = rows(), cur_cols = cols();
 
+            if (!cur_rows || !cur_cols)
+            {
+                // current matrix is empty.
+                rows_type new_rows;
+                new_rows.reserve(row);
+                for (size_t i = 0; i < row; ++i)
+                {
+                    new_rows.push_back(new row_type);
+                    init_row(new_rows.back(), col);
+                }
+                m_rows.swap(new_rows);
+                return;
+            }
+
             if (row > cur_rows)
             {
                 // Insert extra rows...
