@@ -495,13 +495,17 @@ private:
         virtual double get_numeric(size_t row, size_t col) const
         {
             const element& elem = m_rows.at(row).at(col);
-            if (elem.m_type != element_numeric && elem.m_type != element_boolean)
-                throw matrix_error("element type is not numeric.");
-
-            if (elem.m_type == element_boolean)
-                return static_cast<double>(elem.m_boolean);
-
-            return elem.m_numeric;
+            switch (elem.m_type)
+            {
+                case element_numeric:
+                    return elem.m_numeric;
+                case element_boolean:
+                    return static_cast<double>(elem.m_boolean);
+                case element_empty:
+                default:
+                    ;
+            }
+            return 0.0;
         }
 
         virtual const string_type* get_string(size_t row, size_t col) const
@@ -775,16 +779,18 @@ private:
 
         virtual double get_numeric(size_t row, size_t col) const
         {
-            matrix_element_t elem_type = get_type(row, col);
-            if (elem_type != element_numeric && elem_type != element_boolean)
-                throw matrix_error("element type is not numeric.");
-
             const element& elem = get_non_empty_element(row, col);
-
-            if (elem.m_type == element_boolean)
-                return static_cast<double>(elem.m_boolean);
-
-            return elem.m_numeric;
+            switch (elem.m_type)
+            {
+                case element_numeric:
+                    return elem.m_numeric;
+                case element_boolean:
+                    return static_cast<double>(elem.m_boolean);
+                case element_empty:
+                default:
+                    ;
+            }
+            return 0.0;
         }
 
         virtual const string_type* get_string(size_t row, size_t col) const
