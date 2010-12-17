@@ -232,10 +232,10 @@
 				</Folder>
 				<F N="include/mdds/flat_segment_tree.hpp"/>
 				<F N="include/mdds/global.hpp"/>
+				<F N="include/mdds/mixed_type_matrix.hpp"/>
 				<F N="include/mdds/node.hpp"/>
 				<F N="include/mdds/point_quad_tree.hpp"/>
 				<F N="include/mdds/quad_node.hpp"/>
-				<F N="include/mdds/quad_type_matrix.hpp"/>
 				<F N="include/mdds/rectangle_set.hpp"/>
 				<F N="include/mdds/segment_tree.hpp"/>
 			</Folder>
@@ -244,9 +244,9 @@
 		</Folder>
 		<Folder Name="src">
 			<F N="src/flat_segment_tree_test.cpp"/>
+			<F N="src/mixed_type_matrix_test.cpp"/>
 			<F N="src/nodecontainer.cpp"/>
 			<F N="src/point_quad_tree_test.cpp"/>
-			<F N="src/quad_type_matrix_test.cpp"/>
 			<F N="src/rangetree.cpp"/>
 			<F N="src/rectangle_set_test.cpp"/>
 			<F N="src/segment_tree_test.cpp"/>

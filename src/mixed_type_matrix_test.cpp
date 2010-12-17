@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-#include "mdds/quad_type_matrix.hpp"
+#include "mdds/mixed_type_matrix.hpp"
 
 #include <sstream>
 #include <cassert>

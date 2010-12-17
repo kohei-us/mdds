@@ -10,7 +10,7 @@ EXECS= \
 	flat_segment_tree_test \
 	segment_tree_test \
 	point_quad_tree_test \
-	quad_type_matrix_test \
+	mixed_type_matrix_test \
 	rectangle_set_test
 
 HEADERS= \
@@ -20,7 +20,7 @@ HEADERS= \
 	$(INCDIR)/mdds/flat_segment_tree.hpp \
 	$(INCDIR)/mdds/point_quad_tree.hpp \
 	$(INCDIR)/mdds/segment_tree.hpp \
-	$(INCDIR)/mdds/quad_type_matrix.hpp \
+	$(INCDIR)/mdds/mixed_type_matrix.hpp \
 	$(INCDIR)/mdds/rectangle_set.hpp
 
 DEPENDS= \
@@ -61,8 +61,8 @@ $(OBJDIR)/rectangle_set_test.o: $(SRCDIR)/rectangle_set_test.cpp  $(DEPENDS)
 $(OBJDIR)/point_quad_tree_test.o: $(SRCDIR)/point_quad_tree_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/point_quad_tree_test.cpp
 
-$(OBJDIR)/quad_type_matrix_test.o: $(SRCDIR)/quad_type_matrix_test.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/quad_type_matrix_test.cpp
+$(OBJDIR)/mixed_type_matrix_test.o: $(SRCDIR)/mixed_type_matrix_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/mixed_type_matrix_test.cpp
 
 flat_segment_tree_test: pre $(OBJDIR)/flat_segment_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flat_segment_tree_test.o -o $@
@@ -76,8 +76,8 @@ rectangle_set_test: pre $(OBJDIR)/rectangle_set_test.o
 point_quad_tree_test: pre $(OBJDIR)/point_quad_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/point_quad_tree_test.o -o $@
 
-quad_type_matrix_test: pre $(OBJDIR)/quad_type_matrix_test.o
-	$(CXX) $(LDFLAGS) $(OBJDIR)/quad_type_matrix_test.o -o $@
+mixed_type_matrix_test: pre $(OBJDIR)/mixed_type_matrix_test.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/mixed_type_matrix_test.o -o $@
 
 stlperf_test: pre $(SRCDIR)/stlperf_test.cpp
 	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
@@ -115,11 +115,11 @@ test.st.perf: segment_tree_test
 test.st.mem: segment_tree_test
 	valgrind --tool=memcheck --leak-check=full ./segment_tree_test func
 
-test.qtm: quad_type_matrix_test
-	./quad_type_matrix_test
+test.mtm: mixed_type_matrix_test
+	./mixed_type_matrix_test
 
-test.qtm.mem: quad_type_matrix_test
-	valgrind --tool=memcheck --leak-check=full ./quad_type_matrix_test func
+test.mtm.mem: mixed_type_matrix_test
+	valgrind --tool=memcheck --leak-check=full ./mixed_type_matrix_test func
 
 test.stl: stlperf_test
 	./stlperf_test
