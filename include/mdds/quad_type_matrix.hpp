@@ -86,7 +86,7 @@ matrix_init_element_t get_init_element_type(matrix_density_t density)
  * be of one of four types: value, boolean, string, or empty.
  */
 template<typename _String, typename _Flag>
-class quad_type_matrix
+class mixed_type_matrix
 {
 public:
     typedef _String     string_type;
@@ -97,22 +97,22 @@ public:
     /**
      * Default constructor.
      */
-    quad_type_matrix();
+    mixed_type_matrix();
 
     /**
      * Construct an empty matrix with specified density type.
      */
-    quad_type_matrix(matrix_density_t density);
+    mixed_type_matrix(matrix_density_t density);
 
     /**
      * Construct a matrix of specified size with specified density type. 
      */
-    quad_type_matrix(size_t rows, size_t cols, matrix_density_t density);
+    mixed_type_matrix(size_t rows, size_t cols, matrix_density_t density);
 
-    quad_type_matrix(const quad_type_matrix& r);
-    ~quad_type_matrix();
+    mixed_type_matrix(const mixed_type_matrix& r);
+    ~mixed_type_matrix();
 
-    quad_type_matrix& operator= (const quad_type_matrix& r);
+    mixed_type_matrix& operator= (const mixed_type_matrix& r);
 
     /**
      * Get the type of element specified by its position.  The type can be one 
@@ -169,7 +169,7 @@ public:
      *  
      * @return reference to this matrix instance. 
      */
-    quad_type_matrix& transpose();
+    mixed_type_matrix& transpose();
 
     /**
      * Assign values from the passed matrix instance.  If the size of the
@@ -181,7 +181,7 @@ public:
      * 
      * @param r passed matrix object to assign element values from.
      */
-    void assign(const quad_type_matrix& r);
+    void assign(const mixed_type_matrix& r);
 
     /**
      * Resize the matrix to specified size.  This method supports resizing to
@@ -217,7 +217,7 @@ public:
     /**
      * Swap the content of the matrix with another instance.
      */
-    void swap(quad_type_matrix& r);
+    void swap(mixed_type_matrix& r);
 
 #ifdef UNIT_TEST
     void dump() const;
@@ -1027,8 +1027,8 @@ private:
 };
 
 template<typename _String, typename _Flag>
-typename quad_type_matrix<_String,_Flag>::storage_base*
-quad_type_matrix<_String,_Flag>::create_storage(size_t rows, size_t cols, matrix_density_t density)
+typename mixed_type_matrix<_String,_Flag>::storage_base*
+mixed_type_matrix<_String,_Flag>::create_storage(size_t rows, size_t cols, matrix_density_t density)
 {
     switch (density)
     {
@@ -1047,41 +1047,41 @@ quad_type_matrix<_String,_Flag>::create_storage(size_t rows, size_t cols, matrix
 }
 
 template<typename _String, typename _Flag>
-quad_type_matrix<_String,_Flag>::quad_type_matrix() :
+mixed_type_matrix<_String,_Flag>::mixed_type_matrix() :
     mp_storage(NULL)
 {
     mp_storage = create_storage(0, 0, matrix_density_filled_zero);
 }
 
 template<typename _String, typename _Flag>
-quad_type_matrix<_String,_Flag>::quad_type_matrix(matrix_density_t density) :
+mixed_type_matrix<_String,_Flag>::mixed_type_matrix(matrix_density_t density) :
     mp_storage(NULL)
 {
     mp_storage = create_storage(0, 0, density);
 }
 
 template<typename _String, typename _Flag>
-quad_type_matrix<_String,_Flag>::quad_type_matrix(size_t rows, size_t cols, matrix_density_t density) :
+mixed_type_matrix<_String,_Flag>::mixed_type_matrix(size_t rows, size_t cols, matrix_density_t density) :
     mp_storage(NULL)
 {
     mp_storage = create_storage(rows, cols, density);
 }
 
 template<typename _String, typename _Flag>
-quad_type_matrix<_String,_Flag>::quad_type_matrix(const quad_type_matrix& r) :
+mixed_type_matrix<_String,_Flag>::mixed_type_matrix(const mixed_type_matrix& r) :
     mp_storage(r.mp_storage->clone())
 {
 }
 
 template<typename _String, typename _Flag>
-quad_type_matrix<_String,_Flag>::~quad_type_matrix()
+mixed_type_matrix<_String,_Flag>::~mixed_type_matrix()
 {
     delete mp_storage;
 }
 
 template<typename _String, typename _Flag>
-quad_type_matrix<_String,_Flag>&
-quad_type_matrix<_String,_Flag>::operator= (const quad_type_matrix& r)
+mixed_type_matrix<_String,_Flag>&
+mixed_type_matrix<_String,_Flag>::operator= (const mixed_type_matrix& r)
 {
     if (this == &r)
         // self assignment.
@@ -1093,109 +1093,109 @@ quad_type_matrix<_String,_Flag>::operator= (const quad_type_matrix& r)
 }
 
 template<typename _String, typename _Flag>
-matrix_element_t quad_type_matrix<_String,_Flag>::get_type(size_t row, size_t col) const
+matrix_element_t mixed_type_matrix<_String,_Flag>::get_type(size_t row, size_t col) const
 {
     return mp_storage->get_type(row, col);
 }
 
 template<typename _String, typename _Flag>
-double quad_type_matrix<_String,_Flag>::get_numeric(size_t row, size_t col) const
+double mixed_type_matrix<_String,_Flag>::get_numeric(size_t row, size_t col) const
 {
     return mp_storage->get_numeric(row, col);
 }
 
 template<typename _String, typename _Flag>
-bool quad_type_matrix<_String,_Flag>::get_boolean(size_t row, size_t col) const
+bool mixed_type_matrix<_String,_Flag>::get_boolean(size_t row, size_t col) const
 {
     return mp_storage->get_boolean(row, col);
 }
 
 template<typename _String, typename _Flag>
-const typename quad_type_matrix<_String,_Flag>::string_type*
-quad_type_matrix<_String,_Flag>::get_string(size_t row, size_t col) const
+const typename mixed_type_matrix<_String,_Flag>::string_type*
+mixed_type_matrix<_String,_Flag>::get_string(size_t row, size_t col) const
 {
     return mp_storage->get_string(row, col);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::set_numeric(size_t row, size_t col, double val)
+void mixed_type_matrix<_String,_Flag>::set_numeric(size_t row, size_t col, double val)
 {
     mp_storage->get_element(row, col).set_numeric(val);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::set_boolean(size_t row, size_t col, bool val)
+void mixed_type_matrix<_String,_Flag>::set_boolean(size_t row, size_t col, bool val)
 {
     mp_storage->get_element(row, col).set_boolean(val);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::set_string(size_t row, size_t col, string_type* str)
+void mixed_type_matrix<_String,_Flag>::set_string(size_t row, size_t col, string_type* str)
 {
     mp_storage->get_element(row, col).set_string(str);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::set_flag(size_t row, size_t col, flag_type flag)
+void mixed_type_matrix<_String,_Flag>::set_flag(size_t row, size_t col, flag_type flag)
 {
     mp_storage->get_flag_storage().set_flag(row, col, flag);
 }
 
 template<typename _String, typename _Flag>
-typename quad_type_matrix<_String,_Flag>::flag_type
-quad_type_matrix<_String,_Flag>::get_flag(size_t row, size_t col) const
+typename mixed_type_matrix<_String,_Flag>::flag_type
+mixed_type_matrix<_String,_Flag>::get_flag(size_t row, size_t col) const
 {
     return mp_storage->get_flag_storage().get_flag(row, col);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::clear_flag(size_t row, size_t col)
+void mixed_type_matrix<_String,_Flag>::clear_flag(size_t row, size_t col)
 {
     return mp_storage->get_flag_storage().clear_flag(row, col);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::set_empty(size_t row, size_t col)
+void mixed_type_matrix<_String,_Flag>::set_empty(size_t row, size_t col)
 {
     mp_storage->get_element(row, col).set_empty();
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::set(size_t row, size_t col, double val)
+void mixed_type_matrix<_String,_Flag>::set(size_t row, size_t col, double val)
 {
     set_numeric(row, col, val);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::set(size_t row, size_t col, bool val)
+void mixed_type_matrix<_String,_Flag>::set(size_t row, size_t col, bool val)
 {
     set_boolean(row, col, val);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::set(size_t row, size_t col, string_type* str)
+void mixed_type_matrix<_String,_Flag>::set(size_t row, size_t col, string_type* str)
 {
     set_string(row, col, str);
 }
 
 template<typename _String, typename _Flag>
-typename quad_type_matrix<_String,_Flag>::size_pair_type
-quad_type_matrix<_String,_Flag>::size() const
+typename mixed_type_matrix<_String,_Flag>::size_pair_type
+mixed_type_matrix<_String,_Flag>::size() const
 {
     size_pair_type size_pair(mp_storage->rows(), mp_storage->cols());
     return size_pair;
 }
 
 template<typename _String, typename _Flag>
-quad_type_matrix<_String,_Flag>&
-quad_type_matrix<_String,_Flag>::transpose()
+mixed_type_matrix<_String,_Flag>&
+mixed_type_matrix<_String,_Flag>::transpose()
 {
     mp_storage->transpose();
     return *this;
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::assign(const quad_type_matrix& r)
+void mixed_type_matrix<_String,_Flag>::assign(const mixed_type_matrix& r)
 {
     if (this == &r)
         // assignment to self.
@@ -1209,38 +1209,38 @@ void quad_type_matrix<_String,_Flag>::assign(const quad_type_matrix& r)
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::resize(size_t row, size_t col)
+void mixed_type_matrix<_String,_Flag>::resize(size_t row, size_t col)
 {
     mp_storage->resize(row, col);
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::clear()
+void mixed_type_matrix<_String,_Flag>::clear()
 {
     mp_storage->clear();
 }
 
 template<typename _String, typename _Flag>
-bool quad_type_matrix<_String,_Flag>::numeric() const
+bool mixed_type_matrix<_String,_Flag>::numeric() const
 {
     return mp_storage->numeric();
 }
 
 template<typename _String, typename _Flag>
-bool quad_type_matrix<_String,_Flag>::empty() const
+bool mixed_type_matrix<_String,_Flag>::empty() const
 {
     return mp_storage->empty();
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::swap(quad_type_matrix& r)
+void mixed_type_matrix<_String,_Flag>::swap(mixed_type_matrix& r)
 {
     ::std::swap(mp_storage, r.mp_storage);
 }
 
 #ifdef UNIT_TEST
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::dump() const
+void mixed_type_matrix<_String,_Flag>::dump() const
 {
     using namespace std;
     size_t rows = mp_storage->rows(), cols = mp_storage->cols();
@@ -1278,7 +1278,7 @@ void quad_type_matrix<_String,_Flag>::dump() const
 }
 
 template<typename _String, typename _Flag>
-void quad_type_matrix<_String,_Flag>::dump_flags() const
+void mixed_type_matrix<_String,_Flag>::dump_flags() const
 {
     mp_storage->get_flag_storage().dump();
 }

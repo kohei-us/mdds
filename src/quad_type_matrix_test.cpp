@@ -77,7 +77,7 @@ private:
 using namespace std;
 using namespace mdds;
 
-typedef quad_type_matrix<string, uint8_t> mx_type;
+typedef mixed_type_matrix<string, uint8_t> mx_type;
 typedef void (test_func_type)(matrix_density_t);
 
 /**
