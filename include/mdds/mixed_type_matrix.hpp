@@ -377,37 +377,38 @@ private:
 
         ~element()
         {
+            clear_string();
+        }
+
+        void clear_string()
+        {
             if (m_type == element_string)
                 delete mp_string;
         }
 
         void set_empty()
         {
-            if (m_type == element_string)
-                delete mp_string;
+            clear_string();
             m_type = element_empty;
         }
 
         void set_numeric(double val)
         {
-            if (m_type == element_string)
-                delete mp_string;
+            clear_string();
             m_type = element_numeric;
             m_numeric = val;
         }
 
         void set_boolean(bool val)
         {
-            if (m_type == element_string)
-                delete mp_string;
+            clear_string();
             m_type = element_boolean;
             m_boolean = val;
         }
 
         void set_string(string_type* str)
         {
-            if (m_type == element_string)
-                delete mp_string;
+            clear_string();
             m_type = element_string;
             mp_string = str;
         }
