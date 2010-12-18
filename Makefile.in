@@ -21,6 +21,9 @@ HEADERS= \
 	$(INCDIR)/mdds/point_quad_tree.hpp \
 	$(INCDIR)/mdds/segment_tree.hpp \
 	$(INCDIR)/mdds/mixed_type_matrix.hpp \
+	$(INCDIR)/mdds/mixed_type_matrix_def.inl \
+	$(INCDIR)/mdds/mixed_type_matrix_storage.hpp \
+	$(INCDIR)/mdds/mixed_type_matrix_flag_storage.hpp \
 	$(INCDIR)/mdds/rectangle_set.hpp
 
 DEPENDS= \

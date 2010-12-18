@@ -30,6 +30,7 @@
 
 #include "mdds/global.hpp"
 #include "mdds/mixed_type_matrix_element.hpp"
+#include "mdds/mixed_type_matrix_storage.hpp"
 #include "mdds/mixed_type_matrix_flag_storage.hpp"
 
 #include <iostream>
@@ -45,18 +46,6 @@ enum matrix_density_t
     matrix_density_filled_empty,
     matrix_density_sparse_zero,
     matrix_density_sparse_empty
-};
-
-enum matrix_storage_t
-{
-    matrix_storage_filled,
-    matrix_storage_sparse
-};
-
-enum matrix_init_element_t
-{
-    matrix_init_element_zero,
-    matrix_init_element_empty
 };
 
 class matrix_error : public ::mdds::general_error
@@ -79,8 +68,6 @@ public:
     typedef ::std::pair<size_type, size_type> size_pair_type;
 
     typedef ::mdds::element<string_type> element;
-
-private:
     struct size_pair_type_hash
     {
         size_t operator() (const size_pair_type& val) const
@@ -91,47 +78,9 @@ private:
     };
     typedef ::mdds::flag_storage<flag_type, size_pair_type, size_pair_type_hash> flag_storage;
 
-    class storage_base
-    {
-    public:
-        storage_base(matrix_storage_t store_type, matrix_init_element_t init) : 
-            m_store_type(store_type), m_init_type(init) {}
-        storage_base(const storage_base& r) : 
-            m_store_type(r.m_store_type), m_init_type(r.m_init_type), m_flags(r.m_flags) {}
+private:
 
-        matrix_storage_t get_storage_type() const { return m_store_type; }
-
-        virtual ~storage_base() {}
-
-        virtual element& get_element(size_t row, size_t col) = 0;
-
-        virtual matrix_element_t get_type(size_t row, size_t col) const = 0;
-
-        virtual double get_numeric(size_t row, size_t col) const = 0;
-        virtual const string_type* get_string(size_t row, size_t col) const = 0;
-        virtual bool get_boolean(size_t row, size_t col) const = 0;
-
-        virtual size_t rows() const = 0;
-        virtual size_t cols() const = 0;
-
-        virtual void transpose() = 0;
-        virtual void resize(size_t row, size_t col) = 0;
-        virtual void clear() = 0;
-        virtual bool numeric() = 0;
-        virtual bool empty() const = 0;
-
-        virtual storage_base* clone() const = 0;
-
-        flag_storage& get_flag_storage() { return m_flags; }
-
-    protected:
-        matrix_init_element_t get_init_type() const { return m_init_type; }
-
-    private:
-        matrix_storage_t        m_store_type;
-        matrix_init_element_t   m_init_type;
-        flag_storage            m_flags;
-    };
+    typedef ::mdds::storage_base<mixed_type_matrix<_String, _Flag> > storage_base;
 
     /**
      * This storage creates instance for every single element, even for the
@@ -164,18 +113,18 @@ private:
 
         virtual ~storage_filled() {}
 
-        virtual element& get_element(size_t row, size_t col)
+        element& get_element(size_t row, size_t col)
         {
             m_valid = false;
             return m_rows.at(row).at(col);
         }
 
-        virtual matrix_element_t get_type(size_t row, size_t col) const
+        matrix_element_t get_type(size_t row, size_t col) const
         {
             return m_rows.at(row).at(col).m_type;
         }
 
-        virtual double get_numeric(size_t row, size_t col) const
+        double get_numeric(size_t row, size_t col) const
         {
             const element& elem = m_rows.at(row).at(col);
             switch (elem.m_type)
@@ -191,7 +140,7 @@ private:
             return 0.0;
         }
 
-        virtual const string_type* get_string(size_t row, size_t col) const
+        const string_type* get_string(size_t row, size_t col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != element_string)
@@ -200,7 +149,7 @@ private:
             return elem.mp_string;
         }
 
-        virtual bool get_boolean(size_t row, size_t col) const
+        bool get_boolean(size_t row, size_t col) const
         {
             const element& elem = m_rows.at(row).at(col);
             if (elem.m_type != element_boolean)
@@ -209,17 +158,17 @@ private:
             return elem.m_boolean;
         }
 
-        virtual size_t rows() const
+        size_t rows() const
         {
             return m_rows.size();
         }
 
-        virtual size_t cols() const
+        size_t cols() const
         {
             return m_rows.empty() ? 0 : m_rows[0].size();
         }
 
-        virtual void transpose()
+        void transpose()
         {
             rows_type trans_mx;
             size_t row_size = rows(), col_size = cols();
@@ -235,7 +184,7 @@ private:
             m_rows.swap(trans_mx);
         }
 
-        virtual void resize(size_t row, size_t col)
+        void resize(size_t row, size_t col)
         {
             m_valid = false;
             if (!row || !col)
@@ -287,14 +236,14 @@ private:
             }
         }
 
-        virtual void clear()
+        void clear()
         {
             m_rows.clear();
             m_valid = true;
             m_numeric = false;
         }
 
-        virtual bool numeric()
+        bool numeric()
         {
             if (m_valid)
                 return m_numeric;
@@ -320,12 +269,12 @@ private:
             return m_numeric;
         }
 
-        virtual bool empty() const
+        bool empty() const
         {
             return m_rows.empty();
         }
 
-        virtual storage_base* clone() const
+        storage_base* clone() const
         {
             return new storage_filled(*this);
         }
@@ -416,7 +365,7 @@ private:
 
         virtual ~storage_sparse() {}
 
-        virtual element & get_element(size_t row, size_t col)
+        element & get_element(size_t row, size_t col)
         {
             if (row >= m_row_size || col >= m_col_size)
                 throw matrix_error("specified element is out-of-bound.");
@@ -446,7 +395,7 @@ private:
             return *itr_elem->second;
         }
 
-        virtual matrix_element_t get_type(size_t row, size_t col) const
+        matrix_element_t get_type(size_t row, size_t col) const
         {
             typename rows_type::const_iterator itr = m_rows.find(row);
             if (itr == m_rows.end())
@@ -460,7 +409,7 @@ private:
             return itr_elem->second->m_type;
         }
 
-        virtual double get_numeric(size_t row, size_t col) const
+        double get_numeric(size_t row, size_t col) const
         {
             const element& elem = get_non_empty_element(row, col);
             switch (elem.m_type)
@@ -476,7 +425,7 @@ private:
             return 0.0;
         }
 
-        virtual const string_type* get_string(size_t row, size_t col) const
+        const string_type* get_string(size_t row, size_t col) const
         {
             matrix_element_t elem_type = get_type(row, col);
             if (elem_type != element_string)
@@ -485,7 +434,7 @@ private:
             return get_non_empty_element(row, col).mp_string;
         }
 
-        virtual bool get_boolean(size_t row, size_t col) const
+        bool get_boolean(size_t row, size_t col) const
         {
             matrix_element_t elem_type = get_type(row, col);
             if (elem_type != element_boolean)
@@ -494,12 +443,12 @@ private:
             return get_non_empty_element(row, col).m_boolean;
         }
 
-        virtual size_t rows() const
+        size_t rows() const
         {
             return m_row_size;
         }
 
-        virtual size_t cols() const
+        size_t cols() const
         {
             return m_col_size;
         }
@@ -516,7 +465,7 @@ private:
             }
         };
 
-        virtual void transpose()
+        void transpose()
         {
             using namespace std;
 
@@ -575,7 +524,7 @@ private:
             ::std::swap(m_row_size, m_col_size);
         }
 
-        virtual void resize(size_t row, size_t col)
+        void resize(size_t row, size_t col)
         {
             m_valid = false;
 
@@ -613,7 +562,7 @@ private:
             m_col_size = col;
         }
 
-        virtual void clear()
+        void clear()
         {
             m_rows.clear();
             m_row_size = 0;
@@ -622,7 +571,7 @@ private:
             m_numeric = false;
         }
 
-        virtual bool numeric()
+        bool numeric()
         {
             using namespace std;
 
@@ -665,7 +614,7 @@ private:
             return m_numeric;
         }
 
-        virtual bool empty() const
+        bool empty() const
         {
             // If one of row and column sizes are zero, the other size must be
             // zero, and vise versa.
@@ -674,7 +623,7 @@ private:
             return m_row_size == 0 || m_col_size == 0;
         }
 
-        virtual storage_base* clone() const
+        storage_base* clone() const
         {
             return new storage_sparse(*this);
         }
@@ -705,6 +654,19 @@ private:
     static storage_base* create_storage(size_t rows, size_t cols, matrix_density_t density);
 
 public:
+
+    typedef storage_filled filled_storage_type;
+    typedef storage_sparse sparse_storage_type;
+
+    class const_iterator
+    {
+        typedef mixed_type_matrix<string_type, flag_type> parent;
+    public:
+        const_iterator() : mp_store(NULL) {}
+
+    private:
+        const parent::storage_base* mp_store;
+    };
 
     /**
      * Default constructor.
