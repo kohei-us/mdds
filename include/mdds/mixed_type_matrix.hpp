@@ -31,6 +31,7 @@
 #include "mdds/global.hpp"
 #include "mdds/hash_container/map.hpp"
 #include "mdds/mixed_type_matrix_element.hpp"
+#include "mdds/mixed_type_matrix_flag_storage.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -220,75 +221,7 @@ public:
 #endif
 
 private:
-    struct size_pair_type_hash
-    {
-        size_t operator() (const size_pair_type& val) const
-        {
-            size_t n = val.first + (val.second << 8);
-            return n;
-        }
-    };
-    typedef _mdds_unordered_map_type<size_pair_type, flag_type, size_pair_type_hash> flag_store_type;
-
-    class flag_storage
-    {
-    public:
-        flag_storage() {}
-        flag_storage(const flag_storage& r) : m_flags(r.m_flags) {}
-
-        void set_flag(size_t row, size_t col, flag_type flag)
-        {
-            size_pair_type pos = size_pair_type(row, col);
-            typename flag_store_type::iterator itr = m_flags.find(pos);
-            if (itr == m_flags.end())
-            {
-                // flag not stored for this position.
-                ::std::pair<typename flag_store_type::iterator, bool> r = 
-                    m_flags.insert(typename flag_store_type::value_type(pos, flag));
-                return;
-            }
-            itr->second = flag;
-        }
-
-        flag_type get_flag(size_t row, size_t col)
-        {
-            size_pair_type pos = size_pair_type(row, col);
-            typename flag_store_type::iterator itr = m_flags.find(pos);
-            return itr == m_flags.end() ? static_cast<flag_type>(0) : itr->second;
-        }
-
-        void clear_flag(size_t row, size_t col)
-        {
-            size_pair_type pos = size_pair_type(row, col);
-            typename flag_store_type::iterator itr = m_flags.find(pos);
-            if (itr != m_flags.end())
-                // Flag is stored at this position.  Remove it.
-                m_flags.erase(itr);
-        }
-#if UNIT_TEST
-        void dump() const
-        {
-            using namespace std;
-            if (m_flags.empty())
-            {
-                cout << "no flags stored" << endl;
-                return;
-            }
-
-            cout << "flags stored:" << endl;
-            typename flag_store_type::const_iterator itr = m_flags.begin(), itr_end = m_flags.end();
-            for (; itr != itr_end; ++itr)
-            {
-                const size_pair_type& pos = itr->first;
-                flag_type val = itr->second;
-                cout << "(row=" << pos.first << ",col=" << pos.second << ") = 0x" << hex << static_cast<size_t>(val) << endl;
-            }
-        }
-#endif
-    private:
-        flag_store_type m_flags;
-    };
-
+    typedef ::mdds::flag_storage<flag_type, size_pair_type> flag_storage;
 
     class storage_base
     {
