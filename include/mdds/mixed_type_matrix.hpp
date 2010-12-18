@@ -59,21 +59,6 @@ public:
     matrix_error(const ::std::string& msg) : general_error(msg) {}
 };
 
-matrix_init_element_t get_init_element_type(matrix_density_t density)
-{
-    switch (density)
-    {
-        case matrix_density_filled_empty:
-        case matrix_density_sparse_empty:
-            return matrix_init_element_empty;
-        case matrix_density_filled_zero:
-        case matrix_density_sparse_zero:
-            return matrix_init_element_zero;
-        default:
-            throw matrix_error("unknown matrix density type.");
-    }
-}
-
 /**
  * This data structure represents a matrix where each individual element may
  * be of one of four types: value, boolean, string, or empty.
