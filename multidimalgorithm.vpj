@@ -233,6 +233,7 @@
 				<F N="include/mdds/flat_segment_tree.hpp"/>
 				<F N="include/mdds/global.hpp"/>
 				<F N="include/mdds/mixed_type_matrix.hpp"/>
+				<F N="include/mdds/mixed_type_matrix_def.inl"/>
 				<F N="include/mdds/node.hpp"/>
 				<F N="include/mdds/point_quad_tree.hpp"/>
 				<F N="include/mdds/quad_node.hpp"/>
