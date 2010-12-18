@@ -30,6 +30,7 @@
 
 #include "mdds/global.hpp"
 #include "mdds/hash_container/map.hpp"
+#include "mdds/mixed_type_matrix_element.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -44,14 +45,6 @@ enum matrix_density_t
     matrix_density_filled_empty,
     matrix_density_sparse_zero,
     matrix_density_sparse_empty
-};
-
-enum matrix_element_t
-{ 
-    element_empty   = 0, 
-    element_numeric = 1, 
-    element_boolean = 2, 
-    element_string  = 3 
 };
 
 enum matrix_init_element_t
@@ -93,6 +86,8 @@ public:
     typedef _Flag       flag_type;
     typedef size_t      size_type;
     typedef ::std::pair<size_type, size_type> size_pair_type;
+
+    typedef ::mdds::element<string_type> element;
 
     /**
      * Default constructor.
@@ -294,125 +289,6 @@ private:
         flag_store_type m_flags;
     };
 
-    struct element
-    {
-        matrix_element_t m_type:2;
-
-        union
-        {
-            double       m_numeric;
-            bool         m_boolean;
-            string_type* mp_string;
-        };
-
-        element() : m_type(element_empty) {}
-        element(const element& r) : m_type(r.m_type)
-        {
-            switch (m_type)
-            {
-                case element_boolean:
-                    m_boolean = r.m_boolean;
-                    break;
-                case element_numeric:
-                    m_numeric = r.m_numeric;
-                    break;
-                case element_string:
-                    mp_string = new string_type(*r.mp_string);
-                    break;
-                case element_empty:
-                default:
-                    ;
-            }
-        }
-
-        explicit element(double v) : m_type(element_numeric), m_numeric(v) {}
-        explicit element(bool v) : m_type(element_boolean), m_boolean(v) {}
-        explicit element(string_type* p) : m_type(element_string), mp_string(p) {}
-
-        bool operator== (const element& r) const
-        {
-            if (m_type != r.m_type)
-                return false;
-
-            switch (m_type)
-            {
-                case element_boolean:
-                    return m_boolean == r.m_boolean;
-                case element_numeric:
-                    return m_numeric == r.m_numeric;
-                case element_string:
-                    return *mp_string == *r.mp_string;
-                case element_empty:
-                default:
-                    ;
-            }
-
-            return true;
-        }
-
-        element& operator= (const element& r)
-        {
-            if (m_type == element_string)
-                delete mp_string;
-
-            m_type = r.m_type;
-
-            switch (m_type)
-            {
-                case element_boolean:
-                    m_boolean = r.m_boolean;
-                    break;
-                case element_numeric:
-                    m_numeric = r.m_numeric;
-                    break;
-                case element_string:
-                    mp_string = new string_type(*r.mp_string);
-                    break;
-                case element_empty:
-                default:
-                    ;
-            }   
-            return *this;
-        }
-
-        ~element()
-        {
-            clear_string();
-        }
-
-        void clear_string()
-        {
-            if (m_type == element_string)
-                delete mp_string;
-        }
-
-        void set_empty()
-        {
-            clear_string();
-            m_type = element_empty;
-        }
-
-        void set_numeric(double val)
-        {
-            clear_string();
-            m_type = element_numeric;
-            m_numeric = val;
-        }
-
-        void set_boolean(bool val)
-        {
-            clear_string();
-            m_type = element_boolean;
-            m_boolean = val;
-        }
-
-        void set_string(string_type* str)
-        {
-            clear_string();
-            m_type = element_string;
-            mp_string = str;
-        }
-    };
 
     class storage_base
     {
