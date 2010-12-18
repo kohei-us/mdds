@@ -66,8 +66,9 @@ public:
     typedef _Flag       flag_type;
     typedef size_t      size_type;
     typedef ::std::pair<size_type, size_type> size_pair_type;
-
     typedef ::mdds::element<string_type> element;
+
+private:
     struct size_pair_type_hash
     {
         size_t operator() (const size_pair_type& val) const
@@ -76,11 +77,12 @@ public:
             return n;
         }
     };
+    typedef ::mdds::storage_base<mixed_type_matrix> storage_base;
+
+public:
     typedef ::mdds::flag_storage<flag_type, size_pair_type, size_pair_type_hash> flag_storage;
 
 private:
-
-    typedef ::mdds::storage_base<mixed_type_matrix<_String, _Flag> > storage_base;
 
     /**
      * This storage creates instance for every single element, even for the

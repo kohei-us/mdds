@@ -49,14 +49,16 @@ class storage_base
 {
 public:
     typedef _MatrixType matrix_type;
-    typedef typename _MatrixType::element       element;
-    typedef typename _MatrixType::flag_storage  flag_storage;
-    typedef typename _MatrixType::string_type   string_type;
-    typedef typename _MatrixType::filled_storage_type filled_storage_type;
-    typedef typename _MatrixType::sparse_storage_type sparse_storage_type;
+
+    typedef typename _MatrixType::element               element;
+    typedef typename _MatrixType::flag_storage          flag_storage;
+    typedef typename _MatrixType::string_type           string_type;
+    typedef typename _MatrixType::filled_storage_type   filled_storage_type;
+    typedef typename _MatrixType::sparse_storage_type   sparse_storage_type;
 
     storage_base(matrix_storage_t store_type, matrix_init_element_t init) : 
         m_store_type(store_type), m_init_type(init) {}
+
     storage_base(const storage_base& r) : 
         m_store_type(r.m_store_type), m_init_type(r.m_init_type), m_flags(r.m_flags) {}
 
