@@ -34,13 +34,13 @@ mixed_type_matrix<_String,_Flag>::create_storage(size_t rows, size_t cols, matri
     switch (density)
     {
         case matrix_density_filled_zero:
-            return new storage_filled(rows, cols, matrix_init_element_zero);
+            return new filled_storage_type(rows, cols, matrix_init_element_zero);
         case matrix_density_filled_empty:
-            return new storage_filled(rows, cols, matrix_init_element_empty);
+            return new filled_storage_type(rows, cols, matrix_init_element_empty);
         case matrix_density_sparse_zero:
-            return new storage_sparse(rows, cols, matrix_init_element_zero);
+            return new sparse_storage_type(rows, cols, matrix_init_element_zero);
         case matrix_density_sparse_empty:
-            return new storage_sparse(rows, cols, matrix_init_element_empty);
+            return new sparse_storage_type(rows, cols, matrix_init_element_empty);
         default:
             throw matrix_error("unknown density type");
     }
