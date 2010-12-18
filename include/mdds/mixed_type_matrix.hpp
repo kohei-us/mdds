@@ -47,6 +47,12 @@ enum matrix_density_t
     matrix_density_sparse_empty
 };
 
+enum matrix_storage_t
+{
+    matrix_storage_filled,
+    matrix_storage_sparse
+};
+
 enum matrix_init_element_t
 {
     matrix_init_element_zero,
@@ -88,8 +94,12 @@ private:
     class storage_base
     {
     public:
-        storage_base(matrix_init_element_t init) : m_init_type(init) {}
-        storage_base(const storage_base& r) : m_init_type(r.m_init_type), m_flags(r.m_flags) {}
+        storage_base(matrix_storage_t store_type, matrix_init_element_t init) : 
+            m_store_type(store_type), m_init_type(init) {}
+        storage_base(const storage_base& r) : 
+            m_store_type(r.m_store_type), m_init_type(r.m_init_type), m_flags(r.m_flags) {}
+
+        matrix_storage_t get_storage_type() const { return m_store_type; }
 
         virtual ~storage_base() {}
 
@@ -118,8 +128,9 @@ private:
         matrix_init_element_t get_init_type() const { return m_init_type; }
 
     private:
-        matrix_init_element_t m_init_type;
-        flag_storage m_flags;
+        matrix_storage_t        m_store_type;
+        matrix_init_element_t   m_init_type;
+        flag_storage            m_flags;
     };
 
     /**
@@ -133,7 +144,7 @@ private:
 
     public:
         storage_filled(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
-            storage_base(init_type),
+            storage_base(matrix_storage_filled, init_type),
             m_numeric(false),
             m_valid(false)
         {
@@ -380,7 +391,7 @@ private:
 
     public:
         storage_sparse(size_t _rows, size_t _cols, matrix_init_element_t init_type) : 
-            storage_base(init_type),
+            storage_base(matrix_storage_sparse, init_type),
             m_row_size(_rows), m_col_size(_cols),
             m_numeric(_rows && _cols), m_valid(true)
         {
