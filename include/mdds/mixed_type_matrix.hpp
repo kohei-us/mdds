@@ -79,16 +79,12 @@ private:
     };
     typedef ::mdds::storage_base<mixed_type_matrix> storage_base;
 
+    static storage_base* create_storage(size_t rows, size_t cols, matrix_density_t density);
+
 public:
     typedef ::mdds::flag_storage<flag_type, size_pair_type, size_pair_type_hash> flag_storage;
     typedef ::mdds::storage_filled<mixed_type_matrix> filled_storage_type;
     typedef ::mdds::storage_sparse<mixed_type_matrix> sparse_storage_type;
-
-private:
-
-    static storage_base* create_storage(size_t rows, size_t cols, matrix_density_t density);
-
-public:
 
     class const_iterator
     {
