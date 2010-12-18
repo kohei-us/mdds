@@ -29,6 +29,8 @@
 #include <iostream>
 #endif
 
+#include "mdds/hash_container/map.hpp"
+
 namespace mdds {
 
 template<typename _Flag, typename _Key, typename _KeyHash>

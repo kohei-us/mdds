@@ -29,7 +29,6 @@
 #define __MDDS_QUAD_TYPE_MATRIX_HPP__
 
 #include "mdds/global.hpp"
-#include "mdds/hash_container/map.hpp"
 #include "mdds/mixed_type_matrix_element.hpp"
 #include "mdds/mixed_type_matrix_flag_storage.hpp"
 
