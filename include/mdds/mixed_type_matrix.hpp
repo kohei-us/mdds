@@ -221,7 +221,15 @@ public:
 #endif
 
 private:
-    typedef ::mdds::flag_storage<flag_type, size_pair_type> flag_storage;
+    struct size_pair_type_hash
+    {
+        size_t operator() (const size_pair_type& val) const
+        {
+            size_t n = val.first + (val.second << 8);
+            return n;
+        }
+    };
+    typedef ::mdds::flag_storage<flag_type, size_pair_type, size_pair_type_hash> flag_storage;
 
     class storage_base
     {
