@@ -245,10 +245,10 @@ public:
             switch (r.m_type)
             {
                 case matrix_storage_filled:
-                    m_const_itr_access = new filled_access_type(*get_filled_itr());
+                    m_const_itr_access = new filled_access_type(*r.get_filled_itr());
                 break;
                 case matrix_storage_sparse:
-                    m_const_itr_access = new sparse_access_type(*get_sparse_itr());
+                    m_const_itr_access = new sparse_access_type(*r.get_sparse_itr());
                 break;
                 default:
                     assert(!"unknown storage type");
@@ -268,6 +268,19 @@ public:
                 default:
                     assert(!"unknown storage type");
             }
+        }
+
+        void swap(const_iterator& r)
+        {
+            ::std::swap(m_type, r.m_type);
+            ::std::swap(m_const_itr_access, r.m_const_itr_access);
+        }
+
+        const_iterator& operator=(const const_iterator& r)
+        {
+            const_iterator new_itr(r);
+            swap(new_itr);
+            return *this;
         }
 
         bool operator== (const const_iterator& r) const
