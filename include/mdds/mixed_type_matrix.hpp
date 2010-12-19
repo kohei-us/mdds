@@ -84,50 +84,7 @@ public:
     typedef ::mdds::storage_filled<mixed_type_matrix> filled_storage_type;
     typedef ::mdds::storage_sparse<mixed_type_matrix> sparse_storage_type;
 
-    class const_iterator
-    {
-    public:
-        const_iterator() : mp_store(NULL) {}
-
-        const_iterator& operator= (const const_iterator& r)
-        {
-            mp_store = r.mp_store;
-            return *this;
-        }
-
-        const element* operator++()
-        {
-            return operator->();
-        }
-
-        const element* operator--()
-        {
-            return operator->();
-        }
-
-        bool operator== (const const_iterator& r) const
-        {
-            return true;
-        }
-
-        bool operator!= (const const_iterator& r) const
-        {
-            return !operator==(r);
-        }
-
-        const element& operator*()
-        {
-            return element();
-        }
-
-        const element* operator->()
-        {
-            return NULL;
-        }
-
-    private:
-        const typename mixed_type_matrix::storage_base* mp_store;
-    };
+    typedef typename storage_base::const_iterator const_iterator;
 
     /**
      * Default constructor.
@@ -146,6 +103,9 @@ public:
 
     mixed_type_matrix(const mixed_type_matrix& r);
     ~mixed_type_matrix();
+
+    const_iterator begin();
+    const_iterator end();
 
     mixed_type_matrix& operator= (const mixed_type_matrix& r);
 

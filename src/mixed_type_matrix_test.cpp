@@ -735,11 +735,12 @@ void mtm_test_iterator_access_filled(size_t rows, size_t cols)
     StackPrinter __stack_printer__("::mtm_test_iterator_access_filled");
     typedef storage_filled<mx_type> store_type;
 
+    store_type store(rows, cols, matrix_init_element_zero);
     {
         cout << "rows: " << rows << "  cols: " << cols << endl;
-        store_type store(rows, cols, matrix_init_element_zero);
-        store_type::const_itr_access itr_access = store.get_const_itr_access();
-        traverse_itr_access<store_type>(itr_access);
+        store_type::const_itr_access* itr_access = store.get_const_itr_access();
+        traverse_itr_access<store_type>(*itr_access);
+        delete itr_access;
     }
 }
 
@@ -749,33 +750,44 @@ void mtm_test_iterator_access_sparse()
     typedef storage_sparse<mx_type> store_type;
     store_type store(5, 5, matrix_init_element_empty);
     {
-        store_type::const_itr_access itr_access = store.get_const_itr_access();
-        assert(itr_access.empty());
+        store_type::const_itr_access* itr_access = store.get_const_itr_access();
+        assert(itr_access->empty());
+        delete itr_access;
     }
     {
         store_type::element& elem = store.get_element(0, 0);
         elem.m_type = element_numeric;
         elem.m_numeric = 3.5;
-        store_type::const_itr_access itr_access = store.get_const_itr_access();
-        assert(!itr_access.empty());
-        traverse_itr_access<store_type>(itr_access);
+        store_type::const_itr_access* itr_access = store.get_const_itr_access();
+        assert(!itr_access->empty());
+        traverse_itr_access<store_type>(*itr_access);
+        delete itr_access;
     }
     {
         store_type::element& elem = store.get_element(4, 4);
         elem.m_type = element_numeric;
         elem.m_numeric = 12;
-        store_type::const_itr_access itr_access = store.get_const_itr_access();
-        assert(!itr_access.empty());
-        traverse_itr_access<store_type>(itr_access);
+        store_type::const_itr_access* itr_access = store.get_const_itr_access();
+        assert(!itr_access->empty());
+        traverse_itr_access<store_type>(*itr_access);
+        delete itr_access;
     }
     {
         store_type::element& elem = store.get_element(3, 2);
         elem.m_type = element_numeric;
         elem.m_numeric = 26.567;
-        store_type::const_itr_access itr_access = store.get_const_itr_access();
-        assert(!itr_access.empty());
-        traverse_itr_access<store_type>(itr_access);
+        store_type::const_itr_access* itr_access = store.get_const_itr_access();
+        assert(!itr_access->empty());
+        traverse_itr_access<store_type>(*itr_access);
+        delete itr_access;
     }
+}
+
+void mtm_test_const_iterator()
+{
+    StackPrinter __stack_printer__("::mtm_test_const_iterator");
+    mx_type mx(5, 5, matrix_density_filled_zero);
+    mx_type::const_iterator itr = mx.begin(), itr_end = mx.end();
 }
 
 int main()
@@ -802,6 +814,7 @@ int main()
 
     mtm_test_iterator_access_sparse();
 
+    mtm_test_const_iterator();
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }

@@ -167,6 +167,60 @@ public:
     typedef typename _MatrixType::filled_storage_type   filled_storage_type;
     typedef typename _MatrixType::sparse_storage_type   sparse_storage_type;
 
+    class const_iterator
+    {
+        typedef typename filled_storage_type::const_itr_access filled_itr;
+        typedef typename sparse_storage_type::const_itr_access sparse_itr;
+    public:
+        const_iterator() : 
+            m_const_itr_access(NULL), m_type(matrix_storage_filled)
+        {}
+
+        const_iterator(void* p, matrix_storage_t type) : 
+            m_const_itr_access(p), m_type(type) {}
+
+        const_iterator(const const_iterator& r) :
+            m_const_itr_access(NULL),
+            m_type(r.m_type)
+        {
+            if (r.m_const_itr_access)
+            {
+                switch (r.m_type)
+                {
+                    case matrix_storage_filled:
+                        m_const_itr_access = new filled_itr(
+                            *static_cast<filled_itr*>(r.m_const_itr_access));
+                    break;
+                    case matrix_storage_sparse:
+                        m_const_itr_access = new sparse_itr(
+                            *static_cast<sparse_itr*>(r.m_const_itr_access));
+                    break;
+                    default:
+                        assert(!"unknown storage type");
+                }
+            }
+        }
+
+        ~const_iterator()
+        {
+            switch (m_type)
+            {
+                case matrix_storage_filled:
+                    delete static_cast<filled_itr*>(m_const_itr_access);
+                break;
+                case matrix_storage_sparse:
+                    delete static_cast<sparse_itr*>(m_const_itr_access);
+                break;
+                default:
+                    assert(!"unknown storage type");
+            }
+        }
+
+    private:
+        void* m_const_itr_access;
+        matrix_storage_t m_type;
+    };
+
     storage_base(matrix_storage_t store_type, matrix_init_element_t init) : 
         m_store_type(store_type), m_init_type(init) {}
 
@@ -181,6 +235,33 @@ public:
      * without leaking memory. 
      */ 
     virtual ~storage_base() {}
+
+    const_iterator begin()
+    {
+        switch (m_store_type)
+        {
+            case matrix_storage_filled:
+            {
+                void* p = static_cast<filled_storage_type*>(this)->get_const_itr_access();
+                return const_iterator(p, m_store_type);
+            }
+            break;
+            case matrix_storage_sparse:
+            {
+                void* p = static_cast<sparse_storage_type*>(this)->get_const_itr_access();
+                return const_iterator(p, m_store_type);
+            }
+            break;
+            default:
+                assert(!"unknown storage type");
+        }
+        return const_iterator();
+    }
+
+    const_iterator end()
+    {
+        return const_iterator();
+    }
 
     element& get_element(size_t row, size_t col)
     {
@@ -420,9 +501,9 @@ public:
 
     virtual ~storage_filled() {}
 
-    const_itr_access get_const_itr_access()
+    const_itr_access* get_const_itr_access()
     {
-        return const_itr_access(*this);
+        return new const_itr_access(*this);
     }
 
     element& get_element(size_t row, size_t col)
@@ -700,7 +781,7 @@ public:
 
     virtual ~storage_sparse() {}
 
-    const_itr_access get_const_itr_access() { return const_itr_access(*this); }
+    const_itr_access* get_const_itr_access() { return new const_itr_access(*this); }
 
     element & get_element(size_t row, size_t col)
     {

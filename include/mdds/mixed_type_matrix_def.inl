@@ -81,6 +81,20 @@ mixed_type_matrix<_String,_Flag>::~mixed_type_matrix()
 }
 
 template<typename _String, typename _Flag>
+typename mixed_type_matrix<_String,_Flag>::const_iterator
+mixed_type_matrix<_String,_Flag>::begin()
+{
+    return mp_storage->begin();
+}
+
+template<typename _String, typename _Flag>
+typename mixed_type_matrix<_String,_Flag>::const_iterator
+mixed_type_matrix<_String,_Flag>::end()
+{
+    return mp_storage->end();
+}
+
+template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>&
 mixed_type_matrix<_String,_Flag>::operator= (const mixed_type_matrix& r)
 {
