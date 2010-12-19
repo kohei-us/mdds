@@ -752,10 +752,26 @@ void mtm_test_iterator_access_sparse()
         store_type::const_itr_access itr_access = store.get_const_itr_access();
         assert(itr_access.empty());
     }
-    store_type::element& elem = store.get_element(0, 0);
-    elem.m_type = element_numeric;
-    elem.m_numeric = 3.5;
     {
+        store_type::element& elem = store.get_element(0, 0);
+        elem.m_type = element_numeric;
+        elem.m_numeric = 3.5;
+        store_type::const_itr_access itr_access = store.get_const_itr_access();
+        assert(!itr_access.empty());
+        traverse_itr_access<store_type>(itr_access);
+    }
+    {
+        store_type::element& elem = store.get_element(4, 4);
+        elem.m_type = element_numeric;
+        elem.m_numeric = 12;
+        store_type::const_itr_access itr_access = store.get_const_itr_access();
+        assert(!itr_access.empty());
+        traverse_itr_access<store_type>(itr_access);
+    }
+    {
+        store_type::element& elem = store.get_element(3, 2);
+        elem.m_type = element_numeric;
+        elem.m_numeric = 26.567;
         store_type::const_itr_access itr_access = store.get_const_itr_access();
         assert(!itr_access.empty());
         traverse_itr_access<store_type>(itr_access);
