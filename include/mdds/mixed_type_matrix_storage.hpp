@@ -305,14 +305,9 @@ public:
             m_rows_itr(r.m_rows_itr),
             m_rows_itr_end(r.m_rows_itr_end),
             m_row_itr(r.m_row_itr),
-            m_row_itr_end(r.m_row_itr_end)
-        {
-        }
+            m_row_itr_end(r.m_row_itr_end) {}
 
-        bool empty() const
-        {
-            return m_db.empty();
-        }
+        bool empty() const { return m_db.empty(); }
 
         void update_row_itr()
         {
@@ -321,10 +316,7 @@ public:
             m_row_itr_end = m_rows_itr->end();
         }
 
-        const element& get() const
-        {
-            return *m_row_itr;
-        }
+        const element& get() const { return *m_row_itr; }
 
         bool inc()
         {
