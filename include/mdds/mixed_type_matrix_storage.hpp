@@ -169,8 +169,6 @@ public:
 
     class const_iterator
     {
-        typedef typename filled_storage_type::const_itr_access filled_itr;
-        typedef typename sparse_storage_type::const_itr_access sparse_itr;
     public:
         const_iterator() : 
             m_const_itr_access(NULL), m_type(matrix_storage_filled)
@@ -188,12 +186,10 @@ public:
                 switch (r.m_type)
                 {
                     case matrix_storage_filled:
-                        m_const_itr_access = new filled_itr(
-                            *static_cast<filled_itr*>(r.m_const_itr_access));
+                        m_const_itr_access = new filled_itr(*get_filled_itr());
                     break;
                     case matrix_storage_sparse:
-                        m_const_itr_access = new sparse_itr(
-                            *static_cast<sparse_itr*>(r.m_const_itr_access));
+                        m_const_itr_access = new sparse_itr(*get_sparse_itr());
                     break;
                     default:
                         assert(!"unknown storage type");
@@ -206,10 +202,10 @@ public:
             switch (m_type)
             {
                 case matrix_storage_filled:
-                    delete static_cast<filled_itr*>(m_const_itr_access);
+                    delete get_filled_itr();
                 break;
                 case matrix_storage_sparse:
-                    delete static_cast<sparse_itr*>(m_const_itr_access);
+                    delete get_sparse_itr();
                 break;
                 default:
                     assert(!"unknown storage type");
@@ -217,6 +213,20 @@ public:
         }
 
     private:
+        typename filled_storage_type::const_itr_access* get_filled_itr()
+        {
+            return static_cast<
+                typename filled_storage_type::const_itr_access*>(
+                    m_const_itr_access);
+        }
+
+        typename sparse_storage_type::const_itr_access* get_sparse_itr()
+        {
+            return static_cast<
+                typename sparse_storage_type::const_itr_access*>(
+                    m_const_itr_access);
+        }
+
         void* m_const_itr_access;
         matrix_storage_t m_type;
     };
