@@ -116,6 +116,30 @@ void print_mx_density_type(matrix_density_t dens)
     cout << "matrix density type: " << get_mx_density_name(dens) << endl;
 }
 
+template<typename _Elem>
+string print_element(const _Elem& e)
+{
+    ostringstream os;
+    switch (e.m_type)
+    {
+        case element_empty:
+            os << "empty";
+        break;
+        case element_numeric:
+            os << "numeric (" << e.m_numeric << ")";
+        break;
+        case element_boolean:
+            os << "boolean";
+        break;
+        case element_string:
+            os << "string";
+        break;
+        default:
+            os << "<unkwown>";
+    }
+    return os.str();
+}
+
 template<typename _Mx>
 bool verify_transposed_matrix(const _Mx& original, const _Mx& transposed)
 {
@@ -231,9 +255,9 @@ bool verify_assignment(const _Mx& mx1, const _Mx& mx2)
     return verify_assign<_Mx>(mx1, mx2);
 }
 
-void qtm_test_resize(matrix_density_t density)
+void mtm_test_resize(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::qtm_test_resize");
+    StackPrinter __stack_printer__("::mtm_test_resize");
     print_mx_density_type(density);
     pair<size_t,size_t> mxsize;
 
@@ -303,9 +327,9 @@ void qtm_test_resize(matrix_density_t density)
     assert(mx.empty());
 }
 
-void qtm_test_value_store(matrix_density_t density)
+void mtm_test_value_store(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::qtm_test_value_store");
+    StackPrinter __stack_printer__("::mtm_test_value_store");
     print_mx_density_type(density);
     mx_type mx(5, 5, density);
     mx.dump();
@@ -419,9 +443,9 @@ void print_transposed_mx(const _Mx& original, const _Mx& transposed)
     transposed.dump();
 }
 
-void qtm_test_transpose(matrix_density_t density)
+void mtm_test_transpose(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::qtm_test_transpose");
+    StackPrinter __stack_printer__("::mtm_test_transpose");
     print_mx_density_type(density);
 
     {
@@ -466,9 +490,9 @@ void qtm_test_transpose(matrix_density_t density)
     }
 }
 
-void qtm_test_initial_elements()
+void mtm_test_initial_elements()
 {
-    StackPrinter __stack_printer__("::qtm_test_initial_elements");
+    StackPrinter __stack_printer__("::mtm_test_initial_elements");
     {
         mx_type mx(3, 3, matrix_density_filled_zero);
         mx.dump();
@@ -506,9 +530,9 @@ void qtm_test_initial_elements()
     }
 }
 
-void qtm_test_numeric_matrix()
+void mtm_test_numeric_matrix()
 {
-    StackPrinter __stack_printer__("::qtm_test_numeric_matrix");
+    StackPrinter __stack_printer__("::mtm_test_numeric_matrix");
     {
         print_mx_density_type(matrix_density_filled_zero);
         mx_type mx(3, 3, matrix_density_filled_zero);
@@ -562,9 +586,9 @@ void qtm_test_numeric_matrix()
     }
 }
 
-void qtm_test_assign(matrix_density_t dens1, matrix_density_t dens2)
+void mtm_test_assign(matrix_density_t dens1, matrix_density_t dens2)
 {
-    StackPrinter __stack_printer__("::qtm_test_assign");
+    StackPrinter __stack_printer__("::mtm_test_assign");
     print_mx_density_type(dens1);
     print_mx_density_type(dens2);
 
@@ -613,9 +637,9 @@ void qtm_test_assign(matrix_density_t dens1, matrix_density_t dens2)
     assert(success);
 }
 
-void qtm_test_assignment(matrix_density_t density)
+void mtm_test_assignment(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::qtm_test_assignment");
+    StackPrinter __stack_printer__("::mtm_test_assignment");
     print_mx_density_type(density);
     mx_type mx1(0, 0, density), mx2(3, 3, density);
     mx2.set(0, 0, 3.4);
@@ -651,9 +675,9 @@ void qtm_test_assignment(matrix_density_t density)
     assert(mx2.empty());
 }
 
-void qtm_test_flag_storage(matrix_density_t density)
+void mtm_test_flag_storage(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::qtm_test_flag_storage");
+    StackPrinter __stack_printer__("::mtm_test_flag_storage");
     print_mx_density_type(density);
     mx_type mx(3, 3, density);
     mx.dump();
@@ -679,21 +703,58 @@ void qtm_test_flag_storage(matrix_density_t density)
     assert(mx.get_flag(2, 1) == flag);
 }
 
+void mtm_test_iterator_access_filled(size_t rows, size_t cols)
+{
+    StackPrinter __stack_printer__("::mtm_test_iterator_access_filled");
+    typedef storage_filled<mx_type> store_type;
+
+    {
+        cout << "rows: " << rows << "  cols: " << cols << endl;
+        store_type store(rows, cols, matrix_init_element_zero);
+        assert(!store.empty());
+        store_type::const_itr_access itr_access = store.get_const_itr_access();
+
+        cout << "increment" << endl;
+        long i = 0;
+        do
+        {
+            cout << i++ << ": " << print_element(itr_access.get()) << endl;
+        }
+        while (itr_access.inc());
+
+        assert(i == static_cast<long>(rows * cols));
+
+        cout << "decrement" << endl;
+
+        while (itr_access.dec())
+        {
+            cout << --i << ": " << print_element(itr_access.get()) << endl;
+        }
+        assert(i == 0);
+    }
+}
+
 int main()
 {
-    run_tests_on_all_density_types(qtm_test_resize);
-    run_tests_on_all_density_types(qtm_test_value_store);
-    run_tests_on_all_density_types(qtm_test_transpose);
-    run_tests_on_all_density_types(qtm_test_assignment);
+    run_tests_on_all_density_types(mtm_test_resize);
+    run_tests_on_all_density_types(mtm_test_value_store);
+    run_tests_on_all_density_types(mtm_test_transpose);
+    run_tests_on_all_density_types(mtm_test_assignment);
 
-    qtm_test_initial_elements();
-    qtm_test_numeric_matrix();
-    qtm_test_assign(matrix_density_filled_zero, matrix_density_filled_zero);
-    qtm_test_assign(matrix_density_filled_empty, matrix_density_filled_zero);
-    qtm_test_assign(matrix_density_filled_zero, matrix_density_filled_empty);
-    qtm_test_assign(matrix_density_filled_empty, matrix_density_filled_empty);
+    mtm_test_initial_elements();
+    mtm_test_numeric_matrix();
+    mtm_test_assign(matrix_density_filled_zero, matrix_density_filled_zero);
+    mtm_test_assign(matrix_density_filled_empty, matrix_density_filled_zero);
+    mtm_test_assign(matrix_density_filled_zero, matrix_density_filled_empty);
+    mtm_test_assign(matrix_density_filled_empty, matrix_density_filled_empty);
 
-    run_tests_on_all_density_types(qtm_test_flag_storage);
+    run_tests_on_all_density_types(mtm_test_flag_storage);
+
+    mtm_test_iterator_access_filled(1, 1);
+    mtm_test_iterator_access_filled(3, 1);
+    mtm_test_iterator_access_filled(1, 3);
+    mtm_test_iterator_access_filled(3, 3);
+
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }

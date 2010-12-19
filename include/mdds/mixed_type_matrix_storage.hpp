@@ -282,7 +282,110 @@ class storage_filled : public ::mdds::storage_base<_MatrixType>
     typedef ::boost::ptr_vector<row_type> rows_type;
 
 public:
-//  typename ::mdds::storage_base<_MatrixType> storage_base;
+
+    /**
+     * This wrapper class assumes that the storage is not empty; it does not
+     * check for emptiness of the storage.
+     */
+    class const_itr_access
+    {
+    public:
+        const_itr_access(const storage_filled& db) : 
+            m_db(db), 
+            m_rows_itr(db.m_rows.begin()),
+            m_rows_itr_end(db.m_rows.end())
+        {
+            // create iterators for the first row.
+            update_row_itr();
+        }
+
+        const_itr_access(const const_itr_access& r) :
+            m_db(r.m_db),
+            m_rows_itr(r.m_rows_itr),
+            m_rows_itr_end(r.m_rows_itr_end),
+            m_row_itr(r.m_row_itr),
+            m_row_itr_end(r.m_row_itr_end)
+        {
+        }
+
+        void update_row_itr()
+        {
+            assert(m_rows_itr != m_rows_itr_end);
+            m_row_itr = m_rows_itr->begin();
+            m_row_itr_end = m_rows_itr->end();
+        }
+
+        const element& get() const
+        {
+            return *m_row_itr;
+        }
+
+        bool has() const
+        {
+            return m_row_itr != m_row_itr_end;
+        }
+
+        bool inc()
+        {
+            if (m_row_itr == m_row_itr_end)
+                return false;
+
+            ++m_row_itr;
+            if (m_row_itr == m_row_itr_end)
+            {    
+                // Move to the next row.
+                if (m_rows_itr != m_rows_itr_end)
+                {
+                    ++m_rows_itr;
+                    if (m_rows_itr == m_rows_itr_end)
+                        // no more rows.
+                        return false;
+                    update_row_itr();
+                }
+            }
+            return true;
+        }
+
+        bool dec()
+        {
+            if (m_rows_itr == m_rows_itr_end)
+            {
+                --m_rows_itr;
+                assert(m_row_itr == m_row_itr_end);
+                --m_row_itr;
+                return true;
+            }
+
+            if (m_row_itr == m_rows_itr->begin())
+            {
+                // On the first element of a row.
+                if (m_rows_itr == m_db.m_rows.begin())
+                    // already on the first row. 
+                    return false;
+
+                // Move up to the previous row, and select its last element.
+                --m_rows_itr;
+                assert(!m_rows_itr->empty());
+                m_row_itr_end = m_rows_itr->end();
+                m_row_itr = m_row_itr_end;
+                --m_row_itr;
+                return true;
+            }
+
+            // Not on the first element of a row.
+            --m_row_itr;
+            return true;
+        }
+
+    private:
+        const storage_filled& m_db;
+        typename rows_type::const_iterator m_rows_itr;
+        typename rows_type::const_iterator m_rows_itr_end;
+        typename row_type::const_iterator m_row_itr;
+        typename row_type::const_iterator m_row_itr_end;
+    };
+
+    friend class const_itr_access;
 
     storage_filled(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_filled, init_type),
@@ -304,6 +407,11 @@ public:
         m_valid(r.m_valid) {}
 
     virtual ~storage_filled() {}
+
+    const_itr_access get_const_itr_access()
+    {
+        return const_itr_access(*this);
+    }
 
     element& get_element(size_t row, size_t col)
     {

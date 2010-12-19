@@ -86,12 +86,47 @@ public:
 
     class const_iterator
     {
-        typedef mixed_type_matrix<string_type, flag_type> parent;
     public:
         const_iterator() : mp_store(NULL) {}
 
+        const_iterator& operator= (const const_iterator& r)
+        {
+            mp_store = r.mp_store;
+            return *this;
+        }
+
+        const element* operator++()
+        {
+            return operator->();
+        }
+
+        const element* operator--()
+        {
+            return operator->();
+        }
+
+        bool operator== (const const_iterator& r) const
+        {
+            return true;
+        }
+
+        bool operator!= (const const_iterator& r) const
+        {
+            return !operator==(r);
+        }
+
+        const element& operator*()
+        {
+            return element();
+        }
+
+        const element* operator->()
+        {
+            return NULL;
+        }
+
     private:
-        const parent::storage_base* mp_store;
+        const mixed_type_matrix::storage_base* mp_store;
     };
 
     /**
