@@ -792,7 +792,7 @@ public:
 
     typedef ::std::pair<size_t, size_t> elem_pos_type;
 
-    struct elem_pos_sorter : ::std::binary_function<elem_pos_type, elem_pos_type, bool>
+    struct elem_pos_sorter : public ::std::binary_function<elem_pos_type, elem_pos_type, bool>
     {
         bool operator() (const elem_pos_type& left, const elem_pos_type& right) const
         {
