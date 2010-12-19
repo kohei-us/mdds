@@ -787,7 +787,7 @@ void mtm_test_const_iterator()
 {
     StackPrinter __stack_printer__("::mtm_test_const_iterator");
     mx_type mx(5, 5, matrix_density_filled_zero);
-    mx_type::const_iterator itr = mx.begin(), itr_end = mx.end();
+    mx_type::const_iterator itr, itr_beg = mx.begin(), itr_end = mx.end();
 }
 
 int main()

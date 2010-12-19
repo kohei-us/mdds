@@ -181,19 +181,21 @@ public:
             m_const_itr_access(NULL),
             m_type(r.m_type)
         {
-            if (r.m_const_itr_access)
+            if (!r.m_const_itr_access)
+                return;
+
+            switch (r.m_type)
             {
-                switch (r.m_type)
-                {
-                    case matrix_storage_filled:
-                        m_const_itr_access = new filled_itr(*get_filled_itr());
-                    break;
-                    case matrix_storage_sparse:
-                        m_const_itr_access = new sparse_itr(*get_sparse_itr());
-                    break;
-                    default:
-                        assert(!"unknown storage type");
-                }
+                case matrix_storage_filled:
+                    m_const_itr_access = new 
+                        typename filled_storage_type::const_itr_access(*get_filled_itr());
+                break;
+                case matrix_storage_sparse:
+                    m_const_itr_access = new 
+                        typename sparse_storage_type::const_itr_access(*get_sparse_itr());
+                break;
+                default:
+                    assert(!"unknown storage type");
             }
         }
 
