@@ -126,7 +126,7 @@ public:
         }
 
     private:
-        const mixed_type_matrix::storage_base* mp_store;
+        const typename mixed_type_matrix::storage_base* mp_store;
     };
 
     /**
