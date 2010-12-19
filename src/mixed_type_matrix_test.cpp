@@ -786,7 +786,9 @@ void mtm_test_iterator_access_sparse()
 void mtm_test_const_iterator()
 {
     StackPrinter __stack_printer__("::mtm_test_const_iterator");
-    mx_type mx(5, 5, matrix_density_filled_zero);
+    // Test with an empty matrix.
+    mx_type mx(0, 0, matrix_density_filled_zero);
+    assert(mx.empty());
     mx_type::const_iterator itr, itr_beg = mx.begin(), itr_end = mx.end();
 
     // Test for assignment and equality.
@@ -796,6 +798,31 @@ void mtm_test_const_iterator()
     assert(itr == itr_beg);
     itr = itr_end;
     assert(itr == itr_end);
+
+    // For an empty matrix, the begin and end position must equal.
+    assert(itr_beg == itr_end);
+
+    // Now, test with a non-empty matrix.
+    mx.resize(2, 3);
+    assert(!mx.empty());
+    itr = mx_type::const_iterator();
+    itr_beg = mx.begin();
+    itr_end = mx.end();
+    assert(itr_beg != itr_end);
+
+    // Test for assignment and equality again.
+    assert(itr != itr_beg);
+    assert(itr != itr_end);
+    itr = itr_beg;
+    assert(itr == itr_beg);
+    itr = itr_end;
+    assert(itr == itr_end);
+
+    // Create another matrix instance with the same dimension.
+    mx_type mx2(2, 3, matrix_density_filled_zero);
+    assert(mx.size() == mx2.size());
+    assert(mx.begin() != mx2.begin());
+    assert(mx.end() != mx2.end());
 }
 
 int main()
