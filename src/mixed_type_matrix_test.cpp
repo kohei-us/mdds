@@ -711,8 +711,12 @@ void mtm_test_iterator_access_filled(size_t rows, size_t cols)
     {
         cout << "rows: " << rows << "  cols: " << cols << endl;
         store_type store(rows, cols, matrix_init_element_zero);
-        assert(!store.empty());
         store_type::const_itr_access itr_access = store.get_const_itr_access();
+        if (itr_access.empty())
+        {
+            cout << "no element stored." << endl;
+            return;
+        }
 
         cout << "increment" << endl;
         long i = 0;
@@ -754,6 +758,7 @@ int main()
     mtm_test_iterator_access_filled(3, 1);
     mtm_test_iterator_access_filled(1, 3);
     mtm_test_iterator_access_filled(3, 3);
+    mtm_test_iterator_access_filled(0, 0);
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

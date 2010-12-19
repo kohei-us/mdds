@@ -296,7 +296,8 @@ public:
             m_rows_itr_end(db.m_rows.end())
         {
             // create iterators for the first row.
-            update_row_itr();
+            if (!m_db.empty())
+                update_row_itr();
         }
 
         const_itr_access(const const_itr_access& r) :
@@ -306,6 +307,11 @@ public:
             m_row_itr(r.m_row_itr),
             m_row_itr_end(r.m_row_itr_end)
         {
+        }
+
+        bool empty() const
+        {
+            return m_db.empty();
         }
 
         void update_row_itr()
@@ -318,11 +324,6 @@ public:
         const element& get() const
         {
             return *m_row_itr;
-        }
-
-        bool has() const
-        {
-            return m_row_itr != m_row_itr_end;
         }
 
         bool inc()
