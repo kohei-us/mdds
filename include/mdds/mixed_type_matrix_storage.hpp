@@ -72,7 +72,7 @@ public:
         m_rows_itr_end(db.get_rows().end())
     {
         // create iterators for the first row.
-        if (m_rows_itr != m_rows_itr_end)
+        if (!empty())
             update_row_itr();
     }
 
@@ -82,6 +82,45 @@ public:
         m_rows_itr_end(r.m_rows_itr_end),
         m_row_itr(r.m_row_itr),
         m_row_itr_end(r.m_row_itr_end) {}
+
+    /**
+     * Set the current iterator position to the end position.
+     */
+    void set_to_end()
+    {
+        if (empty())
+            return;
+
+        typename store_type::rows_type::const_iterator itr = m_rows_itr_end;
+        --itr; // Move to the last row.
+
+        // They both need to be at the end position of the last row.
+        m_row_itr = m_row_itr_end = m_rows_wrap(itr).end();
+    }
+
+    bool operator== (const const_itr_access& r) const
+    {
+        if (&m_db != &r.m_db)
+            // different storage instances.
+            return false;
+
+        if (empty())
+            return r.empty();
+
+        if (m_rows_itr != r.m_rows_itr)
+            return false;
+
+        // If the rows iterators are equal, the end positions should be equal
+        // too.  No need to check it.
+        assert(m_rows_itr_end == r.m_rows_itr_end);
+
+        if (m_row_itr != r.m_row_itr)
+            return false;
+
+        // Same assumption holds here too. See above.
+        assert(m_row_itr_end == r.m_row_itr_end);
+        return true;
+    }
 
     bool empty() const { return m_rows_itr == m_rows_itr_end; }
 
@@ -169,13 +208,32 @@ public:
 
     class const_iterator
     {
+        typedef typename filled_storage_type::const_itr_access filled_access_type;
+        typedef typename sparse_storage_type::const_itr_access sparse_access_type;
     public:
         const_iterator() : 
             m_const_itr_access(NULL), m_type(matrix_storage_filled)
         {}
 
-        const_iterator(void* p, matrix_storage_t type) : 
-            m_const_itr_access(p), m_type(type) {}
+        const_iterator(void* p, matrix_storage_t type, bool _end = false) : 
+            m_const_itr_access(p), m_type(type)
+        {
+            assert(p != NULL);
+            if (_end)
+            {
+                switch (m_type)
+                {
+                    case matrix_storage_filled:
+                        get_filled_itr()->set_to_end();
+                    break;
+                    case matrix_storage_sparse:
+                        get_sparse_itr()->set_to_end();
+                    break;
+                    default:
+                        assert(!"unknown storage type");
+                }
+            }
+        }
 
         const_iterator(const const_iterator& r) :
             m_const_itr_access(NULL),
@@ -187,12 +245,10 @@ public:
             switch (r.m_type)
             {
                 case matrix_storage_filled:
-                    m_const_itr_access = new 
-                        typename filled_storage_type::const_itr_access(*get_filled_itr());
+                    m_const_itr_access = new filled_access_type(*get_filled_itr());
                 break;
                 case matrix_storage_sparse:
-                    m_const_itr_access = new 
-                        typename sparse_storage_type::const_itr_access(*get_sparse_itr());
+                    m_const_itr_access = new sparse_access_type(*get_sparse_itr());
                 break;
                 default:
                     assert(!"unknown storage type");
@@ -214,22 +270,67 @@ public:
             }
         }
 
+        bool operator== (const const_iterator& r) const
+        {
+            if (m_type != r.m_type)
+                // Types differ.
+                return false;
+
+            if (!m_const_itr_access)
+                // This instance has empty access.  The other one must be empty too.
+                return r.m_const_itr_access == NULL;
+
+            assert(m_const_itr_access != NULL);
+            assert(r.m_const_itr_access != NULL);
+
+            switch (m_type)
+            {
+                case matrix_storage_filled:
+                    return *get_filled_itr() == *r.get_filled_itr();
+                case matrix_storage_sparse:
+                    return *get_sparse_itr() == *r.get_sparse_itr();
+                default:
+                    assert(!"unknown storage type");
+            }
+            return false;
+        }
+
+        bool operator!= (const const_iterator& r) const
+        {
+            return !operator==(r);
+        }
+
     private:
-        typename filled_storage_type::const_itr_access* get_filled_itr()
+        filled_access_type* get_filled_itr()
         {
-            return static_cast<
-                typename filled_storage_type::const_itr_access*>(
-                    m_const_itr_access);
+            return static_cast<filled_access_type*>(m_const_itr_access);
         }
 
-        typename sparse_storage_type::const_itr_access* get_sparse_itr()
+        const filled_access_type* get_filled_itr() const
         {
-            return static_cast<
-                typename sparse_storage_type::const_itr_access*>(
-                    m_const_itr_access);
+            return static_cast<const filled_access_type*>(m_const_itr_access);
         }
 
+        sparse_access_type* get_sparse_itr()
+        {
+            return static_cast<sparse_access_type*>(m_const_itr_access);
+        }
+
+        const sparse_access_type* get_sparse_itr() const
+        {
+            return static_cast<const sparse_access_type*>(m_const_itr_access);
+        }
+
+        /**
+         * Stores new'ed instance of const_itr_access of the respective
+         * storage type. TODO: Find out if there is a way to store the
+         * const_itr_access instance in a type-safe way.
+         */
         void* m_const_itr_access;
+
+        /**
+         * Matrix storage type which is either filled or sparse.
+         */
         matrix_storage_t m_type;
     };
 
@@ -272,6 +373,23 @@ public:
 
     const_iterator end()
     {
+        switch (m_store_type)
+        {
+            case matrix_storage_filled:
+            {
+                void* p = static_cast<filled_storage_type*>(this)->get_const_itr_access();
+                return const_iterator(p, m_store_type, true);
+            }
+            break;
+            case matrix_storage_sparse:
+            {
+                void* p = static_cast<sparse_storage_type*>(this)->get_const_itr_access();
+                return const_iterator(p, m_store_type, true);
+            }
+            break;
+            default:
+                assert(!"unknown storage type");
+        }
         return const_iterator();
     }
 
