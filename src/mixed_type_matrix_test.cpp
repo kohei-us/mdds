@@ -703,6 +703,33 @@ void mtm_test_flag_storage(matrix_density_t density)
     assert(mx.get_flag(2, 1) == flag);
 }
 
+template<typename _StoreType>
+void traverse_itr_access(typename _StoreType::const_itr_access& itr_access)
+{
+    typedef _StoreType store_type;
+    if (itr_access.empty())
+    {
+        cout << "no element stored." << endl;
+        return;
+    }
+
+    cout << "increment" << endl;
+    long i = 0;
+    do
+    {
+        cout << i++ << ": " << print_element(itr_access.get()) << endl;
+    }
+    while (itr_access.inc());
+
+    cout << "decrement" << endl;
+
+    while (itr_access.dec())
+    {
+        cout << --i << ": " << print_element(itr_access.get()) << endl;
+    }
+    assert(i == 0);
+}
+
 void mtm_test_iterator_access_filled(size_t rows, size_t cols)
 {
     StackPrinter __stack_printer__("::mtm_test_iterator_access_filled");
@@ -712,29 +739,26 @@ void mtm_test_iterator_access_filled(size_t rows, size_t cols)
         cout << "rows: " << rows << "  cols: " << cols << endl;
         store_type store(rows, cols, matrix_init_element_zero);
         store_type::const_itr_access itr_access = store.get_const_itr_access();
-        if (itr_access.empty())
-        {
-            cout << "no element stored." << endl;
-            return;
-        }
+        traverse_itr_access<store_type>(itr_access);
+    }
+}
 
-        cout << "increment" << endl;
-        long i = 0;
-        do
-        {
-            cout << i++ << ": " << print_element(itr_access.get()) << endl;
-        }
-        while (itr_access.inc());
-
-        assert(i == static_cast<long>(rows * cols));
-
-        cout << "decrement" << endl;
-
-        while (itr_access.dec())
-        {
-            cout << --i << ": " << print_element(itr_access.get()) << endl;
-        }
-        assert(i == 0);
+void mtm_test_iterator_access_sparse()
+{
+    StackPrinter __stack_printer__("::mem_test_iterator_access_sparse");
+    typedef storage_sparse<mx_type> store_type;
+    store_type store(5, 5, matrix_init_element_empty);
+    {
+        store_type::const_itr_access itr_access = store.get_const_itr_access();
+        assert(itr_access.empty());
+    }
+    store_type::element& elem = store.get_element(0, 0);
+    elem.m_type = element_numeric;
+    elem.m_numeric = 3.5;
+    {
+        store_type::const_itr_access itr_access = store.get_const_itr_access();
+        assert(!itr_access.empty());
+        traverse_itr_access<store_type>(itr_access);
     }
 }
 
@@ -759,6 +783,8 @@ int main()
     mtm_test_iterator_access_filled(1, 3);
     mtm_test_iterator_access_filled(3, 3);
     mtm_test_iterator_access_filled(0, 0);
+
+    mtm_test_iterator_access_sparse();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

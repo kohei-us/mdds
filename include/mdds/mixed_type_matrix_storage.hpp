@@ -53,6 +53,108 @@ public:
     matrix_storage_error(const ::std::string& msg) : general_error(msg) {}
 };
 
+/**
+ * This wrapper class assumes that the storage is not empty; it does not
+ * check for emptiness of the storage.
+ */
+template<typename _StoreType, typename _ElemWrap, typename _RowsWrap>
+class const_itr_access
+{
+    typedef _StoreType  store_type;
+    typedef _ElemWrap   element_wrap_type;
+    typedef _RowsWrap   rows_wrap_type;
+public:
+    typedef typename _StoreType::element element;
+
+    const_itr_access(const store_type& db) : 
+        m_db(db), 
+        m_rows_itr(db.get_rows().begin()),
+        m_rows_itr_end(db.get_rows().end())
+    {
+        // create iterators for the first row.
+        if (m_rows_itr != m_rows_itr_end)
+            update_row_itr();
+    }
+
+    const_itr_access(const const_itr_access& r) :
+        m_db(r.m_db),
+        m_rows_itr(r.m_rows_itr),
+        m_rows_itr_end(r.m_rows_itr_end),
+        m_row_itr(r.m_row_itr),
+        m_row_itr_end(r.m_row_itr_end) {}
+
+    bool empty() const { return m_rows_itr == m_rows_itr_end; }
+
+    void update_row_itr()
+    {
+        m_row_itr = m_rows_wrap(m_rows_itr).begin();
+        m_row_itr_end = m_rows_wrap(m_rows_itr).end();
+    }
+
+    const element& get() const { return m_wrap(m_row_itr); }
+
+    bool inc()
+    {
+        if (m_row_itr == m_row_itr_end)
+            return false;
+
+        ++m_row_itr;
+        if (m_row_itr == m_row_itr_end)
+        {    
+            // Move to the next row.
+            if (m_rows_itr != m_rows_itr_end)
+            {
+                ++m_rows_itr;
+                if (m_rows_itr == m_rows_itr_end)
+                    // no more rows.
+                    return false;
+                update_row_itr();
+            }
+        }
+        return true;
+    }
+
+    bool dec()
+    {
+        if (m_rows_itr == m_rows_itr_end)
+        {
+            --m_rows_itr;
+            assert(m_row_itr == m_row_itr_end);
+            --m_row_itr;
+            return true;
+        }
+
+        if (m_row_itr == m_rows_wrap(m_rows_itr).begin())
+        {
+            // On the first element of a row.
+            if (m_rows_itr == m_db.get_rows().begin())
+                // already on the first row. 
+                return false;
+
+            // Move up to the previous row, and select its last element.
+            --m_rows_itr;
+            assert(!m_rows_wrap(m_rows_itr).empty());
+            m_row_itr_end = m_rows_wrap(m_rows_itr).end();
+            m_row_itr = m_row_itr_end;
+            --m_row_itr;
+            return true;
+        }
+
+        // Not on the first element of a row.
+        --m_row_itr;
+        return true;
+    }
+
+private:
+    const store_type& m_db;
+    typename store_type::rows_type::const_iterator m_rows_itr;
+    typename store_type::rows_type::const_iterator m_rows_itr_end;
+    typename store_type::row_type::const_iterator m_row_itr;
+    typename store_type::row_type::const_iterator m_row_itr_end;
+    element_wrap_type m_wrap;
+    rows_wrap_type m_rows_wrap;
+};
+
 template<typename _MatrixType>
 class storage_base
 {
@@ -274,111 +376,28 @@ template<typename _MatrixType>
 class storage_filled : public ::mdds::storage_base<_MatrixType>
 {
     typedef _MatrixType matrix_type;
+    typedef typename matrix_type::string_type   string_type;
 
-    typedef typename matrix_type::element               element;
-    typedef typename matrix_type::string_type           string_type;
-
+public:
+    typedef typename matrix_type::element element;
     typedef ::boost::ptr_vector<element>  row_type;
     typedef ::boost::ptr_vector<row_type> rows_type;
 
-public:
-
-    /**
-     * This wrapper class assumes that the storage is not empty; it does not
-     * check for emptiness of the storage.
-     */
-    class const_itr_access
+    struct elem_wrap
     {
-    public:
-        const_itr_access(const storage_filled& db) : 
-            m_db(db), 
-            m_rows_itr(db.m_rows.begin()),
-            m_rows_itr_end(db.m_rows.end())
-        {
-            // create iterators for the first row.
-            if (!m_db.empty())
-                update_row_itr();
+        const element& operator() (const typename row_type::const_iterator& itr) const 
+        { 
+            return *itr; 
         }
-
-        const_itr_access(const const_itr_access& r) :
-            m_db(r.m_db),
-            m_rows_itr(r.m_rows_itr),
-            m_rows_itr_end(r.m_rows_itr_end),
-            m_row_itr(r.m_row_itr),
-            m_row_itr_end(r.m_row_itr_end) {}
-
-        bool empty() const { return m_db.empty(); }
-
-        void update_row_itr()
-        {
-            assert(m_rows_itr != m_rows_itr_end);
-            m_row_itr = m_rows_itr->begin();
-            m_row_itr_end = m_rows_itr->end();
-        }
-
-        const element& get() const { return *m_row_itr; }
-
-        bool inc()
-        {
-            if (m_row_itr == m_row_itr_end)
-                return false;
-
-            ++m_row_itr;
-            if (m_row_itr == m_row_itr_end)
-            {    
-                // Move to the next row.
-                if (m_rows_itr != m_rows_itr_end)
-                {
-                    ++m_rows_itr;
-                    if (m_rows_itr == m_rows_itr_end)
-                        // no more rows.
-                        return false;
-                    update_row_itr();
-                }
-            }
-            return true;
-        }
-
-        bool dec()
-        {
-            if (m_rows_itr == m_rows_itr_end)
-            {
-                --m_rows_itr;
-                assert(m_row_itr == m_row_itr_end);
-                --m_row_itr;
-                return true;
-            }
-
-            if (m_row_itr == m_rows_itr->begin())
-            {
-                // On the first element of a row.
-                if (m_rows_itr == m_db.m_rows.begin())
-                    // already on the first row. 
-                    return false;
-
-                // Move up to the previous row, and select its last element.
-                --m_rows_itr;
-                assert(!m_rows_itr->empty());
-                m_row_itr_end = m_rows_itr->end();
-                m_row_itr = m_row_itr_end;
-                --m_row_itr;
-                return true;
-            }
-
-            // Not on the first element of a row.
-            --m_row_itr;
-            return true;
-        }
-
-    private:
-        const storage_filled& m_db;
-        typename rows_type::const_iterator m_rows_itr;
-        typename rows_type::const_iterator m_rows_itr_end;
-        typename row_type::const_iterator m_row_itr;
-        typename row_type::const_iterator m_row_itr_end;
     };
-
-    friend class const_itr_access;
+    struct rows_wrap
+    {
+        const row_type& operator() (const typename rows_type::const_iterator& itr) const
+        { 
+            return *itr;
+        }
+    };
+    typedef ::mdds::const_itr_access<storage_filled, elem_wrap, rows_wrap> const_itr_access;
 
     storage_filled(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_filled, init_type),
@@ -572,6 +591,8 @@ public:
         return new storage_filled(*this);
     }
 
+    const rows_type& get_rows() const { return m_rows; }
+
 private:
 
     /**
@@ -631,13 +652,28 @@ class storage_sparse : public storage_base<_MatrixType>
 {
     typedef _MatrixType matrix_type;
 
-    typedef typename matrix_type::element               element;
-    typedef typename matrix_type::string_type           string_type;
-
-    typedef ::boost::ptr_map<size_t, element>  row_type;
-    typedef ::boost::ptr_map<size_t, row_type> rows_type;
+    typedef typename matrix_type::string_type  string_type;
 
 public:
+    typedef typename matrix_type::element      element;
+    typedef ::boost::ptr_map<size_t, element>  row_type;
+    typedef ::boost::ptr_map<size_t, row_type> rows_type;
+    struct elem_wrap
+    {
+        const element& operator() (const typename row_type::const_iterator& itr) const
+        {
+            return *itr->second;
+        }
+    };
+    struct rows_wrap
+    {
+        const row_type& operator() (const typename rows_type::const_iterator& itr) const
+        {
+            return *itr->second;
+        }
+    };
+    typedef ::mdds::const_itr_access<storage_sparse, elem_wrap, rows_wrap> const_itr_access;
+
     storage_sparse(size_t _rows, size_t _cols, matrix_init_element_t init_type) : 
         storage_base<matrix_type>(matrix_storage_sparse, init_type),
         m_row_size(_rows), m_col_size(_cols),
@@ -663,6 +699,8 @@ public:
         m_col_size(r.m_col_size) {}
 
     virtual ~storage_sparse() {}
+
+    const_itr_access get_const_itr_access() { return const_itr_access(*this); }
 
     element & get_element(size_t row, size_t col)
     {
@@ -926,6 +964,8 @@ public:
     {
         return new storage_sparse(*this);
     }
+
+    const rows_type& get_rows() const { return m_rows; }
 
 private:
     const element& get_non_empty_element(size_t row, size_t col) const
