@@ -91,6 +91,7 @@ public:
         if (empty())
             return;
 
+        m_rows_itr = m_rows_itr_end;
         typename store_type::rows_type::const_iterator itr = m_rows_itr_end;
         --itr; // Move to the last row.
 
@@ -122,7 +123,7 @@ public:
         return true;
     }
 
-    bool empty() const { return m_rows_itr == m_rows_itr_end; }
+    bool empty() const { return m_db.get_rows().begin() == m_rows_itr_end; }
 
     void update_row_itr()
     {
@@ -281,6 +282,64 @@ public:
             const_iterator new_itr(r);
             swap(new_itr);
             return *this;
+        }
+
+        const element& operator*() const
+        {
+            switch (m_type)
+            {
+                case matrix_storage_filled:
+                    return get_filled_itr()->get();
+                case matrix_storage_sparse:
+                    return get_sparse_itr()->get();
+                default:
+                    assert(!"unknown storage type");
+            }
+        }
+
+        const element* operator->() const
+        {
+            switch (m_type)
+            {
+                case matrix_storage_filled:
+                    return &get_filled_itr()->get();
+                case matrix_storage_sparse:
+                    return &get_sparse_itr()->get();
+                default:
+                    assert(!"unknown storage type");
+            }
+        }
+
+        const element* operator++()
+        {
+            switch (m_type)
+            {
+                case matrix_storage_filled:
+                    get_filled_itr()->inc();
+                break;
+                case matrix_storage_sparse:
+                    get_sparse_itr()->inc();
+                break;
+                default:
+                    assert(!"unknown storage type");
+            }
+            return operator->();
+        }
+
+        const element* operator--()
+        {
+            switch (m_type)
+            {
+                case matrix_storage_filled:
+                    get_filled_itr()->dec();
+                break;
+                case matrix_storage_sparse:
+                    get_sparse_itr()->dec();
+                break;
+                default:
+                    assert(!"unknown storage type");
+            }
+            return operator->();
         }
 
         bool operator== (const const_iterator& r) const

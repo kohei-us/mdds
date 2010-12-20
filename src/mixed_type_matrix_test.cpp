@@ -804,6 +804,13 @@ void mtm_test_const_iterator()
 
     // Now, test with a non-empty matrix.
     mx.resize(2, 3);
+    double v = 0.0;
+    mx.set(0, 0, ++v);
+    mx.set(0, 1, ++v);
+    mx.set(0, 2, ++v);
+    mx.set(1, 0, ++v);
+    mx.set(1, 1, ++v);
+    mx.set(1, 2, ++v);
     assert(!mx.empty());
     itr = mx_type::const_iterator();
     itr_beg = mx.begin();
@@ -823,6 +830,20 @@ void mtm_test_const_iterator()
     assert(mx.size() == mx2.size());
     assert(mx.begin() != mx2.begin());
     assert(mx.end() != mx2.end());
+
+    cout << "incrementing iterators." << endl;
+    for (itr = itr_beg; itr != itr_end; ++itr)
+        cout << print_element(*itr) << endl;
+    assert(itr == itr_end);
+
+    cout << "decrementing iterators." << endl;
+    while (true)
+    {
+        cout << print_element(*(--itr)) << endl;;
+        if (itr == itr_beg)
+            break;
+    }
+    assert(itr == itr_beg);
 }
 
 int main()
