@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=0.3.1
+VERSION=0.4.0
 DIR=mdds_$VERSION
 hg clone https://multidimalgorithm.googlecode.com/hg/ $DIR
 pushd .
