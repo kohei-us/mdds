@@ -1,5 +1,5 @@
 Name:           mdds
-Version:        0.4.0
+Version:        @VERSION@
 Release:        1
 Url:            http://code.google.com/p/multidimalgorithm/
 License:        MIT/X11

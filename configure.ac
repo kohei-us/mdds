@@ -1,5 +1,8 @@
 AC_INIT(mdds, 0.4.0, kohei.yoshida@gmail.com)
 
+VERSION=AC_PACKAGE_VERSION
+AC_SUBST(VERSION)
+
 AC_ARG_WITH(hash-container,
 [
   --with-hash-container   specify the type of hash containers to use in test 
@@ -48,3 +51,5 @@ AC_SUBST(CPPFLAGS)
 
 AC_OUTPUT(Makefile)
 AC_OUTPUT(example/Makefile)
+AC_OUTPUT(misc/mdds.spec)
+AC_OUTPUT(bin/pack-release.sh)
