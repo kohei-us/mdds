@@ -47,3 +47,4 @@ fi
 AC_SUBST(CPPFLAGS)
 
 AC_OUTPUT(Makefile)
+AC_OUTPUT(example/Makefile)

@@ -25,7 +25,7 @@
 #
 #***********************************************************************
 
-CPPFLAGS=-Wall -Os -std=c++0x
+CPPFLAGS=@CPPFLAGS@
 
 EXEC= \
 	segment_tree \
