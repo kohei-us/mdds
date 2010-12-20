@@ -3,7 +3,7 @@ OBJDIR=@OBJDIR@
 SRCDIR=@SRCDIR@
 INCDIR=@INCDIR@
 
-CPPFLAGS=@CPPFLAGS@
+CPPFLAGS=@CPPFLAGS@ -I$(INCDIR)
 LDFLAGS=
 
 EXECS= \
@@ -33,13 +33,15 @@ TESTS = \
 	test.fst \
 	test.recset \
 	test.pqt \
-	test.st
+	test.st \
+	test.mtm
 
 TESTS_MEM = \
 	test.pqt.mem \
 	test.recset.mem \
 	test.fst.mem \
-	test.st.mem
+	test.st.mem \
+	test.mtm.mem
 
 # You may add $(TESTS_MEM) if valgrind is available on your platform
 ALL_TESTS = $(TESTS)

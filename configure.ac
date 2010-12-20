@@ -34,7 +34,7 @@ AC_SUBST(OBJDIR)
 AC_SUBST(SRCDIR)
 AC_SUBST(INCDIR)
 
-CPPFLAGS="-I$INCDIR -DDEBUG_NODE_BASE -DUNIT_TEST -Wall -Os -g -pedantic-errors"
+CPPFLAGS="-DDEBUG_NODE_BASE -DUNIT_TEST -Wall -Os -g -pedantic-errors"
 if test $with_hash_container = stlport; then
   CPPFLAGS="$CPPFLAGS -DMDDS_HASH_CONTAINER_STLPORT"
 elif test $with_hash_container = boost; then
