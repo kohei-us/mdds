@@ -844,6 +844,16 @@ void mtm_test_const_iterator()
             break;
     }
     assert(itr == itr_beg);
+
+    cout << "using std::advance" << endl;
+    advance(itr, 3);
+    assert(itr->m_numeric == 4.0);
+    cout << print_element(*itr) << endl;
+    advance(itr, 2);
+    assert(itr->m_numeric == 6.0);
+    cout << print_element(*itr) << endl;
+    advance(itr, 1);
+    assert(itr == itr_end);
 }
 
 int main()

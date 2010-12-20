@@ -213,6 +213,13 @@ public:
         typedef typename filled_storage_type::const_itr_access filled_access_type;
         typedef typename sparse_storage_type::const_itr_access sparse_access_type;
     public:
+        // iterator traits
+        typedef element     value_type;
+        typedef element*    pointer;
+        typedef element&    reference;
+        typedef ptrdiff_t   difference_type;
+        typedef ::std::bidirectional_iterator_tag   iterator_category;
+
         const_iterator() : 
             m_const_itr_access(NULL), m_type(matrix_storage_filled)
         {}
@@ -313,34 +320,36 @@ public:
 
         const element* operator++()
         {
+            bool has_next = false;
             switch (m_type)
             {
                 case matrix_storage_filled:
-                    get_filled_itr()->inc();
+                    has_next = get_filled_itr()->inc();
                 break;
                 case matrix_storage_sparse:
-                    get_sparse_itr()->inc();
+                    has_next = get_sparse_itr()->inc();
                 break;
                 default:
                     assert(!"unknown storage type");
             }
-            return operator->();
+            return has_next ? operator->() : NULL;
         }
 
         const element* operator--()
         {
+            bool has_next = false;
             switch (m_type)
             {
                 case matrix_storage_filled:
-                    get_filled_itr()->dec();
+                    has_next = get_filled_itr()->dec();
                 break;
                 case matrix_storage_sparse:
-                    get_sparse_itr()->dec();
+                    has_next = get_sparse_itr()->dec();
                 break;
                 default:
                     assert(!"unknown storage type");
             }
-            return operator->();
+            return has_next ? operator->() : NULL;
         }
 
         bool operator== (const const_iterator& r) const
