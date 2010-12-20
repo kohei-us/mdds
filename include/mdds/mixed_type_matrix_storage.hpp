@@ -431,19 +431,19 @@ public:
      */ 
     virtual ~storage_base() {}
 
-    const_iterator begin()
+    const_iterator begin() const
     {
         switch (m_store_type)
         {
             case matrix_storage_filled:
             {
-                void* p = static_cast<filled_storage_type*>(this)->get_const_itr_access();
+                void* p = static_cast<const filled_storage_type*>(this)->get_const_itr_access();
                 return const_iterator(p, m_store_type);
             }
             break;
             case matrix_storage_sparse:
             {
-                void* p = static_cast<sparse_storage_type*>(this)->get_const_itr_access();
+                void* p = static_cast<const sparse_storage_type*>(this)->get_const_itr_access();
                 return const_iterator(p, m_store_type);
             }
             break;
@@ -453,19 +453,19 @@ public:
         return const_iterator();
     }
 
-    const_iterator end()
+    const_iterator end() const
     {
         switch (m_store_type)
         {
             case matrix_storage_filled:
             {
-                void* p = static_cast<filled_storage_type*>(this)->get_const_itr_access();
+                void* p = static_cast<const filled_storage_type*>(this)->get_const_itr_access();
                 return const_iterator(p, m_store_type, true);
             }
             break;
             case matrix_storage_sparse:
             {
-                void* p = static_cast<sparse_storage_type*>(this)->get_const_itr_access();
+                void* p = static_cast<const sparse_storage_type*>(this)->get_const_itr_access();
                 return const_iterator(p, m_store_type, true);
             }
             break;
@@ -713,7 +713,7 @@ public:
 
     virtual ~storage_filled() {}
 
-    const_itr_access* get_const_itr_access()
+    const_itr_access* get_const_itr_access() const
     {
         return new const_itr_access(*this);
     }
@@ -993,7 +993,7 @@ public:
 
     virtual ~storage_sparse() {}
 
-    const_itr_access* get_const_itr_access() { return new const_itr_access(*this); }
+    const_itr_access* get_const_itr_access() const { return new const_itr_access(*this); }
 
     element & get_element(size_t row, size_t col)
     {

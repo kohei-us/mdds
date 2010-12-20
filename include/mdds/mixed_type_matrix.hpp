@@ -104,8 +104,8 @@ public:
     mixed_type_matrix(const mixed_type_matrix& r);
     ~mixed_type_matrix();
 
-    const_iterator begin();
-    const_iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
 
     mixed_type_matrix& operator= (const mixed_type_matrix& r);
 
