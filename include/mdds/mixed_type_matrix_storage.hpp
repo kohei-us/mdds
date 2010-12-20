@@ -287,6 +287,10 @@ public:
 
         const_iterator& operator=(const const_iterator& r)
         {
+            if (this == &r)
+                // self assignment.
+                return *this;
+
             const_iterator new_itr(r);
             swap(new_itr);
             return *this;
