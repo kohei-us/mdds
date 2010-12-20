@@ -54,8 +54,9 @@ public:
 };
 
 /**
- * This wrapper class assumes that the storage is not empty; it does not
- * check for emptiness of the storage.
+ * Wrapper class that provides access to the storage internals.  This is 
+ * used by storage_base::const_iterator to traverse data in different 
+ * storage backends. 
  */
 template<typename _StoreType, typename _ElemWrap, typename _RowsWrap>
 class const_itr_access
