@@ -1,3 +1,7 @@
+mdds 0.4.0
+
+* implemented mixed_type_matrix.
+
 mdds 0.3.1
 
   * added support for boost::unordered_map (boost) and std::hash_map 
