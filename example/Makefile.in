@@ -25,13 +25,14 @@
 #
 #***********************************************************************
 
-CPPFLAGS=@CPPFLAGS@
+CPPFLAGS=@CPPFLAGS@ -I../include
 
 EXEC= \
 	segment_tree \
 	flat_segment_tree \
 	rectangle_set \
-	point_quad_tree
+	point_quad_tree \
+	mixed_type_matrix
 
 all: $(EXEC)
 
@@ -42,6 +43,8 @@ flat_segment_tree: flat_segment_tree.cpp
 rectangle_set: rectangle_set.cpp
 
 point_quad_tree: point_quad_tree.cpp
+
+mixed_type_matrix: mixed_type_matrix.cpp
 
 clean:
 	rm -f $(EXEC)
