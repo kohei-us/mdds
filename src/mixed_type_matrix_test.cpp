@@ -783,12 +783,16 @@ void mtm_test_iterator_access_sparse()
     }
 }
 
-struct find_three : public unary_function<bool, mx_type::element>
+class find_value : public unary_function<bool, mx_type::element>
 {
+public:
+    find_value(double val) : m_val(val) {}
     bool operator() (const mx_type::element& elem) const
     {
-        return elem.m_type == element_numeric && elem.m_numeric == 3.0;
+        return elem.m_type == element_numeric && elem.m_numeric == m_val;
     }
+private:
+    double m_val;
 };
 
 void mtm_test_const_iterator()
@@ -864,10 +868,15 @@ void mtm_test_const_iterator()
     assert(itr == itr_end);
 
     cout << "using ::std::find_if" << endl;
-    itr = find_if(itr_beg, itr_end, find_three());
-    cout << print_element(*itr) << endl;
-    assert(itr->m_type == element_numeric);
-    assert(itr->m_numeric == 3.0);
+    for (double val = 1.0; val <= 6.0; ++val)
+    {
+        itr = find_if(itr_beg, itr_end, find_value(val));
+        cout << print_element(*itr) << endl;
+        assert(itr->m_type == element_numeric);
+        assert(itr->m_numeric == val);
+    }
+    itr = find_if(itr_beg, itr_end, find_value(1.5));
+    assert(itr == itr_end); // not found.
 }
 
 int main()
