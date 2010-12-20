@@ -307,6 +307,7 @@ public:
                 default:
                     assert(!"unknown storage type");
             }
+            throw matrix_storage_error("unknown storage type");
         }
 
         const element* operator->() const
@@ -320,6 +321,7 @@ public:
                 default:
                     assert(!"unknown storage type");
             }
+            return NULL;
         }
 
         const element* operator++()
@@ -454,7 +456,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
-        return const_iterator();
+        throw matrix_storage_error("unknown storage type");
     }
 
     const_iterator end() const
@@ -476,7 +478,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
-        return const_iterator();
+        throw matrix_storage_error("unknown storage type");
     }
 
     element& get_element(size_t row, size_t col)
@@ -490,6 +492,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     matrix_element_t get_type(size_t row, size_t col) const
@@ -503,6 +506,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     double get_numeric(size_t row, size_t col) const
@@ -516,6 +520,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     const string_type* get_string(size_t row, size_t col) const
@@ -529,6 +534,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     bool get_boolean(size_t row, size_t col) const
@@ -542,6 +548,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     size_t rows() const
@@ -555,6 +562,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     size_t cols() const
@@ -568,6 +576,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     void transpose()
@@ -626,6 +635,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     bool empty() const
@@ -639,6 +649,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     storage_base* clone() const
@@ -652,6 +663,7 @@ public:
             default:
                 assert(!"unknown storage type");
         }
+        throw matrix_storage_error("unknown storage type");
     }
 
     flag_storage& get_flag_storage() { return m_flags; }
