@@ -1,4 +1,4 @@
-AC_INIT(mdds, 0.3.1, kohei.yoshida@gmail.com)
+AC_INIT(mdds, 0.4.0, kohei.yoshida@gmail.com)
 
 AC_ARG_WITH(hash-container,
 [
