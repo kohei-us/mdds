@@ -1,3 +1,7 @@
+  * properly support prefix, docdir, includedir configure options.
+  
+  * support DESTDIR during make install.  
+
 mdds 0.4.0
 
 * implemented mixed_type_matrix.
