@@ -34,7 +34,7 @@ Authors:
 --------
     Kohei Yoshida <kyoshida@novell.com>
 
-%define _docdir %{_defaultdocdir}/libmdds-devel
+%define _docdir %{_defaultdocdir}/mdds-devel
 
 %prep
 %setup -q -n %{name}_%{version}
