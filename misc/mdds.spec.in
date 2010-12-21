@@ -34,7 +34,7 @@ Authors:
 --------
     Kohei Yoshida <kyoshida@novell.com>
 
-%define _docdir %{_defaultdocdir}/mdds-devel
+%define _docdir %{_defaultdocdir}/libmdds-devel
 
 %prep
 %setup -q -n %{name}_%{version}
@@ -54,9 +54,7 @@ rm -rf %buildroot
 %files devel
 %defattr(-,root,root)
 %dir %{_docdir}
-%dir %{_datadir}/mdds-devel
 %{_includedir}/mdds  
-%{_datadir}/mdds-devel/example  
 %doc %{_docdir}/*  
 
 %changelog
