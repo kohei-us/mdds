@@ -3,6 +3,9 @@ AC_INIT(mdds, 0.4.0, kohei.yoshida@gmail.com)
 VERSION=AC_PACKAGE_VERSION
 AC_SUBST(VERSION)
 
+PACKAGE_TARNAME=AC_PACKAGE_TARNAME
+AC_SUBST(PACKAGE_TARNAME)
+
 AC_ARG_WITH(hash-container,
 [
   --with-hash-container   specify the type of hash containers to use in test 
@@ -18,14 +21,6 @@ AC_ARG_WITH(hash-container,
 
                           Example:  --with-hash-container=boost],
 ,with_hash_container=c++0x)
-
-AC_MSG_CHECKING([prefix])
-if test "$prefix" = "NONE"; then
-  prefix=/usr/local
-fi
-PREFIX=$prefix
-AC_MSG_RESULT([$prefix])
-AC_SUBST(PREFIX)
 
 AC_MSG_CHECKING([hash container type])
 AC_MSG_RESULT([$with_hash_container])

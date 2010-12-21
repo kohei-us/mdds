@@ -40,7 +40,7 @@ Authors:
 %setup -q -n %{name}_%{version}
 
 %build
-./configure --prefix=%buildroot/usr
+./configure --prefix=%buildroot/usr --docdir=%buildroot%{_docdir}
 
 %check
 #make check

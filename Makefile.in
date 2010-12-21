@@ -1,3 +1,6 @@
+prefix=@prefix@
+datarootdir=@datarootdir@
+PACKAGE_TARNAME=@PACKAGE_TARNAME@
 
 OBJDIR=@OBJDIR@
 SRCDIR=@SRCDIR@
@@ -130,15 +133,13 @@ test.stl: stlperf_test
 	./stlperf_test
 
 install: $(HEADERS)
-	install -d $(DESTDIR)@PREFIX@/include/mdds
-	install -d $(DESTDIR)@PREFIX@/include/mdds/hash_container
-	install -d $(DESTDIR)@PREFIX@/share/mdds-devel/example
-	install -d $(DESTDIR)@PREFIX@/share/doc/packages/mdds-devel/
-	install -m 644 -t $(DESTDIR)@PREFIX@/include/mdds $(INCDIR)/mdds/*.hpp
-	install -m 644 -t $(DESTDIR)@PREFIX@/include/mdds $(INCDIR)/mdds/*.inl
-	install -m 644 -t $(DESTDIR)@PREFIX@/include/mdds/hash_container $(INCDIR)/mdds/hash_container/*.hpp
-	install -m 644 -t $(DESTDIR)@PREFIX@/share/mdds-devel/example/ example/*
-	install -m 644 -t $(DESTDIR)@PREFIX@/share/doc/packages/mdds-devel/ AUTHORS NEWS README
+	install -d $(DESTDIR)@includedir@/mdds
+	install -d $(DESTDIR)@includedir@/mdds/hash_container
+	install -d $(DESTDIR)@docdir@
+	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.hpp
+	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.inl
+	install -m 644 -t $(DESTDIR)@includedir@/mdds/hash_container $(INCDIR)/mdds/hash_container/*.hpp
+	install -m 644 -t $(DESTDIR)@docdir@ AUTHORS NEWS README
 
 check: $(ALL_TESTS)
 
