@@ -102,14 +102,14 @@ struct node_base
     }
 };
 
-template<typename _NodePtr>
-inline void intrusive_ptr_add_ref(_NodePtr p)
+template<typename _NodePtr, typename _NodeType>
+inline void intrusive_ptr_add_ref(::mdds::node_base<_NodePtr,_NodeType>* p)
 {
     ++p->refcount;
 }
 
-template<typename _NodePtr>
-inline void intrusive_ptr_release(_NodePtr p)
+template<typename _NodePtr, typename _NodeType>
+inline void intrusive_ptr_release(::mdds::node_base<_NodePtr,_NodeType>* p)
 {
     --p->refcount;
     if (!p->refcount)
