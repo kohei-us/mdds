@@ -29,6 +29,7 @@
 #define __MDDS_FLATSEGMENTTREE_HPP__
 
 #include <iostream>
+#include <sstream>
 #include <utility>
 #include <cassert>
 #include <limits>
@@ -49,83 +50,41 @@ public:
     typedef _Key    key_type;
     typedef _Value  value_type;
 
-private:
     struct nonleaf_value_type
     {
         key_type low;   /// low range value (inclusive)
         key_type high;  /// high range value (non-inclusive)
+
+        bool operator== (const nonleaf_value_type& r) const
+        {
+            return low == r.low && high == r.high;
+        }
     };
 
     struct leaf_value_type
     {
         key_type    key;
         value_type  value;
+        
+        bool operator== (const leaf_value_type& r) const
+        {
+            return key == r.key && value == r.value;
+        }
     };
-#ifdef UNIT_TEST
-public:
-#endif
-    struct node;
-    typedef ::boost::intrusive_ptr<node> node_ptr;
 
-    struct node : public node_base<node_ptr, node>
+    struct fill_nonleaf_value_handler;
+    struct to_string_handler;
+    struct dispose_handler;
+    typedef typename ::mdds::node<flat_segment_tree> node;
+    typedef typename node::node_ptr node_ptr;
+
+    struct fill_nonleaf_value_handler
     {
-        union {
-            nonleaf_value_type  value_nonleaf;
-            leaf_value_type     value_leaf;
-        };
-
-        node(bool _is_leaf) :
-            node_base<node_ptr, node>(_is_leaf)
-        {
-        }
-
-        node(const node& r) :
-            node_base<node_ptr, node>(r)
-        {
-            if (this->is_leaf)
-            {
-                value_leaf.key = r.value_leaf.key;
-                value_leaf.value = r.value_leaf.value;
-            }
-            else
-            {
-                value_nonleaf.low = r.value_nonleaf.low;
-                value_nonleaf.high = r.value_nonleaf.high;
-            }
-        }
-
-        void dispose()
-        {
-        }
-
-        bool equals(const node& r) const
-        {
-            if (this->is_leaf != r.is_leaf)
-                return false;
-
-            if (this->is_leaf)
-            {
-                if (value_leaf.key != r.value_leaf.key)
-                    return false;
-                if (value_leaf.value != r.value_leaf.value)
-                    return false;
-            }
-            else
-            {
-                if (value_nonleaf.low != r.value_nonleaf.low)
-                    return false;
-                if (value_nonleaf.high != r.value_nonleaf.high)
-                    return false;
-            }
-
-            return true;
-        }
-
-        void fill_nonleaf_value(const node_ptr& left_node, const node_ptr& right_node)
+        void operator() (node& _self, const node_ptr& left_node, const node_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
-                value_nonleaf.low  = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.low;
+                _self.value_nonleaf.low  = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.low;
             else
                 // Having a left node is prerequisite.
                 return;
@@ -139,34 +98,43 @@ public:
                     // right leaf node (if such node exists).
 
                     if (right_node->right)
-                        value_nonleaf.high = right_node->right->value_leaf.key;
+                        _self.value_nonleaf.high = right_node->right->value_leaf.key;
                     else
-                        value_nonleaf.high = right_node->value_leaf.key;
+                        _self.value_nonleaf.high = right_node->value_leaf.key;
                 }
                 else
                 {
-                    value_nonleaf.high = right_node->value_nonleaf.high;
+                    _self.value_nonleaf.high = right_node->value_nonleaf.high;
                 }
             }
             else
-                value_nonleaf.high = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.high;
+                _self.value_nonleaf.high = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.high;
         }
+    };
 
-#ifdef UNIT_TEST
-        void dump_value() const
+    struct to_string_handler
+    {
+        ::std::string operator() (const node& _self) const
         {
-            using ::std::cout;
-            if (this->is_leaf)
+            ::std::ostringstream os;
+            if (_self.is_leaf)
             {
-                cout << "(" << value_leaf.key << ")";
+                os << "(" << _self.value_leaf.key << ")";
             }
             else
             {
-                cout << "(" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
+                os << "(" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
             }
-            cout << " ";
+            os << " ";
+            return os.str();
         }
-#endif
+    };
+
+    struct dispose_handler
+    {
+        void operator() (node& /*_self*/)
+        {
+        }
     };
 
 private:

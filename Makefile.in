@@ -100,7 +100,7 @@ test.fst.perf: flat_segment_tree_test
 	./flat_segment_tree_test perf
 
 test.fst.mem: flat_segment_tree_test
-	valgrind --tool=memcheck --leak-check=full ./flat_segment_tree_test
+	valgrind --tool=memcheck --leak-check=full ./flat_segment_tree_test func
 
 test.pqt: point_quad_tree_test
 	./point_quad_tree_test

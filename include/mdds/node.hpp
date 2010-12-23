@@ -102,6 +102,141 @@ struct node_base
     }
 };
 
+template<typename T>
+struct node_traits
+{
+    typedef typename T::nonleaf_value_type          nonleaf_value_type;
+    typedef typename T::leaf_value_type             leaf_value_type;
+    typedef typename T::fill_nonleaf_value_handler  fill_nonleaf_value_handler;
+    typedef typename T::to_string_handler           to_string_handler;
+    typedef typename T::dispose_handler             dispose_handler;
+};
+
+template<typename T>
+struct node
+{
+    typedef ::boost::intrusive_ptr<node>  node_ptr;
+
+    typedef typename node_traits<T>::nonleaf_value_type nonleaf_value_type;
+    typedef typename node_traits<T>::leaf_value_type leaf_value_type;
+    typedef typename node_traits<T>::fill_nonleaf_value_handler fill_nonleaf_value_handler;
+    typedef typename node_traits<T>::to_string_handler to_string_handler;
+    typedef typename node_traits<T>::dispose_handler dispose_handler;
+
+    static size_t get_instance_count()
+    {
+#ifdef DEBUG_NODE_BASE
+        return node_instance_count;
+#else
+        return 0;
+#endif
+    }
+
+    union {
+        nonleaf_value_type  value_nonleaf;
+        leaf_value_type     value_leaf;
+    };
+
+
+    node_ptr    parent; /// parent node
+    node_ptr    left;   /// left child node or previous sibling if it's a leaf node.
+    node_ptr    right;  /// right child node or next sibling if it's aleaf node.
+    bool        is_leaf;
+
+    size_t      refcount;
+private:
+    fill_nonleaf_value_handler  _hdl_fill_nonleaf;
+    to_string_handler           _hdl_to_string;
+    dispose_handler             _hdl_dispose;
+
+public:
+    node(bool _is_leaf) :
+        is_leaf(_is_leaf),
+        refcount(0)
+    {
+#ifdef DEBUG_NODE_BASE
+        ++node_instance_count;
+#endif
+    }
+
+    /** 
+     * When copying node, only the stored values should be copied. 
+     * Connections to the parent, left and right nodes must not be copied. 
+     */
+    node(const node& r) :
+        is_leaf(r.is_leaf),
+        refcount(0)
+    {
+#ifdef DEBUG_NODE_BASE
+        ++node_instance_count;
+#endif
+        if (is_leaf)
+            value_leaf = r.value_leaf;
+        else
+            value_nonleaf = r.value_nonleaf;
+    }
+
+    /** 
+     * Like the copy constructor, only the stored values should be copied. 
+     */
+    node& operator=(const node& r)
+    {
+        if (this == &r)
+            // assignment to self.
+            return *this;
+
+        is_leaf = r.is_leaf;
+        if (is_leaf)
+            value_leaf = r.value_leaf;
+        else
+            value_nonleaf = r.value_nonleaf;
+        return *this;
+    }
+
+    ~node()
+    {
+#ifdef DEBUG_NODE_BASE
+        --node_instance_count;
+#endif
+        dispose();
+    }
+
+    void dispose()
+    {
+        _hdl_dispose(*this);
+    }
+
+    bool equals(const node& r) const
+    {
+        if (is_leaf != r.is_leaf)
+            return false;
+
+        if (is_leaf)
+            return value_leaf == value_leaf;
+        else
+            return value_nonleaf == value_nonleaf;
+
+        return true;
+    }
+
+    void fill_nonleaf_value(const node_ptr& left_node, const node_ptr& right_node)
+    {
+        _hdl_fill_nonleaf(*this, left_node, right_node);
+    }
+
+#ifdef UNIT_TEST
+    void dump_value() const
+    {
+        ::std::cout << _hdl_to_string(*this);
+    }
+
+    ::std::string to_string() const
+    {
+        return _hdl_to_string(*this);
+    }
+#endif
+};
+
 template<typename _NodePtr, typename _NodeType>
 inline void intrusive_ptr_add_ref(::mdds::node_base<_NodePtr,_NodeType>* p)
 {
@@ -110,6 +245,20 @@ inline void intrusive_ptr_add_ref(::mdds::node_base<_NodePtr,_NodeType>* p)
 
 template<typename _NodePtr, typename _NodeType>
 inline void intrusive_ptr_release(::mdds::node_base<_NodePtr,_NodeType>* p)
+{
+    --p->refcount;
+    if (!p->refcount)
+        delete p;
+}
+
+template<typename T>
+inline void intrusive_ptr_add_ref(::mdds::node<T>* p)
+{
+    ++p->refcount;
+}
+
+template<typename T>
+inline void intrusive_ptr_release(::mdds::node<T>* p)
 {
     --p->refcount;
     if (!p->refcount)
