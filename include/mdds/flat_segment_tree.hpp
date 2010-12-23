@@ -75,6 +75,7 @@ public:
     struct fill_nonleaf_value_handler;
     struct to_string_handler;
     struct dispose_handler;
+
     typedef typename ::mdds::node<flat_segment_tree> node;
     typedef typename node::node_ptr node_ptr;
 
@@ -132,9 +133,7 @@ public:
 
     struct dispose_handler
     {
-        void operator() (node& /*_self*/)
-        {
-        }
+        void operator() (node& /*_self*/) {}
     };
 
 private:
