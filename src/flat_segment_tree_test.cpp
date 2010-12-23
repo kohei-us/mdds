@@ -25,10 +25,8 @@
  *
  ************************************************************************/
 
-#if 0 // Disabled until I re-write priority search tree in a template.
-#include "rangetree.hpp"
-#endif
 #include "mdds/flat_segment_tree.hpp"
+#include "test_global.hpp"
 
 #include <list>
 #include <iostream>
@@ -1290,47 +1288,59 @@ void fst_test_back_insert()
     db.dump_leaf_nodes();
 }
 
-int main (int argc, char *argv[])
+int main (int argc, char **argv)
 {
-//  fst_perf_test_insert();
-    fst_test_equality();
-    fst_test_copy_ctor();
-    fst_test_back_insert();
+    cmd_options opt;
+    if (!parse_cmd_options(argc, argv, opt))
+        return EXIT_FAILURE;
+
+    if (opt.test_func)
     {
-        typedef unsigned int   key_type;
-        typedef unsigned short value_type;
-        for (value_type i = 0; i <= 100; ++i)
-            fst_test_insert_front_back<key_type, value_type>(0, 100, i);
+        fst_test_equality();
+        fst_test_copy_ctor();
+        fst_test_back_insert();
+        {
+            typedef unsigned int   key_type;
+            typedef unsigned short value_type;
+            for (value_type i = 0; i <= 100; ++i)
+                fst_test_insert_front_back<key_type, value_type>(0, 100, i);
+        }
+    
+        {
+            typedef int   key_type;
+            typedef short value_type;
+            for (value_type i = 0; i <= 100; ++i)
+                fst_test_insert_front_back<key_type, value_type>(0, 100, i);
+        }
+    
+        {
+            typedef long         key_type;
+            typedef unsigned int value_type;
+            for (value_type i = 0; i <= 100; ++i)
+                fst_test_insert_front_back<key_type, value_type>(0, 100, i);
+        }
+    
+        fst_test_leaf_search();
+        fst_test_tree_build();
+        fst_test_tree_search();
+        fst_perf_test_search(true);
+        fst_test_insert_search_mix();
+        fst_test_shift_segment_left();
+        fst_test_shift_segment_left_right_edge();
+        fst_test_shift_segment_left_append_new_segment();
+        fst_test_shift_segment_right_init0();
+        fst_test_shift_segment_right_init999();
+        fst_test_shift_segment_right_bool();
+        fst_test_shift_segment_right_skip_start_node();
+        fst_test_const_iterator();
     }
 
+    if (opt.test_perf)
     {
-        typedef int   key_type;
-        typedef short value_type;
-        for (value_type i = 0; i <= 100; ++i)
-            fst_test_insert_front_back<key_type, value_type>(0, 100, i);
+        fst_perf_test_insert();
+        fst_perf_test_search(false);
     }
 
-    {
-        typedef long         key_type;
-        typedef unsigned int value_type;
-        for (value_type i = 0; i <= 100; ++i)
-            fst_test_insert_front_back<key_type, value_type>(0, 100, i);
-    }
-
-    fst_test_leaf_search();
-    fst_test_tree_build();
-    fst_test_tree_search();
-//  fst_perf_test_search(false);
-    fst_perf_test_search(true);
-    fst_test_insert_search_mix();
-    fst_test_shift_segment_left();
-    fst_test_shift_segment_left_right_edge();
-    fst_test_shift_segment_left_append_new_segment();
-    fst_test_shift_segment_right_init0();
-    fst_test_shift_segment_right_init999();
-    fst_test_shift_segment_right_bool();
-    fst_test_shift_segment_right_skip_start_node();
-    fst_test_const_iterator();
     fprintf(stdout, "Test finished successfully!\n");
     return 0;
 }

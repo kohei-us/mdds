@@ -29,6 +29,7 @@
 #define __TEST_GLOBAL_HPP__
 
 #include <iostream>
+#include <cstring>
 
 struct cmd_options
 {
