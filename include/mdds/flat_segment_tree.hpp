@@ -74,6 +74,7 @@ public:
 
     struct fill_nonleaf_value_handler;
     struct to_string_handler;
+    struct init_handler;
     struct dispose_handler;
 
     typedef typename ::mdds::node<flat_segment_tree> node;
@@ -129,6 +130,11 @@ public:
             os << " ";
             return os.str();
         }
+    };
+
+    struct init_handler
+    {
+        void operator() (node& /*_self*/) {}
     };
 
     struct dispose_handler

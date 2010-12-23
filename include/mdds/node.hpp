@@ -109,6 +109,7 @@ struct node_traits
     typedef typename T::leaf_value_type             leaf_value_type;
     typedef typename T::fill_nonleaf_value_handler  fill_nonleaf_value_handler;
     typedef typename T::to_string_handler           to_string_handler;
+    typedef typename T::init_handler                init_handler;
     typedef typename T::dispose_handler             dispose_handler;
 };
 
@@ -121,6 +122,7 @@ struct node
     typedef typename node_traits<T>::leaf_value_type leaf_value_type;
     typedef typename node_traits<T>::fill_nonleaf_value_handler fill_nonleaf_value_handler;
     typedef typename node_traits<T>::to_string_handler to_string_handler;
+    typedef typename node_traits<T>::init_handler init_handler;
     typedef typename node_traits<T>::dispose_handler dispose_handler;
 
     static size_t get_instance_count()
@@ -147,6 +149,7 @@ struct node
 private:
     fill_nonleaf_value_handler  _hdl_fill_nonleaf;
     to_string_handler           _hdl_to_string;
+    init_handler                _hdl_init;
     dispose_handler             _hdl_dispose;
 
 public:
@@ -157,6 +160,7 @@ public:
 #ifdef DEBUG_NODE_BASE
         ++node_instance_count;
 #endif
+        _hdl_init(*this);
     }
 
     /** 

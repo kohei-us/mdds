@@ -170,59 +170,39 @@ private:
         key_type low;   /// low range value (inclusive)
         key_type high;  /// high range value (non-inclusive)
         data_chain_type* data_chain;
+
+        bool operator== (const nonleaf_value_type& r) const
+        {
+            return low == r.low && high == r.high && data_chain == r.data_chain;
+        }
     };
 
     struct leaf_value_type
     {
         key_type key;
         data_chain_type* data_chain;
+
+        bool operator== (const leaf_value_type& r) const
+        {
+            return key == r.key && data_chain == r.data_chain;
+        }
     };
 
-    struct node;
-    typedef ::boost::intrusive_ptr<node> node_ptr;
+    struct fill_nonleaf_value_handler;
+    struct to_string_handler;
+    struct init_handler;
+    struct dispose_handler;
 
-    struct node : public node_base<node_ptr, node>
+    typedef ::mdds::node<segment_tree> node;
+    typedef typename node::node_ptr node_ptr;
+
+    struct fill_nonleaf_value_handler
     {
-        union {
-            nonleaf_value_type  value_nonleaf;
-            leaf_value_type     value_leaf;
-        };
-
-        node(bool _is_leaf) :
-            node_base<node_ptr, node>(_is_leaf)
-        {
-            if (_is_leaf)
-                value_leaf.data_chain = NULL;
-            else
-                value_nonleaf.data_chain = NULL;
-        }
-
-        node(const node& r) :
-            node_base<node_ptr, node>(r)
-        {
-        }
-
-        void dispose()
-        {
-            if (this->is_leaf)
-                delete value_leaf.data_chain;
-            else
-                delete value_nonleaf.data_chain;
-        }
-
-        bool equals(const node& r) const
-        {
-            if (this->is_leaf != r.is_leaf)
-                return false;
-
-            return true;
-        }
-
-        void fill_nonleaf_value(const node_ptr& left_node, const node_ptr& right_node)
+        void operator() (node& _self, const node_ptr& left_node, const node_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
-                value_nonleaf.low  = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.low;
+                _self.value_nonleaf.low  = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.low;
             else
                 // Having a left node is prerequisite.
                 return;
@@ -236,39 +216,39 @@ private:
                     // right leaf node (if such node exists).
 
                     if (right_node->right)
-                        value_nonleaf.high = right_node->right->value_leaf.key;
+                        _self.value_nonleaf.high = right_node->right->value_leaf.key;
                     else
-                        value_nonleaf.high = right_node->value_leaf.key;
+                        _self.value_nonleaf.high = right_node->value_leaf.key;
                 }
                 else
                 {
-                    value_nonleaf.high = right_node->value_nonleaf.high;
+                    _self.value_nonleaf.high = right_node->value_nonleaf.high;
                 }
             }
             else
-                value_nonleaf.high = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.high;
+                _self.value_nonleaf.high = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.high;
         }
+    };
 
-#ifdef UNIT_TEST
-        void dump_value() const
-        {
-            ::std::cout << print();
-        }
-
-        ::std::string print() const
+    struct to_string_handler
+    {
+        ::std::string operator() (const node& _self) const
         {
             ::std::ostringstream os;
-            if (this->is_leaf)
+            if (_self.is_leaf)
             {
-                os << "[" << value_leaf.key << "]";
+                os << "[" << _self.value_leaf.key << "]";
             }
             else
             {
-                os << "[" << value_nonleaf.low << "-" << value_nonleaf.high << ")";
-                if (value_nonleaf.data_chain)
+                os << "[" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
+                if (_self.value_nonleaf.data_chain)
                 {
                     os << " { ";
-                    typename data_chain_type::const_iterator itr, itr_beg = value_nonleaf.data_chain->begin(), itr_end = value_nonleaf.data_chain->end();
+                    typename data_chain_type::const_iterator 
+                        itr, 
+                        itr_beg = _self.value_nonleaf.data_chain->begin(), 
+                        itr_end = _self.value_nonleaf.data_chain->end();
                     for (itr = itr_beg; itr != itr_end; ++itr)
                     {
                         if (itr != itr_beg)
@@ -281,16 +261,39 @@ private:
             os << " ";
             return os.str();
         }
-
-        struct printer : public ::std::unary_function<const node*, void>
-        {
-            void operator() (const node* p) const
-            {
-                ::std::cout << p->print() << " ";
-            }
-        };
-#endif
     };
+
+    struct init_handler
+    {
+        void operator() (node& _self)
+        {
+            if (_self.is_leaf)
+                _self.value_leaf.data_chain = NULL;
+            else
+                _self.value_nonleaf.data_chain = NULL;
+        }
+    };
+
+    struct dispose_handler
+    {
+        void operator() (node& _self)
+        {
+            if (_self.is_leaf)
+                delete _self.value_leaf.data_chain;
+            else
+                delete _self.value_nonleaf.data_chain;
+        }
+    };
+
+#if UNIT_TEST
+    struct node_printer : public ::std::unary_function<const node*, void>
+    {
+        void operator() (const node* p) const
+        {
+            ::std::cout << p->to_string() << " ";
+        }
+    };
+#endif
 
 private:
 
@@ -1102,7 +1105,7 @@ bool segment_tree<_Key, _Data>::verify_node_lists() const
         cout << "node list " << itr->first->name << ": ";
         const node_list_type* plist = itr->second;
         assert(plist);
-        typename node::printer func;
+        node_printer func;
         for_each(plist->begin(), plist->end(), func);
         cout << endl;
 
