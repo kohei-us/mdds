@@ -124,7 +124,10 @@ test.st.mem: segment_tree_test
 	valgrind --tool=memcheck --leak-check=full ./segment_tree_test func
 
 test.mtm: mixed_type_matrix_test
-	./mixed_type_matrix_test
+	./mixed_type_matrix_test func
+
+test.mtm.perf: mixed_type_matrix_test
+	./mixed_type_matrix_test perf
 
 test.mtm.mem: mixed_type_matrix_test
 	valgrind --tool=memcheck --leak-check=full ./mixed_type_matrix_test func
