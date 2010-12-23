@@ -1060,7 +1060,7 @@ void segment_tree<_Key, _Data>::dump_tree() const
 
     cout << "dump tree ------------------------------------------------------" << endl;
     size_t node_count = ::mdds::dump_tree<node_ptr>(m_root_node.get());
-    size_t node_instance_count = node_base<node_ptr, node>::get_instance_count();
+    size_t node_instance_count = node::get_instance_count();
 
     cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
 }
@@ -1079,7 +1079,7 @@ void segment_tree<_Key, _Data>::dump_leaf_nodes() const
         print_leaf_value(p->value_leaf);
         p = p->right.get();
     }
-    cout << "  node instance count = " << node_base<node_ptr, node>::get_instance_count() << endl;
+    cout << "  node instance count = " << node::get_instance_count() << endl;
 }
 
 template<typename _Key, typename _Data>

@@ -383,7 +383,7 @@ public:
             assert(!"attempted to dump an invalid tree!");
 
         size_t node_count = ::mdds::dump_tree(m_root_node);
-        size_t node_instance_count = node_base<node_ptr, node>::get_instance_count();
+        size_t node_instance_count = node::get_instance_count();
 
         cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
         assert(node_count == node_instance_count);
@@ -405,7 +405,7 @@ public:
                 << endl;
             cur_node = cur_node->right;
         }
-        cout << endl << "  node instance count = " << node_base<node_ptr, node>::get_instance_count() << endl;
+        cout << endl << "  node instance count = " << node::get_instance_count() << endl;
     }
 
     /** 

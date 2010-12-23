@@ -40,68 +40,6 @@ namespace mdds {
 size_t node_instance_count = 0;
 #endif
 
-template<typename _NodePtr, typename _NodeType>
-struct node_base
-{
-    static size_t get_instance_count()
-    {
-#ifdef DEBUG_NODE_BASE
-        return node_instance_count;
-#else
-        return 0;
-#endif
-    }
-    size_t          refcount;
-
-    _NodePtr   parent; /// parent node
-    _NodePtr   left;   /// left child node or previous sibling if it's a leaf node.
-    _NodePtr   right;  /// right child node or next sibling if it's aleaf node.
-    bool            is_leaf;
-
-    node_base(bool _is_leaf) :
-        refcount(0),
-        is_leaf(_is_leaf)
-    {
-#ifdef DEBUG_NODE_BASE
-        ++node_instance_count;
-#endif
-    }
-
-    /** 
-     * When copying node, only the stored values should be copied. 
-     * Connections to the parent, left and right nodes must not be copied. 
-     */
-    node_base(const node_base& r) :
-        refcount(0),
-        is_leaf(r.is_leaf)
-    {
-#ifdef DEBUG_NODE_BASE
-        ++node_instance_count;
-#endif
-    }
-
-    /** 
-     * Like the copy constructor, only the stored values should be copied. 
-     */
-    node_base& operator=(const node_base& r)
-    {
-        if (this == &r)
-            // assignment to self.
-            return *this;
-
-        is_leaf = r.is_leaf;
-        return *this;
-    }
-
-    ~node_base()
-    {
-#ifdef DEBUG_NODE_BASE
-        --node_instance_count;
-#endif
-        static_cast<_NodeType*>(this)->dispose();
-    }
-};
-
 template<typename T>
 struct node_traits
 {
@@ -240,20 +178,6 @@ public:
     }
 #endif
 };
-
-template<typename _NodePtr, typename _NodeType>
-inline void intrusive_ptr_add_ref(::mdds::node_base<_NodePtr,_NodeType>* p)
-{
-    ++p->refcount;
-}
-
-template<typename _NodePtr, typename _NodeType>
-inline void intrusive_ptr_release(::mdds::node_base<_NodePtr,_NodeType>* p)
-{
-    --p->refcount;
-    if (!p->refcount)
-        delete p;
-}
 
 template<typename T>
 inline void intrusive_ptr_add_ref(::mdds::node<T>* p)
