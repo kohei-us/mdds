@@ -256,6 +256,7 @@
 			<F N="src/segment_tree_test.cpp"/>
 			<F N="src/stlperf_test.cpp"/>
 			<F N="src/template_test.cpp"/>
+			<F N="src/test_global.hpp"/>
 		</Folder>
 	</Files>
 </Project>

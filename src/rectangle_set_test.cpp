@@ -26,6 +26,7 @@
  ************************************************************************/
 
 #include "mdds/rectangle_set.hpp"
+#include "test_global.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -952,29 +953,10 @@ void rect_test_search_result_iterator()
 
 int main(int argc, char** argv)
 {
-    bool test_func = false;
-    bool test_perf = false;
-    if (argc > 1)
-    {
-        for (int i = 1; i < argc; ++i)
-        {
-            if (!strncmp(argv[i], "func", 4))
-                test_func = true;
-            else if (!strncmp(argv[i], "perf", 4))
-                test_perf = true;
-            else
-            {
-                cout << "unknown argument: " << argv[i] << endl;
-                return EXIT_FAILURE;
-            }
-        }
-    }
-    else
-    {
-        cout << "please specify test categories: [perf, func]" << endl;
+    cmd_options opt;
+    if (!parse_cmd_options(argc, argv, opt))
         return EXIT_FAILURE;
-    }
-    if (test_func)
+    if (opt.test_func)
     {
         rect_test_insertion_removal();
         rect_test_search();
@@ -984,7 +966,7 @@ int main(int argc, char** argv)
         rect_test_search_result_iterator();
     }
 
-    if (test_perf)
+    if (opt.test_perf)
     {
         rect_test_perf_insertion_fixed_x();
         rect_test_perf_insertion_fixed_y();

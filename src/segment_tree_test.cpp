@@ -27,6 +27,8 @@
 
 #include "mdds/segment_tree.hpp"
 
+#include "test_global.hpp"
+
 #include <cassert>
 #include <cstdlib>
 #include <cstdio>
@@ -1106,29 +1108,11 @@ void st_test_empty_result_set()
 
 int main(int argc, char** argv)
 {
-    bool test_func = false;
-    bool test_perf = false;
-    if (argc > 1)
-    {
-        for (int i = 1; i < argc; ++i)
-        {
-            if (!strncmp(argv[i], "func", 4))
-                test_func = true;
-            else if (!strncmp(argv[i], "perf", 4))
-                test_perf = true;
-            else
-            {
-                cout << "unknown argument: " << argv[i] << endl;
-                return EXIT_FAILURE;
-            }
-        }
-    }
-    else
-    {
-        cout << "please specify test categories: [perf, func]" << endl;
+    cmd_options opt;
+    if (!parse_cmd_options(argc, argv, opt))
         return EXIT_FAILURE;
-    }
-    if (test_func)
+
+    if (opt.test_func)
     {
         st_test_insert_search_removal();
         st_test_copy_constructor();
@@ -1144,7 +1128,7 @@ int main(int argc, char** argv)
         st_test_empty_result_set();
     }
 
-    if (test_perf)
+    if (opt.test_perf)
     {
         st_test_perf_insertion();
     }
