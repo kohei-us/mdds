@@ -248,7 +248,7 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
     }
 
     m_valid_tree = false;
-    return const_iterator(this, end_pos.get());
+    return const_iterator(this, new_start_node.get());
 }
 
 template<typename _Key, typename _Value>
