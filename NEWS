@@ -3,6 +3,8 @@
     insert() methods now return the start position of the segment that 
     an inserted segment belongs to.  
 
+  * slight performance improvement on the insert methods.
+
   * slight performance improvement on the iterators of 
     flat_segment_tree.
 
