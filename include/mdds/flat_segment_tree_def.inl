@@ -119,9 +119,9 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
     }
     else
     {    
-        start_pos = get_insertion_pos_leaf_reverse(start_key, m_right_leaf);
-        if (start_pos)
-            start_pos = start_pos->right;
+        const node* p = get_insertion_pos_leaf_reverse(start_key, m_right_leaf.get());
+        if (p)
+            start_pos = p->right;
         else
             start_pos = m_left_leaf;
     }
@@ -553,11 +553,11 @@ bool flat_segment_tree<_Key, _Value>::operator==(const flat_segment_tree<key_typ
 }
 
 template<typename _Key, typename _Value>
-typename flat_segment_tree<_Key, _Value>::node_ptr
+const typename flat_segment_tree<_Key, _Value>::node*
 flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
-    key_type key, const node_ptr& start_pos) const
+    key_type key, const node* start_pos) const
 {
-    node_ptr cur_node = start_pos;
+    const node* cur_node = start_pos;
     while (cur_node)
     {
         if (key > cur_node->value_leaf.key)
@@ -565,9 +565,9 @@ flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
             // Found the insertion position.
             return cur_node;
         }
-        cur_node = cur_node->left;
+        cur_node = cur_node->left.get();
     }
-    return node_ptr();
+    return NULL;
 }
 
 template<typename _Key, typename _Value>
