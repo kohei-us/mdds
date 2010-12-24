@@ -462,8 +462,8 @@ private:
     node_ptr   m_root_node;
     node_ptr   m_left_leaf;
     node_ptr   m_right_leaf;
-    value_type      m_init_val;
-    bool            m_valid_tree;
+    value_type m_init_val;
+    bool       m_valid_tree;
 };
 
 } // namespace mdds
