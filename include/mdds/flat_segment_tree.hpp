@@ -238,6 +238,13 @@ public:
     /**
      * Insert a new segment into the tree at or after specified point of
      * insertion.
+     * 
+     * @param pos specified insertion point
+     * @param start_key start value of the segment being inserted.  The value 
+     *              is inclusive.
+     * @param end_key end value of the segment being inserted.  The value is 
+     *            not inclusive.
+     * @param val value associated with this segment.
      */
     void insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
 
