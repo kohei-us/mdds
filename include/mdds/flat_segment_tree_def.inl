@@ -252,8 +252,25 @@ template<typename _Key, typename _Value>
 void flat_segment_tree<_Key, _Value>::insert(
     const const_iterator& pos, key_type start_key, key_type end_key, value_type val)
 {
-    assert(pos.get());
-    node_ptr start_pos(const_cast<node*>(pos.get()));
+    const node* p = pos.get_pos();
+    if (!p || this != pos.get_parent())
+    {
+        // Switch to normal insert.
+        insert_front(start_key, end_key, val);
+        return;
+    }
+
+    assert(p->is_leaf);
+
+    if (start_key < p->value_leaf.key)
+    {
+        // Specified position is already past the start key position.  Not good.
+        insert_front(start_key, end_key, val);
+        return;
+    }
+
+    p = get_insertion_pos_leaf(start_key, p);
+    node_ptr start_pos(const_cast<node*>(p));
     insert_to_pos(start_pos, start_key, end_key, val);
 }
 

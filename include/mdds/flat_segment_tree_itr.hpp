@@ -158,6 +158,9 @@ public:
     }
 
 private:
+    const typename fst_type::node* get_pos() const { return m_pos; }
+    const fst_type* get_parent() const { return m_db; }
+
     const value_type& get_current_node_pair()
     {
         m_current_pair = value_type(m_pos->value_leaf.key, m_pos->value_leaf.value);
