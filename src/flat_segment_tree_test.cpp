@@ -1389,14 +1389,26 @@ void fst_perf_test_insert_position()
     }
 
     {
-        StackPrinter __stack_printer__("::fst_perf_test_insert_position (position)");
         db_type db(0, upper, false);
-        db_type::const_iterator itr = db.begin();
-        bool val = false;
-        for (long i = 0; i < upper; ++i)
         {
-            itr = db.insert(itr, i, i+1, val);
-            val = !val;
+            StackPrinter __stack_printer__("::fst_perf_test_insert_position (position)");
+            db_type::const_iterator itr = db.begin();
+            bool val = false;
+            for (long i = 0; i < upper; ++i)
+            {
+                itr = db.insert(itr, i, i+1, val);
+                val = !val;
+            }
+        }
+        {
+            StackPrinter __stack_printer__("::fst_perf_test_insert_position (position re-insert)");
+            db_type::const_iterator itr = db.begin();
+            bool val = true;
+            for (long i = 0; i < upper; ++i)
+            {
+                itr = db.insert(itr, i, i+1, val);
+                val = !val;
+            }
         }
     }
 }
