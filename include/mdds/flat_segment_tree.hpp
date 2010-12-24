@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_FLATSEGMENTTREE_HPP__
-#define __MDDS_FLATSEGMENTTREE_HPP__
+#ifndef __MDDS_FLAT_SEGMENT_TREE_HPP__
+#define __MDDS_FLAT_SEGMENT_TREE_HPP__
 
 #include <iostream>
 #include <sstream>
