@@ -168,7 +168,6 @@ public:
 
     class const_reverse_iterator : public ::mdds::__fst::const_iterator_base<
         flat_segment_tree, ::mdds::__fst::itr_reverse_handler<flat_segment_tree> > 
-        
     {
         typedef ::mdds::__fst::const_iterator_base<
             flat_segment_tree, ::mdds::__fst::itr_reverse_handler<flat_segment_tree> > 
