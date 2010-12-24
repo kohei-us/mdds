@@ -73,6 +73,7 @@ public:
         }
     };
 
+    // Handlers required by the node template class.
     struct fill_nonleaf_value_handler;
     struct to_string_handler;
     struct init_handler;

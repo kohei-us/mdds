@@ -193,8 +193,8 @@ inline void intrusive_ptr_release(::mdds::node<T>* p)
         delete p;
 }
 
-template<typename _NodePtr>
-void disconnect_all_nodes(_NodePtr p)
+template<typename T>
+void disconnect_all_nodes(::mdds::node<T>* p)
 {
     if (!p)
         return;
@@ -204,17 +204,17 @@ void disconnect_all_nodes(_NodePtr p)
     p->parent.reset();
 }
 
-template<typename _NodePtr>
-void disconnect_leaf_nodes(_NodePtr left_node, _NodePtr right_node)
+template<typename T>
+void disconnect_leaf_nodes(::mdds::node<T>* left_node, ::mdds::node<T>* right_node)
 {
     if (!left_node || !right_node)
         return;
 
     // Go through all leaf nodes, and disconnect their links.
-    _NodePtr cur_node = left_node;
+    ::mdds::node<T>* cur_node = left_node;
     do
     {
-        _NodePtr next_node = cur_node->right.get();
+        ::mdds::node<T>* next_node = cur_node->right.get();
         disconnect_all_nodes(cur_node);
         cur_node = next_node;
     }
@@ -234,8 +234,8 @@ void link_nodes(_NodePtr& left, _NodePtr& right)
  * Disconnect all non-leaf nodes so that their ref-counted instances will 
  * all get destroyed afterwards. 
  */
-template<typename _NodePtr>
-void clear_tree(_NodePtr node)
+template<typename T>
+void clear_tree(::mdds::node<T>* node)
 {
     if (!node)
         // Nothing to do.
