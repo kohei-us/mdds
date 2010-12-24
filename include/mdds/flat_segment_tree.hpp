@@ -144,8 +144,8 @@ public:
     };
 
 private:
-    typedef ::mdds::const_iterator_base<flat_segment_tree> const_iterator_base;
-    friend class ::mdds::const_iterator_base<flat_segment_tree>;
+    typedef ::mdds::__fst::const_iterator_base<flat_segment_tree> const_iterator_base;
+    friend class ::mdds::__fst::const_iterator_base<flat_segment_tree>;
 
 public:
     class const_iterator : public const_iterator_base

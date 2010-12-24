@@ -28,7 +28,7 @@
 #ifndef __MDDS_FLAT_SEGMENT_TREE_ITR_HPP__
 #define __MDDS_FLAT_SEGMENT_TREE_ITR_HPP__
 
-namespace mdds {
+namespace mdds { namespace __fst {
 
 template<typename _FstType>
 class const_iterator_base
@@ -137,7 +137,6 @@ private:
     bool            m_forward:1;
 };
 
-
-}
+}}
 
 #endif
