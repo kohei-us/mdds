@@ -21,6 +21,7 @@ HEADERS= \
 	$(INCDIR)/mdds/quad_node.hpp \
 	$(INCDIR)/mdds/global.hpp \
 	$(INCDIR)/mdds/flat_segment_tree.hpp \
+	$(INCDIR)/mdds/flat_segment_tree_def.inl \
 	$(INCDIR)/mdds/point_quad_tree.hpp \
 	$(INCDIR)/mdds/segment_tree.hpp \
 	$(INCDIR)/mdds/mixed_type_matrix.hpp \

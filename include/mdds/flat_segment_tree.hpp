@@ -422,7 +422,6 @@ private:
 
     void insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward);
 
-    node_ptr get_insertion_pos_leaf(key_type key, const node_ptr& start_pos) const;
     node_ptr get_insertion_pos_leaf_reverse(key_type key, const node_ptr& start_pos) const;
 
     const node* get_insertion_pos_leaf(key_type key, const node* start_pos) const;
