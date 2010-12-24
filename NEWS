@@ -1,6 +1,12 @@
+  * slight performance improvement on the iterators of 
+    flat_segment_tree.
+
+  * re-organized the structure of flat_segment_tree to split it into 
+    multiple headers.  
+
   * properly support prefix, docdir, includedir configure options.
   
-  * support DESTDIR during make install.  
+  * support DESTDIR environment variable for make install.  
 
 mdds 0.4.0
 
@@ -22,7 +28,8 @@ mdds 0.2.1
   * fixed a bug in segment_tree::search_result object, to make it work 
     with empty result set.  
 
-  * fixed segment_tree to make it really usable outside of unit test code.
+  * fixed segment_tree to make it really usable outside of unit test 
+    code.  
 
 mdds 0.2.0
 

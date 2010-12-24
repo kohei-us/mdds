@@ -235,6 +235,12 @@ public:
         insert_segment_impl(start_key, end_key, val, false);
     }
 
+    /**
+     * Insert a new segment into the tree at or after specified point of
+     * insertion.
+     */
+    void insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
+
     /** 
      * Remove a segment specified by the start and end key values, and shift 
      * the remaining segments (i.e. those segments that come after the removed
@@ -421,6 +427,7 @@ private:
     }
 
     void insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward);
+    void insert_to_pos(node_ptr& start_pos, key_type start_key, key_type end_key, value_type val);
 
     const node* get_insertion_pos_leaf_reverse(key_type key, const node* start_pos) const;
 

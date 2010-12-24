@@ -132,7 +132,13 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
         return;
     }
 
+    insert_to_pos(start_pos, start_key, end_key, val);
+}
 
+template<typename _Key, typename _Value>
+void flat_segment_tree<_Key, _Value>::insert_to_pos(
+    node_ptr& start_pos, key_type start_key, key_type end_key, value_type val)
+{
     node_ptr end_pos;
     {
         const node* p = get_insertion_pos_leaf(end_key, start_pos.get());
@@ -240,6 +246,15 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
     }
 
     m_valid_tree = false;
+}
+
+template<typename _Key, typename _Value>
+void flat_segment_tree<_Key, _Value>::insert(
+    const const_iterator& pos, key_type start_key, key_type end_key, value_type val)
+{
+    assert(pos.get());
+    node_ptr start_pos(const_cast<node*>(pos.get()));
+    insert_to_pos(start_pos, start_key, end_key, val);
 }
 
 template<typename _Key, typename _Value>
