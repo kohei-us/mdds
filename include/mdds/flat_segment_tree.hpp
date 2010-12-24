@@ -164,6 +164,9 @@ public:
     private:
         explicit const_iterator(const typename base_type::fst_type* _db, bool _end) :
             base_type(_db, _end) {}
+
+        explicit const_iterator(const typename base_type::fst_type* _db, const node* p) :
+            base_type(_db, p) {}
     };
 
     class const_reverse_iterator : public ::mdds::__fst::const_iterator_base<
@@ -220,9 +223,9 @@ public:
      *            not inclusive.
      * @param val value associated with this segment.
      */
-    void insert_front(key_type start_key, key_type end_key, value_type val)
+    const_iterator insert_front(key_type start_key, key_type end_key, value_type val)
     {
-        insert_segment_impl(start_key, end_key, val, true);
+        return insert_segment_impl(start_key, end_key, val, true);
     }
 
     /** 
@@ -230,9 +233,9 @@ public:
      * the <code>insert_front</code>, this method searches for the point of 
      * insertion from the last leaf node toward the first. 
      */
-    void insert_back(key_type start_key, key_type end_key, value_type val)
+    const_iterator insert_back(key_type start_key, key_type end_key, value_type val)
     {
-        insert_segment_impl(start_key, end_key, val, false);
+        return insert_segment_impl(start_key, end_key, val, false);
     }
 
     /**
@@ -246,7 +249,7 @@ public:
      *            not inclusive.
      * @param val value associated with this segment.
      */
-    void insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
+    const_iterator insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
 
     /** 
      * Remove a segment specified by the start and end key values, and shift 
@@ -433,8 +436,8 @@ private:
         m_valid_tree = false;
     }
 
-    void insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward);
-    void insert_to_pos(node_ptr& start_pos, key_type start_key, key_type end_key, value_type val);
+    const_iterator insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward);
+    const_iterator insert_to_pos(node_ptr& start_pos, key_type start_key, key_type end_key, value_type val);
 
     const node* get_insertion_pos_leaf_reverse(key_type key, const node* start_pos) const;
 

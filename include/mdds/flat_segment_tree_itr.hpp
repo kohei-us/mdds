@@ -113,6 +113,9 @@ public:
         m_pos = m_hdl.init_pos(_db, _end);
     }
 
+    explicit const_iterator_base(const fst_type* _db, const typename fst_type::node* pos) :
+        m_db(_db), m_pos(pos), m_end_pos(false) {}
+
     const_iterator_base(const const_iterator_base& r) :
         m_db(r.m_db), m_pos(r.m_pos), m_end_pos(r.m_end_pos) {}
 

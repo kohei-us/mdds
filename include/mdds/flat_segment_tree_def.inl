@@ -91,11 +91,12 @@ flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 }
 
 template<typename _Key, typename _Value>
-void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward)
+typename flat_segment_tree<_Key, _Value>::const_iterator
+flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward)
 {
     if (end_key < m_left_leaf->value_leaf.key || start_key > m_right_leaf->value_leaf.key)
         // The new segment does not overlap the current interval.
-        return;
+        return const_iterator(this, true);
 
     if (start_key < m_left_leaf->value_leaf.key)
         // The start value should not be smaller than the current minimum.
@@ -106,7 +107,7 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
         end_key = m_right_leaf->value_leaf.key;
 
     if (start_key >= end_key)
-        return;
+        return const_iterator(this, true);
 
     // Find the node with value that either equals or is greater than the
     // start value.
@@ -129,14 +130,15 @@ void flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, ke
     {
         // Insertion position not found.  Bail out.
         assert(!"Insertion position not found.  Bail out");
-        return;
+        return const_iterator(this, true);
     }
 
-    insert_to_pos(start_pos, start_key, end_key, val);
+    return insert_to_pos(start_pos, start_key, end_key, val);
 }
 
 template<typename _Key, typename _Value>
-void flat_segment_tree<_Key, _Value>::insert_to_pos(
+typename flat_segment_tree<_Key, _Value>::const_iterator
+flat_segment_tree<_Key, _Value>::insert_to_pos(
     node_ptr& start_pos, key_type start_key, key_type end_key, value_type val)
 {
     node_ptr end_pos;
@@ -246,18 +248,19 @@ void flat_segment_tree<_Key, _Value>::insert_to_pos(
     }
 
     m_valid_tree = false;
+    return const_iterator(this, end_pos.get());
 }
 
 template<typename _Key, typename _Value>
-void flat_segment_tree<_Key, _Value>::insert(
+typename flat_segment_tree<_Key, _Value>::const_iterator
+flat_segment_tree<_Key, _Value>::insert(
     const const_iterator& pos, key_type start_key, key_type end_key, value_type val)
 {
     const node* p = pos.get_pos();
     if (!p || this != pos.get_parent())
     {
         // Switch to normal insert.
-        insert_front(start_key, end_key, val);
-        return;
+        return insert_front(start_key, end_key, val);
     }
 
     assert(p->is_leaf);
@@ -265,13 +268,12 @@ void flat_segment_tree<_Key, _Value>::insert(
     if (start_key < p->value_leaf.key)
     {
         // Specified position is already past the start key position.  Not good.
-        insert_front(start_key, end_key, val);
-        return;
+        return insert_front(start_key, end_key, val);
     }
 
     p = get_insertion_pos_leaf(start_key, p);
     node_ptr start_pos(const_cast<node*>(p));
-    insert_to_pos(start_pos, start_key, end_key, val);
+    return insert_to_pos(start_pos, start_key, end_key, val);
 }
 
 template<typename _Key, typename _Value>
