@@ -1071,7 +1071,7 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
     }
 }
 
-void fst_perf_test_insert()
+void fst_perf_test_insert_front_back()
 {
     typedef unsigned long key_type;
     typedef int           value_type;
@@ -1361,6 +1361,46 @@ void fst_test_insert_iterator()
     assert(itr == db.end());
 }
 
+void fst_perf_test_insert_position()
+{
+    typedef flat_segment_tree<long, bool> db_type;
+    long upper = 60000;
+    {
+        StackPrinter __stack_printer__("::fst_perf_test_insert_position (front)");
+        // Much smaller upper boundary because front insertion is very slow.
+        db_type db(0, upper, false);
+        bool val = false;
+        for (long i = 0; i < upper; ++i)
+        {
+            db.insert_front(i, i+1, val);
+            val = !val;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer__("::fst_perf_test_insert_position (back)");
+        db_type db(0, upper, false);
+        bool val = false;
+        for (long i = 0; i < upper; ++i)
+        {
+            db.insert_back(i, i+1, val);
+            val = !val;
+        }
+    }
+
+    {
+        StackPrinter __stack_printer__("::fst_perf_test_insert_position (position)");
+        db_type db(0, upper, false);
+        db_type::const_iterator itr = db.begin();
+        bool val = false;
+        for (long i = 0; i < upper; ++i)
+        {
+            itr = db.insert(itr, i, i+1, val);
+            val = !val;
+        }
+    }
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -1411,8 +1451,9 @@ int main (int argc, char **argv)
     if (opt.test_perf)
     {
         fst_perf_test_search(true);
-        fst_perf_test_insert();
         fst_perf_test_search(false);
+        fst_perf_test_insert_front_back();
+        fst_perf_test_insert_position();
     }
 
     fprintf(stdout, "Test finished successfully!\n");
