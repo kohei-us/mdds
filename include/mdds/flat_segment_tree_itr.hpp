@@ -30,11 +30,72 @@
 
 namespace mdds { namespace __fst {
 
+/**
+ * Handler for forward iterator
+ */
 template<typename _FstType>
+struct itr_forward_handler
+{
+    typedef _FstType fst_type;
+
+    const typename fst_type::node* init_pos(const fst_type* _db, bool _end) const
+    {
+        return _end ? _db->m_right_leaf.get() : _db->m_left_leaf.get();
+    }
+
+    void inc(const fst_type* _db, const typename fst_type::node*& p, bool& end) const
+    {
+        if (p == _db->m_right_leaf.get())
+            end = true;
+        else
+            p = p->right.get();
+    }
+
+    void dec(const typename fst_type::node*& p, bool& end) const
+    {
+        if (end)
+            end = false;
+        else
+            p = p->left.get();
+    }
+};
+
+/**
+ * Handler for reverse iterator
+ */
+template<typename _FstType>
+struct itr_reverse_handler
+{
+    typedef _FstType fst_type;
+
+    const typename fst_type::node* init_pos(const fst_type* _db, bool _end) const
+    {
+        return _end ? _db->m_left_leaf.get() : _db->m_right_leaf.get();
+    }
+
+    void inc(const fst_type* _db, const typename fst_type::node*& p, bool& end) const
+    {
+        if (p == _db->m_left_leaf.get())
+            end = true;
+        else
+            p = p->left.get();
+    }
+
+    void dec(const typename fst_type::node*& p, bool& end) const
+    {
+        if (end)
+            end = false;
+        else
+            p = p->right.get();
+    }
+};
+
+template<typename _FstType, typename _Hdl>
 class const_iterator_base
 {
 public:
     typedef _FstType fst_type;
+    typedef _Hdl     handler_type;
 
     // iterator traits
     typedef ::std::pair<typename fst_type::key_type, typename fst_type::value_type> value_type;
@@ -43,26 +104,17 @@ public:
     typedef ptrdiff_t       difference_type;
     typedef ::std::bidirectional_iterator_tag iterator_category;
 
-    explicit const_iterator_base(const fst_type* _db, bool _end, bool _forward) : 
-        m_db(_db), m_pos(NULL), m_end_pos(_end), m_forward(_forward)
+    explicit const_iterator_base(const fst_type* _db, bool _end) : 
+        m_db(_db), m_pos(NULL), m_end_pos(_end)
     {
         if (!_db)
             return;
 
-        if (m_forward)
-        {
-            // forward direction
-            m_pos = _end ? _db->m_right_leaf.get() : _db->m_left_leaf.get();
-        }
-        else
-        {
-            // reverse direction
-            m_pos = _end ? _db->m_left_leaf.get() : _db->m_right_leaf.get();
-        }
+        m_pos = m_hdl.init_pos(_db, _end);
     }
 
     const_iterator_base(const const_iterator_base& r) :
-        m_db(r.m_db), m_pos(r.m_pos), m_end_pos(r.m_end_pos), m_forward(r.m_forward) {}
+        m_db(r.m_db), m_pos(r.m_pos), m_end_pos(r.m_end_pos) {}
 
     const_iterator_base& operator=(const const_iterator_base& r)
     {
@@ -74,32 +126,14 @@ public:
     const value_type* operator++()
     {
         assert(m_pos);
-        if (m_forward)
-        {
-            if (m_pos == m_db->m_right_leaf.get())
-                m_end_pos = true;
-            else
-                m_pos = m_pos->right.get();
-        }
-        else
-        {
-            if (m_pos == m_db->m_left_leaf.get())
-                m_end_pos = true;
-            else
-                m_pos = m_pos->left.get();
-        }
-
+        m_hdl.inc(m_db, m_pos, m_end_pos);
         return operator->();
     }
 
     const value_type* operator--()
     {
         assert(m_pos);
-        if (m_end_pos)
-            m_end_pos = false;
-        else
-            m_pos = m_forward ? m_pos->left.get() : m_pos->right.get();
-
+        m_hdl.dec(m_pos, m_end_pos);
         return operator->();
     }
 
@@ -130,11 +164,11 @@ private:
         return m_current_pair;
     }
 
+    handler_type    m_hdl;
     const fst_type* m_db;
     const typename fst_type::node* m_pos;
     value_type      m_current_pair;
-    bool            m_end_pos:1;
-    bool            m_forward:1;
+    bool            m_end_pos;
 };
 
 }}

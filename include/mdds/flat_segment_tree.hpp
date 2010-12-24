@@ -144,31 +144,41 @@ public:
     };
 
 private:
-    typedef ::mdds::__fst::const_iterator_base<flat_segment_tree> const_iterator_base;
-    friend class ::mdds::__fst::const_iterator_base<flat_segment_tree>;
+
+    friend struct ::mdds::__fst::itr_forward_handler<flat_segment_tree>;
+    friend struct ::mdds::__fst::itr_reverse_handler<flat_segment_tree>;
 
 public:
-    class const_iterator : public const_iterator_base
+    class const_iterator : public ::mdds::__fst::const_iterator_base<
+        flat_segment_tree, typename ::mdds::__fst::itr_forward_handler<flat_segment_tree> > 
     {
+        typedef ::mdds::__fst::const_iterator_base<
+            flat_segment_tree, typename ::mdds::__fst::itr_forward_handler<flat_segment_tree> > 
+                base_type;
         friend class flat_segment_tree;
     public:
         const_iterator() :
-            const_iterator_base(NULL, false, true) {}
+            base_type(NULL, false) {}
 
     private:
-        explicit const_iterator(const typename const_iterator_base::fst_type* _db, bool _end) : 
-            const_iterator_base(_db, _end, true) {}
+        explicit const_iterator(const typename base_type::fst_type* _db, bool _end) :
+            base_type(_db, _end) {}
     };
 
-    class const_reverse_iterator : public const_iterator_base
+    class const_reverse_iterator : public ::mdds::__fst::const_iterator_base<
+        flat_segment_tree, typename ::mdds::__fst::itr_reverse_handler<flat_segment_tree> > 
+        
     {
+        typedef ::mdds::__fst::const_iterator_base<
+            flat_segment_tree, typename ::mdds::__fst::itr_reverse_handler<flat_segment_tree> > 
+                base_type;
         friend class flat_segment_tree;
     public:
         const_reverse_iterator() :
-            const_iterator_base(NULL, false, false) {}
+            base_type(NULL, false) {}
     private:
-        explicit const_reverse_iterator(const typename const_iterator_base::fst_type* _db, bool _end) : 
-            const_iterator_base(_db, _end, false) {}
+        explicit const_reverse_iterator(const typename base_type::fst_type* _db, bool _end) : 
+            base_type(_db, _end) {}
     };
 
     const_iterator begin() const
