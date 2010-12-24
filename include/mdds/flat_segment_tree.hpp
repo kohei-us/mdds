@@ -35,6 +35,7 @@
 #include <limits>
 
 #include "node.hpp"
+#include "flat_segment_tree_itr.hpp"
 
 #ifdef UNIT_TEST
 #include <cstdio>
@@ -143,104 +144,8 @@ public:
     };
 
 private:
-    class const_iterator_base
-    {
-    public:
-        typedef flat_segment_tree<key_type, value_type> fst_type;
-
-        explicit const_iterator_base(const fst_type* _db, bool _end, bool _forward) : 
-            m_db(_db), m_pos(NULL), m_end_pos(_end), m_forward(_forward)
-        {
-            if (!_db)
-                return;
-
-            if (m_forward)
-            {
-                // forward direction
-                m_pos = _end ? _db->m_right_leaf.get() : _db->m_left_leaf.get();
-            }
-            else
-            {
-                // reverse direction
-                m_pos = _end ? _db->m_left_leaf.get() : _db->m_right_leaf.get();
-            }
-        }
-
-        const_iterator_base(const const_iterator_base& r) :
-            m_db(r.m_db), m_pos(r.m_pos), m_end_pos(r.m_end_pos), m_forward(r.m_forward) {}
-
-        const_iterator_base& operator=(const const_iterator_base& r)
-        {
-            m_db = r.m_db;
-            m_pos = r.m_pos;
-            return *this;
-        }
-
-        const ::std::pair<key_type, value_type>* operator++()
-        {
-            assert(m_pos);
-            if (m_forward)
-            {
-                if (m_pos == m_db->m_right_leaf.get())
-                    m_end_pos = true;
-                else
-                    m_pos = m_pos->right.get();
-            }
-            else
-            {
-                if (m_pos == m_db->m_left_leaf.get())
-                    m_end_pos = true;
-                else
-                    m_pos = m_pos->left.get();
-            }
-
-            return operator->();
-        }
-
-        const ::std::pair<key_type, value_type>* operator--()
-        {
-            assert(m_pos);
-            if (m_end_pos)
-                m_end_pos = false;
-            else
-                m_pos = m_forward ? m_pos->left.get() : m_pos->right.get();
-
-            return operator->();
-        }
-
-        bool operator==(const const_iterator_base& r) const
-        {
-            return (m_end_pos == r.m_end_pos) && (m_pos == r.m_pos);
-        }
-
-        bool operator!=(const const_iterator_base& r) const
-        {
-            return !operator==(r);
-        }
-
-        const ::std::pair<key_type, value_type>& operator*()
-        {
-            return get_current_node_pair();
-        }
-
-        const ::std::pair<key_type, value_type>* operator->()
-        {
-            return &get_current_node_pair();
-        }
-
-    private:
-        const ::std::pair<key_type, value_type>& get_current_node_pair()
-        {
-            m_current_pair = ::std::pair<key_type, value_type>(m_pos->value_leaf.key, m_pos->value_leaf.value);
-            return m_current_pair;
-        }
-
-        const fst_type* m_db;
-        const typename fst_type::node* m_pos;
-        ::std::pair<key_type, value_type> m_current_pair;
-        bool            m_end_pos:1;
-        bool            m_forward:1;
-    };
+    typedef ::mdds::const_iterator_base<flat_segment_tree> const_iterator_base;
+    friend class ::mdds::const_iterator_base<flat_segment_tree>;
 
 public:
     class const_iterator : public const_iterator_base
