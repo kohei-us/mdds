@@ -241,8 +241,11 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
     }
     else if (old_value == val)
     {
-        link_nodes(new_start_node, end_pos);
-        changed = true;
+        if (new_start_node->right != end_pos)
+        {
+            link_nodes(new_start_node, end_pos);
+            changed = true;
+        }
     }
     else
     {

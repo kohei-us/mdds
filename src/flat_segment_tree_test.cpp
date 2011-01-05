@@ -1361,6 +1361,103 @@ void fst_test_insert_iterator()
     assert(itr == db.end());
 }
 
+void fst_test_insert_state_changed()
+{
+    StackPrinter __stack_printer__("::fst_test_insert_state_changed");
+    typedef long key_type;
+    typedef short value_type;
+    typedef flat_segment_tree<key_type, value_type> db_type; 
+    typedef pair<db_type::const_iterator, bool> ret_type;
+
+    db_type db(0, 1000, 0);
+
+    // Inserting a segment with the default value.  This should not change the
+    // state.
+    ret_type r = db.insert_front(10, 15, 0);
+    assert(!r.second);
+
+    // New segment with a different value.
+    r = db.insert_front(0, 10, 1);
+    assert(r.second);
+
+    // Inserting the same segment should not change the state.
+    r = db.insert_front(0, 10, 1);
+    assert(!r.second);
+
+    r = db.insert_front(0, 1, 1);
+    assert(!r.second);
+
+    r = db.insert_front(8, 10, 1);
+    assert(!r.second);
+
+    // This extends the segment, therefore the state should change.
+    r = db.insert_front(8, 11, 1);
+    assert(r.second);
+
+    r = db.insert_front(11, 15, 0);
+    assert(!r.second);
+
+    // This extends the segment.  At this point, 0 - 15 should have a value of 1.
+    r = db.insert_front(11, 15, 1);
+    assert(r.second);
+    {
+        db_type::const_iterator itr = r.first;
+        assert(itr->first == 0);
+        assert(itr->second == 1);
+        ++itr;
+        assert(itr->first == 15);
+    }
+
+    r = db.insert_front(2, 4, 1);
+    assert(!r.second);
+
+    // Different value segment.  This should change the state.
+    r = db.insert_front(2, 4, 0);
+    assert(r.second);
+
+    // Ditto.
+    r = db.insert_front(2, 4, 1);
+    assert(r.second);
+
+    r = db.insert_front(1, 8, 1);
+    assert(!r.second);
+
+    // Different value segment.
+    r = db.insert_front(1, 8, 2);
+    assert(r.second);
+
+    r = db.insert_front(8, 20, 2);
+    assert(r.second);
+
+    // The 0-1 segment should still have a value of 1.  So this won't change 
+    // the state.
+    r = db.insert_front(0, 1, 1);
+    assert(!r.second);
+
+    // Partially out-of-bound segment, but this should modify the value of 0-2.
+    r = db.insert_front(-50, 2, 10);
+    assert(r.second);
+    {
+        db_type::const_iterator itr = r.first;
+        assert(itr->first == 0);
+        assert(itr->second == 10);
+        ++itr;
+        assert(itr->first == 2);
+    }
+
+    // Entirely out-of-bound.
+    r = db.insert_front(-50, -2, 20);
+    assert(!r.second);
+
+    // Likewise, partially out-of-bound at the higher end.
+    r = db.insert_front(800, 1200, 20);
+    assert(r.second);
+
+    // Entirely out-of-bound.
+    r = db.insert_front(1300, 1400, 25);
+    assert(!r.second);
+}
+
 void fst_perf_test_insert_position()
 {
     typedef flat_segment_tree<long, bool> db_type;
@@ -1461,6 +1558,7 @@ int main (int argc, char **argv)
         fst_test_shift_segment_right_skip_start_node();
         fst_test_const_iterator();
         fst_test_insert_iterator();
+        fst_test_insert_state_changed();
     }
 
     if (opt.test_perf)
