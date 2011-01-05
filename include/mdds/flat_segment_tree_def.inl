@@ -258,8 +258,8 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
     }
 
     if (changed)
-        m_valid_tree = false
-        ;
+        m_valid_tree = false;
+
     return const_iterator(this, new_start_node.get());
 }
 
