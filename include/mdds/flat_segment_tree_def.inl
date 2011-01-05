@@ -154,6 +154,8 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
 
     // Set the start node.
 
+    bool changed = false;
+
     if (start_pos->value_leaf.key == start_key)
     {
         // Re-use the existing node, but save the old value for later.
@@ -170,6 +172,8 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
             old_value = start_pos->value_leaf.value;
             start_pos->value_leaf.value = val;
             new_start_node = start_pos;
+
+            changed = (old_value != val);
         }
     }
     else if (start_pos->left->value_leaf.value == val)
@@ -194,6 +198,7 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
 
         // Link to the right node.
         link_nodes(new_node, start_pos);
+        changed = true;
     }
 
     node_ptr cur_node = new_start_node->right;
@@ -205,6 +210,7 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
         old_value = cur_node->value_leaf.value;
 
         cur_node = cur_node->right;
+        changed = true;
     }
 
     // Set the end node.
@@ -221,17 +227,20 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
             if (end_pos->right)
                 end_pos->right->left = new_start_node;
             disconnect_all_nodes(end_pos.get());
+            changed = true;
         }
-        else
+        else if (new_start_node->right != end_pos)
         {
             // Just link the new segment to this node.
             new_start_node->right = end_pos;
             end_pos->left = new_start_node;
+            changed = true;
         }
     }
     else if (old_value == val)
     {
         link_nodes(new_start_node, end_pos);
+        changed = true;
     }
     else
     {
@@ -245,6 +254,7 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
 
         // Link to the right node.
         link_nodes(new_node, end_pos);
+        changed = true;
     }
 
     m_valid_tree = false;
