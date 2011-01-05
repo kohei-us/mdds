@@ -1041,7 +1041,7 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
     container_type db_front(start_key, end_key, default_value);
     for (key_type i = start_key; i < end_key - 10; ++i)
     {
-        itr_type itr = db_front.insert_front(i, i+1, val);
+        itr_type itr = db_front.insert_front(i, i+1, val).first;
         assert(itr->first == i);
         assert(itr->second == val);
         if (++val > 10)
@@ -1053,7 +1053,7 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
     val = 0;
     for (key_type i = start_key; i < end_key - 10; ++i)
     {
-        itr_type itr = db_back.insert_back(i, i+1, val);
+        itr_type itr = db_back.insert_back(i, i+1, val).first;
         assert(itr->first == i);
         assert(itr->second == val);
         if (++val > 10)
@@ -1309,61 +1309,62 @@ void fst_test_insert_iterator()
     db_type db(0, 100, 0);
     db_type::const_iterator itr;
 
-    itr = db.insert_front(0, 5, 4);
+    itr = db.insert_front(0, 5, 4).first;
     assert(itr->first == 0);
     assert(itr->second == 4);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(3, 10, 100);
+    itr = db.insert_front(3, 10, 100).first;
     assert(itr->first == 3);
     assert(itr->second == 100);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(5, 8, 100);
+    itr = db.insert_front(5, 8, 100).first;
     assert(itr->first == 3);
     assert(itr->second == 100);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(5, 8, 50);
+    itr = db.insert_front(5, 8, 50).first;
     assert(itr->first == 5);
     assert(itr->second == 50);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(6, 9, 50);
+    itr = db.insert_front(6, 9, 50).first;
     assert(itr->first == 5);
     assert(itr->second == 50);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(9, 20, 24);
+    itr = db.insert_front(9, 20, 24).first;
     assert(itr->first == 9);
     assert(itr->second == 24);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(19, 24, 34);
+    itr = db.insert_front(19, 24, 34).first;
     assert(itr->first == 19);
     assert(itr->second == 34);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(24, 26, 0);
+    itr = db.insert_front(24, 26, 0).first;
     assert(itr->first == 24);
     assert(itr->second == 0);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(30, 50, 2);
+    itr = db.insert_front(30, 50, 2).first;
     assert(itr->first == 30);
     assert(itr->second == 2);
     print_iterator<key_type, value_type>(itr);
 
-    itr = db.insert_front(120, 140, 34);
+    itr = db.insert_front(120, 140, 34).first;
     assert(itr == db.end());
 
-    itr = db.insert_front(-20, -10, 20);
+    itr = db.insert_front(-20, -10, 20).first;
     assert(itr == db.end());
 }
 
 void fst_perf_test_insert_position()
 {
     typedef flat_segment_tree<long, bool> db_type;
+    typedef pair<db_type::const_iterator, bool> ret_type;
     long upper = 60000;
     {
         StackPrinter __stack_printer__("::fst_perf_test_insert_position (front)");
@@ -1396,8 +1397,9 @@ void fst_perf_test_insert_position()
             bool val = false;
             for (long i = 0; i < upper; ++i)
             {
-                itr = db.insert(itr, i, i+1, val);
+                ret_type ret = db.insert(itr, i, i+1, val);
                 val = !val;
+                itr = ret.first;
             }
         }
         {
@@ -1406,8 +1408,9 @@ void fst_perf_test_insert_position()
             bool val = true;
             for (long i = 0; i < upper; ++i)
             {
-                itr = db.insert(itr, i, i+1, val);
+                ret_type ret = db.insert(itr, i, i+1, val);
                 val = !val;
+                itr = ret.first;
             }
         }
     }

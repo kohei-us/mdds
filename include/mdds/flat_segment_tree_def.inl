@@ -91,12 +91,14 @@ flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 }
 
 template<typename _Key, typename _Value>
-typename flat_segment_tree<_Key, _Value>::const_iterator
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
 flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward)
 {
+    typedef ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> ret_type;
+
     if (end_key < m_left_leaf->value_leaf.key || start_key > m_right_leaf->value_leaf.key)
         // The new segment does not overlap the current interval.
-        return const_iterator(this, true);
+        return ret_type(const_iterator(this, true), false);
 
     if (start_key < m_left_leaf->value_leaf.key)
         // The start value should not be smaller than the current minimum.
@@ -107,7 +109,7 @@ flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_typ
         end_key = m_right_leaf->value_leaf.key;
 
     if (start_key >= end_key)
-        return const_iterator(this, true);
+        return ret_type(const_iterator(this, true), false);
 
     // Find the node with value that either equals or is greater than the
     // start value.
@@ -130,14 +132,14 @@ flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_typ
     {
         // Insertion position not found.  Bail out.
         assert(!"Insertion position not found.  Bail out");
-        return const_iterator(this, true);
+        return ret_type(const_iterator(this, true), false);
     }
 
     return insert_to_pos(start_pos, start_key, end_key, val);
 }
 
 template<typename _Key, typename _Value>
-typename flat_segment_tree<_Key, _Value>::const_iterator
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
 flat_segment_tree<_Key, _Value>::insert_to_pos(
     node_ptr& start_pos, key_type start_key, key_type end_key, value_type val)
 {
@@ -260,11 +262,12 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
     if (changed)
         m_valid_tree = false;
 
-    return const_iterator(this, new_start_node.get());
+    return ::std::pair<const_iterator, bool>(
+        const_iterator(this, new_start_node.get()), changed);
 }
 
 template<typename _Key, typename _Value>
-typename flat_segment_tree<_Key, _Value>::const_iterator
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
 flat_segment_tree<_Key, _Value>::insert(
     const const_iterator& pos, key_type start_key, key_type end_key, value_type val)
 {
