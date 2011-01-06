@@ -159,7 +159,7 @@ void fst_test_leaf_search()
         for (int i = 0; i <= 100; ++i)
         {
             int val = 0;
-            if (db.search(i, val))
+            if (db.search(i, val).second)
                 cout << "key = " << i << "; value = " << val << endl;
             else
                 cout << "key = " << i << "; (value not found)" << endl;
@@ -167,7 +167,7 @@ void fst_test_leaf_search()
         for (int i = 0; i <= 100; ++i)
         {
             int val = 0, start, end;
-            if (db.search(i, val, &start, &end))
+            if (db.search(i, val, &start, &end).second)
                 cout << "key = " << i << "; value = " << val << "(span: " << start << " - " << end << ")" << endl;
             else
                 cout << "key = " << i << "; (value not found)" << endl;
@@ -243,7 +243,7 @@ void fst_perf_test_search(bool tree_search)
             }
             else
             {
-                if (db.search(i, val))
+                if (db.search(i, val).second)
                     ++success;
                 else
                     ++failure;

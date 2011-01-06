@@ -444,12 +444,15 @@ void flat_segment_tree<_Key, _Value>::shift_right(key_type pos, key_type size, b
 }
 
 template<typename _Key, typename _Value>
-bool flat_segment_tree<_Key, _Value>::search(
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
+flat_segment_tree<_Key, _Value>::search(
     key_type key, value_type& value, key_type* start_key, key_type* end_key) const
 {
+    typedef ::std::pair<const_iterator, bool> ret_type;
+
     if (key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= key)
         // key value is out-of-bound.
-        return false;
+        return ret_type(const_iterator(this, true), false);
 
     const node* pos = get_insertion_pos_leaf(key, m_left_leaf.get());
     if (pos->value_leaf.key == key)
@@ -459,7 +462,7 @@ bool flat_segment_tree<_Key, _Value>::search(
             *start_key = pos->value_leaf.key;
         if (end_key && pos->right)
             *end_key = pos->right->value_leaf.key;
-        return true;
+        return ret_type(const_iterator(this, pos), true);
     }
     else if (pos->left && pos->left->value_leaf.key < key)
     {
@@ -468,10 +471,10 @@ bool flat_segment_tree<_Key, _Value>::search(
             *start_key = pos->left->value_leaf.key;
         if (end_key)
             *end_key = pos->value_leaf.key;
-        return true;
+        return ret_type(const_iterator(this, pos->left.get()), true);
     }
 
-    return false;
+    return ret_type(const_iterator(this, true), false);
 }
 
 template<typename _Key, typename _Value>

@@ -279,7 +279,8 @@ public:
      */
     void shift_right(key_type pos, key_type size, bool skip_start_node);
 
-    bool search(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
+    ::std::pair<const_iterator, bool>
+    search(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
     bool search_tree(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
