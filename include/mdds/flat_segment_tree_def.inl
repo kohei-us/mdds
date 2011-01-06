@@ -498,7 +498,23 @@ flat_segment_tree<_Key, _Value>::search(const const_iterator& pos,
         // key value is out-of-bound.
         return ret_type(const_iterator(this, true), false);
 
-    return search_impl(pos.get(), key, value, start_key, end_key);
+    const node* p = pos.get_pos();
+    if (!p || this != pos.get_parent())
+    {
+        // Switch to normal search.
+        return search(key, value, start_key, end_key);
+    }
+
+    assert(p->is_leaf);
+
+    if (key < p->value_leaf.key)
+    {
+        // Specified position is already past the start key position.  Fall
+        // back to normal search.
+        return search(key, value, start_key, end_key);
+    }
+
+    return search_impl(p, key, value, start_key, end_key);
 }
 
 template<typename _Key, typename _Value>
