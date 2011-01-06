@@ -223,7 +223,7 @@ public:
      *            not inclusive.
      * @param val value associated with this segment.
      */
-    ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
+    ::std::pair<const_iterator, bool>
     insert_front(key_type start_key, key_type end_key, value_type val)
     {
         return insert_segment_impl(start_key, end_key, val, true);
@@ -234,7 +234,7 @@ public:
      * the <code>insert_front</code>, this method searches for the point of 
      * insertion from the last leaf node toward the first. 
      */
-    ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
+    ::std::pair<const_iterator, bool>
     insert_back(key_type start_key, key_type end_key, value_type val)
     {
         return insert_segment_impl(start_key, end_key, val, false);
@@ -251,7 +251,7 @@ public:
      *            not inclusive.
      * @param val value associated with this segment.
      */
-    ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
+    ::std::pair<const_iterator, bool>
     insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
 
     /** 
@@ -439,10 +439,10 @@ private:
         m_valid_tree = false;
     }
 
-    ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
+    ::std::pair<const_iterator, bool>
         insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward);
 
-    ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
+    ::std::pair<const_iterator, bool>
         insert_to_pos(node_ptr& start_pos, key_type start_key, key_type end_key, value_type val);
 
     const node* get_insertion_pos_leaf_reverse(key_type key, const node* start_pos) const;
