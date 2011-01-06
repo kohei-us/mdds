@@ -43,7 +43,7 @@ struct element
 {
     typedef _String     string_type;
 
-    matrix_element_t m_type
+    matrix_element_t m_type;
 
     union
     {
