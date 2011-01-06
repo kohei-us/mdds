@@ -282,6 +282,9 @@ public:
     ::std::pair<const_iterator, bool>
     search(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
+    ::std::pair<const_iterator, bool>
+    search(const const_iterator& pos, key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
+
     bool search_tree(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
     void build_tree();
@@ -445,6 +448,9 @@ private:
 
     ::std::pair<const_iterator, bool>
         insert_to_pos(node_ptr& start_pos, key_type start_key, key_type end_key, value_type val);
+
+    ::std::pair<const_iterator, bool>
+        search_impl(const node* pos, key_type key, value_type& value, key_type* start_key, key_type* end_key) const;
 
     const node* get_insertion_pos_leaf_reverse(key_type key, const node* start_pos) const;
 
