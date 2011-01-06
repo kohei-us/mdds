@@ -1,3 +1,6 @@
+  * fixed a weird enum value mis-handling with mixed_type_matrix when 
+    compiled with MSVC++.
+
   * added new insert() method to flat_segment_tree that takes a 
     positional hint to boost insertion speed.  Also, all three 
     insert() methods now return the start position of the segment that 
