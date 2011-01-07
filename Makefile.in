@@ -146,7 +146,7 @@ install: $(HEADERS)
 	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.hpp
 	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.inl
 	install -m 644 -t $(DESTDIR)@includedir@/mdds/hash_container $(INCDIR)/mdds/hash_container/*.hpp
-	install -m 644 -t $(DESTDIR)@docdir@ AUTHORS NEWS README
+	install -m 644 -t $(DESTDIR)@docdir@ AUTHORS NEWS README VERSION
 
 check: $(ALL_TESTS)
 
