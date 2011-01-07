@@ -28,6 +28,10 @@
 #ifndef __TEST_GLOBAL_HPP__
 #define __TEST_GLOBAL_HPP__
 
+#include <stdio.h>
+#include <string>
+#include <sys/time.h>
+
 #include <iostream>
 #include <cstring>
 
@@ -65,5 +69,39 @@ bool parse_cmd_options(int argc, char** argv, cmd_options& opt)
     }
     return true;
 }
+
+class StackPrinter
+{
+public:
+    explicit StackPrinter(const char* msg) :
+        msMsg(msg)
+    {
+        fprintf(stdout, "%s: --begin\n", msMsg.c_str());
+        mfStartTime = getTime();
+    }
+
+    ~StackPrinter()
+    {
+        double fEndTime = getTime();
+        fprintf(stdout, "%s: --end (duration: %g sec)\n", msMsg.c_str(), (fEndTime-mfStartTime));
+    }
+
+    void printTime(int line) const
+    {
+        double fEndTime = getTime();
+        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", msMsg.c_str(), line, (fEndTime-mfStartTime));
+    }
+
+private:
+    double getTime() const
+    {
+        timeval tv;
+        gettimeofday(&tv, NULL);
+        return tv.tv_sec + tv.tv_usec / 1000000.0;
+    }
+
+    ::std::string msMsg;
+    double mfStartTime;
+};
 
 #endif

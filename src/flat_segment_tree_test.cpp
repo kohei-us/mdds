@@ -40,49 +40,6 @@
 using namespace std;
 using namespace mdds;
 
-
-#include <stdio.h>
-#include <string>
-#include <sys/time.h>
-
-namespace {
-
-class StackPrinter
-{
-public:
-    explicit StackPrinter(const char* msg) :
-        msMsg(msg)
-    {
-        fprintf(stdout, "%s: --begin\n", msMsg.c_str());
-        mfStartTime = getTime();
-    }
-
-    ~StackPrinter()
-    {
-        double fEndTime = getTime();
-        fprintf(stdout, "%s: --end (duration: %g sec)\n", msMsg.c_str(), (fEndTime-mfStartTime));
-    }
-
-    void printTime(int line) const
-    {
-        double fEndTime = getTime();
-        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", msMsg.c_str(), line, (fEndTime-mfStartTime));
-    }
-
-private:
-    double getTime() const
-    {
-        timeval tv;
-        gettimeofday(&tv, NULL);
-        return tv.tv_sec + tv.tv_usec / 1000000.0;
-    }
-
-    ::std::string msMsg;
-    double mfStartTime;
-};
-
-}
-
 void printTitle(const char* msg)
 {
     cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
@@ -1513,6 +1470,54 @@ void fst_perf_test_insert_position()
     }
 }
 
+void fst_test_position_search()
+{
+    StackPrinter __stack_printer__("::fst_test_position_search");
+    typedef flat_segment_tree<long, bool> db_type;
+    typedef pair<db_type::const_iterator, bool> ret_type;
+    
+    db_type::const_iterator itr;
+    ret_type r;
+    db_type db(0, 100, false);
+    db.insert_front(10, 20, true);
+
+    bool val;
+
+    long start = -1, end = -1;
+
+    r = db.search(itr, 11, val, &start, &end);
+    cout << "start: " << start << "  end: " << end << endl;
+    cout << "returned iterator key: " << r.first->first << "  value: " << r.first->second << endl;
+    assert(start == 10);
+    assert(end == 20);
+    assert(r.first->first == 10);
+    assert(r.first->second == true);
+
+    r = db.search(r.first, 11, val, &start, &end);
+    cout << "start: " << start << "  end: " << end << endl;
+    cout << "returned iterator key: " << r.first->first << "  value: " << r.first->second << endl;
+    assert(start == 10);
+    assert(end == 20);
+    assert(r.first->first == 10);
+    assert(r.first->second == true);
+
+    r = db.search(db.begin(), 11, val, &start, &end);
+    cout << "start: " << start << "  end: " << end << endl;
+    cout << "returned iterator key: " << r.first->first << "  value: " << r.first->second << endl;
+    assert(start == 10);
+    assert(end == 20);
+    assert(r.first->first == 10);
+    assert(r.first->second == true);
+
+    r = db.search(db.end(), 11, val, &start, &end);
+    cout << "start: " << start << "  end: " << end << endl;
+    cout << "returned iterator key: " << r.first->first << "  value: " << r.first->second << endl;
+    assert(start == 10);
+    assert(end == 20);
+    assert(r.first->first == 10);
+    assert(r.first->second == true);
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -1559,6 +1564,7 @@ int main (int argc, char **argv)
         fst_test_const_iterator();
         fst_test_insert_iterator();
         fst_test_insert_state_changed();
+        fst_test_position_search();
     }
 
     if (opt.test_perf)

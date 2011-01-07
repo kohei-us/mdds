@@ -514,6 +514,7 @@ flat_segment_tree<_Key, _Value>::search(const const_iterator& pos,
         return search(key, value, start_key, end_key);
     }
 
+    p = get_insertion_pos_leaf(key, p);
     return search_impl(p, key, value, start_key, end_key);
 }
 
