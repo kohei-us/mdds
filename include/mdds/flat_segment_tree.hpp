@@ -221,7 +221,11 @@ public:
      *              is inclusive.
      * @param end_key end value of the segment being inserted.  The value is 
      *            not inclusive.
-     * @param val value associated with this segment.
+     * @param val value associated with this segment. 
+     *  
+     * @return pair of const_iterator corresponding to the start position of 
+     *         the inserted segment, and a boolean value indicating whether or
+     *         not the insertion has been successful.
      */
     ::std::pair<const_iterator, bool>
     insert_front(key_type start_key, key_type end_key, value_type val)
@@ -233,6 +237,16 @@ public:
      * Insert a new segment into the tree.  Unlike 
      * the <code>insert_front</code>, this method searches for the point of 
      * insertion from the last leaf node toward the first. 
+     *  
+     * @param start_key start value of the segment being inserted.  The value 
+     *              is inclusive.
+     * @param end_key end value of the segment being inserted.  The value is 
+     *            not inclusive.
+     * @param val value associated with this segment. 
+     *  
+     * @return pair of const_iterator corresponding to the start position of 
+     *         the inserted segment, and a boolean value indicating whether or
+     *         not the insertion has been successful.
      */
     ::std::pair<const_iterator, bool>
     insert_back(key_type start_key, key_type end_key, value_type val)
@@ -249,7 +263,11 @@ public:
      *              is inclusive.
      * @param end_key end value of the segment being inserted.  The value is 
      *            not inclusive.
-     * @param val value associated with this segment.
+     * @param val value associated with this segment. 
+     *  
+     * @return pair of const_iterator corresponding to the start position of 
+     *         the inserted segment, and a boolean value indicating whether or
+     *         not the insertion has been successful.
      */
     ::std::pair<const_iterator, bool>
     insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
@@ -279,12 +297,65 @@ public:
      */
     void shift_right(key_type pos, key_type size, bool skip_start_node);
 
+    /**
+     * Perform leaf-node search for a value associated with a key.
+     * 
+     * @param key key value
+     * @param value value associated with key specified gets stored upon
+     *              successful search.
+     * @param start_key pointer to a variable where the start key value of the
+     *                  segment that contains the key gets stored upon
+     *                  successful search.
+     * @param end_key pointer to a varaible where the end key value of the
+     *                segment that contains the key gets stored upon
+     *                successful search.
+     * @return a pair of const_iterator corresponding to the start position of
+     *         the segment containing the key, and a boolean value indicating
+     *         whether or not the search has been successful.
+     * 
+     */
     ::std::pair<const_iterator, bool>
     search(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
+    /**
+     * Perform leaf-node search for a value associated with a key.
+     *  
+     * @param pos position from which the search should start.  When the 
+     *            position is invalid, it falls back to the normal search.
+     * @param key key value
+     * @param value value associated with key specified gets stored upon
+     *              successful search.
+     * @param start_key pointer to a variable where the start key value of the
+     *                  segment that contains the key gets stored upon
+     *                  successful search.
+     * @param end_key pointer to a varaible where the end key value of the
+     *                segment that contains the key gets stored upon
+     *                successful search.
+     * @return a pair of const_iterator corresponding to the start position of
+     *         the segment containing the key, and a boolean value indicating
+     *         whether or not the search has been successful.
+     * 
+     */
     ::std::pair<const_iterator, bool>
     search(const const_iterator& pos, key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
+    /**
+     * Perform tree search for a value associated with a key.  This method 
+     * assumes that the tree is valid. 
+     * 
+     * @param key key value
+     * @param value value associated with key specified gets stored upon
+     *              successful search.
+     * @param start_key pointer to a variable where the start key value of the
+     *                  segment that contains the key gets stored upon
+     *                  successful search.
+     * @param end_key pointer to a varaible where the end key value of the
+     *                segment that contains the key gets stored upon
+     *                successful search.
+     * @return a boolean value indicating whether or not the search has been
+     *         successful.
+     * 
+     */
     bool search_tree(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
     void build_tree();
