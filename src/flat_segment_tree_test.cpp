@@ -1470,52 +1470,88 @@ void fst_perf_test_insert_position()
     }
 }
 
+bool check_pos_search_result(
+    const flat_segment_tree<long, bool>& db, 
+    flat_segment_tree<long, bool>::const_iterator& itr,
+    long key, long start_expected, long end_expected, bool value_expected)
+{
+    typedef flat_segment_tree<long, bool> db_type;
+    typedef pair<db_type::const_iterator, bool> ret_type;
+
+    bool _val;
+    long _start = -1, _end = -1;
+
+    ret_type r = db.search(itr, key, _val, &_start, &_end);
+
+    cout << "expected: start=" << start_expected << " end=" << end_expected << " value=" << value_expected << endl;
+    cout << "observed: start=" << _start << " end=" << _end << " value=" << _val << endl;
+
+    bool result = 
+        _start == start_expected && _end == end_expected && _val == value_expected &&
+        r.first->first == start_expected && r.first->second == value_expected;
+    itr = r.first;
+    return result;
+}
+
 void fst_test_position_search()
 {
     StackPrinter __stack_printer__("::fst_test_position_search");
     typedef flat_segment_tree<long, bool> db_type;
     typedef pair<db_type::const_iterator, bool> ret_type;
     
-    db_type::const_iterator itr;
-    ret_type r;
     db_type db(0, 100, false);
     db.insert_front(10, 20, true);
 
-    bool val;
+    db_type db2(-10, 10, true);
 
-    long start = -1, end = -1;
+    struct {
+        long start_range;
+        long end_range;
+        bool value_expected;
+    } params[] = {
+        {  0,  10, false },
+        { 10,  20, true },
+        { 20, 100, false }
+    };
 
-    r = db.search(itr, 11, val, &start, &end);
-    cout << "start: " << start << "  end: " << end << endl;
-    cout << "returned iterator key: " << r.first->first << "  value: " << r.first->second << endl;
-    assert(start == 10);
-    assert(end == 20);
-    assert(r.first->first == 10);
-    assert(r.first->second == true);
+    size_t n = sizeof(params) / sizeof(params[0]);
 
-    r = db.search(r.first, 11, val, &start, &end);
-    cout << "start: " << start << "  end: " << end << endl;
-    cout << "returned iterator key: " << r.first->first << "  value: " << r.first->second << endl;
-    assert(start == 10);
-    assert(end == 20);
-    assert(r.first->first == 10);
-    assert(r.first->second == true);
+    for (size_t i = 0; i < n; ++i)
+    {
+        for (long j = params[i].start_range; j < params[i].end_range; ++j)
+        {
+            db_type::const_iterator itr;
+            bool success = false;
 
-    r = db.search(db.begin(), 11, val, &start, &end);
-    cout << "start: " << start << "  end: " << end << endl;
-    cout << "returned iterator key: " << r.first->first << "  value: " << r.first->second << endl;
-    assert(start == 10);
-    assert(end == 20);
-    assert(r.first->first == 10);
-    assert(r.first->second == true);
+            // empty iterator - should fall back to normal search.
+            success = check_pos_search_result(
+                db, itr, j, params[i].start_range, params[i].end_range, params[i].value_expected);
+            assert(success);
 
-    r = db.search(db.end(), 11, val, &start, &end);
-    cout << "start: " << start << "  end: " << end << endl;
-    cout << "returned iterator key: " << r.first->first << "  value: " << r.first->second << endl;
-    assert(start == 10);
-    assert(end == 20);
-    assert(r.first->first == 10);
-    assert(r.first->second == true);
+            // iterator returned from the previous search.
+            success = check_pos_search_result(
+                db, itr, j, params[i].start_range, params[i].end_range, params[i].value_expected);
+            assert(success);
+
+            // begin iterator.
+            itr = db.begin();
+            success = check_pos_search_result(
+                db, itr, j, params[i].start_range, params[i].end_range, params[i].value_expected);
+            assert(success);
+
+            // end iterator.
+            itr = db.end();
+            success = check_pos_search_result(
+                db, itr, j, params[i].start_range, params[i].end_range, params[i].value_expected);
+            assert(success);
+
+            // iterator from another container - should fall back to normal search.
+            itr = db2.begin();
+            success = check_pos_search_result(
+                db, itr, j, params[i].start_range, params[i].end_range, params[i].value_expected);
+            assert(success);
+        }
+    }
 }
 
 int main (int argc, char **argv)
