@@ -225,7 +225,7 @@ public:
      *  
      * @return pair of const_iterator corresponding to the start position of 
      *         the inserted segment, and a boolean value indicating whether or
-     *         not the insertion has been successful.
+     *         not the insertion has modified the tree.
      */
     ::std::pair<const_iterator, bool>
     insert_front(key_type start_key, key_type end_key, value_type val)
@@ -246,7 +246,7 @@ public:
      *  
      * @return pair of const_iterator corresponding to the start position of 
      *         the inserted segment, and a boolean value indicating whether or
-     *         not the insertion has been successful.
+     *         not the insertion has modified the tree.
      */
     ::std::pair<const_iterator, bool>
     insert_back(key_type start_key, key_type end_key, value_type val)
@@ -267,7 +267,7 @@ public:
      *  
      * @return pair of const_iterator corresponding to the start position of 
      *         the inserted segment, and a boolean value indicating whether or
-     *         not the insertion has been successful.
+     *         not the insertion has modified the tree.
      */
     ::std::pair<const_iterator, bool>
     insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
