@@ -1520,6 +1520,7 @@ void fst_test_position_search()
 
     size_t n = sizeof(params) / sizeof(params[0]);
 
+    cout << "Testing for searches with various valid and invalid iterators." << endl;
     for (size_t i = 0; i < n; ++i)
     {
         for (long j = params[i].start_range; j < params[i].end_range; ++j)
@@ -1555,6 +1556,21 @@ void fst_test_position_search()
                 db, itr, j, params[i].start_range, params[i].end_range, params[i].value_expected);
             assert(success);
         }
+    }
+
+    cout << "Testing for continuous searching by re-using the iteraotr from the previous search." << endl;
+    db_type::const_iterator itr;
+    short val;
+    long start = 0, end = 0;
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        ret_type r = db.search(itr, end, val, &start, &end);
+        assert(start == params[i].start_range);
+        assert(end == params[i].end_range);
+        assert(val == params[i].value_expected);
+        assert(r.second);
+        itr = r.first;
     }
 }
 
