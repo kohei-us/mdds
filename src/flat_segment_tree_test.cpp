@@ -1470,6 +1470,46 @@ void fst_perf_test_insert_position()
     }
 }
 
+void fst_perf_test_position_search()
+{
+    typedef flat_segment_tree<long, bool> db_type;
+    typedef pair<db_type::const_iterator, bool> ret_type;
+    long upper = 60000;
+    db_type db(0, upper, false);
+
+    // Fill the leaf nodes first.
+    db_type::const_iterator itr = db.begin();
+    bool val = false;
+    for (long i = 0; i < upper; ++i)
+    {
+        ret_type ret = db.insert(itr, i, i+1, val);
+        val = !val;
+        itr = ret.first;
+    }
+
+    {
+        StackPrinter __stack_printer__("::fst_perf_test_position_search (normal)");
+        for (long i = 0; i < upper; ++i)
+        {
+            bool val;
+            ret_type ret = db.search(i, val);
+            assert(ret.second);
+        }
+    }
+
+    {
+        StackPrinter __stack_printer__("::fst_perf_test_position_search (positioned)");
+        itr = db.begin();
+        for (long i = 0; i < upper; ++i)
+        {
+            bool val;
+            ret_type ret = db.search(itr, i, val);
+            assert(ret.second);
+            itr = ret.first;
+        }
+    }
+}
+
 template<typename K, typename V>
 bool check_pos_search_result(
     const flat_segment_tree<K, V>& db, 
@@ -1629,6 +1669,7 @@ int main (int argc, char **argv)
         fst_perf_test_search(false);
         fst_perf_test_insert_front_back();
         fst_perf_test_insert_position();
+        fst_perf_test_position_search();
     }
 
     fprintf(stdout, "Test finished successfully!\n");
