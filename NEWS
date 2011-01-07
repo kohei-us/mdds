@@ -1,3 +1,8 @@
+mdds 0.5.0
+
+  * flat_segment_tree's search methods now return a std::pair of 
+    const_iterator and bool, instead of just returning bool.  
+
   * fixed a weird enum value mis-handling with mixed_type_matrix when 
     compiled with MSVC++.
 
