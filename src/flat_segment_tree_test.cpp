@@ -1470,16 +1470,17 @@ void fst_perf_test_insert_position()
     }
 }
 
+template<typename K, typename V>
 bool check_pos_search_result(
-    const flat_segment_tree<long, bool>& db, 
-    flat_segment_tree<long, bool>::const_iterator& itr,
-    long key, long start_expected, long end_expected, bool value_expected)
+    const flat_segment_tree<K, V>& db, 
+    typename flat_segment_tree<K, V>::const_iterator& itr,
+    K key, K start_expected, K end_expected, V value_expected)
 {
-    typedef flat_segment_tree<long, bool> db_type;
-    typedef pair<db_type::const_iterator, bool> ret_type;
+    typedef flat_segment_tree<K, V> db_type;
+    typedef pair<typename db_type::const_iterator, bool> ret_type;
 
-    bool _val;
-    long _start = -1, _end = -1;
+    V _val;
+    K _start = -1, _end = -1;
 
     ret_type r = db.search(itr, key, _val, &_start, &_end);
 
@@ -1496,22 +1497,25 @@ bool check_pos_search_result(
 void fst_test_position_search()
 {
     StackPrinter __stack_printer__("::fst_test_position_search");
-    typedef flat_segment_tree<long, bool> db_type;
+    typedef flat_segment_tree<long, short> db_type;
     typedef pair<db_type::const_iterator, bool> ret_type;
     
-    db_type db(0, 100, false);
-    db.insert_front(10, 20, true);
+    db_type db(0, 100, 0);
+    db.insert_front(10, 20, 1);
+    db.insert_front(30, 50, 5);
 
-    db_type db2(-10, 10, true);
+    db_type db2(-10, 10, 1);
 
     struct {
         long start_range;
         long end_range;
-        bool value_expected;
+        short value_expected;
     } params[] = {
-        {  0,  10, false },
-        { 10,  20, true },
-        { 20, 100, false }
+        {  0,  10, 0 },
+        { 10,  20, 1 },
+        { 20,  30, 0 },
+        { 30,  50, 5 },
+        { 50, 100, 0 }
     };
 
     size_t n = sizeof(params) / sizeof(params[0]);
