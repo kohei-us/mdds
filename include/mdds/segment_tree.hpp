@@ -198,7 +198,7 @@ private:
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (node& _self, const node_ptr& left_node, const node_ptr& right_node)
+        void operator() (node& _self, const typename node::node_ptr& left_node, const typename node::node_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -345,9 +345,10 @@ private:
 
     class iterator_base
     {
+    protected:
         typedef typename search_result_base::res_chains_type res_chains_type;
         typedef typename search_result_base::res_chains_ptr res_chains_ptr;
-    protected:
+
         iterator_base(const res_chains_ptr& p) :
             mp_res_chains(p), m_end_pos(true) {}
 

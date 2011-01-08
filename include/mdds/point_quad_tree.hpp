@@ -213,6 +213,13 @@ public:
             typedef typename point_quad_tree<_Key,_Data>::data_type data_type;
 
         public:
+            // Iterator traits
+            typedef ::std::pair<point, data_type> value_type;
+            typedef value_type*     pointer;
+            typedef value_type&     reference;
+            typedef ptrdiff_t       difference_type;
+            typedef ::std::bidirectional_iterator_tag iterator_category;
+
             const_iterator(res_nodes_ptr& ptr) : mp_res_nodes(ptr), m_end_pos(false) {}
 
             const_iterator(const const_iterator& r) :

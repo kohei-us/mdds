@@ -217,13 +217,13 @@ struct quad_node_base
         switch (quad)
         {
             case quad_northeast:
-                return northeast.get();
+                return northeast.get() != NULL;
             case quad_northwest:
-                return northwest.get();
+                return northwest.get() != NULL;
             case quad_southeast:
-                return southeast.get();
+                return southeast.get() != NULL;
             case quad_southwest:
-                return southwest.get();
+                return southwest.get() != NULL;
             default:
                 throw general_error("unknown quadrant type");
         }
