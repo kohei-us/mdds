@@ -30,7 +30,10 @@
 
 #include <stdio.h>
 #include <string>
-#ifndef _WIN32
+#ifdef _WIN32
+#include <windows.h>
+#undef max
+#else
 #include <sys/time.h>
 #endif
 
@@ -107,8 +110,10 @@ private:
     double getTime() const
     {
 #ifdef _WIN32
-        // TODO: Find out how to do this on Windows.
-        return 0.0;
+        FILETIME ft;
+        __int64 *time64 = reinterpret_cast<__int64 *>(&ft);
+        GetSystemTimeAsFileTime(&ft);
+        return *time64 / 10000000.0;
 #else
         timeval tv;
         gettimeofday(&tv, NULL);
