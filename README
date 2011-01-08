@@ -1,12 +1,19 @@
 Multi-Dimensional Data Structure (mdds)
 
-A collection of multi-dimensional data structure and indexing algorithm.
+A collection of multi-dimensional data structure and indexing 
+algorithm.  
 
-It implements the following data structure:
+
+Overview
+========
+
+This library implements the following data structure:
 
     * flat segment tree 
     * segment tree
     * rectangle set
+    * point quad tree
+    * mixed type matrix
 
 Segment Tree
 
@@ -41,7 +48,41 @@ Point Quad Tree
 Point quad tree stores 2-dimensional points and provides an efficient 
 way to query all points within specified rectangular region.  
 
-HOWTO
+Mixed Type Matrix
+
+Mixed type matrix (MTM) allows storage of elements of various types: 
+boolean, numeric, string, and empty types.  It also allows storage of 
+additional value associated with each element.  MTM allows two storage 
+back-ends: filled storage and sparse storage.  Filled storage 
+allocates memory for all elements at all times, whereas sparse storage 
+allocates memory only for elements having non-default values.  
+
+
+How-To
+======
 
 Please take a look at simple example files under the 'example' 
 directory on how to use these data structures.
+
+
+API Incompatibility Note
+========================
+
+0.4.0 to 0.5.0
+
+flat_segment_tree
+
+* The search() method now returns ::std::pair<const_iterator, bool>.  
+  This method previously returned only bool.  Use the second parameter of 
+  the new return value which is equivalent of the previous return value.
+
+
+Miscellaneous
+=============
+
+Version detection
+
+When installing this library, file named VERSION that contains nothing 
+but the version number string gets installed in the document directory 
+(docdir).  This may be used to detect the version number of this 
+library via script.  
