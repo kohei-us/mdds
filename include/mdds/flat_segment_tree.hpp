@@ -84,7 +84,7 @@ public:
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (node& _self, const node_ptr& left_node, const node_ptr& right_node)
+        void operator() (node& _self, const typename node::node_ptr& left_node, const typename node::node_ptr& right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)

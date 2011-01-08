@@ -30,10 +30,17 @@
 
 #include <stdio.h>
 #include <string>
+#ifndef _WIN32
 #include <sys/time.h>
+#endif
 
 #include <iostream>
 #include <cstring>
+
+#ifdef _WIN32
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+#endif
 
 struct cmd_options
 {
@@ -95,9 +102,14 @@ public:
 private:
     double getTime() const
     {
+#ifdef _WIN32
+        // TODO: Find out how to do this on Windows.
+        return 0.0;
+#else
         timeval tv;
         gettimeofday(&tv, NULL);
         return tv.tv_sec + tv.tv_usec / 1000000.0;
+#endif
     }
 
     ::std::string msMsg;
