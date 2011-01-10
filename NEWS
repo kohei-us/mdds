@@ -11,11 +11,12 @@ mdds 0.5.0
     compiled with MSVC++.
 
   * added new insert() method to flat_segment_tree that takes a 
-    positional hint to boost insertion speed.  Also, all three 
-    insert() methods now return the start position of the segment that 
-    an inserted segment belongs to.  
+    positional hint in order to speed up insertion speed.  Also, all 
+    three insert() methods now return the start position of the 
+    segment that an inserted segment belongs to.  
 
-  * slight performance improvement on the insert methods.
+  * slight performance improvement on the insert methods of 
+    flat_segment_tree.  
 
   * slight performance improvement on the iterators of 
     flat_segment_tree.
