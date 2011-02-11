@@ -53,8 +53,7 @@ public:
         if (itr == m_flags.end())
         {
             // flag not stored for this position.
-            ::std::pair<typename flag_store_type::iterator, bool> r = 
-                m_flags.insert(typename flag_store_type::value_type(pos, flag));
+            m_flags.insert(typename flag_store_type::value_type(pos, flag));
             return;
         }
         itr->second = flag;
