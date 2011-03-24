@@ -1,3 +1,6 @@
+  * fixed a bug in flat_segment_tree::shift_right() where shifting of all
+    existing nodes was not handled properly.
+
   * fixed a bug in flat_segment_tree::shift_right() where leaf nodes were
     not properly linked under certain conditions.
 
