@@ -1,3 +1,6 @@
+  * fixed a bug in flat_segment_tree::shift_right() where leaf nodes were
+    not properly linked under certain conditions.
+
   * fixed a bug in flat_segment_tree::operator==() where two different
     containers were incorrectly evaluated to be equal.
 
