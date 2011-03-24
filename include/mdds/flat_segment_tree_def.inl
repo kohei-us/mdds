@@ -418,6 +418,7 @@ void flat_segment_tree<_Key, _Value>::shift_right(key_type pos, key_type size, b
             m_left_leaf->value_leaf.value = m_init_val;
             new_node->left = m_left_leaf;
             new_node->right = m_left_leaf->right;
+            m_left_leaf->right->left = new_node;
             m_left_leaf->right = new_node;
         }
 
