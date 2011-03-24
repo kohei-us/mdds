@@ -465,7 +465,7 @@ public:
         }
 
         {
-            // Start from the right-mode node, and traverse left.
+            // Start from the right-most node, and traverse left.
             node* cur_node = m_right_leaf.get();
             typename ::std::vector<key_type>::const_reverse_iterator itr = key_values.rbegin(), itr_end = key_values.rend();
             for (; itr != itr_end; ++itr)
