@@ -426,26 +426,52 @@ public:
      */
     bool verify_keys(const ::std::vector<key_type>& key_values) const
     {
-        node* cur_node = m_left_leaf.get();
-        typename ::std::vector<key_type>::const_iterator itr = key_values.begin(), itr_end = key_values.end();
-        for (; itr != itr_end; ++itr)
         {
-            if (!cur_node)
-                // Position past the right-mode node.  Invalid.
-                return false;
+            // Start from the left-most node, and traverse right.
+            node* cur_node = m_left_leaf.get();
+            typename ::std::vector<key_type>::const_iterator itr = key_values.begin(), itr_end = key_values.end();
+            for (; itr != itr_end; ++itr)
+            {
+                if (!cur_node)
+                    // Position past the right-mode node.  Invalid.
+                    return false;
+    
+                if (cur_node->value_leaf.key != *itr)
+                    // Key values differ.
+                    return false;
+    
+                cur_node = cur_node->right.get();
+            }
 
-            if (cur_node->value_leaf.key != *itr)
-                // Key values differ.
+            if (cur_node)
+                // At this point, we expect the current node to be at the position
+                // past the right-most node, which is NULL.
                 return false;
-
-            cur_node = cur_node->right.get();
         }
 
-        if (cur_node)
-            // At this point, we expect the current node to be at the position
-            // past the right-most node, which is NULL.
-            return false;
+        {
+            // Start from the right-mode node, and traverse left.
+            node* cur_node = m_right_leaf.get();
+            typename ::std::vector<key_type>::const_reverse_iterator itr = key_values.rbegin(), itr_end = key_values.rend();
+            for (; itr != itr_end; ++itr)
+            {
+                if (!cur_node)
+                    // Position past the left-mode node.  Invalid.
+                    return false;
+    
+                if (cur_node->value_leaf.key != *itr)
+                    // Key values differ.
+                    return false;
+    
+                cur_node = cur_node->left.get();
+            }
 
+            if (cur_node)
+                // Likewise, we expect the current position to be past the
+                // left-most node, in which case the node value is NULL.
+                return false;
+        }
+        
         return true;
     }
 
