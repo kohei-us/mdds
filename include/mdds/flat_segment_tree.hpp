@@ -377,6 +377,21 @@ public:
         return !operator==(r);
     }
 
+    key_type min_key() const
+    {
+        return m_left_leaf->value_leaf.key;
+    }
+
+    key_type max_key() const
+    {
+        return m_right_leaf->value_leaf.key;
+    }
+
+    value_type default_value() const
+    {
+        return m_init_val;
+    }
+
 #ifdef UNIT_TEST
     node_ptr get_root_node() const
     {
