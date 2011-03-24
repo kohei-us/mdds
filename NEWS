@@ -1,3 +1,6 @@
+  * fixed a bug in flat_segment_tree::operator==() where two different
+    containers were incorrectly evaluated to be equal.
+
 mdds 0.5.1
 
   * fixed build issues on Windows, using MSVC compilers.
