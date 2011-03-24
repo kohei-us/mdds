@@ -966,7 +966,7 @@ void fst_test_shift_right_all_nodes()
     db.dump_leaf_nodes();
     {
         unsigned k[] = {0, 10};
-        unsigned v[] = {2};
+        unsigned v[] = {0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 }

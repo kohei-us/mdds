@@ -410,16 +410,25 @@ void flat_segment_tree<_Key, _Value>::shift_right(key_type pos, key_type size, b
 
         if (m_left_leaf->value_leaf.value != m_init_val)
         {
-            // The leftmost leaf node has a non-initial value.  We need to
-            // insert a new node to carry that value after the shift.
-            node_ptr new_node(new node(true));
-            new_node->value_leaf.key = pos + size;
-            new_node->value_leaf.value = m_left_leaf->value_leaf.value;
-            m_left_leaf->value_leaf.value = m_init_val;
-            new_node->left = m_left_leaf;
-            new_node->right = m_left_leaf->right;
-            m_left_leaf->right->left = new_node;
-            m_left_leaf->right = new_node;
+            if (size < m_right_leaf->value_leaf.key - m_left_leaf->value_leaf.key)
+            {
+                // The leftmost leaf node has a non-initial value.  We need to
+                // insert a new node to carry that value after the shift.
+                node_ptr new_node(new node(true));
+                new_node->value_leaf.key = pos + size;
+                new_node->value_leaf.value = m_left_leaf->value_leaf.value;
+                m_left_leaf->value_leaf.value = m_init_val;
+                new_node->left = m_left_leaf;
+                new_node->right = m_left_leaf->right;
+                m_left_leaf->right->left = new_node;
+                m_left_leaf->right = new_node;
+            }
+            else
+            {
+                // We shifted out the whole range, so there would be no new
+                // node inserted. Just set default value.
+                m_left_leaf->value_leaf.value = m_init_val;
+            }
         }
 
         m_valid_tree = false;
