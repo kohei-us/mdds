@@ -249,14 +249,14 @@ struct quad_node_base
     }
 };
 
-template<typename _NodePtr>
-inline void intrusive_ptr_add_ref(_NodePtr p)
+template<typename _NodePtr, typename _NodeType, typename _Key>
+inline void intrusive_ptr_add_ref(::mdds::quad_node_base<_NodePtr,_NodeType,_Key>* p)
 {
     ++p->refcount;
 }
 
-template<typename _NodePtr>
-inline void intrusive_ptr_release(_NodePtr p)
+template<typename _NodePtr, typename _NodeType, typename _Key>
+inline void intrusive_ptr_release(::mdds::quad_node_base<_NodePtr,_NodeType,_Key>* p)
 {
     --p->refcount;
     if (!p->refcount)
