@@ -937,6 +937,40 @@ void fst_test_shift_right_skip_start_node()
     }
 }
 
+/**
+ * Right all nodes right so that all existing nodes get pushed out of the
+ * range.
+ */
+void fst_test_shift_right_all_nodes()
+{
+    typedef flat_segment_tree<unsigned, unsigned> fst_type;
+
+    fst_type db(0, 10, 0);
+    {
+        unsigned k[] = {0, 10};
+        unsigned v[] = {0};
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.insert_back(0, 8, 2);
+    db.dump_leaf_nodes();
+    {
+        unsigned k[] = {0, 8, 10};
+        unsigned v[] = {2, 0};
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    // Shift all nodes out of range.  After this, there should be only the
+    // left and right most nodes left.
+    db.shift_right(0, 15, false);
+    db.dump_leaf_nodes();
+    {
+        unsigned k[] = {0, 10};
+        unsigned v[] = {2};
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+    }
+}
+
 template<typename key_type, typename value_type>
 struct leaf_node_functor : public unary_function<void, pair<key_type, value_type> >
 {
@@ -1665,6 +1699,7 @@ int main (int argc, char **argv)
         fst_test_shift_right_init999();
         fst_test_shift_right_bool();
         fst_test_shift_right_skip_start_node();
+        fst_test_shift_right_all_nodes();
         fst_test_const_iterator();
         fst_test_insert_iterator();
         fst_test_insert_state_changed();
