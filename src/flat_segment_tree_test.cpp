@@ -461,7 +461,7 @@ void fst_test_insert_search_mix()
     test_single_tree_search(db, 30, 999, 0, 100);
 }
 
-void fst_test_shift_segment_left()
+void fst_test_shift_left()
 {
     StackPrinter __stack_printer__("fst_test_shift_segment_left");
     typedef flat_segment_tree<int, int> db_type;
@@ -610,7 +610,7 @@ void fst_test_shift_segment_left()
     build_and_dump(db);
 }
 
-void fst_test_shift_segment_left_right_edge()
+void fst_test_shift_left_right_edge()
 {
     StackPrinter __stack_printer__("fst_test_shift_segment_left_right_edge");
     flat_segment_tree<int, bool> db(0, 100, false);
@@ -674,7 +674,7 @@ void fst_test_shift_segment_left_right_edge()
     }
 }
 
-void fst_test_shift_segment_left_append_new_segment()
+void fst_test_shift_left_append_new_segment()
 {
     StackPrinter __stack_printer__("fst_test_shift_segment_left_append_new_segment");
     flat_segment_tree<int, bool> db(0, 100, false);
@@ -719,7 +719,7 @@ void fst_test_shift_segment_left_append_new_segment()
     }
 }
 
-void fst_test_shift_segment_right_init0()
+void fst_test_shift_right_init0()
 {
     StackPrinter __stack_printer__("fst_test_shift_segment_right_init0");
 
@@ -844,7 +844,7 @@ void fst_test_shift_segment_right_init0()
     }
 }
 
-void fst_test_shift_segment_right_init999()
+void fst_test_shift_right_init999()
 {
     StackPrinter __stack_printer__("fst_test_shift_segment_right_init999");
 
@@ -891,7 +891,7 @@ void fst_test_shift_segment_right_init999()
     assert(db.is_tree_valid());
 }
 
-void fst_test_shift_segment_right_bool()
+void fst_test_shift_right_bool()
 {
     flat_segment_tree<long, bool> db(0, 1048576, false);
     db.insert_front(3, 7, true);
@@ -913,7 +913,7 @@ void fst_test_shift_segment_right_bool()
     }
 }
 
-void fst_test_shift_segment_right_skip_start_node()
+void fst_test_shift_right_skip_start_node()
 {
     StackPrinter __stack_printer__("fst_test_shift_segment_right_skip_start_node");
 
@@ -1658,13 +1658,13 @@ int main (int argc, char **argv)
         fst_test_tree_build();
         fst_test_tree_search();
         fst_test_insert_search_mix();
-        fst_test_shift_segment_left();
-        fst_test_shift_segment_left_right_edge();
-        fst_test_shift_segment_left_append_new_segment();
-        fst_test_shift_segment_right_init0();
-        fst_test_shift_segment_right_init999();
-        fst_test_shift_segment_right_bool();
-        fst_test_shift_segment_right_skip_start_node();
+        fst_test_shift_left();
+        fst_test_shift_left_right_edge();
+        fst_test_shift_left_append_new_segment();
+        fst_test_shift_right_init0();
+        fst_test_shift_right_init999();
+        fst_test_shift_right_bool();
+        fst_test_shift_right_skip_start_node();
         fst_test_const_iterator();
         fst_test_insert_iterator();
         fst_test_insert_state_changed();
