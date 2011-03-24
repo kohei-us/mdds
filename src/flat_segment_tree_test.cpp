@@ -1170,6 +1170,14 @@ void fst_test_equality()
     db2.insert_front(0, 1, 1);
     assert(db1 == db2);
 
+    // Same node count, but with different value.
+    db2.insert_front(0, 1, 2);
+    assert(db1 != db2);
+
+    // Set the value back.
+    db2.insert_front(0, 1, 1);
+    assert(db1 == db2);
+
     db1.insert_front(4, 10, 10);
     db1.insert_front(4, 10, 0);
     assert(db1 == db2);

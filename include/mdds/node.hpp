@@ -154,9 +154,9 @@ public:
             return false;
 
         if (is_leaf)
-            return value_leaf == value_leaf;
+            return value_leaf == r.value_leaf;
         else
-            return value_nonleaf == value_nonleaf;
+            return value_nonleaf == r.value_nonleaf;
 
         return true;
     }
