@@ -213,6 +213,8 @@ public:
 
     ~flat_segment_tree();
 
+    void swap(flat_segment_tree<key_type, value_type>& other);
+
     /** 
      * Insert a new segment into the tree.  It searches for the point of 
      * insertion from the first leaf node. 

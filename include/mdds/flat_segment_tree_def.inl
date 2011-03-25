@@ -91,6 +91,18 @@ flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 }
 
 template<typename _Key, typename _Value>
+void
+flat_segment_tree<_Key, _Value>::swap(flat_segment_tree<_Key, _Value>& other)
+{
+    using std::swap;
+    swap(m_root_node, other.m_root_node);
+    swap(m_left_leaf, other.m_left_leaf);
+    swap(m_right_leaf, other.m_right_leaf);
+    swap(m_init_val, other.m_init_val);
+    swap(m_valid_tree, other.m_valid_tree);
+}
+
+template<typename _Key, typename _Value>
 ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
 flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward)
 {
