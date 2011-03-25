@@ -1,3 +1,6 @@
+  * implemented min_key(), max_key(), default_value() and swap() for
+    flat_segment_tree.
+
   * fixed a bug in flat_segment_tree::shift_right() where shifting of all
     existing nodes was not handled properly.
 
