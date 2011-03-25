@@ -1656,6 +1656,15 @@ void fst_test_position_search()
     }
 }
 
+void fst_test_min_max_default()
+{
+    typedef flat_segment_tree<long, short> db_type;
+    db_type db(0, 100, 2);
+    assert(db.min_key() == 0);
+    assert(db.max_key() == 100);
+    assert(db.default_value() == 2);
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -1704,6 +1713,7 @@ int main (int argc, char **argv)
         fst_test_insert_iterator();
         fst_test_insert_state_changed();
         fst_test_position_search();
+        fst_test_min_max_default();
     }
 
     if (opt.test_perf)
