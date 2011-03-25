@@ -1705,6 +1705,46 @@ void fst_test_swap()
     assert(val == 2);
 }
 
+void fst_test_swap()
+{
+    typedef flat_segment_tree<long, int> db_type;
+    db_type db1(0, 200, 20);
+    db_type db2(20, 40, 0);
+    db1.insert_back(20, 30, 1);
+    db1.insert_back(30, 40, 2);
+    db1.insert_back(40, 50, 3);
+    db1.build_tree();
+
+    // Check the content of db1.
+    {
+        db_type::key_type   k[] = {0,  20, 30, 40, 50, 200};
+        db_type::value_type v[] = {20,  1,  2,  3, 20};
+        assert(check_leaf_nodes(db1, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db1.min_key() == 0);
+    assert(db1.max_key() == 200);
+    assert(db1.default_value() == 20);
+    assert(db1.is_tree_valid());
+
+    db1.swap(db2);
+
+    // Now db2 should inherit the content of db1.
+    {
+        db_type::key_type   k[] = {0,  20, 30, 40, 50, 200};
+        db_type::value_type v[] = {20,  1,  2,  3, 20};
+        assert(check_leaf_nodes(db2, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db2.min_key() == 0);
+    assert(db2.max_key() == 200);
+    assert(db2.default_value() == 20);
+    assert(db2.is_tree_valid());
+
+    // Tree search should work on db2.
+    db_type::value_type val;
+    assert(db2.search_tree(35, val));
+    assert(val == 2);
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
