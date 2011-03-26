@@ -935,6 +935,24 @@ void fst_test_shift_right_skip_start_node()
         short v[] = {0, 5, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
+
+    // shift_right from the leftmost node should not change its value
+    db.insert_front(0, 4, 2);
+    assert(!db.is_tree_valid());
+    build_and_dump(db);
+    {
+        long  k[] = {0, 4, 9, 1048576};
+        short v[] = {2, 5, 0};
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+    }
+
+    db.shift_right(0, 2, true);
+    build_and_dump(db);
+    {
+        long  k[] = {0, 6, 11, 1048576};
+        short v[] = {2, 5, 0};
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+    }
 }
 
 /**
