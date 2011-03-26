@@ -1,11 +1,15 @@
-  * implemented min_key(), max_key(), default_value() and swap() for
-    flat_segment_tree.
+  * fixed several bugs in flat_segment_tree::shift_right():
 
-  * fixed a bug in flat_segment_tree::shift_right() where shifting of all
-    existing nodes was not handled properly.
+    * shifting of all existing nodes was not handled properly.  
 
-  * fixed a bug in flat_segment_tree::shift_right() where leaf nodes were
-    not properly linked under certain conditions.
+    * leaf nodes were not properly linked under certain conditions.
+
+    * shifting with skip node option was not properly skipping the 
+      node at insertion position when the insertion position was at 
+      the leftmost node.  
+
+  * implemented min_key(), max_key(), default_value(), clear() and 
+    swap() for flat_segment_tree.  
 
   * fixed a bug in flat_segment_tree::operator==() where two different
     containers were incorrectly evaluated to be equal.
