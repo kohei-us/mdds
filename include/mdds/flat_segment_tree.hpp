@@ -623,6 +623,13 @@ private:
     bool       m_valid_tree;
 };
 
+template<typename _Key, typename _Value>
+void
+swap(flat_segment_tree<_Key, _Value>& left, flat_segment_tree<_Key, _Value>& right)
+{
+    left.swap(right);
+}
+
 } // namespace mdds
 
 #include "flat_segment_tree_def.inl"
