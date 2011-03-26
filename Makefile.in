@@ -5,6 +5,7 @@ PACKAGE_TARNAME=@PACKAGE_TARNAME@
 OBJDIR=@OBJDIR@
 SRCDIR=@SRCDIR@
 INCDIR=@INCDIR@
+QUICKCHECKDIR=@QUICKCHECKDIR@
 
 CPPFLAGS=@CPPFLAGS@ -I$(INCDIR)
 LDFLAGS=
@@ -139,6 +140,12 @@ test.mtm.mem: mixed_type_matrix_test
 test.stl: stlperf_test
 	./stlperf_test
 
+$(QUICKCHECKDIR)/flat_segment_tree.o: $(QUICKCHECKDIR)/flat_segment_tree.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $<
+
+$(QUICKCHECKDIR)/flat_segment_tree: $(QUICKCHECKDIR)/flat_segment_tree.o pre
+	$(CXX) $(LDFLAGS) $< -o $@
+
 install: $(HEADERS)
 	install -d $(DESTDIR)@includedir@/mdds
 	install -d $(DESTDIR)@includedir@/mdds/hash_container
@@ -150,7 +157,10 @@ install: $(HEADERS)
 
 check: $(ALL_TESTS)
 
+quickcheck: $(QUICKCHECKDIR)/flat_segment_tree
+	$(QUICKCHECKDIR)/flat_segment_tree
+
 clean:
 	rm -rf $(OBJDIR) 2>/dev/null || /bin/true
 	rm $(EXECS) 2>/dev/null || /bin/true
-
+	rm $(QUICKCHECKDIR)/flat_segment_tree $(QUICKCHECKDIR)/*.o 2>/dev/null || true

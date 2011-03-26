@@ -28,9 +28,11 @@ AC_MSG_RESULT([$with_hash_container])
 OBJDIR=./obj
 SRCDIR=./src
 INCDIR=./include
+QUICKCHECKDIR=./quickcheck
 AC_SUBST(OBJDIR)
 AC_SUBST(SRCDIR)
 AC_SUBST(INCDIR)
+AC_SUBST(QUICKCHECKDIR)
 
 CPPFLAGS="-DDEBUG_NODE_BASE -DUNIT_TEST -Wall -Os -g -pedantic-errors"
 if test $with_hash_container = stlport; then
