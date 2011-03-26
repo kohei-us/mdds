@@ -1,3 +1,8 @@
+* flat_segment_tree
+
+  * fixed a crash on assignment by properly implementing assignment 
+    operator().  
+
   * fixed several bugs in flat_segment_tree::shift_right():
 
     * shifting of all existing nodes was not handled properly.  
