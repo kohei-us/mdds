@@ -1705,6 +1705,40 @@ void fst_test_swap()
     assert(val == 2);
 }
 
+void fst_test_clear()
+{
+    StackPrinter __stack_printer__("::fst_test_clear");
+
+    typedef flat_segment_tree<long, int> db_type;
+    db_type db(0, 100, 42);
+    db.insert_back(0, 10, 0);
+    db.insert_back(10, 20, 1);
+    db.insert_back(20, 30, 2);
+    db.build_tree();
+
+    {
+        db_type::key_type k[] = {0, 10, 20, 30, 100};
+        db_type::value_type v[] = {0, 1, 2, 42};
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db.min_key() == 0);
+    assert(db.max_key() == 100);
+    assert(db.default_value() == 42);
+    assert(db.is_tree_valid());
+
+    db.clear();
+
+    {
+        db_type::key_type k[] = {0, 100};
+        db_type::value_type v[] = {42};
+        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db.min_key() == 0);
+    assert(db.max_key() == 100);
+    assert(db.default_value() == 42);
+    assert(!db.is_tree_valid());
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -1755,6 +1789,7 @@ int main (int argc, char **argv)
         fst_test_position_search();
         fst_test_min_max_default();
         fst_test_swap();
+        fst_test_clear();
     }
 
     if (opt.test_perf)
