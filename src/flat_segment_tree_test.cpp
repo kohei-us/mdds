@@ -1757,6 +1757,87 @@ void fst_test_clear()
     assert(!db.is_tree_valid());
 }
 
+void fst_test_assignment()
+{
+    StackPrinter __stack_printer__("::fst_test_assignment");
+
+    typedef flat_segment_tree<long, int> db_type;
+    db_type db1(0, 100, 42);
+    db1.insert_back(0, 10, 0);
+    db1.insert_back(10, 20, 1);
+    db1.insert_back(20, 30, 2);
+    db1.build_tree();
+
+    {
+        db_type::key_type k[] = {0, 10, 20, 30, 100};
+        db_type::value_type v[] = {0, 1, 2, 42};
+        assert(check_leaf_nodes(db1, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db1.min_key() == 0);
+    assert(db1.max_key() == 100);
+    assert(db1.default_value() == 42);
+    assert(db1.is_tree_valid());
+
+    db_type db2(20, 40, 0);
+    db2.insert_back(20, 30, 8);
+    db2.build_tree();
+
+    {
+        db_type::key_type k[] = {20, 30, 40};
+        db_type::value_type v[] = {8, 0};
+        assert(check_leaf_nodes(db2, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db2.min_key() == 20);
+    assert(db2.max_key() == 40);
+    assert(db2.default_value() == 0);
+    assert(db2.is_tree_valid());
+
+    db_type db3(10, 80, 4);
+    db3.build_tree();
+
+    {
+        db_type::key_type k[] = {10, 80};
+        db_type::value_type v[] = {4};
+        assert(check_leaf_nodes(db3, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db3.min_key() == 10);
+    assert(db3.max_key() == 80);
+    assert(db3.default_value() == 4);
+    assert(db3.is_tree_valid());
+
+    db3 = db2 = db1;
+
+    {
+        db_type::key_type k[] = {0, 10, 20, 30, 100};
+        db_type::value_type v[] = {0, 1, 2, 42};
+        assert(check_leaf_nodes(db1, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db1.min_key() == 0);
+    assert(db1.max_key() == 100);
+    assert(db1.default_value() == 42);
+    assert(db1.is_tree_valid());
+
+    {
+        db_type::key_type k[] = {0, 10, 20, 30, 100};
+        db_type::value_type v[] = {0, 1, 2, 42};
+        assert(check_leaf_nodes(db2, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db2.min_key() == 0);
+    assert(db2.max_key() == 100);
+    assert(db2.default_value() == 42);
+    assert(!db2.is_tree_valid());
+
+    {
+        db_type::key_type k[] = {0, 10, 20, 30, 100};
+        db_type::value_type v[] = {0, 1, 2, 42};
+        assert(check_leaf_nodes(db3, k, v, ARRAY_SIZE(k)));
+    }
+    assert(db3.min_key() == 0);
+    assert(db3.max_key() == 100);
+    assert(db3.default_value() == 42);
+    assert(!db3.is_tree_valid());
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -1808,6 +1889,7 @@ int main (int argc, char **argv)
         fst_test_min_max_default();
         fst_test_swap();
         fst_test_clear();
+        fst_test_assignment();
     }
 
     if (opt.test_perf)
