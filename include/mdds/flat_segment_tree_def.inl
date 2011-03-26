@@ -89,6 +89,15 @@ flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 }
 
 template<typename _Key, typename _Value>
+flat_segment_tree<_Key, _Value>&
+flat_segment_tree<_Key, _Value>::operator=(const flat_segment_tree<_Key, _Value>& other)
+{
+    flat_segment_tree<_Key, _Value> copy(other);
+    swap(copy);
+    return *this;
+}
+
+template<typename _Key, typename _Value>
 void
 flat_segment_tree<_Key, _Value>::swap(flat_segment_tree<_Key, _Value>& other)
 {

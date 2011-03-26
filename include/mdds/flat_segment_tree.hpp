@@ -213,6 +213,12 @@ public:
 
     ~flat_segment_tree();
 
+    /**
+      * Assignment only copies the leaf nodes.
+      */
+    flat_segment_tree<key_type, value_type>&
+    operator=(const flat_segment_tree<key_type, value_type>& other);
+
     void swap(flat_segment_tree<key_type, value_type>& other);
 
     void clear();
