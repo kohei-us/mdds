@@ -435,7 +435,7 @@ void flat_segment_tree<_Key, _Value>::shift_right(key_type pos, key_type size, b
         node_ptr cur_node = m_left_leaf->right;
         shift_leaf_key_right(cur_node, m_right_leaf, size);
 
-        if (m_left_leaf->value_leaf.value != m_init_val)
+        if (m_left_leaf->value_leaf.value != m_init_val && !skip_start_node)
         {
             if (size < m_right_leaf->value_leaf.key - m_left_leaf->value_leaf.key)
             {
