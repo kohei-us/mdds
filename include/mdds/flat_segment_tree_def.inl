@@ -85,9 +85,7 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key,
 template<typename _Key, typename _Value>
 flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 {
-    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
-    clear_tree(m_root_node.get());
-    disconnect_all_nodes(m_root_node.get());
+    destroy();
 }
 
 template<typename _Key, typename _Value>
@@ -100,6 +98,23 @@ flat_segment_tree<_Key, _Value>::swap(flat_segment_tree<_Key, _Value>& other)
     swap(m_right_leaf, other.m_right_leaf);
     swap(m_init_val, other.m_init_val);
     swap(m_valid_tree, other.m_valid_tree);
+}
+
+template<typename _Key, typename _Value>
+void
+flat_segment_tree<_Key, _Value>::clear()
+{
+    // the border nodes should not be destroyed--add a ref to keep them alive
+    node_ptr left(m_left_leaf);
+    node_ptr right(m_right_leaf);
+
+    // destroy the tree
+    destroy();
+
+    // and construct the default tree
+    link_nodes(m_left_leaf, m_right_leaf);
+    m_left_leaf->value_leaf.value = m_init_val;
+    m_valid_tree = false;
 }
 
 template<typename _Key, typename _Value>
@@ -703,6 +718,15 @@ flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(key_type key, const node
         cur_node = cur_node->right.get();
     }
     return NULL;
+}
+
+template<typename _Key, typename _Value>
+void
+flat_segment_tree<_Key, _Value>::destroy()
+{
+    disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    clear_tree(m_root_node.get());
+    disconnect_all_nodes(m_root_node.get());
 }
 
 }

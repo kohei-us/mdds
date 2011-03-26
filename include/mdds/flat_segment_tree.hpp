@@ -215,6 +215,8 @@ public:
 
     void swap(flat_segment_tree<key_type, value_type>& other);
 
+    void clear();
+
     /** 
      * Insert a new segment into the tree.  It searches for the point of 
      * insertion from the first leaf node. 
@@ -610,6 +612,8 @@ private:
             return;
         }
     }
+
+    void destroy();
 
 private:
     node_ptr   m_root_node;
