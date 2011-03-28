@@ -77,6 +77,15 @@ flat_segment_tree
   the new return value which is equivalent of the previous return value.
 
 
+License
+=======
+
+mdds is free software. You may copy, distribute, and modify it under
+the terms of the License contained in the file COPYING distributed
+with this package. This license is the same as the MIT/X Consortium
+license.
+
+
 Miscellaneous
 =============
 
