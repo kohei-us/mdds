@@ -1,3 +1,11 @@
+Wed Jan 12 20:46:05 CET 2011 - pmladek@suse.cz
+
+- made the package noarch; it did not produce any binary
+- added COPYING file
+- used %%configure, %%name macros
+- used DESTDIR in make install
+- simplified the file list
+
 -------------------------------------------------------------------
 Fri Jan 8 2011 kohei.yoshida@gmail.com
 
