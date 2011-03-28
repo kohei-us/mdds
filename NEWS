@@ -1,9 +1,11 @@
+mdds 0.5.2
+
 * flat_segment_tree
 
   * fixed a crash on assignment by properly implementing assignment 
     operator().  
 
-  * fixed several bugs in flat_segment_tree::shift_right():
+  * fixed several bugs in shift_right():
 
     * shifting of all existing nodes was not handled properly.  
 
@@ -14,10 +16,10 @@
       the leftmost node.  
 
   * implemented min_key(), max_key(), default_value(), clear() and 
-    swap() for flat_segment_tree.  
+    swap().
 
-  * fixed a bug in flat_segment_tree::operator==() where two different
-    containers were incorrectly evaluated to be equal.
+  * fixed a bug in operator==() where two different containers were 
+    incorrectly evaluated to be equal.  
 
   * added quickcheck test code.
 
