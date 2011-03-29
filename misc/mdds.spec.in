@@ -41,7 +41,7 @@ Authors:
 %setup -q -n %{name}_%{version}
 
 %build
-%configure --docdir=%buildroot%{_docdir}
+%configure --docdir=%{_docdir}
 
 %check
 #make check
@@ -54,7 +54,7 @@ rm -rf %buildroot
 
 %files devel
 %defattr(-,root,root)
-%doc %buildroot%{_docdir}
+%doc %{_docdir}
 %{_includedir}/%{name}
 
 %changelog
