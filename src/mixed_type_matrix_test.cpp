@@ -839,6 +839,24 @@ void mtm_test_const_iterator()
     assert(itr == itr_end); // not found.
 }
 
+/**
+ * Measure the performance of object instantiation for filled storage.
+ */
+void mtm_perf_test_filled_storage_creation()
+{
+    StackPrinter __stack_printer__("::mtm_perf_test_filled_storage_creation");
+    size_t rowsize = 1000;
+    size_t obj_count = 30000;
+    cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
+    for (size_t colsize = 1; colsize <= 3; ++colsize)
+    {
+        StackPrinter __stack_printer2__("::mtm_perf_test_filled_storage_creation::group");
+        cout << "column size: " << colsize << endl;
+        for (size_t i = 0; i < obj_count; ++i)
+            mx_type mx(rowsize, colsize, matrix_density_filled_zero);
+    }
+}
+
 int main(int argc, char** argv)
 {
     cmd_options opt;
@@ -871,6 +889,12 @@ int main(int argc, char** argv)
     
         mtm_test_const_iterator();
     }
+
+    if (opt.test_perf)
+    {
+        mtm_perf_test_filled_storage_creation();
+    }
+
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
