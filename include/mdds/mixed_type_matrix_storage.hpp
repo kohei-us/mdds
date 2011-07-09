@@ -32,6 +32,7 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
+#include <boost/pool/object_pool.hpp>
 
 namespace mdds {
 
@@ -689,14 +690,14 @@ class storage_filled : public ::mdds::storage_base<_MatrixType>
 
 public:
     typedef typename matrix_type::element element;
-    typedef ::boost::ptr_vector<element>  row_type;
+    typedef ::std::vector<element*> row_type;
     typedef ::boost::ptr_vector<row_type> rows_type;
 
     struct elem_wrap
     {
         const element& operator() (const typename row_type::const_iterator& itr) const 
         { 
-            return *itr; 
+            return *(*itr); 
         }
     };
     struct rows_wrap
@@ -710,6 +711,7 @@ public:
 
     storage_filled(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_filled, init_type),
+        m_element_pool(new ::boost::object_pool<element>),
         m_numeric(false),
         m_valid(false)
     {
@@ -723,11 +725,30 @@ public:
 
     storage_filled(const storage_filled& r) :
         storage_base<matrix_type>(r),
-        m_rows(r.m_rows),
+        m_element_pool(new ::boost::object_pool<element>),
         m_numeric(r.m_numeric),
-        m_valid(r.m_valid) {}
+        m_valid(r.m_valid)
+    {
+        size_t n = r.m_rows.size();
+        m_rows.reserve(n);
+        for (size_t i = 0; i < n; ++i)
+        {
+            const row_type& row_other = r.m_rows[i];
+            size_t cols = row_other.size();
+            m_rows.push_back(new row_type(cols, NULL));
+            row_type& row = m_rows.back();
+            for (size_t j = 0; j < cols; ++j)
+            {
+                if (row_other[j])
+                    row[j] = m_element_pool->construct(*row_other[j]);
+            }
+        }
+    }
 
-    virtual ~storage_filled() {}
+    virtual ~storage_filled()
+    {
+        delete m_element_pool;
+    }
 
     const_itr_access* get_const_itr_access() const
     {
@@ -737,17 +758,17 @@ public:
     element& get_element(size_t row, size_t col)
     {
         m_valid = false;
-        return m_rows.at(row).at(col);
+        return *m_rows.at(row).at(col);
     }
 
     matrix_element_t get_type(size_t row, size_t col) const
     {
-        return m_rows.at(row).at(col).m_type;
+        return m_rows.at(row).at(col)->m_type;
     }
 
     double get_numeric(size_t row, size_t col) const
     {
-        const element& elem = m_rows.at(row).at(col);
+        const element& elem = *m_rows.at(row).at(col);
         switch (elem.m_type)
         {
             case element_numeric:
@@ -763,7 +784,7 @@ public:
 
     const string_type* get_string(size_t row, size_t col) const
     {
-        const element& elem = m_rows.at(row).at(col);
+        const element& elem = *m_rows.at(row).at(col);
         if (elem.m_type != element_string)
             throw matrix_storage_error("element type is not string.");
 
@@ -772,7 +793,7 @@ public:
 
     bool get_boolean(size_t row, size_t col) const
     {
-        const element& elem = m_rows.at(row).at(col);
+        const element& elem = *m_rows.at(row).at(col);
         if (elem.m_type != element_boolean)
             throw matrix_storage_error("element type is not boolean.");
 
@@ -800,7 +821,7 @@ public:
             row_type& trans_row = trans_mx.back();
             trans_row.reserve(row_size);
             for (size_t row = 0; row < row_size; ++row)
-                trans_row.push_back(new element(m_rows[row][col]));
+                trans_row.push_back(m_rows[row][col]);
         }
         m_rows.swap(trans_mx);
     }
@@ -859,6 +880,8 @@ public:
 
     void clear()
     {
+        delete m_element_pool;
+        m_element_pool = new ::boost::object_pool<element>;
         m_rows.clear();
         m_valid = true;
         m_numeric = false;
@@ -875,7 +898,7 @@ public:
             typename row_type::const_iterator itr_col = itr_row->begin(), itr_col_end = itr_row->end();
             for (; itr_col != itr_col_end; ++itr_col)
             {
-                matrix_element_t elem_type = itr_col->m_type;
+                matrix_element_t elem_type = (*itr_col)->m_type;
                 if (elem_type != element_numeric && elem_type != element_boolean)
                 {
                     m_numeric = false;
@@ -920,7 +943,11 @@ private:
                     insert_new_elem(m_rows[i]);
             }
             else if (new_cols < cur_cols)
+            {
+                // Delete the instances being cast out.
+                delete_elems_from_row(m_rows[i], new_cols);
                 m_rows[i].resize(new_cols);
+            }
         }
     }
 
@@ -931,16 +958,28 @@ private:
             insert_new_elem(row);
     }
 
+    void delete_elems_from_row(row_type& row, size_t new_cols)
+    {
+        typename row_type::iterator itr = row.begin(), itr_end = row.end();
+        ::std::advance(itr, new_cols);
+        for (; itr != itr_end; ++itr)
+        {
+            element* p = *itr;
+            if (p)
+                m_element_pool->destroy(p);
+        }
+    }
+
     void insert_new_elem(row_type& row)
     {
         matrix_init_element_t init_type = storage_base<matrix_type>::get_init_type();
         switch (init_type)
         {
             case matrix_init_element_zero:
-                row.push_back(new element(static_cast<double>(0.0)));
+                row.push_back(m_element_pool->construct(static_cast<double>(0.0)));
             break;
             case matrix_init_element_empty:
-                row.push_back(new element);
+                row.push_back(m_element_pool->construct());
             break;
             default:
                 throw matrix_storage_error("unknown init type.");
@@ -948,6 +987,7 @@ private:
     }
 
 private:
+    ::boost::object_pool<element>* m_element_pool;
     rows_type m_rows;
     bool m_numeric:1;
     bool m_valid:1;
