@@ -715,17 +715,18 @@ public:
         m_numeric(false),
         m_valid(false)
     {
+        if (init_type == matrix_init_element_zero)
+            m_init_elem.set_numeric(0.0);
+
         m_rows.reserve(_rows);
         for (size_t i = 0; i < _rows; ++i)
-        {
-            m_rows.push_back(new row_type);
-            init_row(m_rows.back(), _cols);
-        }
+            m_rows.push_back(new row_type(_cols, &m_init_elem));
     }
 
     storage_filled(const storage_filled& r) :
         storage_base<matrix_type>(r),
         m_element_pool(new ::boost::object_pool<element>),
+        m_init_elem(r.m_init_elem),
         m_numeric(r.m_numeric),
         m_valid(r.m_valid)
     {
@@ -735,11 +736,11 @@ public:
         {
             const row_type& row_other = r.m_rows[i];
             size_t cols = row_other.size();
-            m_rows.push_back(new row_type(cols, NULL));
+            m_rows.push_back(new row_type(cols, &m_init_elem));
             row_type& row = m_rows.back();
             for (size_t j = 0; j < cols; ++j)
             {
-                if (row_other[j])
+                if (row_other[j] != &r.m_init_elem)
                     row[j] = m_element_pool->construct(*row_other[j]);
             }
         }
@@ -758,7 +759,23 @@ public:
     element& get_element(size_t row, size_t col)
     {
         m_valid = false;
-        return *m_rows.at(row).at(col);
+        if (m_rows.at(row).at(col) == &m_init_elem)
+        {
+            // Initial element.  Instantiate a new element to take its place.
+            matrix_init_element_t init_type = storage_base<matrix_type>::get_init_type();
+            switch (init_type)
+            {
+                case matrix_init_element_zero:
+                    m_rows[row][col] = m_element_pool->construct(static_cast<double>(0.0));
+                break;
+                case matrix_init_element_empty:
+                    m_rows[row][col] = m_element_pool->construct();
+                break;
+                default:
+                    throw matrix_storage_error("unknown init type.");
+            }
+        }
+        return *m_rows[row][col];
     }
 
     matrix_element_t get_type(size_t row, size_t col) const
@@ -844,10 +861,8 @@ public:
             rows_type new_rows;
             new_rows.reserve(row);
             for (size_t i = 0; i < row; ++i)
-            {
-                new_rows.push_back(new row_type);
-                init_row(new_rows.back(), col);
-            }
+                new_rows.push_back(new row_type(col, &m_init_elem));
+
             m_rows.swap(new_rows);
             return;
         }
@@ -858,10 +873,7 @@ public:
             size_t new_row_count = row - cur_rows;
             m_rows.reserve(row);
             for (size_t i = 0; i < new_row_count; ++i)
-            {
-                m_rows.push_back(new row_type);
-                init_row(m_rows.back(), col);
-            }
+                m_rows.push_back(new row_type(col, &m_init_elem));
 
             resize_rows(cur_rows-1, cur_cols, col);
         }
@@ -898,7 +910,8 @@ public:
             typename row_type::const_iterator itr_col = itr_row->begin(), itr_col_end = itr_row->end();
             for (; itr_col != itr_col_end; ++itr_col)
             {
-                matrix_element_t elem_type = (*itr_col)->m_type;
+                const element* p = *itr_col;
+                matrix_element_t elem_type = p->m_type;
                 if (elem_type != element_numeric && elem_type != element_boolean)
                 {
                     m_numeric = false;
@@ -951,13 +964,6 @@ private:
         }
     }
 
-    void init_row(row_type& row, size_t col_size)
-    {
-        row.reserve(col_size);
-        for (size_t j = 0; j < col_size; ++j)
-            insert_new_elem(row);
-    }
-
     void delete_elems_from_row(row_type& row, size_t new_cols)
     {
         typename row_type::iterator itr = row.begin(), itr_end = row.end();
@@ -965,7 +971,7 @@ private:
         for (; itr != itr_end; ++itr)
         {
             element* p = *itr;
-            if (p)
+            if (p != &m_init_elem)
                 m_element_pool->destroy(p);
         }
     }
@@ -989,6 +995,7 @@ private:
 private:
     ::boost::object_pool<element>* m_element_pool;
     rows_type m_rows;
+    element m_init_elem;
     bool m_numeric:1;
     bool m_valid:1;
 };
