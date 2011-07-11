@@ -85,22 +85,6 @@ public:
         m_row_itr(r.m_row_itr),
         m_row_itr_end(r.m_row_itr_end) {}
 
-    /**
-     * Set the current iterator position to the end position.
-     */
-    void set_to_end()
-    {
-        if (empty())
-            return;
-
-        m_rows_itr = m_rows_itr_end;
-        typename store_type::rows_type::const_iterator itr = m_rows_itr_end;
-        --itr; // Move to the last row.
-
-        // They both need to be at the end position of the last row.
-        m_row_itr = m_row_itr_end = m_rows_wrap(itr).end();
-    }
-
     bool operator== (const const_itr_access& r) const
     {
         if (&m_db != &r.m_db)
@@ -126,12 +110,6 @@ public:
     }
 
     bool empty() const { return m_db.get_rows().begin() == m_rows_itr_end; }
-
-    void update_row_itr()
-    {
-        m_row_itr = m_rows_wrap(m_rows_itr).begin();
-        m_row_itr_end = m_rows_wrap(m_rows_itr).end();
-    }
 
     const element& get() const { return m_wrap(m_row_itr); }
 
@@ -185,6 +163,30 @@ public:
         // Not on the first element of a row.
         --m_row_itr;
         return true;
+    }
+
+    /**
+     * Set the current iterator position to the end position.
+     */
+    void set_to_end()
+    {
+        if (empty())
+            return;
+
+        m_rows_itr = m_rows_itr_end;
+        typename store_type::rows_type::const_iterator itr = m_rows_itr_end;
+        --itr; // Move to the last row.
+
+        // They both need to be at the end position of the last row.
+        m_row_itr = m_row_itr_end = m_rows_wrap(itr).end();
+    }
+
+private:
+
+    void update_row_itr()
+    {
+        m_row_itr = m_rows_wrap(m_rows_itr).begin();
+        m_row_itr_end = m_rows_wrap(m_rows_itr).end();
     }
 
 private:
@@ -681,6 +683,7 @@ private:
 }
 
 #include "mixed_type_matrix_storage_filled.inl"
+#include "mixed_type_matrix_storage_filled_linear.inl"
 #include "mixed_type_matrix_storage_sparse.inl"
 
 #endif

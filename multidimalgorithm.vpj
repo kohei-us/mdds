@@ -240,11 +240,13 @@
 				<F N="include/mdds/mixed_type_matrix_flag_storage.hpp"/>
 				<F N="include/mdds/mixed_type_matrix_storage.hpp"/>
 				<F N="include/mdds/mixed_type_matrix_storage_filled.inl"/>
+				<F N="include/mdds/mixed_type_matrix_storage_filled_linear.inl"/>
 				<F N="include/mdds/mixed_type_matrix_storage_sparse.inl"/>
 				<F N="include/mdds/node.hpp"/>
 				<F N="include/mdds/point_quad_tree.hpp"/>
 				<F N="include/mdds/quad_node.hpp"/>
 				<F N="include/mdds/rectangle_set.hpp"/>
+				<F N="include/mdds/rectangle_set_def.inl"/>
 				<F N="include/mdds/segment_tree.hpp"/>
 			</Folder>
 			<F N="include/nodecontainer.hpp"/>

@@ -263,11 +263,16 @@ void mtm_test_resize(matrix_density_t density)
     assert(mxsize.first == 6);
     assert(mxsize.second == 4);
     mx.resize(6, 6);
+    mx.set_boolean(5, 5, true);
     mx.dump();
     mxsize = mx.size();
     assert(mxsize.first == 6);
     assert(mxsize.second == 6);
     mx.resize(3, 6);
+    mx.set_numeric(2, 2, 4.2);
+    mx.set_numeric(2, 3, 3.2);
+    mx.set_numeric(2, 4, 2.2);
+    mx.set_numeric(2, 5, 1.2);
     mx.dump();
     mxsize = mx.size();
     assert(mxsize.first == 3);

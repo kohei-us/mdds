@@ -36,6 +36,8 @@
 #include <iostream>
 #include <cstdlib>
 
+#define USE_LINEAR_STORAGE 1
+
 namespace mdds {
 
 enum matrix_density_t
@@ -81,7 +83,11 @@ private:
 
 public:
     typedef ::mdds::flag_storage<flag_type, size_pair_type, size_pair_type_hash> flag_storage;
+#if USE_LINEAR_STORAGE
+    typedef ::mdds::storage_filled_linear<mixed_type_matrix> filled_storage_type;
+#else
     typedef ::mdds::storage_filled<mixed_type_matrix> filled_storage_type;
+#endif
     typedef ::mdds::storage_sparse<mixed_type_matrix> sparse_storage_type;
 
     typedef typename storage_base::const_iterator const_iterator;
