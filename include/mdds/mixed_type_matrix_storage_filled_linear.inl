@@ -78,7 +78,7 @@ public:
                 return false;
 
             ++m_itr;
-            return true;
+            return m_itr != m_itr_end;
         }
 
         bool dec()
