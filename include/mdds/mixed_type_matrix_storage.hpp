@@ -242,6 +242,9 @@ public:
                     case matrix_storage_filled:
                         get_filled_itr()->set_to_end();
                     break;
+                    case matrix_storage_filled_zero:
+                        get_filled_zero_itr()->set_to_end();
+                    break;
                     case matrix_storage_sparse:
                         get_sparse_itr()->set_to_end();
                     break;

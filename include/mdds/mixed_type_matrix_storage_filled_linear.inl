@@ -379,6 +379,10 @@ private:
     bool m_valid:1;
 };
 
+/**
+ * All elements are filled with unique numeric element instances, with their
+ * initial values being zero.
+ */
 template<typename _MatrixType>
 class storage_filled_linear_zero : public ::mdds::storage_base<_MatrixType>
 {
@@ -534,6 +538,13 @@ public:
         {
             for (size_t j = 0; j < min_cols; ++j)
                 new_array[col*i+j] = m_array[get_pos(i, j)];
+            for (size_t j = min_cols; j < col; ++j)
+                new_array[col*i+j] = m_element_pool->construct(static_cast<double>(0.0));
+        }
+        for (size_t i = min_rows; i < row; ++i)
+        {
+            for (size_t j = 0; j < col; ++j)
+                new_array[col*i+j] = m_element_pool->construct(static_cast<double>(0.0));
         }
 
         if (row < m_rows)
