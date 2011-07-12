@@ -36,7 +36,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#define USE_LINEAR_STORAGE 1
+#define USE_LINEAR_STORAGE 0
 
 namespace mdds {
 

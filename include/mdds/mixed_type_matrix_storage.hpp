@@ -682,7 +682,7 @@ private:
 
 }
 
-#include "mixed_type_matrix_storage_filled.inl"
+#include "mixed_type_matrix_storage_filled_nested_array.inl"
 #include "mixed_type_matrix_storage_filled_linear.inl"
 #include "mixed_type_matrix_storage_sparse.inl"
 

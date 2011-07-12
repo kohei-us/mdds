@@ -695,15 +695,16 @@ void traverse_itr_access(typename _StoreType::const_itr_access& itr_access)
     assert(i == 0);
 }
 
+template<typename _FilledStoreType>
 void mtm_test_iterator_access_filled(size_t rows, size_t cols)
 {
     StackPrinter __stack_printer__("::mtm_test_iterator_access_filled");
-    typedef mx_type::filled_storage_type store_type;
+    typedef _FilledStoreType store_type;
 
     store_type store(rows, cols, matrix_init_element_zero);
     {
         cout << "rows: " << rows << "  cols: " << cols << endl;
-        store_type::const_itr_access* itr_access = store.get_const_itr_access();
+        typename store_type::const_itr_access* itr_access = store.get_const_itr_access();
         traverse_itr_access<store_type>(*itr_access);
         delete itr_access;
     }
@@ -908,11 +909,17 @@ int main(int argc, char** argv)
     
         run_tests_on_all_density_types(mtm_test_flag_storage);
     
-        mtm_test_iterator_access_filled(1, 1);
-        mtm_test_iterator_access_filled(3, 1);
-        mtm_test_iterator_access_filled(1, 3);
-        mtm_test_iterator_access_filled(3, 3);
-        mtm_test_iterator_access_filled(0, 0);
+        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(1, 1);
+        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(3, 1);
+        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(1, 3);
+        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(3, 3);
+        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(0, 0);
+
+        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(1, 1);
+        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(3, 1);
+        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(1, 3);
+        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(3, 3);
+        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(0, 0);
     
         mtm_test_iterator_access_sparse();
     
