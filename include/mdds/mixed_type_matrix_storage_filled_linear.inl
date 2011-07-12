@@ -581,7 +581,7 @@ public:
             // empty matrix - nothing to do.
             return;
 
-        ::std::vector<element> trans_array(m_rows*m_cols, element(0.0));
+        array_type trans_array(m_rows*m_cols, element(0.0));
         for (size_t i = 0; i < m_rows; ++i)
             for (size_t j = 0; j < m_cols; ++j)
                 trans_array[m_rows*j+i] = m_array[get_pos(i,j)];
@@ -612,7 +612,7 @@ public:
             return;
         }
 
-        ::std::vector<element> new_array(new_size, element(0.0));
+        array_type new_array(new_size, element(0.0));
         size_t min_rows = ::std::min(row, m_rows);
         size_t min_cols = ::std::min(col, m_cols);
         for (size_t i = 0; i < min_rows; ++i)
