@@ -850,6 +850,7 @@ void mtm_test_const_iterator()
 void mtm_perf_test_filled_storage_creation()
 {
     StackPrinter __stack_printer__("::mtm_perf_test_filled_storage_creation");
+    cout << "measuring performance on matrix object creation." << endl;
     size_t rowsize = 1000;
     size_t obj_count = 30000;
     cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
@@ -859,6 +860,29 @@ void mtm_perf_test_filled_storage_creation()
         cout << "column size: " << colsize << endl;
         for (size_t i = 0; i < obj_count; ++i)
             mx_type mx(rowsize, colsize, matrix_density_filled_zero);
+    }
+}
+
+void mtm_perf_test_filled_storage_set_numeric()
+{
+    StackPrinter __stack_printer__("::mtm_perf_test_filled_storage_set_numeric");
+    cout << "measuring performance on matrix object creation and populating it with numeric data." << endl;
+    size_t rowsize = 1000;
+    size_t obj_count = 30000;
+    cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
+    for (size_t colsize = 1; colsize <= 3; ++colsize)
+    {
+        StackPrinter __stack_printer2__("::mtm_perf_test_filled_storage_set_numeric::group");
+        cout << "column size: " << colsize << endl;
+        for (size_t i = 0; i < obj_count; ++i)
+        {
+            mx_type mx(rowsize, colsize, matrix_density_filled_zero);
+            for (size_t row = 0; row < rowsize; ++row)
+            {
+                for (size_t col = 0; col < colsize; ++col)
+                    mx.set_numeric(row, col, 1.0);
+            }
+        }
     }
 }
 
@@ -898,6 +922,7 @@ int main(int argc, char** argv)
     if (opt.test_perf)
     {
         mtm_perf_test_filled_storage_creation();
+        mtm_perf_test_filled_storage_set_numeric();
     }
 
     cout << "Test finished successfully!" << endl;
