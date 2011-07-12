@@ -77,7 +77,7 @@ mixed_type_matrix<_String,_Flag>::mixed_type_matrix(const mixed_type_matrix& r) 
 template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>::~mixed_type_matrix()
 {
-    delete mp_storage;
+    delete_storage();
 }
 
 template<typename _String, typename _Flag>
@@ -102,7 +102,7 @@ mixed_type_matrix<_String,_Flag>::operator= (const mixed_type_matrix& r)
         // self assignment.
         return *this;
 
-    delete mp_storage;
+    delete_storage();
     mp_storage = r.mp_storage->clone();
     return *this;
 }
@@ -298,5 +298,24 @@ void mixed_type_matrix<_String,_Flag>::dump_flags() const
     mp_storage->get_flag_storage().dump();
 }
 #endif
+
+template<typename _String, typename _Flag>
+void mixed_type_matrix<_String,_Flag>::delete_storage()
+{
+    switch (mp_storage->get_storage_type())
+    {
+        case matrix_storage_filled:
+            delete static_cast<filled_storage_type*>(mp_storage);
+        break;
+        case matrix_storage_filled_zero:
+            delete static_cast<filled_storage_zero_type*>(mp_storage);
+        break;
+        case matrix_storage_sparse:
+            delete static_cast<sparse_storage_type*>(mp_storage);
+        break;
+        default:
+            assert(!"unknown storage type!");
+    }
+}
 
 }

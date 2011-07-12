@@ -81,7 +81,7 @@ public:
         m_row_size(r.m_row_size), 
         m_col_size(r.m_col_size) {}
 
-    virtual ~storage_sparse() {}
+    ~storage_sparse() {}
 
     const_itr_access* get_const_itr_access() const { return new const_itr_access(*this); }
 

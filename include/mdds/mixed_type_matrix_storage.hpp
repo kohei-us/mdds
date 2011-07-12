@@ -469,12 +469,11 @@ public:
 
     matrix_storage_t get_storage_type() const { return m_store_type; }
 
-    /** 
-     * the destructor must remain virtual because the derived classes have 
-     * different sizes.  TODO: Figure out a way to remove the virtual-ness 
-     * without leaking memory. 
-     */ 
-    virtual ~storage_base() {}
+    /**
+     * When deleting the storage object, the caller must explicitly specify
+     * the concrete class or else memory will leak.
+     */
+    ~storage_base() {}
 
     const_iterator begin() const
     {

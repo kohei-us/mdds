@@ -221,6 +221,9 @@ public:
 #endif
 
 private:
+    void delete_storage();
+
+private:
     storage_base* mp_storage;
 };
 

@@ -27,6 +27,9 @@
 
 namespace mdds {
 
+/**
+ * Iterator wrapper for storage whose data provides standard iterators.
+ */
 template<typename _StoreType, typename _ItrWrap>
 class const_itr_access_linear
 {
@@ -235,7 +238,7 @@ public:
         }
     }
 
-    virtual ~storage_filled_linear()
+    ~storage_filled_linear()
     {
         delete m_element_pool;
     }
@@ -507,13 +510,9 @@ public:
         m_rows(r.m_rows),
         m_cols(r.m_cols),
         m_numeric(r.m_numeric),
-        m_valid(r.m_valid)
-    {
-    }
+        m_valid(r.m_valid) {}
 
-    virtual ~storage_filled_linear_zero()
-    {
-    }
+    ~storage_filled_linear_zero() {}
 
     const_itr_access* get_const_itr_access() const
     {
