@@ -27,6 +27,75 @@
 
 namespace mdds {
 
+template<typename _StoreType>
+class const_itr_access_linear
+{
+    typedef _StoreType store_type;
+public:
+    typedef typename store_type::element element;
+
+    const_itr_access_linear(const store_type& db) : 
+        m_db(db), 
+        m_itr(db.get_array().begin()),
+        m_itr_end(db.get_array().end()) {}
+
+    const_itr_access_linear(const const_itr_access_linear& r) :
+        m_db(r.m_db),
+        m_itr(r.m_itr),
+        m_itr_end(r.m_itr_end) {}
+
+    bool operator== (const const_itr_access_linear& r) const
+    {
+        if (&m_db != &r.m_db)
+            // different storage instances.
+            return false;
+
+        return m_itr == r.m_itr;
+    }
+
+    bool empty() const { return m_db.get_array().begin() == m_itr_end; }
+
+    const element& get() const
+    {
+        assert(m_itr != m_itr_end);
+        return *(*m_itr);
+    }
+
+    bool inc()
+    {
+        if (m_itr == m_itr_end)
+            return false;
+
+        ++m_itr;
+        return m_itr != m_itr_end;
+    }
+
+    bool dec()
+    {
+        if (m_itr == m_db.get_array().begin())
+            // already on the first element.
+            return false;
+
+        --m_itr;
+        return true;
+    }
+
+    /**
+     * Set the current iterator position to the end position.
+     */
+    void set_to_end()
+    {
+        if (empty())
+            return;
+
+        m_itr = m_itr_end;
+    }
+private:
+    const store_type& m_db;
+    typename store_type::array_type::const_iterator m_itr;
+    typename store_type::array_type::const_iterator m_itr_end;
+};
+
 /**
  * This storage creates instance for every single element, even for the
  * empty elements. 
@@ -40,72 +109,7 @@ class storage_filled_linear : public ::mdds::storage_base<_MatrixType>
 public:
     typedef typename matrix_type::element element;
     typedef ::std::vector<element*> array_type;
-
-    class const_itr_access
-    {
-        typedef storage_filled_linear<matrix_type> store_type;
-    public:
-        const_itr_access(const store_type& db) : 
-            m_db(db), 
-            m_itr(db.get_array().begin()),
-            m_itr_end(db.get_array().end()) {}
-
-        const_itr_access(const const_itr_access& r) :
-            m_db(r.m_db),
-            m_itr(r.m_itr),
-            m_itr_end(r.m_itr_end) {}
-
-        bool operator== (const const_itr_access& r) const
-        {
-            if (&m_db != &r.m_db)
-                // different storage instances.
-                return false;
-
-            return m_itr == r.m_itr;
-        }
-
-        bool empty() const { return m_db.get_array().begin() == m_itr_end; }
-
-        const element& get() const
-        {
-            assert(m_itr != m_itr_end);
-            return *(*m_itr);
-        }
-
-        bool inc()
-        {
-            if (m_itr == m_itr_end)
-                return false;
-
-            ++m_itr;
-            return m_itr != m_itr_end;
-        }
-
-        bool dec()
-        {
-            if (m_itr == m_db.get_array().begin())
-                // already on the first element.
-                return false;
-
-            --m_itr;
-            return true;
-        }
-
-        /**
-         * Set the current iterator position to the end position.
-         */
-        void set_to_end()
-        {
-            if (empty())
-                return;
-
-            m_itr = m_itr_end;
-        }
-    private:
-        const store_type& m_db;
-        typename store_type::array_type::const_iterator m_itr;
-        typename store_type::array_type::const_iterator m_itr_end;
-    };
+    typedef const_itr_access_linear<storage_filled_linear> const_itr_access;
 
     storage_filled_linear(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_filled, init_type),
