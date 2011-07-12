@@ -74,6 +74,7 @@ int main()
         element* parray = new element[n];
         for (size_t i = 0; i < n; ++i)
             parray[i].number = 1.0;
+        cout << "size of array: " << sizeof(parray) / sizeof(element) << endl;
         delete[] parray;
     }
     return 0;

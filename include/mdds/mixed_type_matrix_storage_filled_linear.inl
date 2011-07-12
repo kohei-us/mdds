@@ -97,6 +97,81 @@ private:
 };
 
 /**
+ * Iterator access wrapper whose storage type is a C-style array with no
+ * standard iterators.
+ */
+template<typename _StoreType>
+class const_itr_access_array
+{
+    typedef _StoreType store_type;
+public:
+    typedef typename store_type::element element;
+
+    const_itr_access_array(const store_type& db) : 
+        m_db(db), 
+        m_array(db.get_array()),
+        m_size(db.rows()*db.cols()),
+        m_pos(0) {}
+
+    const_itr_access_array(const const_itr_access_array& r) :
+        m_db(r.m_db),
+        m_array(r.m_array),
+        m_size(r.m_size),
+        m_pos(r.m_pos) {}
+
+    bool operator== (const const_itr_access_array& r) const
+    {
+        if (&m_db != &r.m_db)
+            // different storage instances.
+            return false;
+
+        return m_array == r.m_array && m_size == r.m_size && m_pos == r.m_pos;
+    }
+
+    bool empty() const { return m_db.empty(); }
+
+    const element& get() const
+    {
+        return m_array[m_pos];
+    }
+
+    bool inc()
+    {
+        if (m_pos == m_size)
+            return false;
+
+        ++m_pos;
+        return m_pos != m_size;
+    }
+
+    bool dec()
+    {
+        if (m_pos == 0)
+            // already on the first element.
+            return false;
+
+        --m_pos;
+        return true;
+    }
+
+    /**
+     * Set the current iterator position to the end position.
+     */
+    void set_to_end()
+    {
+        if (empty())
+            return;
+
+        m_pos = m_size;
+    }
+private:
+    const store_type& m_db;
+    const typename store_type::element* m_array;
+    const size_t m_size;
+    size_t m_pos;
+};
+
+/**
  * This storage creates instance for every single element, even for the
  * empty elements. 
  */
@@ -391,12 +466,11 @@ class storage_filled_linear_zero : public ::mdds::storage_base<_MatrixType>
 
 public:
     typedef typename matrix_type::element element;
-    typedef ::std::vector<element*> array_type;
-    typedef const_itr_access_linear<storage_filled_linear_zero> const_itr_access;
+    typedef const_itr_access_array<storage_filled_linear_zero> const_itr_access;
 
     storage_filled_linear_zero(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_filled_zero, init_type),
-        m_element_pool(new ::boost::object_pool<element>),
+        m_array(NULL),
         m_rows(_rows),
         m_cols(_cols),
         m_numeric(false),
@@ -405,34 +479,34 @@ public:
         assert(init_type == matrix_init_element_zero);
 
         size_t n = m_rows * m_cols;
-        m_array.reserve(n);
+        if (!n)
+            return;
+
+        m_array = new element[n];
         for (size_t i = 0; i < n; ++i)
-            m_array.push_back(m_element_pool->construct(static_cast<double>(0.0)));
+            m_array[i].set_numeric(0.0);
     }
 
     storage_filled_linear_zero(const storage_filled_linear_zero& r) :
         storage_base<matrix_type>(r),
-        m_element_pool(new ::boost::object_pool<element>),
+        m_array(NULL),
         m_rows(r.m_rows),
         m_cols(r.m_cols),
         m_numeric(r.m_numeric),
         m_valid(r.m_valid)
     {
-        size_t n = r.m_array.size();
+        size_t n = m_rows * m_cols;
         if (!n)
             return;
 
-        m_array.reserve(n);
+        m_array = new element[n];
         for (size_t i = 0; i < n; ++i)
-        {
-            const element* p = r.m_array[i];
-            m_array.push_back(m_element_pool->construct(*p));
-        }
+            m_array[i] = r.m_array[i];
     }
 
     virtual ~storage_filled_linear_zero()
     {
-        delete m_element_pool;
+        delete[] m_array;
     }
 
     const_itr_access* get_const_itr_access() const
@@ -443,18 +517,17 @@ public:
     element& get_element(size_t row, size_t col)
     {
         m_valid = false;
-        size_t pos = get_pos(row, col);
-        return *m_array.at(pos);
+        return m_array[get_pos(row,col)];
     }
 
     matrix_element_t get_type(size_t row, size_t col) const
     {
-        return m_array.at(get_pos(row, col))->m_type;
+        return m_array[get_pos(row,col)].m_type;
     }
 
     double get_numeric(size_t row, size_t col) const
     {
-        const element& elem = *m_array.at(get_pos(row, col));
+        const element& elem = m_array[get_pos(row,col)];
         switch (elem.m_type)
         {
             case element_numeric:
@@ -470,7 +543,7 @@ public:
 
     const string_type* get_string(size_t row, size_t col) const
     {
-        const element& elem = *m_array.at(get_pos(row, col));
+        const element& elem = m_array[get_pos(row,col)];
         if (elem.m_type != element_string)
             throw matrix_storage_error("element type is not string.");
 
@@ -479,7 +552,7 @@ public:
 
     bool get_boolean(size_t row, size_t col) const
     {
-        const element& elem = *m_array.at(get_pos(row, col));
+        const element& elem = m_array[get_pos(row,col)];
         if (elem.m_type != element_boolean)
             throw matrix_storage_error("element type is not boolean.");
 
@@ -498,12 +571,17 @@ public:
 
     void transpose()
     {
-        array_type trans_array(m_array.size(), NULL);
+        if (!m_rows || !m_cols)
+            // empty matrix - nothing to do.
+            return;
+
+        element* trans_array = new element[m_rows*m_cols];
         for (size_t i = 0; i < m_rows; ++i)
             for (size_t j = 0; j < m_cols; ++j)
                 trans_array[m_rows*j+i] = m_array[get_pos(i,j)];
 
-        m_array.swap(trans_array);
+        delete[] m_array;
+        m_array = trans_array;
         ::std::swap(m_rows, m_cols);
     }
 
@@ -520,18 +598,18 @@ public:
         }
 
         size_t new_size = row * col;
-        if (m_array.empty())
+        if (empty())
         {
             // Current matrix is empty.
-            m_array.reserve(new_size);
+            m_array = new element[new_size];
             for (size_t i = 0; i < new_size; ++i)
-                m_array.push_back(m_element_pool->construct(static_cast<double>(0.0)));
+                m_array[i].set_numeric(0.0);
             m_rows = row;
             m_cols = col;
             return;
         }
 
-        array_type new_array(new_size, NULL);
+        element* new_array = new element[new_size];
         size_t min_rows = ::std::min(row, m_rows);
         size_t min_cols = ::std::min(col, m_cols);
         for (size_t i = 0; i < min_rows; ++i)
@@ -539,50 +617,25 @@ public:
             for (size_t j = 0; j < min_cols; ++j)
                 new_array[col*i+j] = m_array[get_pos(i, j)];
             for (size_t j = min_cols; j < col; ++j)
-                new_array[col*i+j] = m_element_pool->construct(static_cast<double>(0.0));
+                new_array[col*i+j].set_numeric(0.0);
         }
         for (size_t i = min_rows; i < row; ++i)
         {
             for (size_t j = 0; j < col; ++j)
-                new_array[col*i+j] = m_element_pool->construct(static_cast<double>(0.0));
+                new_array[col*i+j].set_numeric(0.0);
         }
 
-        if (row < m_rows)
-        {
-            // Delete all element instances that are in the rows being stripped off.
-            for (size_t i = row; i < m_rows; ++i)
-            {
-                for (size_t j = 0; j < m_cols; ++j)
-                {
-                    element* p = m_array[get_pos(i, j)];
-                    m_element_pool->destroy(p);
-                }
-            }
-        }
+        delete[] m_array;
+        m_array = new_array;
 
-        if (col < m_cols)
-        {
-            // Delete all elements in the columns that are being stripped off.
-            for (size_t i = 0; i < min_rows; ++i)
-            {
-                for (size_t j = col; j < m_cols; ++j)
-                {
-                    element* p = m_array[get_pos(i, j)];
-                    m_element_pool->destroy(p);
-                }
-            }
-        }
-
-        m_array.swap(new_array);
         m_rows = row;
         m_cols = col;
     }
 
     void clear()
     {
-        delete m_element_pool;
-        m_element_pool = new ::boost::object_pool<element>;
-        m_array.clear();
+        delete[] m_array;
+        m_array = NULL;
         m_valid = true;
         m_numeric = false;
     }
@@ -592,11 +645,17 @@ public:
         if (m_valid)
             return m_numeric;
 
-        typename array_type::const_iterator itr = m_array.begin(), itr_end = m_array.end();
-        for (; itr != itr_end; ++itr)
+        size_t n = m_rows * m_cols;
+        if (!n)
         {
-            const element* p = *itr;
-            matrix_element_t elem_type = p->m_type;
+            // empty matrix is never considered numeric.
+            m_numeric = false;
+            return m_numeric;
+        }
+
+        for (size_t i = 0; i < n; ++i)
+        {
+            matrix_element_t elem_type = m_array[i].m_type;
             if (elem_type != element_numeric && elem_type != element_boolean)
             {
                 m_numeric = false;
@@ -612,7 +671,7 @@ public:
 
     bool empty() const
     {
-        return m_array.empty();
+        return (!m_rows || !m_cols);
     }
 
     ::mdds::storage_base<matrix_type>* clone() const
@@ -620,7 +679,7 @@ public:
         return new storage_filled_linear_zero(*this);
     }
 
-    const array_type& get_array() const { return m_array; }
+    const element* get_array() const { return m_array; }
 
 private:
 
@@ -640,8 +699,7 @@ private:
     }
 
 private:
-    ::boost::object_pool<element>* m_element_pool;
-    array_type m_array;
+    element* m_array;
     size_t m_rows;
     size_t m_cols;
     bool m_numeric:1;
