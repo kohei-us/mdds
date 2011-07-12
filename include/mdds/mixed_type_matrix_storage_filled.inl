@@ -86,10 +86,10 @@ public:
         for (size_t i = 0; i < n; ++i)
         {
             const row_type& row_other = *r.m_rows[i];
-            size_t cols = row_other.size();
-            m_rows.push_back(m_row_pool->construct(cols, &m_init_elem));
+            size_t col_size = row_other.size();
+            m_rows.push_back(m_row_pool->construct(col_size, &m_init_elem));
             row_type& row = *m_rows.back();
-            for (size_t j = 0; j < cols; ++j)
+            for (size_t j = 0; j < col_size; ++j)
             {
                 if (row_other[j] != &r.m_init_elem)
                     row[j] = m_element_pool->construct(*row_other[j]);
@@ -323,9 +323,9 @@ private:
         }
     }
 
-    void delete_rows(rows_type& rows, size_t first_row)
+    void delete_rows(rows_type& row_array, size_t first_row)
     {
-        typename rows_type::iterator itr = rows.begin(), itr_end = rows.end();
+        typename rows_type::iterator itr = row_array.begin(), itr_end = row_array.end();
         ::std::advance(itr, first_row);
         for (; itr != itr_end; ++itr)
         {
