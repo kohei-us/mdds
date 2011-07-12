@@ -398,6 +398,8 @@ public:
         m_numeric(false),
         m_valid(false)
     {
+        assert(init_type == matrix_init_element_zero);
+
         size_t n = m_rows * m_cols;
         m_array.reserve(n);
         for (size_t i = 0; i < n; ++i)
