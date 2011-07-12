@@ -86,7 +86,7 @@ public:
 #if USE_LINEAR_STORAGE
     typedef ::mdds::storage_filled_linear<mixed_type_matrix> filled_storage_type;
 #else
-    typedef ::mdds::storage_filled<mixed_type_matrix> filled_storage_type;
+    typedef ::mdds::storage_filled_nested_array<mixed_type_matrix> filled_storage_type;
 #endif
     typedef ::mdds::storage_sparse<mixed_type_matrix> sparse_storage_type;
 

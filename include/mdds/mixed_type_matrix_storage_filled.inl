@@ -32,7 +32,7 @@ namespace mdds {
  * empty elements. 
  */
 template<typename _MatrixType>
-class storage_filled : public ::mdds::storage_base<_MatrixType>
+class storage_filled_nested_array : public ::mdds::storage_base<_MatrixType>
 {
     typedef _MatrixType matrix_type;
     typedef typename matrix_type::string_type string_type;
@@ -56,9 +56,9 @@ public:
             return *(*itr);
         }
     };
-    typedef ::mdds::const_itr_access<storage_filled, elem_wrap, rows_wrap> const_itr_access;
+    typedef ::mdds::const_itr_access<storage_filled_nested_array, elem_wrap, rows_wrap> const_itr_access;
 
-    storage_filled(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
+    storage_filled_nested_array(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_filled, init_type),
         m_row_pool(new ::boost::object_pool<row_type>),
         m_element_pool(new ::boost::object_pool<element>),
@@ -73,7 +73,7 @@ public:
             m_rows.push_back(m_row_pool->construct(_cols, &m_init_elem));
     }
 
-    storage_filled(const storage_filled& r) :
+    storage_filled_nested_array(const storage_filled_nested_array& r) :
         storage_base<matrix_type>(r),
         m_row_pool(new ::boost::object_pool<row_type>),
         m_element_pool(new ::boost::object_pool<element>),
@@ -97,7 +97,7 @@ public:
         }
     }
 
-    virtual ~storage_filled()
+    virtual ~storage_filled_nested_array()
     {
         delete m_row_pool;
         delete m_element_pool;
@@ -292,7 +292,7 @@ public:
 
     ::mdds::storage_base<matrix_type>* clone() const
     {
-        return new storage_filled(*this);
+        return new storage_filled_nested_array(*this);
     }
 
     const rows_type& get_rows() const { return m_rows; }

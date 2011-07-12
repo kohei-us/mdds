@@ -698,7 +698,7 @@ void traverse_itr_access(typename _StoreType::const_itr_access& itr_access)
 void mtm_test_iterator_access_filled(size_t rows, size_t cols)
 {
     StackPrinter __stack_printer__("::mtm_test_iterator_access_filled");
-    typedef storage_filled<mx_type> store_type;
+    typedef mx_type::filled_storage_type store_type;
 
     store_type store(rows, cols, matrix_init_element_zero);
     {
