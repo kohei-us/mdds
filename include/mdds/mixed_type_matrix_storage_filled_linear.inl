@@ -27,10 +27,11 @@
 
 namespace mdds {
 
-template<typename _StoreType>
+template<typename _StoreType, typename _ItrWrap>
 class const_itr_access_linear
 {
     typedef _StoreType store_type;
+    typedef _ItrWrap itr_wrap_type;
 public:
     typedef typename store_type::element element;
 
@@ -58,7 +59,7 @@ public:
     const element& get() const
     {
         assert(m_itr != m_itr_end);
-        return *(*m_itr);
+        return m_itr_wrap(m_itr);
     }
 
     bool inc()
@@ -92,6 +93,7 @@ public:
     }
 private:
     const store_type& m_db;
+    itr_wrap_type m_itr_wrap;
     typename store_type::array_type::const_iterator m_itr;
     typename store_type::array_type::const_iterator m_itr_end;
 };
@@ -184,7 +186,14 @@ class storage_filled_linear : public ::mdds::storage_base<_MatrixType>
 public:
     typedef typename matrix_type::element element;
     typedef ::std::vector<element*> array_type;
-    typedef const_itr_access_linear<storage_filled_linear> const_itr_access;
+    struct itr_wrap
+    {
+        const element& operator() (const typename array_type::const_iterator& itr) const
+        {
+            return *(*itr);
+        }
+    };
+    typedef const_itr_access_linear<storage_filled_linear, itr_wrap> const_itr_access;
 
     storage_filled_linear(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_filled, init_type),
@@ -466,11 +475,18 @@ class storage_filled_linear_zero : public ::mdds::storage_base<_MatrixType>
 
 public:
     typedef typename matrix_type::element element;
-    typedef const_itr_access_array<storage_filled_linear_zero> const_itr_access;
+    typedef ::std::vector<element> array_type;
+    struct itr_wrap
+    {
+        const element& operator() (const typename array_type::const_iterator& itr) const
+        {
+            return *itr;
+        }
+    };
+    typedef const_itr_access_linear<storage_filled_linear_zero, itr_wrap> const_itr_access;
 
     storage_filled_linear_zero(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_filled_zero, init_type),
-        m_array(NULL),
         m_rows(_rows),
         m_cols(_cols),
         m_numeric(false),
@@ -482,31 +498,21 @@ public:
         if (!n)
             return;
 
-        m_array = new element[n];
-        for (size_t i = 0; i < n; ++i)
-            m_array[i].set_numeric(0.0);
+        m_array.resize(n, element(0.0));
     }
 
     storage_filled_linear_zero(const storage_filled_linear_zero& r) :
         storage_base<matrix_type>(r),
-        m_array(NULL),
+        m_array(r.m_array),
         m_rows(r.m_rows),
         m_cols(r.m_cols),
         m_numeric(r.m_numeric),
         m_valid(r.m_valid)
     {
-        size_t n = m_rows * m_cols;
-        if (!n)
-            return;
-
-        m_array = new element[n];
-        for (size_t i = 0; i < n; ++i)
-            m_array[i] = r.m_array[i];
     }
 
     virtual ~storage_filled_linear_zero()
     {
-        delete[] m_array;
     }
 
     const_itr_access* get_const_itr_access() const
@@ -575,13 +581,12 @@ public:
             // empty matrix - nothing to do.
             return;
 
-        element* trans_array = new element[m_rows*m_cols];
+        ::std::vector<element> trans_array(m_rows*m_cols, element(0.0));
         for (size_t i = 0; i < m_rows; ++i)
             for (size_t j = 0; j < m_cols; ++j)
                 trans_array[m_rows*j+i] = m_array[get_pos(i,j)];
 
-        delete[] m_array;
-        m_array = trans_array;
+        m_array.swap(trans_array);
         ::std::swap(m_rows, m_cols);
     }
 
@@ -601,41 +606,29 @@ public:
         if (empty())
         {
             // Current matrix is empty.
-            m_array = new element[new_size];
-            for (size_t i = 0; i < new_size; ++i)
-                m_array[i].set_numeric(0.0);
+            m_array.resize(new_size, element(0.0));
             m_rows = row;
             m_cols = col;
             return;
         }
 
-        element* new_array = new element[new_size];
+        ::std::vector<element> new_array(new_size, element(0.0));
         size_t min_rows = ::std::min(row, m_rows);
         size_t min_cols = ::std::min(col, m_cols);
         for (size_t i = 0; i < min_rows; ++i)
         {
             for (size_t j = 0; j < min_cols; ++j)
                 new_array[col*i+j] = m_array[get_pos(i, j)];
-            for (size_t j = min_cols; j < col; ++j)
-                new_array[col*i+j].set_numeric(0.0);
-        }
-        for (size_t i = min_rows; i < row; ++i)
-        {
-            for (size_t j = 0; j < col; ++j)
-                new_array[col*i+j].set_numeric(0.0);
         }
 
-        delete[] m_array;
-        m_array = new_array;
-
+        m_array.swap(new_array);
         m_rows = row;
         m_cols = col;
     }
 
     void clear()
     {
-        delete[] m_array;
-        m_array = NULL;
+        m_array.clear();
         m_valid = true;
         m_numeric = false;
     }
@@ -645,7 +638,7 @@ public:
         if (m_valid)
             return m_numeric;
 
-        size_t n = m_rows * m_cols;
+        size_t n = m_array.size();
         if (!n)
         {
             // empty matrix is never considered numeric.
@@ -671,7 +664,7 @@ public:
 
     bool empty() const
     {
-        return (!m_rows || !m_cols);
+        return m_array.empty();    
     }
 
     ::mdds::storage_base<matrix_type>* clone() const
@@ -679,7 +672,7 @@ public:
         return new storage_filled_linear_zero(*this);
     }
 
-    const element* get_array() const { return m_array; }
+    const array_type& get_array() const { return m_array; }
 
 private:
 
@@ -699,7 +692,7 @@ private:
     }
 
 private:
-    element* m_array;
+    array_type m_array;
     size_t m_rows;
     size_t m_cols;
     bool m_numeric:1;
