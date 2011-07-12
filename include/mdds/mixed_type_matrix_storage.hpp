@@ -39,6 +39,7 @@ namespace mdds {
 enum matrix_storage_t
 {
     matrix_storage_filled,
+    matrix_storage_filled_zero,
     matrix_storage_sparse
 };
 
@@ -208,12 +209,15 @@ public:
     typedef typename _MatrixType::element               element;
     typedef typename _MatrixType::flag_storage          flag_storage;
     typedef typename _MatrixType::string_type           string_type;
-    typedef typename _MatrixType::filled_storage_type   filled_storage_type;
-    typedef typename _MatrixType::sparse_storage_type   sparse_storage_type;
+
+    typedef typename _MatrixType::filled_storage_type filled_storage_type;
+    typedef typename _MatrixType::filled_storage_zero_type filled_storage_zero_type;
+    typedef typename _MatrixType::sparse_storage_type sparse_storage_type;
 
     class const_iterator
     {
         typedef typename filled_storage_type::const_itr_access filled_access_type;
+        typedef typename filled_storage_zero_type::const_itr_access filled_zero_access_type;
         typedef typename sparse_storage_type::const_itr_access sparse_access_type;
     public:
         // iterator traits
@@ -259,6 +263,9 @@ public:
                 case matrix_storage_filled:
                     m_const_itr_access = new filled_access_type(*r.get_filled_itr());
                 break;
+                case matrix_storage_filled_zero:
+                    m_const_itr_access = new filled_zero_access_type(*r.get_filled_zero_itr());
+                break;
                 case matrix_storage_sparse:
                     m_const_itr_access = new sparse_access_type(*r.get_sparse_itr());
                 break;
@@ -273,6 +280,9 @@ public:
             {
                 case matrix_storage_filled:
                     delete get_filled_itr();
+                break;
+                case matrix_storage_filled_zero:
+                    delete get_filled_zero_itr();
                 break;
                 case matrix_storage_sparse:
                     delete get_sparse_itr();
@@ -305,6 +315,8 @@ public:
             {
                 case matrix_storage_filled:
                     return get_filled_itr()->get();
+                case matrix_storage_filled_zero:
+                    return get_filled_zero_itr()->get();
                 case matrix_storage_sparse:
                     return get_sparse_itr()->get();
                 default:
@@ -319,6 +331,8 @@ public:
             {
                 case matrix_storage_filled:
                     return &get_filled_itr()->get();
+                case matrix_storage_filled_zero:
+                    return &get_filled_zero_itr()->get();
                 case matrix_storage_sparse:
                     return &get_sparse_itr()->get();
                 default:
@@ -334,6 +348,9 @@ public:
             {
                 case matrix_storage_filled:
                     has_next = get_filled_itr()->inc();
+                break;
+                case matrix_storage_filled_zero:
+                    has_next = get_filled_zero_itr()->inc();
                 break;
                 case matrix_storage_sparse:
                     has_next = get_sparse_itr()->inc();
@@ -351,6 +368,9 @@ public:
             {
                 case matrix_storage_filled:
                     has_next = get_filled_itr()->dec();
+                break;
+                case matrix_storage_filled_zero:
+                    has_next = get_filled_zero_itr()->dec();
                 break;
                 case matrix_storage_sparse:
                     has_next = get_sparse_itr()->dec();
@@ -378,6 +398,8 @@ public:
             {
                 case matrix_storage_filled:
                     return *get_filled_itr() == *r.get_filled_itr();
+                case matrix_storage_filled_zero:
+                    return *get_filled_zero_itr() == *r.get_filled_zero_itr();
                 case matrix_storage_sparse:
                     return *get_sparse_itr() == *r.get_sparse_itr();
                 default:
@@ -392,6 +414,7 @@ public:
         }
 
     private:
+
         filled_access_type* get_filled_itr()
         {
             return static_cast<filled_access_type*>(m_const_itr_access);
@@ -400,6 +423,16 @@ public:
         const filled_access_type* get_filled_itr() const
         {
             return static_cast<const filled_access_type*>(m_const_itr_access);
+        }
+
+        filled_zero_access_type* get_filled_zero_itr()
+        {
+            return static_cast<filled_zero_access_type*>(m_const_itr_access);
+        }
+
+        const filled_zero_access_type* get_filled_zero_itr() const
+        {
+            return static_cast<const filled_zero_access_type*>(m_const_itr_access);
         }
 
         sparse_access_type* get_sparse_itr()
@@ -450,6 +483,12 @@ public:
                 return const_iterator(p, m_store_type);
             }
             break;
+            case matrix_storage_filled_zero:
+            {
+                void* p = static_cast<const filled_storage_zero_type*>(this)->get_const_itr_access();
+                return const_iterator(p, m_store_type);
+            }
+            break;
             case matrix_storage_sparse:
             {
                 void* p = static_cast<const sparse_storage_type*>(this)->get_const_itr_access();
@@ -472,6 +511,12 @@ public:
                 return const_iterator(p, m_store_type, true);
             }
             break;
+            case matrix_storage_filled_zero:
+            {
+                void* p = static_cast<const filled_storage_zero_type*>(this)->get_const_itr_access();
+                return const_iterator(p, m_store_type, true);
+            }
+            break;
             case matrix_storage_sparse:
             {
                 void* p = static_cast<const sparse_storage_type*>(this)->get_const_itr_access();
@@ -490,6 +535,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<filled_storage_type*>(this)->get_element(row, col);
+            case matrix_storage_filled_zero:
+                return static_cast<filled_storage_zero_type*>(this)->get_element(row, col);
             case matrix_storage_sparse:
                 return static_cast<sparse_storage_type*>(this)->get_element(row, col);
             default:
@@ -504,6 +551,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<const filled_storage_type*>(this)->get_type(row, col);
+            case matrix_storage_filled_zero:
+                return static_cast<const filled_storage_zero_type*>(this)->get_type(row, col);
             case matrix_storage_sparse:
                 return static_cast<const sparse_storage_type*>(this)->get_type(row, col);
             default:
@@ -518,6 +567,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<const filled_storage_type*>(this)->get_numeric(row, col);
+            case matrix_storage_filled_zero:
+                return static_cast<const filled_storage_zero_type*>(this)->get_numeric(row, col);
             case matrix_storage_sparse:
                 return static_cast<const sparse_storage_type*>(this)->get_numeric(row, col);
             default:
@@ -532,6 +583,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<const filled_storage_type*>(this)->get_string(row, col);
+            case matrix_storage_filled_zero:
+                return static_cast<const filled_storage_zero_type*>(this)->get_string(row, col);
             case matrix_storage_sparse:
                 return static_cast<const sparse_storage_type*>(this)->get_string(row, col);
             default:
@@ -546,6 +599,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<const filled_storage_type*>(this)->get_boolean(row, col);
+            case matrix_storage_filled_zero:
+                return static_cast<const filled_storage_zero_type*>(this)->get_boolean(row, col);
             case matrix_storage_sparse:
                 return static_cast<const sparse_storage_type*>(this)->get_boolean(row, col);
             default:
@@ -560,6 +615,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<const filled_storage_type*>(this)->rows();
+            case matrix_storage_filled_zero:
+                return static_cast<const filled_storage_zero_type*>(this)->rows();
             case matrix_storage_sparse:
                 return static_cast<const sparse_storage_type*>(this)->rows();
             default:
@@ -574,6 +631,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<const filled_storage_type*>(this)->cols();
+            case matrix_storage_filled_zero:
+                return static_cast<const filled_storage_zero_type*>(this)->cols();
             case matrix_storage_sparse:
                 return static_cast<const sparse_storage_type*>(this)->cols();
             default:
@@ -588,6 +647,9 @@ public:
         {
             case matrix_storage_filled:
                 static_cast<filled_storage_type*>(this)->transpose();
+            break;
+            case matrix_storage_filled_zero:
+                static_cast<filled_storage_zero_type*>(this)->transpose();
             break;
             case matrix_storage_sparse:
                 static_cast<sparse_storage_type*>(this)->transpose();
@@ -604,6 +666,9 @@ public:
             case matrix_storage_filled:
                 static_cast<filled_storage_type*>(this)->resize(row, col);
             break;
+            case matrix_storage_filled_zero:
+                static_cast<filled_storage_zero_type*>(this)->resize(row, col);
+            break;
             case matrix_storage_sparse:
                 static_cast<sparse_storage_type*>(this)->resize(row, col);
             break;
@@ -619,6 +684,9 @@ public:
             case matrix_storage_filled:
                 static_cast<filled_storage_type*>(this)->clear();
             break;
+            case matrix_storage_filled_zero:
+                static_cast<filled_storage_zero_type*>(this)->clear();
+            break;
             case matrix_storage_sparse:
                 static_cast<sparse_storage_type*>(this)->clear();
             break;
@@ -633,6 +701,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<filled_storage_type*>(this)->numeric();
+            case matrix_storage_filled_zero:
+                return static_cast<filled_storage_zero_type*>(this)->numeric();
             case matrix_storage_sparse:
                 return static_cast<sparse_storage_type*>(this)->numeric();
             default:
@@ -647,6 +717,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<const filled_storage_type*>(this)->empty();
+            case matrix_storage_filled_zero:
+                return static_cast<const filled_storage_zero_type*>(this)->empty();
             case matrix_storage_sparse:
                 return static_cast<const sparse_storage_type*>(this)->empty();
             default:
@@ -661,6 +733,8 @@ public:
         {
             case matrix_storage_filled:
                 return static_cast<const filled_storage_type*>(this)->clone();
+            case matrix_storage_filled_zero:
+                return static_cast<const filled_storage_zero_type*>(this)->clone();
             case matrix_storage_sparse:
                 return static_cast<const sparse_storage_type*>(this)->clone();
             default:

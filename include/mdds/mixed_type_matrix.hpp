@@ -85,8 +85,10 @@ public:
     typedef ::mdds::flag_storage<flag_type, size_pair_type, size_pair_type_hash> flag_storage;
 #if USE_LINEAR_STORAGE
     typedef ::mdds::storage_filled_linear<mixed_type_matrix> filled_storage_type;
+    typedef ::mdds::storage_filled_linear_zero<mixed_type_matrix> filled_storage_zero_type;
 #else
     typedef ::mdds::storage_filled_nested_array<mixed_type_matrix> filled_storage_type;
+    typedef ::mdds::storage_filled_nested_array<mixed_type_matrix> filled_storage_zero_type;
 #endif
     typedef ::mdds::storage_sparse<mixed_type_matrix> sparse_storage_type;
 
