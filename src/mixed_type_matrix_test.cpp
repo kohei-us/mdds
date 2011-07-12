@@ -920,6 +920,12 @@ int main(int argc, char** argv)
         mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(1, 3);
         mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(3, 3);
         mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(0, 0);
+
+        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(1, 1);
+        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(3, 1);
+        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(1, 3);
+        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(3, 3);
+        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(0, 0);
     
         mtm_test_iterator_access_sparse();
     
