@@ -221,6 +221,10 @@ public:
 #endif
 
 private:
+    /**
+     * Storage classes have no vtable; the concrete class type must be
+     * specified when deleting the instance.
+     */
     void delete_storage();
 
 private:
