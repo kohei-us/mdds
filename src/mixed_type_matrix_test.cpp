@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#include "mdds/mixed_type_matrix.hpp"
 #include "test_global.hpp"
+#include "mdds/mixed_type_matrix.hpp"
 
 #include <sstream>
 #include <cassert>
