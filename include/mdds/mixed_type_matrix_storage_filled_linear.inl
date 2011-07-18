@@ -441,6 +441,8 @@ public:
 
 private:
 
+    storage_filled_linear& operator= (const storage_filled_linear&); // disabled.
+
     /**
      * Get an array position of the data referenced by the row and column 
      * indices.  The array consists of multiple rows, the content of row 0 
@@ -674,6 +676,7 @@ public:
     const array_type& get_array() const { return m_array; }
 
 private:
+    storage_filled_linear_zero& operator= (const storage_filled_linear_zero&); // disabled.
 
     /**
      * Get an array position of the data referenced by the row and column 

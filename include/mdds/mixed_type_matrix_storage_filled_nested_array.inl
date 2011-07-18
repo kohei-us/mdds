@@ -299,6 +299,8 @@ public:
 
 private:
 
+    storage_filled_nested_array& operator= (const storage_filled_nested_array&); // disabled.
+
     /**
      * Resize rows to a new column size, from row 0 up to specified upper 
      * row. 
