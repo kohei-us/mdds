@@ -156,11 +156,7 @@ public:
     };
 #endif
 
-#ifdef UNIT_TEST
 public:
-#else
-private:
-#endif
     typedef ::std::vector<data_type*> data_chain_type;
     typedef _mdds_unordered_map_type<data_type*, ::std::pair<key_type, key_type> > segment_map_type;
     typedef ::std::map<data_type*, ::std::pair<key_type, key_type> >               sorted_segment_map_type;
@@ -234,6 +230,7 @@ private:
     {
         ::std::string operator() (const node& _self) const
         {
+#ifdef UNIT_TEST
             ::std::ostringstream os;
             if (_self.is_leaf)
             {
@@ -260,6 +257,9 @@ private:
             }
             os << " ";
             return os.str();
+#else
+            return ::std::string();
+#endif
         }
     };
 
