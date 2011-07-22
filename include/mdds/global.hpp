@@ -47,6 +47,12 @@ private:
     ::std::string m_msg;
 };
 
+class invalid_arg_error : public general_error
+{
+public:
+    invalid_arg_error(const ::std::string& msg) : general_error(msg) {}
+};
+
 }
 
 #endif

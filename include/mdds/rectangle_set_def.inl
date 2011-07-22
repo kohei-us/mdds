@@ -79,6 +79,9 @@ bool rectangle_set<_Key,_Data>::operator== (const rectangle_set& r) const
 template<typename _Key, typename _Data>
 bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data)
 {
+    if (x1 >= x2 || y1 >= y2)
+        throw invalid_arg_error("specified range coordinates are invalid.");
+
     // Make sure this is not a duplicate.
     if (m_dataset.find(data) != m_dataset.end())
         return false;

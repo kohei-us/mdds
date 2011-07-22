@@ -909,6 +909,38 @@ void rect_test_search_result_iterator()
     for_each(result.begin(), result.end(), range_type::printer());
 }
 
+void rect_test_invalid_range()
+{
+    StackPrinter __stack_printer__("::rect_test_invalid_range");
+    typedef rectangle_set<int, string> set_type;
+    string A("A");
+
+    int ranges[][4] = {
+        {0, 0, 0, 1},
+        {0, 0, 1, 0},
+        {3, 0, 1, 3},
+        {1, 2, 4, 1},
+    };
+    size_t range_count = sizeof(ranges)/sizeof(ranges[0]);
+
+    set_type db;
+    for (size_t i = 0; i < range_count; ++i)
+    {
+        try
+        {
+            cout << "ranges: (x1=" << ranges[i][0] << ",y1=" << ranges[i][1]
+                << ",x2=" << ranges[i][2] << ",y2=" << ranges[i][3] << ")" << endl;
+
+            db.insert(ranges[i][0], ranges[i][1], ranges[i][2], ranges[i][3], &A);
+            assert(!"exception is expected on invalid range coordinates, but not thrown!");
+        }
+        catch (const invalid_arg_error&)
+        {
+            cout << "invalid arg error is caught as expected" << endl;
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     cmd_options opt;
@@ -922,6 +954,7 @@ int main(int argc, char** argv)
         rect_test_assignment();
         rect_test_equality();
         rect_test_search_result_iterator();
+        rect_test_invalid_range();
     }
 
     if (opt.test_perf)
