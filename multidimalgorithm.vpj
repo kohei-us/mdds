@@ -252,13 +252,6 @@
 			<F N="include/nodecontainer.hpp"/>
 			<F N="include/rangetree.hpp"/>
 		</Folder>
-		<Folder Name="../mdds">
-			<Folder Name="include">
-				<Folder Name="mdds">
-					<F N="../mdds/include/mdds/rectangle_set_def.inl"/>
-				</Folder>
-			</Folder>
-		</Folder>
 		<Folder Name="src">
 			<F N="src/flat_segment_tree_test.cpp"/>
 			<F N="src/mixed_type_matrix_test.cpp"/>
