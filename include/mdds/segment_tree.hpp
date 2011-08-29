@@ -436,9 +436,18 @@ private:
 
         bool operator== (const iterator_base& r) const
         {
-            return mp_res_chains.get() == r.mp_res_chains.get() && 
-                m_cur_chain == r.m_cur_chain && m_cur_pos_in_chain == r.m_cur_pos_in_chain &&
-                m_end_pos == r.m_end_pos;
+            if (mp_res_chains.get())
+            {
+                // non-empty result set.
+                return mp_res_chains.get() == r.mp_res_chains.get() &&
+                    m_cur_chain == r.m_cur_chain && m_cur_pos_in_chain == r.m_cur_pos_in_chain &&
+                    m_end_pos == r.m_end_pos;
+            }
+
+            // empty result set.
+            if (r.mp_res_chains.get())
+                return false;
+            return m_end_pos == r.m_end_pos;
         }
 
         bool operator!= (const iterator_base& r) const { return !operator==(r); }
