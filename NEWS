@@ -1,3 +1,21 @@
+* all
+
+  * added MSVS Solution file, to make it easier to build unit test 
+    programs on Windows.
+    
+* segment_tree
+  
+  * fixed build breakage, to allow it to be buildable when UNIT_TEST 
+    is not defined.
+    
+  * fixed a crasher with MSVC when comparing iterators of empty 
+    search_result instances.
+    
+* point_quad_tree
+  
+  * fixed a bug where de-referencing copied search_result iterators 
+    would return an uninitialized node data.  
+
 mdds 0.5.3
 
 * mixed_type_matrix
