@@ -237,8 +237,18 @@ public:
 
             bool operator== (const const_iterator& r) const
             {
-                return mp_res_nodes.get() == r.mp_res_nodes.get() && 
-                    m_cur_pos == r.m_cur_pos && m_end_pos == r.m_end_pos;
+                if (mp_res_nodes)
+                {
+                    // Non-empty result set.
+                    return mp_res_nodes.get() == r.mp_res_nodes.get() &&
+                        m_cur_pos == r.m_cur_pos && m_end_pos == r.m_end_pos;
+                }
+
+                // Empty result set.
+                if (r.mp_res_nodes)
+                    return false;
+
+                return m_end_pos == r.m_end_pos;
             }
 
             bool operator!= (const const_iterator& r) const
