@@ -40,6 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="C:\Users\Kohei\Workspace\multidimalgorithm\include;C:\dev\boost_1_42_0"
+				PreprocessorDefinitions="UNIT_TEST;DEBUG_NODE_BASE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
