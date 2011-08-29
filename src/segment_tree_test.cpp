@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010 Kohei Yoshida
+ * Copyright (c) 2010, 2011 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -42,7 +42,6 @@
 
 using namespace std;
 using namespace mdds;
-using namespace boost;
 
 template<typename key_type, typename value_type>
 void build_and_dump(segment_tree<key_type, value_type>&db)
@@ -637,7 +636,7 @@ void st_test_search_on_uneven_tree()
 
     for (key_type data_count = 10; data_count < 20; ++data_count)
     {
-        ptr_vector<test_data> data_store;
+        boost::ptr_vector<test_data> data_store;
         data_store.reserve(data_count);
         for (key_type i = 0; i < data_count; ++i)
         {
@@ -680,7 +679,7 @@ void st_test_perf_insertion()
     key_type data_count = 1000000;
 
     // First, create test data instances and store them into a vector.
-    ptr_vector<test_data> data_store;
+    boost::ptr_vector<test_data> data_store;
     {
         StackPrinter __stack_printer2__("::st_test_perf_insertion:: data array creation");
         data_store.reserve(data_count);
