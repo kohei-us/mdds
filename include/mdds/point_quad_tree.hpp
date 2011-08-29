@@ -225,12 +225,14 @@ public:
             const_iterator(const const_iterator& r) :
                 mp_res_nodes(r.mp_res_nodes),
                 m_cur_pos(r.m_cur_pos),
+                m_cur_value(r.m_cur_value),
                 m_end_pos(r.m_end_pos) {}
 
             const_iterator& operator= (const const_iterator& r)
             {
                 mp_res_nodes = r.mp_res_nodes;
                 m_cur_pos = r.m_cur_pos;
+                m_cur_value = r.m_cur_value;
                 m_end_pos = r.m_end_pos;
                 return *this;
             }
