@@ -28,14 +28,33 @@
 #ifndef __MDDS_GRID_MAP_COLUMN_HPP__
 #define __MDDS_GRID_MAP_COLUMN_HPP__
 
+#include <vector>
+#include <algorithm>
+
 namespace mdds { namespace __gridmap {
 
-template<typename _CellT>
+template<typename _CellT, typename _RowKeyT>
 class column
 {
 public:
     typedef _CellT cell_type;
+    typedef _RowKeyT row_key_type;
+
+    column();
+    ~column();
+
+private:
+    std::vector<cell_type*> m_cells;
 };
+
+template<typename _CellT, typename _RowKeyT>
+column<_CellT,_RowKeyT>::column() {}
+
+template<typename _CellT, typename _RowKeyT>
+column<_CellT,_RowKeyT>::~column()
+{
+    std::for_each(m_cells.begin(), m_cells.end(), default_deleter<cell_type>());
+}
 
 }}
 

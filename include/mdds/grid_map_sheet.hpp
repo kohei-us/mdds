@@ -35,12 +35,15 @@
 
 namespace mdds { namespace __gridmap {
 
-template<typename _CellT>
+template<typename _CellT, typename _RowKeyT, typename _ColKeyT>
 class sheet
 {
 public:
+    typedef _RowKeyT row_key_type;
+    typedef _ColKeyT col_key_type;
+
     typedef _CellT cell_type;
-    typedef column<cell_type> column_type;
+    typedef column<cell_type, row_key_type> column_type;
 
     sheet();
     ~sheet();
@@ -49,11 +52,11 @@ private:
     std::vector<column_type*> m_columns;
 };
 
-template<typename _CellT>
-sheet<_CellT>::sheet() {}
+template<typename _CellT, typename _RowKeyT, typename _ColKeyT>
+sheet<_CellT,_RowKeyT,_ColKeyT>::sheet() {}
 
-template<typename _CellT>
-sheet<_CellT>::~sheet()
+template<typename _CellT, typename _RowKeyT, typename _ColKeyT>
+sheet<_CellT,_RowKeyT,_ColKeyT>::~sheet()
 {
     std::for_each(m_columns.begin(), m_columns.end(), default_deleter<column_type>());
 }

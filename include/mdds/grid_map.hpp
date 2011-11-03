@@ -49,7 +49,7 @@ public:
     typedef _ColKeyT   col_key_type;
 
     typedef _CellT cell_type;
-    typedef __gridmap::sheet<cell_type> sheet_type;
+    typedef __gridmap::sheet<cell_type, row_key_type, col_key_type> sheet_type;
 
     grid_map();
     ~grid_map();
