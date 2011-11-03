@@ -25,13 +25,13 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_GRID_MAP_SHEET_HPP__
-#define __MDDS_GRID_MAP_SHEET_HPP__
+#ifndef __MDDS_GRID_MAP_COLUMN_HPP__
+#define __MDDS_GRID_MAP_COLUMN_HPP__
 
 namespace mdds { namespace __gridmap {
 
 template<typename _CellT>
-class sheet
+class column
 {
 public:
     typedef _CellT cell_type;
