@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2011 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -25,10 +25,10 @@
  *
  ************************************************************************/
 
-namespace mdds {
+namespace mdds { namespace __mtm {
 
 /**
- * This storage stores only non-empty elements. 
+ * This storage stores only non-empty elements.
  */
 template<typename _MatrixType>
 class storage_sparse : public storage_base<_MatrixType>
@@ -57,7 +57,7 @@ public:
     };
     typedef ::mdds::const_itr_access<storage_sparse, elem_wrap, rows_wrap> const_itr_access;
 
-    storage_sparse(size_t _rows, size_t _cols, matrix_init_element_t init_type) : 
+    storage_sparse(size_t _rows, size_t _cols, matrix_init_element_t init_type) :
         storage_base<matrix_type>(matrix_storage_sparse, init_type),
         m_row_size(_rows), m_col_size(_cols),
         m_numeric(_rows && _cols), m_valid(true)
@@ -76,9 +76,9 @@ public:
 
     storage_sparse(const storage_sparse& r) :
         storage_base<matrix_type>(r),
-        m_rows(r.m_rows), 
-        m_empty_elem(r.m_empty_elem), 
-        m_row_size(r.m_row_size), 
+        m_rows(r.m_rows),
+        m_empty_elem(r.m_empty_elem),
+        m_row_size(r.m_row_size),
         m_col_size(r.m_col_size) {}
 
     ~storage_sparse() {}
@@ -210,9 +210,9 @@ public:
         // Sort by row index first, then by column index.
         sort(filled_elems.begin(), filled_elems.end(), elem_pos_sorter());
 
-        // Iterate through the non-empty element positions and perform 
+        // Iterate through the non-empty element positions and perform
         // transposition.
-        typename vector<elem_pos_type>::const_iterator 
+        typename vector<elem_pos_type>::const_iterator
             itr_pos = filled_elems.begin(), itr_pos_end = filled_elems.end();
         while (itr_pos != itr_pos_end)
         {
@@ -225,7 +225,7 @@ public:
 
             typename rows_type::iterator itr_row = r.first;
             row_type& row = *itr_row->second;
-            pair<typename row_type::iterator, bool> r2 = 
+            pair<typename row_type::iterator, bool> r2 =
                 row.insert(col_idx, new element(m_rows[col_idx][row_idx]));
             if (!r2.second)
                 throw matrix_storage_error("afiled to insert a new element instance during transposition.");
@@ -254,12 +254,12 @@ public:
             return;
         }
 
-        // Resizing a sparse matrix need to modify the data only when 
+        // Resizing a sparse matrix need to modify the data only when
         // shrinking.
 
         if (m_row_size > row)
         {
-            // Remove all rows where the row index is greater than or 
+            // Remove all rows where the row index is greater than or
             // equal to 'row'.
             typename rows_type::iterator itr = m_rows.lower_bound(row);
             m_rows.erase(itr, m_rows.end());
@@ -270,7 +270,7 @@ public:
             typename rows_type::iterator itr = m_rows.begin(), itr_end = m_rows.end();
             for (; itr != itr_end; ++itr)
             {
-                // Now, remove all columns where the column index is 
+                // Now, remove all columns where the column index is
                 // greater than or equal to 'col'.
                 row_type& row_container = *itr->second;
                 typename row_type::iterator itr_elem = row_container.lower_bound(col);
@@ -324,7 +324,7 @@ public:
         if (init_type == matrix_init_element_zero)
             m_numeric = true;
         else
-        {    
+        {
             size_t total_elem_count = m_row_size * m_col_size;
             assert(non_empty_count <= total_elem_count);
             m_numeric = total_elem_count == non_empty_count;
@@ -373,4 +373,4 @@ private:
     bool        m_valid:1;
 };
 
-}
+}}

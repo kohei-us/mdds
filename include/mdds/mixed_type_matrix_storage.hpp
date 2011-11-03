@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2010 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -56,9 +56,9 @@ public:
 };
 
 /**
- * Wrapper class that provides access to the storage internals.  This is 
- * used by storage_base::const_iterator to traverse data in different 
- * storage backends. 
+ * Wrapper class that provides access to the storage internals.  This is
+ * used by storage_base::const_iterator to traverse data in different
+ * storage backends.
  */
 template<typename _StoreType, typename _ElemWrap, typename _RowsWrap>
 class const_itr_access
@@ -69,8 +69,8 @@ class const_itr_access
 public:
     typedef typename _StoreType::element element;
 
-    const_itr_access(const store_type& db) : 
-        m_db(db), 
+    const_itr_access(const store_type& db) :
+        m_db(db),
         m_rows_itr(db.get_rows().begin()),
         m_rows_itr_end(db.get_rows().end())
     {
@@ -121,7 +121,7 @@ public:
 
         ++m_row_itr;
         if (m_row_itr == m_row_itr_end)
-        {    
+        {
             // Move to the next row.
             if (m_rows_itr != m_rows_itr_end)
             {
@@ -149,7 +149,7 @@ public:
         {
             // On the first element of a row.
             if (m_rows_itr == m_db.get_rows().begin())
-                // already on the first row. 
+                // already on the first row.
                 return false;
 
             // Move up to the previous row, and select its last element.
@@ -227,11 +227,11 @@ public:
         typedef ptrdiff_t   difference_type;
         typedef ::std::bidirectional_iterator_tag   iterator_category;
 
-        const_iterator() : 
+        const_iterator() :
             m_const_itr_access(NULL), m_type(matrix_storage_filled)
         {}
 
-        const_iterator(void* p, matrix_storage_t type, bool _end = false) : 
+        const_iterator(void* p, matrix_storage_t type, bool _end = false) :
             m_const_itr_access(p), m_type(type)
         {
             assert(p != NULL);
@@ -461,10 +461,10 @@ public:
         matrix_storage_t m_type;
     };
 
-    storage_base(matrix_storage_t store_type, matrix_init_element_t init) : 
+    storage_base(matrix_storage_t store_type, matrix_init_element_t init) :
         m_store_type(store_type), m_init_type(init) {}
 
-    storage_base(const storage_base& r) : 
+    storage_base(const storage_base& r) :
         m_store_type(r.m_store_type), m_init_type(r.m_init_type), m_flags(r.m_flags) {}
 
     matrix_storage_t get_storage_type() const { return m_store_type; }
@@ -758,7 +758,6 @@ private:
 
 }
 
-#include "mixed_type_matrix_storage_filled_nested_array.inl"
 #include "mixed_type_matrix_storage_filled_linear.inl"
 #include "mixed_type_matrix_storage_sparse.inl"
 

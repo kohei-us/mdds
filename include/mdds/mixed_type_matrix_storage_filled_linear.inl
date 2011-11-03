@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2011 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-namespace mdds {
+namespace mdds { namespace __mtm {
 
 /**
  * Iterator wrapper for storage whose data provides standard iterators.
@@ -38,8 +38,8 @@ class const_itr_access_linear
 public:
     typedef typename store_type::element element;
 
-    const_itr_access_linear(const store_type& db) : 
-        m_db(db), 
+    const_itr_access_linear(const store_type& db) :
+        m_db(db),
         m_itr(db.get_array().begin()),
         m_itr_end(db.get_array().end()) {}
 
@@ -112,8 +112,8 @@ class const_itr_access_array
 public:
     typedef typename store_type::element element;
 
-    const_itr_access_array(const store_type& db) : 
-        m_db(db), 
+    const_itr_access_array(const store_type& db) :
+        m_db(db),
         m_array(db.get_array()),
         m_size(db.rows()*db.cols()),
         m_pos(0) {}
@@ -178,7 +178,7 @@ private:
 
 /**
  * This storage creates instance for every single element, even for the
- * empty elements. 
+ * empty elements.
  */
 template<typename _MatrixType>
 class storage_filled_linear : public ::mdds::storage_base<_MatrixType>
@@ -444,14 +444,14 @@ private:
     storage_filled_linear& operator= (const storage_filled_linear&); // disabled.
 
     /**
-     * Get an array position of the data referenced by the row and column 
-     * indices.  The array consists of multiple rows, the content of row 0 
-     * followded by the content of row 1, and so on.  <b>Note that no 
-     * boundary check is performed in this method.</b> 
-     *  
+     * Get an array position of the data referenced by the row and column
+     * indices.  The array consists of multiple rows, the content of row 0
+     * followded by the content of row 1, and so on.  <b>Note that no
+     * boundary check is performed in this method.</b>
+     *
      * @param row 0-based row index.
      * @param col 0-based column index.
-     * @return position in the data array. 
+     * @return position in the data array.
      */
     size_t get_pos(size_t row, size_t col) const
     {
@@ -665,7 +665,7 @@ public:
 
     bool empty() const
     {
-        return m_array.empty();    
+        return m_array.empty();
     }
 
     ::mdds::storage_base<matrix_type>* clone() const
@@ -679,14 +679,14 @@ private:
     storage_filled_linear_zero& operator= (const storage_filled_linear_zero&); // disabled.
 
     /**
-     * Get an array position of the data referenced by the row and column 
-     * indices.  The array consists of multiple rows, the content of row 0 
-     * followded by the content of row 1, and so on.  <b>Note that no 
-     * boundary check is performed in this method.</b> 
-     *  
+     * Get an array position of the data referenced by the row and column
+     * indices.  The array consists of multiple rows, the content of row 0
+     * followded by the content of row 1, and so on.  <b>Note that no
+     * boundary check is performed in this method.</b>
+     *
      * @param row 0-based row index.
      * @param col 0-based column index.
-     * @return position in the data array. 
+     * @return position in the data array.
      */
     size_t get_pos(size_t row, size_t col) const
     {
@@ -701,4 +701,4 @@ private:
     bool m_valid:1;
 };
 
-}
+}}

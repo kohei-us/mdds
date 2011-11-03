@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2010 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -42,7 +42,7 @@ typedef void (test_func_type)(matrix_density_t);
 
 /**
  * Run specified test on all matrix density types.
- *  
+ *
  * @param func function pointer to the test function to be performed.
  */
 void run_tests_on_all_density_types(test_func_type* func)
@@ -182,7 +182,7 @@ bool verify_assign(const _Mx& mx1, const _Mx& mx2)
             matrix_element_t elem_type = mx1.get_type(i, j);
             if (elem_type != mx2.get_type(i, j))
                 return false;
-            
+
             switch (elem_type)
             {
                 case element_boolean:
@@ -303,7 +303,7 @@ void mtm_test_value_store(matrix_density_t density)
     assert(mxsize.second == 5);
     assert(!mx.empty());
 
-    // Make sure all elements have been initialized properly according to the 
+    // Make sure all elements have been initialized properly according to the
     // matrix type.
     for (size_t i = 0; i < 5; ++i)
     {
@@ -315,7 +315,7 @@ void mtm_test_value_store(matrix_density_t density)
                 case matrix_density_filled_zero:
                 case matrix_density_sparse_zero:
                 {
-                    // filled matrices are initialized to numeric elements 
+                    // filled matrices are initialized to numeric elements
                     // having a value of 0.
                     assert(elem_type == element_numeric);
                     double val = mx.get_numeric(i, j);
@@ -713,7 +713,7 @@ void mtm_test_iterator_access_filled(size_t rows, size_t cols)
 void mtm_test_iterator_access_sparse()
 {
     StackPrinter __stack_printer__("::mem_test_iterator_access_sparse");
-    typedef storage_sparse<mx_type> store_type;
+    typedef mx_type::sparse_storage_type store_type;
     store_type store(5, 5, matrix_init_element_empty);
     {
         store_type::const_itr_access* itr_access = store.get_const_itr_access();
@@ -899,36 +899,30 @@ int main(int argc, char** argv)
         run_tests_on_all_density_types(mtm_test_value_store);
         run_tests_on_all_density_types(mtm_test_transpose);
         run_tests_on_all_density_types(mtm_test_assignment);
-    
+
         mtm_test_initial_elements();
         mtm_test_numeric_matrix();
         mtm_test_assign(matrix_density_filled_zero, matrix_density_filled_zero);
         mtm_test_assign(matrix_density_filled_empty, matrix_density_filled_zero);
         mtm_test_assign(matrix_density_filled_zero, matrix_density_filled_empty);
         mtm_test_assign(matrix_density_filled_empty, matrix_density_filled_empty);
-    
+
         run_tests_on_all_density_types(mtm_test_flag_storage);
-    
-        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(1, 1);
-        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(3, 1);
-        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(1, 3);
-        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(3, 3);
-        mtm_test_iterator_access_filled<storage_filled_nested_array<mx_type> >(0, 0);
 
-        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(1, 1);
-        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(3, 1);
-        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(1, 3);
-        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(3, 3);
-        mtm_test_iterator_access_filled<storage_filled_linear<mx_type> >(0, 0);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(1, 1);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(3, 1);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(1, 3);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(3, 3);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(0, 0);
 
-        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(1, 1);
-        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(3, 1);
-        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(1, 3);
-        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(3, 3);
-        mtm_test_iterator_access_filled<storage_filled_linear_zero<mx_type> >(0, 0);
-    
+        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(1, 1);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(3, 1);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(1, 3);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(3, 3);
+        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(0, 0);
+
         mtm_test_iterator_access_sparse();
-    
+
         mtm_test_const_iterator();
     }
 

@@ -1,7 +1,7 @@
 /*************************************************************************
  *
- * Copyright (c) 2010 Kohei Yoshida
- * 
+ * Copyright (c) 2010, 2011 Kohei Yoshida
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -80,10 +80,10 @@ private:
     static storage_base* create_storage(size_t rows, size_t cols, matrix_density_t density);
 
 public:
-    typedef ::mdds::flag_storage<flag_type, size_pair_type, size_pair_type_hash> flag_storage;
-    typedef ::mdds::storage_filled_linear<mixed_type_matrix> filled_storage_type;
-    typedef ::mdds::storage_filled_linear_zero<mixed_type_matrix> filled_storage_zero_type;
-    typedef ::mdds::storage_sparse<mixed_type_matrix> sparse_storage_type;
+    typedef ::mdds::__mtm::flag_storage<flag_type, size_pair_type, size_pair_type_hash> flag_storage;
+    typedef ::mdds::__mtm::storage_filled_linear<mixed_type_matrix> filled_storage_type;
+    typedef ::mdds::__mtm::storage_filled_linear_zero<mixed_type_matrix> filled_storage_zero_type;
+    typedef ::mdds::__mtm::storage_sparse<mixed_type_matrix> sparse_storage_type;
 
     typedef typename storage_base::const_iterator const_iterator;
 
@@ -98,7 +98,7 @@ public:
     mixed_type_matrix(matrix_density_t density);
 
     /**
-     * Construct a matrix of specified size with specified density type. 
+     * Construct a matrix of specified size with specified density type.
      */
     mixed_type_matrix(size_t rows, size_t cols, matrix_density_t density);
 
@@ -111,9 +111,9 @@ public:
     mixed_type_matrix& operator= (const mixed_type_matrix& r);
 
     /**
-     * Get the type of element specified by its position.  The type can be one 
-     * of empty, string, numeric, or boolean. 
-     * 
+     * Get the type of element specified by its position.  The type can be one
+     * of empty, string, numeric, or boolean.
+     *
      * @return element type.
      */
     matrix_element_t get_type(size_t row, size_t col) const;
@@ -133,7 +133,7 @@ public:
 
     /**
      * Set flag value at specified position.
-     * 
+     *
      * @param row row position
      * @param col column position
      * @param flag_type flag value
@@ -141,11 +141,11 @@ public:
     void set_flag(size_t row, size_t col, flag_type flag);
 
     /**
-     * Get flag value at specified position. 
-     *  
-     * @param row row position 
-     * @param col column position 
-     * 
+     * Get flag value at specified position.
+     *
+     * @param row row position
+     * @param col column position
+     *
      * @return flag value stored at specified position
      */
     flag_type get_flag(size_t row, size_t col) const;
@@ -155,15 +155,15 @@ public:
     /**
      * Return the size of matrix as a pair.  The first value is the row size,
      * while the second value is the column size.
-     * 
+     *
      * @return matrix size as a value pair.
      */
     size_pair_type size() const;
-    
-    /** 
-     * Transpose the stored matrix data. 
-     *  
-     * @return reference to this matrix instance. 
+
+    /**
+     * Transpose the stored matrix data.
+     *
+     * @return reference to this matrix instance.
      */
     mixed_type_matrix& transpose();
 
@@ -174,7 +174,7 @@ public:
      * the passed matrix instance will remain unmodified.  If the size of the
      * pass matrix instance is larger, then only the elements within the size
      * of this matrix instance will get assigned.
-     * 
+     *
      * @param r passed matrix object to assign element values from.
      */
     void assign(const mixed_type_matrix& r);
@@ -183,7 +183,7 @@ public:
      * Resize the matrix to specified size.  This method supports resizing to
      * zero-sized matrix; however, either specifying the row or column size to
      * zero will resize the matrix to 0 x 0.
-     * 
+     *
      * @param row new row size
      * @param col new column size
      */
@@ -195,17 +195,17 @@ public:
     void clear();
 
     /**
-     * Check whether or not this matrix is numeric.  A numeric matrix contains 
-     * only numeric or boolean elements. 
-     * 
-     * @return true if the matrix contains only numeric or boolean elements, 
+     * Check whether or not this matrix is numeric.  A numeric matrix contains
+     * only numeric or boolean elements.
+     *
+     * @return true if the matrix contains only numeric or boolean elements,
      *         or false otherwise.
      */
     bool numeric() const;
 
     /**
-     * Check whether or not this matrix is empty. 
-     * 
+     * Check whether or not this matrix is empty.
+     *
      * @return true if this matrix is empty, or false otherwise.
      */
     bool empty() const;
