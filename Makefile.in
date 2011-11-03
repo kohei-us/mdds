@@ -15,7 +15,8 @@ EXECS= \
 	segment_tree_test \
 	point_quad_tree_test \
 	mixed_type_matrix_test \
-	rectangle_set_test
+	rectangle_set_test \
+	grid_map_test
 
 HEADERS= \
 	$(INCDIR)/mdds/flat_segment_tree_def.inl \
@@ -46,7 +47,8 @@ TESTS = \
 	test.recset \
 	test.pqt \
 	test.st \
-	test.mtm
+	test.mtm \
+	test.gridmap
 
 TESTS_MEM = \
 	test.pqt.mem \
@@ -81,6 +83,9 @@ $(OBJDIR)/point_quad_tree_test.o: $(SRCDIR)/point_quad_tree_test.cpp $(DEPENDS)
 $(OBJDIR)/mixed_type_matrix_test.o: $(SRCDIR)/mixed_type_matrix_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/mixed_type_matrix_test.cpp
 
+$(OBJDIR)/grid_map_test.o: $(SRCDIR)/grid_map_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/grid_map_test.cpp
+
 flat_segment_tree_test: pre $(OBJDIR)/flat_segment_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flat_segment_tree_test.o -o $@
 
@@ -95,6 +100,9 @@ point_quad_tree_test: pre $(OBJDIR)/point_quad_tree_test.o
 
 mixed_type_matrix_test: pre $(OBJDIR)/mixed_type_matrix_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/mixed_type_matrix_test.o -o $@
+
+grid_map_test: pre $(OBJDIR)/grid_map_test.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/grid_map_test.o -o $@
 
 stlperf_test: pre $(SRCDIR)/stlperf_test.cpp
 	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
@@ -143,6 +151,9 @@ test.mtm.perf: mixed_type_matrix_test
 
 test.mtm.mem: mixed_type_matrix_test
 	valgrind --tool=memcheck --leak-check=full ./mixed_type_matrix_test func
+
+test.gridmap: grid_map_test
+	./grid_map_test func
 
 test.stl: stlperf_test
 	./stlperf_test

@@ -234,6 +234,8 @@
 				<F N="include/mdds/flat_segment_tree_def.inl"/>
 				<F N="include/mdds/flat_segment_tree_itr.hpp"/>
 				<F N="include/mdds/global.hpp"/>
+				<F N="include/mdds/grid_map.hpp"/>
+				<F N="include/mdds/grid_map_def.inl"/>
 				<F N="include/mdds/mixed_type_matrix.hpp"/>
 				<F N="include/mdds/mixed_type_matrix_def.inl"/>
 				<F N="include/mdds/mixed_type_matrix_element.hpp"/>
