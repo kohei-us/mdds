@@ -30,8 +30,62 @@
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
+#include <stdio.h>
+#include <string>
+#include <sys/time.h>
+
 using namespace std;
 using namespace mdds;
+
+namespace {
+
+class stack_printer
+{
+public:
+    explicit stack_printer(const char* msg) :
+        m_msg(msg)
+    {
+        fprintf(stdout, "%s: --begin\n", m_msg.c_str());
+        m_start_time = get_time();
+    }
+
+    ~stack_printer()
+    {
+        double end_time = get_time();
+        fprintf(stdout, "%s: --end (duration: %g sec)\n", m_msg.c_str(), (end_time-m_start_time));
+    }
+
+    void print_time(int line) const
+    {
+        double end_time = get_time();
+        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", m_msg.c_str(), line, (end_time-m_start_time));
+    }
+
+private:
+    double get_time() const
+    {
+        timeval tv;
+        gettimeofday(&tv, NULL);
+        return tv.tv_sec + tv.tv_usec / 1000000.0;
+    }
+
+    std::string m_msg;
+    double m_start_time;
+};
+
+struct numeric_cell
+{
+    double value;
+};
+
+}
+
+void gridmap_test_basic()
+{
+    stack_printer __stack_printer__("::gridmap_test_basic");
+    typedef mdds::grid_map<numeric_cell, long, long, long> grid_store_type;
+    grid_store_type db;
+}
 
 int main (int argc, char **argv)
 {
@@ -41,6 +95,7 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
+        gridmap_test_basic();
     }
 
     if (opt.test_perf)

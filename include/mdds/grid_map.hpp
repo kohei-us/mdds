@@ -28,13 +28,32 @@
 #ifndef __MDDS_GRID_MAP_HPP__
 #define __MDDS_GRID_MAP_HPP__
 
+#include "mdds/grid_map_sheet.hpp"
+
+#include <vector>
+
 namespace mdds {
 
-template<typename _CellType>
+/**
+ * This container stores grid cells in a 3-dimensional hyperplane.  Cells
+ * are accessed via 3-key combinations.
+ */
+template<typename _CellT, typename _SheetKeyT, typename _RowKeyT, typename _ColKeyT>
 class grid_map
 {
 public:
-    typedef _CellType cell_type;
+    typedef _SheetKeyT sheet_key_type;
+    typedef _RowKeyT   row_key_type;
+    typedef _ColKeyT   col_key_type;
+
+    typedef _CellT cell_type;
+    typedef __gridmap::sheet<cell_type> sheet_type;
+
+    grid_map();
+    ~grid_map();
+
+private:
+    std::vector<sheet_type*> m_sheets;
 };
 
 }

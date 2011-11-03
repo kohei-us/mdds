@@ -25,16 +25,18 @@
  *
  ************************************************************************/
 
-namespace mdds {
+#ifndef __GRID_MAP_SHEET_HPP__
+#define __GRID_MAP_SHEET_HPP__
 
-template<typename _CellT, typename _SheetKeyT, typename _RowKeyT, typename _ColKeyT>
-grid_map<_CellT,_SheetKeyT,_RowKeyT,_ColKeyT>::grid_map()
+namespace mdds { namespace __gridmap {
+
+template<typename _CellType>
+class sheet
 {
-}
+public:
+    typedef _CellType cell_type;
+};
 
-template<typename _CellT, typename _SheetKeyT, typename _RowKeyT, typename _ColKeyT>
-grid_map<_CellT,_SheetKeyT,_RowKeyT,_ColKeyT>::~grid_map()
-{
-}
+}}
 
-}
+#endif
