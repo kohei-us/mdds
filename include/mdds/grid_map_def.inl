@@ -35,6 +35,7 @@ grid_map<_CellT,_SheetKeyT,_RowKeyT,_ColKeyT>::grid_map()
 template<typename _CellT, typename _SheetKeyT, typename _RowKeyT, typename _ColKeyT>
 grid_map<_CellT,_SheetKeyT,_RowKeyT,_ColKeyT>::~grid_map()
 {
+    std::for_each(m_sheets.begin(), m_sheets.end(), default_deleter<sheet_type>());
 }
 
 }

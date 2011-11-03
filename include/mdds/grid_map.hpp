@@ -28,9 +28,11 @@
 #ifndef __MDDS_GRID_MAP_HPP__
 #define __MDDS_GRID_MAP_HPP__
 
+#include "mdds/global.hpp"
 #include "mdds/grid_map_sheet.hpp"
 
 #include <vector>
+#include <algorithm>
 
 namespace mdds {
 

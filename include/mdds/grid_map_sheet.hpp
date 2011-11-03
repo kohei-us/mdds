@@ -28,6 +28,11 @@
 #ifndef __MDDS_GRID_MAP_SHEET_HPP__
 #define __MDDS_GRID_MAP_SHEET_HPP__
 
+#include "mdds/grid_map_column.hpp"
+
+#include <vector>
+#include <algorithm>
+
 namespace mdds { namespace __gridmap {
 
 template<typename _CellT>
@@ -35,7 +40,23 @@ class sheet
 {
 public:
     typedef _CellT cell_type;
+    typedef column<cell_type> column_type;
+
+    sheet();
+    ~sheet();
+
+private:
+    std::vector<column_type*> m_columns;
 };
+
+template<typename _CellT>
+sheet<_CellT>::sheet() {}
+
+template<typename _CellT>
+sheet<_CellT>::~sheet()
+{
+    std::for_each(m_columns.begin(), m_columns.end(), default_deleter<column_type>());
+}
 
 }}
 
