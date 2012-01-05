@@ -43,7 +43,7 @@ public:
     typedef typename _Trait::col_key_type col_key_type;
 
     typedef typename _Trait::cell_type cell_type;
-    typedef column<cell_type, row_key_type> column_type;
+    typedef column<_Trait> column_type;
 
     sheet();
     ~sheet();

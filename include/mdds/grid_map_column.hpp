@@ -33,27 +33,51 @@
 
 namespace mdds { namespace __gridmap {
 
-template<typename _CellT, typename _RowKeyT>
+/**
+ * Each column consists of a series of blocks, and each block stores a
+ * series of non-empty cells of identical type.
+ */
+template<typename _Trait>
 class column
 {
+    typedef typename _Trait::cell_type cell_type;
+    typedef typename _Trait::cell_category_type cell_category_type;
+    typedef typename _Trait::row_key_type row_key_type;
+
+    struct block
+    {
+        cell_category_type m_type;
+        std::vector<cell_type*> m_cells;
+
+        block(cell_category_type _type, size_t _init_size = 0);
+        ~block();
+    };
 public:
-    typedef _CellT cell_type;
-    typedef _RowKeyT row_key_type;
 
     column();
     ~column();
 
 private:
-    std::vector<cell_type*> m_cells;
+    std::vector<block*> m_blocks;
 };
 
-template<typename _CellT, typename _RowKeyT>
-column<_CellT,_RowKeyT>::column() {}
+template<typename _Trait>
+column<_Trait>::block::block(cell_category_type _type, size_t _init_size) :
+    m_type(_type), m_cells(_init_size, NULL) {}
 
-template<typename _CellT, typename _RowKeyT>
-column<_CellT,_RowKeyT>::~column()
+template<typename _Trait>
+column<_Trait>::block::~block()
 {
     std::for_each(m_cells.begin(), m_cells.end(), default_deleter<cell_type>());
+}
+
+template<typename _Trait>
+column<_Trait>::column() {}
+
+template<typename _Trait>
+column<_Trait>::~column()
+{
+    std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
 }
 
 }}
