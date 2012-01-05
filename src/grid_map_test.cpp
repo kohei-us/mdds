@@ -73,9 +73,30 @@ private:
     double m_start_time;
 };
 
-struct numeric_cell
+enum cell_t { celltype_numeric, celltype_string };
+
+struct base_cell
+{
+    cell_t type;
+};
+
+struct numeric_cell : public base_cell
 {
     double value;
+};
+
+struct string_cell : public base_cell
+{
+    std::string str;
+};
+
+struct grid_map_trait
+{
+    typedef base_cell cell_type;
+    typedef cell_t cell_category_type;
+    typedef long sheet_key_type;
+    typedef long row_key_type;
+    typedef long col_key_type;
 };
 
 }
@@ -83,7 +104,7 @@ struct numeric_cell
 void gridmap_test_basic()
 {
     stack_printer __stack_printer__("::gridmap_test_basic");
-    typedef mdds::grid_map<numeric_cell, long, long, long> grid_store_type;
+    typedef mdds::grid_map<grid_map_trait> grid_store_type;
     grid_store_type db;
 }
 

@@ -40,15 +40,15 @@ namespace mdds {
  * This container stores grid cells in a 3-dimensional hyperplane.  Cells
  * are accessed via 3-key combinations.
  */
-template<typename _CellT, typename _SheetKeyT, typename _RowKeyT, typename _ColKeyT>
+template<typename _Trait>
 class grid_map
 {
 public:
-    typedef _SheetKeyT sheet_key_type;
-    typedef _RowKeyT   row_key_type;
-    typedef _ColKeyT   col_key_type;
+    typedef typename _Trait::sheet_key_type sheet_key_type;
+    typedef typename _Trait::row_key_type row_key_type;
+    typedef typename _Trait::col_key_type col_key_type;
 
-    typedef _CellT cell_type;
+    typedef typename _Trait::cell_type cell_type;
     typedef __gridmap::sheet<cell_type, row_key_type, col_key_type> sheet_type;
 
     grid_map();
