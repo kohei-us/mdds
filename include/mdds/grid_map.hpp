@@ -49,7 +49,7 @@ public:
     typedef typename _Trait::col_key_type col_key_type;
 
     typedef typename _Trait::cell_type cell_type;
-    typedef __gridmap::sheet<cell_type, row_key_type, col_key_type> sheet_type;
+    typedef __gridmap::sheet<_Trait> sheet_type;
 
     grid_map();
     ~grid_map();
