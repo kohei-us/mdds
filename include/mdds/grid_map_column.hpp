@@ -57,6 +57,9 @@ public:
     column();
     ~column();
 
+    void set_cell(row_key_type row);
+    const cell_type* get_cell(row_key_type row) const;
+
 private:
     std::vector<block*> m_blocks;
 };
@@ -78,6 +81,18 @@ template<typename _Trait>
 column<_Trait>::~column()
 {
     std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
+}
+
+template<typename _Trait>
+void column<_Trait>::set_cell(row_key_type row)
+{
+}
+
+template<typename _Trait>
+const typename column<_Trait>::cell_type*
+column<_Trait>::get_cell(row_key_type row) const
+{
+    return NULL;
 }
 
 }}
