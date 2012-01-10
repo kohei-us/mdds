@@ -55,7 +55,7 @@ private:
     typedef typename _Trait::cell_delete_handler cell_delete_handler;
 
     /**
-     * Data for non-empty block.
+     * Data for non-empty block.  Cells are stored here.
      */
     struct block_data : boost::noncopyable
     {
@@ -66,11 +66,14 @@ private:
         ~block_data();
     };
 
+    /**
+     * Empty or non-empty block.
+     */
     struct block : boost::noncopyable
     {
         row_key_type m_size;
-        bool m_empty;
         block_data* mp_data;
+        bool m_empty;
 
         block();
         block(row_key_type _size);
@@ -104,7 +107,7 @@ template<typename _Trait>
 column<_Trait>::block::block() : m_size(0), m_empty(true), mp_data(NULL) {}
 
 template<typename _Trait>
-column<_Trait>::block::block(row_key_type _size) : m_size(_size), m_empty(true), mp_data(NULL) {}
+column<_Trait>::block::block(row_key_type _size) : m_size(_size), mp_data(NULL), m_empty(true) {}
 
 template<typename _Trait>
 column<_Trait>::block::~block()
@@ -129,6 +132,8 @@ template<typename _Trait>
 void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_type* cell)
 {
     unique_ptr<cell_type, cell_delete_handler> p(cell);
+
+    // TODO: implement cell insertion...
 }
 
 template<typename _Trait>
