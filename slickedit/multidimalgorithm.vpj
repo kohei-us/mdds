@@ -234,6 +234,10 @@
 				<F N="../include/mdds/flat_segment_tree_def.inl"/>
 				<F N="../include/mdds/flat_segment_tree_itr.hpp"/>
 				<F N="../include/mdds/global.hpp"/>
+				<F N="../include/mdds/grid_map.hpp"/>
+				<F N="../include/mdds/grid_map_column.hpp"/>
+				<F N="../include/mdds/grid_map_def.inl"/>
+				<F N="../include/mdds/grid_map_sheet.hpp"/>
 				<F N="../include/mdds/mixed_type_matrix.hpp"/>
 				<F N="../include/mdds/mixed_type_matrix_def.inl"/>
 				<F N="../include/mdds/mixed_type_matrix_element.hpp"/>
@@ -254,6 +258,7 @@
 		</Folder>
 		<Folder Name="src">
 			<F N="../src/flat_segment_tree_test.cpp"/>
+			<F N="../src/grid_map_test.cpp"/>
 			<F N="../src/mixed_type_matrix_test.cpp"/>
 			<F N="../src/nodecontainer.cpp"/>
 			<F N="../src/point_quad_tree_test.cpp"/>
