@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __DEFAULT_DELETER_HPP__
-#define __DEFAULT_DELETER_HPP__
+#ifndef __MDDS_DEFAULT_DELETER_HPP__
+#define __MDDS_DEFAULT_DELETER_HPP__
 
 #include <functional>
 

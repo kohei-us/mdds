@@ -52,6 +52,8 @@ public:
     typedef typename _Trait::row_key_type row_key_type;
 
 private:
+    typedef typename _Trait::cell_delete_handler cell_delete_handler;
+
     /**
      * Data for non-empty block.
      */
@@ -95,7 +97,7 @@ column<_Trait>::block_data::block_data(cell_category_type _type, size_t _init_si
 template<typename _Trait>
 column<_Trait>::block_data::~block_data()
 {
-    std::for_each(m_cells.begin(), m_cells.end(), default_deleter<cell_type>());
+    std::for_each(m_cells.begin(), m_cells.end(), cell_delete_handler());
 }
 
 template<typename _Trait>
@@ -126,7 +128,7 @@ column<_Trait>::~column()
 template<typename _Trait>
 void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_type* cell)
 {
-    unique_ptr<cell_type> p(cell);
+    unique_ptr<cell_type, cell_delete_handler> p(cell);
 }
 
 template<typename _Trait>

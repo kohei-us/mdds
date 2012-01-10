@@ -34,11 +34,11 @@
 
 namespace mdds {
 
-template<typename _T>
-class unique_ptr : public boost::interprocess::unique_ptr<_T, default_deleter<_T> >
+template<typename _T, typename _Deleter = default_deleter<_T> >
+class unique_ptr : public boost::interprocess::unique_ptr<_T, _Deleter>
 {
 public:
-    unique_ptr(_T* p) : boost::interprocess::unique_ptr<_T, default_deleter<_T> >(p) {}
+    unique_ptr(_T* p) : boost::interprocess::unique_ptr<_T, _Deleter>(p) {}
 };
 
 }

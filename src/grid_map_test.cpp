@@ -75,21 +75,42 @@ private:
     double m_start_time;
 };
 
-enum cell_t { celltype_numeric, celltype_string };
+enum cell_t { celltype_numeric = 0, celltype_string };
 
 struct base_cell
 {
     cell_t type;
+    base_cell(cell_t _t) : type(_t) {}
 };
 
 struct numeric_cell : public base_cell
 {
     double value;
+    numeric_cell(double _v) : base_cell(celltype_numeric), value(_v) {}
 };
 
 struct string_cell : public base_cell
 {
     std::string str;
+    string_cell(const std::string& _s) : base_cell(celltype_string), str(_s) {}
+};
+
+struct cell_deleter : public std::unary_function<base_cell*, void>
+{
+    void operator() (base_cell* p)
+    {
+        switch (p->type)
+        {
+            case celltype_numeric:
+                delete static_cast<numeric_cell*>(p);
+            break;
+            case celltype_string:
+                delete static_cast<string_cell*>(p);
+            break;
+            default:
+                assert(!"attempting to delete a cell instance of unknown type!");
+        }
+    }
 };
 
 struct grid_map_trait
@@ -99,6 +120,8 @@ struct grid_map_trait
     typedef long sheet_key_type;
     typedef long row_key_type;
     typedef long col_key_type;
+
+    typedef cell_deleter cell_delete_handler;
 };
 
 }
@@ -114,6 +137,8 @@ void gridmap_test_basic()
     column_type col_db(100);
     const column_type::cell_type* cell = col_db.get_cell(0);
     assert(!cell);
+
+    col_db.set_cell(0, celltype_numeric, new numeric_cell(1.0));
 }
 
 int main (int argc, char **argv)

@@ -155,6 +155,9 @@ test.mtm.mem: mixed_type_matrix_test
 test.gridmap: grid_map_test
 	./grid_map_test func
 
+test.gridmap.mem: grid_map_test
+	valgrind --tool=memcheck --leak-check=full ./grid_map_test func
+
 test.stl: stlperf_test
 	./stlperf_test
 
