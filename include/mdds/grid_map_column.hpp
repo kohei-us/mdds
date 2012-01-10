@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011 Kohei Yoshida
+ * Copyright (c) 2011-2012 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -30,6 +30,9 @@
 
 #include <vector>
 #include <algorithm>
+#include <cassert>
+
+#include <boost/noncopyable.hpp>
 
 namespace mdds { namespace __gridmap {
 
@@ -40,42 +43,76 @@ namespace mdds { namespace __gridmap {
 template<typename _Trait>
 class column
 {
+public:
     typedef typename _Trait::cell_type cell_type;
     typedef typename _Trait::cell_category_type cell_category_type;
     typedef typename _Trait::row_key_type row_key_type;
 
-    struct block
+private:
+    /**
+     * Data for non-empty block.
+     */
+    struct block_data : boost::noncopyable
     {
         cell_category_type m_type;
         std::vector<cell_type*> m_cells;
 
-        block(cell_category_type _type, size_t _init_size = 0);
+        block_data(cell_category_type _type, size_t _init_size = 0);
+        ~block_data();
+    };
+
+    struct block : boost::noncopyable
+    {
+        row_key_type m_size;
+        bool m_empty;
+        block_data* mp_data;
+
+        block();
+        block(row_key_type _size);
         ~block();
     };
-public:
 
-    column();
+    column(); // disabled
+public:
+    column(row_key_type max_row);
     ~column();
 
-    void set_cell(row_key_type row);
+    void set_cell(row_key_type row, cell_category_type cat, cell_type* cell);
     const cell_type* get_cell(row_key_type row) const;
 
 private:
     std::vector<block*> m_blocks;
+    row_key_type m_max_row;
 };
 
 template<typename _Trait>
-column<_Trait>::block::block(cell_category_type _type, size_t _init_size) :
+column<_Trait>::block_data::block_data(cell_category_type _type, size_t _init_size) :
     m_type(_type), m_cells(_init_size, NULL) {}
 
 template<typename _Trait>
-column<_Trait>::block::~block()
+column<_Trait>::block_data::~block_data()
 {
     std::for_each(m_cells.begin(), m_cells.end(), default_deleter<cell_type>());
 }
 
 template<typename _Trait>
-column<_Trait>::column() {}
+column<_Trait>::block::block() : m_size(0), m_empty(true), mp_data(NULL) {}
+
+template<typename _Trait>
+column<_Trait>::block::block(row_key_type _size) : m_size(_size), m_empty(true), mp_data(NULL) {}
+
+template<typename _Trait>
+column<_Trait>::block::~block()
+{
+    delete mp_data;
+}
+
+template<typename _Trait>
+column<_Trait>::column(row_key_type max_row) : m_max_row(max_row)
+{
+    // Initialize with an empty block that spans from 0 to max.
+    m_blocks.push_back(new block(max_row));
+}
 
 template<typename _Trait>
 column<_Trait>::~column()
@@ -84,7 +121,7 @@ column<_Trait>::~column()
 }
 
 template<typename _Trait>
-void column<_Trait>::set_cell(row_key_type row)
+void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_type* cell)
 {
 }
 
@@ -92,6 +129,26 @@ template<typename _Trait>
 const typename column<_Trait>::cell_type*
 column<_Trait>::get_cell(row_key_type row) const
 {
+    row_key_type cur_index = 0;
+    for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
+    {
+        const block& blk = *m_blocks[i];
+        if (row >= cur_index + blk.m_size)
+        {
+            // Specified row is not in this block.
+            cur_index += blk.m_size;
+            continue;
+        }
+
+        if (blk.m_empty)
+            // empty cell block.
+            return NULL;
+
+        assert(blk.mp_data); // data for non-empty blocks should never be NULL.
+        assert(blk.m_size == static_cast<row_key_type>(blk.mp_data->m_cells.size()));
+        row_key_type idx = row - cur_index;
+        return blk.mp_data->m_cells[idx];
+    }
     return NULL;
 }
 

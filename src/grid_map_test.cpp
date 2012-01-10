@@ -28,6 +28,8 @@
 #include "mdds/grid_map.hpp"
 #include "test_global.hpp"
 
+#include <cassert>
+
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
 #include <stdio.h>
@@ -105,7 +107,13 @@ void gridmap_test_basic()
 {
     stack_printer __stack_printer__("::gridmap_test_basic");
     typedef mdds::grid_map<grid_map_trait> grid_store_type;
+    typedef grid_store_type::sheet_type::column_type column_type;
     grid_store_type db;
+
+    // Single column instance with 100 rows.
+    column_type col_db(100);
+    const column_type::cell_type* cell = col_db.get_cell(0);
+    assert(!cell);
 }
 
 int main (int argc, char **argv)
