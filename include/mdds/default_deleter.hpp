@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011-2012 Kohei Yoshida
+ * Copyright (c) 2012 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,40 +25,22 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_GRID_MAP_HPP__
-#define __MDDS_GRID_MAP_HPP__
+#ifndef __DEFAULT_DELETER_HPP__
+#define __DEFAULT_DELETER_HPP__
 
-#include "mdds/grid_map_sheet.hpp"
-
-#include <vector>
-#include <algorithm>
+#include <functional>
 
 namespace mdds {
 
-/**
- * This container stores grid cells in a 3-dimensional hyperplane.  Cells
- * are accessed via 3-key combinations.
- */
-template<typename _Trait>
-class grid_map
+template<typename _T>
+struct default_deleter : public std::unary_function<void, const _T*>
 {
-public:
-    typedef typename _Trait::sheet_key_type sheet_key_type;
-    typedef typename _Trait::row_key_type row_key_type;
-    typedef typename _Trait::col_key_type col_key_type;
-
-    typedef typename _Trait::cell_type cell_type;
-    typedef __gridmap::sheet<_Trait> sheet_type;
-
-    grid_map();
-    ~grid_map();
-
-private:
-    std::vector<sheet_type*> m_sheets;
+    void operator() (const _T* p)
+    {
+        delete p;
+    }
 };
 
 }
-
-#include "grid_map_def.inl"
 
 #endif

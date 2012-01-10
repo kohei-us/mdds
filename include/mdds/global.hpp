@@ -53,15 +53,6 @@ public:
     invalid_arg_error(const ::std::string& msg) : general_error(msg) {}
 };
 
-template<typename _T>
-struct default_deleter : public std::unary_function<void, const _T*>
-{
-    void operator() (const _T* p)
-    {
-        delete p;
-    }
-};
-
 }
 
 #endif

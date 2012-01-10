@@ -219,17 +219,21 @@
 			Filters=""/>
 	</CustomFolders>
 	<Files AutoFolders="DirectoryView">
-		<Folder Name="example">
+		<Folder Name="../example">
 			<F N="../example/flat_segment_tree.cpp"/>
 			<F N="../example/point_quad_tree.cpp"/>
 			<F N="../example/rectangle_set.cpp"/>
 			<F N="../example/segment_tree.cpp"/>
 		</Folder>
-		<Folder Name="include">
+		<Folder Name="../include">
 			<Folder Name="mdds">
+				<Folder Name="compat">
+					<F N="../include/mdds/compat/unique_ptr.hpp"/>
+				</Folder>
 				<Folder Name="hash_container">
 					<F N="../include/mdds/hash_container/map.hpp"/>
 				</Folder>
+				<F N="../include/mdds/default_deleter.hpp"/>
 				<F N="../include/mdds/flat_segment_tree.hpp"/>
 				<F N="../include/mdds/flat_segment_tree_def.inl"/>
 				<F N="../include/mdds/flat_segment_tree_itr.hpp"/>
@@ -256,7 +260,7 @@
 			<F N="../include/nodecontainer.hpp"/>
 			<F N="../include/rangetree.hpp"/>
 		</Folder>
-		<Folder Name="src">
+		<Folder Name="../src">
 			<F N="../src/flat_segment_tree_test.cpp"/>
 			<F N="../src/grid_map_test.cpp"/>
 			<F N="../src/mixed_type_matrix_test.cpp"/>

@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011-2012 Kohei Yoshida
+ * Copyright (c) 2012 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,40 +25,22 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_GRID_MAP_HPP__
-#define __MDDS_GRID_MAP_HPP__
+#ifndef __MDDS_COMPAT_UNIQUE_PTR_HPP__
+#define __MDDS_COMPAT_UNIQUE_PTR_HPP__
 
-#include "mdds/grid_map_sheet.hpp"
+#include "mdds/default_deleter.hpp"
 
-#include <vector>
-#include <algorithm>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 namespace mdds {
 
-/**
- * This container stores grid cells in a 3-dimensional hyperplane.  Cells
- * are accessed via 3-key combinations.
- */
-template<typename _Trait>
-class grid_map
+template<typename _T>
+class unique_ptr : public boost::interprocess::unique_ptr<_T, default_deleter<_T> >
 {
 public:
-    typedef typename _Trait::sheet_key_type sheet_key_type;
-    typedef typename _Trait::row_key_type row_key_type;
-    typedef typename _Trait::col_key_type col_key_type;
-
-    typedef typename _Trait::cell_type cell_type;
-    typedef __gridmap::sheet<_Trait> sheet_type;
-
-    grid_map();
-    ~grid_map();
-
-private:
-    std::vector<sheet_type*> m_sheets;
+    unique_ptr(_T* p) : boost::interprocess::unique_ptr<_T, default_deleter<_T> >(p) {}
 };
 
 }
-
-#include "grid_map_def.inl"
 
 #endif

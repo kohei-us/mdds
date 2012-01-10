@@ -28,6 +28,9 @@
 #ifndef __MDDS_GRID_MAP_COLUMN_HPP__
 #define __MDDS_GRID_MAP_COLUMN_HPP__
 
+#include "mdds/default_deleter.hpp"
+#include "mdds/compat/unique_ptr.hpp"
+
 #include <vector>
 #include <algorithm>
 #include <cassert>
@@ -123,6 +126,7 @@ column<_Trait>::~column()
 template<typename _Trait>
 void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_type* cell)
 {
+    unique_ptr<cell_type> p(cell);
 }
 
 template<typename _Trait>
