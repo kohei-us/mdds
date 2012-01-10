@@ -133,21 +133,60 @@ void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_typ
 {
     unique_ptr<cell_type, cell_delete_handler> p(cell);
 
-    // TODO: implement cell insertion...
+    // Find the right block ID from the row ID.
+    row_key_type start_row = 0; // row ID of the first cell in a block.
+    row_key_type block_index = 0;
+    for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
+    {
+        const block& blk = *m_blocks[i];
+        if (row < start_row + blk.m_size)
+        {
+            // Row is in this block.
+            block_index = i;
+            break;
+        }
+
+        // Specified row is not in this block.
+        start_row += blk.m_size;
+    }
+
+    block& blk = *m_blocks[block_index];
+    assert(blk.m_size > 0); // block size should never be zero at any time.
+
+    if (blk.m_empty)
+    {
+        // This is an empty block.
+    }
+    else if (blk.mp_data->m_type == cat)
+    {
+        // This block is of the same type as the cell being inserted.
+    }
+    else if (row == start_row)
+    {
+        // Insertion point is at the start of the block.
+    }
+    else if (row == (start_row + blk.m_size - 1))
+    {
+        // Insertion point is at the end of the block.
+    }
+    else
+    {
+        // Insertion point is somewhere in the middle of the block.
+    }
 }
 
 template<typename _Trait>
 const typename column<_Trait>::cell_type*
 column<_Trait>::get_cell(row_key_type row) const
 {
-    row_key_type cur_index = 0;
+    row_key_type start_row = 0;
     for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
     {
         const block& blk = *m_blocks[i];
-        if (row >= cur_index + blk.m_size)
+        if (row >= start_row + blk.m_size)
         {
             // Specified row is not in this block.
-            cur_index += blk.m_size;
+            start_row += blk.m_size;
             continue;
         }
 
@@ -155,9 +194,10 @@ column<_Trait>::get_cell(row_key_type row) const
             // empty cell block.
             return NULL;
 
+        assert(row >= start_row);
         assert(blk.mp_data); // data for non-empty blocks should never be NULL.
         assert(blk.m_size == static_cast<row_key_type>(blk.mp_data->m_cells.size()));
-        row_key_type idx = row - cur_index;
+        row_key_type idx = row - start_row;
         return blk.mp_data->m_cells[idx];
     }
     return NULL;
