@@ -160,6 +160,12 @@ void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_typ
     else if (blk.mp_data->m_type == cat)
     {
         // This block is of the same type as the cell being inserted.
+        assert(blk.mp_data);
+        block_data& data = *blk.mp_data;
+        row_key_type i = row - start_row;
+        assert(data.m_cells.size() > static_cast<size_t>(i));
+        delete data.m_cells[i];
+        data.m_cells[i] = p.release();
     }
     else if (row == start_row)
     {
