@@ -42,7 +42,6 @@ public:
     typedef typename _Trait::row_key_type row_key_type;
     typedef typename _Trait::col_key_type col_key_type;
 
-    typedef typename _Trait::cell_type cell_type;
     typedef column<_Trait> column_type;
 
     sheet();

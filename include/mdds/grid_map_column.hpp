@@ -37,8 +37,6 @@
 
 #include <boost/noncopyable.hpp>
 
-#define USE_CELL_BLOCK 1
-
 namespace mdds { namespace __gridmap {
 
 /**
@@ -49,16 +47,18 @@ template<typename _Trait>
 class column
 {
 public:
-    typedef typename _Trait::cell_type cell_type;
     typedef typename _Trait::cell_block_type cell_block_type;
     typedef typename _Trait::cell_category_type cell_category_type;
     typedef typename _Trait::row_key_type row_key_type;
 
 private:
-    typedef typename _Trait::cell_delete_handler cell_delete_handler;
-    typedef typename _Trait::cell_block_delete_handler cell_block_delete_handler;
+    typedef typename _Trait::cell_type_inspector cell_type_inspector;
+    typedef typename _Trait::cell_block_type_inspector cell_block_type_inspector;
 
-#if USE_CELL_BLOCK
+//  typedef typename _Trait::cell_delete_handler cell_delete_handler;
+    typedef typename _Trait::cell_block_delete_handler cell_block_delete_handler;
+    typedef typename _Trait::cell_block_modifier cell_block_modifier;
+
     struct block : boost::noncopyable
     {
         row_key_type m_size;
@@ -68,47 +68,27 @@ private:
         block(row_key_type _size);
         ~block();
     };
-#else
-    /**
-     * Data for non-empty block.  Cells are stored here.
-     */
-    struct block_data : boost::noncopyable
-    {
-        cell_category_type m_type;
-        std::vector<cell_type*> m_cells;
 
-        block_data(cell_category_type _type, size_t _init_size = 0);
-        ~block_data();
-    };
-
-    /**
-     * Empty or non-empty block.
-     */
-    struct block : boost::noncopyable
-    {
-        row_key_type m_size;
-        block_data* mp_data;
-        bool m_empty;
-
-        block();
-        block(row_key_type _size);
-        ~block();
-    };
-#endif
     column(); // disabled
 public:
     column(row_key_type max_row);
     ~column();
 
-    void set_cell(row_key_type row, cell_category_type cat, cell_type* cell);
-    const cell_type* get_cell(row_key_type row) const;
+    template<typename _T>
+    void set_cell(row_key_type row, const _T& cell);
+
+    template<typename _T>
+    void get_cell(row_key_type row, _T& cell) const;
 
 private:
     std::vector<block*> m_blocks;
     row_key_type m_max_row;
+
+    static cell_type_inspector get_type;
+    static cell_block_type_inspector get_block_type;
+    static cell_block_modifier block_func;
 };
 
-#if USE_CELL_BLOCK
 template<typename _Trait>
 column<_Trait>::block::block() : m_size(0), mp_data(NULL) {}
 
@@ -121,18 +101,6 @@ column<_Trait>::block::~block()
     static cell_block_delete_handler hdl;
     hdl(mp_data);
 }
-#else
-template<typename _Trait>
-column<_Trait>::block_data::block_data(cell_category_type _type, size_t _init_size) :
-    m_type(_type), m_cells(_init_size, NULL) {}
-
-template<typename _Trait>
-column<_Trait>::block_data::~block_data()
-{
-    std::for_each(m_cells.begin(), m_cells.end(), cell_delete_handler());
-}
-
-#endif
 
 template<typename _Trait>
 column<_Trait>::column(row_key_type max_row) : m_max_row(max_row)
@@ -148,14 +116,10 @@ column<_Trait>::~column()
 }
 
 template<typename _Trait>
-void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_type* cell)
+template<typename _T>
+void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 {
-#if USE_CELL_BLOCK
-#else
-    if (!cell)
-        return;
-
-    unique_ptr<cell_type, cell_delete_handler> p(cell);
+    cell_category_type cat = get_type(cell);
 
     // Find the right block ID from the row ID.
     row_key_type start_row = 0; // row ID of the first cell in a block.
@@ -177,19 +141,21 @@ void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_typ
     block& blk = *m_blocks[block_index];
     assert(blk.m_size > 0); // block size should never be zero at any time.
 
-    if (blk.m_empty)
+    if (!blk.mp_data)
     {
         // This is an empty block.
+
+        return;
     }
-    else if (blk.mp_data->m_type == cat)
+
+    assert(blk.mp_data);
+    cell_category_type block_cat = get_block_type(*blk.mp_data);
+
+    if (block_cat == cat)
     {
         // This block is of the same type as the cell being inserted.
-        assert(blk.mp_data);
-        block_data& data = *blk.mp_data;
         row_key_type i = row - start_row;
-        assert(data.m_cells.size() > static_cast<size_t>(i));
-        delete data.m_cells[i];
-        data.m_cells[i] = p.release();
+        block_func.set_value(blk.mp_data, i, cell);
     }
     else if (row == start_row)
     {
@@ -203,16 +169,12 @@ void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_typ
     {
         // Insertion point is somewhere in the middle of the block.
     }
-#endif
 }
 
 template<typename _Trait>
-const typename column<_Trait>::cell_type*
-column<_Trait>::get_cell(row_key_type row) const
+template<typename _T>
+void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 {
-#if USE_CELL_BLOCK
-    return NULL;
-#else
     row_key_type start_row = 0;
     for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
     {
@@ -224,18 +186,15 @@ column<_Trait>::get_cell(row_key_type row) const
             continue;
         }
 
-        if (blk.m_empty)
+        if (!blk.mp_data)
             // empty cell block.
-            return NULL;
+            return;
 
         assert(row >= start_row);
         assert(blk.mp_data); // data for non-empty blocks should never be NULL.
-        assert(blk.m_size == static_cast<row_key_type>(blk.mp_data->m_cells.size()));
         row_key_type idx = row - start_row;
-        return blk.mp_data->m_cells[idx];
+        block_func.get_value(blk.mp_data, idx, cell);
     }
-    return NULL;
-#endif
 }
 
 }}
