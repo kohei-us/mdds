@@ -37,6 +37,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#define USE_CELL_BLOCK 1
+
 namespace mdds { namespace __gridmap {
 
 /**
@@ -48,12 +50,25 @@ class column
 {
 public:
     typedef typename _Trait::cell_type cell_type;
+    typedef typename _Trait::cell_block_type cell_block_type;
     typedef typename _Trait::cell_category_type cell_category_type;
     typedef typename _Trait::row_key_type row_key_type;
 
 private:
     typedef typename _Trait::cell_delete_handler cell_delete_handler;
+    typedef typename _Trait::cell_block_delete_handler cell_block_delete_handler;
 
+#if USE_CELL_BLOCK
+    struct block : boost::noncopyable
+    {
+        row_key_type m_size;
+        cell_block_type* mp_data;
+
+        block();
+        block(row_key_type _size);
+        ~block();
+    };
+#else
     /**
      * Data for non-empty block.  Cells are stored here.
      */
@@ -79,7 +94,7 @@ private:
         block(row_key_type _size);
         ~block();
     };
-
+#endif
     column(); // disabled
 public:
     column(row_key_type max_row);
@@ -93,6 +108,20 @@ private:
     row_key_type m_max_row;
 };
 
+#if USE_CELL_BLOCK
+template<typename _Trait>
+column<_Trait>::block::block() : m_size(0), mp_data(NULL) {}
+
+template<typename _Trait>
+column<_Trait>::block::block(row_key_type _size) : m_size(_size), mp_data(NULL) {}
+
+template<typename _Trait>
+column<_Trait>::block::~block()
+{
+    static cell_block_delete_handler hdl;
+    hdl(mp_data);
+}
+#else
 template<typename _Trait>
 column<_Trait>::block_data::block_data(cell_category_type _type, size_t _init_size) :
     m_type(_type), m_cells(_init_size, NULL) {}
@@ -103,17 +132,7 @@ column<_Trait>::block_data::~block_data()
     std::for_each(m_cells.begin(), m_cells.end(), cell_delete_handler());
 }
 
-template<typename _Trait>
-column<_Trait>::block::block() : m_size(0), m_empty(true), mp_data(NULL) {}
-
-template<typename _Trait>
-column<_Trait>::block::block(row_key_type _size) : m_size(_size), mp_data(NULL), m_empty(true) {}
-
-template<typename _Trait>
-column<_Trait>::block::~block()
-{
-    delete mp_data;
-}
+#endif
 
 template<typename _Trait>
 column<_Trait>::column(row_key_type max_row) : m_max_row(max_row)
@@ -131,6 +150,11 @@ column<_Trait>::~column()
 template<typename _Trait>
 void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_type* cell)
 {
+#if USE_CELL_BLOCK
+#else
+    if (!cell)
+        return;
+
     unique_ptr<cell_type, cell_delete_handler> p(cell);
 
     // Find the right block ID from the row ID.
@@ -179,12 +203,16 @@ void column<_Trait>::set_cell(row_key_type row, cell_category_type cat, cell_typ
     {
         // Insertion point is somewhere in the middle of the block.
     }
+#endif
 }
 
 template<typename _Trait>
 const typename column<_Trait>::cell_type*
 column<_Trait>::get_cell(row_key_type row) const
 {
+#if USE_CELL_BLOCK
+    return NULL;
+#else
     row_key_type start_row = 0;
     for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
     {
@@ -207,6 +235,7 @@ column<_Trait>::get_cell(row_key_type row) const
         return blk.mp_data->m_cells[idx];
     }
     return NULL;
+#endif
 }
 
 }}

@@ -99,6 +99,9 @@ struct cell_deleter : public std::unary_function<base_cell*, void>
 {
     void operator() (base_cell* p)
     {
+        if (!p)
+            return;
+
         switch (p->type)
         {
             case celltype_numeric:
@@ -113,15 +116,65 @@ struct cell_deleter : public std::unary_function<base_cell*, void>
     }
 };
 
+struct base_cell_block
+{
+    cell_t type;
+    base_cell_block(cell_t _t) : type(_t) {}
+};
+
+struct numeric_cell_block : public base_cell_block, public std::vector<double>
+{
+public:
+    numeric_cell_block() : base_cell_block(celltype_numeric) {}
+};
+
+struct string_cell_block : public base_cell_block, public std::vector<std::string>
+{
+public:
+    string_cell_block() : base_cell_block(celltype_string) {}
+};
+
+struct cell_block_deleter : public std::unary_function<base_cell_block*, void>
+{
+    void operator() (base_cell_block* p)
+    {
+        if (!p)
+            return;
+
+        switch (p->type)
+        {
+            case celltype_numeric:
+                delete static_cast<numeric_cell_block*>(p);
+            break;
+            case celltype_string:
+                delete static_cast<string_cell_block*>(p);
+            break;
+            default:
+                assert(!"attempting to delete a cell block instance of unknown type!");
+        }
+    }
+};
+
+struct cell_block_type_inspector : public std::unary_function<base_cell_block, cell_t>
+{
+    cell_t operator() (const base_cell_block& r)
+    {
+        return r.type;
+    }
+};
+
 struct grid_map_trait
 {
     typedef base_cell cell_type;
+    typedef base_cell_block cell_block_type;
     typedef cell_t cell_category_type;
     typedef long sheet_key_type;
     typedef long row_key_type;
     typedef long col_key_type;
 
     typedef cell_deleter cell_delete_handler;
+    typedef cell_block_deleter cell_block_delete_handler;
+    typedef cell_block_type_inspector cell_block_type_handler;
 };
 
 }
