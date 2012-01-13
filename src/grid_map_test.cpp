@@ -107,16 +107,16 @@ struct base_cell_block
     base_cell_block(cell_t _t) : type(_t) {}
 };
 
-struct numeric_cell_block : public base_cell_block, public std::vector<double>
+struct numeric_cell_block : public base_cell_block, public vector<double>
 {
 public:
-    numeric_cell_block() : base_cell_block(celltype_numeric) {}
+    numeric_cell_block() : base_cell_block(celltype_numeric), vector<double>(1) {}
 };
 
-struct string_cell_block : public base_cell_block, public std::vector<std::string>
+struct string_cell_block : public base_cell_block, public vector<string>
 {
 public:
-    string_cell_block() : base_cell_block(celltype_string) {}
+    string_cell_block() : base_cell_block(celltype_string), vector<string>(1) {}
 };
 
 struct cell_block_deleter : public std::unary_function<base_cell_block*, void>
@@ -150,21 +150,60 @@ struct get_cell_block_type : public std::unary_function<base_cell_block, cell_t>
 
 struct cell_block_func
 {
-    template<typename T>
-    void set_value(base_cell_block* block, long pos, const T& val);
+    static base_cell_block* create_new_block(cell_t type);
 
     template<typename T>
-    void get_value(base_cell_block* block, long pos, T& val);
+    static void set_value(base_cell_block* block, long pos, const T& val);
+
+    template<typename T>
+    static void get_value(base_cell_block* block, long pos, T& val);
 };
+
+base_cell_block* cell_block_func::create_new_block(cell_t type)
+{
+    
+    switch (type)
+    {
+        case celltype_numeric:
+            return new numeric_cell_block;
+        case celltype_string:
+            return new string_cell_block;
+        default:
+            ;
+    }
+    return NULL;
+}
 
 template<typename T>
 void cell_block_func::set_value(base_cell_block* block, long pos, const T& val)
 {
+    throw general_error("non-specialized version called.");
+}
+
+template<>
+void cell_block_func::set_value<double>(base_cell_block* block, long pos, const double& val)
+{
+    if (block->type != celltype_numeric)
+        throw general_error("block is not of numeric type!");
+
+    numeric_cell_block& blk = static_cast<numeric_cell_block&>(*block);
+    blk[pos] = val;
 }
 
 template<typename T>
 void cell_block_func::get_value(base_cell_block* block, long pos, T& val)
 {
+    throw general_error("non-specialized version called.");
+}
+
+template<>
+void cell_block_func::get_value<double>(base_cell_block* block, long pos, double& val)
+{
+    if (block->type != celltype_numeric)
+        throw general_error("block is not of numeric type!");
+
+    numeric_cell_block& blk = static_cast<numeric_cell_block&>(*block);
+    val = blk[pos];
 }
 
 struct grid_map_trait
@@ -191,12 +230,13 @@ void gridmap_test_basic()
     typedef grid_store_type::sheet_type::column_type column_type;
     grid_store_type db;
 
-    // Single column instance with 100 rows.
-    column_type col_db(100);
+    // Single column instance with only one row.
+    column_type col_db(1);
 
-    double val = 1.0, test = 0.0;
+    double val = 2.0, test = 0.0;
     col_db.set_cell(0, val);
     col_db.get_cell(0, test);
+    assert(val == test);
 }
 
 

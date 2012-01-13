@@ -25,6 +25,12 @@
  *
  ************************************************************************/
 
+#if UNIT_TEST
+#include <iostream>
+using std::cout;
+using std::endl;
+#endif
+
 namespace mdds { namespace __gridmap {
 
 
@@ -42,10 +48,10 @@ column<_Trait>::block::~block()
 }
 
 template<typename _Trait>
-column<_Trait>::column(row_key_type max_row) : m_max_row(max_row)
+column<_Trait>::column(row_key_type max_row_size) : m_max_row_size(max_row_size)
 {
     // Initialize with an empty block that spans from 0 to max.
-    m_blocks.push_back(new block(max_row));
+    m_blocks.push_back(new block(max_row_size));
 }
 
 template<typename _Trait>
@@ -58,6 +64,9 @@ template<typename _Trait>
 template<typename _T>
 void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 {
+    if (row < 0 || row >= m_max_row_size)
+        throw general_error("Specified row index is out-of-bound.");
+
     cell_category_type cat = get_type(cell);
 
     // Find the right block ID from the row ID.
@@ -83,7 +92,25 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     if (!blk.mp_data)
     {
         // This is an empty block.
-
+        cout << "this is an empty block of size " << blk.m_size << endl;
+        if (block_index == 0)
+        {
+            // first block.
+            if (m_blocks.size() == 1)
+            {
+                // this is the only block.
+                assert(blk.m_size == m_max_row_size);
+                if (m_max_row_size == 1)
+                {
+                    // This column is allowed to have only one row!
+                    blk.mp_data = cell_block_modifier::create_new_block(cat);
+                    if (!blk.mp_data)
+                        throw general_error("Failed to create new block.");
+                    assert(row == 0);
+                    cell_block_modifier::set_value(blk.mp_data, 0, cell);
+                }
+            }
+        }
         return;
     }
 
@@ -94,7 +121,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     {
         // This block is of the same type as the cell being inserted.
         row_key_type i = row - start_row;
-        block_func.set_value(blk.mp_data, i, cell);
+        cell_block_modifier::set_value(blk.mp_data, i, cell);
     }
     else if (row == start_row)
     {
@@ -132,7 +159,7 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
         assert(row >= start_row);
         assert(blk.mp_data); // data for non-empty blocks should never be NULL.
         row_key_type idx = row - start_row;
-        block_func.get_value(blk.mp_data, idx, cell);
+        cell_block_modifier::get_value(blk.mp_data, idx, cell);
     }
 }
 

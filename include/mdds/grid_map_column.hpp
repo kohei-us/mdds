@@ -30,6 +30,7 @@
 
 #include "mdds/default_deleter.hpp"
 #include "mdds/compat/unique_ptr.hpp"
+#include "mdds/global.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -70,7 +71,7 @@ private:
 
     column(); // disabled
 public:
-    column(row_key_type max_row);
+    column(row_key_type max_row_size);
     ~column();
 
     template<typename _T>
@@ -81,11 +82,10 @@ public:
 
 private:
     std::vector<block*> m_blocks;
-    row_key_type m_max_row;
+    row_key_type m_max_row_size;
 
     static cell_type_inspector get_type;
     static cell_block_type_inspector get_block_type;
-    static cell_block_modifier block_func;
 };
 
 }}
