@@ -55,7 +55,6 @@ private:
     typedef typename _Trait::cell_type_inspector cell_type_inspector;
     typedef typename _Trait::cell_block_type_inspector cell_block_type_inspector;
 
-//  typedef typename _Trait::cell_delete_handler cell_delete_handler;
     typedef typename _Trait::cell_block_delete_handler cell_block_delete_handler;
     typedef typename _Trait::cell_block_modifier cell_block_modifier;
 
