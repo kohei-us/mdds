@@ -70,7 +70,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 
     // Find the right block ID from the row ID.
     row_key_type start_row = 0; // row ID of the first cell in a block.
-    row_key_type block_index = 0;
+    size_t block_index = 0;
     for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
     {
         const block& blk = *m_blocks[i];
@@ -95,65 +95,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     if (!blk->mp_data)
     {
         // This is an empty block.
-        cout << "this is an empty block of size " << blk->m_size << endl;
-        if (block_index == 0)
-        {
-            // first block.
-            assert(start_row == 0);
-            if (m_blocks.size() == 1)
-            {
-                // this is the only block.
-                assert(blk->m_size == m_max_row_size);
-                if (m_max_row_size == 1)
-                {
-                    // This column is allowed to have only one row!
-                    blk->mp_data = cell_block_modifier::create_new_block(cat);
-                    if (!blk->mp_data)
-                        throw general_error("Failed to create new block.");
-                    assert(pos_in_block == 0);
-                    cell_block_modifier::set_value(blk->mp_data, pos_in_block, cell);
-                }
-                else
-                {
-                    // block has multiple rows.
-                    if (pos_in_block == 0)
-                    {
-                        cout << "Insert into the first cell in block." << endl;
-                        // Insert into the first cell in block.
-                        blk->m_size -= 1;
-                        assert(blk->m_size > 0);
-
-                        m_blocks.insert(m_blocks.begin(), new block(1));
-                        blk = m_blocks[block_index];
-                        blk->mp_data = cell_block_modifier::create_new_block(cat);
-                        if (!blk->mp_data)
-                            throw general_error("Failed to create new block.");
-
-                        cell_block_modifier::set_value(blk->mp_data, 0, cell);
-                    }
-                    else if (pos_in_block == blk->m_size - 1)
-                    {
-                        cout << "Insert into the last cell in block." << endl;
-                        // Insert into the last cell in block.
-                        blk->m_size -= 1;
-                        assert(blk->m_size > 0);
-
-                        m_blocks.push_back(new block(1));
-                        blk = m_blocks.back();
-                        blk->mp_data = cell_block_modifier::create_new_block(cat);
-                        if (!blk->mp_data)
-                            throw general_error("Failed to create new block.");
-
-                        cell_block_modifier::set_value(blk->mp_data, 0, cell);
-                    }
-                    else
-                    {
-                        // Insert into the middle of the block.
-                        assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
-                    }
-                }
-            }
-        }
+        set_cell_to_empty_block(block_index, pos_in_block, cell);
         return;
     }
 
@@ -177,6 +119,87 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     else
     {
         // Insertion point is somewhere in the middle of the block.
+    }
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::set_cell_to_empty_block(
+    size_t block_index, row_key_type pos_in_block, const _T& cell)
+{
+    cell_category_type cat = get_type(cell);
+
+    block* blk = m_blocks[block_index];
+    cout << "this is an empty block of size " << blk->m_size << endl;
+    if (block_index == 0)
+    {
+        // first block.
+        if (m_blocks.size() == 1)
+        {
+            // this is the only block.
+            assert(blk->m_size == m_max_row_size);
+            if (m_max_row_size == 1)
+            {
+                // This column is allowed to have only one row!
+                blk->mp_data = cell_block_modifier::create_new_block(cat);
+                if (!blk->mp_data)
+                    throw general_error("Failed to create new block.");
+                assert(pos_in_block == 0);
+                cell_block_modifier::set_value(blk->mp_data, pos_in_block, cell);
+            }
+            else
+            {
+                // block has multiple rows.
+                if (pos_in_block == 0)
+                {
+                    cout << "Insert into the first cell in block." << endl;
+                    // Insert into the first cell in block.
+                    blk->m_size -= 1;
+                    assert(blk->m_size > 0);
+
+                    m_blocks.insert(m_blocks.begin(), new block(1));
+                    blk = m_blocks[block_index];
+                    blk->mp_data = cell_block_modifier::create_new_block(cat);
+                    if (!blk->mp_data)
+                        throw general_error("Failed to create new block.");
+
+                    cell_block_modifier::set_value(blk->mp_data, 0, cell);
+                }
+                else if (pos_in_block == blk->m_size - 1)
+                {
+                    cout << "Insert into the last cell in block." << endl;
+                    // Insert into the last cell in block.
+                    blk->m_size -= 1;
+                    assert(blk->m_size > 0);
+
+                    m_blocks.push_back(new block(1));
+                    blk = m_blocks.back();
+                    blk->mp_data = cell_block_modifier::create_new_block(cat);
+                    if (!blk->mp_data)
+                        throw general_error("Failed to create new block.");
+
+                    cell_block_modifier::set_value(blk->mp_data, 0, cell);
+                }
+                else
+                {
+                    cout << "Insert into the middle of the block." << endl;
+                    // Insert into the middle of the block.
+                    assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
+                    assert(blk->m_size >= 3);
+                    row_key_type orig_size = blk->m_size;
+                    blk->m_size = pos_in_block;
+                    m_blocks.push_back(new block(1));
+                    blk = m_blocks.back();
+                    blk->mp_data = cell_block_modifier::create_new_block(cat);
+                    if (!blk->mp_data)
+                        throw general_error("Failed to create new block.");
+
+                    cell_block_modifier::set_value(blk->mp_data, 0, cell);
+
+                    m_blocks.push_back(new block(orig_size - pos_in_block - 1));
+                }
+            }
+        }
     }
 }
 

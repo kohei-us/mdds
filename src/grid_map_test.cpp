@@ -261,7 +261,7 @@ void gridmap_test_basic()
     }
 
     {
-        // Column with multiple initial rows.
+        // Insert first value into the top row.
         column_type col_db(10);
         double test = -999.0;
 
@@ -282,6 +282,7 @@ void gridmap_test_basic()
     }
 
     {
+        // Insert first value into the bottom row.
         column_type col_db(10);
 
         double val = 5.0;
@@ -292,6 +293,17 @@ void gridmap_test_basic()
 
         col_db.get_cell(8, test);
         assert(test == 0.0); // should be empty.
+    }
+
+    {
+        // Insert first value into a middle row.
+        column_type col_db(10);
+
+        double val = 5.0;
+        col_db.set_cell(5, val);
+        double test = 0.0;
+        col_db.get_cell(5, test);
+        assert(val == test);
     }
 }
 

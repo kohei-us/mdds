@@ -80,6 +80,11 @@ public:
     void get_cell(row_key_type row, _T& cell) const;
 
 private:
+    template<typename _T>
+    void set_cell_to_empty_block(
+        size_t block_index, row_key_type pos_in_block, const _T& cell);
+
+private:
     std::vector<block*> m_blocks;
     row_key_type m_max_row_size;
 
