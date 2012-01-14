@@ -153,8 +153,11 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
         }
 
         if (!blk.mp_data)
+        {
             // empty cell block.
+            cell_block_modifier::get_empty_value(cell);
             return;
+        }
 
         assert(row >= start_row);
         assert(blk.mp_data); // data for non-empty blocks should never be NULL.

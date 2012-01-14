@@ -157,6 +157,9 @@ struct cell_block_func
 
     template<typename T>
     static void get_value(base_cell_block* block, long pos, T& val);
+
+    template<typename T>
+    static void get_empty_value(T& val);
 };
 
 base_cell_block* cell_block_func::create_new_block(cell_t type)
@@ -174,6 +177,14 @@ base_cell_block* cell_block_func::create_new_block(cell_t type)
     return NULL;
 }
 
+numeric_cell_block* get_numeric_block(base_cell_block* block)
+{
+    if (!block || block->type != celltype_numeric)
+        throw general_error("block is not of numeric type!");
+
+    return static_cast<numeric_cell_block*>(block);
+}
+
 template<typename T>
 void cell_block_func::set_value(base_cell_block* block, long pos, const T& val)
 {
@@ -183,10 +194,7 @@ void cell_block_func::set_value(base_cell_block* block, long pos, const T& val)
 template<>
 void cell_block_func::set_value<double>(base_cell_block* block, long pos, const double& val)
 {
-    if (block->type != celltype_numeric)
-        throw general_error("block is not of numeric type!");
-
-    numeric_cell_block& blk = static_cast<numeric_cell_block&>(*block);
+    numeric_cell_block& blk = *get_numeric_block(block);
     blk[pos] = val;
 }
 
@@ -199,11 +207,20 @@ void cell_block_func::get_value(base_cell_block* block, long pos, T& val)
 template<>
 void cell_block_func::get_value<double>(base_cell_block* block, long pos, double& val)
 {
-    if (block->type != celltype_numeric)
-        throw general_error("block is not of numeric type!");
-
-    numeric_cell_block& blk = static_cast<numeric_cell_block&>(*block);
+    numeric_cell_block& blk = *get_numeric_block(block);
     val = blk[pos];
+}
+
+template<typename T>
+void cell_block_func::get_empty_value(T& val)
+{
+    throw general_error("non-specialized version called.");
+}
+
+template<>
+void cell_block_func::get_empty_value<double>(double& val)
+{
+    val = 0.0;
 }
 
 struct grid_map_trait
