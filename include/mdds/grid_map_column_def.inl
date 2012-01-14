@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2012 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -43,8 +43,7 @@ column<_Trait>::block::block(row_key_type _size) : m_size(_size), mp_data(NULL) 
 template<typename _Trait>
 column<_Trait>::block::~block()
 {
-    static cell_block_delete_handler hdl;
-    hdl(mp_data);
+    cell_block_modifier::delete_block(mp_data);
 }
 
 template<typename _Trait>
@@ -86,48 +85,79 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         start_row += blk.m_size;
     }
 
-    block& blk = *m_blocks[block_index];
-    assert(blk.m_size > 0); // block size should never be zero at any time.
+    block* blk = m_blocks[block_index];
+    assert(blk->m_size > 0); // block size should never be zero at any time.
 
-    if (!blk.mp_data)
+    row_key_type pos_in_block = row - start_row;
+    assert(pos_in_block < blk->m_size);
+    cout << "cell position in block: " << pos_in_block << endl;
+
+    if (!blk->mp_data)
     {
         // This is an empty block.
-        cout << "this is an empty block of size " << blk.m_size << endl;
+        cout << "this is an empty block of size " << blk->m_size << endl;
         if (block_index == 0)
         {
             // first block.
+            assert(start_row == 0);
             if (m_blocks.size() == 1)
             {
                 // this is the only block.
-                assert(blk.m_size == m_max_row_size);
+                assert(blk->m_size == m_max_row_size);
                 if (m_max_row_size == 1)
                 {
                     // This column is allowed to have only one row!
-                    blk.mp_data = cell_block_modifier::create_new_block(cat);
-                    if (!blk.mp_data)
+                    blk->mp_data = cell_block_modifier::create_new_block(cat);
+                    if (!blk->mp_data)
                         throw general_error("Failed to create new block.");
-                    assert(row == 0);
-                    cell_block_modifier::set_value(blk.mp_data, 0, cell);
+                    assert(pos_in_block == 0);
+                    cell_block_modifier::set_value(blk->mp_data, pos_in_block, cell);
+                }
+                else
+                {
+                    // block has multiple rows.
+                    if (pos_in_block == 0)
+                    {
+                        cout << "Insert into the first cell in block." << endl;
+                        // Insert into the first cell in block.
+                        blk->m_size -= 1;
+                        assert(blk->m_size > 0);
+                        m_blocks.insert(m_blocks.begin(), new block(1));
+                        blk = m_blocks[block_index];
+                        blk->mp_data = cell_block_modifier::create_new_block(cat);
+                        if (!blk->mp_data)
+                            throw general_error("Failed to create new block.");
+                        cell_block_modifier::set_value(blk->mp_data, pos_in_block, cell);
+                    }
+                    else if (pos_in_block == blk->m_size - 1)
+                    {
+                        // Insert into the last cell in block.
+                    }
+                    else
+                    {
+                        // Insert into the middle of the block.
+                        assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
+                    }
                 }
             }
         }
         return;
     }
 
-    assert(blk.mp_data);
-    cell_category_type block_cat = get_block_type(*blk.mp_data);
+    assert(blk->mp_data);
+    cell_category_type block_cat = get_block_type(*blk->mp_data);
 
     if (block_cat == cat)
     {
         // This block is of the same type as the cell being inserted.
         row_key_type i = row - start_row;
-        cell_block_modifier::set_value(blk.mp_data, i, cell);
+        cell_block_modifier::set_value(blk->mp_data, i, cell);
     }
     else if (row == start_row)
     {
         // Insertion point is at the start of the block.
     }
-    else if (row == (start_row + blk.m_size - 1))
+    else if (row == (start_row + blk->m_size - 1))
     {
         // Insertion point is at the end of the block.
     }
@@ -145,6 +175,7 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
     for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
     {
         const block& blk = *m_blocks[i];
+        assert(blk.m_size > 0);
         if (row >= start_row + blk.m_size)
         {
             // Specified row is not in this block.
@@ -163,6 +194,7 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
         assert(blk.mp_data); // data for non-empty blocks should never be NULL.
         row_key_type idx = row - start_row;
         cell_block_modifier::get_value(blk.mp_data, idx, cell);
+        return;
     }
 }
 

@@ -119,27 +119,6 @@ public:
     string_cell_block() : base_cell_block(celltype_string), vector<string>(1) {}
 };
 
-struct cell_block_deleter : public std::unary_function<base_cell_block*, void>
-{
-    void operator() (base_cell_block* p)
-    {
-        if (!p)
-            return;
-
-        switch (p->type)
-        {
-            case celltype_numeric:
-                delete static_cast<numeric_cell_block*>(p);
-            break;
-            case celltype_string:
-                delete static_cast<string_cell_block*>(p);
-            break;
-            default:
-                assert(!"attempting to delete a cell block instance of unknown type!");
-        }
-    }
-};
-
 struct get_cell_block_type : public std::unary_function<base_cell_block, cell_t>
 {
     cell_t operator() (const base_cell_block& r)
@@ -151,6 +130,8 @@ struct get_cell_block_type : public std::unary_function<base_cell_block, cell_t>
 struct cell_block_func
 {
     static base_cell_block* create_new_block(cell_t type);
+
+    static void delete_block(base_cell_block* p);
 
     template<typename T>
     static void set_value(base_cell_block* block, long pos, const T& val);
@@ -164,7 +145,6 @@ struct cell_block_func
 
 base_cell_block* cell_block_func::create_new_block(cell_t type)
 {
-    
     switch (type)
     {
         case celltype_numeric:
@@ -175,6 +155,24 @@ base_cell_block* cell_block_func::create_new_block(cell_t type)
             ;
     }
     return NULL;
+}
+
+void cell_block_func::delete_block(base_cell_block* p)
+{
+    if (!p)
+        return;
+
+    switch (p->type)
+    {
+        case celltype_numeric:
+            delete static_cast<numeric_cell_block*>(p);
+        break;
+        case celltype_string:
+            delete static_cast<string_cell_block*>(p);
+        break;
+        default:
+            assert(!"attempting to delete a cell block instance of unknown type!");
+    }
 }
 
 numeric_cell_block* get_numeric_block(base_cell_block* block)
@@ -234,7 +232,6 @@ struct grid_map_trait
     typedef get_cell_type cell_type_inspector;
     typedef get_cell_block_type cell_block_type_inspector;
 
-    typedef cell_block_deleter cell_block_delete_handler;
     typedef cell_block_func cell_block_modifier;
 };
 
@@ -247,13 +244,41 @@ void gridmap_test_basic()
     typedef grid_store_type::sheet_type::column_type column_type;
     grid_store_type db;
 
-    // Single column instance with only one row.
-    column_type col_db(1);
+    {
+        // Single column instance with only one row.
+        column_type col_db(1);
 
-    double val = 2.0, test = 0.0;
-    col_db.set_cell(0, val);
-    col_db.get_cell(0, test);
-    assert(val == test);
+        double val = 2.0, test = -999.0;
+
+        // Empty cell has a numeric value of 0.0.
+        col_db.get_cell(0, test);
+        assert(test == 0.0);
+
+        // Basic value setting and retrieval.
+        col_db.set_cell(0, val);
+        col_db.get_cell(0, test);
+        assert(val == test);
+    }
+
+    {
+        // Column with multiple initial rows.
+        column_type col_db(10);
+        double test = -999.0;
+
+        // Test empty cell values.
+        col_db.get_cell(0, test);
+        assert(test == 0.0);
+        test = 1.0;
+        col_db.get_cell(9, test);
+        assert(test == 0.0);
+
+        double val = 5.0;
+        col_db.set_cell(0, val);
+        col_db.get_cell(0, test);
+        assert(val == test);
+        col_db.get_cell(1, test);
+        assert(test == 0.0);
+    }
 }
 
 
