@@ -122,16 +122,29 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                         // Insert into the first cell in block.
                         blk->m_size -= 1;
                         assert(blk->m_size > 0);
+
                         m_blocks.insert(m_blocks.begin(), new block(1));
                         blk = m_blocks[block_index];
                         blk->mp_data = cell_block_modifier::create_new_block(cat);
                         if (!blk->mp_data)
                             throw general_error("Failed to create new block.");
-                        cell_block_modifier::set_value(blk->mp_data, pos_in_block, cell);
+
+                        cell_block_modifier::set_value(blk->mp_data, 0, cell);
                     }
                     else if (pos_in_block == blk->m_size - 1)
                     {
+                        cout << "Insert into the last cell in block." << endl;
                         // Insert into the last cell in block.
+                        blk->m_size -= 1;
+                        assert(blk->m_size > 0);
+
+                        m_blocks.push_back(new block(1));
+                        blk = m_blocks.back();
+                        blk->mp_data = cell_block_modifier::create_new_block(cat);
+                        if (!blk->mp_data)
+                            throw general_error("Failed to create new block.");
+
+                        cell_block_modifier::set_value(blk->mp_data, 0, cell);
                     }
                     else
                     {

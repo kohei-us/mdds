@@ -276,8 +276,22 @@ void gridmap_test_basic()
         col_db.set_cell(0, val);
         col_db.get_cell(0, test);
         assert(val == test);
+
         col_db.get_cell(1, test);
-        assert(test == 0.0);
+        assert(test == 0.0); // should be empty.
+    }
+
+    {
+        column_type col_db(10);
+
+        double val = 5.0;
+        col_db.set_cell(9, val); // Insert into the last row.
+        double test = 0.0;
+        col_db.get_cell(9, test);
+        assert(val == test);
+
+        col_db.get_cell(8, test);
+        assert(test == 0.0); // should be empty.
     }
 }
 
