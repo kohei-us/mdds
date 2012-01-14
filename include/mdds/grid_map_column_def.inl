@@ -25,6 +25,8 @@
  *
  ************************************************************************/
 
+#include <stdexcept>
+
 #if UNIT_TEST
 #include <iostream>
 using std::cout;
@@ -64,7 +66,7 @@ template<typename _T>
 void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 {
     if (row < 0 || row >= m_max_row_size)
-        throw general_error("Specified row index is out-of-bound.");
+        throw std::out_of_range("Specified row index is out-of-bound.");
 
     cell_category_type cat = get_type(cell);
 
@@ -205,31 +207,35 @@ template<typename _Trait>
 template<typename _T>
 void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 {
+    if (row >= m_max_row_size)
+        throw std::out_of_range("Specified row index is out-of-bound.");
+
     row_key_type start_row = 0;
+    const block* blk = NULL;
     for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
     {
-        const block& blk = *m_blocks[i];
-        assert(blk.m_size > 0);
-        if (row >= start_row + blk.m_size)
-        {
-            // Specified row is not in this block.
-            start_row += blk.m_size;
-            continue;
-        }
+        blk = m_blocks[i];
+        assert(blk->m_size > 0);
+        if (row < start_row + blk->m_size)
+            break;
 
-        if (!blk.mp_data)
-        {
-            // empty cell block.
-            cell_block_modifier::get_empty_value(cell);
-            return;
-        }
+        // Specified row is not in this block.
+        start_row += blk->m_size;
+    }
 
-        assert(row >= start_row);
-        assert(blk.mp_data); // data for non-empty blocks should never be NULL.
-        row_key_type idx = row - start_row;
-        cell_block_modifier::get_value(blk.mp_data, idx, cell);
+    assert(blk);
+
+    if (!blk->mp_data)
+    {
+        // empty cell block.
+        cell_block_modifier::get_empty_value(cell);
         return;
     }
+
+    assert(row >= start_row);
+    assert(blk->mp_data); // data for non-empty blocks should never be NULL.
+    row_key_type idx = row - start_row;
+    cell_block_modifier::get_value(blk->mp_data, idx, cell);
 }
 
 }}
