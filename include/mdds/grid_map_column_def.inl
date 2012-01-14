@@ -124,11 +124,23 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_empty_block(
-    size_t block_index, row_key_type pos_in_block, const _T& cell)
+void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, const _T& cell)
 {
     cell_category_type cat = get_type(cell);
 
+    // New cell block is always size 1.
+    data = cell_block_modifier::create_new_block(cat);
+    if (!data)
+        throw general_error("Failed to create new block.");
+
+    cell_block_modifier::set_value(data, 0, cell);
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::set_cell_to_empty_block(
+    size_t block_index, row_key_type pos_in_block, const _T& cell)
+{
     block* blk = m_blocks[block_index];
     cout << "this is an empty block of size " << blk->m_size << endl;
     if (block_index == 0)
@@ -141,11 +153,8 @@ void column<_Trait>::set_cell_to_empty_block(
             if (m_max_row_size == 1)
             {
                 // This column is allowed to have only one row!
-                blk->mp_data = cell_block_modifier::create_new_block(cat);
-                if (!blk->mp_data)
-                    throw general_error("Failed to create new block.");
                 assert(pos_in_block == 0);
-                cell_block_modifier::set_value(blk->mp_data, pos_in_block, cell);
+                create_new_block_with_new_cell(blk->mp_data, cell);
             }
             else
             {
@@ -159,11 +168,7 @@ void column<_Trait>::set_cell_to_empty_block(
 
                     m_blocks.insert(m_blocks.begin(), new block(1));
                     blk = m_blocks[block_index];
-                    blk->mp_data = cell_block_modifier::create_new_block(cat);
-                    if (!blk->mp_data)
-                        throw general_error("Failed to create new block.");
-
-                    cell_block_modifier::set_value(blk->mp_data, 0, cell);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
                 }
                 else if (pos_in_block == blk->m_size - 1)
                 {
@@ -174,11 +179,8 @@ void column<_Trait>::set_cell_to_empty_block(
 
                     m_blocks.push_back(new block(1));
                     blk = m_blocks.back();
-                    blk->mp_data = cell_block_modifier::create_new_block(cat);
-                    if (!blk->mp_data)
-                        throw general_error("Failed to create new block.");
 
-                    cell_block_modifier::set_value(blk->mp_data, 0, cell);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
                 }
                 else
                 {
@@ -190,13 +192,9 @@ void column<_Trait>::set_cell_to_empty_block(
                     blk->m_size = pos_in_block;
                     m_blocks.push_back(new block(1));
                     blk = m_blocks.back();
-                    blk->mp_data = cell_block_modifier::create_new_block(cat);
-                    if (!blk->mp_data)
-                        throw general_error("Failed to create new block.");
-
-                    cell_block_modifier::set_value(blk->mp_data, 0, cell);
-
                     m_blocks.push_back(new block(orig_size - pos_in_block - 1));
+
+                    create_new_block_with_new_cell(blk->mp_data, cell);
                 }
             }
         }

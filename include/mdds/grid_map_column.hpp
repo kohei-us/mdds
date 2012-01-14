@@ -81,6 +81,9 @@ public:
 
 private:
     template<typename _T>
+    void create_new_block_with_new_cell(cell_block_type*& data, const _T& cell);
+
+    template<typename _T>
     void set_cell_to_empty_block(
         size_t block_index, row_key_type pos_in_block, const _T& cell);
 
