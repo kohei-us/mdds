@@ -291,6 +291,13 @@ struct grid_map_trait
     typedef cell_block_func cell_block_modifier;
 };
 
+template<typename _ColT, typename _ValT>
+bool test_numeric_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT val)
+{
+    _ValT test;
+    col_db.set_cell(row, val);
+    col_db.get_cell(row, test);
+    return val == test;
 }
 
 void gridmap_test_basic()
@@ -299,21 +306,21 @@ void gridmap_test_basic()
     typedef mdds::grid_map<grid_map_trait> grid_store_type;
     typedef grid_store_type::sheet_type::column_type column_type;
     grid_store_type db;
+    bool res;
 
     {
         // Single column instance with only one row.
         column_type col_db(1);
 
-        double val = 2.0, test = -999.0;
+        double test = -999.0;
 
         // Empty cell has a numeric value of 0.0.
         col_db.get_cell(0, test);
         assert(test == 0.0);
 
         // Basic value setting and retrieval.
-        col_db.set_cell(0, val);
-        col_db.get_cell(0, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 0, 2.0);
+        assert(res);
     }
 
     {
@@ -328,95 +335,76 @@ void gridmap_test_basic()
         col_db.get_cell(1, test);
         assert(test == 0.0);
 
-        double val = 5.0;
-        col_db.set_cell(0, val);
-        col_db.get_cell(0, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 0, 5.0);
+        assert(res);
 
         col_db.get_cell(1, test);
         assert(test == 0.0); // should be empty.
 
         // Insert a new value to an empty row right below a non-empty one.
-        val = 7.5;
-        col_db.set_cell(1, val);
-        col_db.get_cell(1, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 1, 7.5);
+        assert(res);
     }
 
     {
         column_type col_db(3);
-        double val = 4.5, test = 0.0;
-        col_db.set_cell(0, val);
-        col_db.get_cell(0, test);
-        assert(val == test);
-        val = 5.1;
-        col_db.set_cell(1, val);
-        col_db.get_cell(1, test);
-        assert(val == test);
-        val = 34.2;
-        col_db.set_cell(2, val);
-        col_db.get_cell(2, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 0, 4.5);
+        assert(res);
+        res = test_numeric_cell_insertion(col_db, 1, 5.1);
+        assert(res);
+        res = test_numeric_cell_insertion(col_db, 2, 34.2);
+        assert(res);
     }
 
     {
         // Insert first value into the bottom row.
         column_type col_db(3);
 
-        double val = 5.0;
-        col_db.set_cell(2, val); // Insert into the last row.
-        double test = 0.0;
-        col_db.get_cell(2, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 2, 5.0); // Insert into the last row.
+        assert(res);
+
+        double test = 9;
+        col_db.get_cell(1, test);
+        assert(test == 0.0); // should be empty.
+
+        res = test_numeric_cell_insertion(col_db, 0, 2.5);
+        assert(res);
 
         col_db.get_cell(1, test);
         assert(test == 0.0); // should be empty.
 
-        val = 2.5;
-        col_db.set_cell(0, val);
-        col_db.get_cell(0, test);
-        assert(val == test);
-
-        col_db.get_cell(1, test);
-        assert(test == 0.0); // should be empty.
-
-        val = 1.2;
-        col_db.set_cell(1, val);
-        col_db.get_cell(1, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 1, 1.2);
+        assert(res);
     }
 
     {
         // This time insert from bottom up one by one.
         column_type col_db(3);
-        double val = 1.2, test = 0.0;
-        col_db.set_cell(2, val);
-        col_db.get_cell(2, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 2, 1.2);
+        assert(res);
+        res = test_numeric_cell_insertion(col_db, 1, 0.2);
+        assert(res);
+        res = test_numeric_cell_insertion(col_db, 0, 23.1);
+        assert(res);
+    }
 
-        val = 0.2;
-        col_db.set_cell(1, val);
-        col_db.get_cell(1, test);
-        assert(val == test);
-
-        val = 23.1;
-        col_db.set_cell(0, val);
-        col_db.get_cell(0, test);
+    {
+        column_type col_db(4);
+        double val = 1.0, test = 0.0;
+        col_db.set_cell(3, val);
+        col_db.get_cell(3, test);
         assert(val == test);
     }
 
     {
         // Insert first value into a middle row.
         column_type col_db(10);
-
-        double val = 5.0;
-        col_db.set_cell(5, val);
-        double test = 0.0;
-        col_db.get_cell(5, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 5, 5.0);
+        assert(res);
     }
 }
 
+}
 
 int main (int argc, char **argv)
 {
