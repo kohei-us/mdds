@@ -230,6 +230,7 @@ void column<_Trait>::set_cell_to_empty_block(
                     {
                         // Remove this one-cell empty block from the top, and
                         // prepend the cell to the next block.
+                        delete m_blocks.front();
                         m_blocks.erase(m_blocks.begin());
                         blk = m_blocks.front();
                         blk->m_size += 1;
