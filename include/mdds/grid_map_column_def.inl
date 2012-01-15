@@ -200,6 +200,65 @@ void column<_Trait>::set_cell_to_empty_block(
                 }
             }
         }
+        else
+        {
+            // this empty block is followed by a non-empty block.
+            throw general_error("not implemented yet.");
+        }
+
+        return;
+    }
+
+    // This empty block is right below a non-empty block.
+    assert(block_index > 0 && m_blocks[block_index-1]->mp_data != NULL);
+
+    if (pos_in_block == 0)
+    {
+        // New cell is right below the non-empty block.
+        cell_category_type blk_cat_prev = get_block_type(*m_blocks[block_index-1]->mp_data);
+        cell_category_type cat = get_type(cell);
+        if (blk_cat_prev == cat)
+        {
+            // Extend the previous block by one to insert this cell.
+            if (blk->m_size == 1)
+            {
+                // Check if we need to merge with the following block.
+                if (block_index == m_blocks.size()-1)
+                {
+                    // Last block.  Delete this block and extend the previous
+                    // block by one.
+                    delete m_blocks[block_index];
+                    m_blocks.pop_back();
+                    blk = m_blocks.back();
+                    blk->m_size += 1;
+                    cell_block_modifier::append_value(blk->mp_data, cell);
+                }
+                else
+                {
+                    cell_block_type* data = m_blocks[block_index+1]->mp_data;
+                    assert(data); // Empty block must not be followed by another empty block.
+                    cell_category_type blk_cat_next = get_block_type(*data);
+                    if (blk_cat_prev == blk_cat_next)
+                    {
+                        // We need to merge the previous and next blocks.
+                        throw general_error("not implemented yet.");
+                    }
+                    else
+                    {
+                        // Ignore the next block. Just extend the previous block.
+                        throw general_error("not implemented yet.");
+                    }
+                }
+            }
+        }
+    }
+    else if (pos_in_block == blk->m_size - 1)
+    {
+        throw general_error("not implemented yet.");
+    }
+    else
+    {
+        throw general_error("not implemented yet.");
     }
 }
 

@@ -137,6 +137,9 @@ struct cell_block_func
     static void set_value(base_cell_block* block, long pos, const T& val);
 
     template<typename T>
+    static void append_value(base_cell_block* block, const T& val);
+
+    template<typename T>
     static void get_value(base_cell_block* block, long pos, T& val);
 
     template<typename T>
@@ -194,6 +197,19 @@ void cell_block_func::set_value<double>(base_cell_block* block, long pos, const 
 {
     numeric_cell_block& blk = *get_numeric_block(block);
     blk[pos] = val;
+}
+
+template<typename T>
+void cell_block_func::append_value(base_cell_block* block, const T& val)
+{
+    throw general_error("non-specialized version called.");
+}
+
+template<>
+void cell_block_func::append_value<double>(base_cell_block* block, const double& val)
+{
+    numeric_cell_block& blk = *get_numeric_block(block);
+    blk.push_back(val);
 }
 
 template<typename T>
@@ -262,14 +278,14 @@ void gridmap_test_basic()
 
     {
         // Insert first value into the top row.
-        column_type col_db(10);
+        column_type col_db(2);
         double test = -999.0;
 
         // Test empty cell values.
         col_db.get_cell(0, test);
         assert(test == 0.0);
         test = 1.0;
-        col_db.get_cell(9, test);
+        col_db.get_cell(1, test);
         assert(test == 0.0);
 
         double val = 5.0;
@@ -279,6 +295,12 @@ void gridmap_test_basic()
 
         col_db.get_cell(1, test);
         assert(test == 0.0); // should be empty.
+
+        // Insert a new value to an empty row right below a non-empty one.
+        val = 7.5;
+        col_db.set_cell(1, val);
+        col_db.get_cell(1, test);
+        assert(val == test);
     }
 
     {
