@@ -250,6 +250,20 @@ void column<_Trait>::set_cell_to_empty_block(
                     }
                 }
             }
+            else
+            {
+                // Extend the previous block to append the cell.
+                assert(blk->m_size > 1);
+                block* blk_prev = m_blocks[block_index-1];
+                blk_prev->m_size += 1;
+                blk->m_size -= 1;
+                cell_block_modifier::append_value(blk_prev->mp_data, cell);
+            }
+        }
+        else
+        {
+            // cell type is different from the type of the previous block.
+            throw general_error("not implemented yet.");
         }
     }
     else if (pos_in_block == blk->m_size - 1)

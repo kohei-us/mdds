@@ -304,6 +304,18 @@ void gridmap_test_basic()
     }
 
     {
+        column_type col_db(3);
+        double val = 4.5, test = 0.0;
+        col_db.set_cell(0, val);
+        col_db.get_cell(0, test);
+        assert(val == test);
+        val = 5.1;
+        col_db.set_cell(1, val);
+        col_db.get_cell(1, test);
+        assert(val == test);
+    }
+
+    {
         // Insert first value into the bottom row.
         column_type col_db(10);
 
