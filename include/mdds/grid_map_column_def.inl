@@ -139,6 +139,30 @@ void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, cons
 
 template<typename _Trait>
 template<typename _T>
+void column<_Trait>::insert_cell_to_middle_of_empty_block(
+    size_t block_index, row_key_type pos_in_block, const _T& cell)
+{
+    block* blk = m_blocks[block_index];
+
+    assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
+    assert(blk->m_size >= 3);
+    row_key_type orig_size = blk->m_size;
+    blk->m_size = pos_in_block;
+
+    typename blocks_type::iterator it = m_blocks.begin();
+    std::advance(it, block_index+1);
+    m_blocks.insert(it, new block(1));
+    it = m_blocks.begin();
+    std::advance(it, block_index+1);
+    blk = *it;
+    ++it;
+    m_blocks.insert(it, new block(orig_size-pos_in_block-1));
+
+    create_new_block_with_new_cell(blk->mp_data, cell);
+}
+
+template<typename _Trait>
+template<typename _T>
 void column<_Trait>::set_cell_to_empty_block(
     size_t block_index, row_key_type pos_in_block, const _T& cell)
 {
@@ -184,15 +208,7 @@ void column<_Trait>::set_cell_to_empty_block(
                 else
                 {
                     // Insert into the middle of the block.
-                    assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
-                    assert(blk->m_size >= 3);
-                    row_key_type orig_size = blk->m_size;
-                    blk->m_size = pos_in_block;
-                    m_blocks.push_back(new block(1));
-                    blk = m_blocks.back();
-                    m_blocks.push_back(new block(orig_size - pos_in_block - 1));
-
-                    create_new_block_with_new_cell(blk->mp_data, cell);
+                    insert_cell_to_middle_of_empty_block(block_index, pos_in_block, cell);
                 }
             }
         }
@@ -254,7 +270,8 @@ void column<_Trait>::set_cell_to_empty_block(
             }
             else
             {
-                assert(!"not implemented yet.");
+                // Inserting into the middle of an empty block.
+                insert_cell_to_middle_of_empty_block(block_index, pos_in_block, cell);
             }
         }
 

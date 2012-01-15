@@ -390,10 +390,14 @@ void gridmap_test_basic()
 
     {
         column_type col_db(4);
-        double val = 1.0, test = 0.0;
-        col_db.set_cell(3, val);
-        col_db.get_cell(3, test);
-        assert(val == test);
+        res = test_numeric_cell_insertion(col_db, 3, 1.0);
+        assert(res);
+        res = test_numeric_cell_insertion(col_db, 1, 2.0);
+        assert(res);
+        res = test_numeric_cell_insertion(col_db, 2, 3.0);
+        assert(res);
+        res = test_numeric_cell_insertion(col_db, 0, 4.0);
+        assert(res);
     }
 
     {
