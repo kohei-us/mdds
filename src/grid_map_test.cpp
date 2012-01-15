@@ -313,20 +313,29 @@ void gridmap_test_basic()
         col_db.set_cell(1, val);
         col_db.get_cell(1, test);
         assert(val == test);
+        val = 34.2;
+        col_db.set_cell(2, val);
+        col_db.get_cell(2, test);
+        assert(val == test);
     }
 
     {
         // Insert first value into the bottom row.
-        column_type col_db(10);
+        column_type col_db(3);
 
         double val = 5.0;
-        col_db.set_cell(9, val); // Insert into the last row.
+        col_db.set_cell(2, val); // Insert into the last row.
         double test = 0.0;
-        col_db.get_cell(9, test);
+        col_db.get_cell(2, test);
         assert(val == test);
 
-        col_db.get_cell(8, test);
+        col_db.get_cell(1, test);
         assert(test == 0.0); // should be empty.
+
+        val = 2.5;
+        col_db.set_cell(0, val);
+        col_db.get_cell(0, test);
+        assert(val == test);
     }
 
     {

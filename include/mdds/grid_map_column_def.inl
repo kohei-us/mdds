@@ -92,7 +92,6 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 
     row_key_type pos_in_block = row - start_row;
     assert(pos_in_block < blk->m_size);
-    cout << "cell position in block: " << pos_in_block << endl;
 
     if (!blk->mp_data)
     {
@@ -144,7 +143,7 @@ void column<_Trait>::set_cell_to_empty_block(
     size_t block_index, row_key_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
-    cout << "this is an empty block of size " << blk->m_size << endl;
+
     if (block_index == 0)
     {
         // first block.
@@ -163,7 +162,6 @@ void column<_Trait>::set_cell_to_empty_block(
                 // block has multiple rows.
                 if (pos_in_block == 0)
                 {
-                    cout << "Insert into the first cell in block." << endl;
                     // Insert into the first cell in block.
                     blk->m_size -= 1;
                     assert(blk->m_size > 0);
@@ -174,7 +172,6 @@ void column<_Trait>::set_cell_to_empty_block(
                 }
                 else if (pos_in_block == blk->m_size - 1)
                 {
-                    cout << "Insert into the last cell in block." << endl;
                     // Insert into the last cell in block.
                     blk->m_size -= 1;
                     assert(blk->m_size > 0);
@@ -186,7 +183,6 @@ void column<_Trait>::set_cell_to_empty_block(
                 }
                 else
                 {
-                    cout << "Insert into the middle of the block." << endl;
                     // Insert into the middle of the block.
                     assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
                     assert(blk->m_size >= 3);
@@ -203,7 +199,29 @@ void column<_Trait>::set_cell_to_empty_block(
         else
         {
             // this empty block is followed by a non-empty block.
-            throw general_error("not implemented yet.");
+            if (pos_in_block == 0)
+            {
+                if (blk->m_size == 1)
+                {
+                    throw general_error("not implemented yet.");
+                }
+                else
+                {
+                    assert(blk->m_size > 1);
+                    blk->m_size -= 1;
+                    m_blocks.insert(m_blocks.begin(), new block(1));
+                    blk = m_blocks.front();
+                    create_new_block_with_new_cell(blk->mp_data, cell);
+                }
+            }
+            else if (pos_in_block == blk->m_size - 1)
+            {
+                throw general_error("not implemented yet.");
+            }
+            else
+            {
+                throw general_error("not implemented yet.");
+            }
         }
 
         return;
