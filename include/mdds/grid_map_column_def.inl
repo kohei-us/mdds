@@ -343,11 +343,41 @@ void column<_Trait>::set_cell_to_empty_block(
     }
     else if (pos_in_block == blk->m_size - 1)
     {
-        assert(!"not implemented yet.");
+        // New cell is at the last cell position.
+        assert(blk->m_size > 1);
+        if (block_index == m_blocks.size()-1)
+        {
+            // This is the last block.
+            blk->m_size -= 1;
+            m_blocks.push_back(new block(1));
+            blk = m_blocks.back();
+            create_new_block_with_new_cell(blk->mp_data, cell);
+        }
+        else
+        {
+            // A non-empty block exists below.
+            cell_category_type cat = get_type(cell);
+            block* blk_next = m_blocks[block_index+1];
+            assert(blk_next->mp_data);
+            cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+            if (cat == blk_cat_next)
+            {
+                // Shrink this empty block and extend the next block.
+                blk->m_size -= 1;
+                blk_next->m_size += 1;
+                cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+            }
+            else
+            {
+                // Just insert this new cell.
+                assert(!"not implemented yet");
+            }
+        }
     }
     else
     {
-        assert(!"not implemented yet.");
+        // New cell is somewhere in the middle of an empty block.
+        insert_cell_to_middle_of_empty_block(block_index, pos_in_block, cell);
     }
 }
 

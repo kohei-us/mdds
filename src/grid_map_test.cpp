@@ -390,14 +390,46 @@ void gridmap_test_basic()
 
     {
         column_type col_db(4);
-        res = test_numeric_cell_insertion(col_db, 3, 1.0);
-        assert(res);
-        res = test_numeric_cell_insertion(col_db, 1, 2.0);
-        assert(res);
-        res = test_numeric_cell_insertion(col_db, 2, 3.0);
-        assert(res);
-        res = test_numeric_cell_insertion(col_db, 0, 4.0);
-        assert(res);
+        long order[] = { 3, 1, 2, 0 };
+        double val = 1.0;
+        for (size_t i = 0; i < 4; ++i, ++val)
+        {
+            res = test_numeric_cell_insertion(col_db, order[i], val);
+            assert(res);
+        }
+    }
+
+    {
+        column_type col_db(4);
+        long order[] = { 0, 3, 1, 2 };
+        double val = 1.0;
+        for (size_t i = 0; i < 4; ++i, ++val)
+        {
+            res = test_numeric_cell_insertion(col_db, order[i], val);
+            assert(res);
+        }
+    }
+
+    {
+        column_type col_db(4);
+        long order[] = { 0, 2, 3, 1 };
+        double val = 1.0;
+        for (size_t i = 0; i < 4; ++i, ++val)
+        {
+            res = test_numeric_cell_insertion(col_db, order[i], val);
+            assert(res);
+        }
+    }
+
+    {
+        column_type col_db(5);
+        long order[] = { 0, 4, 3, 2, 1 };
+        double val = 1.0;
+        for (size_t i = 0; i < 5; ++i, ++val)
+        {
+            res = test_numeric_cell_insertion(col_db, order[i], val);
+            assert(res);
+        }
     }
 
     {
