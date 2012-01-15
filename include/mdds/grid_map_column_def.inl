@@ -146,7 +146,7 @@ void column<_Trait>::set_cell_to_empty_block(
 
     if (block_index == 0)
     {
-        // first block.
+        // Topmost block.
         if (m_blocks.size() == 1)
         {
             // this is the only block.
@@ -199,11 +199,28 @@ void column<_Trait>::set_cell_to_empty_block(
         else
         {
             // this empty block is followed by a non-empty block.
+            assert(block_index < m_blocks.size()-1);
             if (pos_in_block == 0)
             {
                 if (blk->m_size == 1)
                 {
-                    assert(!"not implemented yet.");
+                    // Top empty block with only one cell size.
+                    block* blk_next = m_blocks[block_index+1];
+                    assert(blk_next->mp_data);
+                    cell_category_type cat = get_type(cell);
+                    cell_category_type cat_next = get_block_type(*blk_next->mp_data);
+
+                    if (cat == cat_next)
+                    {
+                        // Remove this one-cell empty block from the top, and
+                        // prepend the cell to the next block.
+                        m_blocks.erase(m_blocks.begin());
+                        blk = m_blocks.front();
+                        blk->m_size += 1;
+                        cell_block_modifier::prepend_value(blk->mp_data, cell);
+                    }
+                    else
+                        create_new_block_with_new_cell(blk->mp_data, cell);
                 }
                 else
                 {
@@ -216,7 +233,24 @@ void column<_Trait>::set_cell_to_empty_block(
             }
             else if (pos_in_block == blk->m_size - 1)
             {
-                assert(!"not implemented yet.");
+                // Immediately above a non-empty block.
+                block* blk_next = m_blocks[block_index+1];
+                assert(blk_next->mp_data);
+                cell_category_type cat = get_type(cell);
+                cell_category_type cat_next = get_block_type(*blk_next->mp_data);
+                assert(blk->m_size > 1);
+
+                if (cat == cat_next)
+                {
+                    // Shrink this empty block by one, and prepend the cell to the next block.
+                    blk->m_size -= 1;
+                    blk_next->m_size += 1;
+                    cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+                }
+                else
+                {
+                    assert(!"not implemented yet.");
+                }
             }
             else
             {

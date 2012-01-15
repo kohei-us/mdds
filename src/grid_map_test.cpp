@@ -137,6 +137,11 @@ struct cell_block_func
     static void set_value(base_cell_block* block, long pos, const T& val);
 
     template<typename T>
+    static void prepend_value(base_cell_block* block, const T& val);
+
+    static void prepend_value(base_cell_block* dest, base_cell_block* src);
+
+    template<typename T>
     static void append_value(base_cell_block* block, const T& val);
 
     static void append_value(base_cell_block* dest, base_cell_block* src);
@@ -199,6 +204,19 @@ void cell_block_func::set_value<double>(base_cell_block* block, long pos, const 
 {
     numeric_cell_block& blk = *get_numeric_block(block);
     blk[pos] = val;
+}
+
+template<typename T>
+void cell_block_func::prepend_value(base_cell_block* block, const T& val)
+{
+    throw general_error("non-specialized version called.");
+}
+
+template<>
+void cell_block_func::prepend_value<double>(base_cell_block* block, const double& val)
+{
+    numeric_cell_block& blk = *get_numeric_block(block);
+    blk.insert(blk.begin(), val);
 }
 
 template<typename T>
@@ -365,6 +383,25 @@ void gridmap_test_basic()
         val = 1.2;
         col_db.set_cell(1, val);
         col_db.get_cell(1, test);
+        assert(val == test);
+    }
+
+    {
+        // This time insert from bottom up one by one.
+        column_type col_db(3);
+        double val = 1.2, test = 0.0;
+        col_db.set_cell(2, val);
+        col_db.get_cell(2, test);
+        assert(val == test);
+
+        val = 0.2;
+        col_db.set_cell(1, val);
+        col_db.get_cell(1, test);
+        assert(val == test);
+
+        val = 23.1;
+        col_db.set_cell(0, val);
+        col_db.get_cell(0, test);
         assert(val == test);
     }
 
