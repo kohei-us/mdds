@@ -139,6 +139,8 @@ struct cell_block_func
     template<typename T>
     static void append_value(base_cell_block* block, const T& val);
 
+    static void append_value(base_cell_block* dest, base_cell_block* src);
+
     template<typename T>
     static void get_value(base_cell_block* block, long pos, T& val);
 
@@ -210,6 +212,26 @@ void cell_block_func::append_value<double>(base_cell_block* block, const double&
 {
     numeric_cell_block& blk = *get_numeric_block(block);
     blk.push_back(val);
+}
+
+void cell_block_func::append_value(base_cell_block* dest, base_cell_block* src)
+{
+    if (!dest)
+        throw general_error("destination cell block is NULL.");
+
+    switch (dest->type)
+    {
+        case celltype_numeric:
+        {
+            numeric_cell_block& d = *get_numeric_block(dest);
+            numeric_cell_block& s = *get_numeric_block(src);
+            d.insert(d.end(), s.begin(), s.end());
+        }
+        break;
+        case celltype_string:
+        default:
+            assert(!"unhandled cell type.");
+    }
 }
 
 template<typename T>
@@ -335,6 +357,14 @@ void gridmap_test_basic()
         val = 2.5;
         col_db.set_cell(0, val);
         col_db.get_cell(0, test);
+        assert(val == test);
+
+        col_db.get_cell(1, test);
+        assert(test == 0.0); // should be empty.
+
+        val = 1.2;
+        col_db.set_cell(1, val);
+        col_db.get_cell(1, test);
         assert(val == test);
     }
 

@@ -203,7 +203,7 @@ void column<_Trait>::set_cell_to_empty_block(
             {
                 if (blk->m_size == 1)
                 {
-                    throw general_error("not implemented yet.");
+                    assert(!"not implemented yet.");
                 }
                 else
                 {
@@ -216,11 +216,11 @@ void column<_Trait>::set_cell_to_empty_block(
             }
             else if (pos_in_block == blk->m_size - 1)
             {
-                throw general_error("not implemented yet.");
+                assert(!"not implemented yet.");
             }
             else
             {
-                throw general_error("not implemented yet.");
+                assert(!"not implemented yet.");
             }
         }
 
@@ -253,18 +253,24 @@ void column<_Trait>::set_cell_to_empty_block(
                 }
                 else
                 {
-                    cell_block_type* data = m_blocks[block_index+1]->mp_data;
-                    assert(data); // Empty block must not be followed by another empty block.
-                    cell_category_type blk_cat_next = get_block_type(*data);
+                    block* blk_next = m_blocks[block_index+1];
+                    cell_block_type* data_next = blk_next->mp_data;
+                    assert(data_next); // Empty block must not be followed by another empty block.
+                    cell_category_type blk_cat_next = get_block_type(*data_next);
                     if (blk_cat_prev == blk_cat_next)
                     {
                         // We need to merge the previous and next blocks.
-                        throw general_error("not implemented yet.");
+                        blk = m_blocks[block_index-1];
+                        blk->m_size += 1 + blk_next->m_size;
+                        cell_block_modifier::append_value(blk->mp_data, cell);
+                        cell_block_modifier::append_value(blk->mp_data, data_next);
+                        delete m_blocks.back();
+                        m_blocks.pop_back();
                     }
                     else
                     {
                         // Ignore the next block. Just extend the previous block.
-                        throw general_error("not implemented yet.");
+                        assert(!"not implemented yet.");
                     }
                 }
             }
@@ -281,16 +287,16 @@ void column<_Trait>::set_cell_to_empty_block(
         else
         {
             // cell type is different from the type of the previous block.
-            throw general_error("not implemented yet.");
+            assert(!"not implemented yet.");
         }
     }
     else if (pos_in_block == blk->m_size - 1)
     {
-        throw general_error("not implemented yet.");
+        assert(!"not implemented yet.");
     }
     else
     {
-        throw general_error("not implemented yet.");
+        assert(!"not implemented yet.");
     }
 }
 
