@@ -500,6 +500,63 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 1, 2.0);
         assert(res);
     }
+
+    {
+        column_type col_db(2);
+        res = test_cell_insertion(col_db, 0, 5.0);
+        assert(res);
+        string str = "test";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+    }
+
+    {
+        column_type col_db(3);
+        res = test_cell_insertion(col_db, 0, 5.0);
+        assert(res);
+        string str = "test";
+        res = test_cell_insertion(col_db, 2, str);
+        assert(res);
+        str = "foo";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+    }
+
+    {
+        column_type col_db(3);
+        res = test_cell_insertion(col_db, 0, 5.0);
+        assert(res);
+        res = test_cell_insertion(col_db, 2, 2.0);
+        assert(res);
+        string str = "foo";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+    }
+
+    {
+        column_type col_db(3);
+        res = test_cell_insertion(col_db, 0, 5.0);
+        assert(res);
+        string str = "foo";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+        str = "test";
+        res = test_cell_insertion(col_db, 2, str);
+        assert(res);
+    }
+
+    {
+        column_type col_db(4);
+        res = test_cell_insertion(col_db, 0, 5.0);
+        assert(res);
+        string str = "foo";
+        res = test_cell_insertion(col_db, 3, str);
+        assert(res);
+        res = test_cell_insertion(col_db, 2, 2.0);
+        assert(res);
+        res = test_cell_insertion(col_db, 1, -2.0);
+        assert(res);
+    }
 }
 
 }

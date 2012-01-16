@@ -350,8 +350,39 @@ void column<_Trait>::set_cell_to_empty_block(
         }
         else
         {
-            // cell type is different from the type of the previous block.
-            assert(!"not implemented yet.");
+            // Cell type is different from the type of the previous block.
+            if (blk->m_size == 1)
+            {
+                if (block_index == m_blocks.size()-1)
+                {
+                    // There is no more block below.
+                    create_new_block_with_new_cell(blk->mp_data, cell);
+                }
+                else
+                {
+                    // Check the type of the following non-empty block.
+                    assert(block_index < m_blocks.size()-1);
+                    block* blk_next = m_blocks[block_index+1];
+                    assert(blk_next->mp_data);
+                    cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+                    if (cat == blk_cat_next)
+                    {
+                        // Remove this empty block, and prepend the cell to the next block.
+                        blk_next->m_size += 1;
+                        cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+                        delete m_blocks[block_index];
+                        m_blocks.erase(m_blocks.begin()+block_index);
+                    }
+                    else
+                        create_new_block_with_new_cell(blk->mp_data, cell);
+                }
+            }
+            else
+            {
+                create_new_block_with_new_cell(blk->mp_data, cell);
+                m_blocks.push_back(new block(blk->m_size-1));
+                blk->m_size = 1;
+            }
         }
     }
     else if (pos_in_block == blk->m_size - 1)
@@ -383,7 +414,10 @@ void column<_Trait>::set_cell_to_empty_block(
             else
             {
                 // Just insert this new cell.
-                assert(!"not implemented yet");
+                blk->m_size -= 1;
+                m_blocks.insert(m_blocks.begin()+1, new block(1));
+                blk = m_blocks[block_index+1];
+                create_new_block_with_new_cell(blk->mp_data, cell);
             }
         }
     }

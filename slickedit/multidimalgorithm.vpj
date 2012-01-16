@@ -4,7 +4,7 @@
 	VendorName="SlickEdit"
 	WorkingDir="."
 	BuildSystem="vsbuild"
-	VCSProject=":">
+	VCSProject="Git:">
 	<Config
 		Name="Debug"
 		Type="gnuc"
