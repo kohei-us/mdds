@@ -163,6 +163,15 @@ void column<_Trait>::insert_cell_to_middle_of_empty_block(
 
 template<typename _Trait>
 template<typename _T>
+void column<_Trait>::append_cell_to_block(size_t block_index, const _T& cell)
+{
+    block* blk = m_blocks[block_index];
+    blk->m_size += 1;
+    cell_block_modifier::append_value(blk->mp_data, cell);
+}
+
+template<typename _Trait>
+template<typename _T>
 void column<_Trait>::set_cell_to_empty_block(
     size_t block_index, row_key_type pos_in_block, const _T& cell)
 {
@@ -266,7 +275,12 @@ void column<_Trait>::set_cell_to_empty_block(
                 }
                 else
                 {
-                    assert(!"not implemented yet.");
+                    blk->m_size -= 1;
+                    typename blocks_type::iterator it = m_blocks.begin();
+                    std::advance(it, block_index+1);
+                    m_blocks.insert(it, new block(1));
+                    blk = m_blocks[block_index+1];
+                    create_new_block_with_new_cell(blk->mp_data, cell);
                 }
             }
             else
@@ -299,9 +313,7 @@ void column<_Trait>::set_cell_to_empty_block(
                     // block by one.
                     delete m_blocks[block_index];
                     m_blocks.pop_back();
-                    blk = m_blocks.back();
-                    blk->m_size += 1;
-                    cell_block_modifier::append_value(blk->mp_data, cell);
+                    append_cell_to_block(block_index-1, cell);
                 }
                 else
                 {
@@ -322,7 +334,9 @@ void column<_Trait>::set_cell_to_empty_block(
                     else
                     {
                         // Ignore the next block. Just extend the previous block.
-                        assert(!"not implemented yet.");
+                        delete m_blocks[block_index];
+                        m_blocks.erase(m_blocks.begin() + block_index);
+                        append_cell_to_block(block_index-1, cell);
                     }
                 }
             }
@@ -330,10 +344,8 @@ void column<_Trait>::set_cell_to_empty_block(
             {
                 // Extend the previous block to append the cell.
                 assert(blk->m_size > 1);
-                block* blk_prev = m_blocks[block_index-1];
-                blk_prev->m_size += 1;
                 blk->m_size -= 1;
-                cell_block_modifier::append_value(blk_prev->mp_data, cell);
+                append_cell_to_block(block_index-1, cell);
             }
         }
         else

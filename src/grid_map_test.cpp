@@ -193,6 +193,14 @@ numeric_cell_block* get_numeric_block(base_cell_block* block)
     return static_cast<numeric_cell_block*>(block);
 }
 
+string_cell_block* get_string_block(base_cell_block* block)
+{
+    if (!block || block->type != celltype_string)
+        throw general_error("block is not of string type!");
+
+    return static_cast<string_cell_block*>(block);
+}
+
 template<typename T>
 void cell_block_func::set_value(base_cell_block* block, long pos, const T& val)
 {
@@ -203,6 +211,13 @@ template<>
 void cell_block_func::set_value<double>(base_cell_block* block, long pos, const double& val)
 {
     numeric_cell_block& blk = *get_numeric_block(block);
+    blk[pos] = val;
+}
+
+template<>
+void cell_block_func::set_value<string>(base_cell_block* block, long pos, const string& val)
+{
+    string_cell_block& blk = *get_string_block(block);
     blk[pos] = val;
 }
 
@@ -219,6 +234,13 @@ void cell_block_func::prepend_value<double>(base_cell_block* block, const double
     blk.insert(blk.begin(), val);
 }
 
+template<>
+void cell_block_func::prepend_value<string>(base_cell_block* block, const string& val)
+{
+    string_cell_block& blk = *get_string_block(block);
+    blk.insert(blk.begin(), val);
+}
+
 template<typename T>
 void cell_block_func::append_value(base_cell_block* block, const T& val)
 {
@@ -229,6 +251,13 @@ template<>
 void cell_block_func::append_value<double>(base_cell_block* block, const double& val)
 {
     numeric_cell_block& blk = *get_numeric_block(block);
+    blk.push_back(val);
+}
+
+template<>
+void cell_block_func::append_value<string>(base_cell_block* block, const string& val)
+{
+    string_cell_block& blk = *get_string_block(block);
     blk.push_back(val);
 }
 
@@ -247,6 +276,12 @@ void cell_block_func::append_value(base_cell_block* dest, base_cell_block* src)
         }
         break;
         case celltype_string:
+        {
+            string_cell_block& d = *get_string_block(dest);
+            string_cell_block& s = *get_string_block(src);
+            d.insert(d.end(), s.begin(), s.end());
+        }
+        break;
         default:
             assert(!"unhandled cell type.");
     }
@@ -265,6 +300,13 @@ void cell_block_func::get_value<double>(base_cell_block* block, long pos, double
     val = blk[pos];
 }
 
+template<>
+void cell_block_func::get_value<string>(base_cell_block* block, long pos, string& val)
+{
+    string_cell_block& blk = *get_string_block(block);
+    val = blk[pos];
+}
+
 template<typename T>
 void cell_block_func::get_empty_value(T& val)
 {
@@ -275,6 +317,12 @@ template<>
 void cell_block_func::get_empty_value<double>(double& val)
 {
     val = 0.0;
+}
+
+template<>
+void cell_block_func::get_empty_value<string>(string& val)
+{
+    val = string();
 }
 
 struct grid_map_trait
@@ -292,7 +340,7 @@ struct grid_map_trait
 };
 
 template<typename _ColT, typename _ValT>
-bool test_numeric_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT val)
+bool test_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT val)
 {
     _ValT test;
     col_db.set_cell(row, val);
@@ -319,7 +367,7 @@ void gridmap_test_basic()
         assert(test == 0.0);
 
         // Basic value setting and retrieval.
-        res = test_numeric_cell_insertion(col_db, 0, 2.0);
+        res = test_cell_insertion(col_db, 0, 2.0);
         assert(res);
     }
 
@@ -335,24 +383,24 @@ void gridmap_test_basic()
         col_db.get_cell(1, test);
         assert(test == 0.0);
 
-        res = test_numeric_cell_insertion(col_db, 0, 5.0);
+        res = test_cell_insertion(col_db, 0, 5.0);
         assert(res);
 
         col_db.get_cell(1, test);
         assert(test == 0.0); // should be empty.
 
         // Insert a new value to an empty row right below a non-empty one.
-        res = test_numeric_cell_insertion(col_db, 1, 7.5);
+        res = test_cell_insertion(col_db, 1, 7.5);
         assert(res);
     }
 
     {
         column_type col_db(3);
-        res = test_numeric_cell_insertion(col_db, 0, 4.5);
+        res = test_cell_insertion(col_db, 0, 4.5);
         assert(res);
-        res = test_numeric_cell_insertion(col_db, 1, 5.1);
+        res = test_cell_insertion(col_db, 1, 5.1);
         assert(res);
-        res = test_numeric_cell_insertion(col_db, 2, 34.2);
+        res = test_cell_insertion(col_db, 2, 34.2);
         assert(res);
     }
 
@@ -360,31 +408,31 @@ void gridmap_test_basic()
         // Insert first value into the bottom row.
         column_type col_db(3);
 
-        res = test_numeric_cell_insertion(col_db, 2, 5.0); // Insert into the last row.
+        res = test_cell_insertion(col_db, 2, 5.0); // Insert into the last row.
         assert(res);
 
         double test = 9;
         col_db.get_cell(1, test);
         assert(test == 0.0); // should be empty.
 
-        res = test_numeric_cell_insertion(col_db, 0, 2.5);
+        res = test_cell_insertion(col_db, 0, 2.5);
         assert(res);
 
         col_db.get_cell(1, test);
         assert(test == 0.0); // should be empty.
 
-        res = test_numeric_cell_insertion(col_db, 1, 1.2);
+        res = test_cell_insertion(col_db, 1, 1.2);
         assert(res);
     }
 
     {
         // This time insert from bottom up one by one.
         column_type col_db(3);
-        res = test_numeric_cell_insertion(col_db, 2, 1.2);
+        res = test_cell_insertion(col_db, 2, 1.2);
         assert(res);
-        res = test_numeric_cell_insertion(col_db, 1, 0.2);
+        res = test_cell_insertion(col_db, 1, 0.2);
         assert(res);
-        res = test_numeric_cell_insertion(col_db, 0, 23.1);
+        res = test_cell_insertion(col_db, 0, 23.1);
         assert(res);
     }
 
@@ -394,7 +442,7 @@ void gridmap_test_basic()
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
         {
-            res = test_numeric_cell_insertion(col_db, order[i], val);
+            res = test_cell_insertion(col_db, order[i], val);
             assert(res);
         }
     }
@@ -405,7 +453,7 @@ void gridmap_test_basic()
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
         {
-            res = test_numeric_cell_insertion(col_db, order[i], val);
+            res = test_cell_insertion(col_db, order[i], val);
             assert(res);
         }
     }
@@ -416,7 +464,7 @@ void gridmap_test_basic()
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
         {
-            res = test_numeric_cell_insertion(col_db, order[i], val);
+            res = test_cell_insertion(col_db, order[i], val);
             assert(res);
         }
     }
@@ -427,7 +475,7 @@ void gridmap_test_basic()
         double val = 1.0;
         for (size_t i = 0; i < 5; ++i, ++val)
         {
-            res = test_numeric_cell_insertion(col_db, order[i], val);
+            res = test_cell_insertion(col_db, order[i], val);
             assert(res);
         }
     }
@@ -435,7 +483,21 @@ void gridmap_test_basic()
     {
         // Insert first value into a middle row.
         column_type col_db(10);
-        res = test_numeric_cell_insertion(col_db, 5, 5.0);
+        res = test_cell_insertion(col_db, 5, 5.0);
+        assert(res);
+        string str = "test";
+        res = test_cell_insertion(col_db, 4, str);
+        assert(res);
+    }
+
+    {
+        column_type col_db(3);
+        res = test_cell_insertion(col_db, 0, 5.0);
+        assert(res);
+        string str = "test";
+        res = test_cell_insertion(col_db, 2, str);
+        assert(res);
+        res = test_cell_insertion(col_db, 1, 2.0);
         assert(res);
     }
 }
