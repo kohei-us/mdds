@@ -101,25 +101,63 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     }
 
     assert(blk->mp_data);
-    cell_category_type block_cat = get_block_type(*blk->mp_data);
+    cell_category_type blk_cat = get_block_type(*blk->mp_data);
 
-    if (block_cat == cat)
+    if (blk_cat == cat)
     {
         // This block is of the same type as the cell being inserted.
         row_key_type i = row - start_row;
         cell_block_modifier::set_value(blk->mp_data, i, cell);
+        return;
     }
-    else if (row == start_row)
+
+    assert(blk_cat != cat);
+
+    if (row == start_row)
     {
         // Insertion point is at the start of the block.
+        if (blk->m_size == 1)
+        {
+            assert(!"not implemented yet");
+            return;
+        }
+
+        assert(blk->m_size > 1);
+        if (block_index == 0)
+        {
+            // No preceding block.
+            blk->m_size -= 1;
+            cell_block_modifier::erase(blk->mp_data, 0);
+            m_blocks.insert(m_blocks.begin(), new block(1));
+            blk = m_blocks[0];
+            create_new_block_with_new_cell(blk->mp_data, cell);
+            return;
+        }
+
+        // Append to the previous block if the types match.
+        block* blk_prev = m_blocks[block_index-1];
+        cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+        if (blk_cat_prev == cat)
+        {
+            // Append to the previous block.
+            blk->m_size -= 1;
+            cell_block_modifier::erase(blk->mp_data, 0);
+            blk_prev->m_size += 1;
+            cell_block_modifier::append_value(blk_prev->mp_data, cell);
+            return;
+        }
+
+        assert(!"not implemented yet");
     }
     else if (row == (start_row + blk->m_size - 1))
     {
         // Insertion point is at the end of the block.
+        assert(!"not implemented yet");
     }
     else
     {
         // Insertion point is somewhere in the middle of the block.
+        assert(!"not implemented yet");
     }
 }
 

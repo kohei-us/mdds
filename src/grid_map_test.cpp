@@ -133,6 +133,8 @@ struct cell_block_func
 
     static void delete_block(base_cell_block* p);
 
+    static void erase(base_cell_block* block, long pos);
+
     template<typename T>
     static void set_value(base_cell_block* block, long pos, const T& val);
 
@@ -182,6 +184,30 @@ void cell_block_func::delete_block(base_cell_block* p)
         break;
         default:
             assert(!"attempting to delete a cell block instance of unknown type!");
+    }
+}
+
+void cell_block_func::erase(base_cell_block* block, long pos)
+{
+    if (!block)
+        return;
+
+    switch (block->type)
+    {
+        case celltype_numeric:
+        {
+            numeric_cell_block& blk = *static_cast<numeric_cell_block*>(block);
+            blk.erase(blk.begin()+pos);
+        }
+        break;
+        case celltype_string:
+        {
+            string_cell_block& blk = *static_cast<string_cell_block*>(block);
+            blk.erase(blk.begin()+pos);
+        }
+        break;
+        default:
+            assert(!"attempting to erase a cell from a block of unknown type!");
     }
 }
 
@@ -556,6 +582,19 @@ void gridmap_test_basic()
         assert(res);
         res = test_cell_insertion(col_db, 1, -2.0);
         assert(res);
+        res = test_cell_insertion(col_db, 0, 7.5); // overwrite.
+        assert(res);
+        str = "bah";
+        res = test_cell_insertion(col_db, 0, str); // overwrite with different type.
+        assert(res);
+        double val = -999;
+        col_db.get_cell(1, val);
+        assert(val == -2.0);
+        str = "alpha";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+        col_db.get_cell(2, val);
+        assert(val == 2.0);
     }
 }
 
