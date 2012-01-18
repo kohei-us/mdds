@@ -118,7 +118,50 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         // Insertion point is at the start of the block.
         if (blk->m_size == 1)
         {
-            assert(!"not implemented yet");
+            if (block_index == 0)
+            {
+                // This is the topmost block.
+                assert(!"not implemented yet.");
+                return;
+            }
+
+            if (block_index == m_blocks.size()-1)
+            {
+                // This is the last block.
+                assert(!"not implemented yet.");
+                return;
+            }
+
+            // Remove the current block, and check if the cell can be append
+            // to the previous block, or prepended to the following block.
+            // Also check if the blocks above and below need to be combined.
+
+            block* blk_prev = m_blocks[block_index-1];
+            block* blk_next = m_blocks[block_index+1];
+            assert(blk_prev && blk_prev->mp_data);
+            assert(blk_next && blk_next->mp_data);
+            cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+            cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+
+            if (blk_cat_prev == blk_cat_next)
+            {
+                // Merge the previous block with the cell being inserted and
+                // the next block.
+                blk_prev->m_size += 1 + blk_next->m_size;
+                cell_block_modifier::append_value(blk_prev->mp_data, cell);
+                cell_block_modifier::append_value(blk_prev->mp_data, blk_next->mp_data);
+
+                // Delete the current and next blocks.
+                delete blk;
+                delete blk_next;
+                typename blocks_type::iterator it = m_blocks.begin() + block_index;
+                typename blocks_type::iterator it_last = it + 2;
+                m_blocks.erase(it, it_last);
+            }
+            else
+            {
+                assert(!"not implemented yet.");
+            }
             return;
         }
 

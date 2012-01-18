@@ -578,23 +578,39 @@ void gridmap_test_basic()
         string str = "foo";
         res = test_cell_insertion(col_db, 3, str);
         assert(res);
+
         res = test_cell_insertion(col_db, 2, 2.0);
         assert(res);
+        string test;
+        col_db.get_cell(3, test); // Check the cell below.
+        assert(test == "foo");
+
         res = test_cell_insertion(col_db, 1, -2.0);
         assert(res);
+
         res = test_cell_insertion(col_db, 0, 7.5); // overwrite.
         assert(res);
+
+
         str = "bah";
         res = test_cell_insertion(col_db, 0, str); // overwrite with different type.
         assert(res);
         double val = -999;
-        col_db.get_cell(1, val);
+        col_db.get_cell(1, val); // Check the cell below.
         assert(val == -2.0);
+
         str = "alpha";
         res = test_cell_insertion(col_db, 1, str);
         assert(res);
-        col_db.get_cell(2, val);
+        col_db.get_cell(2, val); // Check the cell below.
         assert(val == 2.0);
+
+        col_db.get_cell(3, test);
+        assert(test == "foo");
+
+        str = "beta";
+        res = test_cell_insertion(col_db, 2, str);
+        assert(res);
     }
 }
 
