@@ -614,6 +614,28 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 2, str);
         assert(res);
     }
+
+    {
+        column_type col_db(1);
+        res = test_cell_insertion(col_db, 0, 2.0);
+        assert(res);
+        string str = "foo";
+        res = test_cell_insertion(col_db, 0, str);
+        assert(res);
+        res = test_cell_insertion(col_db, 0, 3.0);
+        assert(res);
+    }
+
+    {
+        column_type col_db(2);
+        res = test_cell_insertion(col_db, 0, 2.0);
+        assert(res);
+        string str = "foo";
+        res = test_cell_insertion(col_db, 0, str);
+        assert(res);
+        res = test_cell_insertion(col_db, 0, 3.0);
+        assert(res);
+    }
 }
 
 }

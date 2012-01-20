@@ -120,7 +120,36 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         {
             if (block_index == 0)
             {
-                // This is the topmost block.
+                // This is the topmost block of size 1.
+                if (block_index == m_blocks.size()-1)
+                {
+                    // This is the only block.
+                    cell_block_modifier::delete_block(blk->mp_data);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
+                    return;
+                }
+
+                // There is an existing block below.
+                block* blk_next = m_blocks[block_index+1];
+                if (!blk_next->mp_data)
+                {
+                    // Next block is empty.
+                    cell_block_modifier::delete_block(blk->mp_data);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
+                    return;
+                }
+
+                // Next block is not empty.
+                cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+                if (blk_cat_next != cat)
+                {
+                    // Cell being inserted is of different type than that of the next block.
+                    cell_block_modifier::delete_block(blk->mp_data);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
+                    return;
+                }
+
+                // Delete the current block, and prepend the cell to the next block.
                 assert(!"not implemented yet.");
                 return;
             }
@@ -138,6 +167,20 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 
             block* blk_prev = m_blocks[block_index-1];
             block* blk_next = m_blocks[block_index+1];
+            if (!blk_prev->mp_data)
+            {
+                // Previous block is empty.
+                assert(!"not implemented yet.");
+                return;
+            }
+
+            if (!blk_next->mp_data)
+            {
+                // Next block is empty.
+                assert(!"not implemented yet.");
+                return;
+            }
+
             assert(blk_prev && blk_prev->mp_data);
             assert(blk_next && blk_next->mp_data);
             cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
