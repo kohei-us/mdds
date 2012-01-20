@@ -587,10 +587,12 @@ void gridmap_test_basic()
 
         res = test_cell_insertion(col_db, 1, -2.0);
         assert(res);
+        test = "hmm";
+        col_db.get_cell(3, test);
+        assert(test == "foo");
 
         res = test_cell_insertion(col_db, 0, 7.5); // overwrite.
         assert(res);
-
 
         str = "bah";
         res = test_cell_insertion(col_db, 0, str); // overwrite with different type.

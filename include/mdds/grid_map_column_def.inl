@@ -398,19 +398,24 @@ void column<_Trait>::set_cell_to_empty_block(
                 }
                 else
                 {
+                    // Block exists below.
                     block* blk_next = m_blocks[block_index+1];
                     cell_block_type* data_next = blk_next->mp_data;
                     assert(data_next); // Empty block must not be followed by another empty block.
                     cell_category_type blk_cat_next = get_block_type(*data_next);
                     if (blk_cat_prev == blk_cat_next)
                     {
-                        // We need to merge the previous and next blocks.
-                        blk = m_blocks[block_index-1];
-                        blk->m_size += 1 + blk_next->m_size;
-                        cell_block_modifier::append_value(blk->mp_data, cell);
-                        cell_block_modifier::append_value(blk->mp_data, data_next);
-                        delete m_blocks.back();
-                        m_blocks.pop_back();
+                        // We need to merge the previous and next blocks, then
+                        // delete the current and next blocks.
+                        block* blk_prev = m_blocks[block_index-1];
+                        blk_prev->m_size += 1 + blk_next->m_size;
+                        cell_block_modifier::append_value(blk_prev->mp_data, cell);
+                        cell_block_modifier::append_value(blk_prev->mp_data, data_next);
+
+                        delete blk;
+                        delete blk_next;
+                        typename blocks_type::iterator it = m_blocks.begin() + block_index;
+                        m_blocks.erase(it, it+2);
                     }
                     else
                     {
