@@ -133,6 +133,8 @@ struct cell_block_func
 
     static void delete_block(base_cell_block* p);
 
+    static void print_block(base_cell_block* p);
+
     static void erase(base_cell_block* block, long pos);
 
     template<typename T>
@@ -184,6 +186,41 @@ void cell_block_func::delete_block(base_cell_block* p)
         break;
         default:
             assert(!"attempting to delete a cell block instance of unknown type!");
+    }
+}
+
+template<typename T>
+struct print_block_array
+{
+    void operator() (const T& val) const
+    {
+        cout << val << " ";
+    }
+};
+
+void cell_block_func::print_block(base_cell_block* p)
+{
+    if (!p)
+        return;
+
+    switch (p->type)
+    {
+        case celltype_numeric:
+        {
+            numeric_cell_block& blk = *static_cast<numeric_cell_block*>(p);
+            for_each(blk.begin(), blk.end(), print_block_array<double>());
+            cout << endl;
+        }
+        break;
+        case celltype_string:
+        {
+            string_cell_block& blk = *static_cast<string_cell_block*>(p);
+            for_each(blk.begin(), blk.end(), print_block_array<string>());
+            cout << endl;
+        }
+        break;
+        default:
+            assert(!"attempting to print a cell block instance of unknown type!");
     }
 }
 
@@ -643,6 +680,34 @@ void gridmap_test_basic()
         string test;
         col_db.get_cell(1, test);
         assert(test == "foo");
+    }
+
+    {
+        column_type col_db(3);
+        string str = "alpha";
+        col_db.set_cell(2, str);
+        res = test_cell_insertion(col_db, 2, 5.0);
+        assert(res);
+
+        res = test_cell_insertion(col_db, 0, 1.0);
+        assert(res);
+        res = test_cell_insertion(col_db, 1, 2.0);
+        assert(res);
+
+        // At this point it contains one numeric block with 3 values.
+
+        str = "beta";
+        res = test_cell_insertion(col_db, 2, str);
+        assert(res);
+        res = test_cell_insertion(col_db, 2, 3.0);
+        assert(res);
+        double test;
+        col_db.get_cell(0, test);
+        assert(test == 1.0);
+        col_db.get_cell(1, test);
+        assert(test == 2.0);
+        col_db.get_cell(2, test);
+        assert(test == 3.0);
     }
 }
 

@@ -157,10 +157,35 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                 return;
             }
 
+            assert(block_index > 0);
+
             if (block_index == m_blocks.size()-1)
             {
-                // This is the last block.
-                assert(!"not implemented yet.");
+                // This is the last block, and a block exists above.
+                block* blk_prev = m_blocks[block_index-1];
+                if (!blk_prev->mp_data)
+                {
+                    // Previous block is empty. Replace the current block with a new one.
+                    cell_block_modifier::delete_block(blk->mp_data);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
+                    return;
+                }
+
+                cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+                if (blk_cat_prev == cat)
+                {
+                    // Append the cell to the previos block, and remove the
+                    // current block.
+                    cell_block_modifier::append_value(blk_prev->mp_data, cell);
+                    blk_prev->m_size += 1;
+                    delete blk;
+                    m_blocks.erase(m_blocks.begin()+block_index);
+                    return;
+                }
+                else
+                {
+                    assert(!"not implemented yet.");
+                }
                 return;
             }
 
@@ -241,6 +266,30 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     else if (row == (start_row + blk->m_size - 1))
     {
         // Insertion point is at the end of the block.
+        assert(row != start_row);
+        assert(blk->m_size > 1);
+
+        if (block_index == 0)
+        {
+            if (m_blocks.size() == 1)
+            {
+                // This is the only block.  Pop the last value from the
+                // previous block, and insert a new block for the cell being
+                // inserted.
+                cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
+                blk->m_size -= 1;
+                m_blocks.push_back(new block(1));
+                blk = m_blocks.back();
+                assert(blk->m_size == 1);
+                create_new_block_with_new_cell(blk->mp_data, cell);
+                return;
+            }
+
+            assert(!"not implemented yet");
+            return;
+        }
+
+        assert(block_index > 0);
         assert(!"not implemented yet");
     }
     else
