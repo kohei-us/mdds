@@ -157,13 +157,6 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                 return;
             }
 
-            if (block_index == m_blocks.size()-1)
-            {
-                // This is the last block.
-                assert(!"not implemented yet.");
-                return;
-            }
-
             // Remove the current block, and check if the cell can be append
             // to the previous block, or prepended to the following block.
             // Also check if the blocks above and below need to be combined.
