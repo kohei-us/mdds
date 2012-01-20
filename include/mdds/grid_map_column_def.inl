@@ -150,7 +150,10 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                 }
 
                 // Delete the current block, and prepend the cell to the next block.
-                assert(!"not implemented yet.");
+                blk_next->m_size += 1;
+                cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+                delete blk;
+                m_blocks.erase(m_blocks.begin()+block_index);
                 return;
             }
 
