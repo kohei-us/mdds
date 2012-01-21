@@ -198,6 +198,14 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
             if (!blk_prev->mp_data)
             {
                 // Previous block is empty.
+                if (!blk_next->mp_data)
+                {
+                    // Next block is empty too.
+                    cell_block_modifier::delete_block(blk->mp_data);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
+                    return;
+                }
+
                 assert(!"not implemented yet.");
                 return;
             }
@@ -205,7 +213,21 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
             if (!blk_next->mp_data)
             {
                 // Next block is empty.
-                assert(!"not implemented yet.");
+                assert(blk_prev->mp_data);
+                cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+                if (blk_cat_prev == cat)
+                {
+                    // Append to the previous block.
+                    blk_prev->m_size += 1;
+                    cell_block_modifier::append_value(blk_prev->mp_data, cell);
+                    delete blk;
+                    m_blocks.erase(m_blocks.begin()+block_index);
+                    return;
+                }
+
+                // Just overwrite the current block.
+                cell_block_modifier::delete_block(blk->mp_data);
+                create_new_block_with_new_cell(blk->mp_data, cell);
                 return;
             }
 
@@ -285,6 +307,31 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                 return;
             }
 
+            assert(block_index < m_blocks.size()-1);
+            block* blk_next = m_blocks[block_index+1];
+            if (!blk_next->mp_data)
+            {
+                // Next block is empty.  Pop the last cell of the current
+                // block, and insert a new block with the new cell.
+                cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
+                blk->m_size -= 1;
+                m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
+                blk = m_blocks[block_index+1];
+                create_new_block_with_new_cell(blk->mp_data, cell);
+                return;
+            }
+
+            // Next block is not empty.
+            cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+            if (blk_cat_next == cat)
+            {
+                // Pop the last cell off the current block, and prepend the
+                // new cell to the next block.
+                cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
+                blk->m_size -= 1;
+                cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+                return;
+            }
             assert(!"not implemented yet");
             return;
         }

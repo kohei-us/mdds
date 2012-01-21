@@ -709,6 +709,49 @@ void gridmap_test_basic()
         col_db.get_cell(2, test);
         assert(test == 3.0);
     }
+
+    {
+        column_type col_db(3);
+        res = test_cell_insertion(col_db, 1, 5.0);
+        assert(res);
+        string str = "alpha";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+        res = test_cell_insertion(col_db, 0, 4.0);
+        assert(res);
+        res = test_cell_insertion(col_db, 1, 3.0);
+        assert(res);
+        double test;
+        col_db.get_cell(0, test);
+        assert(test == 4.0);
+
+        // The top 2 cells are numeric and the bottom cell is still empty.
+
+        str = "beta";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+        col_db.get_cell(0, test);
+        assert(test == 4.0);
+
+        res = test_cell_insertion(col_db, 1, 6.5);
+        assert(res);
+        col_db.get_cell(0, test);
+        assert(test == 4.0);
+
+        str = "gamma";
+        res = test_cell_insertion(col_db, 2, str);
+        assert(res);
+        col_db.get_cell(0, test);
+        assert(test == 4.0);
+        col_db.get_cell(1, test);
+        assert(test == 6.5);
+
+        // The top 2 cells are numeric and the bottom cell is string.
+
+        str = "delta";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+    }
 }
 
 }
