@@ -94,6 +94,10 @@ private:
         size_t block_index, row_key_type pos_in_block, const _T& cell);
 
     template<typename _T>
+    void set_cell_to_top_of_data_block(
+        size_t block_index, const _T& cell);
+
+    template<typename _T>
     void set_cell_to_bottom_of_data_block(
         size_t block_index, const _T& cell);
 

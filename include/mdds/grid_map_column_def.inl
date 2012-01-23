@@ -262,11 +262,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         if (block_index == 0)
         {
             // No preceding block.
-            blk->m_size -= 1;
-            cell_block_modifier::erase(blk->mp_data, 0);
-            m_blocks.insert(m_blocks.begin(), new block(1));
-            blk = m_blocks[0];
-            create_new_block_with_new_cell(blk->mp_data, cell);
+            set_cell_to_top_of_data_block(0, cell);
             return;
         }
 
@@ -675,6 +671,18 @@ void column<_Trait>::set_cell_to_empty_block(
         // New cell is somewhere in the middle of an empty block.
         insert_cell_to_middle_of_empty_block(block_index, pos_in_block, cell);
     }
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::set_cell_to_top_of_data_block(size_t block_index, const _T& cell)
+{
+    block* blk = m_blocks[block_index];
+    blk->m_size -= 1;
+    cell_block_modifier::erase(blk->mp_data, 0);
+    m_blocks.insert(m_blocks.begin()+block_index, new block(1));
+    blk = m_blocks[block_index];
+    create_new_block_with_new_cell(blk->mp_data, cell);
 }
 
 template<typename _Trait>
