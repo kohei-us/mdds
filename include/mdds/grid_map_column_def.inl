@@ -298,12 +298,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                 // This is the only block.  Pop the last value from the
                 // previous block, and insert a new block for the cell being
                 // inserted.
-                cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
-                blk->m_size -= 1;
-                m_blocks.push_back(new block(1));
-                blk = m_blocks.back();
-                assert(blk->m_size == 1);
-                create_new_block_with_new_cell(blk->mp_data, cell);
+                set_cell_to_bottom_of_data_block(0, cell);
                 return;
             }
 
@@ -313,26 +308,23 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
             {
                 // Next block is empty.  Pop the last cell of the current
                 // block, and insert a new block with the new cell.
-                cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
-                blk->m_size -= 1;
-                m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
-                blk = m_blocks[block_index+1];
-                create_new_block_with_new_cell(blk->mp_data, cell);
+                set_cell_to_bottom_of_data_block(0, cell);
                 return;
             }
 
             // Next block is not empty.
             cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
-            if (blk_cat_next == cat)
+            if (blk_cat_next != cat)
             {
-                // Pop the last cell off the current block, and prepend the
-                // new cell to the next block.
-                cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
-                blk->m_size -= 1;
-                cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+                set_cell_to_bottom_of_data_block(0, cell);
                 return;
             }
-            assert(!"not implemented yet");
+
+            // Pop the last cell off the current block, and prepend the
+            // new cell to the next block.
+            cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
+            blk->m_size -= 1;
+            cell_block_modifier::prepend_value(blk_next->mp_data, cell);
             return;
         }
 
