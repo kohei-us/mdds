@@ -357,7 +357,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         if (cat_blk_next != cat)
         {
             // Next block is of different type than that of the cell being inserted.
-            assert(!"not implemented yet");
+            set_cell_to_bottom_of_data_block(block_index, cell);
             return;
         }
 
