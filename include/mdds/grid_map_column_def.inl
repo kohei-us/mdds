@@ -288,7 +288,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     else if (row == (start_row + blk->m_size - 1))
     {
         // Insertion point is at the end of the block.
-        assert(row != start_row);
+        assert(row > start_row);
         assert(blk->m_size > 1);
 
         if (block_index == 0)
@@ -337,7 +337,36 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         }
 
         assert(block_index > 0);
-        assert(!"not implemented yet");
+
+        if (block_index == m_blocks.size()-1)
+        {
+            // This is the last block.
+            set_cell_to_bottom_of_data_block(block_index, cell);
+            return;
+        }
+
+        block* blk_next = m_blocks[block_index+1];
+        if (!blk_next->mp_data)
+        {
+            // Next block is empty.
+            set_cell_to_bottom_of_data_block(block_index, cell);
+            return;
+        }
+
+        cell_category_type cat_blk_next = get_block_type(*blk_next->mp_data);
+        if (cat_blk_next != cat)
+        {
+            // Next block is of different type than that of the cell being inserted.
+            assert(!"not implemented yet");
+            return;
+        }
+
+        // Pop the last element from the current block, and prepend the cell
+        // into the next block.
+        cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
+        blk->m_size -= 1;
+        cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+        blk_next->m_size += 1;
     }
     else
     {
@@ -654,6 +683,19 @@ void column<_Trait>::set_cell_to_empty_block(
         // New cell is somewhere in the middle of an empty block.
         insert_cell_to_middle_of_empty_block(block_index, pos_in_block, cell);
     }
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::set_cell_to_bottom_of_data_block(size_t block_index, const _T& cell)
+{
+    assert(block_index < m_blocks.size());
+    block* blk = m_blocks[block_index];
+    cell_block_modifier::erase(blk->mp_data, blk->m_size-1);
+    blk->m_size -= 1;
+    m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
+    blk = m_blocks[block_index+1];
+    create_new_block_with_new_cell(blk->mp_data, cell);
 }
 
 template<typename _Trait>

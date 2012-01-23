@@ -93,6 +93,10 @@ private:
     void set_cell_to_empty_block(
         size_t block_index, row_key_type pos_in_block, const _T& cell);
 
+    template<typename _T>
+    void set_cell_to_bottom_of_data_block(
+        size_t block_index, const _T& cell);
+
 private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;

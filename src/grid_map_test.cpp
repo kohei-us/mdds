@@ -752,6 +752,52 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 1, str);
         assert(res);
     }
+
+    {
+        column_type col_db(4);
+        col_db.set_cell(0, 1.0);
+        string str = "foo";
+        col_db.set_cell(1, str);
+        col_db.set_cell(2, str);
+        col_db.set_cell(3, 4.0);
+
+        res = test_cell_insertion(col_db, 2, 3.0);
+        assert(res);
+        double test;
+        col_db.get_cell(3, test);
+        assert(test == 4.0);
+    }
+
+    {
+        column_type col_db(4);
+        col_db.set_cell(0, 1.0);
+        string str = "foo";
+        col_db.set_cell(1, str);
+        col_db.set_cell(2, str);
+        col_db.set_cell(3, str);
+
+        res = test_cell_insertion(col_db, 3, 3.0);
+        assert(res);
+    }
+
+    {
+        column_type col_db(4);
+        col_db.set_cell(0, 1.0);
+        string str = "foo";
+        col_db.set_cell(1, str);
+        col_db.set_cell(2, str);
+
+        res = test_cell_insertion(col_db, 2, 3.0);
+        assert(res);
+
+        // Next cell should still be empty.
+        double test_val;
+        col_db.get_cell(3, test_val);
+        assert(test_val == 0.0);
+        string test_str;
+        col_db.get_cell(3, test_str);
+        assert(test_str.empty());
+    }
 }
 
 }
