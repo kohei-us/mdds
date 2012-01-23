@@ -79,6 +79,8 @@ public:
     void get_cell(row_key_type row, _T& cell) const;
 
 private:
+    void get_block_position(row_key_type row, row_key_type& start_row, size_t& block_index) const;
+
     template<typename _T>
     void create_new_block_with_new_cell(cell_block_type*& data, const _T& cell);
 

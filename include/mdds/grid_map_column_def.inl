@@ -73,19 +73,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     // Find the right block ID from the row ID.
     row_key_type start_row = 0; // row ID of the first cell in a block.
     size_t block_index = 0;
-    for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
-    {
-        const block& blk = *m_blocks[i];
-        if (row < start_row + blk.m_size)
-        {
-            // Row is in this block.
-            block_index = i;
-            break;
-        }
-
-        // Specified row is not in this block.
-        start_row += blk.m_size;
-    }
+    get_block_position(row, start_row, block_index);
 
     block* blk = m_blocks[block_index];
     assert(blk->m_size > 0); // block size should never be zero at any time.
@@ -360,6 +348,25 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     {
         // Insertion point is somewhere in the middle of the block.
         assert(!"not implemented yet");
+    }
+}
+
+template<typename _Trait>
+void column<_Trait>::get_block_position(row_key_type row, row_key_type& start_row, size_t& block_index) const
+{
+    start_row = 0;
+    for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
+    {
+        const block& blk = *m_blocks[i];
+        if (row < start_row + blk.m_size)
+        {
+            // Row is in this block.
+            block_index = i;
+            break;
+        }
+
+        // Specified row is not in this block.
+        start_row += blk.m_size;
     }
 }
 
@@ -706,18 +713,9 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
         throw std::out_of_range("Specified row index is out-of-bound.");
 
     row_key_type start_row = 0;
-    const block* blk = NULL;
-    for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
-    {
-        blk = m_blocks[i];
-        assert(blk->m_size > 0);
-        if (row < start_row + blk->m_size)
-            break;
-
-        // Specified row is not in this block.
-        start_row += blk->m_size;
-    }
-
+    size_t block_index = static_cast<size_t>(-1);
+    get_block_position(row, start_row, block_index);
+    const block* blk = m_blocks[block_index];
     assert(blk);
 
     if (!blk->mp_data)
