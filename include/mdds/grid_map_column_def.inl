@@ -230,7 +230,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                 // the next block.
                 blk_prev->m_size += 1 + blk_next->m_size;
                 cell_block_modifier::append_value(blk_prev->mp_data, cell);
-                cell_block_modifier::append_value(blk_prev->mp_data, blk_next->mp_data);
+                cell_block_modifier::append_values(blk_prev->mp_data, blk_next->mp_data);
 
                 // Delete the current and next blocks.
                 delete blk;
@@ -347,7 +347,26 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     else
     {
         // Insertion point is somewhere in the middle of the block.
-        assert(!"not implemented yet");
+        block* blk = m_blocks[block_index];
+
+        assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
+        assert(blk->m_size >= 3);
+        row_key_type orig_size = blk->m_size;
+
+        m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
+        block* blk_new = m_blocks[block_index+1];
+        m_blocks.insert(m_blocks.begin()+block_index+2, new block(orig_size-pos_in_block-1));
+        block* blk_tail = m_blocks[block_index+2];
+
+        // Transfer the tail values from the original to the new block.
+        blk_tail->mp_data = cell_block_modifier::create_new_block(blk_cat);
+        cell_block_modifier::assign_values(blk_tail->mp_data, blk->mp_data, pos_in_block+1, orig_size);
+
+        // Shrink the original block.
+        cell_block_modifier::resize_block(blk->mp_data, pos_in_block);
+        blk->m_size = pos_in_block;
+
+        create_new_block_with_new_cell(blk_new->mp_data, cell);
     }
 }
 
@@ -576,7 +595,7 @@ void column<_Trait>::set_cell_to_empty_block(
                         block* blk_prev = m_blocks[block_index-1];
                         blk_prev->m_size += 1 + blk_next->m_size;
                         cell_block_modifier::append_value(blk_prev->mp_data, cell);
-                        cell_block_modifier::append_value(blk_prev->mp_data, data_next);
+                        cell_block_modifier::append_values(blk_prev->mp_data, data_next);
 
                         delete blk;
                         delete blk_next;

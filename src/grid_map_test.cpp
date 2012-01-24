@@ -133,6 +133,8 @@ struct cell_block_func
 
     static void delete_block(base_cell_block* p);
 
+    static void resize_block(base_cell_block* p, size_t new_size);
+
     static void print_block(base_cell_block* p);
 
     static void erase(base_cell_block* block, long pos);
@@ -148,7 +150,9 @@ struct cell_block_func
     template<typename T>
     static void append_value(base_cell_block* block, const T& val);
 
-    static void append_value(base_cell_block* dest, base_cell_block* src);
+    static void append_values(base_cell_block* dest, const base_cell_block* src);
+
+    static void assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t end_pos);
 
     template<typename T>
     static void get_value(base_cell_block* block, long pos, T& val);
@@ -183,6 +187,24 @@ void cell_block_func::delete_block(base_cell_block* p)
         break;
         case celltype_string:
             delete static_cast<string_cell_block*>(p);
+        break;
+        default:
+            assert(!"attempting to delete a cell block instance of unknown type!");
+    }
+}
+
+void cell_block_func::resize_block(base_cell_block* p, size_t new_size)
+{
+    if (!p)
+        return;
+
+    switch (p->type)
+    {
+        case celltype_numeric:
+            static_cast<numeric_cell_block*>(p)->resize(new_size);
+        break;
+        case celltype_string:
+            static_cast<string_cell_block*>(p)->resize(new_size);
         break;
         default:
             assert(!"attempting to delete a cell block instance of unknown type!");
@@ -256,12 +278,28 @@ numeric_cell_block* get_numeric_block(base_cell_block* block)
     return static_cast<numeric_cell_block*>(block);
 }
 
+const numeric_cell_block* get_numeric_block(const base_cell_block* block)
+{
+    if (!block || block->type != celltype_numeric)
+        throw general_error("block is not of numeric type!");
+
+    return static_cast<const numeric_cell_block*>(block);
+}
+
 string_cell_block* get_string_block(base_cell_block* block)
 {
     if (!block || block->type != celltype_string)
         throw general_error("block is not of string type!");
 
     return static_cast<string_cell_block*>(block);
+}
+
+const string_cell_block* get_string_block(const base_cell_block* block)
+{
+    if (!block || block->type != celltype_string)
+        throw general_error("block is not of string type!");
+
+    return static_cast<const string_cell_block*>(block);
 }
 
 template<typename T>
@@ -324,7 +362,7 @@ void cell_block_func::append_value<string>(base_cell_block* block, const string&
     blk.push_back(val);
 }
 
-void cell_block_func::append_value(base_cell_block* dest, base_cell_block* src)
+void cell_block_func::append_values(base_cell_block* dest, const base_cell_block* src)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -334,15 +372,49 @@ void cell_block_func::append_value(base_cell_block* dest, base_cell_block* src)
         case celltype_numeric:
         {
             numeric_cell_block& d = *get_numeric_block(dest);
-            numeric_cell_block& s = *get_numeric_block(src);
+            const numeric_cell_block& s = *get_numeric_block(src);
             d.insert(d.end(), s.begin(), s.end());
         }
         break;
         case celltype_string:
         {
             string_cell_block& d = *get_string_block(dest);
-            string_cell_block& s = *get_string_block(src);
+            const string_cell_block& s = *get_string_block(src);
             d.insert(d.end(), s.begin(), s.end());
+        }
+        break;
+        default:
+            assert(!"unhandled cell type.");
+    }
+}
+
+void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t end_pos)
+{
+    if (!dest)
+        throw general_error("destination cell block is NULL.");
+
+    switch (dest->type)
+    {
+        case celltype_numeric:
+        {
+            numeric_cell_block& d = *get_numeric_block(dest);
+            const numeric_cell_block& s = *get_numeric_block(src);
+            numeric_cell_block::const_iterator it = s.begin();
+            std::advance(it, begin_pos);
+            numeric_cell_block::const_iterator it_end = it;
+            std::advance(it_end, end_pos-begin_pos);
+            d.assign(it, it_end);
+        }
+        break;
+        case celltype_string:
+        {
+            string_cell_block& d = *get_string_block(dest);
+            const string_cell_block& s = *get_string_block(src);
+            string_cell_block::const_iterator it = s.begin();
+            std::advance(it, begin_pos);
+            string_cell_block::const_iterator it_end = it;
+            std::advance(it_end, end_pos-begin_pos);
+            d.assign(it, it_end);
         }
         break;
         default:
@@ -797,6 +869,17 @@ void gridmap_test_basic()
         string test_str;
         col_db.get_cell(3, test_str);
         assert(test_str.empty());
+    }
+
+    {
+        column_type col_db(4);
+        col_db.set_cell(0, 1.0);
+        col_db.set_cell(1, 1.0);
+        col_db.set_cell(2, 1.0);
+        col_db.set_cell(3, 1.0);
+        string str = "alpha";
+        res = test_cell_insertion(col_db, 2, str);
+        assert(res);
     }
 }
 
