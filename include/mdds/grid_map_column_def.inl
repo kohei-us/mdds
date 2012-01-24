@@ -406,7 +406,8 @@ void column<_Trait>::insert_cell_to_middle_of_block(
 
         // Transfer the tail values from the original to the new block.
         blk_tail->mp_data = cell_block_modifier::create_new_block(blk_cat);
-        cell_block_modifier::assign_values(blk_tail->mp_data, blk->mp_data, pos_in_block+1, orig_size);
+        cell_block_modifier::assign_values(
+            blk_tail->mp_data, blk->mp_data, pos_in_block+1, orig_size-pos_in_block-1);
 
         // Shrink the original block.
         cell_block_modifier::resize_block(blk->mp_data, pos_in_block);

@@ -152,7 +152,7 @@ struct cell_block_func
 
     static void append_values(base_cell_block* dest, const base_cell_block* src);
 
-    static void assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t end_pos);
+    static void assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
 
     template<typename T>
     static void get_value(base_cell_block* block, long pos, T& val);
@@ -388,7 +388,7 @@ void cell_block_func::append_values(base_cell_block* dest, const base_cell_block
     }
 }
 
-void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t end_pos)
+void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -402,7 +402,7 @@ void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block
             numeric_cell_block::const_iterator it = s.begin();
             std::advance(it, begin_pos);
             numeric_cell_block::const_iterator it_end = it;
-            std::advance(it_end, end_pos-begin_pos);
+            std::advance(it_end, len);
             d.assign(it, it_end);
         }
         break;
@@ -413,7 +413,7 @@ void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block
             string_cell_block::const_iterator it = s.begin();
             std::advance(it, begin_pos);
             string_cell_block::const_iterator it_end = it;
-            std::advance(it_end, end_pos-begin_pos);
+            std::advance(it_end, len);
             d.assign(it, it_end);
         }
         break;
