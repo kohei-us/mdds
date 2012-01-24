@@ -347,26 +347,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     else
     {
         // Insertion point is somewhere in the middle of the block.
-        block* blk = m_blocks[block_index];
-
-        assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
-        assert(blk->m_size >= 3);
-        row_key_type orig_size = blk->m_size;
-
-        m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
-        block* blk_new = m_blocks[block_index+1];
-        m_blocks.insert(m_blocks.begin()+block_index+2, new block(orig_size-pos_in_block-1));
-        block* blk_tail = m_blocks[block_index+2];
-
-        // Transfer the tail values from the original to the new block.
-        blk_tail->mp_data = cell_block_modifier::create_new_block(blk_cat);
-        cell_block_modifier::assign_values(blk_tail->mp_data, blk->mp_data, pos_in_block+1, orig_size);
-
-        // Shrink the original block.
-        cell_block_modifier::resize_block(blk->mp_data, pos_in_block);
-        blk->m_size = pos_in_block;
-
-        create_new_block_with_new_cell(blk_new->mp_data, cell);
+        insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
     }
 }
 
@@ -405,7 +386,7 @@ void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, cons
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::insert_cell_to_middle_of_empty_block(
+void column<_Trait>::insert_cell_to_middle_of_block(
     size_t block_index, row_key_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
@@ -413,18 +394,27 @@ void column<_Trait>::insert_cell_to_middle_of_empty_block(
     assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
     assert(blk->m_size >= 3);
     row_key_type orig_size = blk->m_size;
+
+    m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
+    block* blk_new = m_blocks[block_index+1];
+    m_blocks.insert(m_blocks.begin()+block_index+2, new block(orig_size-pos_in_block-1));
+    block* blk_tail = m_blocks[block_index+2];
+
+    if (blk->mp_data)
+    {
+        cell_category_type blk_cat = get_block_type(*blk->mp_data);
+
+        // Transfer the tail values from the original to the new block.
+        blk_tail->mp_data = cell_block_modifier::create_new_block(blk_cat);
+        cell_block_modifier::assign_values(blk_tail->mp_data, blk->mp_data, pos_in_block+1, orig_size);
+
+        // Shrink the original block.
+        cell_block_modifier::resize_block(blk->mp_data, pos_in_block);
+    }
+
     blk->m_size = pos_in_block;
 
-    typename blocks_type::iterator it = m_blocks.begin();
-    std::advance(it, block_index+1);
-    m_blocks.insert(it, new block(1));
-    it = m_blocks.begin();
-    std::advance(it, block_index+1);
-    blk = *it;
-    ++it;
-    m_blocks.insert(it, new block(orig_size-pos_in_block-1));
-
-    create_new_block_with_new_cell(blk->mp_data, cell);
+    create_new_block_with_new_cell(blk_new->mp_data, cell);
 }
 
 template<typename _Trait>
@@ -483,7 +473,7 @@ void column<_Trait>::set_cell_to_empty_block(
                 else
                 {
                     // Insert into the middle of the block.
-                    insert_cell_to_middle_of_empty_block(block_index, pos_in_block, cell);
+                    insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
                 }
             }
         }
@@ -552,7 +542,7 @@ void column<_Trait>::set_cell_to_empty_block(
             else
             {
                 // Inserting into the middle of an empty block.
-                insert_cell_to_middle_of_empty_block(block_index, pos_in_block, cell);
+                insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
             }
         }
 
@@ -695,7 +685,7 @@ void column<_Trait>::set_cell_to_empty_block(
     else
     {
         // New cell is somewhere in the middle of an empty block.
-        insert_cell_to_middle_of_empty_block(block_index, pos_in_block, cell);
+        insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
     }
 }
 
