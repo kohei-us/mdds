@@ -170,10 +170,10 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                     m_blocks.erase(m_blocks.begin()+block_index);
                     return;
                 }
-                else
-                {
-                    assert(!"not implemented yet.");
-                }
+
+                // Simply replace the current block with a new block of new type.
+                cell_block_modifier::delete_block(blk->mp_data);
+                create_new_block_with_new_cell(blk->mp_data, cell);
                 return;
             }
 
