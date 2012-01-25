@@ -75,7 +75,7 @@ private:
     double m_start_time;
 };
 
-enum cell_t { celltype_numeric = 0, celltype_string };
+enum cell_t { celltype_numeric = 0, celltype_string, celltype_index };
 
 struct get_cell_type
 {
@@ -101,6 +101,12 @@ cell_t get_cell_type::operator()<std::string> (const std::string& t)
     return celltype_string;
 }
 
+template<>
+cell_t get_cell_type::operator()<size_t> (const size_t& t)
+{
+    return celltype_index;
+}
+
 struct base_cell_block
 {
     cell_t type;
@@ -117,6 +123,12 @@ struct string_cell_block : public base_cell_block, public vector<string>
 {
 public:
     string_cell_block() : base_cell_block(celltype_string), vector<string>(1) {}
+};
+
+struct index_cell_block : public base_cell_block, public vector<size_t>
+{
+public:
+    index_cell_block() : base_cell_block(celltype_index), vector<size_t>(1) {}
 };
 
 struct get_cell_block_type : public std::unary_function<base_cell_block, cell_t>
@@ -145,8 +157,6 @@ struct cell_block_func
     template<typename T>
     static void prepend_value(base_cell_block* block, const T& val);
 
-    static void prepend_value(base_cell_block* dest, base_cell_block* src);
-
     template<typename T>
     static void append_value(base_cell_block* block, const T& val);
 
@@ -169,6 +179,8 @@ base_cell_block* cell_block_func::create_new_block(cell_t type)
             return new numeric_cell_block;
         case celltype_string:
             return new string_cell_block;
+        case celltype_index:
+            return new index_cell_block;
         default:
             ;
     }
@@ -188,6 +200,9 @@ void cell_block_func::delete_block(base_cell_block* p)
         case celltype_string:
             delete static_cast<string_cell_block*>(p);
         break;
+        case celltype_index:
+            delete static_cast<index_cell_block*>(p);
+        break;
         default:
             assert(!"attempting to delete a cell block instance of unknown type!");
     }
@@ -205,6 +220,9 @@ void cell_block_func::resize_block(base_cell_block* p, size_t new_size)
         break;
         case celltype_string:
             static_cast<string_cell_block*>(p)->resize(new_size);
+        break;
+        case celltype_index:
+            static_cast<index_cell_block*>(p)->resize(new_size);
         break;
         default:
             assert(!"attempting to delete a cell block instance of unknown type!");
@@ -241,6 +259,13 @@ void cell_block_func::print_block(base_cell_block* p)
             cout << endl;
         }
         break;
+        case celltype_index:
+        {
+            index_cell_block& blk = *static_cast<index_cell_block*>(p);
+            for_each(blk.begin(), blk.end(), print_block_array<size_t>());
+            cout << endl;
+        }
+        break;
         default:
             assert(!"attempting to print a cell block instance of unknown type!");
     }
@@ -262,6 +287,12 @@ void cell_block_func::erase(base_cell_block* block, long pos)
         case celltype_string:
         {
             string_cell_block& blk = *static_cast<string_cell_block*>(block);
+            blk.erase(blk.begin()+pos);
+        }
+        break;
+        case celltype_index:
+        {
+            index_cell_block& blk = *static_cast<index_cell_block*>(block);
             blk.erase(blk.begin()+pos);
         }
         break;
@@ -302,6 +333,22 @@ const string_cell_block* get_string_block(const base_cell_block* block)
     return static_cast<const string_cell_block*>(block);
 }
 
+index_cell_block* get_index_block(base_cell_block* block)
+{
+    if (!block || block->type != celltype_index)
+        throw general_error("block is not of index type!");
+
+    return static_cast<index_cell_block*>(block);
+}
+
+const index_cell_block* get_index_block(const base_cell_block* block)
+{
+    if (!block || block->type != celltype_index)
+        throw general_error("block is not of index type!");
+
+    return static_cast<const index_cell_block*>(block);
+}
+
 template<typename T>
 void cell_block_func::set_value(base_cell_block* block, long pos, const T& val)
 {
@@ -319,6 +366,13 @@ template<>
 void cell_block_func::set_value<string>(base_cell_block* block, long pos, const string& val)
 {
     string_cell_block& blk = *get_string_block(block);
+    blk[pos] = val;
+}
+
+template<>
+void cell_block_func::set_value<size_t>(base_cell_block* block, long pos, const size_t& val)
+{
+    index_cell_block& blk = *get_index_block(block);
     blk[pos] = val;
 }
 
@@ -342,6 +396,13 @@ void cell_block_func::prepend_value<string>(base_cell_block* block, const string
     blk.insert(blk.begin(), val);
 }
 
+template<>
+void cell_block_func::prepend_value<size_t>(base_cell_block* block, const size_t& val)
+{
+    index_cell_block& blk = *get_index_block(block);
+    blk.insert(blk.begin(), val);
+}
+
 template<typename T>
 void cell_block_func::append_value(base_cell_block* block, const T& val)
 {
@@ -359,6 +420,13 @@ template<>
 void cell_block_func::append_value<string>(base_cell_block* block, const string& val)
 {
     string_cell_block& blk = *get_string_block(block);
+    blk.push_back(val);
+}
+
+template<>
+void cell_block_func::append_value<size_t>(base_cell_block* block, const size_t& val)
+{
+    index_cell_block& blk = *get_index_block(block);
     blk.push_back(val);
 }
 
@@ -380,6 +448,13 @@ void cell_block_func::append_values(base_cell_block* dest, const base_cell_block
         {
             string_cell_block& d = *get_string_block(dest);
             const string_cell_block& s = *get_string_block(src);
+            d.insert(d.end(), s.begin(), s.end());
+        }
+        break;
+        case celltype_index:
+        {
+            index_cell_block& d = *get_index_block(dest);
+            const index_cell_block& s = *get_index_block(src);
             d.insert(d.end(), s.begin(), s.end());
         }
         break;
@@ -417,6 +492,17 @@ void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block
             d.assign(it, it_end);
         }
         break;
+        case celltype_index:
+        {
+            index_cell_block& d = *get_index_block(dest);
+            const index_cell_block& s = *get_index_block(src);
+            index_cell_block::const_iterator it = s.begin();
+            std::advance(it, begin_pos);
+            index_cell_block::const_iterator it_end = it;
+            std::advance(it_end, len);
+            d.assign(it, it_end);
+        }
+        break;
         default:
             assert(!"unhandled cell type.");
     }
@@ -442,6 +528,13 @@ void cell_block_func::get_value<string>(base_cell_block* block, long pos, string
     val = blk[pos];
 }
 
+template<>
+void cell_block_func::get_value<size_t>(base_cell_block* block, long pos, size_t& val)
+{
+    index_cell_block& blk = *get_index_block(block);
+    val = blk[pos];
+}
+
 template<typename T>
 void cell_block_func::get_empty_value(T& val)
 {
@@ -458,6 +551,12 @@ template<>
 void cell_block_func::get_empty_value<string>(string& val)
 {
     val = string();
+}
+
+template<>
+void cell_block_func::get_empty_value<size_t>(size_t& val)
+{
+    val = 0;
 }
 
 struct grid_map_trait
