@@ -106,158 +106,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         // Insertion point is at the start of the block.
         if (blk->m_size == 1)
         {
-            if (block_index == 0)
-            {
-                // This is the topmost block of size 1.
-                if (block_index == m_blocks.size()-1)
-                {
-                    // This is the only block.
-                    cell_block_modifier::delete_block(blk->mp_data);
-                    create_new_block_with_new_cell(blk->mp_data, cell);
-                    return;
-                }
-
-                // There is an existing block below.
-                block* blk_next = m_blocks[block_index+1];
-                if (!blk_next->mp_data)
-                {
-                    // Next block is empty.
-                    cell_block_modifier::delete_block(blk->mp_data);
-                    create_new_block_with_new_cell(blk->mp_data, cell);
-                    return;
-                }
-
-                // Next block is not empty.
-                cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
-                if (blk_cat_next != cat)
-                {
-                    // Cell being inserted is of different type than that of the next block.
-                    cell_block_modifier::delete_block(blk->mp_data);
-                    create_new_block_with_new_cell(blk->mp_data, cell);
-                    return;
-                }
-
-                // Delete the current block, and prepend the cell to the next block.
-                blk_next->m_size += 1;
-                cell_block_modifier::prepend_value(blk_next->mp_data, cell);
-                delete blk;
-                m_blocks.erase(m_blocks.begin()+block_index);
-                return;
-            }
-
-            assert(block_index > 0);
-
-            if (block_index == m_blocks.size()-1)
-            {
-                // This is the last block, and a block exists above.
-                block* blk_prev = m_blocks[block_index-1];
-                if (!blk_prev->mp_data)
-                {
-                    // Previous block is empty. Replace the current block with a new one.
-                    cell_block_modifier::delete_block(blk->mp_data);
-                    create_new_block_with_new_cell(blk->mp_data, cell);
-                    return;
-                }
-
-                cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
-                if (blk_cat_prev == cat)
-                {
-                    // Append the cell to the previos block, and remove the
-                    // current block.
-                    cell_block_modifier::append_value(blk_prev->mp_data, cell);
-                    blk_prev->m_size += 1;
-                    delete blk;
-                    m_blocks.erase(m_blocks.begin()+block_index);
-                    return;
-                }
-
-                // Simply replace the current block with a new block of new type.
-                cell_block_modifier::delete_block(blk->mp_data);
-                create_new_block_with_new_cell(blk->mp_data, cell);
-                return;
-            }
-
-            // Remove the current block, and check if the cell can be append
-            // to the previous block, or prepended to the following block.
-            // Also check if the blocks above and below need to be combined.
-
-            block* blk_prev = m_blocks[block_index-1];
-            block* blk_next = m_blocks[block_index+1];
-            if (!blk_prev->mp_data)
-            {
-                // Previous block is empty.
-                if (!blk_next->mp_data)
-                {
-                    // Next block is empty too.
-                    cell_block_modifier::delete_block(blk->mp_data);
-                    create_new_block_with_new_cell(blk->mp_data, cell);
-                    return;
-                }
-
-                // Previous block is empty, but the next block is not.
-                cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
-                if (blk_cat_next == cat)
-                {
-                    // Delete the current block, and prepend the new cell to the next block.
-                    delete blk;
-                    m_blocks.erase(m_blocks.begin()+block_index);
-                    blk = m_blocks[block_index];
-                    blk->m_size += 1;
-                    cell_block_modifier::prepend_value(blk->mp_data, cell);
-                    return;
-                }
-
-                assert(blk_cat_next != cat);
-                cell_block_modifier::delete_block(blk->mp_data);
-                create_new_block_with_new_cell(blk->mp_data, cell);
-                return;
-            }
-
-            if (!blk_next->mp_data)
-            {
-                // Next block is empty.
-                assert(blk_prev->mp_data);
-                cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
-                if (blk_cat_prev == cat)
-                {
-                    // Append to the previous block.
-                    blk_prev->m_size += 1;
-                    cell_block_modifier::append_value(blk_prev->mp_data, cell);
-                    delete blk;
-                    m_blocks.erase(m_blocks.begin()+block_index);
-                    return;
-                }
-
-                // Just overwrite the current block.
-                cell_block_modifier::delete_block(blk->mp_data);
-                create_new_block_with_new_cell(blk->mp_data, cell);
-                return;
-            }
-
-            assert(blk_prev && blk_prev->mp_data);
-            assert(blk_next && blk_next->mp_data);
-            cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
-            cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
-
-            if (blk_cat_prev == blk_cat_next)
-            {
-                // Merge the previous block with the cell being inserted and
-                // the next block.
-                blk_prev->m_size += 1 + blk_next->m_size;
-                cell_block_modifier::append_value(blk_prev->mp_data, cell);
-                cell_block_modifier::append_values(blk_prev->mp_data, blk_next->mp_data);
-
-                // Delete the current and next blocks.
-                delete blk;
-                delete blk_next;
-                typename blocks_type::iterator it = m_blocks.begin() + block_index;
-                typename blocks_type::iterator it_last = it + 2;
-                m_blocks.erase(it, it_last);
-            }
-            else
-            {
-                assert(!"not implemented yet.");
-            }
+            set_cell_to_block_of_size_one(block_index, cell);
             return;
         }
 
@@ -709,6 +558,168 @@ void column<_Trait>::set_cell_to_empty_block(
     {
         // New cell is somewhere in the middle of an empty block.
         insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
+    }
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T& cell)
+{
+    block* blk = m_blocks[block_index];
+    assert(blk->m_size == 1);
+    cell_category_type cat = get_type(cell);
+
+    if (block_index == 0)
+    {
+        // This is the topmost block of size 1.
+        if (block_index == m_blocks.size()-1)
+        {
+            // This is the only block.
+            cell_block_modifier::delete_block(blk->mp_data);
+            create_new_block_with_new_cell(blk->mp_data, cell);
+            return;
+        }
+
+        // There is an existing block below.
+        block* blk_next = m_blocks[block_index+1];
+        if (!blk_next->mp_data)
+        {
+            // Next block is empty.
+            cell_block_modifier::delete_block(blk->mp_data);
+            create_new_block_with_new_cell(blk->mp_data, cell);
+            return;
+        }
+
+        // Next block is not empty.
+        cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+        if (blk_cat_next != cat)
+        {
+            // Cell being inserted is of different type than that of the next block.
+            cell_block_modifier::delete_block(blk->mp_data);
+            create_new_block_with_new_cell(blk->mp_data, cell);
+            return;
+        }
+
+        // Delete the current block, and prepend the cell to the next block.
+        blk_next->m_size += 1;
+        cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+        delete blk;
+        m_blocks.erase(m_blocks.begin()+block_index);
+        return;
+    }
+
+    assert(block_index > 0);
+
+    if (block_index == m_blocks.size()-1)
+    {
+        // This is the last block, and a block exists above.
+        block* blk_prev = m_blocks[block_index-1];
+        if (!blk_prev->mp_data)
+        {
+            // Previous block is empty. Replace the current block with a new one.
+            cell_block_modifier::delete_block(blk->mp_data);
+            create_new_block_with_new_cell(blk->mp_data, cell);
+            return;
+        }
+
+        cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+        if (blk_cat_prev == cat)
+        {
+            // Append the cell to the previos block, and remove the
+            // current block.
+            cell_block_modifier::append_value(blk_prev->mp_data, cell);
+            blk_prev->m_size += 1;
+            delete blk;
+            m_blocks.erase(m_blocks.begin()+block_index);
+            return;
+        }
+
+        // Simply replace the current block with a new block of new type.
+        cell_block_modifier::delete_block(blk->mp_data);
+        create_new_block_with_new_cell(blk->mp_data, cell);
+        return;
+    }
+
+    // Remove the current block, and check if the cell can be append
+    // to the previous block, or prepended to the following block.
+    // Also check if the blocks above and below need to be combined.
+
+    block* blk_prev = m_blocks[block_index-1];
+    block* blk_next = m_blocks[block_index+1];
+    if (!blk_prev->mp_data)
+    {
+        // Previous block is empty.
+        if (!blk_next->mp_data)
+        {
+            // Next block is empty too.
+            cell_block_modifier::delete_block(blk->mp_data);
+            create_new_block_with_new_cell(blk->mp_data, cell);
+            return;
+        }
+
+        // Previous block is empty, but the next block is not.
+        cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+        if (blk_cat_next == cat)
+        {
+            // Delete the current block, and prepend the new cell to the next block.
+            delete blk;
+            m_blocks.erase(m_blocks.begin()+block_index);
+            blk = m_blocks[block_index];
+            blk->m_size += 1;
+            cell_block_modifier::prepend_value(blk->mp_data, cell);
+            return;
+        }
+
+        assert(blk_cat_next != cat);
+        cell_block_modifier::delete_block(blk->mp_data);
+        create_new_block_with_new_cell(blk->mp_data, cell);
+        return;
+    }
+
+    if (!blk_next->mp_data)
+    {
+        // Next block is empty.
+        assert(blk_prev->mp_data);
+        cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+        if (blk_cat_prev == cat)
+        {
+            // Append to the previous block.
+            blk_prev->m_size += 1;
+            cell_block_modifier::append_value(blk_prev->mp_data, cell);
+            delete blk;
+            m_blocks.erase(m_blocks.begin()+block_index);
+            return;
+        }
+
+        // Just overwrite the current block.
+        cell_block_modifier::delete_block(blk->mp_data);
+        create_new_block_with_new_cell(blk->mp_data, cell);
+        return;
+    }
+
+    assert(blk_prev && blk_prev->mp_data);
+    assert(blk_next && blk_next->mp_data);
+    cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+    cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+
+    if (blk_cat_prev == blk_cat_next)
+    {
+        // Merge the previous block with the cell being inserted and
+        // the next block.
+        blk_prev->m_size += 1 + blk_next->m_size;
+        cell_block_modifier::append_value(blk_prev->mp_data, cell);
+        cell_block_modifier::append_values(blk_prev->mp_data, blk_next->mp_data);
+
+        // Delete the current and next blocks.
+        delete blk;
+        delete blk_next;
+        typename blocks_type::iterator it = m_blocks.begin() + block_index;
+        typename blocks_type::iterator it_last = it + 2;
+        m_blocks.erase(it, it_last);
+    }
+    else
+    {
+        assert(!"not implemented yet.");
     }
 }
 
