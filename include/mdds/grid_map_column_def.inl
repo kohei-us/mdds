@@ -567,7 +567,10 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
 {
     block* blk = m_blocks[block_index];
     assert(blk->m_size == 1);
+    assert(blk->mp_data);
     cell_category_type cat = get_type(cell);
+    cell_category_type blk_cat = get_block_type(*blk->mp_data);
+    assert(blk_cat != cat);
 
     if (block_index == 0)
     {
