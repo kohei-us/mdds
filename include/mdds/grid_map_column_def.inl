@@ -247,6 +247,9 @@ void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, cons
 {
     cell_category_type cat = get_type(cell);
 
+    if (data)
+        cell_block_modifier::delete_block(data);
+
     // New cell block is always size 1.
     data = cell_block_modifier::create_new_block(cat);
     if (!data)
@@ -578,7 +581,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
         if (block_index == m_blocks.size()-1)
         {
             // This is the only block.
-            cell_block_modifier::delete_block(blk->mp_data);
             create_new_block_with_new_cell(blk->mp_data, cell);
             return;
         }
@@ -588,7 +590,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
         if (!blk_next->mp_data)
         {
             // Next block is empty.
-            cell_block_modifier::delete_block(blk->mp_data);
             create_new_block_with_new_cell(blk->mp_data, cell);
             return;
         }
@@ -598,7 +599,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
         if (blk_cat_next != cat)
         {
             // Cell being inserted is of different type than that of the next block.
-            cell_block_modifier::delete_block(blk->mp_data);
             create_new_block_with_new_cell(blk->mp_data, cell);
             return;
         }
@@ -620,7 +620,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
         if (!blk_prev->mp_data)
         {
             // Previous block is empty. Replace the current block with a new one.
-            cell_block_modifier::delete_block(blk->mp_data);
             create_new_block_with_new_cell(blk->mp_data, cell);
             return;
         }
@@ -638,7 +637,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
         }
 
         // Simply replace the current block with a new block of new type.
-        cell_block_modifier::delete_block(blk->mp_data);
         create_new_block_with_new_cell(blk->mp_data, cell);
         return;
     }
@@ -655,7 +653,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
         if (!blk_next->mp_data)
         {
             // Next block is empty too.
-            cell_block_modifier::delete_block(blk->mp_data);
             create_new_block_with_new_cell(blk->mp_data, cell);
             return;
         }
@@ -674,7 +671,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
         }
 
         assert(blk_cat_next != cat);
-        cell_block_modifier::delete_block(blk->mp_data);
         create_new_block_with_new_cell(blk->mp_data, cell);
         return;
     }
@@ -695,7 +691,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
         }
 
         // Just overwrite the current block.
-        cell_block_modifier::delete_block(blk->mp_data);
         create_new_block_with_new_cell(blk->mp_data, cell);
         return;
     }
@@ -707,18 +702,25 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
 
     if (blk_cat_prev == blk_cat_next)
     {
-        // Merge the previous block with the cell being inserted and
-        // the next block.
-        blk_prev->m_size += 1 + blk_next->m_size;
-        cell_block_modifier::append_value(blk_prev->mp_data, cell);
-        cell_block_modifier::append_values(blk_prev->mp_data, blk_next->mp_data);
+        if (blk_cat_prev == cat)
+        {
+            // Merge the previous block with the cell being inserted and
+            // the next block.
+            blk_prev->m_size += 1 + blk_next->m_size;
+            cell_block_modifier::append_value(blk_prev->mp_data, cell);
+            cell_block_modifier::append_values(blk_prev->mp_data, blk_next->mp_data);
 
-        // Delete the current and next blocks.
-        delete blk;
-        delete blk_next;
-        typename blocks_type::iterator it = m_blocks.begin() + block_index;
-        typename blocks_type::iterator it_last = it + 2;
-        m_blocks.erase(it, it_last);
+            // Delete the current and next blocks.
+            delete blk;
+            delete blk_next;
+            typename blocks_type::iterator it = m_blocks.begin() + block_index;
+            typename blocks_type::iterator it_last = it + 2;
+            m_blocks.erase(it, it_last);
+            return;
+        }
+
+        // Just overwrite the current block.
+        create_new_block_with_new_cell(blk->mp_data, cell);
     }
     else
     {

@@ -1007,6 +1007,12 @@ void gridmap_test_basic()
         string test;
         col_db.get_cell(2, test);
         assert(test == "foo");
+        str = "alpha";
+        res = test_cell_insertion(col_db, 0, str);
+        assert(res);
+        double val = 3.5;
+        res = test_cell_insertion(col_db, 1, val);
+        assert(res);
     }
 }
 
