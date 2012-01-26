@@ -990,6 +990,24 @@ void gridmap_test_basic()
         size_t index = 5;
         test_cell_insertion(col_db, 2, index);
     }
+
+    {
+        column_type col_db(3);
+        col_db.set_cell(1, 1.0);
+        string str = "foo";
+        col_db.set_cell(2, str);
+        str = "bah";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+        res = test_cell_insertion(col_db, 1, 2.0);
+        assert(res);
+        size_t index = 2;
+        res = test_cell_insertion(col_db, 1, index);
+        assert(res);
+        string test;
+        col_db.get_cell(2, test);
+        assert(test == "foo");
+    }
 }
 
 }

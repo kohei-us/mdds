@@ -194,7 +194,22 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
                     return;
                 }
 
-                assert(!"not implemented yet.");
+                // Previous block is empty, but the next block is not.
+                cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+                if (blk_cat_next == cat)
+                {
+                    // Delete the current block, and prepend the new cell to the next block.
+                    delete blk;
+                    m_blocks.erase(m_blocks.begin()+block_index);
+                    blk = m_blocks[block_index];
+                    blk->m_size += 1;
+                    cell_block_modifier::prepend_value(blk->mp_data, cell);
+                    return;
+                }
+
+                assert(blk_cat_next != cat);
+                cell_block_modifier::delete_block(blk->mp_data);
+                create_new_block_with_new_cell(blk->mp_data, cell);
                 return;
             }
 
@@ -256,6 +271,13 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 
         // Append to the previous block if the types match.
         block* blk_prev = m_blocks[block_index-1];
+        if (!blk_prev->mp_data)
+        {
+            // Previous block is empty.
+            set_cell_to_top_of_data_block(block_index, cell);
+            return;
+        }
+
         cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
         if (blk_cat_prev == cat)
         {
