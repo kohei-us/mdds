@@ -1013,6 +1013,24 @@ void gridmap_test_basic()
         double val = 3.5;
         res = test_cell_insertion(col_db, 1, val);
         assert(res);
+        index = 3;
+        res = test_cell_insertion(col_db, 2, index);
+        assert(res);
+
+        // At this point cells 1, 2, 3 all contain different data types.
+
+        str = "beta";
+        res = test_cell_insertion(col_db, 1, str);
+        assert(res);
+
+        // Reset.
+        val = 4.5;
+        res = test_cell_insertion(col_db, 1, val);
+        assert(res);
+
+        index = 4;
+        res = test_cell_insertion(col_db, 1, index);
+        assert(res);
     }
 }
 

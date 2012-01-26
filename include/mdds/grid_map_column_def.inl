@@ -721,11 +721,34 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
 
         // Just overwrite the current block.
         create_new_block_with_new_cell(blk->mp_data, cell);
+        return;
     }
-    else
+
+    assert(blk_cat_prev != blk_cat_next);
+
+    if (blk_cat_prev == cat)
     {
-        assert(!"not implemented yet.");
+        // Append to the previous block.
+        blk_prev->m_size += 1;
+        cell_block_modifier::append_value(blk_prev->mp_data, cell);
+        delete blk;
+        m_blocks.erase(m_blocks.begin()+block_index);
+        return;
     }
+
+    if (blk_cat_next == cat)
+    {
+        // Prepend to the next block.
+        blk_next->m_size += 1;
+        cell_block_modifier::prepend_value(blk_next->mp_data, cell);
+        delete blk;
+        m_blocks.erase(m_blocks.begin()+block_index);
+        return;
+    }
+
+    // Just overwrite the current block.
+    create_new_block_with_new_cell(blk->mp_data, cell);
+    assert(!"not tested yet.");
 }
 
 template<typename _Trait>
