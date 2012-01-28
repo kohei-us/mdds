@@ -75,7 +75,7 @@ private:
     double m_start_time;
 };
 
-enum cell_t { celltype_numeric = 0, celltype_string, celltype_index };
+enum cell_t { celltype_numeric = 0, celltype_string, celltype_index, celltype_boolean };
 
 struct get_cell_type
 {
@@ -107,6 +107,12 @@ cell_t get_cell_type::operator()<size_t> (const size_t& t)
     return celltype_index;
 }
 
+template<>
+cell_t get_cell_type::operator()<bool> (const bool& t)
+{
+    return celltype_boolean;
+}
+
 struct base_cell_block
 {
     cell_t type;
@@ -129,6 +135,12 @@ struct index_cell_block : public base_cell_block, public vector<size_t>
 {
 public:
     index_cell_block() : base_cell_block(celltype_index), vector<size_t>(1) {}
+};
+
+struct boolean_cell_block : public base_cell_block, public vector<bool>
+{
+public:
+    boolean_cell_block() : base_cell_block(celltype_boolean), vector<bool>(1) {}
 };
 
 struct get_cell_block_type : public std::unary_function<base_cell_block, cell_t>
@@ -162,7 +174,8 @@ struct cell_block_func
 
     static void append_values(base_cell_block* dest, const base_cell_block* src);
 
-    static void assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
+    static void assign_values(base_cell_block* dest, const base_cell_block* src,
+                              size_t begin_pos, size_t len);
 
     template<typename T>
     static void get_value(base_cell_block* block, long pos, T& val);
@@ -181,6 +194,8 @@ base_cell_block* cell_block_func::create_new_block(cell_t type)
             return new string_cell_block;
         case celltype_index:
             return new index_cell_block;
+        case celltype_boolean:
+            return new boolean_cell_block;
         default:
             ;
     }
@@ -203,6 +218,9 @@ void cell_block_func::delete_block(base_cell_block* p)
         case celltype_index:
             delete static_cast<index_cell_block*>(p);
         break;
+        case celltype_boolean:
+            delete static_cast<boolean_cell_block*>(p);
+        break;
         default:
             assert(!"attempting to delete a cell block instance of unknown type!");
     }
@@ -223,6 +241,9 @@ void cell_block_func::resize_block(base_cell_block* p, size_t new_size)
         break;
         case celltype_index:
             static_cast<index_cell_block*>(p)->resize(new_size);
+        break;
+        case celltype_boolean:
+            static_cast<boolean_cell_block*>(p)->resize(new_size);
         break;
         default:
             assert(!"attempting to delete a cell block instance of unknown type!");
@@ -266,6 +287,13 @@ void cell_block_func::print_block(base_cell_block* p)
             cout << endl;
         }
         break;
+        case celltype_boolean:
+        {
+            boolean_cell_block& blk = *static_cast<boolean_cell_block*>(p);
+            for_each(blk.begin(), blk.end(), print_block_array<bool>());
+            cout << endl;
+        }
+        break;
         default:
             assert(!"attempting to print a cell block instance of unknown type!");
     }
@@ -293,6 +321,12 @@ void cell_block_func::erase(base_cell_block* block, long pos)
         case celltype_index:
         {
             index_cell_block& blk = *static_cast<index_cell_block*>(block);
+            blk.erase(blk.begin()+pos);
+        }
+        break;
+        case celltype_boolean:
+        {
+            boolean_cell_block& blk = *static_cast<boolean_cell_block*>(block);
             blk.erase(blk.begin()+pos);
         }
         break;
@@ -349,6 +383,22 @@ const index_cell_block* get_index_block(const base_cell_block* block)
     return static_cast<const index_cell_block*>(block);
 }
 
+boolean_cell_block* get_boolean_block(base_cell_block* block)
+{
+    if (!block || block->type != celltype_boolean)
+        throw general_error("block is not of boolean type!");
+
+    return static_cast<boolean_cell_block*>(block);
+}
+
+const boolean_cell_block* get_boolean_block(const base_cell_block* block)
+{
+    if (!block || block->type != celltype_boolean)
+        throw general_error("block is not of boolean type!");
+
+    return static_cast<const boolean_cell_block*>(block);
+}
+
 template<typename T>
 void cell_block_func::set_value(base_cell_block* block, long pos, const T& val)
 {
@@ -373,6 +423,13 @@ template<>
 void cell_block_func::set_value<size_t>(base_cell_block* block, long pos, const size_t& val)
 {
     index_cell_block& blk = *get_index_block(block);
+    blk[pos] = val;
+}
+
+template<>
+void cell_block_func::set_value<bool>(base_cell_block* block, long pos, const bool& val)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
     blk[pos] = val;
 }
 
@@ -403,6 +460,13 @@ void cell_block_func::prepend_value<size_t>(base_cell_block* block, const size_t
     blk.insert(blk.begin(), val);
 }
 
+template<>
+void cell_block_func::prepend_value<bool>(base_cell_block* block, const bool& val)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
+    blk.insert(blk.begin(), val);
+}
+
 template<typename T>
 void cell_block_func::append_value(base_cell_block* block, const T& val)
 {
@@ -427,6 +491,13 @@ template<>
 void cell_block_func::append_value<size_t>(base_cell_block* block, const size_t& val)
 {
     index_cell_block& blk = *get_index_block(block);
+    blk.push_back(val);
+}
+
+template<>
+void cell_block_func::append_value<bool>(base_cell_block* block, const bool& val)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
     blk.push_back(val);
 }
 
@@ -455,6 +526,13 @@ void cell_block_func::append_values(base_cell_block* dest, const base_cell_block
         {
             index_cell_block& d = *get_index_block(dest);
             const index_cell_block& s = *get_index_block(src);
+            d.insert(d.end(), s.begin(), s.end());
+        }
+        break;
+        case celltype_boolean:
+        {
+            boolean_cell_block& d = *get_boolean_block(dest);
+            const boolean_cell_block& s = *get_boolean_block(src);
             d.insert(d.end(), s.begin(), s.end());
         }
         break;
@@ -503,6 +581,17 @@ void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block
             d.assign(it, it_end);
         }
         break;
+        case celltype_boolean:
+        {
+            boolean_cell_block& d = *get_boolean_block(dest);
+            const boolean_cell_block& s = *get_boolean_block(src);
+            boolean_cell_block::const_iterator it = s.begin();
+            std::advance(it, begin_pos);
+            boolean_cell_block::const_iterator it_end = it;
+            std::advance(it_end, len);
+            d.assign(it, it_end);
+        }
+        break;
         default:
             assert(!"unhandled cell type.");
     }
@@ -535,6 +624,13 @@ void cell_block_func::get_value<size_t>(base_cell_block* block, long pos, size_t
     val = blk[pos];
 }
 
+template<>
+void cell_block_func::get_value<bool>(base_cell_block* block, long pos, bool& val)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
+    val = blk[pos];
+}
+
 template<typename T>
 void cell_block_func::get_empty_value(T& val)
 {
@@ -557,6 +653,12 @@ template<>
 void cell_block_func::get_empty_value<size_t>(size_t& val)
 {
     val = 0;
+}
+
+template<>
+void cell_block_func::get_empty_value<bool>(bool& val)
+{
+    val = false;
 }
 
 struct grid_map_trait
