@@ -138,7 +138,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
             return;
         }
 
-        assert(!"not implemented yet");
+        set_cell_to_top_of_data_block(block_index, cell);
     }
     else if (row == (start_row + blk->m_size - 1))
     {

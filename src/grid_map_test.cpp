@@ -1032,6 +1032,21 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
     }
+
+    {
+        column_type col_db(3);
+        col_db.set_cell(0, 1.0);
+        string str = "alpha";
+        col_db.set_cell(1, str);
+        str = "beta";
+        col_db.set_cell(2, str);
+        size_t index = 1;
+        res = test_cell_insertion(col_db, 1, index);
+        assert(res);
+        string test;
+        col_db.get_cell(2, test);
+        assert(test == "beta");
+    }
 }
 
 }
