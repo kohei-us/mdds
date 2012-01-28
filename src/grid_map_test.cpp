@@ -1149,6 +1149,24 @@ void gridmap_test_basic()
         col_db.get_cell(2, test);
         assert(test == "beta");
     }
+
+    {
+        column_type col_db(3);
+
+        // Insert 3 cells of 3 different types.
+        res = test_cell_insertion(col_db, 0, true);
+        assert(res);
+        res = test_cell_insertion(col_db, 1, 1.2);
+        assert(res);
+        string str = "foo";
+        res = test_cell_insertion(col_db, 2, str);
+        assert(res);
+
+        // Now, insert a cell of the 4th type to the middle spot.
+        size_t index = 2;
+        res = test_cell_insertion(col_db, 1, index);
+        assert(res);
+    }
 }
 
 }

@@ -750,7 +750,6 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
 
     // Just overwrite the current block.
     create_new_block_with_new_cell(blk->mp_data, cell);
-    assert(!"not tested yet.");
 }
 
 template<typename _Trait>
