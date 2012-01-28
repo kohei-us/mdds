@@ -145,7 +145,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     if (row < (start_row + blk->m_size - 1))
     {
         // Insertion point is somewhere in the middle of the block.
-        insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
+        set_cell_to_middle_of_block(block_index, pos_in_block, cell);
         return;
     }
 
@@ -262,7 +262,7 @@ void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, cons
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::insert_cell_to_middle_of_block(
+void column<_Trait>::set_cell_to_middle_of_block(
     size_t block_index, row_key_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
@@ -350,7 +350,7 @@ void column<_Trait>::set_cell_to_empty_block(
                 else
                 {
                     // Insert into the middle of the block.
-                    insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
+                    set_cell_to_middle_of_block(block_index, pos_in_block, cell);
                 }
             }
         }
@@ -419,7 +419,7 @@ void column<_Trait>::set_cell_to_empty_block(
             else
             {
                 // Inserting into the middle of an empty block.
-                insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
+                set_cell_to_middle_of_block(block_index, pos_in_block, cell);
             }
         }
 
@@ -562,7 +562,7 @@ void column<_Trait>::set_cell_to_empty_block(
     else
     {
         // New cell is somewhere in the middle of an empty block.
-        insert_cell_to_middle_of_block(block_index, pos_in_block, cell);
+        set_cell_to_middle_of_block(block_index, pos_in_block, cell);
     }
 }
 
