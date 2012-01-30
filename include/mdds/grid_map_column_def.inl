@@ -49,7 +49,7 @@ column<_Trait>::block::~block()
 }
 
 template<typename _Trait>
-column<_Trait>::column(row_key_type max_row_size) : m_max_row_size(max_row_size)
+column<_Trait>::column(row_key_type max_row_size) : m_cur_size(max_row_size)
 {
     // Initialize with an empty block that spans from 0 to max.
     m_blocks.push_back(new block(max_row_size));
@@ -65,7 +65,7 @@ template<typename _Trait>
 template<typename _T>
 void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 {
-    if (row < 0 || row >= m_max_row_size)
+    if (row < 0 || row >= m_cur_size)
         throw std::out_of_range("Specified row index is out-of-bound.");
 
     cell_category_type cat = get_type(cell);
@@ -316,8 +316,8 @@ void column<_Trait>::set_cell_to_empty_block(
         if (m_blocks.size() == 1)
         {
             // this is the only block.
-            assert(blk->m_size == m_max_row_size);
-            if (m_max_row_size == 1)
+            assert(blk->m_size == m_cur_size);
+            if (m_cur_size == 1)
             {
                 // This column is allowed to have only one row!
                 assert(pos_in_block == 0);
@@ -781,7 +781,7 @@ template<typename _Trait>
 template<typename _T>
 void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 {
-    if (row >= m_max_row_size)
+    if (row >= m_cur_size)
         throw std::out_of_range("Specified row index is out-of-bound.");
 
     row_key_type start_row = 0;

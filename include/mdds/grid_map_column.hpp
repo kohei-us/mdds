@@ -110,7 +110,7 @@ private:
 private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;
-    row_key_type m_max_row_size;
+    row_key_type m_cur_size;
 
     static cell_type_inspector get_type;
     static cell_block_type_inspector get_block_type;
