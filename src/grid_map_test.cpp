@@ -161,10 +161,12 @@ struct cell_block_func
 
     static void print_block(base_cell_block* p);
 
-    static void erase(base_cell_block* block, long pos);
+    static void erase(base_cell_block* block, size_t pos);
+
+    static void erase(base_cell_block* block, size_t pos, size_t size);
 
     template<typename T>
-    static void set_value(base_cell_block* block, long pos, const T& val);
+    static void set_value(base_cell_block* block, size_t pos, const T& val);
 
     template<typename T>
     static void prepend_value(base_cell_block* block, const T& val);
@@ -178,7 +180,7 @@ struct cell_block_func
                               size_t begin_pos, size_t len);
 
     template<typename T>
-    static void get_value(base_cell_block* block, long pos, T& val);
+    static void get_value(base_cell_block* block, size_t pos, T& val);
 
     template<typename T>
     static void get_empty_value(T& val);
@@ -299,7 +301,7 @@ void cell_block_func::print_block(base_cell_block* p)
     }
 }
 
-void cell_block_func::erase(base_cell_block* block, long pos)
+void cell_block_func::erase(base_cell_block* block, size_t pos)
 {
     if (!block)
         return;
@@ -328,6 +330,42 @@ void cell_block_func::erase(base_cell_block* block, long pos)
         {
             boolean_cell_block& blk = *static_cast<boolean_cell_block*>(block);
             blk.erase(blk.begin()+pos);
+        }
+        break;
+        default:
+            assert(!"attempting to erase a cell from a block of unknown type!");
+    }
+}
+
+void cell_block_func::erase(base_cell_block* block, size_t pos, size_t size)
+{
+    if (!block)
+        return;
+
+    switch (block->type)
+    {
+        case celltype_numeric:
+        {
+            numeric_cell_block& blk = *static_cast<numeric_cell_block*>(block);
+            blk.erase(blk.begin()+pos, blk.begin()+pos+size);
+        }
+        break;
+        case celltype_string:
+        {
+            string_cell_block& blk = *static_cast<string_cell_block*>(block);
+            blk.erase(blk.begin()+pos, blk.begin()+pos+size);
+        }
+        break;
+        case celltype_index:
+        {
+            index_cell_block& blk = *static_cast<index_cell_block*>(block);
+            blk.erase(blk.begin()+pos, blk.begin()+pos+size);
+        }
+        break;
+        case celltype_boolean:
+        {
+            boolean_cell_block& blk = *static_cast<boolean_cell_block*>(block);
+            blk.erase(blk.begin()+pos, blk.begin()+pos+size);
         }
         break;
         default:
@@ -400,34 +438,34 @@ const boolean_cell_block* get_boolean_block(const base_cell_block* block)
 }
 
 template<typename T>
-void cell_block_func::set_value(base_cell_block* block, long pos, const T& val)
+void cell_block_func::set_value(base_cell_block* block, size_t pos, const T& val)
 {
     throw general_error("non-specialized version called.");
 }
 
 template<>
-void cell_block_func::set_value<double>(base_cell_block* block, long pos, const double& val)
+void cell_block_func::set_value<double>(base_cell_block* block, size_t pos, const double& val)
 {
     numeric_cell_block& blk = *get_numeric_block(block);
     blk[pos] = val;
 }
 
 template<>
-void cell_block_func::set_value<string>(base_cell_block* block, long pos, const string& val)
+void cell_block_func::set_value<string>(base_cell_block* block, size_t pos, const string& val)
 {
     string_cell_block& blk = *get_string_block(block);
     blk[pos] = val;
 }
 
 template<>
-void cell_block_func::set_value<size_t>(base_cell_block* block, long pos, const size_t& val)
+void cell_block_func::set_value<size_t>(base_cell_block* block, size_t pos, const size_t& val)
 {
     index_cell_block& blk = *get_index_block(block);
     blk[pos] = val;
 }
 
 template<>
-void cell_block_func::set_value<bool>(base_cell_block* block, long pos, const bool& val)
+void cell_block_func::set_value<bool>(base_cell_block* block, size_t pos, const bool& val)
 {
     boolean_cell_block& blk = *get_boolean_block(block);
     blk[pos] = val;
@@ -598,34 +636,34 @@ void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block
 }
 
 template<typename T>
-void cell_block_func::get_value(base_cell_block* block, long pos, T& val)
+void cell_block_func::get_value(base_cell_block* block, size_t pos, T& val)
 {
     throw general_error("non-specialized version called.");
 }
 
 template<>
-void cell_block_func::get_value<double>(base_cell_block* block, long pos, double& val)
+void cell_block_func::get_value<double>(base_cell_block* block, size_t pos, double& val)
 {
     numeric_cell_block& blk = *get_numeric_block(block);
     val = blk[pos];
 }
 
 template<>
-void cell_block_func::get_value<string>(base_cell_block* block, long pos, string& val)
+void cell_block_func::get_value<string>(base_cell_block* block, size_t pos, string& val)
 {
     string_cell_block& blk = *get_string_block(block);
     val = blk[pos];
 }
 
 template<>
-void cell_block_func::get_value<size_t>(base_cell_block* block, long pos, size_t& val)
+void cell_block_func::get_value<size_t>(base_cell_block* block, size_t pos, size_t& val)
 {
     index_cell_block& blk = *get_index_block(block);
     val = blk[pos];
 }
 
 template<>
-void cell_block_func::get_value<bool>(base_cell_block* block, long pos, bool& val)
+void cell_block_func::get_value<bool>(base_cell_block* block, size_t pos, bool& val)
 {
     boolean_cell_block& blk = *get_boolean_block(block);
     val = blk[pos];
@@ -1178,7 +1216,7 @@ void gridmap_test_empty_cells()
         assert(db.is_empty(0));
         assert(db.is_empty(2));
 
-        // These won't change the state of the cotainer since it's already empty.
+        // These won't change the state of the container since it's already empty.
         db.set_empty(0, 0);
         db.set_empty(1, 1);
         db.set_empty(2, 2);
@@ -1193,9 +1231,25 @@ void gridmap_test_empty_cells()
         db.set_cell(1, 2.3);
         assert(!db.is_empty(1));
 
-        // Container contains a single block of double.
+        // Container contains a single block of numeric cells at this point.
 
+        // Set the whole block empty.
         db.set_empty(0, 2);
+
+        // Reset.
+        db.set_cell(0, 1.0);
+        db.set_cell(1, 2.0);
+        db.set_cell(2, 4.0);
+
+        // Set the upper part of the block empty.
+        db.set_empty(0, 1);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(!db.is_empty(2));
+
+        double test;
+        db.get_cell(2, test);
+        assert(test == 4.0);
     }
 
 }

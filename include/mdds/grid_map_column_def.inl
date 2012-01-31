@@ -827,10 +827,10 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
     if (start_row < 0 || end_row >= m_cur_size)
         throw std::out_of_range("Specified range is not permitted.");
 
-    row_key_type row_in_block1, row_in_block2;
+    row_key_type start_row_in_block1, start_row_in_block2;
     size_t block_pos1, block_pos2;
-    get_block_position(start_row, row_in_block1, block_pos1);
-    get_block_position(end_row, row_in_block2, block_pos2);
+    get_block_position(start_row, start_row_in_block1, block_pos1);
+    get_block_position(end_row, start_row_in_block2, block_pos2);
 
     if (block_pos1 == block_pos2)
     {
@@ -839,6 +839,27 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
         if (!blk->mp_data)
             // This block is already empty.  Do nothing.
             return;
+
+        row_key_type end_row_in_block = start_row_in_block1 + blk->m_size - 1;
+
+        if (start_row == start_row_in_block1)
+        {
+            if (end_row == end_row_in_block)
+            {
+                // Set the whole block empty.
+                cell_block_modifier::delete_block(blk->mp_data);
+                blk->mp_data = NULL;
+                return;
+            }
+
+            // Set the upper part of the block empty.
+            size_t size_to_erase = end_row - start_row + 1;
+            cell_block_modifier::erase(blk->mp_data, 0, size_to_erase);
+
+            // Insert a new empty block.
+            m_blocks.insert(m_blocks.begin()+block_pos1, new block(size_to_erase));
+            return;
+        }
 
         assert(!"not implemented yet.");
         return;
