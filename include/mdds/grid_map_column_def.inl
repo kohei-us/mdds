@@ -225,10 +225,11 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 }
 
 template<typename _Trait>
-void column<_Trait>::get_block_position(row_key_type row, row_key_type& start_row, size_t& block_index) const
+void column<_Trait>::get_block_position(
+    row_key_type row, row_key_type& start_row, size_t& block_index, size_t start_block) const
 {
     start_row = 0;
-    for (size_t i = 0, n = m_blocks.size(); i < n; ++i)
+    for (size_t i = start_block, n = m_blocks.size(); i < n; ++i)
     {
         const block& blk = *m_blocks[i];
         if (row < start_row + blk.m_size)
@@ -830,7 +831,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
     row_key_type start_row_in_block1, start_row_in_block2;
     size_t block_pos1, block_pos2;
     get_block_position(start_row, start_row_in_block1, block_pos1);
-    get_block_position(end_row, start_row_in_block2, block_pos2);
+    get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1);
 
     if (block_pos1 == block_pos2)
     {
