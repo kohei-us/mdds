@@ -235,12 +235,14 @@ void column<_Trait>::get_block_position(row_key_type row, row_key_type& start_ro
         {
             // Row is in this block.
             block_index = i;
-            break;
+            return;
         }
 
         // Specified row is not in this block.
         start_row += blk.m_size;
     }
+
+    assert(!"Block position not found.");
 }
 
 template<typename _Trait>
@@ -801,6 +803,48 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
     assert(blk->mp_data); // data for non-empty blocks should never be NULL.
     row_key_type idx = row - start_row;
     cell_block_modifier::get_value(blk->mp_data, idx, cell);
+}
+
+template<typename _Trait>
+bool column<_Trait>::is_empty(row_key_type row) const
+{
+    if (row < 0 || row >= m_cur_size)
+        throw std::out_of_range("Specified row index is out-of-bound.");
+
+    row_key_type start_row;
+    size_t block_index;
+    get_block_position(row, start_row, block_index);
+
+    return m_blocks[block_index]->mp_data == NULL;
+}
+
+template<typename _Trait>
+void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
+{
+    if (start_row > end_row)
+        throw std::out_of_range("Start row is larger than the end row.");
+
+    if (start_row < 0 || end_row >= m_cur_size)
+        throw std::out_of_range("Specified range is not permitted.");
+
+    row_key_type row_in_block1, row_in_block2;
+    size_t block_pos1, block_pos2;
+    get_block_position(start_row, row_in_block1, block_pos1);
+    get_block_position(end_row, row_in_block2, block_pos2);
+
+    if (block_pos1 == block_pos2)
+    {
+        // Range is within a single block.
+        block* blk = m_blocks[block_pos1];
+        if (!blk->mp_data)
+            // This block is already empty.  Do nothing.
+            return;
+
+        assert(!"not implemented yet.");
+        return;
+    }
+
+    assert(!"not implemented yet.");
 }
 
 }}

@@ -78,6 +78,10 @@ public:
     template<typename _T>
     void get_cell(row_key_type row, _T& cell) const;
 
+    bool is_empty(row_key_type row) const;
+
+    void set_empty(row_key_type start_row, row_key_type end_row);
+
 private:
     void get_block_position(row_key_type row, row_key_type& start_row, size_t& block_index) const;
 

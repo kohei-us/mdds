@@ -684,11 +684,12 @@ bool test_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT 
     return val == test;
 }
 
+typedef mdds::grid_map<grid_map_trait> grid_store_type;
+typedef grid_store_type::sheet_type::column_type column_type;
+
 void gridmap_test_basic()
 {
     stack_printer __stack_printer__("::gridmap_test_basic");
-    typedef mdds::grid_map<grid_map_trait> grid_store_type;
-    typedef grid_store_type::sheet_type::column_type column_type;
     grid_store_type db;
     bool res;
 
@@ -1169,6 +1170,36 @@ void gridmap_test_basic()
     }
 }
 
+void gridmap_test_empty_cells()
+{
+    stack_printer __stack_printer__("::gridmap_test_empty");
+    {
+        column_type db(3);
+        assert(db.is_empty(0));
+        assert(db.is_empty(2));
+
+        // These won't change the state of the cotainer since it's already empty.
+        db.set_empty(0, 0);
+        db.set_empty(1, 1);
+        db.set_empty(2, 2);
+        db.set_empty(0, 2);
+
+        db.set_cell(0, 1.0);
+        db.set_cell(2, 5.0);
+        assert(!db.is_empty(0));
+        assert(!db.is_empty(2));
+        assert(db.is_empty(1));
+
+        db.set_cell(1, 2.3);
+        assert(!db.is_empty(1));
+
+        // Container contains a single block of double.
+
+        db.set_empty(0, 2);
+    }
+
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1180,6 +1211,7 @@ int main (int argc, char **argv)
     if (opt.test_func)
     {
         gridmap_test_basic();
+        gridmap_test_empty_cells();
     }
 
     if (opt.test_perf)
