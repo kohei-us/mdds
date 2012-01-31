@@ -854,11 +854,12 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
             }
 
             // Set the upper part of the block empty.
-            size_t size_to_erase = end_row - start_row + 1;
-            cell_block_modifier::erase(blk->mp_data, 0, size_to_erase);
+            size_t empty_block_size = end_row - start_row + 1;
+            cell_block_modifier::erase(blk->mp_data, 0, empty_block_size);
+            blk->m_size -= empty_block_size;
 
-            // Insert a new empty block.
-            m_blocks.insert(m_blocks.begin()+block_pos1, new block(size_to_erase));
+            // Insert a new empty block before the current one.
+            m_blocks.insert(m_blocks.begin()+block_pos1, new block(empty_block_size));
             return;
         }
 
