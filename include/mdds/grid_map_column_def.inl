@@ -842,9 +842,12 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
             return;
 
         row_key_type end_row_in_block = start_row_in_block1 + blk->m_size - 1;
+        size_t empty_block_size = end_row - start_row + 1;
 
         if (start_row == start_row_in_block1)
         {
+            // start row coincides with the start of a block.
+
             if (end_row == end_row_in_block)
             {
                 // Set the whole block empty.
@@ -854,12 +857,25 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
             }
 
             // Set the upper part of the block empty.
-            size_t empty_block_size = end_row - start_row + 1;
             cell_block_modifier::erase(blk->mp_data, 0, empty_block_size);
             blk->m_size -= empty_block_size;
 
             // Insert a new empty block before the current one.
             m_blocks.insert(m_blocks.begin()+block_pos1, new block(empty_block_size));
+            return;
+        }
+
+        if (end_row == end_row_in_block)
+        {
+            // end row coincides with the end of a block.
+            assert(start_row > start_row_in_block1);
+
+            // Set the lower part of the block empty.
+            cell_block_modifier::erase(blk->mp_data, start_row_in_block1, empty_block_size);
+            blk->m_size -= empty_block_size;
+
+            // Insert a new empty block after the current one.
+            m_blocks.insert(m_blocks.begin()+block_pos1+1, new block(empty_block_size));
             return;
         }
 

@@ -1250,6 +1250,14 @@ void gridmap_test_empty_cells()
         double test;
         db.get_cell(2, test);
         assert(test == 4.0);
+
+        // Reset.
+        db.set_cell(0, 5.0);
+        db.set_cell(1, 5.1);
+        db.set_cell(2, 5.2);
+
+        // Set the lower part of the block empty.
+        db.set_empty(1, 2);
     }
 
 }
