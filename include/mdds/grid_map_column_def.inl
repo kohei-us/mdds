@@ -871,7 +871,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
             assert(start_row > start_row_in_block1);
 
             // Set the lower part of the block empty.
-            cell_block_modifier::erase(blk->mp_data, start_row_in_block1, empty_block_size);
+            cell_block_modifier::erase(blk->mp_data, end_row_in_block-empty_block_size+1, empty_block_size);
             blk->m_size -= empty_block_size;
 
             // Insert a new empty block after the current one.
