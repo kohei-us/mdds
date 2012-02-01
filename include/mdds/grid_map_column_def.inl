@@ -835,75 +835,82 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
 
     if (block_pos1 == block_pos2)
     {
-        // Range is within a single block.
-        block* blk = m_blocks[block_pos1];
-        if (!blk->mp_data)
-            // This block is already empty.  Do nothing.
-            return;
-
-        row_key_type end_row_in_block = start_row_in_block1 + blk->m_size - 1;
-        size_t empty_block_size = end_row - start_row + 1;
-
-        if (start_row == start_row_in_block1)
-        {
-            // start row coincides with the start of a block.
-
-            if (end_row == end_row_in_block)
-            {
-                // Set the whole block empty.
-                cell_block_modifier::delete_block(blk->mp_data);
-                blk->mp_data = NULL;
-                return;
-            }
-
-            // Set the upper part of the block empty.
-            cell_block_modifier::erase(blk->mp_data, 0, empty_block_size);
-            blk->m_size -= empty_block_size;
-
-            // Insert a new empty block before the current one.
-            m_blocks.insert(m_blocks.begin()+block_pos1, new block(empty_block_size));
-            return;
-        }
-
-        if (end_row == end_row_in_block)
-        {
-            // end row coincides with the end of a block.
-            assert(start_row > start_row_in_block1);
-
-            // Set the lower part of the block empty.
-            cell_block_modifier::erase(blk->mp_data, end_row_in_block-empty_block_size+1, empty_block_size);
-            blk->m_size -= empty_block_size;
-
-            // Insert a new empty block after the current one.
-            m_blocks.insert(m_blocks.begin()+block_pos1+1, new block(empty_block_size));
-            return;
-        }
-
-        // Empty the middle part of a block.
-        assert(end_row_in_block - end_row > 0);
-
-        // First, insert two new blocks at position past the current block.
-        row_key_type lower_block_size = end_row_in_block - end_row;
-        m_blocks.insert(m_blocks.begin()+block_pos1+1, 2, NULL);
-        m_blocks[block_pos1+1] = new block(empty_block_size); // empty block.
-        m_blocks[block_pos1+2] = new block(lower_block_size);
-
-        // Copy the lower values from the current block to the new non-empty block.
-        block* blk_lower = m_blocks[block_pos1+2];
-        assert(blk_lower->m_size == lower_block_size);
-        cell_category_type blk_cat = get_block_type(*blk->mp_data);
-        blk_lower->mp_data = cell_block_modifier::create_new_block(blk_cat);
-        cell_block_modifier::assign_values(
-            blk_lower->mp_data, blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
-
-        // Shrink the current data block.
-        cell_block_modifier::erase(
-            blk->mp_data, start_row-start_row_in_block1, end_row_in_block-start_row+1);
-        blk->m_size = start_row - start_row_in_block1;
+        set_empty_in_single_block(start_row, end_row, block_pos1, start_row_in_block1);
         return;
     }
 
     assert(!"not implemented yet.");
+}
+
+template<typename _Trait>
+void column<_Trait>::set_empty_in_single_block(
+    row_key_type start_row, row_key_type end_row, size_t block_index, row_key_type start_row_in_block)
+{
+    // Range is within a single block.
+    block* blk = m_blocks[block_index];
+    if (!blk->mp_data)
+        // This block is already empty.  Do nothing.
+        return;
+
+    row_key_type end_row_in_block = start_row_in_block + blk->m_size - 1;
+    size_t empty_block_size = end_row - start_row + 1;
+
+    if (start_row == start_row_in_block)
+    {
+        // start row coincides with the start of a block.
+
+        if (end_row == end_row_in_block)
+        {
+            // Set the whole block empty.
+            cell_block_modifier::delete_block(blk->mp_data);
+            blk->mp_data = NULL;
+            return;
+        }
+
+        // Set the upper part of the block empty.
+        cell_block_modifier::erase(blk->mp_data, 0, empty_block_size);
+        blk->m_size -= empty_block_size;
+
+        // Insert a new empty block before the current one.
+        m_blocks.insert(m_blocks.begin()+block_index, new block(empty_block_size));
+        return;
+    }
+
+    if (end_row == end_row_in_block)
+    {
+        // end row coincides with the end of a block.
+        assert(start_row > start_row_in_block);
+
+        // Set the lower part of the block empty.
+        cell_block_modifier::erase(blk->mp_data, end_row_in_block-empty_block_size+1, empty_block_size);
+        blk->m_size -= empty_block_size;
+
+        // Insert a new empty block after the current one.
+        m_blocks.insert(m_blocks.begin()+block_index+1, new block(empty_block_size));
+        return;
+    }
+
+    // Empty the middle part of a block.
+    assert(end_row_in_block - end_row > 0);
+
+    // First, insert two new blocks at position past the current block.
+    row_key_type lower_block_size = end_row_in_block - end_row;
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
+    m_blocks[block_index+1] = new block(empty_block_size); // empty block.
+    m_blocks[block_index+2] = new block(lower_block_size);
+
+    // Copy the lower values from the current block to the new non-empty block.
+    block* blk_lower = m_blocks[block_index+2];
+    assert(blk_lower->m_size == lower_block_size);
+    cell_category_type blk_cat = get_block_type(*blk->mp_data);
+    blk_lower->mp_data = cell_block_modifier::create_new_block(blk_cat);
+    cell_block_modifier::assign_values(
+        blk_lower->mp_data, blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
+
+    // Shrink the current data block.
+    cell_block_modifier::erase(
+        blk->mp_data, start_row-start_row_in_block, end_row_in_block-start_row+1);
+    blk->m_size = start_row - start_row_in_block;
 }
 
 }}

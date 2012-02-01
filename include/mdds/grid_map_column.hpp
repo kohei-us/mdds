@@ -112,6 +112,9 @@ private:
     void set_cell_to_bottom_of_data_block(
         size_t block_index, const _T& cell);
 
+    void set_empty_in_single_block(
+        row_key_type start_row, row_key_type end_row, size_t block_index, row_key_type start_row_in_block);
+
 private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;
