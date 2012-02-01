@@ -1264,6 +1264,48 @@ void gridmap_test_empty_cells()
 
         db.get_cell(0, test);
         assert(test == 5.0);
+
+        // Reset.
+        db.set_cell(0, 3.0);
+        db.set_cell(1, 3.1);
+        db.set_cell(2, 3.2);
+
+        // Set the middle part of the block empty.
+        db.set_empty(1, 1);
+        assert(!db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(!db.is_empty(2));
+        db.get_cell(0, test);
+        assert(test == 3.0);
+        db.get_cell(2, test);
+        assert(test == 3.2);
+
+        bool res = test_cell_insertion(db, 1, 4.3);
+        assert(res);
+    }
+
+    {
+        // Empty multiple cells at the middle part of a block.
+        column_type db(4);
+        for (size_t i = 0; i < 4; ++i)
+            db.set_cell(i, static_cast<double>(i+1));
+
+        for (size_t i = 0; i < 4; ++i)
+        {
+            assert(!db.is_empty(i));
+        }
+
+        db.set_empty(1, 2);
+        assert(!db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(!db.is_empty(3));
+
+        double test;
+        db.get_cell(0, test);
+        assert(test == 1.0);
+        db.get_cell(3, test);
+        assert(test == 4.0);
     }
 
 }
