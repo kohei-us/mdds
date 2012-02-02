@@ -860,14 +860,20 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
                 blk->m_size = new_size;
             }
         }
+        else
+        {
+            // First block is already empty.  Adjust the start row of the new
+            // empty range.
+            start_row = start_row_in_block1;
+        }
     }
 
     {
         // Empty the upper part of the last block.
         block* blk = m_blocks[block_pos2];
+        row_key_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
         if (blk->mp_data)
         {
-            row_key_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
             if (last_row_in_block == end_row)
             {
                 // Delete the whole block.
@@ -881,6 +887,14 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
                 cell_block_modifier::erase(blk->mp_data, 0, size_to_erase);
                 blk->m_size -= size_to_erase;
             }
+        }
+        else
+        {
+            // Last block is empty.  Delete this block and adjust the end row
+            // of the new empty range.
+            delete blk;
+            m_blocks.erase(m_blocks.begin()+block_pos2);
+            end_row = last_row_in_block;
         }
     }
 
@@ -909,6 +923,18 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
         // Current block is already empty. Just extend its size.
         blk->m_size = empty_block_size;
     }
+}
+
+template<typename _Trait>
+size_t column<_Trait>::size() const
+{
+    return m_cur_size;
+}
+
+template<typename _Trait>
+size_t column<_Trait>::block_size() const
+{
+    return m_blocks.size();
 }
 
 template<typename _Trait>

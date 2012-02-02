@@ -1322,7 +1322,7 @@ void gridmap_test_empty_cells()
     }
 
     {
-        // Empty multiple blocks, part 2.
+        // Empty multiple blocks, part 2 - from middle block to middle block.
         column_type db(6);
         db.set_cell(0, 1.0);
         db.set_cell(1, 2.0);
@@ -1347,6 +1347,136 @@ void gridmap_test_empty_cells()
         size_t index_test;
         db.get_cell(5, index_test);
         assert(index_test == 100);
+    }
+
+    {
+        // Empty multiple blocks, part 3 - from top block to middle block.
+        column_type db(6);
+        db.set_cell(0, 1.0);
+        db.set_cell(1, 2.0);
+        string str = "foo";
+        db.set_cell(2, str);
+        db.set_cell(3, str);
+        size_t index = 1;
+        db.set_cell(4, index);
+        index = 50;
+        db.set_cell(5, index);
+
+        db.set_empty(0, 4);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(!db.is_empty(5));
+        size_t test;
+        db.get_cell(5, test);
+        assert(test == 50);
+    }
+
+    {
+        // Empty multiple blocks, part 4 - from middle block to bottom block.
+        column_type db(6);
+        db.set_cell(0, 1.0);
+        db.set_cell(1, 2.0);
+        string str = "foo";
+        db.set_cell(2, str);
+        db.set_cell(3, str);
+        size_t index = 1;
+        db.set_cell(4, index);
+        db.set_cell(5, index);
+
+        db.set_empty(1, 5);
+        assert(!db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(db.is_empty(5));
+        double test;
+        db.get_cell(0, test);
+        assert(test == 1.0);
+    }
+
+    {
+        // Empty multiple blocks, part 5 - from middle empty block to middle non-empty block.
+        column_type db(6);
+        db.set_cell(2, 1.0);
+        db.set_cell(3, 2.0);
+        string str = "foo";
+        db.set_cell(4, str);
+        str = "baa";
+        db.set_cell(5, str);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(!db.is_empty(2));
+        assert(!db.is_empty(3));
+        assert(!db.is_empty(4));
+        assert(!db.is_empty(5));
+        assert(db.block_size() == 3);
+
+        db.set_empty(1, 4);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(!db.is_empty(5));
+        assert(db.block_size() == 2);
+        string test;
+        db.get_cell(5, test);
+        assert(test == "baa");
+    }
+
+    {
+        // Empty multiple blocks, part 6 - from middle non-empty block to middle empty block.
+        column_type db(6);
+        db.set_cell(0, 1.0);
+        db.set_cell(1, 2.0);
+        db.set_cell(2, string("foo"));
+        db.set_cell(3, string("baa"));
+        assert(!db.is_empty(0));
+        assert(!db.is_empty(1));
+        assert(!db.is_empty(2));
+        assert(!db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(db.is_empty(5));
+
+        db.set_empty(1, 4);
+        assert(!db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(db.is_empty(5));
+        double test;
+        db.get_cell(0, test);
+        assert(test == 1.0);
+        assert(db.block_size() == 2);
+    }
+
+    {
+        // Empty multiple blocks, part 7 - from middle empty block to middle empty block.
+        column_type db(6);
+        db.set_cell(2, 1.0);
+        db.set_cell(3, string("foo"));
+        assert(db.block_size() == 4);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(!db.is_empty(2));
+        assert(!db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(db.is_empty(5));
+
+        // This should set the whole range empty.
+        db.set_empty(1, 4);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(db.is_empty(5));
+        assert(db.block_size() == 1);
     }
 }
 

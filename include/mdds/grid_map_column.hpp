@@ -82,6 +82,10 @@ public:
 
     void set_empty(row_key_type start_row, row_key_type end_row);
 
+    size_t size() const;
+
+    size_t block_size() const;
+
 private:
     void get_block_position(
         row_key_type row, row_key_type& start_row, size_t& block_index, size_t start_block=0) const;
