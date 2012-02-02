@@ -1480,6 +1480,23 @@ void gridmap_test_empty_cells()
     }
 }
 
+void gridmap_test_swap()
+{
+    stack_printer __stack_printer__("::gridmap_test_swap");
+    column_type db1(3), db2(5);
+    db1.set_cell(0, 1.0);
+    db1.set_cell(1, 2.0);
+    db1.set_cell(2, 3.0);
+
+    db2.set_cell(0, 4.0);
+    db2.set_cell(1, 5.0);
+    db2.set_cell(4, string("foo"));
+    db1.swap(db2);
+
+    assert(db1.size() == 5 && db1.block_size() == 3);
+    assert(db2.size() == 3 && db2.block_size() == 1);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1492,6 +1509,7 @@ int main (int argc, char **argv)
     {
         gridmap_test_basic();
         gridmap_test_empty_cells();
+        gridmap_test_swap();
     }
 
     if (opt.test_perf)

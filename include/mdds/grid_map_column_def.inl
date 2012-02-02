@@ -938,6 +938,13 @@ size_t column<_Trait>::block_size() const
 }
 
 template<typename _Trait>
+void column<_Trait>::swap(column& other)
+{
+    std::swap(m_cur_size, other.m_cur_size);
+    m_blocks.swap(other.m_blocks);
+}
+
+template<typename _Trait>
 void column<_Trait>::set_empty_in_single_block(
     row_key_type start_row, row_key_type end_row, size_t block_index, row_key_type start_row_in_block)
 {
