@@ -839,7 +839,76 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
         return;
     }
 
-    assert(!"not implemented yet.");
+    assert(block_pos1 < block_pos2);
+
+    {
+        // Empty the lower part of the first block.
+        block* blk = m_blocks[block_pos1];
+        if (blk->mp_data)
+        {
+            if (start_row_in_block1 == start_row)
+            {
+                // Empty the whole block.
+                cell_block_modifier::delete_block(blk->mp_data);
+                blk->mp_data = NULL;
+            }
+            else
+            {
+                // Empty the lower part.
+                size_t new_size = start_row - start_row_in_block1;
+                cell_block_modifier::resize_block(blk->mp_data, new_size);
+                blk->m_size = new_size;
+            }
+        }
+    }
+
+    {
+        // Empty the upper part of the last block.
+        block* blk = m_blocks[block_pos2];
+        if (blk->mp_data)
+        {
+            row_key_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
+            if (last_row_in_block == end_row)
+            {
+                // Delete the whole block.
+                delete blk;
+                m_blocks.erase(m_blocks.begin()+block_pos2);
+            }
+            else
+            {
+                // Empty the upper part.
+                row_key_type size_to_erase = end_row - start_row_in_block2 + 1;
+                cell_block_modifier::erase(blk->mp_data, 0, size_to_erase);
+                blk->m_size -= size_to_erase;
+            }
+        }
+    }
+
+    if (block_pos2 - block_pos1 > 1)
+    {
+        // Remove all blocks in-between, from block_pos1+1 to block_pos2-1.
+
+        for (size_t i = block_pos1 + 1; i < block_pos2; ++i)
+            delete m_blocks[i];
+
+        typename blocks_type::iterator it = m_blocks.begin() + block_pos1 + 1;
+        typename blocks_type::iterator it_end = m_blocks.begin() + block_pos2;
+        m_blocks.erase(it, it_end);
+    }
+
+    // Insert a single empty block.
+    block* blk = m_blocks[block_pos1];
+    row_key_type empty_block_size = end_row - start_row + 1;
+    if (blk->mp_data)
+    {
+        // Insert a new empty block after the first block.
+        m_blocks.insert(m_blocks.begin()+block_pos1+1, new block(empty_block_size));
+    }
+    else
+    {
+        // Current block is already empty. Just extend its size.
+        blk->m_size = empty_block_size;
+    }
 }
 
 template<typename _Trait>

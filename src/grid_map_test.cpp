@@ -1308,6 +1308,46 @@ void gridmap_test_empty_cells()
         assert(test == 4.0);
     }
 
+    {
+        // Empty multiple blocks.
+        column_type db(2);
+        db.set_cell(0, 1.0);
+        db.set_cell(1, string("foo"));
+        assert(!db.is_empty(0));
+        assert(!db.is_empty(1));
+
+        db.set_empty(0, 1);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+    }
+
+    {
+        // Empty multiple blocks, part 2.
+        column_type db(6);
+        db.set_cell(0, 1.0);
+        db.set_cell(1, 2.0);
+        string str = "foo";
+        db.set_cell(2, str);
+        db.set_cell(3, str);
+        size_t index = 1;
+        db.set_cell(4, index);
+        index = 100;
+        db.set_cell(5, index);
+
+        db.set_empty(1, 4);
+        assert(!db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(!db.is_empty(5));
+        double val;
+        db.get_cell(0, val);
+        assert(val == 1.0);
+        size_t index_test;
+        db.get_cell(5, index_test);
+        assert(index_test == 100);
+    }
 }
 
 }
