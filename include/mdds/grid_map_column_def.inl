@@ -43,6 +43,13 @@ template<typename _Trait>
 column<_Trait>::block::block(row_key_type _size) : m_size(_size), mp_data(NULL) {}
 
 template<typename _Trait>
+column<_Trait>::block::block(const block& other) :
+    m_size(other.m_size), mp_data(NULL)
+{
+    mp_data = cell_block_modifier::clone_block(other.mp_data);
+}
+
+template<typename _Trait>
 column<_Trait>::block::~block()
 {
     cell_block_modifier::delete_block(mp_data);
@@ -53,6 +60,17 @@ column<_Trait>::column(row_key_type max_row_size) : m_cur_size(max_row_size)
 {
     // Initialize with an empty block that spans from 0 to max.
     m_blocks.push_back(new block(max_row_size));
+}
+
+template<typename _Trait>
+column<_Trait>::column(const column& other) :
+    m_cur_size(other.m_cur_size)
+{
+    // Clone all the blocks.
+    m_blocks.reserve(other.m_blocks.size());
+    typename blocks_type::const_iterator it = other.m_blocks.begin(), it_end = other.m_blocks.end();
+    for (; it != it_end; ++it)
+        m_blocks.push_back(new block(**it));
 }
 
 template<typename _Trait>

@@ -151,9 +151,75 @@ struct get_cell_block_type : public std::unary_function<base_cell_block, cell_t>
     }
 };
 
+numeric_cell_block* get_numeric_block(base_cell_block* block)
+{
+    if (!block || block->type != celltype_numeric)
+        throw general_error("block is not of numeric type!");
+
+    return static_cast<numeric_cell_block*>(block);
+}
+
+const numeric_cell_block* get_numeric_block(const base_cell_block* block)
+{
+    if (!block || block->type != celltype_numeric)
+        throw general_error("block is not of numeric type!");
+
+    return static_cast<const numeric_cell_block*>(block);
+}
+
+string_cell_block* get_string_block(base_cell_block* block)
+{
+    if (!block || block->type != celltype_string)
+        throw general_error("block is not of string type!");
+
+    return static_cast<string_cell_block*>(block);
+}
+
+const string_cell_block* get_string_block(const base_cell_block* block)
+{
+    if (!block || block->type != celltype_string)
+        throw general_error("block is not of string type!");
+
+    return static_cast<const string_cell_block*>(block);
+}
+
+index_cell_block* get_index_block(base_cell_block* block)
+{
+    if (!block || block->type != celltype_index)
+        throw general_error("block is not of index type!");
+
+    return static_cast<index_cell_block*>(block);
+}
+
+const index_cell_block* get_index_block(const base_cell_block* block)
+{
+    if (!block || block->type != celltype_index)
+        throw general_error("block is not of index type!");
+
+    return static_cast<const index_cell_block*>(block);
+}
+
+boolean_cell_block* get_boolean_block(base_cell_block* block)
+{
+    if (!block || block->type != celltype_boolean)
+        throw general_error("block is not of boolean type!");
+
+    return static_cast<boolean_cell_block*>(block);
+}
+
+const boolean_cell_block* get_boolean_block(const base_cell_block* block)
+{
+    if (!block || block->type != celltype_boolean)
+        throw general_error("block is not of boolean type!");
+
+    return static_cast<const boolean_cell_block*>(block);
+}
+
 struct cell_block_func
 {
     static base_cell_block* create_new_block(cell_t type);
+
+    static base_cell_block* clone_block(base_cell_block* p);
 
     static void delete_block(base_cell_block* p);
 
@@ -198,6 +264,27 @@ base_cell_block* cell_block_func::create_new_block(cell_t type)
             return new index_cell_block;
         case celltype_boolean:
             return new boolean_cell_block;
+        default:
+            ;
+    }
+    return NULL;
+}
+
+base_cell_block* cell_block_func::clone_block(base_cell_block* p)
+{
+    if (!p)
+        return NULL;
+
+    switch (p->type)
+    {
+        case celltype_numeric:
+            return new numeric_cell_block(*get_numeric_block(p));
+        case celltype_string:
+            return new string_cell_block(*get_string_block(p));
+        case celltype_index:
+            return new index_cell_block(*get_index_block(p));
+        case celltype_boolean:
+            return new boolean_cell_block(*get_boolean_block(p));
         default:
             ;
     }
@@ -371,70 +458,6 @@ void cell_block_func::erase(base_cell_block* block, size_t pos, size_t size)
         default:
             assert(!"attempting to erase a cell from a block of unknown type!");
     }
-}
-
-numeric_cell_block* get_numeric_block(base_cell_block* block)
-{
-    if (!block || block->type != celltype_numeric)
-        throw general_error("block is not of numeric type!");
-
-    return static_cast<numeric_cell_block*>(block);
-}
-
-const numeric_cell_block* get_numeric_block(const base_cell_block* block)
-{
-    if (!block || block->type != celltype_numeric)
-        throw general_error("block is not of numeric type!");
-
-    return static_cast<const numeric_cell_block*>(block);
-}
-
-string_cell_block* get_string_block(base_cell_block* block)
-{
-    if (!block || block->type != celltype_string)
-        throw general_error("block is not of string type!");
-
-    return static_cast<string_cell_block*>(block);
-}
-
-const string_cell_block* get_string_block(const base_cell_block* block)
-{
-    if (!block || block->type != celltype_string)
-        throw general_error("block is not of string type!");
-
-    return static_cast<const string_cell_block*>(block);
-}
-
-index_cell_block* get_index_block(base_cell_block* block)
-{
-    if (!block || block->type != celltype_index)
-        throw general_error("block is not of index type!");
-
-    return static_cast<index_cell_block*>(block);
-}
-
-const index_cell_block* get_index_block(const base_cell_block* block)
-{
-    if (!block || block->type != celltype_index)
-        throw general_error("block is not of index type!");
-
-    return static_cast<const index_cell_block*>(block);
-}
-
-boolean_cell_block* get_boolean_block(base_cell_block* block)
-{
-    if (!block || block->type != celltype_boolean)
-        throw general_error("block is not of boolean type!");
-
-    return static_cast<boolean_cell_block*>(block);
-}
-
-const boolean_cell_block* get_boolean_block(const base_cell_block* block)
-{
-    if (!block || block->type != celltype_boolean)
-        throw general_error("block is not of boolean type!");
-
-    return static_cast<const boolean_cell_block*>(block);
 }
 
 template<typename T>
@@ -1497,6 +1520,39 @@ void gridmap_test_swap()
     assert(db2.size() == 3 && db2.block_size() == 1);
 }
 
+void gridmap_test_clone()
+{
+    stack_printer __stack_printer__("::gridmap_test_clone");
+    column_type db1(3);
+    db1.set_cell(0, 3.4);
+    db1.set_cell(1, string("foo"));
+    db1.set_cell(2, true);
+
+    column_type db2(db1); // copy construction
+    assert(db1.size() == db2.size());
+    assert(db1.block_size() == db2.block_size());
+
+    {
+        double test1, test2;
+        db1.get_cell(0, test1);
+        db2.get_cell(0, test2);
+        assert(test1 == test2);
+    }
+    {
+        string test1, test2;
+        db1.get_cell(1, test1);
+        db2.get_cell(1, test2);
+        assert(test1 == test2);
+    }
+
+    {
+        bool test1, test2;
+        db1.get_cell(2, test1);
+        db2.get_cell(2, test2);
+        assert(test1 == test2);
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1510,6 +1566,7 @@ int main (int argc, char **argv)
         gridmap_test_basic();
         gridmap_test_empty_cells();
         gridmap_test_swap();
+        gridmap_test_clone();
     }
 
     if (opt.test_perf)

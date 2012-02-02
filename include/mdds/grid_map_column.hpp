@@ -64,12 +64,14 @@ private:
 
         block();
         block(row_key_type _size);
+        block(const block& other);
         ~block();
     };
 
     column(); // disabled
 public:
     column(row_key_type max_row_size);
+    column(const column& other);
     ~column();
 
     template<typename _T>
