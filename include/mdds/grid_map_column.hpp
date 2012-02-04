@@ -68,8 +68,8 @@ private:
         ~block();
     };
 
-    column(); // disabled
 public:
+    column();
     column(row_key_type init_row_size);
     column(const column& other);
     ~column();

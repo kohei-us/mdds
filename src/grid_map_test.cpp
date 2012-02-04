@@ -1627,6 +1627,12 @@ void gridmap_test_clone()
     assert(db3 == db1);
     db3.set_cell(0, string("alpha"));
     assert(db3 != db1);
+
+    column_type db4, db5;
+    db4 = db5 = db3;
+    assert(db4 == db5);
+    assert(db3 == db5);
+    assert(db3 == db4);
 }
 
 }
