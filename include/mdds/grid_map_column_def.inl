@@ -56,10 +56,10 @@ column<_Trait>::block::~block()
 }
 
 template<typename _Trait>
-column<_Trait>::column(row_key_type max_row_size) : m_cur_size(max_row_size)
+column<_Trait>::column(row_key_type init_row_size) : m_cur_size(init_row_size)
 {
     // Initialize with an empty block that spans from 0 to max.
-    m_blocks.push_back(new block(max_row_size));
+    m_blocks.push_back(new block(init_row_size));
 }
 
 template<typename _Trait>

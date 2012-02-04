@@ -70,7 +70,7 @@ private:
 
     column(); // disabled
 public:
-    column(row_key_type max_row_size);
+    column(row_key_type init_row_size);
     column(const column& other);
     ~column();
 
