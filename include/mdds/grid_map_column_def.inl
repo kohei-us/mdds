@@ -963,6 +963,40 @@ void column<_Trait>::swap(column& other)
 }
 
 template<typename _Trait>
+bool column<_Trait>::operator== (const column& other) const
+{
+    if (this == &other)
+        // Comparing to self is always equal.
+        return true;
+
+    if (m_blocks.size() != other.m_blocks.size())
+        // Block sizes differ.
+        return false;
+
+    if (m_cur_size != other.m_cur_size)
+        // Row sizes differ.
+        return false;
+
+    typename blocks_type::const_iterator it = m_blocks.begin(), it_end = m_blocks.end();
+    typename blocks_type::const_iterator it2 = other.m_blocks.begin();
+    for (; it != it_end; ++it, ++it2)
+    {
+        const block* blk1 = *it;
+        const block* blk2 = *it2;
+        if (!cell_block_modifier::equal_block(blk1->mp_data, blk2->mp_data))
+            return false;
+    }
+
+    return true;
+}
+
+template<typename _Trait>
+bool column<_Trait>::operator!= (const column& other) const
+{
+    return !operator== (other);
+}
+
+template<typename _Trait>
 void column<_Trait>::set_empty_in_single_block(
     row_key_type start_row, row_key_type end_row, size_t block_index, row_key_type start_row_in_block)
 {

@@ -250,6 +250,8 @@ struct cell_block_func
 
     template<typename T>
     static void get_empty_value(T& val);
+
+    static bool equal_block(const base_cell_block* left, const base_cell_block* right);
 };
 
 base_cell_block* cell_block_func::create_new_block(cell_t type)
@@ -720,6 +722,38 @@ template<>
 void cell_block_func::get_empty_value<bool>(bool& val)
 {
     val = false;
+}
+
+bool cell_block_func::equal_block(const base_cell_block* left, const base_cell_block* right)
+{
+    if (!left && !right)
+        return true;
+
+    if (left && !right)
+        return false;
+
+    if (!left && right)
+        return false;
+
+    assert(left && right);
+    cell_t block_type = left->type;
+    if (block_type != right->type)
+        return false;
+
+    switch (block_type)
+    {
+        case celltype_numeric:
+            return *get_numeric_block(left) == *get_numeric_block(right);
+        case celltype_string:
+            return *get_string_block(left) == *get_string_block(right);
+        case celltype_index:
+            return *get_index_block(left) == *get_index_block(right);
+        case celltype_boolean:
+            return *get_boolean_block(left) == *get_boolean_block(right);
+        default:
+            ;
+    }
+    return false;
 }
 
 struct grid_map_trait
@@ -1531,6 +1565,7 @@ void gridmap_test_clone()
     column_type db2(db1); // copy construction
     assert(db1.size() == db2.size());
     assert(db1.block_size() == db2.block_size());
+    assert(db1 == db2);
 
     {
         double test1, test2;
@@ -1553,6 +1588,38 @@ void gridmap_test_clone()
     }
 }
 
+void gridmap_test_equality()
+{
+    stack_printer __stack_printer__("::gridmap_test_equality");
+    {
+        // Two columns of equal size.
+        column_type db1(3), db2(3);
+        assert(db1 == db2);
+        db1.set_cell(0, 1.0);
+        assert(db1 != db2);
+        db2.set_cell(0, 1.0);
+        assert(db1 == db2);
+        db2.set_cell(0, 1.2);
+        assert(db1 != db2);
+        db1.set_cell(0, 1.2);
+        assert(db1 == db2);
+    }
+
+    {
+        // Two columns of different sizes.  They are always non-equal no
+        // matter what.
+        column_type db1(3), db2(4);
+        assert(db1 != db2);
+        db1.set_cell(0, 1.2);
+        db2.set_cell(0, 1.2);
+        assert(db1 != db2);
+
+        // Comparison to self.
+        assert(db1 == db1);
+        assert(db2 == db2);
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1567,6 +1634,7 @@ int main (int argc, char **argv)
         gridmap_test_empty_cells();
         gridmap_test_swap();
         gridmap_test_clone();
+        gridmap_test_equality();
     }
 
     if (opt.test_perf)
