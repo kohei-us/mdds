@@ -1554,40 +1554,6 @@ void gridmap_test_swap()
     assert(db2.size() == 3 && db2.block_size() == 1);
 }
 
-void gridmap_test_clone()
-{
-    stack_printer __stack_printer__("::gridmap_test_clone");
-    column_type db1(3);
-    db1.set_cell(0, 3.4);
-    db1.set_cell(1, string("foo"));
-    db1.set_cell(2, true);
-
-    column_type db2(db1); // copy construction
-    assert(db1.size() == db2.size());
-    assert(db1.block_size() == db2.block_size());
-    assert(db1 == db2);
-
-    {
-        double test1, test2;
-        db1.get_cell(0, test1);
-        db2.get_cell(0, test2);
-        assert(test1 == test2);
-    }
-    {
-        string test1, test2;
-        db1.get_cell(1, test1);
-        db2.get_cell(1, test2);
-        assert(test1 == test2);
-    }
-
-    {
-        bool test1, test2;
-        db1.get_cell(2, test1);
-        db2.get_cell(2, test2);
-        assert(test1 == test2);
-    }
-}
-
 void gridmap_test_equality()
 {
     stack_printer __stack_printer__("::gridmap_test_equality");
@@ -1620,6 +1586,49 @@ void gridmap_test_equality()
     }
 }
 
+void gridmap_test_clone()
+{
+    stack_printer __stack_printer__("::gridmap_test_clone");
+    column_type db1(3);
+    db1.set_cell(0, 3.4);
+    db1.set_cell(1, string("foo"));
+    db1.set_cell(2, true);
+
+    // copy construction
+
+    column_type db2(db1);
+    assert(db1.size() == db2.size());
+    assert(db1.block_size() == db2.block_size());
+    assert(db1 == db2);
+
+    {
+        double test1, test2;
+        db1.get_cell(0, test1);
+        db2.get_cell(0, test2);
+        assert(test1 == test2);
+    }
+    {
+        string test1, test2;
+        db1.get_cell(1, test1);
+        db2.get_cell(1, test2);
+        assert(test1 == test2);
+    }
+
+    {
+        bool test1, test2;
+        db1.get_cell(2, test1);
+        db2.get_cell(2, test2);
+        assert(test1 == test2);
+    }
+
+    // assignment
+
+    column_type db3 = db1;
+    assert(db3 == db1);
+    db3.set_cell(0, string("alpha"));
+    assert(db3 != db1);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1633,8 +1642,8 @@ int main (int argc, char **argv)
         gridmap_test_basic();
         gridmap_test_empty_cells();
         gridmap_test_swap();
-        gridmap_test_clone();
         gridmap_test_equality();
+        gridmap_test_clone();
     }
 
     if (opt.test_perf)

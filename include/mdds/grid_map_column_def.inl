@@ -997,6 +997,14 @@ bool column<_Trait>::operator!= (const column& other) const
 }
 
 template<typename _Trait>
+column<_Trait>& column<_Trait>::operator= (const column& other)
+{
+    column assigned(other);
+    swap(assigned);
+    return *this;
+}
+
+template<typename _Trait>
 void column<_Trait>::set_empty_in_single_block(
     row_key_type start_row, row_key_type end_row, size_t block_index, row_key_type start_row_in_block)
 {

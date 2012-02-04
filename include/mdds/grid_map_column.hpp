@@ -93,6 +93,8 @@ public:
     bool operator== (const column& other) const;
     bool operator!= (const column& other) const;
 
+    column& operator= (const column& other);
+
 private:
     void get_block_position(
         row_key_type row, row_key_type& start_row, size_t& block_index, size_t start_block=0) const;
