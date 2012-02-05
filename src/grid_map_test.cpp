@@ -1643,9 +1643,26 @@ void gridmap_test_resize()
     assert(db.empty());
 
     // Resize to create initial empty block.
+    db.resize(3);
+    assert(db.size() == 3);
+    assert(db.block_size() == 1);
+
+    // Resize to increase the existing empty block.
     db.resize(5);
     assert(db.size() == 5);
     assert(db.block_size() == 1);
+
+    for (long row = 0; row < 5; ++row)
+        db.set_cell(row, static_cast<double>(row));
+
+    assert(db.size() == 5);
+    assert(db.block_size() == 1);
+
+    // Increase its size by one.  This should append an empty cell block of size one.
+    db.resize(6);
+    assert(db.size() == 6);
+    assert(db.block_size() == 2);
+    assert(db.is_empty(5));
 }
 
 }

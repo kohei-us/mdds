@@ -997,7 +997,20 @@ void column<_Trait>::resize(size_t new_size)
             return;
         }
 
-        assert(!"not implemented yet.");
+        block* blk_last = m_blocks.back();
+        size_t delta = new_size - m_cur_size;
+
+        if (!blk_last->mp_data)
+        {
+            // Last block is empty.  Just increase its size.
+            blk_last->m_size += delta;
+        }
+        else
+        {
+            // Append a new empty block.
+            m_blocks.push_back(new block(delta));
+        }
+        m_cur_size = new_size;
         return;
     }
 
