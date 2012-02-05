@@ -962,6 +962,13 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
 }
 
 template<typename _Trait>
+void column<_Trait>::clear()
+{
+    std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
+    m_blocks.clear();
+}
+
+template<typename _Trait>
 size_t column<_Trait>::size() const
 {
     return m_cur_size;
@@ -984,6 +991,12 @@ void column<_Trait>::resize(size_t new_size)
 {
     if (new_size == m_cur_size)
         return;
+
+    if (!new_size)
+    {
+        clear();
+        return;
+    }
 
     if (new_size > m_cur_size)
     {
@@ -1014,7 +1027,26 @@ void column<_Trait>::resize(size_t new_size)
         return;
     }
 
-    assert(new_size < m_cur_size);
+    assert(new_size < m_cur_size && new_size > 0);
+
+    // Find out in which block the new end row will be.
+    size_t new_end_row = new_size - 1;
+    size_t start_row_in_block, block_index;
+    get_block_position(new_end_row, start_row_in_block, block_index);
+
+    block* blk = m_blocks[block_index];
+
+    if (new_end_row == start_row_in_block+blk->m_size-1)
+    {
+        // New end row position happens to be the end of an existing block.
+        // Remove all blocks that are below this one.
+        typename blocks_type::iterator it = m_blocks.begin() + block_index + 1;
+        std::for_each(it, m_blocks.end(), default_deleter<block>());
+        m_blocks.erase(it, m_blocks.end());
+        m_cur_size = new_size;
+        return;
+    }
+
     assert(!"not implemented yet.");
 }
 

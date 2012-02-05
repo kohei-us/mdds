@@ -84,6 +84,8 @@ public:
 
     void set_empty(row_key_type start_row, row_key_type end_row);
 
+    void clear();
+
     size_t size() const;
 
     size_t block_size() const;

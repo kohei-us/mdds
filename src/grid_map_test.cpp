@@ -1663,6 +1663,16 @@ void gridmap_test_resize()
     assert(db.size() == 6);
     assert(db.block_size() == 2);
     assert(db.is_empty(5));
+
+    // Do it again.
+    db.resize(7);
+    assert(db.size() == 7);
+    assert(db.block_size() == 2);
+
+    // Now, reduce its size to eliminate the last empty block.
+    db.resize(5);
+    assert(db.size() == 5);
+    assert(db.block_size() == 1);
 }
 
 }
