@@ -59,18 +59,18 @@ private:
 
     struct block : boost::noncopyable
     {
-        row_key_type m_size;
+        size_t m_size;
         cell_block_type* mp_data;
 
         block();
-        block(row_key_type _size);
+        block(size_t _size);
         block(const block& other);
         ~block();
     };
 
 public:
     column();
-    column(row_key_type init_row_size);
+    column(size_t init_row_size);
     column(const column& other);
     ~column();
 
@@ -100,22 +100,28 @@ public:
     column& operator= (const column& other);
 
 private:
+    /**
+     * Check the row value to make sure it's within specified range, and
+     * convert it to size_t for internal use.
+     */
+    size_t check_row_range(row_key_type row) const;
+
     void get_block_position(
-        row_key_type row, row_key_type& start_row, size_t& block_index, size_t start_block=0) const;
+        size_t row, size_t& start_row, size_t& block_index, size_t start_block=0) const;
 
     template<typename _T>
     void create_new_block_with_new_cell(cell_block_type*& data, const _T& cell);
 
     template<typename _T>
     void set_cell_to_middle_of_block(
-        size_t block_index, row_key_type pos_in_block, const _T& cell);
+        size_t block_index, size_t pos_in_block, const _T& cell);
 
     template<typename _T>
     void append_cell_to_block(size_t block_index, const _T& cell);
 
     template<typename _T>
     void set_cell_to_empty_block(
-        size_t block_index, row_key_type pos_in_block, const _T& cell);
+        size_t block_index, size_t pos_in_block, const _T& cell);
 
     template<typename _T>
     void set_cell_to_block_of_size_one(
@@ -130,12 +136,12 @@ private:
         size_t block_index, const _T& cell);
 
     void set_empty_in_single_block(
-        row_key_type start_row, row_key_type end_row, size_t block_index, row_key_type start_row_in_block);
+        size_t start_row, size_t end_row, size_t block_index, size_t start_row_in_block);
 
 private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;
-    row_key_type m_cur_size;
+    size_t m_cur_size;
 
     static cell_type_inspector get_type;
     static cell_block_type_inspector get_block_type;
