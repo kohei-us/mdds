@@ -88,6 +88,10 @@ public:
 
     size_t block_size() const;
 
+    bool empty() const;
+
+    void resize(size_t new_size);
+
     void swap(column& other);
 
     bool operator== (const column& other) const;

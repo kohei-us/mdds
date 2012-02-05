@@ -61,6 +61,12 @@ column<_Trait>::column() : m_cur_size(0) {}
 template<typename _Trait>
 column<_Trait>::column(row_key_type init_row_size) : m_cur_size(init_row_size)
 {
+    if (init_row_size < 0)
+        throw std::out_of_range("Negative initial row size is not allowed.");
+
+    if (!init_row_size)
+        return;
+
     // Initialize with an empty block that spans from 0 to max.
     m_blocks.push_back(new block(init_row_size));
 }
@@ -956,6 +962,38 @@ template<typename _Trait>
 size_t column<_Trait>::block_size() const
 {
     return m_blocks.size();
+}
+
+template<typename _Trait>
+bool column<_Trait>::empty() const
+{
+    return m_blocks.empty();
+}
+
+template<typename _Trait>
+void column<_Trait>::resize(size_t new_size)
+{
+    if (new_size == m_cur_size)
+        return;
+
+    if (new_size > m_cur_size)
+    {
+        // Append empty cells.
+        if (m_blocks.empty())
+        {
+            // No existing block. Create a new one.
+            assert(m_cur_size == 0);
+            m_blocks.push_back(new block(new_size));
+            m_cur_size = new_size;
+            return;
+        }
+
+        assert(!"not implemented yet.");
+        return;
+    }
+
+    assert(new_size < m_cur_size);
+    assert(!"not implemented yet.");
 }
 
 template<typename _Trait>

@@ -1635,6 +1635,19 @@ void gridmap_test_clone()
     assert(db3 == db4);
 }
 
+void gridmap_test_resize()
+{
+    stack_printer __stack_printer__("::gridmap_test_resize");
+    column_type db(0);
+    assert(db.size() == 0);
+    assert(db.empty());
+
+    // Resize to create initial empty block.
+    db.resize(5);
+    assert(db.size() == 5);
+    assert(db.block_size() == 1);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1650,6 +1663,7 @@ int main (int argc, char **argv)
         gridmap_test_swap();
         gridmap_test_equality();
         gridmap_test_clone();
+        gridmap_test_resize();
     }
 
     if (opt.test_perf)
