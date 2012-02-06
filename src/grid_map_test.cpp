@@ -1673,6 +1673,25 @@ void gridmap_test_resize()
     db.resize(5);
     assert(db.size() == 5);
     assert(db.block_size() == 1);
+
+    // Reset.
+    db.resize(7);
+    assert(db.size() == 7);
+    assert(db.block_size() == 2);
+
+    // Now, resize across multiple blocks.
+    db.resize(4);
+    assert(db.size() == 4);
+    assert(db.block_size() == 1);
+    double test;
+    db.get_cell(3, test);
+    assert(test == 3.0);
+
+    // Empty it.
+    db.resize(0);
+    assert(db.size() == 0);
+    assert(db.block_size() == 0);
+    assert(db.empty());
 }
 
 }

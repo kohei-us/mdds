@@ -966,6 +966,7 @@ void column<_Trait>::clear()
 {
     std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
     m_blocks.clear();
+    m_cur_size = 0;
 }
 
 template<typename _Trait>
@@ -1035,19 +1036,21 @@ void column<_Trait>::resize(size_t new_size)
     get_block_position(new_end_row, start_row_in_block, block_index);
 
     block* blk = m_blocks[block_index];
+    size_t end_row_in_block = start_row_in_block + blk->m_size - 1;
 
-    if (new_end_row == start_row_in_block+blk->m_size-1)
+    if (new_end_row < end_row_in_block)
     {
-        // New end row position happens to be the end of an existing block.
-        // Remove all blocks that are below this one.
-        typename blocks_type::iterator it = m_blocks.begin() + block_index + 1;
-        std::for_each(it, m_blocks.end(), default_deleter<block>());
-        m_blocks.erase(it, m_blocks.end());
-        m_cur_size = new_size;
-        return;
+        // Shrink the size of the current block.
+        size_t new_block_size = new_end_row - start_row_in_block + 1;
+        cell_block_modifier::resize_block(blk->mp_data, new_block_size);
+        blk->m_size = new_block_size;
     }
 
-    assert(!"not implemented yet.");
+    // Remove all blocks that are below this one.
+    typename blocks_type::iterator it = m_blocks.begin() + block_index + 1;
+    std::for_each(it, m_blocks.end(), default_deleter<block>());
+    m_blocks.erase(it, m_blocks.end());
+    m_cur_size = new_size;
 }
 
 template<typename _Trait>
