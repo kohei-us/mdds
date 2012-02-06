@@ -820,6 +820,13 @@ void column<_Trait>::set_cell_to_bottom_of_data_block(size_t block_index, const 
 
 template<typename _Trait>
 template<typename _T>
+void column<_Trait>::set_cells(row_key_type row, const _T* cells, size_t count)
+{
+    assert(!"not implemented yet.");
+}
+
+template<typename _Trait>
+template<typename _T>
 void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 {
     size_t _row = check_row_range(row);
@@ -959,6 +966,12 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
         // Current block is already empty. Just extend its size.
         blk->m_size = empty_block_size;
     }
+}
+
+template<typename _Trait>
+void column<_Trait>::erase(row_key_type start_row, row_key_type end_row)
+{
+    assert(!"not implemented yet.");
 }
 
 template<typename _Trait>

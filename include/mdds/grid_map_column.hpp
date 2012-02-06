@@ -78,11 +78,16 @@ public:
     void set_cell(row_key_type row, const _T& cell);
 
     template<typename _T>
+    void set_cells(row_key_type row, const _T* cells, size_t count);
+
+    template<typename _T>
     void get_cell(row_key_type row, _T& cell) const;
 
     bool is_empty(row_key_type row) const;
 
     void set_empty(row_key_type start_row, row_key_type end_row);
+
+    void erase(row_key_type start_row, row_key_type end_row);
 
     void clear();
 
