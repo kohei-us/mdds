@@ -860,11 +860,11 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 template<typename _Trait>
 bool column<_Trait>::is_empty(row_key_type row) const
 {
-    check_row_range(row);
+    size_t _row = check_row_range(row);
 
     size_t start_row;
     size_t block_index;
-    get_block_position(row, start_row, block_index);
+    get_block_position(_row, start_row, block_index);
 
     return m_blocks[block_index]->mp_data == NULL;
 }
