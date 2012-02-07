@@ -1728,6 +1728,23 @@ void gridmap_test_erase()
         assert(db.size() == 0);
         assert(db.empty());
     }
+
+    {
+        // Two blocks - non-empty to empty blocks.
+        column_type db(8);
+        for (long i = 0; i < 4; ++i)
+            db.set_cell(i, static_cast<double>(i+1));
+
+        assert(db.block_size() == 2);
+        assert(db.size() == 8);
+        assert(!db.is_empty(3));
+        assert(db.is_empty(4));
+
+        // Erase across two blocks.
+        db.erase(3, 6); // 4 cells
+        assert(db.block_size() == 2);
+        assert(db.size() == 4);
+    }
 }
 
 }

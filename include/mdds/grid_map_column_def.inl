@@ -1013,6 +1013,7 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
 
         blk->m_size -= size_to_erase;
         m_cur_size -= size_to_erase;
+
         if (blk->m_size == 0)
         {
             delete blk;
@@ -1023,7 +1024,7 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
 
     assert(block_pos1 < block_pos2);
 
-    assert(!"not implemented yet.");
+    assert(!"I'm working on this.");
 }
 
 template<typename _Trait>
