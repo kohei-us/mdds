@@ -1698,12 +1698,31 @@ void gridmap_test_erase()
 {
     stack_printer __stack_printer__("::gridmap_test_erase");
     {
+        // Single empty block.
         column_type db(5);
         db.erase(0, 2); // erase rows 0-2.
         assert(db.size() == 2);
         db.erase(0, 1);
         assert(db.size() == 0);
         assert(db.empty());
+    }
+
+    {
+        // Single non-empty block.
+        column_type db(5);
+        for (long i = 0; i < 5; ++i)
+            db.set_cell(i, static_cast<double>(i+1));
+
+        assert(db.block_size() == 1);
+        assert(db.size() == 5);
+
+        db.erase(0, 2); // erase rows 0-2
+        assert(db.size() == 2);
+        double test;
+        db.get_cell(0, test);
+        assert(test == 4.0);
+        db.get_cell(1, test);
+        assert(test == 5.0);
     }
 }
 

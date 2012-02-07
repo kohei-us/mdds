@@ -1003,22 +1003,21 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
     {
         // Range falls within the same block.
         block* blk = m_blocks[block_pos1];
-        if (!blk->mp_data)
+        size_t size_to_erase = end_row - start_row + 1;
+        if (blk->mp_data)
         {
-            // Block is empty.  Simply change its size and be done with it.
-            size_t delta = end_row - start_row + 1;
-            blk->m_size -= delta;
-            m_cur_size -= delta;
-            if (blk->m_size == 0)
-            {
-                delete blk;
-                m_blocks.erase(m_blocks.begin()+block_pos1);
-            }
-            return;
+            // Erase data in the data block.
+            size_t offset = start_row - start_row_in_block1;
+            cell_block_modifier::erase(blk->mp_data, offset, size_to_erase);
         }
 
-        assert(blk->mp_data);
-        assert(!"not implemented yet.");
+        blk->m_size -= size_to_erase;
+        m_cur_size -= size_to_erase;
+        if (blk->m_size == 0)
+        {
+            delete blk;
+            m_blocks.erase(m_blocks.begin()+block_pos1);
+        }
         return;
     }
 
