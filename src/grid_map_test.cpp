@@ -1694,6 +1694,19 @@ void gridmap_test_resize()
     assert(db.empty());
 }
 
+void gridmap_test_erase()
+{
+    stack_printer __stack_printer__("::gridmap_test_erase");
+    {
+        column_type db(5);
+        db.erase(0, 2); // erase rows 0-2.
+        assert(db.size() == 2);
+        db.erase(0, 1);
+        assert(db.size() == 0);
+        assert(db.empty());
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1710,6 +1723,7 @@ int main (int argc, char **argv)
         gridmap_test_equality();
         gridmap_test_clone();
         gridmap_test_resize();
+        gridmap_test_erase();
     }
 
     if (opt.test_perf)

@@ -976,13 +976,59 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
 }
 
 template<typename _Trait>
-void column<_Trait>::insert_empty(row_key_type start_row, row_key_type end_row)
+void column<_Trait>::erase(row_key_type start_row, row_key_type end_row)
 {
+    size_t _start_row = check_row_range(start_row);
+    size_t _end_row = check_row_range(end_row);
+
+    if (_start_row > _end_row)
+        throw std::out_of_range("Start row is larger than the end row.");
+
+    erase_impl(_start_row, _end_row);
+}
+
+template<typename _Trait>
+void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
+{
+    assert(start_row <= end_row);
+
+    // Keep the logic similar to set_empty().
+
+    size_t start_row_in_block1, start_row_in_block2;
+    size_t block_pos1, block_pos2;
+    get_block_position(start_row, start_row_in_block1, block_pos1);
+    get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1);
+
+    if (block_pos1 == block_pos2)
+    {
+        // Range falls within the same block.
+        block* blk = m_blocks[block_pos1];
+        if (!blk->mp_data)
+        {
+            // Block is empty.  Simply change its size and be done with it.
+            size_t delta = end_row - start_row + 1;
+            blk->m_size -= delta;
+            m_cur_size -= delta;
+            if (blk->m_size == 0)
+            {
+                delete blk;
+                m_blocks.erase(m_blocks.begin()+block_pos1);
+            }
+            return;
+        }
+
+        assert(blk->mp_data);
+        assert(!"not implemented yet.");
+        return;
+    }
+
+    assert(block_pos1 < block_pos2);
+
     assert(!"not implemented yet.");
 }
 
 template<typename _Trait>
-void column<_Trait>::erase(row_key_type start_row, row_key_type end_row)
+void column<_Trait>::insert_empty(row_key_type start_row, row_key_type end_row)
 {
     assert(!"not implemented yet.");
 }

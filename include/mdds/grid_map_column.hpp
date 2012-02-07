@@ -90,9 +90,9 @@ public:
 
     void set_empty(row_key_type start_row, row_key_type end_row);
 
-    void insert_empty(row_key_type start_row, row_key_type end_row);
-
     void erase(row_key_type start_row, row_key_type end_row);
+
+    void insert_empty(row_key_type start_row, row_key_type end_row);
 
     void clear();
 
@@ -149,6 +149,8 @@ private:
 
     void set_empty_in_single_block(
         size_t start_row, size_t end_row, size_t block_index, size_t start_row_in_block);
+
+    void erase_impl(size_t start_row, size_t end_row);
 
 private:
     typedef std::vector<block*> blocks_type;
