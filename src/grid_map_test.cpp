@@ -1723,6 +1723,10 @@ void gridmap_test_erase()
         assert(test == 4.0);
         db.get_cell(1, test);
         assert(test == 5.0);
+
+        db.erase(0, 1);
+        assert(db.size() == 0);
+        assert(db.empty());
     }
 }
 
