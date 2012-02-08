@@ -1024,7 +1024,51 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
 
     assert(block_pos1 < block_pos2);
 
-    assert(!"I'm working on this.");
+    // Initially, we set to erase all blocks between the first and the last.
+    typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_pos1 + 1;
+    typename blocks_type::iterator it_erase_end   = m_blocks.begin() + block_pos2;
+
+    // First, inspect the first block.
+    if (start_row_in_block1 == start_row)
+    {
+        // Erase the whole block.
+        --it_erase_begin;
+    }
+    else
+    {
+        // Erase the lower part of the first block.
+        block* blk = m_blocks[block_pos1];
+        size_t new_size = start_row - start_row_in_block1;
+        if (blk->mp_data)
+        {
+            // Shrink the data array.
+            cell_block_modifier::resize_block(blk->mp_data, new_size);
+        }
+        blk->m_size = new_size;
+    }
+
+    // Then inspect the last block.
+    block* blk = m_blocks[block_pos2];
+    size_t last_row_in_block = start_row_in_block2 + blk->m_size - 1;
+    if (last_row_in_block == end_row)
+    {
+        // Delete the whole block.
+        ++it_erase_end;
+    }
+    else
+    {
+        size_t size_to_erase = end_row - start_row_in_block2 + 1;
+        blk->m_size -= size_to_erase;
+        if (blk->mp_data)
+        {
+            // Erase the upper part.
+            cell_block_modifier::erase(blk->mp_data, 0, size_to_erase);
+        }
+    }
+
+    // Now, erase all blocks in between.
+    m_blocks.erase(it_erase_begin, it_erase_end);
+    m_cur_size -= end_row - start_row + 1;
 }
 
 template<typename _Trait>

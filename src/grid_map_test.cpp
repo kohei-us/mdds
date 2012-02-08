@@ -1744,6 +1744,12 @@ void gridmap_test_erase()
         db.erase(3, 6); // 4 cells
         assert(db.block_size() == 2);
         assert(db.size() == 4);
+
+        // Check the integrity of the data.
+        double test;
+        db.get_cell(2, test);
+        assert(test == 3.0);
+        assert(db.is_empty(3));
     }
 }
 
