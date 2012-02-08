@@ -119,7 +119,7 @@ private:
     size_t check_row_range(row_key_type row) const;
 
     void get_block_position(
-        size_t row, size_t& start_row, size_t& block_index, size_t start_block=0) const;
+        size_t row, size_t& start_row, size_t& block_index, size_t start_block=0, size_t start_block_row=0) const;
 
     template<typename _T>
     void create_new_block_with_new_cell(cell_block_type*& data, const _T& cell);

@@ -29,6 +29,7 @@
 #include "test_global.hpp"
 
 #include <cassert>
+#include <sstream>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -1750,6 +1751,88 @@ void gridmap_test_erase()
         db.get_cell(2, test);
         assert(test == 3.0);
         assert(db.is_empty(3));
+
+        // Empty it.
+        db.erase(0, 3);
+        assert(db.block_size() == 0);
+        assert(db.size() == 0);
+        assert(db.empty());
+    }
+
+    {
+        // Two blocks - non-empty to non-empty blocks.
+        column_type db(8);
+        for (long i = 0; i < 4; ++i)
+            db.set_cell(i, static_cast<double>(i+1));
+
+        for (long i = 4; i < 8; ++i)
+            db.set_cell(i, static_cast<size_t>(i+1));
+
+        assert(db.block_size() == 2);
+        assert(db.size() == 8);
+
+        // Erase across two blocks.
+        db.erase(3, 6); // 4 cells
+        assert(db.block_size() == 2);
+        assert(db.size() == 4);
+
+        // Check the integrity of the data.
+        double test;
+        db.get_cell(2, test);
+        assert(test == 3.0);
+
+        size_t test2;
+        db.get_cell(3, test2);
+        assert(test2 == 8);
+
+        // Empty it.
+        db.erase(0, 3);
+        assert(db.block_size() == 0);
+        assert(db.size() == 0);
+        assert(db.empty());
+    }
+
+    {
+        // 3 blocks, all non-empty.
+        column_type db(9);
+        for (long i = 0; i < 3; ++i)
+            db.set_cell(i, static_cast<double>(i+1));
+
+        for (long i = 3; i < 6; ++i)
+            db.set_cell(i, static_cast<size_t>(i+1));
+
+        for (long i = 6; i < 9; ++i)
+        {
+            ostringstream os;
+            os << i+1;
+            db.set_cell(i, os.str());
+        }
+
+        assert(db.block_size() == 3);
+        assert(db.size() == 9);
+
+        db.erase(2, 7);
+        assert(db.block_size() == 2);
+        assert(db.size() == 3);
+
+        // Check the integrity of the data.
+        double test1;
+        db.get_cell(1, test1);
+        assert(test1 == 2.0);
+        string test2;
+        db.get_cell(2, test2);
+        assert(test2 == "9");
+
+        db.erase(2, 2); // Erase only one-block.
+        assert(db.block_size() == 1);
+        assert(db.size() == 2);
+        test1 = -1.0;
+        db.get_cell(1, test1);
+        assert(test1 == 2.0);
+
+        db.erase(0, 1);
+        assert(db.size() == 0);
+        assert(db.empty());
     }
 }
 

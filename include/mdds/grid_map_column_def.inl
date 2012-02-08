@@ -278,9 +278,9 @@ size_t column<_Trait>::check_row_range(row_key_type row) const
 
 template<typename _Trait>
 void column<_Trait>::get_block_position(
-    size_t row, size_t& start_row, size_t& block_index, size_t start_block) const
+    size_t row, size_t& start_row, size_t& block_index, size_t start_block, size_t start_block_row) const
 {
-    start_row = 0;
+    start_row = start_block_row;
     for (size_t i = start_block, n = m_blocks.size(); i < n; ++i)
     {
         const block& blk = *m_blocks[i];
@@ -881,7 +881,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
     size_t start_row_in_block1, start_row_in_block2;
     size_t block_pos1, block_pos2;
     get_block_position(_start_row, start_row_in_block1, block_pos1);
-    get_block_position(_end_row, start_row_in_block2, block_pos2, block_pos1);
+    get_block_position(_end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
 
     if (block_pos1 == block_pos2)
     {
@@ -997,7 +997,7 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
     size_t start_row_in_block1, start_row_in_block2;
     size_t block_pos1, block_pos2;
     get_block_position(start_row, start_row_in_block1, block_pos1);
-    get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1);
+    get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
 
     if (block_pos1 == block_pos2)
     {
@@ -1067,6 +1067,7 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
     }
 
     // Now, erase all blocks in between.
+    std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
     m_blocks.erase(it_erase_begin, it_erase_end);
     m_cur_size -= end_row - start_row + 1;
 }
