@@ -152,6 +152,8 @@ private:
 
     void erase_impl(size_t start_row, size_t end_row);
 
+    void insert_empty_impl(size_t start_row, size_t end_row);
+
 private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;

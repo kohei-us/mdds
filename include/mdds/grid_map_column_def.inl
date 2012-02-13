@@ -1075,7 +1075,21 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
 template<typename _Trait>
 void column<_Trait>::insert_empty(row_key_type start_row, row_key_type end_row)
 {
-    assert(!"not implemented yet.");
+    size_t _start_row = check_row_range(start_row);
+    size_t _end_row = check_row_range(end_row);
+
+    if (_start_row > _end_row)
+        throw std::out_of_range("Start row is larger than the end row.");
+
+    insert_empty_impl(_start_row, _end_row);
+
+}
+
+template<typename _Trait>
+void column<_Trait>::insert_empty_impl(size_t start_row, size_t end_row)
+{
+    erase_impl(start_row, end_row);
+    assert(!"I'm working on it.");
 }
 
 template<typename _Trait>
