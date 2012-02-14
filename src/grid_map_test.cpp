@@ -1836,6 +1836,15 @@ void gridmap_test_erase()
     }
 }
 
+void gridmap_test_insert_empty()
+{
+    stack_printer __stack_printer__("::gridmap_test_insert_empty");
+    {
+        column_type db(1);
+        db.insert_empty(0, 5);
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1853,6 +1862,7 @@ int main (int argc, char **argv)
         gridmap_test_clone();
         gridmap_test_resize();
         gridmap_test_erase();
+        gridmap_test_insert_empty();
     }
 
     if (opt.test_perf)

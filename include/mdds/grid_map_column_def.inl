@@ -40,7 +40,7 @@ template<typename _Trait>
 column<_Trait>::block::block() : m_size(0), mp_data(NULL) {}
 
 template<typename _Trait>
-column<_Trait>::block::block(size_t _size) : m_size(_size), mp_data(NULL) {}
+column<_Trait>::block::block(size_type _size) : m_size(_size), mp_data(NULL) {}
 
 template<typename _Trait>
 column<_Trait>::block::block(const block& other) :
@@ -59,7 +59,7 @@ template<typename _Trait>
 column<_Trait>::column() : m_cur_size(0) {}
 
 template<typename _Trait>
-column<_Trait>::column(size_t init_row_size) : m_cur_size(init_row_size)
+column<_Trait>::column(size_type init_row_size) : m_cur_size(init_row_size)
 {
     if (!init_row_size)
         return;
@@ -89,20 +89,20 @@ template<typename _Trait>
 template<typename _T>
 void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 {
-    size_t _row = check_row_range(row);
+    size_type _row = check_row_range(row);
 
     cell_category_type cat = get_type(cell);
 
     // Find the right block ID from the row ID.
-    size_t start_row = 0; // row ID of the first cell in a block.
-    size_t block_index = 0;
+    size_type start_row = 0; // row ID of the first cell in a block.
+    size_type block_index = 0;
     get_block_position(_row, start_row, block_index);
 
     block* blk = m_blocks[block_index];
     assert(blk->m_size > 0); // block size should never be zero at any time.
 
     assert(_row >= start_row);
-    size_t pos_in_block = _row - start_row;
+    size_type pos_in_block = _row - start_row;
     assert(pos_in_block < blk->m_size);
 
     if (!blk->mp_data)
@@ -263,13 +263,14 @@ void column<_Trait>::insert_cells(row_key_type row, const _T& it_begin, const _T
 }
 
 template<typename _Trait>
-size_t column<_Trait>::check_row_range(row_key_type row) const
+typename column<_Trait>::size_type
+column<_Trait>::check_row_range(row_key_type row) const
 {
     static const char* msg = "Specified row index is out-of-bound.";
     if (row < 0)
         throw std::out_of_range(msg);
 
-    size_t row_internal = boost::numeric_cast<size_t>(row);
+    size_type row_internal = boost::numeric_cast<size_type>(row);
     if (row_internal >= m_cur_size)
         throw std::out_of_range(msg);
 
@@ -278,10 +279,10 @@ size_t column<_Trait>::check_row_range(row_key_type row) const
 
 template<typename _Trait>
 void column<_Trait>::get_block_position(
-    size_t row, size_t& start_row, size_t& block_index, size_t start_block, size_t start_block_row) const
+    size_type row, size_type& start_row, size_type& block_index, size_type start_block, size_type start_block_row) const
 {
     start_row = start_block_row;
-    for (size_t i = start_block, n = m_blocks.size(); i < n; ++i)
+    for (size_type i = start_block, n = m_blocks.size(); i < n; ++i)
     {
         const block& blk = *m_blocks[i];
         if (row < start_row + blk.m_size)
@@ -318,7 +319,7 @@ void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, cons
 template<typename _Trait>
 template<typename _T>
 void column<_Trait>::set_cell_to_middle_of_block(
-    size_t block_index, size_t pos_in_block, const _T& cell)
+    size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
 
@@ -351,7 +352,7 @@ void column<_Trait>::set_cell_to_middle_of_block(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::append_cell_to_block(size_t block_index, const _T& cell)
+void column<_Trait>::append_cell_to_block(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     blk->m_size += 1;
@@ -361,7 +362,7 @@ void column<_Trait>::append_cell_to_block(size_t block_index, const _T& cell)
 template<typename _Trait>
 template<typename _T>
 void column<_Trait>::set_cell_to_empty_block(
-    size_t block_index, size_t pos_in_block, const _T& cell)
+    size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
 
@@ -623,7 +624,7 @@ void column<_Trait>::set_cell_to_empty_block(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T& cell)
+void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     assert(blk->m_size == 1);
@@ -809,7 +810,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_t block_index, const _T&
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_top_of_data_block(size_t block_index, const _T& cell)
+void column<_Trait>::set_cell_to_top_of_data_block(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     blk->m_size -= 1;
@@ -821,7 +822,7 @@ void column<_Trait>::set_cell_to_top_of_data_block(size_t block_index, const _T&
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_bottom_of_data_block(size_t block_index, const _T& cell)
+void column<_Trait>::set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell)
 {
     assert(block_index < m_blocks.size());
     block* blk = m_blocks[block_index];
@@ -836,10 +837,10 @@ template<typename _Trait>
 template<typename _T>
 void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 {
-    size_t _row = check_row_range(row);
+    size_type _row = check_row_range(row);
 
-    size_t start_row = 0;
-    size_t block_index = static_cast<size_t>(-1);
+    size_type start_row = 0;
+    size_type block_index = static_cast<size_type>(-1);
     get_block_position(_row, start_row, block_index);
     const block* blk = m_blocks[block_index];
     assert(blk);
@@ -860,10 +861,10 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 template<typename _Trait>
 bool column<_Trait>::is_empty(row_key_type row) const
 {
-    size_t _row = check_row_range(row);
+    size_type _row = check_row_range(row);
 
-    size_t start_row;
-    size_t block_index;
+    size_type start_row;
+    size_type block_index;
     get_block_position(_row, start_row, block_index);
 
     return m_blocks[block_index]->mp_data == NULL;
@@ -872,14 +873,14 @@ bool column<_Trait>::is_empty(row_key_type row) const
 template<typename _Trait>
 void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
 {
-    size_t _start_row = check_row_range(start_row);
-    size_t _end_row = check_row_range(end_row);
+    size_type _start_row = check_row_range(start_row);
+    size_type _end_row = check_row_range(end_row);
 
     if (_start_row > _end_row)
         throw std::out_of_range("Start row is larger than the end row.");
 
-    size_t start_row_in_block1, start_row_in_block2;
-    size_t block_pos1, block_pos2;
+    size_type start_row_in_block1, start_row_in_block2;
+    size_type block_pos1, block_pos2;
     get_block_position(_start_row, start_row_in_block1, block_pos1);
     get_block_position(_end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
 
@@ -905,7 +906,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
             else
             {
                 // Empty the lower part.
-                size_t new_size = _start_row - start_row_in_block1;
+                size_type new_size = _start_row - start_row_in_block1;
                 cell_block_modifier::resize_block(blk->mp_data, new_size);
                 blk->m_size = new_size;
             }
@@ -921,7 +922,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
     {
         // Empty the upper part of the last block.
         block* blk = m_blocks[block_pos2];
-        size_t last_row_in_block = start_row_in_block2 + blk->m_size - 1;
+        size_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
         if (blk->mp_data)
         {
             if (last_row_in_block == _end_row)
@@ -933,7 +934,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
             else
             {
                 // Empty the upper part.
-                size_t size_to_erase = _end_row - start_row_in_block2 + 1;
+                size_type size_to_erase = _end_row - start_row_in_block2 + 1;
                 cell_block_modifier::erase(blk->mp_data, 0, size_to_erase);
                 blk->m_size -= size_to_erase;
             }
@@ -952,7 +953,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
     {
         // Remove all blocks in-between, from block_pos1+1 to block_pos2-1.
 
-        for (size_t i = block_pos1 + 1; i < block_pos2; ++i)
+        for (size_type i = block_pos1 + 1; i < block_pos2; ++i)
             delete m_blocks[i];
 
         typename blocks_type::iterator it = m_blocks.begin() + block_pos1 + 1;
@@ -962,7 +963,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
 
     // Insert a single empty block.
     block* blk = m_blocks[block_pos1];
-    size_t empty_block_size = _end_row - _start_row + 1;
+    size_type empty_block_size = _end_row - _start_row + 1;
     if (blk->mp_data)
     {
         // Insert a new empty block after the first block.
@@ -978,8 +979,8 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
 template<typename _Trait>
 void column<_Trait>::erase(row_key_type start_row, row_key_type end_row)
 {
-    size_t _start_row = check_row_range(start_row);
-    size_t _end_row = check_row_range(end_row);
+    size_type _start_row = check_row_range(start_row);
+    size_type _end_row = check_row_range(end_row);
 
     if (_start_row > _end_row)
         throw std::out_of_range("Start row is larger than the end row.");
@@ -988,14 +989,14 @@ void column<_Trait>::erase(row_key_type start_row, row_key_type end_row)
 }
 
 template<typename _Trait>
-void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
+void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
 {
     assert(start_row <= end_row);
 
     // Keep the logic similar to set_empty().
 
-    size_t start_row_in_block1, start_row_in_block2;
-    size_t block_pos1, block_pos2;
+    size_type start_row_in_block1, start_row_in_block2;
+    size_type block_pos1, block_pos2;
     get_block_position(start_row, start_row_in_block1, block_pos1);
     get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
 
@@ -1003,11 +1004,11 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
     {
         // Range falls within the same block.
         block* blk = m_blocks[block_pos1];
-        size_t size_to_erase = end_row - start_row + 1;
+        size_type size_to_erase = end_row - start_row + 1;
         if (blk->mp_data)
         {
             // Erase data in the data block.
-            size_t offset = start_row - start_row_in_block1;
+            size_type offset = start_row - start_row_in_block1;
             cell_block_modifier::erase(blk->mp_data, offset, size_to_erase);
         }
 
@@ -1038,7 +1039,7 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
     {
         // Erase the lower part of the first block.
         block* blk = m_blocks[block_pos1];
-        size_t new_size = start_row - start_row_in_block1;
+        size_type new_size = start_row - start_row_in_block1;
         if (blk->mp_data)
         {
             // Shrink the data array.
@@ -1049,7 +1050,7 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
 
     // Then inspect the last block.
     block* blk = m_blocks[block_pos2];
-    size_t last_row_in_block = start_row_in_block2 + blk->m_size - 1;
+    size_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
     if (last_row_in_block == end_row)
     {
         // Delete the whole block.
@@ -1057,7 +1058,7 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
     }
     else
     {
-        size_t size_to_erase = end_row - start_row_in_block2 + 1;
+        size_type size_to_erase = end_row - start_row_in_block2 + 1;
         blk->m_size -= size_to_erase;
         if (blk->mp_data)
         {
@@ -1073,22 +1074,16 @@ void column<_Trait>::erase_impl(size_t start_row, size_t end_row)
 }
 
 template<typename _Trait>
-void column<_Trait>::insert_empty(row_key_type start_row, row_key_type end_row)
+void column<_Trait>::insert_empty(row_key_type row, size_type length)
 {
-    size_t _start_row = check_row_range(start_row);
-    size_t _end_row = check_row_range(end_row);
-
-    if (_start_row > _end_row)
-        throw std::out_of_range("Start row is larger than the end row.");
-
-    insert_empty_impl(_start_row, _end_row);
-
+    size_type _row = check_row_range(row);
+    insert_empty_impl(_row, length);
 }
 
 template<typename _Trait>
-void column<_Trait>::insert_empty_impl(size_t start_row, size_t end_row)
+void column<_Trait>::insert_empty_impl(size_type row, size_type length)
 {
-    erase_impl(start_row, end_row);
+
     assert(!"I'm working on it.");
 }
 
@@ -1101,13 +1096,15 @@ void column<_Trait>::clear()
 }
 
 template<typename _Trait>
-size_t column<_Trait>::size() const
+typename column<_Trait>::size_type
+column<_Trait>::size() const
 {
     return m_cur_size;
 }
 
 template<typename _Trait>
-size_t column<_Trait>::block_size() const
+typename column<_Trait>::size_type
+column<_Trait>::block_size() const
 {
     return m_blocks.size();
 }
@@ -1119,7 +1116,7 @@ bool column<_Trait>::empty() const
 }
 
 template<typename _Trait>
-void column<_Trait>::resize(size_t new_size)
+void column<_Trait>::resize(size_type new_size)
 {
     if (new_size == m_cur_size)
         return;
@@ -1143,7 +1140,7 @@ void column<_Trait>::resize(size_t new_size)
         }
 
         block* blk_last = m_blocks.back();
-        size_t delta = new_size - m_cur_size;
+        size_type delta = new_size - m_cur_size;
 
         if (!blk_last->mp_data)
         {
@@ -1162,17 +1159,17 @@ void column<_Trait>::resize(size_t new_size)
     assert(new_size < m_cur_size && new_size > 0);
 
     // Find out in which block the new end row will be.
-    size_t new_end_row = new_size - 1;
-    size_t start_row_in_block, block_index;
+    size_type new_end_row = new_size - 1;
+    size_type start_row_in_block, block_index;
     get_block_position(new_end_row, start_row_in_block, block_index);
 
     block* blk = m_blocks[block_index];
-    size_t end_row_in_block = start_row_in_block + blk->m_size - 1;
+    size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
 
     if (new_end_row < end_row_in_block)
     {
         // Shrink the size of the current block.
-        size_t new_block_size = new_end_row - start_row_in_block + 1;
+        size_type new_block_size = new_end_row - start_row_in_block + 1;
         cell_block_modifier::resize_block(blk->mp_data, new_block_size);
         blk->m_size = new_block_size;
     }
@@ -1235,7 +1232,7 @@ column<_Trait>& column<_Trait>::operator= (const column& other)
 
 template<typename _Trait>
 void column<_Trait>::set_empty_in_single_block(
-    size_t start_row, size_t end_row, size_t block_index, size_t start_row_in_block)
+    size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block)
 {
     // Range is within a single block.
     block* blk = m_blocks[block_index];
@@ -1244,8 +1241,8 @@ void column<_Trait>::set_empty_in_single_block(
         return;
 
     assert(start_row_in_block + blk->m_size >= 1);
-    size_t end_row_in_block = start_row_in_block + blk->m_size - 1;
-    size_t empty_block_size = end_row - start_row + 1;
+    size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
+    size_type empty_block_size = end_row - start_row + 1;
 
     if (start_row == start_row_in_block)
     {
@@ -1286,7 +1283,7 @@ void column<_Trait>::set_empty_in_single_block(
     assert(end_row_in_block - end_row > 0);
 
     // First, insert two new blocks at position past the current block.
-    size_t lower_block_size = end_row_in_block - end_row;
+    size_type lower_block_size = end_row_in_block - end_row;
     m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
     m_blocks[block_index+1] = new block(empty_block_size); // empty block.
     m_blocks[block_index+2] = new block(lower_block_size);

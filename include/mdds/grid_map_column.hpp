@@ -48,6 +48,8 @@ template<typename _Trait>
 class column
 {
 public:
+    typedef size_t size_type;
+
     typedef typename _Trait::cell_block_type cell_block_type;
     typedef typename _Trait::cell_category_type cell_category_type;
     typedef typename _Trait::row_key_type row_key_type;
@@ -59,18 +61,18 @@ private:
 
     struct block : boost::noncopyable
     {
-        size_t m_size;
+        size_type m_size;
         cell_block_type* mp_data;
 
         block();
-        block(size_t _size);
+        block(size_type _size);
         block(const block& other);
         ~block();
     };
 
 public:
     column();
-    column(size_t init_row_size);
+    column(size_type init_row_size);
     column(const column& other);
     ~column();
 
@@ -92,17 +94,17 @@ public:
 
     void erase(row_key_type start_row, row_key_type end_row);
 
-    void insert_empty(row_key_type start_row, row_key_type end_row);
+    void insert_empty(row_key_type row, size_type length);
 
     void clear();
 
-    size_t size() const;
+    size_type size() const;
 
-    size_t block_size() const;
+    size_type block_size() const;
 
     bool empty() const;
 
-    void resize(size_t new_size);
+    void resize(size_type new_size);
 
     void swap(column& other);
 
@@ -114,50 +116,50 @@ public:
 private:
     /**
      * Check the row value to make sure it's within specified range, and
-     * convert it to size_t for internal use.
+     * convert it to size_type for internal use.
      */
-    size_t check_row_range(row_key_type row) const;
+    size_type check_row_range(row_key_type row) const;
 
     void get_block_position(
-        size_t row, size_t& start_row, size_t& block_index, size_t start_block=0, size_t start_block_row=0) const;
+        size_type row, size_type& start_row, size_type& block_index, size_type start_block=0, size_type start_block_row=0) const;
 
     template<typename _T>
     void create_new_block_with_new_cell(cell_block_type*& data, const _T& cell);
 
     template<typename _T>
     void set_cell_to_middle_of_block(
-        size_t block_index, size_t pos_in_block, const _T& cell);
+        size_type block_index, size_type pos_in_block, const _T& cell);
 
     template<typename _T>
-    void append_cell_to_block(size_t block_index, const _T& cell);
+    void append_cell_to_block(size_type block_index, const _T& cell);
 
     template<typename _T>
     void set_cell_to_empty_block(
-        size_t block_index, size_t pos_in_block, const _T& cell);
+        size_type block_index, size_type pos_in_block, const _T& cell);
 
     template<typename _T>
     void set_cell_to_block_of_size_one(
-        size_t block_index, const _T& cell);
+        size_type block_index, const _T& cell);
 
     template<typename _T>
     void set_cell_to_top_of_data_block(
-        size_t block_index, const _T& cell);
+        size_type block_index, const _T& cell);
 
     template<typename _T>
     void set_cell_to_bottom_of_data_block(
-        size_t block_index, const _T& cell);
+        size_type block_index, const _T& cell);
 
     void set_empty_in_single_block(
-        size_t start_row, size_t end_row, size_t block_index, size_t start_row_in_block);
+        size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block);
 
-    void erase_impl(size_t start_row, size_t end_row);
+    void erase_impl(size_type start_row, size_type end_row);
 
-    void insert_empty_impl(size_t start_row, size_t end_row);
+    void insert_empty_impl(size_type row, size_type length);
 
 private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;
-    size_t m_cur_size;
+    size_type m_cur_size;
 
     static cell_type_inspector get_type;
     static cell_block_type_inspector get_block_type;
