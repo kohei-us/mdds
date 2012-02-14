@@ -156,6 +156,14 @@ private:
 
     void insert_empty_impl(size_type row, size_type length);
 
+    template<typename _T>
+    void set_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
+
+    template<typename _T>
+    void set_cells_to_single_block(
+        size_type start_row, size_type end_row, size_type block_index,
+        size_type start_row_in_block, const _T& it_begin, const _T& it_end);
+
 private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;

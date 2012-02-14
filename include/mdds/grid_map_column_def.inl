@@ -252,7 +252,8 @@ template<typename _Trait>
 template<typename _T>
 void column<_Trait>::set_cells(row_key_type row, const _T& it_begin, const _T& it_end)
 {
-    assert(!"not implemented yet.");
+    size_type _row = check_row_range(row);
+    set_cells_impl(_row, it_begin, it_end);
 }
 
 template<typename _Trait>
@@ -1145,6 +1146,54 @@ void column<_Trait>::insert_empty_impl(size_type row, size_type length)
     blk->m_size = size_blk_prev;
 
     m_cur_size += length;
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::set_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+{
+    size_type length = std::distance(it_begin, it_end);
+    size_type end_row = row + length - 1;
+    if (end_row >= m_cur_size)
+        throw std::out_of_range("Data array is too long.");
+
+    size_t block_index1, block_index2, start_row1, start_row2;
+    get_block_position(row, start_row1, block_index1);
+    get_block_position(end_row, start_row2, block_index2, block_index1, start_row1);
+
+    if (block_index1 == block_index2)
+    {
+        // The whole data array will fit in a single block.
+        set_cells_to_single_block(row, end_row, block_index1, start_row1, it_begin, it_end);
+        return;
+    }
+    assert(!"I'm working on this.");
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::set_cells_to_single_block(
+    size_type start_row, size_type end_row, size_type block_index,
+    size_type start_row_in_block, const _T& it_begin, const _T& it_end)
+{
+    block* blk = m_blocks[block_index];
+    size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
+    if (start_row == start_row_in_block)
+    {
+        if (end_row == end_row_in_block)
+        {
+            // Replace the whole block.
+            if (blk->mp_data)
+                cell_block_modifier::delete_block(blk->mp_data);
+
+            blk->mp_data = cell_block_modifier::create_new_block(get_type(*it_begin));
+            return;
+        }
+        assert(!"I'm working on this.");
+        return;
+    }
+
+    assert(!"I'm working on this.");
 }
 
 template<typename _Trait>

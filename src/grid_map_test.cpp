@@ -1930,6 +1930,20 @@ void gridmap_test_insert_empty()
     }
 }
 
+void gridmap_test_set_cells()
+{
+    stack_printer __stack_printer__("::gridmap_test_set_cells");
+    {
+        column_type db(5);
+        vector<double> vals;
+        vals.reserve(5);
+        for (size_t i = 0; i < db.size(); ++i)
+            vals.push_back(i+1);
+
+        db.set_cells(0, vals.begin(), vals.end());
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1948,6 +1962,7 @@ int main (int argc, char **argv)
         gridmap_test_resize();
         gridmap_test_erase();
         gridmap_test_insert_empty();
+        gridmap_test_set_cells();
     }
 
     if (opt.test_perf)
