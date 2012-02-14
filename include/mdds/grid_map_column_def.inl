@@ -1088,6 +1088,7 @@ template<typename _Trait>
 void column<_Trait>::insert_empty_impl(size_type row, size_type length)
 {
     assert(row < m_cur_size);
+
     size_type start_row, block_index;
     get_block_position(row, start_row, block_index);
 
@@ -1109,8 +1110,8 @@ void column<_Trait>::insert_empty_impl(size_type row, size_type length)
             block* blk_prev = m_blocks[block_index-1];
             if (!blk_prev->mp_data)
             {
-                // Previous block is empty.  Expand the size of the previous block
-                // and bail out.
+                // Previous block is empty.  Expand the size of the previous
+                // block and bail out.
                 blk_prev->m_size += length;
                 m_cur_size += length;
                 return;
@@ -1122,7 +1123,28 @@ void column<_Trait>::insert_empty_impl(size_type row, size_type length)
         m_cur_size += length;
         return;
     }
-    assert(!"I'm working on it.");
+
+    assert(blk->mp_data);
+    assert(row > start_row);
+
+    size_type size_blk_prev = row - start_row;
+    size_type size_blk_next = blk->m_size - size_blk_prev;
+
+    // Insert two new block below the current; one for the empty block being
+    // inserted, and one for the lower part of the current non-empty block.
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
+
+    m_blocks[block_index+1] = new block(length);
+    m_blocks[block_index+2] = new block(size_blk_next);
+
+    block* blk_next = m_blocks[block_index+2];
+    blk_next->mp_data = cell_block_modifier::create_new_block(get_block_type(*blk->mp_data));
+    cell_block_modifier::assign_values(blk_next->mp_data, blk->mp_data, size_blk_prev, size_blk_next);
+
+    cell_block_modifier::resize_block(blk->mp_data, size_blk_prev);
+    blk->m_size = size_blk_prev;
+
+    m_cur_size += length;
 }
 
 template<typename _Trait>
