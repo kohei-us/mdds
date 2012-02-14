@@ -1076,6 +1076,10 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
 template<typename _Trait>
 void column<_Trait>::insert_empty(row_key_type row, size_type length)
 {
+    if (!length)
+        // Nothing to insert.
+        return;
+
     size_type _row = check_row_range(row);
     insert_empty_impl(_row, length);
 }
@@ -1083,7 +1087,41 @@ void column<_Trait>::insert_empty(row_key_type row, size_type length)
 template<typename _Trait>
 void column<_Trait>::insert_empty_impl(size_type row, size_type length)
 {
+    assert(row < m_cur_size);
+    size_type start_row, block_index;
+    get_block_position(row, start_row, block_index);
 
+    block* blk = m_blocks[block_index];
+    if (!blk->mp_data)
+    {
+        // Insertion point is already empty.  Just expand its size and be done
+        // with it.
+        blk->m_size += length;
+        m_cur_size += length;
+        return;
+    }
+
+    if (start_row == row)
+    {
+        // Insertion point is at the top of an existing non-empty block.
+        if (block_index > 0)
+        {
+            block* blk_prev = m_blocks[block_index-1];
+            if (!blk_prev->mp_data)
+            {
+                // Previous block is empty.  Expand the size of the previous block
+                // and bail out.
+                blk_prev->m_size += length;
+                m_cur_size += length;
+                return;
+            }
+        }
+
+        // Insert a new empty block.
+        m_blocks.insert(m_blocks.begin()+block_index, new block(length));
+        m_cur_size += length;
+        return;
+    }
     assert(!"I'm working on it.");
 }
 

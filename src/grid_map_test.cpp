@@ -1840,8 +1840,33 @@ void gridmap_test_insert_empty()
 {
     stack_printer __stack_printer__("::gridmap_test_insert_empty");
     {
-        column_type db(1);
+        column_type db(5);
         db.insert_empty(0, 5);
+        assert(db.size() == 10);
+        assert(db.block_size() == 1);
+
+        // Insert data from row 0 to 4.
+        for (long i = 0; i < 5; ++i)
+            db.set_cell(i, static_cast<double>(i+1));
+
+        assert(db.block_size() == 2);
+        assert(db.size() == 10);
+
+        // Now, insert an empty block of size 2 at the top.
+        db.insert_empty(0, 2);
+        assert(db.block_size() == 3);
+        assert(db.size() == 12);
+
+        double test;
+        db.get_cell(2, test);
+        assert(test == 1.0);
+
+        // Insert an empty cell into an empty block.
+        db.insert_empty(1, 1);
+        assert(db.block_size() == 3);
+        assert(db.size() == 13);
+        db.get_cell(4, test);
+        assert(test == 2.0);
     }
 }
 
