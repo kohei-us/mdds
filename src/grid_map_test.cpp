@@ -236,6 +236,9 @@ struct cell_block_func
     static void set_value(base_cell_block* block, size_t pos, const T& val);
 
     template<typename T>
+    static void set_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end);
+
+    template<typename T>
     static void prepend_value(base_cell_block* block, const T& val);
 
     template<typename T>
@@ -498,6 +501,63 @@ void cell_block_func::set_value<bool>(base_cell_block* block, size_t pos, const 
 {
     boolean_cell_block& blk = *get_boolean_block(block);
     blk[pos] = val;
+}
+
+template<typename _Iter>
+void _set_values(
+    base_cell_block* block, size_t pos, const typename _Iter::value_type&,
+    const _Iter& it_begin, const _Iter& it_end)
+{
+    throw general_error("non-specialized version of _set_values called.");
+}
+
+template<typename _Iter>
+void _set_values(
+    base_cell_block* block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
+{
+    numeric_cell_block& d = *get_numeric_block(block);
+    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
+        d[pos] = *it;
+}
+
+template<typename _Iter>
+void _set_values(
+    base_cell_block* block, size_t pos, string, const _Iter& it_begin, const _Iter& it_end)
+{
+    string_cell_block& d = *get_string_block(block);
+    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
+        d[pos] = *it;
+}
+
+template<typename _Iter>
+void _set_values(
+    base_cell_block* block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
+{
+    index_cell_block& d = *get_index_block(block);
+    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
+        d[pos] = *it;
+}
+
+template<typename _Iter>
+void _set_values(
+    base_cell_block* block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
+{
+    boolean_cell_block& d = *get_boolean_block(block);
+    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
+        d[pos] = *it;
+}
+
+template<typename T>
+void cell_block_func::set_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+{
+    if (!block)
+        throw general_error("destination cell block is NULL.");
+
+    if (it_begin == it_end)
+        // Nothing to do.
+        return;
+
+    _set_values(block, pos, *it_begin, it_begin, it_end);
 }
 
 template<typename T>
@@ -1985,6 +2045,9 @@ void gridmap_test_set_cells()
     stack_printer __stack_printer__("::gridmap_test_set_cells");
     {
         column_type db(5);
+
+        // Replace the whole block.
+
         {
             vector<double> vals;
             vals.reserve(5);
@@ -2029,6 +2092,37 @@ void gridmap_test_set_cells()
             assert(test == 5.0);
             db.get_cell(4, test);
             assert(test == 9.0);
+        }
+
+        {
+            // Replace the whole block of the same type, which shouldn't
+            // delete the old data array.
+            double vals[] = { 5.1, 6.1, 7.1, 8.1, 9.1 };
+            double* p = &vals[0];
+            double* p_end = p + 5;
+            db.set_cells(0, p, p_end);
+            double test;
+            db.get_cell(0, test);
+            assert(test == 5.1);
+            db.get_cell(4, test);
+            assert(test == 9.1);
+
+            double vals2[] = { 8.2, 9.2 };
+            p = &vals2[0];
+            p_end = p + 2;
+            db.set_cells(3, p, p_end);
+            db.get_cell(3, test);
+            assert(test == 8.2);
+            db.get_cell(4, test);
+            assert(test == 9.2);
+        }
+
+        // Replace the upper part of a single block.
+        {
+            size_t vals[] = { 1, 2, 3 };
+            size_t* p = &vals[0];
+            size_t* p_end = p + 3;
+            db.set_cells(0, p, p_end);
         }
     }
 }

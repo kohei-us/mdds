@@ -1153,6 +1153,10 @@ template<typename _T>
 void column<_Trait>::set_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
 {
     size_type length = std::distance(it_begin, it_end);
+    if (!length)
+        // empty data array.  nothing to do.
+        return;
+
     size_type end_row = row + length - 1;
     if (end_row >= m_cur_size)
         throw std::out_of_range("Data array is too long.");
@@ -1176,7 +1180,23 @@ void column<_Trait>::set_cells_to_single_block(
     size_type start_row, size_type end_row, size_type block_index,
     size_type start_row_in_block, const _T& it_begin, const _T& it_end)
 {
+    assert(it_begin != it_end);
+
+    cell_category_type cat = get_type(*it_begin);
     block* blk = m_blocks[block_index];
+
+    if (blk->mp_data)
+    {
+        cell_category_type blk_cat = get_block_type(*blk->mp_data);
+        if (cat == blk_cat)
+        {
+            // simple overwrite.
+            size_type offset = start_row - start_row_in_block;
+            cell_block_modifier::set_values(blk->mp_data, offset, it_begin, it_end);
+            return;
+        }
+    }
+
     size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
     if (start_row == start_row_in_block)
     {
@@ -1191,7 +1211,48 @@ void column<_Trait>::set_cells_to_single_block(
             cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
             return;
         }
-        assert(!"I'm working on this.");
+
+        // Replace the upper part of the block.
+
+        // Shrink the current block first.
+        size_type length = end_row_in_block - end_row;
+        blk->m_size = length;
+        if (blk->mp_data)
+        {
+            // Erase the upper part of the data from the current data array.
+            cell_block_type* new_data = cell_block_modifier::create_new_block(
+                get_block_type(*blk->mp_data));
+            if (!new_data)
+                throw std::logic_error("failed to instantiate a new data array.");
+
+            cell_block_modifier::assign_values(new_data, blk->mp_data, end_row+1, length);
+            cell_block_modifier::delete_block(blk->mp_data);
+            blk->mp_data = new_data;
+        }
+
+        if (block_index > 0)
+        {
+            block* blk_prev = m_blocks[block_index-1];
+            if (blk_prev->mp_data)
+            {
+                cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+                if (blk_cat_prev == cat)
+                {
+                    // Append to the previous block.
+                    assert(!"not implemented yet.");
+                    return;
+                }
+            }
+        }
+
+        // Insert a new block before the current block, and populate it with
+        // the new data.
+        length = end_row - start_row + 1;
+        m_blocks.insert(m_blocks.begin()+block_index, new block(length));
+        blk = m_blocks[block_index];
+        blk->mp_data = cell_block_modifier::create_new_block(cat);
+        blk->m_size = length;
+        cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
         return;
     }
 
