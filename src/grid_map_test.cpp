@@ -247,6 +247,9 @@ struct cell_block_func
                               size_t begin_pos, size_t len);
 
     template<typename T>
+    static void assign_values(base_cell_block* dest, const T& it_begin, const T& it_end);
+
+    template<typename T>
     static void get_value(base_cell_block* block, size_t pos, T& val);
 
     template<typename T>
@@ -659,6 +662,53 @@ void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block
         default:
             assert(!"unhandled cell type.");
     }
+}
+
+template<typename _Iter>
+void _assign_values(base_cell_block* dest, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
+{
+    throw general_error("non-specialized version of _assign_values called.");
+}
+
+template<typename _Iter>
+void _assign_values(base_cell_block* dest, double, const _Iter& it_begin, const _Iter& it_end)
+{
+    numeric_cell_block& d = *get_numeric_block(dest);
+    d.assign(it_begin, it_end);
+}
+
+template<typename _Iter>
+void _assign_values(base_cell_block* dest, const string&, const _Iter& it_begin, const _Iter& it_end)
+{
+    string_cell_block& d = *get_string_block(dest);
+    d.assign(it_begin, it_end);
+}
+
+template<typename _Iter>
+void _assign_values(base_cell_block* dest, size_t, const _Iter& it_begin, const _Iter& it_end)
+{
+    index_cell_block& d = *get_index_block(dest);
+    d.assign(it_begin, it_end);
+}
+
+template<typename _Iter>
+void _assign_values(base_cell_block* dest, bool, const _Iter& it_begin, const _Iter& it_end)
+{
+    boolean_cell_block& d = *get_boolean_block(dest);
+    d.assign(it_begin, it_end);
+}
+
+template<typename T>
+void cell_block_func::assign_values(base_cell_block* dest, const T& it_begin, const T& it_end)
+{
+    if (!dest)
+        throw general_error("destination cell block is NULL.");
+
+    if (it_begin == it_end)
+        // Nothing to do.
+        return;
+
+    _assign_values(dest, *it_begin, it_begin, it_end);
 }
 
 template<typename T>
@@ -1935,12 +1985,51 @@ void gridmap_test_set_cells()
     stack_printer __stack_printer__("::gridmap_test_set_cells");
     {
         column_type db(5);
-        vector<double> vals;
-        vals.reserve(5);
-        for (size_t i = 0; i < db.size(); ++i)
-            vals.push_back(i+1);
+        {
+            vector<double> vals;
+            vals.reserve(5);
+            for (size_t i = 0; i < db.size(); ++i)
+                vals.push_back(i+1);
 
-        db.set_cells(0, vals.begin(), vals.end());
+            db.set_cells(0, vals.begin(), vals.end());
+
+            double test;
+            db.get_cell(0, test);
+            assert(test == 1.0);
+            db.get_cell(4, test);
+            assert(test == 5.0);
+        }
+
+        {
+            vector<string> vals;
+            vals.reserve(5);
+            for (size_t i = 0; i < db.size(); ++i)
+            {
+                ostringstream os;
+                os << (i+1);
+                vals.push_back(os.str());
+            }
+
+            db.set_cells(0, vals.begin(), vals.end());
+
+            string test;
+            db.get_cell(0, test);
+            assert(test == "1");
+            db.get_cell(4, test);
+            assert(test == "5");
+        }
+
+        {
+            double vals[] = { 5.0, 6.0, 7.0, 8.0, 9.0 };
+            double* p = &vals[0];
+            double* p_end = p + 5;
+            db.set_cells(0, p, p_end);
+            double test;
+            db.get_cell(0, test);
+            assert(test == 5.0);
+            db.get_cell(4, test);
+            assert(test == 9.0);
+        }
     }
 }
 
