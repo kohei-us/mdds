@@ -164,6 +164,11 @@ private:
         size_type start_row, size_type end_row, size_type block_index,
         size_type start_row_in_block, const _T& it_begin, const _T& it_end);
 
+    template<typename _T>
+    bool append_to_prev_block(
+        size_type block_index, cell_category_type cat, size_type length,
+        const _T& it_begin, const _T& it_end);
+
 private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;

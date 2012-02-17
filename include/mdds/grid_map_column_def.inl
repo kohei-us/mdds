@@ -1203,22 +1203,11 @@ void column<_Trait>::set_cells_to_single_block(
         if (end_row == end_row_in_block)
         {
             // Check if we could append it to the previous block.
-            if (block_index > 0)
+            if (append_to_prev_block(block_index, cat, end_row-start_row+1, it_begin, it_end))
             {
-                block* blk_prev = m_blocks[block_index-1];
-                if (blk_prev->mp_data)
-                {
-                    cell_category_type blk_cat = get_block_type(*blk_prev->mp_data);
-                    if (cat == blk_cat)
-                    {
-                        // Append to the previous data, and erase the current block.
-                        cell_block_modifier::append_values(blk_prev->mp_data, it_begin, it_end);
-                        blk_prev->m_size += end_row - start_row + 1;
-                        delete blk;
-                        m_blocks.erase(m_blocks.begin()+block_index);
-                        return;
-                    }
-                }
+                delete blk;
+                m_blocks.erase(m_blocks.begin()+block_index);
+                return;
             }
 
             // Replace the whole block.
@@ -1239,8 +1228,7 @@ void column<_Trait>::set_cells_to_single_block(
         {
             // Erase the upper part of the data from the current data array.
             mdds::unique_ptr<cell_block_type> new_data(
-                cell_block_modifier::create_new_block(
-                    get_block_type(*blk->mp_data)));
+                cell_block_modifier::create_new_block(get_block_type(*blk->mp_data)));
 
             if (!new_data)
                 throw std::logic_error("failed to instantiate a new data array.");
@@ -1252,21 +1240,8 @@ void column<_Trait>::set_cells_to_single_block(
         }
 
         length = end_row - start_row + 1;
-        if (block_index > 0)
-        {
-            block* blk_prev = m_blocks[block_index-1];
-            if (blk_prev->mp_data)
-            {
-                cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
-                if (blk_cat_prev == cat)
-                {
-                    // Append to the previous block.
-                    cell_block_modifier::append_values(blk_prev->mp_data, it_begin, it_end);
-                    blk_prev->m_size += length;
-                    return;
-                }
-            }
-        }
+        if (append_to_prev_block(block_index, cat, length, it_begin, it_end))
+            return;
 
         // Insert a new block before the current block, and populate it with
         // the new data.
@@ -1279,6 +1254,30 @@ void column<_Trait>::set_cells_to_single_block(
     }
 
     assert(!"I'm working on this.");
+}
+
+template<typename _Trait>
+template<typename _T>
+bool column<_Trait>::append_to_prev_block(
+    size_type block_index, cell_category_type cat, size_type length,
+    const _T& it_begin, const _T& it_end)
+{
+    if (block_index > 0)
+    {
+        block* blk_prev = m_blocks[block_index-1];
+        if (blk_prev->mp_data)
+        {
+            cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+            if (blk_cat_prev == cat)
+            {
+                // Append to the previous block.
+                cell_block_modifier::append_values(blk_prev->mp_data, it_begin, it_end);
+                blk_prev->m_size += length;
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 template<typename _Trait>
