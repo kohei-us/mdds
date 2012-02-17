@@ -1253,6 +1253,8 @@ void column<_Trait>::set_cells_to_single_block(
         return;
     }
 
+    assert(start_row > start_row_in_block);
+
     assert(!"I'm working on this.");
 }
 
@@ -1262,22 +1264,21 @@ bool column<_Trait>::append_to_prev_block(
     size_type block_index, cell_category_type cat, size_type length,
     const _T& it_begin, const _T& it_end)
 {
-    if (block_index > 0)
-    {
-        block* blk_prev = m_blocks[block_index-1];
-        if (blk_prev->mp_data)
-        {
-            cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
-            if (blk_cat_prev == cat)
-            {
-                // Append to the previous block.
-                cell_block_modifier::append_values(blk_prev->mp_data, it_begin, it_end);
-                blk_prev->m_size += length;
-                return true;
-            }
-        }
-    }
-    return false;
+    if (block_index == 0)
+        return false;
+
+    block* blk_prev = m_blocks[block_index-1];
+    if (!blk_prev->mp_data)
+        return false;
+
+    cell_category_type blk_cat_prev = get_block_type(*blk_prev->mp_data);
+    if (blk_cat_prev != cat)
+        return false;
+
+    // Append to the previous block.
+    cell_block_modifier::append_values(blk_prev->mp_data, it_begin, it_end);
+    blk_prev->m_size += length;
+    return true;
 }
 
 template<typename _Trait>
