@@ -1206,7 +1206,6 @@ void column<_Trait>::set_cells_to_single_block(
             if (blk->mp_data)
                 cell_block_modifier::delete_block(blk->mp_data);
 
-            cell_category_type cat = get_type(*it_begin);
             blk->mp_data = cell_block_modifier::create_new_block(cat);
             cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
             return;
