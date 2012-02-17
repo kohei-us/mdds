@@ -1243,11 +1243,13 @@ void column<_Trait>::set_cells_to_single_block(
             if (!new_data)
                 throw std::logic_error("failed to instantiate a new data array.");
 
-            cell_block_modifier::assign_values(new_data, blk->mp_data, end_row+1, length);
+            size_type pos = end_row - start_row_in_block + 1;
+            cell_block_modifier::assign_values(new_data, blk->mp_data, pos, length);
             cell_block_modifier::delete_block(blk->mp_data);
             blk->mp_data = new_data;
         }
 
+        length = end_row - start_row + 1;
         if (block_index > 0)
         {
             block* blk_prev = m_blocks[block_index-1];
@@ -1257,7 +1259,8 @@ void column<_Trait>::set_cells_to_single_block(
                 if (blk_cat_prev == cat)
                 {
                     // Append to the previous block.
-                    assert(!"not implemented yet.");
+                    cell_block_modifier::append_values(blk_prev->mp_data, it_begin, it_end);
+                    blk_prev->m_size += length;
                     return;
                 }
             }
@@ -1265,7 +1268,6 @@ void column<_Trait>::set_cells_to_single_block(
 
         // Insert a new block before the current block, and populate it with
         // the new data.
-        length = end_row - start_row + 1;
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
         blk->mp_data = cell_block_modifier::create_new_block(cat);

@@ -2185,7 +2185,7 @@ void gridmap_test_set_cells()
         }
 
         {
-            // Merge with the previos block.
+            // Merge with the previos block and erase the whole block.
             size_t vals[] = { 4, 5 };
             size_t* p = &vals[0];
             size_t* p_end = p + 2;
@@ -2197,6 +2197,34 @@ void gridmap_test_set_cells()
             assert(test == 3);
             db.get_cell(3, test);
             assert(test == 4);
+        }
+
+        {
+            // Merge with the previous block while keeping the lower part of
+            // the block.
+            size_t prev_value;
+            db.get_cell(2, prev_value);
+
+            double val = 2.3;
+            db.set_cell(0, val);
+            assert(db.block_size() == 2);
+            val = 4.5;
+            double* p = &val;
+            double* p_end = p + 1;
+            db.set_cells(1, p, p_end);
+            assert(db.block_size() == 2);
+            assert(db.size() == 5);
+            {
+                double test;
+                db.get_cell(0, test);
+                assert(test == 2.3);
+                db.get_cell(1, test);
+                assert(test == 4.5);
+            }
+
+            size_t test;
+            db.get_cell(2, test);
+            assert(test == prev_value);
         }
     }
 }
