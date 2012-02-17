@@ -1238,15 +1238,17 @@ void column<_Trait>::set_cells_to_single_block(
         if (blk->mp_data)
         {
             // Erase the upper part of the data from the current data array.
-            cell_block_type* new_data = cell_block_modifier::create_new_block(
-                get_block_type(*blk->mp_data));
+            mdds::unique_ptr<cell_block_type> new_data(
+                cell_block_modifier::create_new_block(
+                    get_block_type(*blk->mp_data)));
+
             if (!new_data)
                 throw std::logic_error("failed to instantiate a new data array.");
 
             size_type pos = end_row - start_row_in_block + 1;
-            cell_block_modifier::assign_values(new_data, blk->mp_data, pos, length);
+            cell_block_modifier::assign_values(new_data.get(), blk->mp_data, pos, length);
             cell_block_modifier::delete_block(blk->mp_data);
-            blk->mp_data = new_data;
+            blk->mp_data = new_data.release();
         }
 
         length = end_row - start_row + 1;
