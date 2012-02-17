@@ -246,6 +246,9 @@ struct cell_block_func
 
     static void append_values(base_cell_block* dest, const base_cell_block* src);
 
+    template<typename T>
+    static void append_values(base_cell_block* block, const T& it_begin, const T& it_end);
+
     static void assign_values(base_cell_block* dest, const base_cell_block* src,
                               size_t begin_pos, size_t len);
 
@@ -666,6 +669,51 @@ void cell_block_func::append_values(base_cell_block* dest, const base_cell_block
         default:
             assert(!"unhandled cell type.");
     }
+}
+
+template<typename _Iter>
+void _append_values(base_cell_block* block, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
+{
+    throw general_error("non-specialized version of _append_values called.");
+}
+
+template<typename _Iter>
+void _append_values(base_cell_block* block, double, const _Iter& it_begin, const _Iter& it_end)
+{
+    numeric_cell_block& d = *get_numeric_block(block);
+    numeric_cell_block::iterator it = d.end();
+    d.insert(it, it_begin, it_end);
+}
+
+template<typename _Iter>
+void _append_values(base_cell_block* block, string, const _Iter& it_begin, const _Iter& it_end)
+{
+    string_cell_block& d = *get_string_block(block);
+    string_cell_block::iterator it = d.end();
+    d.insert(it, it_begin, it_end);
+}
+
+template<typename _Iter>
+void _append_values(base_cell_block* block, size_t, const _Iter& it_begin, const _Iter& it_end)
+{
+    index_cell_block& d = *get_index_block(block);
+    index_cell_block::iterator it = d.end();
+    d.insert(it, it_begin, it_end);
+}
+
+template<typename _Iter>
+void _append_values(base_cell_block* block, bool, const _Iter& it_begin, const _Iter& it_end)
+{
+    boolean_cell_block& d = *get_boolean_block(block);
+    boolean_cell_block::iterator it = d.end();
+    d.insert(it, it_begin, it_end);
+}
+
+template<typename T>
+void cell_block_func::append_values(base_cell_block* block, const T& it_begin, const T& it_end)
+{
+    assert(it_begin != it_end);
+    _append_values(block, *it_begin, it_begin, it_end);
 }
 
 void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
@@ -2117,12 +2165,38 @@ void gridmap_test_set_cells()
             assert(test == 9.2);
         }
 
-        // Replace the upper part of a single block.
+
         {
+            // Replace the upper part of a single block.
             size_t vals[] = { 1, 2, 3 };
             size_t* p = &vals[0];
             size_t* p_end = p + 3;
             db.set_cells(0, p, p_end);
+            assert(db.block_size() == 2);
+            assert(db.size() == 5);
+            size_t test;
+            db.get_cell(0, test);
+            assert(test == 1);
+            db.get_cell(2, test);
+            assert(test == 3);
+            double test2;
+            db.get_cell(3, test2);
+            assert(test2 == 8.2);
+        }
+
+        {
+            // Merge with the previos block.
+            size_t vals[] = { 4, 5 };
+            size_t* p = &vals[0];
+            size_t* p_end = p + 2;
+            db.set_cells(3, p, p_end);
+            assert(db.block_size() == 1);
+            assert(db.size() == 5);
+            size_t test;
+            db.get_cell(2, test);
+            assert(test == 3);
+            db.get_cell(3, test);
+            assert(test == 4);
         }
     }
 }

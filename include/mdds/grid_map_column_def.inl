@@ -1202,6 +1202,25 @@ void column<_Trait>::set_cells_to_single_block(
     {
         if (end_row == end_row_in_block)
         {
+            // Check if we could append it to the previous block.
+            if (block_index > 0)
+            {
+                block* blk_prev = m_blocks[block_index-1];
+                if (blk_prev->mp_data)
+                {
+                    cell_category_type blk_cat = get_block_type(*blk_prev->mp_data);
+                    if (cat == blk_cat)
+                    {
+                        // Append to the previous data, and erase the current block.
+                        cell_block_modifier::append_values(blk_prev->mp_data, it_begin, it_end);
+                        blk_prev->m_size += end_row - start_row + 1;
+                        delete blk;
+                        m_blocks.erase(m_blocks.begin()+block_index);
+                        return;
+                    }
+                }
+            }
+
             // Replace the whole block.
             if (blk->mp_data)
                 cell_block_modifier::delete_block(blk->mp_data);
