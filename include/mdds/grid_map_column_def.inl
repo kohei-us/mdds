@@ -1257,21 +1257,33 @@ void column<_Trait>::set_cells_to_single_block(
     assert(start_row > start_row_in_block);
     if (end_row == end_row_in_block)
     {
-        if (block_index < m_blocks.size() - 1)
-        {
-            // Check the next block.
-            assert(!"not implemented yet.");
-            return;
-        }
-
-        // Last block.
-        assert(block_index == m_blocks.size() - 1);
-
         // Shrink the current block and insert a new block for the new data series.
         size_type new_size = start_row - start_row_in_block;
         blk->m_size = new_size;
         if (blk->mp_data)
             cell_block_modifier::resize_block(blk->mp_data, new_size);
+
+        if (block_index < m_blocks.size() - 1)
+        {
+            // Check the next block.
+            block* blk_next = m_blocks[block_index+1];
+            if (blk_next->mp_data)
+            {
+                cell_category_type blk_cat_next = get_block_type(*blk_next->mp_data);
+                if (blk_cat_next == cat)
+                {
+                    // Prepend it to the next block.
+                    cell_block_modifier::prepend_values(blk_next->mp_data, it_begin, it_end);
+                    blk_next->m_size += end_row - start_row + 1;
+                    return;
+                }
+            }
+            assert(!"I'm working on this.");
+            return;
+        }
+
+        // Last block.
+        assert(block_index == m_blocks.size() - 1);
 
         new_size = end_row - start_row + 1;
         m_blocks.push_back(new block(new_size));

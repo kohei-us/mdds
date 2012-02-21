@@ -242,6 +242,9 @@ struct cell_block_func
     static void prepend_value(base_cell_block* block, const T& val);
 
     template<typename T>
+    static void prepend_values(base_cell_block* block, const T& it_begin, const T& it_end);
+
+    template<typename T>
     static void append_value(base_cell_block* block, const T& val);
 
     static void append_values(base_cell_block* dest, const base_cell_block* src);
@@ -595,6 +598,41 @@ void cell_block_func::prepend_value<bool>(base_cell_block* block, const bool& va
 {
     boolean_cell_block& blk = *get_boolean_block(block);
     blk.insert(blk.begin(), val);
+}
+
+template<typename _Iter>
+void _prepend_values(base_cell_block* block, double, const _Iter& it_begin, const _Iter& it_end)
+{
+    numeric_cell_block& d = *get_numeric_block(block);
+    d.insert(d.begin(), it_begin, it_end);
+}
+
+template<typename _Iter>
+void _prepend_values(base_cell_block* block, const string&, const _Iter& it_begin, const _Iter& it_end)
+{
+    string_cell_block& d = *get_string_block(block);
+    d.insert(d.begin(), it_begin, it_end);
+}
+
+template<typename _Iter>
+void _prepend_values(base_cell_block* block, size_t, const _Iter& it_begin, const _Iter& it_end)
+{
+    index_cell_block& d = *get_index_block(block);
+    d.insert(d.begin(), it_begin, it_end);
+}
+
+template<typename _Iter>
+void _prepend_values(base_cell_block* block, bool, const _Iter& it_begin, const _Iter& it_end)
+{
+    boolean_cell_block& d = *get_boolean_block(block);
+    d.insert(d.begin(), it_begin, it_end);
+}
+
+template<typename T>
+void cell_block_func::prepend_values(base_cell_block* block, const T& it_begin, const T& it_end)
+{
+    assert(it_begin != it_end);
+    _prepend_values(block, *it_begin, it_begin, it_end);
 }
 
 template<typename T>
@@ -2253,6 +2291,11 @@ void gridmap_test_set_cells()
             assert(test2 == 10);
             db.get_cell(4, test2);
             assert(test2 == 11);
+
+            // Insertion into a single block but this time it needs to be
+            // merged with the subsequent block.
+            db.set_cells(1, p, p_end);
+
         }
     }
 }
