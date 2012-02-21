@@ -2242,6 +2242,9 @@ void gridmap_test_set_cells()
             size_t* p_end = p + 2;
             db.set_cells(3, p, p_end);
 
+            assert(db.block_size() == 2);
+            assert(db.size() == 5);
+
             double test;
             db.get_cell(2, test);
             assert(test == 3.0);
