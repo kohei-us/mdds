@@ -1181,6 +1181,7 @@ void column<_Trait>::set_cells_to_single_block(
     size_type start_row_in_block, const _T& it_begin, const _T& it_end)
 {
     assert(it_begin != it_end);
+    assert(!m_blocks.empty());
 
     cell_category_type cat = get_type(*it_begin);
     block* blk = m_blocks[block_index];
@@ -1254,7 +1255,33 @@ void column<_Trait>::set_cells_to_single_block(
     }
 
     assert(start_row > start_row_in_block);
+    if (end_row == end_row_in_block)
+    {
+        if (block_index < m_blocks.size() - 1)
+        {
+            // Check the next block.
+            assert(!"not implemented yet.");
+            return;
+        }
 
+        // Last block.
+        assert(block_index == m_blocks.size() - 1);
+
+        // Shrink the current block and insert a new block for the new data series.
+        size_type new_size = start_row - start_row_in_block;
+        blk->m_size = new_size;
+        if (blk->mp_data)
+            cell_block_modifier::resize_block(blk->mp_data, new_size);
+
+        new_size = end_row - start_row + 1;
+        m_blocks.push_back(new block(new_size));
+        blk = m_blocks[block_index+1];
+        blk->mp_data = cell_block_modifier::create_new_block(cat);
+        cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
+        return;
+    }
+
+    assert(end_row < end_row_in_block);
     assert(!"I'm working on this.");
 }
 
