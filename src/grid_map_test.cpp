@@ -2296,6 +2296,67 @@ void gridmap_test_set_cells()
             // merged with the subsequent block.
             db.set_cells(1, p, p_end);
 
+            assert(db.block_size() == 2);
+            assert(db.size() == 5);
+
+            db.get_cell(1, test2);
+            assert(test2 == 10);
+            db.get_cell(2, test2);
+            assert(test2 == 11);
+            db.get_cell(3, test2);
+            assert(test2 == 10);
+            db.get_cell(4, test2);
+            assert(test2 == 11);
+        }
+    }
+
+    {
+        column_type db(6);
+        double vals_d[] = { 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
+        size_t vals_i[] = { 12, 13, 14, 15 };
+        string vals_s[] = { "a", "b" };
+
+        {
+            double* p = &vals_d[0];
+            double* p_end = p + 6;
+            db.set_cells(0, p, p_end);
+            assert(db.block_size() == 1);
+            assert(db.size() == 6);
+            double test;
+            db.get_cell(0, test);
+            assert(test == 1.0);
+            db.get_cell(5, test);
+            assert(test == 1.5);
+        }
+
+        {
+            size_t* p = &vals_i[0];
+            size_t* p_end = p + 4;
+            db.set_cells(0, p, p_end);
+            assert(db.block_size() == 2);
+            size_t test;
+            db.get_cell(0, test);
+            assert(test == 12);
+            db.get_cell(3, test);
+            assert(test == 15);
+        }
+
+        {
+            string* p = &vals_s[0];
+            string* p_end = p + 2;
+            db.set_cells(2, p, p_end);
+            assert(db.block_size() == 3);
+            string test;
+            db.get_cell(2, test);
+            assert(test == "a");
+            db.get_cell(3, test);
+            assert(test == "b");
+            double test_d;
+            db.get_cell(4, test_d);
+            assert(test_d == 1.4);
+            size_t test_i;
+            db.get_cell(1, test_i);
+            assert(test_i == 13);
         }
     }
 }

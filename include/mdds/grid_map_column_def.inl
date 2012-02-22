@@ -1263,6 +1263,8 @@ void column<_Trait>::set_cells_to_single_block(
         if (blk->mp_data)
             cell_block_modifier::resize_block(blk->mp_data, new_size);
 
+        new_size = end_row - start_row + 1; // size of the data array being inserted.
+
         if (block_index < m_blocks.size() - 1)
         {
             // Check the next block.
@@ -1278,16 +1280,20 @@ void column<_Trait>::set_cells_to_single_block(
                     return;
                 }
             }
-            assert(!"I'm working on this.");
+
+            // Next block has a different data type. Do the normal insertion.
+            m_blocks.insert(m_blocks.begin()+block_index+1, new block(new_size));
+            blk = m_blocks[block_index+1];
+            blk->mp_data = cell_block_modifier::create_new_block(cat);
+            cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
             return;
         }
 
         // Last block.
         assert(block_index == m_blocks.size() - 1);
 
-        new_size = end_row - start_row + 1;
         m_blocks.push_back(new block(new_size));
-        blk = m_blocks[block_index+1];
+        blk = m_blocks.back();
         blk->mp_data = cell_block_modifier::create_new_block(cat);
         cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
         return;
