@@ -1299,7 +1299,10 @@ void column<_Trait>::set_cells_to_single_block(
         return;
     }
 
-    assert(end_row < end_row_in_block);
+    // new data array will be in the middle of the current block.
+    assert(start_row_in_block < start_row && end_row < end_row_in_block);
+
+
     assert(!"I'm working on this.");
 }
 
