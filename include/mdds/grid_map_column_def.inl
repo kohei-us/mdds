@@ -1171,7 +1171,9 @@ void column<_Trait>::set_cells_impl(size_type row, const _T& it_begin, const _T&
         set_cells_to_single_block(row, end_row, block_index1, start_row1, it_begin, it_end);
         return;
     }
-    assert(!"I'm working on this.");
+
+    set_cells_to_multi_blocks(
+        row, end_row, block_index1, start_row1, block_index2, start_row2, it_begin, it_end);
 }
 
 template<typename _Trait>
@@ -1327,6 +1329,17 @@ void column<_Trait>::set_cells_to_single_block(
         cell_block_modifier::assign_values(
             blk_new->mp_data, blk->mp_data, end_row+1, new_size);
     }
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::set_cells_to_multi_blocks(
+    size_type start_row, size_type end_row,
+    size_type block_index1, size_type start_row_in_block1,
+    size_type block_index2, size_type start_row_in_block2,
+    const _T& it_begin, const _T& it_end)
+{
+    assert(!"set_cells_to_multi_blocks: I'm working on this.");
 }
 
 template<typename _Trait>

@@ -2386,6 +2386,18 @@ void gridmap_test_set_cells()
             assert(test_d == 2.3);
         }
     }
+
+    {
+        column_type db(2);
+        db.set_cell(0, static_cast<double>(1.1));
+        db.set_cell(1, string("foo"));
+        assert(db.block_size() == 2);
+
+        double vals[] = { 2.1, 2.2 };
+        double* p = &vals[0];
+        double* p_end = p + 2;
+        db.set_cells(0, p, p_end);
+    }
 }
 
 }
