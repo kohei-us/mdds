@@ -891,90 +891,8 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
         return;
     }
 
-    assert(block_pos1 < block_pos2);
-
-    {
-        // Empty the lower part of the first block.
-        block* blk = m_blocks[block_pos1];
-        if (blk->mp_data)
-        {
-            if (start_row_in_block1 == _start_row)
-            {
-                // Empty the whole block.
-                cell_block_modifier::delete_block(blk->mp_data);
-                blk->mp_data = NULL;
-            }
-            else
-            {
-                // Empty the lower part.
-                size_type new_size = _start_row - start_row_in_block1;
-                cell_block_modifier::resize_block(blk->mp_data, new_size);
-                blk->m_size = new_size;
-            }
-        }
-        else
-        {
-            // First block is already empty.  Adjust the start row of the new
-            // empty range.
-            _start_row = start_row_in_block1;
-        }
-    }
-
-    {
-        // Empty the upper part of the last block.
-        block* blk = m_blocks[block_pos2];
-        size_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
-        if (blk->mp_data)
-        {
-            if (last_row_in_block == _end_row)
-            {
-                // Delete the whole block.
-                delete blk;
-                m_blocks.erase(m_blocks.begin()+block_pos2);
-            }
-            else
-            {
-                // Empty the upper part.
-                size_type size_to_erase = _end_row - start_row_in_block2 + 1;
-                cell_block_modifier::erase(blk->mp_data, 0, size_to_erase);
-                blk->m_size -= size_to_erase;
-            }
-        }
-        else
-        {
-            // Last block is empty.  Delete this block and adjust the end row
-            // of the new empty range.
-            delete blk;
-            m_blocks.erase(m_blocks.begin()+block_pos2);
-            _end_row = last_row_in_block;
-        }
-    }
-
-    if (block_pos2 - block_pos1 > 1)
-    {
-        // Remove all blocks in-between, from block_pos1+1 to block_pos2-1.
-
-        for (size_type i = block_pos1 + 1; i < block_pos2; ++i)
-            delete m_blocks[i];
-
-        typename blocks_type::iterator it = m_blocks.begin() + block_pos1 + 1;
-        typename blocks_type::iterator it_end = m_blocks.begin() + block_pos2;
-        m_blocks.erase(it, it_end);
-    }
-
-    // Insert a single empty block.
-    block* blk = m_blocks[block_pos1];
-    size_type empty_block_size = _end_row - _start_row + 1;
-    if (blk->mp_data)
-    {
-        // Insert a new empty block after the first block.
-        m_blocks.insert(m_blocks.begin()+block_pos1+1, new block(empty_block_size));
-    }
-    else
-    {
-        // Current block is already empty. Just extend its size.
-        blk->m_size = empty_block_size;
-    }
+    set_empty_in_multi_blocks(
+        _start_row, _end_row, block_pos1, start_row_in_block1, block_pos2, start_row_in_block2);
 }
 
 template<typename _Trait>
@@ -1578,6 +1496,98 @@ void column<_Trait>::set_empty_in_single_block(
     cell_block_modifier::erase(
         blk->mp_data, start_row-start_row_in_block, end_row_in_block-start_row+1);
     blk->m_size = start_row - start_row_in_block;
+}
+
+template<typename _Trait>
+void column<_Trait>::set_empty_in_multi_blocks(
+    size_type start_row, size_type end_row,
+    size_type block_index1, size_type start_row_in_block1,
+    size_type block_index2, size_type start_row_in_block2)
+{
+    assert(block_index1 < block_index2);
+
+    {
+        // Empty the lower part of the first block.
+        block* blk = m_blocks[block_index1];
+        if (blk->mp_data)
+        {
+            if (start_row_in_block1 == start_row)
+            {
+                // Empty the whole block.
+                cell_block_modifier::delete_block(blk->mp_data);
+                blk->mp_data = NULL;
+            }
+            else
+            {
+                // Empty the lower part.
+                size_type new_size = start_row - start_row_in_block1;
+                cell_block_modifier::resize_block(blk->mp_data, new_size);
+                blk->m_size = new_size;
+            }
+        }
+        else
+        {
+            // First block is already empty.  Adjust the start row of the new
+            // empty range.
+            start_row = start_row_in_block1;
+        }
+    }
+
+    {
+        // Empty the upper part of the last block.
+        block* blk = m_blocks[block_index2];
+        size_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
+        if (blk->mp_data)
+        {
+            if (last_row_in_block == end_row)
+            {
+                // Delete the whole block.
+                delete blk;
+                m_blocks.erase(m_blocks.begin()+block_index2);
+            }
+            else
+            {
+                // Empty the upper part.
+                size_type size_to_erase = end_row - start_row_in_block2 + 1;
+                cell_block_modifier::erase(blk->mp_data, 0, size_to_erase);
+                blk->m_size -= size_to_erase;
+            }
+        }
+        else
+        {
+            // Last block is empty.  Delete this block and adjust the end row
+            // of the new empty range.
+            delete blk;
+            m_blocks.erase(m_blocks.begin()+block_index2);
+            end_row = last_row_in_block;
+        }
+    }
+
+    if (block_index2 - block_index1 > 1)
+    {
+        // Remove all blocks in-between, from block_index1+1 to block_index2-1.
+
+        for (size_type i = block_index1 + 1; i < block_index2; ++i)
+            delete m_blocks[i];
+
+        typename blocks_type::iterator it = m_blocks.begin() + block_index1 + 1;
+        typename blocks_type::iterator it_end = m_blocks.begin() + block_index2;
+        m_blocks.erase(it, it_end);
+    }
+
+    // Insert a single empty block.
+    block* blk = m_blocks[block_index1];
+    size_type empty_block_size = end_row - start_row + 1;
+    if (blk->mp_data)
+    {
+        // Insert a new empty block after the first block.
+        m_blocks.insert(m_blocks.begin()+block_index1+1, new block(empty_block_size));
+    }
+    else
+    {
+        // Current block is already empty. Just extend its size.
+        blk->m_size = empty_block_size;
+    }
 }
 
 }}

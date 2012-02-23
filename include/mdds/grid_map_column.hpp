@@ -152,6 +152,12 @@ private:
     void set_empty_in_single_block(
         size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block);
 
+    void set_empty_in_multi_blocks(
+        size_type start_row, size_type end_row,
+        size_type block_index1, size_type start_row_in_block1,
+        size_type block_index2, size_type start_row_in_block2);
+
+
     void erase_impl(size_type start_row, size_type end_row);
 
     void insert_empty_impl(size_type row, size_type length);
