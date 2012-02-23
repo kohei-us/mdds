@@ -1302,8 +1302,31 @@ void column<_Trait>::set_cells_to_single_block(
     // new data array will be in the middle of the current block.
     assert(start_row_in_block < start_row && end_row < end_row_in_block);
 
+    // Insert two new blocks below the current one.
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
 
-    assert(!"I'm working on this.");
+    blk->m_size = start_row - start_row_in_block;
+
+    // first new block is for the data array being inserted.
+    size_type new_size = end_row - start_row + 1;
+    m_blocks[block_index+1] = new block(new_size);
+    block* blk_new = m_blocks[block_index+1];
+    blk_new->mp_data = cell_block_modifier::create_new_block(cat);
+    cell_block_modifier::assign_values(blk_new->mp_data, it_begin, it_end);
+
+    // second new block is to transfer the lower part of the current block.
+    new_size = end_row_in_block - end_row;
+    m_blocks[block_index+2] = new block(new_size);
+    if (blk->mp_data)
+    {
+        // current block is not empty. Transfer the lower part of the data.
+        cell_category_type blk_cat = get_block_type(*blk->mp_data);
+
+        blk_new = m_blocks[block_index+2];
+        blk_new->mp_data = cell_block_modifier::create_new_block(blk_cat);
+        cell_block_modifier::assign_values(
+            blk_new->mp_data, blk->mp_data, end_row+1, new_size);
+    }
 }
 
 template<typename _Trait>
