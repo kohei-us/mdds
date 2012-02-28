@@ -2434,6 +2434,28 @@ void gridmap_test_set_cells()
         db.get_cell(2, test_s);
         assert(test_s == "baa");
     }
+
+    {
+        column_type db(3);
+        db.set_cell(0, static_cast<double>(3.1));
+        db.set_cell(1, static_cast<double>(3.2));
+        db.set_cell(2, string("foo"));
+        assert(db.block_size() == 2);
+        assert(db.size() == 3);
+
+        double vals[] = { 2.1, 2.2 };
+        double* p = &vals[0];
+        double* p_end = p + 2;
+        db.set_cells(1, p, p_end);
+        assert(db.block_size() == 1);
+        double test;
+        db.get_cell(0, test);
+        assert(test == 3.1);
+        db.get_cell(1, test);
+        assert(test == 2.1);
+        db.get_cell(2, test);
+        assert(test == 2.2);
+    }
 }
 
 }
