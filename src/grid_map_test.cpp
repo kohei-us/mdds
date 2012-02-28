@@ -2388,6 +2388,8 @@ void gridmap_test_set_cells()
     }
 
     {
+        // Set cells over multiple blocks. Very simple case.
+
         column_type db(2);
         db.set_cell(0, static_cast<double>(1.1));
         db.set_cell(1, string("foo"));
@@ -2397,6 +2399,40 @@ void gridmap_test_set_cells()
         double* p = &vals[0];
         double* p_end = p + 2;
         db.set_cells(0, p, p_end);
+        assert(db.block_size() == 1);
+        assert(db.size() == 2);
+
+        double test;
+        db.get_cell(0, test);
+        assert(test == 2.1);
+        db.get_cell(1, test);
+        assert(test == 2.2);
+    }
+
+    {
+        // Same as above, except that the last block is only partially replaced.
+
+        column_type db(3);
+        db.set_cell(0, static_cast<double>(1.1));
+        db.set_cell(1, string("foo"));
+        db.set_cell(2, string("baa"));
+
+        double vals[] = { 2.1, 2.2 };
+        double* p = &vals[0];
+        double* p_end = p + 2;
+        db.set_cells(0, p, p_end);
+        assert(db.block_size() == 2);
+        assert(db.size() == 3);
+
+        double test_val;
+        db.get_cell(0, test_val);
+        assert(test_val == 2.1);
+        db.get_cell(1, test_val);
+        assert(test_val == 2.2);
+
+        string test_s;
+        db.get_cell(2, test_s);
+        assert(test_s == "baa");
     }
 }
 

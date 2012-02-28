@@ -1257,6 +1257,47 @@ void column<_Trait>::set_cells_to_multi_blocks(
     size_type block_index2, size_type start_row_in_block2,
     const _T& it_begin, const _T& it_end)
 {
+    assert(block_index1 < block_index2);
+    assert(it_begin != it_end);
+    assert(!m_blocks.empty());
+
+    cell_category_type cat = get_type(*it_begin);
+    block* blk1 = m_blocks[block_index1];
+    block* blk2 = m_blocks[block_index2];
+    size_type length = std::distance(it_begin, it_end);
+
+    if (blk1->mp_data)
+    {
+        cell_category_type blk_cat1 = get_block_type(*blk1->mp_data);
+        if (blk_cat1 == cat)
+        {
+            // Extend the first block to store the new data set.
+
+            // Shrink it first to remove the old values, then append new values.
+            size_type offset = start_row - start_row_in_block1;
+            cell_block_modifier::resize_block(blk1->mp_data, offset);
+            cell_block_modifier::append_values(blk1->mp_data, it_begin, it_end);
+            blk1->m_size = offset + length;
+
+            typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_index1 + 1;
+            typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
+            if (end_row == start_row_in_block2 + blk2->m_size - 1)
+                // Erase the last block too.
+                ++it_erase_end;
+            else
+            {
+                // Erase the upper part of the last block.
+                size_type size_to_erase = end_row - start_row_in_block2 + 1;
+                if (blk2->mp_data)
+                    cell_block_modifier::erase(blk2->mp_data, 0, size_to_erase);
+                blk2->m_size -= size_to_erase;
+            }
+
+            std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
+            m_blocks.erase(it_erase_begin, it_erase_end);
+            return;
+        }
+    }
     assert(!"set_cells_to_multi_blocks: I'm working on this.");
 }
 
