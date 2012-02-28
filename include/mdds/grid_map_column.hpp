@@ -88,6 +88,9 @@ public:
     template<typename _T>
     void get_cell(row_key_type row, _T& cell) const;
 
+    template<typename _T>
+    _T get_cell(row_key_type row) const;
+
     bool is_empty(row_key_type row) const;
 
     void set_empty(row_key_type start_row, row_key_type end_row);

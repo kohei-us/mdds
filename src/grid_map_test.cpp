@@ -252,6 +252,9 @@ struct cell_block_func
     template<typename T>
     static void append_values(base_cell_block* block, const T& it_begin, const T& it_end);
 
+    static void append_values(base_cell_block* dest, const base_cell_block* src,
+                              size_t begin_pos, size_t len);
+
     static void assign_values(base_cell_block* dest, const base_cell_block* src,
                               size_t begin_pos, size_t len);
 
@@ -752,6 +755,66 @@ void cell_block_func::append_values(base_cell_block* block, const T& it_begin, c
 {
     assert(it_begin != it_end);
     _append_values(block, *it_begin, it_begin, it_end);
+}
+
+void cell_block_func::append_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
+{
+    if (!dest)
+        throw general_error("destination cell block is NULL.");
+
+    switch (dest->type)
+    {
+        case celltype_numeric:
+        {
+            numeric_cell_block& d = *get_numeric_block(dest);
+            const numeric_cell_block& s = *get_numeric_block(src);
+            numeric_cell_block::const_iterator it = s.begin();
+            std::advance(it, begin_pos);
+            numeric_cell_block::const_iterator it_end = it;
+            std::advance(it_end, len);
+            d.reserve(d.size() + len);
+            std::copy(it, it_end, std::back_inserter(d));
+        }
+        break;
+        case celltype_string:
+        {
+            string_cell_block& d = *get_string_block(dest);
+            const string_cell_block& s = *get_string_block(src);
+            string_cell_block::const_iterator it = s.begin();
+            std::advance(it, begin_pos);
+            string_cell_block::const_iterator it_end = it;
+            std::advance(it_end, len);
+            d.reserve(d.size() + len);
+            std::copy(it, it_end, std::back_inserter(d));
+        }
+        break;
+        case celltype_index:
+        {
+            index_cell_block& d = *get_index_block(dest);
+            const index_cell_block& s = *get_index_block(src);
+            index_cell_block::const_iterator it = s.begin();
+            std::advance(it, begin_pos);
+            index_cell_block::const_iterator it_end = it;
+            std::advance(it_end, len);
+            d.reserve(d.size() + len);
+            std::copy(it, it_end, std::back_inserter(d));
+        }
+        break;
+        case celltype_boolean:
+        {
+            boolean_cell_block& d = *get_boolean_block(dest);
+            const boolean_cell_block& s = *get_boolean_block(src);
+            boolean_cell_block::const_iterator it = s.begin();
+            std::advance(it, begin_pos);
+            boolean_cell_block::const_iterator it_end = it;
+            std::advance(it_end, len);
+            d.reserve(d.size() + len);
+            std::copy(it, it_end, std::back_inserter(d));
+        }
+        break;
+        default:
+            assert(!"unhandled cell type.");
+    }
 }
 
 void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
@@ -2455,6 +2518,28 @@ void gridmap_test_set_cells()
         assert(test == 2.1);
         db.get_cell(2, test);
         assert(test == 2.2);
+    }
+
+    {
+        column_type db(5);
+        db.set_cell(0, 1.1);
+        db.set_cell(1, 1.2);
+        db.set_cell(2, string("foo"));
+        db.set_cell(3, 1.3);
+        db.set_cell(4, 1.4);
+        assert(db.block_size() == 3);
+
+        double vals[] = { 2.1, 2.2, 2.3 };
+        double* p = &vals[0];
+        double* p_end = p + 3;
+        db.set_cells(1, p, p_end);
+        assert(db.block_size() == 1);
+        assert(db.size() == 5);
+        assert(db.get_cell<double>(0) == 1.1);
+        assert(db.get_cell<double>(1) == 2.1);
+        assert(db.get_cell<double>(2) == 2.2);
+        assert(db.get_cell<double>(3) == 2.3);
+        assert(db.get_cell<double>(4) == 1.4);
     }
 }
 

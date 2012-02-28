@@ -860,6 +860,15 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 }
 
 template<typename _Trait>
+template<typename _T>
+_T column<_Trait>::get_cell(row_key_type row) const
+{
+    _T cell;
+    get_cell(row, cell);
+    return cell;
+}
+
+template<typename _Trait>
 bool column<_Trait>::is_empty(row_key_type row) const
 {
     size_type _row = check_row_range(row);
@@ -1281,15 +1290,37 @@ void column<_Trait>::set_cells_to_multi_blocks(
 
             typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_index1 + 1;
             typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
-            if (end_row == start_row_in_block2 + blk2->m_size - 1)
-                // Erase the last block too.
+            size_type end_row_in_block2 = start_row_in_block2 + blk2->m_size - 1;
+            if (end_row == end_row_in_block2)
+            {
+                // Data overlaps the entire last block. Erase it.
                 ++it_erase_end;
+            }
+            else if (blk2->mp_data)
+            {
+                cell_category_type blk_cat2 = get_block_type(*blk2->mp_data);
+                if (blk_cat2 == cat)
+                {
+                    // Copy the lower part of the last block to the new block,
+                    // and remove it.
+                    size_type data_length = end_row_in_block2 - end_row;
+                    size_type begin_pos = end_row - start_row_in_block2 + 1;
+                    cell_block_modifier::append_values(blk1->mp_data, blk2->mp_data, begin_pos, data_length);
+                    blk1->m_size += data_length;
+                    ++it_erase_end;
+                }
+                else
+                {
+                    // Erase the upper part of the last block.
+                    size_type size_to_erase = end_row - start_row_in_block2 + 1;
+                    cell_block_modifier::erase(blk2->mp_data, 0, size_to_erase);
+                    blk2->m_size -= size_to_erase;
+                }
+            }
             else
             {
-                // Erase the upper part of the last block.
+                // Last block is empty.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
-                if (blk2->mp_data)
-                    cell_block_modifier::erase(blk2->mp_data, 0, size_to_erase);
                 blk2->m_size -= size_to_erase;
             }
 
