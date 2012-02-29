@@ -1278,22 +1278,25 @@ void column<_Trait>::set_cells_to_multi_blocks(
     if (blk1->mp_data)
     {
         cell_category_type blk_cat1 = get_block_type(*blk1->mp_data);
+        size_type offset = start_row - start_row_in_block1;
+        size_type end_row_in_block2 = start_row_in_block2 + blk2->m_size - 1;
+
+        // Initially set to erase blocks between block 1 and block 2.
+        typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_index1 + 1;
+        typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
+
         if (blk_cat1 == cat)
         {
             // Extend the first block to store the new data set.
 
             // Shrink it first to remove the old values, then append new values.
-            size_type offset = start_row - start_row_in_block1;
             cell_block_modifier::resize_block(blk1->mp_data, offset);
             cell_block_modifier::append_values(blk1->mp_data, it_begin, it_end);
             blk1->m_size = offset + length;
 
-            typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_index1 + 1;
-            typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
-            size_type end_row_in_block2 = start_row_in_block2 + blk2->m_size - 1;
             if (end_row == end_row_in_block2)
             {
-                // Data overlaps the entire last block. Erase it.
+                // Data overlaps the entire block 2. Erase it.
                 ++it_erase_end;
             }
             else if (blk2->mp_data)
@@ -1301,8 +1304,8 @@ void column<_Trait>::set_cells_to_multi_blocks(
                 cell_category_type blk_cat2 = get_block_type(*blk2->mp_data);
                 if (blk_cat2 == cat)
                 {
-                    // Copy the lower part of the last block to the new block,
-                    // and remove it.
+                    // Copy the lower part of block 2 to the new block, and
+                    // remove it.
                     size_type data_length = end_row_in_block2 - end_row;
                     size_type begin_pos = end_row - start_row_in_block2 + 1;
                     cell_block_modifier::append_values(blk1->mp_data, blk2->mp_data, begin_pos, data_length);
@@ -1311,7 +1314,7 @@ void column<_Trait>::set_cells_to_multi_blocks(
                 }
                 else
                 {
-                    // Erase the upper part of the last block.
+                    // Erase the upper part of block 2.
                     size_type size_to_erase = end_row - start_row_in_block2 + 1;
                     cell_block_modifier::erase(blk2->mp_data, 0, size_to_erase);
                     blk2->m_size -= size_to_erase;
@@ -1328,7 +1331,51 @@ void column<_Trait>::set_cells_to_multi_blocks(
             m_blocks.erase(it_erase_begin, it_erase_end);
             return;
         }
+
+        // The first block type is different.
+        assert(blk_cat1 != cat);
+        if (offset == 0)
+        {
+            // Remove block 1.
+            --it_erase_begin;
+
+            // Check the type of the previous block if exists.
+            assert(!"not implemented yet.");
+        }
+
+        assert(offset > 0);
+
+        // Shrink block 1.
+        cell_block_modifier::resize_block(blk1->mp_data, offset);
+        blk1->m_size = offset;
+
+        if (end_row == end_row_in_block2)
+        {
+            // Remove block 2.
+            ++it_erase_end;
+        }
+        else
+        {
+            // Erase the upper part of block 2.
+            size_type size_to_erase = end_row - start_row_in_block2 + 1;
+            cell_block_modifier::erase(blk2->mp_data, 0, size_to_erase);
+            blk2->m_size -= size_to_erase;
+        }
+
+        size_type insert_pos = std::distance(m_blocks.begin(), it_erase_begin);
+
+        // Remove the in-between blocks first.
+        std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
+        m_blocks.erase(it_erase_begin, it_erase_end);
+
+        // Insert the new data block.
+        m_blocks.insert(m_blocks.begin()+insert_pos, new block(length));
+        block* blk = m_blocks[insert_pos];
+        blk->mp_data = cell_block_modifier::create_new_block(cat);
+        cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
+        return;
     }
+
     assert(!"set_cells_to_multi_blocks: I'm working on this.");
 }
 
