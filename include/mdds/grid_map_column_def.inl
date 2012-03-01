@@ -1296,6 +1296,8 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
     block* blk2 = m_blocks[block_index2];
     size_type length = std::distance(it_begin, it_end);
 
+    assert(blk1->mp_data);
+
     cell_category_type blk_cat1 = get_block_type(*blk1->mp_data);
     size_type offset = start_row - start_row_in_block1;
     size_type end_row_in_block2 = start_row_in_block2 + blk2->m_size - 1;
@@ -1368,17 +1370,54 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
     cell_block_modifier::resize_block(blk1->mp_data, offset);
     blk1->m_size = offset;
 
+    // Create the new data block first.
+    mdds::unique_ptr<block> data_blk(new block(length));
+    data_blk->mp_data = cell_block_modifier::create_new_block(cat);
+    cell_block_modifier::assign_values(data_blk->mp_data, it_begin, it_end);
+
     if (end_row == end_row_in_block2)
     {
         // Remove block 2.
         ++it_erase_end;
+
+        if (block_index2+1 < m_blocks.size())
+        {
+            block* blk3 = m_blocks[block_index2+1];
+            if (blk3->mp_data && get_block_type(*blk3->mp_data) == cat)
+            {
+                // Merge block 3 with the new data.
+                assert(!"not implemented yet.");
+            }
+        }
     }
     else
     {
-        // Erase the upper part of block 2.
-        size_type size_to_erase = end_row - start_row_in_block2 + 1;
-        cell_block_modifier::erase(blk2->mp_data, 0, size_to_erase);
-        blk2->m_size -= size_to_erase;
+        bool erase_upper = true;
+        if (blk2->mp_data)
+        {
+            cell_category_type blk_cat2 = get_block_type(*blk2->mp_data);
+            if (blk_cat2 == cat)
+            {
+                // Merge the lower part of block 2 with the new data, and
+                // erase block 2.
+                size_type copy_pos = end_row - start_row_in_block2 + 1;
+                size_type size_to_copy = end_row_in_block2 - end_row;
+                cell_block_modifier::append_values(
+                    data_blk->mp_data, blk2->mp_data, copy_pos, size_to_copy);
+                data_blk->m_size += size_to_copy;
+
+                ++it_erase_end;
+                erase_upper = false;
+            }
+        }
+
+        if (erase_upper)
+        {
+            // Erase the upper part of block 2.
+            size_type size_to_erase = end_row - start_row_in_block2 + 1;
+            cell_block_modifier::erase(blk2->mp_data, 0, size_to_erase);
+            blk2->m_size -= size_to_erase;
+        }
     }
 
     size_type insert_pos = std::distance(m_blocks.begin(), it_erase_begin);
@@ -1388,10 +1427,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
     m_blocks.erase(it_erase_begin, it_erase_end);
 
     // Insert the new data block.
-    m_blocks.insert(m_blocks.begin()+insert_pos, new block(length));
-    block* blk = m_blocks[insert_pos];
-    blk->mp_data = cell_block_modifier::create_new_block(cat);
-    cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
+    m_blocks.insert(m_blocks.begin()+insert_pos, data_blk.release());
 }
 
 template<typename _Trait>
