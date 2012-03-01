@@ -1385,8 +1385,11 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
             block* blk3 = m_blocks[block_index2+1];
             if (blk3->mp_data && get_block_type(*blk3->mp_data) == cat)
             {
-                // Merge block 3 with the new data.
-                assert(!"not implemented yet.");
+                // Merge the whole block 3 with the new data. Remove block 3
+                // afterward.
+                cell_block_modifier::append_values(data_blk->mp_data, blk3->mp_data);
+                data_blk->m_size += blk3->m_size;
+                ++it_erase_end;
             }
         }
     }
