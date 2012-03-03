@@ -1358,7 +1358,6 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
 
     // Create the new data block first.
     mdds::unique_ptr<block> data_blk(new block(length));
-    data_blk->mp_data = cell_block_modifier::create_new_block(cat);
 
     bool blk0_copied = false;
     if (offset == 0)
@@ -1374,9 +1373,9 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
             {
                 if (cat == get_block_type(*blk0->mp_data))
                 {
-                    // Copy the whole block 0 to the data block, and erase it.
-                    cell_block_modifier::assign_values(
-                        data_blk->mp_data, blk0->mp_data, 0, blk0->m_size);
+                    // Transfer the whole data from block 0 to data block.
+                    data_blk->mp_data = blk0->mp_data;
+                    blk0->mp_data = NULL;
 
                     data_blk->m_size += blk0->m_size;
                     --it_erase_begin;
@@ -1395,7 +1394,10 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
     if (blk0_copied)
         cell_block_modifier::append_values(data_blk->mp_data, it_begin, it_end);
     else
+    {
+        data_blk->mp_data = cell_block_modifier::create_new_block(cat);
         cell_block_modifier::assign_values(data_blk->mp_data, it_begin, it_end);
+    }
 
     if (end_row == end_row_in_block2)
     {
