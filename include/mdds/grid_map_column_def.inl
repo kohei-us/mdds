@@ -260,7 +260,8 @@ template<typename _Trait>
 template<typename _T>
 void column<_Trait>::insert_cells(row_key_type row, const _T& it_begin, const _T& it_end)
 {
-    assert(!"not implemented yet.");
+    size_type _row = check_row_range(row);
+    insert_cells_impl(_row, it_begin, it_end);
 }
 
 template<typename _Trait>
@@ -1101,6 +1102,40 @@ void column<_Trait>::set_cells_impl(size_type row, const _T& it_begin, const _T&
 
     set_cells_to_multi_blocks(
         row, end_row, block_index1, start_row1, block_index2, start_row2, it_begin, it_end);
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+{
+    size_type length = std::distance(it_begin, it_end);
+    if (!length)
+        // empty data array.  nothing to do.
+        return;
+
+    size_t block_index, start_row;
+    get_block_position(row, start_row, block_index);
+
+    cell_category_type cat = get_type(*it_begin);
+    block* blk = m_blocks[block_index];
+    if (!blk->mp_data)
+    {
+        assert(!"not implemented yet.");
+        return;
+    }
+
+    assert(blk->mp_data);
+    cell_category_type blk_cat = get_block_type(*blk->mp_data);
+    if (cat == blk_cat)
+    {
+        // Simply insert the new data series into existing block.
+        cell_block_modifier::insert_values(blk->mp_data, row-start_row, it_begin, it_end);
+        blk->m_size += length;
+        m_cur_size += length;
+        return;
+    }
+
+    assert(!"not implemented yet.");
 }
 
 template<typename _Trait>

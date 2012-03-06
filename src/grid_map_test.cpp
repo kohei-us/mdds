@@ -259,6 +259,9 @@ struct cell_block_func
                               size_t begin_pos, size_t len);
 
     template<typename T>
+    static void insert_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end);
+
+    template<typename T>
     static void assign_values(base_cell_block* dest, const T& it_begin, const T& it_end);
 
     template<typename T>
@@ -918,6 +921,59 @@ void cell_block_func::assign_values(base_cell_block* dest, const T& it_begin, co
         return;
 
     _assign_values(dest, *it_begin, it_begin, it_end);
+}
+
+template<typename _Iter>
+void _insert_values(
+    base_cell_block*, size_t, const typename _Iter::value_type&, const _Iter&, const _Iter&)
+{
+    throw general_error("non-specialized version of _insert_values called.");
+}
+
+template<typename _Iter>
+void _insert_values(
+    base_cell_block* block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
+{
+    numeric_cell_block& blk = *get_numeric_block(block);
+    blk.insert(blk.begin()+pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void _insert_values(
+    base_cell_block* block, size_t pos, string, const _Iter& it_begin, const _Iter& it_end)
+{
+    string_cell_block& blk = *get_string_block(block);
+    blk.insert(blk.begin()+pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void _insert_values(
+    base_cell_block* block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
+{
+    index_cell_block& blk = *get_index_block(block);
+    blk.insert(blk.begin()+pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void _insert_values(
+    base_cell_block* block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
+    blk.insert(blk.begin()+pos, it_begin, it_end);
+}
+
+template<typename T>
+void cell_block_func::insert_values(
+    base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+{
+    if (!block)
+        throw general_error("destination cell block is NULL.");
+
+    if (it_begin == it_end)
+        // Nothing to do.
+        return;
+
+    _insert_values(block, pos, *it_begin, it_begin, it_end);
 }
 
 template<typename T>
@@ -2682,6 +2738,27 @@ void gridmap_test_set_cells()
     }
 }
 
+void gridmap_test_insert_cells()
+{
+    stack_printer __stack_printer__("::gridmap_test_insert_cells");
+    {
+        column_type db(1);
+        db.set_cell(0, 1.1);
+        assert(db.block_size() == 1);
+        assert(db.size() == 1);
+
+        double vals[] = { 2.1, 2.2, 2.3 };
+        double* p = &vals[0];
+        db.insert_cells(0, p, p+3);
+        assert(db.block_size() == 1);
+        assert(db.size() == 4);
+        assert(db.get_cell<double>(0) == 2.1);
+        assert(db.get_cell<double>(1) == 2.2);
+        assert(db.get_cell<double>(2) == 2.3);
+        assert(db.get_cell<double>(3) == 1.1);
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -2701,6 +2778,7 @@ int main (int argc, char **argv)
         gridmap_test_erase();
         gridmap_test_insert_empty();
         gridmap_test_set_cells();
+        gridmap_test_insert_cells();
     }
 
     if (opt.test_perf)
