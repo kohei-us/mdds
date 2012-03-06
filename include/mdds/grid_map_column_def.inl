@@ -1175,6 +1175,37 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
         return;
     }
 
+    assert(cat != blk_cat);
+    if (row == start_row)
+    {
+        if (block_index > 0)
+        {
+            // Check the previous block to see if we can append the data there.
+            block* blk0 = m_blocks[block_index-1];
+            if (blk0->mp_data)
+            {
+                cell_category_type blk_cat0 = get_block_type(*blk0->mp_data);
+                if (cat == blk_cat0)
+                {
+                    // Append to the previous block.
+                    cell_block_modifier::append_values(blk0->mp_data, it_begin, it_end);
+                    blk0->m_size += length;
+                    m_cur_size += length;
+                    return;
+                }
+            }
+        }
+
+        // Just insert a new block before the current block.
+        m_blocks.insert(m_blocks.begin()+block_index, new block(length));
+        blk = m_blocks[block_index];
+        blk->mp_data = cell_block_modifier::create_new_block(cat);
+        cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
+        blk->m_size = length;
+        m_cur_size += length;
+        return;
+    }
+
     assert(!"not implemented yet.");
 }
 
