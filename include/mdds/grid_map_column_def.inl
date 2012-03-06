@@ -1150,7 +1150,17 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
             return;
         }
 
-        assert(!"not implemented yet.");
+        // Insert two new blocks, the 2nd of which is empty.
+        size_type n1 = row - start_row;
+        size_type n2 = blk->m_size - n1;
+        m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
+        blk->m_size = n1;
+        m_blocks[block_index+1] = new block(length);
+        m_blocks[block_index+2] = new block(n2);
+        blk = m_blocks[block_index+1];
+        blk->mp_data = cell_block_modifier::create_new_block(cat);
+        cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
+        m_cur_size += length;
         return;
     }
 

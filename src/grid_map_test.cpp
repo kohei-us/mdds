@@ -2811,6 +2811,20 @@ void gridmap_test_insert_cells()
         assert(db.get_cell<double>(3) == 2.3);
         assert(db.is_empty(4));
     }
+
+    {
+        column_type db(2);
+        double vals[] = { 2.1, 2.2, 2.3 };
+        double* p = &vals[0];
+        db.insert_cells(1, p, p+3);
+        assert(db.block_size() == 3);
+        assert(db.size() == 5);
+        assert(db.is_empty(0));
+        assert(db.get_cell<double>(1) == 2.1);
+        assert(db.get_cell<double>(2) == 2.2);
+        assert(db.get_cell<double>(3) == 2.3);
+        assert(db.is_empty(4));
+    }
 }
 
 }
