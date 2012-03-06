@@ -1121,7 +1121,8 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
     if (!blk->mp_data)
     {
         // Insert into an empty block.  Check the previos block (if exists) to
-        // see if the data can be appended to it.
+        // see if the data can be appended to it if inserting at the top of
+        // the block.
         if (block_index > 0 && row == start_row)
         {
             block* blk0 = m_blocks[block_index-1];
@@ -1130,7 +1131,9 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
             if (blk_cat0 == cat)
             {
                 // Append to the previous block.
-                assert(!"not implemented yet.");
+                cell_block_modifier::append_values(blk0->mp_data, it_begin, it_end);
+                blk0->m_size += length;
+                m_cur_size += length;
                 return;
             }
         }
