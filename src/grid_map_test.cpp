@@ -2742,6 +2742,7 @@ void gridmap_test_insert_cells()
 {
     stack_printer __stack_printer__("::gridmap_test_insert_cells");
     {
+        // Insert into non-empty block of the same type.
         column_type db(1);
         db.set_cell(0, 1.1);
         assert(db.block_size() == 1);
@@ -2756,6 +2757,23 @@ void gridmap_test_insert_cells()
         assert(db.get_cell<double>(1) == 2.2);
         assert(db.get_cell<double>(2) == 2.3);
         assert(db.get_cell<double>(3) == 1.1);
+    }
+
+    {
+        // Insert into an existing empty block.
+        column_type db(1);
+        assert(db.block_size() == 1);
+        assert(db.size() == 1);
+
+        double vals[] = { 2.1, 2.2, 2.3 };
+        double* p = &vals[0];
+        db.insert_cells(0, p, p+3);
+        assert(db.block_size() == 2);
+        assert(db.size() == 4);
+        assert(db.get_cell<double>(0) == 2.1);
+        assert(db.get_cell<double>(1) == 2.2);
+        assert(db.get_cell<double>(2) == 2.3);
+        assert(db.is_empty(3));
     }
 }
 

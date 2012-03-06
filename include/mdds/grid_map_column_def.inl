@@ -1113,13 +1113,40 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
         // empty data array.  nothing to do.
         return;
 
-    size_t block_index, start_row;
+    size_type block_index, start_row;
     get_block_position(row, start_row, block_index);
 
     cell_category_type cat = get_type(*it_begin);
     block* blk = m_blocks[block_index];
     if (!blk->mp_data)
     {
+        // Insert into an empty block.  Check the previos block (if exists) to
+        // see if the data can be appended to it.
+        if (block_index > 0 && row == start_row)
+        {
+            block* blk0 = m_blocks[block_index-1];
+            assert(blk0->mp_data);
+            cell_category_type blk_cat0 = get_block_type(*blk0->mp_data);
+            if (blk_cat0 == cat)
+            {
+                // Append to the previous block.
+                assert(!"not implemented yet.");
+                return;
+            }
+        }
+
+        if (row == start_row)
+        {
+            // Just insert a new block before the current block.
+            m_blocks.insert(m_blocks.begin()+block_index, new block(length));
+            blk = m_blocks[block_index];
+            blk->mp_data = cell_block_modifier::create_new_block(cat);
+            cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
+            blk->m_size = length;
+            m_cur_size += length;
+            return;
+        }
+
         assert(!"not implemented yet.");
         return;
     }
