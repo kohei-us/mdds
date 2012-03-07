@@ -1120,26 +1120,26 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
     block* blk = m_blocks[block_index];
     if (!blk->mp_data)
     {
-        // Insert into an empty block.  Check the previos block (if exists) to
-        // see if the data can be appended to it if inserting at the top of
-        // the block.
-        if (block_index > 0 && row == start_row)
-        {
-            block* blk0 = m_blocks[block_index-1];
-            assert(blk0->mp_data);
-            cell_category_type blk_cat0 = get_block_type(*blk0->mp_data);
-            if (blk_cat0 == cat)
-            {
-                // Append to the previous block.
-                cell_block_modifier::append_values(blk0->mp_data, it_begin, it_end);
-                blk0->m_size += length;
-                m_cur_size += length;
-                return;
-            }
-        }
-
         if (row == start_row)
         {
+            // Insert into an empty block.  Check the previos block (if
+            // exists) to see if the data can be appended to it if inserting
+            // at the top of the block.
+            if (block_index > 0)
+            {
+                block* blk0 = m_blocks[block_index-1];
+                assert(blk0->mp_data);
+                cell_category_type blk_cat0 = get_block_type(*blk0->mp_data);
+                if (blk_cat0 == cat)
+                {
+                    // Append to the previous block.
+                    cell_block_modifier::append_values(blk0->mp_data, it_begin, it_end);
+                    blk0->m_size += length;
+                    m_cur_size += length;
+                    return;
+                }
+            }
+
             // Just insert a new block before the current block.
             m_blocks.insert(m_blocks.begin()+block_index, new block(length));
             blk = m_blocks[block_index];
