@@ -86,9 +86,6 @@ struct grid_map_trait
     typedef long row_key_type;
     typedef long col_key_type;
 
-    typedef mdds::gridmap::get_cell_type cell_type_inspector;
-    typedef mdds::gridmap::get_cell_block_type cell_block_type_inspector;
-
     typedef mdds::gridmap::cell_block_func cell_block_modifier;
 };
 

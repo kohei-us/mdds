@@ -39,42 +39,6 @@ const int celltype_string  = 1;
 const int celltype_index   = 2;
 const int celltype_boolean = 3;
 
-struct get_cell_type
-{
-    template<typename T>
-    cell_t operator() (const T& t);
-};
-
-template<typename T>
-cell_t get_cell_type::operator() (const T& t)
-{
-    return celltype_numeric;
-}
-
-template<>
-cell_t get_cell_type::operator()<double> (const double& t)
-{
-    return celltype_numeric;
-}
-
-template<>
-cell_t get_cell_type::operator()<std::string> (const std::string& t)
-{
-    return celltype_string;
-}
-
-template<>
-cell_t get_cell_type::operator()<size_t> (const size_t& t)
-{
-    return celltype_index;
-}
-
-template<>
-cell_t get_cell_type::operator()<bool> (const bool& t)
-{
-    return celltype_boolean;
-}
-
 struct base_cell_block
 {
     cell_t type;
@@ -103,14 +67,6 @@ struct boolean_cell_block : public base_cell_block, public std::vector<bool>
 {
 public:
     boolean_cell_block() : base_cell_block(celltype_boolean), std::vector<bool>(1) {}
-};
-
-struct get_cell_block_type : public std::unary_function<base_cell_block, cell_t>
-{
-    cell_t operator() (const base_cell_block& r)
-    {
-        return r.type;
-    }
 };
 
 numeric_cell_block* get_numeric_block(base_cell_block* block)
@@ -179,6 +135,11 @@ const boolean_cell_block* get_boolean_block(const base_cell_block* block)
 
 struct cell_block_func
 {
+    template<typename T>
+    static cell_t get_cell_type(const T&);
+
+    static cell_t get_block_type(const base_cell_block& block);
+
     static base_cell_block* create_new_block(cell_t type);
 
     static base_cell_block* clone_block(base_cell_block* p);
@@ -233,6 +194,41 @@ struct cell_block_func
 
     static bool equal_block(const base_cell_block* left, const base_cell_block* right);
 };
+
+template<>
+cell_t cell_block_func::get_cell_type<double>(const double& t)
+{
+    return celltype_numeric;
+}
+
+template<>
+cell_t cell_block_func::get_cell_type<std::string> (const std::string& t)
+{
+    return celltype_string;
+}
+
+template<>
+cell_t cell_block_func::get_cell_type<size_t> (const size_t& t)
+{
+    return celltype_index;
+}
+
+template<>
+cell_t cell_block_func::get_cell_type<bool> (const bool& t)
+{
+    return celltype_boolean;
+}
+
+template<typename T>
+cell_t cell_block_func::get_cell_type(const T& t)
+{
+    throw general_error("unknown cell type");
+}
+
+cell_t cell_block_func::get_block_type(const base_cell_block& block)
+{
+    return block.type;
+}
 
 base_cell_block* cell_block_func::create_new_block(cell_t type)
 {

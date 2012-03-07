@@ -55,8 +55,6 @@ public:
     typedef typename _Trait::row_key_type row_key_type;
 
 private:
-    typedef typename _Trait::cell_type_inspector cell_type_inspector;
-    typedef typename _Trait::cell_block_type_inspector cell_block_type_inspector;
     typedef typename _Trait::cell_block_modifier cell_block_modifier;
 
     struct block : boost::noncopyable
@@ -212,9 +210,6 @@ private:
     typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;
     size_type m_cur_size;
-
-    static cell_type_inspector get_type;
-    static cell_block_type_inspector get_block_type;
 };
 
 }}
