@@ -1150,16 +1150,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
             return;
         }
 
-        // Insert two new blocks, the 2nd of which is empty.
-        size_type n1 = row - start_row;
-        size_type n2 = blk->m_size - n1;
-        m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
-        blk->m_size = n1;
-        m_blocks[block_index+1] = new block(length);
-        m_blocks[block_index+2] = new block(n2);
-        blk = m_blocks[block_index+1];
-        blk->mp_data = cell_block_modifier::create_new_block(cat);
-        cell_block_modifier::assign_values(blk->mp_data, it_begin, it_end);
+        insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
         m_cur_size += length;
         return;
     }
@@ -1206,6 +1197,20 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
         return;
     }
 
+    insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
+    m_cur_size += length;
+}
+
+template<typename _Trait>
+template<typename _T>
+void column<_Trait>::insert_cells_to_middle(
+    size_type row, size_type block_index, size_type start_row,
+    const _T& it_begin, const _T& it_end)
+{
+    size_type length = std::distance(it_begin, it_end);
+    block* blk = m_blocks[block_index];
+    cell_category_type cat = get_type(*it_begin);
+
     // Insert two new blocks.
     size_type n1 = row - start_row;
     size_type n2 = blk->m_size - n1;
@@ -1220,14 +1225,17 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
     blk2->mp_data = cell_block_modifier::create_new_block(cat);
     cell_block_modifier::assign_values(blk2->mp_data, it_begin, it_end);
 
-    // block to hold data from the lower part of the existing block.
-    block* blk3 = m_blocks[block_index+2];
-    blk3->mp_data = cell_block_modifier::create_new_block(blk_cat);
+    if (blk->mp_data)
+    {
+        cell_category_type blk_cat = get_block_type(*blk->mp_data);
 
-    // Transfer the lower part of the current block to the new block.
-    cell_block_modifier::assign_values(blk3->mp_data, blk->mp_data, row, n2);
+        // block to hold data from the lower part of the existing block.
+        block* blk3 = m_blocks[block_index+2];
+        blk3->mp_data = cell_block_modifier::create_new_block(blk_cat);
 
-    m_cur_size += length;
+        // Transfer the lower part of the current block to the new block.
+        cell_block_modifier::assign_values(blk3->mp_data, blk->mp_data, row, n2);
+    }
 }
 
 template<typename _Trait>
