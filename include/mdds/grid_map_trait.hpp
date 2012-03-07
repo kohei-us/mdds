@@ -32,7 +32,12 @@
 
 namespace mdds { namespace gridmap {
 
-enum cell_t { celltype_numeric = 0, celltype_string, celltype_index, celltype_boolean };
+typedef int cell_t;
+
+const int celltype_numeric = 0;
+const int celltype_string  = 1;
+const int celltype_index   = 2;
+const int celltype_boolean = 3;
 
 struct get_cell_type
 {
