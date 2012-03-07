@@ -2863,6 +2863,25 @@ void gridmap_test_insert_cells()
         assert(db.get_cell<double>(3) == 2.3);
         assert(db.get_cell<size_t>(4) == 23);
     }
+
+    {
+        column_type db(2);
+        db.set_cell(0, size_t(12));
+        db.set_cell(1, size_t(23));
+        assert(db.block_size() == 1);
+        assert(db.size() == 2);
+
+        double vals[] = { 2.1, 2.2, 2.3 };
+        double* p = &vals[0];
+        db.insert_cells(1, p, p+3);
+        assert(db.block_size() == 3);
+        assert(db.size() == 5);
+        assert(db.get_cell<size_t>(0) == 12);
+        assert(db.get_cell<double>(1) == 2.1);
+        assert(db.get_cell<double>(2) == 2.2);
+        assert(db.get_cell<double>(3) == 2.3);
+        assert(db.get_cell<size_t>(4) == 23);
+    }
 }
 
 }

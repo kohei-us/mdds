@@ -1206,7 +1206,28 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
         return;
     }
 
-    assert(!"not implemented yet.");
+    // Insert two new blocks.
+    size_type n1 = row - start_row;
+    size_type n2 = blk->m_size - n1;
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
+    blk->m_size = n1;
+
+    m_blocks[block_index+1] = new block(length);
+    m_blocks[block_index+2] = new block(n2);
+
+    // block for data series.
+    block* blk2 = m_blocks[block_index+1];
+    blk2->mp_data = cell_block_modifier::create_new_block(cat);
+    cell_block_modifier::assign_values(blk2->mp_data, it_begin, it_end);
+
+    // block to hold data from the lower part of the existing block.
+    block* blk3 = m_blocks[block_index+2];
+    blk3->mp_data = cell_block_modifier::create_new_block(blk_cat);
+
+    // Transfer the lower part of the current block to the new block.
+    cell_block_modifier::assign_values(blk3->mp_data, blk->mp_data, row, n2);
+
+    m_cur_size += length;
 }
 
 template<typename _Trait>
