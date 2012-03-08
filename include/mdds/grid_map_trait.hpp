@@ -322,7 +322,7 @@ struct print_block_array
 {
     void operator() (const T& val) const
     {
-        cout << val << " ";
+        std::cout << val << " ";
     }
 };
 
@@ -337,28 +337,28 @@ void cell_block_func::print_block(base_cell_block* p)
         {
             numeric_cell_block& blk = *static_cast<numeric_cell_block*>(p);
             for_each(blk.begin(), blk.end(), print_block_array<double>());
-            cout << endl;
+            std::cout << std::endl;
         }
         break;
         case celltype_string:
         {
             string_cell_block& blk = *static_cast<string_cell_block*>(p);
             for_each(blk.begin(), blk.end(), print_block_array<std::string>());
-            cout << endl;
+            std::cout << std::endl;
         }
         break;
         case celltype_index:
         {
             index_cell_block& blk = *static_cast<index_cell_block*>(p);
             for_each(blk.begin(), blk.end(), print_block_array<size_t>());
-            cout << endl;
+            std::cout << std::endl;
         }
         break;
         case celltype_boolean:
         {
             boolean_cell_block& blk = *static_cast<boolean_cell_block*>(p);
             for_each(blk.begin(), blk.end(), print_block_array<bool>());
-            cout << endl;
+            std::cout << std::endl;
         }
         break;
         default:

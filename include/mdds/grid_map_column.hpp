@@ -31,6 +31,7 @@
 #include "mdds/default_deleter.hpp"
 #include "mdds/compat/unique_ptr.hpp"
 #include "mdds/global.hpp"
+#include "mdds/grid_map_trait.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -50,8 +51,8 @@ class column
 public:
     typedef size_t size_type;
 
-    typedef typename _Trait::cell_block_type cell_block_type;
-    typedef typename _Trait::cell_category_type cell_category_type;
+    typedef typename mdds::gridmap::base_cell_block cell_block_type;
+    typedef typename mdds::gridmap::cell_t cell_category_type;
     typedef typename _Trait::row_key_type row_key_type;
 
 private:

@@ -80,8 +80,6 @@ private:
 
 struct grid_map_trait
 {
-    typedef mdds::gridmap::base_cell_block cell_block_type;
-    typedef mdds::gridmap::cell_t cell_category_type;
     typedef long sheet_key_type;
     typedef long row_key_type;
     typedef long col_key_type;
