@@ -31,7 +31,7 @@
 
 #include <cassert>
 #include <sstream>
-#include <boost/ptr_container/ptr_vector.hpp>
+#include <vector>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -86,31 +86,16 @@ struct user_cell
     double value;
 };
 
-struct user_cell_block : public gridmap::base_cell_block, public boost::ptr_vector<user_cell>
+struct user_cell_block : public gridmap::base_cell_block, public std::vector<user_cell*>
 {
     user_cell_block() : gridmap::base_cell_block(celltype_user_block) {}
 };
-
-struct my_user_block_func
-{
-    template<typename T>
-    gridmap::cell_t get_cell_type(const T&);
-};
-
-template<typename T>
-gridmap::cell_t my_user_block_func::get_cell_type(const T&)
-{
-    throw general_error("unknown user cell type!");
-}
 
 struct grid_map_trait
 {
     typedef long sheet_key_type;
     typedef long row_key_type;
     typedef long col_key_type;
-
-    typedef mdds::gridmap::cell_block_func cell_block_func;
-    typedef my_user_block_func user_block_func;
 };
 
 template<typename _ColT, typename _ValT>
@@ -1911,6 +1896,13 @@ void gridmap_test_insert_cells()
     }
 }
 
+void gridmap_test_custom_celltype()
+{
+    stack_printer __stack_printer__("::gridmap_test_custom_celltype");
+    column_type db(1);
+    db.set_cell(0, new user_cell);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1931,6 +1923,7 @@ int main (int argc, char **argv)
         gridmap_test_insert_empty();
         gridmap_test_set_cells();
         gridmap_test_insert_cells();
+//      gridmap_test_custom_celltype();
     }
 
     if (opt.test_perf)

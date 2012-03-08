@@ -56,7 +56,7 @@ public:
     typedef typename _Trait::row_key_type row_key_type;
 
 private:
-    typedef typename _Trait::cell_block_func cell_block_func;
+    typedef typename mdds::gridmap::cell_block_func cell_block_func;
 
     struct block : boost::noncopyable
     {
