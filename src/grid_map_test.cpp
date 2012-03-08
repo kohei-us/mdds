@@ -31,6 +31,7 @@
 
 #include <cassert>
 #include <sstream>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -77,6 +78,30 @@ private:
     double m_start_time;
 };
 
+/** custom cell type  */
+const gridmap::cell_t celltype_user_block = gridmap::celltype_user_start;
+
+struct user_cell
+{
+    double value;
+};
+
+struct user_cell_block : public gridmap::base_cell_block, public boost::ptr_vector<user_cell>
+{
+    user_cell_block() : gridmap::base_cell_block(celltype_user_block) {}
+};
+
+struct my_user_block_func
+{
+    template<typename T>
+    gridmap::cell_t get_cell_type(const T&);
+};
+
+template<typename T>
+gridmap::cell_t my_user_block_func::get_cell_type(const T&)
+{
+    throw general_error("unknown user cell type!");
+}
 
 struct grid_map_trait
 {
@@ -85,6 +110,7 @@ struct grid_map_trait
     typedef long col_key_type;
 
     typedef mdds::gridmap::cell_block_func cell_block_func;
+    typedef my_user_block_func user_block_func;
 };
 
 template<typename _ColT, typename _ValT>

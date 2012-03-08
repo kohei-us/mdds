@@ -39,6 +39,8 @@ const int celltype_string  = 1;
 const int celltype_index   = 2;
 const int celltype_boolean = 3;
 
+const int celltype_user_start = 50;
+
 struct base_cell_block
 {
     cell_t type;
