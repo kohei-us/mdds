@@ -119,7 +119,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     {
         // This block is of the same type as the cell being inserted.
         row_key_type i = _row - start_row;
-        cell_block_func::set_value(blk->mp_data, i, cell);
+        set_value(blk->mp_data, i, cell);
         return;
     }
 
@@ -315,7 +315,7 @@ void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, cons
     if (!data)
         throw general_error("Failed to create new block.");
 
-    cell_block_func::set_value(data, 0, cell);
+    set_value(data, 0, cell);
 }
 
 template<typename _Trait>

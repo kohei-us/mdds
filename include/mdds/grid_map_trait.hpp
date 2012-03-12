@@ -154,9 +154,6 @@ struct cell_block_func
     static void erase(base_cell_block* block, size_t pos, size_t size);
 
     template<typename T>
-    static void set_value(base_cell_block* block, size_t pos, const T& val);
-
-    template<typename T>
     static void set_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end);
 
     template<typename T>
@@ -427,35 +424,25 @@ void cell_block_func::erase(base_cell_block* block, size_t pos, size_t size)
     }
 }
 
-template<typename T>
-void cell_block_func::set_value(base_cell_block* block, size_t pos, const T& val)
-{
-    throw general_error("non-specialized version of set_value called.");
-}
-
-template<>
-void cell_block_func::set_value<double>(base_cell_block* block, size_t pos, const double& val)
+void set_value(base_cell_block* block, size_t pos, double val)
 {
     numeric_cell_block& blk = *get_numeric_block(block);
     blk[pos] = val;
 }
 
-template<>
-void cell_block_func::set_value<std::string>(base_cell_block* block, size_t pos, const std::string& val)
+void set_value(base_cell_block* block, size_t pos, const std::string& val)
 {
     string_cell_block& blk = *get_string_block(block);
     blk[pos] = val;
 }
 
-template<>
-void cell_block_func::set_value<size_t>(base_cell_block* block, size_t pos, const size_t& val)
+void set_value(base_cell_block* block, size_t pos, size_t val)
 {
     index_cell_block& blk = *get_index_block(block);
     blk[pos] = val;
 }
 
-template<>
-void cell_block_func::set_value<bool>(base_cell_block* block, size_t pos, const bool& val)
+void set_value(base_cell_block* block, size_t pos, bool val)
 {
     boolean_cell_block& blk = *get_boolean_block(block);
     blk[pos] = val;
