@@ -430,7 +430,7 @@ void cell_block_func::erase(base_cell_block* block, size_t pos, size_t size)
 template<typename T>
 void cell_block_func::set_value(base_cell_block* block, size_t pos, const T& val)
 {
-    throw general_error("non-specialized version called.");
+    throw general_error("non-specialized version of set_value called.");
 }
 
 template<>
@@ -521,7 +521,7 @@ void cell_block_func::set_values(base_cell_block* block, size_t pos, const T& it
 template<typename T>
 void cell_block_func::prepend_value(base_cell_block* block, const T& val)
 {
-    throw general_error("non-specialized version called.");
+    throw general_error("non-specialized version of prepend_value called.");
 }
 
 template<>
@@ -590,7 +590,7 @@ void cell_block_func::prepend_values(base_cell_block* block, const T& it_begin, 
 template<typename T>
 void cell_block_func::append_value(base_cell_block* block, const T& val)
 {
-    throw general_error("non-specialized version called.");
+    throw general_error("non-specialized version of append_value called.");
 }
 
 template<>
@@ -925,7 +925,7 @@ void cell_block_func::insert_values(
 template<typename T>
 void cell_block_func::get_value(base_cell_block* block, size_t pos, T& val)
 {
-    throw general_error("non-specialized version called.");
+    throw general_error("non-specialized version of get_value called.");
 }
 
 template<>
@@ -959,7 +959,7 @@ void cell_block_func::get_value<bool>(base_cell_block* block, size_t pos, bool& 
 template<typename T>
 void cell_block_func::get_empty_value(T& val)
 {
-    throw general_error("non-specialized version called.");
+    throw general_error("non-specialized version of get_empty_value called.");
 }
 
 template<>
