@@ -137,9 +137,6 @@ const boolean_cell_block* get_boolean_block(const base_cell_block* block)
 
 struct cell_block_func
 {
-    template<typename T>
-    static cell_t get_cell_type(const T&);
-
     static cell_t get_block_type(const base_cell_block& block);
 
     static base_cell_block* create_new_block(cell_t type);
@@ -197,34 +194,24 @@ struct cell_block_func
     static bool equal_block(const base_cell_block* left, const base_cell_block* right);
 };
 
-template<>
-cell_t cell_block_func::get_cell_type<double>(const double& t)
+cell_t get_cell_type(double)
 {
     return celltype_numeric;
 }
 
-template<>
-cell_t cell_block_func::get_cell_type<std::string> (const std::string& t)
+cell_t get_cell_type(const std::string&)
 {
     return celltype_string;
 }
 
-template<>
-cell_t cell_block_func::get_cell_type<size_t> (const size_t& t)
+cell_t get_cell_type(size_t)
 {
     return celltype_index;
 }
 
-template<>
-cell_t cell_block_func::get_cell_type<bool> (const bool& t)
+cell_t get_cell_type(bool)
 {
     return celltype_boolean;
-}
-
-template<typename T>
-cell_t cell_block_func::get_cell_type(const T& t)
-{
-    throw general_error("unknown cell type");
 }
 
 cell_t cell_block_func::get_block_type(const base_cell_block& block)

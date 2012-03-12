@@ -98,6 +98,19 @@ struct grid_map_trait
     typedef long col_key_type;
 };
 
+}
+
+namespace mdds { namespace gridmap {
+
+cell_t get_cell_type(user_cell*)
+{
+    return celltype_user_block;
+}
+
+}}
+
+namespace {
+
 template<typename _ColT, typename _ValT>
 bool test_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT val)
 {
