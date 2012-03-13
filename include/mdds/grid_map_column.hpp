@@ -28,10 +28,10 @@
 #ifndef __MDDS_GRID_MAP_COLUMN_HPP__
 #define __MDDS_GRID_MAP_COLUMN_HPP__
 
-#include "mdds/default_deleter.hpp"
-#include "mdds/compat/unique_ptr.hpp"
-#include "mdds/global.hpp"
-#include "mdds/grid_map_trait.hpp"
+#include "default_deleter.hpp"
+#include "compat/unique_ptr.hpp"
+#include "global.hpp"
+#include "grid_map_types.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -56,7 +56,9 @@ public:
     typedef typename _Trait::row_key_type row_key_type;
 
 private:
-    typedef typename mdds::gridmap::cell_block_func cell_block_func;
+    typedef _Trait trait;
+
+    typedef typename _Trait::cell_block_func cell_block_func;
 
     struct block : boost::noncopyable
     {
@@ -114,6 +116,9 @@ public:
     bool operator!= (const column& other) const;
 
     column& operator= (const column& other);
+
+    template<typename _T>
+    static gridmap::cell_t get_cell_type(const _T& cell);
 
 private:
     /**

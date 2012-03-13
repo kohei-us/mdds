@@ -25,9 +25,10 @@
  *
  ************************************************************************/
 
-#include "mdds/grid_map.hpp"
-#include "mdds/grid_map_trait.hpp"
 #include "test_global.hpp"
+
+#include <mdds/grid_map.hpp>
+#include <mdds/grid_map_trait.hpp>
 
 #include <cassert>
 #include <sstream>
@@ -78,7 +79,7 @@ private:
     double m_start_time;
 };
 
-/** custom cell type  */
+/** custom cell type definition. */
 const gridmap::cell_t celltype_user_block = gridmap::celltype_user_start;
 
 struct user_cell
@@ -91,23 +92,40 @@ struct user_cell_block : public gridmap::base_cell_block, public std::vector<use
     user_cell_block() : gridmap::base_cell_block(celltype_user_block) {}
 };
 
-struct grid_map_trait
-{
-    typedef long sheet_key_type;
-    typedef long row_key_type;
-    typedef long col_key_type;
-};
-
 }
 
 namespace mdds { namespace gridmap {
 
-cell_t get_cell_type(user_cell*)
+cell_t get_cell_type(const user_cell*)
 {
     return celltype_user_block;
 }
 
 }}
+
+struct my_cell_block_func : public mdds::gridmap::cell_block_func
+{
+    template<typename T>
+    static mdds::gridmap::cell_t get_cell_type(const T& cell)
+    {
+        return mdds::gridmap::get_cell_type(cell);
+    }
+
+    template<typename T>
+    static void set_value(mdds::gridmap::base_cell_block* block, size_t pos, const T& val)
+    {
+        mdds::gridmap::set_value(block, pos, val);
+    }
+};
+
+struct grid_map_trait
+{
+    typedef long sheet_key_type;
+    typedef long row_key_type;
+    typedef long col_key_type;
+
+    typedef my_cell_block_func cell_block_func;
+};
 
 namespace {
 
@@ -1912,8 +1930,24 @@ void gridmap_test_insert_cells()
 void gridmap_test_custom_celltype()
 {
     stack_printer __stack_printer__("::gridmap_test_custom_celltype");
-    column_type db(1);
-    db.set_cell(0, new user_cell);
+    mdds::gridmap::cell_t ct;
+
+    // Basic types
+    ct = column_type::get_cell_type(double(12.3));
+    assert(ct == gridmap::celltype_numeric);
+    ct = column_type::get_cell_type(string());
+    assert(ct == gridmap::celltype_string);
+    ct = column_type::get_cell_type(size_t(12));
+    assert(ct == gridmap::celltype_index);
+    ct = column_type::get_cell_type(true);
+    assert(ct == gridmap::celltype_boolean);
+    ct = column_type::get_cell_type(false);
+    assert(ct == gridmap::celltype_boolean);
+
+    // Custom cell type
+    user_cell* p = NULL;
+    ct = column_type::get_cell_type(p);
+    assert(ct == celltype_user_block && ct >= gridmap::celltype_user_start);
 }
 
 }
@@ -1936,7 +1970,7 @@ int main (int argc, char **argv)
         gridmap_test_insert_empty();
         gridmap_test_set_cells();
         gridmap_test_insert_cells();
-//      gridmap_test_custom_celltype();
+        gridmap_test_custom_celltype();
     }
 
     if (opt.test_perf)

@@ -28,24 +28,11 @@
 #ifndef __MDDS_GRID_MAP_TRAIT_HPP__
 #define __MDDS_GRID_MAP_TRAIT_HPP__
 
+#include "grid_map_types.hpp"
+
 #include <vector>
 
 namespace mdds { namespace gridmap {
-
-typedef int cell_t;
-
-const int celltype_numeric = 0;
-const int celltype_string  = 1;
-const int celltype_index   = 2;
-const int celltype_boolean = 3;
-
-const int celltype_user_start = 50;
-
-struct base_cell_block
-{
-    cell_t type;
-    base_cell_block(cell_t _t) : type(_t) {}
-};
 
 struct numeric_cell_block : public base_cell_block, public std::vector<double>
 {
@@ -135,6 +122,50 @@ const boolean_cell_block* get_boolean_block(const base_cell_block* block)
     return static_cast<const boolean_cell_block*>(block);
 }
 
+cell_t get_cell_type(double)
+{
+    return celltype_numeric;
+}
+
+cell_t get_cell_type(const std::string&)
+{
+    return celltype_string;
+}
+
+cell_t get_cell_type(size_t)
+{
+    return celltype_index;
+}
+
+cell_t get_cell_type(bool)
+{
+    return celltype_boolean;
+}
+
+void set_value(base_cell_block* block, size_t pos, double val)
+{
+    numeric_cell_block& blk = *get_numeric_block(block);
+    blk[pos] = val;
+}
+
+void set_value(base_cell_block* block, size_t pos, const std::string& val)
+{
+    string_cell_block& blk = *get_string_block(block);
+    blk[pos] = val;
+}
+
+void set_value(base_cell_block* block, size_t pos, size_t val)
+{
+    index_cell_block& blk = *get_index_block(block);
+    blk[pos] = val;
+}
+
+void set_value(base_cell_block* block, size_t pos, bool val)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
+    blk[pos] = val;
+}
+
 struct cell_block_func
 {
     static cell_t get_block_type(const base_cell_block& block);
@@ -190,26 +221,6 @@ struct cell_block_func
 
     static bool equal_block(const base_cell_block* left, const base_cell_block* right);
 };
-
-cell_t get_cell_type(double)
-{
-    return celltype_numeric;
-}
-
-cell_t get_cell_type(const std::string&)
-{
-    return celltype_string;
-}
-
-cell_t get_cell_type(size_t)
-{
-    return celltype_index;
-}
-
-cell_t get_cell_type(bool)
-{
-    return celltype_boolean;
-}
 
 cell_t cell_block_func::get_block_type(const base_cell_block& block)
 {
@@ -422,30 +433,6 @@ void cell_block_func::erase(base_cell_block* block, size_t pos, size_t size)
         default:
             assert(!"attempting to erase a cell from a block of unknown type!");
     }
-}
-
-void set_value(base_cell_block* block, size_t pos, double val)
-{
-    numeric_cell_block& blk = *get_numeric_block(block);
-    blk[pos] = val;
-}
-
-void set_value(base_cell_block* block, size_t pos, const std::string& val)
-{
-    string_cell_block& blk = *get_string_block(block);
-    blk[pos] = val;
-}
-
-void set_value(base_cell_block* block, size_t pos, size_t val)
-{
-    index_cell_block& blk = *get_index_block(block);
-    blk[pos] = val;
-}
-
-void set_value(base_cell_block* block, size_t pos, bool val)
-{
-    boolean_cell_block& blk = *get_boolean_block(block);
-    blk[pos] = val;
 }
 
 template<typename _Iter>
