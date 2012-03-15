@@ -90,6 +90,12 @@ struct user_cell
 struct user_cell_block : public gridmap::base_cell_block, public std::vector<user_cell*>
 {
     user_cell_block() : gridmap::base_cell_block(celltype_user_block) {}
+    user_cell_block(size_t n) : gridmap::base_cell_block(celltype_user_block), std::vector<user_cell*>(n) {}
+
+    ~user_cell_block()
+    {
+        std::for_each(begin(), end(), default_deleter<user_cell>());
+    }
 };
 
 }
@@ -100,6 +106,16 @@ cell_t get_cell_type(const user_cell*)
 {
     return celltype_user_block;
 }
+
+void set_value(base_cell_block* block, size_t pos, user_cell* p)
+{
+    if (block->type != celltype_user_block)
+        throw mdds::general_error("not a user block");
+
+    user_cell_block& blk = *static_cast<user_cell_block*>(block);
+    blk[pos] = p;
+}
+
 
 }}
 
@@ -115,6 +131,35 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func
     static void set_value(mdds::gridmap::base_cell_block* block, size_t pos, const T& val)
     {
         mdds::gridmap::set_value(block, pos, val);
+    }
+
+    static mdds::gridmap::base_cell_block* create_new_block(
+        mdds::gridmap::cell_t type, size_t init_size)
+    {
+        switch (type)
+        {
+            case celltype_user_block:
+                return new user_cell_block(init_size);
+            default:
+                ;
+        }
+
+        return cell_block_func::create_new_block(type, init_size);
+    }
+
+    static void delete_block(mdds::gridmap::base_cell_block* p)
+    {
+        if (!p)
+            return;
+
+        switch (p->type)
+        {
+            case celltype_user_block:
+                delete static_cast<user_cell_block*>(p);
+            break;
+            default:
+                cell_block_func::delete_block(p);
+        }
     }
 };
 
@@ -1948,6 +1993,11 @@ void gridmap_test_custom_celltype()
     user_cell* p = NULL;
     ct = column_type::get_cell_type(p);
     assert(ct == celltype_user_block && ct >= gridmap::celltype_user_start);
+
+    column_type db(4);
+    p = new user_cell;
+    p->value = 1.2;
+    db.set_cell(0, p);
 }
 
 }

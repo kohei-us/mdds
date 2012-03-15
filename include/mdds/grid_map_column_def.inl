@@ -310,8 +310,8 @@ void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, cons
     if (data)
         cell_block_func::delete_block(data);
 
-    // New cell block is always size 1.
-    data = cell_block_func::create_new_block(cat);
+    // New cell block with size 1.
+    data = cell_block_func::create_new_block(cat, 1);
     if (!data)
         throw general_error("Failed to create new block.");
 
@@ -339,7 +339,7 @@ void column<_Trait>::set_cell_to_middle_of_block(
         cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
 
         // Transfer the tail values from the original to the new block.
-        blk_tail->mp_data = cell_block_func::create_new_block(blk_cat);
+        blk_tail->mp_data = cell_block_func::create_new_block(blk_cat, 0);
         cell_block_func::assign_values(
             blk_tail->mp_data, blk->mp_data, pos_in_block+1, orig_size-pos_in_block-1);
 
@@ -1067,7 +1067,7 @@ void column<_Trait>::insert_empty_impl(size_type row, size_type length)
     m_blocks[block_index+2] = new block(size_blk_next);
 
     block* blk_next = m_blocks[block_index+2];
-    blk_next->mp_data = cell_block_func::create_new_block(cell_block_func::get_block_type(*blk->mp_data));
+    blk_next->mp_data = cell_block_func::create_new_block(cell_block_func::get_block_type(*blk->mp_data), 0);
     cell_block_func::assign_values(blk_next->mp_data, blk->mp_data, size_blk_prev, size_blk_next);
 
     cell_block_func::resize_block(blk->mp_data, size_blk_prev);
@@ -1143,7 +1143,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
             // Just insert a new block before the current block.
             m_blocks.insert(m_blocks.begin()+block_index, new block(length));
             blk = m_blocks[block_index];
-            blk->mp_data = cell_block_func::create_new_block(cat);
+            blk->mp_data = cell_block_func::create_new_block(cat, 0);
             cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
             blk->m_size = length;
             m_cur_size += length;
@@ -1190,7 +1190,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
         // Just insert a new block before the current block.
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
-        blk->mp_data = cell_block_func::create_new_block(cat);
+        blk->mp_data = cell_block_func::create_new_block(cat, 0);
         cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
         blk->m_size = length;
         m_cur_size += length;
@@ -1222,7 +1222,7 @@ void column<_Trait>::insert_cells_to_middle(
 
     // block for data series.
     block* blk2 = m_blocks[block_index+1];
-    blk2->mp_data = cell_block_func::create_new_block(cat);
+    blk2->mp_data = cell_block_func::create_new_block(cat, 0);
     cell_block_func::assign_values(blk2->mp_data, it_begin, it_end);
 
     if (blk->mp_data)
@@ -1231,7 +1231,7 @@ void column<_Trait>::insert_cells_to_middle(
 
         // block to hold data from the lower part of the existing block.
         block* blk3 = m_blocks[block_index+2];
-        blk3->mp_data = cell_block_func::create_new_block(blk_cat);
+        blk3->mp_data = cell_block_func::create_new_block(blk_cat, 0);
 
         // Transfer the lower part of the current block to the new block.
         cell_block_func::assign_values(blk3->mp_data, blk->mp_data, row, n2);
@@ -1279,7 +1279,7 @@ void column<_Trait>::set_cells_to_single_block(
             if (blk->mp_data)
                 cell_block_func::delete_block(blk->mp_data);
 
-            blk->mp_data = cell_block_func::create_new_block(cat);
+            blk->mp_data = cell_block_func::create_new_block(cat, 0);
             cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
             return;
         }
@@ -1293,7 +1293,7 @@ void column<_Trait>::set_cells_to_single_block(
         {
             // Erase the upper part of the data from the current data array.
             mdds::unique_ptr<cell_block_type> new_data(
-                cell_block_func::create_new_block(cell_block_func::get_block_type(*blk->mp_data)));
+                cell_block_func::create_new_block(cell_block_func::get_block_type(*blk->mp_data), 0));
 
             if (!new_data)
                 throw std::logic_error("failed to instantiate a new data array.");
@@ -1312,7 +1312,7 @@ void column<_Trait>::set_cells_to_single_block(
         // the new data.
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
-        blk->mp_data = cell_block_func::create_new_block(cat);
+        blk->mp_data = cell_block_func::create_new_block(cat, 0);
         blk->m_size = length;
         cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
         return;
@@ -1348,7 +1348,7 @@ void column<_Trait>::set_cells_to_single_block(
             // Next block has a different data type. Do the normal insertion.
             m_blocks.insert(m_blocks.begin()+block_index+1, new block(new_size));
             blk = m_blocks[block_index+1];
-            blk->mp_data = cell_block_func::create_new_block(cat);
+            blk->mp_data = cell_block_func::create_new_block(cat, 0);
             cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
             return;
         }
@@ -1358,7 +1358,7 @@ void column<_Trait>::set_cells_to_single_block(
 
         m_blocks.push_back(new block(new_size));
         blk = m_blocks.back();
-        blk->mp_data = cell_block_func::create_new_block(cat);
+        blk->mp_data = cell_block_func::create_new_block(cat, 0);
         cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
         return;
     }
@@ -1375,7 +1375,7 @@ void column<_Trait>::set_cells_to_single_block(
     size_type new_size = end_row - start_row + 1;
     m_blocks[block_index+1] = new block(new_size);
     block* blk_new = m_blocks[block_index+1];
-    blk_new->mp_data = cell_block_func::create_new_block(cat);
+    blk_new->mp_data = cell_block_func::create_new_block(cat, 0);
     cell_block_func::assign_values(blk_new->mp_data, it_begin, it_end);
 
     // second new block is to transfer the lower part of the current block.
@@ -1387,7 +1387,7 @@ void column<_Trait>::set_cells_to_single_block(
         cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
 
         blk_new = m_blocks[block_index+2];
-        blk_new->mp_data = cell_block_func::create_new_block(blk_cat);
+        blk_new->mp_data = cell_block_func::create_new_block(blk_cat, 0);
         cell_block_func::assign_values(
             blk_new->mp_data, blk->mp_data, end_row+1, new_size);
     }
@@ -1481,7 +1481,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
         cell_block_func::append_values(data_blk->mp_data, it_begin, it_end);
     else
     {
-        data_blk->mp_data = cell_block_func::create_new_block(cat);
+        data_blk->mp_data = cell_block_func::create_new_block(cat, 0);
         cell_block_func::assign_values(data_blk->mp_data, it_begin, it_end);
     }
 
@@ -1855,7 +1855,7 @@ void column<_Trait>::set_empty_in_single_block(
     block* blk_lower = m_blocks[block_index+2];
     assert(blk_lower->m_size == lower_block_size);
     cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
-    blk_lower->mp_data = cell_block_func::create_new_block(blk_cat);
+    blk_lower->mp_data = cell_block_func::create_new_block(blk_cat, 0);
     cell_block_func::assign_values(
         blk_lower->mp_data, blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
 

@@ -38,24 +38,28 @@ struct numeric_cell_block : public base_cell_block, public std::vector<double>
 {
 public:
     numeric_cell_block() : base_cell_block(celltype_numeric), std::vector<double>(1) {}
+    numeric_cell_block(size_t n) : base_cell_block(celltype_numeric), std::vector<double>(n) {}
 };
 
 struct string_cell_block : public base_cell_block, public std::vector<std::string>
 {
 public:
     string_cell_block() : base_cell_block(celltype_string), std::vector<std::string>(1) {}
+    string_cell_block(size_t n) : base_cell_block(celltype_string), std::vector<std::string>(n) {}
 };
 
 struct index_cell_block : public base_cell_block, public std::vector<size_t>
 {
 public:
     index_cell_block() : base_cell_block(celltype_index), std::vector<size_t>(1) {}
+    index_cell_block(size_t n) : base_cell_block(celltype_index), std::vector<size_t>(n) {}
 };
 
 struct boolean_cell_block : public base_cell_block, public std::vector<bool>
 {
 public:
     boolean_cell_block() : base_cell_block(celltype_boolean), std::vector<bool>(1) {}
+    boolean_cell_block(size_t n) : base_cell_block(celltype_boolean), std::vector<bool>(n) {}
 };
 
 numeric_cell_block* get_numeric_block(base_cell_block* block)
@@ -170,7 +174,7 @@ struct cell_block_func
 {
     static cell_t get_block_type(const base_cell_block& block);
 
-    static base_cell_block* create_new_block(cell_t type);
+    static base_cell_block* create_new_block(cell_t type, size_t init_size);
 
     static base_cell_block* clone_block(base_cell_block* p);
 
@@ -227,20 +231,20 @@ cell_t cell_block_func::get_block_type(const base_cell_block& block)
     return block.type;
 }
 
-base_cell_block* cell_block_func::create_new_block(cell_t type)
+base_cell_block* cell_block_func::create_new_block(cell_t type, size_t init_size)
 {
     switch (type)
     {
         case celltype_numeric:
-            return new numeric_cell_block;
+            return new numeric_cell_block(init_size);
         case celltype_string:
-            return new string_cell_block;
+            return new string_cell_block(init_size);
         case celltype_index:
-            return new index_cell_block;
+            return new index_cell_block(init_size);
         case celltype_boolean:
-            return new boolean_cell_block;
+            return new boolean_cell_block(init_size);
         default:
-            ;
+            throw general_error("create_new_block: failed to create a new block of unknown type.");
     }
     return NULL;
 }
@@ -261,7 +265,7 @@ base_cell_block* cell_block_func::clone_block(base_cell_block* p)
         case celltype_boolean:
             return new boolean_cell_block(*get_boolean_block(p));
         default:
-            ;
+            throw general_error("clone_block: failed to clone a block of unknown type.");
     }
     return NULL;
 }
@@ -286,7 +290,7 @@ void cell_block_func::delete_block(base_cell_block* p)
             delete static_cast<boolean_cell_block*>(p);
         break;
         default:
-            assert(!"attempting to delete a cell block instance of unknown type!");
+            throw general_error("delete_block: failed to delete a block of unknown type.");
     }
 }
 
@@ -310,7 +314,7 @@ void cell_block_func::resize_block(base_cell_block* p, size_t new_size)
             static_cast<boolean_cell_block*>(p)->resize(new_size);
         break;
         default:
-            assert(!"attempting to delete a cell block instance of unknown type!");
+            throw general_error("resize_block: failed to resize a block of unknown type.");
     }
 }
 
@@ -359,7 +363,7 @@ void cell_block_func::print_block(base_cell_block* p)
         }
         break;
         default:
-            assert(!"attempting to print a cell block instance of unknown type!");
+            throw general_error("print_block: failed to print a block of unknown type.");
     }
 }
 
@@ -395,7 +399,7 @@ void cell_block_func::erase(base_cell_block* block, size_t pos)
         }
         break;
         default:
-            assert(!"attempting to erase a cell from a block of unknown type!");
+            throw general_error("erase: failed to erase an element from a block of unknown type.");
     }
 }
 
@@ -431,7 +435,7 @@ void cell_block_func::erase(base_cell_block* block, size_t pos, size_t size)
         }
         break;
         default:
-            assert(!"attempting to erase a cell from a block of unknown type!");
+            throw general_error("erase: failed to erase elements from a block of unknown type.");
     }
 }
 
@@ -631,7 +635,7 @@ void cell_block_func::append_values(base_cell_block* dest, const base_cell_block
         }
         break;
         default:
-            assert(!"unhandled cell type.");
+            throw general_error("append_values: failed to append values to a block of unknown type.");
     }
 }
 
@@ -736,7 +740,7 @@ void cell_block_func::append_values(base_cell_block* dest, const base_cell_block
         }
         break;
         default:
-            assert(!"unhandled cell type.");
+            throw general_error("append_values: failed to append values to a block of unknown type.");
     }
 }
 
@@ -792,7 +796,7 @@ void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block
         }
         break;
         default:
-            assert(!"unhandled cell type.");
+            throw general_error("assign_values: failed to assign values to a block of unknown type.");
     }
 }
 
