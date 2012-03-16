@@ -116,6 +116,11 @@ void set_value(base_cell_block* block, size_t pos, user_cell* p)
     blk[pos] = p;
 }
 
+void get_value(base_cell_block* block, size_t pos, user_cell*& val)
+{
+    user_cell_block& blk = *static_cast<user_cell_block*>(block);
+    val = blk[pos];
+}
 
 }}
 
@@ -131,6 +136,12 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func
     static void set_value(mdds::gridmap::base_cell_block* block, size_t pos, const T& val)
     {
         mdds::gridmap::set_value(block, pos, val);
+    }
+
+    template<typename T>
+    static void get_value(mdds::gridmap::base_cell_block* block, size_t pos, T& val)
+    {
+        mdds::gridmap::get_value(block, pos, val);
     }
 
     static mdds::gridmap::base_cell_block* create_new_block(
@@ -1998,6 +2009,9 @@ void gridmap_test_custom_celltype()
     p = new user_cell;
     p->value = 1.2;
     db.set_cell(0, p);
+
+    user_cell* p2 = db.get_cell<user_cell*>(0);
+    assert(p->value == p2->value);
 }
 
 }

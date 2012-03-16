@@ -170,6 +170,30 @@ void set_value(base_cell_block* block, size_t pos, bool val)
     blk[pos] = val;
 }
 
+void get_value(base_cell_block* block, size_t pos, double& val)
+{
+    numeric_cell_block& blk = *get_numeric_block(block);
+    val = blk[pos];
+}
+
+void get_value(base_cell_block* block, size_t pos, std::string& val)
+{
+    string_cell_block& blk = *get_string_block(block);
+    val = blk[pos];
+}
+
+void get_value(base_cell_block* block, size_t pos, size_t& val)
+{
+    index_cell_block& blk = *get_index_block(block);
+    val = blk[pos];
+}
+
+void get_value(base_cell_block* block, size_t pos, bool& val)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
+    val = blk[pos];
+}
+
 struct cell_block_func
 {
     static cell_t get_block_type(const base_cell_block& block);
@@ -903,35 +927,7 @@ void cell_block_func::insert_values(
 template<typename T>
 void cell_block_func::get_value(base_cell_block* block, size_t pos, T& val)
 {
-    throw general_error("non-specialized version of get_value called.");
-}
-
-template<>
-void cell_block_func::get_value<double>(base_cell_block* block, size_t pos, double& val)
-{
-    numeric_cell_block& blk = *get_numeric_block(block);
-    val = blk[pos];
-}
-
-template<>
-void cell_block_func::get_value<std::string>(base_cell_block* block, size_t pos, std::string& val)
-{
-    string_cell_block& blk = *get_string_block(block);
-    val = blk[pos];
-}
-
-template<>
-void cell_block_func::get_value<size_t>(base_cell_block* block, size_t pos, size_t& val)
-{
-    index_cell_block& blk = *get_index_block(block);
-    val = blk[pos];
-}
-
-template<>
-void cell_block_func::get_value<bool>(base_cell_block* block, size_t pos, bool& val)
-{
-    boolean_cell_block& blk = *get_boolean_block(block);
-    val = blk[pos];
+    mdds::gridmap::get_value(block, pos, val);
 }
 
 template<typename T>
