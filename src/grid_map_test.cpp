@@ -34,6 +34,9 @@
 #include <sstream>
 #include <vector>
 
+#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/noncopyable.hpp>
+
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
 #include <stdio.h>
@@ -85,16 +88,37 @@ const gridmap::cell_t celltype_user_block = gridmap::celltype_user_start;
 struct user_cell
 {
     double value;
+
+    user_cell() : value(0.0) {}
+    user_cell(double _v) : value(_v) {}
 };
 
 struct user_cell_block : public gridmap::base_cell_block, public std::vector<user_cell*>
 {
     user_cell_block() : gridmap::base_cell_block(celltype_user_block) {}
     user_cell_block(size_t n) : gridmap::base_cell_block(celltype_user_block), std::vector<user_cell*>(n) {}
+};
 
-    ~user_cell_block()
+template<typename T>
+class cell_pool : boost::noncopyable
+{
+    boost::ptr_vector<T> m_pool;
+public:
+    T* construct()
     {
-        std::for_each(begin(), end(), default_deleter<user_cell>());
+        m_pool.push_back(new T);
+        return &m_pool.back();
+    }
+};
+
+class user_cell_pool : public cell_pool<user_cell>
+{
+public:
+    user_cell* construct(double val)
+    {
+        user_cell* p = cell_pool<user_cell>::construct();
+        p->value = val;
+        return p;
     }
 };
 
@@ -156,6 +180,22 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func
         }
 
         return cell_block_func::create_new_block(type, init_size);
+    }
+
+    static mdds::gridmap::base_cell_block* clone_block(mdds::gridmap::base_cell_block* p)
+    {
+        if (!p)
+            return NULL;
+
+        switch (p->type)
+        {
+            case celltype_user_block:
+                return new user_cell_block(*static_cast<user_cell_block*>(p));
+            default:
+                ;
+        }
+
+        return cell_block_func::clone_block(p);
     }
 
     static void delete_block(mdds::gridmap::base_cell_block* p)
@@ -2005,13 +2045,28 @@ void gridmap_test_custom_celltype()
     ct = column_type::get_cell_type(p);
     assert(ct == celltype_user_block && ct >= gridmap::celltype_user_start);
 
+    // mdds::grid_map does not manage the life cycle of individual cells; the
+    // client code needs to manage them when storing pointers.
+
+    user_cell_pool pool;
+
+    // set_cell()
+
     column_type db(4);
-    p = new user_cell;
-    p->value = 1.2;
+    p = pool.construct(1.2);
     db.set_cell(0, p);
 
     user_cell* p2 = db.get_cell<user_cell*>(0);
     assert(p->value == p2->value);
+
+    p = pool.construct(3.4);
+    db.set_cell(0, p);
+    p2 = db.get_cell<user_cell*>(0);
+    assert(p->value == p2->value);
+
+    // set_cells()
+
+
 }
 
 }
