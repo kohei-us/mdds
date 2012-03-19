@@ -82,148 +82,14 @@ private:
     double m_start_time;
 };
 
-/** custom cell type definition. */
-const gridmap::cell_t celltype_user_block = gridmap::celltype_user_start;
-
-struct user_cell
-{
-    double value;
-
-    user_cell() : value(0.0) {}
-    user_cell(double _v) : value(_v) {}
-};
-
-struct user_cell_block : public gridmap::base_cell_block, public std::vector<user_cell*>
-{
-    user_cell_block() : gridmap::base_cell_block(celltype_user_block) {}
-    user_cell_block(size_t n) : gridmap::base_cell_block(celltype_user_block), std::vector<user_cell*>(n) {}
-};
-
-template<typename T>
-class cell_pool : boost::noncopyable
-{
-    boost::ptr_vector<T> m_pool;
-public:
-    T* construct()
-    {
-        m_pool.push_back(new T);
-        return &m_pool.back();
-    }
-};
-
-class user_cell_pool : public cell_pool<user_cell>
-{
-public:
-    user_cell* construct(double val)
-    {
-        user_cell* p = cell_pool<user_cell>::construct();
-        p->value = val;
-        return p;
-    }
-};
-
-}
-
-namespace mdds { namespace gridmap {
-
-cell_t get_cell_type(const user_cell*)
-{
-    return celltype_user_block;
-}
-
-void set_value(base_cell_block* block, size_t pos, user_cell* p)
-{
-    if (block->type != celltype_user_block)
-        throw mdds::general_error("not a user block");
-
-    user_cell_block& blk = *static_cast<user_cell_block*>(block);
-    blk[pos] = p;
-}
-
-void get_value(base_cell_block* block, size_t pos, user_cell*& val)
-{
-    user_cell_block& blk = *static_cast<user_cell_block*>(block);
-    val = blk[pos];
-}
-
-}}
-
-struct my_cell_block_func : public mdds::gridmap::cell_block_func
-{
-    template<typename T>
-    static mdds::gridmap::cell_t get_cell_type(const T& cell)
-    {
-        return mdds::gridmap::get_cell_type(cell);
-    }
-
-    template<typename T>
-    static void set_value(mdds::gridmap::base_cell_block* block, size_t pos, const T& val)
-    {
-        mdds::gridmap::set_value(block, pos, val);
-    }
-
-    template<typename T>
-    static void get_value(mdds::gridmap::base_cell_block* block, size_t pos, T& val)
-    {
-        mdds::gridmap::get_value(block, pos, val);
-    }
-
-    static mdds::gridmap::base_cell_block* create_new_block(
-        mdds::gridmap::cell_t type, size_t init_size)
-    {
-        switch (type)
-        {
-            case celltype_user_block:
-                return new user_cell_block(init_size);
-            default:
-                ;
-        }
-
-        return cell_block_func::create_new_block(type, init_size);
-    }
-
-    static mdds::gridmap::base_cell_block* clone_block(mdds::gridmap::base_cell_block* p)
-    {
-        if (!p)
-            return NULL;
-
-        switch (p->type)
-        {
-            case celltype_user_block:
-                return new user_cell_block(*static_cast<user_cell_block*>(p));
-            default:
-                ;
-        }
-
-        return cell_block_func::clone_block(p);
-    }
-
-    static void delete_block(mdds::gridmap::base_cell_block* p)
-    {
-        if (!p)
-            return;
-
-        switch (p->type)
-        {
-            case celltype_user_block:
-                delete static_cast<user_cell_block*>(p);
-            break;
-            default:
-                cell_block_func::delete_block(p);
-        }
-    }
-};
-
 struct grid_map_trait
 {
     typedef long sheet_key_type;
     typedef long row_key_type;
     typedef long col_key_type;
 
-    typedef my_cell_block_func cell_block_func;
+    typedef mdds::gridmap::cell_block_func cell_block_func;
 };
-
-namespace {
 
 template<typename _ColT, typename _ValT>
 bool test_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT val)
@@ -2023,52 +1889,6 @@ void gridmap_test_insert_cells()
     }
 }
 
-void gridmap_test_custom_celltype()
-{
-    stack_printer __stack_printer__("::gridmap_test_custom_celltype");
-    mdds::gridmap::cell_t ct;
-
-    // Basic types
-    ct = column_type::get_cell_type(double(12.3));
-    assert(ct == gridmap::celltype_numeric);
-    ct = column_type::get_cell_type(string());
-    assert(ct == gridmap::celltype_string);
-    ct = column_type::get_cell_type(size_t(12));
-    assert(ct == gridmap::celltype_index);
-    ct = column_type::get_cell_type(true);
-    assert(ct == gridmap::celltype_boolean);
-    ct = column_type::get_cell_type(false);
-    assert(ct == gridmap::celltype_boolean);
-
-    // Custom cell type
-    user_cell* p = NULL;
-    ct = column_type::get_cell_type(p);
-    assert(ct == celltype_user_block && ct >= gridmap::celltype_user_start);
-
-    // mdds::grid_map does not manage the life cycle of individual cells; the
-    // client code needs to manage them when storing pointers.
-
-    user_cell_pool pool;
-
-    // set_cell()
-
-    column_type db(4);
-    p = pool.construct(1.2);
-    db.set_cell(0, p);
-
-    user_cell* p2 = db.get_cell<user_cell*>(0);
-    assert(p->value == p2->value);
-
-    p = pool.construct(3.4);
-    db.set_cell(0, p);
-    p2 = db.get_cell<user_cell*>(0);
-    assert(p->value == p2->value);
-
-    // set_cells()
-
-
-}
-
 }
 
 int main (int argc, char **argv)
@@ -2089,7 +1909,6 @@ int main (int argc, char **argv)
         gridmap_test_insert_empty();
         gridmap_test_set_cells();
         gridmap_test_insert_cells();
-        gridmap_test_custom_celltype();
     }
 
     if (opt.test_perf)

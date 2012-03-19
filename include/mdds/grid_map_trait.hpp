@@ -194,7 +194,7 @@ void get_value(base_cell_block* block, size_t pos, bool& val)
     val = blk[pos];
 }
 
-struct cell_block_func
+struct cell_block_func_base
 {
     static cell_t get_block_type(const base_cell_block& block);
 
@@ -250,12 +250,12 @@ struct cell_block_func
     static bool equal_block(const base_cell_block* left, const base_cell_block* right);
 };
 
-cell_t cell_block_func::get_block_type(const base_cell_block& block)
+cell_t cell_block_func_base::get_block_type(const base_cell_block& block)
 {
     return block.type;
 }
 
-base_cell_block* cell_block_func::create_new_block(cell_t type, size_t init_size)
+base_cell_block* cell_block_func_base::create_new_block(cell_t type, size_t init_size)
 {
     switch (type)
     {
@@ -273,7 +273,7 @@ base_cell_block* cell_block_func::create_new_block(cell_t type, size_t init_size
     return NULL;
 }
 
-base_cell_block* cell_block_func::clone_block(base_cell_block* p)
+base_cell_block* cell_block_func_base::clone_block(base_cell_block* p)
 {
     if (!p)
         return NULL;
@@ -294,7 +294,7 @@ base_cell_block* cell_block_func::clone_block(base_cell_block* p)
     return NULL;
 }
 
-void cell_block_func::delete_block(base_cell_block* p)
+void cell_block_func_base::delete_block(base_cell_block* p)
 {
     if (!p)
         return;
@@ -318,7 +318,7 @@ void cell_block_func::delete_block(base_cell_block* p)
     }
 }
 
-void cell_block_func::resize_block(base_cell_block* p, size_t new_size)
+void cell_block_func_base::resize_block(base_cell_block* p, size_t new_size)
 {
     if (!p)
         return;
@@ -351,7 +351,7 @@ struct print_block_array
     }
 };
 
-void cell_block_func::print_block(base_cell_block* p)
+void cell_block_func_base::print_block(base_cell_block* p)
 {
     if (!p)
         return;
@@ -391,7 +391,7 @@ void cell_block_func::print_block(base_cell_block* p)
     }
 }
 
-void cell_block_func::erase(base_cell_block* block, size_t pos)
+void cell_block_func_base::erase(base_cell_block* block, size_t pos)
 {
     if (!block)
         return;
@@ -427,7 +427,7 @@ void cell_block_func::erase(base_cell_block* block, size_t pos)
     }
 }
 
-void cell_block_func::erase(base_cell_block* block, size_t pos, size_t size)
+void cell_block_func_base::erase(base_cell_block* block, size_t pos, size_t size)
 {
     if (!block)
         return;
@@ -508,7 +508,7 @@ void _set_values(
 }
 
 template<typename T>
-void cell_block_func::set_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+void cell_block_func_base::set_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
 {
     if (!block)
         throw general_error("destination cell block is NULL.");
@@ -521,34 +521,34 @@ void cell_block_func::set_values(base_cell_block* block, size_t pos, const T& it
 }
 
 template<typename T>
-void cell_block_func::prepend_value(base_cell_block* block, const T& val)
+void cell_block_func_base::prepend_value(base_cell_block* block, const T& val)
 {
     throw general_error("non-specialized version of prepend_value called.");
 }
 
 template<>
-void cell_block_func::prepend_value<double>(base_cell_block* block, const double& val)
+void cell_block_func_base::prepend_value<double>(base_cell_block* block, const double& val)
 {
     numeric_cell_block& blk = *get_numeric_block(block);
     blk.insert(blk.begin(), val);
 }
 
 template<>
-void cell_block_func::prepend_value<std::string>(base_cell_block* block, const std::string& val)
+void cell_block_func_base::prepend_value<std::string>(base_cell_block* block, const std::string& val)
 {
     string_cell_block& blk = *get_string_block(block);
     blk.insert(blk.begin(), val);
 }
 
 template<>
-void cell_block_func::prepend_value<size_t>(base_cell_block* block, const size_t& val)
+void cell_block_func_base::prepend_value<size_t>(base_cell_block* block, const size_t& val)
 {
     index_cell_block& blk = *get_index_block(block);
     blk.insert(blk.begin(), val);
 }
 
 template<>
-void cell_block_func::prepend_value<bool>(base_cell_block* block, const bool& val)
+void cell_block_func_base::prepend_value<bool>(base_cell_block* block, const bool& val)
 {
     boolean_cell_block& blk = *get_boolean_block(block);
     blk.insert(blk.begin(), val);
@@ -583,47 +583,47 @@ void _prepend_values(base_cell_block* block, bool, const _Iter& it_begin, const 
 }
 
 template<typename T>
-void cell_block_func::prepend_values(base_cell_block* block, const T& it_begin, const T& it_end)
+void cell_block_func_base::prepend_values(base_cell_block* block, const T& it_begin, const T& it_end)
 {
     assert(it_begin != it_end);
     _prepend_values(block, *it_begin, it_begin, it_end);
 }
 
 template<typename T>
-void cell_block_func::append_value(base_cell_block* block, const T& val)
+void cell_block_func_base::append_value(base_cell_block* block, const T& val)
 {
     throw general_error("non-specialized version of append_value called.");
 }
 
 template<>
-void cell_block_func::append_value<double>(base_cell_block* block, const double& val)
+void cell_block_func_base::append_value<double>(base_cell_block* block, const double& val)
 {
     numeric_cell_block& blk = *get_numeric_block(block);
     blk.push_back(val);
 }
 
 template<>
-void cell_block_func::append_value<std::string>(base_cell_block* block, const std::string& val)
+void cell_block_func_base::append_value<std::string>(base_cell_block* block, const std::string& val)
 {
     string_cell_block& blk = *get_string_block(block);
     blk.push_back(val);
 }
 
 template<>
-void cell_block_func::append_value<size_t>(base_cell_block* block, const size_t& val)
+void cell_block_func_base::append_value<size_t>(base_cell_block* block, const size_t& val)
 {
     index_cell_block& blk = *get_index_block(block);
     blk.push_back(val);
 }
 
 template<>
-void cell_block_func::append_value<bool>(base_cell_block* block, const bool& val)
+void cell_block_func_base::append_value<bool>(base_cell_block* block, const bool& val)
 {
     boolean_cell_block& blk = *get_boolean_block(block);
     blk.push_back(val);
 }
 
-void cell_block_func::append_values(base_cell_block* dest, const base_cell_block* src)
+void cell_block_func_base::append_values(base_cell_block* dest, const base_cell_block* src)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -702,13 +702,13 @@ void _append_values(base_cell_block* block, bool, const _Iter& it_begin, const _
 }
 
 template<typename T>
-void cell_block_func::append_values(base_cell_block* block, const T& it_begin, const T& it_end)
+void cell_block_func_base::append_values(base_cell_block* block, const T& it_begin, const T& it_end)
 {
     assert(it_begin != it_end);
     _append_values(block, *it_begin, it_begin, it_end);
 }
 
-void cell_block_func::append_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
+void cell_block_func_base::append_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -768,7 +768,7 @@ void cell_block_func::append_values(base_cell_block* dest, const base_cell_block
     }
 }
 
-void cell_block_func::assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
+void cell_block_func_base::assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -859,7 +859,7 @@ void _assign_values(base_cell_block* dest, bool, const _Iter& it_begin, const _I
 }
 
 template<typename T>
-void cell_block_func::assign_values(base_cell_block* dest, const T& it_begin, const T& it_end)
+void cell_block_func_base::assign_values(base_cell_block* dest, const T& it_begin, const T& it_end)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -911,7 +911,7 @@ void _insert_values(
 }
 
 template<typename T>
-void cell_block_func::insert_values(
+void cell_block_func_base::insert_values(
     base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
 {
     if (!block)
@@ -925,42 +925,42 @@ void cell_block_func::insert_values(
 }
 
 template<typename T>
-void cell_block_func::get_value(base_cell_block* block, size_t pos, T& val)
+void cell_block_func_base::get_value(base_cell_block* block, size_t pos, T& val)
 {
     mdds::gridmap::get_value(block, pos, val);
 }
 
 template<typename T>
-void cell_block_func::get_empty_value(T& val)
+void cell_block_func_base::get_empty_value(T& val)
 {
     throw general_error("non-specialized version of get_empty_value called.");
 }
 
 template<>
-void cell_block_func::get_empty_value<double>(double& val)
+void cell_block_func_base::get_empty_value<double>(double& val)
 {
     val = 0.0;
 }
 
 template<>
-void cell_block_func::get_empty_value<std::string>(std::string& val)
+void cell_block_func_base::get_empty_value<std::string>(std::string& val)
 {
     val = std::string();
 }
 
 template<>
-void cell_block_func::get_empty_value<size_t>(size_t& val)
+void cell_block_func_base::get_empty_value<size_t>(size_t& val)
 {
     val = 0;
 }
 
 template<>
-void cell_block_func::get_empty_value<bool>(bool& val)
+void cell_block_func_base::get_empty_value<bool>(bool& val)
 {
     val = false;
 }
 
-bool cell_block_func::equal_block(const base_cell_block* left, const base_cell_block* right)
+bool cell_block_func_base::equal_block(const base_cell_block* left, const base_cell_block* right)
 {
     if (!left && !right)
         return true;
@@ -991,6 +991,28 @@ bool cell_block_func::equal_block(const base_cell_block* left, const base_cell_b
     }
     return false;
 }
+
+
+struct cell_block_func : public cell_block_func_base
+{
+    template<typename T>
+    static mdds::gridmap::cell_t get_cell_type(const T& cell)
+    {
+        return mdds::gridmap::get_cell_type(cell);
+    }
+
+    template<typename T>
+    static void set_value(mdds::gridmap::base_cell_block* block, size_t pos, const T& val)
+    {
+        mdds::gridmap::set_value(block, pos, val);
+    }
+
+    template<typename T>
+    static void get_value(mdds::gridmap::base_cell_block* block, size_t pos, T& val)
+    {
+        mdds::gridmap::get_value(block, pos, val);
+    }
+};
 
 }}
 
