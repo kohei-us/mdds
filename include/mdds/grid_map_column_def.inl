@@ -520,7 +520,7 @@ void column<_Trait>::set_cell_to_empty_block(
                         block* blk_prev = m_blocks[block_index-1];
                         blk_prev->m_size += 1 + blk_next->m_size;
                         cell_block_func::append_value(blk_prev->mp_data, cell);
-                        cell_block_func::append_values(blk_prev->mp_data, data_next);
+                        cell_block_func::append_values_from_block(blk_prev->mp_data, data_next);
 
                         delete blk;
                         delete blk_next;
@@ -768,7 +768,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
             // the next block.
             blk_prev->m_size += 1 + blk_next->m_size;
             cell_block_func::append_value(blk_prev->mp_data, cell);
-            cell_block_func::append_values(blk_prev->mp_data, blk_next->mp_data);
+            cell_block_func::append_values_from_block(blk_prev->mp_data, blk_next->mp_data);
 
             // Delete the current and next blocks.
             delete blk;
@@ -1497,7 +1497,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
             {
                 // Merge the whole block 3 with the new data. Remove block 3
                 // afterward.
-                cell_block_func::append_values(data_blk->mp_data, blk3->mp_data);
+                cell_block_func::append_values_from_block(data_blk->mp_data, blk3->mp_data);
                 data_blk->m_size += blk3->m_size;
                 ++it_erase_end;
             }
@@ -1515,7 +1515,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
                 // erase block 2.
                 size_type copy_pos = end_row - start_row_in_block2 + 1;
                 size_type size_to_copy = end_row_in_block2 - end_row;
-                cell_block_func::append_values(
+                cell_block_func::append_values_from_block(
                     data_blk->mp_data, blk2->mp_data, copy_pos, size_to_copy);
                 data_blk->m_size += size_to_copy;
 
@@ -1588,7 +1588,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
                 // remove it.
                 size_type data_length = end_row_in_block2 - end_row;
                 size_type begin_pos = end_row - start_row_in_block2 + 1;
-                cell_block_func::append_values(blk1->mp_data, blk2->mp_data, begin_pos, data_length);
+                cell_block_func::append_values_from_block(blk1->mp_data, blk2->mp_data, begin_pos, data_length);
                 blk1->m_size += data_length;
                 ++it_erase_end;
             }

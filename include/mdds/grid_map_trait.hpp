@@ -248,10 +248,10 @@ struct cell_block_func_base
     template<typename T>
     static void append_value(base_cell_block* block, const T& val);
 
-    static void append_values(base_cell_block* dest, const base_cell_block* src);
+    static void append_values_from_block(base_cell_block* dest, const base_cell_block* src);
 
-    static void append_values(base_cell_block* dest, const base_cell_block* src,
-                              size_t begin_pos, size_t len);
+    static void append_values_from_block(
+        base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
 
     static void assign_values(base_cell_block* dest, const base_cell_block* src,
                               size_t begin_pos, size_t len);
@@ -607,7 +607,7 @@ void cell_block_func_base::prepend_values(base_cell_block* block, const T& it_be
     _prepend_values(block, *it_begin, it_begin, it_end);
 }
 
-void cell_block_func_base::append_values(base_cell_block* dest, const base_cell_block* src)
+void cell_block_func_base::append_values_from_block(base_cell_block* dest, const base_cell_block* src)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -647,7 +647,8 @@ void cell_block_func_base::append_values(base_cell_block* dest, const base_cell_
     }
 }
 
-void cell_block_func_base::append_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
+void cell_block_func_base::append_values_from_block(
+    base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -962,7 +963,6 @@ bool cell_block_func_base::equal_block(const base_cell_block* left, const base_c
  */
 struct cell_block_func : public cell_block_func_base
 {
-    using cell_block_func_base::append_values;
     using cell_block_func_base::assign_values;
 
     template<typename T>

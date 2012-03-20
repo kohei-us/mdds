@@ -258,7 +258,8 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void append_values(mdds::gridmap::base_cell_block* dest, const mdds::gridmap::base_cell_block* src)
+    static void append_values_from_block(
+        mdds::gridmap::base_cell_block* dest, const mdds::gridmap::base_cell_block* src)
     {
         if (!dest)
             throw mdds::general_error("empty destination block.");
@@ -273,11 +274,11 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             }
             break;
             default:
-                cell_block_func_base::append_values(dest, src);
+                cell_block_func_base::append_values_from_block(dest, src);
         }
     }
 
-    static void append_values(
+    static void append_values_from_block(
         mdds::gridmap::base_cell_block* dest, const mdds::gridmap::base_cell_block* src,
         size_t begin_pos, size_t len)
     {
@@ -299,7 +300,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             }
             break;
             default:
-                cell_block_func_base::append_values(dest, src, begin_pos, len);
+                cell_block_func_base::append_values_from_block(dest, src, begin_pos, len);
         }
     }
 
