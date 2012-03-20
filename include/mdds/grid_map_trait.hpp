@@ -194,6 +194,30 @@ void get_value(base_cell_block* block, size_t pos, bool& val)
     val = blk[pos];
 }
 
+void append_value(base_cell_block* block, double val)
+{
+    numeric_cell_block& blk = *get_numeric_block(block);
+    blk.push_back(val);
+}
+
+void append_value(base_cell_block* block, const std::string& val)
+{
+    string_cell_block& blk = *get_string_block(block);
+    blk.push_back(val);
+}
+
+void append_value(base_cell_block* block, size_t val)
+{
+    index_cell_block& blk = *get_index_block(block);
+    blk.push_back(val);
+}
+
+void append_value(base_cell_block* block, bool val)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
+    blk.push_back(val);
+}
+
 struct cell_block_func_base
 {
     static cell_t get_block_type(const base_cell_block& block);
@@ -589,40 +613,6 @@ void cell_block_func_base::prepend_values(base_cell_block* block, const T& it_be
     _prepend_values(block, *it_begin, it_begin, it_end);
 }
 
-template<typename T>
-void cell_block_func_base::append_value(base_cell_block* block, const T& val)
-{
-    throw general_error("non-specialized version of append_value called.");
-}
-
-template<>
-void cell_block_func_base::append_value<double>(base_cell_block* block, const double& val)
-{
-    numeric_cell_block& blk = *get_numeric_block(block);
-    blk.push_back(val);
-}
-
-template<>
-void cell_block_func_base::append_value<std::string>(base_cell_block* block, const std::string& val)
-{
-    string_cell_block& blk = *get_string_block(block);
-    blk.push_back(val);
-}
-
-template<>
-void cell_block_func_base::append_value<size_t>(base_cell_block* block, const size_t& val)
-{
-    index_cell_block& blk = *get_index_block(block);
-    blk.push_back(val);
-}
-
-template<>
-void cell_block_func_base::append_value<bool>(base_cell_block* block, const bool& val)
-{
-    boolean_cell_block& blk = *get_boolean_block(block);
-    blk.push_back(val);
-}
-
 void cell_block_func_base::append_values(base_cell_block* dest, const base_cell_block* src)
 {
     if (!dest)
@@ -992,7 +982,10 @@ bool cell_block_func_base::equal_block(const base_cell_block* left, const base_c
     return false;
 }
 
-
+/**
+ * Default cell block function definitions.  Implementation can use this if
+ * it only uses the default block types implemented by the library.
+ */
 struct cell_block_func : public cell_block_func_base
 {
     template<typename T>
@@ -1011,6 +1004,12 @@ struct cell_block_func : public cell_block_func_base
     static void get_value(mdds::gridmap::base_cell_block* block, size_t pos, T& val)
     {
         mdds::gridmap::get_value(block, pos, val);
+    }
+
+    template<typename T>
+    static void append_value(base_cell_block* block, const T& val)
+    {
+        mdds::gridmap::append_value(block, val);
     }
 };
 

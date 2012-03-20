@@ -98,6 +98,22 @@ struct user_cell_block : public gridmap::base_cell_block, public std::vector<use
 {
     user_cell_block() : gridmap::base_cell_block(celltype_user_block) {}
     user_cell_block(size_t n) : gridmap::base_cell_block(celltype_user_block), std::vector<user_cell*>(n) {}
+
+    static user_cell_block& get(gridmap::base_cell_block* p)
+    {
+        if (!p || p->type != celltype_user_block)
+            throw general_error("block is not of type user_cell_block.");
+
+        return *static_cast<user_cell_block*>(p);
+    }
+
+    static const user_cell_block& get(const gridmap::base_cell_block* p)
+    {
+        if (!p || p->type != celltype_user_block)
+            throw general_error("block is not of type user_cell_block.");
+
+        return *static_cast<const user_cell_block*>(p);
+    }
 };
 
 template<typename T>
@@ -134,17 +150,20 @@ cell_t get_cell_type(const user_cell*)
 
 void set_value(base_cell_block* block, size_t pos, user_cell* p)
 {
-    if (block->type != celltype_user_block)
-        throw mdds::general_error("not a user block");
-
-    user_cell_block& blk = *static_cast<user_cell_block*>(block);
+    user_cell_block& blk = user_cell_block::get(block);
     blk[pos] = p;
 }
 
 void get_value(base_cell_block* block, size_t pos, user_cell*& val)
 {
-    user_cell_block& blk = *static_cast<user_cell_block*>(block);
+    user_cell_block& blk = user_cell_block::get(block);
     val = blk[pos];
+}
+
+void append_value(base_cell_block* block, user_cell* val)
+{
+    user_cell_block& blk = user_cell_block::get(block);
+    blk.push_back(val);
 }
 
 }}
@@ -167,6 +186,12 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     static void get_value(mdds::gridmap::base_cell_block* block, size_t pos, T& val)
     {
         mdds::gridmap::get_value(block, pos, val);
+    }
+
+    template<typename T>
+    static void append_value(mdds::gridmap::base_cell_block* block, const T& val)
+    {
+        mdds::gridmap::append_value(block, val);
     }
 
     static mdds::gridmap::base_cell_block* create_new_block(
@@ -213,6 +238,25 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
                 cell_block_func_base::delete_block(p);
         }
     }
+
+    static void append_values(mdds::gridmap::base_cell_block* dest, const mdds::gridmap::base_cell_block* src)
+    {
+        if (!dest)
+            throw mdds::general_error("empty destination block.");
+
+        switch (dest->type)
+        {
+            case celltype_user_block:
+            {
+                user_cell_block& d = user_cell_block::get(dest);
+                const user_cell_block& s = user_cell_block::get(src);
+                d.insert(d.end(), s.begin(), s.end());
+            }
+            break;
+            default:
+                cell_block_func_base::append_values(dest, src);
+        }
+    }
 };
 
 struct grid_map_trait
@@ -238,9 +282,10 @@ bool test_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT 
 typedef mdds::grid_map<grid_map_trait> grid_store_type;
 typedef grid_store_type::sheet_type::column_type column_type;
 
-void gridmap_test_custom_celltype()
+void gridmap_test_types()
 {
-    stack_printer __stack_printer__("::gridmap_test_custom_celltype");
+    stack_printer __stack_printer__("::gridmap_test_types");
+
     mdds::gridmap::cell_t ct;
 
     // Basic types
@@ -259,6 +304,11 @@ void gridmap_test_custom_celltype()
     user_cell* p = NULL;
     ct = column_type::get_cell_type(p);
     assert(ct == celltype_user_block && ct >= gridmap::celltype_user_start);
+}
+
+void gridmap_test_basic()
+{
+    stack_printer __stack_printer__("::gridmap_test_basic");
 
     // mdds::grid_map does not manage the life cycle of individual cells; the
     // client code needs to manage them when storing pointers.
@@ -268,8 +318,11 @@ void gridmap_test_custom_celltype()
     // set_cell()
 
     column_type db(4);
-    p = pool.construct(1.2);
+    user_cell* p = pool.construct(1.2);
     db.set_cell(0, p);
+    db.set_cell(1, p);
+    db.set_cell(3, p);
+    db.set_cell(2, p);
 
     user_cell* p2 = db.get_cell<user_cell*>(0);
     assert(p->value == p2->value);
@@ -293,7 +346,8 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
-        gridmap_test_custom_celltype();
+        gridmap_test_types();
+        gridmap_test_basic();
     }
 
     if (opt.test_perf)
