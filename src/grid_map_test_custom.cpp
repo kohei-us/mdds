@@ -177,10 +177,18 @@ void append_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Ite
 }
 
 template<typename _Iter>
-void assign_values(base_cell_block* dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(mdds::gridmap::base_cell_block* dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block& d = user_cell_block::get(dest);
     d.assign(it_begin, it_end);
+}
+
+template<typename _Iter>
+void insert_values(
+    mdds::gridmap::base_cell_block* block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(block);
+    d.insert(d.begin()+pos, it_begin, it_end);
 }
 
 }}
@@ -209,6 +217,14 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     static void append_value(mdds::gridmap::base_cell_block* block, const T& val)
     {
         mdds::gridmap::append_value(block, val);
+    }
+
+    template<typename T>
+    static void insert_values(
+        mdds::gridmap::base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::insert_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     static mdds::gridmap::base_cell_block* create_new_block(
@@ -253,6 +269,21 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             break;
             default:
                 cell_block_func_base::delete_block(p);
+        }
+    }
+
+    static void resize_block(mdds::gridmap::base_cell_block* p, size_t new_size)
+    {
+        if (!p)
+            return;
+
+        switch (p->type)
+        {
+            case celltype_user_block:
+                static_cast<user_cell_block*>(p)->resize(new_size);
+            break;
+            default:
+                cell_block_func_base::resize_block(p, new_size);
         }
     }
 
@@ -373,9 +404,8 @@ void gridmap_test_basic()
 
     user_cell_pool pool;
 
-    // set_cell()
-
     {
+        // set_cell()
         column_type db(4);
         user_cell* p = pool.construct(1.2);
         db.set_cell(0, p);
@@ -393,8 +423,8 @@ void gridmap_test_basic()
         pool.clear();
     }
 
-    // set_cells()
     {
+        // set_cells(), resize(), insert_cells().
         column_type db(3);
         user_cell* p1 = pool.construct(1.1);
         user_cell* p2 = pool.construct(2.2);
@@ -412,6 +442,52 @@ void gridmap_test_basic()
         ptest = db.get_cell<user_cell*>(1);
         assert(ptest && ptest->value == 2.2);
         ptest = db.get_cell<user_cell*>(2);
+        assert(ptest && ptest->value == 3.3);
+
+        db.resize(6);
+        user_cell* p4 = pool.construct(11);
+        user_cell* p5 = pool.construct(22);
+        user_cell* p6 = pool.construct(33);
+        vals.clear();
+        vals.push_back(p4);
+        vals.push_back(p5);
+        vals.push_back(p6);
+        db.set_cells(3, vals.begin(), vals.end());
+
+        ptest = db.get_cell<user_cell*>(0);
+        assert(ptest && ptest->value == 1.1);
+        ptest = db.get_cell<user_cell*>(1);
+        assert(ptest && ptest->value == 2.2);
+        ptest = db.get_cell<user_cell*>(2);
+        assert(ptest && ptest->value == 3.3);
+        ptest = db.get_cell<user_cell*>(3);
+        assert(ptest && ptest->value == 11);
+        ptest = db.get_cell<user_cell*>(4);
+        assert(ptest && ptest->value == 22);
+        ptest = db.get_cell<user_cell*>(5);
+        assert(ptest && ptest->value == 33);
+
+        // Shrink the block to erase the bottom 3 cells.
+        db.resize(3);
+        assert(db.size() == 3);
+        ptest = db.get_cell<user_cell*>(2);
+        assert(ptest && ptest->value == 3.3);
+
+        // Re-insert the values at the front.
+        db.insert_cells(0, vals.begin(), vals.end());
+        assert(db.size() == 6);
+
+        ptest = db.get_cell<user_cell*>(0);
+        assert(ptest && ptest->value == 11);
+        ptest = db.get_cell<user_cell*>(1);
+        assert(ptest && ptest->value == 22);
+        ptest = db.get_cell<user_cell*>(2);
+        assert(ptest && ptest->value == 33);
+        ptest = db.get_cell<user_cell*>(3);
+        assert(ptest && ptest->value == 1.1);
+        ptest = db.get_cell<user_cell*>(4);
+        assert(ptest && ptest->value == 2.2);
+        ptest = db.get_cell<user_cell*>(5);
         assert(ptest && ptest->value == 3.3);
     }
 }
