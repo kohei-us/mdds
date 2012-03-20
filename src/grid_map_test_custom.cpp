@@ -287,6 +287,42 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
+    static void erase(mdds::gridmap::base_cell_block* block, size_t pos)
+    {
+        if (!block)
+            return;
+
+        switch (block->type)
+        {
+            case celltype_user_block:
+            {
+                user_cell_block& blk = user_cell_block::get(block);
+                blk.erase(blk.begin()+pos);
+            }
+            break;
+            default:
+                cell_block_func_base::erase(block, pos);
+        }
+    }
+
+    static void erase(mdds::gridmap::base_cell_block* block, size_t pos, size_t size)
+    {
+        if (!block)
+            return;
+
+        switch (block->type)
+        {
+            case celltype_user_block:
+            {
+                user_cell_block& blk = user_cell_block::get(block);
+                blk.erase(blk.begin()+pos, blk.begin()+pos+size);
+            }
+            break;
+            default:
+                cell_block_func_base::erase(block, pos, size);
+        }
+    }
+
     static void append_values_from_block(
         mdds::gridmap::base_cell_block* dest, const mdds::gridmap::base_cell_block* src)
     {
@@ -330,6 +366,31 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             break;
             default:
                 cell_block_func_base::append_values_from_block(dest, src, begin_pos, len);
+        }
+    }
+
+    static void assign_values_from_block(
+        mdds::gridmap::base_cell_block* dest, const mdds::gridmap::base_cell_block* src,
+        size_t begin_pos, size_t len)
+    {
+        if (!dest)
+            throw general_error("destination cell block is NULL.");
+
+        switch (dest->type)
+        {
+            case celltype_user_block:
+            {
+                user_cell_block& d = user_cell_block::get(dest);
+                const user_cell_block& s = user_cell_block::get(src);
+                user_cell_block::const_iterator it = s.begin();
+                std::advance(it, begin_pos);
+                user_cell_block::const_iterator it_end = it;
+                std::advance(it_end, len);
+                d.assign(it, it_end);
+            }
+            break;
+            default:
+                cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
         }
     }
 
@@ -489,6 +550,14 @@ void gridmap_test_basic()
         assert(ptest && ptest->value == 2.2);
         ptest = db.get_cell<user_cell*>(5);
         assert(ptest && ptest->value == 3.3);
+
+        db.set_empty(2, 4);
+        assert(db.block_size() == 3);
+        assert(db.get_cell<user_cell*>(1)->value == 22);
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(db.get_cell<user_cell*>(5)->value == 3.3);
     }
 }
 
