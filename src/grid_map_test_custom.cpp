@@ -176,10 +176,19 @@ void append_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Ite
     d.insert(it, it_begin, it_end);
 }
 
+template<typename _Iter>
+void assign_values(base_cell_block* dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(dest);
+    d.assign(it_begin, it_end);
+}
+
 }}
 
 struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 {
+    using mdds::gridmap::cell_block_func_base::assign_values;
+
     template<typename T>
     static mdds::gridmap::cell_t get_cell_type(const T& cell)
     {
@@ -300,6 +309,13 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         assert(it_begin != it_end);
         mdds::gridmap::append_values(block, *it_begin, it_begin, it_end);
     }
+
+    template<typename T>
+    static void assign_values(mdds::gridmap::base_cell_block* dest, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);
+    }
 };
 
 struct grid_map_trait
@@ -390,6 +406,14 @@ void gridmap_test_basic()
         vals.push_back(p2);
         vals.push_back(p3);
         db.set_cells(0, vals.begin(), vals.end());
+
+        user_cell* ptest;
+        ptest = db.get_cell<user_cell*>(0);
+        assert(ptest && ptest->value == 1.1);
+        ptest = db.get_cell<user_cell*>(1);
+        assert(ptest && ptest->value == 2.2);
+        ptest = db.get_cell<user_cell*>(2);
+        assert(ptest && ptest->value == 3.3);
     }
 }
 

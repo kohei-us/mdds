@@ -260,9 +260,6 @@ struct cell_block_func_base
     static void insert_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end);
 
     template<typename T>
-    static void assign_values(base_cell_block* dest, const T& it_begin, const T& it_end);
-
-    template<typename T>
     static void get_value(base_cell_block* block, size_t pos, T& val);
 
     template<typename T>
@@ -805,50 +802,37 @@ void cell_block_func_base::assign_values(base_cell_block* dest, const base_cell_
 }
 
 template<typename _Iter>
-void _assign_values(base_cell_block* dest, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block* dest, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
 {
-    throw general_error("non-specialized version of _assign_values called.");
+    throw general_error("non-specialized version of assign_values called.");
 }
 
 template<typename _Iter>
-void _assign_values(base_cell_block* dest, double, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block* dest, double, const _Iter& it_begin, const _Iter& it_end)
 {
     numeric_cell_block& d = *get_numeric_block(dest);
     d.assign(it_begin, it_end);
 }
 
 template<typename _Iter>
-void _assign_values(base_cell_block* dest, const std::string&, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block* dest, const std::string&, const _Iter& it_begin, const _Iter& it_end)
 {
     string_cell_block& d = *get_string_block(dest);
     d.assign(it_begin, it_end);
 }
 
 template<typename _Iter>
-void _assign_values(base_cell_block* dest, size_t, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block* dest, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
     index_cell_block& d = *get_index_block(dest);
     d.assign(it_begin, it_end);
 }
 
 template<typename _Iter>
-void _assign_values(base_cell_block* dest, bool, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block* dest, bool, const _Iter& it_begin, const _Iter& it_end)
 {
     boolean_cell_block& d = *get_boolean_block(dest);
     d.assign(it_begin, it_end);
-}
-
-template<typename T>
-void cell_block_func_base::assign_values(base_cell_block* dest, const T& it_begin, const T& it_end)
-{
-    if (!dest)
-        throw general_error("destination cell block is NULL.");
-
-    if (it_begin == it_end)
-        // Nothing to do.
-        return;
-
-    _assign_values(dest, *it_begin, it_begin, it_end);
 }
 
 template<typename _Iter>
@@ -979,6 +963,7 @@ bool cell_block_func_base::equal_block(const base_cell_block* left, const base_c
 struct cell_block_func : public cell_block_func_base
 {
     using cell_block_func_base::append_values;
+    using cell_block_func_base::assign_values;
 
     template<typename T>
     static mdds::gridmap::cell_t get_cell_type(const T& cell)
@@ -1009,6 +994,13 @@ struct cell_block_func : public cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::gridmap::append_values(block, *it_begin, it_begin, it_end);
+    }
+
+    template<typename T>
+    static void assign_values(base_cell_block* dest, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);
     }
 };
 
