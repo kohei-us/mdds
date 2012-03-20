@@ -126,6 +126,8 @@ public:
         m_pool.push_back(new T);
         return &m_pool.back();
     }
+
+    void clear() { m_pool.clear(); }
 };
 
 class user_cell_pool : public cell_pool<user_cell>
@@ -164,6 +166,14 @@ void append_value(base_cell_block* block, user_cell* val)
 {
     user_cell_block& blk = user_cell_block::get(block);
     blk.push_back(val);
+}
+
+template<typename _Iter>
+void append_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(block);
+    user_cell_block::iterator it = d.end();
+    d.insert(it, it_begin, it_end);
 }
 
 }}
@@ -257,6 +267,39 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
                 cell_block_func_base::append_values(dest, src);
         }
     }
+
+    static void append_values(
+        mdds::gridmap::base_cell_block* dest, const mdds::gridmap::base_cell_block* src,
+        size_t begin_pos, size_t len)
+    {
+        if (!dest)
+            throw mdds::general_error("empty destination block.");
+
+        switch (dest->type)
+        {
+            case celltype_user_block:
+            {
+                user_cell_block& d = user_cell_block::get(dest);
+                const user_cell_block& s = user_cell_block::get(src);
+                user_cell_block::const_iterator it = s.begin();
+                std::advance(it, begin_pos);
+                user_cell_block::const_iterator it_end = it;
+                std::advance(it_end, len);
+                d.reserve(d.size() + len);
+                std::copy(it, it_end, std::back_inserter(d));
+            }
+            break;
+            default:
+                cell_block_func_base::append_values(dest, src, begin_pos, len);
+        }
+    }
+
+    template<typename T>
+    static void append_values(mdds::gridmap::base_cell_block* block, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::append_values(block, *it_begin, it_begin, it_end);
+    }
 };
 
 struct grid_map_trait
@@ -317,23 +360,37 @@ void gridmap_test_basic()
 
     // set_cell()
 
-    column_type db(4);
-    user_cell* p = pool.construct(1.2);
-    db.set_cell(0, p);
-    db.set_cell(1, p);
-    db.set_cell(3, p);
-    db.set_cell(2, p);
+    {
+        column_type db(4);
+        user_cell* p = pool.construct(1.2);
+        db.set_cell(0, p);
+        db.set_cell(1, p);
+        db.set_cell(3, p);
+        db.set_cell(2, p);
 
-    user_cell* p2 = db.get_cell<user_cell*>(0);
-    assert(p->value == p2->value);
+        user_cell* p2 = db.get_cell<user_cell*>(0);
+        assert(p->value == p2->value);
 
-    p = pool.construct(3.4);
-    db.set_cell(0, p);
-    p2 = db.get_cell<user_cell*>(0);
-    assert(p->value == p2->value);
+        p = pool.construct(3.4);
+        db.set_cell(0, p);
+        p2 = db.get_cell<user_cell*>(0);
+        assert(p->value == p2->value);
+        pool.clear();
+    }
 
     // set_cells()
-
+    {
+        column_type db(3);
+        user_cell* p1 = pool.construct(1.1);
+        user_cell* p2 = pool.construct(2.2);
+        user_cell* p3 = pool.construct(3.3);
+        std::vector<user_cell*> vals;
+        vals.reserve(3);
+        vals.push_back(p1);
+        vals.push_back(p2);
+        vals.push_back(p3);
+        db.set_cells(0, vals.begin(), vals.end());
+    }
 }
 
 }
