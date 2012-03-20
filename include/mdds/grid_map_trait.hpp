@@ -253,8 +253,8 @@ struct cell_block_func_base
     static void append_values_from_block(
         base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
 
-    static void assign_values(base_cell_block* dest, const base_cell_block* src,
-                              size_t begin_pos, size_t len);
+    static void assign_values_from_block(
+        base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
 
     template<typename T>
     static void insert_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end);
@@ -746,7 +746,8 @@ void append_values(base_cell_block* block, bool, const _Iter& it_begin, const _I
     d.insert(it, it_begin, it_end);
 }
 
-void cell_block_func_base::assign_values(base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
+void cell_block_func_base::assign_values_from_block(
+    base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
 {
     if (!dest)
         throw general_error("destination cell block is NULL.");
@@ -963,8 +964,6 @@ bool cell_block_func_base::equal_block(const base_cell_block* left, const base_c
  */
 struct cell_block_func : public cell_block_func_base
 {
-    using cell_block_func_base::assign_values;
-
     template<typename T>
     static mdds::gridmap::cell_t get_cell_type(const T& cell)
     {

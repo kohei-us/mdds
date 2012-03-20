@@ -187,8 +187,6 @@ void assign_values(base_cell_block* dest, user_cell*, const _Iter& it_begin, con
 
 struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 {
-    using mdds::gridmap::cell_block_func_base::assign_values;
-
     template<typename T>
     static mdds::gridmap::cell_t get_cell_type(const T& cell)
     {
