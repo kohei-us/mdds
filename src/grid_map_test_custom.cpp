@@ -551,6 +551,7 @@ void gridmap_test_basic()
         ptest = db.get_cell<user_cell*>(5);
         assert(ptest && ptest->value == 3.3);
 
+        // set_empty(), is_empty().
         db.set_empty(2, 4);
         assert(db.block_size() == 3);
         assert(db.get_cell<user_cell*>(1)->value == 22);
@@ -558,6 +559,12 @@ void gridmap_test_basic()
         assert(db.is_empty(3));
         assert(db.is_empty(4));
         assert(db.get_cell<user_cell*>(5)->value == 3.3);
+
+        // erase()
+        db.erase(3, 5);
+        assert(db.size() == 3);
+        assert(db.get_cell<user_cell*>(1)->value == 22);
+        assert(db.is_empty(2));
     }
 }
 
