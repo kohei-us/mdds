@@ -218,6 +218,30 @@ void append_value(base_cell_block* block, bool val)
     blk.push_back(val);
 }
 
+void prepend_value(base_cell_block* block, double val)
+{
+    numeric_cell_block& blk = *get_numeric_block(block);
+    blk.insert(blk.begin(), val);
+}
+
+void prepend_value(base_cell_block* block, const std::string& val)
+{
+    string_cell_block& blk = *get_string_block(block);
+    blk.insert(blk.begin(), val);
+}
+
+void prepend_value(base_cell_block* block, size_t val)
+{
+    index_cell_block& blk = *get_index_block(block);
+    blk.insert(blk.begin(), val);
+}
+
+void prepend_value(base_cell_block* block, bool val)
+{
+    boolean_cell_block& blk = *get_boolean_block(block);
+    blk.insert(blk.begin(), val);
+}
+
 struct cell_block_func_base
 {
     static cell_t get_block_type(const base_cell_block& block);
@@ -235,9 +259,6 @@ struct cell_block_func_base
     static void erase(base_cell_block* block, size_t pos);
 
     static void erase(base_cell_block* block, size_t pos, size_t size);
-
-    template<typename T>
-    static void prepend_value(base_cell_block* block, const T& val);
 
     template<typename T>
     static void prepend_values(base_cell_block* block, const T& it_begin, const T& it_end);
@@ -520,40 +541,6 @@ void set_values(
     boolean_cell_block& d = *get_boolean_block(block);
     for (_Iter it = it_begin; it != it_end; ++it, ++pos)
         d[pos] = *it;
-}
-
-template<typename T>
-void cell_block_func_base::prepend_value(base_cell_block* block, const T& val)
-{
-    throw general_error("non-specialized version of prepend_value called.");
-}
-
-template<>
-void cell_block_func_base::prepend_value<double>(base_cell_block* block, const double& val)
-{
-    numeric_cell_block& blk = *get_numeric_block(block);
-    blk.insert(blk.begin(), val);
-}
-
-template<>
-void cell_block_func_base::prepend_value<std::string>(base_cell_block* block, const std::string& val)
-{
-    string_cell_block& blk = *get_string_block(block);
-    blk.insert(blk.begin(), val);
-}
-
-template<>
-void cell_block_func_base::prepend_value<size_t>(base_cell_block* block, const size_t& val)
-{
-    index_cell_block& blk = *get_index_block(block);
-    blk.insert(blk.begin(), val);
-}
-
-template<>
-void cell_block_func_base::prepend_value<bool>(base_cell_block* block, const bool& val)
-{
-    boolean_cell_block& blk = *get_boolean_block(block);
-    blk.insert(blk.begin(), val);
 }
 
 template<typename _Iter>
@@ -985,6 +972,12 @@ struct cell_block_func : public cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);
+    }
+
+    template<typename T>
+    static void prepend_value(base_cell_block* block, const T& val)
+    {
+        mdds::gridmap::prepend_value(block, val);
     }
 };
 
