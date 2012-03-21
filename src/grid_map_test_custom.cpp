@@ -243,6 +243,20 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         mdds::gridmap::insert_values(block, pos, *it_begin, it_begin, it_end);
     }
 
+    template<typename T>
+    static void append_values(mdds::gridmap::base_cell_block* block, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::append_values(block, *it_begin, it_begin, it_end);
+    }
+
+    template<typename T>
+    static void assign_values(mdds::gridmap::base_cell_block* dest, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);
+    }
+
     static mdds::gridmap::base_cell_block* create_new_block(
         mdds::gridmap::cell_t type, size_t init_size)
     {
@@ -408,20 +422,6 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             default:
                 cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
         }
-    }
-
-    template<typename T>
-    static void append_values(mdds::gridmap::base_cell_block* block, const T& it_begin, const T& it_end)
-    {
-        assert(it_begin != it_end);
-        mdds::gridmap::append_values(block, *it_begin, it_begin, it_end);
-    }
-
-    template<typename T>
-    static void assign_values(mdds::gridmap::base_cell_block* dest, const T& it_begin, const T& it_end)
-    {
-        assert(it_begin != it_end);
-        mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);
     }
 };
 

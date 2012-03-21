@@ -237,9 +237,6 @@ struct cell_block_func_base
     static void erase(base_cell_block* block, size_t pos, size_t size);
 
     template<typename T>
-    static void set_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end);
-
-    template<typename T>
     static void prepend_value(base_cell_block* block, const T& val);
 
     template<typename T>
@@ -523,13 +520,6 @@ void set_values(
     boolean_cell_block& d = *get_boolean_block(block);
     for (_Iter it = it_begin; it != it_end; ++it, ++pos)
         d[pos] = *it;
-}
-
-template<typename T>
-void cell_block_func_base::set_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
-{
-    assert(it_begin != it_end);
-    mdds::gridmap::set_values(block, pos, *it_begin, it_begin, it_end);
 }
 
 template<typename T>
@@ -962,6 +952,13 @@ struct cell_block_func : public cell_block_func_base
     static void set_value(mdds::gridmap::base_cell_block* block, size_t pos, const T& val)
     {
         mdds::gridmap::set_value(block, pos, val);
+    }
+
+    template<typename T>
+    static void set_values(mdds::gridmap::base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::set_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
