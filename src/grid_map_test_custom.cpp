@@ -156,6 +156,15 @@ void set_value(base_cell_block* block, size_t pos, user_cell* p)
     blk[pos] = p;
 }
 
+template<typename _Iter>
+void set_values(
+    base_cell_block* block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(block);
+    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
+        d[pos] = *it;
+}
+
 void get_value(base_cell_block* block, size_t pos, user_cell*& val)
 {
     user_cell_block& blk = user_cell_block::get(block);
@@ -205,6 +214,13 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     static void set_value(mdds::gridmap::base_cell_block* block, size_t pos, const T& val)
     {
         mdds::gridmap::set_value(block, pos, val);
+    }
+
+    template<typename T>
+    static void set_values(mdds::gridmap::base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::set_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
@@ -575,6 +591,20 @@ void gridmap_test_basic()
         assert(db.get_cell<user_cell*>(3)->value == 22);
         assert(db.is_empty(4));
 
+        pool.clear();
+    }
+
+    {
+        // set_cells() to overwrite existing values of type user_cell*.
+        column_type db(2);
+        user_cell* p0 = pool.construct(1.2);
+        db.set_cell(0, p0);
+        db.set_cell(1, p0);
+
+        vector<user_cell*> vals;
+        vals.push_back(pool.construct(2.3));
+        vals.push_back(pool.construct(2.4));
+        db.set_cells(0, vals.begin(), vals.end());
     }
 }
 

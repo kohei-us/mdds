@@ -482,7 +482,7 @@ void cell_block_func_base::erase(base_cell_block* block, size_t pos, size_t size
 }
 
 template<typename _Iter>
-void _set_values(
+void set_values(
     base_cell_block* block, size_t pos, const typename _Iter::value_type&,
     const _Iter& it_begin, const _Iter& it_end)
 {
@@ -490,7 +490,7 @@ void _set_values(
 }
 
 template<typename _Iter>
-void _set_values(
+void set_values(
     base_cell_block* block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
 {
     numeric_cell_block& d = *get_numeric_block(block);
@@ -499,7 +499,7 @@ void _set_values(
 }
 
 template<typename _Iter>
-void _set_values(
+void set_values(
     base_cell_block* block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
     string_cell_block& d = *get_string_block(block);
@@ -508,7 +508,7 @@ void _set_values(
 }
 
 template<typename _Iter>
-void _set_values(
+void set_values(
     base_cell_block* block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
     index_cell_block& d = *get_index_block(block);
@@ -517,7 +517,7 @@ void _set_values(
 }
 
 template<typename _Iter>
-void _set_values(
+void set_values(
     base_cell_block* block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
 {
     boolean_cell_block& d = *get_boolean_block(block);
@@ -528,14 +528,8 @@ void _set_values(
 template<typename T>
 void cell_block_func_base::set_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
 {
-    if (!block)
-        throw general_error("destination cell block is NULL.");
-
-    if (it_begin == it_end)
-        // Nothing to do.
-        return;
-
-    _set_values(block, pos, *it_begin, it_begin, it_end);
+    assert(it_begin != it_end);
+    mdds::gridmap::set_values(block, pos, *it_begin, it_begin, it_end);
 }
 
 template<typename T>
