@@ -260,9 +260,6 @@ struct cell_block_func_base
 
     static void erase(base_cell_block* block, size_t pos, size_t size);
 
-    template<typename T>
-    static void append_value(base_cell_block* block, const T& val);
-
     static void append_values_from_block(base_cell_block* dest, const base_cell_block* src);
 
     static void append_values_from_block(
