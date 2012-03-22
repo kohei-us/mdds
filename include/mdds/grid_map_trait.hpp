@@ -242,6 +242,26 @@ void prepend_value(base_cell_block* block, bool val)
     blk.insert(blk.begin(), val);
 }
 
+void get_empty_value(double& val)
+{
+    val = 0.0;
+}
+
+void get_empty_value(std::string& val)
+{
+    val = std::string();
+}
+
+void get_empty_value(size_t& val)
+{
+    val = 0;
+}
+
+void get_empty_value(bool& val)
+{
+    val = false;
+}
+
 struct cell_block_func_base
 {
     static cell_t get_block_type(const base_cell_block& block);
@@ -267,9 +287,6 @@ struct cell_block_func_base
 
     static void assign_values_from_block(
         base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
-
-    template<typename T>
-    static void get_empty_value(T& val);
 
     static bool equal_block(const base_cell_block* left, const base_cell_block* right);
 };
@@ -828,36 +845,6 @@ void insert_values(
     blk.insert(blk.begin()+pos, it_begin, it_end);
 }
 
-template<typename T>
-void cell_block_func_base::get_empty_value(T& val)
-{
-    throw general_error("non-specialized version of get_empty_value called.");
-}
-
-template<>
-void cell_block_func_base::get_empty_value<double>(double& val)
-{
-    val = 0.0;
-}
-
-template<>
-void cell_block_func_base::get_empty_value<std::string>(std::string& val)
-{
-    val = std::string();
-}
-
-template<>
-void cell_block_func_base::get_empty_value<size_t>(size_t& val)
-{
-    val = 0;
-}
-
-template<>
-void cell_block_func_base::get_empty_value<bool>(bool& val)
-{
-    val = false;
-}
-
 bool cell_block_func_base::equal_block(const base_cell_block* left, const base_cell_block* right)
 {
     if (!left && !right)
@@ -960,6 +947,12 @@ struct cell_block_func : public cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::gridmap::prepend_values(block, *it_begin, it_begin, it_end);
+    }
+
+    template<typename T>
+    static void get_empty_value(T& val)
+    {
+        mdds::gridmap::get_empty_value(val);
     }
 };
 

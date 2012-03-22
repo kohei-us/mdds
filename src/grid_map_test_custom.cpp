@@ -213,6 +213,11 @@ void insert_values(
     d.insert(d.begin()+pos, it_begin, it_end);
 }
 
+void get_empty_value(user_cell*& val)
+{
+    val = NULL;
+}
+
 }}
 
 struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
@@ -281,6 +286,12 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::gridmap::prepend_values(block, *it_begin, it_begin, it_end);
+    }
+
+    template<typename T>
+    static void get_empty_value(T& val)
+    {
+        mdds::gridmap::get_empty_value(val);
     }
 
     static mdds::gridmap::base_cell_block* create_new_block(
@@ -649,6 +660,13 @@ void gridmap_test_basic()
         assert(db.get_cell<user_cell*>(3)->value == 1.1);
 
         pool.clear();
+    }
+
+    {
+        // Get empty value.
+        column_type db(1);
+        user_cell* p = db.get_cell<user_cell*>(0);
+        assert(p == NULL);
     }
 }
 
