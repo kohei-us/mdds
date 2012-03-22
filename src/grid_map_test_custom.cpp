@@ -480,6 +480,31 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
                 cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
         }
     }
+
+    static bool equal_block(
+        const mdds::gridmap::base_cell_block* left, const mdds::gridmap::base_cell_block* right)
+    {
+        if (!left)
+            return right == NULL;
+
+        if (!right)
+            // left is non-empty while right is empty.
+            return false;
+
+        assert(left && right);
+
+        if (left->type == celltype_user_block)
+        {
+            if (right->type != celltype_user_block)
+                return false;
+
+            return user_cell_block::get(left) == user_cell_block::get(right);
+        }
+        else if (right->type == celltype_user_block)
+            return false;
+
+        return cell_block_func_base::equal_block(left, right);
+    }
 };
 
 struct grid_map_trait
@@ -690,6 +715,32 @@ void gridmap_test_basic()
     }
 }
 
+void gridmap_test_equality()
+{
+    stack_printer __stack_printer__("::gridmap_test_clone");
+
+    user_cell_pool pool;
+
+    column_type db1(3);
+    column_type db2 = db1;
+    assert(db2 == db1);
+    user_cell* p0 = pool.construct(1.1);
+    db1.set_cell(0, p0);
+    assert(db1 != db2);
+    db2.set_cell(0, p0);
+    assert(db1 == db2);
+    db1.set_cell(2, string("foo"));
+    db2.set_cell(2, string("foo"));
+    assert(db1 == db2);
+
+    // same value but different memory addresses.
+    user_cell* p1 = pool.construct(1.2);
+    user_cell* p2 = pool.construct(1.2);
+    db1.set_cell(1, p1);
+    db2.set_cell(1, p2);
+    assert(db1 != db2); // equality is by the pointer value.
+}
+
 }
 
 int main (int argc, char **argv)
@@ -702,6 +753,7 @@ int main (int argc, char **argv)
     {
         gridmap_test_types();
         gridmap_test_basic();
+        gridmap_test_equality();
     }
 
     if (opt.test_perf)
