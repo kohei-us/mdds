@@ -269,9 +269,6 @@ struct cell_block_func_base
         base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
 
     template<typename T>
-    static void get_value(base_cell_block* block, size_t pos, T& val);
-
-    template<typename T>
     static void get_empty_value(T& val);
 
     static bool equal_block(const base_cell_block* left, const base_cell_block* right);
@@ -829,12 +826,6 @@ void insert_values(
 {
     boolean_cell_block& blk = *get_boolean_block(block);
     blk.insert(blk.begin()+pos, it_begin, it_end);
-}
-
-template<typename T>
-void cell_block_func_base::get_value(base_cell_block* block, size_t pos, T& val)
-{
-    mdds::gridmap::get_value(block, pos, val);
 }
 
 template<typename T>
