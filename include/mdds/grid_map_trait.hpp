@@ -269,9 +269,6 @@ struct cell_block_func_base
         base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
 
     template<typename T>
-    static void insert_values(base_cell_block* block, size_t pos, const T& it_begin, const T& it_end);
-
-    template<typename T>
     static void get_value(base_cell_block* block, size_t pos, T& val);
 
     template<typename T>
@@ -835,14 +832,6 @@ void insert_values(
 }
 
 template<typename T>
-void cell_block_func_base::insert_values(
-    base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
-{
-    assert(it_begin != it_end);
-    mdds::gridmap::insert_values(block, pos, *it_begin, it_begin, it_end);
-}
-
-template<typename T>
 void cell_block_func_base::get_value(base_cell_block* block, size_t pos, T& val)
 {
     mdds::gridmap::get_value(block, pos, val);
@@ -945,6 +934,14 @@ struct cell_block_func : public cell_block_func_base
     static void append_value(base_cell_block* block, const T& val)
     {
         mdds::gridmap::append_value(block, val);
+    }
+
+    template<typename T>
+    static void insert_values(
+        base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::insert_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
