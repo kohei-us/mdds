@@ -261,9 +261,6 @@ struct cell_block_func_base
     static void erase(base_cell_block* block, size_t pos, size_t size);
 
     template<typename T>
-    static void prepend_values(base_cell_block* block, const T& it_begin, const T& it_end);
-
-    template<typename T>
     static void append_value(base_cell_block* block, const T& val);
 
     static void append_values_from_block(base_cell_block* dest, const base_cell_block* src);
@@ -544,38 +541,31 @@ void set_values(
 }
 
 template<typename _Iter>
-void _prepend_values(base_cell_block* block, double, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(base_cell_block* block, double, const _Iter& it_begin, const _Iter& it_end)
 {
     numeric_cell_block& d = *get_numeric_block(block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
 template<typename _Iter>
-void _prepend_values(base_cell_block* block, const std::string&, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(base_cell_block* block, const std::string&, const _Iter& it_begin, const _Iter& it_end)
 {
     string_cell_block& d = *get_string_block(block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
 template<typename _Iter>
-void _prepend_values(base_cell_block* block, size_t, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(base_cell_block* block, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
     index_cell_block& d = *get_index_block(block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
 template<typename _Iter>
-void _prepend_values(base_cell_block* block, bool, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(base_cell_block* block, bool, const _Iter& it_begin, const _Iter& it_end)
 {
     boolean_cell_block& d = *get_boolean_block(block);
     d.insert(d.begin(), it_begin, it_end);
-}
-
-template<typename T>
-void cell_block_func_base::prepend_values(base_cell_block* block, const T& it_begin, const T& it_end)
-{
-    assert(it_begin != it_end);
-    _prepend_values(block, *it_begin, it_begin, it_end);
 }
 
 void cell_block_func_base::append_values_from_block(base_cell_block* dest, const base_cell_block* src)
@@ -978,6 +968,13 @@ struct cell_block_func : public cell_block_func_base
     static void prepend_value(base_cell_block* block, const T& val)
     {
         mdds::gridmap::prepend_value(block, val);
+    }
+
+    template<typename T>
+    static void prepend_values(base_cell_block* block, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::prepend_values(block, *it_begin, it_begin, it_end);
     }
 };
 

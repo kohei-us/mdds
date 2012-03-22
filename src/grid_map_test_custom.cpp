@@ -192,6 +192,13 @@ void append_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Ite
 }
 
 template<typename _Iter>
+void prepend_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(block);
+    d.insert(d.begin(), it_begin, it_end);
+}
+
+template<typename _Iter>
 void assign_values(mdds::gridmap::base_cell_block* dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block& d = user_cell_block::get(dest);
@@ -267,6 +274,13 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     static void prepend_value(mdds::gridmap::base_cell_block* block, const T& val)
     {
         mdds::gridmap::prepend_value(block, val);
+    }
+
+    template<typename T>
+    static void prepend_values(mdds::gridmap::base_cell_block* block, const T& it_begin, const T& it_end)
+    {
+        assert(it_begin != it_end);
+        mdds::gridmap::prepend_values(block, *it_begin, it_begin, it_end);
     }
 
     static mdds::gridmap::base_cell_block* create_new_block(
@@ -617,6 +631,23 @@ void gridmap_test_basic()
         vals.push_back(pool.construct(2.3));
         vals.push_back(pool.construct(2.4));
         db.set_cells(0, vals.begin(), vals.end());
+        pool.clear();
+    }
+
+    {
+        column_type db(4);
+        user_cell* p0 = pool.construct(1.1);
+        db.set_cell(3, p0);
+
+        vector<user_cell*> vals;
+        vals.push_back(pool.construct(2.3));
+        vals.push_back(pool.construct(2.4));
+        db.set_cells(1, vals.begin(), vals.end());
+        assert(db.is_empty(0));
+        assert(db.get_cell<user_cell*>(1)->value == 2.3);
+        assert(db.get_cell<user_cell*>(2)->value == 2.4);
+        assert(db.get_cell<user_cell*>(3)->value == 1.1);
+
         pool.clear();
     }
 }
