@@ -34,51 +34,36 @@
 
 namespace mdds { namespace gridmap {
 
-template<typename _Self, cell_t _TypeId, typename _Data>
-struct cell_block : public base_cell_block, public std::vector<_Data>
-{
-    cell_block() : base_cell_block(_TypeId), std::vector<_Data>(1) {}
-    cell_block(size_t n) : base_cell_block(_TypeId), std::vector<_Data>(n) {}
-
-    static _Self& get(base_cell_block& blk)
-    {
-        if (blk.type != _TypeId)
-            throw general_error("incorrect block type.");
-
-        return static_cast<_Self&>(blk);
-    }
-
-    static const _Self& get(const base_cell_block& blk)
-    {
-        if (blk.type != _TypeId)
-            throw general_error("incorrect block type.");
-
-        return static_cast<const _Self&>(blk);
-    }
-};
-
 struct numeric_cell_block : public cell_block<numeric_cell_block, celltype_numeric, double>
 {
-    numeric_cell_block() : cell_block() {}
-    numeric_cell_block(size_t n) : cell_block(n) {}
+    typedef cell_block<numeric_cell_block, celltype_numeric, double> base_type;
+
+    numeric_cell_block() : base_type() {}
+    numeric_cell_block(size_t n) : base_type(n) {}
 };
 
 struct string_cell_block : public cell_block<string_cell_block, celltype_string, std::string>
 {
-    string_cell_block() : cell_block() {}
-    string_cell_block(size_t n) : cell_block(n) {}
+    typedef cell_block<string_cell_block, celltype_string, std::string> base_type;
+
+    string_cell_block() : base_type() {}
+    string_cell_block(size_t n) : base_type(n) {}
 };
 
 struct index_cell_block : public cell_block<index_cell_block, celltype_index, size_t>
 {
-    index_cell_block() : cell_block() {}
-    index_cell_block(size_t n) : cell_block(n) {}
+    typedef cell_block<index_cell_block, celltype_index, size_t> base_type;
+
+    index_cell_block() : base_type() {}
+    index_cell_block(size_t n) : base_type(n) {}
 };
 
 struct boolean_cell_block : public cell_block<boolean_cell_block, celltype_boolean, bool>
 {
-    boolean_cell_block() : cell_block() {}
-    boolean_cell_block(size_t n) : cell_block(n) {}
+    typedef cell_block<boolean_cell_block, celltype_boolean, bool> base_type;
+
+    boolean_cell_block() : base_type() {}
+    boolean_cell_block(size_t n) : base_type(n) {}
 };
 
 numeric_cell_block* get_numeric_block(base_cell_block* block)
@@ -287,7 +272,7 @@ struct cell_block_func_base
 
     static base_cell_block* create_new_block(cell_t type, size_t init_size);
 
-    static base_cell_block* clone_block(base_cell_block* p);
+    static base_cell_block* clone_block(const base_cell_block& block);
 
     static void delete_block(base_cell_block* p);
 
@@ -333,21 +318,18 @@ base_cell_block* cell_block_func_base::create_new_block(cell_t type, size_t init
     return NULL;
 }
 
-base_cell_block* cell_block_func_base::clone_block(base_cell_block* p)
+base_cell_block* cell_block_func_base::clone_block(const base_cell_block& block)
 {
-    if (!p)
-        return NULL;
-
-    switch (p->type)
+    switch (block.type)
     {
         case celltype_numeric:
-            return new numeric_cell_block(*get_numeric_block(p));
+            return new numeric_cell_block(numeric_cell_block::get(block));
         case celltype_string:
-            return new string_cell_block(*get_string_block(p));
+            return new string_cell_block(string_cell_block::get(block));
         case celltype_index:
-            return new index_cell_block(*get_index_block(p));
+            return new index_cell_block(index_cell_block::get(block));
         case celltype_boolean:
-            return new boolean_cell_block(*get_boolean_block(p));
+            return new boolean_cell_block(boolean_cell_block::get(block));
         default:
             throw general_error("clone_block: failed to clone a block of unknown type.");
     }

@@ -94,10 +94,14 @@ struct user_cell
     user_cell(double _v) : value(_v) {}
 };
 
-struct user_cell_block : public gridmap::base_cell_block, public std::vector<user_cell*>
+struct user_cell_block : public mdds::gridmap::cell_block<user_cell_block, celltype_user_block, user_cell*>
 {
-    user_cell_block() : gridmap::base_cell_block(celltype_user_block) {}
-    user_cell_block(size_t n) : gridmap::base_cell_block(celltype_user_block), std::vector<user_cell*>(n) {}
+    typedef mdds::gridmap::cell_block<user_cell_block, celltype_user_block, user_cell*> base_type;
+
+    using base_type::get;
+
+    user_cell_block() : base_type() {}
+    user_cell_block(size_t n) : base_type(n) {}
 
     static user_cell_block& get(gridmap::base_cell_block* p)
     {
@@ -308,20 +312,17 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         return cell_block_func_base::create_new_block(type, init_size);
     }
 
-    static mdds::gridmap::base_cell_block* clone_block(mdds::gridmap::base_cell_block* p)
+    static mdds::gridmap::base_cell_block* clone_block(const mdds::gridmap::base_cell_block& block)
     {
-        if (!p)
-            return NULL;
-
-        switch (p->type)
+        switch (block.type)
         {
             case celltype_user_block:
-                return new user_cell_block(*static_cast<user_cell_block*>(p));
+                return new user_cell_block(user_cell_block::get(block));
             default:
                 ;
         }
 
-        return cell_block_func_base::clone_block(p);
+        return cell_block_func_base::clone_block(block);
     }
 
     static void delete_block(mdds::gridmap::base_cell_block* p)

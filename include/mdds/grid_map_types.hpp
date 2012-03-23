@@ -45,6 +45,29 @@ struct base_cell_block
     base_cell_block(cell_t _t) : type(_t) {}
 };
 
+template<typename _Self, cell_t _TypeId, typename _Data>
+struct cell_block : public base_cell_block, public std::vector<_Data>
+{
+    cell_block() : base_cell_block(_TypeId), std::vector<_Data>(1) {}
+    cell_block(size_t n) : base_cell_block(_TypeId), std::vector<_Data>(n) {}
+
+    static _Self& get(base_cell_block& block)
+    {
+        if (block.type != _TypeId)
+            throw general_error("incorrect block type.");
+
+        return static_cast<_Self&>(block);
+    }
+
+    static const _Self& get(const base_cell_block& block)
+    {
+        if (block.type != _TypeId)
+            throw general_error("incorrect block type.");
+
+        return static_cast<const _Self&>(block);
+    }
+};
+
 }}
 
 #endif

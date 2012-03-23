@@ -46,7 +46,8 @@ template<typename _Trait>
 column<_Trait>::block::block(const block& other) :
     m_size(other.m_size), mp_data(NULL)
 {
-    mp_data = cell_block_func::clone_block(other.mp_data);
+    if (other.mp_data)
+        mp_data = cell_block_func::clone_block(*other.mp_data);
 }
 
 template<typename _Trait>
