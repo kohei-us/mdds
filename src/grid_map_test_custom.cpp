@@ -102,22 +102,6 @@ struct user_cell_block : public mdds::gridmap::cell_block<user_cell_block, cellt
 
     user_cell_block() : base_type() {}
     user_cell_block(size_t n) : base_type(n) {}
-
-    static user_cell_block& get(gridmap::base_cell_block* p)
-    {
-        if (!p || p->type != celltype_user_block)
-            throw general_error("block is not of type user_cell_block.");
-
-        return *static_cast<user_cell_block*>(p);
-    }
-
-    static const user_cell_block& get(const gridmap::base_cell_block* p)
-    {
-        if (!p || p->type != celltype_user_block)
-            throw general_error("block is not of type user_cell_block.");
-
-        return *static_cast<const user_cell_block*>(p);
-    }
 };
 
 template<typename T>
@@ -156,7 +140,7 @@ cell_t get_cell_type(const user_cell*)
 
 void set_value(base_cell_block* block, size_t pos, user_cell* p)
 {
-    user_cell_block& blk = user_cell_block::get(block);
+    user_cell_block& blk = user_cell_block::get(*block);
     blk[pos] = p;
 }
 
@@ -164,33 +148,33 @@ template<typename _Iter>
 void set_values(
     base_cell_block* block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(block);
+    user_cell_block& d = user_cell_block::get(*block);
     for (_Iter it = it_begin; it != it_end; ++it, ++pos)
         d[pos] = *it;
 }
 
 void get_value(base_cell_block* block, size_t pos, user_cell*& val)
 {
-    user_cell_block& blk = user_cell_block::get(block);
+    user_cell_block& blk = user_cell_block::get(*block);
     val = blk[pos];
 }
 
 void append_value(base_cell_block* block, user_cell* val)
 {
-    user_cell_block& blk = user_cell_block::get(block);
+    user_cell_block& blk = user_cell_block::get(*block);
     blk.push_back(val);
 }
 
 void prepend_value(base_cell_block* block, user_cell* val)
 {
-    user_cell_block& blk = user_cell_block::get(block);
+    user_cell_block& blk = user_cell_block::get(*block);
     blk.insert(blk.begin(), val);
 }
 
 template<typename _Iter>
 void append_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(block);
+    user_cell_block& d = user_cell_block::get(*block);
     user_cell_block::iterator it = d.end();
     d.insert(it, it_begin, it_end);
 }
@@ -198,14 +182,14 @@ void append_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Ite
 template<typename _Iter>
 void prepend_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(block);
+    user_cell_block& d = user_cell_block::get(*block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
 template<typename _Iter>
 void assign_values(mdds::gridmap::base_cell_block* dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(dest);
+    user_cell_block& d = user_cell_block::get(*dest);
     d.assign(it_begin, it_end);
 }
 
@@ -213,7 +197,7 @@ template<typename _Iter>
 void insert_values(
     mdds::gridmap::base_cell_block* block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(block);
+    user_cell_block& d = user_cell_block::get(*block);
     d.insert(d.begin()+pos, it_begin, it_end);
 }
 
@@ -364,7 +348,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
             {
-                user_cell_block& blk = user_cell_block::get(block);
+                user_cell_block& blk = user_cell_block::get(*block);
                 for_each(blk.begin(), blk.end(),
                          mdds::gridmap::print_block_array<user_cell*>());
                 cout << endl;
@@ -384,7 +368,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
             {
-                user_cell_block& blk = user_cell_block::get(block);
+                user_cell_block& blk = user_cell_block::get(*block);
                 blk.erase(blk.begin()+pos);
             }
             break;
@@ -402,7 +386,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
             {
-                user_cell_block& blk = user_cell_block::get(block);
+                user_cell_block& blk = user_cell_block::get(*block);
                 blk.erase(blk.begin()+pos, blk.begin()+pos+size);
             }
             break;
@@ -421,8 +405,8 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
             {
-                user_cell_block& d = user_cell_block::get(dest);
-                const user_cell_block& s = user_cell_block::get(src);
+                user_cell_block& d = user_cell_block::get(*dest);
+                const user_cell_block& s = user_cell_block::get(*src);
                 d.insert(d.end(), s.begin(), s.end());
             }
             break;
@@ -442,8 +426,8 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
             {
-                user_cell_block& d = user_cell_block::get(dest);
-                const user_cell_block& s = user_cell_block::get(src);
+                user_cell_block& d = user_cell_block::get(*dest);
+                const user_cell_block& s = user_cell_block::get(*src);
                 user_cell_block::const_iterator it = s.begin();
                 std::advance(it, begin_pos);
                 user_cell_block::const_iterator it_end = it;
@@ -468,8 +452,8 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
             {
-                user_cell_block& d = user_cell_block::get(dest);
-                const user_cell_block& s = user_cell_block::get(src);
+                user_cell_block& d = user_cell_block::get(*dest);
+                const user_cell_block& s = user_cell_block::get(*src);
                 user_cell_block::const_iterator it = s.begin();
                 std::advance(it, begin_pos);
                 user_cell_block::const_iterator it_end = it;
@@ -499,7 +483,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             if (right->type != celltype_user_block)
                 return false;
 
-            return user_cell_block::get(left) == user_cell_block::get(right);
+            return user_cell_block::get(*left) == user_cell_block::get(*right);
         }
         else if (right->type == celltype_user_block)
             return false;
