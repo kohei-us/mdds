@@ -34,32 +34,51 @@
 
 namespace mdds { namespace gridmap {
 
-struct numeric_cell_block : public base_cell_block, public std::vector<double>
+template<typename _Self, cell_t _TypeId, typename _Data>
+struct cell_block : public base_cell_block, public std::vector<_Data>
 {
-public:
-    numeric_cell_block() : base_cell_block(celltype_numeric), std::vector<double>(1) {}
-    numeric_cell_block(size_t n) : base_cell_block(celltype_numeric), std::vector<double>(n) {}
+    cell_block() : base_cell_block(_TypeId), std::vector<_Data>(1) {}
+    cell_block(size_t n) : base_cell_block(_TypeId), std::vector<_Data>(n) {}
+
+    static _Self& get(base_cell_block& blk)
+    {
+        if (blk.type != _TypeId)
+            throw general_error("incorrect block type.");
+
+        return static_cast<_Self&>(blk);
+    }
+
+    static const _Self& get(const base_cell_block& blk)
+    {
+        if (blk.type != _TypeId)
+            throw general_error("incorrect block type.");
+
+        return static_cast<const _Self&>(blk);
+    }
 };
 
-struct string_cell_block : public base_cell_block, public std::vector<std::string>
+struct numeric_cell_block : public cell_block<numeric_cell_block, celltype_numeric, double>
 {
-public:
-    string_cell_block() : base_cell_block(celltype_string), std::vector<std::string>(1) {}
-    string_cell_block(size_t n) : base_cell_block(celltype_string), std::vector<std::string>(n) {}
+    numeric_cell_block() : cell_block() {}
+    numeric_cell_block(size_t n) : cell_block(n) {}
 };
 
-struct index_cell_block : public base_cell_block, public std::vector<size_t>
+struct string_cell_block : public cell_block<string_cell_block, celltype_string, std::string>
 {
-public:
-    index_cell_block() : base_cell_block(celltype_index), std::vector<size_t>(1) {}
-    index_cell_block(size_t n) : base_cell_block(celltype_index), std::vector<size_t>(n) {}
+    string_cell_block() : cell_block() {}
+    string_cell_block(size_t n) : cell_block(n) {}
 };
 
-struct boolean_cell_block : public base_cell_block, public std::vector<bool>
+struct index_cell_block : public cell_block<index_cell_block, celltype_index, size_t>
 {
-public:
-    boolean_cell_block() : base_cell_block(celltype_boolean), std::vector<bool>(1) {}
-    boolean_cell_block(size_t n) : base_cell_block(celltype_boolean), std::vector<bool>(n) {}
+    index_cell_block() : cell_block() {}
+    index_cell_block(size_t n) : cell_block(n) {}
+};
+
+struct boolean_cell_block : public cell_block<boolean_cell_block, celltype_boolean, bool>
+{
+    boolean_cell_block() : cell_block() {}
+    boolean_cell_block(size_t n) : cell_block(n) {}
 };
 
 numeric_cell_block* get_numeric_block(base_cell_block* block)
