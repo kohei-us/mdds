@@ -49,28 +49,32 @@ mixed_type_matrix<_String,_Flag>::create_storage(size_t rows, size_t cols, matri
 
 template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>::mixed_type_matrix() :
-    mp_storage(NULL)
+    mp_storage(NULL),
+    m_cached_size(0, 0)
 {
     mp_storage = create_storage(0, 0, matrix_density_filled_zero);
 }
 
 template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>::mixed_type_matrix(matrix_density_t density) :
-    mp_storage(NULL)
+    mp_storage(NULL),
+    m_cached_size(0, 0)
 {
     mp_storage = create_storage(0, 0, density);
 }
 
 template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>::mixed_type_matrix(size_t rows, size_t cols, matrix_density_t density) :
-    mp_storage(NULL)
+    mp_storage(NULL),
+    m_cached_size(rows, cols)
 {
     mp_storage = create_storage(rows, cols, density);
 }
 
 template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>::mixed_type_matrix(const mixed_type_matrix& r) :
-    mp_storage(r.mp_storage->clone())
+    mp_storage(r.mp_storage->clone()),
+    m_cached_size(r.m_cached_size)
 {
 }
 
@@ -104,6 +108,7 @@ mixed_type_matrix<_String,_Flag>::operator= (const mixed_type_matrix& r)
 
     delete_storage();
     mp_storage = r.mp_storage->clone();
+    m_cached_size = r.m_cached_size;
     return *this;
 }
 
@@ -197,8 +202,7 @@ template<typename _String, typename _Flag>
 typename mixed_type_matrix<_String,_Flag>::size_pair_type
 mixed_type_matrix<_String,_Flag>::size() const
 {
-    size_pair_type size_pair(mp_storage->rows(), mp_storage->cols());
-    return size_pair;
+    return m_cached_size;
 }
 
 template<typename _String, typename _Flag>
@@ -206,6 +210,7 @@ mixed_type_matrix<_String,_Flag>&
 mixed_type_matrix<_String,_Flag>::transpose()
 {
     mp_storage->transpose();
+    m_cached_size = size_pair_type(mp_storage->rows(), mp_storage->cols());
     return *this;
 }
 
@@ -227,12 +232,14 @@ template<typename _String, typename _Flag>
 void mixed_type_matrix<_String,_Flag>::resize(size_t row, size_t col)
 {
     mp_storage->resize(row, col);
+    m_cached_size = size_pair_type(row, col);
 }
 
 template<typename _String, typename _Flag>
 void mixed_type_matrix<_String,_Flag>::clear()
 {
     mp_storage->clear();
+    m_cached_size = size_pair_type(0, 0);
 }
 
 template<typename _String, typename _Flag>
@@ -251,6 +258,9 @@ template<typename _String, typename _Flag>
 void mixed_type_matrix<_String,_Flag>::swap(mixed_type_matrix& r)
 {
     ::std::swap(mp_storage, r.mp_storage);
+    size_pair_type temp = m_cached_size;
+    r.m_cached_size = m_cached_size;
+    m_cached_size = temp;
 }
 
 #ifdef UNIT_TEST
@@ -258,8 +268,8 @@ template<typename _String, typename _Flag>
 void mixed_type_matrix<_String,_Flag>::dump() const
 {
     using namespace std;
-    size_t rows = mp_storage->rows(), cols = mp_storage->cols();
-    cout << "rows: " << mp_storage->rows() << "  cols: " << mp_storage->cols() << endl;
+    size_t rows = m_cached_size.first, cols = m_cached_size.second;
+    cout << "rows: " << rows << "  cols: " << cols << endl;
     for (size_t i = 0; i < rows; ++i)
     {
         cout << "row " << i << ": ";

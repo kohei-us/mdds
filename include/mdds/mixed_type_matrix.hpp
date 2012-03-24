@@ -229,6 +229,7 @@ private:
 
 private:
     storage_base* mp_storage;
+    size_pair_type m_cached_size;
 };
 
 }
