@@ -16,6 +16,10 @@
   * fixed a bug where de-referencing copied search_result iterators 
     would return an uninitialized node data.  
 
+* mixed_type_matrix
+
+  * improved performance of size() method by caching it.
+
 mdds 0.5.3
 
 * mixed_type_matrix
