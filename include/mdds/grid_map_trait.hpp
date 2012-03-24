@@ -276,7 +276,7 @@ struct cell_block_func_base
 
     static void delete_block(base_cell_block* p);
 
-    static void resize_block(base_cell_block* p, size_t new_size);
+    static void resize_block(base_cell_block& block, size_t new_size);
 
     static void print_block(base_cell_block* p);
 
@@ -360,24 +360,21 @@ void cell_block_func_base::delete_block(base_cell_block* p)
     }
 }
 
-void cell_block_func_base::resize_block(base_cell_block* p, size_t new_size)
+void cell_block_func_base::resize_block(base_cell_block& block, size_t new_size)
 {
-    if (!p)
-        return;
-
-    switch (p->type)
+    switch (block.type)
     {
         case celltype_numeric:
-            static_cast<numeric_cell_block*>(p)->resize(new_size);
+            static_cast<numeric_cell_block&>(block).resize(new_size);
         break;
         case celltype_string:
-            static_cast<string_cell_block*>(p)->resize(new_size);
+            static_cast<string_cell_block&>(block).resize(new_size);
         break;
         case celltype_index:
-            static_cast<index_cell_block*>(p)->resize(new_size);
+            static_cast<index_cell_block&>(block).resize(new_size);
         break;
         case celltype_boolean:
-            static_cast<boolean_cell_block*>(p)->resize(new_size);
+            static_cast<boolean_cell_block&>(block).resize(new_size);
         break;
         default:
             throw general_error("resize_block: failed to resize a block of unknown type.");

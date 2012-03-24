@@ -345,7 +345,7 @@ void column<_Trait>::set_cell_to_middle_of_block(
             blk_tail->mp_data, blk->mp_data, pos_in_block+1, orig_size-pos_in_block-1);
 
         // Shrink the original block.
-        cell_block_func::resize_block(blk->mp_data, pos_in_block);
+        cell_block_func::resize_block(*blk->mp_data, pos_in_block);
     }
 
     blk->m_size = pos_in_block;
@@ -973,7 +973,7 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
         if (blk->mp_data)
         {
             // Shrink the data array.
-            cell_block_func::resize_block(blk->mp_data, new_size);
+            cell_block_func::resize_block(*blk->mp_data, new_size);
         }
         blk->m_size = new_size;
     }
@@ -1071,7 +1071,7 @@ void column<_Trait>::insert_empty_impl(size_type row, size_type length)
     blk_next->mp_data = cell_block_func::create_new_block(cell_block_func::get_block_type(*blk->mp_data), 0);
     cell_block_func::assign_values_from_block(blk_next->mp_data, blk->mp_data, size_blk_prev, size_blk_next);
 
-    cell_block_func::resize_block(blk->mp_data, size_blk_prev);
+    cell_block_func::resize_block(*blk->mp_data, size_blk_prev);
     blk->m_size = size_blk_prev;
 
     m_cur_size += length;
@@ -1326,7 +1326,7 @@ void column<_Trait>::set_cells_to_single_block(
         size_type new_size = start_row - start_row_in_block;
         blk->m_size = new_size;
         if (blk->mp_data)
-            cell_block_func::resize_block(blk->mp_data, new_size);
+            cell_block_func::resize_block(*blk->mp_data, new_size);
 
         new_size = end_row - start_row + 1; // size of the data array being inserted.
 
@@ -1474,7 +1474,8 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
     else
     {
         // Shrink block 1.
-        cell_block_func::resize_block(blk1->mp_data, offset);
+        if (blk1->mp_data)
+            cell_block_func::resize_block(*blk1->mp_data, offset);
         blk1->m_size = offset;
     }
 
@@ -1571,7 +1572,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
         // Extend the first block to store the new data set.
 
         // Shrink it first to remove the old values, then append new values.
-        cell_block_func::resize_block(blk1->mp_data, offset);
+        cell_block_func::resize_block(*blk1->mp_data, offset);
         cell_block_func::append_values(blk1->mp_data, it_begin, it_end);
         blk1->m_size = offset + length;
 
@@ -1727,7 +1728,8 @@ void column<_Trait>::resize(size_type new_size)
     {
         // Shrink the size of the current block.
         size_type new_block_size = new_end_row - start_row_in_block + 1;
-        cell_block_func::resize_block(blk->mp_data, new_block_size);
+        if (blk->mp_data)
+            cell_block_func::resize_block(*blk->mp_data, new_block_size);
         blk->m_size = new_block_size;
     }
 
@@ -1889,7 +1891,7 @@ void column<_Trait>::set_empty_in_multi_blocks(
             {
                 // Empty the lower part.
                 size_type new_size = start_row - start_row_in_block1;
-                cell_block_func::resize_block(blk->mp_data, new_size);
+                cell_block_func::resize_block(*blk->mp_data, new_size);
                 blk->m_size = new_size;
             }
         }

@@ -324,18 +324,15 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void resize_block(mdds::gridmap::base_cell_block* p, size_t new_size)
+    static void resize_block(mdds::gridmap::base_cell_block& block, size_t new_size)
     {
-        if (!p)
-            return;
-
-        switch (p->type)
+        switch (block.type)
         {
             case celltype_user_block:
-                static_cast<user_cell_block*>(p)->resize(new_size);
+                static_cast<user_cell_block&>(block).resize(new_size);
             break;
             default:
-                cell_block_func_base::resize_block(p, new_size);
+                cell_block_func_base::resize_block(block, new_size);
         }
     }
 
