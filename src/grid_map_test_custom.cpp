@@ -336,16 +336,13 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void print_block(mdds::gridmap::base_cell_block* block)
+    static void print_block(const mdds::gridmap::base_cell_block& block)
     {
-        if (!block)
-            return;
-
-        switch (block->type)
+        switch (block.type)
         {
             case celltype_user_block:
             {
-                user_cell_block& blk = user_cell_block::get(*block);
+                const user_cell_block& blk = user_cell_block::get(block);
                 for_each(blk.begin(), blk.end(),
                          mdds::gridmap::print_block_array<user_cell*>());
                 cout << endl;

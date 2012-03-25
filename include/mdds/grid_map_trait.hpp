@@ -278,7 +278,7 @@ struct cell_block_func_base
 
     static void resize_block(base_cell_block& block, size_t new_size);
 
-    static void print_block(base_cell_block* p);
+    static void print_block(const base_cell_block& block);
 
     static void erase(base_cell_block* block, size_t pos);
 
@@ -390,37 +390,34 @@ struct print_block_array
     }
 };
 
-void cell_block_func_base::print_block(base_cell_block* p)
+void cell_block_func_base::print_block(const base_cell_block& block)
 {
-    if (!p)
-        return;
-
-    switch (p->type)
+    switch (block.type)
     {
         case celltype_numeric:
         {
-            numeric_cell_block& blk = *static_cast<numeric_cell_block*>(p);
+            const numeric_cell_block& blk = numeric_cell_block::get(block);
             for_each(blk.begin(), blk.end(), print_block_array<double>());
             std::cout << std::endl;
         }
         break;
         case celltype_string:
         {
-            string_cell_block& blk = *static_cast<string_cell_block*>(p);
+            const string_cell_block& blk = string_cell_block::get(block);
             for_each(blk.begin(), blk.end(), print_block_array<std::string>());
             std::cout << std::endl;
         }
         break;
         case celltype_index:
         {
-            index_cell_block& blk = *static_cast<index_cell_block*>(p);
+            const index_cell_block& blk = index_cell_block::get(block);
             for_each(blk.begin(), blk.end(), print_block_array<size_t>());
             std::cout << std::endl;
         }
         break;
         case celltype_boolean:
         {
-            boolean_cell_block& blk = *static_cast<boolean_cell_block*>(p);
+            const boolean_cell_block& blk = boolean_cell_block::get(block);
             for_each(blk.begin(), blk.end(), print_block_array<bool>());
             std::cout << std::endl;
         }
