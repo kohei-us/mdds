@@ -280,9 +280,9 @@ struct cell_block_func_base
 
     static void print_block(const base_cell_block& block);
 
-    static void erase(base_cell_block* block, size_t pos);
+    static void erase(base_cell_block& block, size_t pos);
 
-    static void erase(base_cell_block* block, size_t pos, size_t size);
+    static void erase(base_cell_block& block, size_t pos, size_t size);
 
     static void append_values_from_block(base_cell_block* dest, const base_cell_block* src);
 
@@ -427,34 +427,31 @@ void cell_block_func_base::print_block(const base_cell_block& block)
     }
 }
 
-void cell_block_func_base::erase(base_cell_block* block, size_t pos)
+void cell_block_func_base::erase(base_cell_block& block, size_t pos)
 {
-    if (!block)
-        return;
-
-    switch (block->type)
+    switch (block.type)
     {
         case celltype_numeric:
         {
-            numeric_cell_block& blk = *static_cast<numeric_cell_block*>(block);
+            numeric_cell_block& blk = numeric_cell_block::get(block);
             blk.erase(blk.begin()+pos);
         }
         break;
         case celltype_string:
         {
-            string_cell_block& blk = *static_cast<string_cell_block*>(block);
+            string_cell_block& blk = string_cell_block::get(block);
             blk.erase(blk.begin()+pos);
         }
         break;
         case celltype_index:
         {
-            index_cell_block& blk = *static_cast<index_cell_block*>(block);
+            index_cell_block& blk = index_cell_block::get(block);
             blk.erase(blk.begin()+pos);
         }
         break;
         case celltype_boolean:
         {
-            boolean_cell_block& blk = *static_cast<boolean_cell_block*>(block);
+            boolean_cell_block& blk = boolean_cell_block::get(block);
             blk.erase(blk.begin()+pos);
         }
         break;
@@ -463,34 +460,31 @@ void cell_block_func_base::erase(base_cell_block* block, size_t pos)
     }
 }
 
-void cell_block_func_base::erase(base_cell_block* block, size_t pos, size_t size)
+void cell_block_func_base::erase(base_cell_block& block, size_t pos, size_t size)
 {
-    if (!block)
-        return;
-
-    switch (block->type)
+    switch (block.type)
     {
         case celltype_numeric:
         {
-            numeric_cell_block& blk = *static_cast<numeric_cell_block*>(block);
+            numeric_cell_block& blk = numeric_cell_block::get(block);
             blk.erase(blk.begin()+pos, blk.begin()+pos+size);
         }
         break;
         case celltype_string:
         {
-            string_cell_block& blk = *static_cast<string_cell_block*>(block);
+            string_cell_block& blk = string_cell_block::get(block);
             blk.erase(blk.begin()+pos, blk.begin()+pos+size);
         }
         break;
         case celltype_index:
         {
-            index_cell_block& blk = *static_cast<index_cell_block*>(block);
+            index_cell_block& blk = index_cell_block::get(block);
             blk.erase(blk.begin()+pos, blk.begin()+pos+size);
         }
         break;
         case celltype_boolean:
         {
-            boolean_cell_block& blk = *static_cast<boolean_cell_block*>(block);
+            boolean_cell_block& blk = boolean_cell_block::get(block);
             blk.erase(blk.begin()+pos, blk.begin()+pos+size);
         }
         break;

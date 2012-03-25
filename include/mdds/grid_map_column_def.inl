@@ -157,7 +157,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         {
             // Append to the previous block.
             blk->m_size -= 1;
-            cell_block_func::erase(blk->mp_data, 0);
+            cell_block_func::erase(*blk->mp_data, 0);
             blk_prev->m_size += 1;
             cell_block_func::append_value(blk_prev->mp_data, cell);
             return;
@@ -210,7 +210,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 
         // Pop the last cell off the current block, and prepend the
         // new cell to the next block.
-        cell_block_func::erase(blk->mp_data, blk->m_size-1);
+        cell_block_func::erase(*blk->mp_data, blk->m_size-1);
         blk->m_size -= 1;
         cell_block_func::prepend_value(blk_next->mp_data, cell);
         return;
@@ -243,7 +243,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 
     // Pop the last element from the current block, and prepend the cell
     // into the next block.
-    cell_block_func::erase(blk->mp_data, blk->m_size-1);
+    cell_block_func::erase(*blk->mp_data, blk->m_size-1);
     blk->m_size -= 1;
     cell_block_func::prepend_value(blk_next->mp_data, cell);
     blk_next->m_size += 1;
@@ -817,7 +817,8 @@ void column<_Trait>::set_cell_to_top_of_data_block(size_type block_index, const 
 {
     block* blk = m_blocks[block_index];
     blk->m_size -= 1;
-    cell_block_func::erase(blk->mp_data, 0);
+    if (blk->mp_data)
+        cell_block_func::erase(*blk->mp_data, 0);
     m_blocks.insert(m_blocks.begin()+block_index, new block(1));
     blk = m_blocks[block_index];
     create_new_block_with_new_cell(blk->mp_data, cell);
@@ -829,7 +830,8 @@ void column<_Trait>::set_cell_to_bottom_of_data_block(size_type block_index, con
 {
     assert(block_index < m_blocks.size());
     block* blk = m_blocks[block_index];
-    cell_block_func::erase(blk->mp_data, blk->m_size-1);
+    if (blk->mp_data)
+        cell_block_func::erase(*blk->mp_data, blk->m_size-1);
     blk->m_size -= 1;
     m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
     blk = m_blocks[block_index+1];
@@ -939,7 +941,7 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
         {
             // Erase data in the data block.
             size_type offset = start_row - start_row_in_block1;
-            cell_block_func::erase(blk->mp_data, offset, size_to_erase);
+            cell_block_func::erase(*blk->mp_data, offset, size_to_erase);
         }
 
         blk->m_size -= size_to_erase;
@@ -993,7 +995,7 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
         if (blk->mp_data)
         {
             // Erase the upper part.
-            cell_block_func::erase(blk->mp_data, 0, size_to_erase);
+            cell_block_func::erase(*blk->mp_data, 0, size_to_erase);
         }
     }
 
@@ -1530,7 +1532,8 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
         {
             // Erase the upper part of block 2.
             size_type size_to_erase = end_row - start_row_in_block2 + 1;
-            cell_block_func::erase(blk2->mp_data, 0, size_to_erase);
+            if (blk2->mp_data)
+                cell_block_func::erase(*blk2->mp_data, 0, size_to_erase);
             blk2->m_size -= size_to_erase;
         }
     }
@@ -1598,7 +1601,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
             {
                 // Erase the upper part of block 2.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
-                cell_block_func::erase(blk2->mp_data, 0, size_to_erase);
+                cell_block_func::erase(*blk2->mp_data, 0, size_to_erase);
                 blk2->m_size -= size_to_erase;
             }
         }
@@ -1823,7 +1826,7 @@ void column<_Trait>::set_empty_in_single_block(
         }
 
         // Set the upper part of the block empty.
-        cell_block_func::erase(blk->mp_data, 0, empty_block_size);
+        cell_block_func::erase(*blk->mp_data, 0, empty_block_size);
         blk->m_size -= empty_block_size;
 
         // Insert a new empty block before the current one.
@@ -1837,7 +1840,7 @@ void column<_Trait>::set_empty_in_single_block(
         assert(start_row > start_row_in_block);
 
         // Set the lower part of the block empty.
-        cell_block_func::erase(blk->mp_data, end_row_in_block-empty_block_size+1, empty_block_size);
+        cell_block_func::erase(*blk->mp_data, end_row_in_block-empty_block_size+1, empty_block_size);
         blk->m_size -= empty_block_size;
 
         // Insert a new empty block after the current one.
@@ -1864,7 +1867,7 @@ void column<_Trait>::set_empty_in_single_block(
 
     // Shrink the current data block.
     cell_block_func::erase(
-        blk->mp_data, start_row-start_row_in_block, end_row_in_block-start_row+1);
+        *blk->mp_data, start_row-start_row_in_block, end_row_in_block-start_row+1);
     blk->m_size = start_row - start_row_in_block;
 }
 
@@ -1919,7 +1922,7 @@ void column<_Trait>::set_empty_in_multi_blocks(
             {
                 // Empty the upper part.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
-                cell_block_func::erase(blk->mp_data, 0, size_to_erase);
+                cell_block_func::erase(*blk->mp_data, 0, size_to_erase);
                 blk->m_size -= size_to_erase;
             }
         }

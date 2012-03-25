@@ -353,16 +353,13 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void erase(mdds::gridmap::base_cell_block* block, size_t pos)
+    static void erase(mdds::gridmap::base_cell_block& block, size_t pos)
     {
-        if (!block)
-            return;
-
-        switch (block->type)
+        switch (block.type)
         {
             case celltype_user_block:
             {
-                user_cell_block& blk = user_cell_block::get(*block);
+                user_cell_block& blk = user_cell_block::get(block);
                 blk.erase(blk.begin()+pos);
             }
             break;
@@ -371,16 +368,13 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void erase(mdds::gridmap::base_cell_block* block, size_t pos, size_t size)
+    static void erase(mdds::gridmap::base_cell_block& block, size_t pos, size_t size)
     {
-        if (!block)
-            return;
-
-        switch (block->type)
+        switch (block.type)
         {
             case celltype_user_block:
             {
-                user_cell_block& blk = user_cell_block::get(*block);
+                user_cell_block& blk = user_cell_block::get(block);
                 blk.erase(blk.begin()+pos, blk.begin()+pos+size);
             }
             break;
