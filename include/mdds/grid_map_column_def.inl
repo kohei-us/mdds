@@ -1771,7 +1771,16 @@ bool column<_Trait>::operator== (const column& other) const
     {
         const block* blk1 = *it;
         const block* blk2 = *it2;
-        if (!cell_block_func::equal_block(blk1->mp_data, blk2->mp_data))
+
+        if (!blk1->mp_data)
+            return blk2->mp_data == NULL;
+
+        if (!blk2->mp_data)
+            // left is non-empty while right is empty.
+            return false;
+
+        assert(blk1->mp_data && blk2->mp_data);
+        if (!cell_block_func::equal_block(*blk1->mp_data, *blk2->mp_data))
             return false;
     }
 

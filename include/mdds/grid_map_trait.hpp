@@ -292,7 +292,7 @@ struct cell_block_func_base
     static void assign_values_from_block(
         base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len);
 
-    static bool equal_block(const base_cell_block* left, const base_cell_block* right);
+    static bool equal_block(const base_cell_block& left, const base_cell_block& right);
 };
 
 cell_t cell_block_func_base::get_block_type(const base_cell_block& block)
@@ -825,32 +825,22 @@ void insert_values(
     blk.insert(blk.begin()+pos, it_begin, it_end);
 }
 
-bool cell_block_func_base::equal_block(const base_cell_block* left, const base_cell_block* right)
+bool cell_block_func_base::equal_block(const base_cell_block& left, const base_cell_block& right)
 {
-    if (!left && !right)
-        return true;
-
-    if (left && !right)
-        return false;
-
-    if (!left && right)
-        return false;
-
-    assert(left && right);
-    cell_t block_type = left->type;
-    if (block_type != right->type)
+    cell_t block_type = left.type;
+    if (block_type != right.type)
         return false;
 
     switch (block_type)
     {
         case celltype_numeric:
-            return *get_numeric_block(left) == *get_numeric_block(right);
+            return numeric_cell_block::get(left) == numeric_cell_block::get(right);
         case celltype_string:
-            return *get_string_block(left) == *get_string_block(right);
+            return string_cell_block::get(left) == string_cell_block::get(right);
         case celltype_index:
-            return *get_index_block(left) == *get_index_block(right);
+            return index_cell_block::get(left) == index_cell_block::get(right);
         case celltype_boolean:
-            return *get_boolean_block(left) == *get_boolean_block(right);
+            return boolean_cell_block::get(left) == boolean_cell_block::get(right);
         default:
             ;
     }

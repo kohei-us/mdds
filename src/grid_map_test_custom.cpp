@@ -446,25 +446,16 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     static bool equal_block(
-        const mdds::gridmap::base_cell_block* left, const mdds::gridmap::base_cell_block* right)
+        const mdds::gridmap::base_cell_block& left, const mdds::gridmap::base_cell_block& right)
     {
-        if (!left)
-            return right == NULL;
-
-        if (!right)
-            // left is non-empty while right is empty.
-            return false;
-
-        assert(left && right);
-
-        if (left->type == celltype_user_block)
+        if (left.type == celltype_user_block)
         {
-            if (right->type != celltype_user_block)
+            if (right.type != celltype_user_block)
                 return false;
 
-            return user_cell_block::get(*left) == user_cell_block::get(*right);
+            return user_cell_block::get(left) == user_cell_block::get(right);
         }
-        else if (right->type == celltype_user_block)
+        else if (right.type == celltype_user_block)
             return false;
 
         return cell_block_func_base::equal_block(left, right);
