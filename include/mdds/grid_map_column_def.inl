@@ -342,7 +342,7 @@ void column<_Trait>::set_cell_to_middle_of_block(
         // Transfer the tail values from the original to the new block.
         blk_tail->mp_data = cell_block_func::create_new_block(blk_cat, 0);
         cell_block_func::assign_values_from_block(
-            blk_tail->mp_data, blk->mp_data, pos_in_block+1, orig_size-pos_in_block-1);
+            *blk_tail->mp_data, *blk->mp_data, pos_in_block+1, orig_size-pos_in_block-1);
 
         // Shrink the original block.
         cell_block_func::resize_block(*blk->mp_data, pos_in_block);
@@ -1071,7 +1071,7 @@ void column<_Trait>::insert_empty_impl(size_type row, size_type length)
 
     block* blk_next = m_blocks[block_index+2];
     blk_next->mp_data = cell_block_func::create_new_block(cell_block_func::get_block_type(*blk->mp_data), 0);
-    cell_block_func::assign_values_from_block(blk_next->mp_data, blk->mp_data, size_blk_prev, size_blk_next);
+    cell_block_func::assign_values_from_block(*blk_next->mp_data, *blk->mp_data, size_blk_prev, size_blk_next);
 
     cell_block_func::resize_block(*blk->mp_data, size_blk_prev);
     blk->m_size = size_blk_prev;
@@ -1237,7 +1237,7 @@ void column<_Trait>::insert_cells_to_middle(
         blk3->mp_data = cell_block_func::create_new_block(blk_cat, 0);
 
         // Transfer the lower part of the current block to the new block.
-        cell_block_func::assign_values_from_block(blk3->mp_data, blk->mp_data, row, n2);
+        cell_block_func::assign_values_from_block(*blk3->mp_data, *blk->mp_data, row, n2);
     }
 }
 
@@ -1302,7 +1302,7 @@ void column<_Trait>::set_cells_to_single_block(
                 throw std::logic_error("failed to instantiate a new data array.");
 
             size_type pos = end_row - start_row_in_block + 1;
-            cell_block_func::assign_values_from_block(new_data.get(), blk->mp_data, pos, length);
+            cell_block_func::assign_values_from_block(*new_data, *blk->mp_data, pos, length);
             cell_block_func::delete_block(blk->mp_data);
             blk->mp_data = new_data.release();
         }
@@ -1392,7 +1392,7 @@ void column<_Trait>::set_cells_to_single_block(
         blk_new = m_blocks[block_index+2];
         blk_new->mp_data = cell_block_func::create_new_block(blk_cat, 0);
         cell_block_func::assign_values_from_block(
-            blk_new->mp_data, blk->mp_data, end_row+1, new_size);
+            *blk_new->mp_data, *blk->mp_data, end_row+1, new_size);
     }
 }
 
@@ -1863,7 +1863,7 @@ void column<_Trait>::set_empty_in_single_block(
     cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
     blk_lower->mp_data = cell_block_func::create_new_block(blk_cat, 0);
     cell_block_func::assign_values_from_block(
-        blk_lower->mp_data, blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
+        *blk_lower->mp_data, *blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
 
     // Shrink the current data block.
     cell_block_func::erase(

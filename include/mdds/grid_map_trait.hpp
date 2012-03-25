@@ -290,7 +290,7 @@ struct cell_block_func_base
         base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len);
 
     static void assign_values_from_block(
-        base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len);
+        base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len);
 
     static bool equal_block(const base_cell_block* left, const base_cell_block* right);
 };
@@ -699,17 +699,14 @@ void append_values(base_cell_block* block, bool, const _Iter& it_begin, const _I
 }
 
 void cell_block_func_base::assign_values_from_block(
-    base_cell_block* dest, const base_cell_block* src, size_t begin_pos, size_t len)
+    base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len)
 {
-    if (!dest)
-        throw general_error("destination cell block is NULL.");
-
-    switch (dest->type)
+    switch (dest.type)
     {
         case celltype_numeric:
         {
-            numeric_cell_block& d = *get_numeric_block(dest);
-            const numeric_cell_block& s = *get_numeric_block(src);
+            numeric_cell_block& d = numeric_cell_block::get(dest);
+            const numeric_cell_block& s = numeric_cell_block::get(src);
             numeric_cell_block::const_iterator it = s.begin();
             std::advance(it, begin_pos);
             numeric_cell_block::const_iterator it_end = it;
@@ -719,8 +716,8 @@ void cell_block_func_base::assign_values_from_block(
         break;
         case celltype_string:
         {
-            string_cell_block& d = *get_string_block(dest);
-            const string_cell_block& s = *get_string_block(src);
+            string_cell_block& d = string_cell_block::get(dest);
+            const string_cell_block& s = string_cell_block::get(src);
             string_cell_block::const_iterator it = s.begin();
             std::advance(it, begin_pos);
             string_cell_block::const_iterator it_end = it;
@@ -730,8 +727,8 @@ void cell_block_func_base::assign_values_from_block(
         break;
         case celltype_index:
         {
-            index_cell_block& d = *get_index_block(dest);
-            const index_cell_block& s = *get_index_block(src);
+            index_cell_block& d = index_cell_block::get(dest);
+            const index_cell_block& s = index_cell_block::get(src);
             index_cell_block::const_iterator it = s.begin();
             std::advance(it, begin_pos);
             index_cell_block::const_iterator it_end = it;
@@ -741,8 +738,8 @@ void cell_block_func_base::assign_values_from_block(
         break;
         case celltype_boolean:
         {
-            boolean_cell_block& d = *get_boolean_block(dest);
-            const boolean_cell_block& s = *get_boolean_block(src);
+            boolean_cell_block& d = boolean_cell_block::get(dest);
+            const boolean_cell_block& s = boolean_cell_block::get(src);
             boolean_cell_block::const_iterator it = s.begin();
             std::advance(it, begin_pos);
             boolean_cell_block::const_iterator it_end = it;

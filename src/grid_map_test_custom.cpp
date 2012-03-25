@@ -424,18 +424,15 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     static void assign_values_from_block(
-        mdds::gridmap::base_cell_block* dest, const mdds::gridmap::base_cell_block* src,
+        mdds::gridmap::base_cell_block& dest, const mdds::gridmap::base_cell_block& src,
         size_t begin_pos, size_t len)
     {
-        if (!dest)
-            throw general_error("destination cell block is NULL.");
-
-        switch (dest->type)
+        switch (dest.type)
         {
             case celltype_user_block:
             {
-                user_cell_block& d = user_cell_block::get(*dest);
-                const user_cell_block& s = user_cell_block::get(*src);
+                user_cell_block& d = user_cell_block::get(dest);
+                const user_cell_block& s = user_cell_block::get(src);
                 user_cell_block::const_iterator it = s.begin();
                 std::advance(it, begin_pos);
                 user_cell_block::const_iterator it_end = it;
