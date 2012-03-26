@@ -307,6 +307,14 @@ void mixed_type_matrix<_String,_Flag>::dump_flags() const
 {
     mp_storage->get_flag_storage().dump();
 }
+
+template<typename _String, typename _Flag>
+typename mixed_type_matrix<_String,_Flag>::size_pair_type
+mixed_type_matrix<_String,_Flag>::get_storage_size() const
+{
+    size_pair_type size_pair(mp_storage->rows(), mp_storage->cols());
+    return size_pair;
+}
 #endif
 
 template<typename _String, typename _Flag>

@@ -220,34 +220,45 @@ void mtm_test_resize(matrix_density_t density)
     StackPrinter __stack_printer__("::mtm_test_resize");
     print_mx_density_type(density);
     pair<size_t,size_t> mxsize;
+    pair<size_t,size_t> mxstoragesize;
 
     {
         // Start with an empty matrix, and resize into a non-empty one.
         mx_type mx(0, 0, density);
         mxsize = mx.size();
+        mxstoragesize = mx.get_storage_size();
         assert(mxsize.first == 0);
         assert(mxsize.second == 0);
+        assert(mxsize == mxstoragesize);
         mx.resize(1, 1);
         mxsize = mx.size();
+        mxstoragesize = mx.get_storage_size();
         assert(mxsize.first == 1);
         assert(mxsize.second == 1);
+        assert(mxsize == mxstoragesize);
         // Back to an empty matrix again.
         mx.resize(0, 0);
         mxsize = mx.size();
+        mxstoragesize = mx.get_storage_size();
         assert(mxsize.first == 0);
         assert(mxsize.second == 0);
+        assert(mxsize == mxstoragesize);
         // Resize to a non-square matrix.
         mx.resize(5, 10);
         mxsize = mx.size();
+        mxstoragesize = mx.get_storage_size();
         assert(mxsize.first == 5);
         assert(mxsize.second == 10);
+        assert(mxsize == mxstoragesize);
     }
 
     mx_type mx(3, 3, density);
     mx.dump();
     mxsize = mx.size();
+    mxstoragesize = mx.get_storage_size();
     assert(mxsize.first == 3);
     assert(mxsize.second == 3);
+    assert(mxsize == mxstoragesize);
 
     mx.set_string(0, 0, new string("test"));
     mx.set_numeric(0, 1, 2.3);
@@ -260,14 +271,20 @@ void mtm_test_resize(matrix_density_t density)
     mx.resize(6, 4);
     mx.dump();
     mxsize = mx.size();
+    mxstoragesize = mx.get_storage_size();
     assert(mxsize.first == 6);
     assert(mxsize.second == 4);
+    assert(mxsize == mxstoragesize);
+
     mx.resize(6, 6);
     mx.set_boolean(5, 5, true);
     mx.dump();
     mxsize = mx.size();
+    mxstoragesize = mx.get_storage_size();
     assert(mxsize.first == 6);
     assert(mxsize.second == 6);
+    assert(mxsize == mxstoragesize);
+
     mx.resize(3, 6);
     mx.set_numeric(2, 2, 4.2);
     mx.set_numeric(2, 3, 3.2);
@@ -275,20 +292,26 @@ void mtm_test_resize(matrix_density_t density)
     mx.set_numeric(2, 5, 1.2);
     mx.dump();
     mxsize = mx.size();
+    mxstoragesize = mx.get_storage_size();
     assert(mxsize.first == 3);
     assert(mxsize.second == 6);
+    assert(mxsize == mxstoragesize);
 
     mx.resize(3, 3);
     mx.dump();
     mxsize = mx.size();
+    mxstoragesize = mx.get_storage_size();
     assert(mxsize.first == 3);
     assert(mxsize.second == 3);
+    assert(mxsize == mxstoragesize);
 
     mx.resize(0, 0);
     mx.dump();
     mxsize = mx.size();
+    mxstoragesize = mx.get_storage_size();
     assert(mxsize.first == 0);
     assert(mxsize.second == 0);
+    assert(mxsize == mxstoragesize);
     assert(mx.empty());
 }
 

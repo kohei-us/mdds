@@ -218,6 +218,7 @@ public:
 #ifdef UNIT_TEST
     void dump() const;
     void dump_flags() const;
+    size_pair_type get_storage_size() const;
 #endif
 
 private:
