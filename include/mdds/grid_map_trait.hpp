@@ -661,39 +661,39 @@ void cell_block_func_base::append_values_from_block(
 }
 
 template<typename _Iter>
-void append_values(base_cell_block* block, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
+void append_values(base_cell_block& block, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
 {
     throw general_error("non-specialized version of _append_values called.");
 }
 
 template<typename _Iter>
-void append_values(base_cell_block* block, double, const _Iter& it_begin, const _Iter& it_end)
+void append_values(base_cell_block& block, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& d = *get_numeric_block(block);
+    numeric_cell_block& d = numeric_cell_block::get(block);
     numeric_cell_block::iterator it = d.end();
     d.insert(it, it_begin, it_end);
 }
 
 template<typename _Iter>
-void append_values(base_cell_block* block, std::string, const _Iter& it_begin, const _Iter& it_end)
+void append_values(base_cell_block& block, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& d = *get_string_block(block);
+    string_cell_block& d = string_cell_block::get(block);
     string_cell_block::iterator it = d.end();
     d.insert(it, it_begin, it_end);
 }
 
 template<typename _Iter>
-void append_values(base_cell_block* block, size_t, const _Iter& it_begin, const _Iter& it_end)
+void append_values(base_cell_block& block, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& d = *get_index_block(block);
+    index_cell_block& d = index_cell_block::get(block);
     index_cell_block::iterator it = d.end();
     d.insert(it, it_begin, it_end);
 }
 
 template<typename _Iter>
-void append_values(base_cell_block* block, bool, const _Iter& it_begin, const _Iter& it_end)
+void append_values(base_cell_block& block, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& d = *get_boolean_block(block);
+    boolean_cell_block& d = boolean_cell_block::get(block);
     boolean_cell_block::iterator it = d.end();
     d.insert(it, it_begin, it_end);
 }
@@ -893,7 +893,7 @@ struct cell_block_func : public cell_block_func_base
     }
 
     template<typename T>
-    static void append_values(base_cell_block* block, const T& it_begin, const T& it_end)
+    static void append_values(base_cell_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::gridmap::append_values(block, *it_begin, it_begin, it_end);

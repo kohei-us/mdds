@@ -1136,7 +1136,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
                 if (blk_cat0 == cat)
                 {
                     // Append to the previous block.
-                    cell_block_func::append_values(blk0->mp_data, it_begin, it_end);
+                    cell_block_func::append_values(*blk0->mp_data, it_begin, it_end);
                     blk0->m_size += length;
                     m_cur_size += length;
                     return;
@@ -1182,7 +1182,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
                 if (cat == blk_cat0)
                 {
                     // Append to the previous block.
-                    cell_block_func::append_values(blk0->mp_data, it_begin, it_end);
+                    cell_block_func::append_values(*blk0->mp_data, it_begin, it_end);
                     blk0->m_size += length;
                     m_cur_size += length;
                     return;
@@ -1482,7 +1482,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
     }
 
     if (blk0_copied)
-        cell_block_func::append_values(data_blk->mp_data, it_begin, it_end);
+        cell_block_func::append_values(*data_blk->mp_data, it_begin, it_end);
     else
     {
         data_blk->mp_data = cell_block_func::create_new_block(cat, 0);
@@ -1576,7 +1576,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
 
         // Shrink it first to remove the old values, then append new values.
         cell_block_func::resize_block(*blk1->mp_data, offset);
-        cell_block_func::append_values(blk1->mp_data, it_begin, it_end);
+        cell_block_func::append_values(*blk1->mp_data, it_begin, it_end);
         blk1->m_size = offset + length;
 
         if (end_row == end_row_in_block2)
@@ -1643,7 +1643,7 @@ bool column<_Trait>::append_to_prev_block(
         return false;
 
     // Append to the previous block.
-    cell_block_func::append_values(blk_prev->mp_data, it_begin, it_end);
+    cell_block_func::append_values(*blk_prev->mp_data, it_begin, it_end);
     blk_prev->m_size += length;
     return true;
 }
