@@ -146,9 +146,9 @@ void set_value(base_cell_block& block, size_t pos, user_cell* p)
 
 template<typename _Iter>
 void set_values(
-    base_cell_block* block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+    base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(*block);
+    user_cell_block& d = user_cell_block::get(block);
     for (_Iter it = it_begin; it != it_end; ++it, ++pos)
         d[pos] = *it;
 }
@@ -223,7 +223,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     template<typename T>
-    static void set_values(mdds::gridmap::base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+    static void set_values(mdds::gridmap::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::gridmap::set_values(block, pos, *it_begin, it_begin, it_end);

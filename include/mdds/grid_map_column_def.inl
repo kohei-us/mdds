@@ -1260,7 +1260,7 @@ void column<_Trait>::set_cells_to_single_block(
         {
             // simple overwrite.
             size_type offset = start_row - start_row_in_block;
-            cell_block_func::set_values(blk->mp_data, offset, it_begin, it_end);
+            cell_block_func::set_values(*blk->mp_data, offset, it_begin, it_end);
             return;
         }
     }
