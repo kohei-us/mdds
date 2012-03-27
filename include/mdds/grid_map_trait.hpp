@@ -753,36 +753,36 @@ void cell_block_func_base::assign_values_from_block(
 }
 
 template<typename _Iter>
-void assign_values(base_cell_block* dest, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block& dest, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
 {
     throw general_error("non-specialized version of assign_values called.");
 }
 
 template<typename _Iter>
-void assign_values(base_cell_block* dest, double, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block& dest, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& d = *get_numeric_block(dest);
+    numeric_cell_block& d = numeric_cell_block::get(dest);
     d.assign(it_begin, it_end);
 }
 
 template<typename _Iter>
-void assign_values(base_cell_block* dest, const std::string&, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block& dest, const std::string&, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& d = *get_string_block(dest);
+    string_cell_block& d = string_cell_block::get(dest);
     d.assign(it_begin, it_end);
 }
 
 template<typename _Iter>
-void assign_values(base_cell_block* dest, size_t, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block& dest, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& d = *get_index_block(dest);
+    index_cell_block& d = index_cell_block::get(dest);
     d.assign(it_begin, it_end);
 }
 
 template<typename _Iter>
-void assign_values(base_cell_block* dest, bool, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(base_cell_block& dest, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& d = *get_boolean_block(dest);
+    boolean_cell_block& d = boolean_cell_block::get(dest);
     d.assign(it_begin, it_end);
 }
 
@@ -900,7 +900,7 @@ struct cell_block_func : public cell_block_func_base
     }
 
     template<typename T>
-    static void assign_values(base_cell_block* dest, const T& it_begin, const T& it_end)
+    static void assign_values(base_cell_block& dest, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);

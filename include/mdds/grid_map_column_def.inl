@@ -1147,7 +1147,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
             m_blocks.insert(m_blocks.begin()+block_index, new block(length));
             blk = m_blocks[block_index];
             blk->mp_data = cell_block_func::create_new_block(cat, 0);
-            cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
+            cell_block_func::assign_values(*blk->mp_data, it_begin, it_end);
             blk->m_size = length;
             m_cur_size += length;
             return;
@@ -1194,7 +1194,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
         blk->mp_data = cell_block_func::create_new_block(cat, 0);
-        cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
+        cell_block_func::assign_values(*blk->mp_data, it_begin, it_end);
         blk->m_size = length;
         m_cur_size += length;
         return;
@@ -1226,7 +1226,7 @@ void column<_Trait>::insert_cells_to_middle(
     // block for data series.
     block* blk2 = m_blocks[block_index+1];
     blk2->mp_data = cell_block_func::create_new_block(cat, 0);
-    cell_block_func::assign_values(blk2->mp_data, it_begin, it_end);
+    cell_block_func::assign_values(*blk2->mp_data, it_begin, it_end);
 
     if (blk->mp_data)
     {
@@ -1283,7 +1283,7 @@ void column<_Trait>::set_cells_to_single_block(
                 cell_block_func::delete_block(blk->mp_data);
 
             blk->mp_data = cell_block_func::create_new_block(cat, 0);
-            cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
+            cell_block_func::assign_values(*blk->mp_data, it_begin, it_end);
             return;
         }
 
@@ -1317,7 +1317,7 @@ void column<_Trait>::set_cells_to_single_block(
         blk = m_blocks[block_index];
         blk->mp_data = cell_block_func::create_new_block(cat, 0);
         blk->m_size = length;
-        cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
+        cell_block_func::assign_values(*blk->mp_data, it_begin, it_end);
         return;
     }
 
@@ -1352,7 +1352,7 @@ void column<_Trait>::set_cells_to_single_block(
             m_blocks.insert(m_blocks.begin()+block_index+1, new block(new_size));
             blk = m_blocks[block_index+1];
             blk->mp_data = cell_block_func::create_new_block(cat, 0);
-            cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
+            cell_block_func::assign_values(*blk->mp_data, it_begin, it_end);
             return;
         }
 
@@ -1362,7 +1362,7 @@ void column<_Trait>::set_cells_to_single_block(
         m_blocks.push_back(new block(new_size));
         blk = m_blocks.back();
         blk->mp_data = cell_block_func::create_new_block(cat, 0);
-        cell_block_func::assign_values(blk->mp_data, it_begin, it_end);
+        cell_block_func::assign_values(*blk->mp_data, it_begin, it_end);
         return;
     }
 
@@ -1379,7 +1379,7 @@ void column<_Trait>::set_cells_to_single_block(
     m_blocks[block_index+1] = new block(new_size);
     block* blk_new = m_blocks[block_index+1];
     blk_new->mp_data = cell_block_func::create_new_block(cat, 0);
-    cell_block_func::assign_values(blk_new->mp_data, it_begin, it_end);
+    cell_block_func::assign_values(*blk_new->mp_data, it_begin, it_end);
 
     // second new block is to transfer the lower part of the current block.
     new_size = end_row_in_block - end_row;
@@ -1486,7 +1486,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
     else
     {
         data_blk->mp_data = cell_block_func::create_new_block(cat, 0);
-        cell_block_func::assign_values(data_blk->mp_data, it_begin, it_end);
+        cell_block_func::assign_values(*data_blk->mp_data, it_begin, it_end);
     }
 
     if (end_row == end_row_in_block2)

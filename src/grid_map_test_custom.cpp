@@ -187,9 +187,9 @@ void prepend_values(mdds::gridmap::base_cell_block* block, user_cell*, const _It
 }
 
 template<typename _Iter>
-void assign_values(mdds::gridmap::base_cell_block* dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(mdds::gridmap::base_cell_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(*dest);
+    user_cell_block& d = user_cell_block::get(dest);
     d.assign(it_begin, it_end);
 }
 
@@ -257,7 +257,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     template<typename T>
-    static void assign_values(mdds::gridmap::base_cell_block* dest, const T& it_begin, const T& it_end)
+    static void assign_values(mdds::gridmap::base_cell_block& dest, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);
