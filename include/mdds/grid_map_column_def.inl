@@ -159,7 +159,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
             blk->m_size -= 1;
             cell_block_func::erase(*blk->mp_data, 0);
             blk_prev->m_size += 1;
-            cell_block_func::append_value(blk_prev->mp_data, cell);
+            cell_block_func::append_value(*blk_prev->mp_data, cell);
             return;
         }
 
@@ -359,7 +359,7 @@ void column<_Trait>::append_cell_to_block(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     blk->m_size += 1;
-    cell_block_func::append_value(blk->mp_data, cell);
+    cell_block_func::append_value(*blk->mp_data, cell);
 }
 
 template<typename _Trait>
@@ -520,7 +520,7 @@ void column<_Trait>::set_cell_to_empty_block(
                         // delete the current and next blocks.
                         block* blk_prev = m_blocks[block_index-1];
                         blk_prev->m_size += 1 + blk_next->m_size;
-                        cell_block_func::append_value(blk_prev->mp_data, cell);
+                        cell_block_func::append_value(*blk_prev->mp_data, cell);
                         cell_block_func::append_values_from_block(*blk_prev->mp_data, *data_next);
 
                         delete blk;
@@ -690,7 +690,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
         {
             // Append the cell to the previos block, and remove the
             // current block.
-            cell_block_func::append_value(blk_prev->mp_data, cell);
+            cell_block_func::append_value(*blk_prev->mp_data, cell);
             blk_prev->m_size += 1;
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
@@ -745,7 +745,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
         {
             // Append to the previous block.
             blk_prev->m_size += 1;
-            cell_block_func::append_value(blk_prev->mp_data, cell);
+            cell_block_func::append_value(*blk_prev->mp_data, cell);
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
             return;
@@ -768,7 +768,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
             // Merge the previous block with the cell being inserted and
             // the next block.
             blk_prev->m_size += 1 + blk_next->m_size;
-            cell_block_func::append_value(blk_prev->mp_data, cell);
+            cell_block_func::append_value(*blk_prev->mp_data, cell);
             cell_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
 
             // Delete the current and next blocks.
@@ -791,7 +791,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
     {
         // Append to the previous block.
         blk_prev->m_size += 1;
-        cell_block_func::append_value(blk_prev->mp_data, cell);
+        cell_block_func::append_value(*blk_prev->mp_data, cell);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return;

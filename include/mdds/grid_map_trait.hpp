@@ -198,27 +198,27 @@ void get_value(const base_cell_block& block, size_t pos, bool& val)
     val = blk[pos];
 }
 
-void append_value(base_cell_block* block, double val)
+void append_value(base_cell_block& block, double val)
 {
-    numeric_cell_block& blk = *get_numeric_block(block);
+    numeric_cell_block& blk = numeric_cell_block::get(block);
     blk.push_back(val);
 }
 
-void append_value(base_cell_block* block, const std::string& val)
+void append_value(base_cell_block& block, const std::string& val)
 {
-    string_cell_block& blk = *get_string_block(block);
+    string_cell_block& blk = string_cell_block::get(block);
     blk.push_back(val);
 }
 
-void append_value(base_cell_block* block, size_t val)
+void append_value(base_cell_block& block, size_t val)
 {
-    index_cell_block& blk = *get_index_block(block);
+    index_cell_block& blk = index_cell_block::get(block);
     blk.push_back(val);
 }
 
-void append_value(base_cell_block* block, bool val)
+void append_value(base_cell_block& block, bool val)
 {
-    boolean_cell_block& blk = *get_boolean_block(block);
+    boolean_cell_block& blk = boolean_cell_block::get(block);
     blk.push_back(val);
 }
 
@@ -879,7 +879,7 @@ struct cell_block_func : public cell_block_func_base
     }
 
     template<typename T>
-    static void append_value(base_cell_block* block, const T& val)
+    static void append_value(base_cell_block& block, const T& val)
     {
         mdds::gridmap::append_value(block, val);
     }

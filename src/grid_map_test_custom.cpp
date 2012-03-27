@@ -159,9 +159,9 @@ void get_value(const base_cell_block& block, size_t pos, user_cell*& val)
     val = blk[pos];
 }
 
-void append_value(base_cell_block* block, user_cell* val)
+void append_value(base_cell_block& block, user_cell* val)
 {
-    user_cell_block& blk = user_cell_block::get(*block);
+    user_cell_block& blk = user_cell_block::get(block);
     blk.push_back(val);
 }
 
@@ -236,7 +236,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     template<typename T>
-    static void append_value(mdds::gridmap::base_cell_block* block, const T& val)
+    static void append_value(mdds::gridmap::base_cell_block& block, const T& val)
     {
         mdds::gridmap::append_value(block, val);
     }
