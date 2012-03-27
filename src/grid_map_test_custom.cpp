@@ -165,9 +165,9 @@ void append_value(base_cell_block& block, user_cell* val)
     blk.push_back(val);
 }
 
-void prepend_value(base_cell_block* block, user_cell* val)
+void prepend_value(base_cell_block& block, user_cell* val)
 {
-    user_cell_block& blk = user_cell_block::get(*block);
+    user_cell_block& blk = user_cell_block::get(block);
     blk.insert(blk.begin(), val);
 }
 
@@ -180,9 +180,9 @@ void append_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Ite
 }
 
 template<typename _Iter>
-void prepend_values(mdds::gridmap::base_cell_block* block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(*block);
+    user_cell_block& d = user_cell_block::get(block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
@@ -264,13 +264,13 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     template<typename T>
-    static void prepend_value(mdds::gridmap::base_cell_block* block, const T& val)
+    static void prepend_value(mdds::gridmap::base_cell_block& block, const T& val)
     {
         mdds::gridmap::prepend_value(block, val);
     }
 
     template<typename T>
-    static void prepend_values(mdds::gridmap::base_cell_block* block, const T& it_begin, const T& it_end)
+    static void prepend_values(mdds::gridmap::base_cell_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::gridmap::prepend_values(block, *it_begin, it_begin, it_end);

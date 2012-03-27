@@ -212,7 +212,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
         // new cell to the next block.
         cell_block_func::erase(*blk->mp_data, blk->m_size-1);
         blk->m_size -= 1;
-        cell_block_func::prepend_value(blk_next->mp_data, cell);
+        cell_block_func::prepend_value(*blk_next->mp_data, cell);
         return;
     }
 
@@ -245,7 +245,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
     // into the next block.
     cell_block_func::erase(*blk->mp_data, blk->m_size-1);
     blk->m_size -= 1;
-    cell_block_func::prepend_value(blk_next->mp_data, cell);
+    cell_block_func::prepend_value(*blk_next->mp_data, cell);
     blk_next->m_size += 1;
 }
 
@@ -435,7 +435,7 @@ void column<_Trait>::set_cell_to_empty_block(
                         m_blocks.erase(m_blocks.begin());
                         blk = m_blocks.front();
                         blk->m_size += 1;
-                        cell_block_func::prepend_value(blk->mp_data, cell);
+                        cell_block_func::prepend_value(*blk->mp_data, cell);
                     }
                     else
                         create_new_block_with_new_cell(blk->mp_data, cell);
@@ -463,7 +463,7 @@ void column<_Trait>::set_cell_to_empty_block(
                     // Shrink this empty block by one, and prepend the cell to the next block.
                     blk->m_size -= 1;
                     blk_next->m_size += 1;
-                    cell_block_func::prepend_value(blk_next->mp_data, cell);
+                    cell_block_func::prepend_value(*blk_next->mp_data, cell);
                 }
                 else
                 {
@@ -566,7 +566,7 @@ void column<_Trait>::set_cell_to_empty_block(
                     {
                         // Remove this empty block, and prepend the cell to the next block.
                         blk_next->m_size += 1;
-                        cell_block_func::prepend_value(blk_next->mp_data, cell);
+                        cell_block_func::prepend_value(*blk_next->mp_data, cell);
                         delete m_blocks[block_index];
                         m_blocks.erase(m_blocks.begin()+block_index);
                     }
@@ -606,7 +606,7 @@ void column<_Trait>::set_cell_to_empty_block(
                 // Shrink this empty block and extend the next block.
                 blk->m_size -= 1;
                 blk_next->m_size += 1;
-                cell_block_func::prepend_value(blk_next->mp_data, cell);
+                cell_block_func::prepend_value(*blk_next->mp_data, cell);
             }
             else
             {
@@ -666,7 +666,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
 
         // Delete the current block, and prepend the cell to the next block.
         blk_next->m_size += 1;
-        cell_block_func::prepend_value(blk_next->mp_data, cell);
+        cell_block_func::prepend_value(*blk_next->mp_data, cell);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return;
@@ -727,7 +727,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
             m_blocks.erase(m_blocks.begin()+block_index);
             blk = m_blocks[block_index];
             blk->m_size += 1;
-            cell_block_func::prepend_value(blk->mp_data, cell);
+            cell_block_func::prepend_value(*blk->mp_data, cell);
             return;
         }
 
@@ -801,7 +801,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
     {
         // Prepend to the next block.
         blk_next->m_size += 1;
-        cell_block_func::prepend_value(blk_next->mp_data, cell);
+        cell_block_func::prepend_value(*blk_next->mp_data, cell);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return;
@@ -1342,7 +1342,7 @@ void column<_Trait>::set_cells_to_single_block(
                 if (blk_cat_next == cat)
                 {
                     // Prepend it to the next block.
-                    cell_block_func::prepend_values(blk_next->mp_data, it_begin, it_end);
+                    cell_block_func::prepend_values(*blk_next->mp_data, it_begin, it_end);
                     blk_next->m_size += end_row - start_row + 1;
                     return;
                 }

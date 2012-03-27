@@ -222,27 +222,27 @@ void append_value(base_cell_block& block, bool val)
     blk.push_back(val);
 }
 
-void prepend_value(base_cell_block* block, double val)
+void prepend_value(base_cell_block& block, double val)
 {
-    numeric_cell_block& blk = *get_numeric_block(block);
+    numeric_cell_block& blk = numeric_cell_block::get(block);
     blk.insert(blk.begin(), val);
 }
 
-void prepend_value(base_cell_block* block, const std::string& val)
+void prepend_value(base_cell_block& block, const std::string& val)
 {
-    string_cell_block& blk = *get_string_block(block);
+    string_cell_block& blk = string_cell_block::get(block);
     blk.insert(blk.begin(), val);
 }
 
-void prepend_value(base_cell_block* block, size_t val)
+void prepend_value(base_cell_block& block, size_t val)
 {
-    index_cell_block& blk = *get_index_block(block);
+    index_cell_block& blk = index_cell_block::get(block);
     blk.insert(blk.begin(), val);
 }
 
-void prepend_value(base_cell_block* block, bool val)
+void prepend_value(base_cell_block& block, bool val)
 {
-    boolean_cell_block& blk = *get_boolean_block(block);
+    boolean_cell_block& blk = boolean_cell_block::get(block);
     blk.insert(blk.begin(), val);
 }
 
@@ -538,30 +538,30 @@ void set_values(
 }
 
 template<typename _Iter>
-void prepend_values(base_cell_block* block, double, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(base_cell_block& block, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& d = *get_numeric_block(block);
+    numeric_cell_block& d = numeric_cell_block::get(block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
 template<typename _Iter>
-void prepend_values(base_cell_block* block, const std::string&, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(base_cell_block& block, const std::string&, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& d = *get_string_block(block);
+    string_cell_block& d = string_cell_block::get(block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
 template<typename _Iter>
-void prepend_values(base_cell_block* block, size_t, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(base_cell_block& block, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& d = *get_index_block(block);
+    index_cell_block& d = index_cell_block::get(block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
 template<typename _Iter>
-void prepend_values(base_cell_block* block, bool, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(base_cell_block& block, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& d = *get_boolean_block(block);
+    boolean_cell_block& d = boolean_cell_block::get(block);
     d.insert(d.begin(), it_begin, it_end);
 }
 
@@ -907,13 +907,13 @@ struct cell_block_func : public cell_block_func_base
     }
 
     template<typename T>
-    static void prepend_value(base_cell_block* block, const T& val)
+    static void prepend_value(base_cell_block& block, const T& val)
     {
         mdds::gridmap::prepend_value(block, val);
     }
 
     template<typename T>
-    static void prepend_values(base_cell_block* block, const T& it_begin, const T& it_end)
+    static void prepend_values(base_cell_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::gridmap::prepend_values(block, *it_begin, it_begin, it_end);
