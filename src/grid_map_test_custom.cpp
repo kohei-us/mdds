@@ -138,9 +138,9 @@ cell_t get_cell_type(const user_cell*)
     return celltype_user_block;
 }
 
-void set_value(base_cell_block* block, size_t pos, user_cell* p)
+void set_value(base_cell_block& block, size_t pos, user_cell* p)
 {
-    user_cell_block& blk = user_cell_block::get(*block);
+    user_cell_block& blk = user_cell_block::get(block);
     blk[pos] = p;
 }
 
@@ -217,7 +217,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     template<typename T>
-    static void set_value(mdds::gridmap::base_cell_block* block, size_t pos, const T& val)
+    static void set_value(mdds::gridmap::base_cell_block& block, size_t pos, const T& val)
     {
         mdds::gridmap::set_value(block, pos, val);
     }
