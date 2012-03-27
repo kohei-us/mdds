@@ -788,40 +788,40 @@ void assign_values(base_cell_block* dest, bool, const _Iter& it_begin, const _It
 
 template<typename _Iter>
 void insert_values(
-    base_cell_block*, size_t, const typename _Iter::value_type&, const _Iter&, const _Iter&)
+    base_cell_block&, size_t, const typename _Iter::value_type&, const _Iter&, const _Iter&)
 {
     throw general_error("non-specialized version of _insert_values called.");
 }
 
 template<typename _Iter>
 void insert_values(
-    base_cell_block* block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
+    base_cell_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& blk = *get_numeric_block(block);
+    numeric_cell_block& blk = numeric_cell_block::get(block);
     blk.insert(blk.begin()+pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
-    base_cell_block* block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
+    base_cell_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& blk = *get_string_block(block);
+    string_cell_block& blk = string_cell_block::get(block);
     blk.insert(blk.begin()+pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
-    base_cell_block* block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
+    base_cell_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& blk = *get_index_block(block);
+    index_cell_block& blk = index_cell_block::get(block);
     blk.insert(blk.begin()+pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
-    base_cell_block* block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
+    base_cell_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& blk = *get_boolean_block(block);
+    boolean_cell_block& blk = boolean_cell_block::get(block);
     blk.insert(blk.begin()+pos, it_begin, it_end);
 }
 
@@ -886,7 +886,7 @@ struct cell_block_func : public cell_block_func_base
 
     template<typename T>
     static void insert_values(
-        base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+        base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::gridmap::insert_values(block, pos, *it_begin, it_begin, it_end);

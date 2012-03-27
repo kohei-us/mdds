@@ -1163,7 +1163,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
     if (cat == blk_cat)
     {
         // Simply insert the new data series into existing block.
-        cell_block_func::insert_values(blk->mp_data, row-start_row, it_begin, it_end);
+        cell_block_func::insert_values(*blk->mp_data, row-start_row, it_begin, it_end);
         blk->m_size += length;
         m_cur_size += length;
         return;

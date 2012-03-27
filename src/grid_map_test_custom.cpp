@@ -195,9 +195,9 @@ void assign_values(mdds::gridmap::base_cell_block* dest, user_cell*, const _Iter
 
 template<typename _Iter>
 void insert_values(
-    mdds::gridmap::base_cell_block* block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+    mdds::gridmap::base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(*block);
+    user_cell_block& d = user_cell_block::get(block);
     d.insert(d.begin()+pos, it_begin, it_end);
 }
 
@@ -243,7 +243,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 
     template<typename T>
     static void insert_values(
-        mdds::gridmap::base_cell_block* block, size_t pos, const T& it_begin, const T& it_end)
+        mdds::gridmap::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::gridmap::insert_values(block, pos, *it_begin, it_begin, it_end);
