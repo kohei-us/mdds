@@ -141,6 +141,9 @@ private:
     void append_cell_to_block(size_type block_index, const _T& cell);
 
     template<typename _T>
+    void set_cell_impl(size_type row, const _T& cell);
+
+    template<typename _T>
     void set_cell_to_empty_block(
         size_type block_index, size_type pos_in_block, const _T& cell);
 
@@ -163,7 +166,6 @@ private:
         size_type start_row, size_type end_row,
         size_type block_index1, size_type start_row_in_block1,
         size_type block_index2, size_type start_row_in_block2);
-
 
     void erase_impl(size_type start_row, size_type end_row);
 
