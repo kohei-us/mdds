@@ -860,7 +860,7 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
     assert(_row >= start_row);
     assert(blk->mp_data); // data for non-empty blocks should never be NULL.
     row_key_type idx = _row - start_row;
-    cell_block_func::get_value(blk->mp_data, idx, cell);
+    cell_block_func::get_value(*blk->mp_data, idx, cell);
 }
 
 template<typename _Trait>

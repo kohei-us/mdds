@@ -174,27 +174,27 @@ void set_value(base_cell_block& block, size_t pos, bool val)
     blk[pos] = val;
 }
 
-void get_value(base_cell_block* block, size_t pos, double& val)
+void get_value(const base_cell_block& block, size_t pos, double& val)
 {
-    numeric_cell_block& blk = *get_numeric_block(block);
+    const numeric_cell_block& blk = numeric_cell_block::get(block);
     val = blk[pos];
 }
 
-void get_value(base_cell_block* block, size_t pos, std::string& val)
+void get_value(const base_cell_block& block, size_t pos, std::string& val)
 {
-    string_cell_block& blk = *get_string_block(block);
+    const string_cell_block& blk = string_cell_block::get(block);
     val = blk[pos];
 }
 
-void get_value(base_cell_block* block, size_t pos, size_t& val)
+void get_value(const base_cell_block& block, size_t pos, size_t& val)
 {
-    index_cell_block& blk = *get_index_block(block);
+    const index_cell_block& blk = index_cell_block::get(block);
     val = blk[pos];
 }
 
-void get_value(base_cell_block* block, size_t pos, bool& val)
+void get_value(const base_cell_block& block, size_t pos, bool& val)
 {
-    boolean_cell_block& blk = *get_boolean_block(block);
+    const boolean_cell_block& blk = boolean_cell_block::get(block);
     val = blk[pos];
 }
 
@@ -873,7 +873,7 @@ struct cell_block_func : public cell_block_func_base
     }
 
     template<typename T>
-    static void get_value(mdds::gridmap::base_cell_block* block, size_t pos, T& val)
+    static void get_value(const mdds::gridmap::base_cell_block& block, size_t pos, T& val)
     {
         mdds::gridmap::get_value(block, pos, val);
     }

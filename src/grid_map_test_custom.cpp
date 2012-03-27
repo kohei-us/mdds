@@ -153,9 +153,9 @@ void set_values(
         d[pos] = *it;
 }
 
-void get_value(base_cell_block* block, size_t pos, user_cell*& val)
+void get_value(const base_cell_block& block, size_t pos, user_cell*& val)
 {
-    user_cell_block& blk = user_cell_block::get(*block);
+    const user_cell_block& blk = user_cell_block::get(block);
     val = blk[pos];
 }
 
@@ -230,7 +230,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     template<typename T>
-    static void get_value(mdds::gridmap::base_cell_block* block, size_t pos, T& val)
+    static void get_value(const mdds::gridmap::base_cell_block& block, size_t pos, T& val)
     {
         mdds::gridmap::get_value(block, pos, val);
     }
