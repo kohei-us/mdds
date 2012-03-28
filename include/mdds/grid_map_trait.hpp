@@ -204,8 +204,6 @@ void get_empty_value(bool& val)
 
 struct cell_block_func_base
 {
-    static cell_t get_block_type(const base_cell_block& block);
-
     static base_cell_block* create_new_block(cell_t type, size_t init_size);
 
     static base_cell_block* clone_block(const base_cell_block& block);
@@ -230,11 +228,6 @@ struct cell_block_func_base
 
     static bool equal_block(const base_cell_block& left, const base_cell_block& right);
 };
-
-cell_t cell_block_func_base::get_block_type(const base_cell_block& block)
-{
-    return block.type;
-}
 
 base_cell_block* cell_block_func_base::create_new_block(cell_t type, size_t init_size)
 {

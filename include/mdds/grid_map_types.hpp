@@ -32,18 +32,23 @@ namespace mdds { namespace gridmap {
 
 typedef int cell_t;
 
-const int celltype_numeric = 0;
-const int celltype_string  = 1;
-const int celltype_index   = 2;
-const int celltype_boolean = 3;
+const cell_t celltype_numeric = 0;
+const cell_t celltype_string  = 1;
+const cell_t celltype_index   = 2;
+const cell_t celltype_boolean = 3;
 
-const int celltype_user_start = 50;
+const cell_t celltype_user_start = 50;
 
 struct base_cell_block
 {
     cell_t type;
     base_cell_block(cell_t _t) : type(_t) {}
 };
+
+inline cell_t get_block_type(const base_cell_block& blk)
+{
+    return blk.type;
+}
 
 template<typename _Self, cell_t _TypeId, typename _Data>
 struct cell_block : public base_cell_block, public std::vector<_Data>

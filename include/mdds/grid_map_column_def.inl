@@ -182,7 +182,7 @@ void column<_Trait>::set_cell_to_middle_of_block(
 
     if (blk->mp_data)
     {
-        cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
+        cell_category_type blk_cat = mdds::gridmap::get_block_type(*blk->mp_data);
 
         // Transfer the tail values from the original to the new block.
         blk_tail->mp_data = cell_block_func::create_new_block(blk_cat, 0);
@@ -233,7 +233,7 @@ void column<_Trait>::set_cell_impl(size_type row, const _T& cell)
     }
 
     assert(blk->mp_data);
-    cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
+    cell_category_type blk_cat = mdds::gridmap::get_block_type(*blk->mp_data);
 
     if (blk_cat == cat)
     {
@@ -271,7 +271,7 @@ void column<_Trait>::set_cell_impl(size_type row, const _T& cell)
             return;
         }
 
-        cell_category_type blk_cat_prev = cell_block_func::get_block_type(*blk_prev->mp_data);
+        cell_category_type blk_cat_prev = mdds::gridmap::get_block_type(*blk_prev->mp_data);
         if (blk_cat_prev == cat)
         {
             // Append to the previous block.
@@ -320,7 +320,7 @@ void column<_Trait>::set_cell_impl(size_type row, const _T& cell)
         }
 
         // Next block is not empty.
-        cell_category_type blk_cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+        cell_category_type blk_cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
         if (blk_cat_next != cat)
         {
             set_cell_to_bottom_of_data_block(0, cell);
@@ -352,7 +352,7 @@ void column<_Trait>::set_cell_impl(size_type row, const _T& cell)
         return;
     }
 
-    cell_category_type cat_blk_next = cell_block_func::get_block_type(*blk_next->mp_data);
+    cell_category_type cat_blk_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
     if (cat_blk_next != cat)
     {
         // Next block is of different type than that of the cell being inserted.
@@ -431,7 +431,7 @@ void column<_Trait>::set_cell_to_empty_block(
                     block* blk_next = m_blocks[block_index+1];
                     assert(blk_next->mp_data);
                     cell_category_type cat = cell_block_func::get_cell_type(cell);
-                    cell_category_type cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+                    cell_category_type cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
 
                     if (cat == cat_next)
                     {
@@ -461,7 +461,7 @@ void column<_Trait>::set_cell_to_empty_block(
                 block* blk_next = m_blocks[block_index+1];
                 assert(blk_next->mp_data);
                 cell_category_type cat = cell_block_func::get_cell_type(cell);
-                cell_category_type cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+                cell_category_type cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
                 assert(blk->m_size > 1);
 
                 if (cat == cat_next)
@@ -497,7 +497,7 @@ void column<_Trait>::set_cell_to_empty_block(
     if (pos_in_block == 0)
     {
         // New cell is right below the non-empty block.
-        cell_category_type blk_cat_prev = cell_block_func::get_block_type(*m_blocks[block_index-1]->mp_data);
+        cell_category_type blk_cat_prev = mdds::gridmap::get_block_type(*m_blocks[block_index-1]->mp_data);
         cell_category_type cat = cell_block_func::get_cell_type(cell);
         if (blk_cat_prev == cat)
         {
@@ -519,7 +519,7 @@ void column<_Trait>::set_cell_to_empty_block(
                     block* blk_next = m_blocks[block_index+1];
                     cell_block_type* data_next = blk_next->mp_data;
                     assert(data_next); // Empty block must not be followed by another empty block.
-                    cell_category_type blk_cat_next = cell_block_func::get_block_type(*data_next);
+                    cell_category_type blk_cat_next = mdds::gridmap::get_block_type(*data_next);
                     if (blk_cat_prev == blk_cat_next)
                     {
                         // We need to merge the previous and next blocks, then
@@ -567,7 +567,7 @@ void column<_Trait>::set_cell_to_empty_block(
                     assert(block_index < m_blocks.size()-1);
                     block* blk_next = m_blocks[block_index+1];
                     assert(blk_next->mp_data);
-                    cell_category_type blk_cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+                    cell_category_type blk_cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
                     if (cat == blk_cat_next)
                     {
                         // Remove this empty block, and prepend the cell to the next block.
@@ -606,7 +606,7 @@ void column<_Trait>::set_cell_to_empty_block(
             cell_category_type cat = cell_block_func::get_cell_type(cell);
             block* blk_next = m_blocks[block_index+1];
             assert(blk_next->mp_data);
-            cell_category_type blk_cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+            cell_category_type blk_cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
             if (cat == blk_cat_next)
             {
                 // Shrink this empty block and extend the next block.
@@ -639,7 +639,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
     assert(blk->m_size == 1);
     assert(blk->mp_data);
     cell_category_type cat = cell_block_func::get_cell_type(cell);
-    cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
+    cell_category_type blk_cat = mdds::gridmap::get_block_type(*blk->mp_data);
     assert(blk_cat != cat);
 
     if (block_index == 0)
@@ -662,7 +662,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
         }
 
         // Next block is not empty.
-        cell_category_type blk_cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+        cell_category_type blk_cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
         if (blk_cat_next != cat)
         {
             // Cell being inserted is of different type than that of the next block.
@@ -691,7 +691,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
             return;
         }
 
-        cell_category_type blk_cat_prev = cell_block_func::get_block_type(*blk_prev->mp_data);
+        cell_category_type blk_cat_prev = mdds::gridmap::get_block_type(*blk_prev->mp_data);
         if (blk_cat_prev == cat)
         {
             // Append the cell to the previos block, and remove the
@@ -725,7 +725,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
         }
 
         // Previous block is empty, but the next block is not.
-        cell_category_type blk_cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+        cell_category_type blk_cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
         if (blk_cat_next == cat)
         {
             // Delete the current block, and prepend the new cell to the next block.
@@ -746,7 +746,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
     {
         // Next block is empty.
         assert(blk_prev->mp_data);
-        cell_category_type blk_cat_prev = cell_block_func::get_block_type(*blk_prev->mp_data);
+        cell_category_type blk_cat_prev = mdds::gridmap::get_block_type(*blk_prev->mp_data);
         if (blk_cat_prev == cat)
         {
             // Append to the previous block.
@@ -764,8 +764,8 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
 
     assert(blk_prev && blk_prev->mp_data);
     assert(blk_next && blk_next->mp_data);
-    cell_category_type blk_cat_prev = cell_block_func::get_block_type(*blk_prev->mp_data);
-    cell_category_type blk_cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+    cell_category_type blk_cat_prev = mdds::gridmap::get_block_type(*blk_prev->mp_data);
+    cell_category_type blk_cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
 
     if (blk_cat_prev == blk_cat_next)
     {
@@ -1076,7 +1076,7 @@ void column<_Trait>::insert_empty_impl(size_type row, size_type length)
     m_blocks[block_index+2] = new block(size_blk_next);
 
     block* blk_next = m_blocks[block_index+2];
-    blk_next->mp_data = cell_block_func::create_new_block(cell_block_func::get_block_type(*blk->mp_data), 0);
+    blk_next->mp_data = cell_block_func::create_new_block(mdds::gridmap::get_block_type(*blk->mp_data), 0);
     cell_block_func::assign_values_from_block(*blk_next->mp_data, *blk->mp_data, size_blk_prev, size_blk_next);
 
     cell_block_func::resize_block(*blk->mp_data, size_blk_prev);
@@ -1138,7 +1138,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
             {
                 block* blk0 = m_blocks[block_index-1];
                 assert(blk0->mp_data);
-                cell_category_type blk_cat0 = cell_block_func::get_block_type(*blk0->mp_data);
+                cell_category_type blk_cat0 = mdds::gridmap::get_block_type(*blk0->mp_data);
                 if (blk_cat0 == cat)
                 {
                     // Append to the previous block.
@@ -1165,7 +1165,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
     }
 
     assert(blk->mp_data);
-    cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
+    cell_category_type blk_cat = mdds::gridmap::get_block_type(*blk->mp_data);
     if (cat == blk_cat)
     {
         // Simply insert the new data series into existing block.
@@ -1184,7 +1184,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
             block* blk0 = m_blocks[block_index-1];
             if (blk0->mp_data)
             {
-                cell_category_type blk_cat0 = cell_block_func::get_block_type(*blk0->mp_data);
+                cell_category_type blk_cat0 = mdds::gridmap::get_block_type(*blk0->mp_data);
                 if (cat == blk_cat0)
                 {
                     // Append to the previous block.
@@ -1236,7 +1236,7 @@ void column<_Trait>::insert_cells_to_middle(
 
     if (blk->mp_data)
     {
-        cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
+        cell_category_type blk_cat = mdds::gridmap::get_block_type(*blk->mp_data);
 
         // block to hold data from the lower part of the existing block.
         block* blk3 = m_blocks[block_index+2];
@@ -1261,7 +1261,7 @@ void column<_Trait>::set_cells_to_single_block(
 
     if (blk->mp_data)
     {
-        cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
+        cell_category_type blk_cat = mdds::gridmap::get_block_type(*blk->mp_data);
         if (cat == blk_cat)
         {
             // simple overwrite.
@@ -1302,7 +1302,7 @@ void column<_Trait>::set_cells_to_single_block(
         {
             // Erase the upper part of the data from the current data array.
             mdds::unique_ptr<cell_block_type> new_data(
-                cell_block_func::create_new_block(cell_block_func::get_block_type(*blk->mp_data), 0));
+                cell_block_func::create_new_block(mdds::gridmap::get_block_type(*blk->mp_data), 0));
 
             if (!new_data)
                 throw std::logic_error("failed to instantiate a new data array.");
@@ -1344,7 +1344,7 @@ void column<_Trait>::set_cells_to_single_block(
             block* blk_next = m_blocks[block_index+1];
             if (blk_next->mp_data)
             {
-                cell_category_type blk_cat_next = cell_block_func::get_block_type(*blk_next->mp_data);
+                cell_category_type blk_cat_next = mdds::gridmap::get_block_type(*blk_next->mp_data);
                 if (blk_cat_next == cat)
                 {
                     // Prepend it to the next block.
@@ -1393,7 +1393,7 @@ void column<_Trait>::set_cells_to_single_block(
     if (blk->mp_data)
     {
         // current block is not empty. Transfer the lower part of the data.
-        cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
+        cell_category_type blk_cat = mdds::gridmap::get_block_type(*blk->mp_data);
 
         blk_new = m_blocks[block_index+2];
         blk_new->mp_data = cell_block_func::create_new_block(blk_cat, 0);
@@ -1466,7 +1466,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
             block* blk0 = m_blocks[block_index1-1];
             if (blk0->mp_data)
             {
-                if (cat == cell_block_func::get_block_type(*blk0->mp_data))
+                if (cat == mdds::gridmap::get_block_type(*blk0->mp_data))
                 {
                     // Transfer the whole data from block 0 to data block.
                     data_blk->mp_data = blk0->mp_data;
@@ -1503,7 +1503,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
         if (block_index2+1 < m_blocks.size())
         {
             block* blk3 = m_blocks[block_index2+1];
-            if (blk3->mp_data && cell_block_func::get_block_type(*blk3->mp_data) == cat)
+            if (blk3->mp_data && mdds::gridmap::get_block_type(*blk3->mp_data) == cat)
             {
                 // Merge the whole block 3 with the new data. Remove block 3
                 // afterward.
@@ -1518,7 +1518,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
         bool erase_upper = true;
         if (blk2->mp_data)
         {
-            cell_category_type blk_cat2 = cell_block_func::get_block_type(*blk2->mp_data);
+            cell_category_type blk_cat2 = mdds::gridmap::get_block_type(*blk2->mp_data);
             if (blk_cat2 == cat)
             {
                 // Merge the lower part of block 2 with the new data, and
@@ -1565,7 +1565,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
     cell_category_type cat = cell_block_func::get_cell_type(*it_begin);
     block* blk1 = m_blocks[block_index1];
     assert(blk1->mp_data);
-    cell_category_type blk_cat1 = cell_block_func::get_block_type(*blk1->mp_data);
+    cell_category_type blk_cat1 = mdds::gridmap::get_block_type(*blk1->mp_data);
 
     if (blk_cat1 == cat)
     {
@@ -1592,7 +1592,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
         }
         else if (blk2->mp_data)
         {
-            cell_category_type blk_cat2 = cell_block_func::get_block_type(*blk2->mp_data);
+            cell_category_type blk_cat2 = mdds::gridmap::get_block_type(*blk2->mp_data);
             if (blk_cat2 == cat)
             {
                 // Copy the lower part of block 2 to the new block, and
@@ -1644,7 +1644,7 @@ bool column<_Trait>::append_to_prev_block(
     if (!blk_prev->mp_data)
         return false;
 
-    cell_category_type blk_cat_prev = cell_block_func::get_block_type(*blk_prev->mp_data);
+    cell_category_type blk_cat_prev = mdds::gridmap::get_block_type(*blk_prev->mp_data);
     if (blk_cat_prev != cat)
         return false;
 
@@ -1875,7 +1875,7 @@ void column<_Trait>::set_empty_in_single_block(
     // Copy the lower values from the current block to the new non-empty block.
     block* blk_lower = m_blocks[block_index+2];
     assert(blk_lower->m_size == lower_block_size);
-    cell_category_type blk_cat = cell_block_func::get_block_type(*blk->mp_data);
+    cell_category_type blk_cat = mdds::gridmap::get_block_type(*blk->mp_data);
     blk_lower->mp_data = cell_block_func::create_new_block(blk_cat, 0);
     cell_block_func::assign_values_from_block(
         *blk_lower->mp_data, *blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
