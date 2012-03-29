@@ -135,14 +135,55 @@ public:
     template<typename _T>
     void insert_cells(row_key_type row, const _T& it_begin, const _T& it_end);
 
+    /**
+     * Get the value of a cell at specified row.  The caller must pass a
+     * variable of the correct type to store the value.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified row position is outside the current container size.</p>
+     *
+     * @param row row position of the cell value to retrieve.
+     * @param cell (out) variable to store the retrieved value.
+     */
     template<typename _T>
     void get_cell(row_key_type row, _T& cell) const;
 
+    /**
+     * Get the value of a cell at specified row.  The caller must specify the
+     * type of the cell as the template parameter e.g. get_cell<double>(1).
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified row position is outside the current container size.</p>
+     *
+     * @param row row position of the cell value to retrieve.
+     * @return cell value.
+     */
     template<typename _T>
     _T get_cell(row_key_type row) const;
 
+    /**
+     * Check if cell at specified row is empty of not.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified row position is outside the current container size.</p>
+     *
+     * @param row row position of the cell to check.
+     *
+     * @return true if the cell is empty, false otherwise.
+     */
     bool is_empty(row_key_type row) const;
 
+    /**
+     * Set specified range of cells to be empty.  Any existing values will be
+     * overwritten.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending row position is outside the current
+     * container size.</p>
+     *
+     * @param start_row starting row position
+     * @param end_row ending row position, inclusive.
+     */
     void set_empty(row_key_type start_row, row_key_type end_row);
 
     void erase(row_key_type start_row, row_key_type end_row);
