@@ -77,12 +77,61 @@ public:
     column(const column& other);
     ~column();
 
+    /**
+     * Set a value of an arbitrary type to a specified row.  The type of the
+     * value is inferred from the value passed to this method.  The new value
+     * will overwrite an existing value at the specified row position if any.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified row is outside the current container size.</p>
+     *
+     * <p>Calling this method will not change the size of the container.</p>
+     *
+     * @param row row to insert the value to.
+     * @param cell value to insert.
+     */
     template<typename _T>
     void set_cell(row_key_type row, const _T& cell);
 
+    /**
+     * Set multiple cell values of identical type to a range of cells starting
+     * at specified row.  Any existing cell values will be overwritten by the
+     * new values.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the range of new values would fall outside the current container
+     * size.</p>
+     *
+     * <p>Calling this method will not change the size of the container.</p>
+     *
+     * @param row position of the first value of the series of new values
+     *            being inserted.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being set.
+     * @param it_end iterator that points to the end position of the values
+     *               being set.
+     */
     template<typename _T>
     void set_cells(row_key_type row, const _T& it_begin, const _T& it_end);
 
+    /**
+     * Insert multiple cell values of identical type to a specified row
+     * position.  Existing values that occur at or below the specified row
+     * position will get shifted after the insertion.  No existing values will
+     * be overwritten by the inserted values.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified row position is outside the current container size.</p>
+     *
+     * <p>Calling this method will increase the size of the container by
+     * the length of the new values inserted.</p>
+     *
+     * @param row row position at which the new values are to be inserted.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being inserted.
+     * @param it_end iterator that points to the end position of the values
+     *               being inserted.
+     */
     template<typename _T>
     void insert_cells(row_key_type row, const _T& it_begin, const _T& it_end);
 
@@ -188,7 +237,6 @@ private:
         size_type block_index1, size_type start_row_in_block1,
         size_type block_index2, size_type start_row_in_block2,
         const _T& it_begin, const _T& it_end);
-
 
     template<typename _T>
     void set_cells_to_multi_blocks_block1_non_equal(
