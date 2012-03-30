@@ -83,7 +83,7 @@ public:
      * will overwrite an existing value at the specified row position if any.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * the specified row is outside the current container size.</p>
+     * the specified row is outside the current container range.</p>
      *
      * <p>Calling this method will not change the size of the container.</p>
      *
@@ -100,7 +100,7 @@ public:
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the range of new values would fall outside the current container
-     * size.</p>
+     * range.</p>
      *
      * <p>Calling this method will not change the size of the container.</p>
      *
@@ -121,7 +121,7 @@ public:
      * be overwritten by the inserted values.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * the specified row position is outside the current container size.</p>
+     * the specified row position is outside the current container range.</p>
      *
      * <p>Calling this method will increase the size of the container by
      * the length of the new values inserted.</p>
@@ -140,7 +140,7 @@ public:
      * variable of the correct type to store the value.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * the specified row position is outside the current container size.</p>
+     * the specified row position is outside the current container range.</p>
      *
      * @param row row position of the cell value to retrieve.
      * @param cell (out) variable to store the retrieved value.
@@ -153,7 +153,7 @@ public:
      * type of the cell as the template parameter e.g. get_cell<double>(1).
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * the specified row position is outside the current container size.</p>
+     * the specified row position is outside the current container range.</p>
      *
      * @param row row position of the cell value to retrieve.
      * @return cell value.
@@ -165,7 +165,7 @@ public:
      * Check if cell at specified row is empty of not.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * the specified row position is outside the current container size.</p>
+     * the specified row position is outside the current container range.</p>
      *
      * @param row row position of the cell to check.
      *
@@ -186,20 +186,87 @@ public:
      */
     void set_empty(row_key_type start_row, row_key_type end_row);
 
+    /**
+     * Erase cells located between specified start and end row positions.  The
+     * end positions are both inclusive.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending row position is outside the current
+     * container range.</p>
+     *
+     * <p>Calling this method will decrease the size of the container by
+     * the length of the erased range.</p>
+     *
+     * @param start_row starting row position
+     * @param end_row ending row position, inclusive.
+     */
     void erase(row_key_type start_row, row_key_type end_row);
 
+    /**
+     * Insert a range of empty cells at specified row position.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the specified row position is outside the current container
+     * range.</p>
+     *
+     * <p>Calling this method will increase the size of the container by
+     * the length of the inserted empty cells.</p>
+     *
+     * @param row row position at which to insert a range of empty cells.
+     * @param length number of empty cells to insert.
+     */
     void insert_empty(row_key_type row, size_type length);
 
+    /**
+     * Clear the content of the container.  The size of the container will
+     * become zero after calling this method.
+     */
     void clear();
 
+    /**
+     * Return the current container size.
+     *
+     * @return current container size.
+     */
     size_type size() const;
 
+    /**
+     * Return the current number of data blocks.  Each data block stores a
+     * series of contiguous cells of identical type.  A series of empty cells
+     * is also represented by a separate data block.
+     *
+     * <p>For instance, if the container stores values of double-precision type
+     * at rows 0 to 2, values of std::string type at 3 to 7, and empty values
+     * at 8 to 10, it consists of 3 data blocks: one that stores double
+     * values, one that stores std::string values, and one that represents the
+     * empty values. In this specific scenario, <code>block_size()</code>
+     * returns 3, and <code>size()</code> returns 11.</p>
+     *
+     * @return current number of data blocks.
+     */
     size_type block_size() const;
 
+    /**
+     * Return whether or not the container is empty.
+     *
+     * @return true if the container is empty, false otherwise.
+     */
     bool empty() const;
 
+    /**
+     * Extend or shrink the container.  When extending the container, it
+     * appends a series of empty cells to the end.  When shrinking, the cells
+     * at the end of the container gets stripped off.
+     *
+     * @param new_size size of the container after the resize.
+     */
     void resize(size_type new_size);
 
+    /**
+     * Swap the content with another container.
+     *
+     * @param other another container to swap content with.
+     */
     void swap(column& other);
 
     bool operator== (const column& other) const;
@@ -207,6 +274,13 @@ public:
 
     column& operator= (const column& other);
 
+    /**
+     * Return the numerical identifier that represents passed cell.
+     *
+     * @param cell cell value.
+     *
+     * @return gridmap::cell_t numerical identifier representing the cell.
+     */
     template<typename _T>
     static gridmap::cell_t get_cell_type(const _T& cell);
 
