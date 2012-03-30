@@ -256,7 +256,7 @@ public:
     /**
      * Extend or shrink the container.  When extending the container, it
      * appends a series of empty cells to the end.  When shrinking, the cells
-     * at the end of the container gets stripped off.
+     * at the end of the container get stripped off.
      *
      * @param new_size size of the container after the resize.
      */
