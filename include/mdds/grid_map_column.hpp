@@ -43,7 +43,10 @@ namespace mdds { namespace __gridmap {
 
 /**
  * Each column consists of a series of blocks, and each block stores a
- * series of non-empty cells of identical type.
+ * series of non-empty cells of identical type.  In this container, cells
+ * are represented simply as values that they store; there are no separate
+ * cell objects that the user of this container needs to deal with.  The
+ * user accesses directly with the raw values.
  */
 template<typename _Trait>
 class column
@@ -72,9 +75,31 @@ private:
     };
 
 public:
+
+    /**
+     * Default constructor.  It initializes the container with empty size.
+     */
     column();
+
+    /**
+     * Constructor that takes initial size of the container.  When the size
+     * specified is greater than 0, it initializes the container with empty
+     * cells.
+     *
+     * @param init_row_size initial container size
+     */
     column(size_type init_row_size);
+
+    /**
+     * Copy constructor.
+     *
+     * @param other other column instance to copy values from.
+     */
     column(const column& other);
+
+    /**
+     * Destructor.  It deletes all allocated data blocks.
+     */
     ~column();
 
     /**
@@ -235,11 +260,11 @@ public:
      * series of contiguous cells of identical type.  A series of empty cells
      * is also represented by a separate data block.
      *
-     * <p>For instance, if the container stores values of double-precision type
-     * at rows 0 to 2, values of std::string type at 3 to 7, and empty values
-     * at 8 to 10, it consists of 3 data blocks: one that stores double
+     * <p>For instance, if the container stores values of double-precision
+     * type at rows 0 to 2, values of std::string type at 3 to 7, and empty
+     * values at 8 to 10, it consists of 3 data blocks: one that stores double
      * values, one that stores std::string values, and one that represents the
-     * empty values. In this specific scenario, <code>block_size()</code>
+     * empty value range. In this specific scenario, <code>block_size()</code>
      * returns 3, and <code>size()</code> returns 11.</p>
      *
      * @return current number of data blocks.
