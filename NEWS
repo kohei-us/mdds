@@ -1,56 +1,64 @@
+
 * all
 
-  * added MSVS Solution file, to make it easier to build unit test 
+  * added MSVS Solution file, to make it easier to build unit test
     programs on Windows.
-    
-* segment_tree
-  
-  * fixed build breakage, to allow it to be buildable when UNIT_TEST 
-    is not defined.
-    
-  * fixed a crasher with MSVC when comparing iterators of empty 
-    search_result instances.
-    
-* point_quad_tree
-  
-  * fixed a bug where de-referencing copied search_result iterators 
-    would return an uninitialized node data.  
 
 * mixed_type_matrix
 
   * improved performance of size() method by caching it.
 
+* grid_map (new)
+
+  * new data structure.  Still experimental and its API may still go
+    through backward-incompatible changes.
+
+mdds 0.5.4
+
+* segment_tree
+
+  * fixed build breakage, to allow it to be buildable when UNIT_TEST
+    is not defined.
+
+  * fixed a crasher with MSVC when comparing iterators of empty
+    search_result instances.
+
+* point_quad_tree
+
+  * fixed a bug where de-referencing copied search_result iterators
+    would return an uninitialized node data.
+
 mdds 0.5.3
 
 * mixed_type_matrix
 
-  * re-implemented the filled storage for better performance, with two 
-    separate implementations for zero and emtpy matrix types.  The 
-    newer implementation should improve object creation time 
+  * re-implemented the filled storage for better performance, with two
+    separate implementations for zero and emtpy matrix types.  The
+    newer implementation should improve object creation time
     considerably.
 
 mdds 0.5.2
 
 * flat_segment_tree
 
-  * fixed a crash on assignment by properly implementing assignment 
-    operator().  
+  * fixed a crash on assignment by properly implementing assignment
+    operator().
 
   * fixed several bugs in shift_right():
 
-    * shifting of all existing nodes was not handled properly.  
+    * shifting of all existing nodes was not handled properly.
 
     * leaf nodes were not properly linked under certain conditions.
 
-    * shifting with skip node option was not properly skipping the 
-      node at insertion position when the insertion position was at 
-      the leftmost node.  
+    * shifting with skip node option was not properly skipping the
+      node at insertion position when the insertion position was at
+      the leftmost node.
 
-  * implemented min_key(), max_key(), default_value(), clear() and 
+  * implemented min_key(), max_key(), default_value(), clear() and
     swap().
 
-  * fixed a bug in operator==() where two different containers were 
-    incorrectly evaluated to be equal.  
+  * fixed a bug in operator==() where two different containers were
+    incorrectly evaluated to be equal.
 
   * added quickcheck test code.
 
@@ -60,29 +68,29 @@ mdds 0.5.1
 
 mdds 0.5.0
 
-  * flat_segment_tree's search methods now return a std::pair of 
-    const_iterator and bool, instead of just returning bool.  
+  * flat_segment_tree's search methods now return a std::pair of
+    const_iterator and bool, instead of just returning bool.
 
-  * fixed a weird enum value mis-handling with mixed_type_matrix when 
+  * fixed a weird enum value mis-handling with mixed_type_matrix when
     compiled with MSVC++.
 
-  * added new insert() method to flat_segment_tree that takes a 
-    positional hint in order to speed up insertion speed.  Also, all 
-    three insert() methods now return the start position of the 
-    segment that an inserted segment belongs to.  
+  * added new insert() method to flat_segment_tree that takes a
+    positional hint in order to speed up insertion speed.  Also, all
+    three insert() methods now return the start position of the
+    segment that an inserted segment belongs to.
 
-  * slight performance improvement on the insert methods of 
-    flat_segment_tree.  
-
-  * slight performance improvement on the iterators of 
+  * slight performance improvement on the insert methods of
     flat_segment_tree.
 
-  * re-organized the structure of flat_segment_tree to split it into 
-    multiple headers.  
+  * slight performance improvement on the iterators of
+    flat_segment_tree.
+
+  * re-organized the structure of flat_segment_tree to split it into
+    multiple headers.
 
   * properly support prefix, docdir, includedir configure options.
-  
-  * support DESTDIR environment variable for make install.  
+
+  * support DESTDIR environment variable for make install.
 
 mdds 0.4.0
 
@@ -90,7 +98,7 @@ mdds 0.4.0
 
 mdds 0.3.1
 
-  * added support for boost::unordered_map (boost) and std::hash_map 
+  * added support for boost::unordered_map (boost) and std::hash_map
     (stlport) in addition to C++0x's std::unordered_map.
 
 mdds 0.3.0
@@ -101,11 +109,11 @@ mdds 0.2.1
 
   * added example files on how to use these data structures.
 
-  * fixed a bug in segment_tree::search_result object, to make it work 
-    with empty result set.  
+  * fixed a bug in segment_tree::search_result object, to make it work
+    with empty result set.
 
-  * fixed segment_tree to make it really usable outside of unit test 
-    code.  
+  * fixed segment_tree to make it really usable outside of unit test
+    code.
 
 mdds 0.2.0
 
@@ -113,8 +121,8 @@ mdds 0.2.0
 
   * lots of code cleanups.
 
-  * support for search result iterator in segment_tree and 
-    rectangle_set, for better search performance.  
+  * support for search result iterator in segment_tree and
+    rectangle_set, for better search performance.
 
   * implemented rectnagle_set.
 
@@ -124,5 +132,5 @@ mdds 0.1.2
 
   * implemented segment_tree.
 
-  * node_base class is now without virtual methods to avoid vtable 
-    generation.  
+  * node_base class is now without virtual methods to avoid vtable
+    generation.
