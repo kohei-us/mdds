@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2010, 2011 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -67,7 +67,7 @@ struct test_data
         }
     };
 
-    /** 
+    /**
      * Use this to sort instances of test_data by name, in ascending order.
      */
     struct sort_by_name : public binary_function<test_data*, test_data*, bool>
@@ -89,7 +89,7 @@ struct test_data
 
 template<typename key_type, typename data_type>
 bool check_leaf_nodes(
-    const segment_tree<key_type, data_type>& db, 
+    const segment_tree<key_type, data_type>& db,
     const key_type* keys, data_type** data_chain, size_t key_size)
 {
     typedef segment_tree<key_type, data_type> st_type;
@@ -97,12 +97,12 @@ bool check_leaf_nodes(
     checks.reserve(key_size);
     size_t dcid = 0;
     for (size_t i = 0; i < key_size; ++i)
-    {    
+    {
         typename st_type::leaf_node_check c;
         c.key = keys[i];
         data_type* p = data_chain[dcid];
         while (p)
-        {    
+        {
             c.data_chain.push_back(p);
             p = data_chain[++dcid];
         }
@@ -139,13 +139,13 @@ bool check_against_expected(const list<const data_type*>& test, data_type** expe
     return true;
 }
 
-/** 
- * Only check the search result against expected result set.  The caller 
- * needs to run search and pass the result to this function. 
+/**
+ * Only check the search result against expected result set.  The caller
+ * needs to run search and pass the result to this function.
  */
 template<typename key_type, typename data_type>
 bool check_search_result_only(
-    const segment_tree<key_type, data_type>& db, 
+    const segment_tree<key_type, data_type>& db,
     const typename segment_tree<key_type, data_type>::search_result_type& result,
     key_type key, data_type** expected)
 {
@@ -163,12 +163,12 @@ bool check_search_result_only(
     return check_against_expected(test, expected);
 }
 
-/** 
+/**
  * Run the search and check the search result.
  */
 template<typename key_type, typename data_type>
 bool check_search_result(
-    const segment_tree<key_type, data_type>& db, 
+    const segment_tree<key_type, data_type>& db,
     key_type key, data_type** expected)
 {
     cout << "search key: " << key << " ";
@@ -181,7 +181,7 @@ bool check_search_result(
 
 template<typename key_type, typename data_type>
 bool check_search_result_iterator(
-    const segment_tree<key_type, data_type>& db, 
+    const segment_tree<key_type, data_type>& db,
     key_type key, data_type** expected)
 {
     cout << "search key: " << key << " ";
@@ -201,7 +201,7 @@ bool check_search_result_iterator(
 
 void st_test_insert_search_removal()
 {
-    StackPrinter __stack_printer__("::st_test_insert_segments");
+    stack_printer __stack_printer__("::st_test_insert_segments");
 
     typedef long key_type;
     typedef test_data data_type;
@@ -364,7 +364,7 @@ void st_test_insert_search_removal()
         for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
         cout << endl;
     }
-    
+
     {
         key_type key = -1;
         data_type* expected[] = {0};
@@ -477,7 +477,7 @@ void st_test_insert_search_removal()
 
 void st_test_copy_constructor()
 {
-    StackPrinter __stack_printer__("::st_test_copy_constructor");
+    stack_printer __stack_printer__("::st_test_copy_constructor");
 
     typedef long key_type;
     typedef test_data data_type;
@@ -497,7 +497,7 @@ void st_test_copy_constructor()
 
     db_type::segment_map_type checks;
     for (size_t i = 0; segments[i].pdata; ++i)
-    {    
+    {
         db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
         pair<key_type, key_type> range;
         range.first = segments[i].begin_key;
@@ -528,7 +528,7 @@ void st_test_copy_constructor()
 
 void st_test_equality()
 {
-    StackPrinter __stack_printer__("::st_test_equality");
+    stack_printer __stack_printer__("::st_test_equality");
 
     typedef uint32_t key_type;
     typedef test_data data_type;
@@ -558,7 +558,7 @@ void st_test_equality()
 
 void st_test_clear()
 {
-    StackPrinter __stack_printer__("::st_test_clear");
+    stack_printer __stack_printer__("::st_test_clear");
 
     typedef uint8_t key_type;
     typedef test_data data_type;
@@ -603,7 +603,7 @@ void st_test_clear()
 
 void st_test_duplicate_insertion()
 {
-    StackPrinter __stack_printer__("::st_test_duplicate_insertion");
+    stack_printer __stack_printer__("::st_test_duplicate_insertion");
 
     typedef short key_type;
     typedef test_data data_type;
@@ -621,14 +621,14 @@ void st_test_duplicate_insertion()
     build_and_dump(db);
 }
 
-/** 
- * When the number of segments is not a multiple of 2, it creates a tree 
- * where the right side becomes "cut off".  Make sure the search works 
- * correctly under those conditions. 
+/**
+ * When the number of segments is not a multiple of 2, it creates a tree
+ * where the right side becomes "cut off".  Make sure the search works
+ * correctly under those conditions.
  */
 void st_test_search_on_uneven_tree()
 {
-    StackPrinter __stack_printer__("::st_test_search_on_uneven_tree");
+    stack_printer __stack_printer__("::st_test_search_on_uneven_tree");
 
     typedef int16_t key_type;
     typedef test_data data_type;
@@ -643,9 +643,9 @@ void st_test_search_on_uneven_tree()
             ostringstream os;
             os << hex << showbase << i;
             data_store.push_back(new test_data(os.str()));
-        }    
+        }
         assert(data_store.size() == static_cast<size_t>(data_count));
-    
+
         db_type db;
         for (key_type i = 0; i < data_count; ++i)
         {
@@ -653,7 +653,7 @@ void st_test_search_on_uneven_tree()
             db.insert(0, i+1, p);
         }
         assert(db.size() == static_cast<size_t>(data_count));
-        
+
         db.build_tree();
 
         for (key_type i = -1; i < data_count+1; ++i)
@@ -670,7 +670,7 @@ void st_test_search_on_uneven_tree()
 
 void st_test_perf_insertion()
 {
-    StackPrinter __stack_printer__("::st_test_perf_insertion");
+    stack_printer __stack_printer__("::st_test_perf_insertion");
 
     typedef uint32_t key_type;
     typedef test_data data_type;
@@ -681,20 +681,20 @@ void st_test_perf_insertion()
     // First, create test data instances and store them into a vector.
     boost::ptr_vector<test_data> data_store;
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: data array creation");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: data array creation");
         data_store.reserve(data_count);
         for (key_type i = 0; i < data_count; ++i)
         {
             ostringstream os;
             os << hex << i;
             data_store.push_back(new test_data(os.str()));
-        }    
+        }
     }
     assert(data_store.size() == data_count);
 
     db_type db;
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: data array insertion into segment tree");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: data array insertion into segment tree");
         for (key_type i = 0; i < data_count; ++i)
         {
             test_data* p = &data_store[i];
@@ -704,14 +704,14 @@ void st_test_perf_insertion()
     assert(db.size() == data_count);
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: build tree");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: build tree");
         db.build_tree();
     }
     assert(db.is_tree_valid());
 
     const test_data* test;
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results");
         for (key_type i = 0; i < 200; ++i)
         {
             db_type::search_result_type result;
@@ -723,7 +723,7 @@ void st_test_perf_insertion()
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results (iterator)");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
             db_type::search_result result = db.search(0);
@@ -734,7 +734,7 @@ void st_test_perf_insertion()
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results");
         for (key_type i = 0; i < 200; ++i)
         {
             db_type::search_result_type result;
@@ -746,7 +746,7 @@ void st_test_perf_insertion()
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results (iterator)");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
             db_type::search_result result = db.search(data_count/2);
@@ -757,7 +757,7 @@ void st_test_perf_insertion()
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results");
         for (key_type i = 0; i < 200; ++i)
         {
             db_type::search_result_type result;
@@ -769,7 +769,7 @@ void st_test_perf_insertion()
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results (iterator)");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
             db_type::search_result result = db.search(data_count);
@@ -780,7 +780,7 @@ void st_test_perf_insertion()
     }
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: 10000 segment removals");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: 10000 segment removals");
         for (key_type i = 0; i < 10000; ++i)
         {
             test_data* p = &data_store[i];
@@ -790,14 +790,14 @@ void st_test_perf_insertion()
     assert(db.size() == data_count - 10000);
 
     {
-        StackPrinter __stack_printer2__("::st_test_perf_insertion:: clear");
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: clear");
         db.clear();
     }
 }
 
 void st_test_aggregated_search_results()
 {
-    StackPrinter __stack_printer__("::st_test_aggregated_search_results");
+    stack_printer __stack_printer__("::st_test_aggregated_search_results");
 
     typedef uint16_t key_type;
     typedef test_data data_type;
@@ -856,7 +856,7 @@ void st_test_aggregated_search_results()
 
 void st_test_dense_tree_search()
 {
-    StackPrinter __stack_printer__("::st_test_dense_tree_search");
+    stack_printer __stack_printer__("::st_test_dense_tree_search");
 
     typedef uint16_t key_type;
     typedef test_data data_type;
@@ -919,7 +919,7 @@ void st_test_dense_tree_search()
 
 void st_test_search_on_empty_set()
 {
-    StackPrinter __stack_printer__("::st_test_search_on_empty_set");
+    stack_printer __stack_printer__("::st_test_search_on_empty_set");
 
     typedef uint16_t key_type;
     typedef test_data data_type;
@@ -938,11 +938,11 @@ void st_test_search_on_empty_set()
 
 void st_test_search_iterator_basic()
 {
-    StackPrinter __stack_printer__("::st_test_search_iterator");
+    stack_printer __stack_printer__("::st_test_search_iterator");
     typedef uint16_t key_type;
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
-    
+
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     db_type db;
     db.insert(0, 1, &A);
@@ -991,12 +991,12 @@ void st_test_search_iterator_basic()
 
 void st_test_search_iterator_result_check()
 {
-    StackPrinter __stack_printer__("::st_test_search_iterator_result_check");
+    stack_printer __stack_printer__("::st_test_search_iterator_result_check");
 
     typedef uint16_t key_type;
     typedef test_data data_type;
     typedef segment_tree<key_type, data_type> db_type;
-    
+
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     db_type db;
     db.insert(0, 1, &A);
@@ -1050,13 +1050,13 @@ void st_test_search_iterator_result_check()
     }
 }
 
-/** 
- * When calling search() on empty tree, even without calling build_tree() 
+/**
+ * When calling search() on empty tree, even without calling build_tree()
  * should still return a valid search_result instance with a size of 0.
  */
 void st_test_empty_result_set()
 {
-    StackPrinter __stack_printer__("::st_test_empty_result_set");
+    stack_printer __stack_printer__("::st_test_empty_result_set");
     typedef segment_tree<long, string> db_type;
     db_type db;
     db_type::search_result result = db.search(0);

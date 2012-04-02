@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2008-2009 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -132,27 +132,27 @@ void fst_test_leaf_search()
     }
 }
 
-/** 
+/**
  * Test tree construction of flat_segment_tree.
  */
 void fst_test_tree_build()
 {
-    StackPrinter __stack_printer__("::fst_test_tree_build");
+    stack_printer __stack_printer__("::fst_test_tree_build");
     {
         int lower = 0, upper = 100, delta = 10;
         flat_segment_tree<int, int> db(lower, upper, 0);
         {
-            StackPrinter __stack_printer__("::fst_test_tree_build insertion");
+            stack_printer __stack_printer__("::fst_test_tree_build insertion");
             for (int i = lower; i < upper; i+=delta)
                 db.insert_front(i, i+delta, i*2);
         }
         db.dump_leaf_nodes();
-    
+
         {
-            StackPrinter __stack_printer__("::fst_test_tree_build tree construction");
+            stack_printer __stack_printer__("::fst_test_tree_build tree construction");
             db.build_tree();
             db.dump_tree();
-        }    
+        }
     }
 
     {
@@ -163,7 +163,7 @@ void fst_test_tree_build()
 
 void fst_perf_test_search(bool tree_search)
 {
-    StackPrinter __stack_printer__("fst_perf_test_leaf_search");
+    stack_printer __stack_printer__("fst_perf_test_leaf_search");
 
     int lower = 0, upper = 50000;
     flat_segment_tree<int, int> db(lower, upper, 0);
@@ -212,7 +212,7 @@ void fst_perf_test_search(bool tree_search)
 
 void fst_test_tree_search()
 {
-    StackPrinter __stack_printer__("::fst_test_tree_search");
+    stack_printer __stack_printer__("::fst_test_tree_search");
     int lower = 0, upper = 200, delta = 5;
     flat_segment_tree<int, int> db(lower, upper, 0);
     for (int i = lower; i < upper; i += delta)
@@ -232,7 +232,7 @@ void fst_test_tree_search()
             ++success;
         }
         else
-        {    
+        {
             ++failure;
             cout << "key = " << i << " (search failed)" << endl;
         }
@@ -259,7 +259,7 @@ void build_and_dump(flat_segment_tree<key_type, value_type>&db)
 
 template<typename key_type, typename value_type>
 bool check_leaf_nodes(
-    const flat_segment_tree<key_type, value_type>& db, 
+    const flat_segment_tree<key_type, value_type>& db,
     const key_type* keys, const value_type* values, size_t key_size)
 {
     if (key_size <= 1)
@@ -307,7 +307,7 @@ bool is_iterator_valid(
 
         if (idx < key_size - 1)
         {
-            // Check the value only if it's not the last node.  The last node 
+            // Check the value only if it's not the last node.  The last node
             // may have an arbitrary value.
             if (values[idx] != itr->second)
                 return false;
@@ -363,7 +363,7 @@ bool is_iterator_valid(
 
         if (idx < key_size - 1)
         {
-            // Check the value only if it's not the last node.  The last node 
+            // Check the value only if it's not the last node.  The last node
             // may have an arbitrary value.
             if (values[idx] != itr->second)
                 return false;
@@ -398,7 +398,7 @@ bool is_iterator_valid(
 
 void fst_test_insert_search_mix()
 {
-    StackPrinter __stack_printer__("fst_test_insert_search_mix");
+    stack_printer __stack_printer__("fst_test_insert_search_mix");
     typedef flat_segment_tree<int, int> db_type;
     db_type db(0, 100, 0);
 
@@ -463,7 +463,7 @@ void fst_test_insert_search_mix()
 
 void fst_test_shift_left()
 {
-    StackPrinter __stack_printer__("fst_test_shift_segment_left");
+    stack_printer __stack_printer__("fst_test_shift_segment_left");
     typedef flat_segment_tree<int, int> db_type;
     db_type db(0, 100, 0);
     db.insert_front(20, 40, 5);
@@ -471,7 +471,7 @@ void fst_test_shift_left()
     db.insert_front(70, 80, 15);
     build_and_dump(db);
 
-    // invalid segment ranges -- these should not modify the state of the 
+    // invalid segment ranges -- these should not modify the state of the
     // tree, hence the tree should remain valid.
     db.shift_left(5, 0);
     assert(db.is_tree_valid());
@@ -522,7 +522,7 @@ void fst_test_shift_left()
         assert(db.verify_keys(key_checks));
     }
 
-    // shift without removing nodes (the upper bound of the removed segment 
+    // shift without removing nodes (the upper bound of the removed segment
     // coincides with a node).
     db.shift_left(5, 10);
     assert(!db.is_tree_valid());
@@ -565,7 +565,7 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  1, 6, 16, 26, 100}; 
+        int keys[] = {0,  1, 6, 16, 26, 100};
         int vals[] = {5, 10, 0, 15,  0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -577,7 +577,7 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  1, 6, 100}; 
+        int keys[] = {0,  1, 6, 100};
         int vals[] = {5, 10, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -588,18 +588,18 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  1, 6,  10, 20,  30, 40, 100}; 
+        int keys[] = {0,  1, 6,  10, 20,  30, 40, 100};
         int vals[] = {5, 10, 0, 400,  0, 400,  0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    // same test as the previous one, but the value of the combined segment 
+    // same test as the previous one, but the value of the combined segment
     // differs from the value of the rightmost leaf node.
     db.shift_left(20, 30);
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  1, 6,  10, 30, 100}; 
+        int keys[] = {0,  1, 6,  10, 30, 100};
         int vals[] = {5, 10, 0, 400,  0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -612,7 +612,7 @@ void fst_test_shift_left()
 
 void fst_test_shift_left_right_edge()
 {
-    StackPrinter __stack_printer__("fst_test_shift_segment_left_right_edge");
+    stack_printer __stack_printer__("fst_test_shift_segment_left_right_edge");
     flat_segment_tree<int, bool> db(0, 100, false);
     build_and_dump(db);
 
@@ -643,7 +643,7 @@ void fst_test_shift_left_right_edge()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    // This should not modify the tree since the removed segment already has 
+    // This should not modify the tree since the removed segment already has
     // the initial base value.
     db.shift_left(85, 100);
     assert(db.is_tree_valid()); // tree must still be valid.
@@ -676,7 +676,7 @@ void fst_test_shift_left_right_edge()
 
 void fst_test_shift_left_append_new_segment()
 {
-    StackPrinter __stack_printer__("fst_test_shift_segment_left_append_new_segment");
+    stack_printer __stack_printer__("fst_test_shift_segment_left_append_new_segment");
     flat_segment_tree<int, bool> db(0, 100, false);
     db.insert_front(0, 100, true);
     assert(!db.is_tree_valid());
@@ -721,7 +721,7 @@ void fst_test_shift_left_append_new_segment()
 
 void fst_test_shift_right_init0()
 {
-    StackPrinter __stack_printer__("fst_test_shift_segment_right_init0");
+    stack_printer __stack_printer__("fst_test_shift_segment_right_init0");
 
     flat_segment_tree<int, int> db(0, 100, 0);
     db.insert_front(0,  10,  15);
@@ -736,7 +736,7 @@ void fst_test_shift_right_init0()
     assert(!db.is_tree_valid());
     build_and_dump(db);
 
-    // shifting position is at the lower bound.  The leftmost segment has a 
+    // shifting position is at the lower bound.  The leftmost segment has a
     // non-zero value which needs to be preserved after the shift by adding a
     // new node.
     db.shift_right(0, 5, false);
@@ -748,7 +748,7 @@ void fst_test_shift_right_init0()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    // shifting position is at the lower bound, and after the shift, the upper 
+    // shifting position is at the lower bound, and after the shift, the upper
     // bound of the last non-zero segment (10) becomes the upper bound of the
     // global range.
     db.shift_right(0, 5, false);
@@ -770,7 +770,7 @@ void fst_test_shift_right_init0()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    // Shift so that the 2nd node from the right-most node becomes the new 
+    // Shift so that the 2nd node from the right-most node becomes the new
     // right-most node.
     db.shift_right(0, 11, false);
     assert(!db.is_tree_valid());
@@ -802,7 +802,7 @@ void fst_test_shift_right_init0()
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
-    // Inserting at a non-node position.  This should simply extend that 
+    // Inserting at a non-node position.  This should simply extend that
     // segment and shift all the others.
     db.shift_right(6, 20, false);
     assert(!db.is_tree_valid());
@@ -846,7 +846,7 @@ void fst_test_shift_right_init0()
 
 void fst_test_shift_right_init999()
 {
-    StackPrinter __stack_printer__("fst_test_shift_segment_right_init999");
+    stack_printer __stack_printer__("fst_test_shift_segment_right_init999");
 
     // Initialize the tree with a default value of 999.
     flat_segment_tree<int, int> db(0, 100, 999);
@@ -869,7 +869,7 @@ void fst_test_shift_right_init999()
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
-    // Inserting at the leftmost node position should create a new segment 
+    // Inserting at the leftmost node position should create a new segment
     // with a default value of 999.
     db.shift_right(0, 10, false);
     assert(!db.is_tree_valid());
@@ -915,7 +915,7 @@ void fst_test_shift_right_bool()
 
 void fst_test_shift_right_skip_start_node()
 {
-    StackPrinter __stack_printer__("fst_test_shift_segment_right_skip_start_node");
+    stack_printer __stack_printer__("fst_test_shift_segment_right_skip_start_node");
 
     flat_segment_tree<long, short> db(0, 1048576, 0);
     db.insert_front(3, 7, 5);
@@ -999,7 +999,7 @@ struct leaf_node_functor : public unary_function<void, pair<key_type, value_type
 
 void fst_test_const_iterator()
 {
-    StackPrinter __stack_printer__("::fst_test_const_reverse_iterator");
+    stack_printer __stack_printer__("::fst_test_const_reverse_iterator");
 
     typedef unsigned int    key_type;
     typedef unsigned short  value_type;
@@ -1087,7 +1087,7 @@ void fst_perf_test_insert_front_back()
     typedef flat_segment_tree<key_type, value_type> container_type;
     key_type upper_bound = 20000;
     {
-        StackPrinter __stack_printer__("::fst_perf_test_insert (front insertion)");
+        stack_printer __stack_printer__("::fst_perf_test_insert (front insertion)");
         container_type db(0, upper_bound, 0);
         value_type val = 0;
         for (key_type i = 0; i < upper_bound; ++i)
@@ -1099,7 +1099,7 @@ void fst_perf_test_insert_front_back()
     }
 
     {
-        StackPrinter __stack_printer__("::fst_perf_test_insert (back insertion)");
+        stack_printer __stack_printer__("::fst_perf_test_insert (back insertion)");
         container_type db(0, upper_bound, 0);
         value_type val = 0;
         for (key_type i = 0; i < upper_bound; ++i)
@@ -1246,7 +1246,7 @@ void fst_test_equality()
 
 void fst_test_back_insert()
 {
-    StackPrinter __stack_printer__("::fst_test_back_insert");
+    stack_printer __stack_printer__("::fst_test_back_insert");
     typedef unsigned int   key_type;
     typedef unsigned short value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
@@ -1318,7 +1318,7 @@ void print_iterator(typename flat_segment_tree<A,B>::const_iterator& itr)
 
 void fst_test_insert_iterator()
 {
-    StackPrinter __stack_printer__("::fst_test_insert_iterator");
+    stack_printer __stack_printer__("::fst_test_insert_iterator");
     typedef long key_type;
     typedef short value_type;
     typedef flat_segment_tree<key_type, value_type> db_type;
@@ -1380,10 +1380,10 @@ void fst_test_insert_iterator()
 
 void fst_test_insert_state_changed()
 {
-    StackPrinter __stack_printer__("::fst_test_insert_state_changed");
+    stack_printer __stack_printer__("::fst_test_insert_state_changed");
     typedef long key_type;
     typedef short value_type;
-    typedef flat_segment_tree<key_type, value_type> db_type; 
+    typedef flat_segment_tree<key_type, value_type> db_type;
     typedef pair<db_type::const_iterator, bool> ret_type;
 
     db_type db(0, 1000, 0);
@@ -1446,7 +1446,7 @@ void fst_test_insert_state_changed()
     r = db.insert_front(8, 20, 2);
     assert(r.second);
 
-    // The 0-1 segment should still have a value of 1.  So this won't change 
+    // The 0-1 segment should still have a value of 1.  So this won't change
     // the state.
     r = db.insert_front(0, 1, 1);
     assert(!r.second);
@@ -1481,7 +1481,7 @@ void fst_perf_test_insert_position()
     typedef pair<db_type::const_iterator, bool> ret_type;
     long upper = 60000;
     {
-        StackPrinter __stack_printer__("::fst_perf_test_insert_position (front)");
+        stack_printer __stack_printer__("::fst_perf_test_insert_position (front)");
         // Much smaller upper boundary because front insertion is very slow.
         db_type db(0, upper, false);
         bool val = false;
@@ -1493,7 +1493,7 @@ void fst_perf_test_insert_position()
     }
 
     {
-        StackPrinter __stack_printer__("::fst_perf_test_insert_position (back)");
+        stack_printer __stack_printer__("::fst_perf_test_insert_position (back)");
         db_type db(0, upper, false);
         bool val = false;
         for (long i = 0; i < upper; ++i)
@@ -1506,7 +1506,7 @@ void fst_perf_test_insert_position()
     {
         db_type db(0, upper, false);
         {
-            StackPrinter __stack_printer__("::fst_perf_test_insert_position (position)");
+            stack_printer __stack_printer__("::fst_perf_test_insert_position (position)");
             db_type::const_iterator itr = db.begin();
             bool val = false;
             for (long i = 0; i < upper; ++i)
@@ -1517,7 +1517,7 @@ void fst_perf_test_insert_position()
             }
         }
         {
-            StackPrinter __stack_printer__("::fst_perf_test_insert_position (position re-insert)");
+            stack_printer __stack_printer__("::fst_perf_test_insert_position (position re-insert)");
             db_type::const_iterator itr = db.begin();
             bool val = true;
             for (long i = 0; i < upper; ++i)
@@ -1548,7 +1548,7 @@ void fst_perf_test_position_search()
     }
 
     {
-        StackPrinter __stack_printer__("::fst_perf_test_position_search (normal)");
+        stack_printer __stack_printer__("::fst_perf_test_position_search (normal)");
         for (long i = 0; i < upper; ++i)
         {
             bool val;
@@ -1558,7 +1558,7 @@ void fst_perf_test_position_search()
     }
 
     {
-        StackPrinter __stack_printer__("::fst_perf_test_position_search (positioned)");
+        stack_printer __stack_printer__("::fst_perf_test_position_search (positioned)");
         itr = db.begin();
         for (long i = 0; i < upper; ++i)
         {
@@ -1572,7 +1572,7 @@ void fst_perf_test_position_search()
 
 template<typename K, typename V>
 bool check_pos_search_result(
-    const flat_segment_tree<K, V>& db, 
+    const flat_segment_tree<K, V>& db,
     typename flat_segment_tree<K, V>::const_iterator& itr,
     K key, K start_expected, K end_expected, V value_expected)
 {
@@ -1587,7 +1587,7 @@ bool check_pos_search_result(
     cout << "expected: start=" << start_expected << " end=" << end_expected << " value=" << value_expected << endl;
     cout << "observed: start=" << _start << " end=" << _end << " value=" << _val << endl;
 
-    bool result = 
+    bool result =
         _start == start_expected && _end == end_expected && _val == value_expected &&
         r.first->first == start_expected && r.first->second == value_expected;
     itr = r.first;
@@ -1596,10 +1596,10 @@ bool check_pos_search_result(
 
 void fst_test_position_search()
 {
-    StackPrinter __stack_printer__("::fst_test_position_search");
+    stack_printer __stack_printer__("::fst_test_position_search");
     typedef flat_segment_tree<long, short> db_type;
     typedef pair<db_type::const_iterator, bool> ret_type;
-    
+
     db_type db(0, 100, 0);
     db.insert_front(10, 20, 1);
     db.insert_front(30, 50, 5);
@@ -1725,7 +1725,7 @@ void fst_test_swap()
 
 void fst_test_clear()
 {
-    StackPrinter __stack_printer__("::fst_test_clear");
+    stack_printer __stack_printer__("::fst_test_clear");
 
     typedef flat_segment_tree<long, int> db_type;
     db_type db(0, 100, 42);
@@ -1759,7 +1759,7 @@ void fst_test_clear()
 
 void fst_test_assignment()
 {
-    StackPrinter __stack_printer__("::fst_test_assignment");
+    stack_printer __stack_printer__("::fst_test_assignment");
 
     typedef flat_segment_tree<long, int> db_type;
     db_type db1(0, 100, 42);
@@ -1855,21 +1855,21 @@ int main (int argc, char **argv)
             for (value_type i = 0; i <= 100; ++i)
                 fst_test_insert_front_back<key_type, value_type>(0, 100, i);
         }
-    
+
         {
             typedef int   key_type;
             typedef short value_type;
             for (value_type i = 0; i <= 100; ++i)
                 fst_test_insert_front_back<key_type, value_type>(0, 100, i);
         }
-    
+
         {
             typedef long         key_type;
             typedef unsigned int value_type;
             for (value_type i = 0; i <= 100; ++i)
                 fst_test_insert_front_back<key_type, value_type>(0, 100, i);
         }
-    
+
         fst_test_leaf_search();
         fst_test_tree_build();
         fst_test_tree_search();

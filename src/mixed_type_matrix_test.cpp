@@ -217,7 +217,7 @@ bool verify_assignment(const _Mx& mx1, const _Mx& mx2)
 
 void mtm_test_resize(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::mtm_test_resize");
+    stack_printer __stack_printer__("::mtm_test_resize");
     print_mx_density_type(density);
     pair<size_t,size_t> mxsize;
     pair<size_t,size_t> mxstoragesize;
@@ -317,7 +317,7 @@ void mtm_test_resize(matrix_density_t density)
 
 void mtm_test_value_store(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::mtm_test_value_store");
+    stack_printer __stack_printer__("::mtm_test_value_store");
     print_mx_density_type(density);
     mx_type mx(5, 5, density);
     mx.dump();
@@ -433,7 +433,7 @@ void print_transposed_mx(const _Mx& original, const _Mx& transposed)
 
 void mtm_test_transpose(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::mtm_test_transpose");
+    stack_printer __stack_printer__("::mtm_test_transpose");
     print_mx_density_type(density);
 
     {
@@ -480,7 +480,7 @@ void mtm_test_transpose(matrix_density_t density)
 
 void mtm_test_initial_elements()
 {
-    StackPrinter __stack_printer__("::mtm_test_initial_elements");
+    stack_printer __stack_printer__("::mtm_test_initial_elements");
     {
         mx_type mx(3, 3, matrix_density_filled_zero);
         mx.dump();
@@ -520,7 +520,7 @@ void mtm_test_initial_elements()
 
 void mtm_test_numeric_matrix()
 {
-    StackPrinter __stack_printer__("::mtm_test_numeric_matrix");
+    stack_printer __stack_printer__("::mtm_test_numeric_matrix");
     {
         print_mx_density_type(matrix_density_filled_zero);
         mx_type mx(3, 3, matrix_density_filled_zero);
@@ -576,7 +576,7 @@ void mtm_test_numeric_matrix()
 
 void mtm_test_assign(matrix_density_t dens1, matrix_density_t dens2)
 {
-    StackPrinter __stack_printer__("::mtm_test_assign");
+    stack_printer __stack_printer__("::mtm_test_assign");
     print_mx_density_type(dens1);
     print_mx_density_type(dens2);
 
@@ -627,7 +627,7 @@ void mtm_test_assign(matrix_density_t dens1, matrix_density_t dens2)
 
 void mtm_test_assignment(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::mtm_test_assignment");
+    stack_printer __stack_printer__("::mtm_test_assignment");
     print_mx_density_type(density);
     mx_type mx1(0, 0, density), mx2(3, 3, density);
     mx2.set(0, 0, 3.4);
@@ -665,7 +665,7 @@ void mtm_test_assignment(matrix_density_t density)
 
 void mtm_test_flag_storage(matrix_density_t density)
 {
-    StackPrinter __stack_printer__("::mtm_test_flag_storage");
+    stack_printer __stack_printer__("::mtm_test_flag_storage");
     print_mx_density_type(density);
     mx_type mx(3, 3, density);
     mx.dump();
@@ -721,7 +721,7 @@ void traverse_itr_access(typename _StoreType::const_itr_access& itr_access)
 template<typename _FilledStoreType>
 void mtm_test_iterator_access_filled(size_t rows, size_t cols)
 {
-    StackPrinter __stack_printer__("::mtm_test_iterator_access_filled");
+    stack_printer __stack_printer__("::mtm_test_iterator_access_filled");
     typedef _FilledStoreType store_type;
 
     store_type store(rows, cols, matrix_init_element_zero);
@@ -735,7 +735,7 @@ void mtm_test_iterator_access_filled(size_t rows, size_t cols)
 
 void mtm_test_iterator_access_sparse()
 {
-    StackPrinter __stack_printer__("::mem_test_iterator_access_sparse");
+    stack_printer __stack_printer__("::mem_test_iterator_access_sparse");
     typedef mx_type::sparse_storage_type store_type;
     store_type store(5, 5, matrix_init_element_empty);
     {
@@ -786,7 +786,7 @@ private:
 
 void mtm_test_const_iterator()
 {
-    StackPrinter __stack_printer__("::mtm_test_const_iterator");
+    stack_printer __stack_printer__("::mtm_test_const_iterator");
     // Test with an empty matrix.
     mx_type mx(0, 0, matrix_density_filled_zero);
     assert(mx.empty());
@@ -873,14 +873,14 @@ void mtm_test_const_iterator()
  */
 void mtm_perf_test_filled_storage_creation()
 {
-    StackPrinter __stack_printer__("::mtm_perf_test_filled_storage_creation");
+    stack_printer __stack_printer__("::mtm_perf_test_filled_storage_creation");
     cout << "measuring performance on matrix object creation." << endl;
     size_t rowsize = 1000;
     size_t obj_count = 30000;
     cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
     for (size_t colsize = 1; colsize <= 3; ++colsize)
     {
-        StackPrinter __stack_printer2__("::mtm_perf_test_filled_storage_creation::group");
+        stack_printer __stack_printer2__("::mtm_perf_test_filled_storage_creation::group");
         cout << "column size: " << colsize << endl;
         for (size_t i = 0; i < obj_count; ++i)
             mx_type mx(rowsize, colsize, matrix_density_filled_zero);
@@ -889,14 +889,14 @@ void mtm_perf_test_filled_storage_creation()
 
 void mtm_perf_test_filled_storage_set_numeric()
 {
-    StackPrinter __stack_printer__("::mtm_perf_test_filled_storage_set_numeric");
+    stack_printer __stack_printer__("::mtm_perf_test_filled_storage_set_numeric");
     cout << "measuring performance on matrix object creation and populating it with numeric data." << endl;
     size_t rowsize = 1000;
     size_t obj_count = 30000;
     cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
     for (size_t colsize = 1; colsize <= 3; ++colsize)
     {
-        StackPrinter __stack_printer2__("::mtm_perf_test_filled_storage_set_numeric::group");
+        stack_printer __stack_printer2__("::mtm_perf_test_filled_storage_set_numeric::group");
         cout << "column size: " << colsize << endl;
         for (size_t i = 0; i < obj_count; ++i)
         {

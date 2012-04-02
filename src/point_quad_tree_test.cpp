@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2010 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -58,7 +58,7 @@ struct search_result_printer : public unary_function<pair<typename _DbType::poin
 
 void pqt_test_basic()
 {
-    StackPrinter __stack_printer__("::pqt_test");
+    stack_printer __stack_printer__("::pqt_test");
     typedef point_quad_tree<uint16_t, const string*> db_type;
     db_type db;
 
@@ -104,7 +104,7 @@ void pqt_test_basic()
         cout << "result: ";
         for_each(result.begin(), result.end(), data_printer());
         cout << endl;
-    
+
         result.clear();
         db.search_region(10, 10, 61, 61, result);
         cout << "search region: (10, 10, 61, 61)" << endl;
@@ -135,7 +135,7 @@ void pqt_test_basic()
 
 void pqt_test_insertion_removal()
 {
-    StackPrinter __stack_printer__("::pqt_test_insertion_removal");
+    stack_printer __stack_printer__("::pqt_test_insertion_removal");
     typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db;
 
@@ -195,7 +195,7 @@ void pqt_test_insertion_removal()
 
 void pqt_test_remove_root()
 {
-    StackPrinter __stack_printer__("::pqt_test_remove_root");    
+    stack_printer __stack_printer__("::pqt_test_remove_root");
     typedef point_quad_tree<int32_t, const string*> db_type;
     string O("O");
     string NW("NW");
@@ -237,7 +237,7 @@ void pqt_test_remove_root()
 
 void pqt_test_equality()
 {
-    StackPrinter __stack_printer__("::pqt_test_equality");
+    stack_printer __stack_printer__("::pqt_test_equality");
 
     typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db1, db2;
@@ -250,7 +250,7 @@ void pqt_test_equality()
     string F("F");
 
     assert(db1 == db2); // both are empty.
-    
+
     db1.insert(0, 0, &A);
     db2.insert(0, 0, &A);
     assert(db1 == db2);
@@ -288,7 +288,7 @@ void pqt_test_equality()
 
 void pqt_test_assignment()
 {
-    StackPrinter __stack_printer__("::pqt_test_assignment");
+    stack_printer __stack_printer__("::pqt_test_assignment");
     typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db1, db2;
     string A("A");
@@ -327,7 +327,7 @@ void pqt_test_assignment()
 
 void pqt_test_swap()
 {
-    StackPrinter __stack_printer__("::pqt_test_swap");
+    stack_printer __stack_printer__("::pqt_test_swap");
     typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db1, db2;
     string A("A");
@@ -359,8 +359,8 @@ void pqt_test_swap()
 
 template<typename _DbType>
 bool verify_find(
-    const _DbType& db, 
-    typename _DbType::key_type x, typename _DbType::key_type y, 
+    const _DbType& db,
+    typename _DbType::key_type x, typename _DbType::key_type y,
     const typename _DbType::data_type data)
 {
     try
@@ -379,7 +379,7 @@ bool verify_find(
 
 void pqt_test_find()
 {
-    StackPrinter __stack_printer__("::pqt_test_find");
+    stack_printer __stack_printer__("::pqt_test_find");
     typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db;
     string A("A");
@@ -422,7 +422,7 @@ void pqt_test_find()
 
 void pqt_test_node_access()
 {
-    StackPrinter __stack_printer__("::pqt_test_node_access");
+    stack_printer __stack_printer__("::pqt_test_node_access");
     typedef point_quad_tree<int32_t, const string*> db_type;
     db_type db;
     db_type::node_access nac = db.get_node_access();

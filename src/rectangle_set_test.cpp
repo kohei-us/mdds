@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2010 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -47,14 +47,14 @@ struct range
     value_type y2;
     string name;
 
-    range(value_type _x1, value_type _y1, value_type _x2, value_type _y2, const string& _name) : 
+    range(value_type _x1, value_type _y1, value_type _x2, value_type _y2, const string& _name) :
         x1(_x1), y1(_y1), x2(_x2), y2(_y2), name(_name) {}
 
     struct printer : public unary_function<range, void>
     {
         void operator() (const range* p) const
         {
-            cout << p->name << ": (x1,y1,x2,y2) = (" << p->x1 << "," << p->y1 
+            cout << p->name << ": (x1,y1,x2,y2) = (" << p->x1 << "," << p->y1
                 << "," << p->x2 << "," << p->y2 << ")" << endl;
         }
     };
@@ -111,8 +111,8 @@ void print_search_result(typename _SetType::key_type x, typename _SetType::key_t
 }
 
 template<typename _SetType>
-bool check_search_result(_SetType& db, 
-                         typename _SetType::key_type x, typename _SetType::key_type y, 
+bool check_search_result(_SetType& db,
+                         typename _SetType::key_type x, typename _SetType::key_type y,
                          const typename _SetType::data_type** expected)
 {
     typename _SetType::search_result_type result, test;
@@ -139,7 +139,7 @@ bool check_search_result(_SetType& db,
 
 void rect_test_insertion_removal()
 {
-    StackPrinter __stack_printer__("::rect_test_insertion_removal");
+    stack_printer __stack_printer__("::rect_test_insertion_removal");
 
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
@@ -225,7 +225,7 @@ void rect_test_insertion_removal()
 
 void rect_test_search()
 {
-    StackPrinter __stack_printer__("::rect_test_search");
+    stack_printer __stack_printer__("::rect_test_search");
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
     typedef rectangle_set<value_type, const range_type> set_type;
@@ -360,7 +360,7 @@ void rect_test_search()
 
 void rect_test_copy_constructor()
 {
-    StackPrinter __stack_printer__("::rect_test_copy_constructor");
+    stack_printer __stack_printer__("::rect_test_copy_constructor");
     typedef int16_t value_type;
     typedef range<value_type> range_type;
     typedef rectangle_set<value_type, const range_type> set_type;
@@ -463,7 +463,7 @@ void rect_test_copy_constructor()
     }
 
     {
-        // Check against the origintal dataset, to ensure modification of the 
+        // Check against the origintal dataset, to ensure modification of the
         // copy does not modify the original.
         const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 0, expected));
@@ -574,7 +574,7 @@ void rect_test_assignment()
     }
 
     {
-        // Check against the origintal dataset, to ensure modification of the 
+        // Check against the origintal dataset, to ensure modification of the
         // copy does not modify the original.
         const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 0, expected));
@@ -590,7 +590,7 @@ void rect_test_assignment()
 
 void rect_test_equality()
 {
-    StackPrinter __stack_printer__("::rect_test_equality");
+    stack_printer __stack_printer__("::rect_test_equality");
 
     typedef int16_t value_type;
     typedef range<value_type> range_type;
@@ -631,7 +631,7 @@ void rect_test_equality()
 
 void rect_test_perf_insertion_fixed_x()
 {
-    StackPrinter __stack_printer__("::rect_test_perf_insertion_fixed_x");
+    stack_printer __stack_printer__("::rect_test_perf_insertion_fixed_x");
     typedef size_t value_type;
     typedef range<value_type> range_type;
     typedef rectangle_set<value_type, const range_type> set_type;
@@ -643,7 +643,7 @@ void rect_test_perf_insertion_fixed_x()
     ptr_vector<range_type> data_store;
     data_store.reserve(data_count);
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion range instance creation");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion range instance creation");
         for (size_t i = 0; i < data_count; ++i)
         {
             ostringstream os;
@@ -653,7 +653,7 @@ void rect_test_perf_insertion_fixed_x()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion data insertion");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion data insertion");
         for (size_t i = 0; i < data_count; ++i)
             insert_range(db, data_store[i]);
     }
@@ -661,7 +661,7 @@ void rect_test_perf_insertion_fixed_x()
 
     const range_type* test = NULL;
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
@@ -673,7 +673,7 @@ void rect_test_perf_insertion_fixed_x()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (without build_tree overhead)");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (without build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
@@ -685,7 +685,7 @@ void rect_test_perf_insertion_fixed_x()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result result = db.search(0, 0);
@@ -696,7 +696,7 @@ void rect_test_perf_insertion_fixed_x()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with median hits");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with median hits");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
@@ -708,7 +708,7 @@ void rect_test_perf_insertion_fixed_x()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result result = db.search(0, data_count/2);
@@ -719,7 +719,7 @@ void rect_test_perf_insertion_fixed_x()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with no hits");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with no hits");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
@@ -731,7 +731,7 @@ void rect_test_perf_insertion_fixed_x()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result result = db.search(0, data_count+1);
@@ -742,20 +742,20 @@ void rect_test_perf_insertion_fixed_x()
     }
 
     {
-        StackPrinter __stack_printer__("::rect_test_perf_insertion 10000 removals");
+        stack_printer __stack_printer__("::rect_test_perf_insertion 10000 removals");
         for (size_t i = 0; i < 10000; ++i)
             db.remove(&data_store[i]);
     }
 
     {
-        StackPrinter __stack_printer__("::rect_test_perf_insertion clearing set");
+        stack_printer __stack_printer__("::rect_test_perf_insertion clearing set");
         db.clear();
     }
 }
 
 void rect_test_perf_insertion_fixed_y()
 {
-    StackPrinter __stack_printer__("::rect_test_perf_insertion_fixed_y");
+    stack_printer __stack_printer__("::rect_test_perf_insertion_fixed_y");
     typedef size_t value_type;
     typedef range<value_type> range_type;
     typedef rectangle_set<value_type, const range_type> set_type;
@@ -767,7 +767,7 @@ void rect_test_perf_insertion_fixed_y()
     ptr_vector<range_type> data_store;
     data_store.reserve(data_count);
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion range instance creation");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion range instance creation");
         for (size_t i = 0; i < data_count; ++i)
         {
             ostringstream os;
@@ -777,7 +777,7 @@ void rect_test_perf_insertion_fixed_y()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion data insertion");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion data insertion");
         for (size_t i = 0; i < data_count; ++i)
             insert_range(db, data_store[i]);
     }
@@ -785,7 +785,7 @@ void rect_test_perf_insertion_fixed_y()
 
     const range_type* test = NULL;
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
@@ -797,7 +797,7 @@ void rect_test_perf_insertion_fixed_y()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (without build_tree overhead)");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (without build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
@@ -809,7 +809,7 @@ void rect_test_perf_insertion_fixed_y()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result result = db.search(0, 0);
@@ -820,7 +820,7 @@ void rect_test_perf_insertion_fixed_y()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with median hits");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with median hits");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
@@ -832,7 +832,7 @@ void rect_test_perf_insertion_fixed_y()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result result = db.search(0, data_count/2);
@@ -843,7 +843,7 @@ void rect_test_perf_insertion_fixed_y()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion 500 searches with no hits");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with no hits");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result_type result;
@@ -855,7 +855,7 @@ void rect_test_perf_insertion_fixed_y()
     }
 
     {
-        StackPrinter __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion same searches with iterator.");
         for (size_t i = 0; i < 500; ++i)
         {
             set_type::search_result result = db.search(0, data_count+1);
@@ -866,20 +866,20 @@ void rect_test_perf_insertion_fixed_y()
     }
 
     {
-        StackPrinter __stack_printer__("::rect_test_perf_insertion 10000 removals");
+        stack_printer __stack_printer__("::rect_test_perf_insertion 10000 removals");
         for (size_t i = 0; i < 10000; ++i)
             db.remove(&data_store[i]);
     }
 
     {
-        StackPrinter __stack_printer__("::rect_test_perf_insertion clearing set");
+        stack_printer __stack_printer__("::rect_test_perf_insertion clearing set");
         db.clear();
     }
 }
 
 void rect_test_search_result_iterator()
 {
-    StackPrinter __stack_printer__("::rect_test_search_result_iterator");
+    stack_printer __stack_printer__("::rect_test_search_result_iterator");
 
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
@@ -911,7 +911,7 @@ void rect_test_search_result_iterator()
 
 void rect_test_invalid_range()
 {
-    StackPrinter __stack_printer__("::rect_test_invalid_range");
+    stack_printer __stack_printer__("::rect_test_invalid_range");
     typedef rectangle_set<int, string> set_type;
     string A("A");
 
