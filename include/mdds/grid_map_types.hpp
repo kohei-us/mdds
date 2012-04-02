@@ -28,6 +28,8 @@
 #ifndef __MDDS_GRID_MAP_TYPES_HPP__
 #define __MDDS_GRID_MAP_TYPES_HPP__
 
+#include <vector>
+
 namespace mdds { namespace gridmap {
 
 typedef int cell_t;

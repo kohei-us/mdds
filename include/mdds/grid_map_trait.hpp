@@ -424,14 +424,6 @@ void cell_block_func_base::erase(base_cell_block& block, size_t pos, size_t size
 
 template<typename _Iter>
 void set_values(
-    base_cell_block& block, size_t pos, const typename _Iter::value_type&,
-    const _Iter& it_begin, const _Iter& it_end)
-{
-    throw general_error("non-specialized version of _set_values called.");
-}
-
-template<typename _Iter>
-void set_values(
     base_cell_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
 {
     numeric_cell_block& d = numeric_cell_block::get(block);
@@ -590,12 +582,6 @@ void cell_block_func_base::append_values_from_block(
 }
 
 template<typename _Iter>
-void append_values(base_cell_block& block, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
-{
-    throw general_error("non-specialized version of _append_values called.");
-}
-
-template<typename _Iter>
 void append_values(base_cell_block& block, double, const _Iter& it_begin, const _Iter& it_end)
 {
     numeric_cell_block& d = numeric_cell_block::get(block);
@@ -682,12 +668,6 @@ void cell_block_func_base::assign_values_from_block(
 }
 
 template<typename _Iter>
-void assign_values(base_cell_block& dest, const typename _Iter::value_type&, const _Iter& it_begin, const _Iter& it_end)
-{
-    throw general_error("non-specialized version of assign_values called.");
-}
-
-template<typename _Iter>
 void assign_values(base_cell_block& dest, double, const _Iter& it_begin, const _Iter& it_end)
 {
     numeric_cell_block& d = numeric_cell_block::get(dest);
@@ -713,13 +693,6 @@ void assign_values(base_cell_block& dest, bool, const _Iter& it_begin, const _It
 {
     boolean_cell_block& d = boolean_cell_block::get(dest);
     d.assign(it_begin, it_end);
-}
-
-template<typename _Iter>
-void insert_values(
-    base_cell_block&, size_t, const typename _Iter::value_type&, const _Iter&, const _Iter&)
-{
-    throw general_error("non-specialized version of _insert_values called.");
 }
 
 template<typename _Iter>
