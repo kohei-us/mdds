@@ -37,8 +37,6 @@
 #include <algorithm>
 #include <cassert>
 
-#include <boost/noncopyable.hpp>
-
 namespace mdds { namespace __gridmap {
 
 /**
@@ -63,7 +61,7 @@ private:
 
     typedef typename _Trait::cell_block_func cell_block_func;
 
-    struct block : boost::noncopyable
+    struct block
     {
         size_type m_size;
         cell_block_type* mp_data;

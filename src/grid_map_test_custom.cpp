@@ -88,6 +88,13 @@ struct muser_cell_block : public mdds::gridmap::cell_block<muser_cell_block, cel
 
     muser_cell_block() : base_type() {}
     muser_cell_block(size_t n) : base_type(n) {}
+    muser_cell_block(const muser_cell_block& r)
+    {
+        reserve(size());
+        muser_cell_block::const_iterator it = r.begin(), it_end = r.end();
+        for (; it != it_end; ++it)
+            push_back(new muser_cell(**it));
+    }
 
     ~muser_cell_block()
     {
@@ -375,6 +382,8 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
                 return new user_cell_block(init_size);
+            case celltype_muser_block:
+                return new muser_cell_block(init_size);
             default:
                 ;
         }
@@ -388,6 +397,8 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
                 return new user_cell_block(user_cell_block::get(block));
+            case celltype_muser_block:
+                return new muser_cell_block(muser_cell_block::get(block));
             default:
                 ;
         }
@@ -571,6 +582,17 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
                 d.assign(it, it_end);
             }
             break;
+            case celltype_muser_block:
+            {
+                muser_cell_block& d = muser_cell_block::get(dest);
+                const muser_cell_block& s = muser_cell_block::get(src);
+                muser_cell_block::const_iterator it = s.begin();
+                std::advance(it, begin_pos);
+                muser_cell_block::const_iterator it_end = it;
+                std::advance(it_end, len);
+                d.assign(it, it_end);
+            }
+            break;
             default:
                 cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
         }
@@ -587,6 +609,16 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             return user_cell_block::get(left) == user_cell_block::get(right);
         }
         else if (right.type == celltype_user_block)
+            return false;
+
+        if (left.type == celltype_muser_block)
+        {
+            if (right.type != celltype_muser_block)
+                return false;
+
+            return muser_cell_block::get(left) == muser_cell_block::get(right);
+        }
+        else if (right.type == celltype_muser_block)
             return false;
 
         return cell_block_func_base::equal_block(left, right);
