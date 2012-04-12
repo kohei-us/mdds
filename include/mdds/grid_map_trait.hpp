@@ -228,6 +228,13 @@ struct cell_block_func_base
 
     static bool equal_block(const base_cell_block& left, const base_cell_block& right);
 
+    /**
+     * This method gets called when cell values are being overwritten by new
+     * values.  This provides the client code an opportunity to delete
+     * overwritten instances in case the block stores pointers to managed
+     * objects.  For blocks that don't need to manage their stored objects (or
+     * store primitive values), this method can be left empty.
+     */
     static void overwrite_cells(base_cell_block& block, size_t pos, size_t len);
 };
 

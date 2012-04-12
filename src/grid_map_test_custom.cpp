@@ -880,6 +880,20 @@ void gridmap_test_equality()
     assert(db1 != db2); // equality is by the pointer value.
 }
 
+void gridmap_test_managed_block()
+{
+    stack_printer __stack_printer__("::gridmap_test_managed_block");
+    {
+        column_type db(1);
+        db.set_cell(0, new muser_cell(1.0));
+        const muser_cell* p = db.get_cell<muser_cell*>(0);
+        assert(p->value == 1.0);
+        db.set_cell(0, new muser_cell(2.0)); // overwrite.
+        p = db.get_cell<muser_cell*>(0);
+        assert(p->value == 2.0);
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -893,6 +907,7 @@ int main (int argc, char **argv)
         gridmap_test_types();
         gridmap_test_basic();
         gridmap_test_equality();
+        gridmap_test_managed_block();
     }
 
     if (opt.test_perf)

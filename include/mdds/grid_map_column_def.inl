@@ -239,6 +239,7 @@ void column<_Trait>::set_cell_impl(size_type row, const _T& cell)
     {
         // This block is of the same type as the cell being inserted.
         row_key_type i = row - start_row;
+        cell_block_func::overwrite_cells(*blk->mp_data, i, 1);
         cell_block_func::set_value(*blk->mp_data, i, cell);
         return;
     }
