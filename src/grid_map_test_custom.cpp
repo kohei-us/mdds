@@ -46,14 +46,28 @@ using namespace mdds;
 namespace {
 
 /** custom cell type definition. */
-const gridmap::cell_t celltype_user_block = gridmap::celltype_user_start;
+const gridmap::cell_t celltype_user_block  = gridmap::celltype_user_start;
+const gridmap::cell_t celltype_muser_block = gridmap::celltype_user_start+1;
 
+/** Caller manages the life cycle of these cells. */
 struct user_cell
 {
     double value;
 
     user_cell() : value(0.0) {}
     user_cell(double _v) : value(_v) {}
+};
+
+/**
+ * Managed user cell: the storing block manages the life cycle of these
+ * cells.
+ */
+struct muser_cell
+{
+    double value;
+
+    muser_cell() : value(0.0) {}
+    muser_cell(double _v) : value(_v) {}
 };
 
 struct user_cell_block : public mdds::gridmap::cell_block<user_cell_block, celltype_user_block, user_cell*>
@@ -64,6 +78,21 @@ struct user_cell_block : public mdds::gridmap::cell_block<user_cell_block, cellt
 
     user_cell_block() : base_type() {}
     user_cell_block(size_t n) : base_type(n) {}
+};
+
+struct muser_cell_block : public mdds::gridmap::cell_block<muser_cell_block, celltype_muser_block, muser_cell*>
+{
+    typedef mdds::gridmap::cell_block<muser_cell_block, celltype_muser_block, muser_cell*> base_type;
+
+    using base_type::get;
+
+    muser_cell_block() : base_type() {}
+    muser_cell_block(size_t n) : base_type(n) {}
+
+    ~muser_cell_block()
+    {
+        std::for_each(begin(), end(), default_deleter<muser_cell>());
+    }
 };
 
 template<typename T>
@@ -100,11 +129,26 @@ cell_t get_cell_type(const user_cell*)
     return celltype_user_block;
 }
 
+cell_t get_cell_type(const muser_cell*)
+{
+    return celltype_muser_block;
+}
+
+//----------------------------------------------------------------------------
+
 void set_value(base_cell_block& block, size_t pos, user_cell* p)
 {
     user_cell_block& blk = user_cell_block::get(block);
     blk[pos] = p;
 }
+
+void set_value(base_cell_block& block, size_t pos, muser_cell* p)
+{
+    muser_cell_block& blk = muser_cell_block::get(block);
+    blk[pos] = p;
+}
+
+//----------------------------------------------------------------------------
 
 template<typename _Iter>
 void set_values(
@@ -115,11 +159,30 @@ void set_values(
         d[pos] = *it;
 }
 
+template<typename _Iter>
+void set_values(
+    base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    muser_cell_block& d = muser_cell_block::get(block);
+    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
+        d[pos] = *it;
+}
+
+//----------------------------------------------------------------------------
+
 void get_value(const base_cell_block& block, size_t pos, user_cell*& val)
 {
     const user_cell_block& blk = user_cell_block::get(block);
     val = blk[pos];
 }
+
+void get_value(const base_cell_block& block, size_t pos, muser_cell*& val)
+{
+    const muser_cell_block& blk = muser_cell_block::get(block);
+    val = blk[pos];
+}
+
+//----------------------------------------------------------------------------
 
 void append_value(base_cell_block& block, user_cell* val)
 {
@@ -127,11 +190,27 @@ void append_value(base_cell_block& block, user_cell* val)
     blk.push_back(val);
 }
 
+void append_value(base_cell_block& block, muser_cell* val)
+{
+    muser_cell_block& blk = muser_cell_block::get(block);
+    blk.push_back(val);
+}
+
+//----------------------------------------------------------------------------
+
 void prepend_value(base_cell_block& block, user_cell* val)
 {
     user_cell_block& blk = user_cell_block::get(block);
     blk.insert(blk.begin(), val);
 }
+
+void prepend_value(base_cell_block& block, muser_cell* val)
+{
+    muser_cell_block& blk = muser_cell_block::get(block);
+    blk.insert(blk.begin(), val);
+}
+
+//----------------------------------------------------------------------------
 
 template<typename _Iter>
 void append_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
@@ -142,11 +221,30 @@ void append_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Ite
 }
 
 template<typename _Iter>
+void append_values(mdds::gridmap::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    muser_cell_block& d = muser_cell_block::get(block);
+    muser_cell_block::iterator it = d.end();
+    d.insert(it, it_begin, it_end);
+}
+
+//----------------------------------------------------------------------------
+
+template<typename _Iter>
 void prepend_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block& d = user_cell_block::get(block);
     d.insert(d.begin(), it_begin, it_end);
 }
+
+template<typename _Iter>
+void prepend_values(mdds::gridmap::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    muser_cell_block& d = muser_cell_block::get(block);
+    d.insert(d.begin(), it_begin, it_end);
+}
+
+//----------------------------------------------------------------------------
 
 template<typename _Iter>
 void assign_values(mdds::gridmap::base_cell_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
@@ -156,6 +254,15 @@ void assign_values(mdds::gridmap::base_cell_block& dest, user_cell*, const _Iter
 }
 
 template<typename _Iter>
+void assign_values(mdds::gridmap::base_cell_block& dest, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    muser_cell_block& d = muser_cell_block::get(dest);
+    d.assign(it_begin, it_end);
+}
+
+//----------------------------------------------------------------------------
+
+template<typename _Iter>
 void insert_values(
     mdds::gridmap::base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
@@ -163,10 +270,27 @@ void insert_values(
     d.insert(d.begin()+pos, it_begin, it_end);
 }
 
+template<typename _Iter>
+void insert_values(
+    mdds::gridmap::base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    muser_cell_block& d = muser_cell_block::get(block);
+    d.insert(d.begin()+pos, it_begin, it_end);
+}
+
+//----------------------------------------------------------------------------
+
 void get_empty_value(user_cell*& val)
 {
     val = NULL;
 }
+
+void get_empty_value(muser_cell*& val)
+{
+    val = NULL;
+}
+
+//----------------------------------------------------------------------------
 
 }}
 
@@ -281,6 +405,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             case celltype_user_block:
                 delete static_cast<user_cell_block*>(p);
             break;
+            case celltype_muser_block:
+                delete static_cast<muser_cell_block*>(p);
+            break;
             default:
                 cell_block_func_base::delete_block(p);
         }
@@ -292,6 +419,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         {
             case celltype_user_block:
                 static_cast<user_cell_block&>(block).resize(new_size);
+            break;
+            case celltype_muser_block:
+                static_cast<muser_cell_block&>(block).resize(new_size);
             break;
             default:
                 cell_block_func_base::resize_block(block, new_size);
@@ -310,6 +440,14 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
                 cout << endl;
             }
             break;
+            case celltype_muser_block:
+            {
+                const muser_cell_block& blk = muser_cell_block::get(block);
+                for_each(blk.begin(), blk.end(),
+                         mdds::gridmap::print_block_array<muser_cell*>());
+                cout << endl;
+            }
+            break;
             default:
                 cell_block_func_base::print_block(block);
         }
@@ -322,6 +460,12 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             case celltype_user_block:
             {
                 user_cell_block& blk = user_cell_block::get(block);
+                blk.erase(blk.begin()+pos);
+            }
+            break;
+            case celltype_muser_block:
+            {
+                muser_cell_block& blk = muser_cell_block::get(block);
                 blk.erase(blk.begin()+pos);
             }
             break;
@@ -340,6 +484,12 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
                 blk.erase(blk.begin()+pos, blk.begin()+pos+size);
             }
             break;
+            case celltype_muser_block:
+            {
+                muser_cell_block& blk = muser_cell_block::get(block);
+                blk.erase(blk.begin()+pos, blk.begin()+pos+size);
+            }
+            break;
             default:
                 cell_block_func_base::erase(block, pos, size);
         }
@@ -354,6 +504,13 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             {
                 user_cell_block& d = user_cell_block::get(dest);
                 const user_cell_block& s = user_cell_block::get(src);
+                d.insert(d.end(), s.begin(), s.end());
+            }
+            break;
+            case celltype_muser_block:
+            {
+                muser_cell_block& d = muser_cell_block::get(dest);
+                const muser_cell_block& s = muser_cell_block::get(src);
                 d.insert(d.end(), s.begin(), s.end());
             }
             break;
@@ -375,6 +532,18 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
                 user_cell_block::const_iterator it = s.begin();
                 std::advance(it, begin_pos);
                 user_cell_block::const_iterator it_end = it;
+                std::advance(it_end, len);
+                d.reserve(d.size() + len);
+                std::copy(it, it_end, std::back_inserter(d));
+            }
+            break;
+            case celltype_muser_block:
+            {
+                muser_cell_block& d = muser_cell_block::get(dest);
+                const muser_cell_block& s = muser_cell_block::get(src);
+                muser_cell_block::const_iterator it = s.begin();
+                std::advance(it, begin_pos);
+                muser_cell_block::const_iterator it_end = it;
                 std::advance(it_end, len);
                 d.reserve(d.size() + len);
                 std::copy(it, it_end, std::back_inserter(d));
@@ -421,6 +590,27 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
             return false;
 
         return cell_block_func_base::equal_block(left, right);
+    }
+
+    static void overwrite_cells(mdds::gridmap::base_cell_block& block, size_t pos, size_t len)
+    {
+        switch (block.type)
+        {
+            case celltype_user_block:
+                // Do nothing.  The client code manages the life cycle of these cells.
+            break;
+            case celltype_muser_block:
+            {
+                // The block manages the life cycle of stored instances.
+                muser_cell_block& blk = muser_cell_block::get(block);
+                muser_cell_block::iterator it = blk.begin() + pos;
+                muser_cell_block::iterator it_end = it + len;
+                std::for_each(it, it_end, default_deleter<muser_cell>());
+            }
+            break;
+            default:
+                cell_block_func_base::overwrite_cells(block, pos, len);
+        }
     }
 };
 

@@ -227,6 +227,8 @@ struct cell_block_func_base
         base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len);
 
     static bool equal_block(const base_cell_block& left, const base_cell_block& right);
+
+    static void overwrite_cells(base_cell_block& block, size_t pos, size_t len);
 };
 
 base_cell_block* cell_block_func_base::create_new_block(cell_t type, size_t init_size)
@@ -747,6 +749,11 @@ bool cell_block_func_base::equal_block(const base_cell_block& left, const base_c
             ;
     }
     return false;
+}
+
+void cell_block_func_base::overwrite_cells(base_cell_block&, size_t, size_t)
+{
+    // Do nothing for the standard types.
 }
 
 /**
