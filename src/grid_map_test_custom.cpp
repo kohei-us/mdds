@@ -892,6 +892,24 @@ void gridmap_test_managed_block()
         p = db.get_cell<muser_cell*>(0);
         assert(p->value == 2.0);
     }
+
+    {
+        column_type db(3);
+
+        // Empty the upper part.
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, new muser_cell(3.0));
+        db.set_empty(0, 0);
+
+        // Empty the lower part.
+        db.set_cell(0, new muser_cell(4.0));
+        db.set_empty(2, 2);
+
+        // Empty the middle part.
+        db.set_cell(2, new muser_cell(5.0));
+        db.set_empty(1, 1);
+    }
 }
 
 }

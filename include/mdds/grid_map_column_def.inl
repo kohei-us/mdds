@@ -1842,6 +1842,7 @@ void column<_Trait>::set_empty_in_single_block(
         }
 
         // Set the upper part of the block empty.
+        cell_block_func::overwrite_cells(*blk->mp_data, 0, empty_block_size);
         cell_block_func::erase(*blk->mp_data, 0, empty_block_size);
         blk->m_size -= empty_block_size;
 
@@ -1856,7 +1857,9 @@ void column<_Trait>::set_empty_in_single_block(
         assert(start_row > start_row_in_block);
 
         // Set the lower part of the block empty.
-        cell_block_func::erase(*blk->mp_data, end_row_in_block-empty_block_size+1, empty_block_size);
+        size_type start_pos = end_row_in_block-empty_block_size+1;
+        cell_block_func::overwrite_cells(*blk->mp_data, start_pos, empty_block_size);
+        cell_block_func::erase(*blk->mp_data, start_pos, empty_block_size);
         blk->m_size -= empty_block_size;
 
         // Insert a new empty block after the current one.
@@ -1880,6 +1883,10 @@ void column<_Trait>::set_empty_in_single_block(
     blk_lower->mp_data = cell_block_func::create_new_block(blk_cat, 0);
     cell_block_func::assign_values_from_block(
         *blk_lower->mp_data, *blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
+
+    // Overwrite cells that will become empty.
+    cell_block_func::overwrite_cells(
+        *blk->mp_data, start_row-start_row_in_block, empty_block_size);
 
     // Shrink the current data block.
     cell_block_func::erase(
