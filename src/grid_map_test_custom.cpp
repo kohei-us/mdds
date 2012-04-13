@@ -910,6 +910,19 @@ void gridmap_test_managed_block()
         db.set_cell(2, new muser_cell(5.0));
         db.set_empty(1, 1);
     }
+
+    {
+        column_type db(3);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, 3.0);
+        db.set_empty(1, 2);
+
+        db.set_cell(0, string("foo"));
+        db.set_cell(1, new muser_cell(4.0));
+        db.set_cell(2, new muser_cell(5.0));
+        db.set_empty(0, 1);
+    }
 }
 
 }

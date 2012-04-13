@@ -1917,6 +1917,7 @@ void column<_Trait>::set_empty_in_multi_blocks(
             {
                 // Empty the lower part.
                 size_type new_size = start_row - start_row_in_block1;
+                cell_block_func::overwrite_cells(*blk->mp_data, new_size, blk->m_size-new_size);
                 cell_block_func::resize_block(*blk->mp_data, new_size);
                 blk->m_size = new_size;
             }
@@ -1945,6 +1946,7 @@ void column<_Trait>::set_empty_in_multi_blocks(
             {
                 // Empty the upper part.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
+                cell_block_func::overwrite_cells(*blk->mp_data, 0, size_to_erase);
                 cell_block_func::erase(*blk->mp_data, 0, size_to_erase);
                 blk->m_size -= size_to_erase;
             }
