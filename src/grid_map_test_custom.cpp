@@ -90,7 +90,7 @@ struct muser_cell_block : public mdds::gridmap::cell_block<muser_cell_block, cel
     muser_cell_block(size_t n) : base_type(n) {}
     muser_cell_block(const muser_cell_block& r)
     {
-        reserve(size());
+        reserve(r.size());
         muser_cell_block::const_iterator it = r.begin(), it_end = r.end();
         for (; it != it_end; ++it)
             push_back(new muser_cell(**it));
@@ -929,6 +929,26 @@ void gridmap_test_managed_block()
         db.set_cell(0, new muser_cell(6.0));
         db.set_cell(1, size_t(12));
         db.set_empty(0, 2);
+    }
+
+    {
+        // Cloning.
+        column_type db(3);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, new muser_cell(3.0));
+
+        column_type db2;
+        db2.swap(db);
+        assert(db.empty());
+        assert(db2.get_cell<muser_cell*>(0)->value == 1.0);
+        assert(db2.get_cell<muser_cell*>(1)->value == 2.0);
+        assert(db2.get_cell<muser_cell*>(2)->value == 3.0);
+        db.swap(db2);
+        assert(db2.empty());
+        assert(db.get_cell<muser_cell*>(0)->value == 1.0);
+        assert(db.get_cell<muser_cell*>(1)->value == 2.0);
+        assert(db.get_cell<muser_cell*>(2)->value == 3.0);
     }
 }
 
