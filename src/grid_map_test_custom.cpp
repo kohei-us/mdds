@@ -958,6 +958,13 @@ void gridmap_test_managed_block()
         assert(db_copied.get_cell<muser_cell*>(0)->value == 1.0);
         assert(db_copied.get_cell<muser_cell*>(1)->value == 2.0);
         assert(db_copied.get_cell<muser_cell*>(2)->value == 3.0);
+
+        // Assignment.
+        column_type db_assigned = db;
+        assert(db_assigned.size() == 3);
+        assert(db_assigned.get_cell<muser_cell*>(0)->value == 1.0);
+        assert(db_assigned.get_cell<muser_cell*>(1)->value == 2.0);
+        assert(db_assigned.get_cell<muser_cell*>(2)->value == 3.0);
     }
 }
 
