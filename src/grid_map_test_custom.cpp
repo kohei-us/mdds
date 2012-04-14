@@ -67,6 +67,7 @@ struct muser_cell
     double value;
 
     muser_cell() : value(0.0) {}
+    muser_cell(const muser_cell& r) : value(r.value) {}
     muser_cell(double _v) : value(_v) {}
 };
 
@@ -932,12 +933,13 @@ void gridmap_test_managed_block()
     }
 
     {
-        // Cloning.
+        // Test for cloning.
         column_type db(3);
         db.set_cell(0, new muser_cell(1.0));
         db.set_cell(1, new muser_cell(2.0));
         db.set_cell(2, new muser_cell(3.0));
 
+        // swap
         column_type db2;
         db2.swap(db);
         assert(db.empty());
@@ -949,6 +951,13 @@ void gridmap_test_managed_block()
         assert(db.get_cell<muser_cell*>(0)->value == 1.0);
         assert(db.get_cell<muser_cell*>(1)->value == 2.0);
         assert(db.get_cell<muser_cell*>(2)->value == 3.0);
+
+        // copy constructor
+        column_type db_copied(db);
+        assert(db_copied.size() == 3);
+        assert(db_copied.get_cell<muser_cell*>(0)->value == 1.0);
+        assert(db_copied.get_cell<muser_cell*>(1)->value == 2.0);
+        assert(db_copied.get_cell<muser_cell*>(2)->value == 3.0);
     }
 }
 
