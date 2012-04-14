@@ -880,6 +880,9 @@ void gridmap_test_equality()
     assert(db1 != db2); // equality is by the pointer value.
 }
 
+/**
+ * This test is to be run with valgrind, to ensure no memory leak occurs.
+ */
 void gridmap_test_managed_block()
 {
     stack_printer __stack_printer__("::gridmap_test_managed_block");
@@ -922,6 +925,10 @@ void gridmap_test_managed_block()
         db.set_cell(1, new muser_cell(4.0));
         db.set_cell(2, new muser_cell(5.0));
         db.set_empty(0, 1);
+
+        db.set_cell(0, new muser_cell(6.0));
+        db.set_cell(1, size_t(12));
+        db.set_empty(0, 2);
     }
 }
 
