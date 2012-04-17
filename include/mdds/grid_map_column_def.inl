@@ -1739,7 +1739,10 @@ void column<_Trait>::resize(size_type new_size)
         // Shrink the size of the current block.
         size_type new_block_size = new_end_row - start_row_in_block + 1;
         if (blk->mp_data)
+        {
+            cell_block_func::overwrite_cells(*blk->mp_data, new_end_row+1, end_row_in_block-new_end_row);
             cell_block_func::resize_block(*blk->mp_data, new_block_size);
+        }
         blk->m_size = new_block_size;
     }
 
