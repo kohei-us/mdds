@@ -189,7 +189,8 @@ void column<_Trait>::set_cell_to_middle_of_block(
         cell_block_func::assign_values_from_block(
             *blk_tail->mp_data, *blk->mp_data, pos_in_block+1, orig_size-pos_in_block-1);
 
-        // Shrink the original block.
+        // Overwrite the cell and shrink the original block.
+        cell_block_func::overwrite_cells(*blk->mp_data, pos_in_block, 1);
         cell_block_func::resize_block(*blk->mp_data, pos_in_block);
     }
 
@@ -948,6 +949,7 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
         {
             // Erase data in the data block.
             size_type offset = start_row - start_row_in_block1;
+            cell_block_func::overwrite_cells(*blk->mp_data, offset, size_to_erase);
             cell_block_func::erase(*blk->mp_data, offset, size_to_erase);
         }
 
@@ -982,6 +984,7 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
         if (blk->mp_data)
         {
             // Shrink the data array.
+            cell_block_func::overwrite_cells(*blk->mp_data, new_size, blk->m_size-new_size);
             cell_block_func::resize_block(*blk->mp_data, new_size);
         }
         blk->m_size = new_size;
@@ -1002,6 +1005,7 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
         if (blk->mp_data)
         {
             // Erase the upper part.
+            cell_block_func::overwrite_cells(*blk->mp_data, 0, size_to_erase);
             cell_block_func::erase(*blk->mp_data, 0, size_to_erase);
         }
     }

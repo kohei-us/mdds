@@ -898,6 +898,7 @@ void gridmap_test_managed_block()
     }
 
     {
+        // Overwrite with empty cells.
         column_type db(3);
 
         // Empty the upper part.
@@ -916,6 +917,7 @@ void gridmap_test_managed_block()
     }
 
     {
+        // More overwrite with empty cells.
         column_type db(3);
         db.set_cell(0, new muser_cell(1.0));
         db.set_cell(1, new muser_cell(2.0));
@@ -977,6 +979,85 @@ void gridmap_test_managed_block()
         assert(db.get_cell<muser_cell*>(0)->value == 1.0);
 
         db.clear();
+    }
+
+    {
+        // Overwrite with a cell of different type.
+        column_type db(3);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, new muser_cell(3.0));
+        db.set_cell(1, 4.5);
+    }
+
+    {
+        // Erase (single block)
+        column_type db(3);
+
+        // Erase the whole thing.
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, new muser_cell(3.0));
+        db.erase(0, 2);
+        assert(db.empty());
+
+        // Erase top.
+        db.resize(3);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, new muser_cell(3.0));
+        db.erase(0, 1);
+        assert(db.size() == 1);
+
+        // Erase bottom.
+        db.resize(3);
+        db.set_cell(1, new muser_cell(4.0));
+        db.set_cell(2, new muser_cell(5.0));
+        db.erase(1, 2);
+        assert(db.size() == 1);
+
+        // Erase middle.
+        db.resize(3);
+        db.set_cell(1, new muser_cell(4.0));
+        db.set_cell(2, new muser_cell(5.0));
+        db.erase(1, 1);
+        assert(db.size() == 2);
+    }
+
+    {
+        // Erase (multi-block 1)
+        column_type db(6);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, new muser_cell(3.0));
+        db.set_cell(3, 4.1);
+        db.set_cell(4, 4.2);
+        db.set_cell(5, 4.3);
+        db.erase(1, 4);
+    }
+
+    {
+        // Erase (multi-block 2)
+        column_type db(6);
+        db.set_cell(0, 4.1);
+        db.set_cell(1, 4.2);
+        db.set_cell(2, 4.3);
+        db.set_cell(3, new muser_cell(5.0));
+        db.set_cell(4, new muser_cell(6.0));
+        db.set_cell(5, new muser_cell(7.0));
+        db.erase(1, 4);
+    }
+
+    {
+        // Erase (multi-block 3)
+        column_type db(6);
+        db.set_cell(0, 1.0);
+        db.set_cell(1, 2.0);
+        db.set_cell(2, new muser_cell(3.0));
+        db.set_cell(3, new muser_cell(4.0));
+        db.set_cell(4, 5.0);
+        db.set_cell(5, 6.0);
+        db.erase(1, 4);
     }
 }
 
