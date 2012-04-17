@@ -1271,6 +1271,7 @@ void column<_Trait>::set_cells_to_single_block(
         {
             // simple overwrite.
             size_type offset = start_row - start_row_in_block;
+            cell_block_func::overwrite_cells(*blk->mp_data, offset, std::distance(it_begin, it_end));
             cell_block_func::set_values(*blk->mp_data, offset, it_begin, it_end);
             return;
         }
@@ -1314,6 +1315,11 @@ void column<_Trait>::set_cells_to_single_block(
 
             size_type pos = end_row - start_row_in_block + 1;
             cell_block_func::assign_values_from_block(*new_data, *blk->mp_data, pos, length);
+            cell_block_func::overwrite_cells(*blk->mp_data, 0, pos);
+
+            // Resize the block to zero before deleting, to prevent the
+            // managed cells from being deleted when the block is deleted.
+            cell_block_func::resize_block(*blk->mp_data, 0);
             cell_block_func::delete_block(blk->mp_data);
             blk->mp_data = new_data.release();
         }

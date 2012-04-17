@@ -1071,6 +1071,32 @@ void gridmap_test_managed_block()
         assert(db.get_cell<muser_cell*>(0)->value == 1.0);
         assert(db.get_cell<muser_cell*>(3)->value == 2.0);
     }
+
+    {
+        // set_cells (simple overwrite)
+        column_type db(2);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+
+        std::vector<muser_cell*> vals;
+        vals.push_back(new muser_cell(3.0));
+        vals.push_back(new muser_cell(4.0));
+        db.set_cells(0, vals.begin(), vals.end());
+        assert(db.get_cell<muser_cell*>(0)->value == 3.0);
+        assert(db.get_cell<muser_cell*>(1)->value == 4.0);
+    }
+
+    {
+        // set_cells (overwrite upper)
+        column_type db(2);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        double vals[] = { 3.0 };
+        const double* p = &vals[0];
+        db.set_cells(0, p, p+1);
+        assert(db.get_cell<double>(0) == 3.0);
+        assert(db.get_cell<muser_cell*>(1)->value == 2.0);
+    }
 }
 
 }
