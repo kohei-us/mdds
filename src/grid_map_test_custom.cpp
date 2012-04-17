@@ -1059,6 +1059,18 @@ void gridmap_test_managed_block()
         db.set_cell(5, 6.0);
         db.erase(1, 4);
     }
+
+    {
+        // Insert into the middle of block.  This one shouldn't overwrite any
+        // cells, but just to be safe...
+        column_type db(2);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(2.0));
+        db.insert_empty(1, 2);
+        assert(db.size() == 4);
+        assert(db.get_cell<muser_cell*>(0)->value == 1.0);
+        assert(db.get_cell<muser_cell*>(3)->value == 2.0);
+    }
 }
 
 }
