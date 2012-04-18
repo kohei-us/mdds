@@ -258,7 +258,7 @@ base_cell_block* cell_block_func_base::create_new_block(cell_t type, size_t init
 
 base_cell_block* cell_block_func_base::clone_block(const base_cell_block& block)
 {
-    switch (block.type)
+    switch (get_block_type(block))
     {
         case celltype_numeric:
             return new numeric_cell_block(numeric_cell_block::get(block));
@@ -300,7 +300,7 @@ void cell_block_func_base::delete_block(base_cell_block* p)
 
 void cell_block_func_base::resize_block(base_cell_block& block, size_t new_size)
 {
-    switch (block.type)
+    switch (get_block_type(block))
     {
         case celltype_numeric:
             static_cast<numeric_cell_block&>(block).resize(new_size);
@@ -330,7 +330,7 @@ struct print_block_array
 
 void cell_block_func_base::print_block(const base_cell_block& block)
 {
-    switch (block.type)
+    switch (get_block_type(block))
     {
         case celltype_numeric:
         {
@@ -367,7 +367,7 @@ void cell_block_func_base::print_block(const base_cell_block& block)
 
 void cell_block_func_base::erase(base_cell_block& block, size_t pos)
 {
-    switch (block.type)
+    switch (get_block_type(block))
     {
         case celltype_numeric:
         {
@@ -400,7 +400,7 @@ void cell_block_func_base::erase(base_cell_block& block, size_t pos)
 
 void cell_block_func_base::erase(base_cell_block& block, size_t pos, size_t size)
 {
-    switch (block.type)
+    switch (get_block_type(block))
     {
         case celltype_numeric:
         {
@@ -497,7 +497,7 @@ void prepend_values(base_cell_block& block, bool, const _Iter& it_begin, const _
 
 void cell_block_func_base::append_values_from_block(base_cell_block& dest, const base_cell_block& src)
 {
-    switch (dest.type)
+    switch (get_block_type(dest))
     {
         case celltype_numeric:
         {
@@ -535,7 +535,7 @@ void cell_block_func_base::append_values_from_block(base_cell_block& dest, const
 void cell_block_func_base::append_values_from_block(
     base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len)
 {
-    switch (dest.type)
+    switch (get_block_type(dest))
     {
         case celltype_numeric:
         {
@@ -625,7 +625,7 @@ void append_values(base_cell_block& block, bool, const _Iter& it_begin, const _I
 void cell_block_func_base::assign_values_from_block(
     base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len)
 {
-    switch (dest.type)
+    switch (get_block_type(dest))
     {
         case celltype_numeric:
         {
@@ -738,8 +738,8 @@ void insert_values(
 
 bool cell_block_func_base::equal_block(const base_cell_block& left, const base_cell_block& right)
 {
-    cell_t block_type = left.type;
-    if (block_type != right.type)
+    cell_t block_type = get_block_type(left);
+    if (block_type != get_block_type(right))
         return false;
 
     switch (block_type)
