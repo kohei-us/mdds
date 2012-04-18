@@ -1109,6 +1109,21 @@ void gridmap_test_managed_block()
         assert(db.get_cell<muser_cell*>(0)->value == 1.0);
         assert(db.get_cell<double>(1) == 3.0);
     }
+
+    {
+        // set_cells (overwrite middle)
+        column_type db(4);
+        db.set_cell(0, 1.1);
+        db.set_cell(1, new muser_cell(1.0));
+        db.set_cell(2, new muser_cell(2.0));
+        db.set_cell(3, new muser_cell(3.0));
+        double vals[] = { 4.0 };
+        const double* p = &vals[0];
+        db.set_cells(2, p, p+1);
+        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
+        assert(db.get_cell<double>(2) == 4.0);
+        assert(db.get_cell<muser_cell*>(3)->value == 3.0);
+    }
 }
 
 }

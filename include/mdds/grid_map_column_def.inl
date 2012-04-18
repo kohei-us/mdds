@@ -1263,6 +1263,7 @@ void column<_Trait>::set_cells_to_single_block(
 
     cell_category_type cat = cell_block_func::get_cell_type(*it_begin);
     block* blk = m_blocks[block_index];
+    size_type data_length = std::distance(it_begin, it_end);
 
     if (blk->mp_data)
     {
@@ -1271,7 +1272,7 @@ void column<_Trait>::set_cells_to_single_block(
         {
             // simple overwrite.
             size_type offset = start_row - start_row_in_block;
-            cell_block_func::overwrite_cells(*blk->mp_data, offset, std::distance(it_begin, it_end));
+            cell_block_func::overwrite_cells(*blk->mp_data, offset, data_length);
             cell_block_func::set_values(*blk->mp_data, offset, it_begin, it_end);
             return;
         }
@@ -1346,7 +1347,7 @@ void column<_Trait>::set_cells_to_single_block(
         blk->m_size = new_size;
         if (blk->mp_data)
         {
-            cell_block_func::overwrite_cells(*blk->mp_data, new_size, std::distance(it_begin, it_end));
+            cell_block_func::overwrite_cells(*blk->mp_data, new_size, data_length);
             cell_block_func::resize_block(*blk->mp_data, new_size);
         }
 
@@ -1392,8 +1393,6 @@ void column<_Trait>::set_cells_to_single_block(
     // Insert two new blocks below the current one.
     m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
 
-    blk->m_size = start_row - start_row_in_block;
-
     // first new block is for the data array being inserted.
     size_type new_size = end_row - start_row + 1;
     m_blocks[block_index+1] = new block(new_size);
@@ -1404,6 +1403,7 @@ void column<_Trait>::set_cells_to_single_block(
     // second new block is to transfer the lower part of the current block.
     new_size = end_row_in_block - end_row;
     m_blocks[block_index+2] = new block(new_size);
+    size_type new_cur_size = start_row - start_row_in_block;
     if (blk->mp_data)
     {
         // current block is not empty. Transfer the lower part of the data.
@@ -1411,9 +1411,15 @@ void column<_Trait>::set_cells_to_single_block(
 
         blk_new = m_blocks[block_index+2];
         blk_new->mp_data = cell_block_func::create_new_block(blk_cat, 0);
+        size_type offset = end_row - start_row_in_block + 1;
         cell_block_func::assign_values_from_block(
-            *blk_new->mp_data, *blk->mp_data, end_row+1, new_size);
+            *blk_new->mp_data, *blk->mp_data, offset, new_size);
+
+        // Resize the current block.
+        cell_block_func::overwrite_cells(*blk->mp_data, new_cur_size, data_length);
+        cell_block_func::resize_block(*blk->mp_data, new_cur_size);
     }
+    blk->m_size = new_cur_size;
 }
 
 template<typename _Trait>
