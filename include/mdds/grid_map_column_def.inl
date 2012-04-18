@@ -1345,7 +1345,10 @@ void column<_Trait>::set_cells_to_single_block(
         size_type new_size = start_row - start_row_in_block;
         blk->m_size = new_size;
         if (blk->mp_data)
+        {
+            cell_block_func::overwrite_cells(*blk->mp_data, new_size, std::distance(it_begin, it_end));
             cell_block_func::resize_block(*blk->mp_data, new_size);
+        }
 
         new_size = end_row - start_row + 1; // size of the data array being inserted.
 
