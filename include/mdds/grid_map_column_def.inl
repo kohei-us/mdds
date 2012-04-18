@@ -1248,7 +1248,8 @@ void column<_Trait>::insert_cells_to_middle(
         blk3->mp_data = cell_block_func::create_new_block(blk_cat, 0);
 
         // Transfer the lower part of the current block to the new block.
-        cell_block_func::assign_values_from_block(*blk3->mp_data, *blk->mp_data, row, n2);
+        size_type offset = row - start_row;
+        cell_block_func::assign_values_from_block(*blk3->mp_data, *blk->mp_data, offset, n2);
     }
 }
 
