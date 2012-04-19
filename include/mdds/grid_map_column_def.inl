@@ -774,10 +774,12 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
         if (blk_cat_prev == cat)
         {
             // Merge the previous block with the cell being inserted and
-            // the next block.
+            // the next block.  Resize the next block to zero to prevent
+            // deletion of mananged cells on block deletion.
             blk_prev->m_size += 1 + blk_next->m_size;
             cell_block_func::append_value(*blk_prev->mp_data, cell);
             cell_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
+            cell_block_func::resize_block(*blk_next->mp_data, 0);
 
             // Delete the current and next blocks.
             delete blk;
