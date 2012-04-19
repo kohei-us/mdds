@@ -1203,18 +1203,19 @@ void gridmap_test_managed_block()
 
     {
         // set_cells() across multiple blocks, part 2.
-        column_type db(5);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, 1.2);
-        db.set_cell(3, new muser_cell(3.0));
-        db.set_cell(4, new muser_cell(4.0));
+        column_type db(6);
+        db.set_cell(0, size_t(12));
+        db.set_cell(1, new muser_cell(1.0));
+        db.set_cell(2, new muser_cell(2.0));
+        db.set_cell(3, 1.2);
+        db.set_cell(4, new muser_cell(3.0));
+        db.set_cell(5, new muser_cell(4.0));
 
         std::vector<muser_cell*> vals;
         vals.push_back(new muser_cell(5.0));
         vals.push_back(new muser_cell(6.0));
         vals.push_back(new muser_cell(7.0));
-        db.set_cells(1, vals.begin(), vals.end());
+        db.set_cells(2, vals.begin(), vals.end());
     }
 }
 

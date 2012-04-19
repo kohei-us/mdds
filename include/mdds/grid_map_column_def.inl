@@ -1649,6 +1649,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
         // Extend the first block to store the new data set.
 
         // Shrink it first to remove the old values, then append new values.
+        cell_block_func::overwrite_cells(*blk1->mp_data, offset, blk1->m_size-offset);
         cell_block_func::resize_block(*blk1->mp_data, offset);
         cell_block_func::append_values(*blk1->mp_data, it_begin, it_end);
         blk1->m_size = offset + length;
@@ -1664,10 +1665,14 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
             if (blk_cat2 == cat)
             {
                 // Copy the lower part of block 2 to the new block, and
-                // remove it.
+                // remove it.  Resize block 2 to zero to prevent the
+                // transferred / overwritten cells from being deleted on block
+                // deletion.
                 size_type data_length = end_row_in_block2 - end_row;
                 size_type begin_pos = end_row - start_row_in_block2 + 1;
                 cell_block_func::append_values_from_block(*blk1->mp_data, *blk2->mp_data, begin_pos, data_length);
+                cell_block_func::overwrite_cells(*blk2->mp_data, 0, begin_pos);
+                cell_block_func::resize_block(*blk2->mp_data, 0);
                 blk1->m_size += data_length;
                 ++it_erase_end;
             }
