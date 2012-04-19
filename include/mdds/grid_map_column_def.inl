@@ -1880,7 +1880,7 @@ void column<_Trait>::set_empty_in_single_block(
         assert(start_row > start_row_in_block);
 
         // Set the lower part of the block empty.
-        size_type start_pos = end_row_in_block-empty_block_size+1;
+        size_type start_pos = start_row - start_row_in_block;
         cell_block_func::overwrite_cells(*blk->mp_data, start_pos, empty_block_size);
         cell_block_func::erase(*blk->mp_data, start_pos, empty_block_size);
         blk->m_size -= empty_block_size;
@@ -1908,13 +1908,14 @@ void column<_Trait>::set_empty_in_single_block(
         *blk_lower->mp_data, *blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
 
     // Overwrite cells that will become empty.
+    size_type new_cur_size = start_row - start_row_in_block;
     cell_block_func::overwrite_cells(
-        *blk->mp_data, start_row-start_row_in_block, empty_block_size);
+        *blk->mp_data, new_cur_size, empty_block_size);
 
     // Shrink the current data block.
     cell_block_func::erase(
-        *blk->mp_data, start_row-start_row_in_block, end_row_in_block-start_row+1);
-    blk->m_size = start_row - start_row_in_block;
+        *blk->mp_data, new_cur_size, end_row_in_block-start_row+1);
+    blk->m_size = new_cur_size;
 }
 
 template<typename _Trait>

@@ -818,6 +818,35 @@ void gridmap_test_empty_cells()
         assert(db.is_empty(5));
         assert(db.block_size() == 1);
     }
+
+    {
+        // Set empty on 2nd block.  Presence of first block causes an offset
+        // on index in the 2nd block.
+        column_type db(5);
+        db.set_cell(0, 1.0);
+        db.set_cell(1, size_t(1));
+        db.set_cell(2, size_t(2));
+        db.set_cell(3, size_t(3));
+        db.set_cell(4, size_t(4));
+        db.set_empty(2, 4);
+        assert(!db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+
+        db.set_cell(2, size_t(5));
+        db.set_cell(3, size_t(6));
+        db.set_cell(4, size_t(7));
+        db.set_empty(1, 2);
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(!db.is_empty(3));
+        assert(!db.is_empty(4));
+
+        db.set_cell(3, size_t(8));
+        db.set_cell(4, size_t(9));
+        db.set_empty(2, 3);
+    }
 }
 
 void gridmap_test_swap()

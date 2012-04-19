@@ -935,6 +935,26 @@ void gridmap_test_managed_block()
     }
 
     {
+        // Another case for set_empty().
+        column_type db(5);
+        db.set_cell(0, 1.2);
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, new muser_cell(3.0));
+        db.set_cell(3, new muser_cell(4.0));
+        db.set_cell(4, new muser_cell(5.0));
+        db.set_empty(2, 4);
+
+        db.set_cell(2, new muser_cell(3.0));
+        db.set_cell(3, new muser_cell(4.0));
+        db.set_cell(4, new muser_cell(5.0));
+        db.set_empty(1, 2);
+
+        db.set_cell(1, new muser_cell(2.0));
+        db.set_cell(2, new muser_cell(3.0));
+        db.set_empty(2, 3);
+    }
+
+    {
         // Test for cloning.
         column_type db(3);
         db.set_cell(0, new muser_cell(1.0));
