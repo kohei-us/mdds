@@ -372,7 +372,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 
     static mdds::gridmap::base_cell_block* clone_block(const mdds::gridmap::base_cell_block& block)
     {
-        switch (block.type)
+        switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
                 return new user_cell_block(user_cell_block::get(block));
@@ -390,7 +390,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         if (!p)
             return;
 
-        switch (p->type)
+        switch (gridmap::get_block_type(*p))
         {
             case celltype_user_block:
                 delete static_cast<user_cell_block*>(p);
@@ -405,7 +405,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 
     static void resize_block(mdds::gridmap::base_cell_block& block, size_t new_size)
     {
-        switch (block.type)
+        switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
                 static_cast<user_cell_block&>(block).resize(new_size);
@@ -420,7 +420,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 
     static void print_block(const mdds::gridmap::base_cell_block& block)
     {
-        switch (block.type)
+        switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
             {
@@ -445,7 +445,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 
     static void erase(mdds::gridmap::base_cell_block& block, size_t pos)
     {
-        switch (block.type)
+        switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
             {
@@ -466,7 +466,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 
     static void erase(mdds::gridmap::base_cell_block& block, size_t pos, size_t size)
     {
-        switch (block.type)
+        switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
             {
@@ -488,7 +488,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     static void append_values_from_block(
         mdds::gridmap::base_cell_block& dest, const mdds::gridmap::base_cell_block& src)
     {
-        switch (dest.type)
+        switch (gridmap::get_block_type(dest))
         {
             case celltype_user_block:
             {
@@ -513,7 +513,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         mdds::gridmap::base_cell_block& dest, const mdds::gridmap::base_cell_block& src,
         size_t begin_pos, size_t len)
     {
-        switch (dest.type)
+        switch (gridmap::get_block_type(dest))
         {
             case celltype_user_block:
             {
@@ -548,7 +548,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         mdds::gridmap::base_cell_block& dest, const mdds::gridmap::base_cell_block& src,
         size_t begin_pos, size_t len)
     {
-        switch (dest.type)
+        switch (gridmap::get_block_type(dest))
         {
             case celltype_user_block:
             {
@@ -580,24 +580,24 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     static bool equal_block(
         const mdds::gridmap::base_cell_block& left, const mdds::gridmap::base_cell_block& right)
     {
-        if (left.type == celltype_user_block)
+        if (gridmap::get_block_type(left) == celltype_user_block)
         {
-            if (right.type != celltype_user_block)
+            if (gridmap::get_block_type(right) != celltype_user_block)
                 return false;
 
             return user_cell_block::get(left) == user_cell_block::get(right);
         }
-        else if (right.type == celltype_user_block)
+        else if (gridmap::get_block_type(right) == celltype_user_block)
             return false;
 
-        if (left.type == celltype_muser_block)
+        if (gridmap::get_block_type(left) == celltype_muser_block)
         {
-            if (right.type != celltype_muser_block)
+            if (gridmap::get_block_type(right) != celltype_muser_block)
                 return false;
 
             return muser_cell_block::get(left) == muser_cell_block::get(right);
         }
-        else if (right.type == celltype_muser_block)
+        else if (gridmap::get_block_type(right) == celltype_muser_block)
             return false;
 
         return cell_block_func_base::equal_block(left, right);
@@ -605,7 +605,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
 
     static void overwrite_cells(mdds::gridmap::base_cell_block& block, size_t pos, size_t len)
     {
-        switch (block.type)
+        switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
                 // Do nothing.  The client code manages the life cycle of these cells.

@@ -252,7 +252,7 @@ void cell_block_func_base::delete_block(base_cell_block* p)
     if (!p)
         return;
 
-    switch (p->type)
+    switch (get_block_type(*p))
     {
         case celltype_numeric:
             delete static_cast<numeric_cell_block*>(p);

@@ -41,8 +41,13 @@ const cell_t celltype_boolean = 3;
 
 const cell_t celltype_user_start = 50;
 
+struct base_cell_block;
+cell_t get_block_type(const base_cell_block&);
+
 struct base_cell_block
 {
+    friend cell_t get_block_type(const base_cell_block&);
+protected:
     cell_t type;
     base_cell_block(cell_t _t) : type(_t) {}
 };
@@ -62,7 +67,7 @@ protected:
 public:
     static _Self& get(base_cell_block& block)
     {
-        if (block.type != _TypeId)
+        if (get_block_type(block) != _TypeId)
             throw general_error("incorrect block type.");
 
         return static_cast<_Self&>(block);
@@ -70,7 +75,7 @@ public:
 
     static const _Self& get(const base_cell_block& block)
     {
-        if (block.type != _TypeId)
+        if (get_block_type(block) != _TypeId)
             throw general_error("incorrect block type.");
 
         return static_cast<const _Self&>(block);
