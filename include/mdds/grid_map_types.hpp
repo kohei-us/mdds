@@ -52,11 +52,6 @@ protected:
     base_cell_block(cell_t _t) : type(_t) {}
 };
 
-inline cell_t get_block_type(const base_cell_block& blk)
-{
-    return blk.type;
-}
-
 template<typename _Self, cell_t _TypeId, typename _Data>
 class cell_block : public base_cell_block, public std::vector<_Data>
 {
@@ -82,6 +77,21 @@ public:
     }
 };
 
+/**
+ * Get the numerical block type ID from a given cell block instance.
+ *
+ * @param blk cell block instance
+ *
+ * @return numerical value representing the ID of a cell block.
+ */
+inline cell_t get_block_type(const base_cell_block& blk)
+{
+    return blk.type;
+}
+
+/**
+ * Template for default, unmanaged cell block for use in grid_map.
+ */
 template<cell_t _TypeId, typename _Data>
 struct default_cell_block : public cell_block<default_cell_block<_TypeId,_Data>, _TypeId, _Data>
 {
@@ -91,6 +101,10 @@ struct default_cell_block : public cell_block<default_cell_block<_TypeId,_Data>,
     default_cell_block(size_t n) : base_type(n) {}
 };
 
+/**
+ * Template for cell block that stores pointers to objects whose life cycles
+ * are managed by the block.
+ */
 template<cell_t _TypeId, typename _Data>
 struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
 {
