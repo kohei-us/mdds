@@ -1221,7 +1221,7 @@ void gridmap_test_managed_block()
     }
 
     {
-        // set_cell() to merge blocks.
+        // set_cell() to merge 3 blocks.
         column_type db(6);
         db.set_cell(0, size_t(12));
         db.set_cell(1, new muser_cell(1.0));
@@ -1245,6 +1245,20 @@ void gridmap_test_managed_block()
         assert(db.get_cell<muser_cell*>(3)->value == 5.0);
         assert(db.get_cell<muser_cell*>(4)->value == 3.0);
         assert(db.get_cell<muser_cell*>(5)->value == 4.0);
+    }
+
+    {
+        // set_cell() to merge 2 blocks.
+        column_type db(3);
+        db.set_cell(0, size_t(23));
+        db.set_cell(1, new muser_cell(2.1));
+        db.set_cell(2, new muser_cell(3.1));
+
+        db.set_cell(0, new muser_cell(4.2)); // merge
+        assert(db.block_size() == 1);
+        assert(db.get_cell<muser_cell*>(0)->value == 4.2);
+        assert(db.get_cell<muser_cell*>(1)->value == 2.1);
+        assert(db.get_cell<muser_cell*>(2)->value == 3.1);
     }
 }
 
