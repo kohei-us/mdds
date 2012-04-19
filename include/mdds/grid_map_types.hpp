@@ -53,11 +53,13 @@ inline cell_t get_block_type(const base_cell_block& blk)
 }
 
 template<typename _Self, cell_t _TypeId, typename _Data>
-struct cell_block : public base_cell_block, public std::vector<_Data>
+class cell_block : public base_cell_block, public std::vector<_Data>
 {
+protected:
     cell_block() : base_cell_block(_TypeId), std::vector<_Data>() {}
     cell_block(size_t n) : base_cell_block(_TypeId), std::vector<_Data>(n) {}
 
+public:
     static _Self& get(base_cell_block& block)
     {
         if (block.type != _TypeId)
