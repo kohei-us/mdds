@@ -71,14 +71,7 @@ struct muser_cell
     muser_cell(double _v) : value(_v) {}
 };
 
-struct user_cell_block : public mdds::gridmap::cell_block<user_cell_block, celltype_user_block, user_cell*>
-{
-    typedef mdds::gridmap::cell_block<user_cell_block, celltype_user_block, user_cell*> base_type;
-
-    user_cell_block() : base_type() {}
-    user_cell_block(size_t n) : base_type(n) {}
-};
-
+typedef mdds::gridmap::default_cell_block<celltype_user_block, user_cell*> user_cell_block;
 typedef mdds::gridmap::managed_cell_block<celltype_muser_block, muser_cell> muser_cell_block;
 
 template<typename T>
