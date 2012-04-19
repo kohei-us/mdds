@@ -1544,7 +1544,11 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
     {
         // Shrink block 1.
         if (blk1->mp_data)
+        {
+            size_type n = blk1->m_size - offset;
+            cell_block_func::overwrite_cells(*blk1->mp_data, offset, n);
             cell_block_func::resize_block(*blk1->mp_data, offset);
+        }
         blk1->m_size = offset;
     }
 
@@ -1600,7 +1604,10 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
             // Erase the upper part of block 2.
             size_type size_to_erase = end_row - start_row_in_block2 + 1;
             if (blk2->mp_data)
+            {
+                cell_block_func::overwrite_cells(*blk2->mp_data, 0, size_to_erase);
                 cell_block_func::erase(*blk2->mp_data, 0, size_to_erase);
+            }
             blk2->m_size -= size_to_erase;
         }
     }
