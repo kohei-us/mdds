@@ -1950,6 +1950,26 @@ void gridmap_test_insert_cells()
         assert(db.size() == 4);
         assert(db.block_size() == 4);
     }
+
+    {
+        column_type db(2);
+        db.set_cell(0, size_t(11));
+        db.set_cell(1, size_t(12));
+        double vals[] = { 1.2 };
+        const double* p = &vals[0];
+        db.insert_cells(1, p, p+1);
+        assert(db.block_size() == 3);
+
+        // Append value to the top block.
+        size_t vals2[] = { 22 };
+        const size_t* p2 = &vals2[0];
+        db.insert_cells(1, p2, p2+1);
+        assert(db.block_size() == 3);
+        assert(db.get_cell<size_t>(0) == 11);
+        assert(db.get_cell<size_t>(1) == 22);
+        assert(db.get_cell<double>(2) == 1.2);
+        assert(db.get_cell<size_t>(3) == 12);
+    }
 }
 
 }
