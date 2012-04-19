@@ -76,6 +76,15 @@ struct cell_block : public base_cell_block, public std::vector<_Data>
 };
 
 template<cell_t _TypeId, typename _Data>
+struct default_cell_block : public cell_block<default_cell_block<_TypeId,_Data>, _TypeId, _Data>
+{
+    typedef cell_block<default_cell_block, _TypeId, _Data> base_type;
+
+    default_cell_block() : base_type() {}
+    default_cell_block(size_t n) : base_type(n) {}
+};
+
+template<cell_t _TypeId, typename _Data>
 struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
 {
     typedef cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;

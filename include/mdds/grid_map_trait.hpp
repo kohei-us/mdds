@@ -34,37 +34,10 @@
 
 namespace mdds { namespace gridmap {
 
-struct numeric_cell_block : public cell_block<numeric_cell_block, celltype_numeric, double>
-{
-    typedef cell_block<numeric_cell_block, celltype_numeric, double> base_type;
-
-    numeric_cell_block() : base_type() {}
-    numeric_cell_block(size_t n) : base_type(n) {}
-};
-
-struct string_cell_block : public cell_block<string_cell_block, celltype_string, std::string>
-{
-    typedef cell_block<string_cell_block, celltype_string, std::string> base_type;
-
-    string_cell_block() : base_type() {}
-    string_cell_block(size_t n) : base_type(n) {}
-};
-
-struct index_cell_block : public cell_block<index_cell_block, celltype_index, size_t>
-{
-    typedef cell_block<index_cell_block, celltype_index, size_t> base_type;
-
-    index_cell_block() : base_type() {}
-    index_cell_block(size_t n) : base_type(n) {}
-};
-
-struct boolean_cell_block : public cell_block<boolean_cell_block, celltype_boolean, bool>
-{
-    typedef cell_block<boolean_cell_block, celltype_boolean, bool> base_type;
-
-    boolean_cell_block() : base_type() {}
-    boolean_cell_block(size_t n) : base_type(n) {}
-};
+typedef default_cell_block<celltype_numeric, double>     numeric_cell_block;
+typedef default_cell_block<celltype_string, std::string> string_cell_block;
+typedef default_cell_block<celltype_index, size_t>       index_cell_block;
+typedef default_cell_block<celltype_boolean, bool>       boolean_cell_block;
 
 cell_t get_cell_type(double)
 {
