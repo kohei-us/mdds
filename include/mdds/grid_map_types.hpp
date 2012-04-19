@@ -75,6 +75,32 @@ struct cell_block : public base_cell_block, public std::vector<_Data>
     }
 };
 
+template<cell_t _TypeId, typename _Data>
+struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
+{
+    typedef cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
+
+    using base_type::begin;
+    using base_type::end;
+    using base_type::reserve;
+    using base_type::push_back;
+
+    managed_cell_block() : base_type() {}
+    managed_cell_block(size_t n) : base_type(n) {}
+    managed_cell_block(const managed_cell_block& r)
+    {
+        reserve(r.size());
+        typename managed_cell_block::const_iterator it = r.begin(), it_end = r.end();
+        for (; it != it_end; ++it)
+            push_back(new _Data(**it));
+    }
+
+    ~managed_cell_block()
+    {
+        std::for_each(begin(), end(), default_deleter<_Data>());
+    }
+};
+
 }}
 
 #endif

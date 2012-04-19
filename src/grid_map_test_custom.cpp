@@ -79,25 +79,7 @@ struct user_cell_block : public mdds::gridmap::cell_block<user_cell_block, cellt
     user_cell_block(size_t n) : base_type(n) {}
 };
 
-struct muser_cell_block : public mdds::gridmap::cell_block<muser_cell_block, celltype_muser_block, muser_cell*>
-{
-    typedef mdds::gridmap::cell_block<muser_cell_block, celltype_muser_block, muser_cell*> base_type;
-
-    muser_cell_block() : base_type() {}
-    muser_cell_block(size_t n) : base_type(n) {}
-    muser_cell_block(const muser_cell_block& r)
-    {
-        reserve(r.size());
-        muser_cell_block::const_iterator it = r.begin(), it_end = r.end();
-        for (; it != it_end; ++it)
-            push_back(new muser_cell(**it));
-    }
-
-    ~muser_cell_block()
-    {
-        std::for_each(begin(), end(), default_deleter<muser_cell>());
-    }
-};
+typedef mdds::gridmap::managed_cell_block<celltype_muser_block, muser_cell> muser_cell_block;
 
 template<typename T>
 class cell_pool : boost::noncopyable
