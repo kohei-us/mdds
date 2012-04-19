@@ -1292,6 +1292,7 @@ void column<_Trait>::insert_cells_to_middle(
         // Transfer the lower part of the current block to the new block.
         size_type offset = row - start_row;
         cell_block_func::assign_values_from_block(*blk3->mp_data, *blk->mp_data, offset, n2);
+        cell_block_func::resize_block(*blk->mp_data, blk->m_size);
     }
 }
 
