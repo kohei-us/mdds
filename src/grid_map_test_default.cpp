@@ -546,6 +546,33 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
     }
+
+    {
+        // set_cell() to merge 3 blocks.
+        column_type db(6);
+        db.set_cell(0, size_t(12));
+        db.set_cell(1, 1.0);
+        db.set_cell(2, 2.0);
+        db.set_cell(3, string("foo"));
+        db.set_cell(4, 3.0);
+        db.set_cell(5, 4.0);
+        assert(db.block_size() == 4);
+        assert(db.get_cell<size_t>(0) == 12);
+        assert(db.get_cell<double>(1) == 1.0);
+        assert(db.get_cell<double>(2) == 2.0);
+        assert(db.get_cell<string>(3) == "foo");
+        assert(db.get_cell<double>(4) == 3.0);
+        assert(db.get_cell<double>(5) == 4.0);
+
+        db.set_cell(3, 5.0); // merge blocks.
+        assert(db.block_size() == 2);
+        assert(db.get_cell<size_t>(0) == 12);
+        assert(db.get_cell<double>(1) == 1.0);
+        assert(db.get_cell<double>(2) == 2.0);
+        assert(db.get_cell<double>(3) == 5.0);
+        assert(db.get_cell<double>(4) == 3.0);
+        assert(db.get_cell<double>(5) == 4.0);
+    }
 }
 
 void gridmap_test_empty_cells()

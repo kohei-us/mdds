@@ -1233,6 +1233,12 @@ void gridmap_test_managed_block()
 
         db.set_cell(3, new muser_cell(5.0)); // merge blocks.
         assert(db.block_size() == 2);
+        assert(db.get_cell<size_t>(0) == 12);
+        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
+        assert(db.get_cell<muser_cell*>(2)->value == 2.0);
+        assert(db.get_cell<muser_cell*>(3)->value == 5.0);
+        assert(db.get_cell<muser_cell*>(4)->value == 3.0);
+        assert(db.get_cell<muser_cell*>(5)->value == 4.0);
     }
 }
 
