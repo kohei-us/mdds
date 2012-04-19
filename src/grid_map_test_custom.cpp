@@ -75,8 +75,6 @@ struct user_cell_block : public mdds::gridmap::cell_block<user_cell_block, cellt
 {
     typedef mdds::gridmap::cell_block<user_cell_block, celltype_user_block, user_cell*> base_type;
 
-    using base_type::get;
-
     user_cell_block() : base_type() {}
     user_cell_block(size_t n) : base_type(n) {}
 };
@@ -84,8 +82,6 @@ struct user_cell_block : public mdds::gridmap::cell_block<user_cell_block, cellt
 struct muser_cell_block : public mdds::gridmap::cell_block<muser_cell_block, celltype_muser_block, muser_cell*>
 {
     typedef mdds::gridmap::cell_block<muser_cell_block, celltype_muser_block, muser_cell*> base_type;
-
-    using base_type::get;
 
     muser_cell_block() : base_type() {}
     muser_cell_block(size_t n) : base_type(n) {}
