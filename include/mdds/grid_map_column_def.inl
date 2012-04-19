@@ -960,6 +960,46 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
         {
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_pos1);
+
+            if (block_pos1 > 0 && block_pos1 < m_blocks.size())
+            {
+                // Check the previous and next blocks to see if they should be merged.
+                block* blk_prev = m_blocks[block_pos1-1];
+                block* blk_next = m_blocks[block_pos1];
+                if (blk_prev->mp_data)
+                {
+                    // Previous block has data.
+                    if (!blk_next->mp_data)
+                        // Next block is empty.  Nothing to do.
+                        return;
+
+                    cell_category_type cat1 = mdds::gridmap::get_block_type(*blk_prev->mp_data);
+                    cell_category_type cat2 = mdds::gridmap::get_block_type(*blk_next->mp_data);
+                    if (cat1 == cat2)
+                    {
+                        // Merge the two blocks.
+                        cell_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
+                        blk_prev->m_size += blk_next->m_size;
+                        // Resize to 0 to prevent deletion of cells in case of managed cells.
+                        cell_block_func::resize_block(*blk_next->mp_data, 0);
+                        delete blk_next;
+                        m_blocks.erase(m_blocks.begin()+block_pos1);
+                    }
+                }
+                else
+                {
+                    // Previous block is empty.
+                    if (blk_next->mp_data)
+                        // Next block is not empty.  Nothing to do.
+                        return;
+
+                    // Both blocks are empty.  Simply increase the size of the
+                    // previous block.
+                    blk_prev->m_size += blk_next->m_size;
+                    delete blk_next;
+                    m_blocks.erase(m_blocks.begin()+block_pos1);
+                }
+            }
         }
         return;
     }

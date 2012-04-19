@@ -1145,6 +1145,37 @@ void gridmap_test_erase()
         assert(db.size() == 0);
         assert(db.empty());
     }
+
+    {
+        // erase() to merge two blocks.
+        column_type db(4);
+        db.set_cell(0, 1.1);
+        db.set_cell(1, string("foo"));
+        db.set_cell(2, size_t(2));
+        db.set_cell(3, string("baa"));
+        assert(db.block_size() == 4);
+        assert(db.size() == 4);
+
+        db.erase(2, 2);
+        assert(db.block_size() == 2);
+        assert(db.size() == 3);
+
+        // Try again, but this time merge two empty blocks.
+        db.resize(4);
+        db.set_empty(1, 3);
+        db.set_cell(2, size_t(10));
+        assert(db.get_cell<double>(0) == 1.1);
+        assert(db.is_empty(1));
+        assert(db.get_cell<size_t>(2) == 10);
+        assert(db.is_empty(3));
+
+        db.erase(2, 2);
+        assert(db.block_size() == 2);
+        assert(db.size() == 3);
+        assert(db.get_cell<double>(0) == 1.1);
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+    }
 }
 
 void gridmap_test_insert_empty()

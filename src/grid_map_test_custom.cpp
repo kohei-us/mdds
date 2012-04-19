@@ -1179,6 +1179,36 @@ void gridmap_test_managed_block()
         assert(db.get_cell<double>(2) == 4.0);
         assert(db.get_cell<muser_cell*>(3)->value == 3.0);
     }
+
+    {
+        // insert_empty() to split the block into two.
+        column_type db(3);
+        db.set_cell(0, 1.1);
+        db.set_cell(1, new muser_cell(1.0));
+        db.set_cell(2, new muser_cell(2.0));
+        db.insert_empty(2, 2);
+        assert(db.size() == 5);
+        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
+        assert(db.get_cell<muser_cell*>(4)->value == 2.0);
+    }
+
+    {
+        // erase() to merge two blocks.
+        column_type db(4);
+        db.set_cell(0, 1.1);
+        db.set_cell(1, new muser_cell(1.0));
+        db.set_cell(2, size_t(2));
+        db.set_cell(3, new muser_cell(3.0));
+        assert(db.block_size() == 4);
+        assert(db.size() == 4);
+
+        db.erase(2, 2);
+        assert(db.block_size() == 2);
+        assert(db.size() == 3);
+        assert(db.get_cell<double>(0) == 1.1);
+        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
+        assert(db.get_cell<muser_cell*>(2)->value == 3.0);
+    }
 }
 
 }
