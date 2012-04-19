@@ -1045,6 +1045,41 @@ void gridmap_test_managed_block()
     }
 
     {
+        // Erase (single block with preceding block)
+        column_type db(4);
+
+        // Erase the whole thing.
+        db.set_cell(0, 1.1);
+        db.set_cell(1, new muser_cell(1.0));
+        db.set_cell(2, new muser_cell(2.0));
+        db.set_cell(3, new muser_cell(3.0));
+        db.erase(1, 3);
+        assert(db.size() == 1);
+
+        // Erase top.
+        db.resize(4);
+        db.set_cell(1, new muser_cell(1.0));
+        db.set_cell(2, new muser_cell(2.0));
+        db.set_cell(3, new muser_cell(3.0));
+        db.erase(1, 2);
+        assert(db.size() == 2);
+
+        // Erase bottom.
+        db.resize(4);
+        db.set_cell(2, new muser_cell(4.0));
+        db.set_cell(3, new muser_cell(5.0));
+        db.erase(2, 3);
+        assert(db.size() == 2);
+
+        // Erase middle.
+        db.resize(4);
+        db.set_cell(2, new muser_cell(4.0));
+        db.set_cell(3, new muser_cell(5.0));
+        db.erase(2, 2);
+        assert(db.size() == 3);
+    }
+
+    {
         // Erase (multi-block 1)
         column_type db(6);
         db.set_cell(0, new muser_cell(1.0));
