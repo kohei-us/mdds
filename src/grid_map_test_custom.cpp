@@ -1263,6 +1263,22 @@ void gridmap_test_managed_block()
         const double* p = &vals[0];
         db.insert_cells(1, p, p+2);
     }
+
+    {
+        // set_cells() - merge new data block with existing block below.
+        column_type db(6);
+        db.set_cell(0, string("foo"));
+        db.set_cell(1, string("foo"));
+        db.set_cell(2, 1.1);
+        db.set_cell(3, 1.2);
+        db.set_cell(4, new muser_cell(2.2));
+        db.set_cell(5, new muser_cell(2.3));
+        vector<muser_cell*> vals;
+        vals.push_back(new muser_cell(2.4));
+        vals.push_back(new muser_cell(2.5));
+        vals.push_back(new muser_cell(2.6));
+        db.set_cells(1, vals.begin(), vals.end());
+    }
 }
 
 }
