@@ -1574,8 +1574,9 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
             if (blk3->mp_data && mdds::gridmap::get_block_type(*blk3->mp_data) == cat)
             {
                 // Merge the whole block 3 with the new data. Remove block 3
-                // afterward.
+                // afterward.  Resize block 3 to zero to prevent invalid free.
                 cell_block_func::append_values_from_block(*data_blk->mp_data, *blk3->mp_data);
+                cell_block_func::resize_block(*blk3->mp_data, 0);
                 data_blk->m_size += blk3->m_size;
                 ++it_erase_end;
             }
