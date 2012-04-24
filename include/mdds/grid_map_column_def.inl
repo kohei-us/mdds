@@ -1591,11 +1591,13 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
             if (blk_cat2 == cat)
             {
                 // Merge the lower part of block 2 with the new data, and
-                // erase block 2.
+                // erase block 2.  Resize block 2 to avoid invalid free on the
+                // copied portion of the block.
                 size_type copy_pos = end_row - start_row_in_block2 + 1;
                 size_type size_to_copy = end_row_in_block2 - end_row;
                 cell_block_func::append_values_from_block(
                     *data_blk->mp_data, *blk2->mp_data, copy_pos, size_to_copy);
+                cell_block_func::resize_block(*blk2->mp_data, copy_pos);
                 data_blk->m_size += size_to_copy;
 
                 ++it_erase_end;

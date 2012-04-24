@@ -1268,9 +1268,36 @@ void gridmap_test_managed_block()
         // set_cells() - merge new data block with existing block below.
         column_type db(6);
         db.set_cell(0, string("foo"));
-        db.set_cell(1, string("foo"));
+        db.set_cell(1, string("baa"));
         db.set_cell(2, 1.1);
         db.set_cell(3, 1.2);
+        db.set_cell(4, new muser_cell(2.2));
+        db.set_cell(5, new muser_cell(2.3));
+        assert(db.block_size() == 3);
+
+        vector<muser_cell*> vals;
+        vals.push_back(new muser_cell(2.4));
+        vals.push_back(new muser_cell(2.5));
+        vals.push_back(new muser_cell(2.6));
+        db.set_cells(1, vals.begin(), vals.end());
+        assert(db.block_size() == 2);
+
+        assert(db.get_cell<string>(0) == "foo");
+        assert(db.get_cell<muser_cell*>(1)->value == 2.4);
+        assert(db.get_cell<muser_cell*>(2)->value == 2.5);
+        assert(db.get_cell<muser_cell*>(3)->value == 2.6);
+        assert(db.get_cell<muser_cell*>(4)->value == 2.2);
+        assert(db.get_cell<muser_cell*>(5)->value == 2.3);
+    }
+
+    {
+        // set_cells() - merge new data block with existing block below, but
+        // it overwrites the upper cell.
+        column_type db(6);
+        db.set_cell(0, string("foo"));
+        db.set_cell(1, string("baa"));
+        db.set_cell(2, 1.1);
+        db.set_cell(3, new muser_cell(2.1));
         db.set_cell(4, new muser_cell(2.2));
         db.set_cell(5, new muser_cell(2.3));
         vector<muser_cell*> vals;
@@ -1278,6 +1305,14 @@ void gridmap_test_managed_block()
         vals.push_back(new muser_cell(2.5));
         vals.push_back(new muser_cell(2.6));
         db.set_cells(1, vals.begin(), vals.end());
+        assert(db.block_size() == 2);
+
+        assert(db.get_cell<string>(0) == "foo");
+        assert(db.get_cell<muser_cell*>(1)->value == 2.4);
+        assert(db.get_cell<muser_cell*>(2)->value == 2.5);
+        assert(db.get_cell<muser_cell*>(3)->value == 2.6);
+        assert(db.get_cell<muser_cell*>(4)->value == 2.2);
+        assert(db.get_cell<muser_cell*>(5)->value == 2.3);
     }
 }
 
