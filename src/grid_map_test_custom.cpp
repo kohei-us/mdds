@@ -339,9 +339,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (type)
         {
             case celltype_user_block:
-                return new user_cell_block(init_size);
+                return user_cell_block::create(init_size);
             case celltype_muser_block:
-                return new muser_cell_block(init_size);
+                return muser_cell_block::create(init_size);
             default:
                 ;
         }
@@ -354,9 +354,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
-                return new user_cell_block(user_cell_block::get(block));
+                return user_cell_block::clone(block);
             case celltype_muser_block:
-                return new muser_cell_block(muser_cell_block::get(block));
+                return muser_cell_block::clone(block);
             default:
                 ;
         }

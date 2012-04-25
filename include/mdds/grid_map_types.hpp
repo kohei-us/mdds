@@ -75,6 +75,16 @@ public:
 
         return static_cast<const _Self&>(block);
     }
+
+    static _Self* create(size_t init_size)
+    {
+        return new _Self(init_size);
+    }
+
+    static _Self* clone(const base_cell_block& blk)
+    {
+        return new _Self(get(blk));
+    }
 };
 
 /**

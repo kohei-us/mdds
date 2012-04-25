@@ -216,13 +216,13 @@ base_cell_block* cell_block_func_base::create_new_block(cell_t type, size_t init
     switch (type)
     {
         case celltype_numeric:
-            return new numeric_cell_block(init_size);
+            return numeric_cell_block::create(init_size);
         case celltype_string:
-            return new string_cell_block(init_size);
+            return string_cell_block::create(init_size);
         case celltype_index:
-            return new index_cell_block(init_size);
+            return index_cell_block::create(init_size);
         case celltype_boolean:
-            return new boolean_cell_block(init_size);
+            return boolean_cell_block::create(init_size);
         default:
             throw general_error("create_new_block: failed to create a new block of unknown type.");
     }
@@ -234,13 +234,13 @@ base_cell_block* cell_block_func_base::clone_block(const base_cell_block& block)
     switch (get_block_type(block))
     {
         case celltype_numeric:
-            return new numeric_cell_block(numeric_cell_block::get(block));
+            return numeric_cell_block::clone(block);
         case celltype_string:
-            return new string_cell_block(string_cell_block::get(block));
+            return string_cell_block::clone(block);
         case celltype_index:
-            return new index_cell_block(index_cell_block::get(block));
+            return index_cell_block::clone(block);
         case celltype_boolean:
-            return new boolean_cell_block(boolean_cell_block::get(block));
+            return boolean_cell_block::clone(block);
         default:
             throw general_error("clone_block: failed to clone a block of unknown type.");
     }
