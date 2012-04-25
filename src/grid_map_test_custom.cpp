@@ -103,31 +103,19 @@ public:
 
 namespace mdds { namespace gridmap {
 
+//----------------------------------------------------------------------------
+// Callbacks for user_cell* type.
+
 cell_t get_cell_type(const user_cell*)
 {
     return celltype_user_block;
 }
-
-cell_t get_cell_type(const muser_cell*)
-{
-    return celltype_muser_block;
-}
-
-//----------------------------------------------------------------------------
 
 void set_value(base_cell_block& block, size_t pos, user_cell* p)
 {
     user_cell_block& blk = user_cell_block::get(block);
     blk[pos] = p;
 }
-
-void set_value(base_cell_block& block, size_t pos, muser_cell* p)
-{
-    muser_cell_block& blk = muser_cell_block::get(block);
-    blk[pos] = p;
-}
-
-//----------------------------------------------------------------------------
 
 template<typename _Iter>
 void set_values(
@@ -136,6 +124,73 @@ void set_values(
     user_cell_block& d = user_cell_block::get(block);
     for (_Iter it = it_begin; it != it_end; ++it, ++pos)
         d[pos] = *it;
+}
+
+void get_value(const base_cell_block& block, size_t pos, user_cell*& val)
+{
+    const user_cell_block& blk = user_cell_block::get(block);
+    val = blk[pos];
+}
+
+void append_value(base_cell_block& block, user_cell* val)
+{
+    user_cell_block& blk = user_cell_block::get(block);
+    blk.push_back(val);
+}
+
+void prepend_value(base_cell_block& block, user_cell* val)
+{
+    user_cell_block& blk = user_cell_block::get(block);
+    blk.insert(blk.begin(), val);
+}
+
+template<typename _Iter>
+void append_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(block);
+    user_cell_block::iterator it = d.end();
+    d.insert(it, it_begin, it_end);
+}
+
+template<typename _Iter>
+void prepend_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(block);
+    d.insert(d.begin(), it_begin, it_end);
+}
+
+template<typename _Iter>
+void assign_values(mdds::gridmap::base_cell_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(dest);
+    d.assign(it_begin, it_end);
+}
+
+template<typename _Iter>
+void insert_values(
+    mdds::gridmap::base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block& d = user_cell_block::get(block);
+    d.insert(d.begin()+pos, it_begin, it_end);
+}
+
+void get_empty_value(user_cell*& val)
+{
+    val = NULL;
+}
+
+//----------------------------------------------------------------------------
+// Callbacks for muser_cell* type.
+
+cell_t get_cell_type(const muser_cell*)
+{
+    return celltype_muser_block;
+}
+
+void set_value(base_cell_block& block, size_t pos, muser_cell* p)
+{
+    muser_cell_block& blk = muser_cell_block::get(block);
+    blk[pos] = p;
 }
 
 template<typename _Iter>
@@ -147,26 +202,10 @@ void set_values(
         d[pos] = *it;
 }
 
-//----------------------------------------------------------------------------
-
-void get_value(const base_cell_block& block, size_t pos, user_cell*& val)
-{
-    const user_cell_block& blk = user_cell_block::get(block);
-    val = blk[pos];
-}
-
 void get_value(const base_cell_block& block, size_t pos, muser_cell*& val)
 {
     const muser_cell_block& blk = muser_cell_block::get(block);
     val = blk[pos];
-}
-
-//----------------------------------------------------------------------------
-
-void append_value(base_cell_block& block, user_cell* val)
-{
-    user_cell_block& blk = user_cell_block::get(block);
-    blk.push_back(val);
 }
 
 void append_value(base_cell_block& block, muser_cell* val)
@@ -175,28 +214,10 @@ void append_value(base_cell_block& block, muser_cell* val)
     blk.push_back(val);
 }
 
-//----------------------------------------------------------------------------
-
-void prepend_value(base_cell_block& block, user_cell* val)
-{
-    user_cell_block& blk = user_cell_block::get(block);
-    blk.insert(blk.begin(), val);
-}
-
 void prepend_value(base_cell_block& block, muser_cell* val)
 {
     muser_cell_block& blk = muser_cell_block::get(block);
     blk.insert(blk.begin(), val);
-}
-
-//----------------------------------------------------------------------------
-
-template<typename _Iter>
-void append_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
-{
-    user_cell_block& d = user_cell_block::get(block);
-    user_cell_block::iterator it = d.end();
-    d.insert(it, it_begin, it_end);
 }
 
 template<typename _Iter>
@@ -207,29 +228,11 @@ void append_values(mdds::gridmap::base_cell_block& block, muser_cell*, const _It
     d.insert(it, it_begin, it_end);
 }
 
-//----------------------------------------------------------------------------
-
-template<typename _Iter>
-void prepend_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
-{
-    user_cell_block& d = user_cell_block::get(block);
-    d.insert(d.begin(), it_begin, it_end);
-}
-
 template<typename _Iter>
 void prepend_values(mdds::gridmap::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block& d = muser_cell_block::get(block);
     d.insert(d.begin(), it_begin, it_end);
-}
-
-//----------------------------------------------------------------------------
-
-template<typename _Iter>
-void assign_values(mdds::gridmap::base_cell_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
-{
-    user_cell_block& d = user_cell_block::get(dest);
-    d.assign(it_begin, it_end);
 }
 
 template<typename _Iter>
@@ -239,29 +242,12 @@ void assign_values(mdds::gridmap::base_cell_block& dest, muser_cell*, const _Ite
     d.assign(it_begin, it_end);
 }
 
-//----------------------------------------------------------------------------
-
-template<typename _Iter>
-void insert_values(
-    mdds::gridmap::base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
-{
-    user_cell_block& d = user_cell_block::get(block);
-    d.insert(d.begin()+pos, it_begin, it_end);
-}
-
 template<typename _Iter>
 void insert_values(
     mdds::gridmap::base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block& d = muser_cell_block::get(block);
     d.insert(d.begin()+pos, it_begin, it_end);
-}
-
-//----------------------------------------------------------------------------
-
-void get_empty_value(user_cell*& val)
-{
-    val = NULL;
 }
 
 void get_empty_value(muser_cell*& val)
