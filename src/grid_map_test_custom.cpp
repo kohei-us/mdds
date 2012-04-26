@@ -526,13 +526,7 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
                 // Do nothing.  The client code manages the life cycle of these cells.
             break;
             case celltype_muser_block:
-            {
-                // The block manages the life cycle of stored instances.
-                muser_cell_block& blk = muser_cell_block::get(block);
-                muser_cell_block::iterator it = blk.begin() + pos;
-                muser_cell_block::iterator it_end = it + len;
-                std::for_each(it, it_end, default_deleter<muser_cell>());
-            }
+                muser_cell_block::overwrite_cells(block, pos, len);
             break;
             default:
                 cell_block_func_base::overwrite_cells(block, pos, len);

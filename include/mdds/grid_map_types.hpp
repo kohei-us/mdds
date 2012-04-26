@@ -178,6 +178,11 @@ struct default_cell_block : public cell_block<default_cell_block<_TypeId,_Data>,
 
     default_cell_block() : base_type() {}
     default_cell_block(size_t n) : base_type(n) {}
+
+    static void overwrite_cells(base_cell_block&, size_t, size_t)
+    {
+        // Do nothing.
+    }
 };
 
 /**
@@ -193,6 +198,7 @@ struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>,
     using base_type::end;
     using base_type::reserve;
     using base_type::push_back;
+    using base_type::get;
 
     managed_cell_block() : base_type() {}
     managed_cell_block(size_t n) : base_type(n) {}
@@ -207,6 +213,14 @@ struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>,
     ~managed_cell_block()
     {
         std::for_each(begin(), end(), default_deleter<_Data>());
+    }
+
+    static void overwrite_cells(base_cell_block& block, size_t pos, size_t len)
+    {
+        managed_cell_block& blk = get(block);
+        typename managed_cell_block::iterator it = blk.begin() + pos;
+        typename managed_cell_block::iterator it_end = it + len;
+        std::for_each(it, it_end, default_deleter<_Data>());
     }
 };
 
