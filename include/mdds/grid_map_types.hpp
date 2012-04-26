@@ -55,6 +55,14 @@ protected:
 template<typename _Self, cell_t _TypeId, typename _Data>
 class cell_block : public base_cell_block, public std::vector<_Data>
 {
+    struct print_block_array
+    {
+        void operator() (const _Data& val) const
+        {
+            std::cout << val << " ";
+        }
+    };
+
 protected:
     cell_block() : base_cell_block(_TypeId), std::vector<_Data>() {}
     cell_block(size_t n) : base_cell_block(_TypeId), std::vector<_Data>(n) {}
@@ -76,14 +84,43 @@ public:
         return static_cast<const _Self&>(block);
     }
 
-    static _Self* create(size_t init_size)
+    static _Self* create_block(size_t init_size)
     {
         return new _Self(init_size);
     }
 
-    static _Self* clone(const base_cell_block& blk)
+    static _Self* clone_block(const base_cell_block& blk)
     {
         return new _Self(get(blk));
+    }
+
+    static void delete_block(const base_cell_block* p)
+    {
+        delete static_cast<const _Self*>(p);
+    }
+
+    static void resize_block(base_cell_block& blk, size_t new_size)
+    {
+        static_cast<_Self&>(blk).resize(new_size);
+    }
+
+    static void print_block(const base_cell_block& blk)
+    {
+        const _Self& blk2 = get(blk);
+        std::for_each(blk2.begin(), blk2.end(), print_block_array());
+        std::cout << std::endl;
+    }
+
+    static void erase_block(base_cell_block& blk, size_t pos)
+    {
+        _Self& blk2 = get(blk);
+        blk2.erase(blk2.begin()+pos);
+    }
+
+    static void erase_block(base_cell_block& blk, size_t pos, size_t size)
+    {
+        _Self& blk2 = get(blk);
+        blk2.erase(blk2.begin()+pos, blk2.begin()+pos+size);
     }
 };
 

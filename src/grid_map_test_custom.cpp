@@ -339,9 +339,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (type)
         {
             case celltype_user_block:
-                return user_cell_block::create(init_size);
+                return user_cell_block::create_block(init_size);
             case celltype_muser_block:
-                return muser_cell_block::create(init_size);
+                return muser_cell_block::create_block(init_size);
             default:
                 ;
         }
@@ -354,9 +354,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
-                return user_cell_block::clone(block);
+                return user_cell_block::clone_block(block);
             case celltype_muser_block:
-                return muser_cell_block::clone(block);
+                return muser_cell_block::clone_block(block);
             default:
                 ;
         }
@@ -372,10 +372,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(*p))
         {
             case celltype_user_block:
-                delete static_cast<user_cell_block*>(p);
+                user_cell_block::delete_block(p);
             break;
             case celltype_muser_block:
-                delete static_cast<muser_cell_block*>(p);
+                muser_cell_block::delete_block(p);
             break;
             default:
                 cell_block_func_base::delete_block(p);
@@ -387,10 +387,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
-                static_cast<user_cell_block&>(block).resize(new_size);
+                user_cell_block::resize_block(block, new_size);
             break;
             case celltype_muser_block:
-                static_cast<muser_cell_block&>(block).resize(new_size);
+                muser_cell_block::resize_block(block, new_size);
             break;
             default:
                 cell_block_func_base::resize_block(block, new_size);
@@ -402,20 +402,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
-            {
-                const user_cell_block& blk = user_cell_block::get(block);
-                for_each(blk.begin(), blk.end(),
-                         mdds::gridmap::print_block_array<user_cell*>());
-                cout << endl;
-            }
+                user_cell_block::print_block(block);
             break;
             case celltype_muser_block:
-            {
-                const muser_cell_block& blk = muser_cell_block::get(block);
-                for_each(blk.begin(), blk.end(),
-                         mdds::gridmap::print_block_array<muser_cell*>());
-                cout << endl;
-            }
+                muser_cell_block::print_block(block);
             break;
             default:
                 cell_block_func_base::print_block(block);
@@ -427,16 +417,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
-            {
-                user_cell_block& blk = user_cell_block::get(block);
-                blk.erase(blk.begin()+pos);
-            }
+                user_cell_block::erase_block(block, pos);
             break;
             case celltype_muser_block:
-            {
-                muser_cell_block& blk = muser_cell_block::get(block);
-                blk.erase(blk.begin()+pos);
-            }
+                muser_cell_block::erase_block(block, pos);
             break;
             default:
                 cell_block_func_base::erase(block, pos);
@@ -448,16 +432,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(block))
         {
             case celltype_user_block:
-            {
-                user_cell_block& blk = user_cell_block::get(block);
-                blk.erase(blk.begin()+pos, blk.begin()+pos+size);
-            }
+                user_cell_block::erase_block(block, pos, size);
             break;
             case celltype_muser_block:
-            {
-                muser_cell_block& blk = muser_cell_block::get(block);
-                blk.erase(blk.begin()+pos, blk.begin()+pos+size);
-            }
+                muser_cell_block::erase_block(block, pos, size);
             break;
             default:
                 cell_block_func_base::erase(block, pos, size);
