@@ -424,32 +424,16 @@ void cell_block_func_base::append_values_from_block(base_cell_block& dest, const
     switch (get_block_type(dest))
     {
         case celltype_numeric:
-        {
-            numeric_cell_block& d = numeric_cell_block::get(dest);
-            const numeric_cell_block& s = numeric_cell_block::get(src);
-            d.insert(d.end(), s.begin(), s.end());
-        }
+            numeric_cell_block::append_values_from_block(dest, src);
         break;
         case celltype_string:
-        {
-            string_cell_block& d = string_cell_block::get(dest);
-            const string_cell_block& s = string_cell_block::get(src);
-            d.insert(d.end(), s.begin(), s.end());
-        }
+            string_cell_block::append_values_from_block(dest, src);
         break;
         case celltype_index:
-        {
-            index_cell_block& d = index_cell_block::get(dest);
-            const index_cell_block& s = index_cell_block::get(src);
-            d.insert(d.end(), s.begin(), s.end());
-        }
+            index_cell_block::append_values_from_block(dest, src);
         break;
         case celltype_boolean:
-        {
-            boolean_cell_block& d = boolean_cell_block::get(dest);
-            const boolean_cell_block& s = boolean_cell_block::get(src);
-            d.insert(d.end(), s.begin(), s.end());
-        }
+            boolean_cell_block::append_values_from_block(dest, src);
         break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");
@@ -462,52 +446,16 @@ void cell_block_func_base::append_values_from_block(
     switch (get_block_type(dest))
     {
         case celltype_numeric:
-        {
-            numeric_cell_block& d = numeric_cell_block::get(dest);
-            const numeric_cell_block& s = numeric_cell_block::get(src);
-            numeric_cell_block::const_iterator it = s.begin();
-            std::advance(it, begin_pos);
-            numeric_cell_block::const_iterator it_end = it;
-            std::advance(it_end, len);
-            d.reserve(d.size() + len);
-            std::copy(it, it_end, std::back_inserter(d));
-        }
+            numeric_cell_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case celltype_string:
-        {
-            string_cell_block& d = string_cell_block::get(dest);
-            const string_cell_block& s = string_cell_block::get(src);
-            string_cell_block::const_iterator it = s.begin();
-            std::advance(it, begin_pos);
-            string_cell_block::const_iterator it_end = it;
-            std::advance(it_end, len);
-            d.reserve(d.size() + len);
-            std::copy(it, it_end, std::back_inserter(d));
-        }
+            string_cell_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case celltype_index:
-        {
-            index_cell_block& d = index_cell_block::get(dest);
-            const index_cell_block& s = index_cell_block::get(src);
-            index_cell_block::const_iterator it = s.begin();
-            std::advance(it, begin_pos);
-            index_cell_block::const_iterator it_end = it;
-            std::advance(it_end, len);
-            d.reserve(d.size() + len);
-            std::copy(it, it_end, std::back_inserter(d));
-        }
+            index_cell_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case celltype_boolean:
-        {
-            boolean_cell_block& d = boolean_cell_block::get(dest);
-            const boolean_cell_block& s = boolean_cell_block::get(src);
-            boolean_cell_block::const_iterator it = s.begin();
-            std::advance(it, begin_pos);
-            boolean_cell_block::const_iterator it_end = it;
-            std::advance(it_end, len);
-            d.reserve(d.size() + len);
-            std::copy(it, it_end, std::back_inserter(d));
-        }
+            boolean_cell_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");
@@ -552,48 +500,16 @@ void cell_block_func_base::assign_values_from_block(
     switch (get_block_type(dest))
     {
         case celltype_numeric:
-        {
-            numeric_cell_block& d = numeric_cell_block::get(dest);
-            const numeric_cell_block& s = numeric_cell_block::get(src);
-            numeric_cell_block::const_iterator it = s.begin();
-            std::advance(it, begin_pos);
-            numeric_cell_block::const_iterator it_end = it;
-            std::advance(it_end, len);
-            d.assign(it, it_end);
-        }
+            numeric_cell_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case celltype_string:
-        {
-            string_cell_block& d = string_cell_block::get(dest);
-            const string_cell_block& s = string_cell_block::get(src);
-            string_cell_block::const_iterator it = s.begin();
-            std::advance(it, begin_pos);
-            string_cell_block::const_iterator it_end = it;
-            std::advance(it_end, len);
-            d.assign(it, it_end);
-        }
+            string_cell_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case celltype_index:
-        {
-            index_cell_block& d = index_cell_block::get(dest);
-            const index_cell_block& s = index_cell_block::get(src);
-            index_cell_block::const_iterator it = s.begin();
-            std::advance(it, begin_pos);
-            index_cell_block::const_iterator it_end = it;
-            std::advance(it_end, len);
-            d.assign(it, it_end);
-        }
+            index_cell_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case celltype_boolean:
-        {
-            boolean_cell_block& d = boolean_cell_block::get(dest);
-            const boolean_cell_block& s = boolean_cell_block::get(src);
-            boolean_cell_block::const_iterator it = s.begin();
-            std::advance(it, begin_pos);
-            boolean_cell_block::const_iterator it_end = it;
-            std::advance(it_end, len);
-            d.assign(it, it_end);
-        }
+            boolean_cell_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         default:
             throw general_error("assign_values: failed to assign values to a block of unknown type.");

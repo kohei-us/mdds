@@ -122,6 +122,38 @@ public:
         _Self& blk2 = get(blk);
         blk2.erase(blk2.begin()+pos, blk2.begin()+pos+size);
     }
+
+    static void append_values_from_block(base_cell_block& dest, const base_cell_block& src)
+    {
+        _Self& d = get(dest);
+        const _Self& s = get(src);
+        d.insert(d.end(), s.begin(), s.end());
+    }
+
+    static void append_values_from_block(
+        base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len)
+    {
+        _Self& d = get(dest);
+        const _Self& s = get(src);
+        typename _Self::const_iterator it = s.begin();
+        std::advance(it, begin_pos);
+        typename _Self::const_iterator it_end = it;
+        std::advance(it_end, len);
+        d.reserve(d.size() + len);
+        std::copy(it, it_end, std::back_inserter(d));
+    }
+
+    static void assign_values_from_block(
+        base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len)
+    {
+        _Self& d = get(dest);
+        const _Self& s = get(src);
+        typename _Self::const_iterator it = s.begin();
+        std::advance(it, begin_pos);
+        typename _Self::const_iterator it_end = it;
+        std::advance(it_end, len);
+        d.assign(it, it_end);
+    }
 };
 
 /**

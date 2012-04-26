@@ -448,18 +448,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(dest))
         {
             case celltype_user_block:
-            {
-                user_cell_block& d = user_cell_block::get(dest);
-                const user_cell_block& s = user_cell_block::get(src);
-                d.insert(d.end(), s.begin(), s.end());
-            }
+                user_cell_block::append_values_from_block(dest, src);
             break;
             case celltype_muser_block:
-            {
-                muser_cell_block& d = muser_cell_block::get(dest);
-                const muser_cell_block& s = muser_cell_block::get(src);
-                d.insert(d.end(), s.begin(), s.end());
-            }
+                muser_cell_block::append_values_from_block(dest, src);
             break;
             default:
                 cell_block_func_base::append_values_from_block(dest, src);
@@ -473,28 +465,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(dest))
         {
             case celltype_user_block:
-            {
-                user_cell_block& d = user_cell_block::get(dest);
-                const user_cell_block& s = user_cell_block::get(src);
-                user_cell_block::const_iterator it = s.begin();
-                std::advance(it, begin_pos);
-                user_cell_block::const_iterator it_end = it;
-                std::advance(it_end, len);
-                d.reserve(d.size() + len);
-                std::copy(it, it_end, std::back_inserter(d));
-            }
+                user_cell_block::append_values_from_block(dest, src, begin_pos, len);
             break;
             case celltype_muser_block:
-            {
-                muser_cell_block& d = muser_cell_block::get(dest);
-                const muser_cell_block& s = muser_cell_block::get(src);
-                muser_cell_block::const_iterator it = s.begin();
-                std::advance(it, begin_pos);
-                muser_cell_block::const_iterator it_end = it;
-                std::advance(it_end, len);
-                d.reserve(d.size() + len);
-                std::copy(it, it_end, std::back_inserter(d));
-            }
+                muser_cell_block::append_values_from_block(dest, src, begin_pos, len);
             break;
             default:
                 cell_block_func_base::append_values_from_block(dest, src, begin_pos, len);
@@ -508,26 +482,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         switch (gridmap::get_block_type(dest))
         {
             case celltype_user_block:
-            {
-                user_cell_block& d = user_cell_block::get(dest);
-                const user_cell_block& s = user_cell_block::get(src);
-                user_cell_block::const_iterator it = s.begin();
-                std::advance(it, begin_pos);
-                user_cell_block::const_iterator it_end = it;
-                std::advance(it_end, len);
-                d.assign(it, it_end);
-            }
+                user_cell_block::assign_values_from_block(dest, src, begin_pos, len);
             break;
             case celltype_muser_block:
-            {
-                muser_cell_block& d = muser_cell_block::get(dest);
-                const muser_cell_block& s = muser_cell_block::get(src);
-                muser_cell_block::const_iterator it = s.begin();
-                std::advance(it, begin_pos);
-                muser_cell_block::const_iterator it_end = it;
-                std::advance(it_end, len);
-                d.assign(it, it_end);
-            }
+                muser_cell_block::assign_values_from_block(dest, src, begin_pos, len);
             break;
             default:
                 cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
