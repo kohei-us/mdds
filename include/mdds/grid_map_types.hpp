@@ -84,6 +84,27 @@ public:
         return static_cast<const _Self&>(block);
     }
 
+    static void set_value(base_cell_block& blk, size_t pos, const _Data& val)
+    {
+        get(blk)[pos] = val;
+    }
+
+    static void get_value(const base_cell_block& blk, size_t pos, _Data& val)
+    {
+        val = get(blk)[pos];
+    }
+
+    static void append_value(base_cell_block& blk, const _Data& val)
+    {
+        get(blk).push_back(val);
+    }
+
+    static void prepend_value(base_cell_block& blk, const _Data& val)
+    {
+        _Self& blk2 = get(blk);
+        blk2.insert(blk2.begin(), val);
+    }
+
     static _Self* create_block(size_t init_size)
     {
         return new _Self(init_size);

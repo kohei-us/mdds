@@ -61,98 +61,82 @@ cell_t get_cell_type(bool)
 
 void set_value(base_cell_block& block, size_t pos, double val)
 {
-    numeric_cell_block& blk = numeric_cell_block::get(block);
-    blk[pos] = val;
+    numeric_cell_block::set_value(block, pos, val);
 }
 
 void set_value(base_cell_block& block, size_t pos, const std::string& val)
 {
-    string_cell_block& blk = string_cell_block::get(block);
-    blk[pos] = val;
+    string_cell_block::set_value(block, pos, val);
 }
 
 void set_value(base_cell_block& block, size_t pos, size_t val)
 {
-    index_cell_block& blk = index_cell_block::get(block);
-    blk[pos] = val;
+    index_cell_block::set_value(block, pos, val);
 }
 
 void set_value(base_cell_block& block, size_t pos, bool val)
 {
-    boolean_cell_block& blk = boolean_cell_block::get(block);
-    blk[pos] = val;
+    boolean_cell_block::set_value(block, pos, val);
 }
 
 void get_value(const base_cell_block& block, size_t pos, double& val)
 {
-    const numeric_cell_block& blk = numeric_cell_block::get(block);
-    val = blk[pos];
+    numeric_cell_block::get_value(block, pos, val);
 }
 
 void get_value(const base_cell_block& block, size_t pos, std::string& val)
 {
-    const string_cell_block& blk = string_cell_block::get(block);
-    val = blk[pos];
+    string_cell_block::get_value(block, pos, val);
 }
 
 void get_value(const base_cell_block& block, size_t pos, size_t& val)
 {
-    const index_cell_block& blk = index_cell_block::get(block);
-    val = blk[pos];
+    index_cell_block::get_value(block, pos, val);
 }
 
 void get_value(const base_cell_block& block, size_t pos, bool& val)
 {
-    const boolean_cell_block& blk = boolean_cell_block::get(block);
-    val = blk[pos];
+    boolean_cell_block::get_value(block, pos, val);
 }
 
 void append_value(base_cell_block& block, double val)
 {
-    numeric_cell_block& blk = numeric_cell_block::get(block);
-    blk.push_back(val);
+    numeric_cell_block::append_value(block, val);
 }
 
 void append_value(base_cell_block& block, const std::string& val)
 {
-    string_cell_block& blk = string_cell_block::get(block);
-    blk.push_back(val);
+    string_cell_block::append_value(block, val);
 }
 
 void append_value(base_cell_block& block, size_t val)
 {
-    index_cell_block& blk = index_cell_block::get(block);
-    blk.push_back(val);
+    index_cell_block::append_value(block, val);
 }
 
 void append_value(base_cell_block& block, bool val)
 {
-    boolean_cell_block& blk = boolean_cell_block::get(block);
-    blk.push_back(val);
+    boolean_cell_block::append_value(block, val);
 }
 
 void prepend_value(base_cell_block& block, double val)
 {
-    numeric_cell_block& blk = numeric_cell_block::get(block);
-    blk.insert(blk.begin(), val);
+    numeric_cell_block::prepend_value(block, val);
 }
 
 void prepend_value(base_cell_block& block, const std::string& val)
 {
-    string_cell_block& blk = string_cell_block::get(block);
-    blk.insert(blk.begin(), val);
+    string_cell_block::prepend_value(block, val);
 }
 
 void prepend_value(base_cell_block& block, size_t val)
 {
-    index_cell_block& blk = index_cell_block::get(block);
-    blk.insert(blk.begin(), val);
+    index_cell_block::prepend_value(block, val);
 }
 
 void prepend_value(base_cell_block& block, bool val)
 {
-    boolean_cell_block& blk = boolean_cell_block::get(block);
-    blk.insert(blk.begin(), val);
+    boolean_cell_block::prepend_value(block, val);
 }
 
 void get_empty_value(double& val)

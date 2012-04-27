@@ -113,8 +113,7 @@ cell_t get_cell_type(const user_cell*)
 
 void set_value(base_cell_block& block, size_t pos, user_cell* p)
 {
-    user_cell_block& blk = user_cell_block::get(block);
-    blk[pos] = p;
+    user_cell_block::set_value(block, pos, p);
 }
 
 template<typename _Iter>
@@ -128,20 +127,17 @@ void set_values(
 
 void get_value(const base_cell_block& block, size_t pos, user_cell*& val)
 {
-    const user_cell_block& blk = user_cell_block::get(block);
-    val = blk[pos];
+    user_cell_block::get_value(block, pos, val);
 }
 
 void append_value(base_cell_block& block, user_cell* val)
 {
-    user_cell_block& blk = user_cell_block::get(block);
-    blk.push_back(val);
+    user_cell_block::append_value(block, val);
 }
 
 void prepend_value(base_cell_block& block, user_cell* val)
 {
-    user_cell_block& blk = user_cell_block::get(block);
-    blk.insert(blk.begin(), val);
+    user_cell_block::prepend_value(block, val);
 }
 
 template<typename _Iter>
@@ -189,8 +185,7 @@ cell_t get_cell_type(const muser_cell*)
 
 void set_value(base_cell_block& block, size_t pos, muser_cell* p)
 {
-    muser_cell_block& blk = muser_cell_block::get(block);
-    blk[pos] = p;
+    muser_cell_block::set_value(block, pos, p);
 }
 
 template<typename _Iter>
@@ -204,20 +199,17 @@ void set_values(
 
 void get_value(const base_cell_block& block, size_t pos, muser_cell*& val)
 {
-    const muser_cell_block& blk = muser_cell_block::get(block);
-    val = blk[pos];
+    muser_cell_block::get_value(block, pos, val);
 }
 
 void append_value(base_cell_block& block, muser_cell* val)
 {
-    muser_cell_block& blk = muser_cell_block::get(block);
-    blk.push_back(val);
+    muser_cell_block::append_value(block, val);
 }
 
 void prepend_value(base_cell_block& block, muser_cell* val)
 {
-    muser_cell_block& blk = muser_cell_block::get(block);
-    blk.insert(blk.begin(), val);
+    muser_cell_block::prepend_value(block, val);
 }
 
 template<typename _Iter>
