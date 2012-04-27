@@ -175,6 +175,15 @@ public:
         std::advance(it_end, len);
         d.assign(it, it_end);
     }
+
+    template<typename _Iter>
+    static void set_values(
+        base_cell_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
+    {
+        _Self& d = get(block);
+        for (_Iter it = it_begin; it != it_end; ++it, ++pos)
+            d[pos] = *it;
+    }
 };
 
 /**

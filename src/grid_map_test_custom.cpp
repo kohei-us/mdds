@@ -120,9 +120,7 @@ template<typename _Iter>
 void set_values(
     base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(block);
-    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
-        d[pos] = *it;
+    user_cell_block::set_values(block, pos, it_begin, it_end);
 }
 
 void get_value(const base_cell_block& block, size_t pos, user_cell*& val)
@@ -192,9 +190,7 @@ template<typename _Iter>
 void set_values(
     base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    muser_cell_block& d = muser_cell_block::get(block);
-    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
-        d[pos] = *it;
+    muser_cell_block::set_values(block, pos, it_begin, it_end);
 }
 
 void get_value(const base_cell_block& block, size_t pos, muser_cell*& val)

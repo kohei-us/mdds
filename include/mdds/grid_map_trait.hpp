@@ -343,36 +343,28 @@ template<typename _Iter>
 void set_values(
     base_cell_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& d = numeric_cell_block::get(block);
-    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
-        d[pos] = *it;
+    numeric_cell_block::set_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void set_values(
     base_cell_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& d = string_cell_block::get(block);
-    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
-        d[pos] = *it;
+    string_cell_block::set_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void set_values(
     base_cell_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& d = index_cell_block::get(block);
-    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
-        d[pos] = *it;
+    index_cell_block::set_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void set_values(
     base_cell_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& d = boolean_cell_block::get(block);
-    for (_Iter it = it_begin; it != it_end; ++it, ++pos)
-        d[pos] = *it;
+    boolean_cell_block::set_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
