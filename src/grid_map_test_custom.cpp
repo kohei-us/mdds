@@ -141,31 +141,26 @@ void prepend_value(base_cell_block& block, user_cell* val)
 template<typename _Iter>
 void append_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(block);
-    user_cell_block::iterator it = d.end();
-    d.insert(it, it_begin, it_end);
+    user_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void prepend_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(block);
-    d.insert(d.begin(), it_begin, it_end);
+    user_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void assign_values(mdds::gridmap::base_cell_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(dest);
-    d.assign(it_begin, it_end);
+    user_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
     mdds::gridmap::base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    user_cell_block& d = user_cell_block::get(block);
-    d.insert(d.begin()+pos, it_begin, it_end);
+    user_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
 void get_empty_value(user_cell*& val)
@@ -211,31 +206,26 @@ void prepend_value(base_cell_block& block, muser_cell* val)
 template<typename _Iter>
 void append_values(mdds::gridmap::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    muser_cell_block& d = muser_cell_block::get(block);
-    muser_cell_block::iterator it = d.end();
-    d.insert(it, it_begin, it_end);
+    muser_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void prepend_values(mdds::gridmap::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    muser_cell_block& d = muser_cell_block::get(block);
-    d.insert(d.begin(), it_begin, it_end);
+    muser_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void assign_values(mdds::gridmap::base_cell_block& dest, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    muser_cell_block& d = muser_cell_block::get(dest);
-    d.assign(it_begin, it_end);
+    muser_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
     mdds::gridmap::base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
-    muser_cell_block& d = muser_cell_block::get(block);
-    d.insert(d.begin()+pos, it_begin, it_end);
+    muser_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
 void get_empty_value(muser_cell*& val)

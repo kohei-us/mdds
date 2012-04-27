@@ -184,6 +184,36 @@ public:
         for (_Iter it = it_begin; it != it_end; ++it, ++pos)
             d[pos] = *it;
     }
+
+    template<typename _Iter>
+    static void append_values(base_cell_block& block, const _Iter& it_begin, const _Iter& it_end)
+    {
+        _Self& d = get(block);
+        typename _Self::iterator it = d.end();
+        d.insert(it, it_begin, it_end);
+    }
+
+    template<typename _Iter>
+    static void prepend_values(base_cell_block& block, const _Iter& it_begin, const _Iter& it_end)
+    {
+        _Self& d = get(block);
+        d.insert(d.begin(), it_begin, it_end);
+    }
+
+    template<typename _Iter>
+    static void assign_values(base_cell_block& dest, const _Iter& it_begin, const _Iter& it_end)
+    {
+        _Self& d = get(dest);
+        d.assign(it_begin, it_end);
+    }
+
+    template<typename _Iter>
+    static void insert_values(
+        base_cell_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
+    {
+        _Self& blk = get(block);
+        blk.insert(blk.begin()+pos, it_begin, it_end);
+    }
 };
 
 /**

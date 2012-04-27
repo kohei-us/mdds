@@ -370,29 +370,25 @@ void set_values(
 template<typename _Iter>
 void prepend_values(base_cell_block& block, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& d = numeric_cell_block::get(block);
-    d.insert(d.begin(), it_begin, it_end);
+    numeric_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void prepend_values(base_cell_block& block, const std::string&, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& d = string_cell_block::get(block);
-    d.insert(d.begin(), it_begin, it_end);
+    string_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void prepend_values(base_cell_block& block, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& d = index_cell_block::get(block);
-    d.insert(d.begin(), it_begin, it_end);
+    index_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void prepend_values(base_cell_block& block, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& d = boolean_cell_block::get(block);
-    d.insert(d.begin(), it_begin, it_end);
+    index_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 void cell_block_func_base::append_values_from_block(base_cell_block& dest, const base_cell_block& src)
@@ -441,33 +437,25 @@ void cell_block_func_base::append_values_from_block(
 template<typename _Iter>
 void append_values(base_cell_block& block, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& d = numeric_cell_block::get(block);
-    numeric_cell_block::iterator it = d.end();
-    d.insert(it, it_begin, it_end);
+    numeric_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void append_values(base_cell_block& block, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& d = string_cell_block::get(block);
-    string_cell_block::iterator it = d.end();
-    d.insert(it, it_begin, it_end);
+    string_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void append_values(base_cell_block& block, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& d = index_cell_block::get(block);
-    index_cell_block::iterator it = d.end();
-    d.insert(it, it_begin, it_end);
+    index_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void append_values(base_cell_block& block, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& d = boolean_cell_block::get(block);
-    boolean_cell_block::iterator it = d.end();
-    d.insert(it, it_begin, it_end);
+    boolean_cell_block::append_values(block, it_begin, it_end);
 }
 
 void cell_block_func_base::assign_values_from_block(
@@ -495,61 +483,53 @@ void cell_block_func_base::assign_values_from_block(
 template<typename _Iter>
 void assign_values(base_cell_block& dest, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& d = numeric_cell_block::get(dest);
-    d.assign(it_begin, it_end);
+    numeric_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void assign_values(base_cell_block& dest, const std::string&, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& d = string_cell_block::get(dest);
-    d.assign(it_begin, it_end);
+    string_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void assign_values(base_cell_block& dest, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& d = index_cell_block::get(dest);
-    d.assign(it_begin, it_end);
+    index_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void assign_values(base_cell_block& dest, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& d = boolean_cell_block::get(dest);
-    d.assign(it_begin, it_end);
+    boolean_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
     base_cell_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    numeric_cell_block& blk = numeric_cell_block::get(block);
-    blk.insert(blk.begin()+pos, it_begin, it_end);
+    numeric_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
     base_cell_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
-    string_cell_block& blk = string_cell_block::get(block);
-    blk.insert(blk.begin()+pos, it_begin, it_end);
+    string_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
     base_cell_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    index_cell_block& blk = index_cell_block::get(block);
-    blk.insert(blk.begin()+pos, it_begin, it_end);
+    index_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
     base_cell_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    boolean_cell_block& blk = boolean_cell_block::get(block);
-    blk.insert(blk.begin()+pos, it_begin, it_end);
+    boolean_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
 bool cell_block_func_base::equal_block(const base_cell_block& left, const base_cell_block& right)
