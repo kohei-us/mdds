@@ -28,6 +28,8 @@
 #ifndef __MDDS_GRID_MAP_TYPES_HPP__
 #define __MDDS_GRID_MAP_TYPES_HPP__
 
+#include "mdds/default_deleter.hpp"
+
 #include <vector>
 
 namespace mdds { namespace gridmap {
@@ -282,7 +284,7 @@ struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>,
 
     ~managed_cell_block()
     {
-        std::for_each(m_array.begin(), m_array.end(), default_deleter<_Data>());
+        std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
     }
 
     static void overwrite_cells(base_cell_block& block, size_t pos, size_t len)
@@ -290,7 +292,7 @@ struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>,
         managed_cell_block& blk = get(block);
         typename managed_cell_block::store_type::iterator it = blk.m_array.begin() + pos;
         typename managed_cell_block::store_type::iterator it_end = it + len;
-        std::for_each(it, it_end, default_deleter<_Data>());
+        std::for_each(it, it_end, mdds::default_deleter<_Data>());
     }
 };
 
