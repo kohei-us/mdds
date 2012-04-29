@@ -31,6 +31,7 @@
 #include "mdds/default_deleter.hpp"
 
 #include <vector>
+#include <boost/noncopyable.hpp>
 
 namespace mdds { namespace gridmap {
 
@@ -42,6 +43,15 @@ const cell_t celltype_index   = 2;
 const cell_t celltype_boolean = 3;
 
 const cell_t celltype_user_start = 50;
+
+/**
+ * Generic exception used for errors specific to cell block operations.
+ */
+class cell_block_error : public mdds::general_error
+{
+public:
+    cell_block_error(const std::string& msg) : mdds::general_error(msg) {}
+};
 
 struct base_cell_block;
 cell_t get_block_type(const base_cell_block&);
@@ -123,11 +133,6 @@ public:
     static _Self* create_block(size_t init_size)
     {
         return new _Self(init_size);
-    }
-
-    static _Self* clone_block(const base_cell_block& blk)
-    {
-        return new _Self(get(blk));
     }
 
     static void delete_block(const base_cell_block* p)
@@ -231,6 +236,38 @@ public:
     }
 };
 
+template<typename _Self, cell_t _TypeId, typename _Data>
+class copyable_cell_block : public cell_block<_Self, _TypeId, _Data>
+{
+    typedef cell_block<_Self,_TypeId,_Data> base_type;
+protected:
+    copyable_cell_block() : base_type() {}
+    copyable_cell_block(size_t n) : base_type(n) {}
+
+public:
+    using base_type::get;
+
+    static _Self* clone_block(const base_cell_block& blk)
+    {
+        return new _Self(get(blk));
+    }
+};
+
+template<typename _Self, cell_t _TypeId, typename _Data>
+class noncopyable_cell_block : public cell_block<_Self, _TypeId, _Data>, private boost::noncopyable
+{
+    typedef cell_block<_Self,_TypeId,_Data> base_type;
+protected:
+    noncopyable_cell_block() : base_type() {}
+    noncopyable_cell_block(size_t n) : base_type(n) {}
+
+public:
+    static _Self* clone_block(const base_cell_block& blk)
+    {
+        throw cell_block_error("attempted to clone a noncopyable cell block.");
+    }
+};
+
 /**
  * Get the numerical block type ID from a given cell block instance.
  *
@@ -247,9 +284,9 @@ inline cell_t get_block_type(const base_cell_block& blk)
  * Template for default, unmanaged cell block for use in grid_map.
  */
 template<cell_t _TypeId, typename _Data>
-struct default_cell_block : public cell_block<default_cell_block<_TypeId,_Data>, _TypeId, _Data>
+struct default_cell_block : public copyable_cell_block<default_cell_block<_TypeId,_Data>, _TypeId, _Data>
 {
-    typedef cell_block<default_cell_block, _TypeId, _Data> base_type;
+    typedef copyable_cell_block<default_cell_block, _TypeId, _Data> base_type;
 
     default_cell_block() : base_type() {}
     default_cell_block(size_t n) : base_type(n) {}
@@ -265,9 +302,9 @@ struct default_cell_block : public cell_block<default_cell_block<_TypeId,_Data>,
  * are managed by the block.
  */
 template<cell_t _TypeId, typename _Data>
-struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
+struct managed_cell_block : public copyable_cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
 {
-    typedef cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
+    typedef copyable_cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
 
     using base_type::get;
     using base_type::m_array;
@@ -292,6 +329,31 @@ struct managed_cell_block : public cell_block<managed_cell_block<_TypeId,_Data>,
         managed_cell_block& blk = get(block);
         typename managed_cell_block::store_type::iterator it = blk.m_array.begin() + pos;
         typename managed_cell_block::store_type::iterator it_end = it + len;
+        std::for_each(it, it_end, mdds::default_deleter<_Data>());
+    }
+};
+
+template<cell_t _TypeId, typename _Data>
+struct noncopyable_managed_cell_block : public noncopyable_cell_block<noncopyable_managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
+{
+    typedef noncopyable_cell_block<noncopyable_managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
+
+    using base_type::get;
+    using base_type::m_array;
+
+    noncopyable_managed_cell_block() : base_type() {}
+    noncopyable_managed_cell_block(size_t n) : base_type(n) {}
+
+    ~noncopyable_managed_cell_block()
+    {
+        std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
+    }
+
+    static void overwrite_cells(base_cell_block& block, size_t pos, size_t len)
+    {
+        noncopyable_managed_cell_block& blk = get(block);
+        typename noncopyable_managed_cell_block::store_type::iterator it = blk.m_array.begin() + pos;
+        typename noncopyable_managed_cell_block::store_type::iterator it_end = it + len;
         std::for_each(it, it_end, mdds::default_deleter<_Data>());
     }
 };
