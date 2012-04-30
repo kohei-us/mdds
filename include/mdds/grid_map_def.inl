@@ -28,14 +28,37 @@
 namespace mdds {
 
 template<typename _Trait>
-grid_map<_Trait>::grid_map()
+grid_map<_Trait>::grid_map() :
+    m_sheet_size(0), m_row_size(0), m_col_size(0) {}
+
+template<typename _Trait>
+grid_map<_Trait>::grid_map(size_type sheet_size, size_type row_size, size_type col_size) :
+    m_sheet_size(sheet_size), m_row_size(row_size), m_col_size(col_size)
 {
+    for (size_type i = 0; i < m_sheet_size; ++i)
+        m_sheets.push_back(new sheet_type(m_row_size, m_col_size));
 }
 
 template<typename _Trait>
 grid_map<_Trait>::~grid_map()
 {
     std::for_each(m_sheets.begin(), m_sheets.end(), default_deleter<sheet_type>());
+}
+
+template<typename _Trait>
+template<typename _T>
+void grid_map<_Trait>::set_cell(
+    sheet_key_type sheet, row_key_type row, col_key_type col, const _T& cell)
+{
+    m_sheets.at(sheet)->set_cell(row, col, cell);
+}
+
+template<typename _Trait>
+template<typename _T>
+_T grid_map<_Trait>::get_cell(
+    sheet_key_type sheet, row_key_type row, col_key_type col) const
+{
+    return m_sheets.at(sheet)->get_cell(row, col);
 }
 
 }

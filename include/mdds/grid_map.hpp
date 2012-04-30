@@ -47,13 +47,26 @@ public:
     typedef typename _Trait::row_key_type row_key_type;
     typedef typename _Trait::col_key_type col_key_type;
 
-    typedef __gridmap::sheet<_Trait> sheet_type;
+    typedef typename __gridmap::sheet<_Trait> sheet_type;
+    typedef typename sheet_type::column_type column_type;
+    typedef typename column_type::size_type size_type;
 
     grid_map();
+    grid_map(size_type sheet_size, size_type row_size, size_type col_size);
     ~grid_map();
+
+    template<typename _T>
+    void set_cell(sheet_key_type sheet, row_key_type row, col_key_type col, const _T& cell);
+
+    template<typename _T>
+    _T get_cell(sheet_key_type sheet, row_key_type row, col_key_type col) const;
 
 private:
     std::vector<sheet_type*> m_sheets;
+
+    size_type m_sheet_size;
+    size_type m_row_size;
+    size_type m_col_size;
 };
 
 }
