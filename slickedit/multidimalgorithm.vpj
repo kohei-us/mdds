@@ -243,6 +243,7 @@
 				<F N="../include/mdds/grid_map_column_def.inl"/>
 				<F N="../include/mdds/grid_map_def.inl"/>
 				<F N="../include/mdds/grid_map_sheet.hpp"/>
+				<F N="../include/mdds/grid_map_sheet_def.inl"/>
 				<F N="../include/mdds/grid_map_trait.hpp"/>
 				<F N="../include/mdds/grid_map_types.hpp"/>
 				<F N="../include/mdds/mixed_type_matrix.hpp"/>

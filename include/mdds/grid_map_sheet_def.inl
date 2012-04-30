@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011-2012 Kohei Yoshida
+ * Copyright (c) 2012 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,45 +25,37 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_GRID_MAP_SHEET_HPP__
-#define __MDDS_GRID_MAP_SHEET_HPP__
-
-#include "mdds/grid_map_column.hpp"
-
-#include <vector>
-#include <algorithm>
-
 namespace mdds { namespace __gridmap {
 
 template<typename _Trait>
-class sheet
+sheet<_Trait>::sheet() : m_row_size(0), m_col_size(0) {}
+
+template<typename _Trait>
+sheet<_Trait>::sheet(size_type row_size, size_type col_size) :
+    m_row_size(row_size), m_col_size(col_size)
 {
-public:
-    typedef typename _Trait::row_key_type row_key_type;
-    typedef typename _Trait::col_key_type col_key_type;
+    for (size_type i = 0; i < m_col_size; ++i)
+        m_columns.push_back(new column_type(m_row_size));
+}
 
-    typedef column<_Trait> column_type;
-    typedef typename column_type::size_type size_type;
+template<typename _Trait>
+sheet<_Trait>::~sheet()
+{
+    std::for_each(m_columns.begin(), m_columns.end(), default_deleter<column_type>());
+}
 
-    sheet();
-    sheet(size_type row_size, size_type col_size);
-    ~sheet();
+template<typename _Trait>
+template<typename _T>
+void sheet<_Trait>::set_cell(row_key_type row, col_key_type col, const _T& cell)
+{
+    m_columns.at(col)->set_cell(row, cell);
+}
 
-    template<typename _T>
-    void set_cell(row_key_type row, col_key_type col, const _T& cell);
-
-    template<typename _T>
-    _T get_cell(row_key_type row, col_key_type col) const;
-
-private:
-    std::vector<column_type*> m_columns;
-
-    size_type m_row_size;
-    size_type m_col_size;
-};
+template<typename _Trait>
+template<typename _T>
+_T sheet<_Trait>::get_cell(row_key_type row, col_key_type col) const
+{
+    return m_columns.at(col)->get_cell(row);
+}
 
 }}
-
-#include "grid_map_sheet_def.inl"
-
-#endif
