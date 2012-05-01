@@ -49,17 +49,8 @@ public:
     sheet(size_type row_size, size_type col_size);
     ~sheet();
 
-    template<typename _T>
-    void set_cell(col_key_type col, row_key_type row, const _T& cell);
-
-    template<typename _T>
-    _T get_cell(col_key_type col, row_key_type row) const;
-
-    mdds::gridmap::cell_t get_type(col_key_type col, row_key_type row) const;
-
-    bool is_empty(col_key_type col, row_key_type row) const;
-
-    void set_empty(col_key_type col, row_key_type start_row, row_key_type end_row);
+    column_type& get_column(col_key_type col);
+    const column_type& get_column(col_key_type col) const;
 
 private:
     std::vector<column_type*> m_columns;

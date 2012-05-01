@@ -45,35 +45,17 @@ sheet<_Trait>::~sheet()
 }
 
 template<typename _Trait>
-template<typename _T>
-void sheet<_Trait>::set_cell(col_key_type col, row_key_type row, const _T& cell)
+typename sheet<_Trait>::column_type&
+sheet<_Trait>::get_column(col_key_type col)
 {
-    m_columns.at(col)->set_cell(row, cell);
+    return *m_columns.at(col);
 }
 
 template<typename _Trait>
-template<typename _T>
-_T sheet<_Trait>::get_cell(col_key_type col, row_key_type row) const
+const typename sheet<_Trait>::column_type&
+sheet<_Trait>::get_column(col_key_type col) const
 {
-    return m_columns.at(col)->get_cell<_T>(row);
-}
-
-template<typename _Trait>
-mdds::gridmap::cell_t sheet<_Trait>::get_type(col_key_type col, row_key_type row) const
-{
-    return m_columns.at(col)->get_type(row);
-}
-
-template<typename _Trait>
-bool sheet<_Trait>::is_empty(col_key_type col, row_key_type row) const
-{
-    return m_columns.at(col)->is_empty(row);
-}
-
-template<typename _Trait>
-void sheet<_Trait>::set_empty(col_key_type col, row_key_type start_row, row_key_type end_row)
-{
-    return m_columns.at(col)->set_empty(start_row, end_row);
+    return *m_columns.at(col);
 }
 
 }}

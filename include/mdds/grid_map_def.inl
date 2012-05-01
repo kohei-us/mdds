@@ -46,40 +46,17 @@ grid_map<_Trait>::~grid_map()
 }
 
 template<typename _Trait>
-template<typename _T>
-void grid_map<_Trait>::set_cell(
-    sheet_key_type sheet, col_key_type col, row_key_type row, const _T& cell)
+typename grid_map<_Trait>::sheet_type&
+grid_map<_Trait>::get_sheet(sheet_key_type sheet)
 {
-    m_sheets.at(sheet)->set_cell(col, row, cell);
+    return *m_sheets.at(sheet);
 }
 
 template<typename _Trait>
-template<typename _T>
-_T grid_map<_Trait>::get_cell(
-    sheet_key_type sheet, col_key_type col, row_key_type row) const
+const typename grid_map<_Trait>::sheet_type&
+grid_map<_Trait>::get_sheet(sheet_key_type sheet) const
 {
-    return m_sheets.at(sheet)->get_cell<_T>(col, row);
-}
-
-template<typename _Trait>
-mdds::gridmap::cell_t grid_map<_Trait>::get_type(
-    sheet_key_type sheet, col_key_type col, row_key_type row) const
-{
-    return m_sheets.at(sheet)->get_type(col, row);
-}
-
-template<typename _Trait>
-bool grid_map<_Trait>::is_empty(
-    sheet_key_type sheet, col_key_type col, row_key_type row) const
-{
-    return m_sheets.at(sheet)->is_empty(col, row);
-}
-
-template<typename _Trait>
-void grid_map<_Trait>::set_empty(
-    sheet_key_type sheet, col_key_type col, row_key_type start_row, row_key_type end_row)
-{
-    return m_sheets.at(sheet)->set_empty(col, start_row, end_row);
+    return *m_sheets.at(sheet);
 }
 
 }
