@@ -50,10 +50,16 @@ public:
     ~sheet();
 
     template<typename _T>
-    void set_cell(row_key_type row, col_key_type col, const _T& cell);
+    void set_cell(col_key_type col, row_key_type row, const _T& cell);
 
     template<typename _T>
-    _T get_cell(row_key_type row, col_key_type col) const;
+    _T get_cell(col_key_type col, row_key_type row) const;
+
+    mdds::gridmap::cell_t get_type(col_key_type col, row_key_type row) const;
+
+    bool is_empty(col_key_type col, row_key_type row) const;
+
+    void set_empty(col_key_type col, row_key_type start_row, row_key_type end_row);
 
 private:
     std::vector<column_type*> m_columns;

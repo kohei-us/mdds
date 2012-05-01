@@ -883,6 +883,20 @@ _T column<_Trait>::get_cell(row_key_type row) const
 }
 
 template<typename _Trait>
+gridmap::cell_t column<_Trait>::get_type(row_key_type row) const
+{
+    size_type _row = check_row_range(row);
+    size_type start_row = 0;
+    size_type block_index = static_cast<size_type>(-1);
+    get_block_position(_row, start_row, block_index);
+    const block* blk = m_blocks[block_index];
+    if (!blk->mp_data)
+        return gridmap::celltype_empty;
+
+    return gridmap::get_block_type(*blk->mp_data);
+}
+
+template<typename _Trait>
 bool column<_Trait>::is_empty(row_key_type row) const
 {
     size_type _row = check_row_range(row);

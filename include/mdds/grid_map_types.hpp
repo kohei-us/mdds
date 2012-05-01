@@ -37,6 +37,8 @@ namespace mdds { namespace gridmap {
 
 typedef int cell_t;
 
+const cell_t celltype_empty = -1;
+
 const cell_t celltype_numeric = 0;
 const cell_t celltype_string  = 1;
 const cell_t celltype_index   = 2;

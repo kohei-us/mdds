@@ -56,10 +56,16 @@ public:
     ~grid_map();
 
     template<typename _T>
-    void set_cell(sheet_key_type sheet, row_key_type row, col_key_type col, const _T& cell);
+    void set_cell(sheet_key_type sheet, col_key_type col, row_key_type row, const _T& cell);
 
     template<typename _T>
-    _T get_cell(sheet_key_type sheet, row_key_type row, col_key_type col) const;
+    _T get_cell(sheet_key_type sheet, col_key_type col, row_key_type row) const;
+
+    mdds::gridmap::cell_t get_type(sheet_key_type sheet, col_key_type col, row_key_type row) const;
+
+    bool is_empty(sheet_key_type sheet, col_key_type col, row_key_type row) const;
+
+    void set_empty(sheet_key_type sheet, col_key_type col, row_key_type start_row, row_key_type end_row);
 
 private:
     std::vector<sheet_type*> m_sheets;

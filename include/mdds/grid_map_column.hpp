@@ -184,6 +184,8 @@ public:
     template<typename _T>
     _T get_cell(row_key_type row) const;
 
+    gridmap::cell_t get_type(row_key_type row) const;
+
     /**
      * Check if cell at specified row is empty of not.
      *
