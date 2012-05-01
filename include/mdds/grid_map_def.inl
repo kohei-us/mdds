@@ -50,7 +50,7 @@ template<typename _T>
 void grid_map<_Trait>::set_cell(
     sheet_key_type sheet, col_key_type col, row_key_type row, const _T& cell)
 {
-    m_sheets.at(sheet)->set_cell(row, col, cell);
+    m_sheets.at(sheet)->set_cell(col, row, cell);
 }
 
 template<typename _Trait>
@@ -58,21 +58,21 @@ template<typename _T>
 _T grid_map<_Trait>::get_cell(
     sheet_key_type sheet, col_key_type col, row_key_type row) const
 {
-    return m_sheets.at(sheet)->get_cell<_T>(row, col);
+    return m_sheets.at(sheet)->get_cell<_T>(col, row);
 }
 
 template<typename _Trait>
 mdds::gridmap::cell_t grid_map<_Trait>::get_type(
     sheet_key_type sheet, col_key_type col, row_key_type row) const
 {
-    return m_sheets.at(sheet)->get_type(row, col);
+    return m_sheets.at(sheet)->get_type(col, row);
 }
 
 template<typename _Trait>
 bool grid_map<_Trait>::is_empty(
     sheet_key_type sheet, col_key_type col, row_key_type row) const
 {
-    return m_sheets.at(sheet)->is_empty(row, col);
+    return m_sheets.at(sheet)->is_empty(col, row);
 }
 
 template<typename _Trait>
