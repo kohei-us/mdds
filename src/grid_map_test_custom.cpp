@@ -1208,6 +1208,13 @@ void gridmap_test_managed_block()
         assert(db.get_cell<muser_cell*>(4)->value == 2.2);
         assert(db.get_cell<muser_cell*>(5)->value == 2.3);
     }
+
+    {
+        column_type db(3);
+        db.set_cell(0, new muser_cell(1.0));
+        db.set_cell(2, new muser_cell(1.0));
+        db.set_cell(1, new muser_cell(1.0));
+    }
 }
 
 }
