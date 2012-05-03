@@ -1214,6 +1214,7 @@ void gridmap_test_managed_block()
         db.set_cell(0, new muser_cell(1.0));
         db.set_cell(2, new muser_cell(1.0));
         db.set_cell(1, new muser_cell(1.0));
+        assert(db.block_size() == 1);
     }
 }
 

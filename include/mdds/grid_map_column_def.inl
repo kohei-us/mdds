@@ -525,11 +525,14 @@ void column<_Trait>::set_cell_to_empty_block(
                     if (blk_cat_prev == blk_cat_next)
                     {
                         // We need to merge the previous and next blocks, then
-                        // delete the current and next blocks.
+                        // delete the current and next blocks.  Be sure to
+                        // resize the next block to zero to prevent the
+                        // transferred cells to be deleted.
                         block* blk_prev = m_blocks[block_index-1];
                         blk_prev->m_size += 1 + blk_next->m_size;
                         cell_block_func::append_value(*blk_prev->mp_data, cell);
                         cell_block_func::append_values_from_block(*blk_prev->mp_data, *data_next);
+                        cell_block_func::resize_block(*data_next, 0);
 
                         delete blk;
                         delete blk_next;
