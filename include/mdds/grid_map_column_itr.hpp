@@ -27,11 +27,12 @@
 
 namespace mdds { namespace __gridmap {
 
-template<typename _ColType, typename _BlksType>
+template<typename _ColType, typename _BlksType, typename _ItrType>
 class column_iterator
 {
     typedef _ColType column_type;
     typedef _BlksType blocks_type;
+    typedef _ItrType base_iterator_type;
 
     struct node
     {
@@ -54,7 +55,7 @@ public:
 
 public:
     column_iterator() {}
-    column_iterator(const typename blocks_type::const_iterator& pos) : m_pos(pos) {}
+    column_iterator(const base_iterator_type& pos) : m_pos(pos) {}
     column_iterator(const column_iterator& other) : m_pos(other.m_pos) {}
 
     bool operator== (const column_iterator& other) const
@@ -115,7 +116,7 @@ private:
 
 private:
     node m_cur_node;
-    typename blocks_type::const_iterator m_pos;
+    base_iterator_type m_pos;
 };
 
 }}

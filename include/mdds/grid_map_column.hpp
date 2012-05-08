@@ -77,7 +77,7 @@ private:
 
 public:
 
-    typedef column_iterator<column, blocks_type> const_iterator;
+    typedef column_iterator<column, blocks_type, typename blocks_type::const_iterator> const_iterator;
 
     const_iterator begin() const;
     const_iterator end() const;
