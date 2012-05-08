@@ -1975,21 +1975,51 @@ void gridmap_test_insert_cells()
 void gridmap_test_iterators()
 {
     stack_printer __stack_printer__("::gridmap_test_iterators");
-    column_type db(5);
-    column_type::const_iterator it;
-    it = db.begin();
-    column_type::const_iterator it_end = db.end();
-    size_t len = std::distance(it, it_end);
-    assert(len == 1);
-    assert(it != it_end);
-    assert(it->type == gridmap::celltype_empty);
-    assert(it->size == 5);
-    const column_type::const_iterator::value_type& val = *it;
-    assert(val.type == it->type);
-    assert(val.size == it->size);
+    {
+        column_type db(5);
+        column_type::const_iterator it;
+        it = db.begin();
+        column_type::const_iterator it_end = db.end();
+        size_t len = std::distance(it, it_end);
+        assert(len == 1);
+        assert(it != it_end);
+        assert(it->type == gridmap::celltype_empty);
+        assert(it->size == 5);
+        const column_type::const_iterator::value_type& val = *it;
+        assert(val.type == it->type);
+        assert(val.size == it->size);
 
-    ++it;
-    assert(it == it_end);
+        ++it;
+        assert(it == it_end);
+    }
+
+    {
+        column_type db(6);
+        db.set_cell(0, 1.1);
+        db.set_cell(1, 2.2);
+        db.set_cell(4, string("boo"));
+        db.set_cell(5, string("hoo"));
+        assert(db.block_size() == 3);
+        column_type::const_iterator it = db.begin(), it_end = db.end();
+        size_t len = std::distance(it, it_end);
+        assert(len == 3);
+        assert(it != it_end);
+        assert(it->type == mdds::gridmap::celltype_numeric);
+        assert(it->size == 2);
+
+        ++it;
+        assert(it != it_end);
+        assert(it->type == mdds::gridmap::celltype_empty);
+        assert(it->size == 2);
+
+        ++it;
+        assert(it != it_end);
+        assert(it->type == mdds::gridmap::celltype_string);
+        assert(it->size == 2);
+
+        ++it;
+        assert(it == it_end);
+    }
 }
 
 }
