@@ -2000,25 +2000,51 @@ void gridmap_test_iterators()
         db.set_cell(4, string("boo"));
         db.set_cell(5, string("hoo"));
         assert(db.block_size() == 3);
-        column_type::const_iterator it = db.begin(), it_end = db.end();
-        size_t len = std::distance(it, it_end);
-        assert(len == 3);
-        assert(it != it_end);
-        assert(it->type == mdds::gridmap::celltype_numeric);
-        assert(it->size == 2);
+        {
+            // Forward iterator
+            column_type::const_iterator it = db.begin(), it_end = db.end();
+            size_t len = std::distance(it, it_end);
+            assert(len == 3);
+            assert(it != it_end);
+            assert(it->type == mdds::gridmap::celltype_numeric);
+            assert(it->size == 2);
 
-        ++it;
-        assert(it != it_end);
-        assert(it->type == mdds::gridmap::celltype_empty);
-        assert(it->size == 2);
+            ++it;
+            assert(it != it_end);
+            assert(it->type == mdds::gridmap::celltype_empty);
+            assert(it->size == 2);
 
-        ++it;
-        assert(it != it_end);
-        assert(it->type == mdds::gridmap::celltype_string);
-        assert(it->size == 2);
+            ++it;
+            assert(it != it_end);
+            assert(it->type == mdds::gridmap::celltype_string);
+            assert(it->size == 2);
 
-        ++it;
-        assert(it == it_end);
+            ++it;
+            assert(it == it_end);
+        }
+
+        {
+            // Reverse iterator
+            column_type::const_reverse_iterator it = db.rbegin(), it_end = db.rend();
+            size_t len = std::distance(it, it_end);
+            assert(len == 3);
+            assert(it != it_end);
+            assert(it->type == mdds::gridmap::celltype_string);
+            assert(it->size == 2);
+
+            ++it;
+            assert(it != it_end);
+            assert(it->type == mdds::gridmap::celltype_empty);
+            assert(it->size == 2);
+
+            ++it;
+            assert(it != it_end);
+            assert(it->type == mdds::gridmap::celltype_numeric);
+            assert(it->size == 2);
+
+            ++it;
+            assert(it == it_end);
+        }
     }
 }
 

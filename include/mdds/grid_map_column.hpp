@@ -78,9 +78,13 @@ private:
 public:
 
     typedef column_iterator<column, blocks_type, typename blocks_type::const_iterator> const_iterator;
+    typedef column_iterator<column, blocks_type, typename blocks_type::const_reverse_iterator> const_reverse_iterator;
 
     const_iterator begin() const;
     const_iterator end() const;
+
+    const_reverse_iterator rbegin() const;
+    const_reverse_iterator rend() const;
 
     /**
      * Default constructor.  It initializes the container with empty size.

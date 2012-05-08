@@ -71,6 +71,20 @@ column<_Trait>::end() const
 }
 
 template<typename _Trait>
+typename column<_Trait>::const_reverse_iterator
+column<_Trait>::rbegin() const
+{
+    return const_reverse_iterator(m_blocks.rbegin());
+}
+
+template<typename _Trait>
+typename column<_Trait>::const_reverse_iterator
+column<_Trait>::rend() const
+{
+    return const_reverse_iterator(m_blocks.rend());
+}
+
+template<typename _Trait>
 column<_Trait>::column() : m_cur_size(0) {}
 
 template<typename _Trait>
