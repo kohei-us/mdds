@@ -241,6 +241,7 @@
 				<F N="../include/mdds/grid_map.hpp"/>
 				<F N="../include/mdds/grid_map_column.hpp"/>
 				<F N="../include/mdds/grid_map_column_def.inl"/>
+				<F N="../include/mdds/grid_map_column_itr.hpp"/>
 				<F N="../include/mdds/grid_map_def.inl"/>
 				<F N="../include/mdds/grid_map_sheet.hpp"/>
 				<F N="../include/mdds/grid_map_sheet_def.inl"/>

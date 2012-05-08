@@ -1972,6 +1972,26 @@ void gridmap_test_insert_cells()
     }
 }
 
+void gridmap_test_iterators()
+{
+    stack_printer __stack_printer__("::gridmap_test_iterators");
+    column_type db(5);
+    column_type::const_iterator it;
+    it = db.begin();
+    column_type::const_iterator it_end = db.end();
+    size_t len = std::distance(it, it_end);
+    assert(len == 1);
+    assert(it != it_end);
+    assert(it->type == gridmap::celltype_empty);
+    assert(it->size == 5);
+    const column_type::const_iterator::value_type& val = *it;
+    assert(val.type == it->type);
+    assert(val.size == it->size);
+
+    ++it;
+    assert(it == it_end);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1992,6 +2012,7 @@ int main (int argc, char **argv)
         gridmap_test_insert_empty();
         gridmap_test_set_cells();
         gridmap_test_insert_cells();
+        gridmap_test_iterators();
     }
 
     if (opt.test_perf)

@@ -32,6 +32,7 @@
 #include "compat/unique_ptr.hpp"
 #include "global.hpp"
 #include "grid_map_types.hpp"
+#include "grid_map_column_itr.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -72,7 +73,14 @@ private:
         ~block();
     };
 
+    typedef std::vector<block*> blocks_type;
+
 public:
+
+    typedef column_iterator<column, blocks_type> const_iterator;
+
+    const_iterator begin() const;
+    const_iterator end() const;
 
     /**
      * Default constructor.  It initializes the container with empty size.
@@ -403,7 +411,6 @@ private:
         const _T& it_begin, const _T& it_end);
 
 private:
-    typedef std::vector<block*> blocks_type;
     blocks_type m_blocks;
     size_type m_cur_size;
 };

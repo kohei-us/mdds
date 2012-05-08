@@ -57,6 +57,20 @@ column<_Trait>::block::~block()
 }
 
 template<typename _Trait>
+typename column<_Trait>::const_iterator
+column<_Trait>::begin() const
+{
+    return const_iterator(m_blocks.begin());
+}
+
+template<typename _Trait>
+typename column<_Trait>::const_iterator
+column<_Trait>::end() const
+{
+    return const_iterator(m_blocks.end());
+}
+
+template<typename _Trait>
 column<_Trait>::column() : m_cur_size(0) {}
 
 template<typename _Trait>
