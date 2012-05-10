@@ -52,11 +52,10 @@ public:
     column_type& get_column(col_key_type col);
     const column_type& get_column(col_key_type col) const;
 
+    size_type column_size() const { return m_columns.size(); }
+
 private:
     std::vector<column_type*> m_columns;
-
-    size_type m_row_size;
-    size_type m_col_size;
 };
 
 }}

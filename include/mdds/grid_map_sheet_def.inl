@@ -28,14 +28,13 @@
 namespace mdds { namespace __gridmap {
 
 template<typename _Trait>
-sheet<_Trait>::sheet() : m_row_size(0), m_col_size(0) {}
+sheet<_Trait>::sheet() {}
 
 template<typename _Trait>
-sheet<_Trait>::sheet(size_type row_size, size_type col_size) :
-    m_row_size(row_size), m_col_size(col_size)
+sheet<_Trait>::sheet(size_type row_size, size_type col_size)
 {
-    for (size_type i = 0; i < m_col_size; ++i)
-        m_columns.push_back(new column_type(m_row_size));
+    for (size_type i = 0; i < col_size; ++i)
+        m_columns.push_back(new column_type(row_size));
 }
 
 template<typename _Trait>

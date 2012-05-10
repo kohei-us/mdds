@@ -60,28 +60,28 @@ template<typename _Trait>
 typename column<_Trait>::const_iterator
 column<_Trait>::begin() const
 {
-    return const_iterator(m_blocks.begin());
+    return const_iterator(m_blocks.begin(), m_blocks.end());
 }
 
 template<typename _Trait>
 typename column<_Trait>::const_iterator
 column<_Trait>::end() const
 {
-    return const_iterator(m_blocks.end());
+    return const_iterator(m_blocks.end(), m_blocks.end());
 }
 
 template<typename _Trait>
 typename column<_Trait>::const_reverse_iterator
 column<_Trait>::rbegin() const
 {
-    return const_reverse_iterator(m_blocks.rbegin());
+    return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend());
 }
 
 template<typename _Trait>
 typename column<_Trait>::const_reverse_iterator
 column<_Trait>::rend() const
 {
-    return const_reverse_iterator(m_blocks.rend());
+    return const_reverse_iterator(m_blocks.rend(), m_blocks.rend());
 }
 
 template<typename _Trait>

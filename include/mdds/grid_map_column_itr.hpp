@@ -55,12 +55,12 @@ public:
 
 public:
     column_iterator() {}
-    column_iterator(const base_iterator_type& pos) : m_pos(pos) {}
-    column_iterator(const column_iterator& other) : m_pos(other.m_pos) {}
+    column_iterator(const base_iterator_type& pos, const base_iterator_type& end) : m_pos(pos), m_end(end) {}
+    column_iterator(const column_iterator& other) : m_pos(other.m_pos), m_end(other.m_end) {}
 
     bool operator== (const column_iterator& other) const
     {
-        return m_pos == other.m_pos;
+        return m_pos == other.m_pos && m_end == other.m_end;
     }
 
     bool operator!= (const column_iterator& other) const
@@ -71,6 +71,7 @@ public:
     column_iterator& operator= (const column_iterator& other)
     {
         m_pos = other.m_pos;
+        m_end = other.m_end;
         return *this;
     }
 
@@ -87,7 +88,7 @@ public:
     const value_type* operator++()
     {
         ++m_pos;
-        return operator->();
+        return (m_pos != m_end) ? operator->() : NULL;
     }
 
     const value_type* operator--()
@@ -101,7 +102,6 @@ private:
     const value_type& get_current_node()
     {
         // blocks_type::value_type is a pointer to column_type::block.
-
         const typename blocks_type::value_type blk = *m_pos;
         if (blk->mp_data)
             m_cur_node.type = mdds::gridmap::get_block_type(*blk->mp_data);
@@ -117,6 +117,7 @@ private:
 private:
     node m_cur_node;
     base_iterator_type m_pos;
+    base_iterator_type m_end;
 };
 
 }}
