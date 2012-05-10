@@ -52,7 +52,12 @@ public:
     column_type& get_column(col_key_type col);
     const column_type& get_column(col_key_type col) const;
 
-    size_type column_size() const { return m_columns.size(); }
+    /**
+     * Return the number of columns.
+     *
+     * @return number of columns.
+     */
+    size_type size() const { return m_columns.size(); }
 
 private:
     std::vector<column_type*> m_columns;

@@ -55,8 +55,19 @@ public:
 
 public:
     column_iterator() {}
-    column_iterator(const base_iterator_type& pos, const base_iterator_type& end) : m_pos(pos), m_end(end) {}
-    column_iterator(const column_iterator& other) : m_pos(other.m_pos), m_end(other.m_end) {}
+    column_iterator(const base_iterator_type& pos, const base_iterator_type& end) :
+        m_pos(pos), m_end(end)
+    {
+        if (m_pos != m_end)
+            update_node();
+    }
+
+    column_iterator(const column_iterator& other) :
+        m_pos(other.m_pos), m_end(other.m_end)
+    {
+        if (m_pos != m_end)
+            update_node();
+    }
 
     bool operator== (const column_iterator& other) const
     {
@@ -72,34 +83,41 @@ public:
     {
         m_pos = other.m_pos;
         m_end = other.m_end;
+        if (m_pos != m_end)
+            update_node();
         return *this;
     }
 
-    const value_type& operator*()
+    const value_type& operator*() const
     {
-        return get_current_node();
+        return m_cur_node;
     }
 
-    const value_type* operator->()
+    const value_type* operator->() const
     {
-        return &get_current_node();
+        return &m_cur_node;
     }
 
     const value_type* operator++()
     {
         ++m_pos;
-        return (m_pos != m_end) ? operator->() : NULL;
+        if (m_pos == m_end)
+            return NULL;
+
+        update_node();
+        return &m_cur_node;
     }
 
     const value_type* operator--()
     {
         --m_pos;
-        return operator->();
+        update_node();
+        return &m_cur_node;
     }
 
 private:
 
-    const value_type& get_current_node()
+    void update_node()
     {
         // blocks_type::value_type is a pointer to column_type::block.
         const typename blocks_type::value_type blk = *m_pos;
@@ -110,8 +128,6 @@ private:
 
         m_cur_node.size = blk->m_size;
         m_cur_node.data = blk->mp_data;
-
-        return m_cur_node;
     }
 
 private:
