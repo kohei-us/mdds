@@ -52,6 +52,12 @@ public:
     column_type& get_column(col_key_type col);
     const column_type& get_column(col_key_type col) const;
 
+    column_type& operator[](size_type n) { return m_columns[n]; }
+    const column_type& operator[](size_type n) const { return m_columns[n]; }
+
+    column_type& at(size_type n) { return m_columns.at(n); }
+    const column_type& at(size_type n) const { return m_columns.at(n); }
+
     /**
      * Return the number of columns.
      *
