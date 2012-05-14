@@ -58,12 +58,18 @@ public:
     sheet_type& get_sheet(sheet_key_type sheet);
     const sheet_type& get_sheet(sheet_key_type sheet) const;
 
+    sheet_type& operator[](size_type n) { return *m_sheets[n]; }
+    const sheet_type& operator[](size_type n) const { return *m_sheets[n]; }
+
+    sheet_type& at(size_type n) { return *m_sheets.at(n); }
+    const sheet_type& at(size_type n) const { return *m_sheets.at(n); }
+
+    void push_back(size_type row_size, size_type col_size);
+
+    size_type size() const { return m_sheets.size(); }
+
 private:
     std::vector<sheet_type*> m_sheets;
-
-    size_type m_sheet_size;
-    size_type m_row_size;
-    size_type m_col_size;
 };
 
 }
