@@ -55,9 +55,6 @@ public:
     grid_map(size_type sheet_size, size_type row_size, size_type col_size);
     ~grid_map();
 
-    sheet_type& get_sheet(sheet_key_type sheet);
-    const sheet_type& get_sheet(sheet_key_type sheet) const;
-
     sheet_type& operator[](size_type n) { return *m_sheets[n]; }
     const sheet_type& operator[](size_type n) const { return *m_sheets[n]; }
 

@@ -44,20 +44,6 @@ grid_map<_Trait>::~grid_map()
 }
 
 template<typename _Trait>
-typename grid_map<_Trait>::sheet_type&
-grid_map<_Trait>::get_sheet(sheet_key_type sheet)
-{
-    return *m_sheets.at(sheet);
-}
-
-template<typename _Trait>
-const typename grid_map<_Trait>::sheet_type&
-grid_map<_Trait>::get_sheet(sheet_key_type sheet) const
-{
-    return *m_sheets.at(sheet);
-}
-
-template<typename _Trait>
 void grid_map<_Trait>::push_back(size_type row_size, size_type col_size)
 {
     m_sheets.push_back(new sheet_type(row_size, col_size));

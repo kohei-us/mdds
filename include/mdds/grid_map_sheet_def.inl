@@ -43,18 +43,4 @@ sheet<_Trait>::~sheet()
     std::for_each(m_columns.begin(), m_columns.end(), default_deleter<column_type>());
 }
 
-template<typename _Trait>
-typename sheet<_Trait>::column_type&
-sheet<_Trait>::get_column(col_key_type col)
-{
-    return *m_columns.at(col);
-}
-
-template<typename _Trait>
-const typename sheet<_Trait>::column_type&
-sheet<_Trait>::get_column(col_key_type col) const
-{
-    return *m_columns.at(col);
-}
-
 }}
