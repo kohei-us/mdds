@@ -253,7 +253,6 @@
 				<F N="../include/mdds/mixed_type_matrix_flag_storage.hpp"/>
 				<F N="../include/mdds/mixed_type_matrix_storage.hpp"/>
 				<F N="../include/mdds/mixed_type_matrix_storage_filled_linear.inl"/>
-				<F N="../include/mdds/mixed_type_matrix_storage_filled_nested_array.inl"/>
 				<F N="../include/mdds/mixed_type_matrix_storage_sparse.inl"/>
 				<F N="../include/mdds/node.hpp"/>
 				<F N="../include/mdds/point_quad_tree.hpp"/>
