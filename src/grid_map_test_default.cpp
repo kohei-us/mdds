@@ -54,7 +54,7 @@ struct multi_type_vector_trait
 };
 
 template<typename _ColT, typename _ValT>
-bool test_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT val)
+bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 {
     _ValT test;
     col_db.set_cell(row, val);

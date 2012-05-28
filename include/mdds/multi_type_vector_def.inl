@@ -116,7 +116,7 @@ multi_type_vector<_Trait>::~multi_type_vector()
 
 template<typename _Trait>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cell(row_key_type row, const _T& cell)
+void multi_type_vector<_Trait>::set_cell(size_type row, const _T& cell)
 {
     size_type _row = check_row_range(row);
     set_cell_impl(_row, cell);
@@ -124,7 +124,7 @@ void multi_type_vector<_Trait>::set_cell(row_key_type row, const _T& cell)
 
 template<typename _Trait>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cells(row_key_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_Trait>::set_cells(size_type row, const _T& it_begin, const _T& it_end)
 {
     size_type _row = check_row_range(row);
     set_cells_impl(_row, it_begin, it_end);
@@ -132,7 +132,7 @@ void multi_type_vector<_Trait>::set_cells(row_key_type row, const _T& it_begin, 
 
 template<typename _Trait>
 template<typename _T>
-void multi_type_vector<_Trait>::insert_cells(row_key_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_Trait>::insert_cells(size_type row, const _T& it_begin, const _T& it_end)
 {
     size_type _row = check_row_range(row);
     insert_cells_impl(_row, it_begin, it_end);
@@ -140,7 +140,7 @@ void multi_type_vector<_Trait>::insert_cells(row_key_type row, const _T& it_begi
 
 template<typename _Trait>
 typename multi_type_vector<_Trait>::size_type
-multi_type_vector<_Trait>::check_row_range(row_key_type row) const
+multi_type_vector<_Trait>::check_row_range(size_type row) const
 {
     static const char* msg = "Specified row index is out-of-bound.";
     if (row < 0)
@@ -201,7 +201,7 @@ void multi_type_vector<_Trait>::set_cell_to_middle_of_block(
 
     assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
     assert(blk->m_size >= 3);
-    row_key_type orig_size = blk->m_size;
+    size_type orig_size = blk->m_size;
 
     m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
     block* blk_new = m_blocks[block_index+1];
@@ -267,7 +267,7 @@ void multi_type_vector<_Trait>::set_cell_impl(size_type row, const _T& cell)
     if (blk_cat == cat)
     {
         // This block is of the same type as the cell being inserted.
-        row_key_type i = row - start_row;
+        size_type i = row - start_row;
         cell_block_func::overwrite_cells(*blk->mp_data, i, 1);
         cell_block_func::set_value(*blk->mp_data, i, cell);
         return;
@@ -881,7 +881,7 @@ void multi_type_vector<_Trait>::set_cell_to_bottom_of_data_block(size_type block
 
 template<typename _Trait>
 template<typename _T>
-void multi_type_vector<_Trait>::get_cell(row_key_type row, _T& cell) const
+void multi_type_vector<_Trait>::get_cell(size_type row, _T& cell) const
 {
     size_type _row = check_row_range(row);
 
@@ -900,13 +900,13 @@ void multi_type_vector<_Trait>::get_cell(row_key_type row, _T& cell) const
 
     assert(_row >= start_row);
     assert(blk->mp_data); // data for non-empty blocks should never be NULL.
-    row_key_type idx = _row - start_row;
+    size_type idx = _row - start_row;
     cell_block_func::get_value(*blk->mp_data, idx, cell);
 }
 
 template<typename _Trait>
 template<typename _T>
-_T multi_type_vector<_Trait>::get_cell(row_key_type row) const
+_T multi_type_vector<_Trait>::get_cell(size_type row) const
 {
     _T cell;
     get_cell(row, cell);
@@ -914,7 +914,7 @@ _T multi_type_vector<_Trait>::get_cell(row_key_type row) const
 }
 
 template<typename _Trait>
-mtv::cell_t multi_type_vector<_Trait>::get_type(row_key_type row) const
+mtv::cell_t multi_type_vector<_Trait>::get_type(size_type row) const
 {
     size_type _row = check_row_range(row);
     size_type start_row = 0;
@@ -928,7 +928,7 @@ mtv::cell_t multi_type_vector<_Trait>::get_type(row_key_type row) const
 }
 
 template<typename _Trait>
-bool multi_type_vector<_Trait>::is_empty(row_key_type row) const
+bool multi_type_vector<_Trait>::is_empty(size_type row) const
 {
     size_type _row = check_row_range(row);
 
@@ -940,7 +940,7 @@ bool multi_type_vector<_Trait>::is_empty(row_key_type row) const
 }
 
 template<typename _Trait>
-void multi_type_vector<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
+void multi_type_vector<_Trait>::set_empty(size_type start_row, size_type end_row)
 {
     size_type _start_row = check_row_range(start_row);
     size_type _end_row = check_row_range(end_row);
@@ -964,7 +964,7 @@ void multi_type_vector<_Trait>::set_empty(row_key_type start_row, row_key_type e
 }
 
 template<typename _Trait>
-void multi_type_vector<_Trait>::erase(row_key_type start_row, row_key_type end_row)
+void multi_type_vector<_Trait>::erase(size_type start_row, size_type end_row)
 {
     size_type _start_row = check_row_range(start_row);
     size_type _end_row = check_row_range(end_row);
@@ -1104,7 +1104,7 @@ void multi_type_vector<_Trait>::erase_impl(size_type start_row, size_type end_ro
 }
 
 template<typename _Trait>
-void multi_type_vector<_Trait>::insert_empty(row_key_type row, size_type length)
+void multi_type_vector<_Trait>::insert_empty(size_type row, size_type length)
 {
     if (!length)
         // Nothing to insert.

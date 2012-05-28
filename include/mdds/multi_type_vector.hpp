@@ -55,7 +55,6 @@ public:
 
     typedef typename mdds::mtv::base_cell_block cell_block_type;
     typedef typename mdds::mtv::cell_t cell_category_type;
-    typedef typename _Trait::row_key_type row_key_type;
 
 private:
     typedef _Trait trait;
@@ -126,7 +125,7 @@ public:
      * @param cell value to insert.
      */
     template<typename _T>
-    void set_cell(row_key_type row, const _T& cell);
+    void set_cell(size_type row, const _T& cell);
 
     /**
      * Set multiple cell values of identical type to a range of cells starting
@@ -147,7 +146,7 @@ public:
      *               being set.
      */
     template<typename _T>
-    void set_cells(row_key_type row, const _T& it_begin, const _T& it_end);
+    void set_cells(size_type row, const _T& it_begin, const _T& it_end);
 
     /**
      * Insert multiple cell values of identical type to a specified row
@@ -168,7 +167,7 @@ public:
      *               being inserted.
      */
     template<typename _T>
-    void insert_cells(row_key_type row, const _T& it_begin, const _T& it_end);
+    void insert_cells(size_type row, const _T& it_begin, const _T& it_end);
 
     /**
      * Get the value of a cell at specified row.  The caller must pass a
@@ -181,7 +180,7 @@ public:
      * @param cell (out) variable to store the retrieved value.
      */
     template<typename _T>
-    void get_cell(row_key_type row, _T& cell) const;
+    void get_cell(size_type row, _T& cell) const;
 
     /**
      * Get the value of a cell at specified row.  The caller must specify the
@@ -194,9 +193,9 @@ public:
      * @return cell value.
      */
     template<typename _T>
-    _T get_cell(row_key_type row) const;
+    _T get_cell(size_type row) const;
 
-    mtv::cell_t get_type(row_key_type row) const;
+    mtv::cell_t get_type(size_type row) const;
 
     /**
      * Check if cell at specified row is empty of not.
@@ -208,7 +207,7 @@ public:
      *
      * @return true if the cell is empty, false otherwise.
      */
-    bool is_empty(row_key_type row) const;
+    bool is_empty(size_type row) const;
 
     /**
      * Set specified range of cells to be empty.  Any existing values will be
@@ -221,7 +220,7 @@ public:
      * @param start_row starting row position
      * @param end_row ending row position, inclusive.
      */
-    void set_empty(row_key_type start_row, row_key_type end_row);
+    void set_empty(size_type start_row, size_type end_row);
 
     /**
      * Erase cells located between specified start and end row positions.  The
@@ -237,7 +236,7 @@ public:
      * @param start_row starting row position
      * @param end_row ending row position, inclusive.
      */
-    void erase(row_key_type start_row, row_key_type end_row);
+    void erase(size_type start_row, size_type end_row);
 
     /**
      * Insert a range of empty cells at specified row position.
@@ -252,7 +251,7 @@ public:
      * @param row row position at which to insert a range of empty cells.
      * @param length number of empty cells to insert.
      */
-    void insert_empty(row_key_type row, size_type length);
+    void insert_empty(size_type row, size_type length);
 
     /**
      * Clear the content of the container.  The size of the container will
@@ -326,7 +325,7 @@ private:
      * Check the row value to make sure it's within specified range, and
      * convert it to size_type for internal use.
      */
-    size_type check_row_range(row_key_type row) const;
+    size_type check_row_range(size_type row) const;
 
     void get_block_position(
         size_type row, size_type& start_row, size_type& block_index, size_type start_block=0, size_type start_block_row=0) const;
