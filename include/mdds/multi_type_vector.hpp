@@ -41,7 +41,7 @@
 namespace mdds {
 
 /**
- * Each column consists of a series of blocks, and each block stores a
+ * Multi-type vector consists of a series of blocks, and each block stores a
  * series of non-empty cells of identical type.  In this container, cells
  * are represented simply as values that they store; there are no separate
  * cell objects that the user of this container needs to deal with.  The
