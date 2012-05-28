@@ -46,10 +46,6 @@ namespace {
 
 struct multi_type_vector_trait
 {
-    typedef long sheet_key_type;
-    typedef long row_key_type;
-    typedef long col_key_type;
-
     typedef mdds::mtv::cell_block_func cell_block_func;
 };
 

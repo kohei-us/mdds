@@ -43,10 +43,6 @@ template<typename _Trait>
 class grid_map
 {
 public:
-    typedef typename _Trait::sheet_key_type sheet_key_type;
-    typedef typename _Trait::row_key_type row_key_type;
-    typedef typename _Trait::col_key_type col_key_type;
-
     typedef typename __gridmap::sheet<_Trait> sheet_type;
     typedef typename sheet_type::column_type column_type;
     typedef typename column_type::size_type size_type;
