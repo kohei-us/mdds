@@ -28,17 +28,17 @@
 namespace mdds { namespace __mtv {
 
 template<typename _ColType, typename _BlksType, typename _ItrType>
-class column_iterator
+class iterator_base
 {
-    typedef _ColType column_type;
+    typedef _ColType parent_type;
     typedef _BlksType blocks_type;
     typedef _ItrType base_iterator_type;
 
     struct node
     {
         mdds::mtv::cell_t type;
-        typename column_type::size_type size;
-        const typename column_type::cell_block_type* data;
+        typename parent_type::size_type size;
+        const typename parent_type::cell_block_type* data;
 
         node() : type(mdds::mtv::celltype_empty), size(0), data(NULL) {}
         node(const node& other) : type(other.type), size(other.size), data(other.data) {}
@@ -54,32 +54,32 @@ public:
     typedef std::bidirectional_iterator_tag iterator_category;
 
 public:
-    column_iterator() {}
-    column_iterator(const base_iterator_type& pos, const base_iterator_type& end) :
+    iterator_base() {}
+    iterator_base(const base_iterator_type& pos, const base_iterator_type& end) :
         m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
     }
 
-    column_iterator(const column_iterator& other) :
+    iterator_base(const iterator_base& other) :
         m_pos(other.m_pos), m_end(other.m_end)
     {
         if (m_pos != m_end)
             update_node();
     }
 
-    bool operator== (const column_iterator& other) const
+    bool operator== (const iterator_base& other) const
     {
         return m_pos == other.m_pos && m_end == other.m_end;
     }
 
-    bool operator!= (const column_iterator& other) const
+    bool operator!= (const iterator_base& other) const
     {
         return !operator==(other);
     }
 
-    column_iterator& operator= (const column_iterator& other)
+    iterator_base& operator= (const iterator_base& other)
     {
         m_pos = other.m_pos;
         m_end = other.m_end;

@@ -77,8 +77,8 @@ private:
 
 public:
 
-    typedef __mtv::column_iterator<multi_type_vector, blocks_type, typename blocks_type::const_iterator> const_iterator;
-    typedef __mtv::column_iterator<multi_type_vector, blocks_type, typename blocks_type::const_reverse_iterator> const_reverse_iterator;
+    typedef __mtv::iterator_base<multi_type_vector, blocks_type, typename blocks_type::const_iterator> const_iterator;
+    typedef __mtv::iterator_base<multi_type_vector, blocks_type, typename blocks_type::const_reverse_iterator> const_reverse_iterator;
 
     const_iterator begin() const;
     const_iterator end() const;
