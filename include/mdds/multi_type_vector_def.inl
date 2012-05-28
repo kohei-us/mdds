@@ -118,39 +118,21 @@ template<typename _Trait>
 template<typename _T>
 void multi_type_vector<_Trait>::set_cell(size_type row, const _T& cell)
 {
-    size_type _row = check_row_range(row);
-    set_cell_impl(_row, cell);
+    set_cell_impl(row, cell);
 }
 
 template<typename _Trait>
 template<typename _T>
 void multi_type_vector<_Trait>::set_cells(size_type row, const _T& it_begin, const _T& it_end)
 {
-    size_type _row = check_row_range(row);
-    set_cells_impl(_row, it_begin, it_end);
+    set_cells_impl(row, it_begin, it_end);
 }
 
 template<typename _Trait>
 template<typename _T>
 void multi_type_vector<_Trait>::insert_cells(size_type row, const _T& it_begin, const _T& it_end)
 {
-    size_type _row = check_row_range(row);
-    insert_cells_impl(_row, it_begin, it_end);
-}
-
-template<typename _Trait>
-typename multi_type_vector<_Trait>::size_type
-multi_type_vector<_Trait>::check_row_range(size_type row) const
-{
-    static const char* msg = "Specified row index is out-of-bound.";
-    if (row < 0)
-        throw std::out_of_range(msg);
-
-    size_type row_internal = boost::numeric_cast<size_type>(row);
-    if (row_internal >= m_cur_size)
-        throw std::out_of_range(msg);
-
-    return row_internal;
+    insert_cells_impl(row, it_begin, it_end);
 }
 
 template<typename _Trait>
@@ -883,11 +865,9 @@ template<typename _Trait>
 template<typename _T>
 void multi_type_vector<_Trait>::get_cell(size_type row, _T& cell) const
 {
-    size_type _row = check_row_range(row);
-
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
-    get_block_position(_row, start_row, block_index);
+    get_block_position(row, start_row, block_index);
     const block* blk = m_blocks[block_index];
     assert(blk);
 
@@ -898,9 +878,9 @@ void multi_type_vector<_Trait>::get_cell(size_type row, _T& cell) const
         return;
     }
 
-    assert(_row >= start_row);
+    assert(row >= start_row);
     assert(blk->mp_data); // data for non-empty blocks should never be NULL.
-    size_type idx = _row - start_row;
+    size_type idx = row - start_row;
     cell_block_func::get_value(*blk->mp_data, idx, cell);
 }
 
@@ -916,10 +896,9 @@ _T multi_type_vector<_Trait>::get_cell(size_type row) const
 template<typename _Trait>
 mtv::cell_t multi_type_vector<_Trait>::get_type(size_type row) const
 {
-    size_type _row = check_row_range(row);
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
-    get_block_position(_row, start_row, block_index);
+    get_block_position(row, start_row, block_index);
     const block* blk = m_blocks[block_index];
     if (!blk->mp_data)
         return mtv::celltype_empty;
@@ -930,11 +909,9 @@ mtv::cell_t multi_type_vector<_Trait>::get_type(size_type row) const
 template<typename _Trait>
 bool multi_type_vector<_Trait>::is_empty(size_type row) const
 {
-    size_type _row = check_row_range(row);
-
     size_type start_row;
     size_type block_index;
-    get_block_position(_row, start_row, block_index);
+    get_block_position(row, start_row, block_index);
 
     return m_blocks[block_index]->mp_data == NULL;
 }
@@ -942,37 +919,31 @@ bool multi_type_vector<_Trait>::is_empty(size_type row) const
 template<typename _Trait>
 void multi_type_vector<_Trait>::set_empty(size_type start_row, size_type end_row)
 {
-    size_type _start_row = check_row_range(start_row);
-    size_type _end_row = check_row_range(end_row);
-
-    if (_start_row > _end_row)
+    if (start_row > end_row)
         throw std::out_of_range("Start row is larger than the end row.");
 
     size_type start_row_in_block1, start_row_in_block2;
     size_type block_pos1, block_pos2;
-    get_block_position(_start_row, start_row_in_block1, block_pos1);
-    get_block_position(_end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
+    get_block_position(start_row, start_row_in_block1, block_pos1);
+    get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
 
     if (block_pos1 == block_pos2)
     {
-        set_empty_in_single_block(_start_row, _end_row, block_pos1, start_row_in_block1);
+        set_empty_in_single_block(start_row, end_row, block_pos1, start_row_in_block1);
         return;
     }
 
     set_empty_in_multi_blocks(
-        _start_row, _end_row, block_pos1, start_row_in_block1, block_pos2, start_row_in_block2);
+        start_row, end_row, block_pos1, start_row_in_block1, block_pos2, start_row_in_block2);
 }
 
 template<typename _Trait>
 void multi_type_vector<_Trait>::erase(size_type start_row, size_type end_row)
 {
-    size_type _start_row = check_row_range(start_row);
-    size_type _end_row = check_row_range(end_row);
-
-    if (_start_row > _end_row)
+    if (start_row > end_row)
         throw std::out_of_range("Start row is larger than the end row.");
 
-    erase_impl(_start_row, _end_row);
+    erase_impl(start_row, end_row);
 }
 
 template<typename _Trait>
@@ -1110,8 +1081,7 @@ void multi_type_vector<_Trait>::insert_empty(size_type row, size_type length)
         // Nothing to insert.
         return;
 
-    size_type _row = check_row_range(row);
-    insert_empty_impl(_row, length);
+    insert_empty_impl(row, length);
 }
 
 template<typename _Trait>

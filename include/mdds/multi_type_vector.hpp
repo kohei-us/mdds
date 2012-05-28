@@ -321,11 +321,6 @@ public:
     static mtv::cell_t get_cell_type(const _T& cell);
 
 private:
-    /**
-     * Check the row value to make sure it's within specified range, and
-     * convert it to size_type for internal use.
-     */
-    size_type check_row_range(size_type row) const;
 
     void get_block_position(
         size_type row, size_type& start_row, size_type& block_index, size_type start_block=0, size_type start_block_row=0) const;
