@@ -871,13 +871,14 @@ void mtm_test_const_iterator()
 /**
  * Measure the performance of object instantiation for filled storage.
  */
-void mtm_perf_test_filled_storage_creation()
+void mtm_perf_test_storage_creation()
 {
     cout << "measuring performance on matrix object creation." << endl;
-    size_t rowsize = 1000;
+    size_t rowsize = 5000;
     size_t obj_count = 30000;
     cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
-    for (size_t colsize = 1; colsize <= 3; ++colsize)
+    cout << "--- filled zero" << endl;
+    for (size_t colsize = 1; colsize <= 5; ++colsize)
     {
         stack_watch sw;
         for (size_t i = 0; i < obj_count; ++i)
@@ -885,15 +886,17 @@ void mtm_perf_test_filled_storage_creation()
 
         cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
     }
+    cout << endl;
 }
 
-void mtm_perf_test_filled_storage_set_numeric()
+void mtm_perf_test_storage_set_numeric()
 {
     cout << "measuring performance on matrix object creation and populating it with numeric data." << endl;
-    size_t rowsize = 1000;
+    size_t rowsize = 3000;
     size_t obj_count = 30000;
     cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
-    for (size_t colsize = 1; colsize <= 3; ++colsize)
+    cout << "--- filled zero" << endl;
+    for (size_t colsize = 1; colsize <= 5; ++colsize)
     {
         stack_watch sw;
         for (size_t i = 0; i < obj_count; ++i)
@@ -907,6 +910,7 @@ void mtm_perf_test_filled_storage_set_numeric()
         }
         cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
     }
+    cout << endl;
 }
 
 int main(int argc, char** argv)
@@ -950,8 +954,8 @@ int main(int argc, char** argv)
 
     if (opt.test_perf)
     {
-        mtm_perf_test_filled_storage_creation();
-        mtm_perf_test_filled_storage_set_numeric();
+        mtm_perf_test_storage_creation();
+        mtm_perf_test_storage_set_numeric();
     }
 
     cout << "Test finished successfully!" << endl;
