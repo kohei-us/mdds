@@ -25,13 +25,13 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_GRID_MAP_COLUMN_HPP__
-#define __MDDS_GRID_MAP_COLUMN_HPP__
+#ifndef __MDDS_MULTI_TYPE_VECTOR_HPP__
+#define __MDDS_MULTI_TYPE_VECTOR_HPP__
 
 #include "default_deleter.hpp"
 #include "compat/unique_ptr.hpp"
 #include "global.hpp"
-#include "grid_map_types.hpp"
+#include "multi_type_vector_types.hpp"
 #include "multi_type_vector_itr.hpp"
 
 #include <vector>

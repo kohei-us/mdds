@@ -28,7 +28,7 @@
 #include "test_global.hpp"
 
 #include <mdds/grid_map.hpp>
-#include <mdds/grid_map_trait.hpp>
+#include <mdds/multi_type_vector_trait.hpp>
 
 #include <cassert>
 #include <sstream>
@@ -44,7 +44,7 @@ using namespace mdds;
 
 namespace {
 
-struct grid_map_trait
+struct multi_type_vector_trait
 {
     typedef long sheet_key_type;
     typedef long row_key_type;
@@ -62,7 +62,7 @@ bool test_cell_insertion(_ColT& col_db, typename _ColT::row_key_type row, _ValT 
     return val == test;
 }
 
-typedef mdds::grid_map<grid_map_trait> grid_store_type;
+typedef mdds::grid_map<multi_type_vector_trait> grid_store_type;
 typedef grid_store_type::sheet_type::column_type column_type;
 
 void gridmap_test_basic()

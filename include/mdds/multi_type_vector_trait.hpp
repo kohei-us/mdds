@@ -28,7 +28,7 @@
 #ifndef __MDDS_GRID_MAP_TRAIT_HPP__
 #define __MDDS_GRID_MAP_TRAIT_HPP__
 
-#include "grid_map_types.hpp"
+#include "multi_type_vector_types.hpp"
 
 #include <vector>
 

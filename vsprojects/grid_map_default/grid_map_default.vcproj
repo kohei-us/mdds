@@ -193,11 +193,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mdds\grid_map_trait.hpp"
+				RelativePath="..\..\include\mdds\multi_type_vector_trait.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mdds\grid_map_types.hpp"
+				RelativePath="..\..\include\mdds\multi_type_vector_types.hpp"
 				>
 			</File>
 		</Filter>
