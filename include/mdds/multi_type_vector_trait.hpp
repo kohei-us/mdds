@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_GRID_MAP_TRAIT_HPP__
-#define __MDDS_GRID_MAP_TRAIT_HPP__
+#ifndef __MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP__
+#define __MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP__
 
 #include "multi_type_vector_types.hpp"
 
