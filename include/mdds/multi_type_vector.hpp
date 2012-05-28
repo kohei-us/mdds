@@ -53,8 +53,8 @@ class multi_type_vector
 public:
     typedef size_t size_type;
 
-    typedef typename mdds::gridmap::base_cell_block cell_block_type;
-    typedef typename mdds::gridmap::cell_t cell_category_type;
+    typedef typename mdds::mtv::base_cell_block cell_block_type;
+    typedef typename mdds::mtv::cell_t cell_category_type;
     typedef typename _Trait::row_key_type row_key_type;
 
 private:
@@ -196,7 +196,7 @@ public:
     template<typename _T>
     _T get_cell(row_key_type row) const;
 
-    gridmap::cell_t get_type(row_key_type row) const;
+    mtv::cell_t get_type(row_key_type row) const;
 
     /**
      * Check if cell at specified row is empty of not.
@@ -316,10 +316,10 @@ public:
      *
      * @param cell cell value.
      *
-     * @return gridmap::cell_t numerical identifier representing the cell.
+     * @return mtv::cell_t numerical identifier representing the cell.
      */
     template<typename _T>
-    static gridmap::cell_t get_cell_type(const _T& cell);
+    static mtv::cell_t get_cell_type(const _T& cell);
 
 private:
     /**

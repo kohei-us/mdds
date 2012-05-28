@@ -36,11 +36,11 @@ class column_iterator
 
     struct node
     {
-        mdds::gridmap::cell_t type;
+        mdds::mtv::cell_t type;
         typename column_type::size_type size;
         const typename column_type::cell_block_type* data;
 
-        node() : type(mdds::gridmap::celltype_empty), size(0), data(NULL) {}
+        node() : type(mdds::mtv::celltype_empty), size(0), data(NULL) {}
         node(const node& other) : type(other.type), size(other.size), data(other.data) {}
     };
 
@@ -122,9 +122,9 @@ private:
         // blocks_type::value_type is a pointer to column_type::block.
         const typename blocks_type::value_type blk = *m_pos;
         if (blk->mp_data)
-            m_cur_node.type = mdds::gridmap::get_block_type(*blk->mp_data);
+            m_cur_node.type = mdds::mtv::get_block_type(*blk->mp_data);
         else
-            m_cur_node.type = mdds::gridmap::celltype_empty;
+            m_cur_node.type = mdds::mtv::celltype_empty;
 
         m_cur_node.size = blk->m_size;
         m_cur_node.data = blk->mp_data;

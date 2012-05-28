@@ -46,8 +46,8 @@ using namespace mdds;
 namespace {
 
 /** custom cell type definition. */
-const gridmap::cell_t celltype_user_block  = gridmap::celltype_user_start;
-const gridmap::cell_t celltype_muser_block = gridmap::celltype_user_start+1;
+const mtv::cell_t celltype_user_block  = mtv::celltype_user_start;
+const mtv::cell_t celltype_muser_block = mtv::celltype_user_start+1;
 
 /** Caller manages the life cycle of these cells. */
 struct user_cell
@@ -71,8 +71,8 @@ struct muser_cell
     muser_cell(double _v) : value(_v) {}
 };
 
-typedef mdds::gridmap::default_cell_block<celltype_user_block, user_cell*> user_cell_block;
-typedef mdds::gridmap::managed_cell_block<celltype_muser_block, muser_cell> muser_cell_block;
+typedef mdds::mtv::default_cell_block<celltype_user_block, user_cell*> user_cell_block;
+typedef mdds::mtv::managed_cell_block<celltype_muser_block, muser_cell> muser_cell_block;
 
 template<typename T>
 class cell_pool : boost::noncopyable
@@ -101,7 +101,7 @@ public:
 
 }
 
-namespace mdds { namespace gridmap {
+namespace mdds { namespace mtv {
 
 //----------------------------------------------------------------------------
 // Callbacks for user_cell* type.
@@ -139,26 +139,26 @@ void prepend_value(base_cell_block& block, user_cell* val)
 }
 
 template<typename _Iter>
-void append_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void append_values(mdds::mtv::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
-void prepend_values(mdds::gridmap::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(mdds::mtv::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
-void assign_values(mdds::gridmap::base_cell_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(mdds::mtv::base_cell_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
-    mdds::gridmap::base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+    mdds::mtv::base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::insert_values(block, pos, it_begin, it_end);
 }
@@ -204,26 +204,26 @@ void prepend_value(base_cell_block& block, muser_cell* val)
 }
 
 template<typename _Iter>
-void append_values(mdds::gridmap::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+void append_values(mdds::mtv::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
-void prepend_values(mdds::gridmap::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(mdds::mtv::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
-void assign_values(mdds::gridmap::base_cell_block& dest, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(mdds::mtv::base_cell_block& dest, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
-    mdds::gridmap::base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+    mdds::mtv::base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::insert_values(block, pos, it_begin, it_end);
 }
@@ -237,82 +237,82 @@ void get_empty_value(muser_cell*& val)
 
 }}
 
-struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
+struct my_cell_block_func : public mdds::mtv::cell_block_func_base
 {
     template<typename T>
-    static mdds::gridmap::cell_t get_cell_type(const T& cell)
+    static mdds::mtv::cell_t get_cell_type(const T& cell)
     {
-        return mdds::gridmap::get_cell_type(cell);
+        return mdds::mtv::get_cell_type(cell);
     }
 
     template<typename T>
-    static void set_value(mdds::gridmap::base_cell_block& block, size_t pos, const T& val)
+    static void set_value(mdds::mtv::base_cell_block& block, size_t pos, const T& val)
     {
-        mdds::gridmap::set_value(block, pos, val);
+        mdds::mtv::set_value(block, pos, val);
     }
 
     template<typename T>
-    static void set_values(mdds::gridmap::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
+    static void set_values(mdds::mtv::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::set_values(block, pos, *it_begin, it_begin, it_end);
+        mdds::mtv::set_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void get_value(const mdds::gridmap::base_cell_block& block, size_t pos, T& val)
+    static void get_value(const mdds::mtv::base_cell_block& block, size_t pos, T& val)
     {
-        mdds::gridmap::get_value(block, pos, val);
+        mdds::mtv::get_value(block, pos, val);
     }
 
     template<typename T>
-    static void append_value(mdds::gridmap::base_cell_block& block, const T& val)
+    static void append_value(mdds::mtv::base_cell_block& block, const T& val)
     {
-        mdds::gridmap::append_value(block, val);
+        mdds::mtv::append_value(block, val);
     }
 
     template<typename T>
     static void insert_values(
-        mdds::gridmap::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
+        mdds::mtv::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::insert_values(block, pos, *it_begin, it_begin, it_end);
+        mdds::mtv::insert_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void append_values(mdds::gridmap::base_cell_block& block, const T& it_begin, const T& it_end)
+    static void append_values(mdds::mtv::base_cell_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::append_values(block, *it_begin, it_begin, it_end);
+        mdds::mtv::append_values(block, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void assign_values(mdds::gridmap::base_cell_block& dest, const T& it_begin, const T& it_end)
+    static void assign_values(mdds::mtv::base_cell_block& dest, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);
+        mdds::mtv::assign_values(dest, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void prepend_value(mdds::gridmap::base_cell_block& block, const T& val)
+    static void prepend_value(mdds::mtv::base_cell_block& block, const T& val)
     {
-        mdds::gridmap::prepend_value(block, val);
+        mdds::mtv::prepend_value(block, val);
     }
 
     template<typename T>
-    static void prepend_values(mdds::gridmap::base_cell_block& block, const T& it_begin, const T& it_end)
+    static void prepend_values(mdds::mtv::base_cell_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::prepend_values(block, *it_begin, it_begin, it_end);
+        mdds::mtv::prepend_values(block, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
     static void get_empty_value(T& val)
     {
-        mdds::gridmap::get_empty_value(val);
+        mdds::mtv::get_empty_value(val);
     }
 
-    static mdds::gridmap::base_cell_block* create_new_block(
-        mdds::gridmap::cell_t type, size_t init_size)
+    static mdds::mtv::base_cell_block* create_new_block(
+        mdds::mtv::cell_t type, size_t init_size)
     {
         switch (type)
         {
@@ -327,9 +327,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         return cell_block_func_base::create_new_block(type, init_size);
     }
 
-    static mdds::gridmap::base_cell_block* clone_block(const mdds::gridmap::base_cell_block& block)
+    static mdds::mtv::base_cell_block* clone_block(const mdds::mtv::base_cell_block& block)
     {
-        switch (gridmap::get_block_type(block))
+        switch (mtv::get_block_type(block))
         {
             case celltype_user_block:
                 return user_cell_block::clone_block(block);
@@ -342,12 +342,12 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         return cell_block_func_base::clone_block(block);
     }
 
-    static void delete_block(mdds::gridmap::base_cell_block* p)
+    static void delete_block(mdds::mtv::base_cell_block* p)
     {
         if (!p)
             return;
 
-        switch (gridmap::get_block_type(*p))
+        switch (mtv::get_block_type(*p))
         {
             case celltype_user_block:
                 user_cell_block::delete_block(p);
@@ -360,9 +360,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void resize_block(mdds::gridmap::base_cell_block& block, size_t new_size)
+    static void resize_block(mdds::mtv::base_cell_block& block, size_t new_size)
     {
-        switch (gridmap::get_block_type(block))
+        switch (mtv::get_block_type(block))
         {
             case celltype_user_block:
                 user_cell_block::resize_block(block, new_size);
@@ -375,9 +375,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void print_block(const mdds::gridmap::base_cell_block& block)
+    static void print_block(const mdds::mtv::base_cell_block& block)
     {
-        switch (gridmap::get_block_type(block))
+        switch (mtv::get_block_type(block))
         {
             case celltype_user_block:
                 user_cell_block::print_block(block);
@@ -390,9 +390,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void erase(mdds::gridmap::base_cell_block& block, size_t pos)
+    static void erase(mdds::mtv::base_cell_block& block, size_t pos)
     {
-        switch (gridmap::get_block_type(block))
+        switch (mtv::get_block_type(block))
         {
             case celltype_user_block:
                 user_cell_block::erase_block(block, pos);
@@ -405,9 +405,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
         }
     }
 
-    static void erase(mdds::gridmap::base_cell_block& block, size_t pos, size_t size)
+    static void erase(mdds::mtv::base_cell_block& block, size_t pos, size_t size)
     {
-        switch (gridmap::get_block_type(block))
+        switch (mtv::get_block_type(block))
         {
             case celltype_user_block:
                 user_cell_block::erase_block(block, pos, size);
@@ -421,9 +421,9 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     static void append_values_from_block(
-        mdds::gridmap::base_cell_block& dest, const mdds::gridmap::base_cell_block& src)
+        mdds::mtv::base_cell_block& dest, const mdds::mtv::base_cell_block& src)
     {
-        switch (gridmap::get_block_type(dest))
+        switch (mtv::get_block_type(dest))
         {
             case celltype_user_block:
                 user_cell_block::append_values_from_block(dest, src);
@@ -437,10 +437,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     static void append_values_from_block(
-        mdds::gridmap::base_cell_block& dest, const mdds::gridmap::base_cell_block& src,
+        mdds::mtv::base_cell_block& dest, const mdds::mtv::base_cell_block& src,
         size_t begin_pos, size_t len)
     {
-        switch (gridmap::get_block_type(dest))
+        switch (mtv::get_block_type(dest))
         {
             case celltype_user_block:
                 user_cell_block::append_values_from_block(dest, src, begin_pos, len);
@@ -454,10 +454,10 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     static void assign_values_from_block(
-        mdds::gridmap::base_cell_block& dest, const mdds::gridmap::base_cell_block& src,
+        mdds::mtv::base_cell_block& dest, const mdds::mtv::base_cell_block& src,
         size_t begin_pos, size_t len)
     {
-        switch (gridmap::get_block_type(dest))
+        switch (mtv::get_block_type(dest))
         {
             case celltype_user_block:
                 user_cell_block::assign_values_from_block(dest, src, begin_pos, len);
@@ -471,34 +471,34 @@ struct my_cell_block_func : public mdds::gridmap::cell_block_func_base
     }
 
     static bool equal_block(
-        const mdds::gridmap::base_cell_block& left, const mdds::gridmap::base_cell_block& right)
+        const mdds::mtv::base_cell_block& left, const mdds::mtv::base_cell_block& right)
     {
-        if (gridmap::get_block_type(left) == celltype_user_block)
+        if (mtv::get_block_type(left) == celltype_user_block)
         {
-            if (gridmap::get_block_type(right) != celltype_user_block)
+            if (mtv::get_block_type(right) != celltype_user_block)
                 return false;
 
             return user_cell_block::get(left) == user_cell_block::get(right);
         }
-        else if (gridmap::get_block_type(right) == celltype_user_block)
+        else if (mtv::get_block_type(right) == celltype_user_block)
             return false;
 
-        if (gridmap::get_block_type(left) == celltype_muser_block)
+        if (mtv::get_block_type(left) == celltype_muser_block)
         {
-            if (gridmap::get_block_type(right) != celltype_muser_block)
+            if (mtv::get_block_type(right) != celltype_muser_block)
                 return false;
 
             return muser_cell_block::get(left) == muser_cell_block::get(right);
         }
-        else if (gridmap::get_block_type(right) == celltype_muser_block)
+        else if (mtv::get_block_type(right) == celltype_muser_block)
             return false;
 
         return cell_block_func_base::equal_block(left, right);
     }
 
-    static void overwrite_cells(mdds::gridmap::base_cell_block& block, size_t pos, size_t len)
+    static void overwrite_cells(mdds::mtv::base_cell_block& block, size_t pos, size_t len)
     {
-        switch (gridmap::get_block_type(block))
+        switch (mtv::get_block_type(block))
         {
             case celltype_user_block:
                 // Do nothing.  The client code manages the life cycle of these cells.
@@ -539,24 +539,24 @@ void gridmap_test_types()
 {
     stack_printer __stack_printer__("::gridmap_test_types");
 
-    mdds::gridmap::cell_t ct;
+    mdds::mtv::cell_t ct;
 
     // Basic types
     ct = column_type::get_cell_type(double(12.3));
-    assert(ct == gridmap::celltype_numeric);
+    assert(ct == mtv::celltype_numeric);
     ct = column_type::get_cell_type(string());
-    assert(ct == gridmap::celltype_string);
+    assert(ct == mtv::celltype_string);
     ct = column_type::get_cell_type(size_t(12));
-    assert(ct == gridmap::celltype_index);
+    assert(ct == mtv::celltype_index);
     ct = column_type::get_cell_type(true);
-    assert(ct == gridmap::celltype_boolean);
+    assert(ct == mtv::celltype_boolean);
     ct = column_type::get_cell_type(false);
-    assert(ct == gridmap::celltype_boolean);
+    assert(ct == mtv::celltype_boolean);
 
     // Custom cell type
     user_cell* p = NULL;
     ct = column_type::get_cell_type(p);
-    assert(ct == celltype_user_block && ct >= gridmap::celltype_user_start);
+    assert(ct == celltype_user_block && ct >= mtv::celltype_user_start);
 }
 
 void gridmap_test_basic()

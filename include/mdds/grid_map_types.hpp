@@ -33,7 +33,7 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 
-namespace mdds { namespace gridmap {
+namespace mdds { namespace mtv {
 
 typedef int cell_t;
 

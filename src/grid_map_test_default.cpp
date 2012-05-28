@@ -50,7 +50,7 @@ struct grid_map_trait
     typedef long row_key_type;
     typedef long col_key_type;
 
-    typedef mdds::gridmap::cell_block_func cell_block_func;
+    typedef mdds::mtv::cell_block_func cell_block_func;
 };
 
 template<typename _ColT, typename _ValT>
@@ -1983,7 +1983,7 @@ void gridmap_test_iterators()
         size_t len = std::distance(it, it_end);
         assert(len == 1);
         assert(it != it_end);
-        assert(it->type == gridmap::celltype_empty);
+        assert(it->type == mtv::celltype_empty);
         assert(it->size == 5);
         const column_type::const_iterator::value_type& val = *it;
         assert(val.type == it->type);
@@ -2006,17 +2006,17 @@ void gridmap_test_iterators()
             size_t len = std::distance(it, it_end);
             assert(len == 3);
             assert(it != it_end);
-            assert(it->type == mdds::gridmap::celltype_numeric);
+            assert(it->type == mdds::mtv::celltype_numeric);
             assert(it->size == 2);
 
             ++it;
             assert(it != it_end);
-            assert(it->type == mdds::gridmap::celltype_empty);
+            assert(it->type == mdds::mtv::celltype_empty);
             assert(it->size == 2);
 
             ++it;
             assert(it != it_end);
-            assert(it->type == mdds::gridmap::celltype_string);
+            assert(it->type == mdds::mtv::celltype_string);
             assert(it->size == 2);
 
             ++it;
@@ -2029,17 +2029,17 @@ void gridmap_test_iterators()
             size_t len = std::distance(it, it_end);
             assert(len == 3);
             assert(it != it_end);
-            assert(it->type == mdds::gridmap::celltype_string);
+            assert(it->type == mdds::mtv::celltype_string);
             assert(it->size == 2);
 
             ++it;
             assert(it != it_end);
-            assert(it->type == mdds::gridmap::celltype_empty);
+            assert(it->type == mdds::mtv::celltype_empty);
             assert(it->size == 2);
 
             ++it;
             assert(it != it_end);
-            assert(it->type == mdds::gridmap::celltype_numeric);
+            assert(it->type == mdds::mtv::celltype_numeric);
             assert(it->size == 2);
 
             ++it;

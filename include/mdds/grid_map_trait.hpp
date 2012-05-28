@@ -32,7 +32,7 @@
 
 #include <vector>
 
-namespace mdds { namespace gridmap {
+namespace mdds { namespace mtv {
 
 typedef default_cell_block<celltype_numeric, double>     numeric_cell_block;
 typedef default_cell_block<celltype_string, std::string> string_cell_block;
@@ -566,34 +566,34 @@ void cell_block_func_base::overwrite_cells(base_cell_block&, size_t, size_t)
 struct cell_block_func : public cell_block_func_base
 {
     template<typename T>
-    static mdds::gridmap::cell_t get_cell_type(const T& cell)
+    static mdds::mtv::cell_t get_cell_type(const T& cell)
     {
-        return mdds::gridmap::get_cell_type(cell);
+        return mdds::mtv::get_cell_type(cell);
     }
 
     template<typename T>
-    static void set_value(mdds::gridmap::base_cell_block& block, size_t pos, const T& val)
+    static void set_value(mdds::mtv::base_cell_block& block, size_t pos, const T& val)
     {
-        mdds::gridmap::set_value(block, pos, val);
+        mdds::mtv::set_value(block, pos, val);
     }
 
     template<typename T>
-    static void set_values(mdds::gridmap::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
+    static void set_values(mdds::mtv::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::set_values(block, pos, *it_begin, it_begin, it_end);
+        mdds::mtv::set_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void get_value(const mdds::gridmap::base_cell_block& block, size_t pos, T& val)
+    static void get_value(const mdds::mtv::base_cell_block& block, size_t pos, T& val)
     {
-        mdds::gridmap::get_value(block, pos, val);
+        mdds::mtv::get_value(block, pos, val);
     }
 
     template<typename T>
     static void append_value(base_cell_block& block, const T& val)
     {
-        mdds::gridmap::append_value(block, val);
+        mdds::mtv::append_value(block, val);
     }
 
     template<typename T>
@@ -601,40 +601,40 @@ struct cell_block_func : public cell_block_func_base
         base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::insert_values(block, pos, *it_begin, it_begin, it_end);
+        mdds::mtv::insert_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
     static void append_values(base_cell_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::append_values(block, *it_begin, it_begin, it_end);
+        mdds::mtv::append_values(block, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
     static void assign_values(base_cell_block& dest, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::assign_values(dest, *it_begin, it_begin, it_end);
+        mdds::mtv::assign_values(dest, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
     static void prepend_value(base_cell_block& block, const T& val)
     {
-        mdds::gridmap::prepend_value(block, val);
+        mdds::mtv::prepend_value(block, val);
     }
 
     template<typename T>
     static void prepend_values(base_cell_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
-        mdds::gridmap::prepend_values(block, *it_begin, it_begin, it_end);
+        mdds::mtv::prepend_values(block, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
     static void get_empty_value(T& val)
     {
-        mdds::gridmap::get_empty_value(val);
+        mdds::mtv::get_empty_value(val);
     }
 };
 
