@@ -47,7 +47,7 @@ namespace mdds {
  * cell objects that the user of this container needs to deal with.  The
  * user accesses directly with the raw values.
  */
-template<typename _Trait>
+template<typename _CellBlockFunc>
 class multi_type_vector
 {
 public:
@@ -57,9 +57,7 @@ public:
     typedef typename mdds::mtv::cell_t cell_category_type;
 
 private:
-    typedef _Trait trait;
-
-    typedef typename _Trait::cell_block_func cell_block_func;
+    typedef _CellBlockFunc cell_block_func;
 
     struct block
     {

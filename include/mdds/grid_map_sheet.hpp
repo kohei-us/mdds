@@ -35,11 +35,11 @@
 
 namespace mdds { namespace __gridmap {
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 class sheet
 {
 public:
-    typedef mdds::multi_type_vector<_Trait> column_type;
+    typedef mdds::multi_type_vector<_CellBlockFunc> column_type;
     typedef typename column_type::size_type size_type;
 
     sheet();

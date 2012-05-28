@@ -27,24 +27,24 @@
 
 namespace mdds {
 
-template<typename _Trait>
-grid_map<_Trait>::grid_map() {}
+template<typename _CellBlockFunc>
+grid_map<_CellBlockFunc>::grid_map() {}
 
-template<typename _Trait>
-grid_map<_Trait>::grid_map(size_type sheet_size, size_type row_size, size_type col_size)
+template<typename _CellBlockFunc>
+grid_map<_CellBlockFunc>::grid_map(size_type sheet_size, size_type row_size, size_type col_size)
 {
     for (size_type i = 0; i < sheet_size; ++i)
         m_sheets.push_back(new sheet_type(row_size, col_size));
 }
 
-template<typename _Trait>
-grid_map<_Trait>::~grid_map()
+template<typename _CellBlockFunc>
+grid_map<_CellBlockFunc>::~grid_map()
 {
     std::for_each(m_sheets.begin(), m_sheets.end(), default_deleter<sheet_type>());
 }
 
-template<typename _Trait>
-void grid_map<_Trait>::push_back(size_type row_size, size_type col_size)
+template<typename _CellBlockFunc>
+void grid_map<_CellBlockFunc>::push_back(size_type row_size, size_type col_size)
 {
     m_sheets.push_back(new sheet_type(row_size, col_size));
 }

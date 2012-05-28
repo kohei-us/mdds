@@ -26,7 +26,6 @@
  ************************************************************************/
 
 #include <stdexcept>
-#include <boost/numeric/conversion/cast.hpp>
 
 #if UNIT_TEST
 #include <iostream>
@@ -36,59 +35,59 @@ using std::endl;
 
 namespace mdds {
 
-template<typename _Trait>
-multi_type_vector<_Trait>::block::block() : m_size(0), mp_data(NULL) {}
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::block::block() : m_size(0), mp_data(NULL) {}
 
-template<typename _Trait>
-multi_type_vector<_Trait>::block::block(size_type _size) : m_size(_size), mp_data(NULL) {}
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::block::block(size_type _size) : m_size(_size), mp_data(NULL) {}
 
-template<typename _Trait>
-multi_type_vector<_Trait>::block::block(const block& other) :
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::block::block(const block& other) :
     m_size(other.m_size), mp_data(NULL)
 {
     if (other.mp_data)
         mp_data = cell_block_func::clone_block(*other.mp_data);
 }
 
-template<typename _Trait>
-multi_type_vector<_Trait>::block::~block()
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::block::~block()
 {
     cell_block_func::delete_block(mp_data);
 }
 
-template<typename _Trait>
-typename multi_type_vector<_Trait>::const_iterator
-multi_type_vector<_Trait>::begin() const
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::const_iterator
+multi_type_vector<_CellBlockFunc>::begin() const
 {
     return const_iterator(m_blocks.begin(), m_blocks.end());
 }
 
-template<typename _Trait>
-typename multi_type_vector<_Trait>::const_iterator
-multi_type_vector<_Trait>::end() const
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::const_iterator
+multi_type_vector<_CellBlockFunc>::end() const
 {
     return const_iterator(m_blocks.end(), m_blocks.end());
 }
 
-template<typename _Trait>
-typename multi_type_vector<_Trait>::const_reverse_iterator
-multi_type_vector<_Trait>::rbegin() const
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::const_reverse_iterator
+multi_type_vector<_CellBlockFunc>::rbegin() const
 {
     return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend());
 }
 
-template<typename _Trait>
-typename multi_type_vector<_Trait>::const_reverse_iterator
-multi_type_vector<_Trait>::rend() const
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::const_reverse_iterator
+multi_type_vector<_CellBlockFunc>::rend() const
 {
     return const_reverse_iterator(m_blocks.rend(), m_blocks.rend());
 }
 
-template<typename _Trait>
-multi_type_vector<_Trait>::multi_type_vector() : m_cur_size(0) {}
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::multi_type_vector() : m_cur_size(0) {}
 
-template<typename _Trait>
-multi_type_vector<_Trait>::multi_type_vector(size_type init_row_size) : m_cur_size(init_row_size)
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_row_size) : m_cur_size(init_row_size)
 {
     if (!init_row_size)
         return;
@@ -97,8 +96,8 @@ multi_type_vector<_Trait>::multi_type_vector(size_type init_row_size) : m_cur_si
     m_blocks.push_back(new block(init_row_size));
 }
 
-template<typename _Trait>
-multi_type_vector<_Trait>::multi_type_vector(const multi_type_vector& other) :
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::multi_type_vector(const multi_type_vector& other) :
     m_cur_size(other.m_cur_size)
 {
     // Clone all the blocks.
@@ -108,35 +107,35 @@ multi_type_vector<_Trait>::multi_type_vector(const multi_type_vector& other) :
         m_blocks.push_back(new block(**it));
 }
 
-template<typename _Trait>
-multi_type_vector<_Trait>::~multi_type_vector()
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::~multi_type_vector()
 {
     std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cell(size_type row, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::set_cell(size_type row, const _T& cell)
 {
     set_cell_impl(row, cell);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cells(size_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_CellBlockFunc>::set_cells(size_type row, const _T& it_begin, const _T& it_end)
 {
     set_cells_impl(row, it_begin, it_end);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::insert_cells(size_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_CellBlockFunc>::insert_cells(size_type row, const _T& it_begin, const _T& it_end)
 {
     insert_cells_impl(row, it_begin, it_end);
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::get_block_position(
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::get_block_position(
     size_type row, size_type& start_row, size_type& block_index, size_type start_block, size_type start_block_row) const
 {
     start_row = start_block_row;
@@ -157,9 +156,9 @@ void multi_type_vector<_Trait>::get_block_position(
     assert(!"Block position not found.");
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::create_new_block_with_new_cell(cell_block_type*& data, const _T& cell)
 {
     cell_category_type cat = cell_block_func::get_cell_type(cell);
 
@@ -174,9 +173,9 @@ void multi_type_vector<_Trait>::create_new_block_with_new_cell(cell_block_type*&
     cell_block_func::set_value(*data, 0, cell);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cell_to_middle_of_block(
+void multi_type_vector<_CellBlockFunc>::set_cell_to_middle_of_block(
     size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
@@ -209,18 +208,18 @@ void multi_type_vector<_Trait>::set_cell_to_middle_of_block(
     create_new_block_with_new_cell(blk_new->mp_data, cell);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::append_cell_to_block(size_type block_index, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::append_cell_to_block(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     blk->m_size += 1;
     cell_block_func::append_value(*blk->mp_data, cell);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cell_impl(size_type row, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::set_cell_impl(size_type row, const _T& cell)
 {
     cell_category_type cat = cell_block_func::get_cell_type(cell);
 
@@ -380,9 +379,9 @@ void multi_type_vector<_Trait>::set_cell_impl(size_type row, const _T& cell)
     blk_next->m_size += 1;
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cell_to_empty_block(
+void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
     size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
@@ -646,9 +645,9 @@ void multi_type_vector<_Trait>::set_cell_to_empty_block(
     }
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     assert(blk->m_size == 1);
@@ -834,9 +833,9 @@ void multi_type_vector<_Trait>::set_cell_to_block_of_size_one(size_type block_in
     create_new_block_with_new_cell(blk->mp_data, cell);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cell_to_top_of_data_block(size_type block_index, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::set_cell_to_top_of_data_block(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     blk->m_size -= 1;
@@ -847,9 +846,9 @@ void multi_type_vector<_Trait>::set_cell_to_top_of_data_block(size_type block_in
     create_new_block_with_new_cell(blk->mp_data, cell);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell)
 {
     assert(block_index < m_blocks.size());
     block* blk = m_blocks[block_index];
@@ -861,9 +860,9 @@ void multi_type_vector<_Trait>::set_cell_to_bottom_of_data_block(size_type block
     create_new_block_with_new_cell(blk->mp_data, cell);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::get_cell(size_type row, _T& cell) const
+void multi_type_vector<_CellBlockFunc>::get_cell(size_type row, _T& cell) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
@@ -884,17 +883,17 @@ void multi_type_vector<_Trait>::get_cell(size_type row, _T& cell) const
     cell_block_func::get_value(*blk->mp_data, idx, cell);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-_T multi_type_vector<_Trait>::get_cell(size_type row) const
+_T multi_type_vector<_CellBlockFunc>::get_cell(size_type row) const
 {
     _T cell;
     get_cell(row, cell);
     return cell;
 }
 
-template<typename _Trait>
-mtv::cell_t multi_type_vector<_Trait>::get_type(size_type row) const
+template<typename _CellBlockFunc>
+mtv::cell_t multi_type_vector<_CellBlockFunc>::get_type(size_type row) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
@@ -906,8 +905,8 @@ mtv::cell_t multi_type_vector<_Trait>::get_type(size_type row) const
     return mtv::get_block_type(*blk->mp_data);
 }
 
-template<typename _Trait>
-bool multi_type_vector<_Trait>::is_empty(size_type row) const
+template<typename _CellBlockFunc>
+bool multi_type_vector<_CellBlockFunc>::is_empty(size_type row) const
 {
     size_type start_row;
     size_type block_index;
@@ -916,8 +915,8 @@ bool multi_type_vector<_Trait>::is_empty(size_type row) const
     return m_blocks[block_index]->mp_data == NULL;
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::set_empty(size_type start_row, size_type end_row)
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::set_empty(size_type start_row, size_type end_row)
 {
     if (start_row > end_row)
         throw std::out_of_range("Start row is larger than the end row.");
@@ -937,8 +936,8 @@ void multi_type_vector<_Trait>::set_empty(size_type start_row, size_type end_row
         start_row, end_row, block_pos1, start_row_in_block1, block_pos2, start_row_in_block2);
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::erase(size_type start_row, size_type end_row)
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::erase(size_type start_row, size_type end_row)
 {
     if (start_row > end_row)
         throw std::out_of_range("Start row is larger than the end row.");
@@ -946,8 +945,8 @@ void multi_type_vector<_Trait>::erase(size_type start_row, size_type end_row)
     erase_impl(start_row, end_row);
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::erase_impl(size_type start_row, size_type end_row)
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_type end_row)
 {
     assert(start_row <= end_row);
 
@@ -1074,8 +1073,8 @@ void multi_type_vector<_Trait>::erase_impl(size_type start_row, size_type end_ro
     m_cur_size -= end_row - start_row + 1;
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::insert_empty(size_type row, size_type length)
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::insert_empty(size_type row, size_type length)
 {
     if (!length)
         // Nothing to insert.
@@ -1084,8 +1083,8 @@ void multi_type_vector<_Trait>::insert_empty(size_type row, size_type length)
     insert_empty_impl(row, length);
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::insert_empty_impl(size_type row, size_type length)
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type length)
 {
     assert(row < m_cur_size);
 
@@ -1147,9 +1146,9 @@ void multi_type_vector<_Trait>::insert_empty_impl(size_type row, size_type lengt
     m_cur_size += length;
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_CellBlockFunc>::set_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
 {
     size_type length = std::distance(it_begin, it_end);
     if (!length)
@@ -1175,9 +1174,9 @@ void multi_type_vector<_Trait>::set_cells_impl(size_type row, const _T& it_begin
         row, end_row, block_index1, start_row1, block_index2, start_row2, it_begin, it_end);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
 {
     size_type length = std::distance(it_begin, it_end);
     if (!length)
@@ -1272,9 +1271,9 @@ void multi_type_vector<_Trait>::insert_cells_impl(size_type row, const _T& it_be
     m_cur_size += length;
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::insert_cells_to_middle(
+void multi_type_vector<_CellBlockFunc>::insert_cells_to_middle(
     size_type row, size_type block_index, size_type start_row,
     const _T& it_begin, const _T& it_end)
 {
@@ -1311,9 +1310,9 @@ void multi_type_vector<_Trait>::insert_cells_to_middle(
     }
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cells_to_single_block(
+void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
     size_type start_row, size_type end_row, size_type block_index,
     size_type start_row_in_block, const _T& it_begin, const _T& it_end)
 {
@@ -1481,9 +1480,9 @@ void multi_type_vector<_Trait>::set_cells_to_single_block(
     blk->m_size = new_cur_size;
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cells_to_multi_blocks(
+void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1511,9 +1510,9 @@ void multi_type_vector<_Trait>::set_cells_to_multi_blocks(
         block_index2, start_row_in_block2, it_begin, it_end);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
+void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1643,9 +1642,9 @@ void multi_type_vector<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
     m_blocks.insert(m_blocks.begin()+insert_pos, data_blk.release());
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
+void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_empty(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1725,9 +1724,9 @@ void multi_type_vector<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
         block_index2, start_row_in_block2, it_begin, it_end);
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-bool multi_type_vector<_Trait>::append_to_prev_block(
+bool multi_type_vector<_CellBlockFunc>::append_to_prev_block(
     size_type block_index, cell_category_type cat, size_type length,
     const _T& it_begin, const _T& it_end)
 {
@@ -1748,36 +1747,36 @@ bool multi_type_vector<_Trait>::append_to_prev_block(
     return true;
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::clear()
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::clear()
 {
     std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
     m_blocks.clear();
     m_cur_size = 0;
 }
 
-template<typename _Trait>
-typename multi_type_vector<_Trait>::size_type
-multi_type_vector<_Trait>::size() const
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::size_type
+multi_type_vector<_CellBlockFunc>::size() const
 {
     return m_cur_size;
 }
 
-template<typename _Trait>
-typename multi_type_vector<_Trait>::size_type
-multi_type_vector<_Trait>::block_size() const
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::size_type
+multi_type_vector<_CellBlockFunc>::block_size() const
 {
     return m_blocks.size();
 }
 
-template<typename _Trait>
-bool multi_type_vector<_Trait>::empty() const
+template<typename _CellBlockFunc>
+bool multi_type_vector<_CellBlockFunc>::empty() const
 {
     return m_blocks.empty();
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::resize(size_type new_size)
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::resize(size_type new_size)
 {
     if (new_size == m_cur_size)
         return;
@@ -1846,15 +1845,15 @@ void multi_type_vector<_Trait>::resize(size_type new_size)
     m_cur_size = new_size;
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::swap(multi_type_vector& other)
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::swap(multi_type_vector& other)
 {
     std::swap(m_cur_size, other.m_cur_size);
     m_blocks.swap(other.m_blocks);
 }
 
-template<typename _Trait>
-bool multi_type_vector<_Trait>::operator== (const multi_type_vector& other) const
+template<typename _CellBlockFunc>
+bool multi_type_vector<_CellBlockFunc>::operator== (const multi_type_vector& other) const
 {
     if (this == &other)
         // Comparing to self is always equal.
@@ -1890,29 +1889,29 @@ bool multi_type_vector<_Trait>::operator== (const multi_type_vector& other) cons
     return true;
 }
 
-template<typename _Trait>
-bool multi_type_vector<_Trait>::operator!= (const multi_type_vector& other) const
+template<typename _CellBlockFunc>
+bool multi_type_vector<_CellBlockFunc>::operator!= (const multi_type_vector& other) const
 {
     return !operator== (other);
 }
 
-template<typename _Trait>
-multi_type_vector<_Trait>& multi_type_vector<_Trait>::operator= (const multi_type_vector& other)
+template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>& multi_type_vector<_CellBlockFunc>::operator= (const multi_type_vector& other)
 {
     multi_type_vector assigned(other);
     swap(assigned);
     return *this;
 }
 
-template<typename _Trait>
+template<typename _CellBlockFunc>
 template<typename _T>
-mtv::cell_t multi_type_vector<_Trait>::get_cell_type(const _T& cell)
+mtv::cell_t multi_type_vector<_CellBlockFunc>::get_cell_type(const _T& cell)
 {
     return cell_block_func::get_cell_type(cell);
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::set_empty_in_single_block(
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
     size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block)
 {
     // Range is within a single block.
@@ -1991,8 +1990,8 @@ void multi_type_vector<_Trait>::set_empty_in_single_block(
     blk->m_size = new_cur_size;
 }
 
-template<typename _Trait>
-void multi_type_vector<_Trait>::set_empty_in_multi_blocks(
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2)

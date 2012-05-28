@@ -39,11 +39,11 @@ namespace mdds {
  * This container stores grid cells in a 3-dimensional hyperplane.  Cells
  * are accessed via 3-key combinations.
  */
-template<typename _Trait>
+template<typename _CellBlockFunc>
 class grid_map
 {
 public:
-    typedef typename __gridmap::sheet<_Trait> sheet_type;
+    typedef typename __gridmap::sheet<_CellBlockFunc> sheet_type;
     typedef typename sheet_type::column_type column_type;
     typedef typename column_type::size_type size_type;
 

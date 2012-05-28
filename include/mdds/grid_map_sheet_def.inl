@@ -27,18 +27,18 @@
 
 namespace mdds { namespace __gridmap {
 
-template<typename _Trait>
-sheet<_Trait>::sheet() {}
+template<typename _CellBlockFunc>
+sheet<_CellBlockFunc>::sheet() {}
 
-template<typename _Trait>
-sheet<_Trait>::sheet(size_type row_size, size_type col_size)
+template<typename _CellBlockFunc>
+sheet<_CellBlockFunc>::sheet(size_type row_size, size_type col_size)
 {
     for (size_type i = 0; i < col_size; ++i)
         m_columns.push_back(new column_type(row_size));
 }
 
-template<typename _Trait>
-sheet<_Trait>::~sheet()
+template<typename _CellBlockFunc>
+sheet<_CellBlockFunc>::~sheet()
 {
     std::for_each(m_columns.begin(), m_columns.end(), default_deleter<column_type>());
 }
