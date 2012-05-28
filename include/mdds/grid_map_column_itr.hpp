@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-namespace mdds { namespace __gridmap {
+namespace mdds { namespace __mtv {
 
 template<typename _ColType, typename _BlksType, typename _ItrType>
 class column_iterator

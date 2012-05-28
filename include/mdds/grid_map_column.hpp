@@ -38,7 +38,7 @@
 #include <algorithm>
 #include <cassert>
 
-namespace mdds { namespace __gridmap {
+namespace mdds {
 
 /**
  * Each column consists of a series of blocks, and each block stores a
@@ -48,7 +48,7 @@ namespace mdds { namespace __gridmap {
  * user accesses directly with the raw values.
  */
 template<typename _Trait>
-class column
+class multi_type_vector
 {
 public:
     typedef size_t size_type;
@@ -77,8 +77,8 @@ private:
 
 public:
 
-    typedef column_iterator<column, blocks_type, typename blocks_type::const_iterator> const_iterator;
-    typedef column_iterator<column, blocks_type, typename blocks_type::const_reverse_iterator> const_reverse_iterator;
+    typedef __mtv::column_iterator<multi_type_vector, blocks_type, typename blocks_type::const_iterator> const_iterator;
+    typedef __mtv::column_iterator<multi_type_vector, blocks_type, typename blocks_type::const_reverse_iterator> const_reverse_iterator;
 
     const_iterator begin() const;
     const_iterator end() const;
@@ -89,7 +89,7 @@ public:
     /**
      * Default constructor.  It initializes the container with empty size.
      */
-    column();
+    multi_type_vector();
 
     /**
      * Constructor that takes initial size of the container.  When the size
@@ -98,19 +98,19 @@ public:
      *
      * @param init_row_size initial container size
      */
-    column(size_type init_row_size);
+    multi_type_vector(size_type init_row_size);
 
     /**
      * Copy constructor.
      *
      * @param other other column instance to copy values from.
      */
-    column(const column& other);
+    multi_type_vector(const multi_type_vector& other);
 
     /**
      * Destructor.  It deletes all allocated data blocks.
      */
-    ~column();
+    ~multi_type_vector();
 
     /**
      * Set a value of an arbitrary type to a specified row.  The type of the
@@ -304,12 +304,12 @@ public:
      *
      * @param other another container to swap content with.
      */
-    void swap(column& other);
+    void swap(multi_type_vector& other);
 
-    bool operator== (const column& other) const;
-    bool operator!= (const column& other) const;
+    bool operator== (const multi_type_vector& other) const;
+    bool operator!= (const multi_type_vector& other) const;
 
-    column& operator= (const column& other);
+    multi_type_vector& operator= (const multi_type_vector& other);
 
     /**
      * Return the numerical identifier that represents passed cell.
@@ -419,7 +419,7 @@ private:
     size_type m_cur_size;
 };
 
-}}
+}
 
 #include "grid_map_column_def.inl"
 

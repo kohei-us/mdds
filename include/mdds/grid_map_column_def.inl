@@ -34,16 +34,16 @@ using std::cout;
 using std::endl;
 #endif
 
-namespace mdds { namespace __gridmap {
+namespace mdds {
 
 template<typename _Trait>
-column<_Trait>::block::block() : m_size(0), mp_data(NULL) {}
+multi_type_vector<_Trait>::block::block() : m_size(0), mp_data(NULL) {}
 
 template<typename _Trait>
-column<_Trait>::block::block(size_type _size) : m_size(_size), mp_data(NULL) {}
+multi_type_vector<_Trait>::block::block(size_type _size) : m_size(_size), mp_data(NULL) {}
 
 template<typename _Trait>
-column<_Trait>::block::block(const block& other) :
+multi_type_vector<_Trait>::block::block(const block& other) :
     m_size(other.m_size), mp_data(NULL)
 {
     if (other.mp_data)
@@ -51,44 +51,44 @@ column<_Trait>::block::block(const block& other) :
 }
 
 template<typename _Trait>
-column<_Trait>::block::~block()
+multi_type_vector<_Trait>::block::~block()
 {
     cell_block_func::delete_block(mp_data);
 }
 
 template<typename _Trait>
-typename column<_Trait>::const_iterator
-column<_Trait>::begin() const
+typename multi_type_vector<_Trait>::const_iterator
+multi_type_vector<_Trait>::begin() const
 {
     return const_iterator(m_blocks.begin(), m_blocks.end());
 }
 
 template<typename _Trait>
-typename column<_Trait>::const_iterator
-column<_Trait>::end() const
+typename multi_type_vector<_Trait>::const_iterator
+multi_type_vector<_Trait>::end() const
 {
     return const_iterator(m_blocks.end(), m_blocks.end());
 }
 
 template<typename _Trait>
-typename column<_Trait>::const_reverse_iterator
-column<_Trait>::rbegin() const
+typename multi_type_vector<_Trait>::const_reverse_iterator
+multi_type_vector<_Trait>::rbegin() const
 {
     return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend());
 }
 
 template<typename _Trait>
-typename column<_Trait>::const_reverse_iterator
-column<_Trait>::rend() const
+typename multi_type_vector<_Trait>::const_reverse_iterator
+multi_type_vector<_Trait>::rend() const
 {
     return const_reverse_iterator(m_blocks.rend(), m_blocks.rend());
 }
 
 template<typename _Trait>
-column<_Trait>::column() : m_cur_size(0) {}
+multi_type_vector<_Trait>::multi_type_vector() : m_cur_size(0) {}
 
 template<typename _Trait>
-column<_Trait>::column(size_type init_row_size) : m_cur_size(init_row_size)
+multi_type_vector<_Trait>::multi_type_vector(size_type init_row_size) : m_cur_size(init_row_size)
 {
     if (!init_row_size)
         return;
@@ -98,7 +98,7 @@ column<_Trait>::column(size_type init_row_size) : m_cur_size(init_row_size)
 }
 
 template<typename _Trait>
-column<_Trait>::column(const column& other) :
+multi_type_vector<_Trait>::multi_type_vector(const multi_type_vector& other) :
     m_cur_size(other.m_cur_size)
 {
     // Clone all the blocks.
@@ -109,14 +109,14 @@ column<_Trait>::column(const column& other) :
 }
 
 template<typename _Trait>
-column<_Trait>::~column()
+multi_type_vector<_Trait>::~multi_type_vector()
 {
     std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
 }
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell(row_key_type row, const _T& cell)
+void multi_type_vector<_Trait>::set_cell(row_key_type row, const _T& cell)
 {
     size_type _row = check_row_range(row);
     set_cell_impl(_row, cell);
@@ -124,7 +124,7 @@ void column<_Trait>::set_cell(row_key_type row, const _T& cell)
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cells(row_key_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_Trait>::set_cells(row_key_type row, const _T& it_begin, const _T& it_end)
 {
     size_type _row = check_row_range(row);
     set_cells_impl(_row, it_begin, it_end);
@@ -132,15 +132,15 @@ void column<_Trait>::set_cells(row_key_type row, const _T& it_begin, const _T& i
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::insert_cells(row_key_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_Trait>::insert_cells(row_key_type row, const _T& it_begin, const _T& it_end)
 {
     size_type _row = check_row_range(row);
     insert_cells_impl(_row, it_begin, it_end);
 }
 
 template<typename _Trait>
-typename column<_Trait>::size_type
-column<_Trait>::check_row_range(row_key_type row) const
+typename multi_type_vector<_Trait>::size_type
+multi_type_vector<_Trait>::check_row_range(row_key_type row) const
 {
     static const char* msg = "Specified row index is out-of-bound.";
     if (row < 0)
@@ -154,7 +154,7 @@ column<_Trait>::check_row_range(row_key_type row) const
 }
 
 template<typename _Trait>
-void column<_Trait>::get_block_position(
+void multi_type_vector<_Trait>::get_block_position(
     size_type row, size_type& start_row, size_type& block_index, size_type start_block, size_type start_block_row) const
 {
     start_row = start_block_row;
@@ -177,7 +177,7 @@ void column<_Trait>::get_block_position(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, const _T& cell)
+void multi_type_vector<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, const _T& cell)
 {
     cell_category_type cat = cell_block_func::get_cell_type(cell);
 
@@ -194,7 +194,7 @@ void column<_Trait>::create_new_block_with_new_cell(cell_block_type*& data, cons
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_middle_of_block(
+void multi_type_vector<_Trait>::set_cell_to_middle_of_block(
     size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
@@ -229,7 +229,7 @@ void column<_Trait>::set_cell_to_middle_of_block(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::append_cell_to_block(size_type block_index, const _T& cell)
+void multi_type_vector<_Trait>::append_cell_to_block(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     blk->m_size += 1;
@@ -238,7 +238,7 @@ void column<_Trait>::append_cell_to_block(size_type block_index, const _T& cell)
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_impl(size_type row, const _T& cell)
+void multi_type_vector<_Trait>::set_cell_impl(size_type row, const _T& cell)
 {
     cell_category_type cat = cell_block_func::get_cell_type(cell);
 
@@ -400,7 +400,7 @@ void column<_Trait>::set_cell_impl(size_type row, const _T& cell)
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_empty_block(
+void multi_type_vector<_Trait>::set_cell_to_empty_block(
     size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
@@ -666,7 +666,7 @@ void column<_Trait>::set_cell_to_empty_block(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const _T& cell)
+void multi_type_vector<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     assert(blk->m_size == 1);
@@ -854,7 +854,7 @@ void column<_Trait>::set_cell_to_block_of_size_one(size_type block_index, const 
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_top_of_data_block(size_type block_index, const _T& cell)
+void multi_type_vector<_Trait>::set_cell_to_top_of_data_block(size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     blk->m_size -= 1;
@@ -867,7 +867,7 @@ void column<_Trait>::set_cell_to_top_of_data_block(size_type block_index, const 
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell)
+void multi_type_vector<_Trait>::set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell)
 {
     assert(block_index < m_blocks.size());
     block* blk = m_blocks[block_index];
@@ -881,7 +881,7 @@ void column<_Trait>::set_cell_to_bottom_of_data_block(size_type block_index, con
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::get_cell(row_key_type row, _T& cell) const
+void multi_type_vector<_Trait>::get_cell(row_key_type row, _T& cell) const
 {
     size_type _row = check_row_range(row);
 
@@ -906,7 +906,7 @@ void column<_Trait>::get_cell(row_key_type row, _T& cell) const
 
 template<typename _Trait>
 template<typename _T>
-_T column<_Trait>::get_cell(row_key_type row) const
+_T multi_type_vector<_Trait>::get_cell(row_key_type row) const
 {
     _T cell;
     get_cell(row, cell);
@@ -914,7 +914,7 @@ _T column<_Trait>::get_cell(row_key_type row) const
 }
 
 template<typename _Trait>
-gridmap::cell_t column<_Trait>::get_type(row_key_type row) const
+gridmap::cell_t multi_type_vector<_Trait>::get_type(row_key_type row) const
 {
     size_type _row = check_row_range(row);
     size_type start_row = 0;
@@ -928,7 +928,7 @@ gridmap::cell_t column<_Trait>::get_type(row_key_type row) const
 }
 
 template<typename _Trait>
-bool column<_Trait>::is_empty(row_key_type row) const
+bool multi_type_vector<_Trait>::is_empty(row_key_type row) const
 {
     size_type _row = check_row_range(row);
 
@@ -940,7 +940,7 @@ bool column<_Trait>::is_empty(row_key_type row) const
 }
 
 template<typename _Trait>
-void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
+void multi_type_vector<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
 {
     size_type _start_row = check_row_range(start_row);
     size_type _end_row = check_row_range(end_row);
@@ -964,7 +964,7 @@ void column<_Trait>::set_empty(row_key_type start_row, row_key_type end_row)
 }
 
 template<typename _Trait>
-void column<_Trait>::erase(row_key_type start_row, row_key_type end_row)
+void multi_type_vector<_Trait>::erase(row_key_type start_row, row_key_type end_row)
 {
     size_type _start_row = check_row_range(start_row);
     size_type _end_row = check_row_range(end_row);
@@ -976,7 +976,7 @@ void column<_Trait>::erase(row_key_type start_row, row_key_type end_row)
 }
 
 template<typename _Trait>
-void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
+void multi_type_vector<_Trait>::erase_impl(size_type start_row, size_type end_row)
 {
     assert(start_row <= end_row);
 
@@ -1104,7 +1104,7 @@ void column<_Trait>::erase_impl(size_type start_row, size_type end_row)
 }
 
 template<typename _Trait>
-void column<_Trait>::insert_empty(row_key_type row, size_type length)
+void multi_type_vector<_Trait>::insert_empty(row_key_type row, size_type length)
 {
     if (!length)
         // Nothing to insert.
@@ -1115,7 +1115,7 @@ void column<_Trait>::insert_empty(row_key_type row, size_type length)
 }
 
 template<typename _Trait>
-void column<_Trait>::insert_empty_impl(size_type row, size_type length)
+void multi_type_vector<_Trait>::insert_empty_impl(size_type row, size_type length)
 {
     assert(row < m_cur_size);
 
@@ -1179,7 +1179,7 @@ void column<_Trait>::insert_empty_impl(size_type row, size_type length)
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_Trait>::set_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
 {
     size_type length = std::distance(it_begin, it_end);
     if (!length)
@@ -1207,7 +1207,7 @@ void column<_Trait>::set_cells_impl(size_type row, const _T& it_begin, const _T&
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
 {
     size_type length = std::distance(it_begin, it_end);
     if (!length)
@@ -1304,7 +1304,7 @@ void column<_Trait>::insert_cells_impl(size_type row, const _T& it_begin, const 
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::insert_cells_to_middle(
+void multi_type_vector<_Trait>::insert_cells_to_middle(
     size_type row, size_type block_index, size_type start_row,
     const _T& it_begin, const _T& it_end)
 {
@@ -1343,7 +1343,7 @@ void column<_Trait>::insert_cells_to_middle(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cells_to_single_block(
+void multi_type_vector<_Trait>::set_cells_to_single_block(
     size_type start_row, size_type end_row, size_type block_index,
     size_type start_row_in_block, const _T& it_begin, const _T& it_end)
 {
@@ -1513,7 +1513,7 @@ void column<_Trait>::set_cells_to_single_block(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cells_to_multi_blocks(
+void multi_type_vector<_Trait>::set_cells_to_multi_blocks(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1543,7 +1543,7 @@ void column<_Trait>::set_cells_to_multi_blocks(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
+void multi_type_vector<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1675,7 +1675,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_equal(
 
 template<typename _Trait>
 template<typename _T>
-void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
+void multi_type_vector<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1757,7 +1757,7 @@ void column<_Trait>::set_cells_to_multi_blocks_block1_non_empty(
 
 template<typename _Trait>
 template<typename _T>
-bool column<_Trait>::append_to_prev_block(
+bool multi_type_vector<_Trait>::append_to_prev_block(
     size_type block_index, cell_category_type cat, size_type length,
     const _T& it_begin, const _T& it_end)
 {
@@ -1779,7 +1779,7 @@ bool column<_Trait>::append_to_prev_block(
 }
 
 template<typename _Trait>
-void column<_Trait>::clear()
+void multi_type_vector<_Trait>::clear()
 {
     std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
     m_blocks.clear();
@@ -1787,27 +1787,27 @@ void column<_Trait>::clear()
 }
 
 template<typename _Trait>
-typename column<_Trait>::size_type
-column<_Trait>::size() const
+typename multi_type_vector<_Trait>::size_type
+multi_type_vector<_Trait>::size() const
 {
     return m_cur_size;
 }
 
 template<typename _Trait>
-typename column<_Trait>::size_type
-column<_Trait>::block_size() const
+typename multi_type_vector<_Trait>::size_type
+multi_type_vector<_Trait>::block_size() const
 {
     return m_blocks.size();
 }
 
 template<typename _Trait>
-bool column<_Trait>::empty() const
+bool multi_type_vector<_Trait>::empty() const
 {
     return m_blocks.empty();
 }
 
 template<typename _Trait>
-void column<_Trait>::resize(size_type new_size)
+void multi_type_vector<_Trait>::resize(size_type new_size)
 {
     if (new_size == m_cur_size)
         return;
@@ -1877,14 +1877,14 @@ void column<_Trait>::resize(size_type new_size)
 }
 
 template<typename _Trait>
-void column<_Trait>::swap(column& other)
+void multi_type_vector<_Trait>::swap(multi_type_vector& other)
 {
     std::swap(m_cur_size, other.m_cur_size);
     m_blocks.swap(other.m_blocks);
 }
 
 template<typename _Trait>
-bool column<_Trait>::operator== (const column& other) const
+bool multi_type_vector<_Trait>::operator== (const multi_type_vector& other) const
 {
     if (this == &other)
         // Comparing to self is always equal.
@@ -1921,28 +1921,28 @@ bool column<_Trait>::operator== (const column& other) const
 }
 
 template<typename _Trait>
-bool column<_Trait>::operator!= (const column& other) const
+bool multi_type_vector<_Trait>::operator!= (const multi_type_vector& other) const
 {
     return !operator== (other);
 }
 
 template<typename _Trait>
-column<_Trait>& column<_Trait>::operator= (const column& other)
+multi_type_vector<_Trait>& multi_type_vector<_Trait>::operator= (const multi_type_vector& other)
 {
-    column assigned(other);
+    multi_type_vector assigned(other);
     swap(assigned);
     return *this;
 }
 
 template<typename _Trait>
 template<typename _T>
-gridmap::cell_t column<_Trait>::get_cell_type(const _T& cell)
+gridmap::cell_t multi_type_vector<_Trait>::get_cell_type(const _T& cell)
 {
     return cell_block_func::get_cell_type(cell);
 }
 
 template<typename _Trait>
-void column<_Trait>::set_empty_in_single_block(
+void multi_type_vector<_Trait>::set_empty_in_single_block(
     size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block)
 {
     // Range is within a single block.
@@ -2022,7 +2022,7 @@ void column<_Trait>::set_empty_in_single_block(
 }
 
 template<typename _Trait>
-void column<_Trait>::set_empty_in_multi_blocks(
+void multi_type_vector<_Trait>::set_empty_in_multi_blocks(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2)
@@ -2115,4 +2115,4 @@ void column<_Trait>::set_empty_in_multi_blocks(
     }
 }
 
-}}
+}

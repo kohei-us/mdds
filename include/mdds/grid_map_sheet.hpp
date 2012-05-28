@@ -42,7 +42,7 @@ public:
     typedef typename _Trait::row_key_type row_key_type;
     typedef typename _Trait::col_key_type col_key_type;
 
-    typedef column<_Trait> column_type;
+    typedef mdds::multi_type_vector<_Trait> column_type;
     typedef typename column_type::size_type size_type;
 
     sheet();
