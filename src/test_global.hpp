@@ -85,6 +85,31 @@ bool parse_cmd_options(int argc, char** argv, cmd_options& opt)
     return true;
 }
 
+double get_current_time()
+{
+#ifdef _WIN32
+    FILETIME ft;
+    __int64 *time64 = reinterpret_cast<__int64 *>(&ft);
+    GetSystemTimeAsFileTime(&ft);
+    return *time64 / 10000000.0;
+#else
+    timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec / 1000000.0;
+#endif
+}
+
+class stack_watch
+{
+public:
+    explicit stack_watch() : m_start_time(get_current_time()) {}
+    void reset() { m_start_time = get_current_time(); }
+    double get_duration() const { return get_current_time() - m_start_time; }
+
+private:
+    double m_start_time;
+};
+
 class stack_printer
 {
 public:
@@ -92,36 +117,22 @@ public:
         m_msg(msg)
     {
         fprintf(stdout, "%s: --begin\n", m_msg.c_str());
-        m_start_time = get_time();
+        m_start_time = get_current_time();
     }
 
     ~stack_printer()
     {
-        double end_time = get_time();
+        double end_time = get_current_time();
         fprintf(stdout, "%s: --end (duration: %g sec)\n", m_msg.c_str(), (end_time-m_start_time));
     }
 
     void print_time(int line) const
     {
-        double end_time = get_time();
+        double end_time = get_current_time();
         fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", m_msg.c_str(), line, (end_time-m_start_time));
     }
 
 private:
-    double get_time() const
-    {
-#ifdef _WIN32
-        FILETIME ft;
-        __int64 *time64 = reinterpret_cast<__int64 *>(&ft);
-        GetSystemTimeAsFileTime(&ft);
-        return *time64 / 10000000.0;
-#else
-        timeval tv;
-        gettimeofday(&tv, NULL);
-        return tv.tv_sec + tv.tv_usec / 1000000.0;
-#endif
-    }
-
     std::string m_msg;
     double m_start_time;
 };
