@@ -177,11 +177,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mdds\grid_map_column.hpp"
+				RelativePath="..\..\include\mdds\multi_type_vector.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mdds\grid_map_column_def.inl"
+				RelativePath="..\..\include\mdds\multi_type_vector_def.inl"
 				>
 			</File>
 			<File

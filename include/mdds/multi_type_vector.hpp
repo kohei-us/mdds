@@ -32,7 +32,7 @@
 #include "compat/unique_ptr.hpp"
 #include "global.hpp"
 #include "grid_map_types.hpp"
-#include "grid_map_column_itr.hpp"
+#include "multi_type_vector_itr.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -421,6 +421,6 @@ private:
 
 }
 
-#include "grid_map_column_def.inl"
+#include "multi_type_vector_def.inl"
 
 #endif

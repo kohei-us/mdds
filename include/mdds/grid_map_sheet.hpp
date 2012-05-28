@@ -28,7 +28,7 @@
 #ifndef __MDDS_GRID_MAP_SHEET_HPP__
 #define __MDDS_GRID_MAP_SHEET_HPP__
 
-#include "mdds/grid_map_column.hpp"
+#include "mdds/multi_type_vector.hpp"
 
 #include <vector>
 #include <algorithm>
