@@ -309,14 +309,14 @@ public:
     multi_type_vector& operator= (const multi_type_vector& other);
 
     /**
-     * Return the numerical identifier that represents passed cell.
+     * Return the numerical identifier that represents passed element.
      *
-     * @param cell cell value.
+     * @param elem element value.
      *
      * @return mtv::cell_t numerical identifier representing the cell.
      */
     template<typename _T>
-    static mtv::cell_t get_cell_type(const _T& cell);
+    static mtv::cell_t get_element_type(const _T& elem);
 
 private:
 

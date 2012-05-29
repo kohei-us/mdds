@@ -106,7 +106,7 @@ namespace mdds { namespace mtv {
 //----------------------------------------------------------------------------
 // Callbacks for user_cell* type.
 
-cell_t get_cell_type(const user_cell*)
+cell_t get_element_type(const user_cell*)
 {
     return celltype_user_block;
 }
@@ -171,7 +171,7 @@ void get_empty_value(user_cell*& val)
 //----------------------------------------------------------------------------
 // Callbacks for muser_cell* type.
 
-cell_t get_cell_type(const muser_cell*)
+cell_t get_element_type(const muser_cell*)
 {
     return celltype_muser_block;
 }
@@ -240,9 +240,9 @@ void get_empty_value(muser_cell*& val)
 struct my_cell_block_func : public mdds::mtv::cell_block_func_base
 {
     template<typename T>
-    static mdds::mtv::cell_t get_cell_type(const T& cell)
+    static mdds::mtv::cell_t get_element_type(const T& cell)
     {
-        return mdds::mtv::get_cell_type(cell);
+        return mdds::mtv::get_element_type(cell);
     }
 
     template<typename T>
@@ -533,20 +533,20 @@ void gridmap_test_types()
     mdds::mtv::cell_t ct;
 
     // Basic types
-    ct = column_type::get_cell_type(double(12.3));
+    ct = column_type::get_element_type(double(12.3));
     assert(ct == mtv::celltype_numeric);
-    ct = column_type::get_cell_type(string());
+    ct = column_type::get_element_type(string());
     assert(ct == mtv::celltype_string);
-    ct = column_type::get_cell_type(size_t(12));
+    ct = column_type::get_element_type(size_t(12));
     assert(ct == mtv::celltype_index);
-    ct = column_type::get_cell_type(true);
+    ct = column_type::get_element_type(true);
     assert(ct == mtv::celltype_boolean);
-    ct = column_type::get_cell_type(false);
+    ct = column_type::get_element_type(false);
     assert(ct == mtv::celltype_boolean);
 
     // Custom cell type
     user_cell* p = NULL;
-    ct = column_type::get_cell_type(p);
+    ct = column_type::get_element_type(p);
     assert(ct == celltype_user_block && ct >= mtv::celltype_user_start);
 }
 

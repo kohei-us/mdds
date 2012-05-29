@@ -39,22 +39,22 @@ typedef default_cell_block<celltype_string, std::string> string_cell_block;
 typedef default_cell_block<celltype_index, size_t>       index_cell_block;
 typedef default_cell_block<celltype_boolean, bool>       boolean_cell_block;
 
-cell_t get_cell_type(double)
+cell_t get_element_type(double)
 {
     return celltype_numeric;
 }
 
-cell_t get_cell_type(const std::string&)
+cell_t get_element_type(const std::string&)
 {
     return celltype_string;
 }
 
-cell_t get_cell_type(size_t)
+cell_t get_element_type(size_t)
 {
     return celltype_index;
 }
 
-cell_t get_cell_type(bool)
+cell_t get_element_type(bool)
 {
     return celltype_boolean;
 }
@@ -566,9 +566,9 @@ void cell_block_func_base::overwrite_cells(base_cell_block&, size_t, size_t)
 struct cell_block_func : public cell_block_func_base
 {
     template<typename T>
-    static mdds::mtv::cell_t get_cell_type(const T& cell)
+    static mdds::mtv::cell_t get_element_type(const T& cell)
     {
-        return mdds::mtv::get_cell_type(cell);
+        return mdds::mtv::get_element_type(cell);
     }
 
     template<typename T>

@@ -160,7 +160,7 @@ template<typename _CellBlockFunc>
 template<typename _T>
 void multi_type_vector<_CellBlockFunc>::create_new_block_with_new_cell(cell_block_type*& data, const _T& cell)
 {
-    cell_category_type cat = cell_block_func::get_cell_type(cell);
+    cell_category_type cat = cell_block_func::get_element_type(cell);
 
     if (data)
         cell_block_func::delete_block(data);
@@ -221,7 +221,7 @@ template<typename _CellBlockFunc>
 template<typename _T>
 void multi_type_vector<_CellBlockFunc>::set_cell_impl(size_type row, const _T& cell)
 {
-    cell_category_type cat = cell_block_func::get_cell_type(cell);
+    cell_category_type cat = cell_block_func::get_element_type(cell);
 
     // Find the right block ID from the row ID.
     size_type start_row = 0; // row ID of the first cell in a block.
@@ -441,7 +441,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     // Top empty block with only one cell size.
                     block* blk_next = m_blocks[block_index+1];
                     assert(blk_next->mp_data);
-                    cell_category_type cat = cell_block_func::get_cell_type(cell);
+                    cell_category_type cat = cell_block_func::get_element_type(cell);
                     cell_category_type cat_next = mdds::mtv::get_block_type(*blk_next->mp_data);
 
                     if (cat == cat_next)
@@ -471,7 +471,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 // Immediately above a non-empty block.
                 block* blk_next = m_blocks[block_index+1];
                 assert(blk_next->mp_data);
-                cell_category_type cat = cell_block_func::get_cell_type(cell);
+                cell_category_type cat = cell_block_func::get_element_type(cell);
                 cell_category_type cat_next = mdds::mtv::get_block_type(*blk_next->mp_data);
                 assert(blk->m_size > 1);
 
@@ -509,7 +509,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
     {
         // New cell is right below the non-empty block.
         cell_category_type blk_cat_prev = mdds::mtv::get_block_type(*m_blocks[block_index-1]->mp_data);
-        cell_category_type cat = cell_block_func::get_cell_type(cell);
+        cell_category_type cat = cell_block_func::get_element_type(cell);
         if (blk_cat_prev == cat)
         {
             // Extend the previous block by one to insert this cell.
@@ -617,7 +617,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
         else
         {
             // A non-empty block exists below.
-            cell_category_type cat = cell_block_func::get_cell_type(cell);
+            cell_category_type cat = cell_block_func::get_element_type(cell);
             block* blk_next = m_blocks[block_index+1];
             assert(blk_next->mp_data);
             cell_category_type blk_cat_next = mdds::mtv::get_block_type(*blk_next->mp_data);
@@ -652,7 +652,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
     block* blk = m_blocks[block_index];
     assert(blk->m_size == 1);
     assert(blk->mp_data);
-    cell_category_type cat = cell_block_func::get_cell_type(cell);
+    cell_category_type cat = cell_block_func::get_element_type(cell);
     cell_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
     assert(blk_cat != cat);
 
@@ -1186,7 +1186,7 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
     size_type block_index, start_row;
     get_block_position(row, start_row, block_index);
 
-    cell_category_type cat = cell_block_func::get_cell_type(*it_begin);
+    cell_category_type cat = cell_block_func::get_element_type(*it_begin);
     block* blk = m_blocks[block_index];
     if (!blk->mp_data)
     {
@@ -1279,7 +1279,7 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_to_middle(
 {
     size_type length = std::distance(it_begin, it_end);
     block* blk = m_blocks[block_index];
-    cell_category_type cat = cell_block_func::get_cell_type(*it_begin);
+    cell_category_type cat = cell_block_func::get_element_type(*it_begin);
 
     // Insert two new blocks.
     size_type n1 = row - start_row;
@@ -1319,7 +1319,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
     assert(it_begin != it_end);
     assert(!m_blocks.empty());
 
-    cell_category_type cat = cell_block_func::get_cell_type(*it_begin);
+    cell_category_type cat = cell_block_func::get_element_type(*it_begin);
     block* blk = m_blocks[block_index];
     size_type data_length = std::distance(it_begin, it_end);
 
@@ -1518,7 +1518,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equ
     size_type block_index2, size_type start_row_in_block2,
     const _T& it_begin, const _T& it_end)
 {
-    cell_category_type cat = cell_block_func::get_cell_type(*it_begin);
+    cell_category_type cat = cell_block_func::get_element_type(*it_begin);
     block* blk1 = m_blocks[block_index1];
     block* blk2 = m_blocks[block_index2];
     size_type length = std::distance(it_begin, it_end);
@@ -1650,7 +1650,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_emp
     size_type block_index2, size_type start_row_in_block2,
     const _T& it_begin, const _T& it_end)
 {
-    cell_category_type cat = cell_block_func::get_cell_type(*it_begin);
+    cell_category_type cat = cell_block_func::get_element_type(*it_begin);
     block* blk1 = m_blocks[block_index1];
     assert(blk1->mp_data);
     cell_category_type blk_cat1 = mdds::mtv::get_block_type(*blk1->mp_data);
@@ -1905,9 +1905,9 @@ multi_type_vector<_CellBlockFunc>& multi_type_vector<_CellBlockFunc>::operator= 
 
 template<typename _CellBlockFunc>
 template<typename _T>
-mtv::cell_t multi_type_vector<_CellBlockFunc>::get_cell_type(const _T& cell)
+mtv::cell_t multi_type_vector<_CellBlockFunc>::get_element_type(const _T& elem)
 {
-    return cell_block_func::get_cell_type(cell);
+    return cell_block_func::get_element_type(elem);
 }
 
 template<typename _CellBlockFunc>
