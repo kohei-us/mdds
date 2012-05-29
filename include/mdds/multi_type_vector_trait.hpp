@@ -34,29 +34,29 @@
 
 namespace mdds { namespace mtv {
 
-typedef default_cell_block<celltype_numeric, double>     numeric_cell_block;
-typedef default_cell_block<celltype_string, std::string> string_cell_block;
-typedef default_cell_block<celltype_index, size_t>       index_cell_block;
-typedef default_cell_block<celltype_boolean, bool>       boolean_cell_block;
+typedef default_cell_block<element_type_numeric, double>     numeric_cell_block;
+typedef default_cell_block<element_type_string, std::string> string_cell_block;
+typedef default_cell_block<element_type_index, size_t>       index_cell_block;
+typedef default_cell_block<element_type_boolean, bool>       boolean_cell_block;
 
-cell_t get_element_type(double)
+element_t get_element_type(double)
 {
-    return celltype_numeric;
+    return element_type_numeric;
 }
 
-cell_t get_element_type(const std::string&)
+element_t get_element_type(const std::string&)
 {
-    return celltype_string;
+    return element_type_string;
 }
 
-cell_t get_element_type(size_t)
+element_t get_element_type(size_t)
 {
-    return celltype_index;
+    return element_type_index;
 }
 
-cell_t get_element_type(bool)
+element_t get_element_type(bool)
 {
-    return celltype_boolean;
+    return element_type_boolean;
 }
 
 void set_value(base_cell_block& block, size_t pos, double val)
@@ -161,7 +161,7 @@ void get_empty_value(bool& val)
 
 struct cell_block_func_base
 {
-    static base_cell_block* create_new_block(cell_t type, size_t init_size);
+    static base_cell_block* create_new_block(element_t type, size_t init_size);
 
     static base_cell_block* clone_block(const base_cell_block& block);
 
@@ -195,17 +195,17 @@ struct cell_block_func_base
     static void overwrite_cells(base_cell_block& block, size_t pos, size_t len);
 };
 
-base_cell_block* cell_block_func_base::create_new_block(cell_t type, size_t init_size)
+base_cell_block* cell_block_func_base::create_new_block(element_t type, size_t init_size)
 {
     switch (type)
     {
-        case celltype_numeric:
+        case element_type_numeric:
             return numeric_cell_block::create_block(init_size);
-        case celltype_string:
+        case element_type_string:
             return string_cell_block::create_block(init_size);
-        case celltype_index:
+        case element_type_index:
             return index_cell_block::create_block(init_size);
-        case celltype_boolean:
+        case element_type_boolean:
             return boolean_cell_block::create_block(init_size);
         default:
             throw general_error("create_new_block: failed to create a new block of unknown type.");
@@ -217,13 +217,13 @@ base_cell_block* cell_block_func_base::clone_block(const base_cell_block& block)
 {
     switch (get_block_type(block))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             return numeric_cell_block::clone_block(block);
-        case celltype_string:
+        case element_type_string:
             return string_cell_block::clone_block(block);
-        case celltype_index:
+        case element_type_index:
             return index_cell_block::clone_block(block);
-        case celltype_boolean:
+        case element_type_boolean:
             return boolean_cell_block::clone_block(block);
         default:
             throw general_error("clone_block: failed to clone a block of unknown type.");
@@ -238,16 +238,16 @@ void cell_block_func_base::delete_block(base_cell_block* p)
 
     switch (get_block_type(*p))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             numeric_cell_block::delete_block(p);
         break;
-        case celltype_string:
+        case element_type_string:
             string_cell_block::delete_block(p);
         break;
-        case celltype_index:
+        case element_type_index:
             index_cell_block::delete_block(p);
         break;
-        case celltype_boolean:
+        case element_type_boolean:
             boolean_cell_block::delete_block(p);
         break;
         default:
@@ -259,16 +259,16 @@ void cell_block_func_base::resize_block(base_cell_block& block, size_t new_size)
 {
     switch (get_block_type(block))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             numeric_cell_block::resize_block(block, new_size);
         break;
-        case celltype_string:
+        case element_type_string:
             string_cell_block::resize_block(block, new_size);
         break;
-        case celltype_index:
+        case element_type_index:
             index_cell_block::resize_block(block, new_size);
         break;
-        case celltype_boolean:
+        case element_type_boolean:
             boolean_cell_block::resize_block(block, new_size);
         break;
         default:
@@ -280,16 +280,16 @@ void cell_block_func_base::print_block(const base_cell_block& block)
 {
     switch (get_block_type(block))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             numeric_cell_block::print_block(block);
         break;
-        case celltype_string:
+        case element_type_string:
             string_cell_block::print_block(block);
         break;
-        case celltype_index:
+        case element_type_index:
             index_cell_block::print_block(block);
         break;
-        case celltype_boolean:
+        case element_type_boolean:
             boolean_cell_block::print_block(block);
         break;
         default:
@@ -301,16 +301,16 @@ void cell_block_func_base::erase(base_cell_block& block, size_t pos)
 {
     switch (get_block_type(block))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             numeric_cell_block::erase_block(block, pos);
         break;
-        case celltype_string:
+        case element_type_string:
             string_cell_block::erase_block(block, pos);
         break;
-        case celltype_index:
+        case element_type_index:
             index_cell_block::erase_block(block, pos);
         break;
-        case celltype_boolean:
+        case element_type_boolean:
             boolean_cell_block::erase_block(block, pos);
         break;
         default:
@@ -322,16 +322,16 @@ void cell_block_func_base::erase(base_cell_block& block, size_t pos, size_t size
 {
     switch (get_block_type(block))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             numeric_cell_block::erase_block(block, pos, size);
         break;
-        case celltype_string:
+        case element_type_string:
             string_cell_block::erase_block(block, pos, size);
         break;
-        case celltype_index:
+        case element_type_index:
             index_cell_block::erase_block(block, pos, size);
         break;
-        case celltype_boolean:
+        case element_type_boolean:
             boolean_cell_block::erase_block(block, pos, size);
         break;
         default:
@@ -395,16 +395,16 @@ void cell_block_func_base::append_values_from_block(base_cell_block& dest, const
 {
     switch (get_block_type(dest))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             numeric_cell_block::append_values_from_block(dest, src);
         break;
-        case celltype_string:
+        case element_type_string:
             string_cell_block::append_values_from_block(dest, src);
         break;
-        case celltype_index:
+        case element_type_index:
             index_cell_block::append_values_from_block(dest, src);
         break;
-        case celltype_boolean:
+        case element_type_boolean:
             boolean_cell_block::append_values_from_block(dest, src);
         break;
         default:
@@ -417,16 +417,16 @@ void cell_block_func_base::append_values_from_block(
 {
     switch (get_block_type(dest))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             numeric_cell_block::append_values_from_block(dest, src, begin_pos, len);
         break;
-        case celltype_string:
+        case element_type_string:
             string_cell_block::append_values_from_block(dest, src, begin_pos, len);
         break;
-        case celltype_index:
+        case element_type_index:
             index_cell_block::append_values_from_block(dest, src, begin_pos, len);
         break;
-        case celltype_boolean:
+        case element_type_boolean:
             boolean_cell_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         default:
@@ -463,16 +463,16 @@ void cell_block_func_base::assign_values_from_block(
 {
     switch (get_block_type(dest))
     {
-        case celltype_numeric:
+        case element_type_numeric:
             numeric_cell_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
-        case celltype_string:
+        case element_type_string:
             string_cell_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
-        case celltype_index:
+        case element_type_index:
             index_cell_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
-        case celltype_boolean:
+        case element_type_boolean:
             boolean_cell_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         default:
@@ -534,19 +534,19 @@ void insert_values(
 
 bool cell_block_func_base::equal_block(const base_cell_block& left, const base_cell_block& right)
 {
-    cell_t block_type = get_block_type(left);
+    element_t block_type = get_block_type(left);
     if (block_type != get_block_type(right))
         return false;
 
     switch (block_type)
     {
-        case celltype_numeric:
+        case element_type_numeric:
             return numeric_cell_block::get(left) == numeric_cell_block::get(right);
-        case celltype_string:
+        case element_type_string:
             return string_cell_block::get(left) == string_cell_block::get(right);
-        case celltype_index:
+        case element_type_index:
             return index_cell_block::get(left) == index_cell_block::get(right);
-        case celltype_boolean:
+        case element_type_boolean:
             return boolean_cell_block::get(left) == boolean_cell_block::get(right);
         default:
             ;
@@ -566,7 +566,7 @@ void cell_block_func_base::overwrite_cells(base_cell_block&, size_t, size_t)
 struct cell_block_func : public cell_block_func_base
 {
     template<typename T>
-    static mdds::mtv::cell_t get_element_type(const T& cell)
+    static mdds::mtv::element_t get_element_type(const T& cell)
     {
         return mdds::mtv::get_element_type(cell);
     }

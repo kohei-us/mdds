@@ -893,14 +893,14 @@ _T multi_type_vector<_CellBlockFunc>::get_cell(size_type row) const
 }
 
 template<typename _CellBlockFunc>
-mtv::cell_t multi_type_vector<_CellBlockFunc>::get_type(size_type row) const
+mtv::element_t multi_type_vector<_CellBlockFunc>::get_type(size_type row) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
     get_block_position(row, start_row, block_index);
     const block* blk = m_blocks[block_index];
     if (!blk->mp_data)
-        return mtv::celltype_empty;
+        return mtv::element_type_empty;
 
     return mtv::get_block_type(*blk->mp_data);
 }
@@ -1905,7 +1905,7 @@ multi_type_vector<_CellBlockFunc>& multi_type_vector<_CellBlockFunc>::operator= 
 
 template<typename _CellBlockFunc>
 template<typename _T>
-mtv::cell_t multi_type_vector<_CellBlockFunc>::get_element_type(const _T& elem)
+mtv::element_t multi_type_vector<_CellBlockFunc>::get_element_type(const _T& elem)
 {
     return cell_block_func::get_element_type(elem);
 }

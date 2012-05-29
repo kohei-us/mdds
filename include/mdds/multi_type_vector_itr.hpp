@@ -36,11 +36,11 @@ class iterator_base
 
     struct node
     {
-        mdds::mtv::cell_t type;
+        mdds::mtv::element_t type;
         typename parent_type::size_type size;
         const typename parent_type::cell_block_type* data;
 
-        node() : type(mdds::mtv::celltype_empty), size(0), data(NULL) {}
+        node() : type(mdds::mtv::element_type_empty), size(0), data(NULL) {}
         node(const node& other) : type(other.type), size(other.size), data(other.data) {}
     };
 
@@ -124,7 +124,7 @@ private:
         if (blk->mp_data)
             m_cur_node.type = mdds::mtv::get_block_type(*blk->mp_data);
         else
-            m_cur_node.type = mdds::mtv::celltype_empty;
+            m_cur_node.type = mdds::mtv::element_type_empty;
 
         m_cur_node.size = blk->m_size;
         m_cur_node.data = blk->mp_data;

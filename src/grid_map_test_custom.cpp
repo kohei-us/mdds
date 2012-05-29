@@ -46,8 +46,8 @@ using namespace mdds;
 namespace {
 
 /** custom cell type definition. */
-const mtv::cell_t celltype_user_block  = mtv::celltype_user_start;
-const mtv::cell_t celltype_muser_block = mtv::celltype_user_start+1;
+const mtv::element_t element_type_user_block  = mtv::element_type_user_start;
+const mtv::element_t element_type_muser_block = mtv::element_type_user_start+1;
 
 /** Caller manages the life cycle of these cells. */
 struct user_cell
@@ -71,8 +71,8 @@ struct muser_cell
     muser_cell(double _v) : value(_v) {}
 };
 
-typedef mdds::mtv::default_cell_block<celltype_user_block, user_cell*> user_cell_block;
-typedef mdds::mtv::managed_cell_block<celltype_muser_block, muser_cell> muser_cell_block;
+typedef mdds::mtv::default_cell_block<element_type_user_block, user_cell*> user_cell_block;
+typedef mdds::mtv::managed_cell_block<element_type_muser_block, muser_cell> muser_cell_block;
 
 template<typename T>
 class cell_pool : boost::noncopyable
@@ -106,9 +106,9 @@ namespace mdds { namespace mtv {
 //----------------------------------------------------------------------------
 // Callbacks for user_cell* type.
 
-cell_t get_element_type(const user_cell*)
+element_t get_element_type(const user_cell*)
 {
-    return celltype_user_block;
+    return element_type_user_block;
 }
 
 void set_value(base_cell_block& block, size_t pos, user_cell* p)
@@ -171,9 +171,9 @@ void get_empty_value(user_cell*& val)
 //----------------------------------------------------------------------------
 // Callbacks for muser_cell* type.
 
-cell_t get_element_type(const muser_cell*)
+element_t get_element_type(const muser_cell*)
 {
-    return celltype_muser_block;
+    return element_type_muser_block;
 }
 
 void set_value(base_cell_block& block, size_t pos, muser_cell* p)
@@ -240,7 +240,7 @@ void get_empty_value(muser_cell*& val)
 struct my_cell_block_func : public mdds::mtv::cell_block_func_base
 {
     template<typename T>
-    static mdds::mtv::cell_t get_element_type(const T& cell)
+    static mdds::mtv::element_t get_element_type(const T& cell)
     {
         return mdds::mtv::get_element_type(cell);
     }
@@ -312,13 +312,13 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     }
 
     static mdds::mtv::base_cell_block* create_new_block(
-        mdds::mtv::cell_t type, size_t init_size)
+        mdds::mtv::element_t type, size_t init_size)
     {
         switch (type)
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 return user_cell_block::create_block(init_size);
-            case celltype_muser_block:
+            case element_type_muser_block:
                 return muser_cell_block::create_block(init_size);
             default:
                 ;
@@ -331,9 +331,9 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(block))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 return user_cell_block::clone_block(block);
-            case celltype_muser_block:
+            case element_type_muser_block:
                 return muser_cell_block::clone_block(block);
             default:
                 ;
@@ -349,10 +349,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
 
         switch (mtv::get_block_type(*p))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 user_cell_block::delete_block(p);
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::delete_block(p);
             break;
             default:
@@ -364,10 +364,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(block))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 user_cell_block::resize_block(block, new_size);
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::resize_block(block, new_size);
             break;
             default:
@@ -379,10 +379,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(block))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 user_cell_block::print_block(block);
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::print_block(block);
             break;
             default:
@@ -394,10 +394,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(block))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 user_cell_block::erase_block(block, pos);
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::erase_block(block, pos);
             break;
             default:
@@ -409,10 +409,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(block))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 user_cell_block::erase_block(block, pos, size);
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::erase_block(block, pos, size);
             break;
             default:
@@ -425,10 +425,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(dest))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 user_cell_block::append_values_from_block(dest, src);
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::append_values_from_block(dest, src);
             break;
             default:
@@ -442,10 +442,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(dest))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 user_cell_block::append_values_from_block(dest, src, begin_pos, len);
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::append_values_from_block(dest, src, begin_pos, len);
             break;
             default:
@@ -459,10 +459,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(dest))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 user_cell_block::assign_values_from_block(dest, src, begin_pos, len);
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::assign_values_from_block(dest, src, begin_pos, len);
             break;
             default:
@@ -473,24 +473,24 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     static bool equal_block(
         const mdds::mtv::base_cell_block& left, const mdds::mtv::base_cell_block& right)
     {
-        if (mtv::get_block_type(left) == celltype_user_block)
+        if (mtv::get_block_type(left) == element_type_user_block)
         {
-            if (mtv::get_block_type(right) != celltype_user_block)
+            if (mtv::get_block_type(right) != element_type_user_block)
                 return false;
 
             return user_cell_block::get(left) == user_cell_block::get(right);
         }
-        else if (mtv::get_block_type(right) == celltype_user_block)
+        else if (mtv::get_block_type(right) == element_type_user_block)
             return false;
 
-        if (mtv::get_block_type(left) == celltype_muser_block)
+        if (mtv::get_block_type(left) == element_type_muser_block)
         {
-            if (mtv::get_block_type(right) != celltype_muser_block)
+            if (mtv::get_block_type(right) != element_type_muser_block)
                 return false;
 
             return muser_cell_block::get(left) == muser_cell_block::get(right);
         }
-        else if (mtv::get_block_type(right) == celltype_muser_block)
+        else if (mtv::get_block_type(right) == element_type_muser_block)
             return false;
 
         return cell_block_func_base::equal_block(left, right);
@@ -500,10 +500,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         switch (mtv::get_block_type(block))
         {
-            case celltype_user_block:
+            case element_type_user_block:
                 // Do nothing.  The client code manages the life cycle of these cells.
             break;
-            case celltype_muser_block:
+            case element_type_muser_block:
                 muser_cell_block::overwrite_cells(block, pos, len);
             break;
             default:
@@ -530,24 +530,24 @@ void gridmap_test_types()
 {
     stack_printer __stack_printer__("::gridmap_test_types");
 
-    mdds::mtv::cell_t ct;
+    mdds::mtv::element_t ct;
 
     // Basic types
     ct = column_type::get_element_type(double(12.3));
-    assert(ct == mtv::celltype_numeric);
+    assert(ct == mtv::element_type_numeric);
     ct = column_type::get_element_type(string());
-    assert(ct == mtv::celltype_string);
+    assert(ct == mtv::element_type_string);
     ct = column_type::get_element_type(size_t(12));
-    assert(ct == mtv::celltype_index);
+    assert(ct == mtv::element_type_index);
     ct = column_type::get_element_type(true);
-    assert(ct == mtv::celltype_boolean);
+    assert(ct == mtv::element_type_boolean);
     ct = column_type::get_element_type(false);
-    assert(ct == mtv::celltype_boolean);
+    assert(ct == mtv::element_type_boolean);
 
     // Custom cell type
     user_cell* p = NULL;
     ct = column_type::get_element_type(p);
-    assert(ct == celltype_user_block && ct >= mtv::celltype_user_start);
+    assert(ct == element_type_user_block && ct >= mtv::element_type_user_start);
 }
 
 void gridmap_test_basic()

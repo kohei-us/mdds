@@ -54,7 +54,7 @@ public:
     typedef size_t size_type;
 
     typedef typename mdds::mtv::base_cell_block cell_block_type;
-    typedef typename mdds::mtv::cell_t cell_category_type;
+    typedef typename mdds::mtv::element_t cell_category_type;
 
 private:
     typedef _CellBlockFunc cell_block_func;
@@ -193,7 +193,7 @@ public:
     template<typename _T>
     _T get_cell(size_type row) const;
 
-    mtv::cell_t get_type(size_type row) const;
+    mtv::element_t get_type(size_type row) const;
 
     /**
      * Check if cell at specified row is empty of not.
@@ -316,7 +316,7 @@ public:
      * @return mtv::cell_t numerical identifier representing the cell.
      */
     template<typename _T>
-    static mtv::cell_t get_element_type(const _T& elem);
+    static mtv::element_t get_element_type(const _T& elem);
 
 private:
 

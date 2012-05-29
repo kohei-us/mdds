@@ -35,16 +35,16 @@
 
 namespace mdds { namespace mtv {
 
-typedef int cell_t;
+typedef int element_t;
 
-const cell_t celltype_empty = -1;
+const element_t element_type_empty = -1;
 
-const cell_t celltype_numeric = 0;
-const cell_t celltype_string  = 1;
-const cell_t celltype_index   = 2;
-const cell_t celltype_boolean = 3;
+const element_t element_type_numeric = 0;
+const element_t element_type_string  = 1;
+const element_t element_type_index   = 2;
+const element_t element_type_boolean = 3;
 
-const cell_t celltype_user_start = 50;
+const element_t element_type_user_start = 50;
 
 /**
  * Generic exception used for errors specific to cell block operations.
@@ -56,17 +56,17 @@ public:
 };
 
 struct base_cell_block;
-cell_t get_block_type(const base_cell_block&);
+element_t get_block_type(const base_cell_block&);
 
 struct base_cell_block
 {
-    friend cell_t get_block_type(const base_cell_block&);
+    friend element_t get_block_type(const base_cell_block&);
 protected:
-    cell_t type;
-    base_cell_block(cell_t _t) : type(_t) {}
+    element_t type;
+    base_cell_block(element_t _t) : type(_t) {}
 };
 
-template<typename _Self, cell_t _TypeId, typename _Data>
+template<typename _Self, element_t _TypeId, typename _Data>
 class cell_block : public base_cell_block
 {
     struct print_block_array
@@ -238,7 +238,7 @@ public:
     }
 };
 
-template<typename _Self, cell_t _TypeId, typename _Data>
+template<typename _Self, element_t _TypeId, typename _Data>
 class copyable_cell_block : public cell_block<_Self, _TypeId, _Data>
 {
     typedef cell_block<_Self,_TypeId,_Data> base_type;
@@ -255,7 +255,7 @@ public:
     }
 };
 
-template<typename _Self, cell_t _TypeId, typename _Data>
+template<typename _Self, element_t _TypeId, typename _Data>
 class noncopyable_cell_block : public cell_block<_Self, _TypeId, _Data>, private boost::noncopyable
 {
     typedef cell_block<_Self,_TypeId,_Data> base_type;
@@ -277,7 +277,7 @@ public:
  *
  * @return numerical value representing the ID of a cell block.
  */
-inline cell_t get_block_type(const base_cell_block& blk)
+inline element_t get_block_type(const base_cell_block& blk)
 {
     return blk.type;
 }
@@ -285,7 +285,7 @@ inline cell_t get_block_type(const base_cell_block& blk)
 /**
  * Template for default, unmanaged cell block for use in grid_map.
  */
-template<cell_t _TypeId, typename _Data>
+template<element_t _TypeId, typename _Data>
 struct default_cell_block : public copyable_cell_block<default_cell_block<_TypeId,_Data>, _TypeId, _Data>
 {
     typedef copyable_cell_block<default_cell_block, _TypeId, _Data> base_type;
@@ -303,7 +303,7 @@ struct default_cell_block : public copyable_cell_block<default_cell_block<_TypeI
  * Template for cell block that stores pointers to objects whose life cycles
  * are managed by the block.
  */
-template<cell_t _TypeId, typename _Data>
+template<element_t _TypeId, typename _Data>
 struct managed_cell_block : public copyable_cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
 {
     typedef copyable_cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
@@ -335,7 +335,7 @@ struct managed_cell_block : public copyable_cell_block<managed_cell_block<_TypeI
     }
 };
 
-template<cell_t _TypeId, typename _Data>
+template<element_t _TypeId, typename _Data>
 struct noncopyable_managed_cell_block : public noncopyable_cell_block<noncopyable_managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
 {
     typedef noncopyable_cell_block<noncopyable_managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;

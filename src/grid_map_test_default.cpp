@@ -1974,7 +1974,7 @@ void gridmap_test_iterators()
         size_t len = std::distance(it, it_end);
         assert(len == 1);
         assert(it != it_end);
-        assert(it->type == mtv::celltype_empty);
+        assert(it->type == mtv::element_type_empty);
         assert(it->size == 5);
         const column_type::const_iterator::value_type& val = *it;
         assert(val.type == it->type);
@@ -1997,17 +1997,17 @@ void gridmap_test_iterators()
             size_t len = std::distance(it, it_end);
             assert(len == 3);
             assert(it != it_end);
-            assert(it->type == mdds::mtv::celltype_numeric);
+            assert(it->type == mdds::mtv::element_type_numeric);
             assert(it->size == 2);
 
             ++it;
             assert(it != it_end);
-            assert(it->type == mdds::mtv::celltype_empty);
+            assert(it->type == mdds::mtv::element_type_empty);
             assert(it->size == 2);
 
             ++it;
             assert(it != it_end);
-            assert(it->type == mdds::mtv::celltype_string);
+            assert(it->type == mdds::mtv::element_type_string);
             assert(it->size == 2);
 
             ++it;
@@ -2020,17 +2020,17 @@ void gridmap_test_iterators()
             size_t len = std::distance(it, it_end);
             assert(len == 3);
             assert(it != it_end);
-            assert(it->type == mdds::mtv::celltype_string);
+            assert(it->type == mdds::mtv::element_type_string);
             assert(it->size == 2);
 
             ++it;
             assert(it != it_end);
-            assert(it->type == mdds::mtv::celltype_empty);
+            assert(it->type == mdds::mtv::element_type_empty);
             assert(it->size == 2);
 
             ++it;
             assert(it != it_end);
-            assert(it->type == mdds::mtv::celltype_numeric);
+            assert(it->type == mdds::mtv::element_type_numeric);
             assert(it->size == 2);
 
             ++it;
