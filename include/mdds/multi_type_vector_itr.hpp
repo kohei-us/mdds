@@ -38,7 +38,7 @@ class iterator_base
     {
         mdds::mtv::element_t type;
         typename parent_type::size_type size;
-        const typename parent_type::cell_block_type* data;
+        const typename parent_type::element_block_type* data;
 
         node() : type(mdds::mtv::element_type_empty), size(0), data(NULL) {}
         node(const node& other) : type(other.type), size(other.size), data(other.data) {}

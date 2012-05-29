@@ -47,22 +47,22 @@ namespace mdds {
  * separate element objects that the user of this container needs to deal
  * with.  The user accesses directly with the raw values.
  */
-template<typename _CellBlockFunc>
+template<typename _ElemBlockFunc>
 class multi_type_vector
 {
 public:
     typedef size_t size_type;
 
-    typedef typename mdds::mtv::base_cell_block cell_block_type;
-    typedef typename mdds::mtv::element_t cell_category_type;
+    typedef typename mdds::mtv::base_cell_block element_block_type;
+    typedef typename mdds::mtv::element_t element_category_type;
 
 private:
-    typedef _CellBlockFunc cell_block_func;
+    typedef _ElemBlockFunc element_block_func;
 
     struct block
     {
         size_type m_size;
-        cell_block_type* mp_data;
+        element_block_type* mp_data;
 
         block();
         block(size_type _size);
@@ -326,7 +326,7 @@ private:
         size_type row, size_type& start_pos, size_type& block_index, size_type start_block=0, size_type start_block_row=0) const;
 
     template<typename _T>
-    void create_new_block_with_new_cell(cell_block_type*& data, const _T& cell);
+    void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
 
     template<typename _T>
     void set_cell_to_middle_of_block(
@@ -400,7 +400,7 @@ private:
 
     template<typename _T>
     bool append_to_prev_block(
-        size_type block_index, cell_category_type cat, size_type length,
+        size_type block_index, element_category_type cat, size_type length,
         const _T& it_begin, const _T& it_end);
 
     template<typename _T>
