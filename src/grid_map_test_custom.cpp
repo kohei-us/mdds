@@ -496,7 +496,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         return cell_block_func_base::equal_block(left, right);
     }
 
-    static void overwrite_cells(mdds::mtv::base_element_block& block, size_t pos, size_t len)
+    static void overwrite_values(mdds::mtv::base_element_block& block, size_t pos, size_t len)
     {
         switch (mtv::get_block_type(block))
         {
@@ -504,10 +504,10 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 // Do nothing.  The client code manages the life cycle of these cells.
             break;
             case element_type_muser_block:
-                muser_cell_block::overwrite_cells(block, pos, len);
+                muser_cell_block::overwrite_values(block, pos, len);
             break;
             default:
-                cell_block_func_base::overwrite_cells(block, pos, len);
+                cell_block_func_base::overwrite_values(block, pos, len);
         }
     }
 };

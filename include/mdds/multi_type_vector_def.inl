@@ -199,7 +199,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_middle_of_block(
             *blk_tail->mp_data, *blk->mp_data, pos_in_block+1, orig_size-pos_in_block-1);
 
         // Overwrite the cell and shrink the original block.
-        element_block_func::overwrite_cells(*blk->mp_data, pos_in_block, 1);
+        element_block_func::overwrite_values(*blk->mp_data, pos_in_block, 1);
         element_block_func::resize_block(*blk->mp_data, pos_in_block);
     }
 
@@ -249,7 +249,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_impl(size_type row, const _T& c
     {
         // This block is of the same type as the cell being inserted.
         size_type i = row - start_row;
-        element_block_func::overwrite_cells(*blk->mp_data, i, 1);
+        element_block_func::overwrite_values(*blk->mp_data, i, 1);
         element_block_func::set_value(*blk->mp_data, i, cell);
         return;
     }
@@ -966,7 +966,7 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
         {
             // Erase data in the data block.
             size_type offset = start_row - start_row_in_block1;
-            element_block_func::overwrite_cells(*blk->mp_data, offset, size_to_erase);
+            element_block_func::overwrite_values(*blk->mp_data, offset, size_to_erase);
             element_block_func::erase(*blk->mp_data, offset, size_to_erase);
         }
 
@@ -1041,7 +1041,7 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
         if (blk->mp_data)
         {
             // Shrink the data array.
-            element_block_func::overwrite_cells(*blk->mp_data, new_size, blk->m_size-new_size);
+            element_block_func::overwrite_values(*blk->mp_data, new_size, blk->m_size-new_size);
             element_block_func::resize_block(*blk->mp_data, new_size);
         }
         blk->m_size = new_size;
@@ -1062,7 +1062,7 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
         if (blk->mp_data)
         {
             // Erase the upper part.
-            element_block_func::overwrite_cells(*blk->mp_data, 0, size_to_erase);
+            element_block_func::overwrite_values(*blk->mp_data, 0, size_to_erase);
             element_block_func::erase(*blk->mp_data, 0, size_to_erase);
         }
     }
@@ -1330,7 +1330,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         {
             // simple overwrite.
             size_type offset = start_row - start_row_in_block;
-            element_block_func::overwrite_cells(*blk->mp_data, offset, data_length);
+            element_block_func::overwrite_values(*blk->mp_data, offset, data_length);
             element_block_func::set_values(*blk->mp_data, offset, it_begin, it_end);
             return;
         }
@@ -1374,7 +1374,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
 
             size_type pos = end_row - start_row_in_block + 1;
             element_block_func::assign_values_from_block(*new_data, *blk->mp_data, pos, length);
-            element_block_func::overwrite_cells(*blk->mp_data, 0, pos);
+            element_block_func::overwrite_values(*blk->mp_data, 0, pos);
 
             // Resize the block to zero before deleting, to prevent the
             // managed cells from being deleted when the block is deleted.
@@ -1405,7 +1405,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         blk->m_size = new_size;
         if (blk->mp_data)
         {
-            element_block_func::overwrite_cells(*blk->mp_data, new_size, data_length);
+            element_block_func::overwrite_values(*blk->mp_data, new_size, data_length);
             element_block_func::resize_block(*blk->mp_data, new_size);
         }
 
@@ -1474,7 +1474,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
             *blk_new->mp_data, *blk->mp_data, offset, new_size);
 
         // Resize the current block.
-        element_block_func::overwrite_cells(*blk->mp_data, new_cur_size, data_length);
+        element_block_func::overwrite_values(*blk->mp_data, new_cur_size, data_length);
         element_block_func::resize_block(*blk->mp_data, new_cur_size);
     }
     blk->m_size = new_cur_size;
@@ -1563,7 +1563,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equ
         if (blk1->mp_data)
         {
             size_type n = blk1->m_size - offset;
-            element_block_func::overwrite_cells(*blk1->mp_data, offset, n);
+            element_block_func::overwrite_values(*blk1->mp_data, offset, n);
             element_block_func::resize_block(*blk1->mp_data, offset);
         }
         blk1->m_size = offset;
@@ -1625,7 +1625,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equ
             size_type size_to_erase = end_row - start_row_in_block2 + 1;
             if (blk2->mp_data)
             {
-                element_block_func::overwrite_cells(*blk2->mp_data, 0, size_to_erase);
+                element_block_func::overwrite_values(*blk2->mp_data, 0, size_to_erase);
                 element_block_func::erase(*blk2->mp_data, 0, size_to_erase);
             }
             blk2->m_size -= size_to_erase;
@@ -1669,7 +1669,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_emp
         // Extend the first block to store the new data set.
 
         // Shrink it first to remove the old values, then append new values.
-        element_block_func::overwrite_cells(*blk1->mp_data, offset, blk1->m_size-offset);
+        element_block_func::overwrite_values(*blk1->mp_data, offset, blk1->m_size-offset);
         element_block_func::resize_block(*blk1->mp_data, offset);
         element_block_func::append_values(*blk1->mp_data, it_begin, it_end);
         blk1->m_size = offset + length;
@@ -1691,7 +1691,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_emp
                 size_type data_length = end_row_in_block2 - end_row;
                 size_type begin_pos = end_row - start_row_in_block2 + 1;
                 element_block_func::append_values_from_block(*blk1->mp_data, *blk2->mp_data, begin_pos, data_length);
-                element_block_func::overwrite_cells(*blk2->mp_data, 0, begin_pos);
+                element_block_func::overwrite_values(*blk2->mp_data, 0, begin_pos);
                 element_block_func::resize_block(*blk2->mp_data, 0);
                 blk1->m_size += data_length;
                 ++it_erase_end;
@@ -1832,7 +1832,7 @@ void multi_type_vector<_CellBlockFunc>::resize(size_type new_size)
         size_type new_block_size = new_end_row - start_row_in_block + 1;
         if (blk->mp_data)
         {
-            element_block_func::overwrite_cells(*blk->mp_data, new_end_row+1, end_row_in_block-new_end_row);
+            element_block_func::overwrite_values(*blk->mp_data, new_end_row+1, end_row_in_block-new_end_row);
             element_block_func::resize_block(*blk->mp_data, new_block_size);
         }
         blk->m_size = new_block_size;
@@ -1937,7 +1937,7 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
         }
 
         // Set the upper part of the block empty.
-        element_block_func::overwrite_cells(*blk->mp_data, 0, empty_block_size);
+        element_block_func::overwrite_values(*blk->mp_data, 0, empty_block_size);
         element_block_func::erase(*blk->mp_data, 0, empty_block_size);
         blk->m_size -= empty_block_size;
 
@@ -1953,7 +1953,7 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
         // Set the lower part of the block empty.
         size_type start_pos = start_row - start_row_in_block;
-        element_block_func::overwrite_cells(*blk->mp_data, start_pos, empty_block_size);
+        element_block_func::overwrite_values(*blk->mp_data, start_pos, empty_block_size);
         element_block_func::erase(*blk->mp_data, start_pos, empty_block_size);
         blk->m_size -= empty_block_size;
 
@@ -1981,7 +1981,7 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
     // Overwrite cells that will become empty.
     size_type new_cur_size = start_row - start_row_in_block;
-    element_block_func::overwrite_cells(
+    element_block_func::overwrite_values(
         *blk->mp_data, new_cur_size, empty_block_size);
 
     // Shrink the current data block.
@@ -2013,7 +2013,7 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
             {
                 // Empty the lower part.
                 size_type new_size = start_row - start_row_in_block1;
-                element_block_func::overwrite_cells(*blk->mp_data, new_size, blk->m_size-new_size);
+                element_block_func::overwrite_values(*blk->mp_data, new_size, blk->m_size-new_size);
                 element_block_func::resize_block(*blk->mp_data, new_size);
                 blk->m_size = new_size;
             }
@@ -2042,7 +2042,7 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
             {
                 // Empty the upper part.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
-                element_block_func::overwrite_cells(*blk->mp_data, 0, size_to_erase);
+                element_block_func::overwrite_values(*blk->mp_data, 0, size_to_erase);
                 element_block_func::erase(*blk->mp_data, 0, size_to_erase);
                 blk->m_size -= size_to_erase;
             }

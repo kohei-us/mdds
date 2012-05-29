@@ -192,7 +192,7 @@ struct cell_block_func_base
      * objects.  For blocks that don't need to manage their stored objects (or
      * store primitive values), this method can be left empty.
      */
-    static void overwrite_cells(base_element_block& block, size_t pos, size_t len);
+    static void overwrite_values(base_element_block& block, size_t pos, size_t len);
 };
 
 base_element_block* cell_block_func_base::create_new_block(element_t type, size_t init_size)
@@ -554,7 +554,7 @@ bool cell_block_func_base::equal_block(const base_element_block& left, const bas
     return false;
 }
 
-void cell_block_func_base::overwrite_cells(base_element_block&, size_t, size_t)
+void cell_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
 {
     // Do nothing for the standard types.
 }

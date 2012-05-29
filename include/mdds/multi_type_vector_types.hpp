@@ -47,12 +47,12 @@ const element_t element_type_boolean = 3;
 const element_t element_type_user_start = 50;
 
 /**
- * Generic exception used for errors specific to cell block operations.
+ * Generic exception used for errors specific to element block operations.
  */
-class cell_block_error : public mdds::general_error
+class element_block_error : public mdds::general_error
 {
 public:
-    cell_block_error(const std::string& msg) : mdds::general_error(msg) {}
+    element_block_error(const std::string& msg) : mdds::general_error(msg) {}
 };
 
 struct base_element_block;
@@ -266,16 +266,16 @@ protected:
 public:
     static _Self* clone_block(const base_element_block& blk)
     {
-        throw cell_block_error("attempted to clone a noncopyable cell block.");
+        throw element_block_error("attempted to clone a noncopyable element block.");
     }
 };
 
 /**
- * Get the numerical block type ID from a given cell block instance.
+ * Get the numerical block type ID from a given element block instance.
  *
- * @param blk cell block instance
+ * @param blk element block instance
  *
- * @return numerical value representing the ID of a cell block.
+ * @return numerical value representing the ID of a element block.
  */
 inline element_t get_block_type(const base_element_block& blk)
 {
@@ -283,7 +283,7 @@ inline element_t get_block_type(const base_element_block& blk)
 }
 
 /**
- * Template for default, unmanaged cell block for use in grid_map.
+ * Template for default, unmanaged element block for use in grid_map.
  */
 template<element_t _TypeId, typename _Data>
 struct default_element_block : public copyable_element_block<default_element_block<_TypeId,_Data>, _TypeId, _Data>
@@ -293,14 +293,14 @@ struct default_element_block : public copyable_element_block<default_element_blo
     default_element_block() : base_type() {}
     default_element_block(size_t n) : base_type(n) {}
 
-    static void overwrite_cells(base_element_block&, size_t, size_t)
+    static void overwrite_values(base_element_block&, size_t, size_t)
     {
         // Do nothing.
     }
 };
 
 /**
- * Template for cell block that stores pointers to objects whose life cycles
+ * Template for element block that stores pointers to objects whose life cycles
  * are managed by the block.
  */
 template<element_t _TypeId, typename _Data>
@@ -326,7 +326,7 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
         std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
     }
 
-    static void overwrite_cells(base_element_block& block, size_t pos, size_t len)
+    static void overwrite_values(base_element_block& block, size_t pos, size_t len)
     {
         managed_element_block& blk = get(block);
         typename managed_element_block::store_type::iterator it = blk.m_array.begin() + pos;
@@ -351,7 +351,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
         std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
     }
 
-    static void overwrite_cells(base_element_block& block, size_t pos, size_t len)
+    static void overwrite_values(base_element_block& block, size_t pos, size_t len)
     {
         noncopyable_managed_element_block& blk = get(block);
         typename noncopyable_managed_element_block::store_type::iterator it = blk.m_array.begin() + pos;
