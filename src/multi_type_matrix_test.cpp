@@ -25,23 +25,49 @@
  *
  ************************************************************************/
 
-namespace mdds {
+#include "test_global.hpp"
 
-template<typename _String, typename _Flag>
-multi_type_matrix<_String,_Flag>::multi_type_matrix() {}
+#include <mdds/multi_type_matrix.hpp>
 
-template<typename _String, typename _Flag>
-multi_type_matrix<_String,_Flag>::~multi_type_matrix() {}
+#include <string>
 
-template<typename _String, typename _Flag>
-multi_type_matrix<_String,_Flag>::multi_type_matrix(size_type rows, size_type cols) :
-    m_size(rows, cols) {}
+using namespace mdds;
+using namespace std;
 
-template<typename _String, typename _Flag>
-typename multi_type_matrix<_String,_Flag>::size_pair_type
-multi_type_matrix<_String,_Flag>::size() const
+typedef mdds::multi_type_matrix<std::string, int> mtx_type;
+
+void mtm_test_construction()
 {
-    return m_size;
+    stack_printer __stack_printer__("::mtm_test_construction");
+    {
+        // default constructor.
+        mtx_type mtx;
+        mtx_type::size_pair_type sz = mtx.size();
+        assert(sz.row == 0 && sz.column == 0);
+    }
+
+    {
+        // construction to a specific size.
+        mtx_type mtx(2, 5);
+        mtx_type::size_pair_type sz = mtx.size();
+        assert(sz.row == 2 && sz.column == 5);
+    }
 }
 
+int main (int argc, char **argv)
+{
+    cmd_options opt;
+    if (!parse_cmd_options(argc, argv, opt))
+        return EXIT_FAILURE;
+
+    if (opt.test_func)
+    {
+        mtm_test_construction();
+    }
+
+    if (opt.test_perf)
+    {
+    }
+
+    return EXIT_SUCCESS;
 }

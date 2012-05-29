@@ -28,18 +28,26 @@
 #ifndef __MDDS_MULTI_TYPE_MATRIX_HPP__
 #define __MDDS_MULTI_TYPE_MATRIX_HPP__
 
+#include <mdds/multi_type_vector.hpp>
+
 namespace mdds {
 
 template<typename _String, typename _Flag>
 class multi_type_matrix
 {
 public:
-    enum element_t { empty, boolean, string, numeric; };
-
+    enum element_t { element_empty, element_boolean, element_string, element_numeric };
     typedef _String     string_type;
     typedef _Flag       flag_type;
     typedef size_t      size_type;
-    typedef ::std::pair<size_type, size_type> size_pair_type;
+
+    struct size_pair_type
+    {
+        size_type row;
+        size_type column;
+        size_pair_type() : row(0), column(0) {}
+        size_pair_type(size_type _row, size_type _column) : row(_row), column(_column) {}
+    };
 
     /**
      * Default constructor.
@@ -96,7 +104,7 @@ public:
      */
     flag_type get_flag(size_t row, size_t col) const;
 
-    void clear_flag(size_t row, size_t cols);
+    void clear_flag(size_t row, size_t col);
 
     /**
      * Return the size of matrix as a pair.  The first value is the row size,
@@ -160,6 +168,9 @@ public:
      * Swap the content of the matrix with another instance.
      */
     void swap(multi_type_matrix& r);
+
+private:
+    size_pair_type m_size;
 };
 
 }

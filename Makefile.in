@@ -15,6 +15,7 @@ EXECS= \
 	segment_tree_test \
 	point_quad_tree_test \
 	mixed_type_matrix_test \
+	multi_type_matrix_test \
 	rectangle_set_test \
 	grid_map_test_default \
 	grid_map_test_custom
@@ -32,6 +33,8 @@ HEADERS= \
 	$(INCDIR)/mdds/mixed_type_matrix_storage_filled_linear.inl \
 	$(INCDIR)/mdds/mixed_type_matrix_storage.hpp \
 	$(INCDIR)/mdds/mixed_type_matrix_storage_sparse.inl \
+	$(INCDIR)/mdds/multi_type_matrix.hpp \
+	$(INCDIR)/mdds/multi_type_matrix_def.inl \
 	$(INCDIR)/mdds/node.hpp \
 	$(INCDIR)/mdds/point_quad_tree.hpp \
 	$(INCDIR)/mdds/quad_node.hpp \
@@ -48,14 +51,16 @@ TESTS = \
 	test.pqt \
 	test.st \
 	test.mtm \
-	test.gridmap
+	test.gridmap \
+	test.mtmatrix
 
 TESTS_MEM = \
 	test.pqt.mem \
 	test.recset.mem \
 	test.fst.mem \
 	test.st.mem \
-	test.mtm.mem
+	test.mtm.mem \
+	test.mtmatrix \
 
 # You may add $(TESTS_MEM) if valgrind is available on your platform
 ALL_TESTS = $(TESTS)
@@ -89,6 +94,9 @@ $(OBJDIR)/grid_map_test_default.o: $(SRCDIR)/grid_map_test_default.cpp $(DEPENDS
 $(OBJDIR)/grid_map_test_custom.o: $(SRCDIR)/grid_map_test_custom.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/grid_map_test_custom.cpp
 
+$(OBJDIR)/multi_type_matrix_test.o: $(SRCDIR)/multi_type_matrix_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/multi_type_matrix_test.cpp
+
 flat_segment_tree_test: pre $(OBJDIR)/flat_segment_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flat_segment_tree_test.o -o $@
 
@@ -109,6 +117,9 @@ grid_map_test_default: pre $(OBJDIR)/grid_map_test_default.o
 
 grid_map_test_custom: pre $(OBJDIR)/grid_map_test_custom.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/grid_map_test_custom.o -o $@
+
+multi_type_matrix_test: pre $(OBJDIR)/multi_type_matrix_test.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/multi_type_matrix_test.o -o $@
 
 grid_map_test: grid_map_test_default grid_map_test_custom
 
@@ -167,6 +178,15 @@ test.gridmap: grid_map_test_default grid_map_test_custom
 test.gridmap.mem: grid_map_test_default grid_map_test_custom
 	valgrind --tool=memcheck --leak-check=full ./grid_map_test_default func
 	valgrind --tool=memcheck --leak-check=full ./grid_map_test_custom func
+
+test.mtmatrix: multi_type_matrix_test
+	./multi_type_matrix_test func
+
+test.mtmatrix.perf: multi_type_matrix_test
+	./multi_type_matrix_test perf
+
+test.mtmatrix.mem: multi_type_matrix_test
+	valgrind --tool=memcheck --leak-check=full ./multi_type_matrix_test func
 
 test.stl: stlperf_test
 	./stlperf_test
