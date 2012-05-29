@@ -115,23 +115,23 @@ multi_type_vector<_CellBlockFunc>::~multi_type_vector()
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cell(size_type row, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::set_cell(size_type pos, const _T& cell)
 {
-    set_cell_impl(row, cell);
+    set_cell_impl(pos, cell);
 }
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cells(size_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_CellBlockFunc>::set_cells(size_type pos, const _T& it_begin, const _T& it_end)
 {
-    set_cells_impl(row, it_begin, it_end);
+    set_cells_impl(pos, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::insert_cells(size_type row, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_CellBlockFunc>::insert_cells(size_type pos, const _T& it_begin, const _T& it_end)
 {
-    insert_cells_impl(row, it_begin, it_end);
+    insert_cells_impl(pos, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc>
@@ -862,11 +862,11 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_bottom_of_data_block(size_ty
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::get_cell(size_type row, _T& cell) const
+void multi_type_vector<_CellBlockFunc>::get_cell(size_type pos, _T& cell) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
-    get_block_position(row, start_row, block_index);
+    get_block_position(pos, start_row, block_index);
     const block* blk = m_blocks[block_index];
     assert(blk);
 
@@ -877,27 +877,27 @@ void multi_type_vector<_CellBlockFunc>::get_cell(size_type row, _T& cell) const
         return;
     }
 
-    assert(row >= start_row);
+    assert(pos >= start_row);
     assert(blk->mp_data); // data for non-empty blocks should never be NULL.
-    size_type idx = row - start_row;
+    size_type idx = pos - start_row;
     cell_block_func::get_value(*blk->mp_data, idx, cell);
 }
 
 template<typename _CellBlockFunc>
 template<typename _T>
-_T multi_type_vector<_CellBlockFunc>::get_cell(size_type row) const
+_T multi_type_vector<_CellBlockFunc>::get_cell(size_type pos) const
 {
     _T cell;
-    get_cell(row, cell);
+    get_cell(pos, cell);
     return cell;
 }
 
 template<typename _CellBlockFunc>
-mtv::element_t multi_type_vector<_CellBlockFunc>::get_type(size_type row) const
+mtv::element_t multi_type_vector<_CellBlockFunc>::get_type(size_type pos) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
-    get_block_position(row, start_row, block_index);
+    get_block_position(pos, start_row, block_index);
     const block* blk = m_blocks[block_index];
     if (!blk->mp_data)
         return mtv::element_type_empty;
@@ -906,43 +906,43 @@ mtv::element_t multi_type_vector<_CellBlockFunc>::get_type(size_type row) const
 }
 
 template<typename _CellBlockFunc>
-bool multi_type_vector<_CellBlockFunc>::is_empty(size_type row) const
+bool multi_type_vector<_CellBlockFunc>::is_empty(size_type pos) const
 {
     size_type start_row;
     size_type block_index;
-    get_block_position(row, start_row, block_index);
+    get_block_position(pos, start_row, block_index);
 
     return m_blocks[block_index]->mp_data == NULL;
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::set_empty(size_type start_row, size_type end_row)
+void multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type end_pos)
 {
-    if (start_row > end_row)
+    if (start_pos > end_pos)
         throw std::out_of_range("Start row is larger than the end row.");
 
     size_type start_row_in_block1, start_row_in_block2;
     size_type block_pos1, block_pos2;
-    get_block_position(start_row, start_row_in_block1, block_pos1);
-    get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
+    get_block_position(start_pos, start_row_in_block1, block_pos1);
+    get_block_position(end_pos, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
 
     if (block_pos1 == block_pos2)
     {
-        set_empty_in_single_block(start_row, end_row, block_pos1, start_row_in_block1);
+        set_empty_in_single_block(start_pos, end_pos, block_pos1, start_row_in_block1);
         return;
     }
 
     set_empty_in_multi_blocks(
-        start_row, end_row, block_pos1, start_row_in_block1, block_pos2, start_row_in_block2);
+        start_pos, end_pos, block_pos1, start_row_in_block1, block_pos2, start_row_in_block2);
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::erase(size_type start_row, size_type end_row)
+void multi_type_vector<_CellBlockFunc>::erase(size_type start_pos, size_type end_pos)
 {
-    if (start_row > end_row)
+    if (start_pos > end_pos)
         throw std::out_of_range("Start row is larger than the end row.");
 
-    erase_impl(start_row, end_row);
+    erase_impl(start_pos, end_pos);
 }
 
 template<typename _CellBlockFunc>
@@ -1074,13 +1074,13 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::insert_empty(size_type row, size_type length)
+void multi_type_vector<_CellBlockFunc>::insert_empty(size_type pos, size_type length)
 {
     if (!length)
         // Nothing to insert.
         return;
 
-    insert_empty_impl(row, length);
+    insert_empty_impl(pos, length);
 }
 
 template<typename _CellBlockFunc>
