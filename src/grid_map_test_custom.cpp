@@ -518,8 +518,8 @@ template<typename _ColT, typename _ValT>
 bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 {
     _ValT test;
-    col_db.set_cell(row, val);
-    col_db.get_cell(row, test);
+    col_db.set(row, val);
+    col_db.get(row, test);
     return val == test;
 }
 
@@ -563,17 +563,17 @@ void gridmap_test_basic()
         // set_cell()
         column_type db(4);
         user_cell* p = pool.construct(1.2);
-        db.set_cell(0, p);
-        db.set_cell(1, p);
-        db.set_cell(3, p);
-        db.set_cell(2, p);
+        db.set(0, p);
+        db.set(1, p);
+        db.set(3, p);
+        db.set(2, p);
 
-        user_cell* p2 = db.get_cell<user_cell*>(0);
+        user_cell* p2 = db.get<user_cell*>(0);
         assert(p->value == p2->value);
 
         p = pool.construct(3.4);
-        db.set_cell(0, p);
-        p2 = db.get_cell<user_cell*>(0);
+        db.set(0, p);
+        p2 = db.get<user_cell*>(0);
         assert(p->value == p2->value);
         pool.clear();
     }
@@ -589,14 +589,14 @@ void gridmap_test_basic()
         vals.push_back(p1);
         vals.push_back(p2);
         vals.push_back(p3);
-        db.set_cells(0, vals.begin(), vals.end());
+        db.set(0, vals.begin(), vals.end());
 
         user_cell* ptest;
-        ptest = db.get_cell<user_cell*>(0);
+        ptest = db.get<user_cell*>(0);
         assert(ptest && ptest->value == 1.1);
-        ptest = db.get_cell<user_cell*>(1);
+        ptest = db.get<user_cell*>(1);
         assert(ptest && ptest->value == 2.2);
-        ptest = db.get_cell<user_cell*>(2);
+        ptest = db.get<user_cell*>(2);
         assert(ptest && ptest->value == 3.3);
 
         db.resize(6);
@@ -607,66 +607,66 @@ void gridmap_test_basic()
         vals.push_back(p4);
         vals.push_back(p5);
         vals.push_back(p6);
-        db.set_cells(3, vals.begin(), vals.end());
+        db.set(3, vals.begin(), vals.end());
 
-        ptest = db.get_cell<user_cell*>(0);
+        ptest = db.get<user_cell*>(0);
         assert(ptest && ptest->value == 1.1);
-        ptest = db.get_cell<user_cell*>(1);
+        ptest = db.get<user_cell*>(1);
         assert(ptest && ptest->value == 2.2);
-        ptest = db.get_cell<user_cell*>(2);
+        ptest = db.get<user_cell*>(2);
         assert(ptest && ptest->value == 3.3);
-        ptest = db.get_cell<user_cell*>(3);
+        ptest = db.get<user_cell*>(3);
         assert(ptest && ptest->value == 11);
-        ptest = db.get_cell<user_cell*>(4);
+        ptest = db.get<user_cell*>(4);
         assert(ptest && ptest->value == 22);
-        ptest = db.get_cell<user_cell*>(5);
+        ptest = db.get<user_cell*>(5);
         assert(ptest && ptest->value == 33);
 
         // Shrink the block to erase the bottom 3 cells.
         db.resize(3);
         assert(db.size() == 3);
-        ptest = db.get_cell<user_cell*>(2);
+        ptest = db.get<user_cell*>(2);
         assert(ptest && ptest->value == 3.3);
 
         // Re-insert the values at the front.
-        db.insert_cells(0, vals.begin(), vals.end());
+        db.insert(0, vals.begin(), vals.end());
         assert(db.size() == 6);
 
-        ptest = db.get_cell<user_cell*>(0);
+        ptest = db.get<user_cell*>(0);
         assert(ptest && ptest->value == 11);
-        ptest = db.get_cell<user_cell*>(1);
+        ptest = db.get<user_cell*>(1);
         assert(ptest && ptest->value == 22);
-        ptest = db.get_cell<user_cell*>(2);
+        ptest = db.get<user_cell*>(2);
         assert(ptest && ptest->value == 33);
-        ptest = db.get_cell<user_cell*>(3);
+        ptest = db.get<user_cell*>(3);
         assert(ptest && ptest->value == 1.1);
-        ptest = db.get_cell<user_cell*>(4);
+        ptest = db.get<user_cell*>(4);
         assert(ptest && ptest->value == 2.2);
-        ptest = db.get_cell<user_cell*>(5);
+        ptest = db.get<user_cell*>(5);
         assert(ptest && ptest->value == 3.3);
 
         // set_empty(), is_empty().
         db.set_empty(2, 4);
         assert(db.block_size() == 3);
-        assert(db.get_cell<user_cell*>(1)->value == 22);
+        assert(db.get<user_cell*>(1)->value == 22);
         assert(db.is_empty(2));
         assert(db.is_empty(3));
         assert(db.is_empty(4));
-        assert(db.get_cell<user_cell*>(5)->value == 3.3);
+        assert(db.get<user_cell*>(5)->value == 3.3);
 
         // erase()
         db.erase(3, 5);
         assert(db.size() == 3);
-        assert(db.get_cell<user_cell*>(1)->value == 22);
+        assert(db.get<user_cell*>(1)->value == 22);
         assert(db.is_empty(2));
 
         // insert_empty().
         db.insert_empty(1, 2);
         assert(db.size() == 5);
-        assert(db.get_cell<user_cell*>(0)->value == 11);
+        assert(db.get<user_cell*>(0)->value == 11);
         assert(db.is_empty(1));
         assert(db.is_empty(2));
-        assert(db.get_cell<user_cell*>(3)->value == 22);
+        assert(db.get<user_cell*>(3)->value == 22);
         assert(db.is_empty(4));
 
         pool.clear();
@@ -676,29 +676,29 @@ void gridmap_test_basic()
         // set_cells() to overwrite existing values of type user_cell*.
         column_type db(2);
         user_cell* p0 = pool.construct(1.2);
-        db.set_cell(1, p0);
-        db.set_cell(0, p0);
+        db.set(1, p0);
+        db.set(0, p0);
 
         vector<user_cell*> vals;
         vals.push_back(pool.construct(2.3));
         vals.push_back(pool.construct(2.4));
-        db.set_cells(0, vals.begin(), vals.end());
+        db.set(0, vals.begin(), vals.end());
         pool.clear();
     }
 
     {
         column_type db(4);
         user_cell* p0 = pool.construct(1.1);
-        db.set_cell(3, p0);
+        db.set(3, p0);
 
         vector<user_cell*> vals;
         vals.push_back(pool.construct(2.3));
         vals.push_back(pool.construct(2.4));
-        db.set_cells(1, vals.begin(), vals.end());
+        db.set(1, vals.begin(), vals.end());
         assert(db.is_empty(0));
-        assert(db.get_cell<user_cell*>(1)->value == 2.3);
-        assert(db.get_cell<user_cell*>(2)->value == 2.4);
-        assert(db.get_cell<user_cell*>(3)->value == 1.1);
+        assert(db.get<user_cell*>(1)->value == 2.3);
+        assert(db.get<user_cell*>(2)->value == 2.4);
+        assert(db.get<user_cell*>(3)->value == 1.1);
 
         pool.clear();
     }
@@ -706,7 +706,7 @@ void gridmap_test_basic()
     {
         // Get empty value.
         column_type db(1);
-        user_cell* p = db.get_cell<user_cell*>(0);
+        user_cell* p = db.get<user_cell*>(0);
         assert(p == NULL);
     }
 }
@@ -721,19 +721,19 @@ void gridmap_test_equality()
     column_type db2 = db1;
     assert(db2 == db1);
     user_cell* p0 = pool.construct(1.1);
-    db1.set_cell(0, p0);
+    db1.set(0, p0);
     assert(db1 != db2);
-    db2.set_cell(0, p0);
+    db2.set(0, p0);
     assert(db1 == db2);
-    db1.set_cell(2, string("foo"));
-    db2.set_cell(2, string("foo"));
+    db1.set(2, string("foo"));
+    db2.set(2, string("foo"));
     assert(db1 == db2);
 
     // same value but different memory addresses.
     user_cell* p1 = pool.construct(1.2);
     user_cell* p2 = pool.construct(1.2);
-    db1.set_cell(1, p1);
-    db2.set_cell(1, p2);
+    db1.set(1, p1);
+    db2.set(1, p2);
     assert(db1 != db2); // equality is by the pointer value.
 }
 
@@ -745,11 +745,11 @@ void gridmap_test_managed_block()
     stack_printer __stack_printer__("::gridmap_test_managed_block");
     {
         column_type db(1);
-        db.set_cell(0, new muser_cell(1.0));
-        const muser_cell* p = db.get_cell<muser_cell*>(0);
+        db.set(0, new muser_cell(1.0));
+        const muser_cell* p = db.get<muser_cell*>(0);
         assert(p->value == 1.0);
-        db.set_cell(0, new muser_cell(2.0)); // overwrite.
-        p = db.get_cell<muser_cell*>(0);
+        db.set(0, new muser_cell(2.0)); // overwrite.
+        p = db.get<muser_cell*>(0);
         assert(p->value == 2.0);
     }
 
@@ -758,101 +758,101 @@ void gridmap_test_managed_block()
         column_type db(3);
 
         // Empty the upper part.
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
         db.set_empty(0, 0);
 
         // Empty the lower part.
-        db.set_cell(0, new muser_cell(4.0));
+        db.set(0, new muser_cell(4.0));
         db.set_empty(2, 2);
 
         // Empty the middle part.
-        db.set_cell(2, new muser_cell(5.0));
+        db.set(2, new muser_cell(5.0));
         db.set_empty(1, 1);
     }
 
     {
         // More overwrite with empty cells.
         column_type db(3);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, 3.0);
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, 3.0);
         db.set_empty(1, 2);
 
-        db.set_cell(0, string("foo"));
-        db.set_cell(1, new muser_cell(4.0));
-        db.set_cell(2, new muser_cell(5.0));
+        db.set(0, string("foo"));
+        db.set(1, new muser_cell(4.0));
+        db.set(2, new muser_cell(5.0));
         db.set_empty(0, 1);
 
-        db.set_cell(0, new muser_cell(6.0));
-        db.set_cell(1, size_t(12));
+        db.set(0, new muser_cell(6.0));
+        db.set(1, size_t(12));
         db.set_empty(0, 2);
     }
 
     {
         // Another case for set_empty().
         column_type db(5);
-        db.set_cell(0, 1.2);
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
-        db.set_cell(3, new muser_cell(4.0));
-        db.set_cell(4, new muser_cell(5.0));
+        db.set(0, 1.2);
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
+        db.set(3, new muser_cell(4.0));
+        db.set(4, new muser_cell(5.0));
         db.set_empty(2, 4);
 
-        db.set_cell(2, new muser_cell(3.0));
-        db.set_cell(3, new muser_cell(4.0));
-        db.set_cell(4, new muser_cell(5.0));
+        db.set(2, new muser_cell(3.0));
+        db.set(3, new muser_cell(4.0));
+        db.set(4, new muser_cell(5.0));
         db.set_empty(1, 2);
 
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
         db.set_empty(2, 3);
     }
 
     {
         // Test for cloning.
         column_type db(3);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
 
         // swap
         column_type db2;
         db2.swap(db);
         assert(db.empty());
-        assert(db2.get_cell<muser_cell*>(0)->value == 1.0);
-        assert(db2.get_cell<muser_cell*>(1)->value == 2.0);
-        assert(db2.get_cell<muser_cell*>(2)->value == 3.0);
+        assert(db2.get<muser_cell*>(0)->value == 1.0);
+        assert(db2.get<muser_cell*>(1)->value == 2.0);
+        assert(db2.get<muser_cell*>(2)->value == 3.0);
         db.swap(db2);
         assert(db2.empty());
-        assert(db.get_cell<muser_cell*>(0)->value == 1.0);
-        assert(db.get_cell<muser_cell*>(1)->value == 2.0);
-        assert(db.get_cell<muser_cell*>(2)->value == 3.0);
+        assert(db.get<muser_cell*>(0)->value == 1.0);
+        assert(db.get<muser_cell*>(1)->value == 2.0);
+        assert(db.get<muser_cell*>(2)->value == 3.0);
 
         // copy constructor
         column_type db_copied(db);
         assert(db_copied.size() == 3);
-        assert(db_copied.get_cell<muser_cell*>(0)->value == 1.0);
-        assert(db_copied.get_cell<muser_cell*>(1)->value == 2.0);
-        assert(db_copied.get_cell<muser_cell*>(2)->value == 3.0);
+        assert(db_copied.get<muser_cell*>(0)->value == 1.0);
+        assert(db_copied.get<muser_cell*>(1)->value == 2.0);
+        assert(db_copied.get<muser_cell*>(2)->value == 3.0);
 
         // Assignment.
         column_type db_assigned = db;
         assert(db_assigned.size() == 3);
-        assert(db_assigned.get_cell<muser_cell*>(0)->value == 1.0);
-        assert(db_assigned.get_cell<muser_cell*>(1)->value == 2.0);
-        assert(db_assigned.get_cell<muser_cell*>(2)->value == 3.0);
+        assert(db_assigned.get<muser_cell*>(0)->value == 1.0);
+        assert(db_assigned.get<muser_cell*>(1)->value == 2.0);
+        assert(db_assigned.get<muser_cell*>(2)->value == 3.0);
     }
 
     {
         // Resize and clear
         column_type db(3);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
         db.resize(1);
-        assert(db.get_cell<muser_cell*>(0)->value == 1.0);
+        assert(db.get<muser_cell*>(0)->value == 1.0);
 
         db.clear();
     }
@@ -860,10 +860,10 @@ void gridmap_test_managed_block()
     {
         // Overwrite with a cell of different type.
         column_type db(3);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
-        db.set_cell(1, 4.5);
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
+        db.set(1, 4.5);
     }
 
     {
@@ -871,31 +871,31 @@ void gridmap_test_managed_block()
         column_type db(3);
 
         // Erase the whole thing.
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
         db.erase(0, 2);
         assert(db.empty());
 
         // Erase top.
         db.resize(3);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
         db.erase(0, 1);
         assert(db.size() == 1);
 
         // Erase bottom.
         db.resize(3);
-        db.set_cell(1, new muser_cell(4.0));
-        db.set_cell(2, new muser_cell(5.0));
+        db.set(1, new muser_cell(4.0));
+        db.set(2, new muser_cell(5.0));
         db.erase(1, 2);
         assert(db.size() == 1);
 
         // Erase middle.
         db.resize(3);
-        db.set_cell(1, new muser_cell(4.0));
-        db.set_cell(2, new muser_cell(5.0));
+        db.set(1, new muser_cell(4.0));
+        db.set(2, new muser_cell(5.0));
         db.erase(1, 1);
         assert(db.size() == 2);
     }
@@ -905,32 +905,32 @@ void gridmap_test_managed_block()
         column_type db(4);
 
         // Erase the whole thing.
-        db.set_cell(0, 1.1);
-        db.set_cell(1, new muser_cell(1.0));
-        db.set_cell(2, new muser_cell(2.0));
-        db.set_cell(3, new muser_cell(3.0));
+        db.set(0, 1.1);
+        db.set(1, new muser_cell(1.0));
+        db.set(2, new muser_cell(2.0));
+        db.set(3, new muser_cell(3.0));
         db.erase(1, 3);
         assert(db.size() == 1);
 
         // Erase top.
         db.resize(4);
-        db.set_cell(1, new muser_cell(1.0));
-        db.set_cell(2, new muser_cell(2.0));
-        db.set_cell(3, new muser_cell(3.0));
+        db.set(1, new muser_cell(1.0));
+        db.set(2, new muser_cell(2.0));
+        db.set(3, new muser_cell(3.0));
         db.erase(1, 2);
         assert(db.size() == 2);
 
         // Erase bottom.
         db.resize(4);
-        db.set_cell(2, new muser_cell(4.0));
-        db.set_cell(3, new muser_cell(5.0));
+        db.set(2, new muser_cell(4.0));
+        db.set(3, new muser_cell(5.0));
         db.erase(2, 3);
         assert(db.size() == 2);
 
         // Erase middle.
         db.resize(4);
-        db.set_cell(2, new muser_cell(4.0));
-        db.set_cell(3, new muser_cell(5.0));
+        db.set(2, new muser_cell(4.0));
+        db.set(3, new muser_cell(5.0));
         db.erase(2, 2);
         assert(db.size() == 3);
     }
@@ -938,36 +938,36 @@ void gridmap_test_managed_block()
     {
         // Erase (multi-block 1)
         column_type db(6);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, new muser_cell(3.0));
-        db.set_cell(3, 4.1);
-        db.set_cell(4, 4.2);
-        db.set_cell(5, 4.3);
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, new muser_cell(3.0));
+        db.set(3, 4.1);
+        db.set(4, 4.2);
+        db.set(5, 4.3);
         db.erase(1, 4);
     }
 
     {
         // Erase (multi-block 2)
         column_type db(6);
-        db.set_cell(0, 4.1);
-        db.set_cell(1, 4.2);
-        db.set_cell(2, 4.3);
-        db.set_cell(3, new muser_cell(5.0));
-        db.set_cell(4, new muser_cell(6.0));
-        db.set_cell(5, new muser_cell(7.0));
+        db.set(0, 4.1);
+        db.set(1, 4.2);
+        db.set(2, 4.3);
+        db.set(3, new muser_cell(5.0));
+        db.set(4, new muser_cell(6.0));
+        db.set(5, new muser_cell(7.0));
         db.erase(1, 4);
     }
 
     {
         // Erase (multi-block 3)
         column_type db(6);
-        db.set_cell(0, 1.0);
-        db.set_cell(1, 2.0);
-        db.set_cell(2, new muser_cell(3.0));
-        db.set_cell(3, new muser_cell(4.0));
-        db.set_cell(4, 5.0);
-        db.set_cell(5, 6.0);
+        db.set(0, 1.0);
+        db.set(1, 2.0);
+        db.set(2, new muser_cell(3.0));
+        db.set(3, new muser_cell(4.0));
+        db.set(4, 5.0);
+        db.set(5, 6.0);
         db.erase(1, 4);
     }
 
@@ -975,236 +975,236 @@ void gridmap_test_managed_block()
         // Insert into the middle of block.  This one shouldn't overwrite any
         // cells, but just to be safe...
         column_type db(2);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
         db.insert_empty(1, 2);
         assert(db.size() == 4);
-        assert(db.get_cell<muser_cell*>(0)->value == 1.0);
-        assert(db.get_cell<muser_cell*>(3)->value == 2.0);
+        assert(db.get<muser_cell*>(0)->value == 1.0);
+        assert(db.get<muser_cell*>(3)->value == 2.0);
     }
 
     {
         // set_cells (simple overwrite)
         column_type db(2);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
 
         std::vector<muser_cell*> vals;
         vals.push_back(new muser_cell(3.0));
         vals.push_back(new muser_cell(4.0));
-        db.set_cells(0, vals.begin(), vals.end());
-        assert(db.get_cell<muser_cell*>(0)->value == 3.0);
-        assert(db.get_cell<muser_cell*>(1)->value == 4.0);
+        db.set(0, vals.begin(), vals.end());
+        assert(db.get<muser_cell*>(0)->value == 3.0);
+        assert(db.get<muser_cell*>(1)->value == 4.0);
     }
 
     {
         // set_cells (overwrite upper)
         column_type db(2);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
         double vals[] = { 3.0 };
         const double* p = &vals[0];
-        db.set_cells(0, p, p+1);
-        assert(db.get_cell<double>(0) == 3.0);
-        assert(db.get_cell<muser_cell*>(1)->value == 2.0);
+        db.set(0, p, p+1);
+        assert(db.get<double>(0) == 3.0);
+        assert(db.get<muser_cell*>(1)->value == 2.0);
     }
 
     {
         // set_cells (overwrite lower)
         column_type db(2);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
         double vals[] = { 3.0 };
         const double* p = &vals[0];
-        db.set_cells(1, p, p+1);
-        assert(db.get_cell<muser_cell*>(0)->value == 1.0);
-        assert(db.get_cell<double>(1) == 3.0);
+        db.set(1, p, p+1);
+        assert(db.get<muser_cell*>(0)->value == 1.0);
+        assert(db.get<double>(1) == 3.0);
     }
 
     {
         // set_cells (overwrite middle)
         column_type db(4);
-        db.set_cell(0, 1.1);
-        db.set_cell(1, new muser_cell(1.0));
-        db.set_cell(2, new muser_cell(2.0));
-        db.set_cell(3, new muser_cell(3.0));
+        db.set(0, 1.1);
+        db.set(1, new muser_cell(1.0));
+        db.set(2, new muser_cell(2.0));
+        db.set(3, new muser_cell(3.0));
         double vals[] = { 4.0 };
         const double* p = &vals[0];
-        db.set_cells(2, p, p+1);
-        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
-        assert(db.get_cell<double>(2) == 4.0);
-        assert(db.get_cell<muser_cell*>(3)->value == 3.0);
+        db.set(2, p, p+1);
+        assert(db.get<muser_cell*>(1)->value == 1.0);
+        assert(db.get<double>(2) == 4.0);
+        assert(db.get<muser_cell*>(3)->value == 3.0);
     }
 
     {
         // insert_empty() to split the block into two.
         column_type db(3);
-        db.set_cell(0, 1.1);
-        db.set_cell(1, new muser_cell(1.0));
-        db.set_cell(2, new muser_cell(2.0));
+        db.set(0, 1.1);
+        db.set(1, new muser_cell(1.0));
+        db.set(2, new muser_cell(2.0));
         db.insert_empty(2, 2);
         assert(db.size() == 5);
-        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
-        assert(db.get_cell<muser_cell*>(4)->value == 2.0);
+        assert(db.get<muser_cell*>(1)->value == 1.0);
+        assert(db.get<muser_cell*>(4)->value == 2.0);
     }
 
     {
         // erase() to merge two blocks.
         column_type db(4);
-        db.set_cell(0, 1.1);
-        db.set_cell(1, new muser_cell(1.0));
-        db.set_cell(2, size_t(2));
-        db.set_cell(3, new muser_cell(3.0));
+        db.set(0, 1.1);
+        db.set(1, new muser_cell(1.0));
+        db.set(2, size_t(2));
+        db.set(3, new muser_cell(3.0));
         assert(db.block_size() == 4);
         assert(db.size() == 4);
 
         db.erase(2, 2);
         assert(db.block_size() == 2);
         assert(db.size() == 3);
-        assert(db.get_cell<double>(0) == 1.1);
-        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
-        assert(db.get_cell<muser_cell*>(2)->value == 3.0);
+        assert(db.get<double>(0) == 1.1);
+        assert(db.get<muser_cell*>(1)->value == 1.0);
+        assert(db.get<muser_cell*>(2)->value == 3.0);
     }
 
     {
         // set_cells() across multiple blocks.
         column_type db(5);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(2.0));
-        db.set_cell(2, 1.2);
-        db.set_cell(3, new muser_cell(3.0));
-        db.set_cell(4, new muser_cell(4.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(1, new muser_cell(2.0));
+        db.set(2, 1.2);
+        db.set(3, new muser_cell(3.0));
+        db.set(4, new muser_cell(4.0));
         size_t vals[] = { 5, 6, 7 };
         const size_t* p = &vals[0];
-        db.set_cells(1, p, p+3);
+        db.set(1, p, p+3);
     }
 
     {
         // set_cells() across multiple blocks, part 2.
         column_type db(6);
-        db.set_cell(0, size_t(12));
-        db.set_cell(1, new muser_cell(1.0));
-        db.set_cell(2, new muser_cell(2.0));
-        db.set_cell(3, 1.2);
-        db.set_cell(4, new muser_cell(3.0));
-        db.set_cell(5, new muser_cell(4.0));
+        db.set(0, size_t(12));
+        db.set(1, new muser_cell(1.0));
+        db.set(2, new muser_cell(2.0));
+        db.set(3, 1.2);
+        db.set(4, new muser_cell(3.0));
+        db.set(5, new muser_cell(4.0));
         assert(db.block_size() == 4);
 
         std::vector<muser_cell*> vals;
         vals.push_back(new muser_cell(5.0));
         vals.push_back(new muser_cell(6.0));
         vals.push_back(new muser_cell(7.0));
-        db.set_cells(2, vals.begin(), vals.end());
+        db.set(2, vals.begin(), vals.end());
         assert(db.block_size() == 2);
     }
 
     {
         // set_cell() to merge 3 blocks.
         column_type db(6);
-        db.set_cell(0, size_t(12));
-        db.set_cell(1, new muser_cell(1.0));
-        db.set_cell(2, new muser_cell(2.0));
-        db.set_cell(3, 1.2);
-        db.set_cell(4, new muser_cell(3.0));
-        db.set_cell(5, new muser_cell(4.0));
+        db.set(0, size_t(12));
+        db.set(1, new muser_cell(1.0));
+        db.set(2, new muser_cell(2.0));
+        db.set(3, 1.2);
+        db.set(4, new muser_cell(3.0));
+        db.set(5, new muser_cell(4.0));
         assert(db.block_size() == 4);
-        assert(db.get_cell<size_t>(0) == 12);
-        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
-        assert(db.get_cell<muser_cell*>(2)->value == 2.0);
-        assert(db.get_cell<double>(3) == 1.2);
-        assert(db.get_cell<muser_cell*>(4)->value == 3.0);
-        assert(db.get_cell<muser_cell*>(5)->value == 4.0);
+        assert(db.get<size_t>(0) == 12);
+        assert(db.get<muser_cell*>(1)->value == 1.0);
+        assert(db.get<muser_cell*>(2)->value == 2.0);
+        assert(db.get<double>(3) == 1.2);
+        assert(db.get<muser_cell*>(4)->value == 3.0);
+        assert(db.get<muser_cell*>(5)->value == 4.0);
 
-        db.set_cell(3, new muser_cell(5.0)); // merge blocks.
+        db.set(3, new muser_cell(5.0)); // merge blocks.
         assert(db.block_size() == 2);
-        assert(db.get_cell<size_t>(0) == 12);
-        assert(db.get_cell<muser_cell*>(1)->value == 1.0);
-        assert(db.get_cell<muser_cell*>(2)->value == 2.0);
-        assert(db.get_cell<muser_cell*>(3)->value == 5.0);
-        assert(db.get_cell<muser_cell*>(4)->value == 3.0);
-        assert(db.get_cell<muser_cell*>(5)->value == 4.0);
+        assert(db.get<size_t>(0) == 12);
+        assert(db.get<muser_cell*>(1)->value == 1.0);
+        assert(db.get<muser_cell*>(2)->value == 2.0);
+        assert(db.get<muser_cell*>(3)->value == 5.0);
+        assert(db.get<muser_cell*>(4)->value == 3.0);
+        assert(db.get<muser_cell*>(5)->value == 4.0);
     }
 
     {
         // set_cell() to merge 2 blocks.
         column_type db(3);
-        db.set_cell(0, size_t(23));
-        db.set_cell(1, new muser_cell(2.1));
-        db.set_cell(2, new muser_cell(3.1));
+        db.set(0, size_t(23));
+        db.set(1, new muser_cell(2.1));
+        db.set(2, new muser_cell(3.1));
 
-        db.set_cell(0, new muser_cell(4.2)); // merge
+        db.set(0, new muser_cell(4.2)); // merge
         assert(db.block_size() == 1);
-        assert(db.get_cell<muser_cell*>(0)->value == 4.2);
-        assert(db.get_cell<muser_cell*>(1)->value == 2.1);
-        assert(db.get_cell<muser_cell*>(2)->value == 3.1);
+        assert(db.get<muser_cell*>(0)->value == 4.2);
+        assert(db.get<muser_cell*>(1)->value == 2.1);
+        assert(db.get<muser_cell*>(2)->value == 3.1);
     }
 
     {
         // insert_cells() to split block into two.
         column_type db(2);
-        db.set_cell(0, new muser_cell(2.1));
-        db.set_cell(1, new muser_cell(2.2));
+        db.set(0, new muser_cell(2.1));
+        db.set(1, new muser_cell(2.2));
         double vals[] = { 3.1, 3.2 };
         const double* p = &vals[0];
-        db.insert_cells(1, p, p+2);
+        db.insert(1, p, p+2);
     }
 
     {
         // set_cells() - merge new data block with existing block below.
         column_type db(6);
-        db.set_cell(0, string("foo"));
-        db.set_cell(1, string("baa"));
-        db.set_cell(2, 1.1);
-        db.set_cell(3, 1.2);
-        db.set_cell(4, new muser_cell(2.2));
-        db.set_cell(5, new muser_cell(2.3));
+        db.set(0, string("foo"));
+        db.set(1, string("baa"));
+        db.set(2, 1.1);
+        db.set(3, 1.2);
+        db.set(4, new muser_cell(2.2));
+        db.set(5, new muser_cell(2.3));
         assert(db.block_size() == 3);
 
         vector<muser_cell*> vals;
         vals.push_back(new muser_cell(2.4));
         vals.push_back(new muser_cell(2.5));
         vals.push_back(new muser_cell(2.6));
-        db.set_cells(1, vals.begin(), vals.end());
+        db.set(1, vals.begin(), vals.end());
         assert(db.block_size() == 2);
 
-        assert(db.get_cell<string>(0) == "foo");
-        assert(db.get_cell<muser_cell*>(1)->value == 2.4);
-        assert(db.get_cell<muser_cell*>(2)->value == 2.5);
-        assert(db.get_cell<muser_cell*>(3)->value == 2.6);
-        assert(db.get_cell<muser_cell*>(4)->value == 2.2);
-        assert(db.get_cell<muser_cell*>(5)->value == 2.3);
+        assert(db.get<string>(0) == "foo");
+        assert(db.get<muser_cell*>(1)->value == 2.4);
+        assert(db.get<muser_cell*>(2)->value == 2.5);
+        assert(db.get<muser_cell*>(3)->value == 2.6);
+        assert(db.get<muser_cell*>(4)->value == 2.2);
+        assert(db.get<muser_cell*>(5)->value == 2.3);
     }
 
     {
         // set_cells() - merge new data block with existing block below, but
         // it overwrites the upper cell.
         column_type db(6);
-        db.set_cell(0, string("foo"));
-        db.set_cell(1, string("baa"));
-        db.set_cell(2, 1.1);
-        db.set_cell(3, new muser_cell(2.1));
-        db.set_cell(4, new muser_cell(2.2));
-        db.set_cell(5, new muser_cell(2.3));
+        db.set(0, string("foo"));
+        db.set(1, string("baa"));
+        db.set(2, 1.1);
+        db.set(3, new muser_cell(2.1));
+        db.set(4, new muser_cell(2.2));
+        db.set(5, new muser_cell(2.3));
         vector<muser_cell*> vals;
         vals.push_back(new muser_cell(2.4));
         vals.push_back(new muser_cell(2.5));
         vals.push_back(new muser_cell(2.6));
-        db.set_cells(1, vals.begin(), vals.end());
+        db.set(1, vals.begin(), vals.end());
         assert(db.block_size() == 2);
 
-        assert(db.get_cell<string>(0) == "foo");
-        assert(db.get_cell<muser_cell*>(1)->value == 2.4);
-        assert(db.get_cell<muser_cell*>(2)->value == 2.5);
-        assert(db.get_cell<muser_cell*>(3)->value == 2.6);
-        assert(db.get_cell<muser_cell*>(4)->value == 2.2);
-        assert(db.get_cell<muser_cell*>(5)->value == 2.3);
+        assert(db.get<string>(0) == "foo");
+        assert(db.get<muser_cell*>(1)->value == 2.4);
+        assert(db.get<muser_cell*>(2)->value == 2.5);
+        assert(db.get<muser_cell*>(3)->value == 2.6);
+        assert(db.get<muser_cell*>(4)->value == 2.2);
+        assert(db.get<muser_cell*>(5)->value == 2.3);
     }
 
     {
         column_type db(3);
-        db.set_cell(0, new muser_cell(1.0));
-        db.set_cell(2, new muser_cell(1.0));
-        db.set_cell(1, new muser_cell(1.0));
+        db.set(0, new muser_cell(1.0));
+        db.set(2, new muser_cell(1.0));
+        db.set(1, new muser_cell(1.0));
         assert(db.block_size() == 1);
     }
 }

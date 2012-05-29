@@ -124,7 +124,7 @@ public:
      * @param cell value to insert.
      */
     template<typename _T>
-    void set_cell(size_type pos, const _T& cell);
+    void set(size_type pos, const _T& cell);
 
     /**
      * Set multiple cell values of identical type to a range of elements
@@ -145,7 +145,7 @@ public:
      *               being set.
      */
     template<typename _T>
-    void set_cells(size_type pos, const _T& it_begin, const _T& it_end);
+    void set(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
      * Insert multiple cell values of identical type to a specified position.
@@ -166,7 +166,7 @@ public:
      *               being inserted.
      */
     template<typename _T>
-    void insert_cells(size_type pos, const _T& it_begin, const _T& it_end);
+    void insert(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
      * Get the value of a cell at specified position.  The caller must pass a
@@ -179,7 +179,7 @@ public:
      * @param cell (out) variable to store the retrieved value.
      */
     template<typename _T>
-    void get_cell(size_type pos, _T& cell) const;
+    void get(size_type pos, _T& cell) const;
 
     /**
      * Get the value of a cell at specified position.  The caller must specify
@@ -193,7 +193,7 @@ public:
      * @return cell value.
      */
     template<typename _T>
-    _T get_cell(size_type pos) const;
+    _T get(size_type pos) const;
 
     mtv::element_t get_type(size_type pos) const;
 

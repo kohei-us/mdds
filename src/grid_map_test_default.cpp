@@ -48,8 +48,8 @@ template<typename _ColT, typename _ValT>
 bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 {
     _ValT test;
-    col_db.set_cell(row, val);
-    col_db.get_cell(row, test);
+    col_db.set(row, val);
+    col_db.get(row, test);
     return val == test;
 }
 
@@ -69,7 +69,7 @@ void gridmap_test_basic()
         double test = -999.0;
 
         // Empty cell has a numeric value of 0.0.
-        col_db.get_cell(0, test);
+        col_db.get(0, test);
         assert(test == 0.0);
 
         // Basic value setting and retrieval.
@@ -83,16 +83,16 @@ void gridmap_test_basic()
         double test = -999.0;
 
         // Test empty cell values.
-        col_db.get_cell(0, test);
+        col_db.get(0, test);
         assert(test == 0.0);
         test = 1.0;
-        col_db.get_cell(1, test);
+        col_db.get(1, test);
         assert(test == 0.0);
 
         res = test_cell_insertion(col_db, 0, 5.0);
         assert(res);
 
-        col_db.get_cell(1, test);
+        col_db.get(1, test);
         assert(test == 0.0); // should be empty.
 
         // Insert a new value to an empty row right below a non-empty one.
@@ -118,13 +118,13 @@ void gridmap_test_basic()
         assert(res);
 
         double test = 9;
-        col_db.get_cell(1, test);
+        col_db.get(1, test);
         assert(test == 0.0); // should be empty.
 
         res = test_cell_insertion(col_db, 0, 2.5);
         assert(res);
 
-        col_db.get_cell(1, test);
+        col_db.get(1, test);
         assert(test == 0.0); // should be empty.
 
         res = test_cell_insertion(col_db, 1, 1.2);
@@ -262,13 +262,13 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 2, 2.0);
         assert(res);
         string test;
-        col_db.get_cell(3, test); // Check the cell below.
+        col_db.get(3, test); // Check the cell below.
         assert(test == "foo");
 
         res = test_cell_insertion(col_db, 1, -2.0);
         assert(res);
         test = "hmm";
-        col_db.get_cell(3, test);
+        col_db.get(3, test);
         assert(test == "foo");
 
         res = test_cell_insertion(col_db, 0, 7.5); // overwrite.
@@ -278,16 +278,16 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 0, str); // overwrite with different type.
         assert(res);
         double val = -999;
-        col_db.get_cell(1, val); // Check the cell below.
+        col_db.get(1, val); // Check the cell below.
         assert(val == -2.0);
 
         str = "alpha";
         res = test_cell_insertion(col_db, 1, str);
         assert(res);
-        col_db.get_cell(2, val); // Check the cell below.
+        col_db.get(2, val); // Check the cell below.
         assert(val == 2.0);
 
-        col_db.get_cell(3, test);
+        col_db.get(3, test);
         assert(test == "foo");
 
         str = "beta";
@@ -321,14 +321,14 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 0, str);
         assert(res);
         string test;
-        col_db.get_cell(1, test);
+        col_db.get(1, test);
         assert(test == "foo");
     }
 
     {
         column_type col_db(3);
         string str = "alpha";
-        col_db.set_cell(2, str);
+        col_db.set(2, str);
         res = test_cell_insertion(col_db, 2, 5.0);
         assert(res);
 
@@ -345,11 +345,11 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 2, 3.0);
         assert(res);
         double test;
-        col_db.get_cell(0, test);
+        col_db.get(0, test);
         assert(test == 1.0);
-        col_db.get_cell(1, test);
+        col_db.get(1, test);
         assert(test == 2.0);
-        col_db.get_cell(2, test);
+        col_db.get(2, test);
         assert(test == 3.0);
     }
 
@@ -365,7 +365,7 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 1, 3.0);
         assert(res);
         double test;
-        col_db.get_cell(0, test);
+        col_db.get(0, test);
         assert(test == 4.0);
 
         // The top 2 cells are numeric and the bottom cell is still empty.
@@ -373,20 +373,20 @@ void gridmap_test_basic()
         str = "beta";
         res = test_cell_insertion(col_db, 1, str);
         assert(res);
-        col_db.get_cell(0, test);
+        col_db.get(0, test);
         assert(test == 4.0);
 
         res = test_cell_insertion(col_db, 1, 6.5);
         assert(res);
-        col_db.get_cell(0, test);
+        col_db.get(0, test);
         assert(test == 4.0);
 
         str = "gamma";
         res = test_cell_insertion(col_db, 2, str);
         assert(res);
-        col_db.get_cell(0, test);
+        col_db.get(0, test);
         assert(test == 4.0);
-        col_db.get_cell(1, test);
+        col_db.get(1, test);
         assert(test == 6.5);
 
         // The top 2 cells are numeric and the bottom cell is string.
@@ -398,26 +398,26 @@ void gridmap_test_basic()
 
     {
         column_type col_db(4);
-        col_db.set_cell(0, 1.0);
+        col_db.set(0, 1.0);
         string str = "foo";
-        col_db.set_cell(1, str);
-        col_db.set_cell(2, str);
-        col_db.set_cell(3, 4.0);
+        col_db.set(1, str);
+        col_db.set(2, str);
+        col_db.set(3, 4.0);
 
         res = test_cell_insertion(col_db, 2, 3.0);
         assert(res);
         double test;
-        col_db.get_cell(3, test);
+        col_db.get(3, test);
         assert(test == 4.0);
     }
 
     {
         column_type col_db(4);
-        col_db.set_cell(0, 1.0);
+        col_db.set(0, 1.0);
         string str = "foo";
-        col_db.set_cell(1, str);
-        col_db.set_cell(2, str);
-        col_db.set_cell(3, str);
+        col_db.set(1, str);
+        col_db.set(2, str);
+        col_db.set(3, str);
 
         res = test_cell_insertion(col_db, 3, 3.0);
         assert(res);
@@ -425,29 +425,29 @@ void gridmap_test_basic()
 
     {
         column_type col_db(4);
-        col_db.set_cell(0, 1.0);
+        col_db.set(0, 1.0);
         string str = "foo";
-        col_db.set_cell(1, str);
-        col_db.set_cell(2, str);
+        col_db.set(1, str);
+        col_db.set(2, str);
 
         res = test_cell_insertion(col_db, 2, 3.0);
         assert(res);
 
         // Next cell should still be empty.
         double test_val;
-        col_db.get_cell(3, test_val);
+        col_db.get(3, test_val);
         assert(test_val == 0.0);
         string test_str;
-        col_db.get_cell(3, test_str);
+        col_db.get(3, test_str);
         assert(test_str.empty());
     }
 
     {
         column_type col_db(4);
-        col_db.set_cell(0, 1.0);
-        col_db.set_cell(1, 1.0);
-        col_db.set_cell(2, 1.0);
-        col_db.set_cell(3, 1.0);
+        col_db.set(0, 1.0);
+        col_db.set(1, 1.0);
+        col_db.set(2, 1.0);
+        col_db.set(3, 1.0);
         string str = "alpha";
         res = test_cell_insertion(col_db, 2, str);
         assert(res);
@@ -455,19 +455,19 @@ void gridmap_test_basic()
 
     {
         column_type col_db(3);
-        col_db.set_cell(0, 1.0);
-        col_db.set_cell(1, 1.0);
+        col_db.set(0, 1.0);
+        col_db.set(1, 1.0);
         string str = "foo";
-        col_db.set_cell(2, str);
+        col_db.set(2, str);
         size_t index = 5;
         test_cell_insertion(col_db, 2, index);
     }
 
     {
         column_type col_db(3);
-        col_db.set_cell(1, 1.0);
+        col_db.set(1, 1.0);
         string str = "foo";
-        col_db.set_cell(2, str);
+        col_db.set(2, str);
         str = "bah";
         res = test_cell_insertion(col_db, 1, str);
         assert(res);
@@ -477,7 +477,7 @@ void gridmap_test_basic()
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
         string test;
-        col_db.get_cell(2, test);
+        col_db.get(2, test);
         assert(test == "foo");
         str = "alpha";
         res = test_cell_insertion(col_db, 0, str);
@@ -507,16 +507,16 @@ void gridmap_test_basic()
 
     {
         column_type col_db(3);
-        col_db.set_cell(0, 1.0);
+        col_db.set(0, 1.0);
         string str = "alpha";
-        col_db.set_cell(1, str);
+        col_db.set(1, str);
         str = "beta";
-        col_db.set_cell(2, str);
+        col_db.set(2, str);
         size_t index = 1;
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
         string test;
-        col_db.get_cell(2, test);
+        col_db.get(2, test);
         assert(test == "beta");
     }
 
@@ -541,28 +541,28 @@ void gridmap_test_basic()
     {
         // set_cell() to merge 3 blocks.
         column_type db(6);
-        db.set_cell(0, size_t(12));
-        db.set_cell(1, 1.0);
-        db.set_cell(2, 2.0);
-        db.set_cell(3, string("foo"));
-        db.set_cell(4, 3.0);
-        db.set_cell(5, 4.0);
+        db.set(0, size_t(12));
+        db.set(1, 1.0);
+        db.set(2, 2.0);
+        db.set(3, string("foo"));
+        db.set(4, 3.0);
+        db.set(5, 4.0);
         assert(db.block_size() == 4);
-        assert(db.get_cell<size_t>(0) == 12);
-        assert(db.get_cell<double>(1) == 1.0);
-        assert(db.get_cell<double>(2) == 2.0);
-        assert(db.get_cell<string>(3) == "foo");
-        assert(db.get_cell<double>(4) == 3.0);
-        assert(db.get_cell<double>(5) == 4.0);
+        assert(db.get<size_t>(0) == 12);
+        assert(db.get<double>(1) == 1.0);
+        assert(db.get<double>(2) == 2.0);
+        assert(db.get<string>(3) == "foo");
+        assert(db.get<double>(4) == 3.0);
+        assert(db.get<double>(5) == 4.0);
 
-        db.set_cell(3, 5.0); // merge blocks.
+        db.set(3, 5.0); // merge blocks.
         assert(db.block_size() == 2);
-        assert(db.get_cell<size_t>(0) == 12);
-        assert(db.get_cell<double>(1) == 1.0);
-        assert(db.get_cell<double>(2) == 2.0);
-        assert(db.get_cell<double>(3) == 5.0);
-        assert(db.get_cell<double>(4) == 3.0);
-        assert(db.get_cell<double>(5) == 4.0);
+        assert(db.get<size_t>(0) == 12);
+        assert(db.get<double>(1) == 1.0);
+        assert(db.get<double>(2) == 2.0);
+        assert(db.get<double>(3) == 5.0);
+        assert(db.get<double>(4) == 3.0);
+        assert(db.get<double>(5) == 4.0);
     }
 }
 
@@ -580,13 +580,13 @@ void gridmap_test_empty_cells()
         db.set_empty(2, 2);
         db.set_empty(0, 2);
 
-        db.set_cell(0, 1.0);
-        db.set_cell(2, 5.0);
+        db.set(0, 1.0);
+        db.set(2, 5.0);
         assert(!db.is_empty(0));
         assert(!db.is_empty(2));
         assert(db.is_empty(1));
 
-        db.set_cell(1, 2.3);
+        db.set(1, 2.3);
         assert(!db.is_empty(1));
 
         // Container contains a single block of numeric cells at this point.
@@ -595,9 +595,9 @@ void gridmap_test_empty_cells()
         db.set_empty(0, 2);
 
         // Reset.
-        db.set_cell(0, 1.0);
-        db.set_cell(1, 2.0);
-        db.set_cell(2, 4.0);
+        db.set(0, 1.0);
+        db.set(1, 2.0);
+        db.set(2, 4.0);
 
         // Set the upper part of the block empty.
         db.set_empty(0, 1);
@@ -606,13 +606,13 @@ void gridmap_test_empty_cells()
         assert(!db.is_empty(2));
 
         double test;
-        db.get_cell(2, test);
+        db.get(2, test);
         assert(test == 4.0);
 
         // Reset.
-        db.set_cell(0, 5.0);
-        db.set_cell(1, 5.1);
-        db.set_cell(2, 5.2);
+        db.set(0, 5.0);
+        db.set(1, 5.1);
+        db.set(2, 5.2);
 
         // Set the lower part of the block empty.
         db.set_empty(1, 2);
@@ -620,22 +620,22 @@ void gridmap_test_empty_cells()
         assert(db.is_empty(1));
         assert(db.is_empty(2));
 
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 5.0);
 
         // Reset.
-        db.set_cell(0, 3.0);
-        db.set_cell(1, 3.1);
-        db.set_cell(2, 3.2);
+        db.set(0, 3.0);
+        db.set(1, 3.1);
+        db.set(2, 3.2);
 
         // Set the middle part of the block empty.
         db.set_empty(1, 1);
         assert(!db.is_empty(0));
         assert(db.is_empty(1));
         assert(!db.is_empty(2));
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 3.0);
-        db.get_cell(2, test);
+        db.get(2, test);
         assert(test == 3.2);
 
         bool res = test_cell_insertion(db, 1, 4.3);
@@ -646,7 +646,7 @@ void gridmap_test_empty_cells()
         // Empty multiple cells at the middle part of a block.
         column_type db(4);
         for (size_t i = 0; i < 4; ++i)
-            db.set_cell(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i+1));
 
         for (size_t i = 0; i < 4; ++i)
         {
@@ -660,17 +660,17 @@ void gridmap_test_empty_cells()
         assert(!db.is_empty(3));
 
         double test;
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 1.0);
-        db.get_cell(3, test);
+        db.get(3, test);
         assert(test == 4.0);
     }
 
     {
         // Empty multiple blocks.
         column_type db(2);
-        db.set_cell(0, 1.0);
-        db.set_cell(1, string("foo"));
+        db.set(0, 1.0);
+        db.set(1, string("foo"));
         assert(!db.is_empty(0));
         assert(!db.is_empty(1));
 
@@ -682,15 +682,15 @@ void gridmap_test_empty_cells()
     {
         // Empty multiple blocks, part 2 - from middle block to middle block.
         column_type db(6);
-        db.set_cell(0, 1.0);
-        db.set_cell(1, 2.0);
+        db.set(0, 1.0);
+        db.set(1, 2.0);
         string str = "foo";
-        db.set_cell(2, str);
-        db.set_cell(3, str);
+        db.set(2, str);
+        db.set(3, str);
         size_t index = 1;
-        db.set_cell(4, index);
+        db.set(4, index);
         index = 100;
-        db.set_cell(5, index);
+        db.set(5, index);
 
         db.set_empty(1, 4);
         assert(!db.is_empty(0));
@@ -700,25 +700,25 @@ void gridmap_test_empty_cells()
         assert(db.is_empty(4));
         assert(!db.is_empty(5));
         double val;
-        db.get_cell(0, val);
+        db.get(0, val);
         assert(val == 1.0);
         size_t index_test;
-        db.get_cell(5, index_test);
+        db.get(5, index_test);
         assert(index_test == 100);
     }
 
     {
         // Empty multiple blocks, part 3 - from top block to middle block.
         column_type db(6);
-        db.set_cell(0, 1.0);
-        db.set_cell(1, 2.0);
+        db.set(0, 1.0);
+        db.set(1, 2.0);
         string str = "foo";
-        db.set_cell(2, str);
-        db.set_cell(3, str);
+        db.set(2, str);
+        db.set(3, str);
         size_t index = 1;
-        db.set_cell(4, index);
+        db.set(4, index);
         index = 50;
-        db.set_cell(5, index);
+        db.set(5, index);
 
         db.set_empty(0, 4);
         assert(db.is_empty(0));
@@ -728,21 +728,21 @@ void gridmap_test_empty_cells()
         assert(db.is_empty(4));
         assert(!db.is_empty(5));
         size_t test;
-        db.get_cell(5, test);
+        db.get(5, test);
         assert(test == 50);
     }
 
     {
         // Empty multiple blocks, part 4 - from middle block to bottom block.
         column_type db(6);
-        db.set_cell(0, 1.0);
-        db.set_cell(1, 2.0);
+        db.set(0, 1.0);
+        db.set(1, 2.0);
         string str = "foo";
-        db.set_cell(2, str);
-        db.set_cell(3, str);
+        db.set(2, str);
+        db.set(3, str);
         size_t index = 1;
-        db.set_cell(4, index);
-        db.set_cell(5, index);
+        db.set(4, index);
+        db.set(5, index);
 
         db.set_empty(1, 5);
         assert(!db.is_empty(0));
@@ -752,19 +752,19 @@ void gridmap_test_empty_cells()
         assert(db.is_empty(4));
         assert(db.is_empty(5));
         double test;
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 1.0);
     }
 
     {
         // Empty multiple blocks, part 5 - from middle empty block to middle non-empty block.
         column_type db(6);
-        db.set_cell(2, 1.0);
-        db.set_cell(3, 2.0);
+        db.set(2, 1.0);
+        db.set(3, 2.0);
         string str = "foo";
-        db.set_cell(4, str);
+        db.set(4, str);
         str = "baa";
-        db.set_cell(5, str);
+        db.set(5, str);
         assert(db.is_empty(0));
         assert(db.is_empty(1));
         assert(!db.is_empty(2));
@@ -782,17 +782,17 @@ void gridmap_test_empty_cells()
         assert(!db.is_empty(5));
         assert(db.block_size() == 2);
         string test;
-        db.get_cell(5, test);
+        db.get(5, test);
         assert(test == "baa");
     }
 
     {
         // Empty multiple blocks, part 6 - from middle non-empty block to middle empty block.
         column_type db(6);
-        db.set_cell(0, 1.0);
-        db.set_cell(1, 2.0);
-        db.set_cell(2, string("foo"));
-        db.set_cell(3, string("baa"));
+        db.set(0, 1.0);
+        db.set(1, 2.0);
+        db.set(2, string("foo"));
+        db.set(3, string("baa"));
         assert(!db.is_empty(0));
         assert(!db.is_empty(1));
         assert(!db.is_empty(2));
@@ -808,7 +808,7 @@ void gridmap_test_empty_cells()
         assert(db.is_empty(4));
         assert(db.is_empty(5));
         double test;
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 1.0);
         assert(db.block_size() == 2);
     }
@@ -816,8 +816,8 @@ void gridmap_test_empty_cells()
     {
         // Empty multiple blocks, part 7 - from middle empty block to middle empty block.
         column_type db(6);
-        db.set_cell(2, 1.0);
-        db.set_cell(3, string("foo"));
+        db.set(2, 1.0);
+        db.set(3, string("foo"));
         assert(db.block_size() == 4);
         assert(db.is_empty(0));
         assert(db.is_empty(1));
@@ -841,28 +841,28 @@ void gridmap_test_empty_cells()
         // Set empty on 2nd block.  Presence of first block causes an offset
         // on index in the 2nd block.
         column_type db(5);
-        db.set_cell(0, 1.0);
-        db.set_cell(1, size_t(1));
-        db.set_cell(2, size_t(2));
-        db.set_cell(3, size_t(3));
-        db.set_cell(4, size_t(4));
+        db.set(0, 1.0);
+        db.set(1, size_t(1));
+        db.set(2, size_t(2));
+        db.set(3, size_t(3));
+        db.set(4, size_t(4));
         db.set_empty(2, 4);
         assert(!db.is_empty(1));
         assert(db.is_empty(2));
         assert(db.is_empty(3));
         assert(db.is_empty(4));
 
-        db.set_cell(2, size_t(5));
-        db.set_cell(3, size_t(6));
-        db.set_cell(4, size_t(7));
+        db.set(2, size_t(5));
+        db.set(3, size_t(6));
+        db.set(4, size_t(7));
         db.set_empty(1, 2);
         assert(db.is_empty(1));
         assert(db.is_empty(2));
         assert(!db.is_empty(3));
         assert(!db.is_empty(4));
 
-        db.set_cell(3, size_t(8));
-        db.set_cell(4, size_t(9));
+        db.set(3, size_t(8));
+        db.set(4, size_t(9));
         db.set_empty(2, 3);
     }
 }
@@ -871,13 +871,13 @@ void gridmap_test_swap()
 {
     stack_printer __stack_printer__("::gridmap_test_swap");
     column_type db1(3), db2(5);
-    db1.set_cell(0, 1.0);
-    db1.set_cell(1, 2.0);
-    db1.set_cell(2, 3.0);
+    db1.set(0, 1.0);
+    db1.set(1, 2.0);
+    db1.set(2, 3.0);
 
-    db2.set_cell(0, 4.0);
-    db2.set_cell(1, 5.0);
-    db2.set_cell(4, string("foo"));
+    db2.set(0, 4.0);
+    db2.set(1, 5.0);
+    db2.set(4, string("foo"));
     db1.swap(db2);
 
     assert(db1.size() == 5 && db1.block_size() == 3);
@@ -891,13 +891,13 @@ void gridmap_test_equality()
         // Two columns of equal size.
         column_type db1(3), db2(3);
         assert(db1 == db2);
-        db1.set_cell(0, 1.0);
+        db1.set(0, 1.0);
         assert(db1 != db2);
-        db2.set_cell(0, 1.0);
+        db2.set(0, 1.0);
         assert(db1 == db2);
-        db2.set_cell(0, 1.2);
+        db2.set(0, 1.2);
         assert(db1 != db2);
-        db1.set_cell(0, 1.2);
+        db1.set(0, 1.2);
         assert(db1 == db2);
     }
 
@@ -906,8 +906,8 @@ void gridmap_test_equality()
         // matter what.
         column_type db1(3), db2(4);
         assert(db1 != db2);
-        db1.set_cell(0, 1.2);
-        db2.set_cell(0, 1.2);
+        db1.set(0, 1.2);
+        db2.set(0, 1.2);
         assert(db1 != db2);
 
         // Comparison to self.
@@ -920,9 +920,9 @@ void gridmap_test_clone()
 {
     stack_printer __stack_printer__("::gridmap_test_clone");
     column_type db1(3);
-    db1.set_cell(0, 3.4);
-    db1.set_cell(1, string("foo"));
-    db1.set_cell(2, true);
+    db1.set(0, 3.4);
+    db1.set(1, string("foo"));
+    db1.set(2, true);
 
     // copy construction
 
@@ -933,21 +933,21 @@ void gridmap_test_clone()
 
     {
         double test1, test2;
-        db1.get_cell(0, test1);
-        db2.get_cell(0, test2);
+        db1.get(0, test1);
+        db2.get(0, test2);
         assert(test1 == test2);
     }
     {
         string test1, test2;
-        db1.get_cell(1, test1);
-        db2.get_cell(1, test2);
+        db1.get(1, test1);
+        db2.get(1, test2);
         assert(test1 == test2);
     }
 
     {
         bool test1, test2;
-        db1.get_cell(2, test1);
-        db2.get_cell(2, test2);
+        db1.get(2, test1);
+        db2.get(2, test2);
         assert(test1 == test2);
     }
 
@@ -955,7 +955,7 @@ void gridmap_test_clone()
 
     column_type db3 = db1;
     assert(db3 == db1);
-    db3.set_cell(0, string("alpha"));
+    db3.set(0, string("alpha"));
     assert(db3 != db1);
 
     column_type db4, db5;
@@ -983,7 +983,7 @@ void gridmap_test_resize()
     assert(db.block_size() == 1);
 
     for (long row = 0; row < 5; ++row)
-        db.set_cell(row, static_cast<double>(row));
+        db.set(row, static_cast<double>(row));
 
     assert(db.size() == 5);
     assert(db.block_size() == 1);
@@ -1014,7 +1014,7 @@ void gridmap_test_resize()
     assert(db.size() == 4);
     assert(db.block_size() == 1);
     double test;
-    db.get_cell(3, test);
+    db.get(3, test);
     assert(test == 3.0);
 
     // Empty it.
@@ -1041,7 +1041,7 @@ void gridmap_test_erase()
         // Single non-empty block.
         column_type db(5);
         for (long i = 0; i < 5; ++i)
-            db.set_cell(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i+1));
 
         assert(db.block_size() == 1);
         assert(db.size() == 5);
@@ -1049,9 +1049,9 @@ void gridmap_test_erase()
         db.erase(0, 2); // erase rows 0-2
         assert(db.size() == 2);
         double test;
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 4.0);
-        db.get_cell(1, test);
+        db.get(1, test);
         assert(test == 5.0);
 
         db.erase(0, 1);
@@ -1063,7 +1063,7 @@ void gridmap_test_erase()
         // Two blocks - non-empty to empty blocks.
         column_type db(8);
         for (long i = 0; i < 4; ++i)
-            db.set_cell(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i+1));
 
         assert(db.block_size() == 2);
         assert(db.size() == 8);
@@ -1077,7 +1077,7 @@ void gridmap_test_erase()
 
         // Check the integrity of the data.
         double test;
-        db.get_cell(2, test);
+        db.get(2, test);
         assert(test == 3.0);
         assert(db.is_empty(3));
 
@@ -1092,10 +1092,10 @@ void gridmap_test_erase()
         // Two blocks - non-empty to non-empty blocks.
         column_type db(8);
         for (long i = 0; i < 4; ++i)
-            db.set_cell(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i+1));
 
         for (long i = 4; i < 8; ++i)
-            db.set_cell(i, static_cast<size_t>(i+1));
+            db.set(i, static_cast<size_t>(i+1));
 
         assert(db.block_size() == 2);
         assert(db.size() == 8);
@@ -1107,11 +1107,11 @@ void gridmap_test_erase()
 
         // Check the integrity of the data.
         double test;
-        db.get_cell(2, test);
+        db.get(2, test);
         assert(test == 3.0);
 
         size_t test2;
-        db.get_cell(3, test2);
+        db.get(3, test2);
         assert(test2 == 8);
 
         // Empty it.
@@ -1125,16 +1125,16 @@ void gridmap_test_erase()
         // 3 blocks, all non-empty.
         column_type db(9);
         for (long i = 0; i < 3; ++i)
-            db.set_cell(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i+1));
 
         for (long i = 3; i < 6; ++i)
-            db.set_cell(i, static_cast<size_t>(i+1));
+            db.set(i, static_cast<size_t>(i+1));
 
         for (long i = 6; i < 9; ++i)
         {
             ostringstream os;
             os << i+1;
-            db.set_cell(i, os.str());
+            db.set(i, os.str());
         }
 
         assert(db.block_size() == 3);
@@ -1146,17 +1146,17 @@ void gridmap_test_erase()
 
         // Check the integrity of the data.
         double test1;
-        db.get_cell(1, test1);
+        db.get(1, test1);
         assert(test1 == 2.0);
         string test2;
-        db.get_cell(2, test2);
+        db.get(2, test2);
         assert(test2 == "9");
 
         db.erase(2, 2); // Erase only one-block.
         assert(db.block_size() == 1);
         assert(db.size() == 2);
         test1 = -1.0;
-        db.get_cell(1, test1);
+        db.get(1, test1);
         assert(test1 == 2.0);
 
         db.erase(0, 1);
@@ -1167,10 +1167,10 @@ void gridmap_test_erase()
     {
         // erase() to merge two blocks.
         column_type db(4);
-        db.set_cell(0, 1.1);
-        db.set_cell(1, string("foo"));
-        db.set_cell(2, size_t(2));
-        db.set_cell(3, string("baa"));
+        db.set(0, 1.1);
+        db.set(1, string("foo"));
+        db.set(2, size_t(2));
+        db.set(3, string("baa"));
         assert(db.block_size() == 4);
         assert(db.size() == 4);
 
@@ -1181,16 +1181,16 @@ void gridmap_test_erase()
         // Try again, but this time merge two empty blocks.
         db.resize(4);
         db.set_empty(1, 3);
-        db.set_cell(2, size_t(10));
-        assert(db.get_cell<double>(0) == 1.1);
+        db.set(2, size_t(10));
+        assert(db.get<double>(0) == 1.1);
         assert(db.is_empty(1));
-        assert(db.get_cell<size_t>(2) == 10);
+        assert(db.get<size_t>(2) == 10);
         assert(db.is_empty(3));
 
         db.erase(2, 2);
         assert(db.block_size() == 2);
         assert(db.size() == 3);
-        assert(db.get_cell<double>(0) == 1.1);
+        assert(db.get<double>(0) == 1.1);
         assert(db.is_empty(1));
         assert(db.is_empty(2));
     }
@@ -1207,7 +1207,7 @@ void gridmap_test_insert_empty()
 
         // Insert data from row 0 to 4.
         for (long i = 0; i < 5; ++i)
-            db.set_cell(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i+1));
 
         assert(db.block_size() == 2);
         assert(db.size() == 10);
@@ -1218,7 +1218,7 @@ void gridmap_test_insert_empty()
         assert(db.size() == 12);
 
         double test;
-        db.get_cell(2, test);
+        db.get(2, test);
         assert(test == 1.0);
 
         // Insert an empty cell into an empty block.  This should shift the
@@ -1226,14 +1226,14 @@ void gridmap_test_insert_empty()
         db.insert_empty(1, 1);
         assert(db.block_size() == 3);
         assert(db.size() == 13);
-        db.get_cell(4, test);
+        db.get(4, test);
         assert(test == 2.0);
     }
 
     {
         column_type db(5);
         for (long i = 0; i < 5; ++i)
-            db.set_cell(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i+1));
 
         assert(db.block_size() == 1);
         assert(db.size() == 5);
@@ -1247,22 +1247,22 @@ void gridmap_test_insert_empty()
         assert(db.is_empty(3));
 
         double test;
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 1.0);
-        db.get_cell(1, test);
+        db.get(1, test);
         assert(test == 2.0);
 
-        db.get_cell(4, test);
+        db.get(4, test);
         assert(test == 3.0);
-        db.get_cell(5, test);
+        db.get(5, test);
         assert(test == 4.0);
-        db.get_cell(6, test);
+        db.get(6, test);
         assert(test == 5.0);
     }
 
     {
         column_type db(1);
-        db.set_cell(0, 2.5);
+        db.set(0, 2.5);
         db.insert_empty(0, 2);
         assert(db.block_size() == 2);
         assert(db.size() == 3);
@@ -1270,22 +1270,22 @@ void gridmap_test_insert_empty()
         assert(!db.is_empty(2));
 
         double test;
-        db.get_cell(2, test);
+        db.get(2, test);
         assert(test == 2.5);
     }
 
     {
         column_type db(2);
-        db.set_cell(0, 1.2);
-        db.set_cell(1, 2.3);
+        db.set(0, 1.2);
+        db.set(1, 2.3);
         db.insert_empty(1, 1);
 
         assert(db.block_size() == 3);
         assert(db.size() == 3);
         double test;
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 1.2);
-        db.get_cell(2, test);
+        db.get(2, test);
         assert(test == 2.3);
     }
 }
@@ -1304,12 +1304,12 @@ void gridmap_test_set_cells()
             for (size_t i = 0; i < db.size(); ++i)
                 vals.push_back(i+1);
 
-            db.set_cells(0, vals.begin(), vals.end());
+            db.set(0, vals.begin(), vals.end());
 
             double test;
-            db.get_cell(0, test);
+            db.get(0, test);
             assert(test == 1.0);
-            db.get_cell(4, test);
+            db.get(4, test);
             assert(test == 5.0);
         }
 
@@ -1323,12 +1323,12 @@ void gridmap_test_set_cells()
                 vals.push_back(os.str());
             }
 
-            db.set_cells(0, vals.begin(), vals.end());
+            db.set(0, vals.begin(), vals.end());
 
             string test;
-            db.get_cell(0, test);
+            db.get(0, test);
             assert(test == "1");
-            db.get_cell(4, test);
+            db.get(4, test);
             assert(test == "5");
         }
 
@@ -1336,11 +1336,11 @@ void gridmap_test_set_cells()
             double vals[] = { 5.0, 6.0, 7.0, 8.0, 9.0 };
             double* p = &vals[0];
             double* p_end = p + 5;
-            db.set_cells(0, p, p_end);
+            db.set(0, p, p_end);
             double test;
-            db.get_cell(0, test);
+            db.get(0, test);
             assert(test == 5.0);
-            db.get_cell(4, test);
+            db.get(4, test);
             assert(test == 9.0);
         }
 
@@ -1350,20 +1350,20 @@ void gridmap_test_set_cells()
             double vals[] = { 5.1, 6.1, 7.1, 8.1, 9.1 };
             double* p = &vals[0];
             double* p_end = p + 5;
-            db.set_cells(0, p, p_end);
+            db.set(0, p, p_end);
             double test;
-            db.get_cell(0, test);
+            db.get(0, test);
             assert(test == 5.1);
-            db.get_cell(4, test);
+            db.get(4, test);
             assert(test == 9.1);
 
             double vals2[] = { 8.2, 9.2 };
             p = &vals2[0];
             p_end = p + 2;
-            db.set_cells(3, p, p_end);
-            db.get_cell(3, test);
+            db.set(3, p, p_end);
+            db.get(3, test);
             assert(test == 8.2);
-            db.get_cell(4, test);
+            db.get(4, test);
             assert(test == 9.2);
         }
 
@@ -1373,16 +1373,16 @@ void gridmap_test_set_cells()
             size_t vals[] = { 1, 2, 3 };
             size_t* p = &vals[0];
             size_t* p_end = p + 3;
-            db.set_cells(0, p, p_end);
+            db.set(0, p, p_end);
             assert(db.block_size() == 2);
             assert(db.size() == 5);
             size_t test;
-            db.get_cell(0, test);
+            db.get(0, test);
             assert(test == 1);
-            db.get_cell(2, test);
+            db.get(2, test);
             assert(test == 3);
             double test2;
-            db.get_cell(3, test2);
+            db.get(3, test2);
             assert(test2 == 8.2);
         }
 
@@ -1391,13 +1391,13 @@ void gridmap_test_set_cells()
             size_t vals[] = { 4, 5 };
             size_t* p = &vals[0];
             size_t* p_end = p + 2;
-            db.set_cells(3, p, p_end);
+            db.set(3, p, p_end);
             assert(db.block_size() == 1);
             assert(db.size() == 5);
             size_t test;
-            db.get_cell(2, test);
+            db.get(2, test);
             assert(test == 3);
-            db.get_cell(3, test);
+            db.get(3, test);
             assert(test == 4);
         }
 
@@ -1405,27 +1405,27 @@ void gridmap_test_set_cells()
             // Merge with the previous block while keeping the lower part of
             // the block.
             size_t prev_value;
-            db.get_cell(2, prev_value);
+            db.get(2, prev_value);
 
             double val = 2.3;
-            db.set_cell(0, val);
+            db.set(0, val);
             assert(db.block_size() == 2);
             val = 4.5;
             double* p = &val;
             double* p_end = p + 1;
-            db.set_cells(1, p, p_end);
+            db.set(1, p, p_end);
             assert(db.block_size() == 2);
             assert(db.size() == 5);
             {
                 double test;
-                db.get_cell(0, test);
+                db.get(0, test);
                 assert(test == 2.3);
-                db.get_cell(1, test);
+                db.get(1, test);
                 assert(test == 4.5);
             }
 
             size_t test;
-            db.get_cell(2, test);
+            db.get(2, test);
             assert(test == prev_value);
         }
     }
@@ -1433,7 +1433,7 @@ void gridmap_test_set_cells()
     {
         column_type db(5);
         for (size_t i = 0; i < 5; ++i)
-            db.set_cell(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i+1));
 
         assert(db.block_size() == 1);
         assert(db.size() == 5);
@@ -1442,34 +1442,34 @@ void gridmap_test_set_cells()
             size_t vals[] = { 10, 11 };
             size_t* p = &vals[0];
             size_t* p_end = p + 2;
-            db.set_cells(3, p, p_end);
+            db.set(3, p, p_end);
 
             assert(db.block_size() == 2);
             assert(db.size() == 5);
 
             double test;
-            db.get_cell(2, test);
+            db.get(2, test);
             assert(test == 3.0);
             size_t test2;
-            db.get_cell(3, test2);
+            db.get(3, test2);
             assert(test2 == 10);
-            db.get_cell(4, test2);
+            db.get(4, test2);
             assert(test2 == 11);
 
             // Insertion into a single block but this time it needs to be
             // merged with the subsequent block.
-            db.set_cells(1, p, p_end);
+            db.set(1, p, p_end);
 
             assert(db.block_size() == 2);
             assert(db.size() == 5);
 
-            db.get_cell(1, test2);
+            db.get(1, test2);
             assert(test2 == 10);
-            db.get_cell(2, test2);
+            db.get(2, test2);
             assert(test2 == 11);
-            db.get_cell(3, test2);
+            db.get(3, test2);
             assert(test2 == 10);
-            db.get_cell(4, test2);
+            db.get(4, test2);
             assert(test2 == 11);
         }
     }
@@ -1483,43 +1483,43 @@ void gridmap_test_set_cells()
         {
             double* p = &vals_d[0];
             double* p_end = p + 6;
-            db.set_cells(0, p, p_end);
+            db.set(0, p, p_end);
             assert(db.block_size() == 1);
             assert(db.size() == 6);
             double test;
-            db.get_cell(0, test);
+            db.get(0, test);
             assert(test == 1.0);
-            db.get_cell(5, test);
+            db.get(5, test);
             assert(test == 1.5);
         }
 
         {
             size_t* p = &vals_i[0];
             size_t* p_end = p + 4;
-            db.set_cells(0, p, p_end);
+            db.set(0, p, p_end);
             assert(db.block_size() == 2);
             size_t test;
-            db.get_cell(0, test);
+            db.get(0, test);
             assert(test == 12);
-            db.get_cell(3, test);
+            db.get(3, test);
             assert(test == 15);
         }
 
         {
             string* p = &vals_s[0];
             string* p_end = p + 2;
-            db.set_cells(2, p, p_end);
+            db.set(2, p, p_end);
             assert(db.block_size() == 3);
             string test;
-            db.get_cell(2, test);
+            db.get(2, test);
             assert(test == "a");
-            db.get_cell(3, test);
+            db.get(3, test);
             assert(test == "b");
             double test_d;
-            db.get_cell(4, test_d);
+            db.get(4, test_d);
             assert(test_d == 1.4);
             size_t test_i;
-            db.get_cell(1, test_i);
+            db.get(1, test_i);
             assert(test_i == 13);
         }
     }
@@ -1530,7 +1530,7 @@ void gridmap_test_set_cells()
             double vals[] = { 2.1, 2.2, 2.3 };
             double* p = &vals[0];
             double* p_end = p + 3;
-            db.set_cells(0, p, p_end);
+            db.set(0, p, p_end);
             assert(db.block_size() == 1);
         }
 
@@ -1538,15 +1538,15 @@ void gridmap_test_set_cells()
             size_t val_i = 23;
             size_t* p = &val_i;
             size_t* p_end = p + 1;
-            db.set_cells(1, p, p_end);
+            db.set(1, p, p_end);
             assert(db.block_size() == 3);
             size_t test;
-            db.get_cell(1, test);
+            db.get(1, test);
             assert(test == 23);
             double test_d;
-            db.get_cell(0, test_d);
+            db.get(0, test_d);
             assert(test_d == 2.1);
-            db.get_cell(2, test_d);
+            db.get(2, test_d);
             assert(test_d == 2.3);
         }
     }
@@ -1555,21 +1555,21 @@ void gridmap_test_set_cells()
         // Set cells over multiple blocks. Very simple case.
 
         column_type db(2);
-        db.set_cell(0, static_cast<double>(1.1));
-        db.set_cell(1, string("foo"));
+        db.set(0, static_cast<double>(1.1));
+        db.set(1, string("foo"));
         assert(db.block_size() == 2);
 
         double vals[] = { 2.1, 2.2 };
         double* p = &vals[0];
         double* p_end = p + 2;
-        db.set_cells(0, p, p_end);
+        db.set(0, p, p_end);
         assert(db.block_size() == 1);
         assert(db.size() == 2);
 
         double test;
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 2.1);
-        db.get_cell(1, test);
+        db.get(1, test);
         assert(test == 2.2);
     }
 
@@ -1577,209 +1577,209 @@ void gridmap_test_set_cells()
         // Same as above, except that the last block is only partially replaced.
 
         column_type db(3);
-        db.set_cell(0, static_cast<double>(1.1));
-        db.set_cell(1, string("foo"));
-        db.set_cell(2, string("baa"));
+        db.set(0, static_cast<double>(1.1));
+        db.set(1, string("foo"));
+        db.set(2, string("baa"));
 
         double vals[] = { 2.1, 2.2 };
         double* p = &vals[0];
         double* p_end = p + 2;
-        db.set_cells(0, p, p_end);
+        db.set(0, p, p_end);
         assert(db.block_size() == 2);
         assert(db.size() == 3);
 
         double test_val;
-        db.get_cell(0, test_val);
+        db.get(0, test_val);
         assert(test_val == 2.1);
-        db.get_cell(1, test_val);
+        db.get(1, test_val);
         assert(test_val == 2.2);
 
         string test_s;
-        db.get_cell(2, test_s);
+        db.get(2, test_s);
         assert(test_s == "baa");
     }
 
     {
         column_type db(3);
-        db.set_cell(0, static_cast<double>(3.1));
-        db.set_cell(1, static_cast<double>(3.2));
-        db.set_cell(2, string("foo"));
+        db.set(0, static_cast<double>(3.1));
+        db.set(1, static_cast<double>(3.2));
+        db.set(2, string("foo"));
         assert(db.block_size() == 2);
         assert(db.size() == 3);
 
         double vals[] = { 2.1, 2.2 };
         double* p = &vals[0];
         double* p_end = p + 2;
-        db.set_cells(1, p, p_end);
+        db.set(1, p, p_end);
         assert(db.block_size() == 1);
         double test;
-        db.get_cell(0, test);
+        db.get(0, test);
         assert(test == 3.1);
-        db.get_cell(1, test);
+        db.get(1, test);
         assert(test == 2.1);
-        db.get_cell(2, test);
+        db.get(2, test);
         assert(test == 2.2);
     }
 
     {
         column_type db(5);
-        db.set_cell(0, 1.1);
-        db.set_cell(1, 1.2);
-        db.set_cell(2, string("foo"));
-        db.set_cell(3, 1.3);
-        db.set_cell(4, 1.4);
+        db.set(0, 1.1);
+        db.set(1, 1.2);
+        db.set(2, string("foo"));
+        db.set(3, 1.3);
+        db.set(4, 1.4);
         assert(db.block_size() == 3);
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
         double* p_end = p + 3;
-        db.set_cells(1, p, p_end);
+        db.set(1, p, p_end);
         assert(db.block_size() == 1);
         assert(db.size() == 5);
-        assert(db.get_cell<double>(0) == 1.1);
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 2.3);
-        assert(db.get_cell<double>(4) == 1.4);
+        assert(db.get<double>(0) == 1.1);
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 2.3);
+        assert(db.get<double>(4) == 1.4);
     }
 
     {
         column_type db(4);
-        db.set_cell(0, string("A"));
-        db.set_cell(1, string("B"));
-        db.set_cell(2, 1.1);
-        db.set_cell(3, 1.2);
+        db.set(0, string("A"));
+        db.set(1, string("B"));
+        db.set(2, 1.1);
+        db.set(3, 1.2);
         assert(db.block_size() == 2);
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.set_cells(1, p, p+3);
+        db.set(1, p, p+3);
         assert(db.block_size() == 2);
-        assert(db.get_cell<string>(0) == string("A"));
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 2.3);
+        assert(db.get<string>(0) == string("A"));
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 2.3);
     }
 
     {
         column_type db(4);
-        db.set_cell(0, string("A"));
-        db.set_cell(1, string("B"));
-        db.set_cell(2, 1.1);
-        db.set_cell(3, 1.2);
+        db.set(0, string("A"));
+        db.set(1, string("B"));
+        db.set(2, 1.1);
+        db.set(3, 1.2);
         assert(db.block_size() == 2);
 
         double vals[] = { 2.1, 2.2 };
         double* p = &vals[0];
-        db.set_cells(1, p, p+2);
+        db.set(1, p, p+2);
         assert(db.block_size() == 2);
-        assert(db.get_cell<string>(0) == string("A"));
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 1.2);
+        assert(db.get<string>(0) == string("A"));
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 1.2);
     }
 
     {
         column_type db(5);
-        db.set_cell(0, string("A"));
-        db.set_cell(1, string("B"));
-        db.set_cell(2, 1.1);
-        db.set_cell(3, 1.2);
-        db.set_cell(4, size_t(12));
+        db.set(0, string("A"));
+        db.set(1, string("B"));
+        db.set(2, 1.1);
+        db.set(3, 1.2);
+        db.set(4, size_t(12));
         assert(db.block_size() == 3);
 
         size_t vals[] = { 21, 22, 23 };
         size_t* p = &vals[0];
-        db.set_cells(1, p, p+3);
+        db.set(1, p, p+3);
         assert(db.block_size() == 2);
-        assert(db.get_cell<string>(0) == string("A"));
-        assert(db.get_cell<size_t>(1) == 21);
-        assert(db.get_cell<size_t>(2) == 22);
-        assert(db.get_cell<size_t>(3) == 23);
-        assert(db.get_cell<size_t>(4) == 12);
+        assert(db.get<string>(0) == string("A"));
+        assert(db.get<size_t>(1) == 21);
+        assert(db.get<size_t>(2) == 22);
+        assert(db.get<size_t>(3) == 23);
+        assert(db.get<size_t>(4) == 12);
     }
 
     {
         column_type db(3);
-        db.set_cell(0, string("A"));
-        db.set_cell(1, 1.1);
-        db.set_cell(2, 1.2);
+        db.set(0, string("A"));
+        db.set(1, 1.1);
+        db.set(2, 1.2);
         assert(db.block_size() == 2);
 
         size_t vals[] = { 11, 12 };
         size_t* p = &vals[0];
-        db.set_cells(0, p, p+2);
+        db.set(0, p, p+2);
         assert(db.block_size() == 2);
-        assert(db.get_cell<size_t>(0) == 11);
-        assert(db.get_cell<size_t>(1) == 12);
-        assert(db.get_cell<double>(2) == 1.2);
+        assert(db.get<size_t>(0) == 11);
+        assert(db.get<size_t>(1) == 12);
+        assert(db.get<double>(2) == 1.2);
     }
 
     {
         column_type db(4);
-        db.set_cell(0, size_t(35));
-        db.set_cell(1, string("A"));
-        db.set_cell(2, 1.1);
-        db.set_cell(3, 1.2);
+        db.set(0, size_t(35));
+        db.set(1, string("A"));
+        db.set(2, 1.1);
+        db.set(3, 1.2);
         assert(db.block_size() == 3);
 
         size_t vals[] = { 11, 12 };
         size_t* p = &vals[0];
-        db.set_cells(1, p, p+2);
+        db.set(1, p, p+2);
         assert(db.block_size() == 2);
-        assert(db.get_cell<size_t>(0) == 35);
-        assert(db.get_cell<size_t>(1) == 11);
-        assert(db.get_cell<size_t>(2) == 12);
-        assert(db.get_cell<double>(3) == 1.2);
+        assert(db.get<size_t>(0) == 35);
+        assert(db.get<size_t>(1) == 11);
+        assert(db.get<size_t>(2) == 12);
+        assert(db.get<double>(3) == 1.2);
     }
 
     {
         // Block 1 is empty.
 
         column_type db(2);
-        db.set_cell(1, 1.2);
+        db.set(1, 1.2);
         assert(db.block_size() == 2);
 
         double vals[] = { 2.1, 2.2 };
         double* p = &vals[0];
-        db.set_cells(0, p, p+2);
+        db.set(0, p, p+2);
         assert(db.block_size() == 1);
-        assert(db.get_cell<double>(0) == 2.1);
-        assert(db.get_cell<double>(1) == 2.2);
+        assert(db.get<double>(0) == 2.1);
+        assert(db.get<double>(1) == 2.2);
     }
 
     {
         column_type db(3);
-        db.set_cell(0, 1.1);
-        db.set_cell(2, 1.2);
+        db.set(0, 1.1);
+        db.set(2, 1.2);
         assert(db.block_size() == 3);
 
         double vals[] = { 2.1, 2.2 };
         double* p = &vals[0];
-        db.set_cells(1, p, p+2);
+        db.set(1, p, p+2);
         assert(db.block_size() == 1);
-        assert(db.get_cell<double>(0) == 1.1);
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
+        assert(db.get<double>(0) == 1.1);
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
     }
 
     {
         column_type db(5);
-        db.set_cell(2, string("A"));
-        db.set_cell(3, string("B"));
-        db.set_cell(4, string("C"));
+        db.set(2, string("A"));
+        db.set(3, string("B"));
+        db.set(4, string("C"));
         assert(db.block_size() == 2);
 
         double vals[] = { 1.1, 1.2, 1.3 };
         double* p = &vals[0];
-        db.set_cells(1, p, p+3);
+        db.set(1, p, p+3);
         assert(db.block_size() == 3);
 
         assert(db.is_empty(0));
-        assert(db.get_cell<double>(1) == 1.1);
-        assert(db.get_cell<double>(2) == 1.2);
-        assert(db.get_cell<double>(3) == 1.3);
-        assert(db.get_cell<string>(4) == string("C"));
+        assert(db.get<double>(1) == 1.1);
+        assert(db.get<double>(2) == 1.2);
+        assert(db.get<double>(3) == 1.3);
+        assert(db.get<string>(4) == string("C"));
     }
 }
 
@@ -1789,19 +1789,19 @@ void gridmap_test_insert_cells()
     {
         // Insert into non-empty block of the same type.
         column_type db(1);
-        db.set_cell(0, 1.1);
+        db.set(0, 1.1);
         assert(db.block_size() == 1);
         assert(db.size() == 1);
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.insert_cells(0, p, p+3);
+        db.insert(0, p, p+3);
         assert(db.block_size() == 1);
         assert(db.size() == 4);
-        assert(db.get_cell<double>(0) == 2.1);
-        assert(db.get_cell<double>(1) == 2.2);
-        assert(db.get_cell<double>(2) == 2.3);
-        assert(db.get_cell<double>(3) == 1.1);
+        assert(db.get<double>(0) == 2.1);
+        assert(db.get<double>(1) == 2.2);
+        assert(db.get<double>(2) == 2.3);
+        assert(db.get<double>(3) == 1.1);
     }
 
     {
@@ -1812,48 +1812,48 @@ void gridmap_test_insert_cells()
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.insert_cells(0, p, p+3);
+        db.insert(0, p, p+3);
         assert(db.block_size() == 2);
         assert(db.size() == 4);
-        assert(db.get_cell<double>(0) == 2.1);
-        assert(db.get_cell<double>(1) == 2.2);
-        assert(db.get_cell<double>(2) == 2.3);
+        assert(db.get<double>(0) == 2.1);
+        assert(db.get<double>(1) == 2.2);
+        assert(db.get<double>(2) == 2.3);
         assert(db.is_empty(3));
     }
 
     {
         column_type db(2);
-        db.set_cell(0, 1.1);
+        db.set(0, 1.1);
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.insert_cells(1, p, p+3);
+        db.insert(1, p, p+3);
         assert(db.block_size() == 2);
         assert(db.size() == 5);
-        assert(db.get_cell<double>(0) == 1.1);
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 2.3);
+        assert(db.get<double>(0) == 1.1);
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 2.3);
         assert(db.is_empty(4));
     }
 
     {
         column_type db(2);
-        db.set_cell(0, size_t(23));
+        db.set(0, size_t(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.insert_cells(1, p, p+3);
+        db.insert(1, p, p+3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
-        assert(db.get_cell<size_t>(0) == 23);
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 2.3);
+        assert(db.get<size_t>(0) == 23);
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 2.3);
         assert(db.is_empty(4));
     }
 
@@ -1861,105 +1861,105 @@ void gridmap_test_insert_cells()
         column_type db(2);
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.insert_cells(1, p, p+3);
+        db.insert(1, p, p+3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
         assert(db.is_empty(0));
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 2.3);
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 2.3);
         assert(db.is_empty(4));
     }
 
     {
         column_type db(2);
-        db.set_cell(0, 1.1);
-        db.set_cell(1, size_t(23));
+        db.set(0, 1.1);
+        db.set(1, size_t(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.insert_cells(1, p, p+3);
+        db.insert(1, p, p+3);
         assert(db.block_size() == 2);
         assert(db.size() == 5);
-        assert(db.get_cell<double>(0) == 1.1);
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 2.3);
-        assert(db.get_cell<size_t>(4) == 23);
+        assert(db.get<double>(0) == 1.1);
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 2.3);
+        assert(db.get<size_t>(4) == 23);
     }
 
     {
         column_type db(2);
-        db.set_cell(0, true);
-        db.set_cell(1, size_t(23));
+        db.set(0, true);
+        db.set(1, size_t(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.insert_cells(1, p, p+3);
+        db.insert(1, p, p+3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
-        assert(db.get_cell<bool>(0) == true);
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 2.3);
-        assert(db.get_cell<size_t>(4) == 23);
+        assert(db.get<bool>(0) == true);
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 2.3);
+        assert(db.get<size_t>(4) == 23);
     }
 
     {
         column_type db(2);
-        db.set_cell(0, size_t(12));
-        db.set_cell(1, size_t(23));
+        db.set(0, size_t(12));
+        db.set(1, size_t(23));
         assert(db.block_size() == 1);
         assert(db.size() == 2);
 
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
-        db.insert_cells(1, p, p+3);
+        db.insert(1, p, p+3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
-        assert(db.get_cell<size_t>(0) == 12);
-        assert(db.get_cell<double>(1) == 2.1);
-        assert(db.get_cell<double>(2) == 2.2);
-        assert(db.get_cell<double>(3) == 2.3);
-        assert(db.get_cell<size_t>(4) == 23);
+        assert(db.get<size_t>(0) == 12);
+        assert(db.get<double>(1) == 2.1);
+        assert(db.get<double>(2) == 2.2);
+        assert(db.get<double>(3) == 2.3);
+        assert(db.get<size_t>(4) == 23);
     }
 
     {
         column_type db(3);
-        db.set_cell(0, 1.0);
-        db.set_cell(1, string("foo"));
-        db.set_cell(2, string("baa"));
+        db.set(0, 1.0);
+        db.set(1, string("foo"));
+        db.set(2, string("baa"));
         assert(db.size() == 3);
         assert(db.block_size() == 2);
         double vals[] = { 2.1 };
         const double* p = &vals[0];
-        db.insert_cells(2, p, p+1);
+        db.insert(2, p, p+1);
         assert(db.size() == 4);
         assert(db.block_size() == 4);
     }
 
     {
         column_type db(2);
-        db.set_cell(0, size_t(11));
-        db.set_cell(1, size_t(12));
+        db.set(0, size_t(11));
+        db.set(1, size_t(12));
         double vals[] = { 1.2 };
         const double* p = &vals[0];
-        db.insert_cells(1, p, p+1);
+        db.insert(1, p, p+1);
         assert(db.block_size() == 3);
 
         // Append value to the top block.
         size_t vals2[] = { 22 };
         const size_t* p2 = &vals2[0];
-        db.insert_cells(1, p2, p2+1);
+        db.insert(1, p2, p2+1);
         assert(db.block_size() == 3);
-        assert(db.get_cell<size_t>(0) == 11);
-        assert(db.get_cell<size_t>(1) == 22);
-        assert(db.get_cell<double>(2) == 1.2);
-        assert(db.get_cell<size_t>(3) == 12);
+        assert(db.get<size_t>(0) == 11);
+        assert(db.get<size_t>(1) == 22);
+        assert(db.get<double>(2) == 1.2);
+        assert(db.get<size_t>(3) == 12);
     }
 }
 
@@ -1986,10 +1986,10 @@ void gridmap_test_iterators()
 
     {
         column_type db(6);
-        db.set_cell(0, 1.1);
-        db.set_cell(1, 2.2);
-        db.set_cell(4, string("boo"));
-        db.set_cell(5, string("hoo"));
+        db.set(0, 1.1);
+        db.set(1, 2.2);
+        db.set(4, string("boo"));
+        db.set(5, string("hoo"));
         assert(db.block_size() == 3);
         {
             // Forward iterator

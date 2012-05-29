@@ -115,21 +115,21 @@ multi_type_vector<_CellBlockFunc>::~multi_type_vector()
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cell(size_type pos, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& cell)
 {
     set_cell_impl(pos, cell);
 }
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cells(size_type pos, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& it_begin, const _T& it_end)
 {
     set_cells_impl(pos, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::insert_cells(size_type pos, const _T& it_begin, const _T& it_end)
+void multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin, const _T& it_end)
 {
     insert_cells_impl(pos, it_begin, it_end);
 }
@@ -862,7 +862,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_bottom_of_data_block(size_ty
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::get_cell(size_type pos, _T& cell) const
+void multi_type_vector<_CellBlockFunc>::get(size_type pos, _T& cell) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
@@ -885,10 +885,10 @@ void multi_type_vector<_CellBlockFunc>::get_cell(size_type pos, _T& cell) const
 
 template<typename _CellBlockFunc>
 template<typename _T>
-_T multi_type_vector<_CellBlockFunc>::get_cell(size_type pos) const
+_T multi_type_vector<_CellBlockFunc>::get(size_type pos) const
 {
     _T cell;
-    get_cell(pos, cell);
+    get(pos, cell);
     return cell;
 }
 
