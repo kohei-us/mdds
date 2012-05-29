@@ -55,19 +55,19 @@ public:
     cell_block_error(const std::string& msg) : mdds::general_error(msg) {}
 };
 
-struct base_cell_block;
-element_t get_block_type(const base_cell_block&);
+struct base_element_block;
+element_t get_block_type(const base_element_block&);
 
-struct base_cell_block
+struct base_element_block
 {
-    friend element_t get_block_type(const base_cell_block&);
+    friend element_t get_block_type(const base_element_block&);
 protected:
     element_t type;
-    base_cell_block(element_t _t) : type(_t) {}
+    base_element_block(element_t _t) : type(_t) {}
 };
 
 template<typename _Self, element_t _TypeId, typename _Data>
-class cell_block : public base_cell_block
+class element_block : public base_element_block
 {
     struct print_block_array
     {
@@ -81,8 +81,8 @@ protected:
     typedef std::vector<_Data> store_type;
     store_type m_array;
 
-    cell_block() : base_cell_block(_TypeId) {}
-    cell_block(size_t n) : base_cell_block(_TypeId), m_array(n) {}
+    element_block() : base_element_block(_TypeId) {}
+    element_block(size_t n) : base_element_block(_TypeId), m_array(n) {}
 
 public:
     bool operator== (const _Self& r) const
@@ -95,7 +95,7 @@ public:
         return !operator==(r);
     }
 
-    static _Self& get(base_cell_block& block)
+    static _Self& get(base_element_block& block)
     {
         if (get_block_type(block) != _TypeId)
             throw general_error("incorrect block type.");
@@ -103,7 +103,7 @@ public:
         return static_cast<_Self&>(block);
     }
 
-    static const _Self& get(const base_cell_block& block)
+    static const _Self& get(const base_element_block& block)
     {
         if (get_block_type(block) != _TypeId)
             throw general_error("incorrect block type.");
@@ -111,22 +111,22 @@ public:
         return static_cast<const _Self&>(block);
     }
 
-    static void set_value(base_cell_block& blk, size_t pos, const _Data& val)
+    static void set_value(base_element_block& blk, size_t pos, const _Data& val)
     {
         get(blk).m_array[pos] = val;
     }
 
-    static void get_value(const base_cell_block& blk, size_t pos, _Data& val)
+    static void get_value(const base_element_block& blk, size_t pos, _Data& val)
     {
         val = get(blk).m_array[pos];
     }
 
-    static void append_value(base_cell_block& blk, const _Data& val)
+    static void append_value(base_element_block& blk, const _Data& val)
     {
         get(blk).m_array.push_back(val);
     }
 
-    static void prepend_value(base_cell_block& blk, const _Data& val)
+    static void prepend_value(base_element_block& blk, const _Data& val)
     {
         store_type& blk2 = get(blk).m_array;
         blk2.insert(blk2.begin(), val);
@@ -137,36 +137,36 @@ public:
         return new _Self(init_size);
     }
 
-    static void delete_block(const base_cell_block* p)
+    static void delete_block(const base_element_block* p)
     {
         delete static_cast<const _Self*>(p);
     }
 
-    static void resize_block(base_cell_block& blk, size_t new_size)
+    static void resize_block(base_element_block& blk, size_t new_size)
     {
         static_cast<_Self&>(blk).m_array.resize(new_size);
     }
 
-    static void print_block(const base_cell_block& blk)
+    static void print_block(const base_element_block& blk)
     {
         const store_type& blk2 = get(blk).m_array;
         std::for_each(blk2.begin(), blk2.end(), print_block_array());
         std::cout << std::endl;
     }
 
-    static void erase_block(base_cell_block& blk, size_t pos)
+    static void erase_block(base_element_block& blk, size_t pos)
     {
         store_type& blk2 = get(blk).m_array;
         blk2.erase(blk2.begin()+pos);
     }
 
-    static void erase_block(base_cell_block& blk, size_t pos, size_t size)
+    static void erase_block(base_element_block& blk, size_t pos, size_t size)
     {
         store_type& blk2 = get(blk).m_array;
         blk2.erase(blk2.begin()+pos, blk2.begin()+pos+size);
     }
 
-    static void append_values_from_block(base_cell_block& dest, const base_cell_block& src)
+    static void append_values_from_block(base_element_block& dest, const base_element_block& src)
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
@@ -174,7 +174,7 @@ public:
     }
 
     static void append_values_from_block(
-        base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len)
+        base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len)
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
@@ -187,7 +187,7 @@ public:
     }
 
     static void assign_values_from_block(
-        base_cell_block& dest, const base_cell_block& src, size_t begin_pos, size_t len)
+        base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len)
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
@@ -200,7 +200,7 @@ public:
 
     template<typename _Iter>
     static void set_values(
-        base_cell_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
+        base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
     {
         store_type& d = get(block).m_array;
         for (_Iter it = it_begin; it != it_end; ++it, ++pos)
@@ -208,7 +208,7 @@ public:
     }
 
     template<typename _Iter>
-    static void append_values(base_cell_block& block, const _Iter& it_begin, const _Iter& it_end)
+    static void append_values(base_element_block& block, const _Iter& it_begin, const _Iter& it_end)
     {
         store_type& d = get(block).m_array;
         typename store_type::iterator it = d.end();
@@ -216,14 +216,14 @@ public:
     }
 
     template<typename _Iter>
-    static void prepend_values(base_cell_block& block, const _Iter& it_begin, const _Iter& it_end)
+    static void prepend_values(base_element_block& block, const _Iter& it_begin, const _Iter& it_end)
     {
         store_type& d = get(block).m_array;
         d.insert(d.begin(), it_begin, it_end);
     }
 
     template<typename _Iter>
-    static void assign_values(base_cell_block& dest, const _Iter& it_begin, const _Iter& it_end)
+    static void assign_values(base_element_block& dest, const _Iter& it_begin, const _Iter& it_end)
     {
         store_type& d = get(dest).m_array;
         d.assign(it_begin, it_end);
@@ -231,7 +231,7 @@ public:
 
     template<typename _Iter>
     static void insert_values(
-        base_cell_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
+        base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
     {
         store_type& blk = get(block).m_array;
         blk.insert(blk.begin()+pos, it_begin, it_end);
@@ -239,32 +239,32 @@ public:
 };
 
 template<typename _Self, element_t _TypeId, typename _Data>
-class copyable_cell_block : public cell_block<_Self, _TypeId, _Data>
+class copyable_element_block : public element_block<_Self, _TypeId, _Data>
 {
-    typedef cell_block<_Self,_TypeId,_Data> base_type;
+    typedef element_block<_Self,_TypeId,_Data> base_type;
 protected:
-    copyable_cell_block() : base_type() {}
-    copyable_cell_block(size_t n) : base_type(n) {}
+    copyable_element_block() : base_type() {}
+    copyable_element_block(size_t n) : base_type(n) {}
 
 public:
     using base_type::get;
 
-    static _Self* clone_block(const base_cell_block& blk)
+    static _Self* clone_block(const base_element_block& blk)
     {
         return new _Self(get(blk));
     }
 };
 
 template<typename _Self, element_t _TypeId, typename _Data>
-class noncopyable_cell_block : public cell_block<_Self, _TypeId, _Data>, private boost::noncopyable
+class noncopyable_element_block : public element_block<_Self, _TypeId, _Data>, private boost::noncopyable
 {
-    typedef cell_block<_Self,_TypeId,_Data> base_type;
+    typedef element_block<_Self,_TypeId,_Data> base_type;
 protected:
-    noncopyable_cell_block() : base_type() {}
-    noncopyable_cell_block(size_t n) : base_type(n) {}
+    noncopyable_element_block() : base_type() {}
+    noncopyable_element_block(size_t n) : base_type(n) {}
 
 public:
-    static _Self* clone_block(const base_cell_block& blk)
+    static _Self* clone_block(const base_element_block& blk)
     {
         throw cell_block_error("attempted to clone a noncopyable cell block.");
     }
@@ -277,7 +277,7 @@ public:
  *
  * @return numerical value representing the ID of a cell block.
  */
-inline element_t get_block_type(const base_cell_block& blk)
+inline element_t get_block_type(const base_element_block& blk)
 {
     return blk.type;
 }
@@ -286,14 +286,14 @@ inline element_t get_block_type(const base_cell_block& blk)
  * Template for default, unmanaged cell block for use in grid_map.
  */
 template<element_t _TypeId, typename _Data>
-struct default_cell_block : public copyable_cell_block<default_cell_block<_TypeId,_Data>, _TypeId, _Data>
+struct default_element_block : public copyable_element_block<default_element_block<_TypeId,_Data>, _TypeId, _Data>
 {
-    typedef copyable_cell_block<default_cell_block, _TypeId, _Data> base_type;
+    typedef copyable_element_block<default_element_block, _TypeId, _Data> base_type;
 
-    default_cell_block() : base_type() {}
-    default_cell_block(size_t n) : base_type(n) {}
+    default_element_block() : base_type() {}
+    default_element_block(size_t n) : base_type(n) {}
 
-    static void overwrite_cells(base_cell_block&, size_t, size_t)
+    static void overwrite_cells(base_element_block&, size_t, size_t)
     {
         // Do nothing.
     }
@@ -304,58 +304,58 @@ struct default_cell_block : public copyable_cell_block<default_cell_block<_TypeI
  * are managed by the block.
  */
 template<element_t _TypeId, typename _Data>
-struct managed_cell_block : public copyable_cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
+struct managed_element_block : public copyable_element_block<managed_element_block<_TypeId,_Data>, _TypeId, _Data*>
 {
-    typedef copyable_cell_block<managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
+    typedef copyable_element_block<managed_element_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
 
     using base_type::get;
     using base_type::m_array;
 
-    managed_cell_block() : base_type() {}
-    managed_cell_block(size_t n) : base_type(n) {}
-    managed_cell_block(const managed_cell_block& r)
+    managed_element_block() : base_type() {}
+    managed_element_block(size_t n) : base_type(n) {}
+    managed_element_block(const managed_element_block& r)
     {
         m_array.reserve(r.m_array.size());
-        typename managed_cell_block::store_type::const_iterator it = r.m_array.begin(), it_end = r.m_array.end();
+        typename managed_element_block::store_type::const_iterator it = r.m_array.begin(), it_end = r.m_array.end();
         for (; it != it_end; ++it)
             m_array.push_back(new _Data(**it));
     }
 
-    ~managed_cell_block()
+    ~managed_element_block()
     {
         std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
     }
 
-    static void overwrite_cells(base_cell_block& block, size_t pos, size_t len)
+    static void overwrite_cells(base_element_block& block, size_t pos, size_t len)
     {
-        managed_cell_block& blk = get(block);
-        typename managed_cell_block::store_type::iterator it = blk.m_array.begin() + pos;
-        typename managed_cell_block::store_type::iterator it_end = it + len;
+        managed_element_block& blk = get(block);
+        typename managed_element_block::store_type::iterator it = blk.m_array.begin() + pos;
+        typename managed_element_block::store_type::iterator it_end = it + len;
         std::for_each(it, it_end, mdds::default_deleter<_Data>());
     }
 };
 
 template<element_t _TypeId, typename _Data>
-struct noncopyable_managed_cell_block : public noncopyable_cell_block<noncopyable_managed_cell_block<_TypeId,_Data>, _TypeId, _Data*>
+struct noncopyable_managed_element_block : public noncopyable_element_block<noncopyable_managed_element_block<_TypeId,_Data>, _TypeId, _Data*>
 {
-    typedef noncopyable_cell_block<noncopyable_managed_cell_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
+    typedef noncopyable_element_block<noncopyable_managed_element_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
 
     using base_type::get;
     using base_type::m_array;
 
-    noncopyable_managed_cell_block() : base_type() {}
-    noncopyable_managed_cell_block(size_t n) : base_type(n) {}
+    noncopyable_managed_element_block() : base_type() {}
+    noncopyable_managed_element_block(size_t n) : base_type(n) {}
 
-    ~noncopyable_managed_cell_block()
+    ~noncopyable_managed_element_block()
     {
         std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
     }
 
-    static void overwrite_cells(base_cell_block& block, size_t pos, size_t len)
+    static void overwrite_cells(base_element_block& block, size_t pos, size_t len)
     {
-        noncopyable_managed_cell_block& blk = get(block);
-        typename noncopyable_managed_cell_block::store_type::iterator it = blk.m_array.begin() + pos;
-        typename noncopyable_managed_cell_block::store_type::iterator it_end = it + len;
+        noncopyable_managed_element_block& blk = get(block);
+        typename noncopyable_managed_element_block::store_type::iterator it = blk.m_array.begin() + pos;
+        typename noncopyable_managed_element_block::store_type::iterator it_end = it + len;
         std::for_each(it, it_end, mdds::default_deleter<_Data>());
     }
 };

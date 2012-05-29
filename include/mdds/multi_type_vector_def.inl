@@ -115,9 +115,9 @@ multi_type_vector<_CellBlockFunc>::~multi_type_vector()
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& cell)
+void multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
 {
-    set_cell_impl(pos, cell);
+    set_cell_impl(pos, value);
 }
 
 template<typename _CellBlockFunc>
@@ -862,7 +862,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_bottom_of_data_block(size_ty
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::get(size_type pos, _T& cell) const
+void multi_type_vector<_CellBlockFunc>::get(size_type pos, _T& value) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
@@ -873,14 +873,14 @@ void multi_type_vector<_CellBlockFunc>::get(size_type pos, _T& cell) const
     if (!blk->mp_data)
     {
         // empty cell block.
-        element_block_func::get_empty_value(cell);
+        element_block_func::get_empty_value(value);
         return;
     }
 
     assert(pos >= start_row);
     assert(blk->mp_data); // data for non-empty blocks should never be NULL.
     size_type idx = pos - start_row;
-    element_block_func::get_value(*blk->mp_data, idx, cell);
+    element_block_func::get_value(*blk->mp_data, idx, value);
 }
 
 template<typename _CellBlockFunc>

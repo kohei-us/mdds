@@ -71,8 +71,8 @@ struct muser_cell
     muser_cell(double _v) : value(_v) {}
 };
 
-typedef mdds::mtv::default_cell_block<element_type_user_block, user_cell*> user_cell_block;
-typedef mdds::mtv::managed_cell_block<element_type_muser_block, muser_cell> muser_cell_block;
+typedef mdds::mtv::default_element_block<element_type_user_block, user_cell*> user_cell_block;
+typedef mdds::mtv::managed_element_block<element_type_muser_block, muser_cell> muser_cell_block;
 
 template<typename T>
 class cell_pool : boost::noncopyable
@@ -111,54 +111,54 @@ element_t get_element_type(const user_cell*)
     return element_type_user_block;
 }
 
-void set_value(base_cell_block& block, size_t pos, user_cell* p)
+void set_value(base_element_block& block, size_t pos, user_cell* p)
 {
     user_cell_block::set_value(block, pos, p);
 }
 
 template<typename _Iter>
 void set_values(
-    base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+    base_element_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::set_values(block, pos, it_begin, it_end);
 }
 
-void get_value(const base_cell_block& block, size_t pos, user_cell*& val)
+void get_value(const base_element_block& block, size_t pos, user_cell*& val)
 {
     user_cell_block::get_value(block, pos, val);
 }
 
-void append_value(base_cell_block& block, user_cell* val)
+void append_value(base_element_block& block, user_cell* val)
 {
     user_cell_block::append_value(block, val);
 }
 
-void prepend_value(base_cell_block& block, user_cell* val)
+void prepend_value(base_element_block& block, user_cell* val)
 {
     user_cell_block::prepend_value(block, val);
 }
 
 template<typename _Iter>
-void append_values(mdds::mtv::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void append_values(mdds::mtv::base_element_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
-void prepend_values(mdds::mtv::base_cell_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(mdds::mtv::base_element_block& block, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
-void assign_values(mdds::mtv::base_cell_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(mdds::mtv::base_element_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
-    mdds::mtv::base_cell_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+    mdds::mtv::base_element_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::insert_values(block, pos, it_begin, it_end);
 }
@@ -176,54 +176,54 @@ element_t get_element_type(const muser_cell*)
     return element_type_muser_block;
 }
 
-void set_value(base_cell_block& block, size_t pos, muser_cell* p)
+void set_value(base_element_block& block, size_t pos, muser_cell* p)
 {
     muser_cell_block::set_value(block, pos, p);
 }
 
 template<typename _Iter>
 void set_values(
-    base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+    base_element_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::set_values(block, pos, it_begin, it_end);
 }
 
-void get_value(const base_cell_block& block, size_t pos, muser_cell*& val)
+void get_value(const base_element_block& block, size_t pos, muser_cell*& val)
 {
     muser_cell_block::get_value(block, pos, val);
 }
 
-void append_value(base_cell_block& block, muser_cell* val)
+void append_value(base_element_block& block, muser_cell* val)
 {
     muser_cell_block::append_value(block, val);
 }
 
-void prepend_value(base_cell_block& block, muser_cell* val)
+void prepend_value(base_element_block& block, muser_cell* val)
 {
     muser_cell_block::prepend_value(block, val);
 }
 
 template<typename _Iter>
-void append_values(mdds::mtv::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+void append_values(mdds::mtv::base_element_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
-void prepend_values(mdds::mtv::base_cell_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+void prepend_values(mdds::mtv::base_element_block& block, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
-void assign_values(mdds::mtv::base_cell_block& dest, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+void assign_values(mdds::mtv::base_element_block& dest, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void insert_values(
-    mdds::mtv::base_cell_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+    mdds::mtv::base_element_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::insert_values(block, pos, it_begin, it_end);
 }
@@ -246,60 +246,60 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     }
 
     template<typename T>
-    static void set_value(mdds::mtv::base_cell_block& block, size_t pos, const T& val)
+    static void set_value(mdds::mtv::base_element_block& block, size_t pos, const T& val)
     {
         mdds::mtv::set_value(block, pos, val);
     }
 
     template<typename T>
-    static void set_values(mdds::mtv::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
+    static void set_values(mdds::mtv::base_element_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::mtv::set_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void get_value(const mdds::mtv::base_cell_block& block, size_t pos, T& val)
+    static void get_value(const mdds::mtv::base_element_block& block, size_t pos, T& val)
     {
         mdds::mtv::get_value(block, pos, val);
     }
 
     template<typename T>
-    static void append_value(mdds::mtv::base_cell_block& block, const T& val)
+    static void append_value(mdds::mtv::base_element_block& block, const T& val)
     {
         mdds::mtv::append_value(block, val);
     }
 
     template<typename T>
     static void insert_values(
-        mdds::mtv::base_cell_block& block, size_t pos, const T& it_begin, const T& it_end)
+        mdds::mtv::base_element_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::mtv::insert_values(block, pos, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void append_values(mdds::mtv::base_cell_block& block, const T& it_begin, const T& it_end)
+    static void append_values(mdds::mtv::base_element_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::mtv::append_values(block, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void assign_values(mdds::mtv::base_cell_block& dest, const T& it_begin, const T& it_end)
+    static void assign_values(mdds::mtv::base_element_block& dest, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::mtv::assign_values(dest, *it_begin, it_begin, it_end);
     }
 
     template<typename T>
-    static void prepend_value(mdds::mtv::base_cell_block& block, const T& val)
+    static void prepend_value(mdds::mtv::base_element_block& block, const T& val)
     {
         mdds::mtv::prepend_value(block, val);
     }
 
     template<typename T>
-    static void prepend_values(mdds::mtv::base_cell_block& block, const T& it_begin, const T& it_end)
+    static void prepend_values(mdds::mtv::base_element_block& block, const T& it_begin, const T& it_end)
     {
         assert(it_begin != it_end);
         mdds::mtv::prepend_values(block, *it_begin, it_begin, it_end);
@@ -311,7 +311,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         mdds::mtv::get_empty_value(val);
     }
 
-    static mdds::mtv::base_cell_block* create_new_block(
+    static mdds::mtv::base_element_block* create_new_block(
         mdds::mtv::element_t type, size_t init_size)
     {
         switch (type)
@@ -327,7 +327,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         return cell_block_func_base::create_new_block(type, init_size);
     }
 
-    static mdds::mtv::base_cell_block* clone_block(const mdds::mtv::base_cell_block& block)
+    static mdds::mtv::base_element_block* clone_block(const mdds::mtv::base_element_block& block)
     {
         switch (mtv::get_block_type(block))
         {
@@ -342,7 +342,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         return cell_block_func_base::clone_block(block);
     }
 
-    static void delete_block(mdds::mtv::base_cell_block* p)
+    static void delete_block(mdds::mtv::base_element_block* p)
     {
         if (!p)
             return;
@@ -360,7 +360,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         }
     }
 
-    static void resize_block(mdds::mtv::base_cell_block& block, size_t new_size)
+    static void resize_block(mdds::mtv::base_element_block& block, size_t new_size)
     {
         switch (mtv::get_block_type(block))
         {
@@ -375,7 +375,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         }
     }
 
-    static void print_block(const mdds::mtv::base_cell_block& block)
+    static void print_block(const mdds::mtv::base_element_block& block)
     {
         switch (mtv::get_block_type(block))
         {
@@ -390,7 +390,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         }
     }
 
-    static void erase(mdds::mtv::base_cell_block& block, size_t pos)
+    static void erase(mdds::mtv::base_element_block& block, size_t pos)
     {
         switch (mtv::get_block_type(block))
         {
@@ -405,7 +405,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         }
     }
 
-    static void erase(mdds::mtv::base_cell_block& block, size_t pos, size_t size)
+    static void erase(mdds::mtv::base_element_block& block, size_t pos, size_t size)
     {
         switch (mtv::get_block_type(block))
         {
@@ -421,7 +421,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     }
 
     static void append_values_from_block(
-        mdds::mtv::base_cell_block& dest, const mdds::mtv::base_cell_block& src)
+        mdds::mtv::base_element_block& dest, const mdds::mtv::base_element_block& src)
     {
         switch (mtv::get_block_type(dest))
         {
@@ -437,7 +437,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     }
 
     static void append_values_from_block(
-        mdds::mtv::base_cell_block& dest, const mdds::mtv::base_cell_block& src,
+        mdds::mtv::base_element_block& dest, const mdds::mtv::base_element_block& src,
         size_t begin_pos, size_t len)
     {
         switch (mtv::get_block_type(dest))
@@ -454,7 +454,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     }
 
     static void assign_values_from_block(
-        mdds::mtv::base_cell_block& dest, const mdds::mtv::base_cell_block& src,
+        mdds::mtv::base_element_block& dest, const mdds::mtv::base_element_block& src,
         size_t begin_pos, size_t len)
     {
         switch (mtv::get_block_type(dest))
@@ -471,7 +471,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     }
 
     static bool equal_block(
-        const mdds::mtv::base_cell_block& left, const mdds::mtv::base_cell_block& right)
+        const mdds::mtv::base_element_block& left, const mdds::mtv::base_element_block& right)
     {
         if (mtv::get_block_type(left) == element_type_user_block)
         {
@@ -496,7 +496,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         return cell_block_func_base::equal_block(left, right);
     }
 
-    static void overwrite_cells(mdds::mtv::base_cell_block& block, size_t pos, size_t len)
+    static void overwrite_cells(mdds::mtv::base_element_block& block, size_t pos, size_t len)
     {
         switch (mtv::get_block_type(block))
         {

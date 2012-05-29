@@ -53,7 +53,7 @@ class multi_type_vector
 public:
     typedef size_t size_type;
 
-    typedef typename mdds::mtv::base_cell_block element_block_type;
+    typedef typename mdds::mtv::base_element_block element_block_type;
     typedef typename mdds::mtv::element_t element_category_type;
 
 private:
@@ -121,15 +121,15 @@ public:
      * <p>Calling this method will not change the size of the container.</p>
      *
      * @param pos position to insert the value to.
-     * @param cell value to insert.
+     * @param value value to insert.
      */
     template<typename _T>
-    void set(size_type pos, const _T& cell);
+    void set(size_type pos, const _T& value);
 
     /**
-     * Set multiple cell values of identical type to a range of elements
-     * starting at specified position.  Any existing cell values will be
-     * overwritten by the new values.
+     * Set multiple values of identical type to a range of elements starting
+     * at specified position.  Any existing values will be overwritten by the
+     * new values.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the range of new values would fall outside the current container
@@ -148,7 +148,7 @@ public:
     void set(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
-     * Insert multiple cell values of identical type to a specified position.
+     * Insert multiple values of identical type to a specified position.
      * Existing values that occur at or below the specified position will get
      * shifted after the insertion.  No existing values will be overwritten by
      * the inserted values.
@@ -169,28 +169,28 @@ public:
     void insert(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
-     * Get the value of a cell at specified position.  The caller must pass a
-     * variable of the correct type to store the value.
+     * Get the value of an element at specified position.  The caller must
+     * pass a variable of the correct type to store the value.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
-     * @param pos position of the cell value to retrieve.
-     * @param cell (out) variable to store the retrieved value.
+     * @param pos position of the element value to retrieve.
+     * @param value (out) variable to store the retrieved value.
      */
     template<typename _T>
-    void get(size_type pos, _T& cell) const;
+    void get(size_type pos, _T& value) const;
 
     /**
-     * Get the value of a cell at specified position.  The caller must specify
-     * the type of the cell as the template parameter e.g.
-     * get_cell<double>(1).
+     * Get the value of an element at specified position.  The caller must
+     * specify the type of the element as the template parameter e.g.
+     * get<double>(1).
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
-     * @param position position of the cell value to retrieve.
-     * @return cell value.
+     * @param position position of the element value to retrieve.
+     * @return element value.
      */
     template<typename _T>
     _T get(size_type pos) const;
@@ -315,7 +315,7 @@ public:
      *
      * @param elem element value.
      *
-     * @return mtv::cell_t numerical identifier representing the cell.
+     * @return numerical identifier representing the element.
      */
     template<typename _T>
     static mtv::element_t get_element_type(const _T& elem);
