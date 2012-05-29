@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_QUAD_TYPE_MATRIX_HPP__
-#define __MDDS_QUAD_TYPE_MATRIX_HPP__
+#ifndef __MDDS_MIXED_TYPE_MATRIX_HPP__
+#define __MDDS_MIXED_TYPE_MATRIX_HPP__
 
 #include "mdds/global.hpp"
 #include "mdds/mixed_type_matrix_element.hpp"
