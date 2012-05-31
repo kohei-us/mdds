@@ -99,17 +99,22 @@ public:
     }
 };
 
+mtv::element_t mdds_mtv_get_element_type(const user_cell*)
+{
+    return element_type_user_block;
+}
+
+mtv::element_t mdds_mtv_get_element_type(const muser_cell*)
+{
+    return element_type_muser_block;
+}
+
 }
 
 namespace mdds { namespace mtv {
 
 //----------------------------------------------------------------------------
 // Callbacks for user_cell* type.
-
-element_t get_element_type(const user_cell*)
-{
-    return element_type_user_block;
-}
 
 void set_value(base_element_block& block, size_t pos, user_cell* p)
 {
@@ -170,11 +175,6 @@ void get_empty_value(user_cell*& val)
 
 //----------------------------------------------------------------------------
 // Callbacks for muser_cell* type.
-
-element_t get_element_type(const muser_cell*)
-{
-    return element_type_muser_block;
-}
 
 void set_value(base_element_block& block, size_t pos, muser_cell* p)
 {
@@ -239,12 +239,6 @@ void get_empty_value(muser_cell*& val)
 
 struct my_cell_block_func : public mdds::mtv::cell_block_func_base
 {
-    template<typename T>
-    static mdds::mtv::element_t get_element_type(const T& cell)
-    {
-        return mdds::mtv::get_element_type(cell);
-    }
-
     template<typename T>
     static void set_value(mdds::mtv::base_element_block& block, size_t pos, const T& val)
     {

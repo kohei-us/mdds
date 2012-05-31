@@ -251,6 +251,7 @@
 				<F N="../include/mdds/mixed_type_matrix_storage_sparse.inl"/>
 				<F N="../include/mdds/multi_type_vector.hpp"/>
 				<F N="../include/mdds/multi_type_vector_def.inl"/>
+				<F N="../include/mdds/multi_type_vector_elem_func.inl"/>
 				<F N="../include/mdds/multi_type_vector_itr.hpp"/>
 				<F N="../include/mdds/multi_type_vector_trait.hpp"/>
 				<F N="../include/mdds/multi_type_vector_types.hpp"/>

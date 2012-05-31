@@ -32,32 +32,15 @@
 
 #include <vector>
 
-namespace mdds { namespace mtv {
+namespace mdds {
+
+
+namespace mtv {
 
 typedef default_element_block<element_type_numeric, double>     numeric_cell_block;
 typedef default_element_block<element_type_string, std::string> string_cell_block;
 typedef default_element_block<element_type_index, size_t>       index_cell_block;
 typedef default_element_block<element_type_boolean, bool>       boolean_cell_block;
-
-element_t get_element_type(double)
-{
-    return element_type_numeric;
-}
-
-element_t get_element_type(const std::string&)
-{
-    return element_type_string;
-}
-
-element_t get_element_type(size_t)
-{
-    return element_type_index;
-}
-
-element_t get_element_type(bool)
-{
-    return element_type_boolean;
-}
 
 void set_value(base_element_block& block, size_t pos, double val)
 {
@@ -565,12 +548,6 @@ void cell_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
  */
 struct cell_block_func : public cell_block_func_base
 {
-    template<typename T>
-    static mdds::mtv::element_t get_element_type(const T& cell)
-    {
-        return mdds::mtv::get_element_type(cell);
-    }
-
     template<typename T>
     static void set_value(mdds::mtv::base_element_block& block, size_t pos, const T& val)
     {
