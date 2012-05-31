@@ -32,35 +32,12 @@
 
 #include <vector>
 
-namespace mdds {
-
-
-namespace mtv {
+namespace mdds { namespace mtv {
 
 typedef default_element_block<element_type_numeric, double>     numeric_cell_block;
 typedef default_element_block<element_type_string, std::string> string_cell_block;
 typedef default_element_block<element_type_index, size_t>       index_cell_block;
 typedef default_element_block<element_type_boolean, bool>       boolean_cell_block;
-
-void set_value(base_element_block& block, size_t pos, double val)
-{
-    numeric_cell_block::set_value(block, pos, val);
-}
-
-void set_value(base_element_block& block, size_t pos, const std::string& val)
-{
-    string_cell_block::set_value(block, pos, val);
-}
-
-void set_value(base_element_block& block, size_t pos, size_t val)
-{
-    index_cell_block::set_value(block, pos, val);
-}
-
-void set_value(base_element_block& block, size_t pos, bool val)
-{
-    boolean_cell_block::set_value(block, pos, val);
-}
 
 void get_value(const base_element_block& block, size_t pos, double& val)
 {
@@ -548,12 +525,6 @@ void cell_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
  */
 struct cell_block_func : public cell_block_func_base
 {
-    template<typename T>
-    static void set_value(mdds::mtv::base_element_block& block, size_t pos, const T& val)
-    {
-        mdds::mtv::set_value(block, pos, val);
-    }
-
     template<typename T>
     static void set_values(mdds::mtv::base_element_block& block, size_t pos, const T& it_begin, const T& it_end)
     {

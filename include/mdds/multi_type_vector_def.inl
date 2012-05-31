@@ -172,7 +172,7 @@ void multi_type_vector<_CellBlockFunc>::create_new_block_with_new_cell(element_b
     if (!data)
         throw general_error("Failed to create new block.");
 
-    element_block_func::set_value(*data, 0, cell);
+    mdds_mtv_set_value(*data, 0, cell);
 }
 
 template<typename _CellBlockFunc>
@@ -252,7 +252,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_impl(size_type row, const _T& c
         // This block is of the same type as the cell being inserted.
         size_type i = row - start_row;
         element_block_func::overwrite_values(*blk->mp_data, i, 1);
-        element_block_func::set_value(*blk->mp_data, i, cell);
+        mdds_mtv_set_value(*blk->mp_data, i, cell);
         return;
     }
 

@@ -109,17 +109,22 @@ mtv::element_t mdds_mtv_get_element_type(const muser_cell*)
     return element_type_muser_block;
 }
 
+void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, user_cell* p)
+{
+    user_cell_block::set_value(block, pos, p);
+}
+
+void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, muser_cell* p)
+{
+    muser_cell_block::set_value(block, pos, p);
+}
+
 }
 
 namespace mdds { namespace mtv {
 
 //----------------------------------------------------------------------------
 // Callbacks for user_cell* type.
-
-void set_value(base_element_block& block, size_t pos, user_cell* p)
-{
-    user_cell_block::set_value(block, pos, p);
-}
 
 template<typename _Iter>
 void set_values(
@@ -175,11 +180,6 @@ void get_empty_value(user_cell*& val)
 
 //----------------------------------------------------------------------------
 // Callbacks for muser_cell* type.
-
-void set_value(base_element_block& block, size_t pos, muser_cell* p)
-{
-    muser_cell_block::set_value(block, pos, p);
-}
 
 template<typename _Iter>
 void set_values(
@@ -239,12 +239,6 @@ void get_empty_value(muser_cell*& val)
 
 struct my_cell_block_func : public mdds::mtv::cell_block_func_base
 {
-    template<typename T>
-    static void set_value(mdds::mtv::base_element_block& block, size_t pos, const T& val)
-    {
-        mdds::mtv::set_value(block, pos, val);
-    }
-
     template<typename T>
     static void set_values(mdds::mtv::base_element_block& block, size_t pos, const T& it_begin, const T& it_end)
     {
