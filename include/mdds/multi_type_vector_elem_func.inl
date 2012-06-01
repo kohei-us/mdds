@@ -223,5 +223,29 @@ void mdds_mtv_append_values(mtv::base_element_block& block, bool, const _Iter& i
     mtv::boolean_cell_block::append_values(block, it_begin, it_end);
 }
 
+template<typename _Iter>
+void mdds_mtv_assign_values(mtv::base_element_block& dest, double, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::numeric_cell_block::assign_values(dest, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_assign_values(mtv::base_element_block& dest, const std::string&, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::string_cell_block::assign_values(dest, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_assign_values(mtv::base_element_block& dest, size_t, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::index_cell_block::assign_values(dest, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_assign_values(mtv::base_element_block& dest, bool, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::boolean_cell_block::assign_values(dest, it_begin, it_end);
+}
+
 }
 

@@ -280,30 +280,6 @@ void cell_block_func_base::assign_values_from_block(
 }
 
 template<typename _Iter>
-void assign_values(base_element_block& dest, double, const _Iter& it_begin, const _Iter& it_end)
-{
-    numeric_cell_block::assign_values(dest, it_begin, it_end);
-}
-
-template<typename _Iter>
-void assign_values(base_element_block& dest, const std::string&, const _Iter& it_begin, const _Iter& it_end)
-{
-    string_cell_block::assign_values(dest, it_begin, it_end);
-}
-
-template<typename _Iter>
-void assign_values(base_element_block& dest, size_t, const _Iter& it_begin, const _Iter& it_end)
-{
-    index_cell_block::assign_values(dest, it_begin, it_end);
-}
-
-template<typename _Iter>
-void assign_values(base_element_block& dest, bool, const _Iter& it_begin, const _Iter& it_end)
-{
-    boolean_cell_block::assign_values(dest, it_begin, it_end);
-}
-
-template<typename _Iter>
 void insert_values(
     base_element_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
 {
@@ -370,13 +346,6 @@ struct cell_block_func : public cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::mtv::insert_values(block, pos, *it_begin, it_begin, it_end);
-    }
-
-    template<typename T>
-    static void assign_values(base_element_block& dest, const T& it_begin, const T& it_end)
-    {
-        assert(it_begin != it_end);
-        mdds::mtv::assign_values(dest, *it_begin, it_begin, it_end);
     }
 };
 

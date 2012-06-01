@@ -187,6 +187,18 @@ void mdds_mtv_append_values(mtv::base_element_block& block, muser_cell*, const _
     muser_cell_block::append_values(block, it_begin, it_end);
 }
 
+template<typename _Iter>
+void mdds_mtv_assign_values(mtv::base_element_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block::assign_values(dest, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_assign_values(mtv::base_element_block& dest, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    muser_cell_block::assign_values(dest, it_begin, it_end);
+}
+
 void mdds_mtv_get_empty_value(user_cell*& val)
 {
     val = NULL;
@@ -204,11 +216,6 @@ namespace mdds { namespace mtv {
 //----------------------------------------------------------------------------
 // Callbacks for user_cell* type.
 
-template<typename _Iter>
-void assign_values(mdds::mtv::base_element_block& dest, user_cell*, const _Iter& it_begin, const _Iter& it_end)
-{
-    user_cell_block::assign_values(dest, it_begin, it_end);
-}
 
 template<typename _Iter>
 void insert_values(
@@ -219,12 +226,6 @@ void insert_values(
 
 //----------------------------------------------------------------------------
 // Callbacks for muser_cell* type.
-
-template<typename _Iter>
-void assign_values(mdds::mtv::base_element_block& dest, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
-{
-    muser_cell_block::assign_values(dest, it_begin, it_end);
-}
 
 template<typename _Iter>
 void insert_values(
@@ -245,13 +246,6 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::mtv::insert_values(block, pos, *it_begin, it_begin, it_end);
-    }
-
-    template<typename T>
-    static void assign_values(mdds::mtv::base_element_block& dest, const T& it_begin, const T& it_end)
-    {
-        assert(it_begin != it_end);
-        mdds::mtv::assign_values(dest, *it_begin, it_begin, it_end);
     }
 
     static mdds::mtv::base_element_block* create_new_block(
