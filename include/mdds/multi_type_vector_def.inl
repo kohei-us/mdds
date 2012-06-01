@@ -1205,7 +1205,7 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
                 if (blk_cat0 == cat)
                 {
                     // Append to the previous block.
-                    element_block_func::append_values(*blk0->mp_data, it_begin, it_end);
+                    mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
                     blk0->m_size += length;
                     m_cur_size += length;
                     return;
@@ -1251,7 +1251,7 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
                 if (cat == blk_cat0)
                 {
                     // Append to the previous block.
-                    element_block_func::append_values(*blk0->mp_data, it_begin, it_end);
+                    mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
                     blk0->m_size += length;
                     m_cur_size += length;
                     return;
@@ -1572,7 +1572,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equ
     }
 
     if (blk0_copied)
-        element_block_func::append_values(*data_blk->mp_data, it_begin, it_end);
+        mdds_mtv_append_values(*data_blk->mp_data, *it_begin, it_begin, it_end);
     else
     {
         data_blk->mp_data = element_block_func::create_new_block(cat, 0);
@@ -1673,7 +1673,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_emp
         // Shrink it first to remove the old values, then append new values.
         element_block_func::overwrite_values(*blk1->mp_data, offset, blk1->m_size-offset);
         element_block_func::resize_block(*blk1->mp_data, offset);
-        element_block_func::append_values(*blk1->mp_data, it_begin, it_end);
+        mdds_mtv_append_values(*blk1->mp_data, *it_begin, it_begin, it_end);
         blk1->m_size = offset + length;
 
         if (end_row == end_row_in_block2)
@@ -1744,7 +1744,7 @@ bool multi_type_vector<_CellBlockFunc>::append_to_prev_block(
         return false;
 
     // Append to the previous block.
-    element_block_func::append_values(*blk_prev->mp_data, it_begin, it_end);
+    mdds_mtv_append_values(*blk_prev->mp_data, *it_begin, it_begin, it_end);
     blk_prev->m_size += length;
     return true;
 }
