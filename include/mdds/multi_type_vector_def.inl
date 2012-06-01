@@ -1232,7 +1232,8 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
     if (cat == blk_cat)
     {
         // Simply insert the new data series into existing block.
-        element_block_func::insert_values(*blk->mp_data, row-start_row, it_begin, it_end);
+        assert(it_begin != it_end);
+        mdds_mtv_insert_values(*blk->mp_data, row-start_row, *it_begin, it_begin, it_end);
         blk->m_size += length;
         m_cur_size += length;
         return;

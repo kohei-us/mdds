@@ -279,34 +279,6 @@ void cell_block_func_base::assign_values_from_block(
     }
 }
 
-template<typename _Iter>
-void insert_values(
-    base_element_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
-{
-    numeric_cell_block::insert_values(block, pos, it_begin, it_end);
-}
-
-template<typename _Iter>
-void insert_values(
-    base_element_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
-{
-    string_cell_block::insert_values(block, pos, it_begin, it_end);
-}
-
-template<typename _Iter>
-void insert_values(
-    base_element_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
-{
-    index_cell_block::insert_values(block, pos, it_begin, it_end);
-}
-
-template<typename _Iter>
-void insert_values(
-    base_element_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
-{
-    boolean_cell_block::insert_values(block, pos, it_begin, it_end);
-}
-
 bool cell_block_func_base::equal_block(const base_element_block& left, const base_element_block& right)
 {
     element_t block_type = get_block_type(left);
@@ -338,16 +310,7 @@ void cell_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
  * Default cell block function definitions.  Implementation can use this if
  * it only uses the default block types implemented by the library.
  */
-struct cell_block_func : public cell_block_func_base
-{
-    template<typename T>
-    static void insert_values(
-        base_element_block& block, size_t pos, const T& it_begin, const T& it_end)
-    {
-        assert(it_begin != it_end);
-        mdds::mtv::insert_values(block, pos, *it_begin, it_begin, it_end);
-    }
-};
+struct cell_block_func : public cell_block_func_base {};
 
 }}
 

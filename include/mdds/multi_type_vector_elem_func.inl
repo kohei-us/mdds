@@ -247,5 +247,33 @@ void mdds_mtv_assign_values(mtv::base_element_block& dest, bool, const _Iter& it
     mtv::boolean_cell_block::assign_values(dest, it_begin, it_end);
 }
 
+template<typename _Iter>
+void mdds_mtv_insert_values(
+    mtv::base_element_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::numeric_cell_block::insert_values(block, pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_insert_values(
+    mtv::base_element_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::string_cell_block::insert_values(block, pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_insert_values(
+    mtv::base_element_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::index_cell_block::insert_values(block, pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_insert_values(
+    mtv::base_element_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::boolean_cell_block::insert_values(block, pos, it_begin, it_end);
+}
+
 }
 
