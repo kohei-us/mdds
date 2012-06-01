@@ -27,11 +27,6 @@
 
 namespace mdds {
 
-typedef mtv::default_element_block<mtv::element_type_numeric, double>     numeric_cell_block;
-typedef mtv::default_element_block<mtv::element_type_string, std::string> string_cell_block;
-typedef mtv::default_element_block<mtv::element_type_index, size_t>       index_cell_block;
-typedef mtv::default_element_block<mtv::element_type_boolean, bool>       boolean_cell_block;
-
 mtv::element_t mdds_mtv_get_element_type(double)
 {
     return mtv::element_type_numeric;
@@ -54,22 +49,22 @@ mtv::element_t mdds_mtv_get_element_type(bool)
 
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, double val)
 {
-    numeric_cell_block::set_value(block, pos, val);
+    mtv::numeric_cell_block::set_value(block, pos, val);
 }
 
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, const std::string& val)
 {
-    string_cell_block::set_value(block, pos, val);
+    mtv::string_cell_block::set_value(block, pos, val);
 }
 
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, size_t val)
 {
-    index_cell_block::set_value(block, pos, val);
+    mtv::index_cell_block::set_value(block, pos, val);
 }
 
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, bool val)
 {
-    boolean_cell_block::set_value(block, pos, val);
+    mtv::boolean_cell_block::set_value(block, pos, val);
 }
 
 }

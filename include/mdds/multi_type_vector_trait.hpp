@@ -34,11 +34,6 @@
 
 namespace mdds { namespace mtv {
 
-typedef default_element_block<element_type_numeric, double>     numeric_cell_block;
-typedef default_element_block<element_type_string, std::string> string_cell_block;
-typedef default_element_block<element_type_index, size_t>       index_cell_block;
-typedef default_element_block<element_type_boolean, bool>       boolean_cell_block;
-
 void get_value(const base_element_block& block, size_t pos, double& val)
 {
     numeric_cell_block::get_value(block, pos, val);

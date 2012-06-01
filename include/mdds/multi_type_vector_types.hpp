@@ -360,6 +360,11 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
     }
 };
 
+typedef default_element_block<mtv::element_type_numeric, double>     numeric_cell_block;
+typedef default_element_block<mtv::element_type_string, std::string> string_cell_block;
+typedef default_element_block<mtv::element_type_index, size_t>       index_cell_block;
+typedef default_element_block<mtv::element_type_boolean, bool>       boolean_cell_block;
+
 }}
 
 #endif
