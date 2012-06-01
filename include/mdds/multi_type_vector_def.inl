@@ -216,7 +216,7 @@ void multi_type_vector<_CellBlockFunc>::append_cell_to_block(size_type block_ind
 {
     block* blk = m_blocks[block_index];
     blk->m_size += 1;
-    element_block_func::append_value(*blk->mp_data, cell);
+    mdds_mtv_append_value(*blk->mp_data, cell);
 }
 
 template<typename _CellBlockFunc>
@@ -291,7 +291,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_impl(size_type row, const _T& c
             blk->m_size -= 1;
             element_block_func::erase(*blk->mp_data, 0);
             blk_prev->m_size += 1;
-            element_block_func::append_value(*blk_prev->mp_data, cell);
+            mdds_mtv_append_value(*blk_prev->mp_data, cell);
             return;
         }
 
@@ -541,7 +541,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         // transferred cells to be deleted.
                         block* blk_prev = m_blocks[block_index-1];
                         blk_prev->m_size += 1 + blk_next->m_size;
-                        element_block_func::append_value(*blk_prev->mp_data, cell);
+                        mdds_mtv_append_value(*blk_prev->mp_data, cell);
                         element_block_func::append_values_from_block(*blk_prev->mp_data, *data_next);
                         element_block_func::resize_block(*data_next, 0);
 
@@ -712,7 +712,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
         {
             // Append the cell to the previos block, and remove the
             // current block.
-            element_block_func::append_value(*blk_prev->mp_data, cell);
+            mdds_mtv_append_value(*blk_prev->mp_data, cell);
             blk_prev->m_size += 1;
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
@@ -767,7 +767,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
         {
             // Append to the previous block.
             blk_prev->m_size += 1;
-            element_block_func::append_value(*blk_prev->mp_data, cell);
+            mdds_mtv_append_value(*blk_prev->mp_data, cell);
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
             return;
@@ -791,7 +791,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
             // the next block.  Resize the next block to zero to prevent
             // deletion of mananged cells on block deletion.
             blk_prev->m_size += 1 + blk_next->m_size;
-            element_block_func::append_value(*blk_prev->mp_data, cell);
+            mdds_mtv_append_value(*blk_prev->mp_data, cell);
             element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
             element_block_func::resize_block(*blk_next->mp_data, 0);
 
@@ -815,7 +815,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
     {
         // Append to the previous block.
         blk_prev->m_size += 1;
-        element_block_func::append_value(*blk_prev->mp_data, cell);
+        mdds_mtv_append_value(*blk_prev->mp_data, cell);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return;

@@ -34,26 +34,6 @@
 
 namespace mdds { namespace mtv {
 
-void append_value(base_element_block& block, double val)
-{
-    numeric_cell_block::append_value(block, val);
-}
-
-void append_value(base_element_block& block, const std::string& val)
-{
-    string_cell_block::append_value(block, val);
-}
-
-void append_value(base_element_block& block, size_t val)
-{
-    index_cell_block::append_value(block, val);
-}
-
-void append_value(base_element_block& block, bool val)
-{
-    boolean_cell_block::append_value(block, val);
-}
-
 void prepend_value(base_element_block& block, double val)
 {
     numeric_cell_block::prepend_value(block, val);
@@ -505,12 +485,6 @@ struct cell_block_func : public cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::mtv::set_values(block, pos, *it_begin, it_begin, it_end);
-    }
-
-    template<typename T>
-    static void append_value(base_element_block& block, const T& val)
-    {
-        mdds::mtv::append_value(block, val);
     }
 
     template<typename T>
