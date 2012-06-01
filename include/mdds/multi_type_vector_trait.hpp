@@ -255,34 +255,6 @@ void cell_block_func_base::erase(base_element_block& block, size_t pos, size_t s
 }
 
 template<typename _Iter>
-void set_values(
-    base_element_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
-{
-    numeric_cell_block::set_values(block, pos, it_begin, it_end);
-}
-
-template<typename _Iter>
-void set_values(
-    base_element_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
-{
-    string_cell_block::set_values(block, pos, it_begin, it_end);
-}
-
-template<typename _Iter>
-void set_values(
-    base_element_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
-{
-    index_cell_block::set_values(block, pos, it_begin, it_end);
-}
-
-template<typename _Iter>
-void set_values(
-    base_element_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
-{
-    boolean_cell_block::set_values(block, pos, it_begin, it_end);
-}
-
-template<typename _Iter>
 void prepend_values(base_element_block& block, double, const _Iter& it_begin, const _Iter& it_end)
 {
     numeric_cell_block::prepend_values(block, it_begin, it_end);
@@ -480,13 +452,6 @@ void cell_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
  */
 struct cell_block_func : public cell_block_func_base
 {
-    template<typename T>
-    static void set_values(mdds::mtv::base_element_block& block, size_t pos, const T& it_begin, const T& it_end)
-    {
-        assert(it_begin != it_end);
-        mdds::mtv::set_values(block, pos, *it_begin, it_begin, it_end);
-    }
-
     template<typename T>
     static void insert_values(
         base_element_block& block, size_t pos, const T& it_begin, const T& it_end)

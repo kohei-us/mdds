@@ -1333,7 +1333,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
             // simple overwrite.
             size_type offset = start_row - start_row_in_block;
             element_block_func::overwrite_values(*blk->mp_data, offset, data_length);
-            element_block_func::set_values(*blk->mp_data, offset, it_begin, it_end);
+            mdds_mtv_set_values(*blk->mp_data, offset, *it_begin, it_begin, it_end);
             return;
         }
     }

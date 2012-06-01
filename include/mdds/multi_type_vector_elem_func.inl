@@ -87,6 +87,34 @@ void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, bool& 
     mtv::boolean_cell_block::get_value(block, pos, val);
 }
 
+template<typename _Iter>
+void mdds_mtv_set_values(
+    mtv::base_element_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::numeric_cell_block::set_values(block, pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_set_values(
+    mtv::base_element_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::string_cell_block::set_values(block, pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_set_values(
+    mtv::base_element_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::index_cell_block::set_values(block, pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_set_values(
+    mtv::base_element_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
+{
+    mtv::boolean_cell_block::set_values(block, pos, it_begin, it_end);
+}
+
 void mdds_mtv_append_value(mtv::base_element_block& block, double val)
 {
     mtv::numeric_cell_block::append_value(block, val);

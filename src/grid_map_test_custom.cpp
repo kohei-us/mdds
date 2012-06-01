@@ -129,6 +129,20 @@ void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, muser_
     muser_cell_block::get_value(block, pos, val);
 }
 
+template<typename _Iter>
+void mdds_mtv_set_values(
+    mtv::base_element_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    user_cell_block::set_values(block, pos, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_set_values(
+    mtv::base_element_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
+{
+    muser_cell_block::set_values(block, pos, it_begin, it_end);
+}
+
 void mdds_mtv_append_value(mtv::base_element_block& block, user_cell* val)
 {
     user_cell_block::append_value(block, val);
@@ -145,13 +159,6 @@ namespace mdds { namespace mtv {
 
 //----------------------------------------------------------------------------
 // Callbacks for user_cell* type.
-
-template<typename _Iter>
-void set_values(
-    base_element_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
-{
-    user_cell_block::set_values(block, pos, it_begin, it_end);
-}
 
 void prepend_value(base_element_block& block, user_cell* val)
 {
@@ -190,13 +197,6 @@ void get_empty_value(user_cell*& val)
 
 //----------------------------------------------------------------------------
 // Callbacks for muser_cell* type.
-
-template<typename _Iter>
-void set_values(
-    base_element_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
-{
-    muser_cell_block::set_values(block, pos, it_begin, it_end);
-}
 
 void prepend_value(base_element_block& block, muser_cell* val)
 {
@@ -239,13 +239,6 @@ void get_empty_value(muser_cell*& val)
 
 struct my_cell_block_func : public mdds::mtv::cell_block_func_base
 {
-    template<typename T>
-    static void set_values(mdds::mtv::base_element_block& block, size_t pos, const T& it_begin, const T& it_end)
-    {
-        assert(it_begin != it_end);
-        mdds::mtv::set_values(block, pos, *it_begin, it_begin, it_end);
-    }
-
     template<typename T>
     static void insert_values(
         mdds::mtv::base_element_block& block, size_t pos, const T& it_begin, const T& it_end)
