@@ -1423,7 +1423,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
                 if (blk_cat_next == cat)
                 {
                     // Prepend it to the next block.
-                    element_block_func::prepend_values(*blk_next->mp_data, it_begin, it_end);
+                    mdds_mtv_prepend_values(*blk_next->mp_data, *it_begin, it_begin, it_end);
                     blk_next->m_size += end_row - start_row + 1;
                     return;
                 }
