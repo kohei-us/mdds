@@ -882,7 +882,7 @@ void multi_type_vector<_CellBlockFunc>::get(size_type pos, _T& value) const
     assert(pos >= start_row);
     assert(blk->mp_data); // data for non-empty blocks should never be NULL.
     size_type idx = pos - start_row;
-    element_block_func::get_value(*blk->mp_data, idx, value);
+    mdds_mtv_get_value(*blk->mp_data, idx, value);
 }
 
 template<typename _CellBlockFunc>

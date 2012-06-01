@@ -67,5 +67,25 @@ void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, bool val)
     mtv::boolean_cell_block::set_value(block, pos, val);
 }
 
+void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, double& val)
+{
+    mtv::numeric_cell_block::get_value(block, pos, val);
+}
+
+void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, std::string& val)
+{
+    mtv::string_cell_block::get_value(block, pos, val);
+}
+
+void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, size_t& val)
+{
+    mtv::index_cell_block::get_value(block, pos, val);
+}
+
+void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, bool& val)
+{
+    mtv::boolean_cell_block::get_value(block, pos, val);
+}
+
 }
 

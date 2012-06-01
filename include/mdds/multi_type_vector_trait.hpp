@@ -34,26 +34,6 @@
 
 namespace mdds { namespace mtv {
 
-void get_value(const base_element_block& block, size_t pos, double& val)
-{
-    numeric_cell_block::get_value(block, pos, val);
-}
-
-void get_value(const base_element_block& block, size_t pos, std::string& val)
-{
-    string_cell_block::get_value(block, pos, val);
-}
-
-void get_value(const base_element_block& block, size_t pos, size_t& val)
-{
-    index_cell_block::get_value(block, pos, val);
-}
-
-void get_value(const base_element_block& block, size_t pos, bool& val)
-{
-    boolean_cell_block::get_value(block, pos, val);
-}
-
 void append_value(base_element_block& block, double val)
 {
     numeric_cell_block::append_value(block, val);
@@ -525,12 +505,6 @@ struct cell_block_func : public cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::mtv::set_values(block, pos, *it_begin, it_begin, it_end);
-    }
-
-    template<typename T>
-    static void get_value(const mdds::mtv::base_element_block& block, size_t pos, T& val)
-    {
-        mdds::mtv::get_value(block, pos, val);
     }
 
     template<typename T>

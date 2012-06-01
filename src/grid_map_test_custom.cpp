@@ -119,6 +119,16 @@ void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, muser_cell* 
     muser_cell_block::set_value(block, pos, p);
 }
 
+void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, user_cell*& val)
+{
+    user_cell_block::get_value(block, pos, val);
+}
+
+void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, muser_cell*& val)
+{
+    muser_cell_block::get_value(block, pos, val);
+}
+
 }
 
 namespace mdds { namespace mtv {
@@ -131,11 +141,6 @@ void set_values(
     base_element_block& block, size_t pos, user_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     user_cell_block::set_values(block, pos, it_begin, it_end);
-}
-
-void get_value(const base_element_block& block, size_t pos, user_cell*& val)
-{
-    user_cell_block::get_value(block, pos, val);
 }
 
 void append_value(base_element_block& block, user_cell* val)
@@ -186,11 +191,6 @@ void set_values(
     base_element_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::set_values(block, pos, it_begin, it_end);
-}
-
-void get_value(const base_element_block& block, size_t pos, muser_cell*& val)
-{
-    muser_cell_block::get_value(block, pos, val);
 }
 
 void append_value(base_element_block& block, muser_cell* val)
@@ -244,12 +244,6 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::mtv::set_values(block, pos, *it_begin, it_begin, it_end);
-    }
-
-    template<typename T>
-    static void get_value(const mdds::mtv::base_element_block& block, size_t pos, T& val)
-    {
-        mdds::mtv::get_value(block, pos, val);
     }
 
     template<typename T>
