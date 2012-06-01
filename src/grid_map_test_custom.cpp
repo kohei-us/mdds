@@ -163,6 +163,16 @@ void mdds_mtv_prepend_value(mtv::base_element_block& block, muser_cell* val)
     muser_cell_block::prepend_value(block, val);
 }
 
+void mdds_mtv_get_empty_value(user_cell*& val)
+{
+    val = NULL;
+}
+
+void mdds_mtv_get_empty_value(muser_cell*& val)
+{
+    val = NULL;
+}
+
 }
 
 namespace mdds { namespace mtv {
@@ -195,11 +205,6 @@ void insert_values(
     user_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
-void get_empty_value(user_cell*& val)
-{
-    val = NULL;
-}
-
 //----------------------------------------------------------------------------
 // Callbacks for muser_cell* type.
 
@@ -226,11 +231,6 @@ void insert_values(
     mdds::mtv::base_element_block& block, size_t pos, muser_cell*, const _Iter& it_begin, const _Iter& it_end)
 {
     muser_cell_block::insert_values(block, pos, it_begin, it_end);
-}
-
-void get_empty_value(muser_cell*& val)
-{
-    val = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -266,12 +266,6 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::mtv::prepend_values(block, *it_begin, it_begin, it_end);
-    }
-
-    template<typename T>
-    static void get_empty_value(T& val)
-    {
-        mdds::mtv::get_empty_value(val);
     }
 
     static mdds::mtv::base_element_block* create_new_block(

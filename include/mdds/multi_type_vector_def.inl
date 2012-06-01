@@ -875,7 +875,7 @@ void multi_type_vector<_CellBlockFunc>::get(size_type pos, _T& value) const
     if (!blk->mp_data)
     {
         // empty cell block.
-        element_block_func::get_empty_value(value);
+        mdds_mtv_get_empty_value(value);
         return;
     }
 

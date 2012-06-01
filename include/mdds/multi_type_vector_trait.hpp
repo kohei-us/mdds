@@ -34,26 +34,6 @@
 
 namespace mdds { namespace mtv {
 
-void get_empty_value(double& val)
-{
-    val = 0.0;
-}
-
-void get_empty_value(std::string& val)
-{
-    val = std::string();
-}
-
-void get_empty_value(size_t& val)
-{
-    val = 0;
-}
-
-void get_empty_value(bool& val)
-{
-    val = false;
-}
-
 struct cell_block_func_base
 {
     static base_element_block* create_new_block(element_t type, size_t init_size);
@@ -459,12 +439,6 @@ struct cell_block_func : public cell_block_func_base
     {
         assert(it_begin != it_end);
         mdds::mtv::prepend_values(block, *it_begin, it_begin, it_end);
-    }
-
-    template<typename T>
-    static void get_empty_value(T& val)
-    {
-        mdds::mtv::get_empty_value(val);
     }
 };
 

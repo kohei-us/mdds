@@ -47,6 +47,26 @@ mtv::element_t mdds_mtv_get_element_type(bool)
     return mtv::element_type_boolean;
 }
 
+void mdds_mtv_get_empty_value(double& val)
+{
+    val = 0.0;
+}
+
+void mdds_mtv_get_empty_value(std::string& val)
+{
+    val = std::string();
+}
+
+void mdds_mtv_get_empty_value(size_t& val)
+{
+    val = 0;
+}
+
+void mdds_mtv_get_empty_value(bool& val)
+{
+    val = false;
+}
+
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, double val)
 {
     mtv::numeric_cell_block::set_value(block, pos, val);
