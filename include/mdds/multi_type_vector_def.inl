@@ -344,7 +344,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_impl(size_type row, const _T& c
         // new cell to the next block.
         element_block_func::erase(*blk->mp_data, blk->m_size-1);
         blk->m_size -= 1;
-        element_block_func::prepend_value(*blk_next->mp_data, cell);
+        mdds_mtv_prepend_value(*blk_next->mp_data, cell);
         return;
     }
 
@@ -377,7 +377,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_impl(size_type row, const _T& c
     // into the next block.
     element_block_func::erase(*blk->mp_data, blk->m_size-1);
     blk->m_size -= 1;
-    element_block_func::prepend_value(*blk_next->mp_data, cell);
+    mdds_mtv_prepend_value(*blk_next->mp_data, cell);
     blk_next->m_size += 1;
 }
 
@@ -454,7 +454,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         m_blocks.erase(m_blocks.begin());
                         blk = m_blocks.front();
                         blk->m_size += 1;
-                        element_block_func::prepend_value(*blk->mp_data, cell);
+                        mdds_mtv_prepend_value(*blk->mp_data, cell);
                     }
                     else
                         create_new_block_with_new_cell(blk->mp_data, cell);
@@ -482,7 +482,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     // Shrink this empty block by one, and prepend the cell to the next block.
                     blk->m_size -= 1;
                     blk_next->m_size += 1;
-                    element_block_func::prepend_value(*blk_next->mp_data, cell);
+                    mdds_mtv_prepend_value(*blk_next->mp_data, cell);
                 }
                 else
                 {
@@ -588,7 +588,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     {
                         // Remove this empty block, and prepend the cell to the next block.
                         blk_next->m_size += 1;
-                        element_block_func::prepend_value(*blk_next->mp_data, cell);
+                        mdds_mtv_prepend_value(*blk_next->mp_data, cell);
                         delete m_blocks[block_index];
                         m_blocks.erase(m_blocks.begin()+block_index);
                     }
@@ -628,7 +628,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 // Shrink this empty block and extend the next block.
                 blk->m_size -= 1;
                 blk_next->m_size += 1;
-                element_block_func::prepend_value(*blk_next->mp_data, cell);
+                mdds_mtv_prepend_value(*blk_next->mp_data, cell);
             }
             else
             {
@@ -688,7 +688,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
 
         // Delete the current block, and prepend the cell to the next block.
         blk_next->m_size += 1;
-        element_block_func::prepend_value(*blk_next->mp_data, cell);
+        mdds_mtv_prepend_value(*blk_next->mp_data, cell);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return;
@@ -749,7 +749,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
             m_blocks.erase(m_blocks.begin()+block_index);
             blk = m_blocks[block_index];
             blk->m_size += 1;
-            element_block_func::prepend_value(*blk->mp_data, cell);
+            mdds_mtv_prepend_value(*blk->mp_data, cell);
             return;
         }
 
@@ -825,7 +825,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
     {
         // Prepend to the next block.
         blk_next->m_size += 1;
-        element_block_func::prepend_value(*blk_next->mp_data, cell);
+        mdds_mtv_prepend_value(*blk_next->mp_data, cell);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return;

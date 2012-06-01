@@ -135,5 +135,25 @@ void mdds_mtv_append_value(mtv::base_element_block& block, bool val)
     mtv::boolean_cell_block::append_value(block, val);
 }
 
+void mdds_mtv_prepend_value(mtv::base_element_block& block, double val)
+{
+    mtv::numeric_cell_block::prepend_value(block, val);
+}
+
+void mdds_mtv_prepend_value(mtv::base_element_block& block, const std::string& val)
+{
+    mtv::string_cell_block::prepend_value(block, val);
+}
+
+void mdds_mtv_prepend_value(mtv::base_element_block& block, size_t val)
+{
+    mtv::index_cell_block::prepend_value(block, val);
+}
+
+void mdds_mtv_prepend_value(mtv::base_element_block& block, bool val)
+{
+    mtv::boolean_cell_block::prepend_value(block, val);
+}
+
 }
 
