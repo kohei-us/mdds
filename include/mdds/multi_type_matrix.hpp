@@ -74,16 +74,13 @@ public:
 
     double get_numeric(size_t row, size_t col) const;
     bool get_boolean(size_t row, size_t col) const;
-    const string_type* get_string(size_t row, size_t col) const;
+    const string_type& get_string(size_t row, size_t col) const;
 
-    void set_numeric(size_t row, size_t col, double val);
-    void set_boolean(size_t row, size_t col, bool val);
-    void set_string(size_t row, size_t col, string_type* str);
     void set_empty(size_t row, size_t col);
 
     void set(size_t row, size_t col, double val);
     void set(size_t row, size_t col, bool val);
-    void set(size_t row, size_t col, string_type* str);
+    void set(size_t row, size_t col, const string_type& str);
 
     /**
      * Set flag value at specified position.
