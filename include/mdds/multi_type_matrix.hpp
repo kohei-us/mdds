@@ -50,8 +50,6 @@ public:
         size_pair_type(size_type _row, size_type _column) : row(_row), column(_column) {}
     };
 
-    typedef __mtm::trait<string_type> trait;
-
     /**
      * Default constructor.
      */
@@ -170,6 +168,9 @@ public:
     void swap(multi_type_matrix& r);
 
 private:
+    typedef __mtm::trait<string_type> trait;
+    typedef mdds::multi_type_vector<typename trait::elem_block_func> store_type;
+    store_type m_store;
     size_pair_type m_size;
 };
 
