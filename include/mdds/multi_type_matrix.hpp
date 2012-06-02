@@ -28,7 +28,8 @@
 #ifndef __MDDS_MULTI_TYPE_MATRIX_HPP__
 #define __MDDS_MULTI_TYPE_MATRIX_HPP__
 
-#include <mdds/multi_type_vector.hpp>
+#include "multi_type_vector.hpp"
+#include "multi_type_matrix_block_func.hpp"
 
 namespace mdds {
 
@@ -48,6 +49,8 @@ public:
         size_pair_type() : row(0), column(0) {}
         size_pair_type(size_type _row, size_type _column) : row(_row), column(_column) {}
     };
+
+    typedef __mtm::trait<string_type> trait;
 
     /**
      * Default constructor.
