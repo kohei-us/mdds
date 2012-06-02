@@ -33,74 +33,74 @@
 
 namespace mdds { namespace __mtm {
 
-const mdds::mtv::element_t element_type_mtx_string = mdds::mtv::element_type_user_start;
+const mdds::mtv::element_t element_type_mtx_custom = mdds::mtv::element_type_user_start;
 
-template<typename _StringType>
+template<typename _CustomType>
 struct trait
 {
-    typedef _StringType string_type;
-    typedef mdds::mtv::default_element_block<element_type_mtx_string, string_type> string_elem_block;
+    typedef _CustomType custom_type;
+    typedef mdds::mtv::default_element_block<element_type_mtx_custom, custom_type> custom_elem_block;
 
-    static mdds::mtv::element_t mdds_mtv_get_element_type(const string_type&)
+    static mdds::mtv::element_t mdds_mtv_get_element_type(const custom_type&)
     {
-        return element_type_mtx_string;
+        return element_type_mtx_custom;
     }
 
-    static void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, const string_type& val)
+    static void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, const custom_type& val)
     {
-        string_elem_block::set_value(block, pos, val);
+        custom_elem_block::set_value(block, pos, val);
     }
 
-    static void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, string_type& val)
+    static void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, custom_type& val)
     {
-        string_elem_block::get_value(block, pos, val);
+        custom_elem_block::get_value(block, pos, val);
     }
 
     template<typename _Iter>
     static void mdds_mtv_set_values(
-        mtv::base_element_block& block, size_t pos, const string_type&, const _Iter& it_begin, const _Iter& it_end)
+        mtv::base_element_block& block, size_t pos, const custom_type&, const _Iter& it_begin, const _Iter& it_end)
     {
-        string_elem_block::set_values(block, pos, it_begin, it_end);
+        custom_elem_block::set_values(block, pos, it_begin, it_end);
     }
 
-    static void mdds_mtv_append_value(mtv::base_element_block& block, const string_type& val)
+    static void mdds_mtv_append_value(mtv::base_element_block& block, const custom_type& val)
     {
-        string_elem_block::append_value(block, val);
+        custom_elem_block::append_value(block, val);
     }
 
-    static void mdds_mtv_prepend_value(mtv::base_element_block& block, const string_type& val)
+    static void mdds_mtv_prepend_value(mtv::base_element_block& block, const custom_type& val)
     {
-        string_elem_block::prepend_value(block, val);
-    }
-
-    template<typename _Iter>
-    static void mdds_mtv_prepend_values(mtv::base_element_block& block, const string_type&, const _Iter& it_begin, const _Iter& it_end)
-    {
-        string_elem_block::prepend_values(block, it_begin, it_end);
+        custom_elem_block::prepend_value(block, val);
     }
 
     template<typename _Iter>
-    static void mdds_mtv_append_values(mtv::base_element_block& block, const string_type&, const _Iter& it_begin, const _Iter& it_end)
+    static void mdds_mtv_prepend_values(mtv::base_element_block& block, const custom_type&, const _Iter& it_begin, const _Iter& it_end)
     {
-        string_elem_block::append_values(block, it_begin, it_end);
+        custom_elem_block::prepend_values(block, it_begin, it_end);
     }
 
     template<typename _Iter>
-    static void mdds_mtv_assign_values(mtv::base_element_block& dest, const string_type&, const _Iter& it_begin, const _Iter& it_end)
+    static void mdds_mtv_append_values(mtv::base_element_block& block, const custom_type&, const _Iter& it_begin, const _Iter& it_end)
     {
-        string_elem_block::assign_values(dest, it_begin, it_end);
+        custom_elem_block::append_values(block, it_begin, it_end);
     }
 
-    static void mdds_mtv_get_empty_value(string_type& val)
+    template<typename _Iter>
+    static void mdds_mtv_assign_values(mtv::base_element_block& dest, const custom_type&, const _Iter& it_begin, const _Iter& it_end)
     {
-        val = string_type();
+        custom_elem_block::assign_values(dest, it_begin, it_end);
+    }
+
+    static void mdds_mtv_get_empty_value(custom_type& val)
+    {
+        val = custom_type();
     }
 
     template<typename _Iter>
     static void mdds_mtv_insert_values(
-        mtv::base_element_block& block, size_t pos, string_type, const _Iter& it_begin, const _Iter& it_end)
+        mtv::base_element_block& block, size_t pos, custom_type, const _Iter& it_begin, const _Iter& it_end)
     {
-        string_elem_block::insert_values(block, pos, it_begin, it_end);
+        custom_elem_block::insert_values(block, pos, it_begin, it_end);
     }
 
     struct elem_block_func
@@ -110,8 +110,8 @@ struct trait
         {
             switch (type)
             {
-                case element_type_mtx_string:
-                    return string_elem_block::create_block(init_size);
+                case element_type_mtx_custom:
+                    return custom_elem_block::create_block(init_size);
                 default:
                     return mdds::mtv::cell_block_func_base::create_new_block(type, init_size);
             }
@@ -121,8 +121,8 @@ struct trait
         {
             switch (mtv::get_block_type(block))
             {
-                case element_type_mtx_string:
-                    return string_elem_block::clone_block(block);
+                case element_type_mtx_custom:
+                    return custom_elem_block::clone_block(block);
                 default:
                     return mdds::mtv::cell_block_func_base::clone_block(block);
             }
@@ -135,8 +135,8 @@ struct trait
 
             switch (mtv::get_block_type(*p))
             {
-                case element_type_mtx_string:
-                    string_elem_block::delete_block(p);
+                case element_type_mtx_custom:
+                    custom_elem_block::delete_block(p);
                 break;
                 default:
                     mdds::mtv::cell_block_func_base::delete_block(p);
@@ -147,8 +147,8 @@ struct trait
         {
             switch (mtv::get_block_type(block))
             {
-                case element_type_mtx_string:
-                    string_elem_block::resize_block(block, new_size);
+                case element_type_mtx_custom:
+                    custom_elem_block::resize_block(block, new_size);
                 break;
                 default:
                     mdds::mtv::cell_block_func_base::resize_block(block, new_size);
@@ -159,8 +159,8 @@ struct trait
         {
             switch (mtv::get_block_type(block))
             {
-                case element_type_mtx_string:
-                    string_elem_block::print_block(block);
+                case element_type_mtx_custom:
+                    custom_elem_block::print_block(block);
                 break;
                 default:
                     mdds::mtv::cell_block_func_base::print_block(block);
@@ -171,8 +171,8 @@ struct trait
         {
             switch (mtv::get_block_type(block))
             {
-                case element_type_mtx_string:
-                    string_elem_block::erase_block(block, pos);
+                case element_type_mtx_custom:
+                    custom_elem_block::erase_block(block, pos);
                 break;
                 default:
                     mdds::mtv::cell_block_func_base::erase(block, pos);
@@ -183,8 +183,8 @@ struct trait
         {
             switch (mtv::get_block_type(block))
             {
-                case element_type_mtx_string:
-                    string_elem_block::erase_block(block, pos, size);
+                case element_type_mtx_custom:
+                    custom_elem_block::erase_block(block, pos, size);
                 break;
                 default:
                     mdds::mtv::cell_block_func_base::erase(block, pos, size);
@@ -196,8 +196,8 @@ struct trait
         {
             switch (mtv::get_block_type(dest))
             {
-                case element_type_mtx_string:
-                    string_elem_block::append_values_from_block(dest, src);
+                case element_type_mtx_custom:
+                    custom_elem_block::append_values_from_block(dest, src);
                 break;
                 default:
                     mdds::mtv::cell_block_func_base::append_values_from_block(dest, src);
@@ -210,8 +210,8 @@ struct trait
         {
             switch (mtv::get_block_type(dest))
             {
-                case element_type_mtx_string:
-                    string_elem_block::append_values_from_block(dest, src, begin_pos, len);
+                case element_type_mtx_custom:
+                    custom_elem_block::append_values_from_block(dest, src, begin_pos, len);
                 break;
                 default:
                     mdds::mtv::cell_block_func_base::append_values_from_block(dest, src, begin_pos, len);
@@ -224,8 +224,8 @@ struct trait
         {
             switch (mtv::get_block_type(dest))
             {
-                case element_type_mtx_string:
-                    string_elem_block::assign_values_from_block(dest, src, begin_pos, len);
+                case element_type_mtx_custom:
+                    custom_elem_block::assign_values_from_block(dest, src, begin_pos, len);
                 break;
                 default:
                     mdds::mtv::cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
@@ -235,14 +235,14 @@ struct trait
         static bool equal_block(
             const mdds::mtv::base_element_block& left, const mdds::mtv::base_element_block& right)
         {
-            if (mtv::get_block_type(left) == element_type_mtx_string)
+            if (mtv::get_block_type(left) == element_type_mtx_custom)
             {
-                if (mtv::get_block_type(right) != element_type_mtx_string)
+                if (mtv::get_block_type(right) != element_type_mtx_custom)
                     return false;
 
-                return string_elem_block::get(left) == string_elem_block::get(right);
+                return custom_elem_block::get(left) == custom_elem_block::get(right);
             }
-            else if (mtv::get_block_type(right) == element_type_mtx_string)
+            else if (mtv::get_block_type(right) == element_type_mtx_custom)
                 return false;
 
             return mdds::mtv::cell_block_func_base::equal_block(left, right);
@@ -252,7 +252,7 @@ struct trait
         {
             switch (mtv::get_block_type(block))
             {
-                case element_type_mtx_string:
+                case element_type_mtx_custom:
                     // Do nothing.  The client code manages the life cycle of these cells.
                 break;
                 default:
