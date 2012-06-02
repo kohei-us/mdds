@@ -225,7 +225,7 @@ void mdds_mtv_insert_values(
 
 }
 
-struct my_cell_block_func : public mdds::mtv::cell_block_func_base
+struct my_cell_block_func
 {
     static mdds::mtv::base_element_block* create_new_block(
         mdds::mtv::element_t type, size_t init_size)
@@ -240,7 +240,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 ;
         }
 
-        return cell_block_func_base::create_new_block(type, init_size);
+        return mtv::cell_block_func_base::create_new_block(type, init_size);
     }
 
     static mdds::mtv::base_element_block* clone_block(const mdds::mtv::base_element_block& block)
@@ -255,7 +255,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 ;
         }
 
-        return cell_block_func_base::clone_block(block);
+        return mtv::cell_block_func_base::clone_block(block);
     }
 
     static void delete_block(mdds::mtv::base_element_block* p)
@@ -272,7 +272,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::delete_block(p);
             break;
             default:
-                cell_block_func_base::delete_block(p);
+                mtv::cell_block_func_base::delete_block(p);
         }
     }
 
@@ -287,7 +287,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::resize_block(block, new_size);
             break;
             default:
-                cell_block_func_base::resize_block(block, new_size);
+                mtv::cell_block_func_base::resize_block(block, new_size);
         }
     }
 
@@ -302,7 +302,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::print_block(block);
             break;
             default:
-                cell_block_func_base::print_block(block);
+                mtv::cell_block_func_base::print_block(block);
         }
     }
 
@@ -317,7 +317,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::erase_block(block, pos);
             break;
             default:
-                cell_block_func_base::erase(block, pos);
+                mtv::cell_block_func_base::erase(block, pos);
         }
     }
 
@@ -332,7 +332,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::erase_block(block, pos, size);
             break;
             default:
-                cell_block_func_base::erase(block, pos, size);
+                mtv::cell_block_func_base::erase(block, pos, size);
         }
     }
 
@@ -348,7 +348,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::append_values_from_block(dest, src);
             break;
             default:
-                cell_block_func_base::append_values_from_block(dest, src);
+                mtv::cell_block_func_base::append_values_from_block(dest, src);
         }
     }
 
@@ -365,7 +365,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::append_values_from_block(dest, src, begin_pos, len);
             break;
             default:
-                cell_block_func_base::append_values_from_block(dest, src, begin_pos, len);
+                mtv::cell_block_func_base::append_values_from_block(dest, src, begin_pos, len);
         }
     }
 
@@ -382,7 +382,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::assign_values_from_block(dest, src, begin_pos, len);
             break;
             default:
-                cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
+                mtv::cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
         }
     }
 
@@ -409,7 +409,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
         else if (mtv::get_block_type(right) == element_type_muser_block)
             return false;
 
-        return cell_block_func_base::equal_block(left, right);
+        return mtv::cell_block_func_base::equal_block(left, right);
     }
 
     static void overwrite_values(mdds::mtv::base_element_block& block, size_t pos, size_t len)
@@ -423,7 +423,7 @@ struct my_cell_block_func : public mdds::mtv::cell_block_func_base
                 muser_cell_block::overwrite_values(block, pos, len);
             break;
             default:
-                cell_block_func_base::overwrite_values(block, pos, len);
+                mtv::cell_block_func_base::overwrite_values(block, pos, len);
         }
     }
 };
