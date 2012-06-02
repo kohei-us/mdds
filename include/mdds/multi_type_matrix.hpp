@@ -168,9 +168,13 @@ public:
     void swap(multi_type_matrix& r);
 
 private:
-    typedef __mtm::trait<string_type> trait;
-    typedef mdds::multi_type_vector<typename trait::elem_block_func> store_type;
+    typedef __mtm::trait<string_type> string_trait;
+    typedef __mtm::trait<flag_type> flag_trait;
+    typedef mdds::multi_type_vector<typename string_trait::elem_block_func> store_type;
+    typedef mdds::multi_type_vector<typename flag_trait::elem_block_func> flag_store_type;
+
     store_type m_store;
+    flag_store_type m_flag_store;
     size_pair_type m_size;
 };
 
