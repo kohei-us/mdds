@@ -77,11 +77,11 @@ public:
     bool get_boolean(size_t row, size_t col) const;
     const string_type& get_string(size_t row, size_t col) const;
 
-    void set_empty(size_t row, size_t col);
+    void set_empty(size_type row, size_type col);
 
-    void set(size_t row, size_t col, double val);
-    void set(size_t row, size_t col, bool val);
-    void set(size_t row, size_t col, const string_type& str);
+    void set(size_type row, size_type col, double val);
+    void set(size_type row, size_type col, bool val);
+    void set(size_type row, size_type col, const string_type& str);
 
     /**
      * Set flag value at specified position.
@@ -166,6 +166,23 @@ public:
      * Swap the content of the matrix with another instance.
      */
     void swap(multi_type_matrix& r);
+
+private:
+
+    /**
+     * Get an array position of the data referenced by the row and column
+     * indices.  The array consists of multiple rows, the content of row 0
+     * followded by the content of row 1, and so on.  <b>Note that no
+     * boundary check is performed in this method.</b>
+     *
+     * @param row 0-based row index.
+     * @param col 0-based column index.
+     * @return position in the data array.
+     */
+    size_type get_pos(size_type row, size_type col) const
+    {
+        return m_size.column * row + col;
+    }
 
 private:
     typedef __mtm::trait<string_type> string_trait;

@@ -35,7 +35,16 @@ multi_type_matrix<_String,_Flag>::~multi_type_matrix() {}
 
 template<typename _String, typename _Flag>
 multi_type_matrix<_String,_Flag>::multi_type_matrix(size_type rows, size_type cols) :
-    m_size(rows, cols) {}
+    m_store(rows*cols), m_flag_store(rows*cols), m_size(rows, cols)
+{
+
+}
+
+template<typename _String, typename _Flag>
+void multi_type_matrix<_String,_Flag>::set(size_type row, size_type col, double val)
+{
+    m_store.set(get_pos(row,col), val);
+}
 
 template<typename _String, typename _Flag>
 typename multi_type_matrix<_String,_Flag>::size_pair_type

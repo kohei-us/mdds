@@ -54,6 +54,51 @@ void mtm_test_construction()
     }
 }
 
+/**
+ * Measure the performance of object instantiation for filled storage.
+ */
+void mtm_perf_test_storage_creation()
+{
+    cout << "measuring performance on matrix object creation." << endl;
+    size_t rowsize = 5000;
+    size_t obj_count = 30000;
+    cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
+    cout << "--- filled zero" << endl;
+    for (size_t colsize = 1; colsize <= 5; ++colsize)
+    {
+        stack_watch sw;
+        for (size_t i = 0; i < obj_count; ++i)
+            mtx_type mx(rowsize, colsize);
+
+        cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
+    }
+    cout << endl;
+}
+
+void mtm_perf_test_storage_set_numeric()
+{
+    cout << "measuring performance on matrix object creation and populating it with numeric data." << endl;
+    size_t rowsize = 3000;
+    size_t obj_count = 30000;
+    cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
+    cout << "--- filled zero" << endl;
+    for (size_t colsize = 1; colsize <= 5; ++colsize)
+    {
+        stack_watch sw;
+        for (size_t i = 0; i < obj_count; ++i)
+        {
+            mtx_type mx(rowsize, colsize);
+            for (size_t row = 0; row < rowsize; ++row)
+            {
+                for (size_t col = 0; col < colsize; ++col)
+                    mx.set(row, col, 1.0);
+            }
+        }
+        cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
+    }
+    cout << endl;
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -67,6 +112,8 @@ int main (int argc, char **argv)
 
     if (opt.test_perf)
     {
+        mtm_perf_test_storage_creation();
+        mtm_perf_test_storage_set_numeric();
     }
 
     return EXIT_SUCCESS;
