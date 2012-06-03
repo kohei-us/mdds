@@ -34,7 +34,7 @@ AC_SUBST(SRCDIR)
 AC_SUBST(INCDIR)
 AC_SUBST(QUICKCHECKDIR)
 
-CPPFLAGS="-DDEBUG_NODE_BASE -DUNIT_TEST -Wall -Os -g -pedantic-errors -D_GLIBCXX_DEBUG"
+CPPFLAGS="-DDEBUG_NODE_BASE -DUNIT_TEST -Wall -Os -g -pedantic-errors"
 if test $with_hash_container = stlport; then
   CPPFLAGS="$CPPFLAGS -DMDDS_HASH_CONTAINER_STLPORT"
 elif test $with_hash_container = boost; then

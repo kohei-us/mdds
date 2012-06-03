@@ -96,6 +96,7 @@ void mtm_perf_test_storage_set_numeric()
         }
         cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
     }
+
     cout << endl;
 }
 
