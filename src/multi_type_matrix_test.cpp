@@ -68,7 +68,7 @@ void mtm_perf_test_storage_creation()
     {
         stack_watch sw;
         for (size_t i = 0; i < obj_count; ++i)
-            mtx_type mx(rowsize, colsize);
+            mtx_type mx(rowsize, colsize, 0.0);
 
         cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
     }
