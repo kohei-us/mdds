@@ -329,7 +329,7 @@ private:
         size_type row, size_type& start_pos, size_type& block_index, size_type start_block=0, size_type start_block_row=0) const;
 
     template<typename _T>
-    void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
+    static void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
 
     template<typename _T>
     void set_cell_to_middle_of_block(
