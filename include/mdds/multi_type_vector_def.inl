@@ -106,9 +106,8 @@ multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const 
     if (!init_size)
         return;
 
-    element_category_type cat = mdds_mtv_get_element_type(value);
     mdds::unique_ptr<block> blk(new block(init_size));
-    blk->mp_data = element_block_func::create_new_block(cat, init_size);
+    blk->mp_data = mdds_mtv_create_new_block(init_size, value);
     m_blocks.push_back(blk.release());
 }
 

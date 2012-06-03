@@ -275,5 +275,25 @@ void mdds_mtv_insert_values(
     mtv::boolean_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
+mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, double val)
+{
+    return mtv::numeric_cell_block::create_block_with_value(init_size, val);
+}
+
+mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const std::string& val)
+{
+    return mtv::string_cell_block::create_block_with_value(init_size, val);
+}
+
+mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, size_t val)
+{
+    return mtv::index_cell_block::create_block_with_value(init_size, val);
+}
+
+mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, bool val)
+{
+    return mtv::boolean_cell_block::create_block_with_value(init_size, val);
+}
+
 }
 

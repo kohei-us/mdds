@@ -83,6 +83,7 @@ protected:
 
     element_block() : base_element_block(_TypeId) {}
     element_block(size_t n) : base_element_block(_TypeId), m_array(n) {}
+    element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val) {}
 
 public:
     bool operator== (const _Self& r) const
@@ -245,6 +246,7 @@ class copyable_element_block : public element_block<_Self, _TypeId, _Data>
 protected:
     copyable_element_block() : base_type() {}
     copyable_element_block(size_t n) : base_type(n) {}
+    copyable_element_block(size_t n, const _Data& val) : base_type(n, val) {}
 
 public:
     using base_type::get;
@@ -262,6 +264,7 @@ class noncopyable_element_block : public element_block<_Self, _TypeId, _Data>, p
 protected:
     noncopyable_element_block() : base_type() {}
     noncopyable_element_block(size_t n) : base_type(n) {}
+    noncopyable_element_block(size_t n, const _Data& val) : base_type(n, val) {}
 
 public:
     static _Self* clone_block(const base_element_block& blk)
@@ -289,9 +292,16 @@ template<element_t _TypeId, typename _Data>
 struct default_element_block : public copyable_element_block<default_element_block<_TypeId,_Data>, _TypeId, _Data>
 {
     typedef copyable_element_block<default_element_block, _TypeId, _Data> base_type;
+    typedef default_element_block<_TypeId,_Data> self_type;
 
     default_element_block() : base_type() {}
     default_element_block(size_t n) : base_type(n) {}
+    default_element_block(size_t n, const _Data& val) : base_type(n, val) {}
+
+    static self_type* create_block_with_value(size_t init_size, const _Data& val)
+    {
+        return new self_type(init_size, val);
+    }
 
     static void overwrite_values(base_element_block&, size_t, size_t)
     {
@@ -300,8 +310,8 @@ struct default_element_block : public copyable_element_block<default_element_blo
 };
 
 /**
- * Template for element block that stores pointers to objects whose life cycles
- * are managed by the block.
+ * Template for element block that stores pointers to objects whose life
+ * cycles are managed by the block.
  */
 template<element_t _TypeId, typename _Data>
 struct managed_element_block : public copyable_element_block<managed_element_block<_TypeId,_Data>, _TypeId, _Data*>
@@ -313,6 +323,7 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
 
     managed_element_block() : base_type() {}
     managed_element_block(size_t n) : base_type(n) {}
+    managed_element_block(size_t n, const _Data& val) : base_type(n, val) {}
     managed_element_block(const managed_element_block& r)
     {
         m_array.reserve(r.m_array.size());
@@ -345,6 +356,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
 
     noncopyable_managed_element_block() : base_type() {}
     noncopyable_managed_element_block(size_t n) : base_type(n) {}
+    noncopyable_managed_element_block(size_t n, const _Data& val) : base_type(n, val) {}
 
     ~noncopyable_managed_element_block()
     {

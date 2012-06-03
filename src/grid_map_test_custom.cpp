@@ -223,6 +223,17 @@ void mdds_mtv_insert_values(
     muser_cell_block::insert_values(block, pos, it_begin, it_end);
 }
 
+mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, user_cell* val)
+{
+    return user_cell_block::create_block_with_value(init_size, val);
+}
+
+mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, muser_cell*)
+{
+    // Managed blocks don't support initialization with value.
+    return user_cell_block::create_block(init_size);
+}
+
 }
 
 struct my_cell_block_func
