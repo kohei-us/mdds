@@ -87,7 +87,7 @@ void mtm_perf_test_storage_set_numeric()
         stack_watch sw;
         for (size_t i = 0; i < obj_count; ++i)
         {
-            mtx_type mx(rowsize, colsize);
+            mtx_type mx(rowsize, colsize, 0.0);
             for (size_t row = 0; row < rowsize; ++row)
             {
                 for (size_t col = 0; col < colsize; ++col)

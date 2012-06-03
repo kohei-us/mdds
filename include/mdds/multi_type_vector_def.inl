@@ -89,13 +89,27 @@ template<typename _CellBlockFunc>
 multi_type_vector<_CellBlockFunc>::multi_type_vector() : m_cur_size(0) {}
 
 template<typename _CellBlockFunc>
-multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_row_size) : m_cur_size(init_row_size)
+multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size) : m_cur_size(init_size)
 {
-    if (!init_row_size)
+    if (!init_size)
         return;
 
     // Initialize with an empty block that spans from 0 to max.
-    m_blocks.push_back(new block(init_row_size));
+    m_blocks.push_back(new block(init_size));
+}
+
+template<typename _CellBlockFunc>
+template<typename _T>
+multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const _T& value) :
+    m_cur_size(init_size)
+{
+    if (!init_size)
+        return;
+
+    element_category_type cat = mdds_mtv_get_element_type(value);
+    mdds::unique_ptr<block> blk(new block(init_size));
+    blk->mp_data = element_block_func::create_new_block(cat, init_size);
+    m_blocks.push_back(blk.release());
 }
 
 template<typename _CellBlockFunc>

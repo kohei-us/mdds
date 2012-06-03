@@ -60,6 +60,9 @@ public:
      */
     multi_type_matrix(size_t rows, size_t cols);
 
+    template<typename _T>
+    multi_type_matrix(size_t rows, size_t cols, const _T& value);
+
     multi_type_matrix(const multi_type_matrix& r);
     ~multi_type_matrix();
 

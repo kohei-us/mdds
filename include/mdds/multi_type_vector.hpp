@@ -95,7 +95,10 @@ public:
      *
      * @param init_row_size initial container size
      */
-    multi_type_vector(size_type init_row_size);
+    multi_type_vector(size_type init_size);
+
+    template<typename _T>
+    multi_type_vector(size_type init_size, const _T& value);
 
     /**
      * Copy constructor.
