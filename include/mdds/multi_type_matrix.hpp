@@ -78,7 +78,7 @@ public:
 
     double get_numeric(size_t row, size_t col) const;
     bool get_boolean(size_t row, size_t col) const;
-    const string_type& get_string(size_t row, size_t col) const;
+    string_type get_string(size_t row, size_t col) const;
 
     void set_empty(size_type row, size_type col);
 

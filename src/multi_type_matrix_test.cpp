@@ -52,6 +52,17 @@ void mtm_test_construction()
         mtx_type::size_pair_type sz = mtx.size();
         assert(sz.row == 2 && sz.column == 5);
     }
+
+    {
+        // construction to a specific size with default value.
+        mtx_type mtx(2, 5, string("foo"));
+        mtx_type::size_pair_type sz = mtx.size();
+        assert(sz.row == 2 && sz.column == 5);
+        assert(mtx.get_type(0,0) == mtx_type::element_string);
+        assert(mtx.get_string(0,0) == "foo");
+        assert(mtx.get_type(1,4) == mtx_type::element_string);
+        assert(mtx.get_string(1,4) == "foo");
+    }
 }
 
 /**
