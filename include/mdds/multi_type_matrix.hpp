@@ -174,8 +174,8 @@ private:
 
     /**
      * Get an array position of the data referenced by the row and column
-     * indices.  The array consists of multiple rows, the content of row 0
-     * followded by the content of row 1, and so on.  <b>Note that no
+     * indices.  The array consists of multiple columns, the content of column
+     * 0 followded by the content of column 1, and so on.  <b>Note that no
      * boundary check is performed in this method.</b>
      *
      * @param row 0-based row index.
@@ -184,7 +184,7 @@ private:
      */
     inline size_type get_pos(size_type row, size_type col) const
     {
-        return m_size.column * row + col;
+        return m_size.row * col + row;
     }
 
 private:
