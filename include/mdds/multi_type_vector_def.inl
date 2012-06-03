@@ -175,17 +175,13 @@ template<typename _CellBlockFunc>
 template<typename _T>
 void multi_type_vector<_CellBlockFunc>::create_new_block_with_new_cell(element_block_type*& data, const _T& cell)
 {
-    element_category_type cat = mdds_mtv_get_element_type(cell);
-
     if (data)
         element_block_func::delete_block(data);
 
     // New cell block with size 1.
-    data = element_block_func::create_new_block(cat, 1);
+    data = mdds_mtv_create_new_block(1, cell);
     if (!data)
         throw general_error("Failed to create new block.");
-
-    mdds_mtv_set_value(*data, 0, cell);
 }
 
 template<typename _CellBlockFunc>

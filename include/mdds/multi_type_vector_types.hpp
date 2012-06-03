@@ -323,7 +323,6 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
 
     managed_element_block() : base_type() {}
     managed_element_block(size_t n) : base_type(n) {}
-    managed_element_block(size_t n, const _Data& val) : base_type(n, val) {}
     managed_element_block(const managed_element_block& r)
     {
         m_array.reserve(r.m_array.size());
@@ -356,7 +355,6 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
 
     noncopyable_managed_element_block() : base_type() {}
     noncopyable_managed_element_block(size_t n) : base_type(n) {}
-    noncopyable_managed_element_block(size_t n, const _Data& val) : base_type(n, val) {}
 
     ~noncopyable_managed_element_block()
     {
