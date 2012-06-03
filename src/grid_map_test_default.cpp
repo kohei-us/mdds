@@ -56,10 +56,29 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 typedef mdds::grid_map<mdds::mtv::cell_block_func> grid_store_type;
 typedef grid_store_type::sheet_type::column_type column_type;
 
+void gridmap_test_construction()
+{
+    stack_printer __stack_printer__("::gridmap_test_construction");
+    {
+        // Create with initial value and size.
+        column_type db(10, 1.0);
+        assert(db.size() == 10);
+        assert(db.get<double>(0) == 1.0);
+        assert(db.get<double>(9) == 1.0);
+    }
+
+    {
+        // Create with initial value and size.
+        column_type db(10, string("foo"));
+        assert(db.size() == 10);
+        assert(db.get<string>(0) == "foo");
+        assert(db.get<string>(9) == "foo");
+    }
+}
+
 void gridmap_test_basic()
 {
     stack_printer __stack_printer__("::gridmap_test_basic");
-    grid_store_type db;
     bool res;
 
     {
@@ -2049,6 +2068,7 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
+        gridmap_test_construction();
         gridmap_test_basic();
         gridmap_test_empty_cells();
         gridmap_test_swap();
