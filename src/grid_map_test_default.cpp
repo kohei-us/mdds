@@ -63,6 +63,7 @@ void gridmap_test_construction()
         // Create with initial value and size.
         column_type db(10, 1.0);
         assert(db.size() == 10);
+        assert(db.block_size() == 1);
         assert(db.get<double>(0) == 1.0);
         assert(db.get<double>(9) == 1.0);
     }
@@ -71,6 +72,7 @@ void gridmap_test_construction()
         // Create with initial value and size.
         column_type db(10, string("foo"));
         assert(db.size() == 10);
+        assert(db.block_size() == 1);
         assert(db.get<string>(0) == "foo");
         assert(db.get<string>(9) == "foo");
     }
