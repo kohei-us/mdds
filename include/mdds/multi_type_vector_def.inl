@@ -132,7 +132,162 @@ template<typename _CellBlockFunc>
 template<typename _T>
 void multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
 {
-    set_cell_impl(pos, value);
+    element_category_type cat = mdds_mtv_get_element_type(value);
+
+    // Find the right block ID from the row ID.
+    size_type start_row = 0; // row ID of the first cell in a block.
+    size_type block_index = 0;
+    get_block_position(pos, start_row, block_index);
+
+    block* blk = m_blocks[block_index];
+    assert(blk->m_size > 0); // block size should never be zero at any time.
+
+    assert(pos >= start_row);
+    size_type pos_in_block = pos - start_row;
+    assert(pos_in_block < blk->m_size);
+
+    if (!blk->mp_data)
+    {
+        // This is an empty block.
+        set_cell_to_empty_block(block_index, pos_in_block, value);
+        return;
+    }
+
+    assert(blk->mp_data);
+    element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
+
+    if (blk_cat == cat)
+    {
+        // This block is of the same type as the cell being inserted.
+        size_type i = pos - start_row;
+        element_block_func::overwrite_values(*blk->mp_data, i, 1);
+        mdds_mtv_set_value(*blk->mp_data, i, value);
+        return;
+    }
+
+    assert(blk_cat != cat);
+
+    if (pos == start_row)
+    {
+        // Insertion point is at the start of the block.
+        if (blk->m_size == 1)
+        {
+            set_cell_to_block_of_size_one(block_index, value);
+            return;
+        }
+
+        assert(blk->m_size > 1);
+        if (block_index == 0)
+        {
+            // No preceding block.
+            set_cell_to_top_of_data_block(0, value);
+            return;
+        }
+
+        // Append to the previous block if the types match.
+        block* blk_prev = m_blocks[block_index-1];
+        if (!blk_prev->mp_data)
+        {
+            // Previous block is empty.
+            set_cell_to_top_of_data_block(block_index, value);
+            return;
+        }
+
+        element_category_type blk_cat_prev = mdds::mtv::get_block_type(*blk_prev->mp_data);
+        if (blk_cat_prev == cat)
+        {
+            // Append to the previous block.
+            blk->m_size -= 1;
+            element_block_func::erase(*blk->mp_data, 0);
+            blk_prev->m_size += 1;
+            mdds_mtv_append_value(*blk_prev->mp_data, value);
+            return;
+        }
+
+        set_cell_to_top_of_data_block(block_index, value);
+        return;
+    }
+
+    if (pos < (start_row + blk->m_size - 1))
+    {
+        // Insertion point is somewhere in the middle of the block.
+        set_cell_to_middle_of_block(block_index, pos_in_block, value);
+        return;
+    }
+
+    // Insertion point is at the end of the block.
+    assert(pos == (start_row + blk->m_size - 1));
+    assert(pos > start_row);
+    assert(blk->m_size > 1);
+
+    if (block_index == 0)
+    {
+        if (m_blocks.size() == 1)
+        {
+            // This is the only block.  Pop the last value from the
+            // previous block, and insert a new block for the cell being
+            // inserted.
+            set_cell_to_bottom_of_data_block(0, value);
+            return;
+        }
+
+        assert(block_index < m_blocks.size()-1);
+        block* blk_next = m_blocks[block_index+1];
+        if (!blk_next->mp_data)
+        {
+            // Next block is empty.  Pop the last cell of the current
+            // block, and insert a new block with the new cell.
+            set_cell_to_bottom_of_data_block(0, value);
+            return;
+        }
+
+        // Next block is not empty.
+        element_category_type blk_cat_next = mdds::mtv::get_block_type(*blk_next->mp_data);
+        if (blk_cat_next != cat)
+        {
+            set_cell_to_bottom_of_data_block(0, value);
+            return;
+        }
+
+        // Pop the last cell off the current block, and prepend the
+        // new cell to the next block.
+        element_block_func::erase(*blk->mp_data, blk->m_size-1);
+        blk->m_size -= 1;
+        mdds_mtv_prepend_value(*blk_next->mp_data, value);
+        return;
+    }
+
+    assert(block_index > 0);
+
+    if (block_index == m_blocks.size()-1)
+    {
+        // This is the last block.
+        set_cell_to_bottom_of_data_block(block_index, value);
+        return;
+    }
+
+    block* blk_next = m_blocks[block_index+1];
+    if (!blk_next->mp_data)
+    {
+        // Next block is empty.
+        set_cell_to_bottom_of_data_block(block_index, value);
+        return;
+    }
+
+    element_category_type cat_blk_next = mdds::mtv::get_block_type(*blk_next->mp_data);
+    if (cat_blk_next != cat)
+    {
+        // Next block is of different type than that of the cell being inserted.
+        set_cell_to_bottom_of_data_block(block_index, value);
+        return;
+    }
+
+    // Pop the last element from the current block, and prepend the cell
+    // into the next block.
+    element_block_func::erase(*blk->mp_data, blk->m_size-1);
+    blk->m_size -= 1;
+    mdds_mtv_prepend_value(*blk_next->mp_data, value);
+    blk_next->m_size += 1;
 }
 
 template<typename _CellBlockFunc>
@@ -226,168 +381,6 @@ void multi_type_vector<_CellBlockFunc>::append_cell_to_block(size_type block_ind
     block* blk = m_blocks[block_index];
     blk->m_size += 1;
     mdds_mtv_append_value(*blk->mp_data, cell);
-}
-
-template<typename _CellBlockFunc>
-template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cell_impl(size_type row, const _T& cell)
-{
-    element_category_type cat = mdds_mtv_get_element_type(cell);
-
-    // Find the right block ID from the row ID.
-    size_type start_row = 0; // row ID of the first cell in a block.
-    size_type block_index = 0;
-    get_block_position(row, start_row, block_index);
-
-    block* blk = m_blocks[block_index];
-    assert(blk->m_size > 0); // block size should never be zero at any time.
-
-    assert(row >= start_row);
-    size_type pos_in_block = row - start_row;
-    assert(pos_in_block < blk->m_size);
-
-    if (!blk->mp_data)
-    {
-        // This is an empty block.
-        set_cell_to_empty_block(block_index, pos_in_block, cell);
-        return;
-    }
-
-    assert(blk->mp_data);
-    element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
-
-    if (blk_cat == cat)
-    {
-        // This block is of the same type as the cell being inserted.
-        size_type i = row - start_row;
-        element_block_func::overwrite_values(*blk->mp_data, i, 1);
-        mdds_mtv_set_value(*blk->mp_data, i, cell);
-        return;
-    }
-
-    assert(blk_cat != cat);
-
-    if (row == start_row)
-    {
-        // Insertion point is at the start of the block.
-        if (blk->m_size == 1)
-        {
-            set_cell_to_block_of_size_one(block_index, cell);
-            return;
-        }
-
-        assert(blk->m_size > 1);
-        if (block_index == 0)
-        {
-            // No preceding block.
-            set_cell_to_top_of_data_block(0, cell);
-            return;
-        }
-
-        // Append to the previous block if the types match.
-        block* blk_prev = m_blocks[block_index-1];
-        if (!blk_prev->mp_data)
-        {
-            // Previous block is empty.
-            set_cell_to_top_of_data_block(block_index, cell);
-            return;
-        }
-
-        element_category_type blk_cat_prev = mdds::mtv::get_block_type(*blk_prev->mp_data);
-        if (blk_cat_prev == cat)
-        {
-            // Append to the previous block.
-            blk->m_size -= 1;
-            element_block_func::erase(*blk->mp_data, 0);
-            blk_prev->m_size += 1;
-            mdds_mtv_append_value(*blk_prev->mp_data, cell);
-            return;
-        }
-
-        set_cell_to_top_of_data_block(block_index, cell);
-        return;
-    }
-
-    if (row < (start_row + blk->m_size - 1))
-    {
-        // Insertion point is somewhere in the middle of the block.
-        set_cell_to_middle_of_block(block_index, pos_in_block, cell);
-        return;
-    }
-
-    // Insertion point is at the end of the block.
-    assert(row == (start_row + blk->m_size - 1));
-    assert(row > start_row);
-    assert(blk->m_size > 1);
-
-    if (block_index == 0)
-    {
-        if (m_blocks.size() == 1)
-        {
-            // This is the only block.  Pop the last value from the
-            // previous block, and insert a new block for the cell being
-            // inserted.
-            set_cell_to_bottom_of_data_block(0, cell);
-            return;
-        }
-
-        assert(block_index < m_blocks.size()-1);
-        block* blk_next = m_blocks[block_index+1];
-        if (!blk_next->mp_data)
-        {
-            // Next block is empty.  Pop the last cell of the current
-            // block, and insert a new block with the new cell.
-            set_cell_to_bottom_of_data_block(0, cell);
-            return;
-        }
-
-        // Next block is not empty.
-        element_category_type blk_cat_next = mdds::mtv::get_block_type(*blk_next->mp_data);
-        if (blk_cat_next != cat)
-        {
-            set_cell_to_bottom_of_data_block(0, cell);
-            return;
-        }
-
-        // Pop the last cell off the current block, and prepend the
-        // new cell to the next block.
-        element_block_func::erase(*blk->mp_data, blk->m_size-1);
-        blk->m_size -= 1;
-        mdds_mtv_prepend_value(*blk_next->mp_data, cell);
-        return;
-    }
-
-    assert(block_index > 0);
-
-    if (block_index == m_blocks.size()-1)
-    {
-        // This is the last block.
-        set_cell_to_bottom_of_data_block(block_index, cell);
-        return;
-    }
-
-    block* blk_next = m_blocks[block_index+1];
-    if (!blk_next->mp_data)
-    {
-        // Next block is empty.
-        set_cell_to_bottom_of_data_block(block_index, cell);
-        return;
-    }
-
-    element_category_type cat_blk_next = mdds::mtv::get_block_type(*blk_next->mp_data);
-    if (cat_blk_next != cat)
-    {
-        // Next block is of different type than that of the cell being inserted.
-        set_cell_to_bottom_of_data_block(block_index, cell);
-        return;
-    }
-
-    // Pop the last element from the current block, and prepend the cell
-    // into the next block.
-    element_block_func::erase(*blk->mp_data, blk->m_size-1);
-    blk->m_size -= 1;
-    mdds_mtv_prepend_value(*blk_next->mp_data, cell);
-    blk_next->m_size += 1;
 }
 
 template<typename _CellBlockFunc>

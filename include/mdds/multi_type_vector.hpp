@@ -339,9 +339,6 @@ private:
     void append_cell_to_block(size_type block_index, const _T& cell);
 
     template<typename _T>
-    void set_cell_impl(size_type row, const _T& cell);
-
-    template<typename _T>
     void set_cell_to_empty_block(
         size_type block_index, size_type pos_in_block, const _T& cell);
 
