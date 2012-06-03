@@ -182,7 +182,7 @@ private:
      * @param col 0-based column index.
      * @return position in the data array.
      */
-    size_type get_pos(size_type row, size_type col) const
+    inline size_type get_pos(size_type row, size_type col) const
     {
         return m_size.column * row + col;
     }
