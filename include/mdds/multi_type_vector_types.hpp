@@ -98,17 +98,19 @@ public:
 
     static _Self& get(base_element_block& block)
     {
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
         if (get_block_type(block) != _TypeId)
             throw general_error("incorrect block type.");
-
+#endif
         return static_cast<_Self&>(block);
     }
 
     static const _Self& get(const base_element_block& block)
     {
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
         if (get_block_type(block) != _TypeId)
             throw general_error("incorrect block type.");
-
+#endif
         return static_cast<const _Self&>(block);
     }
 
