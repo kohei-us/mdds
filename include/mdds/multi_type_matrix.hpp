@@ -76,10 +76,53 @@ public:
      */
     element_t get_type(size_type row, size_type col) const;
 
+    /**
+     * Get a numeric representation of the element.  If the element is of
+     * numeric type, its value is returned.  If it's of boolean type, either 1
+     * or 0 is returned depending on whether it's true or false.  If it's of
+     * empty or string type, 0 is returned.
+     *
+     * @param row row position of the element.
+     * @param col column position of the element.
+     *
+     * @return numeric representation of the element.
+     */
     double get_numeric(size_type row, size_type col) const;
+
+    /**
+     * Get a boolean representation of the element.  If the element is of
+     * numeric type, true is returned if it's non-zero, otherwise false is
+     * returned. If it's of boolean type, its value is returned.  If it's of
+     * empty or string type, false is returned.
+     *
+     * @param row row position of the element.
+     * @param col column position of the element.
+     *
+     * @return boolean representation of the element.
+     */
     bool get_boolean(size_type row, size_type col) const;
+
+    /**
+     * Get the value of a string element.  If the element is not of string
+     * type, it throws an exception.
+     *
+     * @param row row position of the element.
+     * @param col column position of the element.
+     *
+     * @return value of the element.
+     */
     string_type get_string(size_type row, size_type col) const;
 
+    /**
+     * Get the value of element at specified position.  The caller must
+     * explicitly specify the return type.  If the element is not of the
+     * specified type, it throws an exception.
+     *
+     * @param row row position of the element.
+     * @param col column position of the element.
+     *
+     * @return value of the element.
+     */
     template<typename _T>
     _T get(size_type row, size_type col) const;
 
