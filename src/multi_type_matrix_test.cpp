@@ -92,7 +92,7 @@ void mtm_perf_test_storage_set_numeric()
     size_t rowsize = 3000;
     size_t obj_count = 30000;
     cout << "row size: " << rowsize << "  object count: " << obj_count << endl;
-    cout << "--- filled zero" << endl;
+    cout << "--- filled zero (individual insertion)" << endl;
     for (size_t colsize = 1; colsize <= 5; ++colsize)
     {
         stack_watch sw;
@@ -104,6 +104,82 @@ void mtm_perf_test_storage_set_numeric()
                 for (size_t col = 0; col < colsize; ++col)
                     mx.set(row, col, 1.0);
             }
+        }
+        cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
+    }
+
+    cout << "--- filled zero (per column)" << endl;
+    for (size_t colsize = 1; colsize <= 5; ++colsize)
+    {
+        stack_watch sw;
+        for (size_t i = 0; i < obj_count; ++i)
+        {
+            mtx_type mx(rowsize, colsize, 0.0);
+            for (size_t col = 0; col < colsize; ++col)
+            {
+                vector<double> vals;
+                vals.reserve(rowsize);
+                for (size_t row = 0; row < rowsize; ++row)
+                    vals.push_back(1.0);
+                mx.set(0, col, vals.begin(), vals.end());
+            }
+        }
+        cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
+    }
+
+    cout << "--- filled zero (per column, pre-filled array)" << endl;
+    for (size_t colsize = 1; colsize <= 5; ++colsize)
+    {
+        // Fill the data array before insertion.
+        vector<double> vals;
+        vals.reserve(rowsize);
+        for (size_t row = 0; row < rowsize; ++row)
+            vals.push_back(1.0);
+
+        stack_watch sw;
+        for (size_t i = 0; i < obj_count; ++i)
+        {
+            mtx_type mx(rowsize, colsize, 0.0);
+            for (size_t col = 0; col < colsize; ++col)
+                mx.set(0, col, vals.begin(), vals.end());
+        }
+        cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
+    }
+
+    cout << "--- empty on creation (per column)" << endl;
+    for (size_t colsize = 1; colsize <= 5; ++colsize)
+    {
+        stack_watch sw;
+        for (size_t i = 0; i < obj_count; ++i)
+        {
+            mtx_type mx(rowsize, colsize);
+            for (size_t col = 0; col < colsize; ++col)
+            {
+                vector<double> vals;
+                vals.reserve(rowsize);
+                for (size_t row = 0; row < rowsize; ++row)
+                    vals.push_back(1.0);
+                mx.set(0, col, vals.begin(), vals.end());
+            }
+        }
+        cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
+    }
+
+    cout << "--- empty on creation (per column, pre-filled array)" << endl;
+    for (size_t colsize = 1; colsize <= 5; ++colsize)
+    {
+        // Fill the data array before insertion.
+        vector<double> vals;
+        vals.reserve(rowsize);
+        for (size_t row = 0; row < rowsize; ++row)
+            vals.push_back(1.0);
+
+        stack_watch sw;
+        for (size_t i = 0; i < obj_count; ++i)
+        {
+            mtx_type mx(rowsize, colsize);
+            for (size_t col = 0; col < colsize; ++col)
+                mx.set(0, col, vals.begin(), vals.end());
         }
         cout << "column size: " << colsize << "  duration: " << sw.get_duration() << " sec" << endl;
     }

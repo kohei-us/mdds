@@ -87,6 +87,22 @@ public:
     void set(size_type row, size_type col, const string_type& str);
 
     /**
+     * Set values of multiple elements at once, starting at specified element
+     * position following the direction of columns.  When the new value series
+     * does not fit in the column where the start element is, it gets wrapped
+     * into the next column.
+     *
+     * @param row row position of the start element.
+     * @param col column position of the start element.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being set.
+     * @param it_end iterator that points to the end position of the values
+     *               being set.
+     */
+    template<typename _T>
+    void set(size_type row, size_type col, const _T& it_begin, const _T& it_end);
+
+    /**
      * Set flag value at specified position.
      *
      * @param row row position

@@ -140,6 +140,13 @@ void multi_type_matrix<_String,_Flag>::set(size_type row, size_type col, double 
 }
 
 template<typename _String, typename _Flag>
+template<typename _T>
+void multi_type_matrix<_String,_Flag>::set(size_type row, size_type col, const _T& it_begin, const _T& it_end)
+{
+    m_store.set(get_pos(row,col), it_begin, it_end);
+}
+
+template<typename _String, typename _Flag>
 typename multi_type_matrix<_String,_Flag>::size_pair_type
 multi_type_matrix<_String,_Flag>::size() const
 {
