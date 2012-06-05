@@ -125,7 +125,7 @@ multi_type_matrix<_String,_Flag>::get(size_type row, size_type col) const
 template<typename _String, typename _Flag>
 void multi_type_matrix<_String,_Flag>::set_empty(size_type row, size_type col)
 {
-    m_store.set_empty(get_pos(row,col));
+    m_store.set_empty(get_pos(row, col), get_pos(row, col));
 }
 
 template<typename _String, typename _Flag>

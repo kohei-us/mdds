@@ -88,13 +88,19 @@ void mtm_test_data_insertion()
         assert(mtx.get_type(0,0) == mtx_type::element_empty);
         assert(mtx.get_type(2,3) == mtx_type::element_empty);
         check_value(mtx, 1, 1, 1.2);
-        check_value(mtx, 1, 2, true);
-        check_value(mtx, 1, 3, false);
-        check_value(mtx, 2, 0, string("foo"));
-        check_value(mtx, 2, 1, 23.4);
+        check_value(mtx, 2, 1, true);
+        check_value(mtx, 3, 1, false);
+        check_value(mtx, 0, 2, string("foo"));
+        check_value(mtx, 1, 2, 23.4);
 
         // Overwrite
+        assert(mtx.get_type(1,1) == mtx_type::element_numeric);
         check_value(mtx, 1, 1, string("baa"));
+
+        // Setting empty.
+        assert(mtx.get_type(1,1) == mtx_type::element_string);
+        mtx.set_empty(1, 1);
+        assert(mtx.get_type(1,1) == mtx_type::element_empty);
     }
 }
 
