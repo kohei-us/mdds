@@ -36,6 +36,18 @@ using namespace std;
 
 typedef mdds::multi_type_matrix<std::string, int> mtx_type;
 
+namespace {
+
+template<typename _T>
+void check_value(mtx_type& mtx, size_t row, size_t col, const _T& val)
+{
+    mtx.set(row, col, val);
+    _T test = mtx.get<_T>(row, col);
+    assert(test == val);
+}
+
+}
+
 void mtm_test_construction()
 {
     stack_printer __stack_printer__("::mtm_test_construction");
@@ -62,6 +74,24 @@ void mtm_test_construction()
         assert(mtx.get_string(0,0) == "foo");
         assert(mtx.get_type(1,4) == mtx_type::element_string);
         assert(mtx.get_string(1,4) == "foo");
+    }
+}
+
+void mtm_test_data_insertion()
+{
+    stack_printer __stack_printer__("::mtm_test_data_insertion");
+    {
+        // Create with empty elements.
+        mtx_type mtx(3, 4);
+        mtx_type::size_pair_type sz = mtx.size();
+        assert(sz.row == 3 && sz.column == 4);
+        assert(mtx.get_type(0,0) == mtx_type::element_empty);
+        assert(mtx.get_type(2,3) == mtx_type::element_empty);
+        check_value(mtx, 1, 1, 1.2);
+        check_value(mtx, 1, 2, true);
+        check_value(mtx, 1, 3, true);
+        check_value(mtx, 2, 0, string("foo"));
+        check_value(mtx, 2, 1, 23.4);
     }
 }
 
@@ -196,6 +226,7 @@ int main (int argc, char **argv)
     if (opt.test_func)
     {
         mtm_test_construction();
+        mtm_test_data_insertion();
     }
 
     if (opt.test_perf)

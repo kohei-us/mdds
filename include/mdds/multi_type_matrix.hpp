@@ -58,10 +58,10 @@ public:
     /**
      * Construct a matrix of specified size with specified density type.
      */
-    multi_type_matrix(size_t rows, size_t cols);
+    multi_type_matrix(size_type rows, size_type cols);
 
     template<typename _T>
-    multi_type_matrix(size_t rows, size_t cols, const _T& value);
+    multi_type_matrix(size_type rows, size_type cols, const _T& value);
 
     multi_type_matrix(const multi_type_matrix& r);
     ~multi_type_matrix();
@@ -74,11 +74,14 @@ public:
      *
      * @return element type.
      */
-    element_t get_type(size_t row, size_t col) const;
+    element_t get_type(size_type row, size_type col) const;
 
-    double get_numeric(size_t row, size_t col) const;
-    bool get_boolean(size_t row, size_t col) const;
-    string_type get_string(size_t row, size_t col) const;
+    double get_numeric(size_type row, size_type col) const;
+    bool get_boolean(size_type row, size_type col) const;
+    string_type get_string(size_type row, size_type col) const;
+
+    template<typename _T>
+    _T get(size_type row, size_type col) const;
 
     void set_empty(size_type row, size_type col);
 
@@ -109,7 +112,7 @@ public:
      * @param col column position
      * @param flag_type flag value
      */
-    void set_flag(size_t row, size_t col, flag_type flag);
+    void set_flag(size_type row, size_type col, flag_type flag);
 
     /**
      * Get flag value at specified position.
@@ -119,9 +122,9 @@ public:
      *
      * @return flag value stored at specified position
      */
-    flag_type get_flag(size_t row, size_t col) const;
+    flag_type get_flag(size_type row, size_type col) const;
 
-    void clear_flag(size_t row, size_t col);
+    void clear_flag(size_type row, size_type col);
 
     /**
      * Return the size of matrix as a pair.  The first value is the row size,
@@ -158,7 +161,7 @@ public:
      * @param row new row size
      * @param col new column size
      */
-    void resize(size_t row, size_t col);
+    void resize(size_type row, size_type col);
 
     /**
      * Empty the matrix.

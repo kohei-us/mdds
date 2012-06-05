@@ -134,9 +134,35 @@ multi_type_matrix<_String,_Flag>::get_string(size_type row, size_type col) const
 }
 
 template<typename _String, typename _Flag>
+template<typename _T>
+_T
+multi_type_matrix<_String,_Flag>::get(size_type row, size_type col) const
+{
+    return m_store.get<_T>(get_pos(row,col));
+}
+
+template<typename _String, typename _Flag>
+void multi_type_matrix<_String,_Flag>::set_empty(size_type row, size_type col)
+{
+    m_store.set_empty(get_pos(row,col));
+}
+
+template<typename _String, typename _Flag>
 void multi_type_matrix<_String,_Flag>::set(size_type row, size_type col, double val)
 {
     m_store.set(get_pos(row,col), val);
+}
+
+template<typename _String, typename _Flag>
+void multi_type_matrix<_String,_Flag>::set(size_type row, size_type col, bool val)
+{
+    m_store.set(get_pos(row,col), val);
+}
+
+template<typename _String, typename _Flag>
+void multi_type_matrix<_String,_Flag>::set(size_type row, size_type col, const string_type& str)
+{
+    m_store.set(get_pos(row,col), str);
 }
 
 template<typename _String, typename _Flag>
