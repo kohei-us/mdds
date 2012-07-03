@@ -104,6 +104,46 @@ void mtm_test_data_insertion()
     }
 }
 
+void mtm_test_set_empty()
+{
+    stack_printer __stack_printer__("::mtm_test_set_empty");
+    {
+        // set whole column empty.
+        mtx_type mtx(3, 5, 1.2);
+        mtx.set_column_empty(2);
+        assert(mtx.get_type(0, 1) != mtx_type::element_empty);
+        assert(mtx.get_type(1, 1) != mtx_type::element_empty);
+        assert(mtx.get_type(2, 1) != mtx_type::element_empty);
+        assert(mtx.get_type(0, 2) == mtx_type::element_empty);
+        assert(mtx.get_type(1, 2) == mtx_type::element_empty);
+        assert(mtx.get_type(2, 2) == mtx_type::element_empty);
+        assert(mtx.get_type(0, 3) != mtx_type::element_empty);
+        assert(mtx.get_type(1, 3) != mtx_type::element_empty);
+        assert(mtx.get_type(2, 3) != mtx_type::element_empty);
+    }
+
+    {
+        // set whole row empty.
+        mtx_type mtx(3, 5, 1.2);
+        mtx.set_row_empty(1);
+        assert(mtx.get_type(0, 0) != mtx_type::element_empty);
+        assert(mtx.get_type(0, 1) != mtx_type::element_empty);
+        assert(mtx.get_type(0, 2) != mtx_type::element_empty);
+        assert(mtx.get_type(0, 3) != mtx_type::element_empty);
+        assert(mtx.get_type(0, 4) != mtx_type::element_empty);
+        assert(mtx.get_type(1, 0) == mtx_type::element_empty);
+        assert(mtx.get_type(1, 1) == mtx_type::element_empty);
+        assert(mtx.get_type(1, 2) == mtx_type::element_empty);
+        assert(mtx.get_type(1, 3) == mtx_type::element_empty);
+        assert(mtx.get_type(1, 4) == mtx_type::element_empty);
+        assert(mtx.get_type(2, 0) != mtx_type::element_empty);
+        assert(mtx.get_type(2, 1) != mtx_type::element_empty);
+        assert(mtx.get_type(2, 2) != mtx_type::element_empty);
+        assert(mtx.get_type(2, 3) != mtx_type::element_empty);
+        assert(mtx.get_type(2, 4) != mtx_type::element_empty);
+    }
+}
+
 /**
  * Measure the performance of object instantiation for filled storage.
  */
@@ -236,6 +276,7 @@ int main (int argc, char **argv)
     {
         mtm_test_construction();
         mtm_test_data_insertion();
+        mtm_test_set_empty();
     }
 
     if (opt.test_perf)

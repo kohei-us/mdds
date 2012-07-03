@@ -127,6 +127,8 @@ public:
     _T get(size_type row, size_type col) const;
 
     void set_empty(size_type row, size_type col);
+    void set_column_empty(size_type col);
+    void set_row_empty(size_type row);
 
     void set(size_type row, size_type col, double val);
     void set(size_type row, size_type col, bool val);

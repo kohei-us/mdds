@@ -129,6 +129,22 @@ void multi_type_matrix<_String,_Flag>::set_empty(size_type row, size_type col)
 }
 
 template<typename _String, typename _Flag>
+void multi_type_matrix<_String,_Flag>::set_column_empty(size_type col)
+{
+    m_store.set_empty(get_pos(0, col), get_pos(m_size.row-1, col));
+}
+
+template<typename _String, typename _Flag>
+void multi_type_matrix<_String,_Flag>::set_row_empty(size_type row)
+{
+    for (size_type col = 0; col < m_size.column; ++col)
+    {
+        size_type pos = get_pos(row, col);
+        m_store.set_empty(pos, pos);
+    }
+}
+
+template<typename _String, typename _Flag>
 void multi_type_matrix<_String,_Flag>::set(size_type row, size_type col, double val)
 {
     m_store.set(get_pos(row,col), val);
