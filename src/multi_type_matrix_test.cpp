@@ -104,6 +104,46 @@ void mtm_test_data_insertion()
     }
 }
 
+void mtm_test_data_insertion_multiple()
+{
+    stack_printer __stack_printer__("::mtm_test_data_insertion_multiple");
+    {
+        mtx_type mtx(3, 5);
+
+        // data shorter than column length
+        vector<double> vals;
+        vals.push_back(1.1);
+        vals.push_back(1.2);
+        mtx.set_column(2, vals.begin(), vals.end());
+        assert(mtx.get_numeric(0, 2) == 1.1);
+        assert(mtx.get_numeric(1, 2) == 1.2);
+        assert(mtx.get_type(2, 2) == mtx_type::element_empty);
+
+        // data exatly at column length
+        vals.clear();
+        vals.push_back(2.1);
+        vals.push_back(2.2);
+        vals.push_back(2.3);
+        mtx.set_column(2, vals.begin(), vals.end());
+        assert(mtx.get_numeric(0, 2) == 2.1);
+        assert(mtx.get_numeric(1, 2) == 2.2);
+        assert(mtx.get_numeric(2, 2) == 2.3);
+        assert(mtx.get_type(0, 3) == mtx_type::element_empty);
+
+        // data longer than column length.  The excess data should be ignored.
+        vals.clear();
+        vals.push_back(3.1);
+        vals.push_back(3.2);
+        vals.push_back(3.3);
+        vals.push_back(3.4);
+        mtx.set_column(2, vals.begin(), vals.end());
+        assert(mtx.get_numeric(0, 2) == 3.1);
+        assert(mtx.get_numeric(1, 2) == 3.2);
+        assert(mtx.get_numeric(2, 2) == 3.3);
+        assert(mtx.get_type(0, 3) == mtx_type::element_empty);
+    }
+}
+
 void mtm_test_set_empty()
 {
     stack_printer __stack_printer__("::mtm_test_set_empty");
@@ -276,6 +316,7 @@ int main (int argc, char **argv)
     {
         mtm_test_construction();
         mtm_test_data_insertion();
+        mtm_test_data_insertion_multiple();
         mtm_test_set_empty();
     }
 

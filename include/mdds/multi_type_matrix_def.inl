@@ -71,13 +71,13 @@ double multi_type_matrix<_String,_Flag>::get_numeric(size_type row, size_type co
         case element_numeric:
         {
             double val;
-            return m_store.get(get_pos(row,col), val);
+            m_store.get(get_pos(row,col), val);
             return val;
         }
         case element_boolean:
         {
             bool val;
-            return m_store.get(get_pos(row,col), val);
+            m_store.get(get_pos(row,col), val);
             return val;
         }
         case element_string:
@@ -167,6 +167,24 @@ template<typename _T>
 void multi_type_matrix<_String,_Flag>::set(size_type row, size_type col, const _T& it_begin, const _T& it_end)
 {
     m_store.set(get_pos(row,col), it_begin, it_end);
+}
+
+template<typename _String, typename _Flag>
+template<typename _T>
+void multi_type_matrix<_String,_Flag>::set_column(size_type col, const _T& it_begin, const _T& it_end)
+{
+    size_type pos = get_pos(0, col);
+    size_type len = std::distance(it_begin, it_end);
+
+    if (len <= m_size.row)
+    {
+        m_store.set(pos, it_begin, it_end);
+        return;
+    }
+
+    _T it_end2 = it_begin;
+    std::advance(it_end2, m_size.row);
+    m_store.set(pos, it_begin, it_end2);
 }
 
 template<typename _String, typename _Flag>

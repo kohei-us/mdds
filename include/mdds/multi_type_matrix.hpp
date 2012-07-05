@@ -151,6 +151,20 @@ public:
     void set(size_type row, size_type col, const _T& it_begin, const _T& it_end);
 
     /**
+     * Set values of multiple elements at once in a single column.  When the
+     * length of passed elements exceeds that of the column, it gets truncated
+     * to the column size.
+     *
+     * @param col column position
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being set.
+     * @param it_end iterator that points to the end position of the values
+     *               being set.
+     */
+    template<typename _T>
+    void set_column(size_type col, const _T& it_begin, const _T& it_end);
+
+    /**
      * Set flag value at specified position.
      *
      * @param row row position
