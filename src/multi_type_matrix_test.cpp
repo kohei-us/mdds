@@ -184,6 +184,27 @@ void mtm_test_set_empty()
     }
 }
 
+void mtm_test_swap()
+{
+    stack_printer __stack_printer__("::mtm_test_swap");
+    mtx_type mtx1(3, 6), mtx2(7, 2);
+    mtx1.set(0, 0, 1.1);
+    mtx1.set(2, 5, 1.9);
+    mtx2.set(0, 0, 2.1);
+    mtx2.set(6, 1, 2.9);
+    mtx1.swap(mtx2);
+
+    assert(mtx1.size().row == 7);
+    assert(mtx1.size().column == 2);
+    assert(mtx1.get<double>(0, 0) == 2.1);
+    assert(mtx1.get<double>(6, 1) == 2.9);
+
+    assert(mtx2.size().row == 3);
+    assert(mtx2.size().column == 6);
+    assert(mtx2.get<double>(0, 0) == 1.1);
+    assert(mtx2.get<double>(2, 5) == 1.9);
+}
+
 void mtm_test_transpose()
 {
     stack_printer __stack_printer__("::mtm_test_transpose");
@@ -337,6 +358,7 @@ int main (int argc, char **argv)
         mtm_test_data_insertion();
         mtm_test_data_insertion_multiple();
         mtm_test_set_empty();
+        mtm_test_swap();
         mtm_test_transpose();
     }
 
