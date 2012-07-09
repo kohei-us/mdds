@@ -182,8 +182,8 @@ public:
     multi_type_matrix& transpose();
 
     /**
-     * Assign values from the passed matrix instance.  If the size of the
-     * passed matrix is smaller, then the element values are assigned by their
+     * Copy values from the passed matrix instance.  If the size of the passed
+     * matrix is smaller, then the element values are assigned by their
      * positions, while the rest of the elements that fall outside the size of
      * the passed matrix instance will remain unmodified.  If the size of the
      * passed matrix instance is larger, then only the elements within the
@@ -191,7 +191,7 @@ public:
      *
      * @param r passed matrix object to assign element values from.
      */
-    void assign(const multi_type_matrix& r);
+    void copy(const multi_type_matrix& r);
 
     /**
      * Resize the matrix to specified size.  This method supports resizing to
