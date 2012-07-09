@@ -189,7 +189,7 @@ public:
      * passed matrix instance is larger, then only the elements within the
      * size of this matrix instance will get assigned.
      *
-     * @param r passed matrix object to assign element values from.
+     * @param r passed matrix object to copy element values from.
      */
     void copy(const multi_type_matrix& r);
 
