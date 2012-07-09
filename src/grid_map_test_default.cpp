@@ -585,6 +585,19 @@ void gridmap_test_basic()
         assert(db.get<double>(4) == 3.0);
         assert(db.get<double>(5) == 4.0);
     }
+
+    {
+        // TODO: This currently fails.  Look into this.
+        column_type db(25);
+        db.set(0, 1.2);
+        db.set(5, string("test"));
+        db.set(1, string("foo"));
+        db.set(6, true);
+        assert(db.get<double>(0) == 1.2);
+        assert(db.get<string>(5) == "test");
+        assert(db.get<string>(1) == "foo");
+        assert(db.get<bool>(6) == true);
+    }
 }
 
 void gridmap_test_empty_cells()
