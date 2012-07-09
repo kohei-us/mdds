@@ -137,8 +137,11 @@ public:
     /**
      * Set values of multiple elements at once, starting at specified element
      * position following the direction of columns.  When the new value series
-     * does not fit in the column where the start element is, it gets wrapped
-     * into the next column.
+     * does not fit in the column of the start element, it gets wrapped into
+     * the next column(s).
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception
+     * if the specified position is outside the current container range.</p>
      *
      * @param row row position of the start element.
      * @param col column position of the start element.
