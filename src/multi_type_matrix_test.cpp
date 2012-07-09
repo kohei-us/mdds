@@ -184,6 +184,25 @@ void mtm_test_set_empty()
     }
 }
 
+void mtm_test_transpose()
+{
+    stack_printer __stack_printer__("::mtm_test_transpose");
+    mtx_type mtx(3, 6);
+    mtx.set(0, 0, 1.1);
+    mtx.set(1, 0, 1.2);
+    mtx.set(2, 0, 1.3);
+    mtx.set(1, 5, string("foo"));
+    mtx.set(2, 3, true);
+    mtx.transpose();
+    assert(mtx.size().row == 6);
+    assert(mtx.size().column == 3);
+    assert(mtx.get<double>(0, 0) == 1.1);
+    assert(mtx.get<double>(0, 1) == 1.2);
+    assert(mtx.get<double>(0, 2) == 1.3);
+    assert(mtx.get<string>(5, 1) == "foo");
+    assert(mtx.get<bool>(3, 2) == true);
+}
+
 /**
  * Measure the performance of object instantiation for filled storage.
  */
@@ -318,6 +337,7 @@ int main (int argc, char **argv)
         mtm_test_data_insertion();
         mtm_test_data_insertion_multiple();
         mtm_test_set_empty();
+        mtm_test_transpose();
     }
 
     if (opt.test_perf)

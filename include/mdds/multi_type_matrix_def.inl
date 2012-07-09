@@ -196,4 +196,56 @@ multi_type_matrix<_String>::size() const
     return m_size;
 }
 
+template<typename _String>
+multi_type_matrix<_String>&
+multi_type_matrix<_String>::transpose()
+{
+    multi_type_matrix tmp(m_size.column, m_size.row);
+    for (size_type row = 0; row < m_size.row; ++row)
+    {
+        for (size_type col = 0; col < m_size.column; ++col)
+        {
+            switch (get_type(row,col))
+            {
+                case element_numeric:
+                {
+                    double val;
+                    m_store.get(get_pos(row,col), val);
+                    tmp.set(col, row, val);
+                }
+                break;
+                case element_boolean:
+                {
+                    bool val;
+                    m_store.get(get_pos(row,col), val);
+                    tmp.set(col, row, val);
+                }
+                break;
+                case element_string:
+                {
+                    string_type val;
+                    m_store.get(get_pos(row,col), val);
+                    tmp.set(col, row, val);
+                }
+                break;
+                case element_empty:
+                break;
+                default:
+                    throw general_error("multi_type_matrix: unknown element type.");
+            }
+        }
+    }
+
+    swap(tmp);
+    return *this;
+}
+
+template<typename _String>
+void multi_type_matrix<_String>::swap(multi_type_matrix& r)
+{
+    m_store.swap(r.m_store);
+    std::swap(m_size.row, r.m_size.row);
+    std::swap(m_size.column, r.m_size.column);
+}
+
 }
