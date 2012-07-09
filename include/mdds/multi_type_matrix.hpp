@@ -33,13 +33,12 @@
 
 namespace mdds {
 
-template<typename _String, typename _Flag>
+template<typename _String>
 class multi_type_matrix
 {
 public:
     enum element_t { element_empty, element_boolean, element_string, element_numeric };
     typedef _String     string_type;
-    typedef _Flag       flag_type;
     typedef size_t      size_type;
 
     struct size_pair_type
@@ -168,27 +167,6 @@ public:
     void set_column(size_type col, const _T& it_begin, const _T& it_end);
 
     /**
-     * Set flag value at specified position.
-     *
-     * @param row row position
-     * @param col column position
-     * @param flag_type flag value
-     */
-    void set_flag(size_type row, size_type col, flag_type flag);
-
-    /**
-     * Get flag value at specified position.
-     *
-     * @param row row position
-     * @param col column position
-     *
-     * @return flag value stored at specified position
-     */
-    flag_type get_flag(size_type row, size_type col) const;
-
-    void clear_flag(size_type row, size_type col);
-
-    /**
      * Return the size of matrix as a pair.  The first value is the row size,
      * while the second value is the column size.
      *
@@ -270,12 +248,9 @@ private:
 
 private:
     typedef __mtm::trait<string_type> string_trait;
-    typedef __mtm::trait<flag_type> flag_trait;
     typedef mdds::multi_type_vector<typename string_trait::elem_block_func> store_type;
-    typedef mdds::multi_type_vector<typename flag_trait::elem_block_func> flag_store_type;
 
     store_type m_store;
-    flag_store_type m_flag_store;
     size_pair_type m_size;
 };
 

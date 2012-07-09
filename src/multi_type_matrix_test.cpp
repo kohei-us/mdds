@@ -34,7 +34,7 @@
 using namespace mdds;
 using namespace std;
 
-typedef mdds::multi_type_matrix<std::string, int> mtx_type;
+typedef mdds::multi_type_matrix<std::string> mtx_type;
 
 namespace {
 
