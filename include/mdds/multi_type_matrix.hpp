@@ -183,11 +183,11 @@ public:
 
     /**
      * Copy values from the passed matrix instance.  If the size of the passed
-     * matrix is smaller, then the element values are assigned by their
+     * matrix is smaller, then the element values are copied by their
      * positions, while the rest of the elements that fall outside the size of
      * the passed matrix instance will remain unmodified.  If the size of the
      * passed matrix instance is larger, then only the elements within the
-     * size of this matrix instance will get assigned.
+     * size of this matrix instance will get copied.
      *
      * @param r passed matrix object to copy element values from.
      */
