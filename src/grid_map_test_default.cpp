@@ -2072,6 +2072,65 @@ void gridmap_test_iterators()
     }
 }
 
+void gridmap_test_data_iterators()
+{
+    stack_printer __stack_printer__("::gridmap_test_data_iterators");
+
+    column_type db(10);
+    db.set(0, 1.1);
+    db.set(1, 1.2);
+    db.set(2, 1.3);
+    db.set(4, string("A"));
+    db.set(5, string("B"));
+    db.set(6, string("C"));
+    db.set(7, string("D"));
+    column_type::const_iterator it_blk = db.begin(), it_blk_end = db.end();
+
+    // First block is a numeric block.
+    assert(it_blk != it_blk_end);
+    assert(it_blk->type == mdds::mtv::element_type_numeric);
+    assert(it_blk->size == 3);
+    assert(it_blk->data);
+    {
+        mtv::numeric_cell_block::const_iterator it_data = mtv::numeric_cell_block::begin(*it_blk->data);
+        mtv::numeric_cell_block::const_iterator it_data_end = mtv::numeric_cell_block::end(*it_blk->data);
+        assert(it_data != it_data_end);
+        assert(*it_data == 1.1);
+        ++it_data;
+        assert(*it_data == 1.2);
+        ++it_data;
+        assert(*it_data == 1.3);
+        ++it_data;
+        assert(it_data == it_data_end);
+    }
+
+    // Next block is empty.
+    ++it_blk;
+    assert(it_blk->type == mdds::mtv::element_type_empty);
+    assert(it_blk->size == 1);
+    assert(it_blk->data == NULL);
+
+    // Next block is a string block.
+    ++it_blk;
+    assert(it_blk->type == mdds::mtv::element_type_string);
+    assert(it_blk->size == 4);
+    assert(it_blk->data);
+    {
+        mtv::string_cell_block::const_reverse_iterator it_data = mtv::string_cell_block::rbegin(*it_blk->data);
+        mtv::string_cell_block::const_reverse_iterator it_data_end = mtv::string_cell_block::rend(*it_blk->data);
+        assert(it_data != it_data_end);
+        assert(*it_data == "D");
+        ++it_data;
+        assert(*it_data == "C");
+        ++it_data;
+        assert(*it_data == "B");
+        ++it_data;
+        assert(*it_data == "A");
+        ++it_data;
+        assert(it_data == it_data_end);
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -2094,6 +2153,7 @@ int main (int argc, char **argv)
         gridmap_test_set_cells();
         gridmap_test_insert_cells();
         gridmap_test_iterators();
+        gridmap_test_data_iterators();
     }
 
     if (opt.test_perf)

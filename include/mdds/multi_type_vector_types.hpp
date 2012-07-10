@@ -86,6 +86,9 @@ protected:
     element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val) {}
 
 public:
+    typedef typename store_type::const_iterator const_iterator;
+    typedef typename store_type::const_reverse_iterator const_reverse_iterator;
+
     bool operator== (const _Self& r) const
     {
         return m_array == r.m_array;
@@ -94,6 +97,26 @@ public:
     bool operator!= (const _Self& r) const
     {
         return !operator==(r);
+    }
+
+    static const_iterator begin(const base_element_block& block)
+    {
+        return get(block).m_array.begin();
+    }
+
+    static const_iterator end(const base_element_block& block)
+    {
+        return get(block).m_array.end();
+    }
+
+    static const_reverse_iterator rbegin(const base_element_block& block)
+    {
+        return get(block).m_array.rbegin();
+    }
+
+    static const_reverse_iterator rend(const base_element_block& block)
+    {
+        return get(block).m_array.rend();
     }
 
     static _Self& get(base_element_block& block)
