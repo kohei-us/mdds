@@ -271,6 +271,60 @@ void mtm_test_transpose()
     assert(mtx.get<bool>(3, 2) == true);
 }
 
+void mtm_test_resize()
+{
+    stack_printer __stack_printer__("::mtm_test_resize");
+    mtx_type mtx(0, 0);
+    assert(mtx.size().row == 0);
+    assert(mtx.size().column == 0);
+
+    mtx.resize(1, 3);
+    assert(mtx.size().row == 1);
+    assert(mtx.size().column == 3);
+    assert(mtx.get_type(0, 0) == mtx_type::element_empty);
+    assert(mtx.get_type(0, 1) == mtx_type::element_empty);
+    assert(mtx.get_type(0, 2) == mtx_type::element_empty);
+
+    mtx.set(0, 0, 1.1);
+    mtx.set(0, 1, string("foo"));
+    mtx.set(0, 2, true);
+    assert(mtx.get<double>(0, 0) == 1.1);
+    assert(mtx.get<string>(0, 1) == "foo");
+    assert(mtx.get<bool>(0, 2) == true);
+
+    // This shouldn't alter the original content.
+    mtx.resize(2, 4);
+    assert(mtx.size().row == 2);
+    assert(mtx.size().column == 4);
+    assert(mtx.get<double>(0, 0) == 1.1);
+    assert(mtx.get<string>(0, 1) == "foo");
+    assert(mtx.get<bool>(0, 2) == true);
+    assert(mtx.get_type(1, 3) == mtx_type::element_empty);
+
+    mtx.resize(2, 2);
+    assert(mtx.size().row == 2);
+    assert(mtx.size().column == 2);
+    assert(mtx.get<double>(0, 0) == 1.1);
+    assert(mtx.get<string>(0, 1) == "foo");
+    assert(mtx.get_type(1, 0) == mtx_type::element_empty);
+    assert(mtx.get_type(1, 1) == mtx_type::element_empty);
+
+    // Three ways to resize to empty matrix.
+    mtx.resize(2, 0);
+    assert(mtx.size().row == 0);
+    assert(mtx.size().column == 0);
+
+    mtx.resize(2, 2);
+    mtx.resize(0, 2);
+    assert(mtx.size().row == 0);
+    assert(mtx.size().column == 0);
+
+    mtx.resize(2, 2);
+    mtx.resize(0, 0);
+    assert(mtx.size().row == 0);
+    assert(mtx.size().column == 0);
+}
+
 void mtm_test_copy()
 {
     stack_printer __stack_printer__("::mtm_test_copy");
@@ -447,6 +501,7 @@ int main (int argc, char **argv)
         mtm_test_set_empty();
         mtm_test_swap();
         mtm_test_transpose();
+        mtm_test_resize();
         mtm_test_copy();
     }
 
