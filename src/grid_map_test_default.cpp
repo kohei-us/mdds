@@ -587,7 +587,6 @@ void gridmap_test_basic()
     }
 
     {
-        // TODO: This currently fails.  Look into this.
         column_type db(25);
         db.set(0, 1.2);
         db.set(5, string("test"));

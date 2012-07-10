@@ -600,8 +600,12 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
             }
             else
             {
+                // Replace the current empty block of size > 1 with a
+                // non-empty block of size 1, and insert a new empty block
+                // below whose size is one shorter than the current empty
+                // block.
                 create_new_block_with_new_cell(blk->mp_data, cell);
-                m_blocks.push_back(new block(blk->m_size-1));
+                m_blocks.insert(m_blocks.begin()+block_index+1, new block(blk->m_size-1));
                 blk->m_size = 1;
             }
         }
