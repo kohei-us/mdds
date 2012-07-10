@@ -210,7 +210,7 @@ public:
 
     /**
      * Check whether or not this matrix is numeric.  A numeric matrix contains
-     * only numeric or boolean elements.
+     * only numeric or boolean elements.  An empty matrix is not numeric.
      *
      * @return true if the matrix contains only numeric or boolean elements,
      *         or false otherwise.

@@ -373,6 +373,32 @@ void mtm_test_copy()
     assert(success);
 }
 
+void mtm_test_numeric()
+{
+    // Numeric elements only matrix is numeric.
+    mtx_type mtx(2, 2, 1.1);
+    assert(mtx.numeric());
+
+    // Boolean element is numeric.
+    mtx.set(0, 0, true);
+    assert(mtx.numeric());
+
+    // String element is not.
+    mtx.set(1, 0, string("foo"));
+    assert(!mtx.numeric());
+
+    mtx.set(1, 0, 1.3);
+    assert(mtx.numeric());
+
+    // Empty element is not numeric.
+    mtx.set_empty(1, 1);
+    assert(!mtx.numeric());
+
+    // Empty matrix is not numeric.
+    mtx.clear();
+    assert(!mtx.numeric());
+}
+
 /**
  * Measure the performance of object instantiation for filled storage.
  */
@@ -511,6 +537,7 @@ int main (int argc, char **argv)
         mtm_test_transpose();
         mtm_test_resize();
         mtm_test_copy();
+        mtm_test_numeric();
     }
 
     if (opt.test_perf)

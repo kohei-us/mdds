@@ -327,6 +327,35 @@ void multi_type_matrix<_String>::clear()
 }
 
 template<typename _String>
+bool multi_type_matrix<_String>::numeric() const
+{
+    if (m_store.empty())
+        return false;
+
+    typename store_type::const_iterator i = m_store.begin(), iend = m_store.end();
+    for (; i != iend; ++i)
+    {
+        mtv::element_t mtv_type = i->type;
+        switch (mtv_type)
+        {
+            case mtv::element_type_numeric:
+            case mtv::element_type_boolean:
+                // These are numeric types.
+                continue;
+            case mtv::element_type_string:
+            case __mtm::element_type_mtx_custom:
+            case mtv::element_type_empty:
+                // These are not.
+                return false;
+            default:
+                throw general_error("multi_type_matrix: unknown element type.");
+        }
+    }
+
+    return true;
+}
+
+template<typename _String>
 bool multi_type_matrix<_String>::empty() const
 {
     return m_store.empty();
