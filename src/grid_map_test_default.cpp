@@ -2129,6 +2129,15 @@ void gridmap_test_data_iterators()
         ++it_data;
         assert(it_data == it_data_end);
     }
+
+    // Another empty block follows.
+    ++it_blk;
+    assert(it_blk->type == mdds::mtv::element_type_empty);
+    assert(it_blk->size == 2);
+    assert(it_blk->data == NULL);
+
+    ++it_blk;
+    assert(it_blk == it_blk_end);
 }
 
 }
