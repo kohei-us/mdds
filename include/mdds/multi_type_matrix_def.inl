@@ -319,6 +319,20 @@ void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
 }
 
 template<typename _String>
+void multi_type_matrix<_String>::clear()
+{
+    m_store.clear();
+    m_size.row = 0;
+    m_size.column = 0;
+}
+
+template<typename _String>
+bool multi_type_matrix<_String>::empty() const
+{
+    return m_store.empty();
+}
+
+template<typename _String>
 void multi_type_matrix<_String>::swap(multi_type_matrix& r)
 {
     m_store.swap(r.m_store);

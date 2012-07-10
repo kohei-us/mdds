@@ -132,6 +132,7 @@ void mtm_test_data_insertion()
         mtx_type mtx(3, 4);
         mtx_type::size_pair_type sz = mtx.size();
         assert(sz.row == 3 && sz.column == 4);
+        assert(!mtx.empty());
         assert(mtx.get_type(0,0) == mtx_type::element_empty);
         assert(mtx.get_type(2,3) == mtx_type::element_empty);
         check_value(mtx, 1, 1, 1.2);
@@ -148,6 +149,11 @@ void mtm_test_data_insertion()
         assert(mtx.get_type(1,1) == mtx_type::element_string);
         mtx.set_empty(1, 1);
         assert(mtx.get_type(1,1) == mtx_type::element_empty);
+
+        mtx.clear();
+        assert(mtx.size().row == 0);
+        assert(mtx.size().column == 0);
+        assert(mtx.empty());
     }
 }
 
@@ -277,10 +283,12 @@ void mtm_test_resize()
     mtx_type mtx(0, 0);
     assert(mtx.size().row == 0);
     assert(mtx.size().column == 0);
+    assert(mtx.empty());
 
     mtx.resize(1, 3);
     assert(mtx.size().row == 1);
     assert(mtx.size().column == 3);
+    assert(!mtx.empty());
     assert(mtx.get_type(0, 0) == mtx_type::element_empty);
     assert(mtx.get_type(0, 1) == mtx_type::element_empty);
     assert(mtx.get_type(0, 2) == mtx_type::element_empty);
