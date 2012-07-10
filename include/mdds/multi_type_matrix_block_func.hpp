@@ -262,6 +262,14 @@ struct trait
     };
 };
 
+template<>
+struct trait<std::string>
+{
+    typedef std::string string_type;
+    typedef mdds::mtv::string_cell_block string_elem_block;
+    typedef mdds::mtv::cell_block_func elem_block_func;
+};
+
 }}
 
 #endif

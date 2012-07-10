@@ -94,6 +94,10 @@ private:
 public:
     typedef typename store_type::element_block_type element_block_type;
 
+    typedef typename mtv::boolean_cell_block boolean_block_type;
+    typedef typename mtv::numeric_cell_block numeric_block_type;
+    typedef typename string_trait::string_elem_block string_block_type;
+
     struct size_pair_type
     {
         size_type row;

@@ -399,19 +399,56 @@ void mtm_test_numeric()
     assert(!mtx.numeric());
 }
 
+template<typename _T>
+struct print_element : std::unary_function<_T, void>
+{
+    void operator() (const _T& v) const
+    {
+        cout << v << endl;
+    }
+};
+
 class walk_element_block : std::unary_function<mtx_type::element_block_node_type, void>
 {
 public:
     void operator() (const mtx_type::element_block_node_type& node)
     {
-        cout << "block type: " << node.type << "  size: " << node.size << endl;
+        switch (node.type)
+        {
+            case mtm::element_boolean:
+            {
+                mtx_type::boolean_block_type::const_iterator it = mtx_type::boolean_block_type::begin(*node.data);
+                mtx_type::boolean_block_type::const_iterator it_end = mtx_type::boolean_block_type::end(*node.data);
+                std::for_each(it, it_end, print_element<bool>());
+            }
+            break;
+            case mtm::element_string:
+            {
+                mtx_type::string_block_type::const_iterator it = mtx_type::string_block_type::begin(*node.data);
+                mtx_type::string_block_type::const_iterator it_end = mtx_type::string_block_type::end(*node.data);
+                std::for_each(it, it_end, print_element<mtx_type::string_type>());
+            }
+            break;
+            case mtm::element_numeric:
+            {
+                mtx_type::numeric_block_type::const_iterator it = mtx_type::numeric_block_type::begin(*node.data);
+                mtx_type::numeric_block_type::const_iterator it_end = mtx_type::numeric_block_type::end(*node.data);
+                std::for_each(it, it_end, print_element<double>());
+            }
+            break;
+            case mtm::element_empty:
+                cout << "- empty block -" << endl;
+            break;
+            default:
+                ;
+        }
     }
 };
 
 void mtm_test_walk()
 {
     stack_printer __stack_printer__("::mtm_test_walk");
-    mtx_type mtx(10, 1); // single column matrix to make it easier.
+    mtx_type mtx(12, 1); // single column matrix to make it easier.
     mtx.set(2, 0, 1.1);
     mtx.set(3, 0, 1.2);
     mtx.set(4, 0, 1.3);
@@ -419,6 +456,8 @@ void mtm_test_walk()
     mtx.set(7, 0, string("A"));
     mtx.set(8, 0, string("B"));
     mtx.set(9, 0, string("C"));
+    mtx.set(10, 0, false);
+    mtx.set(11, 0, true);
     walk_element_block func;
     mtx.walk(func);
 }
