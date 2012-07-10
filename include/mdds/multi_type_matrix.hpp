@@ -33,11 +33,19 @@
 
 namespace mdds {
 
+namespace mtm {
+
+/**
+ * Element type for multi_type_matrix.
+ */
+enum element_t { element_empty, element_boolean, element_string, element_numeric };
+
+}
+
 template<typename _String>
 class multi_type_matrix
 {
 public:
-    enum element_t { element_empty, element_boolean, element_string, element_numeric };
     typedef _String     string_type;
     typedef size_t      size_type;
 
@@ -73,7 +81,7 @@ public:
      *
      * @return element type.
      */
-    element_t get_type(size_type row, size_type col) const;
+    mtm::element_t get_type(size_type row, size_type col) const;
 
     /**
      * Get a numeric representation of the element.  If the element is of

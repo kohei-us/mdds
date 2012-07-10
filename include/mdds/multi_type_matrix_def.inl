@@ -43,21 +43,21 @@ multi_type_matrix<_String>::multi_type_matrix(size_type rows, size_type cols, co
     m_store(rows*cols, value), m_size(rows, cols) {}
 
 template<typename _String>
-typename multi_type_matrix<_String>::element_t
+mtm::element_t
 multi_type_matrix<_String>::get_type(size_type row, size_type col) const
 {
     mtv::element_t mtv_type = m_store.get_type(get_pos(row,col));
     switch (mtv_type)
     {
         case mtv::element_type_numeric:
-            return element_numeric;
+            return mtm::element_numeric;
         case mtv::element_type_string:
         case __mtm::element_type_mtx_custom:
-            return element_string;
+            return mtm::element_string;
         case mtv::element_type_boolean:
-            return element_boolean;
+            return mtm::element_boolean;
         case mtv::element_type_empty:
-            return element_empty;
+            return mtm::element_empty;
         default:
             throw general_error("multi_type_matrix: unknown element type.");
     }
@@ -68,20 +68,20 @@ double multi_type_matrix<_String>::get_numeric(size_type row, size_type col) con
 {
     switch (get_type(row,col))
     {
-        case element_numeric:
+        case mtm::element_numeric:
         {
             double val;
             m_store.get(get_pos(row,col), val);
             return val;
         }
-        case element_boolean:
+        case mtm::element_boolean:
         {
             bool val;
             m_store.get(get_pos(row,col), val);
             return val;
         }
-        case element_string:
-        case element_empty:
+        case mtm::element_string:
+        case mtm::element_empty:
             return 0.0;
         default:
             throw general_error("multi_type_matrix: unknown element type.");
@@ -100,15 +100,15 @@ multi_type_matrix<_String>::get_string(size_type row, size_type col) const
 {
     switch (get_type(row,col))
     {
-        case element_string:
+        case mtm::element_string:
         {
             string_type val;
             m_store.get(get_pos(row,col), val);
             return val;
         }
-        case element_numeric:
-        case element_boolean:
-        case element_empty:
+        case mtm::element_numeric:
+        case mtm::element_boolean:
+        case mtm::element_empty:
         default:
             throw general_error("multi_type_matrix: unknown element type.");
     }
@@ -207,28 +207,28 @@ multi_type_matrix<_String>::transpose()
         {
             switch (get_type(row,col))
             {
-                case element_numeric:
+                case mtm::element_numeric:
                 {
                     double val;
                     m_store.get(get_pos(row,col), val);
                     tmp.set(col, row, val);
                 }
                 break;
-                case element_boolean:
+                case mtm::element_boolean:
                 {
                     bool val;
                     m_store.get(get_pos(row,col), val);
                     tmp.set(col, row, val);
                 }
                 break;
-                case element_string:
+                case mtm::element_string:
                 {
                     string_type val;
                     m_store.get(get_pos(row,col), val);
                     tmp.set(col, row, val);
                 }
                 break;
-                case element_empty:
+                case mtm::element_empty:
                 break;
                 default:
                     throw general_error("multi_type_matrix: unknown element type.");
@@ -256,16 +256,16 @@ void multi_type_matrix<_String>::copy(const multi_type_matrix& r)
         {
             switch (r.get_type(row, col))
             {
-                case element_numeric:
+                case mtm::element_numeric:
                     m_store.set(get_pos(row,col), r.get<double>(row,col));
                 break;
-                case element_boolean:
+                case mtm::element_boolean:
                     m_store.set(get_pos(row,col), r.get<bool>(row,col));
                 break;
-                case element_string:
+                case mtm::element_string:
                     m_store.set(get_pos(row,col), r.get<string_type>(row,col));
                 break;
-                case element_empty:
+                case mtm::element_empty:
                     m_store.set_empty(get_pos(row,col), get_pos(row,col));
                 break;
                 default:
@@ -295,16 +295,16 @@ void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
         {
             switch (get_type(r, c))
             {
-                case element_numeric:
+                case mtm::element_numeric:
                     temp_store.set(rows*c+r, get<double>(r,c));
                 break;
-                case element_boolean:
+                case mtm::element_boolean:
                     temp_store.set(rows*c+r, get<bool>(r,c));
                 break;
-                case element_string:
+                case mtm::element_string:
                     temp_store.set(rows*c+r, get<string_type>(r,c));
                 break;
-                case element_empty:
+                case mtm::element_empty:
                     // Do nothing since the temp store has been initialized with empty elements.
                 break;
                 default:

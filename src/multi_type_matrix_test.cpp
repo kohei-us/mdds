@@ -54,7 +54,7 @@ bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
     {
         for (size_t j = 0; j < col_count; ++j)
         {
-            mtx_type::element_t elem_type = mx1.get_type(i, j);
+            mtm::element_t elem_type = mx1.get_type(i, j);
             if (elem_type != mx2.get_type(i, j))
             {
                 cout << "check_copy: (row=" << i << ",column=" << j << ") element types differ." << endl;
@@ -63,28 +63,28 @@ bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
 
             switch (elem_type)
             {
-                case mtx_type::element_boolean:
+                case mtm::element_boolean:
                     if (mx1.get<bool>(i, j) != mx2.get<bool>(i, j))
                     {
                         cout << "check_copy: (row=" << i << ",column=" << j << ") different boolean values." << endl;
                         return false;
                     }
                 break;
-                case mtx_type::element_numeric:
+                case mtm::element_numeric:
                     if (mx1.get<double>(i, j) != mx2.get<double>(i, j))
                     {
                         cout << "check_copy: (row=" << i << ",column=" << j << ") different numeric values." << endl;
                         return false;
                     }
                 break;
-                case mtx_type::element_string:
+                case mtm::element_string:
                     if (mx1.get<mtx_type::string_type>(i, j) != mx2.get<mtx_type::string_type>(i, j))
                     {
                         cout << "check_copy: (row=" << i << ",column=" << j << ") different string values." << endl;
                         return false;
                     }
                 break;
-                case mtx_type::element_empty:
+                case mtm::element_empty:
                 default:
                     ;
             }
@@ -117,9 +117,9 @@ void mtm_test_construction()
         mtx_type mtx(2, 5, string("foo"));
         mtx_type::size_pair_type sz = mtx.size();
         assert(sz.row == 2 && sz.column == 5);
-        assert(mtx.get_type(0,0) == mtx_type::element_string);
+        assert(mtx.get_type(0,0) == mtm::element_string);
         assert(mtx.get_string(0,0) == "foo");
-        assert(mtx.get_type(1,4) == mtx_type::element_string);
+        assert(mtx.get_type(1,4) == mtm::element_string);
         assert(mtx.get_string(1,4) == "foo");
     }
 }
@@ -133,8 +133,8 @@ void mtm_test_data_insertion()
         mtx_type::size_pair_type sz = mtx.size();
         assert(sz.row == 3 && sz.column == 4);
         assert(!mtx.empty());
-        assert(mtx.get_type(0,0) == mtx_type::element_empty);
-        assert(mtx.get_type(2,3) == mtx_type::element_empty);
+        assert(mtx.get_type(0,0) == mtm::element_empty);
+        assert(mtx.get_type(2,3) == mtm::element_empty);
         check_value(mtx, 1, 1, 1.2);
         check_value(mtx, 2, 1, true);
         check_value(mtx, 3, 1, false);
@@ -142,13 +142,13 @@ void mtm_test_data_insertion()
         check_value(mtx, 1, 2, 23.4);
 
         // Overwrite
-        assert(mtx.get_type(1,1) == mtx_type::element_numeric);
+        assert(mtx.get_type(1,1) == mtm::element_numeric);
         check_value(mtx, 1, 1, string("baa"));
 
         // Setting empty.
-        assert(mtx.get_type(1,1) == mtx_type::element_string);
+        assert(mtx.get_type(1,1) == mtm::element_string);
         mtx.set_empty(1, 1);
-        assert(mtx.get_type(1,1) == mtx_type::element_empty);
+        assert(mtx.get_type(1,1) == mtm::element_empty);
 
         mtx.clear();
         assert(mtx.size().row == 0);
@@ -170,7 +170,7 @@ void mtm_test_data_insertion_multiple()
         mtx.set_column(2, vals.begin(), vals.end());
         assert(mtx.get_numeric(0, 2) == 1.1);
         assert(mtx.get_numeric(1, 2) == 1.2);
-        assert(mtx.get_type(2, 2) == mtx_type::element_empty);
+        assert(mtx.get_type(2, 2) == mtm::element_empty);
 
         // data exatly at column length
         vals.clear();
@@ -181,7 +181,7 @@ void mtm_test_data_insertion_multiple()
         assert(mtx.get_numeric(0, 2) == 2.1);
         assert(mtx.get_numeric(1, 2) == 2.2);
         assert(mtx.get_numeric(2, 2) == 2.3);
-        assert(mtx.get_type(0, 3) == mtx_type::element_empty);
+        assert(mtx.get_type(0, 3) == mtm::element_empty);
 
         // data longer than column length.  The excess data should be ignored.
         vals.clear();
@@ -193,7 +193,7 @@ void mtm_test_data_insertion_multiple()
         assert(mtx.get_numeric(0, 2) == 3.1);
         assert(mtx.get_numeric(1, 2) == 3.2);
         assert(mtx.get_numeric(2, 2) == 3.3);
-        assert(mtx.get_type(0, 3) == mtx_type::element_empty);
+        assert(mtx.get_type(0, 3) == mtm::element_empty);
     }
 }
 
@@ -204,36 +204,36 @@ void mtm_test_set_empty()
         // set whole column empty.
         mtx_type mtx(3, 5, 1.2);
         mtx.set_column_empty(2);
-        assert(mtx.get_type(0, 1) != mtx_type::element_empty);
-        assert(mtx.get_type(1, 1) != mtx_type::element_empty);
-        assert(mtx.get_type(2, 1) != mtx_type::element_empty);
-        assert(mtx.get_type(0, 2) == mtx_type::element_empty);
-        assert(mtx.get_type(1, 2) == mtx_type::element_empty);
-        assert(mtx.get_type(2, 2) == mtx_type::element_empty);
-        assert(mtx.get_type(0, 3) != mtx_type::element_empty);
-        assert(mtx.get_type(1, 3) != mtx_type::element_empty);
-        assert(mtx.get_type(2, 3) != mtx_type::element_empty);
+        assert(mtx.get_type(0, 1) != mtm::element_empty);
+        assert(mtx.get_type(1, 1) != mtm::element_empty);
+        assert(mtx.get_type(2, 1) != mtm::element_empty);
+        assert(mtx.get_type(0, 2) == mtm::element_empty);
+        assert(mtx.get_type(1, 2) == mtm::element_empty);
+        assert(mtx.get_type(2, 2) == mtm::element_empty);
+        assert(mtx.get_type(0, 3) != mtm::element_empty);
+        assert(mtx.get_type(1, 3) != mtm::element_empty);
+        assert(mtx.get_type(2, 3) != mtm::element_empty);
     }
 
     {
         // set whole row empty.
         mtx_type mtx(3, 5, 1.2);
         mtx.set_row_empty(1);
-        assert(mtx.get_type(0, 0) != mtx_type::element_empty);
-        assert(mtx.get_type(0, 1) != mtx_type::element_empty);
-        assert(mtx.get_type(0, 2) != mtx_type::element_empty);
-        assert(mtx.get_type(0, 3) != mtx_type::element_empty);
-        assert(mtx.get_type(0, 4) != mtx_type::element_empty);
-        assert(mtx.get_type(1, 0) == mtx_type::element_empty);
-        assert(mtx.get_type(1, 1) == mtx_type::element_empty);
-        assert(mtx.get_type(1, 2) == mtx_type::element_empty);
-        assert(mtx.get_type(1, 3) == mtx_type::element_empty);
-        assert(mtx.get_type(1, 4) == mtx_type::element_empty);
-        assert(mtx.get_type(2, 0) != mtx_type::element_empty);
-        assert(mtx.get_type(2, 1) != mtx_type::element_empty);
-        assert(mtx.get_type(2, 2) != mtx_type::element_empty);
-        assert(mtx.get_type(2, 3) != mtx_type::element_empty);
-        assert(mtx.get_type(2, 4) != mtx_type::element_empty);
+        assert(mtx.get_type(0, 0) != mtm::element_empty);
+        assert(mtx.get_type(0, 1) != mtm::element_empty);
+        assert(mtx.get_type(0, 2) != mtm::element_empty);
+        assert(mtx.get_type(0, 3) != mtm::element_empty);
+        assert(mtx.get_type(0, 4) != mtm::element_empty);
+        assert(mtx.get_type(1, 0) == mtm::element_empty);
+        assert(mtx.get_type(1, 1) == mtm::element_empty);
+        assert(mtx.get_type(1, 2) == mtm::element_empty);
+        assert(mtx.get_type(1, 3) == mtm::element_empty);
+        assert(mtx.get_type(1, 4) == mtm::element_empty);
+        assert(mtx.get_type(2, 0) != mtm::element_empty);
+        assert(mtx.get_type(2, 1) != mtm::element_empty);
+        assert(mtx.get_type(2, 2) != mtm::element_empty);
+        assert(mtx.get_type(2, 3) != mtm::element_empty);
+        assert(mtx.get_type(2, 4) != mtm::element_empty);
     }
 }
 
@@ -289,9 +289,9 @@ void mtm_test_resize()
     assert(mtx.size().row == 1);
     assert(mtx.size().column == 3);
     assert(!mtx.empty());
-    assert(mtx.get_type(0, 0) == mtx_type::element_empty);
-    assert(mtx.get_type(0, 1) == mtx_type::element_empty);
-    assert(mtx.get_type(0, 2) == mtx_type::element_empty);
+    assert(mtx.get_type(0, 0) == mtm::element_empty);
+    assert(mtx.get_type(0, 1) == mtm::element_empty);
+    assert(mtx.get_type(0, 2) == mtm::element_empty);
 
     mtx.set(0, 0, 1.1);
     mtx.set(0, 1, string("foo"));
@@ -307,15 +307,15 @@ void mtm_test_resize()
     assert(mtx.get<double>(0, 0) == 1.1);
     assert(mtx.get<string>(0, 1) == "foo");
     assert(mtx.get<bool>(0, 2) == true);
-    assert(mtx.get_type(1, 3) == mtx_type::element_empty);
+    assert(mtx.get_type(1, 3) == mtm::element_empty);
 
     mtx.resize(2, 2);
     assert(mtx.size().row == 2);
     assert(mtx.size().column == 2);
     assert(mtx.get<double>(0, 0) == 1.1);
     assert(mtx.get<string>(0, 1) == "foo");
-    assert(mtx.get_type(1, 0) == mtx_type::element_empty);
-    assert(mtx.get_type(1, 1) == mtx_type::element_empty);
+    assert(mtx.get_type(1, 0) == mtm::element_empty);
+    assert(mtx.get_type(1, 1) == mtm::element_empty);
 
     // Three ways to resize to empty matrix.
     mtx.resize(2, 0);
