@@ -241,6 +241,84 @@ multi_type_matrix<_String>::transpose()
 }
 
 template<typename _String>
+void multi_type_matrix<_String>::copy(const multi_type_matrix& r)
+{
+    if (&r == this)
+        // Self assignment.
+        return;
+
+    size_type rows = std::min(m_size.row, r.m_size.row);
+    size_type cols = std::min(m_size.column, r.m_size.column);
+
+    for (size_type col = 0; col < cols; ++col)
+    {
+        for (size_type row = 0; row < rows; ++row)
+        {
+            switch (r.get_type(row, col))
+            {
+                case element_numeric:
+                    m_store.set(get_pos(row,col), r.get<double>(row,col));
+                break;
+                case element_boolean:
+                    m_store.set(get_pos(row,col), r.get<bool>(row,col));
+                break;
+                case element_string:
+                    m_store.set(get_pos(row,col), r.get<string_type>(row,col));
+                break;
+                case element_empty:
+                    m_store.set_empty(get_pos(row,col), get_pos(row,col));
+                break;
+                default:
+                    throw general_error("multi_type_matrix: unknown element type.");
+            }
+        }
+    }
+}
+
+template<typename _String>
+void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
+{
+    if (!rows || !cols)
+    {
+        m_size.row = 0;
+        m_size.column = 0;
+        m_store.clear();
+        return;
+    }
+
+    store_type temp_store(rows*cols);
+    size_type row_count = std::min(rows, m_size.row);
+    size_type col_count = std::min(cols, m_size.column);
+    for (size_type c = 0; c < col_count; ++c)
+    {
+        for (size_type r = 0; r < row_count; ++r)
+        {
+            switch (get_type(r, c))
+            {
+                case element_numeric:
+                    temp_store.set(rows*c+r, get<double>(r,c));
+                break;
+                case element_boolean:
+                    temp_store.set(rows*c+r, get<bool>(r,c));
+                break;
+                case element_string:
+                    temp_store.set(rows*c+r, get<string_type>(r,c));
+                break;
+                case element_empty:
+                    // Do nothing since the temp store has been initialized with empty elements.
+                break;
+                default:
+                    throw general_error("multi_type_matrix: unknown element type.");
+            }
+        }
+    }
+
+    m_size.row = rows;
+    m_size.column = cols;
+    m_store.swap(temp_store);
+}
+
+template<typename _String>
 void multi_type_matrix<_String>::swap(multi_type_matrix& r)
 {
     m_store.swap(r.m_store);

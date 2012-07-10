@@ -46,6 +46,53 @@ void check_value(mtx_type& mtx, size_t row, size_t col, const _T& val)
     assert(test == val);
 }
 
+bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
+{
+    size_t row_count = min(mx1.size().row,  mx2.size().row);
+    size_t col_count = min(mx1.size().column, mx2.size().column);
+    for (size_t i = 0; i < row_count; ++i)
+    {
+        for (size_t j = 0; j < col_count; ++j)
+        {
+            mtx_type::element_t elem_type = mx1.get_type(i, j);
+            if (elem_type != mx2.get_type(i, j))
+            {
+                cout << "check_copy: (row=" << i << ",column=" << j << ") element types differ." << endl;
+                return false;
+            }
+
+            switch (elem_type)
+            {
+                case mtx_type::element_boolean:
+                    if (mx1.get<bool>(i, j) != mx2.get<bool>(i, j))
+                    {
+                        cout << "check_copy: (row=" << i << ",column=" << j << ") different boolean values." << endl;
+                        return false;
+                    }
+                break;
+                case mtx_type::element_numeric:
+                    if (mx1.get<double>(i, j) != mx2.get<double>(i, j))
+                    {
+                        cout << "check_copy: (row=" << i << ",column=" << j << ") different numeric values." << endl;
+                        return false;
+                    }
+                break;
+                case mtx_type::element_string:
+                    if (mx1.get<mtx_type::string_type>(i, j) != mx2.get<mtx_type::string_type>(i, j))
+                    {
+                        cout << "check_copy: (row=" << i << ",column=" << j << ") different string values." << endl;
+                        return false;
+                    }
+                break;
+                case mtx_type::element_empty:
+                default:
+                    ;
+            }
+        }
+    }
+    return true;
+}
+
 }
 
 void mtm_test_construction()
@@ -224,6 +271,46 @@ void mtm_test_transpose()
     assert(mtx.get<bool>(3, 2) == true);
 }
 
+void mtm_test_copy()
+{
+    stack_printer __stack_printer__("::mtm_test_copy");
+
+    // Assigning from a smaller matrix to a bigger one.
+    mtx_type mx1(5, 5), mx2(2, 2);
+    mx2.set(0, 0, 1.2);
+    mx2.set(1, 1, true);
+    mx2.set(0, 1, string("test"));
+    mx2.set(1, 0, string("foo"));
+    mx1.copy(mx2);
+
+    bool success = check_copy(mx1, mx2);
+    assert(success);
+
+    mx2.resize(8, 8);
+    mx2.copy(mx1);
+
+    success = check_copy(mx1, mx2);
+    assert(success);
+
+    // from a larger matrix to a smaller one.
+    mx1.set(0, 0, new string("test1"));
+    mx2.set(0, 0, new string("test2"));
+    mx2.set(4, 4, true);
+    mx2.set(7, 7, false);
+    mx1.copy(mx2);
+    success = check_copy(mx1, mx2);
+    assert(success);
+
+    // self assignment (should be no-op).
+    mx1.copy(mx1);
+    success = check_copy(mx1, mx1);
+    assert(success);
+
+    mx2.copy(mx2);
+    success = check_copy(mx2, mx2);
+    assert(success);
+}
+
 /**
  * Measure the performance of object instantiation for filled storage.
  */
@@ -360,6 +447,7 @@ int main (int argc, char **argv)
         mtm_test_set_empty();
         mtm_test_swap();
         mtm_test_transpose();
+        mtm_test_copy();
     }
 
     if (opt.test_perf)

@@ -198,10 +198,10 @@ public:
      * zero-sized matrix; however, either specifying the row or column size to
      * zero will resize the matrix to 0 x 0.
      *
-     * @param row new row size
-     * @param col new column size
+     * @param rows new row size
+     * @param cols new column size
      */
-    void resize(size_type row, size_type col);
+    void resize(size_type rows, size_type cols);
 
     /**
      * Empty the matrix.
