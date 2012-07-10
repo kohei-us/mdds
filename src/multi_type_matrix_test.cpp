@@ -399,6 +399,30 @@ void mtm_test_numeric()
     assert(!mtx.numeric());
 }
 
+class walk_element_block : std::unary_function<mtx_type::element_block_node_type, void>
+{
+public:
+    void operator() (const mtx_type::element_block_node_type& node)
+    {
+        cout << "block type: " << node.type << "  size: " << node.size << endl;
+    }
+};
+
+void mtm_test_walk()
+{
+    stack_printer __stack_printer__("::mtm_test_walk");
+    mtx_type mtx(10, 1); // single column matrix to make it easier.
+    mtx.set(2, 0, 1.1);
+    mtx.set(3, 0, 1.2);
+    mtx.set(4, 0, 1.3);
+    mtx.set(5, 0, 1.4);
+    mtx.set(7, 0, string("A"));
+    mtx.set(8, 0, string("B"));
+    mtx.set(9, 0, string("C"));
+    walk_element_block func;
+    mtx.walk(func);
+}
+
 /**
  * Measure the performance of object instantiation for filled storage.
  */
@@ -538,6 +562,7 @@ int main (int argc, char **argv)
         mtm_test_resize();
         mtm_test_copy();
         mtm_test_numeric();
+        mtm_test_walk();
     }
 
     if (opt.test_perf)
