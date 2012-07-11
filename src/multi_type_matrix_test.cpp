@@ -131,11 +131,11 @@ mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const custo
 struct custom_string_trait
 {
     typedef custom_string string_type;
-    typedef custom_string_block string_elem_block;
+    typedef custom_string_block string_element_block;
 
     static const mdds::mtv::element_t string_type_identifier = element_type_custom_string;
 
-    struct elem_block_func
+    struct element_block_func
     {
         static mdds::mtv::base_element_block* create_new_block(
             mdds::mtv::element_t type, size_t init_size)
@@ -143,7 +143,7 @@ struct custom_string_trait
             switch (type)
             {
                 case element_type_custom_string:
-                    return string_elem_block::create_block(init_size);
+                    return string_element_block::create_block(init_size);
                 default:
                     return mdds::mtv::element_block_func::create_new_block(type, init_size);
             }
@@ -154,7 +154,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(block))
             {
                 case element_type_custom_string:
-                    return string_elem_block::clone_block(block);
+                    return string_element_block::clone_block(block);
                 default:
                     return mdds::mtv::element_block_func::clone_block(block);
             }
@@ -168,7 +168,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(*p))
             {
                 case element_type_custom_string:
-                    string_elem_block::delete_block(p);
+                    string_element_block::delete_block(p);
                 break;
                 default:
                     mdds::mtv::element_block_func::delete_block(p);
@@ -180,7 +180,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(block))
             {
                 case element_type_custom_string:
-                    string_elem_block::resize_block(block, new_size);
+                    string_element_block::resize_block(block, new_size);
                 break;
                 default:
                     mdds::mtv::element_block_func::resize_block(block, new_size);
@@ -192,7 +192,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(block))
             {
                 case element_type_custom_string:
-                    string_elem_block::print_block(block);
+                    string_element_block::print_block(block);
                 break;
                 default:
                     mdds::mtv::element_block_func::print_block(block);
@@ -204,7 +204,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(block))
             {
                 case element_type_custom_string:
-                    string_elem_block::erase_block(block, pos);
+                    string_element_block::erase_block(block, pos);
                 break;
                 default:
                     mdds::mtv::element_block_func::erase(block, pos);
@@ -216,7 +216,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(block))
             {
                 case element_type_custom_string:
-                    string_elem_block::erase_block(block, pos, size);
+                    string_element_block::erase_block(block, pos, size);
                 break;
                 default:
                     mdds::mtv::element_block_func::erase(block, pos, size);
@@ -229,7 +229,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(dest))
             {
                 case element_type_custom_string:
-                    string_elem_block::append_values_from_block(dest, src);
+                    string_element_block::append_values_from_block(dest, src);
                 break;
                 default:
                     mdds::mtv::element_block_func::append_values_from_block(dest, src);
@@ -243,7 +243,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(dest))
             {
                 case element_type_custom_string:
-                    string_elem_block::append_values_from_block(dest, src, begin_pos, len);
+                    string_element_block::append_values_from_block(dest, src, begin_pos, len);
                 break;
                 default:
                     mdds::mtv::element_block_func::append_values_from_block(dest, src, begin_pos, len);
@@ -257,7 +257,7 @@ struct custom_string_trait
             switch (mtv::get_block_type(dest))
             {
                 case element_type_custom_string:
-                    string_elem_block::assign_values_from_block(dest, src, begin_pos, len);
+                    string_element_block::assign_values_from_block(dest, src, begin_pos, len);
                 break;
                 default:
                     mdds::mtv::element_block_func::assign_values_from_block(dest, src, begin_pos, len);
@@ -272,7 +272,7 @@ struct custom_string_trait
                 if (mtv::get_block_type(right) != element_type_custom_string)
                     return false;
 
-                return string_elem_block::get(left) == string_elem_block::get(right);
+                return string_element_block::get(left) == string_element_block::get(right);
             }
             else if (mtv::get_block_type(right) == element_type_custom_string)
                 return false;
