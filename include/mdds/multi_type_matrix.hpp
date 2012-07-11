@@ -29,7 +29,8 @@
 #define __MDDS_MULTI_TYPE_MATRIX_HPP__
 
 #include "multi_type_vector.hpp"
-#include "multi_type_matrix_block_func.hpp"
+#include "multi_type_vector_types.hpp"
+#include "multi_type_vector_trait.hpp"
 
 namespace mdds {
 
@@ -40,55 +41,26 @@ namespace mtm {
  */
 enum element_t { element_empty, element_boolean, element_string, element_numeric };
 
-}
-
-namespace __mtm {
-
-inline mdds::mtm::element_t to_mtm_type(mdds::mtv::element_t mtv_type)
+struct std_string_trait
 {
-    switch (mtv_type)
-    {
-        case mdds::mtv::element_type_numeric:
-            return mdds::mtm::element_numeric;
-        case mdds::mtv::element_type_string:
-        case mdds::__mtm::element_type_custom_string:
-            return mdds::mtm::element_string;
-        case mdds::mtv::element_type_boolean:
-            return mdds::mtm::element_boolean;
-        case mdds::mtv::element_type_empty:
-            return mdds::mtm::element_empty;
-        default:
-            throw general_error("multi_type_matrix: unknown element type.");
-    }
-}
+    typedef std::string string_type;
+    typedef mdds::mtv::string_cell_block string_elem_block;
+    typedef mdds::mtv::cell_block_func elem_block_func;
 
-template<typename _MtvNode, typename _MtmNode, typename _Func>
-struct walk_func : std::unary_function<_MtvNode, void>
-{
-    _Func& m_func;
-    walk_func(_Func& func) : m_func(func) {}
-
-    void operator() (const _MtvNode& mtv_node)
-    {
-        _MtmNode mtm_node;
-        mtm_node.type = to_mtm_type(mtv_node.type);
-        mtm_node.size = mtv_node.size;
-        mtm_node.data = mtv_node.data;
-        m_func(mtm_node);
-    }
+    static const mdds::mtv::element_t string_type_identifier = mdds::mtv::element_type_string;
 };
 
 }
 
-template<typename _String>
+template<typename _StringTrait>
 class multi_type_matrix
 {
+    typedef _StringTrait string_trait;
 public:
-    typedef _String     string_type;
+    typedef typename string_trait::string_type string_type;
     typedef size_t      size_type;
 
 private:
-    typedef __mtm::trait<string_type> string_trait;
     typedef mdds::multi_type_vector<typename string_trait::elem_block_func> store_type;
 
 public:
@@ -115,6 +87,40 @@ public:
         element_block_node_type() : type(mtm::element_empty), size(0), data(NULL) {}
         element_block_node_type(const element_block_node_type& other) :
             type(other.type), size(other.size), data(other.data) {}
+    };
+
+    static mtm::element_t to_mtm_type(mdds::mtv::element_t mtv_type)
+    {
+        switch (mtv_type)
+        {
+            case mdds::mtv::element_type_numeric:
+                return mdds::mtm::element_numeric;
+            case string_trait::string_type_identifier:
+                return mdds::mtm::element_string;
+            case mdds::mtv::element_type_boolean:
+                return mdds::mtm::element_boolean;
+            case mdds::mtv::element_type_empty:
+                return mdds::mtm::element_empty;
+            default:
+                throw general_error("multi_type_matrix: unknown element type.");
+        }
+
+    }
+
+    template<typename _Func>
+    struct walk_func : std::unary_function<typename store_type::const_iterator::value_type, void>
+    {
+        _Func& m_func;
+        walk_func(_Func& func) : m_func(func) {}
+
+        void operator() (const typename store_type::const_iterator::value_type& mtv_node)
+        {
+            element_block_node_type mtm_node;
+            mtm_node.type = to_mtm_type(mtv_node.type);
+            mtm_node.size = mtv_node.size;
+            mtm_node.data = mtv_node.data;
+            m_func(mtm_node);
+        }
     };
 
     /**

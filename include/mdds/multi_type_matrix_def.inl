@@ -46,7 +46,7 @@ template<typename _String>
 mtm::element_t
 multi_type_matrix<_String>::get_type(size_type row, size_type col) const
 {
-    return __mtm::to_mtm_type(m_store.get_type(get_pos(row,col)));
+    return to_mtm_type(m_store.get_type(get_pos(row,col)));
 }
 
 template<typename _String>
@@ -328,8 +328,7 @@ bool multi_type_matrix<_String>::numeric() const
             case mtv::element_type_boolean:
                 // These are numeric types.
                 continue;
-            case mtv::element_type_string:
-            case __mtm::element_type_custom_string:
+            case string_trait::string_type_identifier:
             case mtv::element_type_empty:
                 // These are not.
                 return false;
@@ -359,7 +358,7 @@ template<typename _String>
 template<typename _Func>
 void multi_type_matrix<_String>::walk(_Func& func) const
 {
-    __mtm::walk_func<typename store_type::const_iterator::value_type, element_block_node_type, _Func> wf(func);
+    walk_func<_Func> wf(func);
     std::for_each(m_store.begin(), m_store.end(), wf);
 }
 

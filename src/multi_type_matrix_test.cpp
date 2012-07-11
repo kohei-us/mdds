@@ -30,11 +30,266 @@
 #include <mdds/multi_type_matrix.hpp>
 
 #include <string>
+#include <ostream>
 
 using namespace mdds;
 using namespace std;
 
-typedef mdds::multi_type_matrix<std::string> mtx_type;
+// Standard matrix that uses std::string as its string type.
+typedef multi_type_matrix<mtm::std_string_trait> mtx_type;
+
+// Custom string code --------------------------------------------------------
+
+class custom_string
+{
+    string m_val;
+public:
+    custom_string() {}
+    custom_string(const string& val) : m_val(val) {}
+    custom_string(const custom_string& r) : m_val(r.m_val) {}
+    const string& get() const { return m_val; }
+    bool operator== (const custom_string& r) const { return m_val == r.m_val; }
+    bool operator!= (const custom_string& r) const { return !operator==(r); }
+};
+
+ostream& operator<< (ostream& os, const custom_string& str)
+{
+    os << str.get();
+    return os;
+}
+
+const mtv::element_t element_type_custom_string = mdds::mtv::element_type_user_start;
+typedef mtv::default_element_block<element_type_custom_string, custom_string> custom_string_block;
+
+mdds::mtv::element_t mdds_mtv_get_element_type(const custom_string&)
+{
+    return element_type_custom_string;
+}
+
+void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, const custom_string& val)
+{
+    custom_string_block::set_value(block, pos, val);
+}
+
+void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, custom_string& val)
+{
+    custom_string_block::get_value(block, pos, val);
+}
+
+template<typename _Iter>
+void mdds_mtv_set_values(
+    mtv::base_element_block& block, size_t pos, const custom_string&, const _Iter& it_begin, const _Iter& it_end)
+{
+    custom_string_block::set_values(block, pos, it_begin, it_end);
+}
+
+void mdds_mtv_append_value(mtv::base_element_block& block, const custom_string& val)
+{
+    custom_string_block::append_value(block, val);
+}
+
+void mdds_mtv_prepend_value(mtv::base_element_block& block, const custom_string& val)
+{
+    custom_string_block::prepend_value(block, val);
+}
+
+template<typename _Iter>
+void mdds_mtv_prepend_values(mtv::base_element_block& block, const custom_string&, const _Iter& it_begin, const _Iter& it_end)
+{
+    custom_string_block::prepend_values(block, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_append_values(mtv::base_element_block& block, const custom_string&, const _Iter& it_begin, const _Iter& it_end)
+{
+    custom_string_block::append_values(block, it_begin, it_end);
+}
+
+template<typename _Iter>
+void mdds_mtv_assign_values(mtv::base_element_block& dest, const custom_string&, const _Iter& it_begin, const _Iter& it_end)
+{
+    custom_string_block::assign_values(dest, it_begin, it_end);
+}
+
+void mdds_mtv_get_empty_value(custom_string& val)
+{
+    val = custom_string();
+}
+
+template<typename _Iter>
+void mdds_mtv_insert_values(
+    mtv::base_element_block& block, size_t pos, const custom_string&, const _Iter& it_begin, const _Iter& it_end)
+{
+    custom_string_block::insert_values(block, pos, it_begin, it_end);
+}
+
+struct custom_string_trait
+{
+    typedef custom_string string_type;
+    typedef custom_string_block string_elem_block;
+
+    static const mdds::mtv::element_t string_type_identifier = element_type_custom_string;
+
+    struct elem_block_func
+    {
+        static mdds::mtv::base_element_block* create_new_block(
+            mdds::mtv::element_t type, size_t init_size)
+        {
+            switch (type)
+            {
+                case element_type_custom_string:
+                    return string_elem_block::create_block(init_size);
+                default:
+                    return mdds::mtv::cell_block_func_base::create_new_block(type, init_size);
+            }
+        }
+
+        static mdds::mtv::base_element_block* clone_block(const mdds::mtv::base_element_block& block)
+        {
+            switch (mtv::get_block_type(block))
+            {
+                case element_type_custom_string:
+                    return string_elem_block::clone_block(block);
+                default:
+                    return mdds::mtv::cell_block_func_base::clone_block(block);
+            }
+        }
+
+        static void delete_block(mdds::mtv::base_element_block* p)
+        {
+            if (!p)
+                return;
+
+            switch (mtv::get_block_type(*p))
+            {
+                case element_type_custom_string:
+                    string_elem_block::delete_block(p);
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::delete_block(p);
+            }
+        }
+
+        static void resize_block(mdds::mtv::base_element_block& block, size_t new_size)
+        {
+            switch (mtv::get_block_type(block))
+            {
+                case element_type_custom_string:
+                    string_elem_block::resize_block(block, new_size);
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::resize_block(block, new_size);
+            }
+        }
+
+        static void print_block(const mdds::mtv::base_element_block& block)
+        {
+            switch (mtv::get_block_type(block))
+            {
+                case element_type_custom_string:
+                    string_elem_block::print_block(block);
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::print_block(block);
+            }
+        }
+
+        static void erase(mdds::mtv::base_element_block& block, size_t pos)
+        {
+            switch (mtv::get_block_type(block))
+            {
+                case element_type_custom_string:
+                    string_elem_block::erase_block(block, pos);
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::erase(block, pos);
+            }
+        }
+
+        static void erase(mdds::mtv::base_element_block& block, size_t pos, size_t size)
+        {
+            switch (mtv::get_block_type(block))
+            {
+                case element_type_custom_string:
+                    string_elem_block::erase_block(block, pos, size);
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::erase(block, pos, size);
+            }
+        }
+
+        static void append_values_from_block(
+            mdds::mtv::base_element_block& dest, const mdds::mtv::base_element_block& src)
+        {
+            switch (mtv::get_block_type(dest))
+            {
+                case element_type_custom_string:
+                    string_elem_block::append_values_from_block(dest, src);
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::append_values_from_block(dest, src);
+            }
+        }
+
+        static void append_values_from_block(
+            mdds::mtv::base_element_block& dest, const mdds::mtv::base_element_block& src,
+            size_t begin_pos, size_t len)
+        {
+            switch (mtv::get_block_type(dest))
+            {
+                case element_type_custom_string:
+                    string_elem_block::append_values_from_block(dest, src, begin_pos, len);
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::append_values_from_block(dest, src, begin_pos, len);
+            }
+        }
+
+        static void assign_values_from_block(
+            mdds::mtv::base_element_block& dest, const mdds::mtv::base_element_block& src,
+            size_t begin_pos, size_t len)
+        {
+            switch (mtv::get_block_type(dest))
+            {
+                case element_type_custom_string:
+                    string_elem_block::assign_values_from_block(dest, src, begin_pos, len);
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
+            }
+        }
+
+        static bool equal_block(
+            const mdds::mtv::base_element_block& left, const mdds::mtv::base_element_block& right)
+        {
+            if (mtv::get_block_type(left) == element_type_custom_string)
+            {
+                if (mtv::get_block_type(right) != element_type_custom_string)
+                    return false;
+
+                return string_elem_block::get(left) == string_elem_block::get(right);
+            }
+            else if (mtv::get_block_type(right) == element_type_custom_string)
+                return false;
+
+            return mdds::mtv::cell_block_func_base::equal_block(left, right);
+        }
+
+        static void overwrite_values(mdds::mtv::base_element_block& block, size_t pos, size_t len)
+        {
+            switch (mtv::get_block_type(block))
+            {
+                case element_type_custom_string:
+                    // Do nothing.  The client code manages the life cycle of these cells.
+                break;
+                default:
+                    mdds::mtv::cell_block_func_base::overwrite_values(block, pos, len);
+            }
+        }
+    };
+};
+
+typedef mdds::multi_type_matrix<custom_string_trait> mtx_custom_type;
 
 namespace {
 
@@ -462,6 +717,13 @@ void mtm_test_walk()
     mtx.walk(func);
 }
 
+void mtm_test_custom_string()
+{
+    stack_printer __stack_printer__("::mtm_test_custom_string");
+//  mtx_custom_type mtx(2, 2);
+//  mtx.set(0, 0, custom_string_trait::string_type("foo"));
+}
+
 /**
  * Measure the performance of object instantiation for filled storage.
  */
@@ -602,6 +864,7 @@ int main (int argc, char **argv)
         mtm_test_copy();
         mtm_test_numeric();
         mtm_test_walk();
+        mtm_test_custom_string();
     }
 
     if (opt.test_perf)
