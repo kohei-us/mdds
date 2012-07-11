@@ -1986,7 +1986,9 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
     element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
     blk_lower->mp_data = element_block_func::create_new_block(blk_cat, 0);
     element_block_func::assign_values_from_block(
-        *blk_lower->mp_data, *blk->mp_data, end_row_in_block-lower_block_size+1, lower_block_size);
+        *blk_lower->mp_data, *blk->mp_data,
+        end_row_in_block-start_row_in_block-lower_block_size+1,
+        lower_block_size);
 
     // Overwrite cells that will become empty.
     size_type new_cur_size = start_row - start_row_in_block;

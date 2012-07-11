@@ -901,11 +901,17 @@ void gridmap_test_empty_cells()
 
     {
         // Set individual single elements empty.
+        cout << "Setting individual single elements empty..." << endl;
         column_type db(15, 1.2);
+        cout << "setting 1 empty..." << endl;
         db.set_empty(1, 1);
+        cout << "setting 4 empty..." << endl;
         db.set_empty(4, 4);
+        cout << "setting 7 empty..." << endl;
         db.set_empty(7, 7);
+        cout << "setting 10 empty..." << endl;
         db.set_empty(10, 10);
+        cout << "setting 12 empty..." << endl;
         db.set_empty(12, 12);
     }
 }
