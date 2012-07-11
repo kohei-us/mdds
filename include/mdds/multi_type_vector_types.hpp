@@ -217,6 +217,7 @@ public:
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
+        assert(begin_pos + len <= s.size());
         typename store_type::const_iterator it = s.begin();
         std::advance(it, begin_pos);
         typename store_type::const_iterator it_end = it;

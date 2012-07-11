@@ -898,6 +898,16 @@ void gridmap_test_empty_cells()
         db.set(4, size_t(9));
         db.set_empty(2, 3);
     }
+
+    {
+        // Set individual single elements empty.
+        column_type db(15, 1.2);
+        db.set_empty(1, 1);
+        db.set_empty(4, 4);
+        db.set_empty(7, 7);
+        db.set_empty(10, 10);
+        db.set_empty(12, 12);
+    }
 }
 
 void gridmap_test_swap()

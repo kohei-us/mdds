@@ -463,6 +463,7 @@ void mtm_test_set_empty()
     {
         // set whole column empty.
         mtx_type mtx(3, 5, 1.2);
+        cout << "setting whole column 2 empty..." << endl;
         mtx.set_column_empty(2);
         assert(mtx.get_type(0, 1) != mtm::element_empty);
         assert(mtx.get_type(1, 1) != mtm::element_empty);
@@ -478,6 +479,7 @@ void mtm_test_set_empty()
     {
         // set whole row empty.
         mtx_type mtx(3, 5, 1.2);
+        cout << "setting whole row 1 empty..." << endl;
         mtx.set_row_empty(1);
         assert(mtx.get_type(0, 0) != mtm::element_empty);
         assert(mtx.get_type(0, 1) != mtm::element_empty);
