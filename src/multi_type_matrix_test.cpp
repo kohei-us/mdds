@@ -615,8 +615,8 @@ void mtm_test_copy()
     assert(success);
 
     // from a larger matrix to a smaller one.
-    mx1.set(0, 0, new string("test1"));
-    mx2.set(0, 0, new string("test2"));
+    mx1.set(0, 0, string("test1"));
+    mx2.set(0, 0, string("test2"));
     mx2.set(4, 4, true);
     mx2.set(7, 7, false);
     mx1.copy(mx2);

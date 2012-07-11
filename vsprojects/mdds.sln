@@ -24,6 +24,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grid_map (default)", "grid_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grid_map (custom)", "grid_map_custom\grid_map_custom.vcproj", "{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_matrix", "multi_type_matrix\multi_type_matrix.vcproj", "{831A2583-F85F-4AF1-9851-8978D8BC8409}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -61,6 +63,10 @@ Global
 		{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}.Debug|Win32.Build.0 = Debug|Win32
 		{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}.Release|Win32.ActiveCfg = Release|Win32
 		{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}.Release|Win32.Build.0 = Release|Win32
+		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Debug|Win32.ActiveCfg = Debug|Win32
+		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Debug|Win32.Build.0 = Debug|Win32
+		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Release|Win32.ActiveCfg = Release|Win32
+		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
