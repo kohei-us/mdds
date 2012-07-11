@@ -727,6 +727,10 @@ void mtm_test_custom_string()
     stack_printer __stack_printer__("::mtm_test_custom_string");
     mtx_custom_type mtx(2, 2);
     mtx.set(0, 0, custom_string("foo"));
+    assert(mtx.get_type(0, 0) == mtm::element_string);
+    assert(mtx.get<custom_string>(0, 0) == custom_string("foo"));
+    mtx.set(1, 1, 12.3);
+    assert(mtx.get<double>(1, 1) == 12.3);
 }
 
 /**
