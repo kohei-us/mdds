@@ -53,7 +53,7 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
     return val == test;
 }
 
-typedef mdds::grid_map<mdds::mtv::cell_block_func> grid_store_type;
+typedef mdds::grid_map<mdds::mtv::element_block_func> grid_store_type;
 typedef grid_store_type::sheet_type::column_type column_type;
 
 void gridmap_test_construction()

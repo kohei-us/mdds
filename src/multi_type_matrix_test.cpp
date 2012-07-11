@@ -145,7 +145,7 @@ struct custom_string_trait
                 case element_type_custom_string:
                     return string_elem_block::create_block(init_size);
                 default:
-                    return mdds::mtv::cell_block_func_base::create_new_block(type, init_size);
+                    return mdds::mtv::element_block_func::create_new_block(type, init_size);
             }
         }
 
@@ -156,7 +156,7 @@ struct custom_string_trait
                 case element_type_custom_string:
                     return string_elem_block::clone_block(block);
                 default:
-                    return mdds::mtv::cell_block_func_base::clone_block(block);
+                    return mdds::mtv::element_block_func::clone_block(block);
             }
         }
 
@@ -171,7 +171,7 @@ struct custom_string_trait
                     string_elem_block::delete_block(p);
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::delete_block(p);
+                    mdds::mtv::element_block_func::delete_block(p);
             }
         }
 
@@ -183,7 +183,7 @@ struct custom_string_trait
                     string_elem_block::resize_block(block, new_size);
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::resize_block(block, new_size);
+                    mdds::mtv::element_block_func::resize_block(block, new_size);
             }
         }
 
@@ -195,7 +195,7 @@ struct custom_string_trait
                     string_elem_block::print_block(block);
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::print_block(block);
+                    mdds::mtv::element_block_func::print_block(block);
             }
         }
 
@@ -207,7 +207,7 @@ struct custom_string_trait
                     string_elem_block::erase_block(block, pos);
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::erase(block, pos);
+                    mdds::mtv::element_block_func::erase(block, pos);
             }
         }
 
@@ -219,7 +219,7 @@ struct custom_string_trait
                     string_elem_block::erase_block(block, pos, size);
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::erase(block, pos, size);
+                    mdds::mtv::element_block_func::erase(block, pos, size);
             }
         }
 
@@ -232,7 +232,7 @@ struct custom_string_trait
                     string_elem_block::append_values_from_block(dest, src);
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::append_values_from_block(dest, src);
+                    mdds::mtv::element_block_func::append_values_from_block(dest, src);
             }
         }
 
@@ -246,7 +246,7 @@ struct custom_string_trait
                     string_elem_block::append_values_from_block(dest, src, begin_pos, len);
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::append_values_from_block(dest, src, begin_pos, len);
+                    mdds::mtv::element_block_func::append_values_from_block(dest, src, begin_pos, len);
             }
         }
 
@@ -260,7 +260,7 @@ struct custom_string_trait
                     string_elem_block::assign_values_from_block(dest, src, begin_pos, len);
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::assign_values_from_block(dest, src, begin_pos, len);
+                    mdds::mtv::element_block_func::assign_values_from_block(dest, src, begin_pos, len);
             }
         }
 
@@ -277,7 +277,7 @@ struct custom_string_trait
             else if (mtv::get_block_type(right) == element_type_custom_string)
                 return false;
 
-            return mdds::mtv::cell_block_func_base::equal_block(left, right);
+            return mdds::mtv::element_block_func::equal_block(left, right);
         }
 
         static void overwrite_values(mdds::mtv::base_element_block& block, size_t pos, size_t len)
@@ -288,7 +288,7 @@ struct custom_string_trait
                     // Do nothing.  The client code manages the life cycle of these cells.
                 break;
                 default:
-                    mdds::mtv::cell_block_func_base::overwrite_values(block, pos, len);
+                    mdds::mtv::element_block_func::overwrite_values(block, pos, len);
             }
         }
     };

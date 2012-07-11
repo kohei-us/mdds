@@ -29,7 +29,6 @@
 #define __MDDS_MULTI_TYPE_MATRIX_HPP__
 
 #include "multi_type_vector.hpp"
-#include "multi_type_vector_types.hpp"
 #include "multi_type_vector_trait.hpp"
 
 namespace mdds {
@@ -45,7 +44,7 @@ struct std_string_trait
 {
     typedef std::string string_type;
     typedef mdds::mtv::string_cell_block string_elem_block;
-    typedef mdds::mtv::cell_block_func elem_block_func;
+    typedef mdds::mtv::element_block_func elem_block_func;
 
     static const mdds::mtv::element_t string_type_identifier = mdds::mtv::element_type_string;
 };

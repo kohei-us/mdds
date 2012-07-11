@@ -34,7 +34,7 @@
 
 namespace mdds { namespace mtv {
 
-struct cell_block_func_base
+struct element_block_func_base
 {
     static base_element_block* create_new_block(element_t type, size_t init_size);
 
@@ -70,7 +70,7 @@ struct cell_block_func_base
     static void overwrite_values(base_element_block& block, size_t pos, size_t len);
 };
 
-base_element_block* cell_block_func_base::create_new_block(element_t type, size_t init_size)
+base_element_block* element_block_func_base::create_new_block(element_t type, size_t init_size)
 {
     switch (type)
     {
@@ -88,7 +88,7 @@ base_element_block* cell_block_func_base::create_new_block(element_t type, size_
     return NULL;
 }
 
-base_element_block* cell_block_func_base::clone_block(const base_element_block& block)
+base_element_block* element_block_func_base::clone_block(const base_element_block& block)
 {
     switch (get_block_type(block))
     {
@@ -106,7 +106,7 @@ base_element_block* cell_block_func_base::clone_block(const base_element_block& 
     return NULL;
 }
 
-void cell_block_func_base::delete_block(base_element_block* p)
+void element_block_func_base::delete_block(base_element_block* p)
 {
     if (!p)
         return;
@@ -130,7 +130,7 @@ void cell_block_func_base::delete_block(base_element_block* p)
     }
 }
 
-void cell_block_func_base::resize_block(base_element_block& block, size_t new_size)
+void element_block_func_base::resize_block(base_element_block& block, size_t new_size)
 {
     switch (get_block_type(block))
     {
@@ -151,7 +151,7 @@ void cell_block_func_base::resize_block(base_element_block& block, size_t new_si
     }
 }
 
-void cell_block_func_base::print_block(const base_element_block& block)
+void element_block_func_base::print_block(const base_element_block& block)
 {
     switch (get_block_type(block))
     {
@@ -172,7 +172,7 @@ void cell_block_func_base::print_block(const base_element_block& block)
     }
 }
 
-void cell_block_func_base::erase(base_element_block& block, size_t pos)
+void element_block_func_base::erase(base_element_block& block, size_t pos)
 {
     switch (get_block_type(block))
     {
@@ -193,7 +193,7 @@ void cell_block_func_base::erase(base_element_block& block, size_t pos)
     }
 }
 
-void cell_block_func_base::erase(base_element_block& block, size_t pos, size_t size)
+void element_block_func_base::erase(base_element_block& block, size_t pos, size_t size)
 {
     switch (get_block_type(block))
     {
@@ -214,7 +214,7 @@ void cell_block_func_base::erase(base_element_block& block, size_t pos, size_t s
     }
 }
 
-void cell_block_func_base::append_values_from_block(base_element_block& dest, const base_element_block& src)
+void element_block_func_base::append_values_from_block(base_element_block& dest, const base_element_block& src)
 {
     switch (get_block_type(dest))
     {
@@ -235,7 +235,7 @@ void cell_block_func_base::append_values_from_block(base_element_block& dest, co
     }
 }
 
-void cell_block_func_base::append_values_from_block(
+void element_block_func_base::append_values_from_block(
     base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len)
 {
     switch (get_block_type(dest))
@@ -257,7 +257,7 @@ void cell_block_func_base::append_values_from_block(
     }
 }
 
-void cell_block_func_base::assign_values_from_block(
+void element_block_func_base::assign_values_from_block(
     base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len)
 {
     switch (get_block_type(dest))
@@ -279,7 +279,7 @@ void cell_block_func_base::assign_values_from_block(
     }
 }
 
-bool cell_block_func_base::equal_block(const base_element_block& left, const base_element_block& right)
+bool element_block_func_base::equal_block(const base_element_block& left, const base_element_block& right)
 {
     element_t block_type = get_block_type(left);
     if (block_type != get_block_type(right))
@@ -301,7 +301,7 @@ bool cell_block_func_base::equal_block(const base_element_block& left, const bas
     return false;
 }
 
-void cell_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
+void element_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
 {
     // Do nothing for the standard types.
 }
@@ -310,7 +310,7 @@ void cell_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
  * Default cell block function definitions.  Implementation can use this if
  * it only uses the default block types implemented by the library.
  */
-struct cell_block_func : public cell_block_func_base {};
+struct element_block_func : public element_block_func_base {};
 
 }}
 
