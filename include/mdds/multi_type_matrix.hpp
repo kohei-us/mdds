@@ -43,7 +43,7 @@ enum element_t { element_empty, element_boolean, element_string, element_numeric
 struct std_string_trait
 {
     typedef std::string string_type;
-    typedef mdds::mtv::string_cell_block string_elem_block;
+    typedef mdds::mtv::string_element_block string_elem_block;
     typedef mdds::mtv::element_block_func elem_block_func;
 
     static const mdds::mtv::element_t string_type_identifier = mdds::mtv::element_type_string;
@@ -65,8 +65,8 @@ private:
 public:
     typedef typename store_type::element_block_type element_block_type;
 
-    typedef typename mtv::boolean_cell_block boolean_block_type;
-    typedef typename mtv::numeric_cell_block numeric_block_type;
+    typedef typename mtv::boolean_element_block boolean_block_type;
+    typedef typename mtv::numeric_element_block numeric_block_type;
     typedef typename string_trait::string_elem_block string_block_type;
 
     struct size_pair_type

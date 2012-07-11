@@ -75,13 +75,13 @@ base_element_block* element_block_func_base::create_new_block(element_t type, si
     switch (type)
     {
         case element_type_numeric:
-            return numeric_cell_block::create_block(init_size);
+            return numeric_element_block::create_block(init_size);
         case element_type_string:
-            return string_cell_block::create_block(init_size);
+            return string_element_block::create_block(init_size);
         case element_type_index:
-            return index_cell_block::create_block(init_size);
+            return index_element_block::create_block(init_size);
         case element_type_boolean:
-            return boolean_cell_block::create_block(init_size);
+            return boolean_element_block::create_block(init_size);
         default:
             throw general_error("create_new_block: failed to create a new block of unknown type.");
     }
@@ -93,13 +93,13 @@ base_element_block* element_block_func_base::clone_block(const base_element_bloc
     switch (get_block_type(block))
     {
         case element_type_numeric:
-            return numeric_cell_block::clone_block(block);
+            return numeric_element_block::clone_block(block);
         case element_type_string:
-            return string_cell_block::clone_block(block);
+            return string_element_block::clone_block(block);
         case element_type_index:
-            return index_cell_block::clone_block(block);
+            return index_element_block::clone_block(block);
         case element_type_boolean:
-            return boolean_cell_block::clone_block(block);
+            return boolean_element_block::clone_block(block);
         default:
             throw general_error("clone_block: failed to clone a block of unknown type.");
     }
@@ -114,16 +114,16 @@ void element_block_func_base::delete_block(base_element_block* p)
     switch (get_block_type(*p))
     {
         case element_type_numeric:
-            numeric_cell_block::delete_block(p);
+            numeric_element_block::delete_block(p);
         break;
         case element_type_string:
-            string_cell_block::delete_block(p);
+            string_element_block::delete_block(p);
         break;
         case element_type_index:
-            index_cell_block::delete_block(p);
+            index_element_block::delete_block(p);
         break;
         case element_type_boolean:
-            boolean_cell_block::delete_block(p);
+            boolean_element_block::delete_block(p);
         break;
         default:
             throw general_error("delete_block: failed to delete a block of unknown type.");
@@ -135,16 +135,16 @@ void element_block_func_base::resize_block(base_element_block& block, size_t new
     switch (get_block_type(block))
     {
         case element_type_numeric:
-            numeric_cell_block::resize_block(block, new_size);
+            numeric_element_block::resize_block(block, new_size);
         break;
         case element_type_string:
-            string_cell_block::resize_block(block, new_size);
+            string_element_block::resize_block(block, new_size);
         break;
         case element_type_index:
-            index_cell_block::resize_block(block, new_size);
+            index_element_block::resize_block(block, new_size);
         break;
         case element_type_boolean:
-            boolean_cell_block::resize_block(block, new_size);
+            boolean_element_block::resize_block(block, new_size);
         break;
         default:
             throw general_error("resize_block: failed to resize a block of unknown type.");
@@ -156,16 +156,16 @@ void element_block_func_base::print_block(const base_element_block& block)
     switch (get_block_type(block))
     {
         case element_type_numeric:
-            numeric_cell_block::print_block(block);
+            numeric_element_block::print_block(block);
         break;
         case element_type_string:
-            string_cell_block::print_block(block);
+            string_element_block::print_block(block);
         break;
         case element_type_index:
-            index_cell_block::print_block(block);
+            index_element_block::print_block(block);
         break;
         case element_type_boolean:
-            boolean_cell_block::print_block(block);
+            boolean_element_block::print_block(block);
         break;
         default:
             throw general_error("print_block: failed to print a block of unknown type.");
@@ -177,16 +177,16 @@ void element_block_func_base::erase(base_element_block& block, size_t pos)
     switch (get_block_type(block))
     {
         case element_type_numeric:
-            numeric_cell_block::erase_block(block, pos);
+            numeric_element_block::erase_block(block, pos);
         break;
         case element_type_string:
-            string_cell_block::erase_block(block, pos);
+            string_element_block::erase_block(block, pos);
         break;
         case element_type_index:
-            index_cell_block::erase_block(block, pos);
+            index_element_block::erase_block(block, pos);
         break;
         case element_type_boolean:
-            boolean_cell_block::erase_block(block, pos);
+            boolean_element_block::erase_block(block, pos);
         break;
         default:
             throw general_error("erase: failed to erase an element from a block of unknown type.");
@@ -198,16 +198,16 @@ void element_block_func_base::erase(base_element_block& block, size_t pos, size_
     switch (get_block_type(block))
     {
         case element_type_numeric:
-            numeric_cell_block::erase_block(block, pos, size);
+            numeric_element_block::erase_block(block, pos, size);
         break;
         case element_type_string:
-            string_cell_block::erase_block(block, pos, size);
+            string_element_block::erase_block(block, pos, size);
         break;
         case element_type_index:
-            index_cell_block::erase_block(block, pos, size);
+            index_element_block::erase_block(block, pos, size);
         break;
         case element_type_boolean:
-            boolean_cell_block::erase_block(block, pos, size);
+            boolean_element_block::erase_block(block, pos, size);
         break;
         default:
             throw general_error("erase: failed to erase elements from a block of unknown type.");
@@ -219,16 +219,16 @@ void element_block_func_base::append_values_from_block(base_element_block& dest,
     switch (get_block_type(dest))
     {
         case element_type_numeric:
-            numeric_cell_block::append_values_from_block(dest, src);
+            numeric_element_block::append_values_from_block(dest, src);
         break;
         case element_type_string:
-            string_cell_block::append_values_from_block(dest, src);
+            string_element_block::append_values_from_block(dest, src);
         break;
         case element_type_index:
-            index_cell_block::append_values_from_block(dest, src);
+            index_element_block::append_values_from_block(dest, src);
         break;
         case element_type_boolean:
-            boolean_cell_block::append_values_from_block(dest, src);
+            boolean_element_block::append_values_from_block(dest, src);
         break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");
@@ -241,16 +241,16 @@ void element_block_func_base::append_values_from_block(
     switch (get_block_type(dest))
     {
         case element_type_numeric:
-            numeric_cell_block::append_values_from_block(dest, src, begin_pos, len);
+            numeric_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_string:
-            string_cell_block::append_values_from_block(dest, src, begin_pos, len);
+            string_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_index:
-            index_cell_block::append_values_from_block(dest, src, begin_pos, len);
+            index_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_boolean:
-            boolean_cell_block::append_values_from_block(dest, src, begin_pos, len);
+            boolean_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");
@@ -263,16 +263,16 @@ void element_block_func_base::assign_values_from_block(
     switch (get_block_type(dest))
     {
         case element_type_numeric:
-            numeric_cell_block::assign_values_from_block(dest, src, begin_pos, len);
+            numeric_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_string:
-            string_cell_block::assign_values_from_block(dest, src, begin_pos, len);
+            string_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_index:
-            index_cell_block::assign_values_from_block(dest, src, begin_pos, len);
+            index_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_boolean:
-            boolean_cell_block::assign_values_from_block(dest, src, begin_pos, len);
+            boolean_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         default:
             throw general_error("assign_values: failed to assign values to a block of unknown type.");
@@ -288,13 +288,13 @@ bool element_block_func_base::equal_block(const base_element_block& left, const 
     switch (block_type)
     {
         case element_type_numeric:
-            return numeric_cell_block::get(left) == numeric_cell_block::get(right);
+            return numeric_element_block::get(left) == numeric_element_block::get(right);
         case element_type_string:
-            return string_cell_block::get(left) == string_cell_block::get(right);
+            return string_element_block::get(left) == string_element_block::get(right);
         case element_type_index:
-            return index_cell_block::get(left) == index_cell_block::get(right);
+            return index_element_block::get(left) == index_element_block::get(right);
         case element_type_boolean:
-            return boolean_cell_block::get(left) == boolean_cell_block::get(right);
+            return boolean_element_block::get(left) == boolean_element_block::get(right);
         default:
             ;
     }

@@ -2092,8 +2092,8 @@ void gridmap_test_data_iterators()
     assert(it_blk->size == 3);
     assert(it_blk->data);
     {
-        mtv::numeric_cell_block::const_iterator it_data = mtv::numeric_cell_block::begin(*it_blk->data);
-        mtv::numeric_cell_block::const_iterator it_data_end = mtv::numeric_cell_block::end(*it_blk->data);
+        mtv::numeric_element_block::const_iterator it_data = mtv::numeric_element_block::begin(*it_blk->data);
+        mtv::numeric_element_block::const_iterator it_data_end = mtv::numeric_element_block::end(*it_blk->data);
         assert(it_data != it_data_end);
         assert(*it_data == 1.1);
         ++it_data;
@@ -2116,8 +2116,8 @@ void gridmap_test_data_iterators()
     assert(it_blk->size == 4);
     assert(it_blk->data);
     {
-        mtv::string_cell_block::const_reverse_iterator it_data = mtv::string_cell_block::rbegin(*it_blk->data);
-        mtv::string_cell_block::const_reverse_iterator it_data_end = mtv::string_cell_block::rend(*it_blk->data);
+        mtv::string_element_block::const_reverse_iterator it_data = mtv::string_element_block::rbegin(*it_blk->data);
+        mtv::string_element_block::const_reverse_iterator it_data_end = mtv::string_element_block::rend(*it_blk->data);
         assert(it_data != it_data_end);
         assert(*it_data == "D");
         ++it_data;

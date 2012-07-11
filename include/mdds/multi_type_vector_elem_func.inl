@@ -69,230 +69,230 @@ void mdds_mtv_get_empty_value(bool& val)
 
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, double val)
 {
-    mtv::numeric_cell_block::set_value(block, pos, val);
+    mtv::numeric_element_block::set_value(block, pos, val);
 }
 
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, const std::string& val)
 {
-    mtv::string_cell_block::set_value(block, pos, val);
+    mtv::string_element_block::set_value(block, pos, val);
 }
 
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, size_t val)
 {
-    mtv::index_cell_block::set_value(block, pos, val);
+    mtv::index_element_block::set_value(block, pos, val);
 }
 
 void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, bool val)
 {
-    mtv::boolean_cell_block::set_value(block, pos, val);
+    mtv::boolean_element_block::set_value(block, pos, val);
 }
 
 void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, double& val)
 {
-    mtv::numeric_cell_block::get_value(block, pos, val);
+    mtv::numeric_element_block::get_value(block, pos, val);
 }
 
 void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, std::string& val)
 {
-    mtv::string_cell_block::get_value(block, pos, val);
+    mtv::string_element_block::get_value(block, pos, val);
 }
 
 void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, size_t& val)
 {
-    mtv::index_cell_block::get_value(block, pos, val);
+    mtv::index_element_block::get_value(block, pos, val);
 }
 
 void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, bool& val)
 {
-    mtv::boolean_cell_block::get_value(block, pos, val);
+    mtv::boolean_element_block::get_value(block, pos, val);
 }
 
 template<typename _Iter>
 void mdds_mtv_set_values(
     mtv::base_element_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::numeric_cell_block::set_values(block, pos, it_begin, it_end);
+    mtv::numeric_element_block::set_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_set_values(
     mtv::base_element_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::string_cell_block::set_values(block, pos, it_begin, it_end);
+    mtv::string_element_block::set_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_set_values(
     mtv::base_element_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::index_cell_block::set_values(block, pos, it_begin, it_end);
+    mtv::index_element_block::set_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_set_values(
     mtv::base_element_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::boolean_cell_block::set_values(block, pos, it_begin, it_end);
+    mtv::boolean_element_block::set_values(block, pos, it_begin, it_end);
 }
 
 void mdds_mtv_append_value(mtv::base_element_block& block, double val)
 {
-    mtv::numeric_cell_block::append_value(block, val);
+    mtv::numeric_element_block::append_value(block, val);
 }
 
 void mdds_mtv_append_value(mtv::base_element_block& block, const std::string& val)
 {
-    mtv::string_cell_block::append_value(block, val);
+    mtv::string_element_block::append_value(block, val);
 }
 
 void mdds_mtv_append_value(mtv::base_element_block& block, size_t val)
 {
-    mtv::index_cell_block::append_value(block, val);
+    mtv::index_element_block::append_value(block, val);
 }
 
 void mdds_mtv_append_value(mtv::base_element_block& block, bool val)
 {
-    mtv::boolean_cell_block::append_value(block, val);
+    mtv::boolean_element_block::append_value(block, val);
 }
 
 void mdds_mtv_prepend_value(mtv::base_element_block& block, double val)
 {
-    mtv::numeric_cell_block::prepend_value(block, val);
+    mtv::numeric_element_block::prepend_value(block, val);
 }
 
 void mdds_mtv_prepend_value(mtv::base_element_block& block, const std::string& val)
 {
-    mtv::string_cell_block::prepend_value(block, val);
+    mtv::string_element_block::prepend_value(block, val);
 }
 
 void mdds_mtv_prepend_value(mtv::base_element_block& block, size_t val)
 {
-    mtv::index_cell_block::prepend_value(block, val);
+    mtv::index_element_block::prepend_value(block, val);
 }
 
 void mdds_mtv_prepend_value(mtv::base_element_block& block, bool val)
 {
-    mtv::boolean_cell_block::prepend_value(block, val);
+    mtv::boolean_element_block::prepend_value(block, val);
 }
 
 template<typename _Iter>
 void mdds_mtv_prepend_values(mtv::base_element_block& block, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::numeric_cell_block::prepend_values(block, it_begin, it_end);
+    mtv::numeric_element_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_prepend_values(mtv::base_element_block& block, const std::string&, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::string_cell_block::prepend_values(block, it_begin, it_end);
+    mtv::string_element_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_prepend_values(mtv::base_element_block& block, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::index_cell_block::prepend_values(block, it_begin, it_end);
+    mtv::index_element_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_prepend_values(mtv::base_element_block& block, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::index_cell_block::prepend_values(block, it_begin, it_end);
+    mtv::index_element_block::prepend_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_append_values(mtv::base_element_block& block, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::numeric_cell_block::append_values(block, it_begin, it_end);
+    mtv::numeric_element_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_append_values(mtv::base_element_block& block, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::string_cell_block::append_values(block, it_begin, it_end);
+    mtv::string_element_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_append_values(mtv::base_element_block& block, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::index_cell_block::append_values(block, it_begin, it_end);
+    mtv::index_element_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_append_values(mtv::base_element_block& block, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::boolean_cell_block::append_values(block, it_begin, it_end);
+    mtv::boolean_element_block::append_values(block, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_assign_values(mtv::base_element_block& dest, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::numeric_cell_block::assign_values(dest, it_begin, it_end);
+    mtv::numeric_element_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_assign_values(mtv::base_element_block& dest, const std::string&, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::string_cell_block::assign_values(dest, it_begin, it_end);
+    mtv::string_element_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_assign_values(mtv::base_element_block& dest, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::index_cell_block::assign_values(dest, it_begin, it_end);
+    mtv::index_element_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_assign_values(mtv::base_element_block& dest, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::boolean_cell_block::assign_values(dest, it_begin, it_end);
+    mtv::boolean_element_block::assign_values(dest, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_insert_values(
     mtv::base_element_block& block, size_t pos, double, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::numeric_cell_block::insert_values(block, pos, it_begin, it_end);
+    mtv::numeric_element_block::insert_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_insert_values(
     mtv::base_element_block& block, size_t pos, std::string, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::string_cell_block::insert_values(block, pos, it_begin, it_end);
+    mtv::string_element_block::insert_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_insert_values(
     mtv::base_element_block& block, size_t pos, size_t, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::index_cell_block::insert_values(block, pos, it_begin, it_end);
+    mtv::index_element_block::insert_values(block, pos, it_begin, it_end);
 }
 
 template<typename _Iter>
 void mdds_mtv_insert_values(
     mtv::base_element_block& block, size_t pos, bool, const _Iter& it_begin, const _Iter& it_end)
 {
-    mtv::boolean_cell_block::insert_values(block, pos, it_begin, it_end);
+    mtv::boolean_element_block::insert_values(block, pos, it_begin, it_end);
 }
 
 mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, double val)
 {
-    return mtv::numeric_cell_block::create_block_with_value(init_size, val);
+    return mtv::numeric_element_block::create_block_with_value(init_size, val);
 }
 
 mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const std::string& val)
 {
-    return mtv::string_cell_block::create_block_with_value(init_size, val);
+    return mtv::string_element_block::create_block_with_value(init_size, val);
 }
 
 mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, size_t val)
 {
-    return mtv::index_cell_block::create_block_with_value(init_size, val);
+    return mtv::index_element_block::create_block_with_value(init_size, val);
 }
 
 mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, bool val)
 {
-    return mtv::boolean_cell_block::create_block_with_value(init_size, val);
+    return mtv::boolean_element_block::create_block_with_value(init_size, val);
 }
 
 }
