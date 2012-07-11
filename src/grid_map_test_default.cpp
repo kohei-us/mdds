@@ -27,7 +27,7 @@
 
 #include "test_global.hpp"
 
-#include <mdds/grid_map.hpp>
+#include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector_trait.hpp>
 
 #include <cassert>
@@ -53,12 +53,11 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
     return val == test;
 }
 
-typedef mdds::grid_map<mdds::mtv::element_block_func> grid_store_type;
-typedef grid_store_type::sheet_type::column_type column_type;
+typedef mdds::multi_type_vector<mdds::mtv::element_block_func> column_type;
 
-void gridmap_test_construction()
+void mtv_test_construction()
 {
-    stack_printer __stack_printer__("::gridmap_test_construction");
+    stack_printer __stack_printer__("::mtv_test_construction");
     {
         // Create with initial value and size.
         column_type db(10, 1.0);
@@ -78,9 +77,9 @@ void gridmap_test_construction()
     }
 }
 
-void gridmap_test_basic()
+void mtv_test_basic()
 {
-    stack_printer __stack_printer__("::gridmap_test_basic");
+    stack_printer __stack_printer__("::mtv_test_basic");
     bool res;
 
     {
@@ -599,9 +598,9 @@ void gridmap_test_basic()
     }
 }
 
-void gridmap_test_empty_cells()
+void mtv_test_empty_cells()
 {
-    stack_printer __stack_printer__("::gridmap_test_empty");
+    stack_printer __stack_printer__("::mtv_test_empty");
     {
         column_type db(3);
         assert(db.is_empty(0));
@@ -931,9 +930,9 @@ void gridmap_test_empty_cells()
     }
 }
 
-void gridmap_test_swap()
+void mtv_test_swap()
 {
-    stack_printer __stack_printer__("::gridmap_test_swap");
+    stack_printer __stack_printer__("::mtv_test_swap");
     column_type db1(3), db2(5);
     db1.set(0, 1.0);
     db1.set(1, 2.0);
@@ -948,9 +947,9 @@ void gridmap_test_swap()
     assert(db2.size() == 3 && db2.block_size() == 1);
 }
 
-void gridmap_test_equality()
+void mtv_test_equality()
 {
-    stack_printer __stack_printer__("::gridmap_test_equality");
+    stack_printer __stack_printer__("::mtv_test_equality");
     {
         // Two columns of equal size.
         column_type db1(3), db2(3);
@@ -980,9 +979,9 @@ void gridmap_test_equality()
     }
 }
 
-void gridmap_test_clone()
+void mtv_test_clone()
 {
-    stack_printer __stack_printer__("::gridmap_test_clone");
+    stack_printer __stack_printer__("::mtv_test_clone");
     column_type db1(3);
     db1.set(0, 3.4);
     db1.set(1, string("foo"));
@@ -1029,9 +1028,9 @@ void gridmap_test_clone()
     assert(db3 == db4);
 }
 
-void gridmap_test_resize()
+void mtv_test_resize()
 {
-    stack_printer __stack_printer__("::gridmap_test_resize");
+    stack_printer __stack_printer__("::mtv_test_resize");
     column_type db(0);
     assert(db.size() == 0);
     assert(db.empty());
@@ -1088,9 +1087,9 @@ void gridmap_test_resize()
     assert(db.empty());
 }
 
-void gridmap_test_erase()
+void mtv_test_erase()
 {
-    stack_printer __stack_printer__("::gridmap_test_erase");
+    stack_printer __stack_printer__("::mtv_test_erase");
     {
         // Single empty block.
         column_type db(5);
@@ -1260,9 +1259,9 @@ void gridmap_test_erase()
     }
 }
 
-void gridmap_test_insert_empty()
+void mtv_test_insert_empty()
 {
-    stack_printer __stack_printer__("::gridmap_test_insert_empty");
+    stack_printer __stack_printer__("::mtv_test_insert_empty");
     {
         column_type db(5);
         db.insert_empty(0, 5);
@@ -1354,9 +1353,9 @@ void gridmap_test_insert_empty()
     }
 }
 
-void gridmap_test_set_cells()
+void mtv_test_set_cells()
 {
-    stack_printer __stack_printer__("::gridmap_test_set_cells");
+    stack_printer __stack_printer__("::mtv_test_set_cells");
     {
         column_type db(5);
 
@@ -1847,9 +1846,9 @@ void gridmap_test_set_cells()
     }
 }
 
-void gridmap_test_insert_cells()
+void mtv_test_insert_cells()
 {
-    stack_printer __stack_printer__("::gridmap_test_insert_cells");
+    stack_printer __stack_printer__("::mtv_test_insert_cells");
     {
         // Insert into non-empty block of the same type.
         column_type db(1);
@@ -2027,9 +2026,9 @@ void gridmap_test_insert_cells()
     }
 }
 
-void gridmap_test_iterators()
+void mtv_test_iterators()
 {
-    stack_printer __stack_printer__("::gridmap_test_iterators");
+    stack_printer __stack_printer__("::mtv_test_iterators");
     {
         column_type db(5);
         column_type::const_iterator it;
@@ -2103,9 +2102,9 @@ void gridmap_test_iterators()
     }
 }
 
-void gridmap_test_data_iterators()
+void mtv_test_data_iterators()
 {
-    stack_printer __stack_printer__("::gridmap_test_data_iterators");
+    stack_printer __stack_printer__("::mtv_test_data_iterators");
 
     column_type db(10);
     db.set(0, 1.1);
@@ -2181,19 +2180,19 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
-        gridmap_test_construction();
-        gridmap_test_basic();
-        gridmap_test_empty_cells();
-        gridmap_test_swap();
-        gridmap_test_equality();
-        gridmap_test_clone();
-        gridmap_test_resize();
-        gridmap_test_erase();
-        gridmap_test_insert_empty();
-        gridmap_test_set_cells();
-        gridmap_test_insert_cells();
-        gridmap_test_iterators();
-        gridmap_test_data_iterators();
+        mtv_test_construction();
+        mtv_test_basic();
+        mtv_test_empty_cells();
+        mtv_test_swap();
+        mtv_test_equality();
+        mtv_test_clone();
+        mtv_test_resize();
+        mtv_test_erase();
+        mtv_test_insert_empty();
+        mtv_test_set_cells();
+        mtv_test_insert_cells();
+        mtv_test_iterators();
+        mtv_test_data_iterators();
     }
 
     if (opt.test_perf)
