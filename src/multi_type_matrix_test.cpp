@@ -123,6 +123,11 @@ void mdds_mtv_insert_values(
     custom_string_block::insert_values(block, pos, it_begin, it_end);
 }
 
+mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const custom_string& val)
+{
+    return custom_string_block::create_block_with_value(init_size, val);
+}
+
 struct custom_string_trait
 {
     typedef custom_string string_type;
@@ -720,8 +725,8 @@ void mtm_test_walk()
 void mtm_test_custom_string()
 {
     stack_printer __stack_printer__("::mtm_test_custom_string");
-//  mtx_custom_type mtx(2, 2);
-//  mtx.set(0, 0, custom_string_trait::string_type("foo"));
+    mtx_custom_type mtx(2, 2);
+    mtx.set(0, 0, custom_string("foo"));
 }
 
 /**
