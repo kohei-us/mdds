@@ -913,6 +913,21 @@ void gridmap_test_empty_cells()
         db.set_empty(10, 10);
         cout << "setting 12 empty..." << endl;
         db.set_empty(12, 12);
+        assert(!db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(!db.is_empty(2));
+        assert(!db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(!db.is_empty(5));
+        assert(!db.is_empty(6));
+        assert(db.is_empty(7));
+        assert(!db.is_empty(8));
+        assert(!db.is_empty(9));
+        assert(db.is_empty(10));
+        assert(!db.is_empty(11));
+        assert(db.is_empty(12));
+        assert(!db.is_empty(13));
+        assert(!db.is_empty(14));
     }
 }
 
