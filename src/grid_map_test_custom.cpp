@@ -458,9 +458,9 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 
 typedef mdds::multi_type_vector<my_cell_block_func> column_type;
 
-void gridmap_test_types()
+void mtv_test_types()
 {
-    stack_printer __stack_printer__("::gridmap_test_types");
+    stack_printer __stack_printer__("::mtv_test_types");
 
     mdds::mtv::element_t ct;
 
@@ -482,9 +482,9 @@ void gridmap_test_types()
     assert(ct == element_type_user_block && ct >= mtv::element_type_user_start);
 }
 
-void gridmap_test_basic()
+void mtv_test_basic()
 {
-    stack_printer __stack_printer__("::gridmap_test_basic");
+    stack_printer __stack_printer__("::mtv_test_basic");
 
     // mdds::multi_type_vector does not manage the life cycle of individual cells;
     // the client code needs to manage them when storing pointers.
@@ -643,9 +643,9 @@ void gridmap_test_basic()
     }
 }
 
-void gridmap_test_equality()
+void mtv_test_equality()
 {
-    stack_printer __stack_printer__("::gridmap_test_clone");
+    stack_printer __stack_printer__("::mtv_test_clone");
 
     user_cell_pool pool;
 
@@ -672,9 +672,9 @@ void gridmap_test_equality()
 /**
  * This test is to be run with valgrind, to ensure no memory leak occurs.
  */
-void gridmap_test_managed_block()
+void mtv_test_managed_block()
 {
-    stack_printer __stack_printer__("::gridmap_test_managed_block");
+    stack_printer __stack_printer__("::mtv_test_managed_block");
     {
         column_type db(1);
         db.set(0, new muser_cell(1.0));
@@ -1151,10 +1151,10 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
-        gridmap_test_types();
-        gridmap_test_basic();
-        gridmap_test_equality();
-        gridmap_test_managed_block();
+        mtv_test_types();
+        mtv_test_basic();
+        mtv_test_equality();
+        mtv_test_managed_block();
     }
 
     if (opt.test_perf)
