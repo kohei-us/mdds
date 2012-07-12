@@ -20,9 +20,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "point_quad_tree", "point_qu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mixed_type_matrix", "mixed_type_matrix\mixed_type_matrix.vcproj", "{7C7AC06B-6C02-420B-8BAE-6330C8DB83AC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grid_map (default)", "grid_map_default\grid_map_default.vcproj", "{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (default)", "multi_type_vector_default\multi_type_vector_default.vcproj", "{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grid_map (custom)", "grid_map_custom\grid_map_custom.vcproj", "{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (custom)", "multi_type_vector_custom\multi_type_vector_custom.vcproj", "{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_matrix", "multi_type_matrix\multi_type_matrix.vcproj", "{831A2583-F85F-4AF1-9851-8978D8BC8409}"
 EndProject

@@ -17,8 +17,8 @@ EXECS= \
 	mixed_type_matrix_test \
 	multi_type_matrix_test \
 	rectangle_set_test \
-	grid_map_test_default \
-	grid_map_test_custom
+	multi_type_vector_test_default \
+	multi_type_vector_test_custom
 
 HEADERS= \
 	$(INCDIR)/mdds/flat_segment_tree_def.inl \
@@ -51,7 +51,7 @@ TESTS = \
 	test.pqt \
 	test.st \
 	test.mtm \
-	test.gridmap \
+	test.mtv \
 	test.mtmatrix
 
 TESTS_MEM = \
@@ -88,11 +88,11 @@ $(OBJDIR)/point_quad_tree_test.o: $(SRCDIR)/point_quad_tree_test.cpp $(DEPENDS)
 $(OBJDIR)/mixed_type_matrix_test.o: $(SRCDIR)/mixed_type_matrix_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/mixed_type_matrix_test.cpp
 
-$(OBJDIR)/grid_map_test_default.o: $(SRCDIR)/grid_map_test_default.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/grid_map_test_default.cpp
+$(OBJDIR)/multi_type_vector_test_default.o: $(SRCDIR)/multi_type_vector_test_default.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/multi_type_vector_test_default.cpp
 
-$(OBJDIR)/grid_map_test_custom.o: $(SRCDIR)/grid_map_test_custom.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/grid_map_test_custom.cpp
+$(OBJDIR)/multi_type_vector_test_custom.o: $(SRCDIR)/multi_type_vector_test_custom.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/multi_type_vector_test_custom.cpp
 
 $(OBJDIR)/multi_type_matrix_test.o: $(SRCDIR)/multi_type_matrix_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/multi_type_matrix_test.cpp
@@ -112,16 +112,16 @@ point_quad_tree_test: pre $(OBJDIR)/point_quad_tree_test.o
 mixed_type_matrix_test: pre $(OBJDIR)/mixed_type_matrix_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/mixed_type_matrix_test.o -o $@
 
-grid_map_test_default: pre $(OBJDIR)/grid_map_test_default.o
-	$(CXX) $(LDFLAGS) $(OBJDIR)/grid_map_test_default.o -o $@
+multi_type_vector_test_default: pre $(OBJDIR)/multi_type_vector_test_default.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/multi_type_vector_test_default.o -o $@
 
-grid_map_test_custom: pre $(OBJDIR)/grid_map_test_custom.o
-	$(CXX) $(LDFLAGS) $(OBJDIR)/grid_map_test_custom.o -o $@
+multi_type_vector_test_custom: pre $(OBJDIR)/multi_type_vector_test_custom.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/multi_type_vector_test_custom.o -o $@
 
 multi_type_matrix_test: pre $(OBJDIR)/multi_type_matrix_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/multi_type_matrix_test.o -o $@
 
-grid_map_test: grid_map_test_default grid_map_test_custom
+multi_type_vector_test: multi_type_vector_test_default multi_type_vector_test_custom
 
 stlperf_test: pre $(SRCDIR)/stlperf_test.cpp
 	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
@@ -171,13 +171,13 @@ test.mtm.perf: mixed_type_matrix_test
 test.mtm.mem: mixed_type_matrix_test
 	valgrind --tool=memcheck --leak-check=full ./mixed_type_matrix_test func
 
-test.gridmap: grid_map_test_default grid_map_test_custom
-	./grid_map_test_default func
-	./grid_map_test_custom func
+test.mtv: multi_type_vector_test_default multi_type_vector_test_custom
+	./multi_type_vector_test_default func
+	./multi_type_vector_test_custom func
 
-test.gridmap.mem: grid_map_test_default grid_map_test_custom
-	valgrind --tool=memcheck --leak-check=full ./grid_map_test_default func
-	valgrind --tool=memcheck --leak-check=full ./grid_map_test_custom func
+test.mtv.mem: multi_type_vector_test_default multi_type_vector_test_custom
+	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_default func
+	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_custom func
 
 test.mtmatrix: multi_type_matrix_test
 	./multi_type_matrix_test func
