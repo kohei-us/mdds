@@ -250,7 +250,6 @@
 				<F N="../include/mdds/mixed_type_matrix_storage_filled_linear.inl"/>
 				<F N="../include/mdds/mixed_type_matrix_storage_sparse.inl"/>
 				<F N="../include/mdds/multi_type_matrix.hpp"/>
-				<F N="../include/mdds/multi_type_matrix_block_func.hpp"/>
 				<F N="../include/mdds/multi_type_matrix_def.inl"/>
 				<F N="../include/mdds/multi_type_vector.hpp"/>
 				<F N="../include/mdds/multi_type_vector_def.inl"/>
@@ -268,10 +267,10 @@
 		</Folder>
 		<Folder Name="../src">
 			<F N="../src/flat_segment_tree_test.cpp"/>
-			<F N="../src/multi_type_vector_test_custom.cpp"/>
-			<F N="../src/multi_type_vector_test_default.cpp"/>
 			<F N="../src/mixed_type_matrix_test.cpp"/>
 			<F N="../src/multi_type_matrix_test.cpp"/>
+			<F N="../src/multi_type_vector_test_custom.cpp"/>
+			<F N="../src/multi_type_vector_test_default.cpp"/>
 			<F N="../src/nodecontainer.cpp"/>
 			<F N="../src/point_quad_tree_test.cpp"/>
 			<F N="../src/rangetree.cpp"/>
