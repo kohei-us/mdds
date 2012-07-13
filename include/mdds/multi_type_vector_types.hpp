@@ -29,6 +29,7 @@
 #define __MDDS_GRID_MAP_TYPES_HPP__
 
 #include "mdds/default_deleter.hpp"
+#include "compat/unique_ptr.hpp"
 
 #include <vector>
 #include <boost/noncopyable.hpp>
@@ -343,6 +344,7 @@ template<element_t _TypeId, typename _Data>
 struct managed_element_block : public copyable_element_block<managed_element_block<_TypeId,_Data>, _TypeId, _Data*>
 {
     typedef copyable_element_block<managed_element_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
+    typedef managed_element_block<_TypeId,_Data> self_type;
 
     using base_type::get;
     using base_type::m_array;
@@ -362,6 +364,19 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
         std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
     }
 
+    static self_type* create_block_with_value(size_t init_size, _Data* val)
+    {
+        // Managed blocks don't support initialization with value.
+        if (init_size > 1)
+            throw general_error("You can't create a managed block with initial value.");
+
+        unique_ptr<self_type> blk(new self_type(init_size));
+        if (init_size == 1)
+            set_value(*blk, 0, val);
+
+        return blk.release();
+    }
+
     static void overwrite_values(base_element_block& block, size_t pos, size_t len)
     {
         managed_element_block& blk = get(block);
@@ -375,6 +390,7 @@ template<element_t _TypeId, typename _Data>
 struct noncopyable_managed_element_block : public noncopyable_element_block<noncopyable_managed_element_block<_TypeId,_Data>, _TypeId, _Data*>
 {
     typedef noncopyable_element_block<noncopyable_managed_element_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
+    typedef managed_element_block<_TypeId,_Data> self_type;
 
     using base_type::get;
     using base_type::m_array;
@@ -385,6 +401,19 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
     ~noncopyable_managed_element_block()
     {
         std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
+    }
+
+    static self_type* create_block_with_value(size_t init_size, _Data* val)
+    {
+        // Managed blocks don't support initialization with value.
+        if (init_size > 1)
+            throw general_error("You can't create a managed block with initial value.");
+
+        unique_ptr<self_type> blk(new self_type(init_size));
+        if (init_size == 1)
+            set_value(*blk, 0, val);
+
+        return blk.release();
     }
 
     static void overwrite_values(base_element_block& block, size_t pos, size_t len)

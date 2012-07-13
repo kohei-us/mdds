@@ -229,15 +229,7 @@ mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, user_cell* 
 
 mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, muser_cell* val)
 {
-    // Managed blocks in general don't support initialization with value.
-    if (init_size > 1)
-        throw general_error("You can't create a managed block with initial value.");
-
-    mdds::unique_ptr<muser_cell_block> blk(muser_cell_block::create_block(init_size));
-    if (init_size == 1)
-        muser_cell_block::set_value(*blk, 0, val);
-
-    return blk.release();
+    return muser_cell_block::create_block_with_value(init_size, val);
 }
 
 }
