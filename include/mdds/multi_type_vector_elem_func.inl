@@ -27,82 +27,82 @@
 
 namespace mdds {
 
-mtv::element_t mdds_mtv_get_element_type(double)
+inline mtv::element_t mdds_mtv_get_element_type(double)
 {
     return mtv::element_type_numeric;
 }
 
-mtv::element_t mdds_mtv_get_element_type(const std::string&)
+inline mtv::element_t mdds_mtv_get_element_type(const std::string&)
 {
     return mtv::element_type_string;
 }
 
-mtv::element_t mdds_mtv_get_element_type(size_t)
+inline mtv::element_t mdds_mtv_get_element_type(size_t)
 {
     return mtv::element_type_index;
 }
 
-mtv::element_t mdds_mtv_get_element_type(bool)
+inline mtv::element_t mdds_mtv_get_element_type(bool)
 {
     return mtv::element_type_boolean;
 }
 
-void mdds_mtv_get_empty_value(double& val)
+inline void mdds_mtv_get_empty_value(double& val)
 {
     val = 0.0;
 }
 
-void mdds_mtv_get_empty_value(std::string& val)
+inline void mdds_mtv_get_empty_value(std::string& val)
 {
     val = std::string();
 }
 
-void mdds_mtv_get_empty_value(size_t& val)
+inline void mdds_mtv_get_empty_value(size_t& val)
 {
     val = 0;
 }
 
-void mdds_mtv_get_empty_value(bool& val)
+inline void mdds_mtv_get_empty_value(bool& val)
 {
     val = false;
 }
 
-void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, double val)
+inline void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, double val)
 {
     mtv::numeric_element_block::set_value(block, pos, val);
 }
 
-void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, const std::string& val)
+inline void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, const std::string& val)
 {
     mtv::string_element_block::set_value(block, pos, val);
 }
 
-void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, size_t val)
+inline void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, size_t val)
 {
     mtv::index_element_block::set_value(block, pos, val);
 }
 
-void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, bool val)
+inline void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, bool val)
 {
     mtv::boolean_element_block::set_value(block, pos, val);
 }
 
-void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, double& val)
+inline void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, double& val)
 {
     mtv::numeric_element_block::get_value(block, pos, val);
 }
 
-void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, std::string& val)
+inline void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, std::string& val)
 {
     mtv::string_element_block::get_value(block, pos, val);
 }
 
-void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, size_t& val)
+inline void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, size_t& val)
 {
     mtv::index_element_block::get_value(block, pos, val);
 }
 
-void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, bool& val)
+inline void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, bool& val)
 {
     mtv::boolean_element_block::get_value(block, pos, val);
 }
@@ -135,42 +135,42 @@ void mdds_mtv_set_values(
     mtv::boolean_element_block::set_values(block, pos, it_begin, it_end);
 }
 
-void mdds_mtv_append_value(mtv::base_element_block& block, double val)
+inline void mdds_mtv_append_value(mtv::base_element_block& block, double val)
 {
     mtv::numeric_element_block::append_value(block, val);
 }
 
-void mdds_mtv_append_value(mtv::base_element_block& block, const std::string& val)
+inline void mdds_mtv_append_value(mtv::base_element_block& block, const std::string& val)
 {
     mtv::string_element_block::append_value(block, val);
 }
 
-void mdds_mtv_append_value(mtv::base_element_block& block, size_t val)
+inline void mdds_mtv_append_value(mtv::base_element_block& block, size_t val)
 {
     mtv::index_element_block::append_value(block, val);
 }
 
-void mdds_mtv_append_value(mtv::base_element_block& block, bool val)
+inline void mdds_mtv_append_value(mtv::base_element_block& block, bool val)
 {
     mtv::boolean_element_block::append_value(block, val);
 }
 
-void mdds_mtv_prepend_value(mtv::base_element_block& block, double val)
+inline void mdds_mtv_prepend_value(mtv::base_element_block& block, double val)
 {
     mtv::numeric_element_block::prepend_value(block, val);
 }
 
-void mdds_mtv_prepend_value(mtv::base_element_block& block, const std::string& val)
+inline void mdds_mtv_prepend_value(mtv::base_element_block& block, const std::string& val)
 {
     mtv::string_element_block::prepend_value(block, val);
 }
 
-void mdds_mtv_prepend_value(mtv::base_element_block& block, size_t val)
+inline void mdds_mtv_prepend_value(mtv::base_element_block& block, size_t val)
 {
     mtv::index_element_block::prepend_value(block, val);
 }
 
-void mdds_mtv_prepend_value(mtv::base_element_block& block, bool val)
+inline void mdds_mtv_prepend_value(mtv::base_element_block& block, bool val)
 {
     mtv::boolean_element_block::prepend_value(block, val);
 }
@@ -275,22 +275,22 @@ void mdds_mtv_insert_values(
     mtv::boolean_element_block::insert_values(block, pos, it_begin, it_end);
 }
 
-mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, double val)
+inline mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, double val)
 {
     return mtv::numeric_element_block::create_block_with_value(init_size, val);
 }
 
-mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const std::string& val)
+inline mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const std::string& val)
 {
     return mtv::string_element_block::create_block_with_value(init_size, val);
 }
 
-mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, size_t val)
+inline mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, size_t val)
 {
     return mtv::index_element_block::create_block_with_value(init_size, val);
 }
 
-mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, bool val)
+inline mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, bool val)
 {
     return mtv::boolean_element_block::create_block_with_value(init_size, val);
 }

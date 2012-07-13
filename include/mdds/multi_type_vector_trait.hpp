@@ -36,29 +36,29 @@ namespace mdds { namespace mtv {
 
 struct element_block_func_base
 {
-    static base_element_block* create_new_block(element_t type, size_t init_size);
+    inline static base_element_block* create_new_block(element_t type, size_t init_size);
 
-    static base_element_block* clone_block(const base_element_block& block);
+    inline static base_element_block* clone_block(const base_element_block& block);
 
-    static void delete_block(base_element_block* p);
+    inline static void delete_block(base_element_block* p);
 
-    static void resize_block(base_element_block& block, size_t new_size);
+    inline static void resize_block(base_element_block& block, size_t new_size);
 
-    static void print_block(const base_element_block& block);
+    inline static void print_block(const base_element_block& block);
 
-    static void erase(base_element_block& block, size_t pos);
+    inline static void erase(base_element_block& block, size_t pos);
 
-    static void erase(base_element_block& block, size_t pos, size_t size);
+    inline static void erase(base_element_block& block, size_t pos, size_t size);
 
-    static void append_values_from_block(base_element_block& dest, const base_element_block& src);
+    inline static void append_values_from_block(base_element_block& dest, const base_element_block& src);
 
-    static void append_values_from_block(
+    inline static void append_values_from_block(
         base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len);
 
-    static void assign_values_from_block(
+    inline static void assign_values_from_block(
         base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len);
 
-    static bool equal_block(const base_element_block& left, const base_element_block& right);
+    inline static bool equal_block(const base_element_block& left, const base_element_block& right);
 
     /**
      * This method gets called when cell values are being overwritten by new
@@ -67,7 +67,7 @@ struct element_block_func_base
      * objects.  For blocks that don't need to manage their stored objects (or
      * store primitive values), this method can be left empty.
      */
-    static void overwrite_values(base_element_block& block, size_t pos, size_t len);
+    inline static void overwrite_values(base_element_block& block, size_t pos, size_t len);
 };
 
 base_element_block* element_block_func_base::create_new_block(element_t type, size_t init_size)

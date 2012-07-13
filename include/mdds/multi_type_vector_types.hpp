@@ -28,8 +28,9 @@
 #ifndef __MDDS_GRID_MAP_TYPES_HPP__
 #define __MDDS_GRID_MAP_TYPES_HPP__
 
-#include "mdds/default_deleter.hpp"
+#include "default_deleter.hpp"
 #include "compat/unique_ptr.hpp"
+#include "global.hpp"
 
 #include <vector>
 #include <boost/noncopyable.hpp>
