@@ -33,6 +33,7 @@
 #include "global.hpp"
 
 #include <vector>
+#include <iostream>
 #include <boost/noncopyable.hpp>
 
 namespace mdds { namespace mtv {
