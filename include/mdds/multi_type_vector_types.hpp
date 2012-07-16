@@ -91,6 +91,7 @@ protected:
 public:
     typedef typename store_type::const_iterator const_iterator;
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
+    typedef _Data value_type;
 
     bool operator== (const _Self& r) const
     {
