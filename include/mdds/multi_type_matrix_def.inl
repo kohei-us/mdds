@@ -291,6 +291,36 @@ void multi_type_matrix<_String>::copy(const multi_type_matrix& r)
 }
 
 template<typename _String>
+void multi_type_matrix<_String>::copy_store(store_type& dest, size_type rows, size_type cols) const
+{
+    size_type row_count = std::min(rows, m_size.row);
+    size_type col_count = std::min(cols, m_size.column);
+    for (size_type c = 0; c < col_count; ++c)
+    {
+        for (size_type r = 0; r < row_count; ++r)
+        {
+            switch (get_type(r, c))
+            {
+                case mtm::element_numeric:
+                    dest.set(rows*c+r, get<double>(r,c));
+                break;
+                case mtm::element_boolean:
+                    dest.set(rows*c+r, get<bool>(r,c));
+                break;
+                case mtm::element_string:
+                    dest.set(rows*c+r, get<string_type>(r,c));
+                break;
+                case mtm::element_empty:
+                    // Do nothing since the temp store has been initialized with empty elements.
+                break;
+                default:
+                    throw general_error("multi_type_matrix: unknown element type.");
+            }
+        }
+    }
+}
+
+template<typename _String>
 void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
 {
     if (!rows || !cols)
@@ -302,31 +332,27 @@ void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
     }
 
     store_type temp_store(rows*cols);
-    size_type row_count = std::min(rows, m_size.row);
-    size_type col_count = std::min(cols, m_size.column);
-    for (size_type c = 0; c < col_count; ++c)
+    copy_store(temp_store, rows, cols);
+
+    m_size.row = rows;
+    m_size.column = cols;
+    m_store.swap(temp_store);
+}
+
+template<typename _String>
+template<typename _T>
+void multi_type_matrix<_String>::resize(size_type rows, size_type cols, const _T& value)
+{
+    if (!rows || !cols)
     {
-        for (size_type r = 0; r < row_count; ++r)
-        {
-            switch (get_type(r, c))
-            {
-                case mtm::element_numeric:
-                    temp_store.set(rows*c+r, get<double>(r,c));
-                break;
-                case mtm::element_boolean:
-                    temp_store.set(rows*c+r, get<bool>(r,c));
-                break;
-                case mtm::element_string:
-                    temp_store.set(rows*c+r, get<string_type>(r,c));
-                break;
-                case mtm::element_empty:
-                    // Do nothing since the temp store has been initialized with empty elements.
-                break;
-                default:
-                    throw general_error("multi_type_matrix: unknown element type.");
-            }
-        }
+        m_size.row = 0;
+        m_size.column = 0;
+        m_store.clear();
+        return;
     }
+
+    store_type temp_store(rows*cols, value);
+    copy_store(temp_store, rows, cols);
 
     m_size.row = rows;
     m_size.column = cols;

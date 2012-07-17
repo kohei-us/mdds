@@ -282,6 +282,9 @@ public:
      */
     void resize(size_type rows, size_type cols);
 
+    template<typename _T>
+    void resize(size_type rows, size_type cols, const _T& value);
+
     /**
      * Empty the matrix.
      */
@@ -333,6 +336,8 @@ private:
     {
         return m_size.row * col + row;
     }
+
+    void copy_store(store_type& dest, size_type rows, size_type cols) const;
 
 private:
     store_type m_store;

@@ -593,6 +593,32 @@ void mtm_test_resize()
     mtx.resize(0, 0);
     assert(mtx.size().row == 0);
     assert(mtx.size().column == 0);
+
+    // Resize with initial value when the matrix becomes larger.
+    mtx.resize(3, 2, 12.5);
+    assert(mtx.size().row == 3);
+    assert(mtx.size().column == 2);
+    assert(mtx.get<double>(2, 1) == 12.5);
+    assert(mtx.get<double>(2, 0) == 12.5);
+    assert(mtx.get<double>(0, 0) == 12.5);
+    assert(mtx.get<double>(0, 1) == 12.5);
+
+    // The initial value should be ignored when shrinking.
+    mtx.resize(2, 1, true);
+    assert(mtx.size().row == 2);
+    assert(mtx.size().column == 1);
+    assert(mtx.get<double>(1, 0) == 12.5);
+
+    // Resize again with initial value of different type.
+    mtx.resize(3, 2, string("extra"));
+    assert(mtx.size().row == 3);
+    assert(mtx.size().column == 2);
+    assert(mtx.get<double>(0, 0) == 12.5);
+    assert(mtx.get<double>(1, 0) == 12.5);
+    assert(mtx.get<string>(2, 1) == "extra");
+    assert(mtx.get<string>(2, 0) == "extra");
+    assert(mtx.get<string>(1, 1) == "extra");
+    assert(mtx.get<string>(0, 1) == "extra");
 }
 
 void mtm_test_copy()
