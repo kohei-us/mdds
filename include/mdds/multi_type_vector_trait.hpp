@@ -79,7 +79,7 @@ base_element_block* element_block_func_base::create_new_block(element_t type, si
         case element_type_string:
             return string_element_block::create_block(init_size);
         case element_type_ulong:
-            return index_element_block::create_block(init_size);
+            return ulong_element_block::create_block(init_size);
         case element_type_boolean:
             return boolean_element_block::create_block(init_size);
         default:
@@ -97,7 +97,7 @@ base_element_block* element_block_func_base::clone_block(const base_element_bloc
         case element_type_string:
             return string_element_block::clone_block(block);
         case element_type_ulong:
-            return index_element_block::clone_block(block);
+            return ulong_element_block::clone_block(block);
         case element_type_boolean:
             return boolean_element_block::clone_block(block);
         default:
@@ -120,7 +120,7 @@ void element_block_func_base::delete_block(base_element_block* p)
             string_element_block::delete_block(p);
         break;
         case element_type_ulong:
-            index_element_block::delete_block(p);
+            ulong_element_block::delete_block(p);
         break;
         case element_type_boolean:
             boolean_element_block::delete_block(p);
@@ -141,7 +141,7 @@ void element_block_func_base::resize_block(base_element_block& block, size_t new
             string_element_block::resize_block(block, new_size);
         break;
         case element_type_ulong:
-            index_element_block::resize_block(block, new_size);
+            ulong_element_block::resize_block(block, new_size);
         break;
         case element_type_boolean:
             boolean_element_block::resize_block(block, new_size);
@@ -162,7 +162,7 @@ void element_block_func_base::print_block(const base_element_block& block)
             string_element_block::print_block(block);
         break;
         case element_type_ulong:
-            index_element_block::print_block(block);
+            ulong_element_block::print_block(block);
         break;
         case element_type_boolean:
             boolean_element_block::print_block(block);
@@ -183,7 +183,7 @@ void element_block_func_base::erase(base_element_block& block, size_t pos)
             string_element_block::erase_block(block, pos);
         break;
         case element_type_ulong:
-            index_element_block::erase_block(block, pos);
+            ulong_element_block::erase_block(block, pos);
         break;
         case element_type_boolean:
             boolean_element_block::erase_block(block, pos);
@@ -204,7 +204,7 @@ void element_block_func_base::erase(base_element_block& block, size_t pos, size_
             string_element_block::erase_block(block, pos, size);
         break;
         case element_type_ulong:
-            index_element_block::erase_block(block, pos, size);
+            ulong_element_block::erase_block(block, pos, size);
         break;
         case element_type_boolean:
             boolean_element_block::erase_block(block, pos, size);
@@ -225,7 +225,7 @@ void element_block_func_base::append_values_from_block(base_element_block& dest,
             string_element_block::append_values_from_block(dest, src);
         break;
         case element_type_ulong:
-            index_element_block::append_values_from_block(dest, src);
+            ulong_element_block::append_values_from_block(dest, src);
         break;
         case element_type_boolean:
             boolean_element_block::append_values_from_block(dest, src);
@@ -247,7 +247,7 @@ void element_block_func_base::append_values_from_block(
             string_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_ulong:
-            index_element_block::append_values_from_block(dest, src, begin_pos, len);
+            ulong_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_boolean:
             boolean_element_block::append_values_from_block(dest, src, begin_pos, len);
@@ -269,7 +269,7 @@ void element_block_func_base::assign_values_from_block(
             string_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_ulong:
-            index_element_block::assign_values_from_block(dest, src, begin_pos, len);
+            ulong_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_boolean:
             boolean_element_block::assign_values_from_block(dest, src, begin_pos, len);
@@ -292,7 +292,7 @@ bool element_block_func_base::equal_block(const base_element_block& left, const 
         case element_type_string:
             return string_element_block::get(left) == string_element_block::get(right);
         case element_type_ulong:
-            return index_element_block::get(left) == index_element_block::get(right);
+            return ulong_element_block::get(left) == ulong_element_block::get(right);
         case element_type_boolean:
             return boolean_element_block::get(left) == boolean_element_block::get(right);
         default:

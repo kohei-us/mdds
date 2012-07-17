@@ -430,7 +430,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
 
 typedef default_element_block<mtv::element_type_numeric, double>      numeric_element_block;
 typedef default_element_block<mtv::element_type_string, std::string>  string_element_block;
-typedef default_element_block<mtv::element_type_ulong, unsigned long> index_element_block;
+typedef default_element_block<mtv::element_type_ulong, unsigned long> ulong_element_block;
 typedef default_element_block<mtv::element_type_boolean, bool>        boolean_element_block;
 
 }}

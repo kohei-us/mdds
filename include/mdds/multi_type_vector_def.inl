@@ -25,6 +25,8 @@
  *
  ************************************************************************/
 
+#include "multi_type_vector_macro.hpp"
+
 #include <stdexcept>
 
 #if UNIT_TEST
@@ -33,9 +35,12 @@ using std::cout;
 using std::endl;
 #endif
 
-#include "multi_type_vector_elem_func.inl"
-
 namespace mdds {
+
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_numeric, 0.0, mtv::numeric_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, mtv::element_type_string, std::string(), mtv::string_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned long, mtv::element_type_ulong, 0, mtv::ulong_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
 
 template<typename _CellBlockFunc>
 multi_type_vector<_CellBlockFunc>::block::block() : m_size(0), mp_data(NULL) {}

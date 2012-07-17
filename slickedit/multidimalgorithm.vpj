@@ -253,8 +253,8 @@
 				<F N="../include/mdds/multi_type_matrix_def.inl"/>
 				<F N="../include/mdds/multi_type_vector.hpp"/>
 				<F N="../include/mdds/multi_type_vector_def.inl"/>
-				<F N="../include/mdds/multi_type_vector_elem_func.inl"/>
 				<F N="../include/mdds/multi_type_vector_itr.hpp"/>
+				<F N="../include/mdds/multi_type_vector_macro.hpp"/>
 				<F N="../include/mdds/multi_type_vector_trait.hpp"/>
 				<F N="../include/mdds/multi_type_vector_types.hpp"/>
 				<F N="../include/mdds/node.hpp"/>
