@@ -31,9 +31,6 @@ template<typename _String>
 multi_type_matrix<_String>::multi_type_matrix() {}
 
 template<typename _String>
-multi_type_matrix<_String>::~multi_type_matrix() {}
-
-template<typename _String>
 multi_type_matrix<_String>::multi_type_matrix(size_type rows, size_type cols) :
     m_store(rows*cols), m_size(rows, cols) {}
 
@@ -41,6 +38,38 @@ template<typename _String>
 template<typename _T>
 multi_type_matrix<_String>::multi_type_matrix(size_type rows, size_type cols, const _T& value) :
     m_store(rows*cols, value), m_size(rows, cols) {}
+
+template<typename _String>
+multi_type_matrix<_String>::multi_type_matrix(const multi_type_matrix& r) :
+    m_store(r.m_store), m_size(r.m_size) {}
+
+template<typename _String>
+multi_type_matrix<_String>::~multi_type_matrix() {}
+
+template<typename _String>
+bool multi_type_matrix<_String>::operator== (const multi_type_matrix& r) const
+{
+    return m_size == r.m_size && m_store == r.m_store;
+}
+
+template<typename _String>
+bool multi_type_matrix<_String>::operator!= (const multi_type_matrix& r) const
+{
+    return !operator== (r);
+}
+
+template<typename _String>
+multi_type_matrix<_String>&
+multi_type_matrix<_String>::operator= (const multi_type_matrix& r)
+{
+    if (this == &r)
+        return *this;
+
+    store_type tmp(r.m_store);
+    m_store.swap(tmp);
+    m_size = r.m_size;
+    return *this;
+}
 
 template<typename _String>
 mtm::element_t

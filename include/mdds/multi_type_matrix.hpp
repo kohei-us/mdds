@@ -75,6 +75,9 @@ public:
         size_type column;
         size_pair_type() : row(0), column(0) {}
         size_pair_type(size_type _row, size_type _column) : row(_row), column(_column) {}
+
+        bool operator== (const size_pair_type& r) const { return row == r.row && column == r.column; }
+        bool operator!= (const size_pair_type& r) const { return !operator== (r); }
     };
 
     struct element_block_node_type
@@ -137,6 +140,9 @@ public:
 
     multi_type_matrix(const multi_type_matrix& r);
     ~multi_type_matrix();
+
+    bool operator== (const multi_type_matrix& other) const;
+    bool operator!= (const multi_type_matrix& other) const;
 
     multi_type_matrix& operator= (const multi_type_matrix& r);
 

@@ -635,6 +635,22 @@ void mtm_test_copy()
     assert(success);
 }
 
+void mtm_test_assignment()
+{
+    stack_printer __stack_printer__("::mtm_test_assignment");
+    mtx_type mx_orig(5, 5, 1.2);
+    mtx_type mx_copied = mx_orig;
+    assert(mx_orig == mx_copied);
+
+    mx_copied = mx_copied; // self assignment.
+    assert(mx_copied == mx_copied);
+
+    mx_orig.set(2, 3, true);
+    mx_orig.set(1, 1, string("foo"));
+    mx_copied = mx_orig;
+    assert(mx_orig == mx_copied);
+}
+
 void mtm_test_numeric()
 {
     // Numeric elements only matrix is numeric.
@@ -873,6 +889,7 @@ int main (int argc, char **argv)
         mtm_test_transpose();
         mtm_test_resize();
         mtm_test_copy();
+        mtm_test_assignment();
         mtm_test_numeric();
         mtm_test_walk();
         mtm_test_custom_string();
