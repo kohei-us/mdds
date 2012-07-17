@@ -34,7 +34,8 @@ AC_SUBST(SRCDIR)
 AC_SUBST(INCDIR)
 AC_SUBST(QUICKCHECKDIR)
 
-CPPFLAGS="-DDEBUG_NODE_BASE -DUNIT_TEST -Wall -Os -g -pedantic-errors"
+CPPFLAGS_NODEBUG="-Wall -Os -g -pedantic-errors"
+CPPFLAGS="$CPPFLAGS_NODEBUG -DDEBUG_NODE_BASE -DUNIT_TEST"
 if test $with_hash_container = stlport; then
   CPPFLAGS="$CPPFLAGS -DMDDS_HASH_CONTAINER_STLPORT"
 elif test $with_hash_container = boost; then
@@ -43,8 +44,8 @@ else
   CPPFLAGS="$CPPFLAGS -std=c++0x"
 fi
 
-
 AC_SUBST(CPPFLAGS)
+AC_SUBST(CPPFLAGS_NODEBUG)
 
 AC_OUTPUT(Makefile)
 AC_OUTPUT(example/Makefile)

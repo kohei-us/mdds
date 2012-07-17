@@ -25,7 +25,7 @@
 #
 #***********************************************************************
 
-CPPFLAGS=@CPPFLAGS@ -I../include
+CPPFLAGS=@CPPFLAGS_NODEBUG@ -I../include
 
 EXEC= \
 	segment_tree \
