@@ -7,7 +7,6 @@ git clone https://code.google.com/p/multidimalgorithm/ $DIR
 pushd .
 cd $DIR
 autoconf
-rm -rf autom4te.cache .git bin
+rm -rf autom4te.cache .git bin slickedit vsprojects
 popd
-find $DIR -name '*.vp?' -type f | xargs rm -f
 tar jcvf $DIR.tar.bz2 $DIR
