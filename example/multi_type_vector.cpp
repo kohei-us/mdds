@@ -63,6 +63,7 @@ int main()
                     mdds::mtv::string_element_block::end(*it_blk->data);
                 std::for_each(it, it_end, print_elements<mdds::mtv::string_element_block>());
             }
+            break;
             case mdds::mtv::element_type_empty:
                 cout << "empty block of size " << it_blk->size << endl;
                 cout << " - no data - " << endl;
