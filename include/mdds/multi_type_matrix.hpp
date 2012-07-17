@@ -275,13 +275,24 @@ public:
     /**
      * Resize the matrix to specified size.  This method supports resizing to
      * zero-sized matrix; however, either specifying the row or column size to
-     * zero will resize the matrix to 0 x 0.
+     * zero will resize the matrix to 0 x 0.  When resizing the matrix larger,
+     * empty elements will be inserted in the region where no existing
+     * elements exist.
      *
      * @param rows new row size
      * @param cols new column size
      */
     void resize(size_type rows, size_type cols);
 
+    /**
+     * Resize the matrix to specified size and initial value.  The initial
+     * value will be applied to new elements created when the specified size
+     * is larger than the current one.
+     *
+     * @param rows new row size
+     * @param cols new column size
+     * @param value initial value for new elements
+     */
     template<typename _T>
     void resize(size_type rows, size_type cols, const _T& value);
 
