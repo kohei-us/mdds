@@ -462,7 +462,7 @@ void mtv_test_types()
     ct = column_type::get_element_type(string());
     assert(ct == mtv::element_type_string);
     ct = column_type::get_element_type(size_t(12));
-    assert(ct == mtv::element_type_index);
+    assert(ct == mtv::element_type_ulong);
     ct = column_type::get_element_type(true);
     assert(ct == mtv::element_type_boolean);
     ct = column_type::get_element_type(false);
