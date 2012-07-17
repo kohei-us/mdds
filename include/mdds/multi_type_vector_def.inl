@@ -661,8 +661,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type 
     assert(blk->m_size == 1);
     assert(blk->mp_data);
     element_category_type cat = mdds_mtv_get_element_type(cell);
-    element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
-    assert(blk_cat != cat);
+    assert(mdds::mtv::get_block_type(*blk->mp_data) != cat);
 
     if (block_index == 0)
     {
