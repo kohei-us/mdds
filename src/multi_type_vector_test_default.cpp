@@ -537,7 +537,7 @@ void mtv_test_basic()
         col_db.set(1, 1.0);
         string str = "foo";
         col_db.set(2, str);
-        size_t index = 5;
+        unsigned long index = 5;
         test_cell_insertion(col_db, 2, index);
     }
 
@@ -551,7 +551,7 @@ void mtv_test_basic()
         assert(res);
         res = test_cell_insertion(col_db, 1, 2.0);
         assert(res);
-        size_t index = 2;
+        unsigned long index = 2;
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
         string test;
@@ -590,7 +590,7 @@ void mtv_test_basic()
         col_db.set(1, str);
         str = "beta";
         col_db.set(2, str);
-        size_t index = 1;
+        unsigned long index = 1;
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
         string test;
@@ -611,7 +611,7 @@ void mtv_test_basic()
         assert(res);
 
         // Now, insert a cell of the 4th type to the middle spot.
-        size_t index = 2;
+        unsigned long index = 2;
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
     }
@@ -619,14 +619,14 @@ void mtv_test_basic()
     {
         // set_cell() to merge 3 blocks.
         column_type db(6);
-        db.set(0, size_t(12));
+        db.set(0, static_cast<unsigned long>(12));
         db.set(1, 1.0);
         db.set(2, 2.0);
         db.set(3, string("foo"));
         db.set(4, 3.0);
         db.set(5, 4.0);
         assert(db.block_size() == 4);
-        assert(db.get<size_t>(0) == 12);
+        assert(db.get<unsigned long>(0) == 12);
         assert(db.get<double>(1) == 1.0);
         assert(db.get<double>(2) == 2.0);
         assert(db.get<string>(3) == "foo");
@@ -635,7 +635,7 @@ void mtv_test_basic()
 
         db.set(3, 5.0); // merge blocks.
         assert(db.block_size() == 2);
-        assert(db.get<size_t>(0) == 12);
+        assert(db.get<unsigned long>(0) == 12);
         assert(db.get<double>(1) == 1.0);
         assert(db.get<double>(2) == 2.0);
         assert(db.get<double>(3) == 5.0);
@@ -777,7 +777,7 @@ void mtv_test_empty_cells()
         string str = "foo";
         db.set(2, str);
         db.set(3, str);
-        size_t index = 1;
+        unsigned long index = 1;
         db.set(4, index);
         index = 100;
         db.set(5, index);
@@ -792,7 +792,7 @@ void mtv_test_empty_cells()
         double val;
         db.get(0, val);
         assert(val == 1.0);
-        size_t index_test;
+        unsigned long index_test;
         db.get(5, index_test);
         assert(index_test == 100);
     }
@@ -805,7 +805,7 @@ void mtv_test_empty_cells()
         string str = "foo";
         db.set(2, str);
         db.set(3, str);
-        size_t index = 1;
+        unsigned long index = 1;
         db.set(4, index);
         index = 50;
         db.set(5, index);
@@ -817,7 +817,7 @@ void mtv_test_empty_cells()
         assert(db.is_empty(3));
         assert(db.is_empty(4));
         assert(!db.is_empty(5));
-        size_t test;
+        unsigned long test;
         db.get(5, test);
         assert(test == 50);
     }
@@ -830,7 +830,7 @@ void mtv_test_empty_cells()
         string str = "foo";
         db.set(2, str);
         db.set(3, str);
-        size_t index = 1;
+        unsigned long index = 1;
         db.set(4, index);
         db.set(5, index);
 
@@ -932,27 +932,27 @@ void mtv_test_empty_cells()
         // on index in the 2nd block.
         column_type db(5);
         db.set(0, 1.0);
-        db.set(1, size_t(1));
-        db.set(2, size_t(2));
-        db.set(3, size_t(3));
-        db.set(4, size_t(4));
+        db.set(1, static_cast<unsigned long>(1));
+        db.set(2, static_cast<unsigned long>(2));
+        db.set(3, static_cast<unsigned long>(3));
+        db.set(4, static_cast<unsigned long>(4));
         db.set_empty(2, 4);
         assert(!db.is_empty(1));
         assert(db.is_empty(2));
         assert(db.is_empty(3));
         assert(db.is_empty(4));
 
-        db.set(2, size_t(5));
-        db.set(3, size_t(6));
-        db.set(4, size_t(7));
+        db.set(2, static_cast<unsigned long>(5));
+        db.set(3, static_cast<unsigned long>(6));
+        db.set(4, static_cast<unsigned long>(7));
         db.set_empty(1, 2);
         assert(db.is_empty(1));
         assert(db.is_empty(2));
         assert(!db.is_empty(3));
         assert(!db.is_empty(4));
 
-        db.set(3, size_t(8));
-        db.set(4, size_t(9));
+        db.set(3, static_cast<unsigned long>(8));
+        db.set(4, static_cast<unsigned long>(9));
         db.set_empty(2, 3);
     }
 
@@ -1216,7 +1216,7 @@ void mtv_test_erase()
             db.set(i, static_cast<double>(i+1));
 
         for (long i = 4; i < 8; ++i)
-            db.set(i, static_cast<size_t>(i+1));
+            db.set(i, static_cast<unsigned long>(i+1));
 
         assert(db.block_size() == 2);
         assert(db.size() == 8);
@@ -1231,7 +1231,7 @@ void mtv_test_erase()
         db.get(2, test);
         assert(test == 3.0);
 
-        size_t test2;
+        unsigned long test2;
         db.get(3, test2);
         assert(test2 == 8);
 
@@ -1249,7 +1249,7 @@ void mtv_test_erase()
             db.set(i, static_cast<double>(i+1));
 
         for (long i = 3; i < 6; ++i)
-            db.set(i, static_cast<size_t>(i+1));
+            db.set(i, static_cast<unsigned long>(i+1));
 
         for (long i = 6; i < 9; ++i)
         {
@@ -1290,7 +1290,7 @@ void mtv_test_erase()
         column_type db(4);
         db.set(0, 1.1);
         db.set(1, string("foo"));
-        db.set(2, size_t(2));
+        db.set(2, static_cast<unsigned long>(2));
         db.set(3, string("baa"));
         assert(db.block_size() == 4);
         assert(db.size() == 4);
@@ -1302,10 +1302,10 @@ void mtv_test_erase()
         // Try again, but this time merge two empty blocks.
         db.resize(4);
         db.set_empty(1, 3);
-        db.set(2, size_t(10));
+        db.set(2, static_cast<unsigned long>(10));
         assert(db.get<double>(0) == 1.1);
         assert(db.is_empty(1));
-        assert(db.get<size_t>(2) == 10);
+        assert(db.get<unsigned long>(2) == 10);
         assert(db.is_empty(3));
 
         db.erase(2, 2);
@@ -1491,13 +1491,13 @@ void mtv_test_set_cells()
 
         {
             // Replace the upper part of a single block.
-            size_t vals[] = { 1, 2, 3 };
-            size_t* p = &vals[0];
-            size_t* p_end = p + 3;
+            unsigned long vals[] = { 1, 2, 3 };
+            unsigned long* p = &vals[0];
+            unsigned long* p_end = p + 3;
             db.set(0, p, p_end);
             assert(db.block_size() == 2);
             assert(db.size() == 5);
-            size_t test;
+            unsigned long test;
             db.get(0, test);
             assert(test == 1);
             db.get(2, test);
@@ -1509,13 +1509,13 @@ void mtv_test_set_cells()
 
         {
             // Merge with the previos block and erase the whole block.
-            size_t vals[] = { 4, 5 };
-            size_t* p = &vals[0];
-            size_t* p_end = p + 2;
+            unsigned long vals[] = { 4, 5 };
+            unsigned long* p = &vals[0];
+            unsigned long* p_end = p + 2;
             db.set(3, p, p_end);
             assert(db.block_size() == 1);
             assert(db.size() == 5);
-            size_t test;
+            unsigned long test;
             db.get(2, test);
             assert(test == 3);
             db.get(3, test);
@@ -1525,7 +1525,7 @@ void mtv_test_set_cells()
         {
             // Merge with the previous block while keeping the lower part of
             // the block.
-            size_t prev_value;
+            unsigned long prev_value;
             db.get(2, prev_value);
 
             double val = 2.3;
@@ -1545,7 +1545,7 @@ void mtv_test_set_cells()
                 assert(test == 4.5);
             }
 
-            size_t test;
+            unsigned long test;
             db.get(2, test);
             assert(test == prev_value);
         }
@@ -1560,9 +1560,9 @@ void mtv_test_set_cells()
         assert(db.size() == 5);
 
         {
-            size_t vals[] = { 10, 11 };
-            size_t* p = &vals[0];
-            size_t* p_end = p + 2;
+            unsigned long vals[] = { 10, 11 };
+            unsigned long* p = &vals[0];
+            unsigned long* p_end = p + 2;
             db.set(3, p, p_end);
 
             assert(db.block_size() == 2);
@@ -1571,7 +1571,7 @@ void mtv_test_set_cells()
             double test;
             db.get(2, test);
             assert(test == 3.0);
-            size_t test2;
+            unsigned long test2;
             db.get(3, test2);
             assert(test2 == 10);
             db.get(4, test2);
@@ -1598,7 +1598,7 @@ void mtv_test_set_cells()
     {
         column_type db(6);
         double vals_d[] = { 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
-        size_t vals_i[] = { 12, 13, 14, 15 };
+        unsigned long vals_i[] = { 12, 13, 14, 15 };
         string vals_s[] = { "a", "b" };
 
         {
@@ -1615,11 +1615,11 @@ void mtv_test_set_cells()
         }
 
         {
-            size_t* p = &vals_i[0];
-            size_t* p_end = p + 4;
+            unsigned long* p = &vals_i[0];
+            unsigned long* p_end = p + 4;
             db.set(0, p, p_end);
             assert(db.block_size() == 2);
-            size_t test;
+            unsigned long test;
             db.get(0, test);
             assert(test == 12);
             db.get(3, test);
@@ -1639,7 +1639,7 @@ void mtv_test_set_cells()
             double test_d;
             db.get(4, test_d);
             assert(test_d == 1.4);
-            size_t test_i;
+            unsigned long test_i;
             db.get(1, test_i);
             assert(test_i == 13);
         }
@@ -1656,12 +1656,12 @@ void mtv_test_set_cells()
         }
 
         {
-            size_t val_i = 23;
-            size_t* p = &val_i;
-            size_t* p_end = p + 1;
+            unsigned long val_i = 23;
+            unsigned long* p = &val_i;
+            unsigned long* p_end = p + 1;
             db.set(1, p, p_end);
             assert(db.block_size() == 3);
-            size_t test;
+            unsigned long test;
             db.get(1, test);
             assert(test == 23);
             double test_d;
@@ -1806,18 +1806,18 @@ void mtv_test_set_cells()
         db.set(1, string("B"));
         db.set(2, 1.1);
         db.set(3, 1.2);
-        db.set(4, size_t(12));
+        db.set(4, static_cast<unsigned long>(12));
         assert(db.block_size() == 3);
 
-        size_t vals[] = { 21, 22, 23 };
-        size_t* p = &vals[0];
+        unsigned long vals[] = { 21, 22, 23 };
+        unsigned long* p = &vals[0];
         db.set(1, p, p+3);
         assert(db.block_size() == 2);
         assert(db.get<string>(0) == string("A"));
-        assert(db.get<size_t>(1) == 21);
-        assert(db.get<size_t>(2) == 22);
-        assert(db.get<size_t>(3) == 23);
-        assert(db.get<size_t>(4) == 12);
+        assert(db.get<unsigned long>(1) == 21);
+        assert(db.get<unsigned long>(2) == 22);
+        assert(db.get<unsigned long>(3) == 23);
+        assert(db.get<unsigned long>(4) == 12);
     }
 
     {
@@ -1827,30 +1827,30 @@ void mtv_test_set_cells()
         db.set(2, 1.2);
         assert(db.block_size() == 2);
 
-        size_t vals[] = { 11, 12 };
-        size_t* p = &vals[0];
+        unsigned long vals[] = { 11, 12 };
+        unsigned long* p = &vals[0];
         db.set(0, p, p+2);
         assert(db.block_size() == 2);
-        assert(db.get<size_t>(0) == 11);
-        assert(db.get<size_t>(1) == 12);
+        assert(db.get<unsigned long>(0) == 11);
+        assert(db.get<unsigned long>(1) == 12);
         assert(db.get<double>(2) == 1.2);
     }
 
     {
         column_type db(4);
-        db.set(0, size_t(35));
+        db.set(0, static_cast<unsigned long>(35));
         db.set(1, string("A"));
         db.set(2, 1.1);
         db.set(3, 1.2);
         assert(db.block_size() == 3);
 
-        size_t vals[] = { 11, 12 };
-        size_t* p = &vals[0];
+        unsigned long vals[] = { 11, 12 };
+        unsigned long* p = &vals[0];
         db.set(1, p, p+2);
         assert(db.block_size() == 2);
-        assert(db.get<size_t>(0) == 35);
-        assert(db.get<size_t>(1) == 11);
-        assert(db.get<size_t>(2) == 12);
+        assert(db.get<unsigned long>(0) == 35);
+        assert(db.get<unsigned long>(1) == 11);
+        assert(db.get<unsigned long>(2) == 12);
         assert(db.get<double>(3) == 1.2);
     }
 
@@ -1962,7 +1962,7 @@ void mtv_test_insert_cells()
 
     {
         column_type db(2);
-        db.set(0, size_t(23));
+        db.set(0, static_cast<unsigned long>(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
@@ -1971,7 +1971,7 @@ void mtv_test_insert_cells()
         db.insert(1, p, p+3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
-        assert(db.get<size_t>(0) == 23);
+        assert(db.get<unsigned long>(0) == 23);
         assert(db.get<double>(1) == 2.1);
         assert(db.get<double>(2) == 2.2);
         assert(db.get<double>(3) == 2.3);
@@ -1995,7 +1995,7 @@ void mtv_test_insert_cells()
     {
         column_type db(2);
         db.set(0, 1.1);
-        db.set(1, size_t(23));
+        db.set(1, static_cast<unsigned long>(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
@@ -2008,13 +2008,13 @@ void mtv_test_insert_cells()
         assert(db.get<double>(1) == 2.1);
         assert(db.get<double>(2) == 2.2);
         assert(db.get<double>(3) == 2.3);
-        assert(db.get<size_t>(4) == 23);
+        assert(db.get<unsigned long>(4) == 23);
     }
 
     {
         column_type db(2);
         db.set(0, true);
-        db.set(1, size_t(23));
+        db.set(1, static_cast<unsigned long>(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
@@ -2027,13 +2027,13 @@ void mtv_test_insert_cells()
         assert(db.get<double>(1) == 2.1);
         assert(db.get<double>(2) == 2.2);
         assert(db.get<double>(3) == 2.3);
-        assert(db.get<size_t>(4) == 23);
+        assert(db.get<unsigned long>(4) == 23);
     }
 
     {
         column_type db(2);
-        db.set(0, size_t(12));
-        db.set(1, size_t(23));
+        db.set(0, static_cast<unsigned long>(12));
+        db.set(1, static_cast<unsigned long>(23));
         assert(db.block_size() == 1);
         assert(db.size() == 2);
 
@@ -2042,11 +2042,11 @@ void mtv_test_insert_cells()
         db.insert(1, p, p+3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
-        assert(db.get<size_t>(0) == 12);
+        assert(db.get<unsigned long>(0) == 12);
         assert(db.get<double>(1) == 2.1);
         assert(db.get<double>(2) == 2.2);
         assert(db.get<double>(3) == 2.3);
-        assert(db.get<size_t>(4) == 23);
+        assert(db.get<unsigned long>(4) == 23);
     }
 
     {
@@ -2065,22 +2065,22 @@ void mtv_test_insert_cells()
 
     {
         column_type db(2);
-        db.set(0, size_t(11));
-        db.set(1, size_t(12));
+        db.set(0, static_cast<unsigned long>(11));
+        db.set(1, static_cast<unsigned long>(12));
         double vals[] = { 1.2 };
         const double* p = &vals[0];
         db.insert(1, p, p+1);
         assert(db.block_size() == 3);
 
         // Append value to the top block.
-        size_t vals2[] = { 22 };
-        const size_t* p2 = &vals2[0];
+        unsigned long vals2[] = { 22 };
+        const unsigned long* p2 = &vals2[0];
         db.insert(1, p2, p2+1);
         assert(db.block_size() == 3);
-        assert(db.get<size_t>(0) == 11);
-        assert(db.get<size_t>(1) == 22);
+        assert(db.get<unsigned long>(0) == 11);
+        assert(db.get<unsigned long>(1) == 22);
         assert(db.get<double>(2) == 1.2);
-        assert(db.get<size_t>(3) == 12);
+        assert(db.get<unsigned long>(3) == 12);
     }
 }
 
