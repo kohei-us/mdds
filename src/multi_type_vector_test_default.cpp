@@ -78,38 +78,47 @@ void mtv_test_types()
     {
         bool val = false;
         assert(test_type(val) == _bool);
+        cout << "bool is good" << endl;
     }
     {
         short val = 0;
         assert(test_type(val) == _short);
+        cout << "short is good" << endl;
     }
     {
         unsigned short val = 0;
         assert(test_type(val) == _ushort);
+        cout << "unsigned short is good" << endl;
     }
     {
         int val = 0;
         assert(test_type(val) == _int);
+        cout << "int is good" << endl;
     }
     {
         unsigned int val = 0;
         assert(test_type(val) == _uint);
+        cout << "unsigned int is good" << endl;
     }
     {
         long val = 0;
         assert(test_type(val) == _long);
+        cout << "long is good" << endl;
     }
     {
         unsigned long val = 0;
         assert(test_type(val) == _ulong);
+        cout << "unsigned long is good" << endl;
     }
     {
         double val = 0;
         assert(test_type(val) == _double);
+        cout << "double is good" << endl;
     }
     {
         string val;
         assert(test_type(val) == _string);
+        cout << "string is good" << endl;
     }
 }
 
