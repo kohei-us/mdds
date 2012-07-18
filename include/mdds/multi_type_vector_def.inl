@@ -939,7 +939,7 @@ void multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type
         throw std::out_of_range("Start row is larger than the end row.");
 
     size_type start_row_in_block1, start_row_in_block2;
-    size_type block_pos1, block_pos2;
+    size_type block_pos1 = 0, block_pos2 = 0;
     get_block_position(start_pos, start_row_in_block1, block_pos1);
     get_block_position(end_pos, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
 
