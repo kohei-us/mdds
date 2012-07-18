@@ -55,6 +55,64 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 
 typedef mdds::multi_type_vector<mdds::mtv::element_block_func> column_type;
 
+enum test_mtv_type {
+    _bool, _short, _ushort, _int, _uint, _long, _ulong, _double, _string
+};
+
+#define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
+TEST_TYPE(bool,_bool)
+TEST_TYPE(short,_short)
+TEST_TYPE(unsigned short,_ushort)
+TEST_TYPE(int,_int)
+TEST_TYPE(unsigned int,_uint)
+TEST_TYPE(long,_long)
+TEST_TYPE(unsigned long,_ulong)
+TEST_TYPE(double,_double)
+TEST_TYPE(string,_string)
+
+void mtv_test_types()
+{
+    // Test function overloading of standard types.
+
+    stack_printer __stack_printer__("::mtv_test_types");
+    {
+        bool val = false;
+        assert(test_type(val) == _bool);
+    }
+    {
+        short val = 0;
+        assert(test_type(val) == _short);
+    }
+    {
+        unsigned short val = 0;
+        assert(test_type(val) == _ushort);
+    }
+    {
+        int val = 0;
+        assert(test_type(val) == _int);
+    }
+    {
+        unsigned int val = 0;
+        assert(test_type(val) == _uint);
+    }
+    {
+        long val = 0;
+        assert(test_type(val) == _long);
+    }
+    {
+        unsigned long val = 0;
+        assert(test_type(val) == _ulong);
+    }
+    {
+        double val = 0;
+        assert(test_type(val) == _double);
+    }
+    {
+        string val;
+        assert(test_type(val) == _string);
+    }
+}
+
 void mtv_test_construction()
 {
     stack_printer __stack_printer__("::mtv_test_construction");
@@ -2180,6 +2238,7 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
+        mtv_test_types();
         mtv_test_construction();
         mtv_test_basic();
         mtv_test_empty_cells();
