@@ -1176,7 +1176,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_impl(size_type row, const _T& 
     if (end_row >= m_cur_size)
         throw std::out_of_range("Data array is too long.");
 
-    size_t block_index1, block_index2, start_row1, start_row2;
+    size_t block_index1 = 0, block_index2 = 0, start_row1 = 0, start_row2 = 0;
     get_block_position(row, start_row1, block_index1);
     get_block_position(end_row, start_row2, block_index2, block_index1, start_row1);
 
