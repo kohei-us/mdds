@@ -663,6 +663,16 @@ void mtv_test_basic()
         assert(db.get<string>(1) == "foo");
         assert(db.get<bool>(6) == true);
     }
+
+    {
+        // Test various integer types.
+        column_type db(5);
+        db.set(0, static_cast<long>(-10));
+        db.set(1, static_cast<unsigned long>(10));
+        assert(db.block_size() == 3);
+        assert(db.get_type(0) == mtv::element_type_long);
+        assert(db.get_type(1) == mtv::element_type_ulong);
+    }
 }
 
 void mtv_test_empty_cells()
