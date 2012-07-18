@@ -30,7 +30,7 @@
 
 #define MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(_type_,_type_id_,_empty_val_,_block_) \
  \
-inline mtv::element_t mdds_mtv_get_element_type(const _type_&) \
+inline mdds::mtv::element_t mdds_mtv_get_element_type(const _type_&) \
 { \
     return _type_id_; \
 } \
@@ -40,66 +40,66 @@ inline void mdds_mtv_get_empty_value(_type_& val) \
     val = _empty_val_; \
 } \
  \
-inline void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, const _type_& val) \
+inline void mdds_mtv_set_value(mdds::mtv::base_element_block& block, size_t pos, const _type_& val) \
 { \
     _block_::set_value(block, pos, val); \
 } \
  \
-inline void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, _type_& val) \
+inline void mdds_mtv_get_value(const mdds::mtv::base_element_block& block, size_t pos, _type_& val) \
 { \
     _block_::get_value(block, pos, val); \
 } \
  \
 template<typename _Iter> \
 void mdds_mtv_set_values( \
-    mtv::base_element_block& block, size_t pos, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
+    mdds::mtv::base_element_block& block, size_t pos, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::set_values(block, pos, it_begin, it_end); \
 } \
  \
-inline void mdds_mtv_append_value(mtv::base_element_block& block, const _type_& val) \
+inline void mdds_mtv_append_value(mdds::mtv::base_element_block& block, const _type_& val) \
 { \
     _block_::append_value(block, val); \
 } \
  \
-inline void mdds_mtv_prepend_value(mtv::base_element_block& block, const _type_& val) \
+inline void mdds_mtv_prepend_value(mdds::mtv::base_element_block& block, const _type_& val) \
 { \
     _block_::prepend_value(block, val); \
 } \
  \
 template<typename _Iter> \
-void mdds_mtv_prepend_values(mtv::base_element_block& block, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
+void mdds_mtv_prepend_values(mdds::mtv::base_element_block& block, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::prepend_values(block, it_begin, it_end); \
 } \
  \
 template<typename _Iter> \
-void mdds_mtv_append_values(mtv::base_element_block& block, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
+void mdds_mtv_append_values(mdds::mtv::base_element_block& block, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::append_values(block, it_begin, it_end); \
 } \
  \
 template<typename _Iter> \
-void mdds_mtv_assign_values(mtv::base_element_block& dest, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
+void mdds_mtv_assign_values(mdds::mtv::base_element_block& dest, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::assign_values(dest, it_begin, it_end); \
 } \
  \
 template<typename _Iter> \
 void mdds_mtv_insert_values( \
-    mtv::base_element_block& block, size_t pos, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
+    mdds::mtv::base_element_block& block, size_t pos, const _type_&, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::insert_values(block, pos, it_begin, it_end); \
 } \
  \
-inline mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const _type_& val) \
+inline mdds::mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const _type_& val) \
 { \
     return _block_::create_block_with_value(init_size, val); \
 }
 
 #define MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(_type_,_type_id_,_empty_val_,_block_) \
  \
-inline mtv::element_t mdds_mtv_get_element_type(const _type_*) \
+inline mdds::mtv::element_t mdds_mtv_get_element_type(const _type_*) \
 { \
     return _type_id_; \
 } \
@@ -109,59 +109,59 @@ inline void mdds_mtv_get_empty_value(_type_*& val) \
     val = _empty_val_; \
 } \
  \
-inline void mdds_mtv_set_value(mtv::base_element_block& block, size_t pos, _type_* val) \
+inline void mdds_mtv_set_value(mdds::mtv::base_element_block& block, size_t pos, _type_* val) \
 { \
     _block_::set_value(block, pos, val); \
 } \
  \
-inline void mdds_mtv_get_value(const mtv::base_element_block& block, size_t pos, _type_*& val) \
+inline void mdds_mtv_get_value(const mdds::mtv::base_element_block& block, size_t pos, _type_*& val) \
 { \
     _block_::get_value(block, pos, val); \
 } \
  \
 template<typename _Iter> \
 void mdds_mtv_set_values( \
-    mtv::base_element_block& block, size_t pos, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
+    mdds::mtv::base_element_block& block, size_t pos, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::set_values(block, pos, it_begin, it_end); \
 } \
  \
-inline void mdds_mtv_append_value(mtv::base_element_block& block, _type_* val) \
+inline void mdds_mtv_append_value(mdds::mtv::base_element_block& block, _type_* val) \
 { \
     _block_::append_value(block, val); \
 } \
  \
-inline void mdds_mtv_prepend_value(mtv::base_element_block& block, _type_* val) \
+inline void mdds_mtv_prepend_value(mdds::mtv::base_element_block& block, _type_* val) \
 { \
     _block_::prepend_value(block, val); \
 } \
  \
 template<typename _Iter> \
-void mdds_mtv_prepend_values(mtv::base_element_block& block, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
+void mdds_mtv_prepend_values(mdds::mtv::base_element_block& block, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::prepend_values(block, it_begin, it_end); \
 } \
  \
 template<typename _Iter> \
-void mdds_mtv_append_values(mtv::base_element_block& block, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
+void mdds_mtv_append_values(mdds::mtv::base_element_block& block, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::append_values(block, it_begin, it_end); \
 } \
  \
 template<typename _Iter> \
-void mdds_mtv_assign_values(mtv::base_element_block& dest, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
+void mdds_mtv_assign_values(mdds::mtv::base_element_block& dest, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::assign_values(dest, it_begin, it_end); \
 } \
  \
 template<typename _Iter> \
 void mdds_mtv_insert_values( \
-    mtv::base_element_block& block, size_t pos, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
+    mdds::mtv::base_element_block& block, size_t pos, const _type_*, const _Iter& it_begin, const _Iter& it_end) \
 { \
     _block_::insert_values(block, pos, it_begin, it_end); \
 } \
  \
-inline mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, _type_* val) \
+inline mdds::mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, _type_* val) \
 { \
     return _block_::create_block_with_value(init_size, val); \
 }
