@@ -666,12 +666,22 @@ void mtv_test_basic()
 
     {
         // Test various integer types.
-        column_type db(5);
+        column_type db(7);
         db.set(0, static_cast<long>(-10));
         db.set(1, static_cast<unsigned long>(10));
-        assert(db.block_size() == 3);
+        db.set(2, static_cast<int>(-10));
+        db.set(3, static_cast<unsigned int>(10));
+        db.set(4, static_cast<short>(-10));
+        db.set(5, static_cast<unsigned short>(10));
+        db.set(6, true);
+        assert(db.block_size() == 7);
         assert(db.get_type(0) == mtv::element_type_long);
         assert(db.get_type(1) == mtv::element_type_ulong);
+        assert(db.get_type(2) == mtv::element_type_int);
+        assert(db.get_type(3) == mtv::element_type_uint);
+        assert(db.get_type(4) == mtv::element_type_short);
+        assert(db.get_type(5) == mtv::element_type_ushort);
+        assert(db.get_type(6) == mtv::element_type_boolean);
     }
 }
 

@@ -44,9 +44,13 @@ const element_t element_type_empty = -1;
 
 const element_t element_type_numeric = 0;
 const element_t element_type_string  = 1;
-const element_t element_type_long    = 2;
-const element_t element_type_ulong   = 3;
-const element_t element_type_boolean = 4;
+const element_t element_type_short   = 2;
+const element_t element_type_ushort  = 3;
+const element_t element_type_int     = 4;
+const element_t element_type_uint    = 5;
+const element_t element_type_long    = 6;
+const element_t element_type_ulong   = 7;
+const element_t element_type_boolean = 8;
 
 const element_t element_type_user_start = 50;
 
@@ -429,11 +433,15 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
     }
 };
 
-typedef default_element_block<mtv::element_type_numeric, double>      numeric_element_block;
-typedef default_element_block<mtv::element_type_string, std::string>  string_element_block;
-typedef default_element_block<mtv::element_type_long, long>           long_element_block;
-typedef default_element_block<mtv::element_type_ulong, unsigned long> ulong_element_block;
-typedef default_element_block<mtv::element_type_boolean, bool>        boolean_element_block;
+typedef default_element_block<mtv::element_type_numeric, double>        numeric_element_block;
+typedef default_element_block<mtv::element_type_string, std::string>    string_element_block;
+typedef default_element_block<mtv::element_type_short, short>           short_element_block;
+typedef default_element_block<mtv::element_type_ushort, unsigned short> ushort_element_block;
+typedef default_element_block<mtv::element_type_int, int>               int_element_block;
+typedef default_element_block<mtv::element_type_uint, unsigned int>     uint_element_block;
+typedef default_element_block<mtv::element_type_long, long>             long_element_block;
+typedef default_element_block<mtv::element_type_ulong, unsigned long>   ulong_element_block;
+typedef default_element_block<mtv::element_type_boolean, bool>          boolean_element_block;
 
 }}
 
