@@ -39,6 +39,7 @@ namespace mdds {
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_numeric, 0.0, mtv::numeric_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, mtv::element_type_string, std::string(), mtv::string_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(long, mtv::element_type_long, 0, mtv::long_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned long, mtv::element_type_ulong, 0, mtv::ulong_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
 

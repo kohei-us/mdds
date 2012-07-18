@@ -44,8 +44,9 @@ const element_t element_type_empty = -1;
 
 const element_t element_type_numeric = 0;
 const element_t element_type_string  = 1;
-const element_t element_type_ulong   = 2;
-const element_t element_type_boolean = 3;
+const element_t element_type_long    = 2;
+const element_t element_type_ulong   = 3;
+const element_t element_type_boolean = 4;
 
 const element_t element_type_user_start = 50;
 
@@ -430,6 +431,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
 
 typedef default_element_block<mtv::element_type_numeric, double>      numeric_element_block;
 typedef default_element_block<mtv::element_type_string, std::string>  string_element_block;
+typedef default_element_block<mtv::element_type_long, long>           long_element_block;
 typedef default_element_block<mtv::element_type_ulong, unsigned long> ulong_element_block;
 typedef default_element_block<mtv::element_type_boolean, bool>        boolean_element_block;
 

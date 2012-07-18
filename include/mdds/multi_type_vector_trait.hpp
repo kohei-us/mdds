@@ -78,6 +78,8 @@ base_element_block* element_block_func_base::create_new_block(element_t type, si
             return numeric_element_block::create_block(init_size);
         case element_type_string:
             return string_element_block::create_block(init_size);
+        case element_type_long:
+            return long_element_block::create_block(init_size);
         case element_type_ulong:
             return ulong_element_block::create_block(init_size);
         case element_type_boolean:
@@ -96,6 +98,8 @@ base_element_block* element_block_func_base::clone_block(const base_element_bloc
             return numeric_element_block::clone_block(block);
         case element_type_string:
             return string_element_block::clone_block(block);
+        case element_type_long:
+            return long_element_block::clone_block(block);
         case element_type_ulong:
             return ulong_element_block::clone_block(block);
         case element_type_boolean:
@@ -119,6 +123,9 @@ void element_block_func_base::delete_block(base_element_block* p)
         case element_type_string:
             string_element_block::delete_block(p);
         break;
+        case element_type_long:
+            long_element_block::delete_block(p);
+        break;
         case element_type_ulong:
             ulong_element_block::delete_block(p);
         break;
@@ -139,6 +146,9 @@ void element_block_func_base::resize_block(base_element_block& block, size_t new
         break;
         case element_type_string:
             string_element_block::resize_block(block, new_size);
+        break;
+        case element_type_long:
+            long_element_block::resize_block(block, new_size);
         break;
         case element_type_ulong:
             ulong_element_block::resize_block(block, new_size);
@@ -161,6 +171,9 @@ void element_block_func_base::print_block(const base_element_block& block)
         case element_type_string:
             string_element_block::print_block(block);
         break;
+        case element_type_long:
+            long_element_block::print_block(block);
+        break;
         case element_type_ulong:
             ulong_element_block::print_block(block);
         break;
@@ -181,6 +194,9 @@ void element_block_func_base::erase(base_element_block& block, size_t pos)
         break;
         case element_type_string:
             string_element_block::erase_block(block, pos);
+        break;
+        case element_type_long:
+            long_element_block::erase_block(block, pos);
         break;
         case element_type_ulong:
             ulong_element_block::erase_block(block, pos);
@@ -203,6 +219,9 @@ void element_block_func_base::erase(base_element_block& block, size_t pos, size_
         case element_type_string:
             string_element_block::erase_block(block, pos, size);
         break;
+        case element_type_long:
+            long_element_block::erase_block(block, pos, size);
+        break;
         case element_type_ulong:
             ulong_element_block::erase_block(block, pos, size);
         break;
@@ -223,6 +242,9 @@ void element_block_func_base::append_values_from_block(base_element_block& dest,
         break;
         case element_type_string:
             string_element_block::append_values_from_block(dest, src);
+        break;
+        case element_type_long:
+            long_element_block::append_values_from_block(dest, src);
         break;
         case element_type_ulong:
             ulong_element_block::append_values_from_block(dest, src);
@@ -246,6 +268,9 @@ void element_block_func_base::append_values_from_block(
         case element_type_string:
             string_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
+        case element_type_long:
+            long_element_block::append_values_from_block(dest, src, begin_pos, len);
+        break;
         case element_type_ulong:
             ulong_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
@@ -267,6 +292,9 @@ void element_block_func_base::assign_values_from_block(
         break;
         case element_type_string:
             string_element_block::assign_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_long:
+            long_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_ulong:
             ulong_element_block::assign_values_from_block(dest, src, begin_pos, len);
@@ -291,6 +319,8 @@ bool element_block_func_base::equal_block(const base_element_block& left, const 
             return numeric_element_block::get(left) == numeric_element_block::get(right);
         case element_type_string:
             return string_element_block::get(left) == string_element_block::get(right);
+        case element_type_long:
+            return long_element_block::get(left) == long_element_block::get(right);
         case element_type_ulong:
             return ulong_element_block::get(left) == ulong_element_block::get(right);
         case element_type_boolean:
