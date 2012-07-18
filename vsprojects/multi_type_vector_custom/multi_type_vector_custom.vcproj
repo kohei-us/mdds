@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="multi_type_vector (default)"
-	ProjectGUID="{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}"
-	RootNamespace="multi_type_vector"
+	Name="multi_type_vector (custom)"
+	ProjectGUID="{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}"
+	RootNamespace="multi_type_vector_custom"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -163,7 +163,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\src\multi_type_vector_test_default.cpp"
+				RelativePath="..\..\src\multi_type_vector_test_custom.cpp"
 				>
 			</File>
 		</Filter>
