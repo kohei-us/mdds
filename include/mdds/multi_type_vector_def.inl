@@ -925,8 +925,8 @@ mtv::element_t multi_type_vector<_CellBlockFunc>::get_type(size_type pos) const
 template<typename _CellBlockFunc>
 bool multi_type_vector<_CellBlockFunc>::is_empty(size_type pos) const
 {
-    size_type start_row;
-    size_type block_index;
+    size_type start_row = 0;
+    size_type block_index = 0;
     get_block_position(pos, start_row, block_index);
 
     return m_blocks[block_index]->mp_data == NULL;
@@ -938,7 +938,7 @@ void multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type
     if (start_pos > end_pos)
         throw std::out_of_range("Start row is larger than the end row.");
 
-    size_type start_row_in_block1, start_row_in_block2;
+    size_type start_row_in_block1 = 0, start_row_in_block2 = 0;
     size_type block_pos1 = 0, block_pos2 = 0;
     get_block_position(start_pos, start_row_in_block1, block_pos1);
     get_block_position(end_pos, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
@@ -969,8 +969,8 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
 
     // Keep the logic similar to set_empty().
 
-    size_type start_row_in_block1, start_row_in_block2;
-    size_type block_pos1, block_pos2;
+    size_type start_row_in_block1 = 0, start_row_in_block2 = 0;
+    size_type block_pos1 = 0, block_pos2 = 0;
     get_block_position(start_row, start_row_in_block1, block_pos1);
     get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
 
@@ -1105,7 +1105,7 @@ void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_ty
 {
     assert(row < m_cur_size);
 
-    size_type start_row, block_index;
+    size_type start_row = 0, block_index = 0;
     get_block_position(row, start_row, block_index);
 
     block* blk = m_blocks[block_index];
@@ -1200,7 +1200,7 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
         // empty data array.  nothing to do.
         return;
 
-    size_type block_index, start_row;
+    size_type block_index = 0, start_row = 0;
     get_block_position(row, start_row, block_index);
 
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
@@ -1838,7 +1838,7 @@ void multi_type_vector<_CellBlockFunc>::resize(size_type new_size)
 
     // Find out in which block the new end row will be.
     size_type new_end_row = new_size - 1;
-    size_type start_row_in_block, block_index;
+    size_type start_row_in_block = 0, block_index = 0;
     get_block_position(new_end_row, start_row_in_block, block_index);
 
     block* blk = m_blocks[block_index];
