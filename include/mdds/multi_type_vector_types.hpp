@@ -355,6 +355,7 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
     typedef managed_element_block<_TypeId,_Data> self_type;
 
     using base_type::get;
+    using base_type::set_value;
     using base_type::m_array;
 
     managed_element_block() : base_type() {}
