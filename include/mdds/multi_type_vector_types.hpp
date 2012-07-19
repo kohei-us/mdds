@@ -302,7 +302,7 @@ protected:
     noncopyable_element_block(size_t n, const _Data& val) : base_type(n, val) {}
 
 public:
-    static _Self* clone_block(const base_element_block& blk)
+    static _Self* clone_block(const base_element_block&)
     {
         throw element_block_error("attempted to clone a noncopyable element block.");
     }
