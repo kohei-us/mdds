@@ -862,5 +862,6 @@ int main (int argc, char **argv)
         mtm_perf_test_storage_set_numeric();
     }
 
+    cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }

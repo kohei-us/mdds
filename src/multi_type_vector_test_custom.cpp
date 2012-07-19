@@ -1022,5 +1022,6 @@ int main (int argc, char **argv)
     {
     }
 
+    cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
