@@ -1148,7 +1148,7 @@ void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_ty
 
     // Insert two new block below the current; one for the empty block being
     // inserted, and one for the lower part of the current non-empty block.
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, NULL);
 
     m_blocks[block_index+1] = new block(length);
     m_blocks[block_index+2] = new block(size_blk_next);
@@ -1302,7 +1302,7 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_to_middle(
     // Insert two new blocks.
     size_type n1 = row - start_row;
     size_type n2 = blk->m_size - n1;
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, NULL);
     blk->m_size = n1;
 
     m_blocks[block_index+1] = new block(length);
@@ -1467,7 +1467,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
     assert(start_row_in_block < start_row && end_row < end_row_in_block);
 
     // Insert two new blocks below the current one.
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, NULL);
 
     // first new block is for the data array being inserted.
     size_type new_size = end_row - start_row + 1;
@@ -1985,7 +1985,7 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
     // First, insert two new blocks at position past the current block.
     size_type lower_block_size = end_row_in_block - end_row;
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2, NULL);
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, NULL);
     m_blocks[block_index+1] = new block(empty_block_size); // empty block.
     m_blocks[block_index+2] = new block(lower_block_size);
 
