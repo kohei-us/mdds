@@ -44,7 +44,6 @@ mixed_type_matrix<_String,_Flag>::create_storage(size_t rows, size_t cols, matri
         default:
             throw matrix_error("unknown density type");
     }
-    return NULL;
 }
 
 template<typename _String, typename _Flag>
