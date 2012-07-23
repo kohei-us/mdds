@@ -834,6 +834,54 @@ void mtm_perf_test_storage_set_numeric()
     cout << endl;
 }
 
+struct sum_all_values
+{
+    double result;
+
+    sum_all_values() : result(0.0) {}
+
+    void operator() (const mtx_type::element_block_node_type& blk)
+    {
+        mtv::numeric_element_block::const_iterator it = mtv::numeric_element_block::begin(*blk.data);
+        mtv::numeric_element_block::const_iterator it_end = mtv::numeric_element_block::end(*blk.data);
+        for (; it != it_end; ++it)
+            result += *it;
+    }
+};
+
+void mtm_perf_test_iterate_elements()
+{
+    cout << "measuring performance on iterating over all numeric elements." << endl;
+    size_t rowsize = 100000;
+    size_t colsize = 1000;
+    cout << "row size: " << rowsize << "  column size: " << colsize << endl;
+    mtx_type mx(rowsize, colsize, 0.0);
+    {
+        stack_watch sw;
+        double val = 1.0;
+        std::vector<double> vals;
+        vals.reserve(rowsize*colsize);
+        for (size_t i = 0; i < rowsize; ++i)
+        {
+            for (size_t j = 0; j < colsize; ++j)
+            {
+                vals.push_back(val);
+                val += 0.001;
+            }
+        }
+        mx.set(0, 0, vals.begin(), vals.end());
+        cout << "element values inserted.  (duration: " << sw.get_duration() << " sec)" << endl;
+    }
+
+    {
+        stack_watch sw;
+        sum_all_values func;
+        mx.walk(func);
+        double val = func.result;
+        cout << "all element values added.  (answer: " << val << ")  (duration: " << sw.get_duration() << " sec)" << endl;
+    }
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -860,6 +908,7 @@ int main (int argc, char **argv)
     {
         mtm_perf_test_storage_creation();
         mtm_perf_test_storage_set_numeric();
+        mtm_perf_test_iterate_elements();
     }
 
     cout << "Test finished successfully!" << endl;

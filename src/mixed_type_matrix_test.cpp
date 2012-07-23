@@ -913,6 +913,38 @@ void mtm_perf_test_storage_set_numeric()
     cout << endl;
 }
 
+void mtm_perf_test_iterate_elements()
+{
+    cout << "measuring performance on iterating over all numeric elements." << endl;
+    size_t rowsize = 100000;
+    size_t colsize = 1000;
+    cout << "row size: " << rowsize << "  column size: " << colsize << endl;
+    mx_type mx(rowsize, colsize, matrix_density_filled_zero);
+    {
+        stack_watch sw;
+        double val = 1.0;
+        for (size_t i = 0; i < rowsize; ++i)
+        {
+            for (size_t j = 0; j < colsize; ++j)
+            {
+                mx.set(i, j, val);
+                val += 0.001;
+            }
+        }
+        cout << "element values inserted.  (duration: " << sw.get_duration() << " sec)" << endl;
+    }
+
+    {
+        stack_watch sw;
+        double val = 0.0;
+        mx_type::const_iterator it = mx.begin(), it_end = mx.end();
+        for (; it != it_end; ++it)
+            val += it->m_numeric;
+
+        cout << "all element values added.  (answer: " << val << ")  (duration: " << sw.get_duration() << " sec)" << endl;
+    }
+}
+
 int main(int argc, char** argv)
 {
     cmd_options opt;
@@ -956,6 +988,7 @@ int main(int argc, char** argv)
     {
         mtm_perf_test_storage_creation();
         mtm_perf_test_storage_set_numeric();
+        mtm_perf_test_iterate_elements();
     }
 
     cout << "Test finished successfully!" << endl;
