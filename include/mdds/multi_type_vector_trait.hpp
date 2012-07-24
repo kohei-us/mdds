@@ -95,7 +95,6 @@ base_element_block* element_block_func_base::create_new_block(element_t type, si
         default:
             throw general_error("create_new_block: failed to create a new block of unknown type.");
     }
-    return NULL;
 }
 
 base_element_block* element_block_func_base::clone_block(const base_element_block& block)
@@ -123,7 +122,6 @@ base_element_block* element_block_func_base::clone_block(const base_element_bloc
         default:
             throw general_error("clone_block: failed to clone a block of unknown type.");
     }
-    return NULL;
 }
 
 void element_block_func_base::delete_block(base_element_block* p)
