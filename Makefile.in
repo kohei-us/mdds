@@ -21,6 +21,7 @@ EXECS= \
 	multi_type_vector_test_custom
 
 HEADERS= \
+	$(INCDIR)/mdds/compat/unique_ptr.hpp \
 	$(INCDIR)/mdds/flat_segment_tree_def.inl \
 	$(INCDIR)/mdds/flat_segment_tree.hpp \
 	$(INCDIR)/mdds/flat_segment_tree_itr.hpp \
@@ -200,9 +201,11 @@ $(QUICKCHECKDIR)/flat_segment_tree: $(QUICKCHECKDIR)/flat_segment_tree.o pre
 install: $(HEADERS)
 	install -d $(DESTDIR)@includedir@/mdds
 	install -d $(DESTDIR)@includedir@/mdds/hash_container
+	install -d $(DESTDIR)@includedir@/mdds/compat
 	install -d $(DESTDIR)@docdir@
 	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.hpp
 	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.inl
+	install -m 644 -t $(DESTDIR)@includedir@/mdds/compat $(INCDIR)/mdds/compat/*.hpp
 	install -m 644 -t $(DESTDIR)@includedir@/mdds/hash_container $(INCDIR)/mdds/hash_container/*.hpp
 	install -m 644 -t $(DESTDIR)@docdir@ AUTHORS COPYING NEWS README VERSION
 
