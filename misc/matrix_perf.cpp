@@ -36,6 +36,104 @@ using namespace std;
 typedef mdds::mixed_type_matrix<std::string, bool> mixed_mx_type;
 typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> multi_mx_type;
 
+namespace {
+
+class sum_all_values : public std::unary_function<multi_mx_type::element_block_node_type, void>
+{
+    double m_sum;
+public:
+    sum_all_values() : m_sum(0.0) {}
+    void operator() (const multi_mx_type::element_block_node_type& blk)
+    {
+        if (!blk.data)
+            return;
+
+        if (mdds::mtv::get_block_type(*blk.data) != mdds::mtv::element_type_numeric)
+            return;
+
+        using mdds::mtv::numeric_element_block;
+        numeric_element_block::const_iterator it = numeric_element_block::begin(*blk.data);
+        numeric_element_block::const_iterator it_end = numeric_element_block::end(*blk.data);
+        for (; it != it_end; ++it)
+            m_sum += *it;
+    }
+
+    double get() const { return m_sum; }
+};
+
+class count_all_values : public std::unary_function<multi_mx_type::element_block_node_type, void>
+{
+    long m_count;
+public:
+    count_all_values() : m_count(0) {}
+    void operator() (const multi_mx_type::element_block_node_type& blk)
+    {
+        if (!blk.data)
+            return;
+
+        if (mdds::mtv::get_block_type(*blk.data) != mdds::mtv::element_type_numeric)
+            return;
+
+        m_count += blk.size;
+    }
+
+    long get() const { return m_count; }
+};
+
+template<typename _Mx>
+void init_manual_loop(_Mx& mx, size_t row_size, size_t col_size)
+{
+    double val = 0.0;
+    for (size_t row = 0; row < row_size; ++row)
+    {
+        for (size_t col = 0; col < col_size; ++col)
+        {
+            mx.set(row, col, val);
+            val += 0.00001;
+        }
+    }
+}
+
+void init_value_vector(vector<double>& vals, size_t row_size, size_t col_size)
+{
+    vals.reserve(row_size*col_size);
+
+    double val = 0.0;
+    for (size_t row = 0; row < row_size; ++row)
+    {
+        for (size_t col = 0; col < col_size; ++col)
+        {
+            vals.push_back(val);
+            val += 0.00001;
+        }
+    }
+}
+
+template<typename _Mx>
+double sum_manual_loop(const _Mx& mx, size_t row_size, size_t col_size)
+{
+    double sum = 0.0;
+    for (size_t row = 0; row < row_size; ++row)
+        for (size_t col = 0; col < col_size; ++col)
+            sum += mx.get_numeric(row, col);
+
+    return sum;
+}
+
+double sum_iterator(const mixed_mx_type& mx)
+{
+    double sum = 0.0;
+    mixed_mx_type::const_iterator it = mx.begin(), it_end = mx.end();
+    for (; it != it_end; ++it)
+    {
+        if (it->m_type == mdds::element_numeric)
+            sum += it->m_numeric;
+    }
+    return sum;
+}
+
+}
+
 void perf_construction()
 {
     cout << "---" << endl;
@@ -84,63 +182,30 @@ void perf_insertion()
     {
         mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
         stack_watch sw;
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                mx.set(row, col, val);
-                val += 0.001;
-            }
-        }
+        init_manual_loop(mx, row_size, col_size);
         cout << "insertion via loop: " << sw.get_duration() << " sec (mixed_type_matrix, filled zero)" << endl;
     }
 
     {
         multi_mx_type mx(row_size, col_size);
         stack_watch sw;
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                mx.set(row, col, val);
-                val += 0.001;
-            }
-        }
+        init_manual_loop(mx, row_size, col_size);
         cout << "insertion via loop: " << sw.get_duration() << " sec (multi_type_matrix, init empty)" << endl;
     }
 
     {
         multi_mx_type mx(row_size, col_size, 0.0);
         stack_watch sw;
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                mx.set(row, col, val);
-                val += 0.001;
-            }
-        }
+        init_manual_loop(mx, row_size, col_size);
         cout << "insertion via loop: " << sw.get_duration() << " sec (multi_type_matrix, init zero)" << endl;
     }
 
     {
         multi_mx_type mx(row_size, col_size);
         std::vector<double> vals;
-        vals.reserve(row_size*col_size);
 
         stack_watch sw;
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                vals.push_back(val);
-                val += 0.001;
-            }
-        }
+        init_value_vector(vals, row_size, col_size);
         mx.set(0, 0, vals.begin(), vals.end());
         cout << "insertion via single set call: " << sw.get_duration() << " sec (multi_type_matrix, init empty, value initialization included)" << endl;
     }
@@ -148,17 +213,7 @@ void perf_insertion()
     {
         multi_mx_type mx(row_size, col_size);
         std::vector<double> vals;
-        vals.reserve(row_size*col_size);
-
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                vals.push_back(val);
-                val += 0.001;
-            }
-        }
+        init_value_vector(vals, row_size, col_size);
 
         stack_watch sw;
         mx.set(0, 0, vals.begin(), vals.end());
@@ -171,15 +226,7 @@ void perf_insertion()
         vals.reserve(row_size*col_size);
 
         stack_watch sw;
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                vals.push_back(val);
-                val += 0.001;
-            }
-        }
+        init_value_vector(vals, row_size, col_size);
         mx.set(0, 0, vals.begin(), vals.end());
         cout << "insertion via single set call: " << sw.get_duration() << " sec (multi_type_matrix, init zero, value initialization included)" << endl;
     }
@@ -187,17 +234,7 @@ void perf_insertion()
     {
         multi_mx_type mx(row_size, col_size, 0.0);
         std::vector<double> vals;
-        vals.reserve(row_size*col_size);
-
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                vals.push_back(val);
-                val += 0.001;
-            }
-        }
+        init_value_vector(vals, row_size, col_size);
 
         stack_watch sw;
         mx.set(0, 0, vals.begin(), vals.end());
@@ -205,92 +242,14 @@ void perf_insertion()
     }
 }
 
-namespace {
-
-class sum_all_values : public std::unary_function<multi_mx_type::element_block_node_type, void>
-{
-    double m_sum;
-public:
-    sum_all_values() : m_sum(0.0) {}
-    void operator() (const multi_mx_type::element_block_node_type& blk)
-    {
-        if (!blk.data)
-            return;
-
-        if (mdds::mtv::get_block_type(*blk.data) != mdds::mtv::element_type_numeric)
-            return;
-
-        using mdds::mtv::numeric_element_block;
-        numeric_element_block::const_iterator it = numeric_element_block::begin(*blk.data);
-        numeric_element_block::const_iterator it_end = numeric_element_block::end(*blk.data);
-        for (; it != it_end; ++it)
-            m_sum += *it;
-    }
-
-    double get() const { return m_sum; }
-};
-
-class count_all_values : public std::unary_function<multi_mx_type::element_block_node_type, void>
-{
-    long m_count;
-public:
-    count_all_values() : m_count(0) {}
-    void operator() (const multi_mx_type::element_block_node_type& blk)
-    {
-        if (!blk.data)
-            return;
-
-        if (mdds::mtv::get_block_type(*blk.data) != mdds::mtv::element_type_numeric)
-            return;
-
-        m_count += blk.size;
-    }
-
-    long get() const { return m_count; }
-};
-
-template<typename _Mx>
-double sum_manual_loop(const _Mx& mx, size_t row_size, size_t col_size)
-{
-    double sum = 0.0;
-    for (size_t row = 0; row < row_size; ++row)
-        for (size_t col = 0; col < col_size; ++col)
-            sum += mx.get_numeric(row, col);
-
-    return sum;
-}
-
-double sum_iterator(const mixed_mx_type& mx)
-{
-    double sum = 0.0;
-    mixed_mx_type::const_iterator it = mx.begin(), it_end = mx.end();
-    for (; it != it_end; ++it)
-    {
-        if (it->m_type == mdds::element_numeric)
-            sum += it->m_numeric;
-    }
-    return sum;
-}
-
-}
-
 void perf_sum_all_values()
 {
     cout << "---" << endl;
     size_t row_size = 10000;
     size_t col_size = 1000;
-    double step = 0.00001;
     {
         mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                mx.set(row, col, val);
-                val += step;
-            }
-        }
+        init_manual_loop(mx, row_size, col_size);
 
         {
             stack_watch sw;
@@ -333,15 +292,7 @@ void perf_sum_all_values()
 
     {
         multi_mx_type mx(row_size, col_size, 0.0);
-        double val = 0.0;
-        for (size_t row = 0; row < row_size; ++row)
-        {
-            for (size_t col = 0; col < col_size; ++col)
-            {
-                mx.set(row, col, val);
-                val += step;
-            }
-        }
+        init_manual_loop(mx, row_size, col_size);
 
         {
             stack_watch sw;
@@ -471,11 +422,51 @@ void perf_sum_all_values_multi_block()
     }
 }
 
+void perf_init_with_value()
+{
+    cout << "---" << endl;
+    size_t row_size = 10000;
+    size_t col_size = 2000;
+    double val = 12.3;
+    {
+        stack_watch sw;
+        mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
+        for (size_t row = 0; row < row_size; ++row)
+            for (size_t col = 0; col < col_size; ++col)
+                mx.set(row, col, val);
+        cout << "init with value: " << sw.get_duration() << " sec (mixed_type_matrix, filled zero, manual loop)" << endl;
+    }
+
+    {
+        stack_watch sw;
+        multi_mx_type mx(row_size, col_size, 0.0);
+        for (size_t row = 0; row < row_size; ++row)
+            for (size_t col = 0; col < col_size; ++col)
+                mx.set(row, col, val);
+        cout << "init with value: " << sw.get_duration() << " sec (multi_type_matrix, manual loop)" << endl;
+    }
+
+    {
+        stack_watch sw;
+        multi_mx_type(row_size, col_size, val);
+        cout << "init with value: " << sw.get_duration() << " sec (multi_type_matrix, constructor)" << endl;
+    }
+
+    {
+        stack_watch sw;
+        multi_mx_type mx(row_size, col_size);
+        vector<double> vals(row_size*col_size, val);
+        mx.set(0, 0, vals.begin(), vals.end());
+        cout << "init with value: " << sw.get_duration() << " sec (multi_type_matrix, vector + set)" << endl;
+    }
+}
+
 int main()
 {
     perf_construction();
     perf_insertion();
     perf_sum_all_values();
     perf_sum_all_values_multi_block();
+    perf_init_with_value();
     return EXIT_SUCCESS;
 }
