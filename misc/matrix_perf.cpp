@@ -38,6 +38,7 @@ typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> multi_mx_type;
 
 void perf_construction()
 {
+    cout << "---" << endl;
     {
         stack_watch sw;
         mixed_mx_type mx(20000, 5000, mdds::matrix_density_filled_zero);
@@ -77,8 +78,9 @@ void perf_construction()
 
 void perf_insertion()
 {
+    cout << "---" << endl;
     size_t row_size = 10000;
-    size_t col_size = 1000;
+    size_t col_size = 500;
     {
         mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
         stack_watch sw;
@@ -247,12 +249,36 @@ public:
     long get() const { return m_count; }
 };
 
+template<typename _Mx>
+double sum_manual_loop(const _Mx& mx, size_t row_size, size_t col_size)
+{
+    double sum = 0.0;
+    for (size_t row = 0; row < row_size; ++row)
+        for (size_t col = 0; col < col_size; ++col)
+            sum += mx.get_numeric(row, col);
+
+    return sum;
+}
+
+double sum_iterator(const mixed_mx_type& mx)
+{
+    double sum = 0.0;
+    mixed_mx_type::const_iterator it = mx.begin(), it_end = mx.end();
+    for (; it != it_end; ++it)
+    {
+        if (it->m_type == mdds::element_numeric)
+            sum += it->m_numeric;
+    }
+    return sum;
+}
+
 }
 
 void perf_sum_all_values()
 {
+    cout << "---" << endl;
     size_t row_size = 10000;
-    size_t col_size = 2000;
+    size_t col_size = 1000;
     double step = 0.00001;
     {
         mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
@@ -268,24 +294,13 @@ void perf_sum_all_values()
 
         {
             stack_watch sw;
-            double sum = 0.0;
-            for (size_t row = 0; row < row_size; ++row)
-                for (size_t col = 0; col < col_size; ++col)
-                    sum += mx.get_numeric(row, col);
-
+            double sum = sum_manual_loop(mx, row_size, col_size);
             cout << "sum all values (" << sum << ") : " << sw.get_duration() << " sec (mixed_type_matrix, manual loop)" << endl;
         }
 
         {
             stack_watch sw;
-            double sum = 0.0;
-            mixed_mx_type::const_iterator it = mx.begin(), it_end = mx.end();
-            for (; it != it_end; ++it)
-            {
-                if (it->m_type == mdds::element_numeric)
-                    sum += it->m_numeric;
-            }
-
+            double sum = sum_iterator(mx);
             cout << "sum all values (" << sum << ") : " << sw.get_duration() << " sec (mixed_type_matrix, iterator)" << endl;
         }
 
@@ -330,15 +345,7 @@ void perf_sum_all_values()
 
         {
             stack_watch sw;
-            double sum = 0.0;
-            for (size_t row = 0; row < row_size; ++row)
-            {
-                for (size_t col = 0; col < col_size; ++col)
-                {
-                    sum += mx.get_numeric(row, col);
-                }
-            }
-
+            double sum = sum_manual_loop(mx, row_size, col_size);
             cout << "sum all values (" << sum << ") : " << sw.get_duration() << " sec (multi_type_matrix, manual loop)" << endl;
         }
 
@@ -360,8 +367,9 @@ void perf_sum_all_values()
 
 void perf_sum_all_values_multi_block()
 {
+    cout << "---" << endl;
     size_t row_size = 10000;
-    size_t col_size = 500;
+    size_t col_size = 1000;
     double step = 0.00001;
     {
         mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
@@ -384,24 +392,13 @@ void perf_sum_all_values_multi_block()
 
         {
             stack_watch sw;
-            double sum = 0.0;
-            for (size_t row = 0; row < row_size; ++row)
-                for (size_t col = 0; col < col_size; ++col)
-                    sum += mx.get_numeric(row, col);
-
+            double sum = sum_manual_loop(mx, row_size, col_size);
             cout << "sum all values multi-block (" << sum << ") : " << sw.get_duration() << " sec (mixed_type_matrix, manual loop)" << endl;
         }
 
         {
             stack_watch sw;
-            double sum = 0.0;
-            mixed_mx_type::const_iterator it = mx.begin(), it_end = mx.end();
-            for (; it != it_end; ++it)
-            {
-                if (it->m_type == mdds::element_numeric)
-                    sum += it->m_numeric;
-            }
-
+            double sum = sum_iterator(mx);
             cout << "sum all values multi-block (" << sum << ") : " << sw.get_duration() << " sec (mixed_type_matrix, iterator)" << endl;
         }
 
@@ -454,11 +451,7 @@ void perf_sum_all_values_multi_block()
 
         {
             stack_watch sw;
-            double sum = 0.0;
-            for (size_t row = 0; row < row_size; ++row)
-                for (size_t col = 0; col < col_size; ++col)
-                    sum += mx.get_numeric(row, col);
-
+            double sum = sum_manual_loop(mx, row_size, col_size);
             cout << "sum all values multi-block (" << sum << ") : " << sw.get_duration() << " sec (multi_type_matrix, manual loop)" << endl;
         }
 
@@ -473,7 +466,7 @@ void perf_sum_all_values_multi_block()
             stack_watch sw;
             count_all_values func;
             mx.walk(func);
-            cout << "count all values (" << func.get() << ") : " << sw.get_duration() << " sec (multi_type_matrix, walk)" << endl;
+            cout << "count all values multi-block (" << func.get() << ") : " << sw.get_duration() << " sec (multi_type_matrix, walk)" << endl;
         }
     }
 }
