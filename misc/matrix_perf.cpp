@@ -137,39 +137,40 @@ double sum_iterator(const mixed_mx_type& mx)
 void perf_construction()
 {
     cout << "---" << endl;
+    size_t row_size = 20000, col_size = 8000;
     {
         stack_watch sw;
-        mixed_mx_type mx(20000, 5000, mdds::matrix_density_filled_zero);
+        mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
         cout << "construction filled zero: " << sw.get_duration() << " sec (mixed_type_matrix, filled)" << endl;
     }
 
     {
         stack_watch sw;
-        mixed_mx_type mx(20000, 5000, mdds::matrix_density_sparse_zero);
+        mixed_mx_type mx(row_size, col_size, mdds::matrix_density_sparse_zero);
         cout << "construction filled zero: " << sw.get_duration() << " sec (mixed_type_matrix, sparse)" << endl;
     }
 
     {
         stack_watch sw;
-        multi_mx_type mx(20000, 5000, 0.0);
+        multi_mx_type mx(row_size, col_size, 0.0);
         cout << "construction filled zero: " << sw.get_duration() << " sec (multi_type_matrix)" << endl;
     }
 
     {
         stack_watch sw;
-        mixed_mx_type mx(20000, 5000, mdds::matrix_density_filled_empty);
+        mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_empty);
         cout << "construction filled empty: " << sw.get_duration() << " sec (mixed_type_matrix, filled)" << endl;
     }
 
     {
         stack_watch sw;
-        mixed_mx_type mx(20000, 5000, mdds::matrix_density_sparse_empty);
+        mixed_mx_type mx(row_size, col_size, mdds::matrix_density_sparse_empty);
         cout << "construction filled empty: " << sw.get_duration() << " sec (mixed_type_matrix, sparse)" << endl;
     }
 
     {
         stack_watch sw;
-        multi_mx_type mx(20000, 5000);
+        multi_mx_type mx(row_size, col_size);
         cout << "construction filled empty: " << sw.get_duration() << " sec (multi_type_matrix)" << endl;
     }
 }
@@ -178,7 +179,7 @@ void perf_insertion()
 {
     cout << "---" << endl;
     size_t row_size = 10000;
-    size_t col_size = 500;
+    size_t col_size = 1000;
     {
         mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
         stack_watch sw;
