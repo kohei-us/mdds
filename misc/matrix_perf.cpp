@@ -462,6 +462,43 @@ void perf_init_with_value()
     }
 }
 
+void perf_heap_vs_array()
+{
+    cout << "---" << endl;
+    size_t row_size = 20000, col_size = 3000;
+    {
+        mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_empty);
+        init_manual_loop(mx, row_size, col_size);
+        stack_watch sw;
+        double sum = 0.0;
+        for (size_t row = 0; row < row_size; ++row)
+            for (size_t col = 0; col < col_size; ++col)
+                sum += mx.get_numeric(row, col);
+        cout << "sum with values on the heap (mixed_type_matrix): " << sw.get_duration() << " sec (" << sum << ")" << endl;
+    }
+
+    {
+        mixed_mx_type mx(row_size, col_size, mdds::matrix_density_filled_zero);
+        init_manual_loop(mx, row_size, col_size);
+        stack_watch sw;
+        double sum = 0.0;
+        for (size_t row = 0; row < row_size; ++row)
+            for (size_t col = 0; col < col_size; ++col)
+                sum += mx.get_numeric(row, col);
+        cout << "sum with array values (mixed_type_matrix): " << sw.get_duration() << " sec (" << sum << ")" << endl;
+    }
+
+    {
+        multi_mx_type mx(row_size, col_size, 0.0);
+        init_manual_loop(mx, row_size, col_size);
+        sum_all_values func;
+        stack_watch sw;
+        mx.walk(func);
+        double sum = func.get();
+        cout << "sum with array values (multi_type_matrix): " << sw.get_duration() << " sec (" << sum << ")" << endl;
+    }
+}
+
 int main()
 {
     perf_construction();
@@ -469,5 +506,6 @@ int main()
     perf_sum_all_values();
     perf_sum_all_values_multi_block();
     perf_init_with_value();
+    perf_heap_vs_array();
     return EXIT_SUCCESS;
 }
