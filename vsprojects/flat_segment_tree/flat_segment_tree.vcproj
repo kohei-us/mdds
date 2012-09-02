@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Users\Kohei\Workspace\multidimalgorithm\include;C:\dev\boost_1_42_0"
+				AdditionalIncludeDirectories="..\..\include;C:\dev\boost_1_42_0"
 				PreprocessorDefinitions="UNIT_TEST;DEBUG_NODE_BASE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -111,7 +111,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="C:\Users\Kohei\Workspace\multidimalgorithm\include;C:\dev\boost_1_42_0"
+				AdditionalIncludeDirectories="..\..\include;C:\dev\boost_1_42_0"
 				PreprocessorDefinitions="UNIT_TEST;DEBUG_NODE_BASE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
