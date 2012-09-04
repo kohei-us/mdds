@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="multi_type_vector (custom)"
 	ProjectGUID="{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}"
 	RootNamespace="multi_type_vector_custom"
@@ -20,6 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\DefaultConfig.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -40,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;C:\dev\boost_1_42_0"
+				AdditionalIncludeDirectories=""
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -88,6 +89,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\DefaultConfig.vsprops"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -177,11 +179,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mdds\multi_type_vector_macro.hpp"
+				RelativePath="..\..\include\mdds\multi_type_vector_def.inl"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mdds\multi_type_vector_def.inl"
+				RelativePath="..\..\include\mdds\multi_type_vector_macro.hpp"
 				>
 			</File>
 			<File

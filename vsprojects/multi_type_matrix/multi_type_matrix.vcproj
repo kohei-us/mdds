@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="multi_type_matrix"
 	ProjectGUID="{831A2583-F85F-4AF1-9851-8978D8BC8409}"
 	RootNamespace="multi_type_matrix"
@@ -20,6 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\DefaultConfig.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -40,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;C:\dev\boost_1_42_0"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="UNIT_TEST;DEBUG_NODE_BASE;MDDS_HASH_CONTAINER_BOOST"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -89,6 +90,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\DefaultConfig.vsprops"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -111,7 +113,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\include;C:\dev\boost_1_42_0"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="UNIT_TEST;DEBUG_NODE_BASE;MDDS_HASH_CONTAINER_BOOST"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
