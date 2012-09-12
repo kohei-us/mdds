@@ -403,6 +403,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
 
     using base_type::get;
     using base_type::m_array;
+    using base_type::set_value;
 
     noncopyable_managed_element_block() : base_type() {}
     noncopyable_managed_element_block(size_t n) : base_type(n) {}
