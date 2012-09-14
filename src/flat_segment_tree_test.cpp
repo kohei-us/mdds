@@ -999,7 +999,7 @@ struct leaf_node_functor : public unary_function<void, pair<key_type, value_type
 
 void fst_test_const_iterator()
 {
-    stack_printer __stack_printer__("::fst_test_const_reverse_iterator");
+    stack_printer __stack_printer__("::fst_test_const_iterator");
 
     typedef unsigned int    key_type;
     typedef unsigned short  value_type;
