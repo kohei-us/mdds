@@ -1,3 +1,23 @@
+
+* all
+
+  * use property files in the Visual Studio project files, to share
+    some of the common custom build variables across all projects.
+
+  * various build fixes and compiler warning eliminations.
+
+  * fixed link error with boost 1.50.
+
+  * fixed make installer script which previously would not install
+    mdds/compat headers.
+
+* flat_segment_tree
+
+  * fixed a bug in its iterator implementation, which previously would
+    always treat the last valid position before the end position as
+    the end position.  This fix affects both in const_iterator and
+    const_reverse_iterator.
+
 mdds 0.6.0
 
 * all
