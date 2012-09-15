@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010 Kohei Yoshida
+ * Copyright (c) 2010-2012 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,12 +38,12 @@ struct itr_forward_handler
 {
     typedef _FstType fst_type;
 
-    const typename fst_type::node* init_pos(const fst_type* _db, bool _end) const
+    static const typename fst_type::node* init_pos(const fst_type* _db, bool _end)
     {
         return _end ? _db->m_right_leaf.get() : _db->m_left_leaf.get();
     }
 
-    void inc(const fst_type* _db, const typename fst_type::node*& p, bool& end) const
+    static void inc(const fst_type* _db, const typename fst_type::node*& p, bool& end)
     {
         if (p == _db->m_right_leaf.get())
             end = true;
@@ -51,7 +51,7 @@ struct itr_forward_handler
             p = p->right.get();
     }
 
-    void dec(const typename fst_type::node*& p, bool& end) const
+    static void dec(const typename fst_type::node*& p, bool& end)
     {
         if (end)
             end = false;
@@ -68,12 +68,12 @@ struct itr_reverse_handler
 {
     typedef _FstType fst_type;
 
-    const typename fst_type::node* init_pos(const fst_type* _db, bool _end) const
+    static const typename fst_type::node* init_pos(const fst_type* _db, bool _end)
     {
         return _end ? _db->m_left_leaf.get() : _db->m_right_leaf.get();
     }
 
-    void inc(const fst_type* _db, const typename fst_type::node*& p, bool& end) const
+    static void inc(const fst_type* _db, const typename fst_type::node*& p, bool& end)
     {
         if (p == _db->m_left_leaf.get())
             end = true;
@@ -81,7 +81,7 @@ struct itr_reverse_handler
             p = p->left.get();
     }
 
-    void dec(const typename fst_type::node*& p, bool& end) const
+    static void dec(const typename fst_type::node*& p, bool& end)
     {
         if (end)
             end = false;
@@ -93,9 +93,9 @@ struct itr_reverse_handler
 template<typename _FstType, typename _Hdl>
 class const_iterator_base
 {
+    typedef _Hdl     handler_type;
 public:
     typedef _FstType fst_type;
-    typedef _Hdl     handler_type;
 
     // iterator traits
     typedef ::std::pair<typename fst_type::key_type, typename fst_type::value_type> value_type;
@@ -110,7 +110,7 @@ public:
         if (!_db)
             return;
 
-        m_pos = m_hdl.init_pos(_db, _end);
+        m_pos = handler_type::init_pos(_db, _end);
     }
 
     explicit const_iterator_base(const fst_type* _db, const typename fst_type::node* pos) :
@@ -130,14 +130,14 @@ public:
     const value_type* operator++()
     {
         assert(m_pos);
-        m_hdl.inc(m_db, m_pos, m_end_pos);
+        handler_type::inc(m_db, m_pos, m_end_pos);
         return operator->();
     }
 
     const value_type* operator--()
     {
         assert(m_pos);
-        m_hdl.dec(m_pos, m_end_pos);
+        handler_type::dec(m_pos, m_end_pos);
         return operator->();
     }
 
@@ -175,7 +175,6 @@ private:
         return m_current_pair;
     }
 
-    handler_type    m_hdl;
     const fst_type* m_db;
     const typename fst_type::node* m_pos;
     value_type      m_current_pair;
