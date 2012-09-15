@@ -1001,41 +1001,92 @@ void fst_test_const_iterator()
 {
     stack_printer __stack_printer__("::fst_test_const_iterator");
 
-    typedef unsigned int    key_type;
-    typedef unsigned short  value_type;
-    unsigned short max_value = numeric_limits<value_type>::max();
-    typedef flat_segment_tree<key_type, value_type> container_type;
-
-    container_type db(0, 1000, max_value);
-
-    build_and_dump(db);
     {
-        unsigned int   k[] = {0, 1000};
-        unsigned short v[] = {max_value};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        typedef unsigned int    key_type;
+        typedef unsigned short  value_type;
+        unsigned short max_value = numeric_limits<value_type>::max();
+        typedef flat_segment_tree<key_type, value_type> container_type;
+
+        container_type db(0, 1000, max_value);
+
+        build_and_dump(db);
+        {
+            unsigned int   k[] = {0, 1000};
+            unsigned short v[] = {max_value};
+            assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        }
+
+        db.insert_front(10, 20, 10);
+        db.insert_front(20, 50, 20);
+        db.insert_front(100, 300, 55);
+        build_and_dump(db);
+        {
+            unsigned int   k[] = {0, 10, 20, 50, 100, 300, 1000};
+            unsigned short v[] = {max_value, 10, 20, max_value, 55, max_value};
+            assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+            fprintf(stdout, "fst_test_const_iterator:   leaf nodes valid\n");
+
+            // Check the forward iterator's integrity.
+            assert(is_iterator_valid(db.begin(), db.end(), k, v, ARRAY_SIZE(k)));
+            fprintf(stdout, "fst_test_const_iterator:   forward iterator valid\n");
+
+            // Check the reverse iterator's integrity.
+            assert(is_iterator_valid(db.rbegin(), db.rend(), k, v, ARRAY_SIZE(k)));
+            fprintf(stdout, "fst_test_const_iterator:   reverse iterator valid\n");
+        }
+
+        // Make sure it works with for_each.
+        for_each(db.begin(), db.end(), leaf_node_functor<key_type, value_type>());
     }
 
-    db.insert_front(10, 20, 10);
-    db.insert_front(20, 50, 20);
-    db.insert_front(100, 300, 55);
-    build_and_dump(db);
     {
-        unsigned int   k[] = {0, 10, 20, 50, 100, 300, 1000};
-        unsigned short v[] = {max_value, 10, 20, max_value, 55, max_value};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
-        fprintf(stdout, "fst_test_const_iterator:   leaf nodes valid\n");
+        typedef flat_segment_tree<int, bool> container_type;
+        container_type db(0, 100, true);
+        db.insert_front(0, 50, false);
 
-        // Check the forward iterator's integrity.
-        assert(is_iterator_valid(db.begin(), db.end(), k, v, ARRAY_SIZE(k)));
-        fprintf(stdout, "fst_test_const_iterator:   forward iterator valid\n");
-
-        // Check the reverse iterator's integrity.
-        assert(is_iterator_valid(db.rbegin(), db.rend(), k, v, ARRAY_SIZE(k)));
-        fprintf(stdout, "fst_test_const_iterator:   reverse iterator valid\n");
+        {
+            cout << "-- forward" << endl;
+            container_type::const_iterator it = db.begin(), it_end = db.end();
+            // 0 -> 50 -> 100 -> end
+            cout << "key: " << it->first << "  value: " << it->second << endl;
+            assert(it->first == 0);
+            assert(it->second == false);
+            ++it;
+            cout << "key: " << it->first << "  value: " << it->second << endl;
+            assert(it->first == 50);
+            assert(it->second == true);
+            ++it;
+            cout << "key: " << it->first << "  value: " << it->second << endl;
+            assert(it->first == 100);
+            assert(it != it_end);
+            ++it;
+            assert(it == it_end);
+        }
+        {
+            cout << "-- reverse" << endl;
+            container_type::const_reverse_iterator it = db.rbegin(), it_end = db.rend();
+            // 100 -> 50 -> 0 -> end
+            cout << "key: " << it->first << "  value: " << it->second << endl;
+            assert(it->first == 100);
+            ++it;
+            cout << "key: " << it->first << "  value: " << it->second << endl;
+            assert(it->first == 50);
+            assert(it->second == true);
+            ++it;
+            cout << "key: " << it->first << "  value: " << it->second << endl;
+            assert(it->first == 0);
+            assert(it->second == false);
+            assert(it != it_end);
+            ++it;
+            assert(it == it_end);
+        }
     }
+}
 
-    // Make sure it works with for_each.
-    for_each(db.begin(), db.end(), leaf_node_functor<key_type, value_type>());
+void fst_test_reverse_iterator()
+{
+    stack_printer __stack_printer__("::fst_test_reverse_iterator");
+
 }
 
 template<typename key_type, typename value_type>

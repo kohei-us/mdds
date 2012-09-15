@@ -123,6 +123,7 @@ public:
     {
         m_db = r.m_db;
         m_pos = r.m_pos;
+        m_end_pos = r.m_end_pos;
         return *this;
     }
 
@@ -145,10 +146,7 @@ public:
         if (m_db != r.m_db)
             return false;
 
-        if (m_end_pos == r.m_end_pos)
-            return true;
-
-        return (m_pos == r.m_pos);
+        return (m_pos == r.m_pos) && (m_end_pos == r.m_end_pos);
     }
 
     bool operator!=(const const_iterator_base& r) const
