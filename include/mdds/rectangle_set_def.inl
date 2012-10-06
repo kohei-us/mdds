@@ -1,7 +1,7 @@
 /*************************************************************************
  *
- * Copyright (c) 2011 Kohei Yoshida
- * 
+ * Copyright (c) 2011-2012 Kohei Yoshida
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -24,6 +24,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  ************************************************************************/
+
+#include <sstream>
 
 namespace mdds {
 
@@ -80,7 +82,11 @@ template<typename _Key, typename _Data>
 bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data)
 {
     if (x1 >= x2 || y1 >= y2)
-        throw invalid_arg_error("specified range coordinates are invalid.");
+    {
+        std::ostringstream os;
+        os << "specified range coordinates are invalid (x1=" << x1 << ",y1=" << y1 << ",x2=" << x2 << ",y2=" << y2 << ')';
+        throw invalid_arg_error(os.str());
+    }
 
     // Make sure this is not a duplicate.
     if (m_dataset.find(data) != m_dataset.end())
@@ -91,7 +97,7 @@ bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
     typename inner_segment_map_type::iterator itr = m_inner_map.find(outer_interval);
     if (itr == m_inner_map.end())
     {
-        // this interval has not yet been stored.  Create a new inner segment 
+        // this interval has not yet been stored.  Create a new inner segment
         // tree instance for this interval.
         ::std::pair<typename inner_segment_map_type::iterator, bool> r =
             m_inner_map.insert(outer_interval, new inner_type);
@@ -100,7 +106,7 @@ bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
 
         itr = r.first;
 
-        // Register the pointer to this inner segment tree instance with the 
+        // Register the pointer to this inner segment tree instance with the
         // outer segment tree.
         if (!m_outer_segments.insert(x1, x2, itr->second))
             // This should never fail if my logic is correct.
@@ -216,7 +222,7 @@ bool rectangle_set<_Key,_Data>::empty() const
 template<typename _Key, typename _Data>
 void rectangle_set<_Key,_Data>::build_outer_segment_tree()
 {
-    // Re-construct the outer segment tree from the authoritative inner tree 
+    // Re-construct the outer segment tree from the authoritative inner tree
     // map.
     typename inner_segment_map_type::iterator itr = m_inner_map.begin(), itr_end = m_inner_map.end();
     for (; itr != itr_end; ++itr)
@@ -244,7 +250,7 @@ void rectangle_set<_Key,_Data>::dump_rectangles() const
     {
         const rectangle& rect = itr->second;
         cout << itr->first->name << ": (x1,y1,x2,y2) = "
-            << "(" << rect.x1 << "," << rect.y1 << "," << rect.x2 << "," << rect.y2 << ")" 
+            << "(" << rect.x1 << "," << rect.y1 << "," << rect.x2 << "," << rect.y2 << ")"
             << endl;
     }
 }
