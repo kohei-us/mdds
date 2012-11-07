@@ -1083,12 +1083,6 @@ void fst_test_const_iterator()
     }
 }
 
-void fst_test_reverse_iterator()
-{
-    stack_printer __stack_printer__("::fst_test_reverse_iterator");
-
-}
-
 template<typename key_type, typename value_type>
 void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type default_value)
 {
