@@ -94,6 +94,8 @@ protected:
     element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val) {}
 
 public:
+    typedef typename store_type::iterator iterator;
+    typedef typename store_type::reverse_iterator reverse_iterator;
     typedef typename store_type::const_iterator const_iterator;
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
     typedef _Data value_type;
@@ -108,6 +110,16 @@ public:
         return !operator==(r);
     }
 
+    static iterator begin(base_element_block& block)
+    {
+        return get(block).m_array.begin();
+    }
+
+    static iterator end(base_element_block& block)
+    {
+        return get(block).m_array.end();
+    }
+
     static const_iterator begin(const base_element_block& block)
     {
         return get(block).m_array.begin();
@@ -116,6 +128,16 @@ public:
     static const_iterator end(const base_element_block& block)
     {
         return get(block).m_array.end();
+    }
+
+    static reverse_iterator rbegin(base_element_block& block)
+    {
+        return get(block).m_array.rbegin();
+    }
+
+    static reverse_iterator rend(base_element_block& block)
+    {
+        return get(block).m_array.rend();
     }
 
     static const_reverse_iterator rbegin(const base_element_block& block)
@@ -321,7 +343,8 @@ inline element_t get_block_type(const base_element_block& blk)
 }
 
 /**
- * Template for default, unmanaged element block for use in grid_map.
+ * Template for default, unmanaged element block for use in
+ * multi_type_vector.
  */
 template<element_t _TypeId, typename _Data>
 struct default_element_block : public copyable_element_block<default_element_block<_TypeId,_Data>, _TypeId, _Data>
