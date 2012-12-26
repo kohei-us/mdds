@@ -43,6 +43,13 @@ protected:
 
         node() : type(mdds::mtv::element_type_empty), size(0), data(NULL) {}
         node(const node& other) : type(other.type), size(other.size), data(other.data) {}
+
+        void swap(node& other)
+        {
+            std::swap(type, other.type);
+            std::swap(size, other.size);
+            std::swap(data, other.data);
+        }
     };
 
     iterator_common_base() {}
@@ -77,6 +84,33 @@ protected:
     node m_cur_node;
     base_iterator_type m_pos;
     base_iterator_type m_end;
+
+public:
+    bool operator== (const iterator_common_base& other) const
+    {
+        return m_pos == other.m_pos && m_end == other.m_end;
+    }
+
+    bool operator!= (const iterator_common_base& other) const
+    {
+        return !operator==(other);
+    }
+
+    iterator_common_base& operator= (const iterator_common_base& other)
+    {
+        m_pos = other.m_pos;
+        m_end = other.m_end;
+        if (m_pos != m_end)
+            update_node();
+        return *this;
+    }
+
+    void swap(iterator_common_base& other)
+    {
+        m_cur_node.swap(other.m_cur_node);
+        m_pos.swap(other.m_pos);
+        m_end.swap(other.m_end);
+    }
 };
 
 template<typename _ParentType, typename _BlksType, typename _BaseItrType>
@@ -106,25 +140,6 @@ public:
 
     iterator_base(const iterator_base& other) :
         common_base(other) {}
-
-    bool operator== (const iterator_base& other) const
-    {
-        return m_pos == other.m_pos && m_end == other.m_end;
-    }
-
-    bool operator!= (const iterator_base& other) const
-    {
-        return !operator==(other);
-    }
-
-    iterator_base& operator= (const iterator_base& other)
-    {
-        m_pos = other.m_pos;
-        m_end = other.m_end;
-        if (m_pos != m_end)
-            update_node();
-        return *this;
-    }
 
     value_type& operator*()
     {
@@ -201,37 +216,6 @@ public:
      */
     const_iterator_base(const iterator_base& other) :
         common_base(other.get_pos(), other.get_end()) {}
-
-    bool operator== (const const_iterator_base& other) const
-    {
-        return m_pos == other.m_pos && m_end == other.m_end;
-    }
-
-    bool operator!= (const const_iterator_base& other) const
-    {
-        return !operator==(other);
-    }
-
-    const_iterator_base& operator= (const const_iterator_base& other)
-    {
-        m_pos = other.m_pos;
-        m_end = other.m_end;
-        if (m_pos != m_end)
-            update_node();
-        return *this;
-    }
-
-    /**
-     * Assign the non-const iterator counterpart to const iterator.
-     */
-    const_iterator_base& operator= (const iterator_base& other)
-    {
-        m_pos = other.get_pos();
-        m_end = other.get_end();
-        if (m_pos != m_end)
-            update_node();
-        return *this;
-    }
 
     const value_type& operator*() const
     {
