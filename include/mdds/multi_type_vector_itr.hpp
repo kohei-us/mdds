@@ -98,18 +98,16 @@ public:
 
     iterator_common_base& operator= (const iterator_common_base& other)
     {
-        m_pos = other.m_pos;
-        m_end = other.m_end;
-        if (m_pos != m_end)
-            update_node();
+        iterator_common_base assigned(other);
+        swap(assigned);
         return *this;
     }
 
     void swap(iterator_common_base& other)
     {
         m_cur_node.swap(other.m_cur_node);
-        m_pos.swap(other.m_pos);
-        m_end.swap(other.m_end);
+        std::swap(m_pos, other.m_pos);
+        std::swap(m_end, other.m_end);
     }
 };
 
