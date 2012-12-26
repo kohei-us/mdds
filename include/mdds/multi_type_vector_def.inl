@@ -68,6 +68,20 @@ multi_type_vector<_CellBlockFunc>::block::~block()
 }
 
 template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::begin()
+{
+    return iterator(m_blocks.begin(), m_blocks.end());
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::end()
+{
+    return iterator(m_blocks.end(), m_blocks.end());
+}
+
+template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::const_iterator
 multi_type_vector<_CellBlockFunc>::begin() const
 {
