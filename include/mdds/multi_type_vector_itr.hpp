@@ -28,7 +28,7 @@
 namespace mdds { namespace __mtv {
 
 template<typename _ColType, typename _BlksType, typename _ItrType>
-class iterator_base
+class const_iterator_base
 {
     typedef _ColType parent_type;
     typedef _BlksType blocks_type;
@@ -54,32 +54,32 @@ public:
     typedef std::bidirectional_iterator_tag iterator_category;
 
 public:
-    iterator_base() {}
-    iterator_base(const base_iterator_type& pos, const base_iterator_type& end) :
+    const_iterator_base() {}
+    const_iterator_base(const base_iterator_type& pos, const base_iterator_type& end) :
         m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
     }
 
-    iterator_base(const iterator_base& other) :
+    const_iterator_base(const const_iterator_base& other) :
         m_pos(other.m_pos), m_end(other.m_end)
     {
         if (m_pos != m_end)
             update_node();
     }
 
-    bool operator== (const iterator_base& other) const
+    bool operator== (const const_iterator_base& other) const
     {
         return m_pos == other.m_pos && m_end == other.m_end;
     }
 
-    bool operator!= (const iterator_base& other) const
+    bool operator!= (const const_iterator_base& other) const
     {
         return !operator==(other);
     }
 
-    iterator_base& operator= (const iterator_base& other)
+    const_iterator_base& operator= (const const_iterator_base& other)
     {
         m_pos = other.m_pos;
         m_end = other.m_end;
