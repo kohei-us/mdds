@@ -27,6 +27,11 @@
 
 namespace mdds { namespace __mtv {
 
+/**
+ * Common base for both const and non-const iterators.  Its protected inc()
+ * and dec() methods have non-const return type, and the derived classes
+ * wrap them and return values with their respective const modifiers.
+ */
 template<typename _ParentType, typename _BlksType, typename _BaseItrType>
 class iterator_common_base
 {
