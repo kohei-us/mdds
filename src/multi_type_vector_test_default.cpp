@@ -2268,6 +2268,7 @@ void mtv_test_non_const_data_iterators()
     assert(n == 1);
     assert(it_blk->type == mtv::element_type_numeric);
     assert(it_blk->data != NULL);
+
     mtv::numeric_element_block::iterator it = mtv::numeric_element_block::begin(*it_blk->data);
     mtv::numeric_element_block::iterator it_end = mtv::numeric_element_block::end(*it_blk->data);
     n = std::distance(it, it_end);
@@ -2276,6 +2277,31 @@ void mtv_test_non_const_data_iterators()
 
     *it = 2.3; // write via iterator.
     assert(db.get<double>(0) == 2.3);
+
+    db.resize(3);
+    db.set(1, 2.4);
+    db.set(2, 2.5);
+
+    it_blk = db.begin();
+    it_blk_end = db.end();
+    n = std::distance(it_blk, it_blk_end);
+    assert(n == 1);
+    assert(it_blk->type == mtv::element_type_numeric);
+    assert(it_blk->data != NULL);
+
+    it = mtv::numeric_element_block::begin(*it_blk->data);
+    it_end = mtv::numeric_element_block::end(*it_blk->data);
+    n = std::distance(it, it_end);
+    assert(n == 3);
+    *it = 3.1;
+    ++it;
+    *it = 3.2;
+    ++it;
+    *it = 3.3;
+
+    assert(db.get<double>(0) == 3.1);
+    assert(db.get<double>(1) == 3.2);
+    assert(db.get<double>(2) == 3.3);
 }
 
 }
