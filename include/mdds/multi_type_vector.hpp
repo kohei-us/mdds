@@ -335,8 +335,7 @@ private:
      *
      * @return true if block position is found, false otherwise.
      */
-    bool get_block_position(
-        size_type row, size_type& start_pos, size_type& block_index, size_type start_block=0, size_type start_block_row=0) const;
+    bool get_block_position(size_type row, size_type& start_pos, size_type& block_index) const;
 
     template<typename _T>
     static void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
