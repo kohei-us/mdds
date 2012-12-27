@@ -2304,6 +2304,28 @@ void mtv_test_non_const_data_iterators()
     assert(db.get<double>(2) == 3.3);
 }
 
+void mtv_perf_test_block_position_lookup()
+{
+    size_t n = 24000;
+
+    {
+        // Default insertion which always looks up the right element block
+        // from the position of the first block.  As such, as the block size
+        // grows, so does the time it takes to search for the right block.
+
+        mtv_type db(n*2);
+        double val1 = 1.1;
+        int val2 = 23;
+        stack_printer __stack_printer__("::mtv_perf_test_block_position_lookup::default insertion");
+        for (size_t i = 0; i < n; ++i)
+        {
+            size_t pos1 = i*2, pos2 = i*2 + 1;
+            db.set(pos1, val1);
+            db.set(pos2, val2);
+        }
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -2333,6 +2355,7 @@ int main (int argc, char **argv)
 
     if (opt.test_perf)
     {
+        mtv_perf_test_block_position_lookup();
     }
 
     cout << "Test finished successfully!" << endl;
