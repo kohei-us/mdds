@@ -161,7 +161,8 @@ void multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     // Find the right block ID from the row ID.
     size_type start_row = 0; // row ID of the first cell in a block.
     size_type block_index = 0;
-    get_block_position(pos, start_row, block_index);
+    if (!get_block_position(pos, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
 
     block* blk = m_blocks[block_index];
     assert(blk->m_size > 0); // block size should never be zero at any time.
@@ -329,7 +330,7 @@ void multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::get_block_position(
+bool multi_type_vector<_CellBlockFunc>::get_block_position(
     size_type row, size_type& start_row, size_type& block_index, size_type start_block, size_type start_block_row) const
 {
     start_row = start_block_row;
@@ -340,14 +341,14 @@ void multi_type_vector<_CellBlockFunc>::get_block_position(
         {
             // Row is in this block.
             block_index = i;
-            return;
+            return true;
         }
 
         // Specified row is not in this block.
         start_row += blk.m_size;
     }
 
-    assert(!"Block position not found.");
+    return false;
 }
 
 template<typename _CellBlockFunc>
@@ -897,7 +898,9 @@ void multi_type_vector<_CellBlockFunc>::get(size_type pos, _T& value) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
-    get_block_position(pos, start_row, block_index);
+    if (!get_block_position(pos, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
+
     const block* blk = m_blocks[block_index];
     assert(blk);
 
@@ -928,7 +931,9 @@ mtv::element_t multi_type_vector<_CellBlockFunc>::get_type(size_type pos) const
 {
     size_type start_row = 0;
     size_type block_index = static_cast<size_type>(-1);
-    get_block_position(pos, start_row, block_index);
+    if (!get_block_position(pos, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
+
     const block* blk = m_blocks[block_index];
     if (!blk->mp_data)
         return mtv::element_type_empty;
@@ -941,7 +946,8 @@ bool multi_type_vector<_CellBlockFunc>::is_empty(size_type pos) const
 {
     size_type start_row = 0;
     size_type block_index = 0;
-    get_block_position(pos, start_row, block_index);
+    if (!get_block_position(pos, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
 
     return m_blocks[block_index]->mp_data == NULL;
 }
@@ -954,8 +960,11 @@ void multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type
 
     size_type start_row_in_block1 = 0, start_row_in_block2 = 0;
     size_type block_pos1 = 0, block_pos2 = 0;
-    get_block_position(start_pos, start_row_in_block1, block_pos1);
-    get_block_position(end_pos, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
+    if (!get_block_position(start_pos, start_row_in_block1, block_pos1))
+        throw std::out_of_range("Block position not found!");
+
+    if (!get_block_position(end_pos, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1))
+        throw std::out_of_range("Block position not found!");
 
     if (block_pos1 == block_pos2)
     {
@@ -985,8 +994,11 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
 
     size_type start_row_in_block1 = 0, start_row_in_block2 = 0;
     size_type block_pos1 = 0, block_pos2 = 0;
-    get_block_position(start_row, start_row_in_block1, block_pos1);
-    get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1);
+    if (!get_block_position(start_row, start_row_in_block1, block_pos1))
+        throw std::out_of_range("Block position not found!");
+
+    if (!get_block_position(end_row, start_row_in_block2, block_pos2, block_pos1, start_row_in_block1))
+        throw std::out_of_range("Block position not found!");
 
     if (block_pos1 == block_pos2)
     {
@@ -1120,7 +1132,8 @@ void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_ty
     assert(row < m_cur_size);
 
     size_type start_row = 0, block_index = 0;
-    get_block_position(row, start_row, block_index);
+    if (!get_block_position(row, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
 
     block* blk = m_blocks[block_index];
     if (!blk->mp_data)
@@ -1191,8 +1204,11 @@ void multi_type_vector<_CellBlockFunc>::set_cells_impl(size_type row, const _T& 
         throw std::out_of_range("Data array is too long.");
 
     size_t block_index1 = 0, block_index2 = 0, start_row1 = 0, start_row2 = 0;
-    get_block_position(row, start_row1, block_index1);
-    get_block_position(end_row, start_row2, block_index2, block_index1, start_row1);
+    if (!get_block_position(row, start_row1, block_index1))
+        throw std::out_of_range("Block position not found!");
+
+    if (!get_block_position(end_row, start_row2, block_index2, block_index1, start_row1))
+        throw std::out_of_range("Block position not found!");
 
     if (block_index1 == block_index2)
     {
@@ -1215,7 +1231,8 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
         return;
 
     size_type block_index = 0, start_row = 0;
-    get_block_position(row, start_row, block_index);
+    if (!get_block_position(row, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
 
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
     block* blk = m_blocks[block_index];
@@ -1853,7 +1870,8 @@ void multi_type_vector<_CellBlockFunc>::resize(size_type new_size)
     // Find out in which block the new end row will be.
     size_type new_end_row = new_size - 1;
     size_type start_row_in_block = 0, block_index = 0;
-    get_block_position(new_end_row, start_row_in_block, block_index);
+    if (!get_block_position(new_end_row, start_row_in_block, block_index))
+        throw std::out_of_range("Block position not found!");
 
     block* blk = m_blocks[block_index];
     size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
