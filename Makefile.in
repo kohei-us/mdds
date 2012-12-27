@@ -176,6 +176,10 @@ test.mtv: multi_type_vector_test_default multi_type_vector_test_custom
 	./multi_type_vector_test_default func
 	./multi_type_vector_test_custom func
 
+test.mtv.perf: multi_type_vector_test_default multi_type_vector_test_custom
+	./multi_type_vector_test_default perf
+	./multi_type_vector_test_custom perf
+
 test.mtv.mem: multi_type_vector_test_default multi_type_vector_test_custom
 	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_default func
 	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_custom func
