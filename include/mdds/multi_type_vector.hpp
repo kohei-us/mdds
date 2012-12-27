@@ -330,6 +330,11 @@ public:
 
 private:
 
+    /**
+     * Find the correct block position for given logical row ID.
+     *
+     * @return true if block position is found, false otherwise.
+     */
     bool get_block_position(
         size_type row, size_type& start_pos, size_type& block_index, size_type start_block=0, size_type start_block_row=0) const;
 
