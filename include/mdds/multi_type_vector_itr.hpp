@@ -81,6 +81,23 @@ protected:
         m_cur_node.data = blk->mp_data;
     }
 
+    node* inc()
+    {
+        ++m_pos;
+        if (m_pos == m_end)
+            return NULL;
+
+        update_node();
+        return &m_cur_node;
+    }
+
+    node* dec()
+    {
+        --m_pos;
+        update_node();
+        return &m_cur_node;
+    }
+
     node m_cur_node;
     base_iterator_type m_pos;
     base_iterator_type m_end;
@@ -117,7 +134,8 @@ class iterator_base : public iterator_common_base<_ParentType,_BlksType,_BaseItr
     typedef iterator_common_base<_ParentType,_BlksType,_BaseItrType> common_base;
     typedef _BaseItrType base_iterator_type;
 
-    using common_base::update_node;
+    using common_base::inc;
+    using common_base::dec;
     using common_base::m_cur_node;
     using common_base::m_pos;
     using common_base::m_end;
@@ -151,19 +169,12 @@ public:
 
     value_type* operator++()
     {
-        ++m_pos;
-        if (m_pos == m_end)
-            return NULL;
-
-        update_node();
-        return &m_cur_node;
+        return inc();
     }
 
     value_type* operator--()
     {
-        --m_pos;
-        update_node();
-        return &m_cur_node;
+        return dec();
     }
 
     /**
@@ -185,10 +196,9 @@ class const_iterator_base : public iterator_common_base<_ParentType,_BlksType,_B
     typedef iterator_common_base<_ParentType,_BlksType,_BaseItrType> common_base;
     typedef _BaseItrType base_iterator_type;
 
-    using common_base::update_node;
+    using common_base::inc;
+    using common_base::dec;
     using common_base::m_cur_node;
-    using common_base::m_pos;
-    using common_base::m_end;
 
 public:
 
@@ -227,19 +237,12 @@ public:
 
     const value_type* operator++()
     {
-        ++m_pos;
-        if (m_pos == m_end)
-            return NULL;
-
-        update_node();
-        return &m_cur_node;
+        return inc();
     }
 
     const value_type* operator--()
     {
-        --m_pos;
-        update_node();
-        return &m_cur_node;
+        return dec();
     }
 };
 
