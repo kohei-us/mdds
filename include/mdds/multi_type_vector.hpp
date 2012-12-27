@@ -333,6 +333,20 @@ private:
     /**
      * Find the correct block position for given logical row ID.
      *
+     * @param row logical ID of the row that belongs to the block being looked
+     *            up for.
+     *
+     * @param start_pos logical ID of the first row of the block being looked
+     *                  up for. The caller needs to assign its initial value
+     *                  before calling this method in case the search needs to
+     *                  start with a block that's not the first block.  Assign
+     *                  0 if the search starts from the first block.
+     *
+     * @param block_index index of the block being looked up for. The caller
+     *                    needs to assign its initial index which will be the
+     *                    index of the block from which the search starts.
+     *                    Assign 0 if the search starts from the first block.
+     *
      * @return true if block position is found, false otherwise.
      */
     bool get_block_position(size_type row, size_type& start_pos, size_type& block_index) const;
