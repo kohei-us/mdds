@@ -317,7 +317,7 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
     return val == test;
 }
 
-typedef mdds::multi_type_vector<my_cell_block_func> column_type;
+typedef mdds::multi_type_vector<my_cell_block_func> mtv_type;
 
 void mtv_test_types()
 {
@@ -326,20 +326,20 @@ void mtv_test_types()
     mdds::mtv::element_t ct;
 
     // Basic types
-    ct = column_type::get_element_type(double(12.3));
+    ct = mtv_type::get_element_type(double(12.3));
     assert(ct == mtv::element_type_numeric);
-    ct = column_type::get_element_type(string());
+    ct = mtv_type::get_element_type(string());
     assert(ct == mtv::element_type_string);
-    ct = column_type::get_element_type(static_cast<unsigned long>(12));
+    ct = mtv_type::get_element_type(static_cast<unsigned long>(12));
     assert(ct == mtv::element_type_ulong);
-    ct = column_type::get_element_type(true);
+    ct = mtv_type::get_element_type(true);
     assert(ct == mtv::element_type_boolean);
-    ct = column_type::get_element_type(false);
+    ct = mtv_type::get_element_type(false);
     assert(ct == mtv::element_type_boolean);
 
     // Custom cell type
     user_cell* p = NULL;
-    ct = column_type::get_element_type(p);
+    ct = mtv_type::get_element_type(p);
     assert(ct == element_type_user_block && ct >= mtv::element_type_user_start);
 }
 
@@ -354,7 +354,7 @@ void mtv_test_basic()
 
     {
         // set_cell()
-        column_type db(4);
+        mtv_type db(4);
         user_cell* p = pool.construct(1.2);
         db.set(0, p);
         db.set(1, p);
@@ -373,7 +373,7 @@ void mtv_test_basic()
 
     {
         // set_cells(), resize(), insert_cells().
-        column_type db(3);
+        mtv_type db(3);
         user_cell* p1 = pool.construct(1.1);
         user_cell* p2 = pool.construct(2.2);
         user_cell* p3 = pool.construct(3.3);
@@ -467,7 +467,7 @@ void mtv_test_basic()
 
     {
         // set_cells() to overwrite existing values of type user_cell*.
-        column_type db(2);
+        mtv_type db(2);
         user_cell* p0 = pool.construct(1.2);
         db.set(1, p0);
         db.set(0, p0);
@@ -480,7 +480,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type db(4);
+        mtv_type db(4);
         user_cell* p0 = pool.construct(1.1);
         db.set(3, p0);
 
@@ -498,7 +498,7 @@ void mtv_test_basic()
 
     {
         // Get empty value.
-        column_type db(1);
+        mtv_type db(1);
         user_cell* p = db.get<user_cell*>(0);
         assert(p == NULL);
     }
@@ -510,8 +510,8 @@ void mtv_test_equality()
 
     user_cell_pool pool;
 
-    column_type db1(3);
-    column_type db2 = db1;
+    mtv_type db1(3);
+    mtv_type db2 = db1;
     assert(db2 == db1);
     user_cell* p0 = pool.construct(1.1);
     db1.set(0, p0);
@@ -537,7 +537,7 @@ void mtv_test_managed_block()
 {
     stack_printer __stack_printer__("::mtv_test_managed_block");
     {
-        column_type db(1);
+        mtv_type db(1);
         db.set(0, new muser_cell(1.0));
         const muser_cell* p = db.get<muser_cell*>(0);
         assert(p->value == 1.0);
@@ -548,7 +548,7 @@ void mtv_test_managed_block()
 
     {
         // Overwrite with empty cells.
-        column_type db(3);
+        mtv_type db(3);
 
         // Empty the upper part.
         db.set(0, new muser_cell(1.0));
@@ -567,7 +567,7 @@ void mtv_test_managed_block()
 
     {
         // More overwrite with empty cells.
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         db.set(2, 3.0);
@@ -585,7 +585,7 @@ void mtv_test_managed_block()
 
     {
         // Another case for set_empty().
-        column_type db(5);
+        mtv_type db(5);
         db.set(0, 1.2);
         db.set(1, new muser_cell(2.0));
         db.set(2, new muser_cell(3.0));
@@ -605,13 +605,13 @@ void mtv_test_managed_block()
 
     {
         // Test for cloning.
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         db.set(2, new muser_cell(3.0));
 
         // swap
-        column_type db2;
+        mtv_type db2;
         db2.swap(db);
         assert(db.empty());
         assert(db2.get<muser_cell*>(0)->value == 1.0);
@@ -624,14 +624,14 @@ void mtv_test_managed_block()
         assert(db.get<muser_cell*>(2)->value == 3.0);
 
         // copy constructor
-        column_type db_copied(db);
+        mtv_type db_copied(db);
         assert(db_copied.size() == 3);
         assert(db_copied.get<muser_cell*>(0)->value == 1.0);
         assert(db_copied.get<muser_cell*>(1)->value == 2.0);
         assert(db_copied.get<muser_cell*>(2)->value == 3.0);
 
         // Assignment.
-        column_type db_assigned = db;
+        mtv_type db_assigned = db;
         assert(db_assigned.size() == 3);
         assert(db_assigned.get<muser_cell*>(0)->value == 1.0);
         assert(db_assigned.get<muser_cell*>(1)->value == 2.0);
@@ -640,7 +640,7 @@ void mtv_test_managed_block()
 
     {
         // Resize and clear
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         db.set(2, new muser_cell(3.0));
@@ -652,7 +652,7 @@ void mtv_test_managed_block()
 
     {
         // Overwrite with a cell of different type.
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         db.set(2, new muser_cell(3.0));
@@ -661,7 +661,7 @@ void mtv_test_managed_block()
 
     {
         // Erase (single block)
-        column_type db(3);
+        mtv_type db(3);
 
         // Erase the whole thing.
         db.set(0, new muser_cell(1.0));
@@ -695,7 +695,7 @@ void mtv_test_managed_block()
 
     {
         // Erase (single block with preceding block)
-        column_type db(4);
+        mtv_type db(4);
 
         // Erase the whole thing.
         db.set(0, 1.1);
@@ -730,7 +730,7 @@ void mtv_test_managed_block()
 
     {
         // Erase (multi-block 1)
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         db.set(2, new muser_cell(3.0));
@@ -742,7 +742,7 @@ void mtv_test_managed_block()
 
     {
         // Erase (multi-block 2)
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, 4.1);
         db.set(1, 4.2);
         db.set(2, 4.3);
@@ -754,7 +754,7 @@ void mtv_test_managed_block()
 
     {
         // Erase (multi-block 3)
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, 1.0);
         db.set(1, 2.0);
         db.set(2, new muser_cell(3.0));
@@ -767,7 +767,7 @@ void mtv_test_managed_block()
     {
         // Insert into the middle of block.  This one shouldn't overwrite any
         // cells, but just to be safe...
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         db.insert_empty(1, 2);
@@ -778,7 +778,7 @@ void mtv_test_managed_block()
 
     {
         // set_cells (simple overwrite)
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
 
@@ -792,7 +792,7 @@ void mtv_test_managed_block()
 
     {
         // set_cells (overwrite upper)
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         double vals[] = { 3.0 };
@@ -804,7 +804,7 @@ void mtv_test_managed_block()
 
     {
         // set_cells (overwrite lower)
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         double vals[] = { 3.0 };
@@ -816,7 +816,7 @@ void mtv_test_managed_block()
 
     {
         // set_cells (overwrite middle)
-        column_type db(4);
+        mtv_type db(4);
         db.set(0, 1.1);
         db.set(1, new muser_cell(1.0));
         db.set(2, new muser_cell(2.0));
@@ -831,7 +831,7 @@ void mtv_test_managed_block()
 
     {
         // insert_empty() to split the block into two.
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, 1.1);
         db.set(1, new muser_cell(1.0));
         db.set(2, new muser_cell(2.0));
@@ -843,7 +843,7 @@ void mtv_test_managed_block()
 
     {
         // erase() to merge two blocks.
-        column_type db(4);
+        mtv_type db(4);
         db.set(0, 1.1);
         db.set(1, new muser_cell(1.0));
         db.set(2, static_cast<unsigned long>(2));
@@ -861,7 +861,7 @@ void mtv_test_managed_block()
 
     {
         // set_cells() across multiple blocks.
-        column_type db(5);
+        mtv_type db(5);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
         db.set(2, 1.2);
@@ -874,7 +874,7 @@ void mtv_test_managed_block()
 
     {
         // set_cells() across multiple blocks, part 2.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, static_cast<unsigned long>(12));
         db.set(1, new muser_cell(1.0));
         db.set(2, new muser_cell(2.0));
@@ -893,7 +893,7 @@ void mtv_test_managed_block()
 
     {
         // set_cell() to merge 3 blocks.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, static_cast<unsigned long>(12));
         db.set(1, new muser_cell(1.0));
         db.set(2, new muser_cell(2.0));
@@ -920,7 +920,7 @@ void mtv_test_managed_block()
 
     {
         // set_cell() to merge 2 blocks.
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, static_cast<unsigned long>(23));
         db.set(1, new muser_cell(2.1));
         db.set(2, new muser_cell(3.1));
@@ -934,7 +934,7 @@ void mtv_test_managed_block()
 
     {
         // insert_cells() to split block into two.
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, new muser_cell(2.1));
         db.set(1, new muser_cell(2.2));
         double vals[] = { 3.1, 3.2 };
@@ -944,7 +944,7 @@ void mtv_test_managed_block()
 
     {
         // set_cells() - merge new data block with existing block below.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, string("foo"));
         db.set(1, string("baa"));
         db.set(2, 1.1);
@@ -971,7 +971,7 @@ void mtv_test_managed_block()
     {
         // set_cells() - merge new data block with existing block below, but
         // it overwrites the upper cell.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, string("foo"));
         db.set(1, string("baa"));
         db.set(2, 1.1);
@@ -994,7 +994,7 @@ void mtv_test_managed_block()
     }
 
     {
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, new muser_cell(1.0));
         db.set(2, new muser_cell(1.0));
         db.set(1, new muser_cell(1.0));

@@ -53,7 +53,7 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
     return val == test;
 }
 
-typedef mdds::multi_type_vector<mdds::mtv::element_block_func> column_type;
+typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
 
 enum test_mtv_type {
     _bool, _short, _ushort, _int, _uint, _long, _ulong, _double, _string
@@ -127,7 +127,7 @@ void mtv_test_construction()
     stack_printer __stack_printer__("::mtv_test_construction");
     {
         // Create with initial value and size.
-        column_type db(10, 1.0);
+        mtv_type db(10, 1.0);
         assert(db.size() == 10);
         assert(db.block_size() == 1);
         assert(db.get<double>(0) == 1.0);
@@ -136,7 +136,7 @@ void mtv_test_construction()
 
     {
         // Create with initial value and size.
-        column_type db(10, string("foo"));
+        mtv_type db(10, string("foo"));
         assert(db.size() == 10);
         assert(db.block_size() == 1);
         assert(db.get<string>(0) == "foo");
@@ -151,7 +151,7 @@ void mtv_test_basic()
 
     {
         // Single column instance with only one row.
-        column_type col_db(1);
+        mtv_type col_db(1);
 
         double test = -999.0;
 
@@ -166,7 +166,7 @@ void mtv_test_basic()
 
     {
         // Insert first value into the top row.
-        column_type col_db(2);
+        mtv_type col_db(2);
         double test = -999.0;
 
         // Test empty cell values.
@@ -188,7 +188,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         res = test_cell_insertion(col_db, 0, 4.5);
         assert(res);
         res = test_cell_insertion(col_db, 1, 5.1);
@@ -199,7 +199,7 @@ void mtv_test_basic()
 
     {
         // Insert first value into the bottom row.
-        column_type col_db(3);
+        mtv_type col_db(3);
 
         res = test_cell_insertion(col_db, 2, 5.0); // Insert into the last row.
         assert(res);
@@ -220,7 +220,7 @@ void mtv_test_basic()
 
     {
         // This time insert from bottom up one by one.
-        column_type col_db(3);
+        mtv_type col_db(3);
         res = test_cell_insertion(col_db, 2, 1.2);
         assert(res);
         res = test_cell_insertion(col_db, 1, 0.2);
@@ -230,7 +230,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(4);
+        mtv_type col_db(4);
         long order[] = { 3, 1, 2, 0 };
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
@@ -241,7 +241,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(4);
+        mtv_type col_db(4);
         long order[] = { 0, 3, 1, 2 };
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
@@ -252,7 +252,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(4);
+        mtv_type col_db(4);
         long order[] = { 0, 2, 3, 1 };
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
@@ -263,7 +263,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(5);
+        mtv_type col_db(5);
         long order[] = { 0, 4, 3, 2, 1 };
         double val = 1.0;
         for (size_t i = 0; i < 5; ++i, ++val)
@@ -275,7 +275,7 @@ void mtv_test_basic()
 
     {
         // Insert first value into a middle row.
-        column_type col_db(10);
+        mtv_type col_db(10);
         res = test_cell_insertion(col_db, 5, 5.0);
         assert(res);
         string str = "test";
@@ -284,7 +284,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         res = test_cell_insertion(col_db, 0, 5.0);
         assert(res);
         string str = "test";
@@ -295,7 +295,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(2);
+        mtv_type col_db(2);
         res = test_cell_insertion(col_db, 0, 5.0);
         assert(res);
         string str = "test";
@@ -304,7 +304,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         res = test_cell_insertion(col_db, 0, 5.0);
         assert(res);
         string str = "test";
@@ -316,7 +316,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         res = test_cell_insertion(col_db, 0, 5.0);
         assert(res);
         res = test_cell_insertion(col_db, 2, 2.0);
@@ -327,7 +327,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         res = test_cell_insertion(col_db, 0, 5.0);
         assert(res);
         string str = "foo";
@@ -339,7 +339,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(4);
+        mtv_type col_db(4);
         res = test_cell_insertion(col_db, 0, 5.0);
         assert(res);
         string str = "foo";
@@ -383,7 +383,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(1);
+        mtv_type col_db(1);
         res = test_cell_insertion(col_db, 0, 2.0);
         assert(res);
         string str = "foo";
@@ -394,7 +394,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(2);
+        mtv_type col_db(2);
         res = test_cell_insertion(col_db, 0, 2.0);
         assert(res);
         string str = "foo";
@@ -413,7 +413,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         string str = "alpha";
         col_db.set(2, str);
         res = test_cell_insertion(col_db, 2, 5.0);
@@ -441,7 +441,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         res = test_cell_insertion(col_db, 1, 5.0);
         assert(res);
         string str = "alpha";
@@ -484,7 +484,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(4);
+        mtv_type col_db(4);
         col_db.set(0, 1.0);
         string str = "foo";
         col_db.set(1, str);
@@ -499,7 +499,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(4);
+        mtv_type col_db(4);
         col_db.set(0, 1.0);
         string str = "foo";
         col_db.set(1, str);
@@ -511,7 +511,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(4);
+        mtv_type col_db(4);
         col_db.set(0, 1.0);
         string str = "foo";
         col_db.set(1, str);
@@ -530,7 +530,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(4);
+        mtv_type col_db(4);
         col_db.set(0, 1.0);
         col_db.set(1, 1.0);
         col_db.set(2, 1.0);
@@ -541,7 +541,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         col_db.set(0, 1.0);
         col_db.set(1, 1.0);
         string str = "foo";
@@ -551,7 +551,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         col_db.set(1, 1.0);
         string str = "foo";
         col_db.set(2, str);
@@ -593,7 +593,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
         col_db.set(0, 1.0);
         string str = "alpha";
         col_db.set(1, str);
@@ -608,7 +608,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type col_db(3);
+        mtv_type col_db(3);
 
         // Insert 3 cells of 3 different types.
         res = test_cell_insertion(col_db, 0, true);
@@ -627,7 +627,7 @@ void mtv_test_basic()
 
     {
         // set_cell() to merge 3 blocks.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, static_cast<unsigned long>(12));
         db.set(1, 1.0);
         db.set(2, 2.0);
@@ -653,7 +653,7 @@ void mtv_test_basic()
     }
 
     {
-        column_type db(25);
+        mtv_type db(25);
         db.set(0, 1.2);
         db.set(5, string("test"));
         db.set(1, string("foo"));
@@ -666,7 +666,7 @@ void mtv_test_basic()
 
     {
         // Test various integer types.
-        column_type db(7);
+        mtv_type db(7);
         db.set(0, static_cast<long>(-10));
         db.set(1, static_cast<unsigned long>(10));
         db.set(2, static_cast<int>(-10));
@@ -689,7 +689,7 @@ void mtv_test_empty_cells()
 {
     stack_printer __stack_printer__("::mtv_test_empty");
     {
-        column_type db(3);
+        mtv_type db(3);
         assert(db.is_empty(0));
         assert(db.is_empty(2));
 
@@ -763,7 +763,7 @@ void mtv_test_empty_cells()
 
     {
         // Empty multiple cells at the middle part of a block.
-        column_type db(4);
+        mtv_type db(4);
         for (size_t i = 0; i < 4; ++i)
             db.set(i, static_cast<double>(i+1));
 
@@ -787,7 +787,7 @@ void mtv_test_empty_cells()
 
     {
         // Empty multiple blocks.
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, 1.0);
         db.set(1, string("foo"));
         assert(!db.is_empty(0));
@@ -800,7 +800,7 @@ void mtv_test_empty_cells()
 
     {
         // Empty multiple blocks, part 2 - from middle block to middle block.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, 1.0);
         db.set(1, 2.0);
         string str = "foo";
@@ -828,7 +828,7 @@ void mtv_test_empty_cells()
 
     {
         // Empty multiple blocks, part 3 - from top block to middle block.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, 1.0);
         db.set(1, 2.0);
         string str = "foo";
@@ -853,7 +853,7 @@ void mtv_test_empty_cells()
 
     {
         // Empty multiple blocks, part 4 - from middle block to bottom block.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, 1.0);
         db.set(1, 2.0);
         string str = "foo";
@@ -877,7 +877,7 @@ void mtv_test_empty_cells()
 
     {
         // Empty multiple blocks, part 5 - from middle empty block to middle non-empty block.
-        column_type db(6);
+        mtv_type db(6);
         db.set(2, 1.0);
         db.set(3, 2.0);
         string str = "foo";
@@ -907,7 +907,7 @@ void mtv_test_empty_cells()
 
     {
         // Empty multiple blocks, part 6 - from middle non-empty block to middle empty block.
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, 1.0);
         db.set(1, 2.0);
         db.set(2, string("foo"));
@@ -934,7 +934,7 @@ void mtv_test_empty_cells()
 
     {
         // Empty multiple blocks, part 7 - from middle empty block to middle empty block.
-        column_type db(6);
+        mtv_type db(6);
         db.set(2, 1.0);
         db.set(3, string("foo"));
         assert(db.block_size() == 4);
@@ -959,7 +959,7 @@ void mtv_test_empty_cells()
     {
         // Set empty on 2nd block.  Presence of first block causes an offset
         // on index in the 2nd block.
-        column_type db(5);
+        mtv_type db(5);
         db.set(0, 1.0);
         db.set(1, static_cast<unsigned long>(1));
         db.set(2, static_cast<unsigned long>(2));
@@ -988,7 +988,7 @@ void mtv_test_empty_cells()
     {
         // Set individual single elements empty.
         cout << "Setting individual single elements empty..." << endl;
-        column_type db(15, 1.2);
+        mtv_type db(15, 1.2);
         cout << "setting 1 empty..." << endl;
         db.set_empty(1, 1);
         cout << "setting 4 empty..." << endl;
@@ -1020,7 +1020,7 @@ void mtv_test_empty_cells()
 void mtv_test_swap()
 {
     stack_printer __stack_printer__("::mtv_test_swap");
-    column_type db1(3), db2(5);
+    mtv_type db1(3), db2(5);
     db1.set(0, 1.0);
     db1.set(1, 2.0);
     db1.set(2, 3.0);
@@ -1039,7 +1039,7 @@ void mtv_test_equality()
     stack_printer __stack_printer__("::mtv_test_equality");
     {
         // Two columns of equal size.
-        column_type db1(3), db2(3);
+        mtv_type db1(3), db2(3);
         assert(db1 == db2);
         db1.set(0, 1.0);
         assert(db1 != db2);
@@ -1054,7 +1054,7 @@ void mtv_test_equality()
     {
         // Two columns of different sizes.  They are always non-equal no
         // matter what.
-        column_type db1(3), db2(4);
+        mtv_type db1(3), db2(4);
         assert(db1 != db2);
         db1.set(0, 1.2);
         db2.set(0, 1.2);
@@ -1069,14 +1069,14 @@ void mtv_test_equality()
 void mtv_test_clone()
 {
     stack_printer __stack_printer__("::mtv_test_clone");
-    column_type db1(3);
+    mtv_type db1(3);
     db1.set(0, 3.4);
     db1.set(1, string("foo"));
     db1.set(2, true);
 
     // copy construction
 
-    column_type db2(db1);
+    mtv_type db2(db1);
     assert(db1.size() == db2.size());
     assert(db1.block_size() == db2.block_size());
     assert(db1 == db2);
@@ -1103,12 +1103,12 @@ void mtv_test_clone()
 
     // assignment
 
-    column_type db3 = db1;
+    mtv_type db3 = db1;
     assert(db3 == db1);
     db3.set(0, string("alpha"));
     assert(db3 != db1);
 
-    column_type db4, db5;
+    mtv_type db4, db5;
     db4 = db5 = db3;
     assert(db4 == db5);
     assert(db3 == db5);
@@ -1118,7 +1118,7 @@ void mtv_test_clone()
 void mtv_test_resize()
 {
     stack_printer __stack_printer__("::mtv_test_resize");
-    column_type db(0);
+    mtv_type db(0);
     assert(db.size() == 0);
     assert(db.empty());
 
@@ -1179,7 +1179,7 @@ void mtv_test_erase()
     stack_printer __stack_printer__("::mtv_test_erase");
     {
         // Single empty block.
-        column_type db(5);
+        mtv_type db(5);
         db.erase(0, 2); // erase rows 0-2.
         assert(db.size() == 2);
         db.erase(0, 1);
@@ -1189,7 +1189,7 @@ void mtv_test_erase()
 
     {
         // Single non-empty block.
-        column_type db(5);
+        mtv_type db(5);
         for (long i = 0; i < 5; ++i)
             db.set(i, static_cast<double>(i+1));
 
@@ -1211,7 +1211,7 @@ void mtv_test_erase()
 
     {
         // Two blocks - non-empty to empty blocks.
-        column_type db(8);
+        mtv_type db(8);
         for (long i = 0; i < 4; ++i)
             db.set(i, static_cast<double>(i+1));
 
@@ -1240,7 +1240,7 @@ void mtv_test_erase()
 
     {
         // Two blocks - non-empty to non-empty blocks.
-        column_type db(8);
+        mtv_type db(8);
         for (long i = 0; i < 4; ++i)
             db.set(i, static_cast<double>(i+1));
 
@@ -1273,7 +1273,7 @@ void mtv_test_erase()
 
     {
         // 3 blocks, all non-empty.
-        column_type db(9);
+        mtv_type db(9);
         for (long i = 0; i < 3; ++i)
             db.set(i, static_cast<double>(i+1));
 
@@ -1316,7 +1316,7 @@ void mtv_test_erase()
 
     {
         // erase() to merge two blocks.
-        column_type db(4);
+        mtv_type db(4);
         db.set(0, 1.1);
         db.set(1, string("foo"));
         db.set(2, static_cast<unsigned long>(2));
@@ -1350,7 +1350,7 @@ void mtv_test_insert_empty()
 {
     stack_printer __stack_printer__("::mtv_test_insert_empty");
     {
-        column_type db(5);
+        mtv_type db(5);
         db.insert_empty(0, 5);
         assert(db.size() == 10);
         assert(db.block_size() == 1);
@@ -1381,7 +1381,7 @@ void mtv_test_insert_empty()
     }
 
     {
-        column_type db(5);
+        mtv_type db(5);
         for (long i = 0; i < 5; ++i)
             db.set(i, static_cast<double>(i+1));
 
@@ -1411,7 +1411,7 @@ void mtv_test_insert_empty()
     }
 
     {
-        column_type db(1);
+        mtv_type db(1);
         db.set(0, 2.5);
         db.insert_empty(0, 2);
         assert(db.block_size() == 2);
@@ -1425,7 +1425,7 @@ void mtv_test_insert_empty()
     }
 
     {
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, 1.2);
         db.set(1, 2.3);
         db.insert_empty(1, 1);
@@ -1444,7 +1444,7 @@ void mtv_test_set_cells()
 {
     stack_printer __stack_printer__("::mtv_test_set_cells");
     {
-        column_type db(5);
+        mtv_type db(5);
 
         // Replace the whole block.
 
@@ -1581,7 +1581,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(5);
+        mtv_type db(5);
         for (size_t i = 0; i < 5; ++i)
             db.set(i, static_cast<double>(i+1));
 
@@ -1625,7 +1625,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(6);
+        mtv_type db(6);
         double vals_d[] = { 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
         unsigned long vals_i[] = { 12, 13, 14, 15 };
         string vals_s[] = { "a", "b" };
@@ -1675,7 +1675,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(3);
+        mtv_type db(3);
         {
             double vals[] = { 2.1, 2.2, 2.3 };
             double* p = &vals[0];
@@ -1704,7 +1704,7 @@ void mtv_test_set_cells()
     {
         // Set cells over multiple blocks. Very simple case.
 
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, static_cast<double>(1.1));
         db.set(1, string("foo"));
         assert(db.block_size() == 2);
@@ -1726,7 +1726,7 @@ void mtv_test_set_cells()
     {
         // Same as above, except that the last block is only partially replaced.
 
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, static_cast<double>(1.1));
         db.set(1, string("foo"));
         db.set(2, string("baa"));
@@ -1750,7 +1750,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, static_cast<double>(3.1));
         db.set(1, static_cast<double>(3.2));
         db.set(2, string("foo"));
@@ -1772,7 +1772,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(5);
+        mtv_type db(5);
         db.set(0, 1.1);
         db.set(1, 1.2);
         db.set(2, string("foo"));
@@ -1794,7 +1794,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(4);
+        mtv_type db(4);
         db.set(0, string("A"));
         db.set(1, string("B"));
         db.set(2, 1.1);
@@ -1812,7 +1812,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(4);
+        mtv_type db(4);
         db.set(0, string("A"));
         db.set(1, string("B"));
         db.set(2, 1.1);
@@ -1830,7 +1830,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(5);
+        mtv_type db(5);
         db.set(0, string("A"));
         db.set(1, string("B"));
         db.set(2, 1.1);
@@ -1850,7 +1850,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, string("A"));
         db.set(1, 1.1);
         db.set(2, 1.2);
@@ -1866,7 +1866,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(4);
+        mtv_type db(4);
         db.set(0, static_cast<unsigned long>(35));
         db.set(1, string("A"));
         db.set(2, 1.1);
@@ -1886,7 +1886,7 @@ void mtv_test_set_cells()
     {
         // Block 1 is empty.
 
-        column_type db(2);
+        mtv_type db(2);
         db.set(1, 1.2);
         assert(db.block_size() == 2);
 
@@ -1899,7 +1899,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, 1.1);
         db.set(2, 1.2);
         assert(db.block_size() == 3);
@@ -1914,7 +1914,7 @@ void mtv_test_set_cells()
     }
 
     {
-        column_type db(5);
+        mtv_type db(5);
         db.set(2, string("A"));
         db.set(3, string("B"));
         db.set(4, string("C"));
@@ -1938,7 +1938,7 @@ void mtv_test_insert_cells()
     stack_printer __stack_printer__("::mtv_test_insert_cells");
     {
         // Insert into non-empty block of the same type.
-        column_type db(1);
+        mtv_type db(1);
         db.set(0, 1.1);
         assert(db.block_size() == 1);
         assert(db.size() == 1);
@@ -1956,7 +1956,7 @@ void mtv_test_insert_cells()
 
     {
         // Insert into an existing empty block.
-        column_type db(1);
+        mtv_type db(1);
         assert(db.block_size() == 1);
         assert(db.size() == 1);
 
@@ -1972,7 +1972,7 @@ void mtv_test_insert_cells()
     }
 
     {
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, 1.1);
         assert(db.block_size() == 2);
         assert(db.size() == 2);
@@ -1990,7 +1990,7 @@ void mtv_test_insert_cells()
     }
 
     {
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, static_cast<unsigned long>(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
@@ -2008,7 +2008,7 @@ void mtv_test_insert_cells()
     }
 
     {
-        column_type db(2);
+        mtv_type db(2);
         double vals[] = { 2.1, 2.2, 2.3 };
         double* p = &vals[0];
         db.insert(1, p, p+3);
@@ -2022,7 +2022,7 @@ void mtv_test_insert_cells()
     }
 
     {
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, 1.1);
         db.set(1, static_cast<unsigned long>(23));
         assert(db.block_size() == 2);
@@ -2041,7 +2041,7 @@ void mtv_test_insert_cells()
     }
 
     {
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, true);
         db.set(1, static_cast<unsigned long>(23));
         assert(db.block_size() == 2);
@@ -2060,7 +2060,7 @@ void mtv_test_insert_cells()
     }
 
     {
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, static_cast<unsigned long>(12));
         db.set(1, static_cast<unsigned long>(23));
         assert(db.block_size() == 1);
@@ -2079,7 +2079,7 @@ void mtv_test_insert_cells()
     }
 
     {
-        column_type db(3);
+        mtv_type db(3);
         db.set(0, 1.0);
         db.set(1, string("foo"));
         db.set(2, string("baa"));
@@ -2093,7 +2093,7 @@ void mtv_test_insert_cells()
     }
 
     {
-        column_type db(2);
+        mtv_type db(2);
         db.set(0, static_cast<unsigned long>(11));
         db.set(1, static_cast<unsigned long>(12));
         double vals[] = { 1.2 };
@@ -2117,16 +2117,16 @@ void mtv_test_iterators()
 {
     stack_printer __stack_printer__("::mtv_test_iterators");
     {
-        column_type db(5);
-        column_type::const_iterator it;
+        mtv_type db(5);
+        mtv_type::const_iterator it;
         it = db.begin();
-        column_type::const_iterator it_end = db.end();
+        mtv_type::const_iterator it_end = db.end();
         size_t len = std::distance(it, it_end);
         assert(len == 1);
         assert(it != it_end);
         assert(it->type == mtv::element_type_empty);
         assert(it->size == 5);
-        const column_type::const_iterator::value_type& val = *it;
+        const mtv_type::const_iterator::value_type& val = *it;
         assert(val.type == it->type);
         assert(val.size == it->size);
 
@@ -2135,7 +2135,7 @@ void mtv_test_iterators()
     }
 
     {
-        column_type db(6);
+        mtv_type db(6);
         db.set(0, 1.1);
         db.set(1, 2.2);
         db.set(4, string("boo"));
@@ -2143,7 +2143,7 @@ void mtv_test_iterators()
         assert(db.block_size() == 3);
         {
             // Forward iterator
-            column_type::const_iterator it = db.begin(), it_end = db.end();
+            mtv_type::const_iterator it = db.begin(), it_end = db.end();
             size_t len = std::distance(it, it_end);
             assert(len == 3);
             assert(it != it_end);
@@ -2166,7 +2166,7 @@ void mtv_test_iterators()
 
         {
             // Reverse iterator
-            column_type::const_reverse_iterator it = db.rbegin(), it_end = db.rend();
+            mtv_type::const_reverse_iterator it = db.rbegin(), it_end = db.rend();
             size_t len = std::distance(it, it_end);
             assert(len == 3);
             assert(it != it_end);
@@ -2193,7 +2193,7 @@ void mtv_test_data_iterators()
 {
     stack_printer __stack_printer__("::mtv_test_data_iterators");
 
-    column_type db(10);
+    mtv_type db(10);
     db.set(0, 1.1);
     db.set(1, 1.2);
     db.set(2, 1.3);
@@ -2201,7 +2201,7 @@ void mtv_test_data_iterators()
     db.set(5, string("B"));
     db.set(6, string("C"));
     db.set(7, string("D"));
-    column_type::const_iterator it_blk = db.begin(), it_blk_end = db.end();
+    mtv_type::const_iterator it_blk = db.begin(), it_blk_end = db.end();
 
     // First block is a numeric block.
     assert(it_blk != it_blk_end);
