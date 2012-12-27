@@ -2257,6 +2257,27 @@ void mtv_test_data_iterators()
     assert(it_blk == it_blk_end);
 }
 
+void mtv_test_non_const_data_iterators()
+{
+    stack_printer __stack_printer__("::mtv_test_non_const_data_iterators");
+
+    column_type db(1);
+    db.set(0, 1.2);
+    column_type::iterator it_blk = db.begin(), it_blk_end = db.end();
+    size_t n = std::distance(it_blk, it_blk_end);
+    assert(n == 1);
+    assert(it_blk->type == mtv::element_type_numeric);
+    assert(it_blk->data != NULL);
+    mtv::numeric_element_block::iterator it = mtv::numeric_element_block::begin(*it_blk->data);
+    mtv::numeric_element_block::iterator it_end = mtv::numeric_element_block::end(*it_blk->data);
+    n = std::distance(it, it_end);
+    assert(n == 1);
+    assert(*it == 1.2);
+
+    *it = 2.3; // write via iterator.
+    assert(db.get<double>(0) == 2.3);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -2281,6 +2302,7 @@ int main (int argc, char **argv)
         mtv_test_insert_cells();
         mtv_test_iterators();
         mtv_test_data_iterators();
+        mtv_test_non_const_data_iterators();
     }
 
     if (opt.test_perf)
