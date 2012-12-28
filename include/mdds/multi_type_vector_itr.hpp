@@ -32,13 +32,13 @@ namespace mdds { namespace __mtv {
  * and dec() methods have non-const return type, and the derived classes
  * wrap them and return values with their respective const modifiers.
  */
-template<typename _ParentType, typename _BlksType, typename _BaseItrType>
+template<typename _Trait>
 class iterator_common_base
 {
 protected:
-    typedef _ParentType parent_type;
-    typedef _BlksType blocks_type;
-    typedef _BaseItrType base_iterator_type;
+    typedef typename _Trait::parent parent_type;
+    typedef typename _Trait::blocks blocks_type;
+    typedef typename _Trait::base_iterator base_iterator_type;
 
     struct node
     {
@@ -133,11 +133,13 @@ public:
     }
 };
 
-template<typename _ParentType, typename _BlksType, typename _BaseItrType>
-class iterator_base : public iterator_common_base<_ParentType,_BlksType,_BaseItrType>
+template<typename _Trait>
+class iterator_base : public iterator_common_base<_Trait>
 {
-    typedef iterator_common_base<_ParentType,_BlksType,_BaseItrType> common_base;
-    typedef _BaseItrType base_iterator_type;
+    typedef _Trait trait;
+    typedef iterator_common_base<trait> common_base;
+
+    typedef typename trait::base_iterator base_iterator_type;
 
     using common_base::inc;
     using common_base::dec;
@@ -167,7 +169,17 @@ public:
         return m_cur_node;
     }
 
+    const value_type& operator*() const
+    {
+        return m_cur_node;
+    }
+
     value_type* operator->()
+    {
+        return &m_cur_node;
+    }
+
+    const value_type* operator->() const
     {
         return &m_cur_node;
     }
@@ -195,11 +207,13 @@ public:
     const base_iterator_type& get_end() const { return m_end; }
 };
 
-template<typename _ParentType, typename _BlksType, typename _BaseItrType, typename _NonConstItrBase>
-class const_iterator_base : public iterator_common_base<_ParentType,_BlksType,_BaseItrType>
+template<typename _Trait, typename _NonConstItrBase>
+class const_iterator_base : public iterator_common_base<_Trait>
 {
-    typedef iterator_common_base<_ParentType,_BlksType,_BaseItrType> common_base;
-    typedef _BaseItrType base_iterator_type;
+    typedef _Trait trait;
+    typedef iterator_common_base<trait> common_base;
+
+    typedef typename trait::base_iterator base_iterator_type;
 
     using common_base::inc;
     using common_base::dec;

@@ -2257,6 +2257,21 @@ void mtv_test_data_iterators()
     assert(it_blk == it_blk_end);
 }
 
+/**
+ * This function is just to ensure that even the non-const iterator can be
+ * dereferenced via const reference.
+ *
+ * @param it this is passed as a const reference, yet it should still allow
+ *           being dereferenced as long as no data is modified.
+ */
+void check_block_iterator(const mtv_type::iterator& it, mtv::element_t expected)
+{
+    mtv::element_t actual = it->type;
+    const mtv_type::element_block_type* data = (*it).data;
+    assert(actual == expected);
+    assert(data != NULL);
+}
+
 void mtv_test_non_const_data_iterators()
 {
     stack_printer __stack_printer__("::mtv_test_non_const_data_iterators");
@@ -2266,8 +2281,7 @@ void mtv_test_non_const_data_iterators()
     mtv_type::iterator it_blk = db.begin(), it_blk_end = db.end();
     size_t n = std::distance(it_blk, it_blk_end);
     assert(n == 1);
-    assert(it_blk->type == mtv::element_type_numeric);
-    assert(it_blk->data != NULL);
+    check_block_iterator(it_blk, mtv::element_type_numeric);
 
     mtv::numeric_element_block::iterator it = mtv::numeric_element_block::begin(*it_blk->data);
     mtv::numeric_element_block::iterator it_end = mtv::numeric_element_block::end(*it_blk->data);
@@ -2286,8 +2300,7 @@ void mtv_test_non_const_data_iterators()
     it_blk_end = db.end();
     n = std::distance(it_blk, it_blk_end);
     assert(n == 1);
-    assert(it_blk->type == mtv::element_type_numeric);
-    assert(it_blk->data != NULL);
+    check_block_iterator(it_blk, mtv::element_type_numeric);
 
     it = mtv::numeric_element_block::begin(*it_blk->data);
     it_end = mtv::numeric_element_block::end(*it_blk->data);

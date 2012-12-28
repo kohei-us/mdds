@@ -72,12 +72,40 @@ private:
 
     typedef std::vector<block*> blocks_type;
 
+    struct iterator_trait
+    {
+        typedef multi_type_vector parent;
+        typedef blocks_type blocks;
+        typedef typename blocks_type::iterator base_iterator;
+    };
+
+    struct reverse_iterator_trait
+    {
+        typedef multi_type_vector parent;
+        typedef blocks_type blocks;
+        typedef typename blocks_type::reverse_iterator base_iterator;
+    };
+
+    struct const_iterator_trait
+    {
+        typedef multi_type_vector parent;
+        typedef blocks_type blocks;
+        typedef typename blocks_type::const_iterator base_iterator;
+    };
+
+    struct const_reverse_iterator_trait
+    {
+        typedef multi_type_vector parent;
+        typedef blocks_type blocks;
+        typedef typename blocks_type::const_reverse_iterator base_iterator;
+    };
+
 public:
 
-    typedef __mtv::iterator_base<multi_type_vector, blocks_type, typename blocks_type::iterator> iterator;
-    typedef __mtv::iterator_base<multi_type_vector, blocks_type, typename blocks_type::reverse_iterator> reverse_iterator;
-    typedef __mtv::const_iterator_base<multi_type_vector, blocks_type, typename blocks_type::const_iterator, iterator> const_iterator;
-    typedef __mtv::const_iterator_base<multi_type_vector, blocks_type, typename blocks_type::const_reverse_iterator, reverse_iterator> const_reverse_iterator;
+    typedef __mtv::iterator_base<iterator_trait> iterator;
+    typedef __mtv::iterator_base<reverse_iterator_trait> reverse_iterator;
+    typedef __mtv::const_iterator_base<const_iterator_trait, iterator> const_iterator;
+    typedef __mtv::const_iterator_base<const_reverse_iterator_trait, reverse_iterator> const_reverse_iterator;
 
     iterator begin();
     iterator end();
