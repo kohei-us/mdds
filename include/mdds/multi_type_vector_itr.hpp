@@ -25,13 +25,6 @@
  *
  ************************************************************************/
 
-namespace mdds {
-
-template<typename _ElemBlockFunc>
-class multi_type_vector;
-
-}
-
 namespace mdds { namespace __mtv {
 
 template<typename _SizeT, typename _ElemBlkT>
