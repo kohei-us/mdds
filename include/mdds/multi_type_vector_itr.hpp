@@ -119,6 +119,10 @@ protected:
 
     void update_node()
     {
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+        if (m_pos == m_end)
+            throw general_error("Current node position should never equal the end position during node update.");
+#endif
         // blocks_type::value_type is a pointer to multi_type_vector::block.
         typename blocks_type::value_type blk = *m_pos;
         if (blk->mp_data)
