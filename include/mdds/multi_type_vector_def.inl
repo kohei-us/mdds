@@ -112,6 +112,20 @@ multi_type_vector<_CellBlockFunc>::end() const
 }
 
 template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::reverse_iterator
+multi_type_vector<_CellBlockFunc>::rbegin()
+{
+    return reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0, 0);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::reverse_iterator
+multi_type_vector<_CellBlockFunc>::rend()
+{
+    return reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0, 0);
+}
+
+template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::const_reverse_iterator
 multi_type_vector<_CellBlockFunc>::rbegin() const
 {
