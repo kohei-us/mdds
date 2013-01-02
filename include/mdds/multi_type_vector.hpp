@@ -100,10 +100,15 @@ private:
         typedef typename blocks_type::const_reverse_iterator base_iterator;
     };
 
+    typedef __mtv::iterator_value_node<size_type, element_block_type> itr_node;
+    typedef __mtv::private_data_forward_update<itr_node> itr_forward_update;
+    typedef __mtv::private_data_no_update<itr_node> itr_no_update;
+
 public:
 
-    typedef __mtv::iterator_base<iterator_trait> iterator;
-    typedef __mtv::iterator_base<reverse_iterator_trait> reverse_iterator;
+    typedef __mtv::iterator_base<iterator_trait, itr_forward_update> iterator;
+    typedef __mtv::iterator_base<reverse_iterator_trait, itr_no_update> reverse_iterator;
+
     typedef __mtv::const_iterator_base<const_iterator_trait, iterator> const_iterator;
     typedef __mtv::const_iterator_base<const_reverse_iterator_trait, reverse_iterator> const_reverse_iterator;
 

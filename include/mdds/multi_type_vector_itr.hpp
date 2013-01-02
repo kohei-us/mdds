@@ -34,8 +34,77 @@ class multi_type_vector;
 
 namespace mdds { namespace __mtv {
 
-template<typename _Trait>
-class iterator_base;
+template<typename _SizeT, typename _ElemBlkT>
+struct iterator_value_node
+{
+    typedef _SizeT size_type;
+    typedef _ElemBlkT element_block_type;
+
+    mdds::mtv::element_t type;
+    size_type size;
+    element_block_type* data;
+
+    iterator_value_node(size_type start_pos, size_type block_index) :
+        type(mdds::mtv::element_type_empty), size(0), data(NULL), __private_data(start_pos, block_index) {}
+
+    iterator_value_node(const iterator_value_node& other) :
+        type(other.type), size(other.size), data(other.data), __private_data(other.__private_data) {}
+
+    void swap(iterator_value_node& other)
+    {
+        std::swap(type, other.type);
+        std::swap(size, other.size);
+        std::swap(data, other.data);
+
+        __private_data.swap(other.__private_data);
+    }
+
+    struct private_data
+    {
+        size_type start_pos;
+        size_type block_index;
+
+        private_data() : start_pos(0), block_index(0) {}
+        private_data(size_type _start_pos, size_type _block_index) :
+            start_pos(_start_pos), block_index(_block_index) {}
+        private_data(const private_data& other) :
+            start_pos(other.start_pos), block_index(other.block_index) {}
+
+        void swap(private_data& other)
+        {
+            std::swap(start_pos, other.start_pos);
+            std::swap(block_index, other.block_index);
+        }
+    };
+    private_data __private_data;
+};
+
+template<typename _NodeT>
+struct private_data_no_update
+{
+    typedef _NodeT node_type;
+
+    static void inc(node_type&) {}
+    static void dec(node_type&) {}
+};
+
+template<typename _NodeT>
+struct private_data_forward_update
+{
+    typedef _NodeT node_type;
+
+    static void inc(node_type& nd)
+    {
+        ++nd.__private_data.block_index;
+        nd.__private_data.start_pos += nd.size;
+    }
+
+    static void dec(node_type& nd)
+    {
+        --nd.__private_data.block_index;
+        nd.__private_data.start_pos -= nd.size;
+    }
+};
 
 /**
  * Common base for both const and non-const iterators.  Its protected inc()
@@ -51,53 +120,7 @@ protected:
     typedef typename _Trait::base_iterator base_iterator_type;
 
     typedef typename parent_type::size_type size_type;
-
-    struct node
-    {
-        friend class iterator_base<_Trait>;
-        friend class mdds::multi_type_vector<typename _Trait::parent::element_block_func>;
-
-        mdds::mtv::element_t type;
-        size_type size;
-        typename parent_type::element_block_type* data;
-
-        node(size_type start_pos, size_type block_index) :
-            type(mdds::mtv::element_type_empty), size(0), data(NULL), __private_data(start_pos, block_index) {}
-
-        node(const node& other) : type(other.type), size(other.size), data(other.data), __private_data(other.__private_data) {}
-
-        void swap(node& other)
-        {
-            std::swap(type, other.type);
-            std::swap(size, other.size);
-            std::swap(data, other.data);
-
-            __private_data.swap(other.__private_data);
-        }
-
-    private:
-        /**
-         * Private data that only multi_type_vector has access to.
-         */
-        struct private_data
-        {
-            size_type start_pos;
-            size_type block_index;
-
-            private_data() : start_pos(0), block_index(0) {}
-            private_data(size_type _start_pos, size_type _block_index) :
-                start_pos(_start_pos), block_index(_block_index) {}
-            private_data(const private_data& other) :
-                start_pos(other.start_pos), block_index(other.block_index) {}
-
-            void swap(private_data& other)
-            {
-                std::swap(start_pos, other.start_pos);
-                std::swap(block_index, other.block_index);
-            }
-        };
-        private_data __private_data;
-    };
+    typedef iterator_value_node<size_type, typename parent_type::element_block_type> node;
 
     iterator_common_base() : m_cur_node(0, 0) {}
 
@@ -181,12 +204,12 @@ public:
     }
 };
 
-template<typename _Trait>
+template<typename _Trait, typename _NodeUpdateFunc>
 class iterator_base : public iterator_common_base<_Trait>
 {
     typedef _Trait trait;
+    typedef _NodeUpdateFunc node_update_func;
     typedef iterator_common_base<trait> common_base;
-
     typedef typename trait::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
@@ -237,12 +260,20 @@ public:
 
     value_type* operator++()
     {
-        return inc();
+        value_type* ret = inc();
+        if (!ret)
+            // end position reached.
+            return ret;
+
+        node_update_func::inc(m_cur_node);
+        return ret;
     }
 
     value_type* operator--()
     {
-        return dec();
+        value_type* ret = dec();
+        node_update_func::dec(m_cur_node);
+        return ret;
     }
 
     /**
