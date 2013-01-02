@@ -25,7 +25,17 @@
  *
  ************************************************************************/
 
+namespace mdds {
+
+template<typename _ElemBlockFunc>
+class multi_type_vector;
+
+}
+
 namespace mdds { namespace __mtv {
+
+template<typename _Trait>
+class iterator_base;
 
 /**
  * Common base for both const and non-const iterators.  Its protected inc()
@@ -40,34 +50,68 @@ protected:
     typedef typename _Trait::blocks blocks_type;
     typedef typename _Trait::base_iterator base_iterator_type;
 
+    typedef typename parent_type::size_type size_type;
+
     struct node
     {
+        friend class iterator_base<_Trait>;
+        friend class mdds::multi_type_vector<typename _Trait::parent::element_block_func>;
+
         mdds::mtv::element_t type;
-        typename parent_type::size_type size;
+        size_type size;
         typename parent_type::element_block_type* data;
 
-        node() : type(mdds::mtv::element_type_empty), size(0), data(NULL) {}
-        node(const node& other) : type(other.type), size(other.size), data(other.data) {}
+        node(size_type start_pos, size_type block_index) :
+            type(mdds::mtv::element_type_empty), size(0), data(NULL), __private_data(start_pos, block_index) {}
+
+        node(const node& other) : type(other.type), size(other.size), data(other.data), __private_data(other.__private_data) {}
 
         void swap(node& other)
         {
             std::swap(type, other.type);
             std::swap(size, other.size);
             std::swap(data, other.data);
+
+            __private_data.swap(other.__private_data);
         }
+
+    private:
+        /**
+         * Private data that only multi_type_vector has access to.
+         */
+        struct private_data
+        {
+            size_type start_pos;
+            size_type block_index;
+
+            private_data() : start_pos(0), block_index(0) {}
+            private_data(size_type _start_pos, size_type _block_index) :
+                start_pos(_start_pos), block_index(_block_index) {}
+            private_data(const private_data& other) :
+                start_pos(other.start_pos), block_index(other.block_index) {}
+
+            void swap(private_data& other)
+            {
+                std::swap(start_pos, other.start_pos);
+                std::swap(block_index, other.block_index);
+            }
+        };
+        private_data __private_data;
     };
 
-    iterator_common_base() {}
+    iterator_common_base() : m_cur_node(0, 0) {}
 
-    iterator_common_base(const base_iterator_type& pos, const base_iterator_type& end) :
-        m_pos(pos), m_end(end)
+    iterator_common_base(
+        const base_iterator_type& pos, const base_iterator_type& end,
+        size_type start_pos, size_type block_index) :
+        m_cur_node(start_pos, block_index), m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
     }
 
     iterator_common_base(const iterator_common_base& other) :
-        m_pos(other.m_pos), m_end(other.m_end)
+        m_cur_node(other.m_cur_node), m_pos(other.m_pos), m_end(other.m_end)
     {
         if (m_pos != m_end)
             update_node();
@@ -75,7 +119,7 @@ protected:
 
     void update_node()
     {
-        // blocks_type::value_type is a pointer to parent_type::block.
+        // blocks_type::value_type is a pointer to multi_type_vector::block.
         typename blocks_type::value_type blk = *m_pos;
         if (blk->mp_data)
             m_cur_node.type = mdds::mtv::get_block_type(*blk->mp_data);
@@ -140,6 +184,7 @@ class iterator_base : public iterator_common_base<_Trait>
     typedef iterator_common_base<trait> common_base;
 
     typedef typename trait::base_iterator base_iterator_type;
+    typedef typename common_base::size_type size_type;
 
     using common_base::inc;
     using common_base::dec;
@@ -158,8 +203,10 @@ public:
 
 public:
     iterator_base() {}
-    iterator_base(const base_iterator_type& pos, const base_iterator_type& end) :
-        common_base(pos, end) {}
+    iterator_base(
+        const base_iterator_type& pos, const base_iterator_type& end,
+        size_type start_pos, size_type block_index) :
+        common_base(pos, end, start_pos, block_index) {}
 
     iterator_base(const iterator_base& other) :
         common_base(other) {}
@@ -195,16 +242,13 @@ public:
     }
 
     /**
-     * This method is public only to allow const_iterator_base to instantiate
-     * from iterator_base.
+     * These method are public only to allow const_iterator_base to
+     * instantiate from iterator_base.
      */
     const base_iterator_type& get_pos() const { return m_pos; }
-
-    /**
-     * This method is public only to allow const_iterator_base to instantiate
-     * from iterator_base.
-     */
     const base_iterator_type& get_end() const { return m_end; }
+    size_type get_start_pos() const { return m_cur_node.__private_data.start_pos; }
+    size_type get_block_index() const { return m_cur_node.__private_data.block_index; }
 };
 
 template<typename _Trait, typename _NonConstItrBase>
@@ -214,6 +258,7 @@ class const_iterator_base : public iterator_common_base<_Trait>
     typedef iterator_common_base<trait> common_base;
 
     typedef typename trait::base_iterator base_iterator_type;
+    typedef typename common_base::size_type size_type;
 
     using common_base::inc;
     using common_base::dec;
@@ -232,8 +277,10 @@ public:
 
 public:
     const_iterator_base() : common_base() {}
-    const_iterator_base(const base_iterator_type& pos, const base_iterator_type& end) :
-        common_base(pos, end) {}
+    const_iterator_base(
+        const base_iterator_type& pos, const base_iterator_type& end,
+        size_type start_pos, size_type block_index) :
+        common_base(pos, end, start_pos, block_index) {}
 
     const_iterator_base(const const_iterator_base& other) :
         common_base(other) {}
@@ -242,7 +289,7 @@ public:
      * Take the non-const iterator counterpart to create a const iterator.
      */
     const_iterator_base(const iterator_base& other) :
-        common_base(other.get_pos(), other.get_end()) {}
+        common_base(other.get_pos(), other.get_end(), other.get_start_pos(), other.get_block_index()) {}
 
     const value_type& operator*() const
     {

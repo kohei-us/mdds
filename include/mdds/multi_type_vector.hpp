@@ -55,9 +55,9 @@ public:
 
     typedef typename mdds::mtv::base_element_block element_block_type;
     typedef typename mdds::mtv::element_t element_category_type;
+    typedef _ElemBlockFunc element_block_func;
 
 private:
-    typedef _ElemBlockFunc element_block_func;
 
     struct block
     {

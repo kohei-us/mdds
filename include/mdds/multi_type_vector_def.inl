@@ -71,28 +71,44 @@ template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::begin()
 {
-    return iterator(m_blocks.begin(), m_blocks.end());
+    return iterator(m_blocks.begin(), m_blocks.end(), 0, 0);
 }
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::end()
 {
-    return iterator(m_blocks.end(), m_blocks.end());
+    size_type start_pos = 0, block_index = 0;
+    if (!m_blocks.empty())
+    {
+        // Get the index and the start row position of the last block.
+        block_index = m_blocks.size() - 1;
+        const block* blk = m_blocks.back();
+        start_pos = m_cur_size - blk->m_size;
+    }
+    return iterator(m_blocks.end(), m_blocks.end(), start_pos, block_index);
 }
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::const_iterator
 multi_type_vector<_CellBlockFunc>::begin() const
 {
-    return const_iterator(m_blocks.begin(), m_blocks.end());
+    return const_iterator(m_blocks.begin(), m_blocks.end(), 0, 0);
 }
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::const_iterator
 multi_type_vector<_CellBlockFunc>::end() const
 {
-    return const_iterator(m_blocks.end(), m_blocks.end());
+    size_type start_pos = 0, block_index = 0;
+    if (!m_blocks.empty())
+    {
+        // Get the index and the start row position of the last block.
+        block_index = m_blocks.size() - 1;
+        const block* blk = m_blocks.back();
+        start_pos = m_cur_size - blk->m_size;
+    }
+    return const_iterator(m_blocks.end(), m_blocks.end(), start_pos, block_index);
 }
 
 template<typename _CellBlockFunc>
