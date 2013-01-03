@@ -2321,6 +2321,10 @@ void mtv_test_non_const_data_iterators()
 void mtv_test_iterator_private_data()
 {
     stack_printer __stack_printer__("::mtv_test_iterator_private_data");
+
+    // What the end position iterator stores in the private data area is
+    // untentionally undefined.
+
     mtv_type db(9);
 
     // With only a single block
