@@ -2318,6 +2318,60 @@ void mtv_test_non_const_data_iterators()
     assert(db.get<double>(2) == 3.3);
 }
 
+void mtv_test_iterator_private_data()
+{
+    stack_printer __stack_printer__("::mtv_test_iterator_private_data");
+    mtv_type db(9);
+
+    // With only a single block
+
+    mtv_type::iterator it = db.begin();
+    assert(it->__private_data.start_pos == 0);
+    assert(it->__private_data.block_index == 0);
+
+    it = db.end();
+    --it;
+    assert(it->__private_data.start_pos == 0);
+    assert(it->__private_data.block_index == 0);
+
+    // With 3 blocks (sizes of 4, 3, and 2 in this order)
+
+    db.set(4, 1.1);
+    db.set(5, 1.1);
+    db.set(6, 1.1);
+
+    it = db.begin();
+    assert(it->size == 4);
+    assert(it->__private_data.start_pos == 0);
+    assert(it->__private_data.block_index == 0);
+    ++it;
+    assert(it->size == 3);
+    assert(it->__private_data.start_pos == 4);
+    assert(it->__private_data.block_index == 1);
+    ++it;
+    assert(it->size == 2);
+    assert(it->__private_data.start_pos == 7);
+    assert(it->__private_data.block_index == 2);
+
+    ++it;
+    assert(it == db.end()); // end position reached.
+
+    // Go in reverse direction.
+    --it;
+    assert(it->size == 2);
+    assert(it->__private_data.start_pos == 7);
+    assert(it->__private_data.block_index == 2);
+    --it;
+    assert(it->size == 3);
+    assert(it->__private_data.start_pos == 4);
+    assert(it->__private_data.block_index == 1);
+    --it;
+    assert(it->size == 4);
+    assert(it->__private_data.start_pos == 0);
+    assert(it->__private_data.block_index == 0);
+    assert(it == db.begin());
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -2365,6 +2419,7 @@ int main (int argc, char **argv)
         mtv_test_iterators();
         mtv_test_data_iterators();
         mtv_test_non_const_data_iterators();
+        mtv_test_iterator_private_data();
     }
 
     if (opt.test_perf)

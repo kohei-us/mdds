@@ -27,6 +27,10 @@
 
 namespace mdds { namespace __mtv {
 
+/**
+ * Node that represents the content of each iterator.  The private data part
+ * is an implementation detail that should never be accessed externally.
+ */
 template<typename _SizeT, typename _ElemBlkT>
 struct iterator_value_node
 {
@@ -115,22 +119,33 @@ protected:
     typedef typename parent_type::size_type size_type;
     typedef iterator_value_node<size_type, typename parent_type::element_block_type> node;
 
-    iterator_common_base() : m_cur_node(0, 0) {}
+    iterator_common_base() : m_blocks(NULL), m_cur_node(0, 0) {}
 
     iterator_common_base(
         const base_iterator_type& pos, const base_iterator_type& end,
-        size_type start_pos, size_type block_index) :
-        m_cur_node(start_pos, block_index), m_pos(pos), m_end(end)
+        const blocks_type* blks, size_type start_pos, size_type block_index) :
+        m_blocks(blks),
+        m_cur_node(start_pos, block_index),
+        m_pos(pos),
+        m_end(end)
     {
-        if (m_pos != m_end)
+        if (m_pos == m_end)
+        {
+            if (!blks || blks->empty())
+                return;
+
+            m_cur_node.size = blks->back()->m_size;
+        }
+        else
             update_node();
     }
 
     iterator_common_base(const iterator_common_base& other) :
-        m_cur_node(other.m_cur_node), m_pos(other.m_pos), m_end(other.m_end)
+        m_blocks(other.m_blocks),
+        m_cur_node(other.m_cur_node),
+        m_pos(other.m_pos),
+        m_end(other.m_end)
     {
-        if (m_pos != m_end)
-            update_node();
     }
 
     void update_node()
@@ -167,6 +182,7 @@ protected:
         return &m_cur_node;
     }
 
+    const blocks_type* m_blocks;
     node m_cur_node;
     base_iterator_type m_pos;
     base_iterator_type m_end;
@@ -203,6 +219,8 @@ class iterator_base : public iterator_common_base<_Trait>
     typedef _Trait trait;
     typedef _NodeUpdateFunc node_update_func;
     typedef iterator_common_base<trait> common_base;
+
+    typedef typename trait::blocks blocks_type;
     typedef typename trait::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
@@ -225,8 +243,8 @@ public:
     iterator_base() {}
     iterator_base(
         const base_iterator_type& pos, const base_iterator_type& end,
-        size_type start_pos, size_type block_index) :
-        common_base(pos, end, start_pos, block_index) {}
+        const blocks_type* blks, size_type start_pos, size_type block_index) :
+        common_base(pos, end, blks, start_pos, block_index) {}
 
     iterator_base(const iterator_base& other) :
         common_base(other) {}
@@ -253,13 +271,8 @@ public:
 
     value_type* operator++()
     {
-        value_type* ret = inc();
-        if (!ret)
-            // end position reached.
-            return ret;
-
         node_update_func::inc(m_cur_node);
-        return ret;
+        return inc();
     }
 
     value_type* operator--()
@@ -285,6 +298,7 @@ class const_iterator_base : public iterator_common_base<_Trait>
     typedef _Trait trait;
     typedef iterator_common_base<trait> common_base;
 
+    typedef typename trait::blocks blocks_type;
     typedef typename trait::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
@@ -307,8 +321,8 @@ public:
     const_iterator_base() : common_base() {}
     const_iterator_base(
         const base_iterator_type& pos, const base_iterator_type& end,
-        size_type start_pos, size_type block_index) :
-        common_base(pos, end, start_pos, block_index) {}
+        const blocks_type* blks, size_type start_pos, size_type block_index) :
+        common_base(pos, end, blks, start_pos, block_index) {}
 
     const_iterator_base(const const_iterator_base& other) :
         common_base(other) {}
@@ -317,7 +331,7 @@ public:
      * Take the non-const iterator counterpart to create a const iterator.
      */
     const_iterator_base(const iterator_base& other) :
-        common_base(other.get_pos(), other.get_end(), other.get_start_pos(), other.get_block_index()) {}
+        common_base(other.get_pos(), other.get_end(), NULL, other.get_start_pos(), other.get_block_index()) {}
 
     const value_type& operator*() const
     {
