@@ -31,7 +31,7 @@ namespace mdds { namespace __mtv {
  * Node that represents the content of each iterator.  The private data part
  * is an implementation detail that should never be accessed externally.
  * What the end position stores in its private data is totally &
- * untentionally undefined.
+ * intentionally undefined.
  */
 template<typename _SizeT, typename _ElemBlkT>
 struct iterator_value_node

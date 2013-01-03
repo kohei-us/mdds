@@ -2323,7 +2323,7 @@ void mtv_test_iterator_private_data()
     stack_printer __stack_printer__("::mtv_test_iterator_private_data");
 
     // What the end position iterator stores in the private data area is
-    // untentionally undefined.
+    // intentionally undefined.
 
     mtv_type db(9);
 
