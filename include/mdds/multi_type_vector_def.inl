@@ -92,21 +92,14 @@ template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::const_iterator
 multi_type_vector<_CellBlockFunc>::begin() const
 {
-    return const_iterator(m_blocks.begin(), m_blocks.end(), &m_blocks, 0, 0);
+    return const_iterator(m_blocks.begin(), m_blocks.end(), NULL, 0, 0);
 }
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::const_iterator
 multi_type_vector<_CellBlockFunc>::end() const
 {
-    size_type start_pos = 0, block_index = 0;
-    if (!m_blocks.empty())
-    {
-        // Get the index and the start row position of the imaginary block after the last block.
-        block_index = m_blocks.size();
-        start_pos = m_cur_size;
-    }
-    return const_iterator(m_blocks.end(), m_blocks.end(), &m_blocks, start_pos, block_index);
+    return const_iterator(m_blocks.end(), m_blocks.end(), NULL, 0, 0);
 }
 
 template<typename _CellBlockFunc>

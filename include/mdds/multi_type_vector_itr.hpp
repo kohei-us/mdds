@@ -288,8 +288,6 @@ public:
      */
     const base_iterator_type& get_pos() const { return m_pos; }
     const base_iterator_type& get_end() const { return m_end; }
-    size_type get_start_pos() const { return m_cur_node.__private_data.start_pos; }
-    size_type get_block_index() const { return m_cur_node.__private_data.block_index; }
 };
 
 template<typename _Trait, typename _NonConstItrBase>
@@ -331,7 +329,7 @@ public:
      * Take the non-const iterator counterpart to create a const iterator.
      */
     const_iterator_base(const iterator_base& other) :
-        common_base(other.get_pos(), other.get_end(), NULL, other.get_start_pos(), other.get_block_index()) {}
+        common_base(other.get_pos(), other.get_end(), NULL, 0, 0) {}
 
     const value_type& operator*() const
     {
