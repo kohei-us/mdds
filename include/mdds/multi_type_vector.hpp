@@ -168,7 +168,7 @@ public:
      * @param value value to insert.
      */
     template<typename _T>
-    void set(size_type pos, const _T& value);
+    iterator set(size_type pos, const _T& value);
 
     /**
      * Set multiple values of identical type to a range of elements starting
