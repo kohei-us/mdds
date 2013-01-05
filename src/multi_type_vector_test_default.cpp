@@ -2405,6 +2405,107 @@ void mtv_test_iterator_private_data()
     assert(it == db.begin());
 }
 
+void mtv_test_set_return_iterator()
+{
+    stack_printer __stack_printer__("::mtv_test_set_return_iterator");
+
+    // single element only
+    mtv_type db(1);
+    mtv_type::iterator it = db.set(0, 1.1);
+    assert(it == db.begin());
+
+    // Set value to the top of the only block.
+    db.clear();
+    db.resize(3);
+    it = db.set(0, 1.2);
+    assert(it == db.begin());
+
+    // Set value to the bottom of the only block.
+    db.clear();
+    db.resize(3);
+    it = db.set(2, 1.3);
+    mtv_type::iterator check = db.begin();
+    ++check;
+    assert(it == check);
+    check = db.end();
+    --check;
+    assert(it == check);
+
+    // Set value to the middle of the only block.
+    db.clear();
+    db.resize(3);
+    it = db.set(1, 1.4);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    check = db.end();
+    std::advance(check, -2);
+    assert(it == check);
+    assert(it->__private_data.start_pos == 1);
+    assert(it->__private_data.block_index == 1);
+
+    // Set value to the top empty block of size 1 followed by a non-empty block.
+    db.clear();
+    db.resize(2);
+    db.set(1, 2.1);
+    it = db.set(0, 2.2); // same type as that of the following block.
+    assert(it == db.begin());
+    assert(it->size == 2);
+    assert(it->__private_data.start_pos == 0);
+    assert(it->__private_data.block_index == 0);
+    db.set_empty(0, 0);
+    it = db.set(0, true); // different type from that of the following block.
+    assert(it == db.begin());
+    assert(it->size == 1);
+    assert(it->__private_data.start_pos == 0);
+    assert(it->__private_data.block_index == 0);
+
+    // Set value to the top of the top empty block (not size 1) followed by a non-empty block.
+    db.clear();
+    db.resize(3);
+    db.set(2, true);
+    it = db.set(0, 5.1);
+    assert(it == db.begin());
+
+    // Set value to the bottom of the top empty block (not size 1) followed by a non-empty block.
+    db.clear();
+    db.resize(3);
+    db.set(2, 6.1);
+    it = db.set(1, 6.2); // same type as that of the following block.
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    check = db.end();
+    --check;
+    assert(it == check);
+    assert(it->size == 2);
+    assert(it->__private_data.start_pos == 1);
+    assert(it->__private_data.block_index == 1);
+    db.set_empty(0, 1);
+    it = db.set(1, true); // different type from that of the following block.
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    check = db.end();
+    std::advance(check, -2);
+    assert(it == check);
+    assert(it->size == 1);
+    assert(it->__private_data.start_pos == 1);
+    assert(it->__private_data.block_index == 1);
+
+    // Set value to the middle of the top empty block (not size 1) followed by a non-empty block.
+    db.clear();
+    db.resize(6);
+    db.set(5, 1.1);
+    it = db.set(3, 1.2);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 1);
+    assert(it->__private_data.start_pos == 3);
+    assert(it->__private_data.block_index == 1);
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -2437,22 +2538,23 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
-        mtv_test_types();
-        mtv_test_construction();
-        mtv_test_basic();
-        mtv_test_empty_cells();
-        mtv_test_swap();
-        mtv_test_equality();
-        mtv_test_clone();
-        mtv_test_resize();
-        mtv_test_erase();
-        mtv_test_insert_empty();
-        mtv_test_set_cells();
-        mtv_test_insert_cells();
-        mtv_test_iterators();
-        mtv_test_data_iterators();
-        mtv_test_non_const_data_iterators();
-        mtv_test_iterator_private_data();
+//      mtv_test_types();
+//      mtv_test_construction();
+//      mtv_test_basic();
+//      mtv_test_empty_cells();
+//      mtv_test_swap();
+//      mtv_test_equality();
+//      mtv_test_clone();
+//      mtv_test_resize();
+//      mtv_test_erase();
+//      mtv_test_insert_empty();
+//      mtv_test_set_cells();
+//      mtv_test_insert_cells();
+//      mtv_test_iterators();
+//      mtv_test_data_iterators();
+//      mtv_test_non_const_data_iterators();
+//      mtv_test_iterator_private_data();
+        mtv_test_set_return_iterator();
     }
 
     if (opt.test_perf)
