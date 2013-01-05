@@ -200,10 +200,10 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     if (!blk->mp_data)
     {
         // This is an empty block.
-        set_cell_to_empty_block(block_index, pos_in_block, value);
-        return itr_pos;
+        return set_cell_to_empty_block(block_index, pos_in_block, value);
     }
 
+    assert(!"not implemented yet.");
     assert(blk->mp_data);
     element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
 
@@ -438,7 +438,8 @@ void multi_type_vector<_CellBlockFunc>::append_cell_to_block(size_type block_ind
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
     size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block* blk = m_blocks[block_index];
@@ -455,6 +456,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 // This column is allowed to have only one row!
                 assert(pos_in_block == 0);
                 create_new_block_with_new_cell(blk->mp_data, cell);
+                assert(!"not implemented yet.");
             }
             else
             {
@@ -468,6 +470,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     m_blocks.insert(m_blocks.begin(), new block(1));
                     blk = m_blocks[block_index];
                     create_new_block_with_new_cell(blk->mp_data, cell);
+                    assert(!"not implemented yet.");
                 }
                 else if (pos_in_block == blk->m_size - 1)
                 {
@@ -479,11 +482,13 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     blk = m_blocks.back();
 
                     create_new_block_with_new_cell(blk->mp_data, cell);
+                    assert(!"not implemented yet.");
                 }
                 else
                 {
                     // Insert into the middle of the block.
                     set_cell_to_middle_of_block(block_index, pos_in_block, cell);
+                    assert(!"not implemented yet.");
                 }
             }
         }
@@ -510,9 +515,13 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         blk = m_blocks.front();
                         blk->m_size += 1;
                         mdds_mtv_prepend_value(*blk->mp_data, cell);
+                        assert(!"not implemented yet.");
                     }
                     else
+                    {
                         create_new_block_with_new_cell(blk->mp_data, cell);
+                        assert(!"not implemented yet.");
+                    }
                 }
                 else
                 {
@@ -521,6 +530,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     m_blocks.insert(m_blocks.begin(), new block(1));
                     blk = m_blocks.front();
                     create_new_block_with_new_cell(blk->mp_data, cell);
+                    assert(!"not implemented yet.");
                 }
             }
             else if (pos_in_block == blk->m_size - 1)
@@ -538,6 +548,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     blk->m_size -= 1;
                     blk_next->m_size += 1;
                     mdds_mtv_prepend_value(*blk_next->mp_data, cell);
+                    assert(!"not implemented yet.");
                 }
                 else
                 {
@@ -547,16 +558,18 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     m_blocks.insert(it, new block(1));
                     blk = m_blocks[block_index+1];
                     create_new_block_with_new_cell(blk->mp_data, cell);
+                    assert(!"not implemented yet.");
                 }
             }
             else
             {
                 // Inserting into the middle of an empty block.
                 set_cell_to_middle_of_block(block_index, pos_in_block, cell);
+                assert(!"not implemented yet.");
             }
         }
 
-        return;
+        return begin();
     }
 
     // This empty block is right below a non-empty block.
@@ -580,6 +593,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     delete m_blocks[block_index];
                     m_blocks.pop_back();
                     append_cell_to_block(block_index-1, cell);
+                    assert(!"not implemented yet.");
                 }
                 else
                 {
@@ -604,6 +618,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         delete blk_next;
                         typename blocks_type::iterator it = m_blocks.begin() + block_index;
                         m_blocks.erase(it, it+2);
+                        assert(!"not implemented yet.");
                     }
                     else
                     {
@@ -611,6 +626,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         delete m_blocks[block_index];
                         m_blocks.erase(m_blocks.begin() + block_index);
                         append_cell_to_block(block_index-1, cell);
+                        assert(!"not implemented yet.");
                     }
                 }
             }
@@ -620,6 +636,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 assert(blk->m_size > 1);
                 blk->m_size -= 1;
                 append_cell_to_block(block_index-1, cell);
+                assert(!"not implemented yet.");
             }
         }
         else
@@ -631,6 +648,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 {
                     // There is no more block below.
                     create_new_block_with_new_cell(blk->mp_data, cell);
+                    assert(!"not implemented yet.");
                 }
                 else
                 {
@@ -646,9 +664,13 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
                         delete m_blocks[block_index];
                         m_blocks.erase(m_blocks.begin()+block_index);
+                        assert(!"not implemented yet.");
                     }
                     else
+                    {
                         create_new_block_with_new_cell(blk->mp_data, cell);
+                        assert(!"not implemented yet.");
+                    }
                 }
             }
             else
@@ -660,6 +682,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 create_new_block_with_new_cell(blk->mp_data, cell);
                 m_blocks.insert(m_blocks.begin()+block_index+1, new block(blk->m_size-1));
                 blk->m_size = 1;
+                assert(!"not implemented yet.");
             }
         }
     }
@@ -674,6 +697,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
             m_blocks.push_back(new block(1));
             blk = m_blocks.back();
             create_new_block_with_new_cell(blk->mp_data, cell);
+            assert(!"not implemented yet.");
         }
         else
         {
@@ -688,6 +712,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 blk->m_size -= 1;
                 blk_next->m_size += 1;
                 mdds_mtv_prepend_value(*blk_next->mp_data, cell);
+                assert(!"not implemented yet.");
             }
             else
             {
@@ -696,6 +721,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
                 blk = m_blocks[block_index+1];
                 create_new_block_with_new_cell(blk->mp_data, cell);
+                assert(!"not implemented yet.");
             }
         }
     }
@@ -703,7 +729,10 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
     {
         // New cell is somewhere in the middle of an empty block.
         set_cell_to_middle_of_block(block_index, pos_in_block, cell);
+        assert(!"not implemented yet.");
     }
+
+    return begin();
 }
 
 template<typename _CellBlockFunc>
