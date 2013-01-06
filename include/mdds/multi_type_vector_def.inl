@@ -588,6 +588,8 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
         if (blk_cat_prev == cat)
         {
             // Extend the previous block by one to insert this cell.
+            size_type offset = m_blocks[block_index-1]->m_size; // for returned iterator
+
             if (blk->m_size == 1)
             {
                 // Check if we need to merge with the following block.
@@ -598,7 +600,6 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     delete m_blocks[block_index];
                     m_blocks.pop_back();
                     append_cell_to_block(block_index-1, cell);
-                    assert(!"not implemented yet.");
                 }
                 else
                 {
@@ -607,6 +608,7 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                     element_block_type* data_next = blk_next->mp_data;
                     assert(data_next); // Empty block must not be followed by another empty block.
                     element_category_type blk_cat_next = mdds::mtv::get_block_type(*data_next);
+
                     if (blk_cat_prev == blk_cat_next)
                     {
                         // We need to merge the previous and next blocks, then
@@ -623,7 +625,6 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         delete blk_next;
                         typename blocks_type::iterator it = m_blocks.begin() + block_index;
                         m_blocks.erase(it, it+2);
-                        assert(!"not implemented yet.");
                     }
                     else
                     {
@@ -631,7 +632,6 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         delete m_blocks[block_index];
                         m_blocks.erase(m_blocks.begin() + block_index);
                         append_cell_to_block(block_index-1, cell);
-                        assert(!"not implemented yet.");
                     }
                 }
             }
@@ -641,8 +641,11 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 assert(blk->m_size > 1);
                 blk->m_size -= 1;
                 append_cell_to_block(block_index-1, cell);
-                assert(!"not implemented yet.");
             }
+
+            typename blocks_type::iterator block_pos = m_blocks.begin();
+            std::advance(block_pos, block_index-1);
+            return iterator(block_pos, m_blocks.end(), start_row-offset, block_index-1);
         }
         else
         {

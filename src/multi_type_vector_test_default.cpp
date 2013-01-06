@@ -2504,6 +2504,42 @@ void mtv_test_set_return_iterator()
     assert(it->size == 1);
     assert(it->__private_data.start_pos == 3);
     assert(it->__private_data.block_index == 1);
+
+    // Set value to an empty block of size 1 immediately below a non-empty block.
+    db.clear();
+    db.resize(2);
+    db.set(0, true);
+    it = db.set(1, false); // same type as that of the previous block.
+    assert(it == db.begin());
+
+    // Set value to an empty block of size 1 between non-empty blocks of the same type.
+    db = mtv_type(3, true);
+    db.set_empty(1, 1);
+    it = db.set(1, false);
+    assert(it == db.begin());
+    assert(it->size == 3);
+    ++it;
+    assert(it == db.end());
+
+    // Set value to an empty block of size 1 between non-empty blocks. The
+    // previous block is of the same type as that of the inserted value.
+    db = mtv_type(3, 1.1);
+    db.set_empty(0, 1);
+    db.set(0, true);
+    it = db.set(1, false);
+    assert(it == db.begin());
+    assert(it->size == 2);
+    std::advance(it, 2);
+    assert(it == db.end());
+
+    // Set value to the top of an empty block (not of size 1) following a
+    // non-empty block of the same type.
+    db.clear();
+    db.resize(3);
+    db.set(0, true);
+    it = db.set(1, false);
+    assert(it == db.begin());
+    assert(it->size == 2);
 }
 
 void mtv_perf_test_block_position_lookup()
