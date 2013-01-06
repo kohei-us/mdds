@@ -574,7 +574,7 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
             }
         }
 
-        throw general_error("this code path should never be reached!");
+        assert(!"this code path should never be reached!");
     }
 
     // This empty block is right below a non-empty block.
