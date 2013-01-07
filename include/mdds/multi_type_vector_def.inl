@@ -722,17 +722,20 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 blk->m_size -= 1;
                 blk_next->m_size += 1;
                 mdds_mtv_prepend_value(*blk_next->mp_data, cell);
-                assert(!"not implemented yet.");
             }
             else
             {
                 // Just insert this new cell.
                 blk->m_size -= 1;
                 m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
-                blk = m_blocks[block_index+1];
-                create_new_block_with_new_cell(blk->mp_data, cell);
-                assert(!"not implemented yet.");
+                block* blk2 = m_blocks[block_index+1];
+                create_new_block_with_new_cell(blk2->mp_data, cell);
             }
+
+            size_type offset = blk->m_size;
+            typename blocks_type::iterator block_pos = m_blocks.begin();
+            std::advance(block_pos, block_index+1);
+            return iterator(block_pos, m_blocks.end(), start_row+offset, block_index+1);
         }
     }
     else
