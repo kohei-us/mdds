@@ -650,7 +650,7 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
             {
                 // Just insert this new cell.
                 blk->m_size -= 1;
-                m_blocks.insert(m_blocks.begin()+1, new block(1));
+                m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
                 blk = m_blocks[block_index+1];
                 create_new_block_with_new_cell(blk->mp_data, cell);
             }
