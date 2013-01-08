@@ -684,6 +684,20 @@ void mtv_test_basic()
         assert(db.get_type(5) == mtv::element_type_ushort);
         assert(db.get_type(6) == mtv::element_type_boolean);
     }
+
+    {
+        mtv_type db(10);
+        db.set(0, 1.1);
+        db.set(1, 1.2);
+        db.set(2, true);
+        db.set(3, false);
+        db.set(8, string("A"));
+        db.set(9, string("B"));
+        db.set(7, 2.1);
+        assert(db.block_size() == 5);
+        assert(db.get_type(7) == mtv::element_type_numeric);
+        assert(db.get<double>(7) == 2.1);
+    }
 }
 
 void mtv_test_empty_cells()
