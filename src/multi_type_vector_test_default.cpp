@@ -2626,6 +2626,50 @@ void mtv_test_set_return_iterator()
     assert(it->size == 1);
     std::advance(it, 3);
     assert(it == db.end());
+
+    // Set value to the top of an existing topmost block of different type.
+    db = mtv_type(5, true);
+    it = db.set(0, 1.1);
+    assert(it == db.begin());
+    std::advance(it, 2);
+    assert(it == db.end());
+
+    // Set value to the top of an existing block of different type.  The block
+    // is below an empty block.
+    db = mtv_type(10, true);
+    db.set_empty(0, 4);
+    it = db.set(5, 2.1);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    std::advance(it, 2);
+    assert(it == db.end());
+
+    // Set value to the top of an existing block of different type.  The block
+    // is below a non-empty block.
+    db = mtv_type(10, true);
+    vector<double> doubles(3, 1.1);
+    db.set(2, doubles.begin(), doubles.end()); // set double's to 2 thru 4.
+    it = db.set(5, 2.1); // append to the previous block.
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    ++it;
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    db = mtv_type(10, true);
+    db.set(2, doubles.begin(), doubles.end()); // set double's to 2 thru 4.
+    it = db.set(5, string("foo")); // type different from that of the previous block.
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    check = db.begin();
+    std::advance(check, 2);
+    assert(it == check);
+    std::advance(it, 2);
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()

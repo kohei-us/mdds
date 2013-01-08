@@ -232,8 +232,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         {
             // No preceding block.
             set_cell_to_top_of_data_block(0, value);
-            assert(!"not implemented yet.");
-            return itr_pos;
+            return begin();
         }
 
         // Append to the previous block if the types match.
@@ -242,25 +241,31 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         {
             // Previous block is empty.
             set_cell_to_top_of_data_block(block_index, value);
-            assert(!"not implemented yet.");
-            return itr_pos;
+            typename blocks_type::iterator block_pos = m_blocks.begin();
+            std::advance(block_pos, block_index);
+            return iterator(block_pos, m_blocks.end(), start_row, block_index);
         }
 
         element_category_type blk_cat_prev = mdds::mtv::get_block_type(*blk_prev->mp_data);
         if (blk_cat_prev == cat)
         {
             // Append to the previous block.
+            size_type offset = blk_prev->m_size;
             blk->m_size -= 1;
             element_block_func::erase(*blk->mp_data, 0);
             blk_prev->m_size += 1;
             mdds_mtv_append_value(*blk_prev->mp_data, value);
-            assert(!"not implemented yet.");
-            return itr_pos;
+
+            typename blocks_type::iterator block_pos = m_blocks.begin();
+            std::advance(block_pos, block_index-1);
+            return iterator(block_pos, m_blocks.end(), start_row-offset, block_index-1);
         }
 
         set_cell_to_top_of_data_block(block_index, value);
-        assert(!"not implemented yet.");
-        return itr_pos;
+
+        typename blocks_type::iterator block_pos = m_blocks.begin();
+        std::advance(block_pos, block_index);
+        return iterator(block_pos, m_blocks.end(), start_row, block_index);
     }
 
     if (pos < (start_row + blk->m_size - 1))
