@@ -738,14 +738,9 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
             return iterator(block_pos, m_blocks.end(), start_row+offset, block_index+1);
         }
     }
-    else
-    {
-        // New cell is somewhere in the middle of an empty block.
-        set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
-        assert(!"not implemented yet.");
-    }
 
-    return begin();
+    // New cell is somewhere in the middle of an empty block.
+    return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
 }
 
 template<typename _CellBlockFunc>
