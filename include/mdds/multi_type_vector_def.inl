@@ -203,7 +203,6 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         return set_cell_to_empty_block(start_row, block_index, pos_in_block, value);
     }
 
-    assert(!"not implemented yet.");
     assert(blk->mp_data);
     element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
 
@@ -213,6 +212,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         size_type i = pos - start_row;
         element_block_func::overwrite_values(*blk->mp_data, i, 1);
         mdds_mtv_set_value(*blk->mp_data, i, value);
+        assert(!"not implemented yet.");
         return itr_pos;
     }
 
@@ -224,6 +224,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         if (blk->m_size == 1)
         {
             set_cell_to_block_of_size_one(block_index, value);
+            assert(!"not implemented yet.");
             return itr_pos;
         }
 
@@ -232,6 +233,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         {
             // No preceding block.
             set_cell_to_top_of_data_block(0, value);
+            assert(!"not implemented yet.");
             return itr_pos;
         }
 
@@ -241,6 +243,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         {
             // Previous block is empty.
             set_cell_to_top_of_data_block(block_index, value);
+            assert(!"not implemented yet.");
             return itr_pos;
         }
 
@@ -252,10 +255,12 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
             element_block_func::erase(*blk->mp_data, 0);
             blk_prev->m_size += 1;
             mdds_mtv_append_value(*blk_prev->mp_data, value);
+            assert(!"not implemented yet.");
             return itr_pos;
         }
 
         set_cell_to_top_of_data_block(block_index, value);
+        assert(!"not implemented yet.");
         return itr_pos;
     }
 
@@ -263,6 +268,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     {
         // Insertion point is somewhere in the middle of the block.
         set_cell_to_middle_of_block(start_row, block_index, pos_in_block, value);
+        assert(!"not implemented yet.");
         return itr_pos;
     }
 
@@ -279,6 +285,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
             // previous block, and insert a new block for the cell being
             // inserted.
             set_cell_to_bottom_of_data_block(0, value);
+            assert(!"not implemented yet.");
             return itr_pos;
         }
 
@@ -289,6 +296,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
             // Next block is empty.  Pop the last cell of the current
             // block, and insert a new block with the new cell.
             set_cell_to_bottom_of_data_block(0, value);
+            assert(!"not implemented yet.");
             return itr_pos;
         }
 
@@ -297,6 +305,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         if (blk_cat_next != cat)
         {
             set_cell_to_bottom_of_data_block(0, value);
+            assert(!"not implemented yet.");
             return itr_pos;
         }
 
@@ -306,6 +315,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         blk->m_size -= 1;
         mdds_mtv_prepend_value(*blk_next->mp_data, value);
         blk_next->m_size += 1;
+        assert(!"not implemented yet.");
         return itr_pos;
     }
 
@@ -315,6 +325,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     {
         // This is the last block.
         set_cell_to_bottom_of_data_block(block_index, value);
+        assert(!"not implemented yet.");
         return itr_pos;
     }
 
@@ -323,6 +334,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     {
         // Next block is empty.
         set_cell_to_bottom_of_data_block(block_index, value);
+        assert(!"not implemented yet.");
         return itr_pos;
     }
 
@@ -331,6 +343,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     {
         // Next block is of different type than that of the cell being inserted.
         set_cell_to_bottom_of_data_block(block_index, value);
+        assert(!"not implemented yet.");
         return itr_pos;
     }
 
@@ -341,6 +354,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     mdds_mtv_prepend_value(*blk_next->mp_data, value);
     blk_next->m_size += 1;
 
+    assert(!"not implemented yet.");
     return itr_pos;
 }
 
