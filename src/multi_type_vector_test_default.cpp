@@ -2617,6 +2617,15 @@ void mtv_test_set_return_iterator()
     assert(it->type == mtv::element_type_boolean);
     ++it;
     assert(it == db.end());
+
+    // Set value to existing block of the same type.
+    it = db.set(5, 4.5);
+    check = db.begin();
+    std::advance(check, 2);
+    assert(it == check);
+    assert(it->size == 1);
+    std::advance(it, 3);
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()

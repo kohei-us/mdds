@@ -212,8 +212,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         size_type i = pos - start_row;
         element_block_func::overwrite_values(*blk->mp_data, i, 1);
         mdds_mtv_set_value(*blk->mp_data, i, value);
-        assert(!"not implemented yet.");
-        return itr_pos;
+        return iterator(block_pos, m_blocks.end(), start_row, block_index);
     }
 
     assert(blk_cat != cat);
