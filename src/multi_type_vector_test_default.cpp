@@ -697,6 +697,21 @@ void mtv_test_basic()
         assert(db.get_type(7) == mtv::element_type_numeric);
         assert(db.get<double>(7) == 2.1);
     }
+
+    {
+        mtv_type db(8, true);
+        vector<double> vals(3, 1.2);
+        db.set(4, vals.begin(), vals.end());
+        db.set(3, 4.1);
+        assert(db.get<bool>(0) == true);
+        assert(db.get<bool>(1) == true);
+        assert(db.get<bool>(2) == true);
+        assert(db.get<double>(3) == 4.1);
+        assert(db.get<double>(4) == 1.2);
+        assert(db.get<double>(5) == 1.2);
+        assert(db.get<double>(6) == 1.2);
+        assert(db.get<bool>(7) == true);
+    }
 }
 
 void mtv_test_empty_cells()

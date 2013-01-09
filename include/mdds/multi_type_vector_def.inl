@@ -264,6 +264,7 @@ void multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         element_block_func::erase(*blk->mp_data, blk->m_size-1);
         blk->m_size -= 1;
         mdds_mtv_prepend_value(*blk_next->mp_data, value);
+        blk_next->m_size += 1;
         return;
     }
 
