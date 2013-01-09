@@ -271,9 +271,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     if (pos < (start_row + blk->m_size - 1))
     {
         // Insertion point is somewhere in the middle of the block.
-        set_cell_to_middle_of_block(start_row, block_index, pos_in_block, value);
-        assert(!"not implemented yet.");
-        return itr_pos;
+        return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, value);
     }
 
     // Insertion point is at the end of the block.
@@ -289,8 +287,9 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
             // previous block, and insert a new block for the cell being
             // inserted.
             set_cell_to_bottom_of_data_block(0, value);
-            assert(!"not implemented yet.");
-            return itr_pos;
+            iterator itr = end();
+            --itr;
+            return itr;
         }
 
         assert(block_index < m_blocks.size()-1);
@@ -300,8 +299,9 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
             // Next block is empty.  Pop the last cell of the current
             // block, and insert a new block with the new cell.
             set_cell_to_bottom_of_data_block(0, value);
-            assert(!"not implemented yet.");
-            return itr_pos;
+            iterator itr = begin();
+            ++itr;
+            return itr;
         }
 
         // Next block is not empty.
@@ -309,18 +309,21 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         if (blk_cat_next != cat)
         {
             set_cell_to_bottom_of_data_block(0, value);
-            assert(!"not implemented yet.");
-            return itr_pos;
+            iterator itr = begin();
+            ++itr;
+            return itr;
         }
 
         // Pop the last cell off the current block, and prepend the
         // new cell to the next block.
         element_block_func::erase(*blk->mp_data, blk->m_size-1);
         blk->m_size -= 1;
+        size_type offset = blk->m_size;
         mdds_mtv_prepend_value(*blk_next->mp_data, value);
         blk_next->m_size += 1;
-        assert(!"not implemented yet.");
-        return itr_pos;
+        typename blocks_type::iterator block_pos = m_blocks.begin();
+        std::advance(block_pos, block_index+1);
+        return iterator(block_pos, m_blocks.end(), start_row+offset, block_index+1);
     }
 
     assert(block_index > 0);

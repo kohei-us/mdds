@@ -2670,6 +2670,80 @@ void mtv_test_set_return_iterator()
     assert(it == check);
     std::advance(it, 2);
     assert(it == db.end());
+
+    // Set value to the middle of an existing non-empty block.
+    db = mtv_type(10, true);
+    doubles.clear();
+    doubles.resize(3, 2.3);
+    db.set(0, doubles.begin(), doubles.end()); // set double's to 0 thru 2.
+    it = db.set(6, string("text"));
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    assert(it->__private_data.start_pos = 6);
+    check = db.begin();
+    std::advance(check, 2);
+    assert(it == check);
+    ++it;
+    assert(it->size == 3);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    // Set value to the bottom of the only block that's non-empty.
+    db = mtv_type(10, false);
+    it = db.set(9, 2.1);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    ++it;
+    assert(it == db.end());
+
+    // Set value to the bottom of the topmost non-empty block which is
+    // followed by an empty block.
+    db = mtv_type(10, false);
+    db.set_empty(5, 9);
+    it = db.set(4, 1.1);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->__private_data.start_pos == 4);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    ++it;
+    assert(it->size == 5);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db.end());
+
+    // This time the following block is not empty but is of different type
+    // than that of the value being set.
+    db = mtv_type(10, false);
+    doubles.clear();
+    doubles.resize(5, 2.1);
+    db.set(5, doubles.begin(), doubles.end()); // numeric at 5 thru 9
+    it = db.set(4, string("foo"));
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    ++it;
+    assert(it->size == 5);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it == db.end());
+
+    // Same as before, but the value being set is of the same type as that of
+    // the following block.
+    db = mtv_type(10, false);
+    doubles.clear();
+    doubles.resize(5, 2.1);
+    db.set(5, doubles.begin(), doubles.end()); // numeric at 5 thru 9
+    it = db.set(4, 4.5); // same type as the following block.
+    assert(it->size == 6);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
