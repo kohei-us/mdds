@@ -321,6 +321,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         size_type offset = blk->m_size;
         mdds_mtv_prepend_value(*blk_next->mp_data, value);
         blk_next->m_size += 1;
+
         typename blocks_type::iterator block_pos = m_blocks.begin();
         std::advance(block_pos, block_index+1);
         return iterator(block_pos, m_blocks.end(), start_row+offset, block_index+1);
