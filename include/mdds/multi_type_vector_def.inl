@@ -191,8 +191,6 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     block* blk = *block_pos;
     assert(blk->m_size > 0); // block size should never be zero at any time.
 
-    iterator itr_pos(block_pos, m_blocks.end(), start_row, block_index);
-
     assert(pos >= start_row);
     size_type pos_in_block = pos - start_row;
     assert(pos_in_block < blk->m_size);
@@ -224,7 +222,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         {
             set_cell_to_block_of_size_one(block_index, value);
             assert(!"not implemented yet.");
-            return itr_pos;
+            return begin();
         }
 
         assert(blk->m_size > 1);
@@ -241,7 +239,8 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         {
             // Previous block is empty.
             set_cell_to_top_of_data_block(block_index, value);
-            typename blocks_type::iterator block_pos = m_blocks.begin();
+
+            block_pos = m_blocks.begin();
             std::advance(block_pos, block_index);
             return iterator(block_pos, m_blocks.end(), start_row, block_index);
         }
@@ -256,14 +255,14 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
             blk_prev->m_size += 1;
             mdds_mtv_append_value(*blk_prev->mp_data, value);
 
-            typename blocks_type::iterator block_pos = m_blocks.begin();
+            block_pos = m_blocks.begin();
             std::advance(block_pos, block_index-1);
             return iterator(block_pos, m_blocks.end(), start_row-offset, block_index-1);
         }
 
         set_cell_to_top_of_data_block(block_index, value);
 
-        typename blocks_type::iterator block_pos = m_blocks.begin();
+        block_pos = m_blocks.begin();
         std::advance(block_pos, block_index);
         return iterator(block_pos, m_blocks.end(), start_row, block_index);
     }
@@ -322,7 +321,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
         mdds_mtv_prepend_value(*blk_next->mp_data, value);
         blk_next->m_size += 1;
 
-        typename blocks_type::iterator block_pos = m_blocks.begin();
+        block_pos = m_blocks.begin();
         std::advance(block_pos, block_index+1);
         return iterator(block_pos, m_blocks.end(), start_row+offset, block_index+1);
     }
@@ -333,26 +332,20 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     {
         // This is the last block.
         set_cell_to_bottom_of_data_block(block_index, value);
-        assert(!"not implemented yet.");
-        return itr_pos;
+        iterator itr = end();
+        --itr;
+        return itr;
     }
 
     block* blk_next = m_blocks[block_index+1];
-    if (!blk_next->mp_data)
+    if (!blk_next->mp_data || mdds::mtv::get_block_type(*blk_next->mp_data) != cat)
     {
-        // Next block is empty.
+        // Next block is either empty or of different type than that of the cell being inserted.
         set_cell_to_bottom_of_data_block(block_index, value);
-        assert(!"not implemented yet.");
-        return itr_pos;
-    }
 
-    element_category_type cat_blk_next = mdds::mtv::get_block_type(*blk_next->mp_data);
-    if (cat_blk_next != cat)
-    {
-        // Next block is of different type than that of the cell being inserted.
-        set_cell_to_bottom_of_data_block(block_index, value);
-        assert(!"not implemented yet.");
-        return itr_pos;
+        block_pos = m_blocks.begin();
+        std::advance(block_pos, block_index+1);
+        return iterator(block_pos, m_blocks.end(), start_row+blk->m_size, block_index+1);
     }
 
     // Pop the last element from the current block, and prepend the cell
@@ -362,8 +355,9 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     mdds_mtv_prepend_value(*blk_next->mp_data, value);
     blk_next->m_size += 1;
 
-    assert(!"not implemented yet.");
-    return itr_pos;
+    block_pos = m_blocks.begin();
+    std::advance(block_pos, block_index+1);
+    return iterator(block_pos, m_blocks.end(), start_row+blk->m_size, block_index+1);
 }
 
 template<typename _CellBlockFunc>

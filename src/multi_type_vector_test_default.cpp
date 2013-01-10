@@ -2744,6 +2744,54 @@ void mtv_test_set_return_iterator()
     assert(it->type == mtv::element_type_numeric);
     ++it;
     assert(it == db.end());
+
+    // Set value to the bottom of the last non-empty block.
+    db = mtv_type(10, false);
+    doubles.clear();
+    doubles.resize(4, 3.1);
+    db.set(6, doubles.begin(), doubles.end()); // numeric at 6 thru 9
+    it = db.set(9, true);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    // Set value to the bottom of an non-empty block followed by an empty block.
+    db = mtv_type(10, false);
+    doubles.clear();
+    doubles.resize(3, 3.3);
+    db.set(2, doubles.begin(), doubles.end()); // numeric at 2 thru 4.
+    db.set_empty(5, 9);
+    it = db.set(4, string("foo"));
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    assert(it->__private_data.start_pos == 4);
+    assert(it->__private_data.block_index == 2);
+    ++it;
+    assert(it->size == 5);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db.end());
+
+    // Same as before, except the following block isn't empty but of different type.
+    db = mtv_type(10, false);
+    db.set(4, doubles.begin(), doubles.end()); // numeric at 4 thru 6.
+    it = db.set(6, string("foo")); // 7 thru 9 is boolean.
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    assert(it->__private_data.start_pos == 6);
+    assert(it->__private_data.block_index == 2);
+    ++it;
+    assert(it->size == 3);
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->__private_data.start_pos == 7);
+    ++it;
+    assert(it == db.end());
+
+    // Same as before, except the following block is now of the same type.
+    db = mtv_type(10, false);
+    db.set(4, doubles.begin(), doubles.end()); // numeric at 4 thru 6.
+    it = db.set(6, true); // 7 thru 9 is boolean.
 }
 
 void mtv_perf_test_block_position_lookup()
