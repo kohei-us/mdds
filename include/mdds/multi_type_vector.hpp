@@ -467,6 +467,13 @@ private:
         size_type row, size_type block_index, size_type start_pos,
         const _T& it_begin, const _T& it_end);
 
+    inline iterator get_iterator(size_type block_index, size_type start_row)
+    {
+        typename blocks_type::iterator block_pos = m_blocks.begin();
+        std::advance(block_pos, block_index);
+        return iterator(block_pos, m_blocks.end(), start_row, block_index);
+    }
+
 private:
     blocks_type m_blocks;
     size_type m_cur_size;
