@@ -2792,6 +2792,46 @@ void mtv_test_set_return_iterator()
     db = mtv_type(10, false);
     db.set(4, doubles.begin(), doubles.end()); // numeric at 4 thru 6.
     it = db.set(6, true); // 7 thru 9 is boolean.
+
+    // Set value to the only block (non-empty) of size 1.
+    db = mtv_type(1, true);
+    it = db.set(0, 1.1);
+    assert(it == db.begin());
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_numeric);
+
+    // Set value to the topmost non-empty block of size 1, followed by an empty block.
+    db.resize(5);
+    it = db.set(0, string("foo"));
+    assert(it == db.begin());
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    ++it;
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db.end());
+
+    // Set value to the topmost non-empty block of size 1, followed by a non-empty block.
+    db = mtv_type(5, true);
+    db.set(0, 1.1);
+    it = db.set(0, string("foo"));
+    assert(it == db.begin());
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    ++it;
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    // This time set value whose type is the same as that of the following block.
+    it = db.set(0, false);
+    assert(it == db.begin());
+    assert(it->size == 5);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
