@@ -772,16 +772,12 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block
     {
         // This is the last block, and a block exists above.
         block* blk_prev = m_blocks[block_index-1];
-        if (!blk_prev->mp_data)
+        if (!blk_prev->mp_data || mdds::mtv::get_block_type(*blk_prev->mp_data) != cat)
         {
             // Previous block is empty. Replace the current block with a new one.
             create_new_block_with_new_cell(blk->mp_data, cell);
-            assert(!"not implemented yet");
-            return begin();
         }
-
-        element_category_type blk_cat_prev = mdds::mtv::get_block_type(*blk_prev->mp_data);
-        if (blk_cat_prev == cat)
+        else
         {
             // Append the cell to the previos block, and remove the
             // current block.
@@ -789,14 +785,11 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block
             blk_prev->m_size += 1;
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
-            assert(!"not implemented yet");
-            return begin();
         }
 
-        // Simply replace the current block with a new block of new type.
-        create_new_block_with_new_cell(blk->mp_data, cell);
-        assert(!"not implemented yet");
-        return begin();
+        iterator itr = end();
+        --itr;
+        return itr;
     }
 
     // Remove the current block, and check if the cell can be append

@@ -2832,6 +2832,40 @@ void mtv_test_set_return_iterator()
     assert(it->type == mtv::element_type_boolean);
     ++it;
     assert(it == db.end());
+
+    // Set value to the topmost non-empty block of size 1, preceded by an empty block.
+    db = mtv_type(5);
+    db.set(4, true);
+    it = db.set(4, 1.2);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it == db.end());
+
+    // This time the preceding block is not empty, but of different type.
+    db = mtv_type(5, false);
+    db.set(0, string("baa"));
+    db.set(4, string("foo"));
+    it = db.set(4, 1.2);
+    check = db.begin();
+    std::advance(check, 2);
+    assert(it == check);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it == db.end());
+
+    it = db.set(4, true); // Now set value whose type is the same as that of the preceding block.
+    check = db.end();
+    --check;
+    assert(it == check);
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_boolean);
+    --it;
+    assert(it == db.begin());
 }
 
 void mtv_perf_test_block_position_lookup()
