@@ -819,14 +819,12 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(
             blk = m_blocks[block_index];
             blk->m_size += 1;
             mdds_mtv_prepend_value(*blk->mp_data, cell);
-            assert(!"not implemented yet");
-            return begin();
+            return get_iterator(block_index, start_row);
         }
 
         assert(blk_cat_next != cat);
         create_new_block_with_new_cell(blk->mp_data, cell);
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index, start_row);
     }
 
     if (!blk_next->mp_data)
@@ -837,18 +835,17 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(
         if (blk_cat_prev == cat)
         {
             // Append to the previous block.
+            size_type offset = blk_prev->m_size;
             blk_prev->m_size += 1;
             mdds_mtv_append_value(*blk_prev->mp_data, cell);
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
-            assert(!"not implemented yet");
-            return begin();
+            return get_iterator(block_index-1, start_row-offset);
         }
 
         // Just overwrite the current block.
         create_new_block_with_new_cell(blk->mp_data, cell);
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index, start_row);
     }
 
     assert(blk_prev && blk_prev->mp_data);

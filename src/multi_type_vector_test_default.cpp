@@ -2938,6 +2938,56 @@ void mtv_test_set_return_iterator()
     assert(it->__private_data.block_index == 1);
     std::advance(it, 2);
     assert(it == db.end());
+
+    // Preceding block is empty, and the following block is non-empty.
+    db = mtv_type(10);
+    doubles.resize(3, 1.1);
+    db.set(7, doubles.begin(), doubles.end()); // 7 thru 9 to be numeric.
+    db.set(6, static_cast<int>(23));
+    it = db.set(6, string("foo")); // Type different from that of the following block.
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    assert(it->__private_data.start_pos == 6);
+    ++it;
+    assert(it->size == 3);
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->__private_data.start_pos == 7);
+    ++it;
+    assert(it == db.end());
+
+    db.set(6, static_cast<int>(24)); // Reset.
+    it = db.set(6, 4.5); // This time the same type as that of the following block.
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it == db.end());
+
+    // Now, the preceding block is not empty while the following block is.
+    db = mtv_type(10, static_cast<unsigned short>(10));
+    db.set_empty(4, 6);
+    db.set(3, 1.2);
+    it = db.set(3, static_cast<unsigned short>(11)); // Same as the previous block.
+    assert(it == db.begin());
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_ushort);
+    std::advance(it, 3);
+    assert(it == db.end());
+
+    db.set(3, 1.3); // Reset
+    it = db.set(3, string("foo")); // This time, different from the previous block.
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    std::advance(it, 3);
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
