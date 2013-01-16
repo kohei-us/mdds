@@ -219,7 +219,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     {
         // Insertion point is at the start of the block.
         if (blk->m_size == 1)
-            return set_cell_to_block_of_size_one(block_index, value);
+            return set_cell_to_block_of_size_one(start_row, block_index, value);
 
         assert(blk->m_size > 1);
         if (block_index == 0)
@@ -731,7 +731,8 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
 template<typename _CellBlockFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block_index, const _T& cell)
+multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(
+    size_type start_row, size_type block_index, const _T& cell)
 {
     block* blk = m_blocks[block_index];
     assert(blk->m_size == 1);
@@ -805,8 +806,7 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block
         {
             // Next block is empty too.
             create_new_block_with_new_cell(blk->mp_data, cell);
-            assert(!"not implemented yet");
-            return begin();
+            return get_iterator(block_index, start_row);
         }
 
         // Previous block is empty, but the next block is not.
@@ -863,6 +863,7 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block
             // Merge the previous block with the cell being inserted and
             // the next block.  Resize the next block to zero to prevent
             // deletion of mananged cells on block deletion.
+            size_type offset = blk_prev->m_size;
             blk_prev->m_size += 1 + blk_next->m_size;
             mdds_mtv_append_value(*blk_prev->mp_data, cell);
             element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
@@ -874,14 +875,12 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block
             typename blocks_type::iterator it = m_blocks.begin() + block_index;
             typename blocks_type::iterator it_last = it + 2;
             m_blocks.erase(it, it_last);
-            assert(!"not implemented yet");
-            return begin();
+            return get_iterator(block_index-1, start_row-offset);
         }
 
         // Just overwrite the current block.
         create_new_block_with_new_cell(blk->mp_data, cell);
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index, start_row);
     }
 
     assert(blk_cat_prev != blk_cat_next);
@@ -889,12 +888,12 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block
     if (blk_cat_prev == cat)
     {
         // Append to the previous block.
+        size_type offset = blk_prev->m_size;
         blk_prev->m_size += 1;
         mdds_mtv_append_value(*blk_prev->mp_data, cell);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index-1, start_row-offset);
     }
 
     if (blk_cat_next == cat)
@@ -904,14 +903,12 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_block_of_size_one(size_type block
         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index, start_row);
     }
 
     // Just overwrite the current block.
     create_new_block_with_new_cell(blk->mp_data, cell);
-    assert(!"not implemented yet");
-    return begin();
+    return get_iterator(block_index, start_row);
 }
 
 template<typename _CellBlockFunc>

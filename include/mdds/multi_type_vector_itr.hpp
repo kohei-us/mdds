@@ -76,6 +76,18 @@ struct iterator_value_node
         }
     };
     private_data __private_data;
+
+    bool operator== (const iterator_value_node& other) const
+    {
+        return type == other.type && size == other.size && data == other.data &&
+            __private_data.start_pos == other.__private_data.start_pos &&
+            __private_data.block_index == other.__private_data.block_index;
+    }
+
+    bool operator!= (const iterator_value_node& other) const
+    {
+        return !operator== (other);
+    }
 };
 
 template<typename _NodeT>
@@ -182,6 +194,13 @@ protected:
 public:
     bool operator== (const iterator_common_base& other) const
     {
+        if (m_pos != m_end && other.m_pos != other.m_end)
+        {
+            // TODO: Set hard-coded values to the current node for the end
+            // position nodes to remove this if block.
+            if (m_cur_node != other.m_cur_node)
+                return false;
+        }
         return m_pos == other.m_pos && m_end == other.m_end;
     }
 

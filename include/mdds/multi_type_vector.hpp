@@ -403,7 +403,7 @@ private:
 
     template<typename _T>
     iterator set_cell_to_block_of_size_one(
-        size_type block_index, const _T& cell);
+        size_type start_row, size_type block_index, const _T& cell);
 
     template<typename _T>
     void set_cell_to_top_of_data_block(
