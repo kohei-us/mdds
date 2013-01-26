@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012 Kohei Yoshida
+ * Copyright (c) 2012-2013 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -1380,6 +1380,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
                         element_block_func::append_values_from_block(*blk->mp_data, *blk_next->mp_data);
                         element_block_func::resize_block(*blk_next->mp_data, 0);
                         blk->m_size += blk_next->m_size;
+                        delete m_blocks[block_index+1];
                         m_blocks.erase(m_blocks.begin()+block_index+1);
                     }
                 }
