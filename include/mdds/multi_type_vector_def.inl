@@ -1365,6 +1365,24 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
             {
                 delete blk;
                 m_blocks.erase(m_blocks.begin()+block_index);
+
+                // Check if we need to merge it with the next block.
+                --block_index;
+                if (block_index < m_blocks.size()-1)
+                {
+                    // Block exists below.
+                    blk = m_blocks[block_index];
+                    assert(blk->mp_data); // data is just appended to this block; must not be empty.
+                    block* blk_next = m_blocks[block_index+1];
+                    if (blk_next->mp_data && cat == mdds::mtv::get_block_type(*blk_next->mp_data))
+                    {
+                        // Merge it with the next block.
+                        element_block_func::append_values_from_block(*blk->mp_data, *blk_next->mp_data);
+                        element_block_func::resize_block(*blk_next->mp_data, 0);
+                        blk->m_size += blk_next->m_size;
+                        m_blocks.erase(m_blocks.begin()+block_index+1);
+                    }
+                }
                 return;
             }
 
