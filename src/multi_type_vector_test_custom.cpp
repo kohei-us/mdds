@@ -1001,6 +1001,33 @@ void mtv_test_managed_block()
         db.set(1, new muser_cell(1.0));
         assert(db.block_size() == 1);
     }
+
+    {
+        mtv_type db(10);
+        for (size_t i = 0; i < 10; ++i)
+            db.set(i, new muser_cell(1.1));
+
+        vector<double> doubles(3, 2.2);
+        db.set(3, doubles.begin(), doubles.end());
+        assert(db.block_size() == 3);
+
+        vector<muser_cell*> cells;
+        cells.push_back(new muser_cell(2.1));
+        cells.push_back(new muser_cell(2.2));
+        cells.push_back(new muser_cell(2.3));
+        db.set(3, cells.begin(), cells.end());
+        assert(db.block_size() == 1);
+        assert(db.get<muser_cell*>(0)->value == 1.1);
+        assert(db.get<muser_cell*>(1)->value == 1.1);
+        assert(db.get<muser_cell*>(2)->value == 1.1);
+        assert(db.get<muser_cell*>(3)->value == 2.1);
+        assert(db.get<muser_cell*>(4)->value == 2.2);
+        assert(db.get<muser_cell*>(5)->value == 2.3);
+        assert(db.get<muser_cell*>(6)->value == 1.1);
+        assert(db.get<muser_cell*>(7)->value == 1.1);
+        assert(db.get<muser_cell*>(8)->value == 1.1);
+        assert(db.get<muser_cell*>(9)->value == 1.1);
+    }
 }
 
 }
