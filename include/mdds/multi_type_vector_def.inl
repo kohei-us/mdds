@@ -1426,18 +1426,13 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
     block* blk = m_blocks[block_index];
     size_type data_length = std::distance(it_begin, it_end);
 
-    if (blk->mp_data)
+    if (blk->mp_data && mdds::mtv::get_block_type(*blk->mp_data) == cat)
     {
-        element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
-        if (cat == blk_cat)
-        {
-            // simple overwrite.
-            size_type offset = start_row - start_row_in_block;
-            element_block_func::overwrite_values(*blk->mp_data, offset, data_length);
-            mdds_mtv_set_values(*blk->mp_data, offset, *it_begin, it_begin, it_end);
-            assert(!"not implemented yet");
-            return begin();
-        }
+        // simple overwrite.
+        size_type offset = start_row - start_row_in_block;
+        element_block_func::overwrite_values(*blk->mp_data, offset, data_length);
+        mdds_mtv_set_values(*blk->mp_data, offset, *it_begin, it_begin, it_end);
+        return get_iterator(block_index, start_row);
     }
 
     size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
@@ -1446,6 +1441,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         if (end_row == end_row_in_block)
         {
             // Check if we could append it to the previous block.
+            size_type offset = block_index > 0 ? m_blocks[block_index-1]->m_size : 0;
             if (append_to_prev_block(block_index, cat, end_row-start_row+1, it_begin, it_end))
             {
                 delete blk;
@@ -1454,8 +1450,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
                 // Check if we need to merge it with the next block.
                 --block_index;
                 merge_with_next_block(block_index);
-                assert(!"not implemented yet");
-                return begin();
+                return get_iterator(block_index, start_row-offset);
             }
 
             // Replace the whole block.

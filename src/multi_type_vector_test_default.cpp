@@ -34,6 +34,7 @@
 #include <cassert>
 #include <sstream>
 #include <vector>
+#include <deque>
 
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/noncopyable.hpp>
@@ -3050,11 +3051,33 @@ void mtv_test_set2_return_iterator()
 {
     stack_printer __stack_printer__("::mtv_test_set2_return_iterator");
     mtv_type::iterator it, check;
-    vector<double> doubles;
-    doubles.resize(3, 1.1);
+    vector<double> doubles(3, 1.1);
+    deque<bool> bools;
 
-    mtv_type db(10);
-    it = db.set(0, doubles.begin(), doubles.end());
+    // simple overwrite.
+    mtv_type db(10, 2.3);
+    db.set(0, true);
+    db.set(1, string("foo"));
+    it = db.set(2, doubles.begin(), doubles.end());
+    check = db.begin();
+    std::advance(check, 2);
+    assert(it == check);
+    ++it;
+    assert(it == db.end());
+
+    // Insert and merge with previous block.
+    db = mtv_type(10, true);
+    db.set(5, 1.1);
+    db.set(6, 1.2);
+    db.set(7, 1.3);
+    db.set(8, string("foo"));
+    bools.resize(3, false);
+    it = db.set(5, bools.begin(), bools.end());
+    assert(it == db.begin());
+    assert(it->size == 8);
+    assert(it->type == mtv::element_type_boolean);
+    std::advance(it, 3);
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
