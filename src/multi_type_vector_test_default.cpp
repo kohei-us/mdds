@@ -3078,6 +3078,22 @@ void mtv_test_set2_return_iterator()
     assert(it->type == mtv::element_type_boolean);
     std::advance(it, 3);
     assert(it == db.end());
+
+    // Insert and merge with previous and next blocks.
+    db = mtv_type(10, true);
+    db.set(0, string("foo"));
+    db.set(5, 1.1);
+    db.set(6, 1.2);
+    db.set(7, 1.3);
+    it = db.set(5, bools.begin(), bools.end());
+    assert(db.block_size() == 2);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 9);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
