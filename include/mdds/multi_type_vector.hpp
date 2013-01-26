@@ -166,6 +166,8 @@ public:
      *
      * @param pos position to insert the value to.
      * @param value value to insert.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.
      */
     template<typename _T>
     iterator set(size_type pos, const _T& value);
@@ -187,9 +189,12 @@ public:
      *                 values being set.
      * @param it_end iterator that points to the end position of the values
      *               being set.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.  When no value insertion occurs because the value set
+     *         is empty, the end iterator position is returned.
      */
     template<typename _T>
-    void set(size_type pos, const _T& it_begin, const _T& it_end);
+    iterator set(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
      * Insert multiple values of identical type to a specified position.
@@ -426,13 +431,13 @@ private:
     void insert_empty_impl(size_type row, size_type length);
 
     template<typename _T>
-    void set_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
+    iterator set_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     void insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
-    void set_cells_to_single_block(
+    iterator set_cells_to_single_block(
         size_type start_pos, size_type end_pos, size_type block_index,
         size_type start_pos_in_block, const _T& it_begin, const _T& it_end);
 

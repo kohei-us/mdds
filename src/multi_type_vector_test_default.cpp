@@ -3043,6 +3043,20 @@ void mtv_test_set_return_iterator()
     assert(it == db.end());
 }
 
+/**
+ * Test the variant of set() method that takes iterators.
+ */
+void mtv_test_set2_return_iterator()
+{
+    stack_printer __stack_printer__("::mtv_test_set2_return_iterator");
+    mtv_type::iterator it, check;
+    vector<double> doubles;
+    doubles.resize(3, 1.1);
+
+    mtv_type db(10);
+    it = db.set(0, doubles.begin(), doubles.end());
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -3075,23 +3089,24 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
-        mtv_test_types();
-        mtv_test_construction();
-        mtv_test_basic();
-        mtv_test_empty_cells();
-        mtv_test_swap();
-        mtv_test_equality();
-        mtv_test_clone();
-        mtv_test_resize();
-        mtv_test_erase();
-        mtv_test_insert_empty();
-        mtv_test_set_cells();
-        mtv_test_insert_cells();
-        mtv_test_iterators();
-        mtv_test_data_iterators();
-        mtv_test_non_const_data_iterators();
-        mtv_test_iterator_private_data();
-        mtv_test_set_return_iterator();
+//      mtv_test_types();
+//      mtv_test_construction();
+//      mtv_test_basic();
+//      mtv_test_empty_cells();
+//      mtv_test_swap();
+//      mtv_test_equality();
+//      mtv_test_clone();
+//      mtv_test_resize();
+//      mtv_test_erase();
+//      mtv_test_insert_empty();
+//      mtv_test_set_cells();
+//      mtv_test_insert_cells();
+//      mtv_test_iterators();
+//      mtv_test_data_iterators();
+//      mtv_test_non_const_data_iterators();
+//      mtv_test_iterator_private_data();
+//      mtv_test_set_return_iterator();
+        mtv_test_set2_return_iterator();
     }
 
     if (opt.test_perf)
