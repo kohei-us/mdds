@@ -1961,6 +1961,31 @@ void mtv_test_set_cells()
         assert(db.get<double>(3) == 1.3);
         assert(db.get<string>(4) == string("C"));
     }
+
+    {
+        mtv_type db(10, true);
+        vector<bool> bools(3, false);
+        db.set(3, 1.1);
+        db.set(4, 1.2);
+        db.set(5, 1.3);
+        assert(db.block_size() == 3);
+
+        // This should replace the middle numeric block and merge with the top
+        // and bottom ones.
+        db.set(3, bools.begin(), bools.end());
+        assert(db.block_size() == 1);
+        assert(db.size() == 10);
+        assert(db.get<bool>(0) == true);
+        assert(db.get<bool>(1) == true);
+        assert(db.get<bool>(2) == true);
+        assert(db.get<bool>(3) == false);
+        assert(db.get<bool>(4) == false);
+        assert(db.get<bool>(5) == false);
+        assert(db.get<bool>(6) == true);
+        assert(db.get<bool>(7) == true);
+        assert(db.get<bool>(8) == true);
+        assert(db.get<bool>(9) == true);
+    }
 }
 
 void mtv_test_insert_cells()
