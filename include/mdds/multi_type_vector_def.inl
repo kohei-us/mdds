@@ -1368,22 +1368,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
 
                 // Check if we need to merge it with the next block.
                 --block_index;
-                if (block_index < m_blocks.size()-1)
-                {
-                    // Block exists below.
-                    blk = m_blocks[block_index];
-                    assert(blk->mp_data); // data is just appended to this block; must not be empty.
-                    block* blk_next = m_blocks[block_index+1];
-                    if (blk_next->mp_data && cat == mdds::mtv::get_block_type(*blk_next->mp_data))
-                    {
-                        // Merge it with the next block.
-                        element_block_func::append_values_from_block(*blk->mp_data, *blk_next->mp_data);
-                        element_block_func::resize_block(*blk_next->mp_data, 0);
-                        blk->m_size += blk_next->m_size;
-                        delete m_blocks[block_index+1];
-                        m_blocks.erase(m_blocks.begin()+block_index+1);
-                    }
-                }
+                merge_with_next_block(block_index);
                 return;
             }
 
@@ -1393,6 +1378,7 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
 
             blk->mp_data = element_block_func::create_new_block(cat, 0);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
+            merge_with_next_block(block_index);
             return;
         }
 
@@ -1760,6 +1746,35 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_emp
     set_cells_to_multi_blocks_block1_non_equal(
         start_row, end_row, block_index1, start_row_in_block1,
         block_index2, start_row_in_block2, it_begin, it_end);
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::merge_with_next_block(size_type block_index)
+{
+    if (block_index >= m_blocks.size()-1)
+        // No more block below this one.
+        return;
+
+    // Block exists below.
+    block* blk = m_blocks[block_index];
+    if (!blk->mp_data)
+        // Don't merge an empty block.
+        return;
+
+    block* blk_next = m_blocks[block_index+1];
+    if (!blk_next->mp_data)
+        return;
+
+    if (mdds::mtv::get_block_type(*blk->mp_data) != mdds::mtv::get_block_type(*blk_next->mp_data))
+        // Block types differ.  Don't merge.
+        return;
+
+    // Merge it with the next block.
+    element_block_func::append_values_from_block(*blk->mp_data, *blk_next->mp_data);
+    element_block_func::resize_block(*blk_next->mp_data, 0);
+    blk->m_size += blk_next->m_size;
+    delete m_blocks[block_index+1];
+    m_blocks.erase(m_blocks.begin()+block_index+1);
 }
 
 template<typename _CellBlockFunc>
