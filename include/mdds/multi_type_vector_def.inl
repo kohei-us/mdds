@@ -1460,8 +1460,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
             blk->mp_data = element_block_func::create_new_block(cat, 0);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             merge_with_next_block(block_index);
-            assert(!"not implemented yet");
-            return begin();
+            return get_iterator(block_index, start_row);
         }
 
         // Replace the upper part of the block.

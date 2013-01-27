@@ -3094,6 +3094,24 @@ void mtv_test_set2_return_iterator()
     assert(it->type == mtv::element_type_boolean);
     ++it;
     assert(it == db.end());
+
+    // Insert and merge with next block only.
+    db = mtv_type(10); // start empty.
+    db.set(4, true);
+    db.set(5, true);
+    db.set(6, true);
+    db.set(7, 1.1);
+    db.set(8, 1.2);
+    db.set(9, 1.3);
+    doubles.resize(3, 2.2);
+    it = db.set(4, doubles.begin(), doubles.end());
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 6);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
