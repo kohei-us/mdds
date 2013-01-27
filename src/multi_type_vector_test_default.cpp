@@ -1986,6 +1986,34 @@ void mtv_test_set_cells()
         assert(db.get<bool>(8) == true);
         assert(db.get<bool>(9) == true);
     }
+
+    {
+        mtv_type db(9);
+        db.set(0, 1.1);
+        db.set(1, 1.2);
+        db.set(2, true);
+        db.set(3, false);
+        db.set(4, true);
+        db.set(5, string("a"));
+        db.set(6, string("b"));
+        db.set(7, string("c"));
+        db.set(8, string("d"));
+        assert(db.block_size() == 3);
+
+        vector<string> strings(3, string("foo"));
+        db.set(2, strings.begin(), strings.end()); // Merge with the next block.
+        assert(db.block_size() == 2);
+        assert(db.size() == 9);
+        assert(db.get<double>(0) == 1.1);
+        assert(db.get<double>(1) == 1.2);
+        assert(db.get<string>(2) == "foo");
+        assert(db.get<string>(3) == "foo");
+        assert(db.get<string>(4) == "foo");
+        assert(db.get<string>(5) == "a");
+        assert(db.get<string>(6) == "b");
+        assert(db.get<string>(7) == "c");
+        assert(db.get<string>(8) == "d");
+    }
 }
 
 void mtv_test_insert_cells()

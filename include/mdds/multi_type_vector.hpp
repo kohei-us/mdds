@@ -457,6 +457,8 @@ private:
         size_type block_index2, size_type start_pos_in_block2,
         const _T& it_begin, const _T& it_end);
 
+    void merge_with_next_block(size_type block_index);
+
     template<typename _T>
     bool append_to_prev_block(
         size_type block_index, element_category_type cat, size_type length,
