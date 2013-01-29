@@ -99,6 +99,10 @@ struct element
 
     element& operator= (const element& r)
     {
+        if (&r == this)
+            // assignment to self.
+            return *this;
+
         if (m_type == element_string)
             delete mp_string;
 
