@@ -1489,11 +1489,9 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         }
 
         length = end_row - start_row + 1;
+        size_type offset = block_index > 0 ? m_blocks[block_index-1]->m_size : 0;
         if (append_to_prev_block(block_index, cat, length, it_begin, it_end))
-        {
-            assert(!"not implemented yet");
-            return begin();
-        }
+            return get_iterator(block_index-1, start_row-offset);
 
         // Insert a new block before the current block, and populate it with
         // the new data.
@@ -1502,8 +1500,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         blk->mp_data = element_block_func::create_new_block(cat, 0);
         blk->m_size = length;
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index, start_row);
     }
 
     assert(start_row > start_row_in_block);

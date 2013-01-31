@@ -3112,6 +3112,44 @@ void mtv_test_set2_return_iterator()
     assert(it->type == mtv::element_type_numeric);
     ++it;
     assert(it == db.end());
+
+    // Replace the upper part of a block and merge with previous block.
+    db = mtv_type(10, false);
+    db.set(3, 1.2);
+    db.set(4, 1.3);
+    db.set(5, 1.4);
+    db.set(6, 1.5);
+    db.set(7, 1.6);
+    bools.resize(3, true);
+    it = db.set(3, bools.begin(), bools.end());
+    assert(it == db.begin());
+    assert(it->size == 6);
+    assert(it->type == mtv::element_type_boolean);
+    std::advance(it, 3);
+    assert(it == db.end());
+
+    // Replace the upper part of a block but don't merge with previous block.
+    db = mtv_type(10, false);
+    db.set(3, string("A"));
+    db.set(4, string("B"));
+    db.set(5, string("C"));
+    db.set(6, string("D"));
+    db.set(7, string("E"));
+    doubles.resize(3, 1.1);
+    it = db.set(3, doubles.begin(), doubles.end());
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 3);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it->size == 2);
+    assert(it->type == mtv::element_type_string);
+    ++it;
+    assert(it->size == 2);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
