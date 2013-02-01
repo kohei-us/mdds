@@ -442,21 +442,21 @@ private:
         size_type start_pos_in_block, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
-    void set_cells_to_multi_blocks(
+    iterator set_cells_to_multi_blocks(
         size_type start_pos, size_type end_pos,
         size_type block_index1, size_type start_pos_in_block1,
         size_type block_index2, size_type start_pos_in_block2,
         const _T& it_begin, const _T& it_end);
 
     template<typename _T>
-    void set_cells_to_multi_blocks_block1_non_equal(
+    iterator set_cells_to_multi_blocks_block1_non_equal(
         size_type start_pos, size_type end_pos,
         size_type block_index1, size_type start_pos_in_block1,
         size_type block_index2, size_type start_pos_in_block2,
         const _T& it_begin, const _T& it_end);
 
     template<typename _T>
-    void set_cells_to_multi_blocks_block1_non_empty(
+    iterator set_cells_to_multi_blocks_block1_non_empty(
         size_type start_pos, size_type end_pos,
         size_type block_index1, size_type start_pos_in_block1,
         size_type block_index2, size_type start_pos_in_block2,

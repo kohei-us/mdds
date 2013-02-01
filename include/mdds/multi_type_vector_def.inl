@@ -1267,11 +1267,8 @@ multi_type_vector<_CellBlockFunc>::set_cells_impl(size_type row, const _T& it_be
         return set_cells_to_single_block(row, end_row, block_index1, start_row1, it_begin, it_end);
     }
 
-    assert(!"not implemented yet");
-    set_cells_to_multi_blocks(
+    return set_cells_to_multi_blocks(
         row, end_row, block_index1, start_row1, block_index2, start_row2, it_begin, it_end);
-
-    return begin();
 }
 
 template<typename _CellBlockFunc>
@@ -1586,7 +1583,8 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks(
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1599,24 +1597,23 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks(
     block* blk1 = m_blocks[block_index1];
     if (blk1->mp_data)
     {
-        set_cells_to_multi_blocks_block1_non_empty(
+        return set_cells_to_multi_blocks_block1_non_empty(
             start_row, end_row, block_index1, start_row_in_block1,
             block_index2, start_row_in_block2, it_begin, it_end);
-
-        return;
     }
 
     // Block 1 is empty.
     assert(!blk1->mp_data);
 
-    set_cells_to_multi_blocks_block1_non_equal(
+    return set_cells_to_multi_blocks_block1_non_equal(
         start_row, end_row, block_index1, start_row_in_block1,
         block_index2, start_row_in_block2, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1744,11 +1741,15 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equ
 
     // Insert the new data block.
     m_blocks.insert(m_blocks.begin()+insert_pos, data_blk.release());
+
+    assert(!"not implemented yet");
+    return begin();
 }
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_empty(
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_empty(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2,
@@ -1817,13 +1818,14 @@ void multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_emp
 
         std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
         m_blocks.erase(it_erase_begin, it_erase_end);
-        return;
+        assert(!"not implemented yet");
+        return begin();
     }
 
     // The first block type is different.
     assert(blk_cat1 != cat);
 
-    set_cells_to_multi_blocks_block1_non_equal(
+    return set_cells_to_multi_blocks_block1_non_equal(
         start_row, end_row, block_index1, start_row_in_block1,
         block_index2, start_row_in_block2, it_begin, it_end);
 }
