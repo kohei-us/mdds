@@ -3196,6 +3196,18 @@ void mtv_test_set2_return_iterator()
     assert(it->size == 3);
     assert(it->type == mtv::element_type_numeric);
     assert(it == db.end());
+
+    // Overwrite the middle part of a block.
+    db = mtv_type(10);
+    bools.resize(5, true);
+    it = db.set(3, bools.begin(), bools.end());
+    check = db.begin();
+    ++check;
+    assert(check == it);
+    assert(it->size == 5);
+    assert(it->type == mtv::element_type_boolean);
+    std::advance(it, 2);
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()

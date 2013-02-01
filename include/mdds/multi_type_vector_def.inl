@@ -1581,8 +1581,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
     }
     blk->m_size = new_cur_size;
 
-    assert(!"not implemented yet");
-    return begin();
+    return get_iterator(block_index+1, start_row);
 }
 
 template<typename _CellBlockFunc>
