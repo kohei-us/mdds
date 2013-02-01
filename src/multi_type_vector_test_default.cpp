@@ -3150,6 +3150,52 @@ void mtv_test_set2_return_iterator()
     assert(it->type == mtv::element_type_boolean);
     ++it;
     assert(it == db.end());
+
+    // Overwrite the lower part of a block and merge it with the next block.
+    db = mtv_type(10, false);
+    db.set(0, 2.2);
+    db.set(4, 1.1);
+    db.set(5, 1.2);
+    db.set(6, 1.3);
+    assert(db.block_size() == 4);
+    bools.resize(2, true);
+    it = db.set(5, bools.begin(), bools.end()); // 5 to 6
+    check = db.begin();
+    std::advance(check, 3);
+    assert(it == check);
+    assert(it->size == 5);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    // Overwrite the lower part of a block but don't merge it with the next block.
+    db = mtv_type(10, string("boo"));
+    db.set(0, 1.1);
+    db.set(5, true);
+    db.set(6, true);
+    db.set(7, true);
+    doubles.resize(2, 2.2);
+    it = db.set(6, doubles.begin(), doubles.end());
+    check = db.begin();
+    std::advance(check, 3);
+    assert(it == check);
+    assert(it->size == 2);
+    assert(it->type == mtv::element_type_numeric);
+    std::advance(it, 2);
+    assert(it == db.end());
+
+    // Overwrite the lower part of the last block.
+    db = mtv_type(10, string("boo"));
+    db.set(0, 1.1);
+    doubles.resize(3, 2.2);
+    it = db.set(7, doubles.begin(), doubles.end());
+    check = db.begin();
+    std::advance(check, 2);
+    assert(it == check);
+    ++it;
+    assert(it->size == 3);
+    assert(it->type == mtv::element_type_numeric);
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()

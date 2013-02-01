@@ -1432,7 +1432,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         size_type offset = start_row - start_row_in_block;
         element_block_func::overwrite_values(*blk->mp_data, offset, data_length);
         mdds_mtv_set_values(*blk->mp_data, offset, *it_begin, it_begin, it_end);
-        return get_iterator(block_index, start_row);
+        return get_iterator(block_index, start_row_in_block);
     }
 
     size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
@@ -1450,7 +1450,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
                 // Check if we need to merge it with the next block.
                 --block_index;
                 merge_with_next_block(block_index);
-                return get_iterator(block_index, start_row-offset);
+                return get_iterator(block_index, start_row_in_block-offset);
             }
 
             // Replace the whole block.
@@ -1460,7 +1460,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
             blk->mp_data = element_block_func::create_new_block(cat, 0);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             merge_with_next_block(block_index);
-            return get_iterator(block_index, start_row);
+            return get_iterator(block_index, start_row_in_block);
         }
 
         // Replace the upper part of the block.
@@ -1491,7 +1491,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         length = end_row - start_row + 1;
         size_type offset = block_index > 0 ? m_blocks[block_index-1]->m_size : 0;
         if (append_to_prev_block(block_index, cat, length, it_begin, it_end))
-            return get_iterator(block_index-1, start_row-offset);
+            return get_iterator(block_index-1, start_row_in_block-offset);
 
         // Insert a new block before the current block, and populate it with
         // the new data.
@@ -1500,7 +1500,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         blk->mp_data = element_block_func::create_new_block(cat, 0);
         blk->m_size = length;
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
-        return get_iterator(block_index, start_row);
+        return get_iterator(block_index, start_row_in_block);
     }
 
     assert(start_row > start_row_in_block);
@@ -1521,17 +1521,12 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         {
             // Check the next block.
             block* blk_next = m_blocks[block_index+1];
-            if (blk_next->mp_data)
+            if (blk_next->mp_data && cat == mdds::mtv::get_block_type(*blk_next->mp_data))
             {
-                element_category_type blk_cat_next = mdds::mtv::get_block_type(*blk_next->mp_data);
-                if (blk_cat_next == cat)
-                {
-                    // Prepend it to the next block.
-                    mdds_mtv_prepend_values(*blk_next->mp_data, *it_begin, it_begin, it_end);
-                    blk_next->m_size += end_row - start_row + 1;
-                    assert(!"not implemented yet");
-                    return begin();
-                }
+                // Prepend it to the next block.
+                mdds_mtv_prepend_values(*blk_next->mp_data, *it_begin, it_begin, it_end);
+                blk_next->m_size += end_row - start_row + 1;
+                return get_iterator(block_index+1, start_row);
             }
 
             // Next block has a different data type. Do the normal insertion.
@@ -1539,8 +1534,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
             blk = m_blocks[block_index+1];
             blk->mp_data = element_block_func::create_new_block(cat, 0);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
-            assert(!"not implemented yet");
-            return begin();
+            return get_iterator(block_index+1, start_row);
         }
 
         // Last block.
@@ -1550,8 +1544,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         blk = m_blocks.back();
         blk->mp_data = element_block_func::create_new_block(cat, 0);
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index+1, start_row);
     }
 
     // new data array will be in the middle of the current block.
