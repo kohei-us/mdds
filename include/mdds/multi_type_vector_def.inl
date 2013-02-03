@@ -1655,7 +1655,6 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
                 data_blk->m_size += blk0->m_size;
                 --it_erase_begin;
                 blk0_copied = true;
-                assert(!"not implemented yet");
             }
         }
     }

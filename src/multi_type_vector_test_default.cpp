@@ -3250,7 +3250,7 @@ void mtv_test_set2_return_iterator()
     db.set(3, doubles.begin(), doubles.end()); // 3 thru 6
     db.set(0, int(1));
     strings.resize(4, string("test"));
-    it = db.set(4, strings.begin(), strings.end());
+    it = db.set(4, strings.begin(), strings.end()); // Overwrite the lower part of the top block.
     check = db.begin();
     assert(check->type == mtv::element_type_int);
     ++check;
@@ -3263,6 +3263,28 @@ void mtv_test_set2_return_iterator()
     assert(it->size == 4);
     ++it;
     assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    db = mtv_type(10, false);
+    db.set(0, 1.1);
+    db.set(4, 1.2);
+    db.set(5, 1.3);
+    db.set(6, string("a"));
+    db.set(7, string("b"));
+    doubles.resize(3, 0.8);
+    it = db.set(6, doubles.begin(), doubles.end()); // Merge with the upper block.
+    check = db.begin();
+    assert(check->type == mtv::element_type_numeric);
+    ++check;
+    assert(check->type == mtv::element_type_boolean);
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 5);
+    ++it;
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->size == 1);
     ++it;
     assert(it == db.end());
 }
