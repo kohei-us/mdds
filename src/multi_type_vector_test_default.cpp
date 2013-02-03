@@ -3208,6 +3208,40 @@ void mtv_test_set2_return_iterator()
     assert(it->type == mtv::element_type_boolean);
     std::advance(it, 2);
     assert(it == db.end());
+
+    // Overwrite multiple blocks with values whose type matches that of the top block.
+    int int_val = 255;
+    db = mtv_type(10, int_val);
+    bools.resize(6, true);
+    db.set(4, bools.begin(), bools.end()); // set 4 thru 9 to bool.
+    db.set(5, 1.1);
+    db.set(7, string("foo"));
+    assert(db.block_size() == 6);
+    doubles.resize(4, 4.5);
+    it = db.set(5, doubles.begin(), doubles.end()); // 5 thrugh 8.
+    check = db.begin();
+    assert(check->type == mtv::element_type_int);
+    ++check;
+    assert(check->type == mtv::element_type_boolean);
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 4);
+    std::advance(it, 2);
+    assert(it == db.end());
+
+    // The same scenario, except that the values also match that of the bottom block.
+    db = mtv_type(10, 1.1);
+    db.set(5, true);
+    assert(db.block_size() == 3);
+    doubles.resize(3, 2.3);
+    it = db.set(4, doubles.begin(), doubles.end());
+    assert(db.block_size() == 1);
+    assert(it == db.begin());
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 10);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()

@@ -1818,8 +1818,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_empty(
 
         std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
         m_blocks.erase(it_erase_begin, it_erase_end);
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index1, start_row_in_block1);
     }
 
     // The first block type is different.
