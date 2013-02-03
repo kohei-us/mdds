@@ -1626,6 +1626,8 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
     size_type offset = start_row - start_row_in_block1;
     size_type end_row_in_block2 = start_row_in_block2 + blk2->m_size - 1;
 
+    size_type start_row_itr = start_row_in_block1;
+
     // Initially set to erase blocks between block 1 and block 2.
     typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_index1 + 1;
     typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
@@ -1643,18 +1645,17 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
         if (block_index1 > 0)
         {
             block* blk0 = m_blocks[block_index1-1];
-            if (blk0->mp_data)
+            if (blk0->mp_data && cat == mdds::mtv::get_block_type(*blk0->mp_data))
             {
-                if (cat == mdds::mtv::get_block_type(*blk0->mp_data))
-                {
-                    // Transfer the whole data from block 0 to data block.
-                    data_blk->mp_data = blk0->mp_data;
-                    blk0->mp_data = NULL;
+                // Transfer the whole data from block 0 to data block.
+                data_blk->mp_data = blk0->mp_data;
+                blk0->mp_data = NULL;
 
-                    data_blk->m_size += blk0->m_size;
-                    --it_erase_begin;
-                    blk0_copied = true;
-                }
+                start_row_itr -= blk0->m_size;
+                data_blk->m_size += blk0->m_size;
+                --it_erase_begin;
+                blk0_copied = true;
+                assert(!"not implemented yet");
             }
         }
     }
@@ -1668,6 +1669,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
             element_block_func::resize_block(*blk1->mp_data, offset);
         }
         blk1->m_size = offset;
+        start_row_itr += offset;
     }
 
     if (blk0_copied)
@@ -1742,8 +1744,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
     // Insert the new data block.
     m_blocks.insert(m_blocks.begin()+insert_pos, data_blk.release());
 
-    assert(!"not implemented yet");
-    return begin();
+    return get_iterator(insert_pos, start_row_itr);
 }
 
 template<typename _CellBlockFunc>

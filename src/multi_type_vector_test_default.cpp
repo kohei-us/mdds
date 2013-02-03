@@ -3053,6 +3053,7 @@ void mtv_test_set2_return_iterator()
     mtv_type::iterator it, check;
     vector<double> doubles(3, 1.1);
     deque<bool> bools;
+    vector<string> strings;
 
     // simple overwrite.
     mtv_type db(10, 2.3);
@@ -3240,6 +3241,28 @@ void mtv_test_set2_return_iterator()
     assert(it == db.begin());
     assert(it->type == mtv::element_type_numeric);
     assert(it->size == 10);
+    ++it;
+    assert(it == db.end());
+
+    // This time, the top block is of different type.
+    db = mtv_type(10, false);
+    doubles.resize(4, 4.5);
+    db.set(3, doubles.begin(), doubles.end()); // 3 thru 6
+    db.set(0, int(1));
+    strings.resize(4, string("test"));
+    it = db.set(4, strings.begin(), strings.end());
+    check = db.begin();
+    assert(check->type == mtv::element_type_int);
+    ++check;
+    assert(check->type == mtv::element_type_boolean);
+    ++check;
+    assert(check->type == mtv::element_type_numeric);
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_string);
+    assert(it->size == 4);
+    ++it;
+    assert(it->type == mtv::element_type_boolean);
     ++it;
     assert(it == db.end());
 }
