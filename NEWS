@@ -1,10 +1,15 @@
 * multi_type_vector
 
-  * set() method (single-parameter variant) to return iterator that
-    references the block where the value is set.
+  * set() methods (both single- and multi-parameter variants) to
+    return iterator that references the block in which the value is
+    set.
 
   * fixed bugs in set() method (single-parameter variant) which would
     insert a new block at incorrect position.
+
+  * fixed bugs in set() method (multi-parameter variant) which would
+    fail to merge neighboring blocks of identical type under certain
+    conditions.
 
 mdds 0.6.1
 
