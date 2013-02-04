@@ -1,5 +1,8 @@
 * multi_type_vector
 
+  * add support for non-const iterators which allow the client code to
+    modify values directly from the iterators.
+
   * set() methods (both single- and multi-parameter variants) to
     return iterator that references the block in which the value is
     set.
