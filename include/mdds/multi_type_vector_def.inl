@@ -349,9 +349,10 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& it_begin, const 
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin, const _T& it_end)
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin, const _T& it_end)
 {
-    insert_cells_impl(pos, it_begin, it_end);
+    return insert_cells_impl(pos, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc>
@@ -1273,12 +1274,13 @@ multi_type_vector<_CellBlockFunc>::set_cells_impl(size_type row, const _T& it_be
 
 template<typename _CellBlockFunc>
 template<typename _T>
-void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
 {
     size_type length = std::distance(it_begin, it_end);
     if (!length)
         // empty data array.  nothing to do.
-        return;
+        return end();
 
     size_type block_index = 0, start_row = 0;
     if (!get_block_position(row, start_row, block_index))
@@ -1304,7 +1306,8 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
                     mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
                     blk0->m_size += length;
                     m_cur_size += length;
-                    return;
+                    assert(!"not implemented yet");
+                    return begin();
                 }
             }
 
@@ -1315,12 +1318,14 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             blk->m_size = length;
             m_cur_size += length;
-            return;
+            assert(!"not implemented yet");
+            return begin();
         }
 
         insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
         m_cur_size += length;
-        return;
+        assert(!"not implemented yet");
+        return begin();
     }
 
     assert(blk->mp_data);
@@ -1332,7 +1337,8 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
         mdds_mtv_insert_values(*blk->mp_data, row-start_row, *it_begin, it_begin, it_end);
         blk->m_size += length;
         m_cur_size += length;
-        return;
+        assert(!"not implemented yet");
+        return begin();
     }
 
     assert(cat != blk_cat);
@@ -1351,7 +1357,8 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
                     mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
                     blk0->m_size += length;
                     m_cur_size += length;
-                    return;
+                    assert(!"not implemented yet");
+                    return begin();
                 }
             }
         }
@@ -1363,11 +1370,14 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         blk->m_size = length;
         m_cur_size += length;
-        return;
+        assert(!"not implemented yet");
+        return begin();
     }
 
     insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
     m_cur_size += length;
+    assert(!"not implemented yet");
+    return begin();
 }
 
 template<typename _CellBlockFunc>

@@ -215,7 +215,7 @@ public:
      *               being inserted.
      */
     template<typename _T>
-    void insert(size_type pos, const _T& it_begin, const _T& it_end);
+    iterator insert(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
      * Get the value of an element at specified position.  The caller must
@@ -434,7 +434,7 @@ private:
     iterator set_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
-    void insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
+    iterator insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cells_to_single_block(
