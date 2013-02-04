@@ -3287,6 +3287,33 @@ void mtv_test_set2_return_iterator()
     assert(it->size == 1);
     ++it;
     assert(it == db.end());
+
+    // Make sure this also works in scenarios where the values merge with lower block.
+    db = mtv_type(20, false);
+    doubles.resize(4, 3.4);
+    db.set(5, doubles.begin(), doubles.end()); // 5 thru 8
+    strings.resize(5, "expanded");
+    db.set(11, strings.begin(), strings.end()); // 11 thru 15
+    strings.clear();
+    strings.resize(6, "overwriting");
+    it = db.set(7, strings.begin(), strings.end()); // 7 thru 12
+
+    // At this point, 7 thru 15 should be strings.
+    assert(it->type == mtv::element_type_string);
+    assert(it->size == 9);
+    check = db.begin();
+    assert(check->type == mtv::element_type_boolean);
+    assert(check->size == 5); // 0 thru 4
+    ++check;
+    assert(check->type == mtv::element_type_numeric);
+    assert(check->size == 2); // 5 thru 6
+    ++check;
+    assert(it == check);
+    ++it;
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->size == 4); // 16 thru 19
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
