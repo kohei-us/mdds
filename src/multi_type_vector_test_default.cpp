@@ -3319,6 +3319,57 @@ void mtv_test_set2_return_iterator()
 void mtv_test_insert_cells_return_iterator()
 {
     stack_printer __stack_printer__("::mtv_test_insert_cells_return_iterator");
+    mtv_type::iterator it, check;
+
+    // Insert values into empty block.  They are to be appended to the previous block.
+    mtv_type db(10); // start with empty set.
+    db.set(0, string("top"));
+    db.set(3, 0.9);
+    vector<double> doubles(4, 1.1);
+    it = db.insert(4, doubles.begin(), doubles.end());
+    check = db.begin();
+    advance(check, 2);
+    assert(it == check);
+    assert(it->size == 5);
+    assert(it->__private_data.start_pos == 3);
+    ++it;
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 6);
+    ++it;
+    assert(it == db.end());
+
+    // Same as above, except that the values will not be appended to the previous block.
+    db = mtv_type(3);
+    db.set(0, string("top"));
+    doubles.resize(5, 3.3);
+    it = db.insert(1, doubles.begin(), doubles.end());
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 5);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 2);
+    ++it;
+    assert(it == db.end());
+
+    // Insert into the middle of an empty block.
+    db = mtv_type(2);
+    doubles.resize(3, 1.2);
+    it = db.insert(1, doubles.begin(), doubles.end());
+    check = db.begin();
+    assert(check->type == mtv::element_type_empty);
+    assert(check->size == 1);
+    ++check;
+    assert(check == it);
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 3);
+    ++it;
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 1);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()

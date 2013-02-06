@@ -213,6 +213,9 @@ public:
      *                 values being inserted.
      * @param it_end iterator that points to the end position of the values
      *               being inserted.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.  When no value insertion occurs because the value set
+     *         is empty, the end iterator position is returned.
      */
     template<typename _T>
     iterator insert(size_type pos, const _T& it_begin, const _T& it_end);

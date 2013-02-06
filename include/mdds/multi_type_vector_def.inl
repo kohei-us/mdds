@@ -1304,10 +1304,11 @@ multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _T& it
                 {
                     // Append to the previous block.
                     mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
+                    size_type offset = blk0->m_size;
                     blk0->m_size += length;
                     m_cur_size += length;
-                    assert(!"not implemented yet");
-                    return begin();
+
+                    return get_iterator(block_index-1, start_row-offset);
                 }
             }
 
@@ -1318,14 +1319,14 @@ multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _T& it
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             blk->m_size = length;
             m_cur_size += length;
-            assert(!"not implemented yet");
-            return begin();
+
+            return get_iterator(block_index, start_row);
         }
 
         insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
         m_cur_size += length;
-        assert(!"not implemented yet");
-        return begin();
+
+        return get_iterator(block_index+1, row);
     }
 
     assert(blk->mp_data);
