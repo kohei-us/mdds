@@ -3320,12 +3320,15 @@ void mtv_test_insert_cells_return_iterator()
 {
     stack_printer __stack_printer__("::mtv_test_insert_cells_return_iterator");
     mtv_type::iterator it, check;
+    vector<double> doubles;
+    vector<bool> bools;
+    vector<string> strings;
 
     // Insert values into empty block.  They are to be appended to the previous block.
     mtv_type db(10); // start with empty set.
     db.set(0, string("top"));
     db.set(3, 0.9);
-    vector<double> doubles(4, 1.1);
+    doubles.resize(4, 1.1);
     it = db.insert(4, doubles.begin(), doubles.end());
     check = db.begin();
     advance(check, 2);
@@ -3368,6 +3371,38 @@ void mtv_test_insert_cells_return_iterator()
     ++it;
     assert(it->type == mtv::element_type_empty);
     assert(it->size == 1);
+    ++it;
+    assert(it == db.end());
+
+    // Insert into a block of the same type.
+    db = mtv_type(5, false);
+    db.set(0, string("top"));
+    db.set(4, string("bottom"));
+    bools.resize(3, true);
+    it = db.insert(2, bools.begin(), bools.end());
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->size == 6);
+    advance(it, 2);
+    assert(it == db.end());
+
+    // Insert values which will be append to the previous block.
+    db = mtv_type(5, 1.1);
+    strings.resize(3, string("test"));
+    db.set(0, true);
+    db.set(2, strings.begin(), strings.end()); // 2 thru 4
+    doubles.resize(2, 2.2);
+    it = db.insert(2, doubles.begin(), doubles.end());
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 3);
+    ++it;
+    assert(it->type == mtv::element_type_string);
+    assert(it->size == 3);
     ++it;
     assert(it == db.end());
 }
