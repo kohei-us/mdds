@@ -1348,18 +1348,14 @@ multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _T& it
         {
             // Check the previous block to see if we can append the data there.
             block* blk0 = m_blocks[block_index-1];
-            if (blk0->mp_data)
+            if (blk0->mp_data && cat == mdds::mtv::get_block_type(*blk0->mp_data))
             {
-                element_category_type blk_cat0 = mdds::mtv::get_block_type(*blk0->mp_data);
-                if (cat == blk_cat0)
-                {
-                    // Append to the previous block.
-                    size_type offset = blk0->m_size;
-                    mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
-                    blk0->m_size += length;
-                    m_cur_size += length;
-                    return get_iterator(block_index-1, start_row-offset);
-                }
+                // Append to the previous block.
+                size_type offset = blk0->m_size;
+                mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
+                blk0->m_size += length;
+                m_cur_size += length;
+                return get_iterator(block_index-1, start_row-offset);
             }
         }
 
