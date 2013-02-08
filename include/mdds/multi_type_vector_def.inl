@@ -1366,14 +1366,14 @@ multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _T& it
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         blk->m_size = length;
         m_cur_size += length;
-        assert(!"not implemented yet");
-        return begin();
+
+        return get_iterator(block_index, start_row);
     }
 
     insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
     m_cur_size += length;
-    assert(!"not implemented yet");
-    return begin();
+
+    return get_iterator(block_index+1, row);
 }
 
 template<typename _CellBlockFunc>
