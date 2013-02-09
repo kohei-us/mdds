@@ -998,7 +998,8 @@ bool multi_type_vector<_CellBlockFunc>::is_empty(size_type pos) const
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type end_pos)
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type end_pos)
 {
     if (start_pos > end_pos)
         throw std::out_of_range("Start row is larger than the end row.");
@@ -1014,12 +1015,9 @@ void multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type
         throw std::out_of_range("Block position not found!");
 
     if (block_pos1 == block_pos2)
-    {
-        set_empty_in_single_block(start_pos, end_pos, block_pos1, start_row_in_block1);
-        return;
-    }
+        return set_empty_in_single_block(start_pos, end_pos, block_pos1, start_row_in_block1);
 
-    set_empty_in_multi_blocks(
+    return set_empty_in_multi_blocks(
         start_pos, end_pos, block_pos1, start_row_in_block1, block_pos2, start_row_in_block2);
 }
 
@@ -2052,14 +2050,18 @@ mtv::element_t multi_type_vector<_CellBlockFunc>::get_element_type(const _T& ele
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
     size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block)
 {
     // Range is within a single block.
     block* blk = m_blocks[block_index];
     if (!blk->mp_data)
+    {
         // This block is already empty.  Do nothing.
-        return;
+        assert(!"not implemented yet");
+        return begin();
+    }
 
     assert(start_row_in_block + blk->m_size >= 1);
     size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
@@ -2074,7 +2076,8 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
             // Set the whole block empty.
             element_block_func::delete_block(blk->mp_data);
             blk->mp_data = NULL;
-            return;
+            assert(!"not implemented yet");
+            return begin();
         }
 
         // Set the upper part of the block empty.
@@ -2084,7 +2087,8 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
         // Insert a new empty block before the current one.
         m_blocks.insert(m_blocks.begin()+block_index, new block(empty_block_size));
-        return;
+        assert(!"not implemented yet");
+        return begin();
     }
 
     if (end_row == end_row_in_block)
@@ -2100,7 +2104,8 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
         // Insert a new empty block after the current one.
         m_blocks.insert(m_blocks.begin()+block_index+1, new block(empty_block_size));
-        return;
+        assert(!"not implemented yet");
+        return begin();
     }
 
     // Empty the middle part of a block.
@@ -2131,10 +2136,14 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
     element_block_func::erase(
         *blk->mp_data, new_cur_size, end_row_in_block-start_row+1);
     blk->m_size = new_cur_size;
+
+    assert(!"not implemented yet");
+    return begin();
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
     size_type block_index2, size_type start_row_in_block2)
@@ -2225,6 +2234,9 @@ void multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
         // Current block is already empty. Just extend its size.
         blk->m_size = empty_block_size;
     }
+
+    assert(!"not implemented yet");
+    return begin();
 }
 
 }

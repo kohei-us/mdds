@@ -271,8 +271,10 @@ public:
      *
      * @param start_pos starting position
      * @param end_pos ending position, inclusive.
+     * @return iterator position pointing to the block where the elements are
+     *         emptied.
      */
-    void set_empty(size_type start_pos, size_type end_pos);
+    iterator set_empty(size_type start_pos, size_type end_pos);
 
     /**
      * Erase elements located between specified start and end positions. The
@@ -421,10 +423,10 @@ private:
     void set_cell_to_bottom_of_data_block(
         size_type block_index, const _T& cell);
 
-    void set_empty_in_single_block(
+    iterator set_empty_in_single_block(
         size_type start_pos, size_type end_pos, size_type block_index, size_type start_pos_in_block);
 
-    void set_empty_in_multi_blocks(
+    iterator set_empty_in_multi_blocks(
         size_type start_pos, size_type end_pos,
         size_type block_index1, size_type start_pos_in_block1,
         size_type block_index2, size_type start_pos_in_block2);
