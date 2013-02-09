@@ -3454,6 +3454,70 @@ void mtv_test_insert_cells_return_iterator()
 void mtv_test_set_empty_return_iterator()
 {
     stack_printer __stack_printer__("::mtv_test_set_empty_return_iterator");
+    mtv_type::iterator it, check;
+
+    // Block is already empty. Calling the method does not do anything.
+    mtv_type db(10);
+    db.set(0, 1.1);
+    it = db.set_empty(6, 8);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+
+    // Empty a whole block.
+    db = mtv_type(10, false);
+    db.set(0, 1.1);
+    db.set(1, string("A"));
+    it = db.set_empty(2, 9);
+    check = db.begin();
+    advance(check, 2);
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 8);
+    ++it;
+    assert(it == db.end());
+
+    // Empty the upper part of a block.
+    vector<short> shorts(8, 23);
+    db.set(2, shorts.begin(), shorts.end());
+    it = db.set_empty(2, 6);
+    check = db.begin();
+    advance(check, 2);
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 5);
+    ++it;
+    assert(it->type == mtv::element_type_short);
+    assert(it->size == 3);
+    ++it;
+    assert(it == db.end());
+
+    // Empty the lower part of a block.
+    db = mtv_type(10, string("foo"));
+    it = db.set_empty(3, 9);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 7);
+    ++it;
+    assert(it == db.end());
+
+    // Empty the middle part of a block.
+    db = mtv_type(10, string("baa"));
+    it = db.set_empty(3, 6);
+    check = db.begin();
+    assert(check->type == mtv::element_type_string);
+    assert(check->size == 3);
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 4);
+    ++it;
+    assert(it->type == mtv::element_type_string);
+    assert(it->size == 3);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()

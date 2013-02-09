@@ -2057,11 +2057,8 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
     // Range is within a single block.
     block* blk = m_blocks[block_index];
     if (!blk->mp_data)
-    {
         // This block is already empty.  Do nothing.
-        assert(!"not implemented yet");
-        return begin();
-    }
+        return get_iterator(block_index, start_row_in_block);
 
     assert(start_row_in_block + blk->m_size >= 1);
     size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
@@ -2076,8 +2073,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
             // Set the whole block empty.
             element_block_func::delete_block(blk->mp_data);
             blk->mp_data = NULL;
-            assert(!"not implemented yet");
-            return begin();
+            return get_iterator(block_index, start_row_in_block);
         }
 
         // Set the upper part of the block empty.
@@ -2087,8 +2083,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
         // Insert a new empty block before the current one.
         m_blocks.insert(m_blocks.begin()+block_index, new block(empty_block_size));
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index, start_row_in_block);
     }
 
     if (end_row == end_row_in_block)
@@ -2104,8 +2099,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
         // Insert a new empty block after the current one.
         m_blocks.insert(m_blocks.begin()+block_index+1, new block(empty_block_size));
-        assert(!"not implemented yet");
-        return begin();
+        return get_iterator(block_index+1, start_row);
     }
 
     // Empty the middle part of a block.
@@ -2137,8 +2131,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
         *blk->mp_data, new_cur_size, end_row_in_block-start_row+1);
     blk->m_size = new_cur_size;
 
-    assert(!"not implemented yet");
-    return begin();
+    return get_iterator(block_index+1, start_row);
 }
 
 template<typename _CellBlockFunc>
