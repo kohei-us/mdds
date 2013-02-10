@@ -1046,6 +1046,16 @@ void mtv_test_empty_cells()
         assert(!db.is_empty(13));
         assert(!db.is_empty(14));
     }
+
+    {
+        mtv_type db(3, true);
+        assert(db.block_size() == 1);
+        db.set_empty(1, 1);
+        assert(db.get<bool>(0) == true);
+        assert(db.is_empty(1));
+        assert(db.get<bool>(2) == true);
+        assert(db.block_size() == 3);
+    }
 }
 
 void mtv_test_swap()
