@@ -3617,25 +3617,25 @@ int main (int argc, char **argv)
 
     if (opt.test_func)
     {
-//      mtv_test_types();
-//      mtv_test_construction();
-//      mtv_test_basic();
-//      mtv_test_empty_cells();
-//      mtv_test_swap();
-//      mtv_test_equality();
-//      mtv_test_clone();
-//      mtv_test_resize();
-//      mtv_test_erase();
-//      mtv_test_insert_empty();
-//      mtv_test_set_cells();
-//      mtv_test_insert_cells();
-//      mtv_test_iterators();
-//      mtv_test_data_iterators();
-//      mtv_test_non_const_data_iterators();
-//      mtv_test_iterator_private_data();
-//      mtv_test_set_return_iterator();
-//      mtv_test_set2_return_iterator();
-//      mtv_test_insert_cells_return_iterator();
+        mtv_test_types();
+        mtv_test_construction();
+        mtv_test_basic();
+        mtv_test_empty_cells();
+        mtv_test_swap();
+        mtv_test_equality();
+        mtv_test_clone();
+        mtv_test_resize();
+        mtv_test_erase();
+        mtv_test_insert_empty();
+        mtv_test_set_cells();
+        mtv_test_insert_cells();
+        mtv_test_iterators();
+        mtv_test_data_iterators();
+        mtv_test_non_const_data_iterators();
+        mtv_test_iterator_private_data();
+        mtv_test_set_return_iterator();
+        mtv_test_set2_return_iterator();
+        mtv_test_insert_cells_return_iterator();
         mtv_test_set_empty_return_iterator();
     }
 
