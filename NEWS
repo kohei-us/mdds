@@ -3,9 +3,9 @@
   * add support for non-const iterators which allow the client code to
     modify values directly from the iterators.
 
-  * set() methods (both single- and multi-parameter variants), and
-    insert() method to return iterator that references the block in
-    which the value is set.
+  * set() methods (both single- and multi-parameter variants),
+    set_empty() and insert() method to return iterator that references
+    the block to which the value is set.
 
   * fixed bugs in set() method (single-parameter variant) which would
     insert a new block at incorrect position.
