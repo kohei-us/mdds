@@ -2214,22 +2214,18 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
         m_blocks.erase(it, it_end);
     }
 
-    // Insert a single empty block.
     block* blk = m_blocks[block_index1];
     size_type empty_block_size = end_row - start_row + 1;
     if (blk->mp_data)
     {
         // Insert a new empty block after the first block.
         m_blocks.insert(m_blocks.begin()+block_index1+1, new block(empty_block_size));
-    }
-    else
-    {
-        // Current block is already empty. Just extend its size.
-        blk->m_size = empty_block_size;
+        return get_iterator(block_index1+1, start_row);
     }
 
-    assert(!"not implemented yet");
-    return begin();
+    // Current block is already empty. Just extend its size.
+    blk->m_size = empty_block_size;
+    return get_iterator(block_index1, start_row);
 }
 
 }

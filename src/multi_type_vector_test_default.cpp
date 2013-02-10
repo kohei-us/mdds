@@ -3518,6 +3518,71 @@ void mtv_test_set_empty_return_iterator()
     assert(it->size == 3);
     ++it;
     assert(it == db.end());
+
+    // Empty multiple blocks. The first block is partially emptied.
+    db = mtv_type(10, false);
+    db.set(0, 1.1);
+    shorts.resize(3, 22);
+    db.set(4, shorts.begin(), shorts.end()); // 4 thru 6
+    it = db.set_empty(5, 8);
+    check = db.begin();
+    assert(check->type == mtv::element_type_numeric);
+    assert(check->size == 1);
+    ++check;
+    assert(check->type == mtv::element_type_boolean);
+    assert(check->size == 3);
+    ++check;
+    assert(check->type == mtv::element_type_short);
+    assert(check->size == 1);
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 4);
+    ++it;
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->size == 1);
+    ++it;
+    assert(it == db.end());
+
+    // This time, the first block is completely emptied.
+    db = mtv_type(10, false);
+    db.set(0, 1.2);
+    shorts.resize(3, 42);
+    db.set(4, shorts.begin(), shorts.end()); // 4 thru 6
+    it = db.set_empty(4, 7);
+    check = db.begin();
+    assert(check->type == mtv::element_type_numeric);
+    assert(check->size == 1);
+    ++check;
+    assert(check->type == mtv::element_type_boolean);
+    assert(check->size == 3);
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 4);
+    ++it;
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->size == 2);
+    ++it;
+    assert(it == db.end());
+
+    // And this time, the first block is partially emptied but it's already an
+    // empty block to begin with.
+    db = mtv_type(10);
+    db.set(0, string("top"));
+    vector<double> doubles(5, 1.2);
+    db.set(5, doubles.begin(), doubles.end()); // 5 thru 9
+    it = db.set_empty(3, 7);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 7);
+    ++it;
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 2);
+    ++it;
+    assert(it == db.end());
 }
 
 void mtv_perf_test_block_position_lookup()
