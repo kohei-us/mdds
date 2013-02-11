@@ -604,7 +604,7 @@ void mtm_test_assignment()
     assert(mx_orig == mx_copied);
 
     mx_copied = mx_copied; // self assignment.
-    assert(mx_copied == mx_copied);
+    assert(mx_orig == mx_copied);
 
     mx_orig.set(2, 3, true);
     mx_orig.set(1, 1, string("foo"));
