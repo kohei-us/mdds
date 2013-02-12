@@ -1164,17 +1164,19 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::insert_empty(size_type pos, size_type length)
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::insert_empty(size_type pos, size_type length)
 {
     if (!length)
         // Nothing to insert.
-        return;
+        return end();
 
-    insert_empty_impl(pos, length);
+    return insert_empty_impl(pos, length);
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type length)
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type length)
 {
     assert(row < m_cur_size);
 
@@ -1189,7 +1191,7 @@ void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_ty
         // with it.
         blk->m_size += length;
         m_cur_size += length;
-        return;
+        return get_iterator(block_index, start_row);
     }
 
     if (start_row == row)
@@ -1202,16 +1204,17 @@ void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_ty
             {
                 // Previous block is empty.  Expand the size of the previous
                 // block and bail out.
+                size_type offset = blk_prev->m_size;
                 blk_prev->m_size += length;
                 m_cur_size += length;
-                return;
+                return get_iterator(block_index-1, row-offset);
             }
         }
 
         // Insert a new empty block.
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         m_cur_size += length;
-        return;
+        return get_iterator(block_index, row);
     }
 
     assert(blk->mp_data);
@@ -1220,8 +1223,9 @@ void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_ty
     size_type size_blk_prev = row - start_row;
     size_type size_blk_next = blk->m_size - size_blk_prev;
 
-    // Insert two new block below the current; one for the empty block being
-    // inserted, and one for the lower part of the current non-empty block.
+    // Insert two new blocks below the current; one for the empty block being
+    // inserted, and the other for the lower part of the current non-empty
+    // block.
     m_blocks.insert(m_blocks.begin()+block_index+1, 2u, NULL);
 
     m_blocks[block_index+1] = new block(length);
@@ -1235,6 +1239,8 @@ void multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_ty
     blk->m_size = size_blk_prev;
 
     m_cur_size += length;
+
+    return get_iterator(block_index+1, row);
 }
 
 template<typename _CellBlockFunc>

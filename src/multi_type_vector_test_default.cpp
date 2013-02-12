@@ -3595,6 +3595,74 @@ void mtv_test_set_empty_return_iterator()
     assert(it == db.end());
 }
 
+void mtv_test_insert_empty_return_iterator()
+{
+    stack_printer __stack_printer__("::mtv_test_insert_empty_return_iterator");
+
+    // Insert into an already empty spot.
+    mtv_type db(2);
+    db.set(1, 1.2);
+    mtv_type::iterator it = db.insert_empty(0, 3);
+    assert(it == db.begin());
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 1);
+    ++it;
+    assert(it == db.end());
+
+    // Insert an empty range that will be tucked into the previous empty block.
+    db = mtv_type(4);
+    db.set(0, string("foo"));
+    db.set(2, 1.1);
+    db.set(3, 1.2);
+    it = db.insert_empty(2, 2);
+    mtv_type::iterator check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 3);
+    ++it;
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 2);
+    ++it;
+    assert(it == db.end());
+
+    // Insert an empty range between non-empty blocks.
+    db = mtv_type(2, false);
+    db.set(0, 1.1);
+    it = db.insert_empty(1, 2);
+    check = db.begin();
+    assert(check->type == mtv::element_type_numeric);
+    assert(check->size == 1);
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 2);
+    ++it;
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->size == 1);
+    ++it;
+    assert(it == db.end());
+
+    // Insert in the middle of a non-empty block.
+    db = mtv_type(3, string("foo"));
+    it = db.insert_empty(2, 4);
+    check = db.begin();
+    assert(check->type == mtv::element_type_string);
+    assert(check->size == 2);
+    ++check;
+    assert(it == check);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 4);
+    ++it;
+    assert(it->type == mtv::element_type_string);
+    assert(it->size == 1);
+    ++it;
+    assert(it == db.end());
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -3647,6 +3715,7 @@ int main (int argc, char **argv)
         mtv_test_set2_return_iterator();
         mtv_test_insert_cells_return_iterator();
         mtv_test_set_empty_return_iterator();
+        mtv_test_insert_empty_return_iterator();
     }
 
     if (opt.test_perf)

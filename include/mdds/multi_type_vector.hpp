@@ -304,8 +304,11 @@ public:
      *
      * @param pos position at which to insert a range of empty elements.
      * @param length number of empty elements to insert.
+     * @return iterator position pointing to the block where the empty range
+     *         is inserted. When no insertion occurs because the length is
+     *         zero, the end iterator position is returned.
      */
-    void insert_empty(size_type pos, size_type length);
+    iterator insert_empty(size_type pos, size_type length);
 
     /**
      * Clear the content of the container.  The size of the container will
@@ -433,7 +436,7 @@ private:
 
     void erase_impl(size_type start_pos, size_type end_pos);
 
-    void insert_empty_impl(size_type row, size_type length);
+    iterator insert_empty_impl(size_type row, size_type length);
 
     template<typename _T>
     iterator set_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
