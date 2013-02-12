@@ -4,8 +4,9 @@
     modify values directly from the iterators.
 
   * set() methods (both single- and multi-parameter variants),
-    set_empty() and insert() method to return iterator that references
-    the block to which the value is set.
+    set_empty(), insert() and insert_empty() methods now return
+    iterator that references the block to which the values are set or
+    inserted.
 
   * fixed bugs in set() method (single-parameter variant) which would
     insert a new block at incorrect position.
