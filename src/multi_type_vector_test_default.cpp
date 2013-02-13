@@ -3683,6 +3683,23 @@ void mtv_perf_test_block_position_lookup()
             db.set(pos2, val2);
         }
     }
+
+    {
+        // As a solution for this, we can use an iterator to specify the start
+        // position, which eliminates the above scalability problem nicely.
+
+        mtv_type db(n*2);
+        mtv_type::iterator pos_hint = db.begin();
+        double val1 = 1.1;
+        int val2 = 23;
+        stack_printer __stack_printer__("::mtv_perf_test_block_position_lookup::insertion with position hint");
+        for (size_t i = 0; i < n; ++i)
+        {
+            size_t pos1 = i*2, pos2 = i*2 + 1;
+            pos_hint = db.set(pos_hint, pos1, val1);
+            pos_hint = db.set(pos_hint, pos2, val2);
+        }
+    }
 }
 
 }

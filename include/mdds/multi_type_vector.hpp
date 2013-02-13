@@ -173,6 +173,38 @@ public:
     iterator set(size_type pos, const _T& value);
 
     /**
+     * Set a value of an arbitrary type to a specified position.  The type of
+     * the value is inferred from the value passed to this method.  The new
+     * value will overwrite an existing value at the specified position
+     * position if any.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the
+     * right block to insert the value into.  The other variant that doesn't
+     * take an iterator always starts the block lookup from the first block,
+     * which does not scale well as the block size grows.</p>
+     *
+     * <p>Note that <i>the caller is responsible for ensuring that the
+     * iterator is valid.</i>  When passing an invalid iterator as the first
+     * parameter, the behavior is undefined.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception
+     * if the specified position is outside the current container range.</p>
+     *
+     * <p>Calling this method will not change the size of the container.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right block
+     *                 to insert the value.
+     * @param pos position to insert the value to.
+     * @param value value to insert.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.
+     */
+    template<typename _T>
+    iterator set(iterator pos_hint, size_type pos, const _T& value);
+
+    /**
      * Set multiple values of identical type to a range of elements starting
      * at specified position.  Any existing values will be overwritten by the
      * new values.
@@ -378,6 +410,9 @@ public:
     static mtv::element_t get_element_type(const _T& elem);
 
 private:
+
+    template<typename _T>
+    iterator set_impl(size_type pos, size_type start_row, size_type block_index, const _T& value);
 
     /**
      * Find the correct block position for given logical row ID.

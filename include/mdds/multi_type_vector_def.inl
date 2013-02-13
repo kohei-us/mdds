@@ -178,13 +178,34 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
 {
-    element_category_type cat = mdds_mtv_get_element_type(value);
+    return set_impl(pos, 0, 0, value);
+}
 
-    // Find the right block ID from the row ID.
-    size_type start_row = 0; // row ID of the first cell in a block.
-    size_type block_index = 0;
+template<typename _CellBlockFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set(iterator pos_hint, size_type pos, const _T& value)
+{
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (pos_hint.get_end() != m_blocks.end())
+        throw general_error("Iterator passed as a position hint is invalid.");
+#endif
+
+    size_type start_row = pos_hint->__private_data.start_pos;
+    size_type block_index = pos_hint->__private_data.block_index;
+    return set_impl(pos, start_row, block_index, value);
+}
+
+template<typename _CellBlockFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_impl(
+    size_type pos, size_type start_row, size_type block_index, const _T& value)
+{
     if (!get_block_position(pos, start_row, block_index))
         throw std::out_of_range("Block position not found!");
+
+    element_category_type cat = mdds_mtv_get_element_type(value);
 
     typename blocks_type::iterator block_pos = m_blocks.begin();
     std::advance(block_pos, block_index);
