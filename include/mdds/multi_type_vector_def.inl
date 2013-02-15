@@ -178,7 +178,12 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
 {
-    return set_impl(pos, 0, 0, value);
+    size_type start_row = 0;
+    size_type block_index = 0;
+    if (!get_block_position(pos, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
+
+    return set_impl(pos, start_row, block_index, value);
 }
 
 template<typename _CellBlockFunc>
@@ -186,13 +191,9 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set(iterator pos_hint, size_type pos, const _T& value)
 {
-#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (pos_hint.get_end() != m_blocks.end())
-        throw general_error("Iterator passed as a position hint is invalid.");
-#endif
-
-    size_type start_row = pos_hint->__private_data.start_pos;
-    size_type block_index = pos_hint->__private_data.block_index;
+    size_type start_row = 0;
+    size_type block_index = 0;
+    get_block_position(pos_hint, pos, start_row, block_index);
     return set_impl(pos, start_row, block_index, value);
 }
 
@@ -202,9 +203,6 @@ typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_impl(
     size_type pos, size_type start_row, size_type block_index, const _T& value)
 {
-    if (!get_block_position(pos, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
-
     element_category_type cat = mdds_mtv_get_element_type(value);
 
     typename blocks_type::iterator block_pos = m_blocks.begin();
@@ -395,6 +393,41 @@ bool multi_type_vector<_CellBlockFunc>::get_block_position(
     }
 
     return false;
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::get_block_position(
+    iterator pos_hint, size_type pos, size_type& start_row, size_type& block_index) const
+{
+    start_row = 0;
+    block_index = 0;
+    if (pos_hint.get_end() == m_blocks.end())
+    {
+        // Iterator is valid. Get the block position from it unless if it's
+        // the end position.
+        if (pos_hint.get_pos() != pos_hint.get_end())
+        {
+            start_row = pos_hint->__private_data.start_pos;
+            block_index = pos_hint->__private_data.block_index;
+        }
+    }
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    else
+        throw general_error("Iterator passed as a position hint is invalid.");
+#endif
+
+    // We'll try the search twice when not starting with the top in the 1st pass.
+    bool retry_on_fail = (block_index > 0);
+    if (!get_block_position(pos, start_row, block_index))
+    {
+        if (!retry_on_fail)
+            throw std::out_of_range("Block position not found!");
+
+        start_row = 0;
+        block_index = 0;
+        if (!get_block_position(pos, start_row, block_index))
+            throw std::out_of_range("Block position not found!");
+    }
 }
 
 template<typename _CellBlockFunc>

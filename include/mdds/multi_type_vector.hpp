@@ -185,8 +185,9 @@ public:
      * which does not scale well as the block size grows.</p>
      *
      * <p>Note that <i>the caller is responsible for ensuring that the
-     * iterator is valid.</i>  When passing an invalid iterator as the first
-     * parameter, the behavior is undefined.</p>
+     * iterator is valid.</i>  Passing an invalid iterator as the first
+     * parameter will still work, though there would be no performance
+     * benefit.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception
      * if the specified position is outside the current container range.</p>
@@ -434,6 +435,12 @@ private:
      * @return true if block position is found, false otherwise.
      */
     bool get_block_position(size_type row, size_type& start_pos, size_type& block_index) const;
+
+    /**
+     * Same as above, but try to infer block position from the iterator first
+     * before trying full search.
+     */
+    void get_block_position(iterator pos_hint, size_type pos, size_type& start_pos, size_type& block_index) const;
 
     template<typename _T>
     static void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
