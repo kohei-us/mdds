@@ -411,23 +411,16 @@ void multi_type_vector<_CellBlockFunc>::get_block_position(
             block_index = pos_hint->__private_data.block_index;
         }
     }
-#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    else
-        throw general_error("Iterator passed as a position hint is invalid.");
-#endif
 
-    // We'll try the search twice when not starting with the top in the 1st pass.
-    bool retry_on_fail = (block_index > 0);
-    if (!get_block_position(pos, start_row, block_index))
+    if (pos < start_row)
     {
-        if (!retry_on_fail)
-            throw std::out_of_range("Block position not found!");
-
+        // Position hint is past the insertion position. Reset.
         start_row = 0;
         block_index = 0;
-        if (!get_block_position(pos, start_row, block_index))
-            throw std::out_of_range("Block position not found!");
     }
+
+    if (!get_block_position(pos, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
 }
 
 template<typename _CellBlockFunc>

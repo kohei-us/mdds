@@ -3663,6 +3663,38 @@ void mtv_test_insert_empty_return_iterator()
     assert(it == db.end());
 }
 
+void mtv_test_set_with_position()
+{
+    stack_printer __stack_printer__("::mtv_test_set_with_position");
+    mtv_type db(3);
+    db.set(db.begin(), 0, 23.4);
+    assert(db.get<double>(0) == 23.4);
+    db.set(db.end(), 0, string("test")); // passing end position should have no impact.
+    assert(db.get<string>(0) == "test");
+
+    mtv_type::iterator pos_hint = db.set(0, 1.2);
+    pos_hint = db.set(pos_hint, 1, 1.3);
+    pos_hint = db.set(pos_hint, 2, 1.4);
+    assert(db.get<double>(0) == 1.2);
+    assert(db.get<double>(1) == 1.3);
+    assert(db.get<double>(2) == 1.4);
+
+    pos_hint = db.begin();
+    pos_hint = db.set(pos_hint, 0, false);
+    pos_hint = db.set(pos_hint, 1, string("foo"));
+    pos_hint = db.set(pos_hint, 2, 34.5);
+    assert(db.get<bool>(0) == false);
+    assert(db.get<string>(1) == "foo");
+    assert(db.get<double>(2) == 34.5);
+
+    db.set(pos_hint, 0, int(444)); // position hint does not precede the insertion position.
+    assert(db.get<int>(0) == 444); // it should still work.
+
+    mtv_type::iterator invalid_pos;
+    db.set(invalid_pos, 2, string("baa")); // Passing an invalid iterator shouldn't cause any problem.
+    assert(db.get<string>(2) == "baa");
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -3733,6 +3765,7 @@ int main (int argc, char **argv)
         mtv_test_insert_cells_return_iterator();
         mtv_test_set_empty_return_iterator();
         mtv_test_insert_empty_return_iterator();
+        mtv_test_set_with_position();
     }
 
     if (opt.test_perf)
