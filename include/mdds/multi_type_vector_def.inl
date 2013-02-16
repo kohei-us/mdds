@@ -402,6 +402,17 @@ multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin, con
 }
 
 template<typename _CellBlockFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::insert(iterator pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
+{
+    size_type block_index = 0, start_pos = 0;
+    get_block_position(pos_hint, pos, start_pos, block_index);
+
+    return insert_cells_impl(pos, start_pos, block_index, it_begin, it_end);
+}
+
+template<typename _CellBlockFunc>
 bool multi_type_vector<_CellBlockFunc>::get_block_position(
     size_type row, size_type& start_row, size_type& block_index) const
 {

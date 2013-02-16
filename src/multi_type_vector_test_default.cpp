@@ -3733,6 +3733,53 @@ void mtv_test_set_cells_with_position()
     assert(db.get<string>(8) == "C");
 }
 
+void mtv_test_insert_cells_with_position()
+{
+    stack_printer __stack_printer__("::mtv_test_insert_cells_with_position");
+
+    mtv_type db(1, true); // We need to have at least one element to be able to insert.
+
+    vector<int> ints;
+    ints.push_back(11);
+    ints.push_back(22);
+
+    vector<double> doubles;
+    doubles.push_back(2.1);
+    doubles.push_back(3.2);
+    doubles.push_back(4.3);
+
+    vector<string> strings;
+    strings.push_back(string("Andy"));
+    strings.push_back(string("Bruce"));
+    strings.push_back(string("Charlie"));
+    strings.push_back(string("David"));
+
+    mtv_type::iterator pos_hint = db.insert(0, ints.begin(), ints.end());
+    assert(db.get<int>(0) == 11);
+    assert(db.get<int>(1) == 22);
+    assert(db.get<bool>(2) == true);
+
+    pos_hint = db.insert(pos_hint, 2, doubles.begin(), doubles.end());
+    assert(db.get<int>(0) == 11);
+    assert(db.get<int>(1) == 22);
+    assert(db.get<double>(2) == 2.1);
+    assert(db.get<double>(3) == 3.2);
+    assert(db.get<double>(4) == 4.3);
+    assert(db.get<bool>(5) == true);
+
+    pos_hint = db.insert(pos_hint, 4, strings.begin(), strings.end());
+    assert(db.get<int>(0) == 11);
+    assert(db.get<int>(1) == 22);
+    assert(db.get<double>(2) == 2.1);
+    assert(db.get<double>(3) == 3.2);
+    assert(db.get<string>(4) == "Andy");
+    assert(db.get<string>(5) == "Bruce");
+    assert(db.get<string>(6) == "Charlie");
+    assert(db.get<string>(7) == "David");
+    assert(db.get<double>(8) == 4.3);
+    assert(db.get<bool>(9) == true);
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -3805,6 +3852,7 @@ int main (int argc, char **argv)
         mtv_test_insert_empty_return_iterator();
         mtv_test_set_with_position();
         mtv_test_set_cells_with_position();
+        mtv_test_insert_cells_with_position();
     }
 
     if (opt.test_perf)

@@ -298,6 +298,47 @@ public:
     iterator insert(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
+     * Insert multiple values of identical type to a specified position.
+     * Existing values that occur at or below the specified position will get
+     * shifted after the insertion.  No existing values will be overwritten by
+     * the inserted values.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the first
+     * insertion block.  The other variant that doesn't take an iterator
+     * always starts the block lookup from the first block, which does not
+     * scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the insertion
+     * position to yield any performance benefit.</p>
+     *
+     * <p>Note that <i>the caller is responsible for ensuring that the
+     * iterator is valid.</i>  Passing an invalid iterator as the first
+     * parameter will still work, though there would be no performance
+     * benefit and it incurs slight overhead.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception
+     * if the specified position is outside the current container range.</p>
+     *
+     * <p>Calling this method will increase the size of the container by
+     * the length of the new values inserted.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right block
+     *                 to insert the value into.
+     * @param pos position at which the new values are to be inserted.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being inserted.
+     * @param it_end iterator that points to the end position of the values
+     *               being inserted.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.  When no value insertion occurs because the value set
+     *         is empty, the end iterator position is returned.
+     */
+    template<typename _T>
+    iterator insert(iterator pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
+
+    /**
      * Get the value of an element at specified position.  The caller must
      * pass a variable of the correct type to store the value.
      *
