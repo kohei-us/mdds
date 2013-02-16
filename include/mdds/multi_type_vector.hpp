@@ -187,11 +187,6 @@ public:
      * <p>This position hint iterator must <b>precede</b> the insertion
      * position to yield any performance benefit.</p>
      *
-     * <p>Note that <i>the caller is responsible for ensuring that the
-     * iterator is valid.</i>  Passing an invalid iterator as the first
-     * parameter will still work, though there would be no performance
-     * benefit and it incurs slight overhead.</p>
-     *
      * <p>The method will throw an <code>std::out_of_range</code> exception
      * if the specified position is outside the current container range.</p>
      *
@@ -245,11 +240,6 @@ public:
      *
      * <p>This position hint iterator must <b>precede</b> the insertion
      * position to yield any performance benefit.</p>
-     *
-     * <p>Note that <i>the caller is responsible for ensuring that the
-     * iterator is valid.</i>  Passing an invalid iterator as the first
-     * parameter will still work, though there would be no performance
-     * benefit and it incurs slight overhead.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the range of new values would fall outside the current container
@@ -311,11 +301,6 @@ public:
      *
      * <p>This position hint iterator must <b>precede</b> the insertion
      * position to yield any performance benefit.</p>
-     *
-     * <p>Note that <i>the caller is responsible for ensuring that the
-     * iterator is valid.</i>  Passing an invalid iterator as the first
-     * parameter will still work, though there would be no performance
-     * benefit and it incurs slight overhead.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception
      * if the specified position is outside the current container range.</p>
