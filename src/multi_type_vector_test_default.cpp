@@ -3780,6 +3780,29 @@ void mtv_test_insert_cells_with_position()
     assert(db.get<bool>(9) == true);
 }
 
+void mtv_test_set_empty_with_position()
+{
+    stack_printer __stack_printer__("::mtv_test_set_empty_with_position");
+    mtv_type db(20, true);
+    mtv_type::iterator pos_hint = db.set_empty(db.begin(), 2, 3);
+    pos_hint = db.set_empty(pos_hint, 5, 7);
+    pos_hint = db.set_empty(pos_hint, 9, 12);
+    pos_hint = db.set_empty(pos_hint, 14, 17);
+
+    // Check the boundaries.
+    assert(!db.is_empty(0));
+    assert(!db.is_empty(4));
+    assert(db.is_empty(5));
+    assert(db.is_empty(7));
+    assert(!db.is_empty(8));
+    assert(db.is_empty(9));
+    assert(db.is_empty(12));
+    assert(!db.is_empty(13));
+    assert(db.is_empty(14));
+    assert(db.is_empty(17));
+    assert(!db.is_empty(18));
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -3853,6 +3876,7 @@ int main (int argc, char **argv)
         mtv_test_set_with_position();
         mtv_test_set_cells_with_position();
         mtv_test_insert_cells_with_position();
+        mtv_test_set_empty_with_position();
     }
 
     if (opt.test_perf)

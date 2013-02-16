@@ -1096,6 +1096,16 @@ multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type end_
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_empty(iterator pos_hint, size_type start_pos, size_type end_pos)
+{
+    size_type start_pos_in_block1 = 0;
+    size_type block_index1 = 0;
+    get_block_position(pos_hint, start_pos, start_pos_in_block1, block_index1);
+    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_empty_impl(
     size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1)
 {

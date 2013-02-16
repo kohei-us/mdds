@@ -1,8 +1,9 @@
 * multi_type_vector
 
-  * add variants of set() methods (both single- and multi-value) and
-    insert() method that take an iterator as an additional position
-    hint parameter for block lookup speed optimization.
+  * add variants of set() methods (both single- and multi-value)
+    insert() method and set_empty() method that take an iterator as an
+    additional position hint parameter for block lookup speed
+    optimization.
 
   * add support for non-const iterators which allow the client code to
     modify values directly from the iterators.

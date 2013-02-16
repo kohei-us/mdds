@@ -395,6 +395,33 @@ public:
     iterator set_empty(size_type start_pos, size_type end_pos);
 
     /**
+     * Set specified range of elements to be empty.  Any existing values will
+     * be overwritten.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the first block
+     * to empty.  The other variant that doesn't take an iterator always
+     * starts the block lookup from the first block, which does not
+     * scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the start
+     * position to yield any performance benefit.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right
+     *                 blocks to empty.
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @return iterator position pointing to the block where the elements are
+     *         emptied.
+     */
+    iterator set_empty(iterator pos_hint, size_type start_pos, size_type end_pos);
+
+    /**
      * Erase elements located between specified start and end positions. The
      * end positions are both inclusive.
      *
