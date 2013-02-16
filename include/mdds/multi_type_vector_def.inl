@@ -363,7 +363,20 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& it_begin, const _T& it_end)
 {
-    return set_cells_impl(pos, it_begin, it_end);
+    size_type length = std::distance(it_begin, it_end);
+    if (!length)
+        // empty data array.  nothing to do.
+        return end();
+
+    size_type end_pos = pos + length - 1;
+    if (end_pos >= m_cur_size)
+        throw std::out_of_range("Data array is too long.");
+
+    size_type block_index1 = 0, start_row1 = 0;
+    if (!get_block_position(pos, start_row1, block_index1))
+        throw std::out_of_range("Block position not found!");
+
+    return set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc>
@@ -1293,21 +1306,9 @@ multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type le
 template<typename _CellBlockFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::set_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+multi_type_vector<_CellBlockFunc>::set_cells_impl(
+    size_type row, size_type end_row, size_type start_row1, size_type block_index1, const _T& it_begin, const _T& it_end)
 {
-    size_type length = std::distance(it_begin, it_end);
-    if (!length)
-        // empty data array.  nothing to do.
-        return end();
-
-    size_type end_row = row + length - 1;
-    if (end_row >= m_cur_size)
-        throw std::out_of_range("Data array is too long.");
-
-    size_type block_index1 = 0, start_row1 = 0;
-    if (!get_block_position(row, start_row1, block_index1))
-        throw std::out_of_range("Block position not found!");
-
     size_type start_row2 = start_row1;
     size_type block_index2 = block_index1;
     if (!get_block_position(end_row, start_row2, block_index2))
