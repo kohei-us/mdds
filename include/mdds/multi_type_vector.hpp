@@ -185,7 +185,7 @@ public:
      * which does not scale well as the block size grows.</p>
      *
      * <p>This position hint iterator must <b>precede</b> the insertion
-     * position for it to yield any performance benefit.</p>
+     * position to yield any performance benefit.</p>
      *
      * <p>Note that <i>the caller is responsible for ensuring that the
      * iterator is valid.</i>  Passing an invalid iterator as the first
@@ -199,7 +199,7 @@ public:
      *
      * @param pos_hint iterator used as a block position hint, to specify
      *                 which block to start when searching for the right block
-     *                 to insert the value.
+     *                 to insert the value into.
      * @param pos position to insert the value to.
      * @param value value to insert.
      * @return iterator position pointing to the block where the value is
@@ -231,6 +231,47 @@ public:
      */
     template<typename _T>
     iterator set(size_type pos, const _T& it_begin, const _T& it_end);
+
+    /**
+     * Set multiple values of identical type to a range of elements starting
+     * at specified position.  Any existing values will be overwritten by the
+     * new values.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the first
+     * insertion block.  The other variant that doesn't take an iterator
+     * always starts the block lookup from the first block, which does not
+     * scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the insertion
+     * position to yield any performance benefit.</p>
+     *
+     * <p>Note that <i>the caller is responsible for ensuring that the
+     * iterator is valid.</i>  Passing an invalid iterator as the first
+     * parameter will still work, though there would be no performance
+     * benefit and it incurs slight overhead.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the range of new values would fall outside the current container
+     * range.</p>
+     *
+     * <p>Calling this method will not change the size of the container.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right block
+     *                 to insert the value into.
+     * @param pos position of the first value of the series of new values
+     *            being inserted.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being set.
+     * @param it_end iterator that points to the end position of the values
+     *               being set.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.  When no value insertion occurs because the value set
+     *         is empty, the end iterator position is returned.
+     */
+    template<typename _T>
+    iterator set(iterator pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
      * Insert multiple values of identical type to a specified position.
@@ -482,6 +523,10 @@ private:
     void erase_impl(size_type start_pos, size_type end_pos);
 
     iterator insert_empty_impl(size_type row, size_type length);
+
+    template<typename _T>
+    bool set_cells_precheck(
+        size_type row, const _T& it_begin, const _T& it_end, size_type& end_pos);
 
     template<typename _T>
     iterator set_cells_impl(

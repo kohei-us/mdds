@@ -1,8 +1,8 @@
 * multi_type_vector
 
-  * add variant of set() method that takes an iterator as an
-    additional position hint parameter for insertion speed
-    optimization.
+  * add variants of set() methods (both single- and multi-value) that
+    takes an iterator as an additional position hint parameter for
+    insertion speed optimization.
 
   * add support for non-const iterators which allow the client code to
     modify values directly from the iterators.

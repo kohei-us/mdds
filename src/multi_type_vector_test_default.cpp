@@ -3695,6 +3695,44 @@ void mtv_test_set_with_position()
     assert(db.get<string>(2) == "baa");
 }
 
+void mtv_test_set_cells_with_position()
+{
+    stack_printer __stack_printer__("::mtv_test_set_cells_with_position");
+    mtv_type db(9);
+
+    vector<int> ints;
+    ints.push_back(1);
+    ints.push_back(2);
+    ints.push_back(3);
+
+    vector<double> doubles;
+    doubles.push_back(1.1);
+    doubles.push_back(1.2);
+    doubles.push_back(1.3);
+
+    vector<string> strings;
+    strings.push_back(string("A"));
+    strings.push_back(string("B"));
+    strings.push_back(string("C"));
+
+    mtv_type::iterator pos_hint = db.begin();
+    pos_hint = db.set(pos_hint, 0, ints.begin(), ints.end());
+    pos_hint = db.set(pos_hint, 3, doubles.begin(), doubles.end());
+    pos_hint = db.set(pos_hint, 6, strings.begin(), strings.end());
+
+    assert(db.get<int>(0) == 1);
+    assert(db.get<int>(1) == 2);
+    assert(db.get<int>(2) == 3);
+
+    assert(db.get<double>(3) == 1.1);
+    assert(db.get<double>(4) == 1.2);
+    assert(db.get<double>(5) == 1.3);
+
+    assert(db.get<string>(6) == "A");
+    assert(db.get<string>(7) == "B");
+    assert(db.get<string>(8) == "C");
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -3766,6 +3804,7 @@ int main (int argc, char **argv)
         mtv_test_set_empty_return_iterator();
         mtv_test_insert_empty_return_iterator();
         mtv_test_set_with_position();
+        mtv_test_set_cells_with_position();
     }
 
     if (opt.test_perf)

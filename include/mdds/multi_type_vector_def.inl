@@ -363,18 +363,28 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& it_begin, const _T& it_end)
 {
-    size_type length = std::distance(it_begin, it_end);
-    if (!length)
-        // empty data array.  nothing to do.
+    size_type end_pos = 0;
+    if (!set_cells_precheck(pos, it_begin, it_end, end_pos))
         return end();
-
-    size_type end_pos = pos + length - 1;
-    if (end_pos >= m_cur_size)
-        throw std::out_of_range("Data array is too long.");
 
     size_type block_index1 = 0, start_row1 = 0;
     if (!get_block_position(pos, start_row1, block_index1))
         throw std::out_of_range("Block position not found!");
+
+    return set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
+}
+
+template<typename _CellBlockFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set(iterator pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
+{
+    size_type end_pos = 0;
+    if (!set_cells_precheck(pos, it_begin, it_end, end_pos))
+        return end();
+
+    size_type block_index1 = 0, start_row1 = 0;
+    get_block_position(pos_hint, pos, start_row1, block_index1);
 
     return set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
 }
@@ -1301,6 +1311,23 @@ multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type le
     m_cur_size += length;
 
     return get_iterator(block_index+1, row);
+}
+
+template<typename _CellBlockFunc>
+template<typename _T>
+bool multi_type_vector<_CellBlockFunc>::set_cells_precheck(
+    size_type pos, const _T& it_begin, const _T& it_end, size_type& end_pos)
+{
+    size_type length = std::distance(it_begin, it_end);
+    if (!length)
+        // empty data array.  nothing to do.
+        return false;
+
+    end_pos = pos + length - 1;
+    if (end_pos >= m_cur_size)
+        throw std::out_of_range("Data array is too long.");
+
+    return true;
 }
 
 template<typename _CellBlockFunc>
