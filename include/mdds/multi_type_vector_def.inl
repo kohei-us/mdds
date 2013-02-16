@@ -1086,24 +1086,32 @@ template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type end_pos)
 {
+    size_type start_pos_in_block1 = 0;
+    size_type block_index1 = 0;
+    if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
+        throw std::out_of_range("Block position not found!");
+
+    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_empty_impl(
+    size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1)
+{
     if (start_pos > end_pos)
         throw std::out_of_range("Start row is larger than the end row.");
 
-    size_type start_row_in_block1 = 0;
-    size_type block_pos1 = 0;
-    if (!get_block_position(start_pos, start_row_in_block1, block_pos1))
+    size_type start_pos_in_block2 = start_pos_in_block1;
+    size_type block_index2 = block_index1;
+    if (!get_block_position(end_pos, start_pos_in_block2, block_index2))
         throw std::out_of_range("Block position not found!");
 
-    size_type start_row_in_block2 = start_row_in_block1;
-    size_type block_pos2 = block_pos1;
-    if (!get_block_position(end_pos, start_row_in_block2, block_pos2))
-        throw std::out_of_range("Block position not found!");
-
-    if (block_pos1 == block_pos2)
-        return set_empty_in_single_block(start_pos, end_pos, block_pos1, start_row_in_block1);
+    if (block_index1 == block_index2)
+        return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1);
 
     return set_empty_in_multi_blocks(
-        start_pos, end_pos, block_pos1, start_row_in_block1, block_pos2, start_row_in_block2);
+        start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2);
 }
 
 template<typename _CellBlockFunc>
