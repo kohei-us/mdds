@@ -403,8 +403,8 @@ void multi_type_vector<_CellBlockFunc>::get_block_position(
     block_index = 0;
     if (pos_hint.get_end() == m_blocks.end())
     {
-        // Iterator is valid. Get the block position from it unless if it's
-        // the end position.
+        // Iterator is valid. Get the block position from it unless it's the
+        // end position.
         if (pos_hint.get_pos() != pos_hint.get_end())
         {
             start_row = pos_hint->__private_data.start_pos;
