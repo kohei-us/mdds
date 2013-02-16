@@ -533,7 +533,7 @@ private:
         size_type row, size_type end_row, size_type start_row1, size_type block_index1, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
-    iterator insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end);
+    iterator insert_cells_impl(size_type row, size_type start_row, size_type block_index, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cells_to_single_block(

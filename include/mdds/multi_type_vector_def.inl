@@ -394,7 +394,11 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin, const _T& it_end)
 {
-    return insert_cells_impl(pos, it_begin, it_end);
+    size_type block_index = 0, start_pos = 0;
+    if (!get_block_position(pos, start_pos, block_index))
+        throw std::out_of_range("Block position not found!");
+
+    return insert_cells_impl(pos, start_pos, block_index, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc>
@@ -1354,16 +1358,13 @@ multi_type_vector<_CellBlockFunc>::set_cells_impl(
 template<typename _CellBlockFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::insert_cells_impl(size_type row, const _T& it_begin, const _T& it_end)
+multi_type_vector<_CellBlockFunc>::insert_cells_impl(
+    size_type row, size_type start_row, size_type block_index, const _T& it_begin, const _T& it_end)
 {
     size_type length = std::distance(it_begin, it_end);
     if (!length)
         // empty data array.  nothing to do.
         return end();
-
-    size_type block_index = 0, start_row = 0;
-    if (!get_block_position(row, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
 
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
     block* blk = m_blocks[block_index];
