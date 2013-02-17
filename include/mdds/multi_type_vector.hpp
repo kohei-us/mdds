@@ -577,7 +577,7 @@ private:
 
     void erase_impl(size_type start_pos, size_type end_pos);
 
-    iterator insert_empty_impl(size_type row, size_type length);
+    iterator insert_empty_impl(size_type row, size_type start_pos, size_type block_index, size_type length);
 
     template<typename _T>
     bool set_cells_precheck(

@@ -1274,18 +1274,19 @@ multi_type_vector<_CellBlockFunc>::insert_empty(size_type pos, size_type length)
         // Nothing to insert.
         return end();
 
-    return insert_empty_impl(pos, length);
+    size_type start_pos = 0, block_index = 0;
+    if (!get_block_position(pos, start_pos, block_index))
+        throw std::out_of_range("Block position not found!");
+
+    return insert_empty_impl(pos, start_pos, block_index, length);
 }
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type length)
+multi_type_vector<_CellBlockFunc>::insert_empty_impl(
+    size_type pos, size_type start_pos, size_type block_index, size_type length)
 {
-    assert(row < m_cur_size);
-
-    size_type start_row = 0, block_index = 0;
-    if (!get_block_position(row, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
+    assert(pos < m_cur_size);
 
     block* blk = m_blocks[block_index];
     if (!blk->mp_data)
@@ -1294,10 +1295,10 @@ multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type le
         // with it.
         blk->m_size += length;
         m_cur_size += length;
-        return get_iterator(block_index, start_row);
+        return get_iterator(block_index, start_pos);
     }
 
-    if (start_row == row)
+    if (start_pos == pos)
     {
         // Insertion point is at the top of an existing non-empty block.
         if (block_index > 0)
@@ -1310,20 +1311,20 @@ multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type le
                 size_type offset = blk_prev->m_size;
                 blk_prev->m_size += length;
                 m_cur_size += length;
-                return get_iterator(block_index-1, row-offset);
+                return get_iterator(block_index-1, pos-offset);
             }
         }
 
         // Insert a new empty block.
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         m_cur_size += length;
-        return get_iterator(block_index, row);
+        return get_iterator(block_index, pos);
     }
 
     assert(blk->mp_data);
-    assert(row > start_row);
+    assert(pos > start_pos);
 
-    size_type size_blk_prev = row - start_row;
+    size_type size_blk_prev = pos - start_pos;
     size_type size_blk_next = blk->m_size - size_blk_prev;
 
     // Insert two new blocks below the current; one for the empty block being
@@ -1343,7 +1344,7 @@ multi_type_vector<_CellBlockFunc>::insert_empty_impl(size_type row, size_type le
 
     m_cur_size += length;
 
-    return get_iterator(block_index+1, row);
+    return get_iterator(block_index+1, pos);
 }
 
 template<typename _CellBlockFunc>
