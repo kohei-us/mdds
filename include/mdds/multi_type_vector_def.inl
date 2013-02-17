@@ -1283,6 +1283,20 @@ multi_type_vector<_CellBlockFunc>::insert_empty(size_type pos, size_type length)
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::insert_empty(iterator pos_hint, size_type pos, size_type length)
+{
+    if (!length)
+        // Nothing to insert.
+        return end();
+
+    size_type start_pos = 0, block_index = 0;
+    get_block_position(pos_hint, pos, start_pos, block_index);
+
+    return insert_empty_impl(pos, start_pos, block_index, length);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::insert_empty_impl(
     size_type pos, size_type start_pos, size_type block_index, size_type length)
 {

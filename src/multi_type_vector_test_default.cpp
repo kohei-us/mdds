@@ -3803,6 +3803,27 @@ void mtv_test_set_empty_with_position()
     assert(!db.is_empty(18));
 }
 
+void mtv_test_insert_empty_with_position()
+{
+    stack_printer __stack_printer__("::mtv_test_insert_empty_with_position");
+    mtv_type db(2, true);
+    mtv_type::iterator pos_hint; // start as an invalid iterator.
+    pos_hint = db.insert_empty(pos_hint, 1, 3); // the size becomes 5.
+    pos_hint = db.insert_empty(pos_hint, 4, 2); // the size now becomes 7.
+
+    mtv_type::iterator check = db.begin();
+    assert(check->type == mtv::element_type_boolean);
+    assert(check->size == 1);
+    ++check;
+    assert(check->type == mtv::element_type_empty);
+    assert(check->size == 5);
+    ++check;
+    assert(check->type == mtv::element_type_boolean);
+    assert(check->size == 1);
+    ++check;
+    assert(check == db.end());
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -3877,6 +3898,7 @@ int main (int argc, char **argv)
         mtv_test_set_cells_with_position();
         mtv_test_insert_cells_with_position();
         mtv_test_set_empty_with_position();
+        mtv_test_insert_empty_with_position();
     }
 
     if (opt.test_perf)

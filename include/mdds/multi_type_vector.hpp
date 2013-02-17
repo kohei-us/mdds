@@ -441,6 +441,36 @@ public:
     iterator insert_empty(size_type pos, size_type length);
 
     /**
+     * Insert a range of empty elements at specified position.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the block in
+     * which to insert the new empty segment.  The other variant that doesn't
+     * take an iterator always starts the block lookup from the first block,
+     * which does not scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the start
+     * position to yield any performance benefit.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the specified position is outside the current container
+     * range.</p>
+     *
+     * <p>Calling this method will increase the size of the container by
+     * the length of the inserted empty elements.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right block
+     *                 in which to insert the empty segment.
+     * @param pos position at which to insert a range of empty elements.
+     * @param length number of empty elements to insert.
+     * @return iterator position pointing to the block where the empty range
+     *         is inserted. When no insertion occurs because the length is
+     *         zero, the end iterator position is returned.
+     */
+    iterator insert_empty(iterator pos_hint, size_type pos, size_type length);
+
+    /**
      * Clear the content of the container.  The size of the container will
      * become zero after calling this method.
      */
