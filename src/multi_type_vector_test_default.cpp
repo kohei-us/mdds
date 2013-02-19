@@ -3689,10 +3689,6 @@ void mtv_test_set_with_position()
 
     db.set(pos_hint, 0, int(444)); // position hint does not precede the insertion position.
     assert(db.get<int>(0) == 444); // it should still work.
-
-    mtv_type::iterator invalid_pos;
-    db.set(invalid_pos, 2, string("baa")); // Passing an invalid iterator shouldn't cause any problem.
-    assert(db.get<string>(2) == "baa");
 }
 
 void mtv_test_set_cells_with_position()
@@ -3807,7 +3803,7 @@ void mtv_test_insert_empty_with_position()
 {
     stack_printer __stack_printer__("::mtv_test_insert_empty_with_position");
     mtv_type db(2, true);
-    mtv_type::iterator pos_hint; // start as an invalid iterator.
+    mtv_type::iterator pos_hint = db.begin();
     pos_hint = db.insert_empty(pos_hint, 1, 3); // the size becomes 5.
     pos_hint = db.insert_empty(pos_hint, 4, 2); // the size now becomes 7.
 
