@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="multi_type_vector (default)"
 	ProjectGUID="{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}"
 	RootNamespace="multi_type_vector"
@@ -180,6 +180,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\mdds\multi_type_vector_def.inl"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\mdds\multi_type_vector_itr.hpp"
 				>
 			</File>
 			<File
