@@ -2379,8 +2379,31 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
             if (start_row_in_block1 == start_row)
             {
                 // Empty the whole block.
-                element_block_func::delete_block(blk->mp_data);
-                blk->mp_data = NULL;
+
+                // Check if the previos block (if exists) is also empty.
+                block* blk_prev = NULL;
+                if (block_index1 > 0)
+                {
+                    blk_prev = m_blocks[block_index1-1];
+                    if (blk_prev->mp_data)
+                        // Not empty.  Ignore it.
+                        blk_prev = NULL;
+                }
+
+                if (blk_prev)
+                {
+                    // Previous block is empty.  Move the start row to the
+                    // first row of the previous block, and make the previous
+                    // block 'block 1'.
+                    start_row -= blk_prev->m_size;
+                    --block_index1;
+                }
+                else
+                {
+                    // Make block 1 empty.
+                    element_block_func::delete_block(blk->mp_data);
+                    blk->mp_data = NULL;
+                }
             }
             else
             {
@@ -2399,6 +2422,8 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
         }
     }
 
+    size_type end_block_to_erase = block_index2; // End block position is non-inclusive.
+
     {
         // Empty the upper part of the last block.
         block* blk = m_blocks[block_index2];
@@ -2408,8 +2433,24 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
             if (last_row_in_block == end_row)
             {
                 // Delete the whole block.
-                delete blk;
-                m_blocks.erase(m_blocks.begin()+block_index2);
+                ++end_block_to_erase;
+
+                // Check if the following block (if exists) is also empty.
+                block* blk_next = NULL;
+                if (block_index2+1 < m_blocks.size())
+                {
+                    blk_next = m_blocks[block_index2+1];
+                    if (blk_next->mp_data)
+                        // Not empty.  Ignore it.
+                        blk_next = NULL;
+                }
+
+                if (blk_next)
+                {
+                    // The following block is also empty.
+                    end_row += blk_next->m_size;
+                    ++end_block_to_erase;
+                }
             }
             else
             {
@@ -2424,21 +2465,20 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
         {
             // Last block is empty.  Delete this block and adjust the end row
             // of the new empty range.
-            delete blk;
-            m_blocks.erase(m_blocks.begin()+block_index2);
+            ++end_block_to_erase;
             end_row = last_row_in_block;
         }
     }
 
-    if (block_index2 - block_index1 > 1)
+    if (end_block_to_erase - block_index1 > 1)
     {
-        // Remove all blocks in-between, from block_index1+1 to block_index2-1.
+        // Remove all blocks in-between, from block_index1+1 to end_block_to_erase-1.
 
-        for (size_type i = block_index1 + 1; i < block_index2; ++i)
+        for (size_type i = block_index1 + 1; i < end_block_to_erase; ++i)
             delete m_blocks[i];
 
         typename blocks_type::iterator it = m_blocks.begin() + block_index1 + 1;
-        typename blocks_type::iterator it_end = m_blocks.begin() + block_index2;
+        typename blocks_type::iterator it_end = m_blocks.begin() + end_block_to_erase;
         m_blocks.erase(it, it_end);
     }
 

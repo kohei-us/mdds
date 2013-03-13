@@ -1102,6 +1102,35 @@ void mtv_test_empty_cells()
         db.set_empty(3, 3); // Merge with the previous block.
         assert(db.block_size() == 2);
     }
+
+    {
+        mtv_type db(7);
+        db.set(0, 1.2);
+        db.set(2, true);
+        db.set(4, true);
+        db.set(5, static_cast<int>(22));
+        db.set(6, string("foo"));
+        assert(db.block_size() == 7);
+        db.set_empty(2, 4); // Merge with the previous block.
+        assert(db.block_size() == 4);
+        assert(db.get<double>(0) == 1.2);
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.is_empty(4));
+        assert(db.get<int>(5) == 22);
+        assert(db.get<string>(6) == "foo");
+    }
+
+    {
+        mtv_type db(4);
+        db.set(0, true);
+        db.set(2, true);
+        assert(db.block_size() == 4);
+        db.set_empty(0, 2); // Merge with the next block.
+        cout << "block size: " << db.block_size() << endl;
+        assert(db.block_size() == 1);
+    }
 }
 
 void mtv_test_swap()
