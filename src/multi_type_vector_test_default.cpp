@@ -1094,6 +1094,13 @@ void mtv_test_empty_cells()
         db.set_empty(1, 1); // Merge with the next block.
         assert(db.block_size() == 2);
         db.set(1, 1.3);
+
+        db = mtv_type(5);
+        db.set(3, 2.1);
+        db.set(4, 2.2);
+        assert(db.block_size() == 2);
+        db.set_empty(3, 3); // Merge with the previous block.
+        assert(db.block_size() == 2);
     }
 }
 

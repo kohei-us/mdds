@@ -2276,6 +2276,24 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
         element_block_func::erase(*blk->mp_data, 0, empty_block_size);
         blk->m_size -= empty_block_size;
 
+        // Check if the preceding block (if exists) is also empty.
+        block* blk_prev = NULL;
+        if (block_index > 0)
+        {
+            blk_prev = m_blocks[block_index-1];
+            if (blk_prev->mp_data)
+                // Preceding block is not empty. Ignore it.
+                blk_prev = NULL;
+        }
+
+        if (blk_prev)
+        {
+            // Extend the previous empty block.
+            size_type offset = blk_prev->m_size;
+            blk_prev->m_size += empty_block_size;
+            return get_iterator(block_index-1, start_row-offset);
+        }
+
         // Insert a new empty block before the current one.
         m_blocks.insert(m_blocks.begin()+block_index, new block(empty_block_size));
         return get_iterator(block_index, start_row_in_block);
