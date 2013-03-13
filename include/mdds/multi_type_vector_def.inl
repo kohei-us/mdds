@@ -2177,6 +2177,80 @@ mtv::element_t multi_type_vector<_CellBlockFunc>::get_element_type(const _T& ele
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::set_whole_block_empty(size_type block_index, size_type start_pos_in_block)
+{
+    block* blk = m_blocks[block_index];
+    element_block_func::delete_block(blk->mp_data);
+    blk->mp_data = NULL;
+
+    block* blk_prev = NULL;
+    if (block_index > 0)
+    {
+        // Check if the preceding block is empty.
+        blk_prev = m_blocks[block_index-1];
+        if (blk_prev->mp_data)
+            // Previous block is not empty.  Ignore it.
+            blk_prev = NULL;
+    }
+
+    block* blk_next = NULL;
+    if (block_index < m_blocks.size()-1)
+    {
+        // Check if the next block is empty.
+        blk_next = m_blocks[block_index+1];
+        if (blk_next->mp_data)
+            // Next block is not empty. Ignore it.
+            blk_next = NULL;
+    }
+
+    // Merge with adjacent block(s) if necessary.
+    if (blk_prev)
+    {
+        if (blk_next)
+        {
+            // Both preceding and next blocks are empty.
+            size_type offset = blk_prev->m_size;
+            blk_prev->m_size += blk->m_size + blk_next->m_size;
+
+            // Erase the current and next blocks.
+            delete blk;
+            delete blk_next;
+            typename blocks_type::iterator it = m_blocks.begin();
+            std::advance(it, block_index);
+            typename blocks_type::iterator it_end = it;
+            std::advance(it_end, 2);
+            m_blocks.erase(it, it_end);
+
+            return get_iterator(block_index-1, start_pos_in_block-offset);
+        }
+
+        // Only the preceding block is empty. Merge the current block with the previous.
+        size_type offset = blk_prev->m_size;
+        blk_prev->m_size += blk->m_size;
+        delete blk;
+        typename blocks_type::iterator it = m_blocks.begin();
+        std::advance(it, block_index);
+        m_blocks.erase(it);
+
+        return get_iterator(block_index-1, start_pos_in_block-offset);
+    }
+    else if (blk_next)
+    {
+        // Only the next block is empty. Merge the next block with the current.
+        blk->m_size += blk_next->m_size;
+        delete blk_next;
+        typename blocks_type::iterator it = m_blocks.begin();
+        std::advance(it, block_index+1);
+        m_blocks.erase(it);
+
+        return get_iterator(block_index, start_pos_in_block);
+    }
+
+    return get_iterator(block_index, start_pos_in_block);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
     size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block)
 {
@@ -2195,12 +2269,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
         // start row coincides with the start of a block.
 
         if (end_row == end_row_in_block)
-        {
-            // Set the whole block empty.
-            element_block_func::delete_block(blk->mp_data);
-            blk->mp_data = NULL;
-            return get_iterator(block_index, start_row_in_block);
-        }
+            return set_whole_block_empty(block_index, start_row_in_block);
 
         // Set the upper part of the block empty.
         element_block_func::overwrite_values(*blk->mp_data, 0, empty_block_size);

@@ -617,6 +617,8 @@ private:
 
     iterator set_empty_impl(size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1);
 
+    iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block);
+
     iterator set_empty_in_single_block(
         size_type start_pos, size_type end_pos, size_type block_index, size_type start_pos_in_block);
 

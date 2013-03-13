@@ -1040,6 +1040,14 @@ void mtv_test_managed_block()
         assert(db.is_empty(1));
         assert(db.get<muser_cell*>(2)->value == 3.0);
     }
+
+    {
+        mtv_type db(3);
+        db.set(1, new muser_cell(3.3));
+        assert(db.block_size() == 3);
+        db.set_empty(1, 1);
+        assert(db.block_size() == 1);
+    }
 }
 
 }

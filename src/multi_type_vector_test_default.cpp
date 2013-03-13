@@ -1056,6 +1056,34 @@ void mtv_test_empty_cells()
         assert(db.get<bool>(2) == true);
         assert(db.block_size() == 3);
     }
+
+    {
+        mtv_type db(10);
+        assert(db.block_size() == 1);
+
+        unsigned short val = 12;
+        db.set(3, val);
+        assert(db.block_size() == 3);
+        assert(db.is_empty(2));
+        assert(!db.is_empty(3));
+        assert(db.is_empty(4));
+
+        db.set_empty(3, 3); // This should merge the top, middle and bottom blocks into one.
+        assert(db.block_size() == 1);
+
+        db.set(9, val);
+        assert(db.block_size() == 2);
+        db.set_empty(9, 9); // Merge the block with the top one.
+        assert(db.block_size() == 1);
+
+        db = mtv_type(10, true);
+        db.set(3, 1.1);
+        db.set(4, 1.2);
+        db.set(5, 1.3);
+        assert(db.block_size() == 3);
+        db.set_empty(3, 5); // No merging.
+        assert(db.block_size() == 3);
+    }
 }
 
 void mtv_test_swap()
