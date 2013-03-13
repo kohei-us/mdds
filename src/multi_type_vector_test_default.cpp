@@ -3639,6 +3639,58 @@ void mtv_test_set_empty_return_iterator()
     assert(it->size == 2);
     ++it;
     assert(it == db.end());
+
+    db = mtv_type(10);
+    db.set(0, true);
+    db.set(5, 1.1);
+    it = db.set_empty(5, 5); // Merge with previous and next blocks.
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 9);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->__private_data.start_pos == 1);
+    assert(it->__private_data.block_index == 1);
+    ++it;
+    assert(it == db.end());
+
+    doubles.resize(3, 32.3);
+    db.set(4, doubles.begin(), doubles.end()); // 4 thru 6
+    assert(db.block_size() == 4);
+    it = db.set_empty(4, 5); // Merge with the previous block.
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 5);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->__private_data.start_pos == 1);
+    assert(it->__private_data.block_index == 1);
+    ++it;
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it->size == 3);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db.end());
+
+    db = mtv_type(10);
+    db.set(9, false);
+    db.set(3, 1.1);
+    db.set(4, 1.2);
+    db.set(5, 1.3);
+    assert(db.block_size() == 4);
+    it = db.set_empty(5, 5); // Merge with the next empty block.
+    assert(db.block_size() == 4);
+    check = db.begin();
+    advance(check, 2);
+    assert(it == check);
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->__private_data.block_index == 2);
+    assert(it->__private_data.start_pos == 5);
+    advance(it, 2);
+    assert(it == db.end());
 }
 
 void mtv_test_insert_empty_return_iterator()
