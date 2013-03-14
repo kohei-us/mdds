@@ -1,3 +1,5 @@
+mdds 0.7.1
+
 * multi_type_vector
 
   * fixed a bug in set_empty() where emptying a whole or partial block
