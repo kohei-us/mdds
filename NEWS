@@ -1,3 +1,9 @@
+
+* multi_type_vector
+
+  * added char and unsigned char types to the standard types supported
+    by default.
+
 mdds 0.7.1
 
 * multi_type_vector
