@@ -58,7 +58,7 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
 
 enum test_mtv_type {
-    _bool, _short, _ushort, _int, _uint, _long, _ulong, _double, _string
+    _bool, _short, _ushort, _int, _uint, _long, _ulong, _double, _string, _char, _uchar
 };
 
 #define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
@@ -71,6 +71,8 @@ TEST_TYPE(long,_long)
 TEST_TYPE(unsigned long,_ulong)
 TEST_TYPE(double,_double)
 TEST_TYPE(string,_string)
+TEST_TYPE(char,_char)
+TEST_TYPE(unsigned char,_uchar)
 
 void mtv_test_types()
 {
@@ -121,6 +123,16 @@ void mtv_test_types()
         string val;
         assert(test_type(val) == _string);
         cout << "string is good" << endl;
+    }
+    {
+        char val = 0;
+        assert(test_type(val) == _char);
+        cout << "char is good" << endl;
+    }
+    {
+        unsigned char val = 0;
+        assert(test_type(val) == _uchar);
+        cout << "unsigned char is good" << endl;
     }
 }
 

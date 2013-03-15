@@ -46,6 +46,8 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned int, mtv::element_type_uint, 0, mtv::
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(long, mtv::element_type_long, 0, mtv::long_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned long, mtv::element_type_ulong, 0, mtv::ulong_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(char, mtv::element_type_char, 0, mtv::char_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned char, mtv::element_type_uchar, 0, mtv::uchar_element_block)
 
 template<typename _CellBlockFunc>
 multi_type_vector<_CellBlockFunc>::block::block() : m_size(0), mp_data(NULL) {}
