@@ -1,0 +1,7 @@
+prefix=@prefix@
+includedir=@includedir@
+
+Name: mdds
+Description: A collection of multi-dimensional data structure and indexing algorithm
+Version: @VERSION@
+Cflags: -I${includedir}

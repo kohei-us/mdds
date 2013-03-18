@@ -28,10 +28,12 @@ AC_MSG_RESULT([$with_hash_container])
 OBJDIR=./obj
 SRCDIR=./src
 INCDIR=./include
+MISCDIR=./misc
 QUICKCHECKDIR=./quickcheck
 AC_SUBST(OBJDIR)
 AC_SUBST(SRCDIR)
 AC_SUBST(INCDIR)
+AC_SUBST(MISCDIR)
 AC_SUBST(QUICKCHECKDIR)
 
 CPPFLAGS_NODEBUG="-Wall -Os -g -pedantic-errors"
@@ -48,4 +50,5 @@ AC_SUBST(CPPFLAGS_NODEBUG)
 AC_OUTPUT(Makefile)
 AC_OUTPUT(example/Makefile)
 AC_OUTPUT(misc/mdds.spec)
+AC_OUTPUT(misc/mdds.pc)
 AC_OUTPUT(VERSION)

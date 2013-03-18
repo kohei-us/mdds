@@ -5,6 +5,7 @@ PACKAGE_TARNAME=@PACKAGE_TARNAME@
 OBJDIR=@OBJDIR@
 SRCDIR=@SRCDIR@
 INCDIR=@INCDIR@
+MISCDIR=@MISCDIR@
 QUICKCHECKDIR=@QUICKCHECKDIR@
 
 CPPFLAGS=@CPPFLAGS@ -I$(INCDIR)
@@ -207,10 +208,13 @@ install: $(HEADERS)
 	install -d $(DESTDIR)@includedir@/mdds/hash_container
 	install -d $(DESTDIR)@includedir@/mdds/compat
 	install -d $(DESTDIR)@docdir@
+	install -d $(DESTDIR)@datarootdir@
+	install -d $(DESTDIR)@datarootdir@/pkgconfig
 	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.hpp
 	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.inl
 	install -m 644 -t $(DESTDIR)@includedir@/mdds/compat $(INCDIR)/mdds/compat/*.hpp
 	install -m 644 -t $(DESTDIR)@includedir@/mdds/hash_container $(INCDIR)/mdds/hash_container/*.hpp
+	install -m 644 -t $(DESTDIR)@datarootdir@/pkgconfig $(MISCDIR)/mdds.pc
 	install -m 644 -t $(DESTDIR)@docdir@ AUTHORS COPYING NEWS README VERSION
 
 check: $(ALL_TESTS)
