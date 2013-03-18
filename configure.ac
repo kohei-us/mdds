@@ -25,11 +25,11 @@ AC_ARG_WITH(hash-container,
 AC_MSG_CHECKING([hash container type])
 AC_MSG_RESULT([$with_hash_container])
 
-OBJDIR=./obj
-SRCDIR=./src
-INCDIR=./include
-MISCDIR=./misc
-QUICKCHECKDIR=./quickcheck
+OBJDIR=obj
+SRCDIR=src
+INCDIR=include
+MISCDIR=misc
+QUICKCHECKDIR=quickcheck
 AC_SUBST(OBJDIR)
 AC_SUBST(SRCDIR)
 AC_SUBST(INCDIR)

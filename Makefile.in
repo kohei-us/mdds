@@ -22,27 +22,27 @@ EXECS= \
 	multi_type_vector_test_custom
 
 HEADERS= \
-	$(INCDIR)/mdds/compat/unique_ptr.hpp \
-	$(INCDIR)/mdds/flat_segment_tree_def.inl \
-	$(INCDIR)/mdds/flat_segment_tree.hpp \
-	$(INCDIR)/mdds/flat_segment_tree_itr.hpp \
-	$(INCDIR)/mdds/global.hpp \
-	$(INCDIR)/mdds/hash_container/map.hpp \
-	$(INCDIR)/mdds/mixed_type_matrix_def.inl \
-	$(INCDIR)/mdds/mixed_type_matrix_element.hpp \
-	$(INCDIR)/mdds/mixed_type_matrix_flag_storage.hpp \
-	$(INCDIR)/mdds/mixed_type_matrix.hpp \
-	$(INCDIR)/mdds/mixed_type_matrix_storage_filled_linear.inl \
-	$(INCDIR)/mdds/mixed_type_matrix_storage.hpp \
-	$(INCDIR)/mdds/mixed_type_matrix_storage_sparse.inl \
-	$(INCDIR)/mdds/multi_type_matrix.hpp \
-	$(INCDIR)/mdds/multi_type_matrix_def.inl \
-	$(INCDIR)/mdds/node.hpp \
-	$(INCDIR)/mdds/point_quad_tree.hpp \
-	$(INCDIR)/mdds/quad_node.hpp \
-	$(INCDIR)/mdds/rectangle_set_def.inl \
-	$(INCDIR)/mdds/rectangle_set.hpp \
-	$(INCDIR)/mdds/segment_tree.hpp
+	@top_srcdir@/$(INCDIR)/mdds/compat/unique_ptr.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/flat_segment_tree_def.inl \
+	@top_srcdir@/$(INCDIR)/mdds/flat_segment_tree.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/flat_segment_tree_itr.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/global.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/hash_container/map.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_def.inl \
+	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_element.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_flag_storage.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_storage_filled_linear.inl \
+	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_storage.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_storage_sparse.inl \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_matrix.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_matrix_def.inl \
+	@top_srcdir@/$(INCDIR)/mdds/node.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/point_quad_tree.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/quad_node.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/rectangle_set_def.inl \
+	@top_srcdir@/$(INCDIR)/mdds/rectangle_set.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/segment_tree.hpp
 
 DEPENDS= \
 	$(HEADERS)
@@ -75,29 +75,29 @@ all: $(EXECS)
 pre:
 	mkdir -p $(OBJDIR)
 
-$(OBJDIR)/flat_segment_tree_test.o: $(SRCDIR)/flat_segment_tree_test.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/flat_segment_tree_test.cpp
+$(OBJDIR)/flat_segment_tree_test.o: @top_srcdir@/$(SRCDIR)/flat_segment_tree_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/flat_segment_tree_test.cpp
 
-$(OBJDIR)/segment_tree_test.o: $(SRCDIR)/segment_tree_test.cpp  $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/segment_tree_test.cpp
+$(OBJDIR)/segment_tree_test.o: @top_srcdir@/$(SRCDIR)/segment_tree_test.cpp  $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/segment_tree_test.cpp
 
-$(OBJDIR)/rectangle_set_test.o: $(SRCDIR)/rectangle_set_test.cpp  $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/rectangle_set_test.cpp
+$(OBJDIR)/rectangle_set_test.o: @top_srcdir@/$(SRCDIR)/rectangle_set_test.cpp  $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/rectangle_set_test.cpp
 
-$(OBJDIR)/point_quad_tree_test.o: $(SRCDIR)/point_quad_tree_test.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/point_quad_tree_test.cpp
+$(OBJDIR)/point_quad_tree_test.o: @top_srcdir@/$(SRCDIR)/point_quad_tree_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/point_quad_tree_test.cpp
 
-$(OBJDIR)/mixed_type_matrix_test.o: $(SRCDIR)/mixed_type_matrix_test.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/mixed_type_matrix_test.cpp
+$(OBJDIR)/mixed_type_matrix_test.o: @top_srcdir@/$(SRCDIR)/mixed_type_matrix_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/mixed_type_matrix_test.cpp
 
-$(OBJDIR)/multi_type_vector_test_default.o: $(SRCDIR)/multi_type_vector_test_default.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/multi_type_vector_test_default.cpp
+$(OBJDIR)/multi_type_vector_test_default.o: @top_srcdir@/$(SRCDIR)/multi_type_vector_test_default.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/multi_type_vector_test_default.cpp
 
-$(OBJDIR)/multi_type_vector_test_custom.o: $(SRCDIR)/multi_type_vector_test_custom.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/multi_type_vector_test_custom.cpp
+$(OBJDIR)/multi_type_vector_test_custom.o: @top_srcdir@/$(SRCDIR)/multi_type_vector_test_custom.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/multi_type_vector_test_custom.cpp
 
-$(OBJDIR)/multi_type_matrix_test.o: $(SRCDIR)/multi_type_matrix_test.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/multi_type_matrix_test.cpp
+$(OBJDIR)/multi_type_matrix_test.o: @top_srcdir@/$(SRCDIR)/multi_type_matrix_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/multi_type_matrix_test.cpp
 
 flat_segment_tree_test: pre $(OBJDIR)/flat_segment_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flat_segment_tree_test.o -o $@
@@ -125,11 +125,11 @@ multi_type_matrix_test: pre $(OBJDIR)/multi_type_matrix_test.o
 
 multi_type_vector_test: multi_type_vector_test_default multi_type_vector_test_custom
 
-stlperf_test: pre $(SRCDIR)/stlperf_test.cpp
-	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(SRCDIR)/stlperf_test.cpp -o $@
+stlperf_test: pre @top_srcdir@/$(SRCDIR)/stlperf_test.cpp
+	$(CXX) $(LDFLAGS) $(CPPFLAGS) @top_srcdir@/$(SRCDIR)/stlperf_test.cpp -o $@
 
-$(OBJDIR)/template_test.o: $(SRCDIR)/template_test.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ $(SRCDIR)/template_test.cpp
+$(OBJDIR)/template_test.o: @top_srcdir@/$(SRCDIR)/template_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/template_test.cpp
 
 test.fst: flat_segment_tree_test
 	./flat_segment_tree_test func
@@ -210,12 +210,12 @@ install: $(HEADERS)
 	install -d $(DESTDIR)@docdir@
 	install -d $(DESTDIR)@datarootdir@
 	install -d $(DESTDIR)@datarootdir@/pkgconfig
-	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.hpp
-	install -m 644 -t $(DESTDIR)@includedir@/mdds $(INCDIR)/mdds/*.inl
-	install -m 644 -t $(DESTDIR)@includedir@/mdds/compat $(INCDIR)/mdds/compat/*.hpp
-	install -m 644 -t $(DESTDIR)@includedir@/mdds/hash_container $(INCDIR)/mdds/hash_container/*.hpp
+	install -m 644 -t $(DESTDIR)@includedir@/mdds @top_srcdir@/$(INCDIR)/mdds/*.hpp
+	install -m 644 -t $(DESTDIR)@includedir@/mdds @top_srcdir@/$(INCDIR)/mdds/*.inl
+	install -m 644 -t $(DESTDIR)@includedir@/mdds/compat @top_srcdir@/$(INCDIR)/mdds/compat/*.hpp
+	install -m 644 -t $(DESTDIR)@includedir@/mdds/hash_container @top_srcdir@/$(INCDIR)/mdds/hash_container/*.hpp
 	install -m 644 -t $(DESTDIR)@datarootdir@/pkgconfig $(MISCDIR)/mdds.pc
-	install -m 644 -t $(DESTDIR)@docdir@ AUTHORS COPYING NEWS README VERSION
+	install -m 644 -t $(DESTDIR)@docdir@ @top_srcdir@/AUTHORS @top_srcdir@/COPYING @top_srcdir@/NEWS @top_srcdir@/README @top_srcdir@/VERSION
 
 check: $(ALL_TESTS)
 
