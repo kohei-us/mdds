@@ -2400,6 +2400,18 @@ void mtv_test_data_iterators()
         assert(*it_data == 1.3);
         ++it_data;
         assert(it_data == it_data_end);
+
+        assert(mtv::numeric_element_block::at(*it_blk->data, 0) == 1.1);
+        assert(mtv::numeric_element_block::at(*it_blk->data, 1) == 1.2);
+        assert(mtv::numeric_element_block::at(*it_blk->data, 2) == 1.3);
+
+        // Access the underlying data array directly.
+        const double* array = &mtv::numeric_element_block::at(*it_blk->data, 0);
+        assert(*array == 1.1);
+        ++array;
+        assert(*array == 1.2);
+        ++array;
+        assert(*array == 1.3);
     }
 
     // Next block is empty.

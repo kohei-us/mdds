@@ -8,6 +8,9 @@
     position and returns a pair of block iterator where the element
     resides and its offset within that block.
 
+  * added at() static member method to the data block, which calls the
+    at() method of the underlying std::vector container.
+
 mdds 0.7.1
 
 * multi_type_vector

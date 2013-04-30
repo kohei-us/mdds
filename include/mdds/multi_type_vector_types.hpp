@@ -112,6 +112,16 @@ public:
         return !operator==(r);
     }
 
+    static const value_type& at(const base_element_block& block, typename store_type::size_type pos)
+    {
+        return get(block).m_array.at(pos);
+    }
+
+    static value_type& at(base_element_block& block, typename store_type::size_type pos)
+    {
+        return get(block).m_array.at(pos);
+    }
+
     static iterator begin(base_element_block& block)
     {
         return get(block).m_array.begin();
