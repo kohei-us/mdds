@@ -1,4 +1,8 @@
 
+* all
+
+  * added .pc file for pkg-config.
+
 * multi_type_vector
 
   * added char and unsigned char types to the standard types supported
