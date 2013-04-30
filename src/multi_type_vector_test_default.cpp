@@ -3959,6 +3959,62 @@ void mtv_test_insert_empty_with_position()
     assert(check == db.end());
 }
 
+void mtv_test_position()
+{
+    stack_printer __stack_printer__("::mtv_test_position");
+    mtv_type db(10, false);
+    mtv_type::iterator check;
+    db.set(6, 1.1);
+    db.set(7, 1.2);
+    db.set(8, 1.3);
+    db.set(9, 1.4);
+
+    pair<mtv_type::iterator,mtv_type::size_type> pos = db.position(0);
+    assert(pos.first == db.begin());
+    assert(pos.second == 0);
+
+    pos = db.position(1);
+    assert(pos.first == db.begin());
+    assert(pos.second == 1);
+
+    pos = db.position(5);
+    assert(pos.first == db.begin());
+    assert(pos.second == 5);
+
+    check = db.begin();
+    ++check;
+
+    // These positions should be on the 2nd block.
+
+    pos = db.position(6);
+    assert(pos.first == check);
+    assert(pos.second == 0);
+
+    pos = db.position(7);
+    assert(pos.first == check);
+    assert(pos.second == 1);
+
+    pos = db.position(9);
+    assert(pos.first == check);
+    assert(pos.second == 3);
+
+    {
+        // Make sure you get the right element.
+        mtv_type::iterator it = pos.first;
+        assert(it->type == mtv::element_type_numeric);
+        assert(it->data);
+        mtv::numeric_element_block::iterator it_elem = mtv::numeric_element_block::begin(*it->data);
+        advance(it_elem, pos.second);
+        assert(*it_elem == 1.4);
+    }
+
+    // Quick check for the const variant.
+    const mtv_type& db_ref = db;
+    pair<mtv_type::const_iterator,mtv_type::size_type> const_pos = db_ref.position(3);
+    assert(const_pos.first == db_ref.begin());
+    assert(const_pos.second == 3);
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -4034,6 +4090,7 @@ int main (int argc, char **argv)
         mtv_test_insert_cells_with_position();
         mtv_test_set_empty_with_position();
         mtv_test_insert_empty_with_position();
+        mtv_test_position();
     }
 
     if (opt.test_perf)

@@ -4,6 +4,10 @@
   * added char and unsigned char types to the standard types supported
     by default.
 
+  * added position() member method that takes a logical element
+    position and returns a pair of block iterator where the element
+    resides and its offset within that block.
+
 mdds 0.7.1
 
 * multi_type_vector
