@@ -754,6 +754,18 @@ void mtv_test_basic()
             ++p;
             assert(*p == 'c');
         }
+
+        ++it;
+        assert(it != it_end);
+        assert(it->type == mtv::element_type_uchar);
+        {
+            const unsigned char* p = &mtv::uchar_element_block::at(*it->data, 0);
+            assert(*p == 'd');
+            ++p;
+            assert(*p == 'e');
+            ++p;
+            assert(*p == 'z');
+        }
     }
 }
 
