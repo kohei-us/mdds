@@ -285,7 +285,7 @@ public:
         }
     };
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
     struct node_printer : public ::std::unary_function<const node*, void>
     {
         void operator() (const node* p) const

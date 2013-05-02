@@ -29,7 +29,7 @@
 
 #include <stdexcept>
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
 #include <iostream>
 using std::cout;
 using std::endl;

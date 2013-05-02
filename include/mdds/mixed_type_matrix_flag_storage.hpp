@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-#if UNIT_TEST
+#ifdef UNIT_TEST
 #include <iostream>
 #endif
 
@@ -74,7 +74,7 @@ public:
             // Flag is stored at this position.  Remove it.
             m_flags.erase(itr);
     }
-#if UNIT_TEST
+#ifdef UNIT_TEST
     void dump() const
     {
         using namespace std;
