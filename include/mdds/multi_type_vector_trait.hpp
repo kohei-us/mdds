@@ -92,6 +92,10 @@ base_element_block* element_block_func_base::create_new_block(element_t type, si
             return ulong_element_block::create_block(init_size);
         case element_type_boolean:
             return boolean_element_block::create_block(init_size);
+        case element_type_char:
+            return char_element_block::create_block(init_size);
+        case element_type_uchar:
+            return uchar_element_block::create_block(init_size);
         default:
             throw general_error("create_new_block: failed to create a new block of unknown type.");
     }
@@ -119,6 +123,10 @@ base_element_block* element_block_func_base::clone_block(const base_element_bloc
             return ulong_element_block::clone_block(block);
         case element_type_boolean:
             return boolean_element_block::clone_block(block);
+        case element_type_char:
+            return char_element_block::clone_block(block);
+        case element_type_uchar:
+            return uchar_element_block::clone_block(block);
         default:
             throw general_error("clone_block: failed to clone a block of unknown type.");
     }
@@ -158,6 +166,12 @@ void element_block_func_base::delete_block(base_element_block* p)
         case element_type_boolean:
             boolean_element_block::delete_block(p);
         break;
+        case element_type_char:
+            char_element_block::delete_block(p);
+        break;
+        case element_type_uchar:
+            uchar_element_block::delete_block(p);
+        break;
         default:
             throw general_error("delete_block: failed to delete a block of unknown type.");
     }
@@ -193,6 +207,12 @@ void element_block_func_base::resize_block(base_element_block& block, size_t new
         break;
         case element_type_boolean:
             boolean_element_block::resize_block(block, new_size);
+        break;
+        case element_type_char:
+            char_element_block::resize_block(block, new_size);
+        break;
+        case element_type_uchar:
+            uchar_element_block::resize_block(block, new_size);
         break;
         default:
             throw general_error("resize_block: failed to resize a block of unknown type.");
@@ -230,6 +250,12 @@ void element_block_func_base::print_block(const base_element_block& block)
         case element_type_boolean:
             boolean_element_block::print_block(block);
         break;
+        case element_type_char:
+            char_element_block::print_block(block);
+        break;
+        case element_type_uchar:
+            uchar_element_block::print_block(block);
+        break;
         default:
             throw general_error("print_block: failed to print a block of unknown type.");
     }
@@ -265,6 +291,12 @@ void element_block_func_base::erase(base_element_block& block, size_t pos)
         break;
         case element_type_boolean:
             boolean_element_block::erase_block(block, pos);
+        break;
+        case element_type_char:
+            char_element_block::erase_block(block, pos);
+        break;
+        case element_type_uchar:
+            uchar_element_block::erase_block(block, pos);
         break;
         default:
             throw general_error("erase: failed to erase an element from a block of unknown type.");
@@ -302,6 +334,12 @@ void element_block_func_base::erase(base_element_block& block, size_t pos, size_
         case element_type_boolean:
             boolean_element_block::erase_block(block, pos, size);
         break;
+        case element_type_char:
+            char_element_block::erase_block(block, pos, size);
+        break;
+        case element_type_uchar:
+            uchar_element_block::erase_block(block, pos, size);
+        break;
         default:
             throw general_error("erase: failed to erase elements from a block of unknown type.");
     }
@@ -337,6 +375,12 @@ void element_block_func_base::append_values_from_block(base_element_block& dest,
         break;
         case element_type_boolean:
             boolean_element_block::append_values_from_block(dest, src);
+        break;
+        case element_type_char:
+            char_element_block::append_values_from_block(dest, src);
+        break;
+        case element_type_uchar:
+            uchar_element_block::append_values_from_block(dest, src);
         break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");
@@ -375,6 +419,12 @@ void element_block_func_base::append_values_from_block(
         case element_type_boolean:
             boolean_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
+        case element_type_char:
+            char_element_block::append_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_uchar:
+            uchar_element_block::append_values_from_block(dest, src, begin_pos, len);
+        break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");
     }
@@ -412,6 +462,12 @@ void element_block_func_base::assign_values_from_block(
         case element_type_boolean:
             boolean_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
+        case element_type_char:
+            char_element_block::assign_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_uchar:
+            uchar_element_block::assign_values_from_block(dest, src, begin_pos, len);
+        break;
         default:
             throw general_error("assign_values: failed to assign values to a block of unknown type.");
     }
@@ -443,6 +499,10 @@ bool element_block_func_base::equal_block(const base_element_block& left, const 
             return ulong_element_block::get(left) == ulong_element_block::get(right);
         case element_type_boolean:
             return boolean_element_block::get(left) == boolean_element_block::get(right);
+        case element_type_char:
+            return char_element_block::get(left) == char_element_block::get(right);
+        case element_type_uchar:
+            return uchar_element_block::get(left) == uchar_element_block::get(right);
         default:
             ;
     }
