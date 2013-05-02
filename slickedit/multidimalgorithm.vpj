@@ -262,12 +262,10 @@
 				<F N="../include/mdds/rectangle_set_def.inl"/>
 				<F N="../include/mdds/segment_tree.hpp"/>
 			</Folder>
-		</Folder>
-		<Folder Name="../misc">
-			<F N="../misc/matrix_perf.cpp"/>
-		</Folder>
-		<Folder Name="../quickcheck">
-			<F N="../quickcheck/flat_segment_tree.cpp"/>
+			<Folder Name="obsolete">
+				<F N="../include/obsolete/nodecontainer.hpp"/>
+				<F N="../include/obsolete/rangetree.hpp"/>
+			</Folder>
 		</Folder>
 		<Folder Name="../src">
 			<F N="../src/array_creation_perf_test.cpp"/>

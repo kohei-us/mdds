@@ -726,6 +726,35 @@ void mtv_test_basic()
         assert(db.get<double>(6) == 1.2);
         assert(db.get<bool>(7) == true);
     }
+
+    {
+        mtv_type db(10, false);
+        db.set<char>(0, 'a');
+        db.set<char>(1, 'b');
+        db.set<char>(2, 'c');
+
+        db.set<unsigned char>(3, 'd');
+        db.set<unsigned char>(4, 'e');
+        db.set<unsigned char>(5, 'f');
+
+        assert(db.block_size() == 3);
+        db.set<char>(0, 'r'); // overwrite.
+        db.set<unsigned char>(5, 'z'); // overwrite
+
+        assert(db.block_size() == 3);
+        mtv_type::const_iterator it = db.begin();
+        mtv_type::const_iterator it_end = db.end();
+        assert(it != it_end);
+        assert(it->type == mtv::element_type_char);
+        {
+            const char* p = &mtv::char_element_block::at(*it->data, 0);
+            assert(*p == 'r');
+            ++p;
+            assert(*p == 'b');
+            ++p;
+            assert(*p == 'c');
+        }
+    }
 }
 
 void mtv_test_empty_cells()
