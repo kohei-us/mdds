@@ -480,7 +480,7 @@ typedef default_element_block<mtv::element_type_long, long>             long_ele
 typedef default_element_block<mtv::element_type_ulong, unsigned long>   ulong_element_block;
 typedef default_element_block<mtv::element_type_boolean, bool>          boolean_element_block;
 typedef default_element_block<mtv::element_type_char, char>             char_element_block;
-typedef default_element_block<mtv::element_type_char, unsigned char>    uchar_element_block;
+typedef default_element_block<mtv::element_type_uchar, unsigned char>    uchar_element_block;
 
 }}
 
