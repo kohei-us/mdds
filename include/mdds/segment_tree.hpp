@@ -39,7 +39,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 #include <sstream>
 #endif
 
@@ -125,7 +125,7 @@ public:
     typedef size_t      size_type;
     typedef ::std::vector<data_type*> search_result_type;
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
     struct segment_data
     {
         key_type    begin_key;
@@ -230,7 +230,7 @@ public:
     {
         ::std::string operator() (const node& _self) const
         {
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
             ::std::ostringstream os;
             if (_self.is_leaf)
             {
@@ -285,7 +285,7 @@ public:
         }
     };
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
     struct node_printer : public ::std::unary_function<const node*, void>
     {
         void operator() (const node* p) const
@@ -650,7 +650,7 @@ public:
      */
     bool empty() const;
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
     void dump_tree() const;
     void dump_leaf_nodes() const;
     void dump_segment_data() const;
@@ -702,7 +702,7 @@ private:
 
     void clear_all_nodes();
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
     static bool has_data_pointer(const node_list_type& node_list, const data_type* pdata);
     static void print_leaf_value(const leaf_value_type& v);
 #endif
@@ -1058,7 +1058,7 @@ void segment_tree<_Key, _Data>::clear_all_nodes()
     m_root_node.reset();
 }
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::dump_tree() const
 {

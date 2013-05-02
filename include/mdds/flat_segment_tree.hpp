@@ -37,7 +37,7 @@
 #include "node.hpp"
 #include "flat_segment_tree_itr.hpp"
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 #include <cstdio>
 #include <vector>
 #endif
@@ -402,7 +402,7 @@ public:
         return m_init_val;
     }
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
     node_ptr get_root_node() const
     {
         return m_root_node;
@@ -544,7 +544,7 @@ private:
             return;
         }
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
         // The start position must come after the position of the last node 
         // before the right-most node.
         assert(m_right_leaf->left->value_leaf.key < start_key);        

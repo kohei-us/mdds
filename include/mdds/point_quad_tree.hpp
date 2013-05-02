@@ -475,7 +475,7 @@ public:
 
     bool operator!= (const point_quad_tree& r) const { return !operator== (r); }
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 public:
 #else
 private:

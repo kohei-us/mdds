@@ -215,7 +215,7 @@ public:
      */
     void swap(mixed_type_matrix& r);
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
     void dump() const;
     void dump_flags() const;
     size_pair_type get_storage_size() const;

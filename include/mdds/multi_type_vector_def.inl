@@ -29,7 +29,7 @@
 
 #include <stdexcept>
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 #include <iostream>
 using std::cout;
 using std::endl;

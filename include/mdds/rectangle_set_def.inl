@@ -233,7 +233,7 @@ void rectangle_set<_Key,_Data>::build_outer_segment_tree()
     }
 }
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 template<typename _Key, typename _Data>
 void rectangle_set<_Key,_Data>::dump_rectangles() const
 {

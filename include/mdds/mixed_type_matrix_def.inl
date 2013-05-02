@@ -262,7 +262,7 @@ void mixed_type_matrix<_String,_Flag>::swap(mixed_type_matrix& r)
     m_cached_size = temp;
 }
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 template<typename _String, typename _Flag>
 void mixed_type_matrix<_String,_Flag>::dump() const
 {

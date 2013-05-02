@@ -44,7 +44,7 @@ public:
     typedef _Key    key_type;
     typedef _Data   data_type;
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 public:
 #else
 private:
@@ -221,7 +221,7 @@ public:
 private:
     void build_outer_segment_tree();
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 public:
     void dump_rectangles() const;
     bool verify_rectangles(const dataset_type& expected) const;

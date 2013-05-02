@@ -36,7 +36,7 @@
 
 namespace mdds {
 
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
 size_t node_instance_count = 0;
 #endif
 
@@ -65,7 +65,7 @@ struct node
 
     static size_t get_instance_count()
     {
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
         return node_instance_count;
 #else
         return 0;
@@ -95,7 +95,7 @@ public:
         is_leaf(_is_leaf),
         refcount(0)
     {
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
 #endif
         _hdl_init(*this);
@@ -109,7 +109,7 @@ public:
         is_leaf(r.is_leaf),
         refcount(0)
     {
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
 #endif
         if (is_leaf)
@@ -137,7 +137,7 @@ public:
 
     ~node()
     {
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
         --node_instance_count;
 #endif
         dispose();
@@ -166,7 +166,7 @@ public:
         _hdl_fill_nonleaf(*this, left_node, right_node);
     }
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
     void dump_value() const
     {
         ::std::cout << _hdl_to_string(*this);
@@ -335,7 +335,7 @@ _NodePtr build_tree(const _NodePtr& left_leaf_node)
     return build_tree_non_leaf<_NodePtr, _NodeType>(node_list);
 }
 
-#ifdef UNIT_TEST
+#ifdef MDDS_UNIT_TEST
 template<typename _NodePtr>
 size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int level)
 {

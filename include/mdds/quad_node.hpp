@@ -34,7 +34,7 @@
 
 namespace mdds {
 
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
 size_t node_instance_count = 0;
 inline size_t get_node_instance_count()
 {
@@ -140,7 +140,7 @@ struct quad_node_base
         x(_x), 
         y(_y)
     {
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
 #endif
     }
@@ -159,7 +159,7 @@ struct quad_node_base
         x(r.x), 
         y(r.y)
     {
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
 #endif
     }
@@ -190,7 +190,7 @@ struct quad_node_base
 
     ~quad_node_base()
     {
-#ifdef DEBUG_NODE_BASE
+#ifdef MDDS_DEBUG_NODE_BASE
         --node_instance_count;
 #endif
         static_cast<node_type*>(this)->dispose();
