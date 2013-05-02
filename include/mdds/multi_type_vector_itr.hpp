@@ -359,6 +359,16 @@ public:
     {
         return dec();
     }
+
+    bool operator== (const const_iterator_base& other) const
+    {
+        return iterator_common_base<_Trait>::operator==(other);
+    }
+
+    bool operator!= (const const_iterator_base& other) const
+    {
+        return iterator_common_base<_Trait>::operator!=(other);
+    }
 };
 
 }}

@@ -743,8 +743,7 @@ void mtv_test_basic()
 
         assert(db.block_size() == 3);
         mtv_type::const_iterator it = db.begin();
-        mtv_type::const_iterator it_end = db.end();
-        assert(it != it_end);
+        assert(it != db.end());
         assert(it->type == mtv::element_type_char);
         {
             const char* p = &mtv::char_element_block::at(*it->data, 0);
@@ -756,7 +755,7 @@ void mtv_test_basic()
         }
 
         ++it;
-        assert(it != it_end);
+        assert(it != db.end());
         assert(it->type == mtv::element_type_uchar);
         {
             const unsigned char* p = &mtv::uchar_element_block::at(*it->data, 0);
