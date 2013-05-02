@@ -1059,6 +1059,36 @@ _T multi_type_vector<_CellBlockFunc>::get(size_type pos) const
 }
 
 template<typename _CellBlockFunc>
+template<typename _T>
+_T multi_type_vector<_CellBlockFunc>::release(size_type pos)
+{
+    size_type start_row = 0;
+    size_type block_index = 0;
+    if (!get_block_position(pos, start_row, block_index))
+        throw std::out_of_range("Block position not found!");
+
+    const block* blk = m_blocks[block_index];
+    assert(blk);
+
+    _T value;
+    if (!blk->mp_data)
+    {
+        // Empty cell block.  There is no element to release.
+        mdds_mtv_get_empty_value(value);
+        return value;
+    }
+
+    assert(pos >= start_row);
+    assert(blk->mp_data); // data for non-empty blocks should never be NULL.
+    size_type idx = pos - start_row;
+    mdds_mtv_get_value(*blk->mp_data, idx, value);
+
+    // Set the element slot empty without overwriting it.
+    set_empty_in_single_block(pos, pos, block_index, start_row, false);
+    return value;
+}
+
+template<typename _CellBlockFunc>
 std::pair<typename multi_type_vector<_CellBlockFunc>::iterator, typename multi_type_vector<_CellBlockFunc>::size_type>
 multi_type_vector<_CellBlockFunc>::position(size_type pos)
 {
@@ -1152,7 +1182,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
         throw std::out_of_range("Block position not found!");
 
     if (block_index1 == block_index2)
-        return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1);
+        return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, true);
 
     return set_empty_in_multi_blocks(
         start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2);
@@ -2211,9 +2241,14 @@ mtv::element_t multi_type_vector<_CellBlockFunc>::get_element_type(const _T& ele
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::set_whole_block_empty(size_type block_index, size_type start_pos_in_block)
+multi_type_vector<_CellBlockFunc>::set_whole_block_empty(
+    size_type block_index, size_type start_pos_in_block, bool overwrite)
 {
     block* blk = m_blocks[block_index];
+    if (!overwrite)
+        // Resize block to 0 before deleting, to prevent its elements from getting deleted.
+        element_block_func::resize_block(*blk->mp_data, 0);
+
     element_block_func::delete_block(blk->mp_data);
     blk->mp_data = NULL;
 
@@ -2286,7 +2321,7 @@ multi_type_vector<_CellBlockFunc>::set_whole_block_empty(size_type block_index, 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
-    size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block)
+    size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block, bool overwrite)
 {
     // Range is within a single block.
     block* blk = m_blocks[block_index];
@@ -2303,10 +2338,11 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
         // start row coincides with the start of a block.
 
         if (end_row == end_row_in_block)
-            return set_whole_block_empty(block_index, start_row_in_block);
+            return set_whole_block_empty(block_index, start_row_in_block, overwrite);
 
         // Set the upper part of the block empty.
-        element_block_func::overwrite_values(*blk->mp_data, 0, empty_block_size);
+        if (overwrite)
+            element_block_func::overwrite_values(*blk->mp_data, 0, empty_block_size);
         element_block_func::erase(*blk->mp_data, 0, empty_block_size);
         blk->m_size -= empty_block_size;
 
@@ -2340,7 +2376,8 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
         // Set the lower part of the block empty.
         size_type start_pos = start_row - start_row_in_block;
-        element_block_func::overwrite_values(*blk->mp_data, start_pos, empty_block_size);
+        if (overwrite)
+            element_block_func::overwrite_values(*blk->mp_data, start_pos, empty_block_size);
         element_block_func::erase(*blk->mp_data, start_pos, empty_block_size);
         blk->m_size -= empty_block_size;
 
@@ -2383,10 +2420,13 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
         end_row_in_block-start_row_in_block-lower_block_size+1,
         lower_block_size);
 
-    // Overwrite cells that will become empty.
     size_type new_cur_size = start_row - start_row_in_block;
-    element_block_func::overwrite_values(
-        *blk->mp_data, new_cur_size, empty_block_size);
+    if (overwrite)
+    {
+        // Overwrite cells that will become empty.
+        element_block_func::overwrite_values(
+            *blk->mp_data, new_cur_size, empty_block_size);
+    }
 
     // Shrink the current data block.
     element_block_func::erase(

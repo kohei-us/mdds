@@ -356,11 +356,27 @@ public:
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
-     * @param position position of the element value to retrieve.
+     * @param pos position of the element value to retrieve.
      * @return element value.
      */
     template<typename _T>
     _T get(size_type pos) const;
+
+    /**
+     * Return the value of an element at specified position and set that
+     * position empty.  If the element resides in a managed block, this call
+     * will <i>not</i> delete that element.  If the element is on a
+     * non-managed block, this call is equivalent to set_empty(pos, pos).
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos position of the element to release.
+     *
+     * @return element value.
+     */
+    template<typename _T>
+    _T release(size_type pos);
 
     /**
      * Given the logical position of an element, get the iterator of the block
@@ -652,10 +668,11 @@ private:
 
     iterator set_empty_impl(size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1);
 
-    iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block);
+    iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block, bool overwrite);
 
     iterator set_empty_in_single_block(
-        size_type start_pos, size_type end_pos, size_type block_index, size_type start_pos_in_block);
+        size_type start_pos, size_type end_pos, size_type block_index, size_type start_pos_in_block,
+        bool overwrite);
 
     iterator set_empty_in_multi_blocks(
         size_type start_pos, size_type end_pos,

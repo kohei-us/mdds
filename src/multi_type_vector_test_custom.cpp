@@ -1048,6 +1048,63 @@ void mtv_test_managed_block()
         db.set_empty(1, 1);
         assert(db.block_size() == 1);
     }
+
+    {
+        // Release an element.
+        mtv_type db(1);
+        muser_cell* p = new muser_cell(4.5);
+        db.set(0, p);
+        muser_cell* p2 = db.release<muser_cell*>(0);
+        assert(p == p2);
+        assert(p2->value == 4.5);
+        assert(db.is_empty(0));
+        delete p2;
+
+        db = mtv_type(2);
+        db.set(0, new muser_cell(23.3));
+        assert(db.block_size() == 2);
+        p2 = db.release<muser_cell*>(0);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.block_size() == 1);
+        delete p2;
+
+        db = mtv_type(2);
+        db.set(0, new muser_cell(1.2));
+        db.set(1, new muser_cell(1.3));
+
+        p2 = db.release<muser_cell*>(0);
+        assert(db.is_empty(0));
+        assert(!db.is_empty(1));
+        assert(p2->value == 1.2);
+        delete p2;
+
+        db.set(0, new muser_cell(1.4));
+        p2 = db.release<muser_cell*>(1);
+        assert(!db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(p2->value == 1.3);
+        delete p2;
+
+        db = mtv_type(3);
+        db.set(0, new muser_cell(2.1));
+        db.set(1, new muser_cell(2.2));
+        db.set(2, new muser_cell(2.3));
+
+        p2 = db.release<muser_cell*>(1);
+        assert(p2->value == 2.2);
+        assert(!db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(!db.is_empty(2));
+
+        delete p2;
+
+        db = mtv_type(3);
+        db.set(0, new muser_cell(2.1));
+        db.set(1, new muser_cell(2.2));
+        db.set(2, new muser_cell(2.3));
+        db.set_empty(0, 2); // Make sure this doesn't release anything.
+    }
 }
 
 }

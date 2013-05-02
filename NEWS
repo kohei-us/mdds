@@ -15,6 +15,9 @@
   * added at() static member method to the data block, which calls the
     at() method of the underlying std::vector container.
 
+  * added release() member method to allow caller to release an object
+    stored inside a managed block.
+
 mdds 0.7.1
 
 * multi_type_vector
