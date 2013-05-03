@@ -30,6 +30,7 @@
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector_trait.hpp>
+#include <mdds/multi_type_vector_custom_func1.hpp>
 
 #include <cassert>
 #include <sstream>
@@ -48,6 +49,9 @@ namespace {
 /** custom cell type definition. */
 const mtv::element_t element_type_user_block  = mtv::element_type_user_start;
 const mtv::element_t element_type_muser_block = mtv::element_type_user_start+1;
+const mtv::element_t element_type_fruit_block = mtv::element_type_user_start+2;
+
+enum my_fruit_type { unknown_fruit = 0, apple, orange, mango, peach };
 
 /** Caller manages the life cycle of these cells. */
 struct user_cell
@@ -70,9 +74,6 @@ struct muser_cell
     muser_cell(const muser_cell& r) : value(r.value) {}
     muser_cell(double _v) : value(_v) {}
 };
-
-typedef mdds::mtv::default_element_block<element_type_user_block, user_cell*> user_cell_block;
-typedef mdds::mtv::managed_element_block<element_type_muser_block, muser_cell> muser_cell_block;
 
 template<typename T>
 class cell_pool : boost::noncopyable
@@ -99,8 +100,13 @@ public:
     }
 };
 
+typedef mdds::mtv::default_element_block<element_type_user_block, user_cell*> user_cell_block;
+typedef mdds::mtv::managed_element_block<element_type_muser_block, muser_cell> muser_cell_block;
+typedef mdds::mtv::default_element_block<element_type_fruit_block, my_fruit_type> fruit_block;
+
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(user_cell, element_type_user_block, NULL, user_cell_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(muser_cell, element_type_muser_block, NULL, muser_cell_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(my_fruit_type, element_type_fruit_block, unknown_fruit, fruit_block)
 
 }
 
@@ -309,6 +315,9 @@ struct my_cell_block_func
 
 namespace {
 
+typedef multi_type_vector<my_cell_block_func> mtv_type;
+typedef multi_type_vector<mtv::custom_block_func1<element_type_fruit_block, fruit_block> > mtv_fruit_type;
+
 template<typename _ColT, typename _ValT>
 bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 {
@@ -317,8 +326,6 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
     col_db.get(row, test);
     return val == test;
 }
-
-typedef mdds::multi_type_vector<my_cell_block_func> mtv_type;
 
 void mtv_test_types()
 {
@@ -1107,6 +1114,26 @@ void mtv_test_managed_block()
     }
 }
 
+void mtv_test_custom_block_func1()
+{
+    stack_printer __stack_printer__("::mtv_test_custom_block_func1");
+    mtv_fruit_type db(10);
+    db.set(0, apple);
+    db.set(1, orange);
+    db.set(2, mango);
+    db.set(3, peach);
+    assert(db.block_size() == 2);
+    assert(db.get_type(0) == element_type_fruit_block);
+    assert(db.get<my_fruit_type>(0) == apple);
+    assert(db.get<my_fruit_type>(1) == orange);
+    assert(db.get<my_fruit_type>(2) == mango);
+    assert(db.get<my_fruit_type>(3) == peach);
+    db.set<int>(1, 234);
+    assert(db.block_size() == 4);
+    db.set(1, apple);
+    assert(db.block_size() == 2);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1121,6 +1148,7 @@ int main (int argc, char **argv)
         mtv_test_basic();
         mtv_test_equality();
         mtv_test_managed_block();
+        mtv_test_custom_block_func1();
     }
 
     if (opt.test_perf)
