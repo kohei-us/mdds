@@ -192,6 +192,6 @@ struct custom_block_func1
     }
 };
 
-}
+}}
 
 #endif
