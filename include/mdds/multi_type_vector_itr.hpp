@@ -25,6 +25,11 @@
  *
  ************************************************************************/
 
+#ifndef MDDS_MULTI_TYPE_VECTOR_ITR_HPP
+#define MDDS_MULTI_TYPE_VECTOR_ITR_HPP
+
+#include "multi_type_vector_types.hpp"
+
 namespace mdds { namespace __mtv {
 
 /**
@@ -372,3 +377,5 @@ public:
 };
 
 }}
+
+#endif
