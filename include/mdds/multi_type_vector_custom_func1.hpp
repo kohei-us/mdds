@@ -33,6 +33,9 @@
 
 namespace mdds { namespace mtv {
 
+/**
+ * Block function template for multi_type_vector with 1 user-defined block.
+ */
 template<element_t _TypeId, typename _Block>
 struct custom_block_func1
 {
