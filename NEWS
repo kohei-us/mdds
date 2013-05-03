@@ -18,6 +18,9 @@
   * added release() member method to allow caller to release an object
     stored inside a managed block.
 
+  * added two templates to ease creation of custom element block
+    functions when using one or two custom element types.
+
 mdds 0.7.1
 
 * multi_type_vector
