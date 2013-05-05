@@ -41,27 +41,16 @@ size_t node_instance_count = 0;
 #endif
 
 template<typename T>
-struct node_traits
-{
-    typedef typename T::nonleaf_value_type          nonleaf_value_type;
-    typedef typename T::leaf_value_type             leaf_value_type;
-    typedef typename T::fill_nonleaf_value_handler  fill_nonleaf_value_handler;
-    typedef typename T::to_string_handler           to_string_handler;
-    typedef typename T::init_handler                init_handler;
-    typedef typename T::dispose_handler             dispose_handler;
-};
-
-template<typename T>
 struct node
 {
     typedef ::boost::intrusive_ptr<node>  node_ptr;
 
-    typedef typename node_traits<T>::nonleaf_value_type nonleaf_value_type;
-    typedef typename node_traits<T>::leaf_value_type leaf_value_type;
-    typedef typename node_traits<T>::fill_nonleaf_value_handler fill_nonleaf_value_handler;
-    typedef typename node_traits<T>::to_string_handler to_string_handler;
-    typedef typename node_traits<T>::init_handler init_handler;
-    typedef typename node_traits<T>::dispose_handler dispose_handler;
+    typedef typename T::nonleaf_value_type nonleaf_value_type;
+    typedef typename T::leaf_value_type leaf_value_type;
+    typedef typename T::fill_nonleaf_value_handler fill_nonleaf_value_handler;
+    typedef typename T::to_string_handler to_string_handler;
+    typedef typename T::init_handler init_handler;
+    typedef typename T::dispose_handler dispose_handler;
 
     static size_t get_instance_count()
     {
