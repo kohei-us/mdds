@@ -205,7 +205,7 @@ public:
      *         inserted.
      */
     template<typename _T>
-    iterator set(iterator pos_hint, size_type pos, const _T& value);
+    iterator set(const iterator& pos_hint, size_type pos, const _T& value);
 
     /**
      * Set multiple values of identical type to a range of elements starting
@@ -269,7 +269,7 @@ public:
      *         is empty, the end iterator position is returned.
      */
     template<typename _T>
-    iterator set(iterator pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
+    iterator set(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
      * Insert multiple values of identical type to a specified position.
@@ -333,7 +333,7 @@ public:
      *         is empty, the end iterator position is returned.
      */
     template<typename _T>
-    iterator insert(iterator pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
+    iterator insert(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
      * Get the value of an element at specified position.  The caller must
@@ -471,7 +471,7 @@ public:
      * @return iterator position pointing to the block where the elements are
      *         emptied.
      */
-    iterator set_empty(iterator pos_hint, size_type start_pos, size_type end_pos);
+    iterator set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos);
 
     /**
      * Erase elements located between specified start and end positions. The
@@ -539,7 +539,7 @@ public:
      *         is inserted. When no insertion occurs because the length is
      *         zero, the end iterator position is returned.
      */
-    iterator insert_empty(iterator pos_hint, size_type pos, size_type length);
+    iterator insert_empty(const iterator& pos_hint, size_type pos, size_type length);
 
     /**
      * Clear the content of the container.  The size of the container will
@@ -638,7 +638,7 @@ private:
      * Same as above, but try to infer block position from the iterator first
      * before trying full search.
      */
-    void get_block_position(iterator pos_hint, size_type pos, size_type& start_pos, size_type& block_index) const;
+    void get_block_position(const iterator& pos_hint, size_type pos, size_type& start_pos, size_type& block_index) const;
 
     template<typename _T>
     static void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);

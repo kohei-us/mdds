@@ -191,7 +191,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
 template<typename _CellBlockFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::set(iterator pos_hint, size_type pos, const _T& value)
+multi_type_vector<_CellBlockFunc>::set(const iterator& pos_hint, size_type pos, const _T& value)
 {
     size_type start_row = 0;
     size_type block_index = 0;
@@ -379,7 +379,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& it_begin, const 
 template<typename _CellBlockFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::set(iterator pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
+multi_type_vector<_CellBlockFunc>::set(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
 {
     size_type end_pos = 0;
     if (!set_cells_precheck(pos, it_begin, it_end, end_pos))
@@ -406,7 +406,7 @@ multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin, con
 template<typename _CellBlockFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::insert(iterator pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
+multi_type_vector<_CellBlockFunc>::insert(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
 {
     size_type block_index = 0, start_pos = 0;
     get_block_position(pos_hint, pos, start_pos, block_index);
@@ -437,7 +437,7 @@ bool multi_type_vector<_CellBlockFunc>::get_block_position(
 
 template<typename _CellBlockFunc>
 void multi_type_vector<_CellBlockFunc>::get_block_position(
-    iterator pos_hint, size_type pos, size_type& start_row, size_type& block_index) const
+    const iterator& pos_hint, size_type pos, size_type& start_row, size_type& block_index) const
 {
     start_row = 0;
     block_index = 0;
@@ -1160,7 +1160,7 @@ multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type end_
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::set_empty(iterator pos_hint, size_type start_pos, size_type end_pos)
+multi_type_vector<_CellBlockFunc>::set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
@@ -1347,7 +1347,7 @@ multi_type_vector<_CellBlockFunc>::insert_empty(size_type pos, size_type length)
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::insert_empty(iterator pos_hint, size_type pos, size_type length)
+multi_type_vector<_CellBlockFunc>::insert_empty(const iterator& pos_hint, size_type pos, size_type length)
 {
     if (!length)
         // Nothing to insert.
