@@ -68,6 +68,16 @@ directory on how to use these data structures.
 API Incompatibility Note
 ========================
 
+0.7.1 to 0.8.0
+
+flat_segment_tree
+
+* The search_tree() method in 0.8.0 returns std::pair<const_iterator,
+  bool> instead of just returning bool as of 0.7.1.  If you use this
+  method and relies on the return value of the old version, use the
+  second parameter of the new return value which is equivalent of the
+  previous return value.
+
 0.4.0 to 0.5.0
 
 flat_segment_tree
