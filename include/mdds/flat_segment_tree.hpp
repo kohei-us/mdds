@@ -344,7 +344,6 @@ public:
      * @return a pair of const_iterator corresponding to the start position of
      *         the segment containing the key, and a boolean value indicating
      *         whether or not the search has been successful.
-     * 
      */
     ::std::pair<const_iterator, bool>
     search(const const_iterator& pos, key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
@@ -362,11 +361,12 @@ public:
      * @param end_key pointer to a varaible where the end key value of the
      *                segment that contains the key gets stored upon
      *                successful search.
-     * @return a boolean value indicating whether or not the search has been
-     *         successful.
-     * 
+     * @return a pair of const_iterator corresponding to the start position of
+     *         the segment containing the key, and a boolean value indicating
+     *         whether or not the search has been successful.
      */
-    bool search_tree(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
+    std::pair<const_iterator, bool>
+    search_tree(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
 
     void build_tree();
 

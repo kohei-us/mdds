@@ -40,7 +40,7 @@
 using namespace std;
 using namespace mdds;
 
-void printTitle(const char* msg)
+void print_title(const char* msg)
 {
     cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
     cout << " " << msg << endl;
@@ -50,7 +50,7 @@ void printTitle(const char* msg)
 void fst_test_leaf_search()
 {
     {
-        printTitle("Simple insert test");
+        print_title("Simple insert test");
         flat_segment_tree<int, int> int_ranges(0, 100, -1);
         for (int i = 0; i < 20; ++i)
         {
@@ -62,7 +62,7 @@ void fst_test_leaf_search()
     }
 
     {
-        printTitle("Merge test 1");
+        print_title("Merge test 1");
         flat_segment_tree<int, int> merge_test(0, 100, -1);
         merge_test.insert_front(10, 20, 5);
         merge_test.dump_leaf_nodes();
@@ -77,7 +77,7 @@ void fst_test_leaf_search()
     }
 
     {
-        printTitle("Merge test 2");
+        print_title("Merge test 2");
         flat_segment_tree<int, int> merge_test(0, 100, -1);
 
         // This should not change the node configuration.
@@ -104,7 +104,7 @@ void fst_test_leaf_search()
     }
 
     {
-        printTitle("Search test");
+        print_title("Search test");
         flat_segment_tree<int, int> db(0, 100, -1);
         for (int i = 0; i < 10; ++i)
         {
@@ -179,7 +179,7 @@ void fst_perf_test_search(bool tree_search)
         int val;
         for (int i = lower; i < upper; ++i)
         {
-            if (db.search_tree(i, val))
+            if (db.search_tree(i, val).second)
                 ++success;
             else
                 ++failure;
@@ -193,7 +193,7 @@ void fst_perf_test_search(bool tree_search)
         {
             if (tree_search)
             {
-                if (db.search_tree(i, val))
+                if (db.search_tree(i, val).second)
                     ++success;
                 else
                     ++failure;
@@ -226,7 +226,7 @@ void fst_test_tree_search()
     int success = 0, failure = 0;
     for (int i = lower-10; i < upper+10; ++i)
     {
-        if (db.search_tree(i, val, &start, &end))
+        if (db.search_tree(i, val, &start, &end).second)
         {
             cout << "key = " << i << "; value = " << val << " (" << start << "-" << end << ")" << endl;
             ++success;
@@ -243,7 +243,7 @@ void fst_test_tree_search()
 void test_single_tree_search(const flat_segment_tree<int, int>& db, int key, int val, int start, int end)
 {
     int r_val, r_start, r_end;
-    if (db.search_tree(key, r_val, &r_start, &r_end))
+    if (db.search_tree(key, r_val, &r_start, &r_end).second)
         assert(r_val == val && r_start == start && r_end == end);
     else
         assert(!"tree search failed!");
@@ -1764,7 +1764,7 @@ void fst_test_swap()
 
     // Tree search should work on db2.
     db_type::value_type val;
-    assert(db2.search_tree(35, val));
+    assert(db2.search_tree(35, val).second);
     assert(val == 2);
 }
 
