@@ -1,7 +1,14 @@
+mdds 0.8.0
 
 * all
 
   * added .pc file for pkg-config.
+
+* flat_segment_tree
+
+  * changed the return type of search_tree from bool to
+    std::pair<const_iterator,bool>, to make it consistent with the
+    search() method.  Note that this is an API-incompatible change.
 
 * multi_type_vector
 
