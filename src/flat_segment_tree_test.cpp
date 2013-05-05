@@ -213,8 +213,9 @@ void fst_perf_test_search(bool tree_search)
 void fst_test_tree_search()
 {
     stack_printer __stack_printer__("::fst_test_tree_search");
+    typedef flat_segment_tree<int, int> fst_type;
     int lower = 0, upper = 200, delta = 5;
-    flat_segment_tree<int, int> db(lower, upper, 0);
+    fst_type db(lower, upper, 0);
     for (int i = lower; i < upper; i += delta)
         db.insert_front(i, i+delta, i);
 
@@ -238,6 +239,42 @@ void fst_test_tree_search()
         }
     }
     cout << "search: success (" << success << ")  failure (" << failure << ")" << endl;
+
+    // Make sure search_tree() returns correct iterator position.
+    db.clear();
+    db.insert_back(5, 10, 2);
+    db.insert_back(15, 18, 3);
+    db.insert_back(23, 28, 4);
+    db.build_tree();
+
+    typedef pair<fst_type::const_iterator,bool> ret_type;
+    ret_type ret = db.search_tree(0, val, &start, &end);
+    assert(ret.second);
+    assert(start == 0 && end == 5 && val == 0);
+    assert(ret.first == db.begin());
+
+    ret = db.search_tree(6, val, &start, &end);
+    assert(ret.second);
+    assert(start == 5 && end == 10 && val == 2);
+    fst_type::const_iterator check = db.begin();
+    ++check; // 5-10 is the 2nd segment from the top.
+    assert(ret.first == check);
+
+    ret = db.search_tree(17, val, &start, &end);
+    assert(ret.second);
+    assert(start == 15 && end == 18 && val == 3);
+    std::advance(check, 2);
+    assert(ret.first == check);
+
+    ret = db.search_tree(55, val, &start, &end);
+    assert(ret.second);
+    assert(start == 28 && end == upper && val == 0);
+    std::advance(check, 3);
+    assert(ret.first == check);
+
+    ret = db.search_tree(upper+10, val, &start, &end);
+    assert(!ret.second); // This search should fail.
+    assert(ret.first == db.end());
 }
 
 void test_single_tree_search(const flat_segment_tree<int, int>& db, int key, int val, int start, int end)
