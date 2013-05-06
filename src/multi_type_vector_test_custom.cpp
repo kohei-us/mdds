@@ -147,6 +147,10 @@ void mtv_test_types()
     user_cell* p = NULL;
     ct = mtv_type::get_element_type(p);
     assert(ct == element_type_user_block && ct >= mtv::element_type_user_start);
+    ct = mtv_type::get_element_type(static_cast<muser_cell*>(NULL));
+    assert(ct == element_type_muser_block && ct >= mtv::element_type_user_start);
+    ct = mtv_fruit_type::get_element_type(unknown_fruit);
+    assert(ct == element_type_fruit_block && ct >= mtv::element_type_user_start);
 }
 
 void mtv_test_basic()
