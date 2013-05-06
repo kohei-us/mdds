@@ -406,6 +406,10 @@ public:
      */
     std::pair<const_iterator, size_type> position(size_type pos) const;
 
+    iterator transfer(size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
+
+    iterator transfer(const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
+
     /**
      * Get the type of an element at specified position.
      *
@@ -666,6 +670,10 @@ private:
     void set_cell_to_bottom_of_data_block(
         size_type block_index, const _T& cell);
 
+    iterator transfer_impl(
+        size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+        multi_type_vector& dest, size_type dest_pos);
+
     iterator set_empty_impl(size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1);
 
     iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block, bool overwrite);
@@ -677,7 +685,7 @@ private:
     iterator set_empty_in_multi_blocks(
         size_type start_pos, size_type end_pos,
         size_type block_index1, size_type start_pos_in_block1,
-        size_type block_index2, size_type start_pos_in_block2);
+        size_type block_index2, size_type start_pos_in_block2, bool overwrite);
 
     void erase_impl(size_type start_pos, size_type end_pos);
 

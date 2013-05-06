@@ -1121,6 +1121,31 @@ multi_type_vector<_CellBlockFunc>::position(size_type pos) const
 }
 
 template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::transfer(
+    size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
+{
+    size_type start_pos_in_block1 = 0;
+    size_type block_index1 = 0;
+    if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
+        throw std::out_of_range("Block position not found!");
+
+    return transfer_impl(start_pos, end_pos, start_pos_in_block1, block_index1, dest, dest_pos);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::transfer(
+    const iterator& pos_hint, size_type start_pos, size_type end_pos,
+    multi_type_vector& dest, size_type dest_pos)
+{
+    size_type start_pos_in_block1 = 0;
+    size_type block_index1 = 0;
+    get_block_position(pos_hint, start_pos, start_pos_in_block1, block_index1);
+    return transfer_impl(start_pos, end_pos, start_pos_in_block1, block_index1, dest, dest_pos);
+}
+
+template<typename _CellBlockFunc>
 mtv::element_t multi_type_vector<_CellBlockFunc>::get_type(size_type pos) const
 {
     size_type start_row = 0;
@@ -1170,6 +1195,50 @@ multi_type_vector<_CellBlockFunc>::set_empty(const iterator& pos_hint, size_type
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::transfer_impl(
+    size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+    multi_type_vector& dest, size_type dest_pos)
+{
+    if (start_pos > end_pos)
+        throw std::out_of_range("Start row is larger than the end row.");
+
+    size_type start_pos_in_block2 = start_pos_in_block1;
+    size_type block_index2 = block_index1;
+    if (!get_block_position(end_pos, start_pos_in_block2, block_index2))
+        throw std::out_of_range("Block position not found!");
+
+    // Make sure the destination container is large enough.
+    size_type last_dest_pos = dest_pos + end_pos - start_pos;
+    if (last_dest_pos >= dest.size())
+        throw std::out_of_range("Destination vector is too small for the elements being transferred.");
+
+    if (block_index1 == block_index2)
+    {
+        // All elements are in the same block.
+        block* blk = m_blocks[block_index1];
+
+        // Empty the region in the destination container where the elements are to be transferred to.
+        iterator dit_blk = dest.set_empty(dest_pos, last_dest_pos);
+        if (!blk->mp_data)
+            return get_iterator(block_index1, start_pos_in_block1);
+
+        if (dit_blk->__private_data.block_index == 0)
+        {
+            // The elements will be transferred within the topmost block in the destination.
+            assert(!"not implemented yet");
+        }
+
+        assert(!"not implemented yet");
+        return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, false);
+    }
+
+    assert(!"not implemented yet");
+    return set_empty_in_multi_blocks(
+        start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2, false);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_empty_impl(
     size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1)
 {
@@ -1185,7 +1254,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
         return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, true);
 
     return set_empty_in_multi_blocks(
-        start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2);
+        start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2, true);
 }
 
 template<typename _CellBlockFunc>
@@ -2441,7 +2510,7 @@ typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
     size_type start_row, size_type end_row,
     size_type block_index1, size_type start_row_in_block1,
-    size_type block_index2, size_type start_row_in_block2)
+    size_type block_index2, size_type start_row_in_block2, bool overwrite)
 {
     assert(block_index1 < block_index2);
 
@@ -2475,6 +2544,9 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
                 else
                 {
                     // Make block 1 empty.
+                    if (!overwrite)
+                        element_block_func::resize_block(*blk->mp_data, 0);
+
                     element_block_func::delete_block(blk->mp_data);
                     blk->mp_data = NULL;
                 }
@@ -2483,7 +2555,9 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
             {
                 // Empty the lower part.
                 size_type new_size = start_row - start_row_in_block1;
-                element_block_func::overwrite_values(*blk->mp_data, new_size, blk->m_size-new_size);
+                if (overwrite)
+                    element_block_func::overwrite_values(*blk->mp_data, new_size, blk->m_size-new_size);
+
                 element_block_func::resize_block(*blk->mp_data, new_size);
                 blk->m_size = new_size;
             }
@@ -2530,7 +2604,9 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
             {
                 // Empty the upper part.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
-                element_block_func::overwrite_values(*blk->mp_data, 0, size_to_erase);
+                if (overwrite)
+                    element_block_func::overwrite_values(*blk->mp_data, 0, size_to_erase);
+
                 element_block_func::erase(*blk->mp_data, 0, size_to_erase);
                 blk->m_size -= size_to_erase;
             }
@@ -2549,7 +2625,13 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
         // Remove all blocks in-between, from block_index1+1 to end_block_to_erase-1.
 
         for (size_type i = block_index1 + 1; i < end_block_to_erase; ++i)
-            delete m_blocks[i];
+        {
+            block* blk = m_blocks[i];
+            if (!overwrite && blk->mp_data)
+                element_block_func::resize_block(*blk->mp_data, 0);
+
+            delete blk;
+        }
 
         typename blocks_type::iterator it = m_blocks.begin() + block_index1 + 1;
         typename blocks_type::iterator it_end = m_blocks.begin() + end_block_to_erase;

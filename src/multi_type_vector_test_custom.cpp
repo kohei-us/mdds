@@ -936,6 +936,17 @@ void mtv_test_custom_block_func1()
     assert(db.block_size() == 2);
 }
 
+void mtv_test_transfer()
+{
+    stack_printer __stack_printer__("::mtv_test_transfer");
+    mtv_type db1(3), db2(3);
+    db1.set(0, new muser_cell(1.1));
+    db1.set(1, new muser_cell(1.2));
+    db1.set(2, new muser_cell(1.3));
+
+    db1.transfer(0, 2, db2, 0);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -951,6 +962,7 @@ int main (int argc, char **argv)
         mtv_test_equality();
         mtv_test_managed_block();
         mtv_test_custom_block_func1();
+        mtv_test_transfer();
     }
 
     if (opt.test_perf)
