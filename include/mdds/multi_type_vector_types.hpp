@@ -33,8 +33,14 @@
 #include "global.hpp"
 
 #include <vector>
-#include <iostream>
 #include <boost/noncopyable.hpp>
+
+#ifdef MDDS_UNIT_TEST
+#include <iostream>
+using std::cout;
+using std::cerr;
+using std::endl;
+#endif
 
 namespace mdds { namespace mtv {
 

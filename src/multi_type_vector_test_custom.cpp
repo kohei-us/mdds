@@ -939,12 +939,27 @@ void mtv_test_custom_block_func1()
 void mtv_test_transfer()
 {
     stack_printer __stack_printer__("::mtv_test_transfer");
-    mtv_type db1(3), db2(3);
+    mtv_type db1(3), db2(4);
     db1.set(0, new muser_cell(1.1));
     db1.set(1, new muser_cell(1.2));
     db1.set(2, new muser_cell(1.3));
+    assert(db1.block_size() == 1);
 
+    // Do the transfer.
     db1.transfer(0, 2, db2, 0);
+
+    // Now db1 should be totally empty.
+    assert(db1.block_size() == 1);
+    mtv_type::iterator check = db1.begin();
+    assert(check != db1.end());
+    assert(check->type == mtv::element_type_empty);
+    assert(check->size == 3);
+
+    assert(db2.block_size() == 2);
+    assert(db2.get<muser_cell*>(0)->value == 1.1);
+    assert(db2.get<muser_cell*>(1)->value == 1.2);
+    assert(db2.get<muser_cell*>(2)->value == 1.3);
+    assert(db2.is_empty(3));
 }
 
 }

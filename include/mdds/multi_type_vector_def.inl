@@ -1207,8 +1207,10 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
     if (!get_block_position(end_pos, start_pos_in_block2, block_index2))
         throw std::out_of_range("Block position not found!");
 
+    size_type len = end_pos - start_pos + 1;
+    size_type last_dest_pos = dest_pos + len - 1;
+
     // Make sure the destination container is large enough.
-    size_type last_dest_pos = dest_pos + end_pos - start_pos;
     if (last_dest_pos >= dest.size())
         throw std::out_of_range("Destination vector is too small for the elements being transferred.");
 
@@ -1218,17 +1220,48 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
         block* blk = m_blocks[block_index1];
 
         // Empty the region in the destination container where the elements are to be transferred to.
-        iterator dit_blk = dest.set_empty(dest_pos, last_dest_pos);
+        iterator it_dest_blk = dest.set_empty(dest_pos, last_dest_pos);
+
         if (!blk->mp_data)
             return get_iterator(block_index1, start_pos_in_block1);
 
-        if (dit_blk->__private_data.block_index == 0)
+        element_category_type cat = get_block_type(*blk->mp_data);
+
+        if (it_dest_blk->__private_data.block_index == 0)
         {
             // The elements will be transferred within the topmost block in the destination.
+            if (dest_pos == 0)
+            {
+                block* blk_dest = dest.m_blocks[0];
+                if (len < blk_dest->m_size)
+                {
+                    // Shrink the existing block and insert a new block before it.
+                    blk_dest->m_size -= len;
+                    dest.m_blocks.insert(dest.m_blocks.begin(), new block(len));
+                    blk_dest = dest.m_blocks[0];
+                    blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
+                    assert(blk_dest->mp_data);
+
+                    // Shallow-copy the elements to the destination block.
+                    size_type offset = start_pos - start_pos_in_block1;
+                    element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, offset, len);
+                }
+                else
+                {
+                    assert(!"not implemented yet");
+                }
+            }
+            else
+            {
+                assert(!"not implemented yet");
+            }
+        }
+        else
+        {
             assert(!"not implemented yet");
         }
 
-        assert(!"not implemented yet");
+        // Set the source range empty without overwriting the elements.
         return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, false);
     }
 
