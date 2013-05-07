@@ -1228,20 +1228,21 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
             return get_iterator(block_index1, start_pos_in_block1);
 
         element_category_type cat = get_block_type(*blk->mp_data);
+
         size_type dest_block_index = it_dest_blk->__private_data.block_index;
+        block* blk_dest = dest.m_blocks[dest_block_index];
 
         size_type dest_pos_in_block = dest_pos - it_dest_blk->__private_data.start_pos;
         if (dest_pos_in_block == 0)
         {
             // Copy to the top part of destination block.
 
-            block* blk_dest = dest.m_blocks[dest_block_index];
             assert(!blk_dest->mp_data); // should be already emptied.
 
             if (len == blk_dest->m_size)
             {
                 // Source and destination blocks are of the same size.
-                blk_dest->mp_data = blk->mp_data;
+                blk_dest->mp_data = blk->mp_data; // Transfer the whole data array.
                 blk->mp_data = NULL;
                 dest.merge_with_adjacent_blocks(dest_block_index);
                 merge_with_adjacent_blocks(block_index1);
@@ -1263,9 +1264,31 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
             element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, offset, len);
             dest.merge_with_adjacent_blocks(dest_block_index);
         }
+        else if (dest_pos_in_block == (it_dest_blk->size-1))
+        {
+            // Copy to the bottom part of destination block.
+            assert(!"copy to the bottom - not implemented yet");
+        }
         else
         {
-            assert(!"not implemented yet");
+            // Copy to the middle of destination block.
+
+            // Insert two new blocks below current.
+            size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
+            dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, 2, NULL);
+            dest.m_blocks[dest_block_index+1] = new block(len);
+            dest.m_blocks[dest_block_index+2] = new block(blk2_size);
+            blk_dest->m_size = dest_pos_in_block;
+
+            blk_dest = dest.m_blocks[dest_block_index+1];
+            assert(blk_dest->m_size == len);
+            blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
+            assert(blk_dest->mp_data);
+
+            // Shallow-copy the elements to the destination block.
+            size_type offset = start_pos - start_pos_in_block1;
+            element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, offset, len);
+            dest.merge_with_adjacent_blocks(dest_block_index);
         }
 
         // Set the source range empty without overwriting the elements.
@@ -2190,7 +2213,6 @@ void multi_type_vector<_CellBlockFunc>::merge_with_adjacent_blocks(size_type blo
     if (blk->mp_data)
     {
         // Current block is not empty. Check with the next block.
-        assert(!"not tested yet!");
         merge_with_next_block(block_index);
         return;
     }
@@ -2210,7 +2232,6 @@ void multi_type_vector<_CellBlockFunc>::merge_with_adjacent_blocks(size_type blo
         return;
     }
 
-    assert(!"not tested yet!");
     // Next block is not empty, or does not exist. Merge the current block with the previous one.
     merge_with_next_block(block_index-1);
 }

@@ -1051,6 +1051,21 @@ void mtv_test_transfer()
     assert(db2.get<muser_cell*>(0)->value == 4.1);
     assert(db2.get<muser_cell*>(1)->value == 4.2);
     assert(db2.get<muser_cell*>(2)->value == 4.3);
+
+    db1 = mtv_type(3);
+    db2 = mtv_type(3);
+    db1.set(0, new muser_cell(5.2));
+    assert(db1.block_size() == 2);
+    db1.transfer(0, 0, db2, 1);
+    assert(db1.block_size() == 1);
+    check = db1.begin();
+    assert(check != db1.end());
+    assert(check->size == 3);
+    assert(check->type == mtv::element_type_empty);
+    assert(db2.block_size() == 3);
+    assert(db2.is_empty(0));
+    assert(db2.get<muser_cell*>(1)->value == 5.2);
+    assert(db2.is_empty(2));
 }
 
 }
