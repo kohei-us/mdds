@@ -1165,6 +1165,39 @@ void mtv_test_transfer()
     assert(it != db1.end());
     assert(it->size == 4);
     assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db1.end());
+
+    // Multi-block transfer to the top part of destination block.
+    db1 = mtv_type(5);
+    db2 = mtv_type(5);
+    db1.set(0, new muser_cell(-1.1));
+    db1.set(1, new muser_cell(-2.1));
+    db1.set(2, new muser_cell(-3.1));
+    db1.set(3, string("foo"));
+    db1.set(4, new muser_cell(-5.1));
+    db2.set(1, true);
+    db2.set(2, false);
+    db2.set(3, true);
+    it = db1.transfer(2, 3, db2, 2);
+    assert(it != db1.end());
+    assert(it->size == 2);
+    assert(it->type == mtv::element_type_empty);
+    std::advance(it, 2);
+    assert(it == db1.end());
+    assert(db1.block_size() == 3);
+    assert(db1.get<muser_cell*>(0)->value == -1.1);
+    assert(db1.get<muser_cell*>(1)->value == -2.1);
+    assert(db1.is_empty(2));
+    assert(db1.is_empty(3));
+    assert(db1.get<muser_cell*>(4)->value == -5.1);
+
+    assert(db2.block_size() == 5);
+    assert(db2.is_empty(0));
+    assert(db2.get<bool>(1) == true);
+    assert(db2.get<muser_cell*>(2)->value == -3.1);
+    assert(db2.get<string>(3) == "foo");
+    assert(db2.is_empty(4));
 }
 
 }

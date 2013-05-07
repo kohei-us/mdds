@@ -1258,6 +1258,7 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
     }
     else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
     {
+        assert(!"not tested yet");
         // Copy to the bottom part of destination block. Insert slots for new
         // blocks below current, and shrink the current block.
         dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len, NULL);
@@ -1267,6 +1268,7 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
     }
     else
     {
+        assert(!"not tested yet");
         // Copy to the middle of destination block. Insert slots for new
         // blocks (plus one for the empty block) below current.
         size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
@@ -1306,7 +1308,7 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
         blk->m_size = offset;
         ++del_index1; // Retain this block.
 
-        // Position of the next block will be returned.
+        // Move the return block position to the next block.
         ++ret_block_index;
         ret_start_pos += blk->m_size;
     }
