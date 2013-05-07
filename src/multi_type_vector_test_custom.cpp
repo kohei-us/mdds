@@ -997,6 +997,60 @@ void mtv_test_transfer()
     assert(check != db2.end());
     assert(check->size == 4);
     assert(check->type == mtv::element_type_empty);
+
+    db1 = mtv_type(4);
+    db2 = mtv_type(4);
+    db2.set(1, new muser_cell(2.1));
+    db2.set(2, new muser_cell(2.2));
+    assert(db2.block_size() == 3);
+    db1.transfer(0, 1, db2, 1); // This causes db2's 3 blocks to merge into one.
+    assert(db2.block_size() == 1);
+    check = db2.begin();
+    assert(check != db2.end());
+    assert(check->size == 4);
+    assert(check->type == mtv::element_type_empty);
+    assert(db1.block_size() == 1);
+    check = db1.begin();
+    assert(check != db1.end());
+    assert(check->size == 4);
+    assert(check->type == mtv::element_type_empty);
+
+    db2.set(0, new muser_cell(3.1));
+    assert(db2.block_size() == 2);
+
+    db1.set(1, new muser_cell(3.2));
+    db1.set(2, new muser_cell(3.3));
+    db1.set(3, new muser_cell(3.4));
+    assert(db1.block_size() == 2);
+
+    db1.transfer(1, 2, db2, 1);
+    assert(db1.block_size() == 2);
+    assert(db1.is_empty(0));
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db1.get<muser_cell*>(3)->value == 3.4);
+    assert(db2.block_size() == 2);
+    assert(db2.get<muser_cell*>(0)->value == 3.1);
+    assert(db2.get<muser_cell*>(1)->value == 3.2);
+    assert(db2.get<muser_cell*>(2)->value == 3.3);
+    assert(db2.is_empty(3));
+
+    db1 = mtv_type(3);
+    db2 = mtv_type(3);
+    db1.set(1, new muser_cell(4.2));
+    db2.set(0, new muser_cell(4.1));
+    db2.set(2, new muser_cell(4.3));
+
+    db1.transfer(1, 1, db2, 1);
+    assert(db1.block_size() == 1);
+    check = db1.begin();
+    assert(check != db1.end());
+    assert(check->size == 3);
+    assert(check->type == mtv::element_type_empty);
+    assert(db2.block_size() == 1);
+    assert(db2.get<muser_cell*>(0)->value == 4.1);
+    assert(db2.get<muser_cell*>(1)->value == 4.2);
+    assert(db2.get<muser_cell*>(2)->value == 4.3);
 }
 
 }

@@ -1229,45 +1229,39 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
 
         element_category_type cat = get_block_type(*blk->mp_data);
         size_type dest_block_index = it_dest_blk->__private_data.block_index;
-        if (dest_block_index == 0)
+
+        size_type dest_pos_in_block = dest_pos - it_dest_blk->__private_data.start_pos;
+        if (dest_pos_in_block == 0)
         {
-            // The elements will be transferred within the topmost block in the destination.
-            size_type dest_pos_in_block = dest_pos - it_dest_blk->__private_data.start_pos;
-            if (dest_pos_in_block == 0)
+            // Copy to the top part of destination block.
+
+            block* blk_dest = dest.m_blocks[dest_block_index];
+            assert(!blk_dest->mp_data); // should be already emptied.
+
+            if (len == blk_dest->m_size)
             {
-                // Copy to the top part of destination block.
+                // Source and destination blocks are of the same size.
+                blk_dest->mp_data = blk->mp_data;
+                blk->mp_data = NULL;
+                dest.merge_with_adjacent_blocks(dest_block_index);
+                merge_with_adjacent_blocks(block_index1);
 
-                block* blk_dest = dest.m_blocks[dest_block_index];
-                assert(!blk_dest->mp_data); // should be already emptied.
-
-                if (len == blk_dest->m_size)
-                {
-                    // Source and destination blocks are of the same size.
-                    blk_dest->mp_data = blk->mp_data;
-                    blk->mp_data = NULL;
-                    dest.merge_with_adjacent_blocks(dest_block_index);
-                    merge_with_adjacent_blocks(block_index1);
-
-                    // No need to empty the block. We're done here.
-                    return get_iterator(block_index1, start_pos_in_block1);
-                }
-
-                // Shrink the existing block and insert a new block before it.
-                assert(len < blk_dest->m_size);
-                blk_dest->m_size -= len;
-                dest.m_blocks.insert(dest.m_blocks.begin(), new block(len));
-                blk_dest = dest.m_blocks[dest_block_index];
-                blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
-                assert(blk_dest->mp_data);
-
-                // Shallow-copy the elements to the destination block.
-                size_type offset = start_pos - start_pos_in_block1;
-                element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, offset, len);
+                // No need to empty the block. We're done here.
+                return get_iterator(block_index1, start_pos_in_block1);
             }
-            else
-            {
-                assert(!"not implemented yet");
-            }
+
+            // Shrink the existing block and insert a new block before it.
+            assert(len < blk_dest->m_size);
+            blk_dest->m_size -= len;
+            dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, new block(len));
+            blk_dest = dest.m_blocks[dest_block_index];
+            blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
+            assert(blk_dest->mp_data);
+
+            // Shallow-copy the elements to the destination block.
+            size_type offset = start_pos - start_pos_in_block1;
+            element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, offset, len);
+            dest.merge_with_adjacent_blocks(dest_block_index);
         }
         else
         {
@@ -2157,49 +2151,68 @@ void multi_type_vector<_CellBlockFunc>::merge_with_adjacent_blocks(size_type blo
     // Check the previous block.
     if (blk_prev->mp_data)
     {
-        assert(!"not implemented yet");
-    }
-    else
-    {
-        // Previous block is empty.
-        if (blk->mp_data)
+        // Previous block has data.
+        element_category_type cat_prev = mtv::get_block_type(*blk_prev->mp_data);
+        if (!blk->mp_data || cat_prev != mtv::get_block_type(*blk->mp_data))
         {
-            // Current block is not empty.
-            if (blk_next)
-            {
-                // Check the next block.
-
-            }
-            assert(!"not implemented yet");
+            // Current block is empty or is of different type from the previous one.
+            merge_with_next_block(block_index);
+            return;
         }
-        else
-        {
-            // Previous and current blocks are both empty.
-            if (blk_next && !blk_next->mp_data)
-            {
-                // Next block is empty too. Merge all three.
-                blk_prev->m_size += blk->m_size + blk_next->m_size;
-                delete blk;
-                delete blk_next;
-                typename blocks_type::iterator it = m_blocks.begin();
-                std::advance(it, block_index);
-                typename blocks_type::iterator it_end = it;
-                std::advance(it_end, 2);
-                m_blocks.erase(it, it_end);
-                return;
-            }
 
-            // Next block is not empty, or does not exist. Merge the current block with the previous one.
-            blk_prev->m_size += blk->m_size;
+        // Previous and current blocks are of the same type.
+        if (blk_next && blk_next->mp_data && cat_prev == get_block_type(*blk_next->mp_data))
+        {
+            // Merge all three blocks.
+            blk_prev->m_size += blk->m_size + blk_next->m_size;
+            element_block_func::append_values_from_block(*blk_prev->mp_data, *blk->mp_data);
+            element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
+            // Avoid overwriting the transferred elements.
+            element_block_func::resize_block(*blk->mp_data, 0);
+            element_block_func::resize_block(*blk_next->mp_data, 0);
+
             delete blk;
+            delete blk_next;
             typename blocks_type::iterator it = m_blocks.begin();
             std::advance(it, block_index);
             typename blocks_type::iterator it_end = it;
-            ++it_end;
+            std::advance(it_end, 2);
             m_blocks.erase(it, it_end);
             return;
         }
+
+        // Merge only the previous and current blocks.
+        merge_with_next_block(block_index-1);
+        return;
     }
+
+    // Previous block is empty.
+    if (blk->mp_data)
+    {
+        // Current block is not empty. Check with the next block.
+        assert(!"not tested yet!");
+        merge_with_next_block(block_index);
+        return;
+    }
+
+    // Previous and current blocks are both empty.
+    if (blk_next && !blk_next->mp_data)
+    {
+        // Next block is empty too. Merge all three.
+        blk_prev->m_size += blk->m_size + blk_next->m_size;
+        delete blk;
+        delete blk_next;
+        typename blocks_type::iterator it = m_blocks.begin();
+        std::advance(it, block_index);
+        typename blocks_type::iterator it_end = it;
+        std::advance(it_end, 2);
+        m_blocks.erase(it, it_end);
+        return;
+    }
+
+    assert(!"not tested yet!");
+    // Next block is not empty, or does not exist. Merge the current block with the previous one.
+    merge_with_next_block(block_index-1);
 }
 
 template<typename _CellBlockFunc>
