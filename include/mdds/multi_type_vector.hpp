@@ -406,8 +406,57 @@ public:
      */
     std::pair<const_iterator, size_type> position(size_type pos) const;
 
+    /**
+     * Move elements from one container to another. After the move, the
+     * segment where the elements were in the original container becomes
+     * empty.  When transferring managed elements, this call transfers
+     * ownership of the moved elements to the new container.  The moved
+     * elements will overwrite any existing elements in the destination range.
+     * Transfer of elements within the same container is not allowed.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size, or the destination container is not large enough to
+     * accommodate the transferred elements.</p>
+     *
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @param dest destination container to which the elements are to be
+     *             moved.
+     * @param dest_pos position in the destination container to which the
+     *                 elements are to be moved.
+     *
+     * @return iterator referencing the block where the moved elements were
+     *         prior to the transfer.
+     */
     iterator transfer(size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
 
+    /**
+     * Move elements from one container to another. After the move, the
+     * segment where the elements were in the original container becomes
+     * empty.  When transferring managed elements, this call transfers
+     * ownership of the moved elements to the new container.  The moved
+     * elements will overwrite any existing elements in the destination range.
+     * Transfer of elements within the same container is not allowed.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size, or the destination container is not large enough to
+     * accommodate the transferred elements.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the blocks
+     *                 where the elements to be transferred reside.
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @param dest destination container to which the elements are to be
+     *             moved.
+     * @param dest_pos position in the destination container to which the
+     *                 elements are to be moved.
+     *
+     * @return iterator referencing the block where the moved elements were
+     *         prior to the transfer.
+     */
     iterator transfer(const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
 
     /**
