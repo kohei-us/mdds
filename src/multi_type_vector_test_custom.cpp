@@ -961,7 +961,7 @@ void mtv_test_transfer()
     assert(db2.get<muser_cell*>(2)->value == 1.3);
     assert(db2.is_empty(3));
 
-    // Transfer back to db1.
+    // Transfer back to db1. This should make db2 to be totally empty again.
     db2.transfer(0, 2, db1, 0);
     assert(db2.block_size() == 1);
     check = db2.begin();
@@ -973,6 +973,30 @@ void mtv_test_transfer()
     assert(db1.get<muser_cell*>(0)->value == 1.1);
     assert(db1.get<muser_cell*>(1)->value == 1.2);
     assert(db1.get<muser_cell*>(2)->value == 1.3);
+
+    // Now, transfer only the top 2 elements.
+    db1.transfer(0, 1, db2, 0);
+    assert(db1.is_empty(0));
+    assert(db1.is_empty(1));
+    assert(db1.get<muser_cell*>(2)->value == 1.3);
+
+    assert(db2.get<muser_cell*>(0)->value == 1.1);
+    assert(db2.get<muser_cell*>(1)->value == 1.2);
+    assert(db2.is_empty(2));
+    assert(db2.is_empty(3));
+
+    // .. and back.
+    db2.transfer(0, 1, db1, 0);
+    assert(db1.block_size() == 1);
+    assert(db1.get<muser_cell*>(0)->value == 1.1);
+    assert(db1.get<muser_cell*>(1)->value == 1.2);
+    assert(db1.get<muser_cell*>(2)->value == 1.3);
+
+    assert(db2.block_size() == 1);
+    check = db2.begin();
+    assert(check != db2.end());
+    assert(check->size == 4);
+    assert(check->type == mtv::element_type_empty);
 }
 
 }
