@@ -1239,23 +1239,15 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
 
             assert(!blk_dest->mp_data); // should be already emptied.
 
-            if (len == blk_dest->m_size)
+            if (len < blk_dest->m_size)
             {
-                // Source and destination blocks are of the same size.
-                blk_dest->mp_data = blk->mp_data; // Transfer the whole data array.
-                blk->mp_data = NULL;
-                dest.merge_with_adjacent_blocks(dest_block_index);
-                merge_with_adjacent_blocks(block_index1);
-
-                // No need to empty the block. We're done here.
-                return get_iterator(block_index1, start_pos_in_block1);
+                // Shrink the existing block and insert a new block before it.
+                assert(len < blk_dest->m_size);
+                blk_dest->m_size -= len;
+                dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, new block(len));
+                blk_dest = dest.m_blocks[dest_block_index];
             }
 
-            // Shrink the existing block and insert a new block before it.
-            assert(len < blk_dest->m_size);
-            blk_dest->m_size -= len;
-            dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, new block(len));
-            blk_dest = dest.m_blocks[dest_block_index];
             blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
             assert(blk_dest->mp_data);
 
@@ -1264,7 +1256,7 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
             element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, offset, len);
             dest.merge_with_adjacent_blocks(dest_block_index);
         }
-        else if (dest_pos_in_block == (it_dest_blk->size-1))
+        else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
         {
             // Copy to the bottom part of destination block.
             assert(!"copy to the bottom - not implemented yet");
