@@ -1492,7 +1492,13 @@ multi_type_vector<_CellBlockFunc>::transfer_single_block(
         blk_dest->mp_data = blk->mp_data;
         blk->mp_data = NULL;
         dest.merge_with_adjacent_blocks(dest_block_index);
-        merge_with_adjacent_blocks(block_index1);
+        size_type start_pos_offset = merge_with_adjacent_blocks(block_index1);
+        if (start_pos_offset)
+        {
+            // Merged with the previous block. Adjust the return block position.
+            --block_index1;
+            start_pos_in_block1 -= start_pos_offset;
+        }
         return get_iterator(block_index1, start_pos_in_block1);
     }
 

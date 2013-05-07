@@ -1162,9 +1162,9 @@ void mtv_test_transfer()
     assert(db2.get<muser_cell*>(3)->value == 0.3);
     assert(db2.get<muser_cell*>(4)->value == 1.2);
 
-//  assert(it != db1.end());
-//  assert(it->size == 4);
-//  assert(it->type == mtv::element_type_empty);
+    assert(it != db1.end());
+    assert(it->size == 4);
+    assert(it->type == mtv::element_type_empty);
 }
 
 }
