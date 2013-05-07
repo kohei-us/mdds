@@ -1098,6 +1098,13 @@ void mtv_test_transfer()
     assert(db2.is_empty(2));
     assert(db2.get<muser_cell*>(3)->value == 6.1);
     assert(db2.get<muser_cell*>(4)->value == 6.2);
+
+    // Transfer multiple blocks.
+    db1 = mtv_type(4);
+    db2 = mtv_type(3);
+    db1.set(1, new muser_cell(10.1));
+    db1.set(3, new muser_cell(10.2));
+    db1.transfer(1, 3, db2, 0);
 }
 
 }
