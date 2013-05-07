@@ -768,6 +768,10 @@ private:
         return iterator(block_pos, m_blocks.end(), start_row, block_index);
     }
 
+#ifdef MDDS_UNIT_TEST
+    void dump_blocks() const;
+#endif
+
 private:
     blocks_type m_blocks;
     size_type m_cur_size;

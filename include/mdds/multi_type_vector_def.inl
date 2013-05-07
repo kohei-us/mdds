@@ -3023,4 +3023,20 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
     return get_iterator(block_index1, start_row);
 }
 
+#ifdef MDDS_UNIT_TEST
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::dump_blocks() const
+{
+    cout << "--- blocks" << endl;
+    for (size_type i = 0, n = m_blocks.size(); i < n; ++i)
+    {
+        block* blk = m_blocks[i];
+        element_category_type cat = mtv::element_type_empty;
+        if (blk->mp_data)
+            cat = mtv::get_block_type(*blk->mp_data);
+        cout << "  block " << i << ": size=" << blk->m_size << " type=" << cat << endl;
+    }
+}
+#endif
+
 }
