@@ -612,6 +612,10 @@ public:
     template<typename _T>
     static mtv::element_t get_element_type(const _T& elem);
 
+#ifdef MDDS_UNIT_TEST
+    void dump_blocks() const;
+#endif
+
 private:
 
     template<typename _T>
@@ -767,10 +771,6 @@ private:
         std::advance(block_pos, block_index);
         return iterator(block_pos, m_blocks.end(), start_row, block_index);
     }
-
-#ifdef MDDS_UNIT_TEST
-    void dump_blocks() const;
-#endif
 
 private:
     blocks_type m_blocks;
