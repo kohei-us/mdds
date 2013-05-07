@@ -1256,8 +1256,6 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
             dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, new block(len));
             blk_dest->m_size -= len;
             blk_dest = dest.m_blocks[dest_block_index+1];
-
-            assert(blk_dest->m_size == len);
         }
         else
         {
@@ -1271,9 +1269,9 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
             blk_dest->m_size = dest_pos_in_block;
 
             blk_dest = dest.m_blocks[dest_block_index+1];
-            assert(blk_dest->m_size == len);
         }
 
+        assert(blk_dest->m_size == len);
         size_type offset = start_pos - start_pos_in_block1;
         if (offset == 0 && len == blk->m_size)
         {
