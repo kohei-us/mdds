@@ -945,6 +945,16 @@ void mtv_test_transfer()
     db1.set(2, new muser_cell(1.3));
     assert(db1.block_size() == 1);
 
+    try
+    {
+        db1.transfer(0, 1, db1, 0);
+        assert(!"Exception should have been thrown");
+    }
+    catch (const invalid_arg_error&)
+    {
+        // Good.
+    }
+
     // Do the transfer.
     db1.transfer(0, 2, db2, 0);
 

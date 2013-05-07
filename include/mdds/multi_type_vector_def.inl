@@ -1125,6 +1125,9 @@ typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::transfer(
     size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
 {
+    if (&dest == this)
+        throw invalid_arg_error("You cannot transfer between the same container.");
+
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
     if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
