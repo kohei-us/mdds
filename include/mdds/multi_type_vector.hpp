@@ -732,8 +732,24 @@ private:
         size_type block_index2, size_type start_pos_in_block2,
         const _T& it_begin, const _T& it_end);
 
-    void merge_with_adjacent_blocks(size_type block_index);
-    void merge_with_next_block(size_type block_index);
+    /**
+     * Merge with previous or next block as needed.
+     *
+     * @param block_index index of the block that may need merging.
+     *
+     * @return size of previous block if the block is merged with the previous
+     *         block, or 0 if it didn't merge with the previous block.
+     */
+    size_type merge_with_adjacent_blocks(size_type block_index);
+
+    /**
+     * Merge only with the next block if the two are of the same type.
+     *
+     * @param block_index index of the block that may need merging.
+     *
+     * @return true if merge occurs, false otherwise.
+     */
+    bool merge_with_next_block(size_type block_index);
 
     template<typename _T>
     bool append_to_prev_block(
