@@ -1099,7 +1099,7 @@ void mtv_test_transfer()
     assert(db2.get<muser_cell*>(3)->value == 6.1);
     assert(db2.get<muser_cell*>(4)->value == 6.2);
 
-    // Transfer multiple blocks.
+    // Transfer multiple blocks.  Very simple use case.
     db1 = mtv_type(4);
     db2 = mtv_type(3);
     db1.set(1, new muser_cell(10.1));
@@ -1117,6 +1117,54 @@ void mtv_test_transfer()
     assert(db2.get<muser_cell*>(0)->value == 10.1);
     assert(db2.is_empty(1));
     assert(db2.get<muser_cell*>(2)->value == 10.2);
+
+    // Multiple-block transfer that involves merging.
+    db1 = mtv_type(5);
+    db2 = mtv_type(5);
+    db1.set(0, new muser_cell(0.1));
+    db1.set(1, new muser_cell(0.2));
+    db1.set(3, new muser_cell(0.3));
+    db1.set(4, new muser_cell(0.4));
+
+    db2.set(0, new muser_cell(1.1));
+    db2.set(4, new muser_cell(1.2));
+
+    mtv_type::iterator it = db1.transfer(1, 3, db2, 1);
+    assert(db1.block_size() == 3);
+    assert(db1.get<muser_cell*>(0)->value == 0.1);
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db1.is_empty(3));
+    assert(db1.get<muser_cell*>(4)->value == 0.4);
+
+    assert(db2.block_size() == 3);
+    assert(db2.get<muser_cell*>(0)->value == 1.1);
+    assert(db2.get<muser_cell*>(1)->value == 0.2);
+    assert(db2.is_empty(2));
+    assert(db2.get<muser_cell*>(3)->value == 0.3);
+    assert(db2.get<muser_cell*>(4)->value == 1.2);
+
+    assert(it != db1.end());
+    assert(it->size == 3);
+    assert(it->type == mtv::element_type_empty);
+    it = db1.transfer(it, 4, 4, db2, 2); // Transfer single element at 4.
+    assert(db1.block_size() == 2);
+    assert(db1.get<muser_cell*>(0)->value == 0.1);
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db1.is_empty(3));
+    assert(db1.is_empty(4));
+
+    assert(db2.block_size() == 1);
+    assert(db2.get<muser_cell*>(0)->value == 1.1);
+    assert(db2.get<muser_cell*>(1)->value == 0.2);
+    assert(db2.get<muser_cell*>(2)->value == 0.4);
+    assert(db2.get<muser_cell*>(3)->value == 0.3);
+    assert(db2.get<muser_cell*>(4)->value == 1.2);
+
+//  assert(it != db1.end());
+//  assert(it->size == 4);
+//  assert(it->type == mtv::element_type_empty);
 }
 
 }

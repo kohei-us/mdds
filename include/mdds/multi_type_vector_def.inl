@@ -2367,6 +2367,7 @@ typename multi_type_vector<_CellBlockFunc>::size_type
 multi_type_vector<_CellBlockFunc>::merge_with_adjacent_blocks(size_type block_index)
 {
     assert(!m_blocks.empty());
+    assert(block_index < m_blocks.size());
     block* blk_prev = block_index > 0 ? m_blocks[block_index-1] : NULL;
 
     if (!blk_prev)
@@ -2451,6 +2452,9 @@ multi_type_vector<_CellBlockFunc>::merge_with_adjacent_blocks(size_type block_in
 template<typename _CellBlockFunc>
 bool multi_type_vector<_CellBlockFunc>::merge_with_next_block(size_type block_index)
 {
+    assert(!m_blocks.empty());
+    assert(block_index < m_blocks.size());
+
     if (block_index >= m_blocks.size()-1)
         // No more block below this one.
         return false;
