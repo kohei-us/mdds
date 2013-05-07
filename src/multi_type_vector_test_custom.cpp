@@ -1105,6 +1105,18 @@ void mtv_test_transfer()
     db1.set(1, new muser_cell(10.1));
     db1.set(3, new muser_cell(10.2));
     db1.transfer(1, 3, db2, 0);
+
+    // db1 should be completely empty.
+    assert(db1.block_size() == 1);
+    check = db1.begin();
+    assert(check != db1.end());
+    assert(check->size == 4);
+    assert(check->type == mtv::element_type_empty);
+
+    assert(db2.block_size() == 3);
+    assert(db2.get<muser_cell*>(0)->value == 10.1);
+    assert(db2.is_empty(1));
+    assert(db2.get<muser_cell*>(2)->value == 10.2);
 }
 
 }
