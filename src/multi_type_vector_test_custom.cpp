@@ -1247,6 +1247,52 @@ void mtv_test_transfer()
     assert(db2.get<muser_cell*>(7)->value == 2.1);
     assert(db2.get<muser_cell*>(8)->value == 2.2);
     assert(db2.get<char>(9) == 'a');
+
+    // Multi-block transfer to the middle part of destination block.
+    db1 = mtv_type(10);
+    db2 = mtv_type(10);
+    db2.set(0, true);
+    db2.set(9, true);
+    db1.set(3, new muser_cell(2.4));
+    db1.set(4, new muser_cell(2.5));
+    db1.set(5, string("abc"));
+    db1.set(6, new muser_cell(2.6));
+    db1.set(7, new muser_cell(2.7));
+    db1.set(8, true);
+    it = db1.transfer(3, 6, db2, 2);
+    assert(it != db1.end());
+    assert(it->size == 7);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it != db1.end());
+    assert(it->size == 1);
+    assert(it->type == element_type_muser_block);
+    ++it;
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_boolean);
+    ++it;
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db1.end());
+
+    assert(db1.block_size() == 4);
+    assert(db1.is_empty(6));
+    assert(db1.get<muser_cell*>(7)->value == 2.7);
+    assert(db1.get<bool>(8) == true);
+    assert(db1.is_empty(9));
+
+    assert(db2.block_size() == 7);
+    assert(db2.get<bool>(0) == true);
+    assert(db2.is_empty(1));
+    assert(db2.get<muser_cell*>(2)->value == 2.4);
+    assert(db2.get<muser_cell*>(3)->value == 2.5);
+    assert(db2.get<string>(4) == "abc");
+    assert(db2.get<muser_cell*>(5)->value == 2.6);
+    assert(db2.is_empty(6));
+    assert(db2.is_empty(7));
+    assert(db2.is_empty(8));
+    assert(db2.get<bool>(9) == true);
 }
 
 }

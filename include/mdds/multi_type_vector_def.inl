@@ -1270,7 +1270,6 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
     }
     else
     {
-        assert(!"not tested yet");
         // Copy to the middle of destination block. Insert slots for new
         // blocks (plus one for the empty block) below current.
         size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
