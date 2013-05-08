@@ -1337,15 +1337,15 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
     if (block_len > 1)
     {
         size_type size_to_trans = end_pos - start_pos_in_block2 + 1;
-        size_type dest_pos = dest_block_index1 + block_len - 1;
-        assert(!dest.m_blocks[dest_pos]);
+        size_type dest_block_pos = dest_block_index1 + block_len - 1;
+        assert(!dest.m_blocks[dest_block_pos]);
 
         block* blk = m_blocks[block_index2];
         if (size_to_trans < blk->m_size)
         {
             // Transfer the upper part of this block.
-            dest.m_blocks[dest_pos] = new block(size_to_trans);
-            blk_dest = dest.m_blocks[dest_pos];
+            dest.m_blocks[dest_block_pos] = new block(size_to_trans);
+            blk_dest = dest.m_blocks[dest_block_pos];
             if (blk->mp_data)
             {
                 element_category_type cat = mtv::get_block_type(*blk->mp_data);
@@ -1360,7 +1360,7 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
         else
         {
             // Just move the whole block over.
-            dest.m_blocks[dest_pos] = m_blocks[block_index2];
+            dest.m_blocks[dest_block_pos] = m_blocks[block_index2];
             m_blocks[block_index2] = NULL;
         }
     }
@@ -2425,7 +2425,9 @@ multi_type_vector<_CellBlockFunc>::merge_with_adjacent_blocks(size_type block_in
 
         // Merge only the previous and current blocks.
         bool merged = merge_with_next_block(block_index-1);
-        assert(merged);
+        if (!merged)
+            assert(!"Blocks were not merged!");
+
         return size_prev;
     }
 
@@ -2454,7 +2456,9 @@ multi_type_vector<_CellBlockFunc>::merge_with_adjacent_blocks(size_type block_in
 
     // Next block is not empty, or does not exist. Merge the current block with the previous one.
     bool merged = merge_with_next_block(block_index-1);
-    assert(merged);
+    if (!merged)
+        assert(!"Blocks were not merged!");
+
     return size_prev;
 }
 
