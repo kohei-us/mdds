@@ -1325,11 +1325,11 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
         // Transfer all blocks in between.
         for (size_type i = 0; i < block_len - 2; ++i)
         {
-            size_type src_pos = block_index1 + 1 + i;
-            size_type dest_pos = dest_block_index1 + 1 + i;
-            assert(!dest.m_blocks[dest_pos]);
-            dest.m_blocks[dest_pos] = m_blocks[src_pos];
-            m_blocks[src_pos] = NULL;
+            size_type src_block_pos = block_index1 + 1 + i;
+            size_type dest_block_pos = dest_block_index1 + 1 + i;
+            assert(!dest.m_blocks[dest_block_pos]);
+            dest.m_blocks[dest_block_pos] = m_blocks[src_block_pos];
+            m_blocks[src_block_pos] = NULL;
         }
     }
 

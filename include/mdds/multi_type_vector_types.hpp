@@ -85,6 +85,7 @@ protected:
 template<typename _Self, element_t _TypeId, typename _Data>
 class element_block : public base_element_block
 {
+#ifdef MDDS_UNIT_TEST
     struct print_block_array
     {
         void operator() (const _Data& val) const
@@ -92,6 +93,7 @@ class element_block : public base_element_block
             std::cout << val << " ";
         }
     };
+#endif
 
 protected:
     typedef std::vector<_Data> store_type;
@@ -222,12 +224,16 @@ public:
         static_cast<_Self&>(blk).m_array.resize(new_size);
     }
 
+#ifdef MDDS_UNIT_TEST
     static void print_block(const base_element_block& blk)
     {
         const store_type& blk2 = get(blk).m_array;
         std::for_each(blk2.begin(), blk2.end(), print_block_array());
         std::cout << std::endl;
     }
+#else
+    static void print_block(const base_element_block&) {}
+#endif
 
     static void erase_block(base_element_block& blk, size_t pos)
     {
