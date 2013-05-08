@@ -1394,7 +1394,7 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
         ++del_index1;
     }
 
-    if (del_index2 > del_index1)
+    if (del_index2 >= del_index1)
     {
         typename blocks_type::iterator it_blk = m_blocks.begin();
         typename blocks_type::iterator it_blk_end = m_blocks.begin();

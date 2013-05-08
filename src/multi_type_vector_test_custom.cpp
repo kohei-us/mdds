@@ -1293,6 +1293,30 @@ void mtv_test_transfer()
     assert(db2.is_empty(7));
     assert(db2.is_empty(8));
     assert(db2.get<bool>(9) == true);
+
+    db1 = mtv_type(10);
+    db2 = mtv_type(10);
+    db1.set(3, true);
+    db2.set(3, string("test"));
+    db1.transfer(0, 6, db2, 0);
+    assert(db1.block_size() == 1);
+    check = db1.begin();
+    assert(check != db1.end());
+    assert(check->size == 10);
+    assert(check->type == mtv::element_type_empty);
+    ++check;
+    assert(check == db1.end());
+    assert(db2.block_size() == 3);
+    assert(db2.is_empty(0));
+    assert(db2.is_empty(1));
+    assert(db2.is_empty(2));
+    assert(db2.get<bool>(3) == true);
+    assert(db2.is_empty(4));
+    assert(db2.is_empty(5));
+    assert(db2.is_empty(6));
+    assert(db2.is_empty(7));
+    assert(db2.is_empty(8));
+    assert(db2.is_empty(9));
 }
 
 }
