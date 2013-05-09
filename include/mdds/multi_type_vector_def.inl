@@ -1479,7 +1479,7 @@ multi_type_vector<_CellBlockFunc>::transfer_single_block(
 
         // Insert two new blocks below current.
         size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
-        dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, 2, NULL);
+        dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, 2u, NULL);
         dest.m_blocks[dest_block_index+1] = new block(len);
         dest.m_blocks[dest_block_index+2] = new block(blk2_size);
         blk_dest->m_size = dest_pos_in_block;
