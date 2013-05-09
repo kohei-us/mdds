@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="rectangle_set"
 	ProjectGUID="{F00F70DF-E414-4B53-871F-33520245D338}"
 	RootNamespace="rectangle_set"
@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="UNIT_TEST;DEBUG_NODE_BASE;MDDS_HASH_CONTAINER_BOOST"
+				PreprocessorDefinitions="MDDS_UNIT_TEST;MDDS_DEBUG_NODE_BASE;MDDS_HASH_CONTAINER_BOOST"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -114,7 +114,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="UNIT_TEST;DEBUG_NODE_BASE;MDDS_HASH_CONTAINER_BOOST"
+				PreprocessorDefinitions="MDDS_UNIT_TEST;MDDS_DEBUG_NODE_BASE;MDDS_HASH_CONTAINER_BOOST"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
