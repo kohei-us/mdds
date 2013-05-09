@@ -28,6 +28,11 @@ mdds 0.8.0
   * added two templates to ease creation of custom element block
     functions when using one or two custom element types.
 
+  * added transfer() member method to allow elements in a specified
+    range to be transferred from one container to another.  When
+    transferring elements stored in a managed element block, the
+    ownership of those elements is also transferred.
+
 mdds 0.7.1
 
 * multi_type_vector
