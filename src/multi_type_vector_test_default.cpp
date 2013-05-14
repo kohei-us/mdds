@@ -1512,6 +1512,17 @@ void mtv_test_erase()
         assert(db.is_empty(1));
         assert(db.is_empty(2));
     }
+
+    {
+        mtv_type db(6);
+        db.set(0, 1.0);
+        db.set(1, 2.0);
+        db.set(2, string("A"));
+        db.set(3, string("B"));
+        db.set(4, 5.0);
+        db.set(5, 6.0);
+        db.erase(1, 4);
+    }
 }
 
 void mtv_test_insert_empty()

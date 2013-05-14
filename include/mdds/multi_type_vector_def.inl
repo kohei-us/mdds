@@ -1625,65 +1625,7 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
 
     if (block_pos1 == block_pos2)
     {
-        // Range falls within the same block.
-        block* blk = m_blocks[block_pos1];
-        size_type size_to_erase = end_row - start_row + 1;
-        if (blk->mp_data)
-        {
-            // Erase data in the data block.
-            size_type offset = start_row - start_row_in_block1;
-            element_block_func::overwrite_values(*blk->mp_data, offset, size_to_erase);
-            element_block_func::erase(*blk->mp_data, offset, size_to_erase);
-        }
-
-        blk->m_size -= size_to_erase;
-        m_cur_size -= size_to_erase;
-
-        if (blk->m_size == 0)
-        {
-            delete blk;
-            m_blocks.erase(m_blocks.begin()+block_pos1);
-
-            if (block_pos1 > 0 && block_pos1 < m_blocks.size())
-            {
-                // Check the previous and next blocks to see if they should be merged.
-                block* blk_prev = m_blocks[block_pos1-1];
-                block* blk_next = m_blocks[block_pos1];
-                if (blk_prev->mp_data)
-                {
-                    // Previous block has data.
-                    if (!blk_next->mp_data)
-                        // Next block is empty.  Nothing to do.
-                        return;
-
-                    element_category_type cat1 = mdds::mtv::get_block_type(*blk_prev->mp_data);
-                    element_category_type cat2 = mdds::mtv::get_block_type(*blk_next->mp_data);
-                    if (cat1 == cat2)
-                    {
-                        // Merge the two blocks.
-                        element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
-                        blk_prev->m_size += blk_next->m_size;
-                        // Resize to 0 to prevent deletion of cells in case of managed cells.
-                        element_block_func::resize_block(*blk_next->mp_data, 0);
-                        delete blk_next;
-                        m_blocks.erase(m_blocks.begin()+block_pos1);
-                    }
-                }
-                else
-                {
-                    // Previous block is empty.
-                    if (blk_next->mp_data)
-                        // Next block is not empty.  Nothing to do.
-                        return;
-
-                    // Both blocks are empty.  Simply increase the size of the
-                    // previous block.
-                    blk_prev->m_size += blk_next->m_size;
-                    delete blk_next;
-                    m_blocks.erase(m_blocks.begin()+block_pos1);
-                }
-            }
-        }
+        erase_in_single_block(start_row, end_row, block_pos1, start_row_in_block1);
         return;
     }
 
@@ -1737,6 +1679,71 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
     std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
     m_blocks.erase(it_erase_begin, it_erase_end);
     m_cur_size -= end_row - start_row + 1;
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::erase_in_single_block(
+    size_type start_pos, size_type end_pos, size_type block_pos, size_type start_pos_in_block)
+{
+    // Range falls within the same block.
+    block* blk = m_blocks[block_pos];
+    size_type size_to_erase = end_pos - start_pos + 1;
+    if (blk->mp_data)
+    {
+        // Erase data in the data block.
+        size_type offset = start_pos - start_pos_in_block;
+        element_block_func::overwrite_values(*blk->mp_data, offset, size_to_erase);
+        element_block_func::erase(*blk->mp_data, offset, size_to_erase);
+    }
+
+    blk->m_size -= size_to_erase;
+    m_cur_size -= size_to_erase;
+
+    if (blk->m_size == 0)
+    {
+        delete blk;
+        m_blocks.erase(m_blocks.begin()+block_pos);
+
+        if (block_pos > 0 && block_pos < m_blocks.size())
+        {
+            // Check the previous and next blocks to see if they should be merged.
+            block* blk_prev = m_blocks[block_pos-1];
+            block* blk_next = m_blocks[block_pos];
+            if (blk_prev->mp_data)
+            {
+                // Previous block has data.
+                if (!blk_next->mp_data)
+                    // Next block is empty.  Nothing to do.
+                    return;
+
+                element_category_type cat1 = mdds::mtv::get_block_type(*blk_prev->mp_data);
+                element_category_type cat2 = mdds::mtv::get_block_type(*blk_next->mp_data);
+                if (cat1 == cat2)
+                {
+                    // Merge the two blocks.
+                    element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
+                    blk_prev->m_size += blk_next->m_size;
+                    // Resize to 0 to prevent deletion of cells in case of managed cells.
+                    element_block_func::resize_block(*blk_next->mp_data, 0);
+                    delete blk_next;
+                    m_blocks.erase(m_blocks.begin()+block_pos);
+                }
+            }
+            else
+            {
+                // Previous block is empty.
+                if (blk_next->mp_data)
+                    // Next block is not empty.  Nothing to do.
+                    return;
+
+                // Both blocks are empty.  Simply increase the size of the
+                // previous block.
+                blk_prev->m_size += blk_next->m_size;
+                delete blk_next;
+                m_blocks.erase(m_blocks.begin()+block_pos);
+            }
+        }
+    }
 }
 
 template<typename _CellBlockFunc>

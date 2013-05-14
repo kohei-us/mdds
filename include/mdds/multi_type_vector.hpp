@@ -755,6 +755,8 @@ private:
         size_type block_index2, size_type start_pos_in_block2, bool overwrite);
 
     void erase_impl(size_type start_pos, size_type end_pos);
+    void erase_in_single_block(
+        size_type start_pos, size_type end_pos, size_type block_pos, size_type start_pos_in_block);
 
     iterator insert_empty_impl(size_type row, size_type start_pos, size_type block_index, size_type length);
 
