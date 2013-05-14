@@ -1,3 +1,10 @@
+mdds 0.8.1
+
+* multi_type_vector
+
+  * fixed a bug in the erase() method where adjacent blocks of the
+    same type would fail to merge after the erase() call.
+
 mdds 0.8.0
 
 * all
