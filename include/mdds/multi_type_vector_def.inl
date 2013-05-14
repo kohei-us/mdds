@@ -29,12 +29,6 @@
 
 #include <stdexcept>
 
-#ifdef MDDS_UNIT_TEST
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 namespace mdds {
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_numeric, 0.0, mtv::numeric_element_block)
