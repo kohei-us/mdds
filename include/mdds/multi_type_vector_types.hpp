@@ -35,7 +35,7 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 
-#ifdef MDDS_UNIT_TEST
+#if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
 #include <iostream>
 using std::cout;
 using std::cerr;

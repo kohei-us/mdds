@@ -661,7 +661,7 @@ public:
     template<typename _T>
     static mtv::element_t get_element_type(const _T& elem);
 
-#ifdef MDDS_UNIT_TEST
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     void dump_blocks() const;
 #endif
 

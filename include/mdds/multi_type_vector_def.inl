@@ -3036,7 +3036,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
     return get_iterator(block_index1, start_row);
 }
 
-#ifdef MDDS_UNIT_TEST
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 template<typename _CellBlockFunc>
 void multi_type_vector<_CellBlockFunc>::dump_blocks() const
 {
