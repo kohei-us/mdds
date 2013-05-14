@@ -429,7 +429,24 @@ multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin, con
     if (!get_block_position(pos, start_pos, block_index))
         throw std::out_of_range("Block position not found!");
 
-    return insert_cells_impl(pos, start_pos, block_index, it_begin, it_end);
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = insert_cells_impl(pos, start_pos, block_index, it_begin, it_end);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in insert (" << pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc>
@@ -440,7 +457,24 @@ multi_type_vector<_CellBlockFunc>::insert(const iterator& pos_hint, size_type po
     size_type block_index = 0, start_pos = 0;
     get_block_position(pos_hint, pos, start_pos, block_index);
 
-    return insert_cells_impl(pos, start_pos, block_index, it_begin, it_end);
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = insert_cells_impl(pos, start_pos, block_index, it_begin, it_end);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in insert (" << pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc>
@@ -1162,7 +1196,28 @@ multi_type_vector<_CellBlockFunc>::transfer(
     if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
         throw std::out_of_range("Block position not found!");
 
-    return transfer_impl(start_pos, end_pos, start_pos_in_block1, block_index1, dest, dest_pos);
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    os_prev_block << "source:" << endl;
+    dump_blocks(os_prev_block);
+    os_prev_block << "destination:" << endl;
+    dest.dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = transfer_impl(start_pos, end_pos, start_pos_in_block1, block_index1, dest, dest_pos);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity() || !dest.check_block_integrity())
+    {
+        cerr << "block integrity check failed in transfer (start_pos=" << start_pos
+            << ",end_pos=" << end_pos << ",dest_pos=" << dest_pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc>
@@ -1174,7 +1229,29 @@ multi_type_vector<_CellBlockFunc>::transfer(
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
     get_block_position(pos_hint, start_pos, start_pos_in_block1, block_index1);
-    return transfer_impl(start_pos, end_pos, start_pos_in_block1, block_index1, dest, dest_pos);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    os_prev_block << "source:" << endl;
+    dump_blocks(os_prev_block);
+    os_prev_block << "destination:" << endl;
+    dest.dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = transfer_impl(start_pos, end_pos, start_pos_in_block1, block_index1, dest, dest_pos);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity() || !dest.check_block_integrity())
+    {
+        cerr << "block integrity check failed in transfer (start_pos=" << start_pos
+            << ",end_pos=" << end_pos << ",dest_pos=" << dest_pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc>
