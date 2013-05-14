@@ -1521,7 +1521,19 @@ void mtv_test_erase()
         db.set(3, string("B"));
         db.set(4, 5.0);
         db.set(5, 6.0);
+        assert(db.block_size() == 3);
+        assert(db.size() == 6);
+        assert(db.get<double>(0) == 1.0);
+        assert(db.get<double>(1) == 2.0);
+        assert(db.get<string>(2) == "A");
+        assert(db.get<string>(3) == "B");
+        assert(db.get<double>(4) == 5.0);
+        assert(db.get<double>(5) == 6.0);
         db.erase(1, 4);
+        assert(db.block_size() == 1);
+        assert(db.size() == 2);
+        assert(db.get<double>(0) == 1.0);
+        assert(db.get<double>(1) == 6.0);
     }
 }
 

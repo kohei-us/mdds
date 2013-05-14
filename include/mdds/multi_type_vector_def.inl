@@ -1675,10 +1675,18 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
         }
     }
 
+    // Get the index of the block that sits before the blocks being erased.
+    block_pos1 = std::distance(m_blocks.begin(), it_erase_begin);
+    if (block_pos1 > 0)
+        --block_pos1;
+
     // Now, erase all blocks in between.
     std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
     m_blocks.erase(it_erase_begin, it_erase_end);
     m_cur_size -= end_row - start_row + 1;
+
+    if (!m_blocks.empty())
+        merge_with_next_block(block_pos1);
 }
 
 template<typename _CellBlockFunc>
