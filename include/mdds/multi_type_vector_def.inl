@@ -1529,11 +1529,17 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
     if (!get_block_position(end_pos, start_pos_in_block2, block_index2))
         throw std::out_of_range("Block position not found!");
 
+    iterator ret_it;
     if (block_index1 == block_index2)
-        return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, true);
+        ret_it = set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, true);
+    else
+        ret_it = set_empty_in_multi_blocks(
+            start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2, true);
 
-    return set_empty_in_multi_blocks(
-        start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2, true);
+#if MDDS_MULTI_TYPE_VECTOR_DEBUG
+    check_block_integrity();
+#endif
+    return ret_it;
 }
 
 template<typename _CellBlockFunc>
@@ -3048,6 +3054,55 @@ void multi_type_vector<_CellBlockFunc>::dump_blocks() const
         if (blk->mp_data)
             cat = mtv::get_block_type(*blk->mp_data);
         cout << "  block " << i << ": size=" << blk->m_size << " type=" << cat << endl;
+    }
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::check_block_integrity() const
+{
+    if (m_blocks.empty())
+        // Nothing to check.
+        return;
+
+    if (m_blocks.size() == 1 && !m_blocks[0])
+    {
+        cerr << "block should never be null!" << endl;
+        abort();
+    }
+
+    const block* blk_prev = m_blocks[0];
+    if (!blk_prev)
+    {
+        cerr << "block should never be null!" << endl;
+        abort();
+    }
+
+    element_category_type cat_prev = mtv::element_type_empty;
+    if (blk_prev->mp_data)
+        cat_prev = mtv::get_block_type(*blk_prev->mp_data);
+
+    for (size_type i = 1, n = m_blocks.size(); i < n; ++i)
+    {
+        block* blk = m_blocks[i];
+        if (!blk)
+        {
+            cerr << "block should never be null!" << endl;
+            abort();
+        }
+
+        element_category_type cat = mtv::element_type_empty;
+        if (blk->mp_data)
+            cat = mtv::get_block_type(*blk->mp_data);
+
+        if (cat_prev == cat)
+        {
+            cerr << "Two adjacent blocks should never be of the same type." << endl;
+            dump_blocks();
+            abort();
+        }
+
+        blk_prev = blk;
+        cat_prev = cat;
     }
 }
 #endif

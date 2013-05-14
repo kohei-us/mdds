@@ -663,6 +663,8 @@ public:
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     void dump_blocks() const;
+
+    void check_block_integrity() const;
 #endif
 
 private:
