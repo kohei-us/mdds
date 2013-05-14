@@ -1537,7 +1537,11 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
             start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2, true);
 
 #if MDDS_MULTI_TYPE_VECTOR_DEBUG
-    check_block_integrity();
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in set_empty (" << start_pos << "-" << end_pos << ")" << endl;
+        abort();
+    }
 #endif
     return ret_it;
 }
@@ -3058,23 +3062,23 @@ void multi_type_vector<_CellBlockFunc>::dump_blocks() const
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::check_block_integrity() const
+bool multi_type_vector<_CellBlockFunc>::check_block_integrity() const
 {
     if (m_blocks.empty())
         // Nothing to check.
-        return;
+        return true;
 
     if (m_blocks.size() == 1 && !m_blocks[0])
     {
         cerr << "block should never be null!" << endl;
-        abort();
+        return false;
     }
 
     const block* blk_prev = m_blocks[0];
     if (!blk_prev)
     {
         cerr << "block should never be null!" << endl;
-        abort();
+        return false;
     }
 
     element_category_type cat_prev = mtv::element_type_empty;
@@ -3087,7 +3091,7 @@ void multi_type_vector<_CellBlockFunc>::check_block_integrity() const
         if (!blk)
         {
             cerr << "block should never be null!" << endl;
-            abort();
+            return false;
         }
 
         element_category_type cat = mtv::element_type_empty;
@@ -3098,12 +3102,14 @@ void multi_type_vector<_CellBlockFunc>::check_block_integrity() const
         {
             cerr << "Two adjacent blocks should never be of the same type." << endl;
             dump_blocks();
-            abort();
+            return false;
         }
 
         blk_prev = blk;
         cat_prev = cat;
     }
+
+    return true;
 }
 #endif
 
