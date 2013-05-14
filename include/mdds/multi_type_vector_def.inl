@@ -179,7 +179,24 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     if (!get_block_position(pos, start_row, block_index))
         throw std::out_of_range("Block position not found!");
 
-    return set_impl(pos, start_row, block_index, value);
+#if MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = set_impl(pos, start_row, block_index, value);
+
+#if MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in set (" << pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc>
@@ -190,7 +207,25 @@ multi_type_vector<_CellBlockFunc>::set(const iterator& pos_hint, size_type pos, 
     size_type start_row = 0;
     size_type block_index = 0;
     get_block_position(pos_hint, pos, start_row, block_index);
-    return set_impl(pos, start_row, block_index, value);
+
+#if MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = set_impl(pos, start_row, block_index, value);
+
+#if MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in set (" << pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc>
