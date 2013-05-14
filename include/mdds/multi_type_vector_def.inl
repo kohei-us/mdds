@@ -1523,6 +1523,11 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
     if (!get_block_position(end_pos, start_pos_in_block2, block_index2))
         throw std::out_of_range("Block position not found!");
 
+#if MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
     iterator ret_it;
     if (block_index1 == block_index2)
         ret_it = set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, true);
@@ -1534,6 +1539,8 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
     if (!check_block_integrity())
     {
         cerr << "block integrity check failed in set_empty (" << start_pos << "-" << end_pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
         abort();
     }
 #endif
@@ -3042,16 +3049,16 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_multi_blocks(
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::dump_blocks() const
+void multi_type_vector<_CellBlockFunc>::dump_blocks(std::ostream& os) const
 {
-    cout << "--- blocks" << endl;
+    os << "--- blocks" << endl;
     for (size_type i = 0, n = m_blocks.size(); i < n; ++i)
     {
         block* blk = m_blocks[i];
         element_category_type cat = mtv::element_type_empty;
         if (blk->mp_data)
             cat = mtv::get_block_type(*blk->mp_data);
-        cout << "  block " << i << ": size=" << blk->m_size << " type=" << cat << endl;
+        os << "  block " << i << ": size=" << blk->m_size << " type=" << cat << endl;
     }
 }
 
@@ -3095,7 +3102,7 @@ bool multi_type_vector<_CellBlockFunc>::check_block_integrity() const
         if (cat_prev == cat)
         {
             cerr << "Two adjacent blocks should never be of the same type." << endl;
-            dump_blocks();
+            dump_blocks(cerr);
             return false;
         }
 

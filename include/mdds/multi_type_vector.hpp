@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_MULTI_TYPE_VECTOR_HPP__
-#define __MDDS_MULTI_TYPE_VECTOR_HPP__
+#ifndef MDDS_MULTI_TYPE_VECTOR_HPP
+#define MDDS_MULTI_TYPE_VECTOR_HPP
 
 #include "default_deleter.hpp"
 #include "compat/unique_ptr.hpp"
@@ -37,6 +37,14 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+
+#if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
+#include <sstream>
+#include <iostream>
+using std::cout;
+using std::cerr;
+using std::endl;
+#endif
 
 namespace mdds {
 
@@ -662,7 +670,7 @@ public:
     static mtv::element_t get_element_type(const _T& elem);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    void dump_blocks() const;
+    void dump_blocks(std::ostream& os) const;
 
     bool check_block_integrity() const;
 #endif

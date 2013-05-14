@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_GRID_MAP_TYPES_HPP__
-#define __MDDS_GRID_MAP_TYPES_HPP__
+#ifndef MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
+#define MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
 
 #include "default_deleter.hpp"
 #include "compat/unique_ptr.hpp"
