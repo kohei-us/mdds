@@ -4088,6 +4088,25 @@ void mtv_test_position()
     pair<mtv_type::const_iterator,mtv_type::size_type> const_pos = db_ref.position(3);
     assert(const_pos.first == db_ref.begin());
     assert(const_pos.second == 3);
+
+    // Check for the variant that takes position hint.
+    pos = db.position(0);
+    assert(pos.first == db.begin());
+    assert(pos.second == 0);
+
+    pos = db.position(pos.first, 6);
+    check = db.begin();
+    ++check;
+    assert(pos.first == check);
+    assert(pos.second == 0);
+
+    pos = db.position(pos.first, 7);
+    assert(pos.first == check);
+    assert(pos.second == 1);
+
+    pos = db.position(pos.first, 9);
+    assert(pos.first == check);
+    assert(pos.second == 3);
 }
 
 void mtv_perf_test_block_position_lookup()

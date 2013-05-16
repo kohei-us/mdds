@@ -5,6 +5,10 @@ mdds 0.8.1
   * fixed a bug in the erase() method where adjacent blocks of the
     same type would fail to merge after the erase() call.
 
+  * add a variant of the position() method that takes an iterator as
+    positional hint.  Note that there is no variant of position() that
+    takes const_iterator.
+
 mdds 0.8.0
 
 * all

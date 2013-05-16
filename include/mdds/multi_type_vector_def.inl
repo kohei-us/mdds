@@ -1157,13 +1157,27 @@ multi_type_vector<_CellBlockFunc>::position(size_type pos)
 {
     typedef std::pair<iterator, size_type> ret_type;
 
-    size_type start_row = 0;
+    size_type start_pos = 0;
     size_type block_index = 0;
-    if (!get_block_position(pos, start_row, block_index))
+    if (!get_block_position(pos, start_pos, block_index))
         throw std::out_of_range("Block position not found!");
 
-    iterator it = get_iterator(block_index, start_row);
-    return ret_type(it, pos - start_row);
+    iterator it = get_iterator(block_index, start_pos);
+    return ret_type(it, pos - start_pos);
+}
+
+template<typename _CellBlockFunc>
+std::pair<typename multi_type_vector<_CellBlockFunc>::iterator, typename multi_type_vector<_CellBlockFunc>::size_type>
+multi_type_vector<_CellBlockFunc>::position(const iterator& pos_hint, size_type pos)
+{
+    typedef std::pair<iterator, size_type> ret_type;
+
+    size_type start_pos = 0;
+    size_type block_index = 0;
+    get_block_position(pos_hint, pos, start_pos, block_index);
+
+    iterator it = get_iterator(block_index, start_pos);
+    return ret_type(it, pos - start_pos);
 }
 
 template<typename _CellBlockFunc>

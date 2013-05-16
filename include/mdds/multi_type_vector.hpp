@@ -394,11 +394,28 @@ public:
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
-     * @param pos position of the element.
+     * @param pos logical position of the element.
      * @return iterator referencing the block where the element resides, and
      *         its offset within the block.
      */
     std::pair<iterator, size_type> position(size_type pos);
+
+    /**
+     * Given the logical position of an element, get the iterator of the block
+     * where the element is located, and its offset from the first element of
+     * that block.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the element
+     *                 position.
+     * @param pos logical position of the element.
+     * @return iterator referencing the block where the element resides, and
+     *         its offset within the block.
+     */
+    std::pair<iterator, size_type> position(const iterator& pos_hint, size_type pos);
 
     /**
      * Given the logical position of an element, get the iterator of the block
