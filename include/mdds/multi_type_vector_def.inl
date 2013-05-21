@@ -3276,6 +3276,7 @@ bool multi_type_vector<_CellBlockFunc>::check_block_integrity() const
     if (blk_prev->mp_data)
         cat_prev = mtv::get_block_type(*blk_prev->mp_data);
 
+    size_type total_size = blk_prev->m_size;
     for (size_type i = 1, n = m_blocks.size(); i < n; ++i)
     {
         block* blk = m_blocks[i];
@@ -3298,6 +3299,15 @@ bool multi_type_vector<_CellBlockFunc>::check_block_integrity() const
 
         blk_prev = blk;
         cat_prev = cat;
+
+        total_size += blk->m_size;
+    }
+
+    if (total_size != m_cur_size)
+    {
+        cerr << "Current size does not equal the total sizes of all blocks." << endl;
+        dump_blocks(cerr);
+        return false;
     }
 
     return true;
