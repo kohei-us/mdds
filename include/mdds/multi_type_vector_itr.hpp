@@ -216,8 +216,9 @@ public:
 
     iterator_common_base& operator= (const iterator_common_base& other)
     {
-        iterator_common_base assigned(other);
-        swap(assigned);
+        m_cur_node = other.m_cur_node;
+        m_pos = other.m_pos;
+        m_end = other.m_end;
         return *this;
     }
 
