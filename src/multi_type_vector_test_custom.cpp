@@ -32,6 +32,7 @@
 #include <mdds/multi_type_vector_trait.hpp>
 #include <mdds/multi_type_vector_custom_func1.hpp>
 #include <mdds/multi_type_vector_custom_func2.hpp>
+#include <mdds/multi_type_vector_custom_func3.hpp>
 
 #include <cassert>
 #include <sstream>
@@ -51,6 +52,7 @@ namespace {
 const mtv::element_t element_type_user_block  = mtv::element_type_user_start;
 const mtv::element_t element_type_muser_block = mtv::element_type_user_start+1;
 const mtv::element_t element_type_fruit_block = mtv::element_type_user_start+2;
+const mtv::element_t element_type_date_block  = mtv::element_type_user_start+3;
 
 enum my_fruit_type { unknown_fruit = 0, apple, orange, mango, peach };
 
@@ -74,6 +76,16 @@ struct muser_cell
     muser_cell() : value(0.0) {}
     muser_cell(const muser_cell& r) : value(r.value) {}
     muser_cell(double _v) : value(_v) {}
+};
+
+struct date
+{
+    int year;
+    int month;
+    int day;
+
+    date() : year(0), month(0), day(0) {}
+    date(int _year, int _month, int _day) : year(_year), month(_month), day(_day) {}
 };
 
 template<typename T>
@@ -104,10 +116,12 @@ public:
 typedef mdds::mtv::default_element_block<element_type_user_block, user_cell*> user_cell_block;
 typedef mdds::mtv::managed_element_block<element_type_muser_block, muser_cell> muser_cell_block;
 typedef mdds::mtv::default_element_block<element_type_fruit_block, my_fruit_type> fruit_block;
+typedef mdds::mtv::default_element_block<element_type_date_block, date> date_block;
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(user_cell, element_type_user_block, NULL, user_cell_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(muser_cell, element_type_muser_block, NULL, muser_cell_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(my_fruit_type, element_type_fruit_block, unknown_fruit, fruit_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(date, element_type_date_block, date(), date_block)
 
 }
 
@@ -115,6 +129,11 @@ namespace {
 
 typedef multi_type_vector<mtv::custom_block_func2<element_type_user_block, user_cell_block, element_type_muser_block, muser_cell_block> > mtv_type;
 typedef multi_type_vector<mtv::custom_block_func1<element_type_fruit_block, fruit_block> > mtv_fruit_type;
+typedef multi_type_vector<
+    mtv::custom_block_func3<
+        element_type_muser_block, muser_cell_block,
+        element_type_fruit_block, fruit_block,
+        element_type_date_block, date_block> > mtv3_type;
 
 template<typename _ColT, typename _ValT>
 bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
@@ -1319,6 +1338,35 @@ void mtv_test_transfer()
     assert(db2.is_empty(9));
 }
 
+void mtv_test_custom_block_func3()
+{
+    stack_printer __stack_printer__("::mtv_test_custom_block_func3");
+    mtv3_type db(10);
+
+    // Insert custom elements.
+    db.set(0, new muser_cell(12.3));
+    db.set(1, apple);
+    db.set(2, date(1989,12,13));
+    db.set(3, date(2011,8,7));
+    assert(db.get_type(0) == element_type_muser_block);
+    assert(db.get_type(1) == element_type_fruit_block);
+    assert(db.get_type(2) == element_type_date_block);
+    assert(db.get_type(3) == element_type_date_block);
+    assert(db.get<muser_cell*>(0)->value == 12.3);
+    assert(db.get<my_fruit_type>(1) == apple);
+    assert(db.get<date>(2).year == 1989);
+    assert(db.get<date>(2).month == 12);
+    assert(db.get<date>(2).day == 13);
+    assert(db.get<date>(3).year == 2011);
+    assert(db.get<date>(3).month == 8);
+    assert(db.get<date>(3).day == 7);
+    assert(db.block_size() == 4);
+
+    // We should still support the primitive types.
+    db.set(8, 34.56);
+    assert(db.get<double>(8) == 34.56);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1335,6 +1383,7 @@ int main (int argc, char **argv)
         mtv_test_managed_block();
         mtv_test_custom_block_func1();
         mtv_test_transfer();
+        mtv_test_custom_block_func3();
     }
 
     if (opt.test_perf)
