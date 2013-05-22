@@ -22,6 +22,12 @@ AC_ARG_WITH(hash-container,
                           Example:  --with-hash-container=boost],
 ,with_hash_container=c++0x)
 
+AC_ARG_ENABLE(debug-stdcxx,
+[
+  --enable-debug-stdcxx   Enable libstdc++ debug mode during make check.
+]
+,debug_stdcxx=yes)
+
 AC_MSG_CHECKING([hash container type])
 AC_MSG_RESULT([$with_hash_container])
 
@@ -44,6 +50,11 @@ elif test $with_hash_container = boost; then
 fi
 
 CPPFLAGS="$CPPFLAGS_NODEBUG -DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST -std=c++0x"
+
+if test "$debug_stdcxx" = "yes"; then
+  CPPFLAGS="$CPPFLAGS -D_GLIBCXX_DEBUG"
+fi
+
 AC_SUBST(CPPFLAGS)
 AC_SUBST(CPPFLAGS_NODEBUG)
 
