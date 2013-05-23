@@ -880,10 +880,10 @@ void mtv_test_managed_block()
     {
         // Release an element.
         mtv_type db(1);
-        muser_cell* p = new muser_cell(4.5);
-        db.set(0, p);
+        muser_cell* p1 = new muser_cell(4.5);
+        db.set(0, p1);
         muser_cell* p2 = db.release<muser_cell*>(0);
-        assert(p == p2);
+        assert(p1 == p2);
         assert(p2->value == 4.5);
         assert(db.is_empty(0));
         delete p2;
@@ -932,6 +932,27 @@ void mtv_test_managed_block()
         db.set(1, new muser_cell(2.2));
         db.set(2, new muser_cell(2.3));
         db.set_empty(0, 2); // Make sure this doesn't release anything.
+
+        // Release with position hint.
+        db = mtv_type(4);
+        db.set(0, new muser_cell(4.5));
+        db.set(1, new muser_cell(4.6));
+        db.set(3, new muser_cell(5.1));
+
+        mtv_type::iterator pos = db.release(0, p1);
+        assert(pos == db.begin());
+        pos = db.release(pos, 3, p2);
+        ++pos;
+        assert(pos == db.end());
+        assert(p1->value == 4.5);
+        assert(p2->value == 5.1);
+        assert(db.block_size() == 3);
+        assert(db.is_empty(0));
+        assert(db.get<muser_cell*>(1)->value == 4.6);
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        delete p1;
+        delete p2;
     }
 }
 

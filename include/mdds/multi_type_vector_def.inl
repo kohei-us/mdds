@@ -392,6 +392,31 @@ multi_type_vector<_CellBlockFunc>::set_impl(
 template<typename _CellBlockFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::release_impl(
+    size_type pos, size_type start_pos, size_type block_index, _T& value)
+{
+    const block* blk = m_blocks[block_index];
+    assert(blk);
+
+    if (!blk->mp_data)
+    {
+        // Empty cell block.  There is no element to release.
+        mdds_mtv_get_empty_value(value);
+        return get_iterator(block_index, start_pos);
+    }
+
+    assert(pos >= start_pos);
+    assert(blk->mp_data); // data for non-empty blocks should never be NULL.
+    size_type idx = pos - start_pos;
+    mdds_mtv_get_value(*blk->mp_data, idx, value);
+
+    // Set the element slot empty without overwriting it.
+    return set_empty_in_single_block(pos, pos, block_index, start_pos, false);
+}
+
+template<typename _CellBlockFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& it_begin, const _T& it_end)
 {
     size_type end_pos = 0;
@@ -1125,30 +1150,39 @@ template<typename _CellBlockFunc>
 template<typename _T>
 _T multi_type_vector<_CellBlockFunc>::release(size_type pos)
 {
-    size_type start_row = 0;
+    size_type start_pos = 0;
     size_type block_index = 0;
-    if (!get_block_position(pos, start_row, block_index))
+    if (!get_block_position(pos, start_pos, block_index))
         throw std::out_of_range("Block position not found!");
 
-    const block* blk = m_blocks[block_index];
-    assert(blk);
-
     _T value;
-    if (!blk->mp_data)
-    {
-        // Empty cell block.  There is no element to release.
-        mdds_mtv_get_empty_value(value);
-        return value;
-    }
-
-    assert(pos >= start_row);
-    assert(blk->mp_data); // data for non-empty blocks should never be NULL.
-    size_type idx = pos - start_row;
-    mdds_mtv_get_value(*blk->mp_data, idx, value);
-
-    // Set the element slot empty without overwriting it.
-    set_empty_in_single_block(pos, pos, block_index, start_row, false);
+    release_impl(pos, start_pos, block_index, value);
     return value;
+}
+
+template<typename _CellBlockFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::release(size_type pos, _T& value)
+{
+    size_type start_pos = 0;
+    size_type block_index = 0;
+    if (!get_block_position(pos, start_pos, block_index))
+        throw std::out_of_range("Block position not found!");
+
+    return release_impl(pos, start_pos, block_index, value);
+}
+
+template<typename _CellBlockFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::release(const iterator& pos_hint, size_type pos, _T& value)
+{
+    size_type start_pos = 0;
+    size_type block_index = 0;
+    get_block_position(pos_hint, pos, start_pos, block_index);
+
+    return release_impl(pos, start_pos, block_index, value);
 }
 
 template<typename _CellBlockFunc>

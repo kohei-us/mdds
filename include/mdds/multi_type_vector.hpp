@@ -373,7 +373,7 @@ public:
     /**
      * Return the value of an element at specified position and set that
      * position empty.  If the element resides in a managed block, this call
-     * will <i>not</i> delete that element.  If the element is on a
+     * will release that element from that block.  If the element is on a
      * non-managed block, this call is equivalent to set_empty(pos, pos).
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
@@ -385,6 +385,42 @@ public:
      */
     template<typename _T>
     _T release(size_type pos);
+
+    /**
+     * Retrieve the value of an element at specified position and set that
+     * position empty.  If the element resides in a managed block, this call
+     * will release that element from that block.  If the element is on a
+     * non-managed block, this call is equivalent to set_empty(pos, pos).
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos position of the element to release.
+     * @param value element value.
+     *
+     * @return iterator referencing the block where the position of the
+     *         released element is.
+     */
+    template<typename _T>
+    iterator release(size_type pos, _T& value);
+
+    /**
+     * Retrieve the value of an element at specified position and set that
+     * position empty.  If the element resides in a managed block, this call
+     * will release that element from that block.  If the element is on a
+     * non-managed block, this call is equivalent to set_empty(pos, pos).
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos position of the element to release.
+     * @param value element value.
+     *
+     * @return iterator referencing the block where the position of the
+     *         released element is.
+     */
+    template<typename _T>
+    iterator release(const iterator& pos_hint, size_type pos, _T& value);
 
     /**
      * Given the logical position of an element, get the iterator of the block
@@ -696,6 +732,9 @@ private:
 
     template<typename _T>
     iterator set_impl(size_type pos, size_type start_row, size_type block_index, const _T& value);
+
+    template<typename _T>
+    iterator release_impl(size_type pos, size_type start_pos, size_type block_index, _T& value);
 
     /**
      * Find the correct block position for given logical row ID.

@@ -4,6 +4,14 @@
   * added another block function template to make it easier to declare
     container with 3 custom element types.
 
+  * added two variants of release():
+
+    * template<typename _T> iterator
+      release(size_type pos, _T& value)
+
+    * template<typename _T> iterator
+      release(const iterator& pos_hint, size_type pos, _T& value)
+
 mdds 0.8.1
 
 * multi_type_vector
