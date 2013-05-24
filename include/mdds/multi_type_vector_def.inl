@@ -1722,6 +1722,14 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
 }
 
 template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::swap_impl(
+    multi_type_vector& other, size_type start_pos, size_type end_pos,
+    size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
+    size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2)
+{
+}
+
+template<typename _CellBlockFunc>
 void multi_type_vector<_CellBlockFunc>::erase(size_type start_pos, size_type end_pos)
 {
     if (start_pos > end_pos)
@@ -2881,6 +2889,40 @@ void multi_type_vector<_CellBlockFunc>::swap(multi_type_vector& other)
 {
     std::swap(m_cur_size, other.m_cur_size);
     m_blocks.swap(other.m_blocks);
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::swap(multi_type_vector& other, size_type start_pos, size_type end_pos)
+{
+    if (start_pos > end_pos)
+        throw std::out_of_range("multi_type_vector::swap: start position is larger than the end position!");
+
+    if (end_pos >= m_cur_size || end_pos > other.m_cur_size)
+        throw std::out_of_range("multi_type_vector::swap: end position is out of bound!");
+
+    size_type start_pos1 = 0;
+    size_type block_index1 = 0;
+    if (!get_block_position(start_pos, start_pos1, block_index1))
+        throw std::out_of_range("multi_type_vector::swap: start block position in source not found!");
+
+    size_type start_pos2 = start_pos1;
+    size_type block_index2 = block_index1;
+    if (!get_block_position(end_pos, start_pos2, block_index2))
+        throw std::out_of_range("multi_type_vector::swap: end block position in source not found!");
+
+    size_type dest_start_pos1 = 0;
+    size_type dest_block_index1 = 0;
+    if (!other.get_block_position(start_pos, dest_start_pos1, dest_block_index1))
+        throw std::out_of_range("multi_type_vector::swap: start block position in destination not found!");
+
+    size_type dest_start_pos2 = dest_start_pos1;
+    size_type dest_block_index2 = dest_block_index1;
+    if (!other.get_block_position(end_pos, dest_start_pos2, dest_block_index2))
+        throw std::out_of_range("multi_type_vector::swap: end block position in destination not found!");
+
+    swap_impl(
+        other, start_pos, end_pos, start_pos1, block_index1, start_pos2, block_index2,
+        dest_start_pos1, dest_block_index1, dest_start_pos2, dest_block_index2);
 }
 
 template<typename _CellBlockFunc>
