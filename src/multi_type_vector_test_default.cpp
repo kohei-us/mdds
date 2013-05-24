@@ -4039,6 +4039,7 @@ void mtv_test_position()
     stack_printer __stack_printer__("::mtv_test_position");
     mtv_type db(10, false);
     mtv_type::iterator check;
+    mtv_type::const_iterator const_check;
     db.set(6, 1.1);
     db.set(7, 1.2);
     db.set(8, 1.3);
@@ -4088,6 +4089,11 @@ void mtv_test_position()
     pair<mtv_type::const_iterator,mtv_type::size_type> const_pos = db_ref.position(3);
     assert(const_pos.first == db_ref.begin());
     assert(const_pos.second == 3);
+    const_pos = db_ref.position(const_pos.first, 7);
+    const_check = db_ref.begin();
+    ++const_check;
+    assert(const_pos.first == const_check);
+    assert(const_pos.second == 1);
 
     // Check for the variant that takes position hint.
     pos = db.position(0);

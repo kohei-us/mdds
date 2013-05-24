@@ -117,8 +117,8 @@ public:
     typedef __mtv::iterator_base<iterator_trait, itr_forward_update> iterator;
     typedef __mtv::iterator_base<reverse_iterator_trait, itr_no_update> reverse_iterator;
 
-    typedef __mtv::const_iterator_base<const_iterator_trait, iterator> const_iterator;
-    typedef __mtv::const_iterator_base<const_reverse_iterator_trait, reverse_iterator> const_reverse_iterator;
+    typedef __mtv::const_iterator_base<const_iterator_trait, itr_forward_update, iterator> const_iterator;
+    typedef __mtv::const_iterator_base<const_reverse_iterator_trait, itr_no_update, reverse_iterator> const_reverse_iterator;
 
     iterator begin();
     iterator end();
@@ -468,6 +468,23 @@ public:
     std::pair<const_iterator, size_type> position(size_type pos) const;
 
     /**
+     * Given the logical position of an element, get the iterator of the block
+     * where the element is located, and its offset from the first element of
+     * that block.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the element
+     *                 position.
+     * @param pos logical position of the element.
+     * @return iterator referencing the block where the element resides, and
+     *         its offset within the block.
+     */
+    std::pair<const_iterator, size_type> position(const const_iterator& pos_hint, size_type pos) const;
+
+    /**
      * Move elements from one container to another. After the move, the
      * segment where the elements were in the original container becomes
      * empty.  When transferring managed elements, this call transfers
@@ -761,7 +778,7 @@ private:
      * Same as above, but try to infer block position from the iterator first
      * before trying full search.
      */
-    void get_block_position(const iterator& pos_hint, size_type pos, size_type& start_pos, size_type& block_index) const;
+    void get_block_position(const const_iterator& pos_hint, size_type pos, size_type& start_pos, size_type& block_index) const;
 
     template<typename _T>
     static void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
@@ -887,6 +904,13 @@ private:
         typename blocks_type::iterator block_pos = m_blocks.begin();
         std::advance(block_pos, block_index);
         return iterator(block_pos, m_blocks.end(), start_row, block_index);
+    }
+
+    inline const_iterator get_const_iterator(size_type block_index, size_type start_row) const
+    {
+        typename blocks_type::const_iterator block_pos = m_blocks.begin();
+        std::advance(block_pos, block_index);
+        return const_iterator(block_pos, m_blocks.end(), start_row, block_index);
     }
 
 private:

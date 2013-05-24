@@ -228,6 +228,9 @@ public:
         std::swap(m_pos, other.m_pos);
         std::swap(m_end, other.m_end);
     }
+
+    const base_iterator_type& get_pos() const { return m_pos; }
+    const base_iterator_type& get_end() const { return m_end; }
 };
 
 template<typename _Trait, typename _NodeUpdateFunc>
@@ -247,6 +250,9 @@ class iterator_base : public iterator_common_base<_Trait>
     using common_base::m_end;
 
 public:
+
+    using common_base::get_pos;
+    using common_base::get_end;
 
     // iterator traits
     typedef typename common_base::node value_type;
@@ -297,19 +303,13 @@ public:
         node_update_func::dec(m_cur_node);
         return ret;
     }
-
-    /**
-     * These method are public only to allow const_iterator_base to
-     * instantiate from iterator_base.
-     */
-    const base_iterator_type& get_pos() const { return m_pos; }
-    const base_iterator_type& get_end() const { return m_end; }
 };
 
-template<typename _Trait, typename _NonConstItrBase>
+template<typename _Trait, typename _NodeUpdateFunc, typename _NonConstItrBase>
 class const_iterator_base : public iterator_common_base<_Trait>
 {
     typedef _Trait trait;
+    typedef _NodeUpdateFunc node_update_func;
     typedef iterator_common_base<trait> common_base;
 
     typedef typename trait::base_iterator base_iterator_type;
@@ -320,6 +320,9 @@ class const_iterator_base : public iterator_common_base<_Trait>
     using common_base::m_cur_node;
 
 public:
+
+    using common_base::get_pos;
+    using common_base::get_end;
 
     typedef _NonConstItrBase iterator_base;
 
@@ -358,11 +361,13 @@ public:
 
     const value_type* operator++()
     {
+        node_update_func::inc(m_cur_node);
         return inc();
     }
 
     const value_type* operator--()
     {
+        node_update_func::dec(m_cur_node);
         return dec();
     }
 

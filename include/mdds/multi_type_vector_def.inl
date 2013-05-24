@@ -525,7 +525,7 @@ bool multi_type_vector<_CellBlockFunc>::get_block_position(
 
 template<typename _CellBlockFunc>
 void multi_type_vector<_CellBlockFunc>::get_block_position(
-    const iterator& pos_hint, size_type pos, size_type& start_row, size_type& block_index) const
+    const const_iterator& pos_hint, size_type pos, size_type& start_row, size_type& block_index) const
 {
     start_row = 0;
     block_index = 0;
@@ -1229,6 +1229,20 @@ multi_type_vector<_CellBlockFunc>::position(size_type pos) const
     std::advance(block_pos, block_index);
     const_iterator it = const_iterator(block_pos, m_blocks.end(), start_row, block_index);
     return ret_type(it, pos - start_row);
+}
+
+template<typename _CellBlockFunc>
+std::pair<typename multi_type_vector<_CellBlockFunc>::const_iterator, typename multi_type_vector<_CellBlockFunc>::size_type>
+multi_type_vector<_CellBlockFunc>::position(const const_iterator& pos_hint, size_type pos) const
+{
+    typedef std::pair<const_iterator, size_type> ret_type;
+
+    size_type start_pos = 0;
+    size_type block_index = 0;
+    get_block_position(pos_hint, pos, start_pos, block_index);
+
+    const_iterator it = get_const_iterator(block_index, start_pos);
+    return ret_type(it, pos - start_pos);
 }
 
 template<typename _CellBlockFunc>

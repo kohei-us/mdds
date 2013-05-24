@@ -12,6 +12,12 @@
     * template<typename _T> iterator
       release(const iterator& pos_hint, size_type pos, _T& value)
 
+  * added a new variant of position() that takes const_iterator as
+    position hint.
+
+    * std::pair<const_iterator, size_type>
+      position(const const_iterator& pos_hint, size_type pos) const
+
 mdds 0.8.1
 
 * multi_type_vector
