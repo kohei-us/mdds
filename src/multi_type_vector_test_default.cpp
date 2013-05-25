@@ -4136,89 +4136,38 @@ void mtv_test_swap_range()
     assert(db2.get<double>(4) == 1.3);
 }
 
-void mtv_perf_test_block_position_lookup()
-{
-    size_t n = 24000;
-
-    {
-        // Default insertion which always looks up the right element block
-        // from the position of the first block.  As such, as the block size
-        // grows, so does the time it takes to search for the right block.
-
-        mtv_type db(n*2);
-        double val1 = 1.1;
-        int val2 = 23;
-        stack_printer __stack_printer__("::mtv_perf_test_block_position_lookup::default insertion");
-        for (size_t i = 0; i < n; ++i)
-        {
-            size_t pos1 = i*2, pos2 = i*2 + 1;
-            db.set(pos1, val1);
-            db.set(pos2, val2);
-        }
-    }
-
-    {
-        // As a solution for this, we can use an iterator to specify the start
-        // position, which eliminates the above scalability problem nicely.
-
-        mtv_type db(n*2);
-        mtv_type::iterator pos_hint = db.begin();
-        double val1 = 1.1;
-        int val2 = 23;
-        stack_printer __stack_printer__("::mtv_perf_test_block_position_lookup::insertion with position hint");
-        for (size_t i = 0; i < n; ++i)
-        {
-            size_t pos1 = i*2, pos2 = i*2 + 1;
-            pos_hint = db.set(pos_hint, pos1, val1);
-            pos_hint = db.set(pos_hint, pos2, val2);
-        }
-    }
-}
-
 }
 
 int main (int argc, char **argv)
 {
-    cmd_options opt;
-    if (!parse_cmd_options(argc, argv, opt))
-        return EXIT_FAILURE;
-
-    if (opt.test_func)
-    {
-        mtv_test_types();
-        mtv_test_construction();
-        mtv_test_basic();
-        mtv_test_empty_cells();
-        mtv_test_swap();
-        mtv_test_equality();
-        mtv_test_clone();
-        mtv_test_resize();
-        mtv_test_erase();
-        mtv_test_insert_empty();
-        mtv_test_set_cells();
-        mtv_test_insert_cells();
-        mtv_test_iterators();
-        mtv_test_data_iterators();
-        mtv_test_non_const_data_iterators();
-        mtv_test_iterator_private_data();
-        mtv_test_set_return_iterator();
-        mtv_test_set2_return_iterator();
-        mtv_test_insert_cells_return_iterator();
-        mtv_test_set_empty_return_iterator();
-        mtv_test_insert_empty_return_iterator();
-        mtv_test_set_with_position();
-        mtv_test_set_cells_with_position();
-        mtv_test_insert_cells_with_position();
-        mtv_test_set_empty_with_position();
-        mtv_test_insert_empty_with_position();
-        mtv_test_position();
-        mtv_test_swap_range();
-    }
-
-    if (opt.test_perf)
-    {
-        mtv_perf_test_block_position_lookup();
-    }
+    mtv_test_types();
+    mtv_test_construction();
+    mtv_test_basic();
+    mtv_test_empty_cells();
+    mtv_test_swap();
+    mtv_test_equality();
+    mtv_test_clone();
+    mtv_test_resize();
+    mtv_test_erase();
+    mtv_test_insert_empty();
+    mtv_test_set_cells();
+    mtv_test_insert_cells();
+    mtv_test_iterators();
+    mtv_test_data_iterators();
+    mtv_test_non_const_data_iterators();
+    mtv_test_iterator_private_data();
+    mtv_test_set_return_iterator();
+    mtv_test_set2_return_iterator();
+    mtv_test_insert_cells_return_iterator();
+    mtv_test_set_empty_return_iterator();
+    mtv_test_insert_empty_return_iterator();
+    mtv_test_set_with_position();
+    mtv_test_set_cells_with_position();
+    mtv_test_insert_cells_with_position();
+    mtv_test_set_empty_with_position();
+    mtv_test_insert_empty_with_position();
+    mtv_test_position();
+    mtv_test_swap_range();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

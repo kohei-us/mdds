@@ -96,6 +96,9 @@ $(OBJDIR)/multi_type_vector_test_default.o: @top_srcdir@/$(SRCDIR)/multi_type_ve
 $(OBJDIR)/multi_type_vector_test_custom.o: @top_srcdir@/$(SRCDIR)/multi_type_vector_test_custom.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/multi_type_vector_test_custom.cpp
 
+$(OBJDIR)/multi_type_vector_test_perf.o: @top_srcdir@/$(SRCDIR)/multi_type_vector_test_perf.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/multi_type_vector_test_perf.cpp
+
 $(OBJDIR)/multi_type_matrix_test.o: @top_srcdir@/$(SRCDIR)/multi_type_matrix_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/multi_type_matrix_test.cpp
 
@@ -120,10 +123,13 @@ multi_type_vector_test_default: pre $(OBJDIR)/multi_type_vector_test_default.o
 multi_type_vector_test_custom: pre $(OBJDIR)/multi_type_vector_test_custom.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/multi_type_vector_test_custom.o -o $@
 
+multi_type_vector_test_perf: pre $(OBJDIR)/multi_type_vector_test_perf.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/multi_type_vector_test_perf.o -o $@
+
 multi_type_matrix_test: pre $(OBJDIR)/multi_type_matrix_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/multi_type_matrix_test.o -o $@
 
-multi_type_vector_test: multi_type_vector_test_default multi_type_vector_test_custom
+multi_type_vector_test: multi_type_vector_test_default multi_type_vector_test_custom multi_type_vector_test_perf
 
 stlperf_test: pre @top_srcdir@/$(SRCDIR)/stlperf_test.cpp
 	$(CXX) $(LDFLAGS) $(CPPFLAGS) @top_srcdir@/$(SRCDIR)/stlperf_test.cpp -o $@
@@ -174,15 +180,14 @@ test.mtm.mem: mixed_type_matrix_test
 	valgrind --tool=memcheck --leak-check=full ./mixed_type_matrix_test func
 
 test.mtv: multi_type_vector_test_default multi_type_vector_test_custom
-	./multi_type_vector_test_default func
+	./multi_type_vector_test_default
 	./multi_type_vector_test_custom func
 
-test.mtv.perf: multi_type_vector_test_default multi_type_vector_test_custom
-	./multi_type_vector_test_default perf
-	./multi_type_vector_test_custom perf
+test.mtv.perf: multi_type_vector_test_perf
+	./multi_type_vector_test_perf
 
 test.mtv.mem: multi_type_vector_test_default multi_type_vector_test_custom
-	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_default func
+	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_default
 	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_custom func
 
 test.mtmatrix: multi_type_matrix_test
