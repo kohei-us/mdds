@@ -229,6 +229,7 @@ public:
         std::swap(m_end, other.m_end);
     }
 
+    const node& get_node() const { return m_cur_node; }
     const base_iterator_type& get_pos() const { return m_pos; }
     const base_iterator_type& get_end() const { return m_end; }
 };
@@ -347,7 +348,10 @@ public:
      * Take the non-const iterator counterpart to create a const iterator.
      */
     const_iterator_base(const iterator_base& other) :
-        common_base(other.get_pos(), other.get_end(), 0, 0) {}
+        common_base(
+            other.get_pos(), other.get_end(),
+            other.get_node().__private_data.start_pos,
+            other.get_node().__private_data.block_index) {}
 
     const value_type& operator*() const
     {
