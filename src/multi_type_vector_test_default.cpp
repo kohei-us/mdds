@@ -4150,6 +4150,13 @@ void mtv_test_swap_range()
 
     // Go to the opposite direction.
     db1.swap(1, 2, db2, 1);
+    assert(db1.block_size() == 1);
+    mtv_type::iterator it = db1.begin();
+    assert(it->type == mtv::element_type_empty);
+    assert(it->size == 3);
+    it = db2.begin();
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->size == 3);
 }
 
 }
