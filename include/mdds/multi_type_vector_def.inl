@@ -1727,6 +1727,52 @@ void multi_type_vector<_CellBlockFunc>::swap_impl(
     size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
     size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2)
 {
+    if (block_index1 == block_index2)
+    {
+        // Source range is in a single block.
+        if (dblock_index1 == dblock_index2)
+        {
+            // Destination range is also in a single block.
+            swap_single_blocks(
+                other, start_pos, end_pos, start_pos_in_block1, block_index1,
+                start_pos_in_dblock1, dblock_index1);
+            return;
+        }
+    }
+    assert(!"not implemented yet");
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
+    multi_type_vector& other, size_type start_pos, size_type end_pos,
+    size_type start_pos_in_block, size_type block_index, size_type start_pos_in_dblock, size_type dblock_index)
+{
+    block* blk_src = m_blocks[block_index];
+    block* blk_dst = other.m_blocks[dblock_index];
+    element_category_type cat_src = mtv::element_type_empty;
+    element_category_type cat_dst = mtv::element_type_empty;
+
+    if (blk_src->mp_data)
+        cat_src = mtv::get_block_type(*blk_src->mp_data);
+    if (blk_dst->mp_data)
+        cat_dst = mtv::get_block_type(*blk_dst->mp_data);
+
+    size_t len = end_pos - start_pos + 1; // length of elements to swap.
+
+    if (cat_src == cat_dst)
+    {
+        // Source and destination blocks are of the same type.
+        if (cat_src == mtv::element_type_empty)
+            // Both are empty blocks. Nothing to swap.
+            return;
+
+        size_type src_offset = start_pos - start_pos_in_block;
+        size_type dst_offset = start_pos - start_pos_in_dblock;
+        element_block_func::swap_values(*blk_src->mp_data, *blk_dst->mp_data, src_offset, dst_offset, len);
+        return;
+    }
+
+    assert(!"not implemented yet");
 }
 
 template<typename _CellBlockFunc>

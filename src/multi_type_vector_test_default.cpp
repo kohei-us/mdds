@@ -4115,6 +4115,27 @@ void mtv_test_position()
     assert(pos.second == 3);
 }
 
+void mtv_test_swap_range()
+{
+    stack_printer __stack_printer__("::mtv_test_swap_range");
+    mtv_type db1(10), db2(10);
+    db1.set(2, 1.1);
+    db1.set(3, 1.2);
+    db1.set(4, 1.3);
+
+    db2.set(2, 2.1);
+    db2.set(3, 2.2);
+    db2.set(4, 2.3);
+
+    db1.swap(db2, 2, 4);
+    assert(db1.get<double>(2) == 2.1);
+    assert(db1.get<double>(3) == 2.2);
+    assert(db1.get<double>(4) == 2.3);
+    assert(db2.get<double>(2) == 1.1);
+    assert(db2.get<double>(3) == 1.2);
+    assert(db2.get<double>(4) == 1.3);
+}
+
 void mtv_perf_test_block_position_lookup()
 {
     size_t n = 24000;
@@ -4191,6 +4212,7 @@ int main (int argc, char **argv)
         mtv_test_set_empty_with_position();
         mtv_test_insert_empty_with_position();
         mtv_test_position();
+        mtv_test_swap_range();
     }
 
     if (opt.test_perf)

@@ -219,6 +219,25 @@ struct custom_block_func3
         }
     }
 
+    static void swap_values(
+        base_element_block& blk1, base_element_block& blk2, size_t pos1, size_t pos2, size_t len)
+    {
+        switch (get_block_type(blk1))
+        {
+            case _TypeId1:
+                _Block1::swap_values(blk1, blk2, pos1, pos2, len);
+            break;
+            case _TypeId2:
+                _Block2::swap_values(blk1, blk2, pos1, pos2, len);
+            break;
+            case _TypeId3:
+                _Block3::swap_values(blk1, blk2, pos1, pos2, len);
+            break;
+            default:
+                element_block_func_base::swap_values(blk1, blk2, pos1, pos2, len);
+        }
+    }
+
     static bool equal_block(
         const base_element_block& left, const base_element_block& right)
     {

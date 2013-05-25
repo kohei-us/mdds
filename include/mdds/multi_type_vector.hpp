@@ -823,6 +823,10 @@ private:
         size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
         size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2);
 
+    void swap_single_blocks(
+        multi_type_vector& other, size_type start_pos, size_type end_pos,
+        size_type start_pos_in_block, size_type block_index, size_type start_pos_in_dblock, size_type dblock_index);
+
     iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block, bool overwrite);
 
     iterator set_empty_in_single_block(

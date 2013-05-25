@@ -32,7 +32,11 @@
 #include "compat/unique_ptr.hpp"
 #include "global.hpp"
 
+#ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
+#include <deque>
+#else
 #include <vector>
+#endif
 #include <boost/noncopyable.hpp>
 
 #if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
@@ -96,7 +100,11 @@ class element_block : public base_element_block
 #endif
 
 protected:
+#ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
+    typedef std::deque<_Data> store_type;
+#else
     typedef std::vector<_Data> store_type;
+#endif
     store_type m_array;
 
     element_block() : base_element_block(_TypeId) {}
@@ -263,7 +271,9 @@ public:
         std::advance(it, begin_pos);
         typename store_type::const_iterator it_end = it;
         std::advance(it_end, len);
+#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
         d.reserve(d.size() + len);
+#endif
         std::copy(it, it_end, std::back_inserter(d));
     }
 
@@ -278,6 +288,29 @@ public:
         typename store_type::const_iterator it_end = it;
         std::advance(it_end, len);
         d.assign(it, it_end);
+    }
+
+    static void swap_values(
+        base_element_block& blk1, base_element_block& blk2, size_t pos1, size_t pos2, size_t len)
+    {
+        store_type& st1 = get(blk1).m_array;
+        store_type& st2 = get(blk2).m_array;
+        assert(pos1 + len <= st1.size());
+        assert(pos2 + len <= st2.size());
+
+        typename store_type::iterator it1 = st1.begin(), it2 = st2.begin();
+        std::advance(it1, pos1);
+        std::advance(it2, pos2);
+        for (size_t i = 0; i < len; ++i, ++it1, ++it2)
+        {
+#ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
+            std::swap(*it1, *it2);
+#else
+            value_type v1 = *it1, v2 = *it2;
+            *it1 = v2;
+            *it2 = v1;
+#endif
+        }
     }
 
     template<typename _Iter>
@@ -409,7 +442,9 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
     managed_element_block(size_t n) : base_type(n) {}
     managed_element_block(const managed_element_block& r)
     {
+#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
         m_array.reserve(r.m_array.size());
+#endif
         typename managed_element_block::store_type::const_iterator it = r.m_array.begin(), it_end = r.m_array.end();
         for (; it != it_end; ++it)
             m_array.push_back(new _Data(**it));
