@@ -277,6 +277,7 @@
 			<F N="../src/multi_type_matrix_test.cpp"/>
 			<F N="../src/multi_type_vector_test_custom.cpp"/>
 			<F N="../src/multi_type_vector_test_default.cpp"/>
+			<F N="../src/multi_type_vector_test_perf.cpp"/>
 			<F N="../src/nodecontainer.cpp"/>
 			<F N="../src/point_quad_tree_test.cpp"/>
 			<F N="../src/rangetree.cpp"/>
