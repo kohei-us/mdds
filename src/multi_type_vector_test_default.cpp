@@ -4127,13 +4127,29 @@ void mtv_test_swap_range()
     db2.set(3, 2.2);
     db2.set(4, 2.3);
 
-    db1.swap(db2, 2, 4);
+    db1.swap(2, 4, db2, 2);
     assert(db1.get<double>(2) == 2.1);
     assert(db1.get<double>(3) == 2.2);
     assert(db1.get<double>(4) == 2.3);
     assert(db2.get<double>(2) == 1.1);
     assert(db2.get<double>(3) == 1.2);
     assert(db2.get<double>(4) == 1.3);
+
+    // Source is empty but destination is not.
+    db1 = mtv_type(3);
+    db2 = mtv_type(3, 12.3);
+    db1.swap(1, 2, db2, 1);
+    assert(db1.is_empty(0));
+    assert(db1.get<double>(1) == 12.3);
+    assert(db1.get<double>(2) == 12.3);
+    assert(db1.block_size() == 2);
+    assert(db2.get<double>(0) == 12.3);
+    assert(db2.is_empty(1));
+    assert(db2.is_empty(2));
+    assert(db2.block_size() == 2);
+
+    // Go to the opposite direction.
+    db1.swap(1, 2, db2, 1);
 }
 
 }
