@@ -78,6 +78,14 @@ private:
         ~block();
     };
 
+    struct element_block_deleter : public std::unary_function<void, const element_block_type*>
+    {
+        void operator() (const element_block_type* p)
+        {
+            element_block_func::delete_block(const_cast<element_block_type*>(p));
+        }
+    };
+
     typedef std::vector<block*> blocks_type;
 
     struct iterator_trait
@@ -909,6 +917,29 @@ private:
     void insert_cells_to_middle(
         size_type row, size_type block_index, size_type start_pos,
         const _T& it_begin, const _T& it_end);
+
+    block* get_previous_block_of_type(size_type block_index, element_category_type cat);
+    block* get_next_block_of_type(size_type block_index, element_category_type cat);
+
+    /**
+     * Send elements from a source block to place them in a destination block.
+     * In return, the method returns the elements in the destination block
+     * that have been replaced by the elements sent by the caller.  The caller
+     * needs to manage the life cycle of the returned block.
+     *
+     * @param src_data source data block from which the elements are sent.
+     * @param src_offset position of the first element in the source block.
+     * @param dst_index destination block index.
+     * @param dst_offset position in the destination block where the sent
+     *                   elements are to be placed.
+     * @param len length of elements.
+     *
+     * @return heap allocated block that contains the overwritten elements
+     *         originally in the destination block. The caller needs to manage
+     *         its life cycle.
+     */
+    element_block_type* exchange_elements(
+        const element_block_type& src_data, size_type src_offset, size_t dst_index, size_type dst_offset, size_type len);
 
     inline iterator get_iterator(size_type block_index, size_type start_row)
     {

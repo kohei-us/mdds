@@ -4157,6 +4157,29 @@ void mtv_test_swap_range()
     it = db2.begin();
     assert(it->type == mtv::element_type_numeric);
     assert(it->size == 3);
+
+    int int_val = 2;
+    short short_val = 5;
+    db1 = mtv_type(5, int_val);
+    db2 = mtv_type(5, short_val);
+    db1.set(1, 2.3);
+    db1.set(2, 2.4);
+    db2.set(3, string("abc"));
+    db2.set(4, string("def"));
+    db1.swap(1, 2, db2, 3); // Swap 1-2 of source with 3-4 of destination.
+    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<string>(1) == "abc");
+    assert(db1.get<string>(2) == "def");
+    assert(db1.get<int>(3) == int_val);
+    assert(db1.get<int>(4) == int_val);
+    assert(db1.block_size() == 3);
+
+    assert(db2.get<short>(0) == short_val);
+    assert(db2.get<short>(1) == short_val);
+    assert(db2.get<short>(2) == short_val);
+    assert(db2.get<double>(3) == 2.3);
+    assert(db2.get<double>(4) == 2.4);
+    assert(db2.block_size() == 2);
 }
 
 }

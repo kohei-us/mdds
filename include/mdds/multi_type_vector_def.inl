@@ -1762,6 +1762,10 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
     size_type src_offset = start_pos - start_pos_in_block;
     size_type dst_offset = other_pos - start_pos_in_other_block;
 
+    // length of the tail that will not be swapped.
+    size_type src_tail_len = blk_src->m_size - src_offset - len;
+    size_type dst_tail_len = blk_dst->m_size - dst_offset - len;
+
     if (cat_src == cat_dst)
     {
         // Source and destination blocks are of the same type.
@@ -1774,6 +1778,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
     }
 
     // Source and destination blocks are of different types.
+
     if (cat_src == mtv::element_type_empty)
     {
         // Source is empty but destination is not. This is equivalent of transfer.
@@ -1787,6 +1792,35 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
         transfer_single_block(start_pos, end_pos, start_pos_in_block, block_index, other, other_pos);
         return;
     }
+
+    // Neither the source nor destination blocks are empty, and they are of different types.
+    if (src_offset == 0)
+    {
+        // Source range is at the top of a block.
+        if (src_tail_len == 0)
+        {
+            // the whole block needs to be replaced.
+            mdds::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->mp_data);
+            blk_src->mp_data = other.exchange_elements(
+                *src_data, src_offset, other_block_index, dst_offset, len);
+            merge_with_adjacent_blocks(block_index);
+            return;
+        }
+
+        // Replace the top part of the source block.
+        assert(!"not implemented yet");
+        return;
+    }
+
+    if (src_tail_len == 0)
+    {
+        // Source range is at the bottom of a block.
+        assert(!"not implemented yet");
+        return;
+    }
+
+    // Source range is in the middle of a block.
+    assert(src_offset && src_tail_len);
 
     assert(!"not implemented yet");
 }
@@ -2271,6 +2305,83 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_to_middle(
 }
 
 template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::block*
+multi_type_vector<_CellBlockFunc>::get_previous_block_of_type(
+    size_type block_index, element_category_type cat)
+{
+    if (block_index == 0)
+        // No previous block.
+        return NULL;
+
+    block* blk = m_blocks[block_index-1];
+    if (blk->mp_data)
+        return (cat == mtv::get_block_type(*blk->mp_data)) ? blk : NULL;
+
+    return (cat == mtv::element_type_empty) ? blk : NULL;
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::block*
+multi_type_vector<_CellBlockFunc>::get_next_block_of_type(
+    size_type block_index, element_category_type cat)
+{
+    if (block_index == m_blocks.size()-1)
+        // No next block.
+        return NULL;
+
+    block* blk = m_blocks[block_index+1];
+    if (blk->mp_data)
+        return (cat == mtv::get_block_type(*blk->mp_data)) ? blk : NULL;
+
+    return (cat == mtv::element_type_empty) ? blk : NULL;
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::element_block_type*
+multi_type_vector<_CellBlockFunc>::exchange_elements(
+    const element_block_type& src_data, size_type src_offset, size_type dst_index,
+    size_type dst_offset, size_type len)
+{
+    assert(dst_index < m_blocks.size());
+    block* blk = m_blocks[dst_index];
+    element_category_type cat_src = mtv::get_block_type(src_data);
+
+    if (dst_offset == 0)
+    {
+        // Set elements to the top of the destination block.
+
+        block* prev_blk = get_previous_block_of_type(dst_index, cat_src);
+        if (prev_blk)
+        {
+            // Append to the previous block.
+            assert(!"exchange_elements not implemented yet");
+            return NULL;
+        }
+
+        if (blk->m_size == len)
+        {
+            // The whole block will get replaced. Check the next block to see if we need to merge.
+            block* next_blk = get_next_block_of_type(dst_index, cat_src);
+            if (next_blk)
+            {
+                // We need to merge with the next block.
+                assert(!"exchange_elements not implemented yet");
+            }
+
+            mdds::unique_ptr<element_block_type, element_block_deleter> data(blk->mp_data);
+            blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+            assert(blk->mp_data && blk->mp_data != data.get());
+            element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
+
+            // Return this data block as-is.
+            return data.release();
+        }
+    }
+
+    assert(!"exchange_elements not implemented yet");
+}
+
+template<typename _CellBlockFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
@@ -2329,7 +2440,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         if (blk->mp_data)
         {
             // Erase the upper part of the data from the current data array.
-            mdds::unique_ptr<element_block_type> new_data(
+            mdds::unique_ptr<element_block_type, element_block_deleter> new_data(
                 element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->mp_data), 0));
 
             if (!new_data)

@@ -18,6 +18,10 @@
     * std::pair<const_iterator, size_type>
       position(const const_iterator& pos_hint, size_type pos) const
 
+  * fixed a memory leak in
+
+    * set(size_type pos, const _T& it_begin, const _T& it_end).
+
 mdds 0.8.1
 
 * multi_type_vector
