@@ -82,7 +82,7 @@ private:
     {
         void operator() (const element_block_type* p)
         {
-            element_block_func::delete_block(const_cast<element_block_type*>(p));
+            element_block_func::delete_block(p);
         }
     };
 

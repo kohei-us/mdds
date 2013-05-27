@@ -40,7 +40,7 @@ struct element_block_func_base
 
     inline static base_element_block* clone_block(const base_element_block& block);
 
-    inline static void delete_block(base_element_block* p);
+    inline static void delete_block(const base_element_block* p);
 
     inline static void resize_block(base_element_block& block, size_t new_size);
 
@@ -135,7 +135,7 @@ base_element_block* element_block_func_base::clone_block(const base_element_bloc
     }
 }
 
-void element_block_func_base::delete_block(base_element_block* p)
+void element_block_func_base::delete_block(const base_element_block* p)
 {
     if (!p)
         return;

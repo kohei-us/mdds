@@ -70,7 +70,7 @@ struct custom_block_func3
         return element_block_func::clone_block(block);
     }
 
-    static void delete_block(base_element_block* p)
+    static void delete_block(const base_element_block* p)
     {
         if (!p)
             return;
