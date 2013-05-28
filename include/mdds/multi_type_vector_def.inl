@@ -3106,9 +3106,24 @@ void multi_type_vector<_CellBlockFunc>::swap(size_type start_pos, size_type end_
     if (!other.get_block_position(other_end_pos, dest_start_pos2, dest_block_index2))
         throw std::out_of_range("multi_type_vector::swap: end block position in destination not found!");
 
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
     swap_impl(
         other, start_pos, end_pos, other_pos, start_pos1, block_index1, start_pos2, block_index2,
         dest_start_pos1, dest_block_index1, dest_start_pos2, dest_block_index2);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in swap" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
 }
 
 template<typename _CellBlockFunc>
