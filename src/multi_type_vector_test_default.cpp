@@ -4180,6 +4180,28 @@ void mtv_test_swap_range()
     assert(db2.get<double>(3) == 2.3);
     assert(db2.get<double>(4) == 2.4);
     assert(db2.block_size() == 2);
+
+    // Merge with the next block in the destination.
+    db1 = mtv_type(5, int_val);
+    db2 = mtv_type(5, 12.3);
+    db2.set(0, string("A"));
+    db2.set(1, string("B"));
+    db1.set(3, 1.1);
+    db1.set(4, 1.2);
+    db1.swap(3, 4, db2, 0);
+    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<string>(3) == "A");
+    assert(db1.get<string>(4) == "B");
+    assert(db1.block_size() == 2);
+
+    assert(db2.get<double>(0) == 1.1);
+    assert(db2.get<double>(1) == 1.2);
+    assert(db2.get<double>(2) == 12.3);
+    assert(db2.get<double>(3) == 12.3);
+    assert(db2.get<double>(4) == 12.3);
+    assert(db2.block_size() == 1);
 }
 
 }

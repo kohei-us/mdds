@@ -219,6 +219,25 @@ struct custom_block_func3
         }
     }
 
+    static void prepend_values_from_block(
+        base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len)
+    {
+        switch (get_block_type(dest))
+        {
+            case _TypeId1:
+                _Block1::prepend_values_from_block(dest, src, begin_pos, len);
+            break;
+            case _TypeId2:
+                _Block2::prepend_values_from_block(dest, src, begin_pos, len);
+            break;
+            case _TypeId3:
+                _Block3::prepend_values_from_block(dest, src, begin_pos, len);
+            break;
+            default:
+                element_block_func_base::prepend_values_from_block(dest, src, begin_pos, len);
+        }
+    }
+
     static void swap_values(
         base_element_block& blk1, base_element_block& blk2, size_t pos1, size_t pos2, size_t len)
     {

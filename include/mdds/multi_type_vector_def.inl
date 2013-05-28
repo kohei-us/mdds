@@ -2350,8 +2350,8 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
     {
         // Set elements to the top of the destination block.
 
-        block* prev_blk = get_previous_block_of_type(dst_index, cat_src);
-        if (prev_blk)
+        block* blk_prev = get_previous_block_of_type(dst_index, cat_src);
+        if (blk_prev)
         {
             // Append to the previous block.
             assert(!"exchange_elements not implemented yet");
@@ -2360,18 +2360,29 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
 
         if (blk->m_size == len)
         {
-            // The whole block will get replaced. Check the next block to see if we need to merge.
-            block* next_blk = get_next_block_of_type(dst_index, cat_src);
-            if (next_blk)
-            {
-                // We need to merge with the next block.
-                assert(!"exchange_elements not implemented yet");
-            }
-
+            // The whole block will get replaced.
             mdds::unique_ptr<element_block_type, element_block_deleter> data(blk->mp_data);
-            blk->mp_data = element_block_func::create_new_block(cat_src, 0);
-            assert(blk->mp_data && blk->mp_data != data.get());
-            element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
+
+            // Check the next block to see if we need to merge.
+            block* blk_next = get_next_block_of_type(dst_index, cat_src);
+            if (blk_next)
+            {
+                // We need to merge with the next block.  Remove the current
+                // block and use the next block to store the new elements as
+                // well as the existing ones.
+                blk->mp_data = NULL;
+                delete blk;
+                m_blocks.erase(m_blocks.begin()+dst_index);
+                blk = blk_next;
+                element_block_func::prepend_values_from_block(*blk->mp_data, src_data, src_offset, len);
+                blk->m_size += len;
+            }
+            else
+            {
+                blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+                assert(blk->mp_data && blk->mp_data != data.get());
+                element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
+            }
 
             // Return this data block as-is.
             return data.release();

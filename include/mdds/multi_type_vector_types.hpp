@@ -268,14 +268,11 @@ public:
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
-        typename store_type::const_iterator it = s.begin();
-        std::advance(it, begin_pos);
-        typename store_type::const_iterator it_end = it;
-        std::advance(it_end, len);
+        std::pair<const_iterator,const_iterator> its = get_iterator_pair(s, begin_pos, len);
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
         d.reserve(d.size() + len);
 #endif
-        std::copy(it, it_end, std::back_inserter(d));
+        std::copy(its.first, its.second, std::back_inserter(d));
     }
 
     static void assign_values_from_block(
@@ -283,12 +280,20 @@ public:
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
-        assert(begin_pos + len <= s.size());
-        typename store_type::const_iterator it = s.begin();
-        std::advance(it, begin_pos);
-        typename store_type::const_iterator it_end = it;
-        std::advance(it_end, len);
-        d.assign(it, it_end);
+        std::pair<const_iterator,const_iterator> its = get_iterator_pair(s, begin_pos, len);
+        d.assign(its.first, its.second);
+    }
+
+    static void prepend_values_from_block(
+        base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len)
+    {
+        store_type& d = get(dest).m_array;
+        const store_type& s = get(src).m_array;
+        std::pair<const_iterator,const_iterator> its = get_iterator_pair(s, begin_pos, len);
+#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
+        d.reserve(d.size() + len);
+#endif
+        d.insert(d.begin(), its.first, its.second);
     }
 
     static void swap_values(
@@ -351,6 +356,18 @@ public:
     {
         store_type& blk = get(block).m_array;
         blk.insert(blk.begin()+pos, it_begin, it_end);
+    }
+
+private:
+    static std::pair<const_iterator,const_iterator>
+    get_iterator_pair(const store_type& array, size_t begin_pos, size_t len)
+    {
+        assert(begin_pos + len <= array.size());
+        const_iterator it = array.begin();
+        std::advance(it, begin_pos);
+        const_iterator it_end = it;
+        std::advance(it_end, len);
+        return std::pair<const_iterator,const_iterator>(it, it_end);
     }
 };
 

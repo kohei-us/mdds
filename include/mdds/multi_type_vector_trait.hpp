@@ -58,6 +58,9 @@ struct element_block_func_base
     inline static void assign_values_from_block(
         base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len);
 
+    inline static void prepend_values_from_block(
+        base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len);
+
     inline static void swap_values(
         base_element_block& blk1, base_element_block& blk2, size_t pos1, size_t pos2, size_t len);
 
@@ -473,6 +476,49 @@ void element_block_func_base::assign_values_from_block(
         break;
         default:
             throw general_error("assign_values_from_block: failed to assign values to a block of unknown type.");
+    }
+}
+
+void element_block_func_base::prepend_values_from_block(
+    base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len)
+{
+    switch (get_block_type(dest))
+    {
+        case element_type_numeric:
+            numeric_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_string:
+            string_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_short:
+            short_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_ushort:
+            ushort_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_int:
+            int_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_uint:
+            uint_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_long:
+            long_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_ulong:
+            ulong_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_boolean:
+            boolean_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_char:
+            char_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        case element_type_uchar:
+            uchar_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        break;
+        default:
+            throw general_error("prepend_values_from_block: failed to prepend values to a block of unknown type.");
     }
 }
 
