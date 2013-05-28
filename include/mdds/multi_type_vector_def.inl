@@ -2534,7 +2534,7 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
     {
         // The new elements will replace the lower part of the block.
 
-        element_block_func::erase(*blk->mp_data, dst_offset, len);
+        element_block_func::resize_block(*blk->mp_data, dst_offset);
         blk->m_size = dst_offset;
 
         if (blk_next)
