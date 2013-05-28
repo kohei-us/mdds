@@ -1807,8 +1807,29 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
             return;
         }
 
-        // Replace the top part of the source block.
-        assert(!"not implemented yet");
+        // Get the new elements from the other container.
+        mdds::unique_ptr<element_block_type, element_block_deleter> dst_data(
+            other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
+
+        // Shrink the current block by erasing the top part.
+        element_block_func::erase(*blk_src->mp_data, 0, len);
+        blk_src->m_size -= len;
+
+        block* blk_prev = get_previous_block_of_type(block_index, cat_dst);
+        if (blk_prev)
+        {
+            // Append the new elements to the previous block.
+            element_block_func::append_values_from_block(*blk_prev->mp_data, *dst_data);
+            blk_prev->m_size += len;
+        }
+        else
+        {
+            // Insert a new block to store the new elements.
+            m_blocks.insert(m_blocks.begin()+block_index, NULL);
+            m_blocks[block_index] = new block(len);
+            block* blk = m_blocks[block_index];
+            blk->mp_data = dst_data.release();
+        }
         return;
     }
 
