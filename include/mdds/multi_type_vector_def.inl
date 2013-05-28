@@ -2491,12 +2491,26 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
     if (dst_end_pos == blk->m_size)
     {
         // The new elements will replace the lower part of the block.
+
+        element_block_func::erase(*blk->mp_data, dst_offset, len);
+        blk->m_size = dst_offset;
+
         if (blk_next)
         {
-            assert(!"exchange_elements not implemented yet");
+            // Merge with the next block.
+            element_block_func::prepend_values_from_block(*blk_next->mp_data, src_data, src_offset, len);
+            blk_next->m_size += len;
         }
-
-        assert(!"exchange_elements not implemented yet");
+        else
+        {
+            // Insert a new block to store the new elements.
+            m_blocks.insert(m_blocks.begin()+dst_index+1, NULL);
+            m_blocks[dst_index+1] = new block(len);
+            blk = m_blocks[dst_index+1];
+            blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+            assert(blk->mp_data);
+            element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
+        }
     }
     else
     {
