@@ -2305,6 +2305,45 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_to_middle(
 }
 
 template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
+    size_type block_index, size_type offset, size_type new_block_size, bool overwrite)
+{
+    assert(block_index < m_blocks.size());
+
+    block* blk = m_blocks[block_index];
+
+    // First, insert two new blocks at position past the current block.
+    size_type lower_block_size = blk->m_size - offset - new_block_size;
+    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, NULL);
+    m_blocks[block_index+1] = new block(new_block_size); // empty block.
+    m_blocks[block_index+2] = new block(lower_block_size);
+
+    if (blk->mp_data)
+    {
+        // Copy the lower values from the current block to the new non-empty block.
+        size_type lower_data_start = offset + new_block_size;
+        block* blk_lower = m_blocks[block_index+2];
+        assert(blk_lower->m_size == lower_block_size);
+        element_category_type cat = mtv::get_block_type(*blk->mp_data);
+        blk_lower->mp_data = element_block_func::create_new_block(cat, 0);
+        element_block_func::assign_values_from_block(
+            *blk_lower->mp_data, *blk->mp_data, lower_data_start, lower_block_size);
+    }
+
+    if (overwrite)
+    {
+        // Overwrite cells that will become empty.
+        element_block_func::overwrite_values(
+            *blk->mp_data, offset, new_block_size);
+    }
+
+    // Shrink the current data block.
+    element_block_func::erase(
+        *blk->mp_data, offset, blk->m_size - offset);
+    blk->m_size = offset;
+}
+
+template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::block*
 multi_type_vector<_CellBlockFunc>::get_previous_block_of_type(
     size_type block_index, element_category_type cat)
@@ -2345,6 +2384,7 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
     assert(dst_index < m_blocks.size());
     block* blk = m_blocks[dst_index];
     element_category_type cat_src = mtv::get_block_type(src_data);
+    block* blk_next = get_next_block_of_type(dst_index, cat_src);
 
     if (dst_offset == 0)
     {
@@ -2357,7 +2397,6 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
             mdds::unique_ptr<element_block_type, element_block_deleter> data(blk->mp_data);
             blk->mp_data = NULL; // Prevent its deletion when the parent block gets deleted.
 
-            block* blk_next = get_next_block_of_type(dst_index, cat_src);
             if (blk_prev)
             {
                 // Append to the previous block. Remove the current block.
@@ -2437,7 +2476,41 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
         return data.release();
     }
 
-    assert(!"exchange_elements not implemented yet");
+    // New block to send back to the caller.
+    mdds::unique_ptr<element_block_type, element_block_deleter> data(NULL);
+    if (blk->mp_data)
+    {
+        element_category_type cat_dst = mtv::get_block_type(*blk->mp_data);
+        data.reset(element_block_func::create_new_block(cat_dst, 0));
+        element_block_func::assign_values_from_block(*data, *blk->mp_data, dst_offset, len);
+    }
+
+    assert(dst_offset > 0);
+    size_type dst_end_pos = dst_offset + len;
+
+    if (dst_end_pos == blk->m_size)
+    {
+        // The new elements will replace the lower part of the block.
+        if (blk_next)
+        {
+            assert(!"exchange_elements not implemented yet");
+        }
+
+        assert(!"exchange_elements not implemented yet");
+    }
+    else
+    {
+        // The new elements will replace the middle of the block.
+        assert(dst_end_pos < blk->m_size);
+        set_new_block_to_middle(dst_index, dst_offset, len, false);
+        blk = m_blocks[dst_index+1];
+        assert(blk->m_size == len);
+        blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+        assert(blk->mp_data);
+        element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
+    }
+
+    return data.release();
 }
 
 template<typename _CellBlockFunc>

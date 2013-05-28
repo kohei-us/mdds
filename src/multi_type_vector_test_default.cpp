@@ -4290,6 +4290,47 @@ void mtv_test_swap_range()
     assert(db2.get<short>(3) == short_val);
     assert(db2.get<short>(4) == short_val);
     assert(db2.block_size() == 2);
+
+    // Set the new element to the middle of a destination block.
+    db1 = mtv_type(5, int_val);
+    db1.set(3, string("I"));
+    db1.set(4, string("J"));
+    db2 = mtv_type(5, short_val);
+    db2.set(0, string("top"));
+    db1.swap(3, 4, db2, 2);
+    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<short>(3) == short_val);
+    assert(db1.get<short>(4) == short_val);
+    assert(db1.block_size() == 2);
+
+    assert(db2.get<string>(0) == "top");
+    assert(db2.get<short>(1) == short_val);
+    assert(db2.get<string>(2) == "I");
+    assert(db2.get<string>(3) == "J");
+    assert(db2.get<short>(4) == short_val);
+    assert(db2.block_size() == 4);
+
+    // Set the new element to the lower part of a destination block.
+    db1 = mtv_type(5, int_val);
+    db1.set(0, string("A1"));
+    db1.set(1, string("A2"));
+    db2 = mtv_type(5, short_val);
+    db1.swap(0, 1, db2, 3);
+    assert(db1.get<short>(0) == short_val);
+    assert(db1.get<short>(1) == short_val);
+    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<int>(3) == int_val);
+    assert(db1.get<int>(4) == int_val);
+    assert(db1.block_size() == 2);
+
+    assert(db2.get<short>(0) == short_val);
+    assert(db2.get<short>(1) == short_val);
+    assert(db2.get<short>(2) == short_val);
+    assert(db2.get<string>(3) == "A1");
+    assert(db2.get<string>(4) == "A2");
+    assert(db2.block_size() == 2);
 }
 
 }

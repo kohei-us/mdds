@@ -918,6 +918,21 @@ private:
         size_type row, size_type block_index, size_type start_pos,
         const _T& it_begin, const _T& it_end);
 
+    /**
+     * Set a new block in the middle of an existing block. This call inserts
+     * two new blocks below the specificed block position. The first one will
+     * be empty, and the second one will contain the lower elements of the
+     * existing block.
+     *
+     * @param block_index index of block into which to set a new block.
+     * @param offset position in the existing block to set the new block to.
+     * @param new_block_size size of the new block
+     * @param overwrite whether or not to overwrite the elements replaced by
+     *                  the new block.
+     */
+    void set_new_block_to_middle(
+        size_type block_index, size_type offset, size_type new_block_size, bool overwrite);
+
     block* get_previous_block_of_type(size_type block_index, element_category_type cat);
     block* get_next_block_of_type(size_type block_index, element_category_type cat);
 
