@@ -1764,7 +1764,6 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
 
     // length of the tail that will not be swapped.
     size_type src_tail_len = blk_src->m_size - src_offset - len;
-    size_type dst_tail_len = blk_dst->m_size - dst_offset - len;
 
     if (cat_src == cat_dst)
     {
@@ -1836,7 +1835,29 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
     if (src_tail_len == 0)
     {
         // Source range is at the bottom of a block.
-        assert(!"not implemented yet");
+
+        // Get the new elements from the other container.
+        mdds::unique_ptr<element_block_type, element_block_deleter> dst_data(
+            other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
+
+        // Shrink the current block.
+        element_block_func::resize_block(*blk_src->mp_data, src_offset);
+        blk_src->m_size = src_offset;
+
+        block* blk_next = get_next_block_of_type(block_index, cat_dst);
+        if (blk_next)
+        {
+            // Merge with the next block.
+            element_block_func::prepend_values_from_block(*blk_next->mp_data, *dst_data, 0, len);
+            blk_next->m_size += len;
+        }
+        else
+        {
+            m_blocks.insert(m_blocks.begin()+block_index+1, NULL);
+            m_blocks[block_index+1] = new block(len);
+            block* blk = m_blocks[block_index+1];
+            blk->mp_data = dst_data.release();
+        }
         return;
     }
 

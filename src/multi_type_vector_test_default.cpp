@@ -4395,6 +4395,24 @@ void mtv_test_swap_range()
     assert(db2.get<short>(3) == short_val);
     assert(db2.get<short>(4) == short_val);
     assert(db2.block_size() == 2);
+
+    // Replace the bottom part of existing source block.
+    db1 = mtv_type(2, true);
+    db2 = mtv_type(1, int_val);
+    db1.swap(1, 1, db2, 0);
+    assert(db1.get<bool>(0) == true);
+    assert(db1.get<int>(1) == int_val);
+    assert(db2.get<bool>(0) == true);
+
+    // Do the same, but merge with the next block in the source.
+    db1 = mtv_type(3, true);
+    db1.set<int>(2, int_val+1);
+    db2 = mtv_type(1, int_val);
+    db1.swap(1, 1, db2, 0);
+    assert(db1.get<bool>(0) == true);
+    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<int>(2) == int_val+1);
+    assert(db2.get<bool>(0) == true);
 }
 
 }
