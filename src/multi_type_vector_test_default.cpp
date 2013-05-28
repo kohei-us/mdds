@@ -4202,6 +4202,94 @@ void mtv_test_swap_range()
     assert(db2.get<double>(3) == 12.3);
     assert(db2.get<double>(4) == 12.3);
     assert(db2.block_size() == 1);
+
+    // Merge with the previous block in the destination.
+    db1 = mtv_type(5, int_val);
+    db1.set(2, string("A"));
+    db1.set(3, string("B"));
+
+    db2 = mtv_type(5, string("default"));
+    db2.set(3, short_val);
+    db2.set(4, short_val);
+
+    db1.swap(2, 3, db2, 3);
+    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<short>(2) == short_val);
+    assert(db1.get<short>(3) == short_val);
+    assert(db1.get<int>(4) == int_val);
+    assert(db1.block_size() == 3);
+
+    assert(db2.get<string>(0) == "default");
+    assert(db2.get<string>(1) == "default");
+    assert(db2.get<string>(2) == "default");
+    assert(db2.get<string>(3) == "A");
+    assert(db2.get<string>(4) == "B");
+    assert(db2.block_size() == 1);
+
+    // Merge with both the previous and next blocks in the destination.
+    db1 = mtv_type(5, int_val);
+    db1.set(2, string("C"));
+    db1.set(3, string("D"));
+
+    db2 = mtv_type(6, string("default"));
+    db2.set(3, short_val);
+    db2.set(4, short_val);
+
+    db1.swap(2, 3, db2, 3);
+    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<short>(2) == short_val);
+    assert(db1.get<short>(3) == short_val);
+    assert(db1.get<int>(4) == int_val);
+    assert(db1.block_size() == 3);
+
+    assert(db2.get<string>(0) == "default");
+    assert(db2.get<string>(1) == "default");
+    assert(db2.get<string>(2) == "default");
+    assert(db2.get<string>(3) == "C");
+    assert(db2.get<string>(4) == "D");
+    assert(db2.get<string>(5) == "default");
+    assert(db2.block_size() == 1);
+
+    // Set the new elements to the top of a block in the destination.
+    db1 = mtv_type(5, int_val);
+    db1.set(3, string("E"));
+    db1.set(4, string("F"));
+    db2 = mtv_type(5, short_val);
+    db1.swap(3, 4, db2, 0);
+    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<short>(3) == short_val);
+    assert(db1.get<short>(4) == short_val);
+    assert(db1.block_size() == 2);
+    assert(db2.get<string>(0) == "E");
+    assert(db2.get<string>(1) == "F");
+    assert(db2.get<short>(2) == short_val);
+    assert(db2.get<short>(3) == short_val);
+    assert(db2.get<short>(4) == short_val);
+    assert(db2.block_size() == 2);
+
+    // Do the same as before, but merge with the previous block.
+    db1 = mtv_type(5, int_val);
+    db1.set(3, string("G"));
+    db1.set(4, string("H"));
+    db2 = mtv_type(5, short_val);
+    db2.set(0, string("F"));
+    db1.swap(3, 4, db2, 1);
+    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<short>(3) == short_val);
+    assert(db1.get<short>(4) == short_val);
+    assert(db1.block_size() == 2);
+    assert(db2.get<string>(0) == "F");
+    assert(db2.get<string>(1) == "G");
+    assert(db2.get<string>(2) == "H");
+    assert(db2.get<short>(3) == short_val);
+    assert(db2.get<short>(4) == short_val);
+    assert(db2.block_size() == 2);
 }
 
 }

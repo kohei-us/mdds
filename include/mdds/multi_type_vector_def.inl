@@ -2349,28 +2349,44 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
     if (dst_offset == 0)
     {
         // Set elements to the top of the destination block.
-
         block* blk_prev = get_previous_block_of_type(dst_index, cat_src);
-        if (blk_prev)
-        {
-            // Append to the previous block.
-            assert(!"exchange_elements not implemented yet");
-            return NULL;
-        }
 
         if (blk->m_size == len)
         {
             // The whole block will get replaced.
             mdds::unique_ptr<element_block_type, element_block_deleter> data(blk->mp_data);
+            blk->mp_data = NULL; // Prevent its deletion when the parent block gets deleted.
+
+            block* blk_next = get_next_block_of_type(dst_index, cat_src);
+            if (blk_prev)
+            {
+                // Append to the previous block. Remove the current block.
+                element_block_func::append_values_from_block(*blk_prev->mp_data, src_data, src_offset, len);
+                blk_prev->m_size += len;
+                typename blocks_type::iterator it = m_blocks.begin();
+                std::advance(it, dst_index);
+                typename blocks_type::iterator it_end = it;
+                ++it_end;
+                delete blk;
+                if (blk_next)
+                {
+                    // Apend elements from the next block too.
+                    element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
+                    blk_prev->m_size += blk_next->m_size;
+                    ++it_end;
+                    delete blk_next;
+                }
+
+                m_blocks.erase(it, it_end);
+                return data.release();
+            }
 
             // Check the next block to see if we need to merge.
-            block* blk_next = get_next_block_of_type(dst_index, cat_src);
             if (blk_next)
             {
                 // We need to merge with the next block.  Remove the current
                 // block and use the next block to store the new elements as
                 // well as the existing ones.
-                blk->mp_data = NULL;
                 delete blk;
                 m_blocks.erase(m_blocks.begin()+dst_index);
                 blk = blk_next;
@@ -2387,6 +2403,38 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
             // Return this data block as-is.
             return data.release();
         }
+
+        // New block to send back to the caller.
+        mdds::unique_ptr<element_block_type, element_block_deleter> data(NULL);
+
+        if (blk->mp_data)
+        {
+            element_category_type cat_dst = mtv::get_block_type(*blk->mp_data);
+            data.reset(element_block_func::create_new_block(cat_dst, 0));
+
+            // We need to keep the tail elements of the current block.
+            element_block_func::assign_values_from_block(*data, *blk->mp_data, 0, len);
+            element_block_func::erase(*blk->mp_data, 0, len);
+        }
+
+        blk->m_size -= len;
+
+        if (blk_prev)
+        {
+            // Append the new elements to the previous block.
+            element_block_func::append_values_from_block(*blk_prev->mp_data, src_data, src_offset, len);
+            blk_prev->m_size += len;
+        }
+        else
+        {
+            // Insert a new block to house the new elements.
+            m_blocks.insert(m_blocks.begin()+dst_index, new block(len));
+            blk = m_blocks[dst_index];
+            blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+            element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
+        }
+
+        return data.release();
     }
 
     assert(!"exchange_elements not implemented yet");
@@ -3107,8 +3155,9 @@ void multi_type_vector<_CellBlockFunc>::swap(size_type start_pos, size_type end_
         throw std::out_of_range("multi_type_vector::swap: end block position in destination not found!");
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    std::ostringstream os_prev_block;
+    std::ostringstream os_prev_block, os_prev_block_other;
     dump_blocks(os_prev_block);
+    other.dump_blocks(os_prev_block_other);
 #endif
 
     swap_impl(
@@ -3116,11 +3165,13 @@ void multi_type_vector<_CellBlockFunc>::swap(size_type start_pos, size_type end_
         dest_start_pos1, dest_block_index1, dest_start_pos2, dest_block_index2);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    if (!check_block_integrity() || !other.check_block_integrity())
     {
         cerr << "block integrity check failed in swap" << endl;
-        cerr << "previous block state:" << endl;
+        cerr << "previous block state (source):" << endl;
         cerr << os_prev_block.str();
+        cerr << "previous block state (destination):" << endl;
+        cerr << os_prev_block_other.str();
         abort();
     }
 #endif
@@ -3597,6 +3648,7 @@ bool multi_type_vector<_CellBlockFunc>::check_block_integrity() const
     if (total_size != m_cur_size)
     {
         cerr << "Current size does not equal the total sizes of all blocks." << endl;
+        cerr << "current size=" << m_cur_size << " total block size=" << total_size << endl;
         dump_blocks(cerr);
         return false;
     }
