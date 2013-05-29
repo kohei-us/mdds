@@ -4435,6 +4435,28 @@ void mtv_test_swap_range()
     assert(db2.get<char>(0) == 'c');
     assert(db2.get<char>(1) == 'd');
     assert(db2.block_size() == 1);
+
+    // Swap single empty block with multiple destination blocks.
+    db1 = mtv_type(5);
+    db2 = mtv_type(5);
+    db2.set(0, 1.1);
+    db2.set(1, 2.1);
+    db2.set(2, 3.1);
+    db2.set(3, string("abc"));
+    db2.set(4, string("def"));
+    db1.swap(0, 3, db2, 1);
+    assert(db1.get<double>(0) == 2.1);
+    assert(db1.get<double>(1) == 3.1);
+    assert(db1.get<string>(2) == "abc");
+    assert(db1.get<string>(3) == "def");
+    assert(db1.is_empty(4));
+    assert(db1.block_size() == 3);
+    assert(db2.get<double>(0) == 1.1);
+    assert(db2.is_empty(1));
+    assert(db2.is_empty(2));
+    assert(db2.is_empty(3));
+    assert(db2.is_empty(4));
+    assert(db2.block_size() == 2);
 }
 
 }

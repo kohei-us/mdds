@@ -820,8 +820,20 @@ private:
         size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
         multi_type_vector& dest, size_type dest_pos);
 
+    /**
+     * All elements to transfer to the other container is in the same block.
+     */
     iterator transfer_single_block(
         size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+        multi_type_vector& dest, size_type dest_pos);
+
+    /**
+     * Elements to transfer to the other container span across multiple
+     * blocks.
+     */
+    iterator transfer_multi_blocks(
+        size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+        size_type start_pos_in_block2, size_type block_index2,
         multi_type_vector& dest, size_type dest_pos);
 
     iterator set_empty_impl(size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1);
@@ -834,6 +846,11 @@ private:
     void swap_single_blocks(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
         size_type start_pos_in_block, size_type block_index, size_type start_pos_in_other_block, size_type other_block_index);
+
+    void swap_single_to_multi_blocks(
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
+        size_type start_pos_in_block, size_type block_index, size_type dst_start_pos_in_block1, size_type dst_block_index1,
+        size_type dst_start_pos_in_block2, size_type dst_block_index2);
 
     iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block, bool overwrite);
 
