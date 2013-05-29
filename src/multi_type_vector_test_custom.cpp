@@ -1392,24 +1392,13 @@ void mtv_test_custom_block_func3()
 
 int main (int argc, char **argv)
 {
-    cmd_options opt;
-    if (!parse_cmd_options(argc, argv, opt))
-        return EXIT_FAILURE;
-
-    if (opt.test_func)
-    {
-        mtv_test_types();
-        mtv_test_basic();
-        mtv_test_equality();
-        mtv_test_managed_block();
-        mtv_test_custom_block_func1();
-        mtv_test_transfer();
-        mtv_test_custom_block_func3();
-    }
-
-    if (opt.test_perf)
-    {
-    }
+    mtv_test_types();
+    mtv_test_basic();
+    mtv_test_equality();
+    mtv_test_managed_block();
+    mtv_test_custom_block_func1();
+    mtv_test_transfer();
+    mtv_test_custom_block_func3();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

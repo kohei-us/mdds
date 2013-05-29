@@ -181,14 +181,14 @@ test.mtm.mem: mixed_type_matrix_test
 
 test.mtv: multi_type_vector_test_default multi_type_vector_test_custom
 	./multi_type_vector_test_default
-	./multi_type_vector_test_custom func
+	./multi_type_vector_test_custom
 
 test.mtv.perf: multi_type_vector_test_perf
 	./multi_type_vector_test_perf
 
 test.mtv.mem: multi_type_vector_test_default multi_type_vector_test_custom
 	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_default
-	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_custom func
+	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_custom
 
 test.mtmatrix: multi_type_matrix_test
 	./multi_type_matrix_test func
