@@ -1359,6 +1359,22 @@ void mtv_test_transfer()
     assert(db2.is_empty(9));
 }
 
+void mtv_test_swap()
+{
+    stack_printer __stack_printer__("::mtv_test_swap");
+    mtv3_type db1(5), db2(2);
+    db1.set(0, new muser_cell(1.1));
+    db1.set(1, new muser_cell(1.2));
+    db1.set(2, new muser_cell(1.3));
+    db1.set(3, new muser_cell(1.4));
+    db1.set(4, new muser_cell(1.5));
+
+    db2.set(0, string("A"));
+    db2.set(1, string("B"));
+
+    db1.swap(2, 3, db2, 0);
+}
+
 void mtv_test_custom_block_func3()
 {
     stack_printer __stack_printer__("::mtv_test_custom_block_func3");
@@ -1398,6 +1414,7 @@ int main (int argc, char **argv)
     mtv_test_managed_block();
     mtv_test_custom_block_func1();
     mtv_test_transfer();
+    mtv_test_swap();
     mtv_test_custom_block_func3();
 
     cout << "Test finished successfully!" << endl;
