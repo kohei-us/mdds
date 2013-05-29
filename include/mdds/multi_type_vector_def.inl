@@ -2705,7 +2705,83 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
     size_type dst_index1, size_type dst_offset1, size_type dst_index2, size_type dst_offset2,
     size_type len, blocks_type& new_blocks)
 {
-    assert(!"exchange_elements 2: not implemented yet");
+    assert(dst_index1 < dst_index2);
+    assert(dst_offset1 < m_blocks[dst_index1]->m_size);
+    assert(dst_offset2 < m_blocks[dst_index2]->m_size);
+
+    typename blocks_type::iterator it_erase = m_blocks.begin();
+    std::advance(it_erase, dst_index1+1); // Set it to the block past the first destination block.
+    typename blocks_type::iterator it_erase_end = m_blocks.begin();
+    std::advance(it_erase_end, dst_index2); // Set the end position to the second destination block.
+
+    mdds::unique_ptr<block> first_block(NULL); // partial elements from the 1st dest block.
+    mdds::unique_ptr<block> last_block(NULL);  // partial elements from the last dest block.
+
+    if (dst_offset1 == 0)
+    {
+        // The whole first destination block needs to be replaced.
+        --it_erase;
+    }
+    else
+    {
+        // Keep the upper part of the first destination block, but erase the rest.
+        block* blk = m_blocks[dst_index1];
+        first_block.reset(new block(blk->m_size - dst_offset1));
+
+        if (blk->mp_data)
+        {
+            // Copy the lower part to the block to be returned.
+            first_block->mp_data =
+                element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
+            assert(first_block->mp_data);
+            element_block_func::assign_values_from_block(
+                *first_block->mp_data, *blk->mp_data, dst_offset1, blk->m_size-dst_offset1);
+
+            // Shrink the destination block.
+            element_block_func::resize_block(*blk->mp_data, dst_offset1);
+        }
+        blk->m_size = dst_offset1;
+    }
+
+    block* blk2 = m_blocks[dst_index2];
+    if (dst_offset2 == blk2->m_size)
+    {
+        // The whole last destination block needs to be replaced.
+        ++it_erase_end;
+    }
+    else
+    {
+        // Keep the lower part of the block, and erase the rest.
+        last_block.reset(new block(dst_offset2));
+
+        if (blk2->mp_data)
+        {
+            // Copy the upper part to the block to be returned.
+            last_block->mp_data =
+                element_block_func::create_new_block(mtv::get_block_type(*blk2->mp_data), 0);
+            assert(last_block->mp_data);
+            element_block_func::assign_values_from_block(
+                *last_block->mp_data, *blk2->mp_data, 0, dst_offset2);
+
+            // Shrink it.
+            element_block_func::erase(*blk2->mp_data, 0, dst_offset2);
+        }
+        blk2->m_size -= dst_offset2;
+    }
+
+    blocks_type ret;
+    if (first_block)
+        ret.push_back(first_block.release());
+
+    for (typename blocks_type::iterator it = it_erase; it != it_erase_end; ++it)
+        ret.push_back(*it);
+
+    if (last_block)
+        ret.push_back(last_block.release());
+
+    m_blocks.erase(it_erase, it_erase_end);
+
+    assert(!"exchange_elements 2: not tested yet");
 }
 
 template<typename _CellBlockFunc>
