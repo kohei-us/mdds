@@ -972,7 +972,12 @@ private:
      *         its life cycle.
      */
     element_block_type* exchange_elements(
-        const element_block_type& src_data, size_type src_offset, size_t dst_index, size_type dst_offset, size_type len);
+        const element_block_type& src_data, size_type src_offset, size_type dst_index, size_type dst_offset, size_type len);
+
+    void exchange_elements(
+        const element_block_type& src_data, size_type src_offset,
+        size_type dst_index1, size_type dst_offset1, size_type dst_index2, size_type dst_offset2,
+        size_type len, blocks_type& new_blocks);
 
     inline iterator get_iterator(size_type block_index, size_type start_row)
     {

@@ -1916,9 +1916,6 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
     if (blk_src->mp_data)
         cat_src = mtv::get_block_type(*blk_src->mp_data);
 
-    size_type src_offset = start_pos_in_block - start_pos;
-    size_type dst_offset1 = start_pos - dst_start_pos_in_block1;
-    size_type dst_offset2 = end_pos - dst_start_pos_in_block2;
     size_type len = end_pos - start_pos + 1;
 
     if (cat_src == mtv::element_type_empty)
@@ -1930,7 +1927,72 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
         return;
     }
 
-    assert(!"swap_single_to_multi_blocks not implemented yet");
+    size_type src_offset = start_pos_in_block - start_pos;
+    size_type dst_offset1 = start_pos - dst_start_pos_in_block1;
+    size_type dst_offset2 = end_pos - dst_start_pos_in_block2;
+
+    // length of the tail that will not be swapped.
+    size_type src_tail_len = blk_src->m_size - src_offset - len;
+
+    // Get the new elements from the other container.
+    blocks_type new_blocks;
+    other.exchange_elements(
+        *blk_src->mp_data, src_offset, dst_block_index1, dst_offset1, dst_block_index2, dst_offset2, len, new_blocks);
+
+    if (new_blocks.empty())
+        throw general_error("multi_type_vector::swap_single_to_multi_blocks: failed to exchange elements.");
+
+    if (src_offset == 0)
+    {
+        // Source range is at the top of a block.
+
+        if (src_tail_len == 0)
+        {
+            // the whole block needs to be replaced.
+            delete blk_src;
+            m_blocks.erase(m_blocks.begin()+block_index);
+            assert(!"not tested yet");
+        }
+        else
+        {
+            // Shrink the current block by erasing the top part.
+            element_block_func::erase(*blk_src->mp_data, 0, len);
+            blk_src->m_size -= len;
+            assert(!"not tested yet");
+        }
+
+        m_blocks.insert(m_blocks.begin()+block_index, new_blocks.begin(), new_blocks.end());
+        merge_with_next_block(block_index+new_blocks.size()-1); // last block inserted.
+        if (block_index > 0)
+            merge_with_next_block(block_index-1); // block before the first block inserted.
+
+        return;
+    }
+
+    if (src_tail_len == 0)
+    {
+        // Source range is at the bottom of a block.
+
+        // Shrink the current block.
+        element_block_func::resize_block(*blk_src->mp_data, src_offset);
+        blk_src->m_size = src_offset;
+        assert(!"not tested yet");
+        return;
+    }
+    else
+    {
+        // Source range is in the middle of a block.
+        assert(src_offset && src_tail_len);
+
+        // This creates an empty block at block_index+1.
+        set_new_block_to_middle(block_index, src_offset, len, false);
+        assert(!"not tested yet");
+    }
+
+    m_blocks.erase(m_blocks.begin()+block_index+1);
+    m_blocks.insert(m_blocks.begin()+block_index+1, new_blocks.begin(), new_blocks.end());
+    merge_with_next_block(block_index+new_blocks.size()); // last block inserted.
+    merge_with_next_block(block_index); // block before the first block inserted.
 }
 
 template<typename _CellBlockFunc>
@@ -2635,6 +2697,15 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
     }
 
     return data.release();
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::exchange_elements(
+    const element_block_type& src_data, size_type src_offset,
+    size_type dst_index1, size_type dst_offset1, size_type dst_index2, size_type dst_offset2,
+    size_type len, blocks_type& new_blocks)
+{
+    assert(!"exchange_elements 2: not implemented yet");
 }
 
 template<typename _CellBlockFunc>
