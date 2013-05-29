@@ -929,8 +929,9 @@ private:
      * @param new_block_size size of the new block
      * @param overwrite whether or not to overwrite the elements replaced by
      *                  the new block.
+     * @return pointer to the middle block
      */
-    void set_new_block_to_middle(
+    block* set_new_block_to_middle(
         size_type block_index, size_type offset, size_type new_block_size, bool overwrite);
 
     block* get_previous_block_of_type(size_type block_index, element_category_type cat);

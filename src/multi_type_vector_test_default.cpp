@@ -4413,6 +4413,28 @@ void mtv_test_swap_range()
     assert(db1.get<int>(1) == int_val);
     assert(db1.get<int>(2) == int_val+1);
     assert(db2.get<bool>(0) == true);
+
+    // Replace the middle of existing source block.
+    db1 = mtv_type(5);
+    db1.set<char>(0, 'a');
+    db1.set<char>(1, 'b');
+    db1.set<char>(2, 'c');
+    db1.set<char>(3, 'd');
+    db1.set<char>(4, 'e');
+    db2 = mtv_type(2);
+    db2.set(0, 1.1);
+    db2.set(1, -1.1);
+    db1.swap(2, 3, db2, 0);
+    assert(db1.get<char>(0) == 'a');
+    assert(db1.get<char>(1) == 'b');
+    assert(db1.get<double>(2) == 1.1);
+    assert(db1.get<double>(3) == -1.1);
+    assert(db1.get<char>(4) == 'e');
+    assert(db1.block_size() == 3);
+
+    assert(db2.get<char>(0) == 'c');
+    assert(db2.get<char>(1) == 'd');
+    assert(db2.block_size() == 1);
 }
 
 }

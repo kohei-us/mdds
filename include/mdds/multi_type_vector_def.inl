@@ -1832,13 +1832,13 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
         return;
     }
 
+    // Get the new elements from the other container.
+    mdds::unique_ptr<element_block_type, element_block_deleter> dst_data(
+        other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
+
     if (src_tail_len == 0)
     {
         // Source range is at the bottom of a block.
-
-        // Get the new elements from the other container.
-        mdds::unique_ptr<element_block_type, element_block_deleter> dst_data(
-            other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
 
         // Shrink the current block.
         element_block_func::resize_block(*blk_src->mp_data, src_offset);
@@ -1863,8 +1863,8 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
 
     // Source range is in the middle of a block.
     assert(src_offset && src_tail_len);
-
-    assert(!"not implemented yet");
+    block* blk = set_new_block_to_middle(block_index, src_offset, len, false);
+    blk->mp_data = dst_data.release();
 }
 
 template<typename _CellBlockFunc>
@@ -2347,7 +2347,8 @@ void multi_type_vector<_CellBlockFunc>::insert_cells_to_middle(
 }
 
 template<typename _CellBlockFunc>
-void multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
+typename multi_type_vector<_CellBlockFunc>::block*
+multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
     size_type block_index, size_type offset, size_type new_block_size, bool overwrite)
 {
     assert(block_index < m_blocks.size());
@@ -2383,6 +2384,8 @@ void multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
     element_block_func::erase(
         *blk->mp_data, offset, blk->m_size - offset);
     blk->m_size = offset;
+
+    return m_blocks[block_index+1];
 }
 
 template<typename _CellBlockFunc>
@@ -2558,8 +2561,7 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
     {
         // The new elements will replace the middle of the block.
         assert(dst_end_pos < blk->m_size);
-        set_new_block_to_middle(dst_index, dst_offset, len, false);
-        blk = m_blocks[dst_index+1];
+        blk = set_new_block_to_middle(dst_index, dst_offset, len, false);
         assert(blk->m_size == len);
         blk->mp_data = element_block_func::create_new_block(cat_src, 0);
         assert(blk->mp_data);
