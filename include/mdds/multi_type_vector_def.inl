@@ -1927,9 +1927,9 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
         return;
     }
 
-    size_type src_offset = start_pos_in_block - start_pos;
-    size_type dst_offset1 = start_pos - dst_start_pos_in_block1;
-    size_type dst_offset2 = end_pos - dst_start_pos_in_block2;
+    size_type src_offset = start_pos - start_pos_in_block;
+    size_type dst_offset1 = other_pos - dst_start_pos_in_block1;
+    size_type dst_offset2 = other_pos + len - 1 - dst_start_pos_in_block2;
 
     // length of the tail that will not be swapped.
     size_type src_tail_len = blk_src->m_size - src_offset - len;
@@ -1951,7 +1951,6 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
             // the whole block needs to be replaced.
             delete blk_src;
             m_blocks.erase(m_blocks.begin()+block_index);
-            assert(!"not tested yet");
         }
         else
         {
@@ -2717,10 +2716,13 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
     mdds::unique_ptr<block> first_block(NULL); // partial elements from the 1st dest block.
     mdds::unique_ptr<block> last_block(NULL);  // partial elements from the last dest block.
 
+    size_type ins_index = dst_index1+1; // insertion position for new element block.
     if (dst_offset1 == 0)
     {
         // The whole first destination block needs to be replaced.
         --it_erase;
+        --ins_index;
+        assert(!"exchange_elements 2: not tested yet");
     }
     else
     {
@@ -2744,7 +2746,8 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
     }
 
     block* blk2 = m_blocks[dst_index2];
-    if (dst_offset2 == blk2->m_size)
+    assert(blk2->m_size > 0);
+    if (dst_offset2 == blk2->m_size-1)
     {
         // The whole last destination block needs to be replaced.
         ++it_erase_end;
@@ -2752,7 +2755,7 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
     else
     {
         // Keep the lower part of the block, and erase the rest.
-        last_block.reset(new block(dst_offset2));
+        last_block.reset(new block(dst_offset2+1));
 
         if (blk2->mp_data)
         {
@@ -2761,12 +2764,14 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
                 element_block_func::create_new_block(mtv::get_block_type(*blk2->mp_data), 0);
             assert(last_block->mp_data);
             element_block_func::assign_values_from_block(
-                *last_block->mp_data, *blk2->mp_data, 0, dst_offset2);
+                *last_block->mp_data, *blk2->mp_data, 0, dst_offset2+1);
 
             // Shrink it.
-            element_block_func::erase(*blk2->mp_data, 0, dst_offset2);
+            element_block_func::erase(*blk2->mp_data, 0, dst_offset2+1);
+            assert(!"exchange_elements 2: not tested yet");
         }
-        blk2->m_size -= dst_offset2;
+        blk2->m_size -= dst_offset2+1;
+        assert(!"exchange_elements 2: not tested yet");
     }
 
     blocks_type ret;
@@ -2779,9 +2784,13 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
     if (last_block)
         ret.push_back(last_block.release());
 
-    m_blocks.erase(it_erase, it_erase_end);
+    m_blocks.erase(it_erase, it_erase_end); // These blocks have been transferred to 'ret'.
+    m_blocks.insert(m_blocks.begin()+ins_index, new block(len));
+    block* blk = m_blocks[ins_index];
+    blk->mp_data = element_block_func::create_new_block(mtv::get_block_type(src_data), 0);
+    element_block_func::assign_values_from_block(*blk->mp_data, src_data, 0, len);
 
-    assert(!"exchange_elements 2: not tested yet");
+    new_blocks.swap(ret);
 }
 
 template<typename _CellBlockFunc>
