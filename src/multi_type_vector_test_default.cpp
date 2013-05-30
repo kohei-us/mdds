@@ -4524,6 +4524,44 @@ void mtv_test_swap_range()
     assert(db2.get<int>(1) == 2);
     assert(db2.get<int>(2) == 3);
     assert(db2.block_size() == 1);
+
+    // Another one.
+    db1 = mtv_type(3, string("test"));
+    db2 = mtv_type(2);
+    db2.set(0, -99.1);
+    db2.set(1, string("foo"));
+    db1.swap(1, 2, db2, 0);
+    assert(db1.get<string>(0) == "test");
+    assert(db1.get<double>(1) == -99.1);
+    assert(db1.get<string>(2) == "foo");
+    assert(db2.get<string>(0) == "test");
+    assert(db2.get<string>(1) == "test");
+
+    // The source range is in the middle of a block.
+    db1 = mtv_type(8);
+    for (int i = 0; i < 8; ++i)
+        db1.set<int>(i, i+2);
+    db2 = mtv_type(4);
+    db2.set<int>(0, 12);
+    db2.set<short>(1, 13);
+    db2.set<long>(2, 14);
+    db2.set<double>(3, 15.0);
+    db1.swap(3, 5, db2, 1);
+
+    assert(db1.get<int>(0) == 2);
+    assert(db1.get<int>(1) == 3);
+    assert(db1.get<int>(2) == 4);
+    assert(db1.get<short>(3) == 13);
+    assert(db1.get<long>(4) == 14);
+    assert(db1.get<double>(5) == 15.0);
+    assert(db1.get<int>(6) == 8);
+    assert(db1.get<int>(7) == 9);
+
+    assert(db2.get<int>(0) == 12);
+    assert(db2.get<int>(1) == 5);
+    assert(db2.get<int>(2) == 6);
+    assert(db2.get<int>(3) == 7);
+    assert(db2.block_size() == 1);
 }
 
 }

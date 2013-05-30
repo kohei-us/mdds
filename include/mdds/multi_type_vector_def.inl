@@ -1974,8 +1974,6 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
         // Shrink the current block.
         element_block_func::resize_block(*blk_src->mp_data, src_offset);
         blk_src->m_size = src_offset;
-        assert(!"not tested yet");
-        return;
     }
     else
     {
@@ -1984,10 +1982,9 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
 
         // This creates an empty block at block_index+1.
         set_new_block_to_middle(block_index, src_offset, len, false);
-        assert(!"not tested yet");
+        m_blocks.erase(m_blocks.begin()+block_index+1);
     }
 
-    m_blocks.erase(m_blocks.begin()+block_index+1);
     m_blocks.insert(m_blocks.begin()+block_index+1, new_blocks.begin(), new_blocks.end());
     merge_with_next_block(block_index+new_blocks.size()); // last block inserted.
     merge_with_next_block(block_index); // block before the first block inserted.
@@ -2784,7 +2781,8 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
     m_blocks.insert(m_blocks.begin()+ins_index, new block(len));
     block* blk = m_blocks[ins_index];
     blk->mp_data = element_block_func::create_new_block(mtv::get_block_type(src_data), 0);
-    element_block_func::assign_values_from_block(*blk->mp_data, src_data, 0, len);
+    element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
+    merge_with_adjacent_blocks(ins_index);
 
     new_blocks.swap(ret);
 }
