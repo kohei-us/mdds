@@ -4591,6 +4591,11 @@ void mtv_test_swap_range()
     db2.set(0, int_val);
     db2.set(1, short_val);
     db1.swap(0, 1, db2, 0);
+
+    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<short>(1) == short_val);
+    assert(db2.get<double>(0) == 2.1);
+    assert(db2.get<string>(1) == "test");
 }
 
 }
