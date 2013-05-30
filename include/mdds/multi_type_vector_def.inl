@@ -1982,6 +1982,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
 
         // This creates an empty block at block_index+1.
         set_new_block_to_middle(block_index, src_offset, len, false);
+        delete m_blocks[block_index+1];
         m_blocks.erase(m_blocks.begin()+block_index+1);
     }
 
