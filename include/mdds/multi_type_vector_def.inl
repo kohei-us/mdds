@@ -1957,7 +1957,6 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
             // Shrink the current block by erasing the top part.
             element_block_func::erase(*blk_src->mp_data, 0, len);
             blk_src->m_size -= len;
-            assert(!"not tested yet");
         }
 
         m_blocks.insert(m_blocks.begin()+block_index, new_blocks.begin(), new_blocks.end());

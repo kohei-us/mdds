@@ -4502,6 +4502,28 @@ void mtv_test_swap_range()
     assert(db2.get<double>(0) == 3.14);
     assert(db2.get<double>(1) == 3.14);
     assert(db2.get<unsigned char>(2) == 'y');
+
+    // Another scenario.
+    db1 = mtv_type(5);
+    db1.set<int>(0, 1);
+    db1.set<int>(1, 2);
+    db1.set<int>(2, 3);
+    db1.set<int>(3, 4);
+    db1.set<int>(4, 5);
+    db2 = mtv_type(3);
+    db2.set(0, 2.3);
+    db2.set<char>(1, 'B');
+    db2.set<long>(2, 123);
+    db1.swap(0, 2, db2, 0);
+    assert(db1.get<double>(0) == 2.3);
+    assert(db1.get<char>(1) == 'B');
+    assert(db1.get<long>(2) == 123);
+    assert(db1.get<int>(3) == 4);
+    assert(db1.get<int>(4) == 5);
+    assert(db2.get<int>(0) == 1);
+    assert(db2.get<int>(1) == 2);
+    assert(db2.get<int>(2) == 3);
+    assert(db2.block_size() == 1);
 }
 
 }
