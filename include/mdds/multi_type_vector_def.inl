@@ -2767,10 +2767,8 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
 
             // Shrink it.
             element_block_func::erase(*blk2->mp_data, 0, dst_offset2+1);
-            assert(!"exchange_elements 2: not tested yet");
         }
         blk2->m_size -= dst_offset2+1;
-        assert(!"exchange_elements 2: not tested yet");
     }
 
     blocks_type ret;
