@@ -4562,6 +4562,26 @@ void mtv_test_swap_range()
     assert(db2.get<int>(2) == 6);
     assert(db2.get<int>(3) == 7);
     assert(db2.block_size() == 1);
+
+    // Try swapping in a multi-to-single block direction.
+    db1 = mtv_type(2);
+    db1.set(0, 1.2);
+    db1.set(1, string("123"));
+    db2 = mtv_type(10, short_val);
+    db1.swap(0, 1, db2, 4);
+    assert(db1.get<short>(0) == short_val);
+    assert(db1.get<short>(1) == short_val);
+
+    assert(db2.get<short>(0) == short_val);
+    assert(db2.get<short>(1) == short_val);
+    assert(db2.get<short>(2) == short_val);
+    assert(db2.get<short>(3) == short_val);
+    assert(db2.get<double>(4) == 1.2);
+    assert(db2.get<string>(5) == "123");
+    assert(db2.get<short>(6) == short_val);
+    assert(db2.get<short>(7) == short_val);
+    assert(db2.get<short>(8) == short_val);
+    assert(db2.get<short>(9) == short_val);
 }
 
 }
