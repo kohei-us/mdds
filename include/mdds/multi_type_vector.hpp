@@ -88,6 +88,14 @@ private:
 
     typedef std::vector<block*> blocks_type;
 
+    struct blocks_to_transfer
+    {
+        blocks_type blocks;
+        size_type insert_index;
+
+        blocks_to_transfer();
+    };
+
     struct iterator_trait
     {
         typedef multi_type_vector parent;
@@ -851,6 +859,13 @@ private:
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
         size_type start_pos_in_block, size_type block_index, size_type dst_start_pos_in_block1, size_type dst_block_index1,
         size_type dst_start_pos_in_block2, size_type dst_block_index2);
+
+    void swap_multi_to_multi_blocks(
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
+        size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
+        size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2);
+
+    void prepare_blocks_to_transfer(blocks_to_transfer& bucket, size_type block_index1, size_type offset1, size_type block_index2, size_type offset2);
 
     iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block, bool overwrite);
 

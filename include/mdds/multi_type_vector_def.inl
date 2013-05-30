@@ -64,6 +64,9 @@ multi_type_vector<_CellBlockFunc>::block::~block()
 }
 
 template<typename _CellBlockFunc>
+multi_type_vector<_CellBlockFunc>::blocks_to_transfer::blocks_to_transfer() : insert_index(0) {}
+
+template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::begin()
 {
@@ -1760,23 +1763,22 @@ void multi_type_vector<_CellBlockFunc>::swap_impl(
                 start_pos_in_dblock1, dblock_index1, start_pos_in_dblock2, dblock_index2);
         }
     }
+    else if (dblock_index1 == dblock_index2)
+    {
+        // Destination range is over a single block. Switch source and destination.
+        size_type len = end_pos - start_pos + 1;
+        other.swap_single_to_multi_blocks(
+            *this, other_pos, other_pos+len-1, start_pos,
+            start_pos_in_dblock1, dblock_index1,
+            start_pos_in_block1, block_index1, start_pos_in_block2, block_index2);
+    }
     else
     {
-        // Source range is over multiple blocks.
-        if (dblock_index1 == dblock_index2)
-        {
-            // Destination range is over a single block. Switch source and destination.
-            size_type len = end_pos - start_pos + 1;
-            other.swap_single_to_multi_blocks(
-                *this, other_pos, other_pos+len-1, start_pos,
-                start_pos_in_dblock1, dblock_index1,
-                start_pos_in_block1, block_index1, start_pos_in_block2, block_index2);
-        }
-        else
-        {
-            // Both source and destinations are multi-block.
-            assert(!"not implemented yet");
-        }
+        // Both source and destinations are multi-block.
+        swap_multi_to_multi_blocks(
+            other, start_pos, end_pos, other_pos, start_pos_in_block1, block_index1,
+            start_pos_in_block2, block_index2, start_pos_in_dblock1, dblock_index1,
+            start_pos_in_dblock2, dblock_index2);
     }
 }
 
@@ -1989,6 +1991,105 @@ void multi_type_vector<_CellBlockFunc>::swap_single_to_multi_blocks(
     m_blocks.insert(m_blocks.begin()+block_index+1, new_blocks.begin(), new_blocks.end());
     merge_with_next_block(block_index+new_blocks.size()); // last block inserted.
     merge_with_next_block(block_index); // block before the first block inserted.
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::swap_multi_to_multi_blocks(
+    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
+    size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
+    size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2)
+{
+    assert(block_index1 < block_index2);
+    assert(dblock_index1 < dblock_index2);
+
+    size_type len = end_pos - start_pos + 1;
+    size_type src_offset1 = start_pos - start_pos_in_block1;
+    size_type src_offset2 = end_pos - start_pos_in_block2;
+    size_type dst_offset1 = other_pos - start_pos_in_dblock1;
+    size_type dst_offset2 = other_pos + len - 1 - start_pos_in_dblock2;
+
+    blocks_to_transfer src_bucket, dst_bucket;
+    prepare_blocks_to_transfer(src_bucket, block_index1, src_offset1, block_index2, src_offset2);
+    other.prepare_blocks_to_transfer(dst_bucket, dblock_index1, dst_offset1, dblock_index2, dst_offset2);
+
+    assert(!"swap_multi_to_multi_blocks: not implemented yet");
+}
+
+template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::prepare_blocks_to_transfer(
+    blocks_to_transfer& bucket, size_type block_index1, size_type offset1, size_type block_index2, size_type offset2)
+{
+    assert(block_index1 < block_index2);
+    assert(offset1 < m_blocks[block_index1]->m_size);
+    assert(offset2 < m_blocks[block_index2]->m_size);
+
+    mdds::unique_ptr<block> block_first(NULL);
+    mdds::unique_ptr<block> block_last(NULL);
+    typename blocks_type::iterator it_begin = m_blocks.begin();
+    typename blocks_type::iterator it_end = m_blocks.begin();
+
+    std::advance(it_begin, block_index1+1);
+    std::advance(it_end, block_index2);
+    bucket.insert_index = block_index1+1;
+
+    if (offset1 == 0)
+    {
+        // The whole first block needs to be swapped.
+        --it_begin;
+        --bucket.insert_index;
+    }
+    else
+    {
+        // Copy the lower part of the block for transfer.
+        block* blk = m_blocks[block_index1];
+        size_type blk_size = blk->m_size - offset1;
+        block_first.reset(new block(blk_size));
+        if (blk->mp_data)
+        {
+            block_first->mp_data = element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
+            element_block_func::assign_values_from_block(*block_first->mp_data, *blk->mp_data, offset1, blk_size);
+
+            // Shrink the existing block.
+            element_block_func::resize_block(*blk->mp_data, offset1);
+        }
+
+        blk->m_size = offset1;
+    }
+
+    block* blk = m_blocks[block_index2];
+    if (offset2 == blk->m_size-1)
+    {
+        // The whole last block needs to be swapped.
+        ++it_end;
+    }
+    else
+    {
+        // Copy the upper part of the block for transfer.
+        size_type blk_size = offset2 + 1;
+        block_last.reset(new block(blk_size));
+        if (blk->mp_data)
+        {
+            block_last->mp_data = element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
+            element_block_func::assign_values_from_block(*block_last->mp_data, *blk->mp_data, 0, blk_size);
+
+            // Shrink the existing block.
+            element_block_func::erase(*blk->mp_data, 0, blk_size);
+        }
+
+        blk->m_size -= blk_size;
+    }
+
+    // Copy all blocks into the bucket.
+    if (block_first)
+        bucket.blocks.push_back(block_first.release());
+
+    std::copy(it_begin, it_end, std::back_inserter(bucket.blocks));
+
+    if (block_last)
+        bucket.blocks.push_back(block_last.release());
+
+    // Remove the slots for these blocks (but don't delete the blocks).
+    m_blocks.erase(it_begin, it_end);
 }
 
 template<typename _CellBlockFunc>

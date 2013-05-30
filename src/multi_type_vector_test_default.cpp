@@ -4582,6 +4582,15 @@ void mtv_test_swap_range()
     assert(db2.get<short>(7) == short_val);
     assert(db2.get<short>(8) == short_val);
     assert(db2.get<short>(9) == short_val);
+
+    // Multi-to-multi block swapping. Very simple case.
+    db1 = mtv_type(2);
+    db1.set(0, 2.1);
+    db1.set(1, string("test"));
+    db2 = mtv_type(2);
+    db2.set(0, int_val);
+    db2.set(1, short_val);
+    db1.swap(0, 1, db2, 0);
 }
 
 }
