@@ -22,6 +22,14 @@
 
     * set(size_type pos, const _T& it_begin, const _T& it_end).
 
+  * added compile-time macro MDDS_MULTI_TYPE_VECTOR_USE_DEQUE to allow
+    users to specify std::deque as the underlying data array.  By
+    default, multi_type_vector uses std::vector as the underlying data
+    array container.
+
+  * added a new variant of swap() that allows partial swapping of
+    content with another container.
+
 mdds 0.8.1
 
 * multi_type_vector
