@@ -4478,6 +4478,17 @@ void mtv_test_swap_range()
     assert(db2.get<int>(3) == int_val);
     assert(db2.get<int>(4) == int_val);
     assert(db2.block_size() == 2);
+
+    // Another scenario.
+    db1 = mtv_type(2, short_val);
+    db2 = mtv_type(2);
+    db2.set(0, string("A"));
+    db2.set<char>(1, 'A');
+    db1.swap(0, 1, db2, 0);
+    assert(db1.get<string>(0) == "A");
+    assert(db1.get<char>(1) == 'A');
+    assert(db2.get<short>(0) == short_val);
+    assert(db2.get<short>(1) == short_val);
 }
 
 }

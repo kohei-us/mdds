@@ -2722,7 +2722,6 @@ void multi_type_vector<_CellBlockFunc>::exchange_elements(
         // The whole first destination block needs to be replaced.
         --it_erase;
         --ins_index;
-        assert(!"exchange_elements 2: not tested yet");
     }
     else
     {
