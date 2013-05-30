@@ -2024,9 +2024,9 @@ void multi_type_vector<_CellBlockFunc>::swap_multi_to_multi_blocks(
         other.m_blocks.begin()+dst_bucket.insert_index, src_bucket.blocks.begin(), src_bucket.blocks.end());
 
     // Merge the boundary blocks in the destination.
-    merge_with_next_block(dst_bucket.insert_index + src_bucket.blocks.size()-1);
+    other.merge_with_next_block(dst_bucket.insert_index + src_bucket.blocks.size()-1);
     if (dst_bucket.insert_index > 0)
-        merge_with_next_block(dst_bucket.insert_index-1);
+        other.merge_with_next_block(dst_bucket.insert_index-1);
 }
 
 template<typename _CellBlockFunc>

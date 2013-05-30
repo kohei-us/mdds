@@ -4596,6 +4596,45 @@ void mtv_test_swap_range()
     assert(db1.get<short>(1) == short_val);
     assert(db2.get<double>(0) == 2.1);
     assert(db2.get<string>(1) == "test");
+
+    // More complex case.
+    db1 = mtv_type(10);
+    db1.set<int>(0, 2);
+    db1.set<int>(1, 3);
+    db1.set<int>(2, 4);
+    db1.set<string>(3, "A");
+    db1.set<string>(4, "B");
+    db1.set<string>(5, "C");
+    // Leave some empty range.
+    db2 = mtv_type(10);
+    for (int i = 0; i < 10; ++i)
+        db2.set<int>(i, 10+i);
+    db2.set<char>(5, 'Z');
+    db1.swap(1, 7, db2, 2);
+
+    assert(db1.get<int>(0) == 2);
+    assert(db1.get<int>(1) == 12);
+    assert(db1.get<int>(2) == 13);
+    assert(db1.get<int>(3) == 14);
+    assert(db1.get<char>(4) == 'Z');
+    assert(db1.get<int>(5) == 16);
+    assert(db1.get<int>(6) == 17);
+    assert(db1.get<int>(7) == 18);
+    assert(db1.is_empty(8));
+    assert(db1.is_empty(9));
+    assert(db1.block_size() == 4);
+
+    assert(db2.get<int>(0) == 10);
+    assert(db2.get<int>(1) == 11);
+    assert(db2.get<int>(2) == 3);
+    assert(db2.get<int>(3) == 4);
+    assert(db2.get<string>(4) == "A");
+    assert(db2.get<string>(5) == "B");
+    assert(db2.get<string>(6) == "C");
+    assert(db2.is_empty(7));
+    assert(db2.is_empty(8));
+    assert(db2.get<int>(9) == 19);
+    assert(db2.block_size() == 4);
 }
 
 }
