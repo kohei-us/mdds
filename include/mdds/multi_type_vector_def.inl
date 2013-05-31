@@ -2619,9 +2619,12 @@ multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
             *blk->mp_data, offset, new_block_size);
     }
 
-    // Shrink the current data block.
-    element_block_func::erase(
-        *blk->mp_data, offset, blk->m_size - offset);
+    if (blk->mp_data)
+    {
+        // Shrink the current data block.
+        element_block_func::resize_block(*blk->mp_data, offset);
+    }
+
     blk->m_size = offset;
 
     return m_blocks[block_index+1];
@@ -2970,36 +2973,11 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
     // new data array will be in the middle of the current block.
     assert(start_row_in_block < start_row && end_row < end_row_in_block);
 
-    // Insert two new blocks below the current one.
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, NULL);
+    block* blk_new = set_new_block_to_middle(
+        block_index, start_row-start_row_in_block, end_row-start_row+1, true);
 
-    // first new block is for the data array being inserted.
-    size_type new_size = end_row - start_row + 1;
-    m_blocks[block_index+1] = new block(new_size);
-    block* blk_new = m_blocks[block_index+1];
     blk_new->mp_data = element_block_func::create_new_block(cat, 0);
     mdds_mtv_assign_values(*blk_new->mp_data, *it_begin, it_begin, it_end);
-
-    // second new block is to transfer the lower part of the current block.
-    new_size = end_row_in_block - end_row;
-    m_blocks[block_index+2] = new block(new_size);
-    size_type new_cur_size = start_row - start_row_in_block;
-    if (blk->mp_data)
-    {
-        // current block is not empty. Transfer the lower part of the data.
-        element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
-
-        blk_new = m_blocks[block_index+2];
-        blk_new->mp_data = element_block_func::create_new_block(blk_cat, 0);
-        size_type offset = end_row - start_row_in_block + 1;
-        element_block_func::assign_values_from_block(
-            *blk_new->mp_data, *blk->mp_data, offset, new_size);
-
-        // Resize the current block.
-        element_block_func::overwrite_values(*blk->mp_data, new_cur_size, data_length);
-        element_block_func::resize_block(*blk->mp_data, new_cur_size);
-    }
-    blk->m_size = new_cur_size;
 
     return get_iterator(block_index+1, start_row);
 }
