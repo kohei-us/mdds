@@ -546,36 +546,11 @@ typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_cell_to_middle_of_block(
     size_type start_row, size_type block_index, size_type pos_in_block, const _T& cell)
 {
-    block* blk = m_blocks[block_index];
-
-    assert(pos_in_block > 0 && pos_in_block < blk->m_size - 1);
-    assert(blk->m_size >= 3);
-    size_type orig_size = blk->m_size;
-
-    m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
-    block* blk_new = m_blocks[block_index+1];
-    m_blocks.insert(m_blocks.begin()+block_index+2, new block(orig_size-pos_in_block-1));
-    block* blk_tail = m_blocks[block_index+2];
-
-    if (blk->mp_data)
-    {
-        element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
-
-        // Transfer the tail values from the original to the new block.
-        blk_tail->mp_data = element_block_func::create_new_block(blk_cat, 0);
-        element_block_func::assign_values_from_block(
-            *blk_tail->mp_data, *blk->mp_data, pos_in_block+1, orig_size-pos_in_block-1);
-
-        // Overwrite the cell and shrink the original block.
-        element_block_func::overwrite_values(*blk->mp_data, pos_in_block, 1);
-        element_block_func::resize_block(*blk->mp_data, pos_in_block);
-    }
-
-    blk->m_size = pos_in_block;
-
+    block* blk_new = set_new_block_to_middle(block_index, pos_in_block, 1, true);
     create_new_block_with_new_cell(blk_new->mp_data, cell);
 
     // Return the iterator referencing the inserted block.
+    block* blk = m_blocks[block_index];
     return get_iterator(block_index+1, start_row+blk->m_size);
 }
 
@@ -2573,17 +2548,14 @@ multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
         blk_lower->mp_data = element_block_func::create_new_block(cat, 0);
         element_block_func::assign_values_from_block(
             *blk_lower->mp_data, *blk->mp_data, lower_data_start, lower_block_size);
-    }
 
-    if (overwrite)
-    {
-        // Overwrite cells that will become empty.
-        element_block_func::overwrite_values(
-            *blk->mp_data, offset, new_block_size);
-    }
+        if (overwrite)
+        {
+            // Overwrite cells that will become empty.
+            element_block_func::overwrite_values(
+                *blk->mp_data, offset, new_block_size);
+        }
 
-    if (blk->mp_data)
-    {
         // Shrink the current data block.
         element_block_func::resize_block(*blk->mp_data, offset);
     }
