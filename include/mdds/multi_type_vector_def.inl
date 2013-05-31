@@ -3370,15 +3370,8 @@ bool multi_type_vector<_CellBlockFunc>::append_to_prev_block(
     size_type block_index, element_category_type cat, size_type length,
     const _T& it_begin, const _T& it_end)
 {
-    if (block_index == 0)
-        return false;
-
-    block* blk_prev = m_blocks[block_index-1];
-    if (!blk_prev->mp_data)
-        return false;
-
-    element_category_type blk_cat_prev = mdds::mtv::get_block_type(*blk_prev->mp_data);
-    if (blk_cat_prev != cat)
+    block* blk_prev = get_previous_block_of_type(block_index, cat);
+    if (!blk_prev)
         return false;
 
     // Append to the previous block.
