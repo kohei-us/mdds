@@ -3769,35 +3769,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
 
     // Empty the middle part of a block.
     assert(end_row_in_block - end_row > 0);
-
-    // First, insert two new blocks at position past the current block.
-    size_type lower_block_size = end_row_in_block - end_row;
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, NULL);
-    m_blocks[block_index+1] = new block(empty_block_size); // empty block.
-    m_blocks[block_index+2] = new block(lower_block_size);
-
-    // Copy the lower values from the current block to the new non-empty block.
-    block* blk_lower = m_blocks[block_index+2];
-    assert(blk_lower->m_size == lower_block_size);
-    element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
-    blk_lower->mp_data = element_block_func::create_new_block(blk_cat, 0);
-    element_block_func::assign_values_from_block(
-        *blk_lower->mp_data, *blk->mp_data,
-        end_row_in_block-start_row_in_block-lower_block_size+1,
-        lower_block_size);
-
-    size_type new_cur_size = start_row - start_row_in_block;
-    if (overwrite)
-    {
-        // Overwrite cells that will become empty.
-        element_block_func::overwrite_values(
-            *blk->mp_data, new_cur_size, empty_block_size);
-    }
-
-    // Shrink the current data block.
-    element_block_func::erase(
-        *blk->mp_data, new_cur_size, end_row_in_block-start_row+1);
-    blk->m_size = new_cur_size;
+    set_new_block_to_middle(block_index, start_row-start_row_in_block, empty_block_size, overwrite);
 
     return get_iterator(block_index+1, start_row);
 }
