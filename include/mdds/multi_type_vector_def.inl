@@ -275,24 +275,8 @@ multi_type_vector<_CellBlockFunc>::set_impl(
             return set_cell_to_block_of_size_one(start_row, block_index, value);
 
         assert(blk->m_size > 1);
-        if (block_index == 0)
-        {
-            // No preceding block.
-            set_cell_to_top_of_data_block(0, value);
-            return begin();
-        }
-
-        // Append to the previous block if the types match.
-        block* blk_prev = m_blocks[block_index-1];
-        if (!blk_prev->mp_data)
-        {
-            // Previous block is empty.
-            set_cell_to_top_of_data_block(block_index, value);
-            return get_iterator(block_index, start_row);
-        }
-
-        element_category_type blk_cat_prev = mdds::mtv::get_block_type(*blk_prev->mp_data);
-        if (blk_cat_prev == cat)
+        block* blk_prev = get_previous_block_of_type(block_index, cat);
+        if (blk_prev)
         {
             // Append to the previous block.
             size_type offset = blk_prev->m_size;
@@ -2361,18 +2345,16 @@ multi_type_vector<_CellBlockFunc>::insert_empty_impl(
     if (start_pos == pos)
     {
         // Insertion point is at the top of an existing non-empty block.
-        if (block_index > 0)
+        block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
+        if (blk_prev)
         {
-            block* blk_prev = m_blocks[block_index-1];
-            if (!blk_prev->mp_data)
-            {
-                // Previous block is empty.  Expand the size of the previous
-                // block and bail out.
-                size_type offset = blk_prev->m_size;
-                blk_prev->m_size += length;
-                m_cur_size += length;
-                return get_iterator(block_index-1, pos-offset);
-            }
+            assert(!blk_prev->mp_data);
+            // Previous block is empty.  Expand the size of the previous
+            // block and bail out.
+            size_type offset = blk_prev->m_size;
+            blk_prev->m_size += length;
+            m_cur_size += length;
+            return get_iterator(block_index-1, pos-offset);
         }
 
         // Insert a new empty block.
@@ -2465,21 +2447,16 @@ multi_type_vector<_CellBlockFunc>::insert_cells_impl(
             // Insert into an empty block.  Check the previos block (if
             // exists) to see if the data can be appended to it if inserting
             // at the top of the block.
-            if (block_index > 0)
+            block* blk0 = get_previous_block_of_type(block_index, cat);
+            if (blk0)
             {
-                block* blk0 = m_blocks[block_index-1];
-                assert(blk0->mp_data);
-                element_category_type blk_cat0 = mdds::mtv::get_block_type(*blk0->mp_data);
-                if (blk_cat0 == cat)
-                {
-                    // Append to the previous block.
-                    mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
-                    size_type offset = blk0->m_size;
-                    blk0->m_size += length;
-                    m_cur_size += length;
+                // Append to the previous block.
+                mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
+                size_type offset = blk0->m_size;
+                blk0->m_size += length;
+                m_cur_size += length;
 
-                    return get_iterator(block_index-1, start_row-offset);
-                }
+                return get_iterator(block_index-1, start_row-offset);
             }
 
             // Just insert a new block before the current block.
@@ -2514,19 +2491,16 @@ multi_type_vector<_CellBlockFunc>::insert_cells_impl(
     assert(cat != blk_cat);
     if (row == start_row)
     {
-        if (block_index > 0)
+        // Check the previous block to see if we can append the data there.
+        block* blk0 = get_previous_block_of_type(block_index, cat);
+        if (blk0)
         {
-            // Check the previous block to see if we can append the data there.
-            block* blk0 = m_blocks[block_index-1];
-            if (blk0->mp_data && cat == mdds::mtv::get_block_type(*blk0->mp_data))
-            {
-                // Append to the previous block.
-                size_type offset = blk0->m_size;
-                mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
-                blk0->m_size += length;
-                m_cur_size += length;
-                return get_iterator(block_index-1, start_row-offset);
-            }
+            // Append to the previous block.
+            size_type offset = blk0->m_size;
+            mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
+            blk0->m_size += length;
+            m_cur_size += length;
+            return get_iterator(block_index-1, start_row-offset);
         }
 
         // Just insert a new block before the current block.
@@ -3611,25 +3585,8 @@ multi_type_vector<_CellBlockFunc>::set_whole_block_empty(
     element_block_func::delete_block(blk->mp_data);
     blk->mp_data = NULL;
 
-    block* blk_prev = NULL;
-    if (block_index > 0)
-    {
-        // Check if the preceding block is empty.
-        blk_prev = m_blocks[block_index-1];
-        if (blk_prev->mp_data)
-            // Previous block is not empty.  Ignore it.
-            blk_prev = NULL;
-    }
-
-    block* blk_next = NULL;
-    if (block_index < m_blocks.size()-1)
-    {
-        // Check if the next block is empty.
-        blk_next = m_blocks[block_index+1];
-        if (blk_next->mp_data)
-            // Next block is not empty. Ignore it.
-            blk_next = NULL;
-    }
+    block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
+    block* blk_next = get_next_block_of_type(block_index, mtv::element_type_empty);
 
     // Merge with adjacent block(s) if necessary.
     if (blk_prev)
@@ -3706,15 +3663,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_in_single_block(
         blk->m_size -= empty_block_size;
 
         // Check if the preceding block (if exists) is also empty.
-        block* blk_prev = NULL;
-        if (block_index > 0)
-        {
-            blk_prev = m_blocks[block_index-1];
-            if (blk_prev->mp_data)
-                // Preceding block is not empty. Ignore it.
-                blk_prev = NULL;
-        }
-
+        block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
         if (blk_prev)
         {
             // Extend the previous empty block.
