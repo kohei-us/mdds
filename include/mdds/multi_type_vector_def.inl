@@ -585,109 +585,102 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                 create_new_block_with_new_cell(blk->mp_data, cell);
                 return begin();
             }
-            else
-            {
-                // block has multiple rows.
-                if (pos_in_block == 0)
-                {
-                    // Insert into the first cell in block.
-                    blk->m_size -= 1;
-                    assert(blk->m_size > 0);
 
-                    m_blocks.insert(m_blocks.begin(), new block(1));
-                    blk = m_blocks[block_index];
-                    create_new_block_with_new_cell(blk->mp_data, cell);
-                    return begin();
-                }
-                else if (pos_in_block == blk->m_size - 1)
-                {
-                    // Insert into the last cell in block.
-                    blk->m_size -= 1;
-                    assert(blk->m_size > 0);
-
-                    m_blocks.push_back(new block(1));
-                    blk = m_blocks.back();
-
-                    create_new_block_with_new_cell(blk->mp_data, cell);
-                    iterator ret = end();
-                    --ret;
-                    return ret;
-                }
-                else
-                {
-                    // Insert into the middle of the block.
-                    return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
-                }
-            }
-        }
-        else
-        {
-            // This topmost empty block is followed by a non-empty block.
-            assert(block_index < m_blocks.size()-1);
+            // block has multiple rows.
             if (pos_in_block == 0)
             {
-                if (blk->m_size == 1)
-                {
-                    // Top empty block with only one cell size.
-                    element_category_type cat = mdds_mtv_get_element_type(cell);
-                    block* blk_next = get_next_block_of_type(block_index, cat);
-                    if (blk_next)
-                    {
-                        // Remove this one-cell empty block from the top, and
-                        // prepend the cell to the next block.
-                        delete m_blocks.front();
-                        m_blocks.erase(m_blocks.begin());
-                        blk = m_blocks.front();
-                        blk->m_size += 1;
-                        mdds_mtv_prepend_value(*blk->mp_data, cell);
-                    }
-                    else
-                        create_new_block_with_new_cell(blk->mp_data, cell);
-                }
-                else
-                {
-                    assert(blk->m_size > 1);
-                    blk->m_size -= 1;
-                    m_blocks.insert(m_blocks.begin(), new block(1));
-                    blk = m_blocks.front();
-                    create_new_block_with_new_cell(blk->mp_data, cell);
-                }
+                // Insert into the first cell in block.
+                blk->m_size -= 1;
+                assert(blk->m_size > 0);
 
+                m_blocks.insert(m_blocks.begin(), new block(1));
+                blk = m_blocks[block_index];
+                create_new_block_with_new_cell(blk->mp_data, cell);
                 return begin();
             }
-            else if (pos_in_block == blk->m_size - 1)
+
+            if (pos_in_block == blk->m_size - 1)
             {
-                // Immediately above a non-empty block.
+                // Insert into the last cell in block.
+                blk->m_size -= 1;
+                assert(blk->m_size > 0);
+
+                m_blocks.push_back(new block(1));
+                blk = m_blocks.back();
+
+                create_new_block_with_new_cell(blk->mp_data, cell);
+                iterator ret = end();
+                --ret;
+                return ret;
+            }
+
+            // Insert into the middle of the block.
+            return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
+        }
+
+        // This topmost empty block is followed by a non-empty block.
+
+        if (pos_in_block == 0)
+        {
+            assert(block_index < m_blocks.size()-1);
+            if (blk->m_size == 1)
+            {
+                // Top empty block with only one cell size.
                 element_category_type cat = mdds_mtv_get_element_type(cell);
                 block* blk_next = get_next_block_of_type(block_index, cat);
                 if (blk_next)
                 {
-                    assert(blk->m_size > 1);
-                    // Shrink this empty block by one, and prepend the cell to the next block.
-                    blk->m_size -= 1;
-                    blk_next->m_size += 1;
-                    mdds_mtv_prepend_value(*blk_next->mp_data, cell);
+                    // Remove this one-cell empty block from the top, and
+                    // prepend the cell to the next block.
+                    delete m_blocks.front();
+                    m_blocks.erase(m_blocks.begin());
+                    blk = m_blocks.front();
+                    blk->m_size += 1;
+                    mdds_mtv_prepend_value(*blk->mp_data, cell);
                 }
                 else
-                {
-                    blk->m_size -= 1;
-                    typename blocks_type::iterator it = m_blocks.begin();
-                    std::advance(it, block_index+1);
-                    m_blocks.insert(it, new block(1));
-                    block* blk2 = m_blocks[block_index+1];
-                    create_new_block_with_new_cell(blk2->mp_data, cell);
-                }
-
-                return get_iterator(block_index+1, start_row+blk->m_size);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
             }
             else
             {
-                // Inserting into the middle of an empty block.
-                return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
+                assert(blk->m_size > 1);
+                blk->m_size -= 1;
+                m_blocks.insert(m_blocks.begin(), new block(1));
+                blk = m_blocks.front();
+                create_new_block_with_new_cell(blk->mp_data, cell);
             }
+
+            return begin();
         }
 
-        assert(!"this code path should never be reached!");
+        if (pos_in_block == blk->m_size - 1)
+        {
+            // Immediately above a non-empty block.
+            element_category_type cat = mdds_mtv_get_element_type(cell);
+            block* blk_next = get_next_block_of_type(block_index, cat);
+            if (blk_next)
+            {
+                assert(blk->m_size > 1);
+                // Shrink this empty block by one, and prepend the cell to the next block.
+                blk->m_size -= 1;
+                blk_next->m_size += 1;
+                mdds_mtv_prepend_value(*blk_next->mp_data, cell);
+            }
+            else
+            {
+                blk->m_size -= 1;
+                typename blocks_type::iterator it = m_blocks.begin();
+                std::advance(it, block_index+1);
+                m_blocks.insert(it, new block(1));
+                block* blk2 = m_blocks[block_index+1];
+                create_new_block_with_new_cell(blk2->mp_data, cell);
+            }
+
+            return get_iterator(block_index+1, start_row+blk->m_size);
+        }
+
+        // Inserting into the middle of an empty block.
+        return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
     }
 
     // This empty block is right below a non-empty block.
