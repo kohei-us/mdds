@@ -315,22 +315,11 @@ multi_type_vector<_CellBlockFunc>::set_impl(
             return itr;
         }
 
-        assert(block_index < m_blocks.size()-1);
-        block* blk_next = m_blocks[block_index+1];
-        if (!blk_next->mp_data)
+        block* blk_next = get_next_block_of_type(block_index, cat);
+        if (!blk_next)
         {
-            // Next block is empty.  Pop the last cell of the current
-            // block, and insert a new block with the new cell.
-            set_cell_to_bottom_of_data_block(0, value);
-            iterator itr = begin();
-            ++itr;
-            return itr;
-        }
-
-        // Next block is not empty.
-        element_category_type blk_cat_next = mdds::mtv::get_block_type(*blk_next->mp_data);
-        if (blk_cat_next != cat)
-        {
+            // Pop the last cell of the current block, and insert a new block
+            // with the new cell.
             set_cell_to_bottom_of_data_block(0, value);
             iterator itr = begin();
             ++itr;
@@ -358,8 +347,8 @@ multi_type_vector<_CellBlockFunc>::set_impl(
         return itr;
     }
 
-    block* blk_next = m_blocks[block_index+1];
-    if (!blk_next->mp_data || mdds::mtv::get_block_type(*blk_next->mp_data) != cat)
+    block* blk_next = get_next_block_of_type(block_index, cat);
+    if (!blk_next)
     {
         // Next block is either empty or of different type than that of the cell being inserted.
         set_cell_to_bottom_of_data_block(block_index, value);
