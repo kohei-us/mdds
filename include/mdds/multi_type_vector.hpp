@@ -136,6 +136,8 @@ public:
     typedef __mtv::const_iterator_base<const_iterator_trait, itr_forward_update, iterator> const_iterator;
     typedef __mtv::const_iterator_base<const_reverse_iterator_trait, itr_no_update, reverse_iterator> const_reverse_iterator;
 
+    typedef itr_node value_type;
+
     iterator begin();
     iterator end();
 

@@ -4637,6 +4637,26 @@ void mtv_test_swap_range()
     assert(db2.block_size() == 4);
 }
 
+struct block_node_printer : unary_function<mtv_type::value_type, void>
+{
+    void operator() (const mtv_type::value_type& node) const
+    {
+        cout << "type: " << node.type << "  size: " << node.size << "  data: " << node.data << endl;
+    }
+};
+
+void mtv_test_value_type()
+{
+    stack_printer __stack_printer__("::mtv_test_value_type");
+    mtv_type db(5);
+    db.set(0, 1.1);
+    db.set(1, string("A"));
+    db.set(2, string("B"));
+    db.set(3, int(12));
+    db.set(4, short(8));
+    for_each(db.begin(), db.end(), block_node_printer());
+}
+
 }
 
 int main (int argc, char **argv)
@@ -4669,6 +4689,7 @@ int main (int argc, char **argv)
     mtv_test_insert_empty_with_position();
     mtv_test_position();
     mtv_test_swap_range();
+    mtv_test_value_type();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
