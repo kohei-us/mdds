@@ -117,7 +117,7 @@ protected:
     element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val) {}
 
 public:
-    static const element_t block_type_identifier = _TypeId;
+    static const element_t block_type = _TypeId;
 
     typedef typename store_type::iterator iterator;
     typedef typename store_type::reverse_iterator reverse_iterator;
