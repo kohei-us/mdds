@@ -78,6 +78,10 @@ public:
 struct base_element_block;
 element_t get_block_type(const base_element_block&);
 
+/**
+ * Non-template common base type necessary for blocks of all types to be
+ * stored in a single container.
+ */
 struct base_element_block
 {
     friend element_t get_block_type(const base_element_block&);
@@ -113,6 +117,8 @@ protected:
     element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val) {}
 
 public:
+    static const element_t block_type_identifier = _TypeId;
+
     typedef typename store_type::iterator iterator;
     typedef typename store_type::reverse_iterator reverse_iterator;
     typedef typename store_type::const_iterator const_iterator;

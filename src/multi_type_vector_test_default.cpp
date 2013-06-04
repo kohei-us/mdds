@@ -4657,6 +4657,22 @@ void mtv_test_value_type()
     for_each(db.begin(), db.end(), block_node_printer());
 }
 
+void mtv_test_block_identifier()
+{
+    stack_printer __stack_printer__("::mtv_test_block_identifier");
+    assert(mtv::numeric_element_block::block_type_identifier == mtv::element_type_numeric);
+    assert(mtv::string_element_block::block_type_identifier == mtv::element_type_string);
+    assert(mtv::short_element_block::block_type_identifier == mtv::element_type_short);
+    assert(mtv::ushort_element_block::block_type_identifier == mtv::element_type_ushort);
+    assert(mtv::int_element_block::block_type_identifier == mtv::element_type_int);
+    assert(mtv::uint_element_block::block_type_identifier == mtv::element_type_uint);
+    assert(mtv::long_element_block::block_type_identifier == mtv::element_type_long);
+    assert(mtv::ulong_element_block::block_type_identifier == mtv::element_type_ulong);
+    assert(mtv::boolean_element_block::block_type_identifier == mtv::element_type_boolean);
+    assert(mtv::char_element_block::block_type_identifier == mtv::element_type_char);
+    assert(mtv::uchar_element_block::block_type_identifier == mtv::element_type_uchar);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -4690,6 +4706,7 @@ int main (int argc, char **argv)
     mtv_test_position();
     mtv_test_swap_range();
     mtv_test_value_type();
+    mtv_test_block_identifier();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

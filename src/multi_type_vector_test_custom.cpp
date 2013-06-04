@@ -172,6 +172,15 @@ void mtv_test_types()
     assert(ct == element_type_fruit_block && ct >= mtv::element_type_user_start);
 }
 
+void mtv_test_block_identifier()
+{
+    stack_printer __stack_printer__("::mtv_test_block_identifier");
+    assert(user_cell_block::block_type_identifier == element_type_user_block);
+    assert(muser_cell_block::block_type_identifier == element_type_muser_block);
+    assert(fruit_block::block_type_identifier == element_type_fruit_block);
+    assert(date_block::block_type_identifier == element_type_date_block);
+}
+
 void mtv_test_basic()
 {
     stack_printer __stack_printer__("::mtv_test_basic");
@@ -1409,6 +1418,7 @@ void mtv_test_custom_block_func3()
 int main (int argc, char **argv)
 {
     mtv_test_types();
+    mtv_test_block_identifier();
     mtv_test_basic();
     mtv_test_equality();
     mtv_test_managed_block();
