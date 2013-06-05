@@ -45,18 +45,20 @@ struct iterator_value_node
     typedef _ElemBlkT element_block_type;
 
     mdds::mtv::element_t type;
+    size_type position;
     size_type size;
     element_block_type* data;
 
     iterator_value_node(size_type start_pos, size_type block_index) :
-        type(mdds::mtv::element_type_empty), size(0), data(NULL), __private_data(start_pos, block_index) {}
+        type(mdds::mtv::element_type_empty), position(start_pos), size(0), data(NULL), __private_data(block_index) {}
 
     iterator_value_node(const iterator_value_node& other) :
-        type(other.type), size(other.size), data(other.data), __private_data(other.__private_data) {}
+        type(other.type), position(other.position), size(other.size), data(other.data), __private_data(other.__private_data) {}
 
     void swap(iterator_value_node& other)
     {
         std::swap(type, other.type);
+        std::swap(position, other.position);
         std::swap(size, other.size);
         std::swap(data, other.data);
 
@@ -65,18 +67,16 @@ struct iterator_value_node
 
     struct private_data
     {
-        size_type start_pos;
         size_type block_index;
 
-        private_data() : start_pos(0), block_index(0) {}
-        private_data(size_type _start_pos, size_type _block_index) :
-            start_pos(_start_pos), block_index(_block_index) {}
+        private_data() : block_index(0) {}
+        private_data(size_type _block_index) :
+            block_index(_block_index) {}
         private_data(const private_data& other) :
-            start_pos(other.start_pos), block_index(other.block_index) {}
+            block_index(other.block_index) {}
 
         void swap(private_data& other)
         {
-            std::swap(start_pos, other.start_pos);
             std::swap(block_index, other.block_index);
         }
     };
@@ -84,8 +84,7 @@ struct iterator_value_node
 
     bool operator== (const iterator_value_node& other) const
     {
-        return type == other.type && size == other.size && data == other.data &&
-            __private_data.start_pos == other.__private_data.start_pos &&
+        return type == other.type && position == other.position && size == other.size && data == other.data &&
             __private_data.block_index == other.__private_data.block_index;
     }
 
@@ -112,13 +111,13 @@ struct private_data_forward_update
     static void inc(node_type& nd)
     {
         ++nd.__private_data.block_index;
-        nd.__private_data.start_pos += nd.size;
+        nd.position += nd.size;
     }
 
     static void dec(node_type& nd)
     {
         --nd.__private_data.block_index;
-        nd.__private_data.start_pos -= nd.size;
+        nd.position -= nd.size;
     }
 };
 
@@ -350,7 +349,7 @@ public:
     const_iterator_base(const iterator_base& other) :
         common_base(
             other.get_pos(), other.get_end(),
-            other.get_node().__private_data.start_pos,
+            other.get_node().position,
             other.get_node().__private_data.block_index) {}
 
     const value_type& operator*() const

@@ -2585,12 +2585,12 @@ void mtv_test_iterator_private_data()
     // With only a single block
 
     mtv_type::iterator it = db.begin();
-    assert(it->__private_data.start_pos == 0);
+    assert(it->position == 0);
     assert(it->__private_data.block_index == 0);
 
     it = db.end();
     --it;
-    assert(it->__private_data.start_pos == 0);
+    assert(it->position == 0);
     assert(it->__private_data.block_index == 0);
 
     // With 3 blocks (sizes of 4, 3, and 2 in this order)
@@ -2601,15 +2601,15 @@ void mtv_test_iterator_private_data()
 
     it = db.begin();
     assert(it->size == 4);
-    assert(it->__private_data.start_pos == 0);
+    assert(it->position == 0);
     assert(it->__private_data.block_index == 0);
     ++it;
     assert(it->size == 3);
-    assert(it->__private_data.start_pos == 4);
+    assert(it->position == 4);
     assert(it->__private_data.block_index == 1);
     ++it;
     assert(it->size == 2);
-    assert(it->__private_data.start_pos == 7);
+    assert(it->position == 7);
     assert(it->__private_data.block_index == 2);
 
     ++it;
@@ -2618,15 +2618,15 @@ void mtv_test_iterator_private_data()
     // Go in reverse direction.
     --it;
     assert(it->size == 2);
-    assert(it->__private_data.start_pos == 7);
+    assert(it->position == 7);
     assert(it->__private_data.block_index == 2);
     --it;
     assert(it->size == 3);
-    assert(it->__private_data.start_pos == 4);
+    assert(it->position == 4);
     assert(it->__private_data.block_index == 1);
     --it;
     assert(it->size == 4);
-    assert(it->__private_data.start_pos == 0);
+    assert(it->position == 0);
     assert(it->__private_data.block_index == 0);
     assert(it == db.begin());
 }
@@ -2667,7 +2667,7 @@ void mtv_test_set_return_iterator()
     check = db.end();
     std::advance(check, -2);
     assert(it == check);
-    assert(it->__private_data.start_pos == 1);
+    assert(it->position == 1);
     assert(it->__private_data.block_index == 1);
 
     // Set value to the top empty block of size 1 followed by a non-empty block.
@@ -2677,13 +2677,13 @@ void mtv_test_set_return_iterator()
     it = db.set(0, 2.2); // same type as that of the following block.
     assert(it == db.begin());
     assert(it->size == 2);
-    assert(it->__private_data.start_pos == 0);
+    assert(it->position == 0);
     assert(it->__private_data.block_index == 0);
     db.set_empty(0, 0);
     it = db.set(0, true); // different type from that of the following block.
     assert(it == db.begin());
     assert(it->size == 1);
-    assert(it->__private_data.start_pos == 0);
+    assert(it->position == 0);
     assert(it->__private_data.block_index == 0);
 
     // Set value to the top of the top empty block (not size 1) followed by a non-empty block.
@@ -2705,7 +2705,7 @@ void mtv_test_set_return_iterator()
     --check;
     assert(it == check);
     assert(it->size == 2);
-    assert(it->__private_data.start_pos == 1);
+    assert(it->position == 1);
     assert(it->__private_data.block_index == 1);
     db.set_empty(0, 1);
     it = db.set(1, true); // different type from that of the following block.
@@ -2716,7 +2716,7 @@ void mtv_test_set_return_iterator()
     std::advance(check, -2);
     assert(it == check);
     assert(it->size == 1);
-    assert(it->__private_data.start_pos == 1);
+    assert(it->position == 1);
     assert(it->__private_data.block_index == 1);
 
     // Set value to the middle of the top empty block (not size 1) followed by a non-empty block.
@@ -2728,7 +2728,7 @@ void mtv_test_set_return_iterator()
     ++check;
     assert(it == check);
     assert(it->size == 1);
-    assert(it->__private_data.start_pos == 3);
+    assert(it->position == 3);
     assert(it->__private_data.block_index == 1);
 
     // Set value to an empty block of size 1 immediately below a non-empty block.
@@ -2806,7 +2806,7 @@ void mtv_test_set_return_iterator()
     ++check;
     assert(it == check);
     assert(it->size == 1);
-    assert(it->__private_data.start_pos == 1);
+    assert(it->position == 1);
 
     // Set value to the bottom of an empty block (not of size 1) between
     // non-empty blocks.
@@ -2814,7 +2814,7 @@ void mtv_test_set_return_iterator()
     db.set_empty(2, 4);
     it = db.set(4, true); // Same type as that of the following block.
     assert(it->size == 3);
-    assert(it->__private_data.start_pos == 4);
+    assert(it->position == 4);
     assert(it->__private_data.block_index == 2);
     ++it;
     assert(it == db.end());
@@ -2822,7 +2822,7 @@ void mtv_test_set_return_iterator()
     db.set_empty(2, 4);
     it = db.set(4, 1.1); // Different type from that of the following block.
     assert(it->size == 1);
-    assert(it->__private_data.start_pos == 4);
+    assert(it->position == 4);
     assert(it->__private_data.block_index == 2);
     std::advance(it, 2);
     assert(it == db.end());
@@ -2905,7 +2905,7 @@ void mtv_test_set_return_iterator()
     it = db.set(6, string("text"));
     assert(it->size == 1);
     assert(it->type == mtv::element_type_string);
-    assert(it->__private_data.start_pos = 6);
+    assert(it->position = 6);
     check = db.begin();
     std::advance(check, 2);
     assert(it == check);
@@ -2931,7 +2931,7 @@ void mtv_test_set_return_iterator()
     it = db.set(4, 1.1);
     assert(it->size == 1);
     assert(it->type == mtv::element_type_numeric);
-    assert(it->__private_data.start_pos == 4);
+    assert(it->position == 4);
     check = db.begin();
     ++check;
     assert(it == check);
@@ -2991,7 +2991,7 @@ void mtv_test_set_return_iterator()
     it = db.set(4, string("foo"));
     assert(it->size == 1);
     assert(it->type == mtv::element_type_string);
-    assert(it->__private_data.start_pos == 4);
+    assert(it->position == 4);
     assert(it->__private_data.block_index == 2);
     ++it;
     assert(it->size == 5);
@@ -3005,12 +3005,12 @@ void mtv_test_set_return_iterator()
     it = db.set(6, string("foo")); // 7 thru 9 is boolean.
     assert(it->size == 1);
     assert(it->type == mtv::element_type_string);
-    assert(it->__private_data.start_pos == 6);
+    assert(it->position == 6);
     assert(it->__private_data.block_index == 2);
     ++it;
     assert(it->size == 3);
     assert(it->type == mtv::element_type_boolean);
-    assert(it->__private_data.start_pos == 7);
+    assert(it->position == 7);
     ++it;
     assert(it == db.end());
 
@@ -3120,17 +3120,17 @@ void mtv_test_set_return_iterator()
     --it;
     assert(it->size == 4);
     assert(it->type == mtv::element_type_numeric);
-    assert(it->__private_data.start_pos == 2);
+    assert(it->position == 2);
     --it;
     assert(it->size == 2);
     assert(it->type == mtv::element_type_boolean);
-    assert(it->__private_data.start_pos == 0);
+    assert(it->position == 0);
     assert(it == db.begin());
 
     it = db.set(6, 4.5); // Same type as those of the preceding and following blocks.
     assert(it->size == 8);
     assert(it->type == mtv::element_type_numeric);
-    assert(it->__private_data.start_pos == 2);
+    assert(it->position == 2);
     assert(it->__private_data.block_index == 1);
     check = db.begin();
     ++check;
@@ -3160,7 +3160,7 @@ void mtv_test_set_return_iterator()
     it = db.set(4, static_cast<short>(28)); // Different type from either of the blocks.
     assert(it->size == 1);
     assert(it->type == mtv::element_type_short);
-    assert(it->__private_data.start_pos == 4);
+    assert(it->position == 4);
     assert(it->__private_data.block_index == 1);
     std::advance(it, 2);
     assert(it == db.end());
@@ -3176,11 +3176,11 @@ void mtv_test_set_return_iterator()
     assert(it == check);
     assert(it->size == 1);
     assert(it->type == mtv::element_type_string);
-    assert(it->__private_data.start_pos == 6);
+    assert(it->position == 6);
     ++it;
     assert(it->size == 3);
     assert(it->type == mtv::element_type_numeric);
-    assert(it->__private_data.start_pos == 7);
+    assert(it->position == 7);
     ++it;
     assert(it == db.end());
 
@@ -3507,7 +3507,7 @@ void mtv_test_insert_cells_return_iterator()
     advance(check, 2);
     assert(it == check);
     assert(it->size == 5);
-    assert(it->__private_data.start_pos == 3);
+    assert(it->position == 3);
     ++it;
     assert(it->type == mtv::element_type_empty);
     assert(it->size == 6);
@@ -3765,7 +3765,7 @@ void mtv_test_set_empty_return_iterator()
     assert(it == check);
     assert(it->size == 9);
     assert(it->type == mtv::element_type_empty);
-    assert(it->__private_data.start_pos == 1);
+    assert(it->position == 1);
     assert(it->__private_data.block_index == 1);
     ++it;
     assert(it == db.end());
@@ -3779,7 +3779,7 @@ void mtv_test_set_empty_return_iterator()
     assert(it == check);
     assert(it->size == 5);
     assert(it->type == mtv::element_type_empty);
-    assert(it->__private_data.start_pos == 1);
+    assert(it->position == 1);
     assert(it->__private_data.block_index == 1);
     ++it;
     assert(it->size == 1);
@@ -3804,7 +3804,7 @@ void mtv_test_set_empty_return_iterator()
     assert(it->size == 4);
     assert(it->type == mtv::element_type_empty);
     assert(it->__private_data.block_index == 2);
-    assert(it->__private_data.start_pos == 5);
+    assert(it->position == 5);
     advance(it, 2);
     assert(it == db.end());
 }

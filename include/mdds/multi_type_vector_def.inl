@@ -511,7 +511,7 @@ void multi_type_vector<_CellBlockFunc>::get_block_position(
         // end position.
         if (pos_hint.get_pos() != pos_hint.get_end())
         {
-            start_row = pos_hint->__private_data.start_pos;
+            start_row = pos_hint->position;
             block_index = pos_hint->__private_data.block_index;
         }
     }
@@ -1352,7 +1352,7 @@ multi_type_vector<_CellBlockFunc>::transfer_single_block(
     size_type dest_block_index = it_dest_blk->__private_data.block_index;
     block* blk_dest = dest.m_blocks[dest_block_index];
 
-    size_type dest_pos_in_block = dest_pos - it_dest_blk->__private_data.start_pos;
+    size_type dest_pos_in_block = dest_pos - it_dest_blk->position;
     if (dest_pos_in_block == 0)
     {
         // Copy to the top part of destination block.
@@ -1438,7 +1438,7 @@ multi_type_vector<_CellBlockFunc>::transfer_multi_blocks(
     iterator it_dest_blk = dest.set_empty(dest_pos, last_dest_pos);
 
     size_type dest_block_index = it_dest_blk->__private_data.block_index;
-    size_type dest_pos_in_block = dest_pos - it_dest_blk->__private_data.start_pos;
+    size_type dest_pos_in_block = dest_pos - it_dest_blk->position;
     block* blk_dest = dest.m_blocks[dest_block_index];
     assert(!blk_dest->mp_data); // should be already emptied.
 
