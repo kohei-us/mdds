@@ -60,6 +60,5 @@ AC_SUBST(CPPFLAGS_NODEBUG)
 
 AC_OUTPUT(Makefile)
 AC_OUTPUT(example/Makefile)
-AC_OUTPUT(misc/mdds.spec)
 AC_OUTPUT(misc/mdds.pc)
 AC_OUTPUT(VERSION)
