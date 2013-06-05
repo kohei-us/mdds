@@ -36,14 +36,14 @@ namespace mdds { namespace mtv {
 /**
  * Block function template for multi_type_vector with 1 user-defined block.
  */
-template<element_t _TypeId, typename _Block>
+template<typename _Block>
 struct custom_block_func1
 {
     static base_element_block* create_new_block(element_t type, size_t init_size)
     {
         switch (type)
         {
-            case _TypeId:
+            case _Block::block_type:
                 return _Block::create_block(init_size);
             default:
                 ;
@@ -56,7 +56,7 @@ struct custom_block_func1
     {
         switch (get_block_type(block))
         {
-            case _TypeId:
+            case _Block::block_type:
                 return _Block::clone_block(block);
             default:
                 ;
@@ -72,7 +72,7 @@ struct custom_block_func1
 
         switch (get_block_type(*p))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::delete_block(p);
             break;
             default:
@@ -84,7 +84,7 @@ struct custom_block_func1
     {
         switch (get_block_type(block))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::resize_block(block, new_size);
             break;
             default:
@@ -96,7 +96,7 @@ struct custom_block_func1
     {
         switch (get_block_type(block))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::print_block(block);
             break;
             default:
@@ -108,7 +108,7 @@ struct custom_block_func1
     {
         switch (get_block_type(block))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::erase_block(block, pos);
             break;
             default:
@@ -120,7 +120,7 @@ struct custom_block_func1
     {
         switch (get_block_type(block))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::erase_block(block, pos, size);
             break;
             default:
@@ -132,7 +132,7 @@ struct custom_block_func1
     {
         switch (get_block_type(dest))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::append_values_from_block(dest, src);
             break;
             default:
@@ -145,7 +145,7 @@ struct custom_block_func1
     {
         switch (get_block_type(dest))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::append_values_from_block(dest, src, begin_pos, len);
             break;
             default:
@@ -158,7 +158,7 @@ struct custom_block_func1
     {
         switch (get_block_type(dest))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::assign_values_from_block(dest, src, begin_pos, len);
             break;
             default:
@@ -171,7 +171,7 @@ struct custom_block_func1
     {
         switch (get_block_type(dest))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::prepend_values_from_block(dest, src, begin_pos, len);
             break;
             default:
@@ -184,7 +184,7 @@ struct custom_block_func1
     {
         switch (get_block_type(blk1))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::swap_values(blk1, blk2, pos1, pos2, len);
             break;
             default:
@@ -195,14 +195,14 @@ struct custom_block_func1
     static bool equal_block(
         const base_element_block& left, const base_element_block& right)
     {
-        if (get_block_type(left) == _TypeId)
+        if (get_block_type(left) == _Block::block_type)
         {
-            if (get_block_type(right) != _TypeId)
+            if (get_block_type(right) != _Block::block_type)
                 return false;
 
             return _Block::get(left) == _Block::get(right);
         }
-        else if (mtv::get_block_type(right) == _TypeId)
+        else if (mtv::get_block_type(right) == _Block::block_type)
             return false;
 
         return element_block_func::equal_block(left, right);
@@ -212,7 +212,7 @@ struct custom_block_func1
     {
         switch (get_block_type(block))
         {
-            case _TypeId:
+            case _Block::block_type:
                 _Block::overwrite_values(block, pos, len);
             break;
             default:

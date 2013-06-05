@@ -36,16 +36,16 @@ namespace mdds { namespace mtv {
 /**
  * Block function template for multi_type_vector with 1 user-defined block.
  */
-template<element_t _TypeId1, typename _Block1, element_t _TypeId2, typename _Block2>
+template<typename _Block1, typename _Block2>
 struct custom_block_func2
 {
     static base_element_block* create_new_block(element_t type, size_t init_size)
     {
         switch (type)
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 return _Block1::create_block(init_size);
-            case _TypeId2:
+            case _Block2::block_type:
                 return _Block2::create_block(init_size);
             default:
                 ;
@@ -58,9 +58,9 @@ struct custom_block_func2
     {
         switch (get_block_type(block))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 return _Block1::clone_block(block);
-            case _TypeId2:
+            case _Block2::block_type:
                 return _Block2::clone_block(block);
             default:
                 ;
@@ -76,10 +76,10 @@ struct custom_block_func2
 
         switch (get_block_type(*p))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::delete_block(p);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::delete_block(p);
             break;
             default:
@@ -91,10 +91,10 @@ struct custom_block_func2
     {
         switch (get_block_type(block))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::resize_block(block, new_size);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::resize_block(block, new_size);
             break;
             default:
@@ -106,10 +106,10 @@ struct custom_block_func2
     {
         switch (get_block_type(block))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::print_block(block);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::print_block(block);
             break;
             default:
@@ -121,10 +121,10 @@ struct custom_block_func2
     {
         switch (get_block_type(block))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::erase_block(block, pos);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::erase_block(block, pos);
             break;
             default:
@@ -136,10 +136,10 @@ struct custom_block_func2
     {
         switch (get_block_type(block))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::erase_block(block, pos, size);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::erase_block(block, pos, size);
             break;
             default:
@@ -151,10 +151,10 @@ struct custom_block_func2
     {
         switch (get_block_type(dest))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::append_values_from_block(dest, src);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::append_values_from_block(dest, src);
             break;
             default:
@@ -167,10 +167,10 @@ struct custom_block_func2
     {
         switch (get_block_type(dest))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::append_values_from_block(dest, src, begin_pos, len);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::append_values_from_block(dest, src, begin_pos, len);
             break;
             default:
@@ -183,10 +183,10 @@ struct custom_block_func2
     {
         switch (get_block_type(dest))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::assign_values_from_block(dest, src, begin_pos, len);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::assign_values_from_block(dest, src, begin_pos, len);
             break;
             default:
@@ -199,10 +199,10 @@ struct custom_block_func2
     {
         switch (get_block_type(dest))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::prepend_values_from_block(dest, src, begin_pos, len);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::prepend_values_from_block(dest, src, begin_pos, len);
             break;
             default:
@@ -215,10 +215,10 @@ struct custom_block_func2
     {
         switch (get_block_type(blk1))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::swap_values(blk1, blk2, pos1, pos2, len);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::swap_values(blk1, blk2, pos1, pos2, len);
             break;
             default:
@@ -229,24 +229,24 @@ struct custom_block_func2
     static bool equal_block(
         const base_element_block& left, const base_element_block& right)
     {
-        if (get_block_type(left) == _TypeId1)
+        if (get_block_type(left) == _Block1::block_type)
         {
-            if (get_block_type(right) != _TypeId1)
+            if (get_block_type(right) != _Block1::block_type)
                 return false;
 
             return _Block1::get(left) == _Block1::get(right);
         }
-        else if (mtv::get_block_type(right) == _TypeId1)
+        else if (mtv::get_block_type(right) == _Block1::block_type)
             return false;
 
-        if (get_block_type(left) == _TypeId2)
+        if (get_block_type(left) == _Block2::block_type)
         {
-            if (get_block_type(right) != _TypeId2)
+            if (get_block_type(right) != _Block2::block_type)
                 return false;
 
             return _Block2::get(left) == _Block2::get(right);
         }
-        else if (mtv::get_block_type(right) == _TypeId2)
+        else if (mtv::get_block_type(right) == _Block2::block_type)
             return false;
 
         return element_block_func::equal_block(left, right);
@@ -256,10 +256,10 @@ struct custom_block_func2
     {
         switch (get_block_type(block))
         {
-            case _TypeId1:
+            case _Block1::block_type:
                 _Block1::overwrite_values(block, pos, len);
             break;
-            case _TypeId2:
+            case _Block2::block_type:
                 _Block2::overwrite_values(block, pos, len);
             break;
             default:

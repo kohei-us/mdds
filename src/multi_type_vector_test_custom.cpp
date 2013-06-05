@@ -127,13 +127,10 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(date, element_type_date_block, date(), date_bl
 
 namespace {
 
-typedef multi_type_vector<mtv::custom_block_func2<element_type_user_block, user_cell_block, element_type_muser_block, muser_cell_block> > mtv_type;
-typedef multi_type_vector<mtv::custom_block_func1<element_type_fruit_block, fruit_block> > mtv_fruit_type;
+typedef multi_type_vector<mtv::custom_block_func2<user_cell_block, muser_cell_block> > mtv_type;
+typedef multi_type_vector<mtv::custom_block_func1<fruit_block> > mtv_fruit_type;
 typedef multi_type_vector<
-    mtv::custom_block_func3<
-        element_type_muser_block, muser_cell_block,
-        element_type_fruit_block, fruit_block,
-        element_type_date_block, date_block> > mtv3_type;
+    mtv::custom_block_func3<muser_cell_block, fruit_block, date_block> > mtv3_type;
 
 template<typename _ColT, typename _ValT>
 bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
