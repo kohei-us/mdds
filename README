@@ -68,6 +68,16 @@ directory on how to use these data structures.
 API Incompatibility Note
 ========================
 
+0.8.1 to 0.9.0
+
+multi_type_vector
+
+* The number of template parameters in custom_block_func1,
+  custom_block_func2 and custom_block_func3 have been reduced by half,
+  by deducing the numerical block type ID from the block type
+  definition directly.  If you use the older variant, simply remove
+  the template arguments that are numerical block IDs.
+
 0.7.1 to 0.8.0
 
 flat_segment_tree

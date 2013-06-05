@@ -30,6 +30,9 @@
   * added a new variant of swap() that allows partial swapping of
     content with another container.
 
+  * added static block type identifier so that the numeric block type
+    ID can be deduced from the block type directly.
+
 mdds 0.8.1
 
 * multi_type_vector
