@@ -1363,6 +1363,22 @@ void mtv_test_transfer()
     assert(db2.is_empty(7));
     assert(db2.is_empty(8));
     assert(db2.is_empty(9));
+
+    // Make sure that transfer will overwrite cells in managed blocks.
+    db1 = mtv_type(3);
+    db2 = mtv_type(3);
+    db1.set(0, new muser_cell(1.1));
+    db1.set(1, new muser_cell(1.2));
+    db1.set(2, new muser_cell(1.3));
+
+    db2.set(1, new muser_cell(2.1)); // This element will be overwritten.
+    db1.transfer(0, 2, db2, 0);
+    assert(db1.is_empty(0));
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db2.get<muser_cell*>(0)->value == 1.1);
+    assert(db2.get<muser_cell*>(1)->value == 1.2);
+    assert(db2.get<muser_cell*>(2)->value == 1.3);
 }
 
 void mtv_test_swap()
