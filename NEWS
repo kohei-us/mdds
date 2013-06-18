@@ -13,6 +13,9 @@ mdds 0.9.0
     * template<typename _T> iterator
       release(const iterator& pos_hint, size_type pos, _T& value)
 
+  * added a variant of release() that takes no arguments.  This one
+    releases all elements and makes the container empty afterward.
+
   * added a new variant of position() that takes const_iterator as
     position hint.
 

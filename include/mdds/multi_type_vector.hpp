@@ -441,6 +441,15 @@ public:
     iterator release(const iterator& pos_hint, size_type pos, _T& value);
 
     /**
+     * Release all its elements, and empties its content.  Calling this method
+     * relinquishes the ownership of all elements stored in managed blocks.
+     *
+     * <p>This call is equivalent of clear() if the container consists of no
+     * managed blocks.</p>
+     */
+    void release();
+
+    /**
      * Given the logical position of an element, get the iterator of the block
      * where the element is located, and its offset from the first element of
      * that block.

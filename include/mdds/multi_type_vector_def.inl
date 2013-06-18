@@ -1118,6 +1118,22 @@ multi_type_vector<_CellBlockFunc>::release(const iterator& pos_hint, size_type p
 }
 
 template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::release()
+{
+    typename blocks_type::iterator it = m_blocks.begin(), it_end = m_blocks.end();
+    for (; it != it_end; ++it)
+    {
+        block* blk = *it;
+        if (blk->mp_data)
+            element_block_func::resize_block(*blk->mp_data, 0);
+        delete blk;
+    }
+
+    m_blocks.clear();
+    m_cur_size = 0;
+}
+
+template<typename _CellBlockFunc>
 std::pair<typename multi_type_vector<_CellBlockFunc>::iterator, typename multi_type_vector<_CellBlockFunc>::size_type>
 multi_type_vector<_CellBlockFunc>::position(size_type pos)
 {

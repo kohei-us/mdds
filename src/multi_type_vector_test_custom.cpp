@@ -1426,6 +1426,16 @@ void mtv_test_custom_block_func3()
     assert(db.get<double>(8) == 34.56);
 }
 
+void mtv_test_release()
+{
+    stack_printer __stack_printer__("::mtv_test_release");
+    mtv_type db(3);
+    muser_cell c1(1.2), c2(1.3);
+    db.set(0, &c1);
+    db.set(2, &c2);
+    db.release(); // Prevent invalid free when db goes out of scope.
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1439,6 +1449,7 @@ int main (int argc, char **argv)
     mtv_test_transfer();
     mtv_test_swap();
     mtv_test_custom_block_func3();
+    mtv_test_release();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
