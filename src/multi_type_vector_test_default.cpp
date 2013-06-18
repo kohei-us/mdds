@@ -2431,6 +2431,22 @@ void mtv_test_iterators()
             assert(it == it_end);
         }
     }
+
+    {
+        // Make sure that decrementing the iterator calculates the position correctly.
+        mtv_type db(10);
+        db.set(0, true);
+        mtv_type::const_iterator it = db.begin();
+        assert(it->position == 0);
+        assert(it->size == 1);
+        ++it;
+        assert(it->position == 1);
+        assert(it->size == 9);
+        --it;
+        assert(it->position == 0);
+        assert(it->size == 1);
+        assert(it == db.begin());
+    }
 }
 
 void mtv_test_data_iterators()

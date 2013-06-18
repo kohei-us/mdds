@@ -110,12 +110,14 @@ struct private_data_forward_update
 
     static void inc(node_type& nd)
     {
+        // Called before incrementing the iterator position.
         ++nd.__private_data.block_index;
         nd.position += nd.size;
     }
 
     static void dec(node_type& nd)
     {
+        // Called after decrementing the iterator position.
         --nd.__private_data.block_index;
         nd.position -= nd.size;
     }
@@ -370,8 +372,9 @@ public:
 
     const value_type* operator--()
     {
+        const value_type* ret = dec();
         node_update_func::dec(m_cur_node);
-        return dec();
+        return ret;
     }
 
     bool operator== (const const_iterator_base& other) const
