@@ -4061,7 +4061,7 @@ void mtv_test_position()
     db.set(8, 1.3);
     db.set(9, 1.4);
 
-    pair<mtv_type::iterator,mtv_type::size_type> pos = db.position(0);
+    mtv_type::position_type pos = db.position(0);
     assert(pos.first == db.begin());
     assert(pos.second == 0);
 
@@ -4102,7 +4102,7 @@ void mtv_test_position()
 
     // Quick check for the const variant.
     const mtv_type& db_ref = db;
-    pair<mtv_type::const_iterator,mtv_type::size_type> const_pos = db_ref.position(3);
+    mtv_type::const_position_type const_pos = db_ref.position(3);
     assert(const_pos.first == db_ref.begin());
     assert(const_pos.second == 3);
     const_pos = db_ref.position(const_pos.first, 7);

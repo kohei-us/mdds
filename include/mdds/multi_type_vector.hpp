@@ -138,6 +138,9 @@ public:
 
     typedef itr_node value_type;
 
+    typedef std::pair<iterator, size_type> position_type;
+    typedef std::pair<const_iterator, size_type> const_position_type;
+
     iterator begin();
     iterator end();
 
@@ -461,7 +464,7 @@ public:
      * @return iterator referencing the block where the element resides, and
      *         its offset within the block.
      */
-    std::pair<iterator, size_type> position(size_type pos);
+    position_type position(size_type pos);
 
     /**
      * Given the logical position of an element, get the iterator of the block
@@ -478,7 +481,7 @@ public:
      * @return iterator referencing the block where the element resides, and
      *         its offset within the block.
      */
-    std::pair<iterator, size_type> position(const iterator& pos_hint, size_type pos);
+    position_type position(const iterator& pos_hint, size_type pos);
 
     /**
      * Given the logical position of an element, get the iterator of the block
@@ -492,7 +495,7 @@ public:
      * @return iterator referencing the block where the element resides, and
      *         its offset within the block.
      */
-    std::pair<const_iterator, size_type> position(size_type pos) const;
+    const_position_type position(size_type pos) const;
 
     /**
      * Given the logical position of an element, get the iterator of the block
@@ -509,7 +512,7 @@ public:
      * @return iterator referencing the block where the element resides, and
      *         its offset within the block.
      */
-    std::pair<const_iterator, size_type> position(const const_iterator& pos_hint, size_type pos) const;
+    const_position_type position(const const_iterator& pos_hint, size_type pos) const;
 
     /**
      * Move elements from one container to another. After the move, the
