@@ -4,10 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcproj", "{3D33EFFC-5A65-4375-81AA-FCEA29016A50}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A77E2B1A-7535-4770-8DDC-0DB088E5929A} = {A77E2B1A-7535-4770-8DDC-0DB088E5929A}
+		{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF} = {9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}
 		{7C7AC06B-6C02-420B-8BAE-6330C8DB83AC} = {7C7AC06B-6C02-420B-8BAE-6330C8DB83AC}
+		{831A2583-F85F-4AF1-9851-8978D8BC8409} = {831A2583-F85F-4AF1-9851-8978D8BC8409}
 		{1E1C0589-A911-45A9-8C91-2EBC3FB1F078} = {1E1C0589-A911-45A9-8C91-2EBC3FB1F078}
+		{2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4} = {2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4}
 		{DE2B238C-D05D-4FB1-AC00-B4B847F43B1C} = {DE2B238C-D05D-4FB1-AC00-B4B847F43B1C}
 		{F00F70DF-E414-4B53-871F-33520245D338} = {F00F70DF-E414-4B53-871F-33520245D338}
+		{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C} = {8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flat_segment_tree", "flat_segment_tree\flat_segment_tree.vcproj", "{DE2B238C-D05D-4FB1-AC00-B4B847F43B1C}"
@@ -25,6 +29,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (custom)", "multi_type_vector_custom\multi_type_vector_custom.vcproj", "{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_matrix", "multi_type_matrix\multi_type_matrix.vcproj", "{831A2583-F85F-4AF1-9851-8978D8BC8409}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (perf)", "multi_type_vector_perf\multi_type_vector_perf.vcproj", "{2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +73,10 @@ Global
 		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Debug|Win32.Build.0 = Debug|Win32
 		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Release|Win32.ActiveCfg = Release|Win32
 		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Release|Win32.Build.0 = Release|Win32
+		{2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4}.Debug|Win32.ActiveCfg = Release|Win32
+		{2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4}.Debug|Win32.Build.0 = Release|Win32
+		{2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4}.Release|Win32.ActiveCfg = Release|Win32
+		{2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
