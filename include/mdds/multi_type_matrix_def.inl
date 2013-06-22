@@ -174,6 +174,13 @@ void multi_type_matrix<_String>::set_empty(size_type row, size_type col)
 }
 
 template<typename _String>
+void multi_type_matrix<_String>::set_empty(const position_type& pos)
+{
+    size_type store_pos = get_pos(pos);
+    m_store.set_empty(pos.first, store_pos, store_pos);
+}
+
+template<typename _String>
 void multi_type_matrix<_String>::set_column_empty(size_type col)
 {
     m_store.set_empty(get_pos(0, col), get_pos(m_size.row-1, col));
@@ -196,15 +203,33 @@ void multi_type_matrix<_String>::set(size_type row, size_type col, double val)
 }
 
 template<typename _String>
+void multi_type_matrix<_String>::set(const position_type& pos, double val)
+{
+    m_store.set(pos.first, get_pos(pos), val);
+}
+
+template<typename _String>
 void multi_type_matrix<_String>::set(size_type row, size_type col, bool val)
 {
     m_store.set(get_pos(row,col), val);
 }
 
 template<typename _String>
+void multi_type_matrix<_String>::set(const position_type& pos, bool val)
+{
+    m_store.set(pos.first, get_pos(pos), val);
+}
+
+template<typename _String>
 void multi_type_matrix<_String>::set(size_type row, size_type col, const string_type& str)
 {
     m_store.set(get_pos(row,col), str);
+}
+
+template<typename _String>
+void multi_type_matrix<_String>::set(const position_type& pos, const string_type& str)
+{
+    m_store.set(pos.first, get_pos(pos), str);
 }
 
 template<typename _String>

@@ -586,6 +586,24 @@ void mtm_test_position()
     pos = mtx.position(0, 1);
     assert(mtx.get_type(pos) == mtm::element_string);
     assert(mtx.get_string(pos) == "foo");
+
+    mtx.set_empty(pos);
+    assert(mtx.get_type(0, 1) == mtm::element_empty);
+
+    pos = mtx.position(1, 1);
+    mtx.set(pos, false);
+    assert(mtx.get_type(1, 1) == mtm::element_boolean);
+    assert(mtx.get_boolean(1, 1) == false);
+
+    pos = mtx.position(2, 0);
+    mtx.set(pos, 12.3);
+    assert(mtx.get_type(2, 0) == mtm::element_numeric);
+    assert(mtx.get_numeric(2, 0) == 12.3);
+
+    pos = mtx.position(2, 1);
+    mtx.set(pos, string("ABC"));
+    assert(mtx.get_type(2, 1) == mtm::element_string);
+    assert(mtx.get_string(2, 1) == "ABC");
 }
 
 /**

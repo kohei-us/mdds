@@ -50,10 +50,13 @@ mdds 0.9.0
     efficient.
 
   * added position() method that returns a reference object to an
-    element.
+    element (position object).
 
   * added variants of get_numeric(), get_boolean() and get_string()
-    that retrieves elements from reference objects.
+    that retrieves elements from position objects.
+
+  * added variants of set() that sets new element values via position
+    objects.
 
 mdds 0.8.1
 

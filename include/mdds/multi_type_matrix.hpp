@@ -150,9 +150,10 @@ public:
     multi_type_matrix& operator= (const multi_type_matrix& r);
 
     /**
-     * Get a mutable reference of an element at specified position. The
-     * reference object can then be passed to an additional method to get the
-     * type or value of the element it references, or set a new value to it.
+     * Get a mutable reference of an element (position object) at specified
+     * position. The position object can then be passed to an additional
+     * method to get the type or value of the element it references, or set a
+     * new value to it.
      *
      * @param row row position of the referenced element.
      * @param col column position of the referenced element.
@@ -162,9 +163,9 @@ public:
     position_type position(size_type row, size_type col);
 
     /**
-     * Get an immutable reference of an element at specified position. The
-     * reference object can then be passed to an additional method to get the
-     * type or value of the element it references.
+     * Get an immutable reference of an element (position object) at specified
+     * position. The position object can then be passed to an additional
+     * method to get the type or value of the element it references.
      *
      * @param row row position of the referenced element.
      * @param col column position of the referenced element.
@@ -174,8 +175,10 @@ public:
     const_position_type position(size_type row, size_type col) const;
 
     /**
-     * Get the type of element from a reference object.  The type can be one
+     * Get the type of element from a position object.  The type can be one
      * of empty, string, numeric, or boolean.
+     *
+     * @param pos position object of an element
      *
      * @return element type.
      */
@@ -203,12 +206,12 @@ public:
     double get_numeric(size_type row, size_type col) const;
 
     /**
-     * Get a numeric representation of the element from a reference object.
+     * Get a numeric representation of the element from a position object.
      * If the element is of numeric type, its value is returned.  If it's of
      * boolean type, either 1 or 0 is returned depending on whether it's true
      * or false.  If it's of empty or string type, 0 is returned.
      *
-     * @param pos reference object of an element
+     * @param pos position object of an element
      *
      * @return numeric representation of the element.
      */
@@ -228,12 +231,12 @@ public:
     bool get_boolean(size_type row, size_type col) const;
 
     /**
-     * Get a boolean representation of the element from a reference object.
+     * Get a boolean representation of the element from a position object.
      * If the element is of numeric type, true is returned if it's non-zero,
      * otherwise false is returned. If it's of boolean type, its value is
      * returned.  If it's of empty or string type, false is returned.
      *
-     * @param pos reference object of an element
+     * @param pos position object of an element
      *
      * @return boolean representation of the element.
      */
@@ -251,10 +254,10 @@ public:
     const string_type& get_string(size_type row, size_type col) const;
 
     /**
-     * Get the value of a string element from a reference object.  If the
+     * Get the value of a string element from a position object.  If the
      * element is not of string type, it throws an exception.
      *
-     * @param pos reference object of an element
+     * @param pos position object of an element
      *
      * @return value of the element.
      */
@@ -273,13 +276,32 @@ public:
     template<typename _T>
     _T get(size_type row, size_type col) const;
 
+    /**
+     * Set specified element position empty.
+     *
+     * @param row row position of the element.
+     * @param col column position of the element.
+     */
     void set_empty(size_type row, size_type col);
+
+    /**
+     * Set element referenced by the position object empty.
+     *
+     * @param pos position object that references element.
+     */
+    void set_empty(const position_type& pos);
+
     void set_column_empty(size_type col);
     void set_row_empty(size_type row);
 
     void set(size_type row, size_type col, double val);
+    void set(const position_type& pos, double val);
+
     void set(size_type row, size_type col, bool val);
+    void set(const position_type& pos, bool val);
+
     void set(size_type row, size_type col, const string_type& str);
+    void set(const position_type& pos, const string_type& str);
 
     /**
      * Set values of multiple elements at once, starting at specified element
@@ -415,6 +437,11 @@ private:
     inline size_type get_pos(size_type row, size_type col) const
     {
         return m_size.row * col + row;
+    }
+
+    inline size_type get_pos(const const_position_type& pos) const
+    {
+        return pos.first->position + pos.second;
     }
 
     void copy_store(store_type& dest, size_type rows, size_type cols) const;
