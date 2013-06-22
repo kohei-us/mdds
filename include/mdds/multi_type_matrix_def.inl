@@ -81,22 +81,21 @@ multi_type_matrix<_String>::get_type(size_type row, size_type col) const
 template<typename _String>
 double multi_type_matrix<_String>::get_numeric(size_type row, size_type col) const
 {
-    switch (get_type(row,col))
+    typename store_type::const_position_type pos = m_store.position(get_pos(row,col));
+    switch (pos.first->type)
     {
-        case mtm::element_numeric:
+        case mtv::element_type_numeric:
+            return mtv::numeric_element_block::at(*pos.first->data, pos.second);
+        case mtv::element_type_boolean:
         {
-            double val;
-            m_store.get(get_pos(row,col), val);
-            return val;
+            // vector<bool> cannot return reference i.e. we can't use at() here.
+            typename mtv::boolean_element_block::const_iterator it =
+                mtv::boolean_element_block::begin(*pos.first->data);
+            std::advance(it, pos.second);
+            return *it;
         }
-        case mtm::element_boolean:
-        {
-            bool val;
-            m_store.get(get_pos(row,col), val);
-            return val;
-        }
-        case mtm::element_string:
-        case mtm::element_empty:
+        case string_trait::string_type_identifier:
+        case mtv::element_type_empty:
             return 0.0;
         default:
             throw general_error("multi_type_matrix: unknown element type.");
@@ -110,23 +109,14 @@ bool multi_type_matrix<_String>::get_boolean(size_type row, size_type col) const
 }
 
 template<typename _String>
-typename multi_type_matrix<_String>::string_type
+const typename multi_type_matrix<_String>::string_type&
 multi_type_matrix<_String>::get_string(size_type row, size_type col) const
 {
-    switch (get_type(row,col))
-    {
-        case mtm::element_string:
-        {
-            string_type val;
-            m_store.get(get_pos(row,col), val);
-            return val;
-        }
-        case mtm::element_numeric:
-        case mtm::element_boolean:
-        case mtm::element_empty:
-        default:
-            throw general_error("multi_type_matrix: unknown element type.");
-    }
+    typename store_type::const_position_type pos = m_store.position(get_pos(row,col));
+    if (pos.first->type != string_trait::string_type_identifier)
+        throw general_error("multi_type_matrix: unknown element type.");
+
+    return string_block_type::at(*pos.first->data, pos.second);
 }
 
 template<typename _String>

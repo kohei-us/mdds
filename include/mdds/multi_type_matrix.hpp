@@ -189,7 +189,7 @@ public:
      *
      * @return value of the element.
      */
-    string_type get_string(size_type row, size_type col) const;
+    const string_type& get_string(size_type row, size_type col) const;
 
     /**
      * Get the value of element at specified position.  The caller must
