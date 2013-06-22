@@ -63,6 +63,9 @@ private:
     typedef mdds::multi_type_vector<typename string_trait::element_block_func> store_type;
 
 public:
+    typedef typename store_type::position_type position_type;
+    typedef typename store_type::const_position_type const_position_type;
+
     typedef typename store_type::element_block_type element_block_type;
 
     typedef typename mtv::boolean_element_block boolean_block_type;
@@ -147,6 +150,38 @@ public:
     multi_type_matrix& operator= (const multi_type_matrix& r);
 
     /**
+     * Get a mutable reference of an element at specified position. The
+     * reference object can then be passed to an additional method to get the
+     * type or value of the element it references, or set a new value to it.
+     *
+     * @param row row position of the referenced element.
+     * @param col column position of the referenced element.
+     *
+     * @return reference object of element at specified position.
+     */
+    position_type position(size_type row, size_type col);
+
+    /**
+     * Get an immutable reference of an element at specified position. The
+     * reference object can then be passed to an additional method to get the
+     * type or value of the element it references.
+     *
+     * @param row row position of the referenced element.
+     * @param col column position of the referenced element.
+     *
+     * @return reference object of element at specified position.
+     */
+    const_position_type position(size_type row, size_type col) const;
+
+    /**
+     * Get the type of element from a reference object.  The type can be one
+     * of empty, string, numeric, or boolean.
+     *
+     * @return element type.
+     */
+    mtm::element_t get_type(const const_position_type& pos) const;
+
+    /**
      * Get the type of element specified by its position.  The type can be one
      * of empty, string, numeric, or boolean.
      *
@@ -168,6 +203,18 @@ public:
     double get_numeric(size_type row, size_type col) const;
 
     /**
+     * Get a numeric representation of the element from a reference object.
+     * If the element is of numeric type, its value is returned.  If it's of
+     * boolean type, either 1 or 0 is returned depending on whether it's true
+     * or false.  If it's of empty or string type, 0 is returned.
+     *
+     * @param pos reference object of an element
+     *
+     * @return numeric representation of the element.
+     */
+    double get_numeric(const const_position_type& pos) const;
+
+    /**
      * Get a boolean representation of the element.  If the element is of
      * numeric type, true is returned if it's non-zero, otherwise false is
      * returned. If it's of boolean type, its value is returned.  If it's of
@@ -181,6 +228,18 @@ public:
     bool get_boolean(size_type row, size_type col) const;
 
     /**
+     * Get a boolean representation of the element from a reference object.
+     * If the element is of numeric type, true is returned if it's non-zero,
+     * otherwise false is returned. If it's of boolean type, its value is
+     * returned.  If it's of empty or string type, false is returned.
+     *
+     * @param pos reference object of an element
+     *
+     * @return boolean representation of the element.
+     */
+    bool get_boolean(const const_position_type& pos) const;
+
+    /**
      * Get the value of a string element.  If the element is not of string
      * type, it throws an exception.
      *
@@ -190,6 +249,16 @@ public:
      * @return value of the element.
      */
     const string_type& get_string(size_type row, size_type col) const;
+
+    /**
+     * Get the value of a string element from a reference object.  If the
+     * element is not of string type, it throws an exception.
+     *
+     * @param pos reference object of an element
+     *
+     * @return value of the element.
+     */
+    const string_type& get_string(const const_position_type& pos) const;
 
     /**
      * Get the value of element at specified position.  The caller must

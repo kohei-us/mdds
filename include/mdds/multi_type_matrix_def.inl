@@ -72,6 +72,27 @@ multi_type_matrix<_String>::operator= (const multi_type_matrix& r)
 }
 
 template<typename _String>
+typename multi_type_matrix<_String>::position_type
+multi_type_matrix<_String>::position(size_type row, size_type col)
+{
+    return m_store.position(get_pos(row,col));
+}
+
+template<typename _String>
+typename multi_type_matrix<_String>::const_position_type
+multi_type_matrix<_String>::position(size_type row, size_type col) const
+{
+    return m_store.position(get_pos(row,col));
+}
+
+template<typename _String>
+mtm::element_t
+multi_type_matrix<_String>::get_type(const const_position_type& pos) const
+{
+    return to_mtm_type(pos.first->type);
+}
+
+template<typename _String>
 mtm::element_t
 multi_type_matrix<_String>::get_type(size_type row, size_type col) const
 {
@@ -81,7 +102,12 @@ multi_type_matrix<_String>::get_type(size_type row, size_type col) const
 template<typename _String>
 double multi_type_matrix<_String>::get_numeric(size_type row, size_type col) const
 {
-    typename store_type::const_position_type pos = m_store.position(get_pos(row,col));
+    return get_numeric(m_store.position(get_pos(row,col)));
+}
+
+template<typename _String>
+double multi_type_matrix<_String>::get_numeric(const const_position_type& pos) const
+{
     switch (pos.first->type)
     {
         case mtv::element_type_numeric:
@@ -109,10 +135,22 @@ bool multi_type_matrix<_String>::get_boolean(size_type row, size_type col) const
 }
 
 template<typename _String>
+bool multi_type_matrix<_String>::get_boolean(const const_position_type& pos) const
+{
+    return static_cast<bool>(get_numeric(pos));
+}
+
+template<typename _String>
 const typename multi_type_matrix<_String>::string_type&
 multi_type_matrix<_String>::get_string(size_type row, size_type col) const
 {
-    typename store_type::const_position_type pos = m_store.position(get_pos(row,col));
+    return get_string(m_store.position(get_pos(row,col)));
+}
+
+template<typename _String>
+const typename multi_type_matrix<_String>::string_type&
+multi_type_matrix<_String>::get_string(const const_position_type& pos) const
+{
     if (pos.first->type != string_trait::string_type_identifier)
         throw general_error("multi_type_matrix: unknown element type.");
 
