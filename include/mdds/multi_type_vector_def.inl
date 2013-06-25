@@ -1801,8 +1801,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
         else
         {
             // Insert a new block to store the new elements.
-            m_blocks.insert(m_blocks.begin()+block_index, NULL);
-            m_blocks[block_index] = new block(len);
+            m_blocks.insert(m_blocks.begin()+block_index, new block(len));
             block* blk = m_blocks[block_index];
             blk->mp_data = dst_data.release();
         }
