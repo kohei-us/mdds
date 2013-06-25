@@ -2713,8 +2713,7 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
         else
         {
             // Insert a new block to store the new elements.
-            m_blocks.insert(m_blocks.begin()+dst_index+1, NULL);
-            m_blocks[dst_index+1] = new block(len);
+            m_blocks.insert(m_blocks.begin()+dst_index+1, new block(len));
             blk = m_blocks[dst_index+1];
             blk->mp_data = element_block_func::create_new_block(cat_src, 0);
             assert(blk->mp_data);
