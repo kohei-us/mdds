@@ -1829,8 +1829,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
         }
         else
         {
-            m_blocks.insert(m_blocks.begin()+block_index+1, NULL);
-            m_blocks[block_index+1] = new block(len);
+            m_blocks.insert(m_blocks.begin()+block_index+1, new block(len));
             block* blk = m_blocks[block_index+1];
             blk->mp_data = dst_data.release();
         }
