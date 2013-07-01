@@ -57,16 +57,14 @@ class multi_type_matrix
     typedef _StringTrait string_trait;
 public:
     typedef typename string_trait::string_type string_type;
-    typedef size_t      size_type;
+    typedef size_t size_type;
 
-private:
-    typedef mdds::multi_type_vector<typename string_trait::element_block_func> store_type;
+    typedef mdds::multi_type_vector<typename string_trait::element_block_func> vector_type;
 
-public:
-    typedef typename store_type::position_type position_type;
-    typedef typename store_type::const_position_type const_position_type;
+    typedef typename vector_type::position_type position_type;
+    typedef typename vector_type::const_position_type const_position_type;
 
-    typedef typename store_type::element_block_type element_block_type;
+    typedef typename vector_type::element_block_type element_block_type;
 
     typedef typename mtv::boolean_element_block boolean_block_type;
     typedef typename mtv::numeric_element_block numeric_block_type;
@@ -113,12 +111,12 @@ public:
     }
 
     template<typename _Func>
-    struct walk_func : std::unary_function<typename store_type::const_iterator::value_type, void>
+    struct walk_func : std::unary_function<typename vector_type::const_iterator::value_type, void>
     {
         _Func& m_func;
         walk_func(_Func& func) : m_func(func) {}
 
-        void operator() (const typename store_type::const_iterator::value_type& mtv_node)
+        void operator() (const typename vector_type::const_iterator::value_type& mtv_node)
         {
             element_block_node_type mtm_node;
             mtm_node.type = to_mtm_type(mtv_node.type);
@@ -148,6 +146,22 @@ public:
     bool operator!= (const multi_type_matrix& other) const;
 
     multi_type_matrix& operator= (const multi_type_matrix& r);
+
+    /**
+     * Get the underlying vector storage container used to store matrix
+     * element values internally.
+     *
+     * @return underlying vector storage container.
+     */
+    vector_type& get_vector();
+
+    /**
+     * Get the underlying vector storage container used to store matrix
+     * element values internally.
+     *
+     * @return underlying vector storage container.
+     */
+    const vector_type& get_vector() const;
 
     /**
      * Get a mutable reference of an element (position object) at specified
@@ -444,10 +458,10 @@ private:
         return pos.first->position + pos.second;
     }
 
-    void copy_store(store_type& dest, size_type rows, size_type cols) const;
+    void copy_store(vector_type& dest, size_type rows, size_type cols) const;
 
 private:
-    store_type m_store;
+    vector_type m_store;
     size_pair_type m_size;
 };
 
