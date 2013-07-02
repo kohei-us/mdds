@@ -65,24 +65,10 @@ multi_type_matrix<_String>::operator= (const multi_type_matrix& r)
     if (this == &r)
         return *this;
 
-    vector_type tmp(r.m_store);
+    store_type tmp(r.m_store);
     m_store.swap(tmp);
     m_size = r.m_size;
     return *this;
-}
-
-template<typename _String>
-typename multi_type_matrix<_String>::vector_type&
-multi_type_matrix<_String>::get_vector()
-{
-    return m_store;
-}
-
-template<typename _String>
-const typename multi_type_matrix<_String>::vector_type&
-multi_type_matrix<_String>::get_vector() const
-{
-    return m_store;
 }
 
 template<typename _String>
@@ -358,7 +344,7 @@ void multi_type_matrix<_String>::copy(const multi_type_matrix& r)
 }
 
 template<typename _String>
-void multi_type_matrix<_String>::copy_store(vector_type& dest, size_type rows, size_type cols) const
+void multi_type_matrix<_String>::copy_store(store_type& dest, size_type rows, size_type cols) const
 {
     size_type row_count = std::min(rows, m_size.row);
     size_type col_count = std::min(cols, m_size.column);
@@ -398,7 +384,7 @@ void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
         return;
     }
 
-    vector_type temp_store(rows*cols);
+    store_type temp_store(rows*cols);
     copy_store(temp_store, rows, cols);
 
     m_size.row = rows;
@@ -418,7 +404,7 @@ void multi_type_matrix<_String>::resize(size_type rows, size_type cols, const _T
         return;
     }
 
-    vector_type temp_store(rows*cols, value);
+    store_type temp_store(rows*cols, value);
     copy_store(temp_store, rows, cols);
 
     m_size.row = rows;
@@ -440,7 +426,7 @@ bool multi_type_matrix<_String>::numeric() const
     if (m_store.empty())
         return false;
 
-    typename vector_type::const_iterator i = m_store.begin(), iend = m_store.end();
+    typename store_type::const_iterator i = m_store.begin(), iend = m_store.end();
     for (; i != iend; ++i)
     {
         mtv::element_t mtv_type = i->type;
