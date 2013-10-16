@@ -174,10 +174,12 @@ void multi_type_matrix<_String>::set_empty(size_type row, size_type col)
 }
 
 template<typename _String>
-void multi_type_matrix<_String>::set_empty(const position_type& pos)
+typename multi_type_matrix<_String>::position_type
+multi_type_matrix<_String>::set_empty(const position_type& pos)
 {
     size_type store_pos = get_pos(pos);
-    m_store.set_empty(pos.first, store_pos, store_pos);
+    typename store_type::iterator it = m_store.set_empty(pos.first, store_pos, store_pos);
+    return position_type(it, store_pos - it->position);
 }
 
 template<typename _String>
@@ -203,9 +205,12 @@ void multi_type_matrix<_String>::set(size_type row, size_type col, double val)
 }
 
 template<typename _String>
-void multi_type_matrix<_String>::set(const position_type& pos, double val)
+typename multi_type_matrix<_String>::position_type
+multi_type_matrix<_String>::set(const position_type& pos, double val)
 {
-    m_store.set(pos.first, get_pos(pos), val);
+    size_type store_pos = get_pos(pos);
+    typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
+    return position_type(it, store_pos - it->position);
 }
 
 template<typename _String>
@@ -215,9 +220,12 @@ void multi_type_matrix<_String>::set(size_type row, size_type col, bool val)
 }
 
 template<typename _String>
-void multi_type_matrix<_String>::set(const position_type& pos, bool val)
+typename multi_type_matrix<_String>::position_type
+multi_type_matrix<_String>::set(const position_type& pos, bool val)
 {
-    m_store.set(pos.first, get_pos(pos), val);
+    size_type store_pos = get_pos(pos);
+    typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
+    return position_type(it, store_pos - it->position);
 }
 
 template<typename _String>
@@ -227,9 +235,12 @@ void multi_type_matrix<_String>::set(size_type row, size_type col, const string_
 }
 
 template<typename _String>
-void multi_type_matrix<_String>::set(const position_type& pos, const string_type& str)
+typename multi_type_matrix<_String>::position_type
+multi_type_matrix<_String>::set(const position_type& pos, const string_type& str)
 {
-    m_store.set(pos.first, get_pos(pos), str);
+    size_type store_pos = get_pos(pos);
+    typename store_type::iterator it = m_store.set(pos.first, store_pos, str);
+    return position_type(it, store_pos - it->position);
 }
 
 template<typename _String>

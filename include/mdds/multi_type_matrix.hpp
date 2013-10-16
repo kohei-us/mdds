@@ -289,19 +289,19 @@ public:
      *
      * @param pos position object that references element.
      */
-    void set_empty(const position_type& pos);
+    position_type set_empty(const position_type& pos);
 
     void set_column_empty(size_type col);
     void set_row_empty(size_type row);
 
     void set(size_type row, size_type col, double val);
-    void set(const position_type& pos, double val);
+    position_type set(const position_type& pos, double val);
 
     void set(size_type row, size_type col, bool val);
-    void set(const position_type& pos, bool val);
+    position_type set(const position_type& pos, bool val);
 
     void set(size_type row, size_type col, const string_type& str);
-    void set(const position_type& pos, const string_type& str);
+    position_type set(const position_type& pos, const string_type& str);
 
     /**
      * Set values of multiple elements at once, starting at specified element
