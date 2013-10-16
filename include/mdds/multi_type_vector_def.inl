@@ -67,6 +67,59 @@ template<typename _CellBlockFunc>
 multi_type_vector<_CellBlockFunc>::blocks_to_transfer::blocks_to_transfer() : insert_index(0) {}
 
 template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::position_type
+multi_type_vector<_CellBlockFunc>::next_position(const position_type& pos)
+{
+    position_type ret = pos;
+    if (pos.second + 1 < pos.first->size)
+    {
+        // Next element is still in the same block.
+        ++ret.second;
+    }
+    else
+    {
+        ++ret.first;
+        ret.second = 0;
+    }
+
+    return ret;
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::const_position_type
+multi_type_vector<_CellBlockFunc>::next_position(const const_position_type& pos)
+{
+    const_position_type ret = pos;
+    if (pos.second + 1 < pos.first->size)
+    {
+        // Next element is still in the same block.
+        ++ret.second;
+    }
+    else
+    {
+        ++ret.first;
+        ret.second = 0;
+    }
+
+    return ret;
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::size_type
+multi_type_vector<_CellBlockFunc>::logical_position(const const_position_type& pos)
+{
+    return pos.first->position + pos.second;
+}
+
+template<typename _CellBlockFunc>
+template<typename _Blk>
+typename _Blk::value_type
+multi_type_vector<_CellBlockFunc>::get(const const_position_type& pos)
+{
+    return _Blk::at(*pos.first->data, pos.second);
+}
+
+template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::begin()
 {

@@ -4131,6 +4131,65 @@ void mtv_test_position()
     assert(pos.second == 3);
 }
 
+void mtv_test_next_position()
+{
+    stack_printer __stack_printer__("::mtv_test_next_position");
+    mtv_type db(10);
+    db.set(2, 1.1);
+    db.set(3, 1.2);
+    db.set(4, string("A"));
+    db.set(5, string("B"));
+    db.set(6, string("C"));
+
+    mtv_type::position_type pos = db.position(0);
+    assert(mtv_type::logical_position(pos) == 0);
+    assert(pos.first->type == mtv::element_type_empty);
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 1);
+    assert(pos.first->type == mtv::element_type_empty);
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 2);
+    assert(pos.first->type == mtv::element_type_numeric);
+    assert(mtv_type::get<mtv::numeric_element_block>(pos) == 1.1);
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 3);
+    assert(pos.first->type == mtv::element_type_numeric);
+    assert(mtv_type::get<mtv::numeric_element_block>(pos) == 1.2);
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 4);
+    assert(pos.first->type == mtv::element_type_string);
+    assert(mtv_type::get<mtv::string_element_block>(pos) == "A");
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 5);
+    assert(pos.first->type == mtv::element_type_string);
+    assert(mtv_type::get<mtv::string_element_block>(pos) == "B");
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 6);
+    assert(pos.first->type == mtv::element_type_string);
+    assert(mtv_type::get<mtv::string_element_block>(pos) == "C");
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 7);
+    assert(pos.first->type == mtv::element_type_empty);
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 8);
+    assert(pos.first->type == mtv::element_type_empty);
+
+    pos = mtv_type::next_position(pos);
+    assert(mtv_type::logical_position(pos) == 9);
+    assert(pos.first->type == mtv::element_type_empty);
+
+    pos = mtv_type::next_position(pos);
+    assert(pos.first == db.end());
+}
+
 void mtv_test_swap_range()
 {
     stack_printer __stack_printer__("::mtv_test_swap_range");
@@ -4720,6 +4779,7 @@ int main (int argc, char **argv)
     mtv_test_set_empty_with_position();
     mtv_test_insert_empty_with_position();
     mtv_test_position();
+    mtv_test_next_position();
     mtv_test_swap_range();
     mtv_test_value_type();
     mtv_test_block_identifier();

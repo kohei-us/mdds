@@ -141,6 +141,47 @@ public:
     typedef std::pair<iterator, size_type> position_type;
     typedef std::pair<const_iterator, size_type> const_position_type;
 
+    /**
+     * Move the position object to the next logical position.  Caller must
+     * ensure the the position object is valid.
+     *
+     * @param pos position object.
+     *
+     * @return position object that points to the next logical position.
+     */
+    static position_type next_position(const position_type& pos);
+
+    /**
+     * Move the position object to the next logical position.  Caller must
+     * ensure the the position object is valid.
+     *
+     * @param pos position object.
+     *
+     * @return position object that points to the next logical position.
+     */
+    static const_position_type next_position(const const_position_type& pos);
+
+    /**
+     * Extract the logical position from a position object.
+     *
+     * @param pos position object.
+     *
+     * @return logical position of the element that the position object
+     *         references.
+     */
+    static size_type logical_position(const const_position_type& pos);
+
+    /**
+     * Get element value from a position object. The caller must specify the
+     * type of block in which the element is expected to be stored.
+     *
+     * @param pos position object.
+     *
+     * @return element value.
+     */
+    template<typename _Blk>
+    static typename _Blk::value_type get(const const_position_type& pos);
+
     iterator begin();
     iterator end();
 
