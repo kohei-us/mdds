@@ -86,10 +86,47 @@ void mtv_perf_test_block_position_lookup()
     }
 }
 
+void mtv_perf_test_insert_via_position_object()
+{
+    size_t data_size = 80000;
+    mtv_type db(data_size);
+    {
+        stack_printer __stack_printer__("::mtv_perf_test_insert_via_position_object initialize mtv.");
+        mtv_type::iterator it = db.begin();
+        for (size_t i = 0, n = db.size() / 2; i < n; ++i)
+        {
+            it = db.set(it, i*2, 1.1);
+        }
+    }
+
+    mtv_type db2 = db;
+    {
+        stack_printer __stack_printer__("::mtv_perf_test_insert_via_position_object insert with position hint.");
+        mtv_type::iterator it = db2.begin();
+        for (size_t i = 0, n = db2.size(); i < n; ++i)
+        {
+            it = db2.set(it, i, string("foo"));
+        }
+    }
+
+    db2 = db;
+    {
+        stack_printer __stack_printer__("::mtv_perf_test_insert_via_position_object insert via position object.");
+        mtv_type::position_type pos = db2.position(0);
+        for (; pos.first != db2.end(); pos = mtv_type::next_position(pos))
+        {
+            size_t log_pos = mtv_type::logical_position(pos);
+            pos.first = db2.set(pos.first, log_pos, string("foo"));
+            pos.second = log_pos - pos.first->position;
+        }
+    }
+}
+
 }
 
 int main (int argc, char **argv)
 {
     mtv_perf_test_block_position_lookup();
+    mtv_perf_test_insert_via_position_object();
     return EXIT_SUCCESS;
 }
