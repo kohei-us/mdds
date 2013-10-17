@@ -867,6 +867,14 @@ void mtm_perf_test_insert_via_position_object()
             }
         }
     }
+
+    {
+        stack_printer __stack_printer__("::mtm_perf_test_insert_via_position_object (position object)");
+        mtx_type mx(rowsize, colsize);
+        mtx_type::position_type pos = mx.position(0, 0);
+        for (; pos != mx.end_position(); pos = mtx_type::next_position(pos))
+            pos = mx.set(pos, 1.1);
+    }
 }
 
 int main (int argc, char **argv)
