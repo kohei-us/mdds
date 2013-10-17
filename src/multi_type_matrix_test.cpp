@@ -640,6 +640,35 @@ void mtm_test_position()
     assert(pos == mtx.end_position());
 }
 
+void mtm_test_set_data_via_position()
+{
+    stack_printer __stack_printer__("::mtm_test_set_data_via_position");
+    mtx_type mtx(5, 4);
+    mtx_type::position_type pos = mtx.position(0, 1);
+    vector<double> data;
+    data.push_back(1.1);
+    data.push_back(1.2);
+    data.push_back(1.3);
+    data.push_back(1.4);
+    data.push_back(1.5);
+    pos = mtx.set(pos, data.begin(), data.end());
+    assert(mtx.get<double>(0, 1) == 1.1);
+    assert(mtx.get<double>(1, 1) == 1.2);
+    assert(mtx.get<double>(2, 1) == 1.3);
+    assert(mtx.get<double>(3, 1) == 1.4);
+    assert(mtx.get<double>(4, 1) == 1.5);
+
+    mtx_type::size_pair_type mtx_pos = mtx.matrix_position(pos);
+    assert(mtx_pos.row == 0);
+    assert(mtx_pos.column == 1);
+    pos = mtx.position(pos, 0, 2);
+    pos = mtx.set(pos, string("test"));
+    pos = mtx_type::next_position(pos);
+    pos = mtx.set(pos, true);
+    assert(mtx.get<string>(0, 2) == "test");
+    assert(mtx.get<bool>(1, 2) == true);
+}
+
 /**
  * Measure the performance of object instantiation for filled storage.
  */
@@ -831,6 +860,7 @@ int main (int argc, char **argv)
         mtm_test_walk();
         mtm_test_custom_string();
         mtm_test_position();
+        mtm_test_set_data_via_position();
     }
 
     if (opt.test_perf)

@@ -28,6 +28,12 @@
 #ifndef __MDDS_MULTI_TYPE_MATRIX_HPP__
 #define __MDDS_MULTI_TYPE_MATRIX_HPP__
 
+#ifdef MDDS_MULTI_TYPE_MATRIX_DEBUG
+#ifndef MDDS_MULTI_TYPE_VECTOR_DEBUG
+#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
+#endif
+#endif
+
 #include "multi_type_vector.hpp"
 #include "multi_type_vector_trait.hpp"
 
@@ -185,6 +191,21 @@ public:
     position_type position(size_type row, size_type col);
 
     /**
+     * Get a mutable reference of an element (position object) at specified
+     * position. The position object can then be passed to an additional
+     * method to get the type or value of the element it references, or set a
+     * new value to it.
+     *
+     * @param pos_hint position object to be used as a position hint for
+     *                 faster lookup.
+     * @param row row position of the referenced element.
+     * @param col column position of the referenced element.
+     *
+     * @return reference object of element at specified position.
+     */
+    position_type position(const position_type& pos_hint, size_type row, size_type col);
+
+    /**
      * Get an immutable reference of an element (position object) at specified
      * position. The position object can then be passed to an additional
      * method to get the type or value of the element it references.
@@ -195,6 +216,20 @@ public:
      * @return reference object of element at specified position.
      */
     const_position_type position(size_type row, size_type col) const;
+
+    /**
+     * Get an immutable reference of an element (position object) at specified
+     * position. The position object can then be passed to an additional
+     * method to get the type or value of the element it references.
+     *
+     * @param pos_hint position object to be used as a position hint for
+     *                 faster lookup.
+     * @param row row position of the referenced element.
+     * @param col column position of the referenced element.
+     *
+     * @return reference object of element at specified position.
+     */
+    const_position_type position(const const_position_type& pos_hint, size_type row, size_type col) const;
 
     /**
      * Get the row and column positions of the current element from a position
@@ -372,6 +407,9 @@ public:
     template<typename _T>
     void set(size_type row, size_type col, const _T& it_begin, const _T& it_end);
 
+    template<typename _T>
+    position_type set(const position_type& pos, const _T& it_begin, const _T& it_end);
+
     /**
      * Set values of multiple elements at once in a single column.  When the
      * length of passed elements exceeds that of the column, it gets truncated
@@ -471,6 +509,13 @@ public:
      */
     template<typename _Func>
     void walk(_Func& func) const;
+
+#ifdef MDDS_MULTI_TYPE_MATRIX_DEBUG
+    void dump() const
+    {
+        m_store.dump_blocks(std::cout);
+    }
+#endif
 
 private:
 
