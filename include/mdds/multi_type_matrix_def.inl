@@ -28,6 +28,20 @@
 namespace mdds {
 
 template<typename _String>
+typename multi_type_matrix<_String>::position_type
+multi_type_matrix<_String>::next_position(const position_type& pos)
+{
+    return store_type::next_position(pos);
+}
+
+template<typename _String>
+typename multi_type_matrix<_String>::const_position_type
+multi_type_matrix<_String>::next_position(const const_position_type& pos)
+{
+    return store_type::next_position(pos);
+}
+
+template<typename _String>
 multi_type_matrix<_String>::multi_type_matrix() {}
 
 template<typename _String>
@@ -83,6 +97,30 @@ typename multi_type_matrix<_String>::const_position_type
 multi_type_matrix<_String>::position(size_type row, size_type col) const
 {
     return m_store.position(get_pos(row,col));
+}
+
+template<typename _String>
+typename multi_type_matrix<_String>::size_pair_type
+multi_type_matrix<_String>::matrix_position(const const_position_type& pos)
+{
+    size_type mtv_pos = store_type::logical_position(pos);
+    size_type col = mtv_pos / m_size.row;
+    size_type row = mtv_pos - m_size.row * col;
+    return size_pair_type(row, col);
+}
+
+template<typename _String>
+typename multi_type_matrix<_String>::position_type
+multi_type_matrix<_String>::end_position()
+{
+    return position_type(m_store.end(), 0);
+}
+
+template<typename _String>
+typename multi_type_matrix<_String>::const_position_type
+multi_type_matrix<_String>::end_position() const
+{
+    return const_position_type(m_store.end(), 0);
 }
 
 template<typename _String>

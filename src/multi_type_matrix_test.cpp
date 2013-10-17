@@ -604,6 +604,40 @@ void mtm_test_position()
     mtx.set(pos, string("ABC"));
     assert(mtx.get_type(2, 1) == mtm::element_string);
     assert(mtx.get_string(2, 1) == "ABC");
+
+    // Start over, and test the traversal of position object.
+    pos = mtx.position(0, 0);
+    mtx_type::size_pair_type mtx_pos = mtx.matrix_position(pos);
+    assert(mtx_pos.column == 0);
+    assert(mtx_pos.row == 0);
+
+    pos = mtx_type::next_position(pos);
+    mtx_pos = mtx.matrix_position(pos);
+    assert(mtx_pos.column == 0);
+    assert(mtx_pos.row == 1);
+
+    pos = mtx_type::next_position(pos);
+    mtx_pos = mtx.matrix_position(pos);
+    assert(mtx_pos.column == 0);
+    assert(mtx_pos.row == 2);
+
+    pos = mtx_type::next_position(pos);
+    mtx_pos = mtx.matrix_position(pos);
+    assert(mtx_pos.column == 1);
+    assert(mtx_pos.row == 0);
+
+    pos = mtx_type::next_position(pos);
+    mtx_pos = mtx.matrix_position(pos);
+    assert(mtx_pos.column == 1);
+    assert(mtx_pos.row == 1);
+
+    pos = mtx_type::next_position(pos);
+    mtx_pos = mtx.matrix_position(pos);
+    assert(mtx_pos.column == 1);
+    assert(mtx_pos.row == 2);
+
+    pos = mtx_type::next_position(pos);
+    assert(pos == mtx.end_position());
 }
 
 /**

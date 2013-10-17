@@ -129,6 +129,28 @@ public:
     };
 
     /**
+     * Move to the next logical position. The movement is in the top-to-bottom
+     * then left-to-right direction.
+     *
+     * @param pos position object.
+     *
+     * @return position object that references the element at the next logical
+     *         position.
+     */
+    static position_type next_position(const position_type& pos);
+
+    /**
+     * Move to the next logical position. The movement is in the top-to-bottom
+     * then left-to-right direction.
+     *
+     * @param pos position object.
+     *
+     * @return non-mutable position object that references the element at the
+     *         next logical position.
+     */
+    static const_position_type next_position(const const_position_type& pos);
+
+    /**
      * Default constructor.
      */
     multi_type_matrix();
@@ -173,6 +195,34 @@ public:
      * @return reference object of element at specified position.
      */
     const_position_type position(size_type row, size_type col) const;
+
+    /**
+     * Get the row and column positions of the current element from a position
+     * object.
+     *
+     * @param pos position object.
+     *
+     * @return 0-based row and column positions.
+     */
+    size_pair_type matrix_position(const const_position_type& pos);
+
+    /**
+     * Return a position type that represents an end position.  This can be
+     * used to compare with another position object to see if it is past the
+     * last element position.
+     *
+     * @return end position object
+     */
+    position_type end_position();
+
+    /**
+     * Return a position type that represents an end position.  This can be
+     * used to compare with another position object to see if it is past the
+     * last element position.
+     *
+     * @return end position object
+     */
+    const_position_type end_position() const;
 
     /**
      * Get the type of element from a position object.  The type can be one
