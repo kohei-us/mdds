@@ -44,7 +44,13 @@ namespace mtm {
 /**
  * Element type for multi_type_matrix.
  */
-enum element_t { element_empty, element_boolean, element_string, element_numeric };
+enum element_t
+{
+    element_empty = mdds::mtv::element_type_empty,
+    element_boolean = mdds::mtv::element_type_boolean,
+    element_string = mdds::mtv::element_type_string,
+    element_numeric = mdds::mtv::element_type_numeric
+};
 
 struct std_string_trait
 {
@@ -104,18 +110,16 @@ public:
     {
         switch (mtv_type)
         {
-            case mdds::mtv::element_type_numeric:
-                return mdds::mtm::element_numeric;
             case string_trait::string_type_identifier:
                 return mdds::mtm::element_string;
+            case mdds::mtv::element_type_numeric:
             case mdds::mtv::element_type_boolean:
-                return mdds::mtm::element_boolean;
             case mdds::mtv::element_type_empty:
-                return mdds::mtm::element_empty;
+                // These types share the same numeric values.
+                return static_cast<mtm::element_t>(mtv_type);
             default:
                 throw general_error("multi_type_matrix: unknown element type.");
         }
-
     }
 
     template<typename _Func>
