@@ -839,6 +839,36 @@ void mtm_perf_test_iterate_elements()
     }
 }
 
+void mtm_perf_test_insert_via_position_object()
+{
+    size_t rowsize = 3000, colsize = 3000;
+    {
+        stack_printer __stack_printer__("::mtm_perf_test_insert_via_position_object (column and row positions)");
+        mtx_type mx(rowsize, colsize);
+        for (size_t i = 0; i < rowsize; ++i)
+        {
+            for (size_t j = 0; j < colsize; ++j)
+            {
+                mx.set(i, j, 1.1);
+            }
+        }
+    }
+
+    {
+        stack_printer __stack_printer__("::mtm_perf_test_insert_via_position_object (position object)");
+        mtx_type mx(rowsize, colsize);
+        mtx_type::position_type pos = mx.position(0, 0);
+        for (size_t i = 0; i < rowsize; ++i)
+        {
+            for (size_t j = 0; j < colsize; ++j)
+            {
+                pos = mx.set(pos, 1.1);
+                pos = mtx_type::next_position(pos);
+            }
+        }
+    }
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -868,6 +898,7 @@ int main (int argc, char **argv)
         mtm_perf_test_storage_creation();
         mtm_perf_test_storage_set_numeric();
         mtm_perf_test_iterate_elements();
+        mtm_perf_test_insert_via_position_object();
     }
 
     cout << "Test finished successfully!" << endl;
