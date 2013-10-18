@@ -1436,6 +1436,29 @@ void mtv_test_release()
     db.release(); // Prevent invalid free when db goes out of scope.
 }
 
+void mtv_test_construction_with_array()
+{
+    stack_printer __stack_printer__("::mtv_test_construction_with_array");
+    {
+        std::vector<muser_cell*> vals;
+        vals.push_back(new muser_cell(2.1));
+        vals.push_back(new muser_cell(2.2));
+        vals.push_back(new muser_cell(2.3));
+        mtv_type db(vals.size(), vals.begin(), vals.end());
+
+        db.set(1, 10.2); // overwrite.
+        assert(db.size() == 3);
+        assert(db.block_size() == 3);
+        assert(db.get<muser_cell*>(0)->value == 2.1);
+        assert(db.get<double>(1) == 10.2);
+        assert(db.get<muser_cell*>(2)->value == 2.3);
+
+        // Now those heap objects are owned by the container.  Clearing the
+        // array shouldn't leak.
+        vals.clear();
+    }
+}
+
 }
 
 int main (int argc, char **argv)
@@ -1450,6 +1473,7 @@ int main (int argc, char **argv)
     mtv_test_swap();
     mtv_test_custom_block_func3();
     mtv_test_release();
+    mtv_test_construction_with_array();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

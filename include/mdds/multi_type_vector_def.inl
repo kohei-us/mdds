@@ -209,6 +209,25 @@ multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const 
 }
 
 template<typename _CellBlockFunc>
+template<typename _T>
+multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const _T& it_begin, const _T& it_end) :
+    m_cur_size(init_size)
+{
+    if (!m_cur_size)
+        return;
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    size_type data_len = std::distance(it_begin, it_end);
+    if (m_cur_size != data_len)
+        throw general_error("Specified size does not match the size of the initial data array.");
+#endif
+
+    mdds::unique_ptr<block> blk(new block(m_cur_size));
+    blk->mp_data = mdds_mtv_create_new_block(*it_begin, it_begin, it_end);
+    m_blocks.push_back(blk.release());
+}
+
+template<typename _CellBlockFunc>
 multi_type_vector<_CellBlockFunc>::multi_type_vector(const multi_type_vector& other) :
     m_cur_size(other.m_cur_size)
 {

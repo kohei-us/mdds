@@ -95,6 +95,12 @@ void mdds_mtv_insert_values( \
 inline mdds::mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, const _type_& val) \
 { \
     return _block_::create_block_with_value(init_size, val); \
+} \
+ \
+template<typename _Iter> \
+mdds::mtv::base_element_block* mdds_mtv_create_new_block(const _type_&, const _Iter& it_begin, const _Iter& it_end) \
+{ \
+    return _block_::create_block_with_values(it_begin, it_end); \
 }
 
 #define MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(_type_,_type_id_,_empty_val_,_block_) \
@@ -164,6 +170,12 @@ void mdds_mtv_insert_values( \
 inline mdds::mtv::base_element_block* mdds_mtv_create_new_block(size_t init_size, _type_* val) \
 { \
     return _block_::create_block_with_value(init_size, val); \
+} \
+ \
+template<typename _Iter> \
+mdds::mtv::base_element_block* mdds_mtv_create_new_block(const _type_*, const _Iter& it_begin, const _Iter& it_end) \
+{ \
+    return _block_::create_block_with_values(it_begin, it_end); \
 }
 
 #endif

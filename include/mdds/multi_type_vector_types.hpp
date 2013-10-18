@@ -116,6 +116,9 @@ protected:
     element_block(size_t n) : base_element_block(_TypeId), m_array(n) {}
     element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val) {}
 
+    template<typename _Iter>
+    element_block(const _Iter& it_begin, const _Iter& it_end) : base_element_block(_TypeId), m_array(it_begin, it_end) {}
+
 public:
     static const element_t block_type = _TypeId;
 
@@ -388,6 +391,9 @@ protected:
     copyable_element_block(size_t n) : base_type(n) {}
     copyable_element_block(size_t n, const _Data& val) : base_type(n, val) {}
 
+    template<typename _Iter>
+    copyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+
 public:
     using base_type::get;
 
@@ -405,6 +411,9 @@ protected:
     noncopyable_element_block() : base_type() {}
     noncopyable_element_block(size_t n) : base_type(n) {}
     noncopyable_element_block(size_t n, const _Data& val) : base_type(n, val) {}
+
+    template<typename _Iter>
+    noncopyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
 
 public:
     static _Self* clone_block(const base_element_block&)
@@ -439,9 +448,18 @@ struct default_element_block : public copyable_element_block<default_element_blo
     default_element_block(size_t n) : base_type(n) {}
     default_element_block(size_t n, const _Data& val) : base_type(n, val) {}
 
+    template<typename _Iter>
+    default_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+
     static self_type* create_block_with_value(size_t init_size, const _Data& val)
     {
         return new self_type(init_size, val);
+    }
+
+    template<typename _Iter>
+    static self_type* create_block_with_values(const _Iter& it_begin, const _Iter& it_end)
+    {
+        return new self_type(it_begin, it_end);
     }
 
     static void overwrite_values(base_element_block&, size_t, size_t)
@@ -476,6 +494,9 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
             m_array.push_back(new _Data(**it));
     }
 
+    template<typename _Iter>
+    managed_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+
     ~managed_element_block()
     {
         std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
@@ -492,6 +513,12 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
             set_value(*blk, 0, val);
 
         return blk.release();
+    }
+
+    template<typename _Iter>
+    static self_type* create_block_with_values(const _Iter& it_begin, const _Iter& it_end)
+    {
+        return new self_type(it_begin, it_end);
     }
 
     static void overwrite_values(base_element_block& block, size_t pos, size_t len)
@@ -516,6 +543,9 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
     noncopyable_managed_element_block() : base_type() {}
     noncopyable_managed_element_block(size_t n) : base_type(n) {}
 
+    template<typename _Iter>
+    noncopyable_managed_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+
     ~noncopyable_managed_element_block()
     {
         std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
@@ -532,6 +562,12 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
             set_value(*blk, 0, val);
 
         return blk.release();
+    }
+
+    template<typename _Iter>
+    static self_type* create_block_with_values(const _Iter& it_begin, const _Iter& it_end)
+    {
+        return new self_type(it_begin, it_end);
     }
 
     static void overwrite_values(base_element_block& block, size_t pos, size_t len)

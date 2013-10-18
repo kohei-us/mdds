@@ -156,6 +156,36 @@ void mtv_test_construction()
         assert(db.get<string>(0) == "foo");
         assert(db.get<string>(9) == "foo");
     }
+
+    {
+        // Create with an array of values.
+        vector<double> vals;
+        vals.push_back(1.1);
+        vals.push_back(1.2);
+        vals.push_back(1.3);
+        mtv_type db(vals.size(), vals.begin(), vals.end());
+        assert(db.size() == 3);
+        assert(db.block_size() == 1);
+        assert(db.get<double>(0) == 1.1);
+        assert(db.get<double>(1) == 1.2);
+        assert(db.get<double>(2) == 1.3);
+    }
+
+    {
+        vector<string> vals;
+        mtv_type db_empty(0, vals.begin(), vals.end());
+        assert(db_empty.size() == 0);
+        assert(db_empty.block_size() == 0);
+
+        vals.push_back("Andy");
+        vals.push_back("Bruce");
+
+        mtv_type db(2, vals.begin(), vals.end());
+        assert(db.size() == 2);
+        assert(db.block_size() == 1);
+        assert(db.get<string>(0) == "Andy");
+        assert(db.get<string>(1) == "Bruce");
+    }
 }
 
 void mtv_test_basic()

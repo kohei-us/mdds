@@ -211,6 +211,9 @@ public:
     template<typename _T>
     multi_type_vector(size_type init_size, const _T& value);
 
+    template<typename _T>
+    multi_type_vector(size_type init_size, const _T& it_begin, const _T& it_end);
+
     /**
      * Copy constructor.
      *
