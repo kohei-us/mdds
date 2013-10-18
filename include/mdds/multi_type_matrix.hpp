@@ -173,6 +173,9 @@ public:
     template<typename _T>
     multi_type_matrix(size_type rows, size_type cols, const _T& value);
 
+    template<typename _T>
+    multi_type_matrix(size_type rows, size_type cols, const _T& it_begin, const _T& it_end);
+
     multi_type_matrix(const multi_type_matrix& r);
     ~multi_type_matrix();
 

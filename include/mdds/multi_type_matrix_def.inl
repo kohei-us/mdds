@@ -54,6 +54,20 @@ multi_type_matrix<_String>::multi_type_matrix(size_type rows, size_type cols, co
     m_store(rows*cols, value), m_size(rows, cols) {}
 
 template<typename _String>
+template<typename _T>
+multi_type_matrix<_String>::multi_type_matrix(
+    size_type rows, size_type cols, const _T& it_begin, const _T& it_end) :
+    m_store(rows*cols, it_begin, it_end), m_size(rows, cols)
+{
+    if (m_store.empty())
+        return;
+
+    // Throw an exception when trying to construct with data that the matrix doesn't support.
+    typename store_type::iterator it = m_store.begin();
+    to_mtm_type(it->type);
+}
+
+template<typename _String>
 multi_type_matrix<_String>::multi_type_matrix(const multi_type_matrix& r) :
     m_store(r.m_store), m_size(r.m_size) {}
 

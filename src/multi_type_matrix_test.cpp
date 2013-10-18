@@ -162,6 +162,64 @@ void mtm_test_construction()
         assert(mtx.get_type(1,4) == mtm::element_string);
         assert(mtx.get_string(1,4) == "foo");
     }
+
+    {
+        // construct with an array of data.
+        vector<double> vals;
+        vals.push_back(1.1);
+        vals.push_back(1.2);
+        vals.push_back(1.3);
+        vals.push_back(1.4);
+        mtx_type mtx(2, 2, vals.begin(), vals.end());
+        mtx_type::size_pair_type sz = mtx.size();
+        assert(sz.row == 2 && sz.column == 2);
+        assert(mtx.get_numeric(0,0) == 1.1);
+        assert(mtx.get_numeric(1,0) == 1.2);
+        assert(mtx.get_numeric(0,1) == 1.3);
+        assert(mtx.get_numeric(1,1) == 1.4);
+
+        try
+        {
+            mtx_type mtx2(3, 2, vals.begin(), vals.end());
+            assert(!"Construction of this matrix should have failed!");
+        }
+        catch (const invalid_arg_error& e)
+        {
+            // Good.
+            cout << "exception caught (as expected) which says: " << e.what() << endl;
+        }
+
+        try
+        {
+            // Trying to initialize a matrix with array of unsupported data
+            // type should end with an exception thrown.
+            vector<size_t> vals_ptr(4, 22);
+            mtx_type mtx3(2, 2, vals_ptr.begin(), vals_ptr.end());
+            assert(!"Construction of this matrix should have failed!");
+        }
+        catch (const exception& e)
+        {
+            cout << "exception caught (as expected) which says: " << e.what() << endl;
+        }
+    }
+
+    {
+        // Construct with an array of custom string type.
+        vector<custom_string> vals;
+        vals.push_back(custom_string("A"));
+        vals.push_back(custom_string("B"));
+        vals.push_back(custom_string("C"));
+        vals.push_back(custom_string("D"));
+        mtx_custom_type mtx(1, 4, vals.begin(), vals.end());
+        assert(mtx.get_string(0,0).get() == "A");
+        assert(mtx.get_string(0,1).get() == "B");
+        assert(mtx.get_string(0,2).get() == "C");
+        assert(mtx.get_string(0,3).get() == "D");
+        assert(mtx.get_type(0,0) == mtm::element_string);
+        assert(mtx.get_type(0,1) == mtm::element_string);
+        assert(mtx.get_type(0,2) == mtm::element_string);
+        assert(mtx.get_type(0,3) == mtm::element_string);
+    }
 }
 
 void mtm_test_data_insertion()
