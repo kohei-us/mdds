@@ -216,11 +216,9 @@ multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const 
     if (!m_cur_size)
         return;
 
-#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     size_type data_len = std::distance(it_begin, it_end);
     if (m_cur_size != data_len)
-        throw general_error("Specified size does not match the size of the initial data array.");
-#endif
+        throw invalid_arg_error("Specified size does not match the size of the initial data array.");
 
     mdds::unique_ptr<block> blk(new block(m_cur_size));
     blk->mp_data = mdds_mtv_create_new_block(*it_begin, it_begin, it_end);

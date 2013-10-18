@@ -186,6 +186,19 @@ void mtv_test_construction()
         assert(db.get<string>(0) == "Andy");
         assert(db.get<string>(1) == "Bruce");
     }
+
+    {
+        vector<int> vals(10, 1);
+        try
+        {
+            mtv_type db(20, vals.begin(), vals.end());
+            assert(!"This construction should have failed due to incorrect initial array size.");
+        }
+        catch (const invalid_arg_error&)
+        {
+            // good.
+        }
+    }
 }
 
 void mtv_test_basic()
