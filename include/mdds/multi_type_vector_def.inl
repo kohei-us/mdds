@@ -2828,7 +2828,12 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         // simple overwrite.
         size_type offset = start_row - start_row_in_block;
         element_block_func::overwrite_values(*blk->mp_data, offset, data_length);
-        mdds_mtv_set_values(*blk->mp_data, offset, *it_begin, it_begin, it_end);
+        if (!offset && data_length == blk->m_size)
+            // Overwrite the whole block.  It's faster to use assign_values.
+            mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
+        else
+            mdds_mtv_set_values(*blk->mp_data, offset, *it_begin, it_begin, it_end);
+
         return get_iterator(block_index, start_row_in_block);
     }
 

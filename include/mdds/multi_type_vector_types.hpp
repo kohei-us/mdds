@@ -330,8 +330,10 @@ public:
         base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
     {
         store_type& d = get(block).m_array;
-        for (_Iter it = it_begin; it != it_end; ++it, ++pos)
-            d[pos] = *it;
+        typename store_type::iterator it_dest = d.begin();
+        std::advance(it_dest, pos);
+        for (_Iter it = it_begin; it != it_end; ++it, ++it_dest)
+            *it_dest = *it;
     }
 
     template<typename _Iter>
