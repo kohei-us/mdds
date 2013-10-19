@@ -1,3 +1,24 @@
+mdds 0.9.1
+
+* multi_type_vector
+
+  * added several convenience methods for position objects.
+
+  * performance improvement on setting array values.
+
+  * added new constructor that takes an array of values as initial
+    element values.
+
+* multi_type_matrix
+
+  * setter methods that take a position object to also return a
+    position object.
+
+  * added several convenience methods for position objects.
+
+  * added new constructor that takes an array of values as initial
+    element values.
+
 mdds 0.9.0
 
 * multi_type_vector
