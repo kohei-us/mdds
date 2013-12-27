@@ -41,6 +41,7 @@
 
 #if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
 #include <iostream>
+#include <sstream>
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -192,7 +193,11 @@ public:
     {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
         if (get_block_type(block) != _TypeId)
-            throw general_error("incorrect block type.");
+        {
+            std::ostringstream os;
+            os << "incorrect block type: expected block type=" << _TypeId << ", passed block type=" << get_block_type(block);
+            throw general_error(os.str());
+        }
 #endif
         return static_cast<_Self&>(block);
     }
@@ -201,7 +206,11 @@ public:
     {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
         if (get_block_type(block) != _TypeId)
-            throw general_error("incorrect block type.");
+        {
+            std::ostringstream os;
+            os << "incorrect block type: expected block type=" << _TypeId << ", passed block type=" << get_block_type(block);
+            throw general_error(os.str());
+        }
 #endif
         return static_cast<const _Self&>(block);
     }
