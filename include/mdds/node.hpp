@@ -29,7 +29,7 @@
 #define __MDDS_NODE_HXX__
 
 #include <iostream>
-#include <list>
+#include <vector>
 #include <cassert>
 
 #include <boost/intrusive_ptr.hpp>
@@ -258,7 +258,7 @@ _NodePtr make_parent_node(const _NodePtr& node1, const _NodePtr& node2)
 }
 
 template<typename _NodePtr, typename _NodeType>
-_NodePtr build_tree_non_leaf(const ::std::list<_NodePtr>& node_list)
+_NodePtr build_tree_non_leaf(const std::vector<_NodePtr>& node_list)
 {
     size_t node_count = node_list.size();
     if (node_count == 1)
@@ -268,10 +268,10 @@ _NodePtr build_tree_non_leaf(const ::std::list<_NodePtr>& node_list)
     else if (node_count == 0)
         return _NodePtr();
 
-    ::std::list<_NodePtr> new_node_list;
+    std::vector<_NodePtr> new_node_list;
     _NodePtr node_pair[2];
-    typename ::std::list<_NodePtr>::const_iterator itr    = node_list.begin();
-    typename ::std::list<_NodePtr>::const_iterator itr_end = node_list.end();
+    typename std::vector<_NodePtr>::const_iterator itr    = node_list.begin();
+    typename std::vector<_NodePtr>::const_iterator itr_end = node_list.end();
     for (bool even_itr = false; itr != itr_end; ++itr, even_itr = !even_itr)
     {
         node_pair[even_itr] = *itr;
@@ -307,7 +307,7 @@ _NodePtr build_tree(const _NodePtr& left_leaf_node)
     _NodePtr node1, node2;
     node1 = left_leaf_node;
 
-    ::std::list<_NodePtr> node_list;
+    std::vector<_NodePtr> node_list;
     while (true)
     {
         node2 = node1->right;
@@ -326,7 +326,7 @@ _NodePtr build_tree(const _NodePtr& left_leaf_node)
 
 #ifdef MDDS_UNIT_TEST
 template<typename _NodePtr>
-size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int level)
+size_t dump_tree_layer(const std::vector<_NodePtr>& node_list, unsigned int level)
 {
     using ::std::cout;
     using ::std::endl;
@@ -339,8 +339,8 @@ size_t dump_tree_layer(const ::std::list<_NodePtr>& node_list, unsigned int leve
     bool isLeaf = node_list.front()->is_leaf;
     cout << "level " << level << " (" << (isLeaf?"leaf":"non-leaf") << ")" << endl;
 
-    ::std::list<_NodePtr> newList;
-    typename ::std::list<_NodePtr>::const_iterator itr = node_list.begin(), itrEnd = node_list.end();
+    std::vector<_NodePtr> newList;
+    typename std::vector<_NodePtr>::const_iterator itr = node_list.begin(), itrEnd = node_list.end();
     for (; itr != itrEnd; ++itr)
     {
         const _NodePtr& p = *itr;
@@ -376,7 +376,7 @@ size_t dump_tree(_NodePtr root_node)
     if (!root_node)
         return 0;
 
-    ::std::list<_NodePtr> node_list;
+    std::vector<_NodePtr> node_list;
     node_list.push_back(root_node);
     return dump_tree_layer(node_list, 0);
 }
