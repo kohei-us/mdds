@@ -1,3 +1,8 @@
+* multi_type_vector
+
+  * improved debug message on mis-matched block types (only when
+    MDDS_MULTI_TYPE_VECTOR_DEBUG is defined).
+
 mdds 0.9.1
 
 * multi_type_vector
