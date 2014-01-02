@@ -161,9 +161,9 @@ void fst_test_tree_build()
     }
 }
 
-void fst_perf_test_search(bool tree_search)
+void fst_perf_test_search_leaf()
 {
-    stack_printer __stack_printer__("fst_perf_test_leaf_search");
+    stack_printer __stack_printer__("fst_perf_test_search_leaf");
 
     int lower = 0, upper = 50000;
     flat_segment_tree<int, int> db(lower, upper, 0);
@@ -171,11 +171,34 @@ void fst_perf_test_search(bool tree_search)
         db.insert_front(i, i+1, i);
 
     int success = 0, failure = 0;
-    if (tree_search)
+    int val;
+    for (int i = lower; i < upper; ++i)
     {
-        fprintf(stdout, "fst_perf_test_search:   tree search\n");
-        db.build_tree();
+        if (db.search(i, val).second)
+            ++success;
+        else
+            ++failure;
+    }
+    fprintf(stdout, "fst_perf_test_search_leaf:   success (%d)  failure (%d)\n", success, failure);
+}
 
+void fst_perf_test_search_tree()
+{
+    stack_printer __stack_printer__("fst_perf_test_leaf_search");
+
+    int lower = 0, upper = 5000000;
+    flat_segment_tree<int, int> db(lower, upper, 0);
+    for (int i = upper-1; i >= lower; --i)
+        db.insert_front(i, i+1, i);
+
+    {
+        stack_printer sp2("::fst_perf_test_search_tree (build tree)");
+        db.build_tree();
+    }
+
+    int success = 0, failure = 0;
+    {
+        stack_printer sp2("::fst_perf_test_search_tree (search tree)");
         int val;
         for (int i = lower; i < upper; ++i)
         {
@@ -185,28 +208,7 @@ void fst_perf_test_search(bool tree_search)
                 ++failure;
         }
     }
-    else
-    {
-        fprintf(stdout, "fst_perf_test_search:   leaf search\n");
-        int val;
-        for (int i = lower; i < upper; ++i)
-        {
-            if (tree_search)
-            {
-                if (db.search_tree(i, val).second)
-                    ++success;
-                else
-                    ++failure;
-            }
-            else
-            {
-                if (db.search(i, val).second)
-                    ++success;
-                else
-                    ++failure;
-            }
-        }
-    }
+
     fprintf(stdout, "fst_perf_test_search:   success (%d)  failure (%d)\n", success, failure);
 }
 
@@ -1281,7 +1283,7 @@ void fst_test_copy_ctor()
     assert(!db_copied_again.get_root_node());
 
     // Make sure we can still perform tree search correctly.
-    value_type answer;
+    value_type answer = 0;
     db_copied_again.build_tree();
     db_copied_again.search_tree(18, answer);
     assert(db_copied_again.is_tree_valid());
@@ -1800,7 +1802,7 @@ void fst_test_swap()
     assert(db2.is_tree_valid());
 
     // Tree search should work on db2.
-    db_type::value_type val;
+    db_type::value_type val = 0;
     assert(db2.search_tree(35, val).second);
     assert(val == 2);
 }
@@ -1976,8 +1978,8 @@ int main (int argc, char **argv)
 
     if (opt.test_perf)
     {
-        fst_perf_test_search(true);
-        fst_perf_test_search(false);
+        fst_perf_test_search_leaf();
+        fst_perf_test_search_tree();
         fst_perf_test_insert_front_back();
         fst_perf_test_insert_position();
         fst_perf_test_position_search();
