@@ -80,14 +80,14 @@ public:
     struct init_handler;
     struct dispose_handler;
 
-    typedef typename mdds::node<flat_segment_tree> node;
+    typedef typename mdds::__st::node<flat_segment_tree> node;
     typedef typename node::node_ptr node_ptr;
 
-    typedef typename mdds::nonleaf_node<flat_segment_tree> nonleaf_node;
+    typedef typename mdds::__st::nonleaf_node<flat_segment_tree> nonleaf_node;
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (nonleaf_node& _self, const node_base* left_node, const node_base* right_node)
+        void operator() (nonleaf_node& _self, const __st::node_base* left_node, const __st::node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -439,7 +439,7 @@ public:
         if (!m_valid_tree)
             assert(!"attempted to dump an invalid tree!");
 
-        size_t node_count = mdds::tree_dumper<node, nonleaf_node>::dump(m_root_node);
+        size_t node_count = mdds::__st::tree_dumper<node, nonleaf_node>::dump(m_root_node);
         size_t node_instance_count = node::get_instance_count();
         size_t leaf_count = leaf_size();
 

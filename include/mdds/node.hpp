@@ -34,7 +34,7 @@
 
 #include <boost/intrusive_ptr.hpp>
 
-namespace mdds {
+namespace mdds { namespace __st {
 
 #ifdef MDDS_DEBUG_NODE_BASE
 size_t node_instance_count = 0;
@@ -232,13 +232,13 @@ public:
 };
 
 template<typename T>
-inline void intrusive_ptr_add_ref(::mdds::node<T>* p)
+inline void intrusive_ptr_add_ref(node<T>* p)
 {
     ++p->refcount;
 }
 
 template<typename T>
-inline void intrusive_ptr_release(::mdds::node<T>* p)
+inline void intrusive_ptr_release(node<T>* p)
 {
     --p->refcount;
     if (!p->refcount)
@@ -252,35 +252,13 @@ void link_nodes(typename node<T>::node_ptr& left, typename node<T>::node_ptr& ri
     right->prev = left;
 }
 
-/**
- * Disconnect all non-leaf nodes so that their ref-counted instances will
- * all get destroyed afterwards.
- */
-template<typename T>
-void clear_tree(::mdds::node<T>* node)
-{
-    if (!node)
-        // Nothing to do.
-        return;
-
-    if (node->is_leaf)
-    {
-        node->parent.reset();
-        return;
-    }
-
-    clear_tree(node->left.get());
-    clear_tree(node->right.get());
-    disconnect_all_nodes(node);
-}
-
 template<typename T>
 class tree_builder
 {
 public:
-    typedef mdds::node<T> leaf_node;
-    typedef typename mdds::node<T>::node_ptr leaf_node_ptr;
-    typedef mdds::nonleaf_node<T> nonleaf_node;
+    typedef mdds::__st::node<T> leaf_node;
+    typedef typename mdds::__st::node<T>::node_ptr leaf_node_ptr;
+    typedef mdds::__st::nonleaf_node<T> nonleaf_node;
     typedef std::vector<nonleaf_node> nonleaf_node_pool_type;
 
     tree_builder(nonleaf_node_pool_type& pool) :
@@ -379,7 +357,7 @@ private:
 
 
 template<typename T>
-void disconnect_all_nodes(mdds::node<T>* p)
+void disconnect_all_nodes(node<T>* p)
 {
     if (!p)
         return;
@@ -390,16 +368,16 @@ void disconnect_all_nodes(mdds::node<T>* p)
 }
 
 template<typename T>
-void disconnect_leaf_nodes(mdds::node<T>* left_node, mdds::node<T>* right_node)
+void disconnect_leaf_nodes(node<T>* left_node, node<T>* right_node)
 {
     if (!left_node || !right_node)
         return;
 
     // Go through all leaf nodes, and disconnect their links.
-    mdds::node<T>* cur_node = left_node;
+    node<T>* cur_node = left_node;
     do
     {
-        mdds::node<T>* next_node = cur_node->next.get();
+        node<T>* next_node = cur_node->next.get();
         disconnect_all_nodes(cur_node);
         cur_node = next_node;
     }
@@ -477,6 +455,6 @@ private:
 
 #endif
 
-}
+}}
 
 #endif

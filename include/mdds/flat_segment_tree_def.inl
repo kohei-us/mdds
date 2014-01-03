@@ -121,7 +121,7 @@ flat_segment_tree<_Key, _Value>::clear()
     destroy();
 
     // and construct the default tree
-    link_nodes<flat_segment_tree>(m_left_leaf, m_right_leaf);
+    __st::link_nodes<flat_segment_tree>(m_left_leaf, m_right_leaf);
     m_left_leaf->value_leaf.value = m_init_val;
     m_valid_tree = false;
 }
@@ -232,10 +232,10 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
         old_value = left_node->value_leaf.value;
 
         // Link to the left node.
-        link_nodes<flat_segment_tree>(left_node, new_node);
+        __st::link_nodes<flat_segment_tree>(left_node, new_node);
 
         // Link to the right node.
-        link_nodes<flat_segment_tree>(new_node, start_pos);
+        __st::link_nodes<flat_segment_tree>(new_node, start_pos);
         changed = true;
     }
 
@@ -279,7 +279,7 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
     {
         if (new_start_node->next != end_pos)
         {
-            link_nodes<flat_segment_tree>(new_start_node, end_pos);
+            __st::link_nodes<flat_segment_tree>(new_start_node, end_pos);
             changed = true;
         }
     }
@@ -291,10 +291,10 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
         new_node->value_leaf.value = old_value;
 
         // Link to the left node.
-        link_nodes<flat_segment_tree>(new_start_node, new_node);
+        __st::link_nodes<flat_segment_tree>(new_start_node, new_node);
 
         // Link to the right node.
-        link_nodes<flat_segment_tree>(new_node, end_pos);
+        __st::link_nodes<flat_segment_tree>(new_node, end_pos);
         changed = true;
     }
 
@@ -689,7 +689,7 @@ void flat_segment_tree<_Key, _Value>::build_tree()
     }
 
     m_nonleaf_node_pool.resize(nonleaf_count);
-    mdds::tree_builder<flat_segment_tree> builder(m_nonleaf_node_pool);
+    mdds::__st::tree_builder<flat_segment_tree> builder(m_nonleaf_node_pool);
     m_root_node = builder.build(m_left_leaf);
     m_valid_tree = true;
 }
