@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010-2012 Kohei Yoshida
+ * Copyright (c) 2010-2014 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,7 +48,7 @@ struct itr_forward_handler
         if (p == _db->m_right_leaf.get())
             end = true;
         else
-            p = p->right.get();
+            p = p->next.get();
     }
 
     static void dec(const typename fst_type::node*& p, bool& end)
@@ -56,7 +56,7 @@ struct itr_forward_handler
         if (end)
             end = false;
         else
-            p = p->left.get();
+            p = p->prev.get();
     }
 };
 
@@ -78,7 +78,7 @@ struct itr_reverse_handler
         if (p == _db->m_left_leaf.get())
             end = true;
         else
-            p = p->left.get();
+            p = p->prev.get();
     }
 
     static void dec(const typename fst_type::node*& p, bool& end)
@@ -86,7 +86,7 @@ struct itr_reverse_handler
         if (end)
             end = false;
         else
-            p = p->right.get();
+            p = p->next.get();
     }
 };
 

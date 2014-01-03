@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2008-2010 Kohei Yoshida
+ * Copyright (c) 2008-2014 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,8 +34,9 @@
 #include <cassert>
 #include <limits>
 
-#include "node.hpp"
-#include "flat_segment_tree_itr.hpp"
+#include "mdds/node.hpp"
+#include "mdds/flat_segment_tree_itr.hpp"
+#include "mdds/global.hpp"
 
 #ifdef MDDS_UNIT_TEST
 #include <cstdio>
@@ -79,19 +80,28 @@ public:
     struct init_handler;
     struct dispose_handler;
 
-    typedef typename ::mdds::node<flat_segment_tree> node;
+    typedef typename mdds::node<flat_segment_tree> node;
     typedef typename node::node_ptr node_ptr;
+
+    typedef typename mdds::nonleaf_node<flat_segment_tree> nonleaf_node;
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (node& _self, const typename node::node_ptr& left_node, const typename node::node_ptr& right_node)
+        void operator() (nonleaf_node& _self, const node_base* left_node, const node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
-                _self.value_nonleaf.low  = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.low;
+            {
+                _self.value_nonleaf.low =
+                    left_node->is_leaf ?
+                        static_cast<const node*>(left_node)->value_leaf.key :
+                        static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
+            }
             else
+            {
                 // Having a left node is prerequisite.
-                return;
+                throw general_error("flat_segment_tree::fill_nonleaf_value_handler: Having a left node is prerequisite.");
+            }
 
             if (right_node)
             {    
@@ -100,36 +110,40 @@ public:
                     // When the child nodes are leaf nodes, the upper bound
                     // must be the value of the node that comes after the
                     // right leaf node (if such node exists).
-
-                    if (right_node->right)
-                        _self.value_nonleaf.high = right_node->right->value_leaf.key;
+                    const node* p = static_cast<const node*>(right_node);
+                    if (p->next)
+                        _self.value_nonleaf.high = p->next->value_leaf.key;
                     else
-                        _self.value_nonleaf.high = right_node->value_leaf.key;
+                        _self.value_nonleaf.high = p->value_leaf.key;
                 }
                 else
                 {
-                    _self.value_nonleaf.high = right_node->value_nonleaf.high;
+                    _self.value_nonleaf.high = static_cast<const nonleaf_node*>(right_node)->value_nonleaf.high;
                 }
             }
             else
-                _self.value_nonleaf.high = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.high;
+            {
+                _self.value_nonleaf.high =
+                    left_node->is_leaf ?
+                    static_cast<const node*>(left_node)->value_leaf.key :
+                    static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
+            }
         }
     };
 
     struct to_string_handler
     {
-        ::std::string operator() (const node& _self) const
+        std::string operator() (const node& _self) const
         {
-            ::std::ostringstream os;
-            if (_self.is_leaf)
-            {
-                os << "(" << _self.value_leaf.key << ")";
-            }
-            else
-            {
-                os << "(" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
-            }
-            os << " ";
+            std::ostringstream os;
+            os << "(" << _self.value_leaf.key << ") ";
+            return os.str();
+        }
+
+        std::string operator() (const nonleaf_node& _self) const
+        {
+            std::ostringstream os;
+            os << "(" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ") ";
             return os.str();
         }
     };
@@ -137,11 +151,13 @@ public:
     struct init_handler
     {
         void operator() (node& /*_self*/) {}
+        void operator() (nonleaf_node& /*_self*/) {}
     };
 
     struct dispose_handler
     {
         void operator() (node& /*_self*/) {}
+        void operator() (nonleaf_node& /*_self*/) {}
     };
 
 private:
@@ -402,8 +418,15 @@ public:
         return m_init_val;
     }
 
+    /**
+     * Return the number of leaf nodes.
+     *
+     * @return number of leaf nodes.
+     */
+    size_t leaf_size() const;
+
 #ifdef MDDS_UNIT_TEST
-    node_ptr get_root_node() const
+    nonleaf_node* get_root_node() const
     {
         return m_root_node;
     }
@@ -416,11 +439,14 @@ public:
         if (!m_valid_tree)
             assert(!"attempted to dump an invalid tree!");
 
-        size_t node_count = ::mdds::dump_tree(m_root_node);
+        size_t node_count = mdds::tree_dumper<node, nonleaf_node>::dump(m_root_node);
         size_t node_instance_count = node::get_instance_count();
+        size_t leaf_count = leaf_size();
 
-        cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
-        assert(node_count == node_instance_count);
+        cout << "tree node count = " << node_count << "; node instance count = "
+            << node_instance_count << "; leaf node count = " << leaf_count << endl;
+
+        assert(leaf_count == node_instance_count);
     }
 
     void dump_leaf_nodes() const
@@ -437,7 +463,7 @@ public:
             cout << "  node " << node_id++ << ": key = " << cur_node->value_leaf.key
                 << "; value = " << cur_node->value_leaf.value 
                 << endl;
-            cur_node = cur_node->right;
+            cur_node = cur_node->next;
         }
         cout << endl << "  node instance count = " << node::get_instance_count() << endl;
     }
@@ -465,7 +491,7 @@ public:
                     // Key values differ.
                     return false;
     
-                cur_node = cur_node->right.get();
+                cur_node = cur_node->next.get();
             }
 
             if (cur_node)
@@ -488,7 +514,7 @@ public:
                     // Key values differ.
                     return false;
     
-                cur_node = cur_node->left.get();
+                cur_node = cur_node->prev.get();
             }
 
             if (cur_node)
@@ -521,7 +547,7 @@ public:
                 // Key values differ.
                 return false;
 
-            cur_node = cur_node->right.get();
+            cur_node = cur_node->next.get();
         }
 
         if (cur_node != end_node)
@@ -538,30 +564,30 @@ private:
 
     void append_new_segment(key_type start_key)
     {
-        if (m_right_leaf->left->value_leaf.key == start_key)
+        if (m_right_leaf->prev->value_leaf.key == start_key)
         {
-            m_right_leaf->left->value_leaf.value = m_init_val;
+            m_right_leaf->prev->value_leaf.value = m_init_val;
             return;
         }
 
 #ifdef MDDS_UNIT_TEST
         // The start position must come after the position of the last node 
         // before the right-most node.
-        assert(m_right_leaf->left->value_leaf.key < start_key);        
+        assert(m_right_leaf->prev->value_leaf.key < start_key);
 #endif
 
-        if (m_right_leaf->left->value_leaf.value == m_init_val)
+        if (m_right_leaf->prev->value_leaf.value == m_init_val)
             // The existing segment has the same value.  No need to insert a 
             // new segment.
             return;
 
-        node_ptr new_node(new node(true));
+        node_ptr new_node(new node);
         new_node->value_leaf.key   = start_key;
         new_node->value_leaf.value = m_init_val;
-        new_node->left = m_right_leaf->left;
-        new_node->right = m_right_leaf;
-        m_right_leaf->left->right = new_node;
-        m_right_leaf->left = new_node;
+        new_node->prev = m_right_leaf->prev;
+        new_node->next = m_right_leaf;
+        m_right_leaf->prev->next = new_node;
+        m_right_leaf->prev = new_node;
         m_valid_tree = false;
     }
 
@@ -585,7 +611,7 @@ private:
         while (cur_node_p != end_node_p)
         {
             cur_node_p->value_leaf.key -= shift_value;
-            cur_node_p = cur_node_p->right.get();
+            cur_node_p = cur_node_p->next.get();
         }
     }
 
@@ -598,7 +624,7 @@ private:
             if (cur_node->value_leaf.key < end_node_key)
             {
                 // The node is still in-bound.  Keep shifting.
-                cur_node = cur_node->right;
+                cur_node = cur_node->next;
                 continue;
             }
 
@@ -606,15 +632,15 @@ private:
             // Remove all nodes that follows, and connect the previous node
             // with the end node.
 
-            node_ptr last_node = cur_node->left;
+            node_ptr last_node = cur_node->prev;
             while (cur_node.get() != end_node.get())
             {
-                node_ptr next_node = cur_node->right;
+                node_ptr next_node = cur_node->next;
                 disconnect_all_nodes(cur_node.get());
                 cur_node = next_node;
             }
-            last_node->right = end_node;
-            end_node->left = last_node;
+            last_node->next = end_node;
+            end_node->prev = last_node;
             return;
         }
     }
@@ -622,7 +648,9 @@ private:
     void destroy();
 
 private:
-    node_ptr   m_root_node;
+    std::vector<nonleaf_node> m_nonleaf_node_pool;
+
+    nonleaf_node* m_root_node;
     node_ptr   m_left_leaf;
     node_ptr   m_right_leaf;
     value_type m_init_val;

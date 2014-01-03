@@ -442,7 +442,7 @@ void fst_test_insert_search_mix()
     db_type db(0, 100, 0);
 
     build_and_dump(db);
-    assert(db_type::node::get_instance_count() == 3);
+    assert(db_type::node::get_instance_count() == db.leaf_size());
     assert(db.is_tree_valid());
     test_single_tree_search(db, 0, 0, 0, 100);
     test_single_tree_search(db, 99, 0, 0, 100);
@@ -450,7 +450,7 @@ void fst_test_insert_search_mix()
     db.insert_front(0, 10, 1);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(db_type::node::get_instance_count() == 6);
+    assert(db_type::node::get_instance_count() == db.leaf_size());
     assert(db.is_tree_valid());
     test_single_tree_search(db, 0, 1, 0, 10);
     test_single_tree_search(db, 5, 1, 0, 10);
@@ -460,7 +460,7 @@ void fst_test_insert_search_mix()
     db.insert_front(0, 100, 0);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(db_type::node::get_instance_count() == 3);
+    assert(db_type::node::get_instance_count() == db.leaf_size());
     assert(db.is_tree_valid());
     test_single_tree_search(db, 0, 0, 0, 100);
     test_single_tree_search(db, 99, 0, 0, 100);
@@ -469,7 +469,7 @@ void fst_test_insert_search_mix()
     db.insert_front(30, 40, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(db_type::node::get_instance_count() == 12);
+    assert(db_type::node::get_instance_count() == db.leaf_size());
     assert(db.is_tree_valid());
     test_single_tree_search(db, 10, 5, 10, 20);
     test_single_tree_search(db, 20, 0, 20, 30);
@@ -479,7 +479,7 @@ void fst_test_insert_search_mix()
     db.insert_front(18, 22, 6);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(db_type::node::get_instance_count() == 14);
+    assert(db_type::node::get_instance_count() == db.leaf_size());
     assert(db.is_tree_valid());
     test_single_tree_search(db, 18, 6, 18, 22);
     test_single_tree_search(db, 22, 0, 22, 30);
@@ -488,14 +488,14 @@ void fst_test_insert_search_mix()
     db.insert_front(19, 30, 5);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(db_type::node::get_instance_count() == 12);
+    assert(db_type::node::get_instance_count() == db.leaf_size());
     assert(db.is_tree_valid());
     test_single_tree_search(db, 19, 5, 19, 40);
 
     db.insert_front(-100, 500, 999);
     assert(!db.is_tree_valid());
     build_and_dump(db);
-    assert(db_type::node::get_instance_count() == 3);
+    assert(db_type::node::get_instance_count() == db.leaf_size());
     assert(db.is_tree_valid());
     test_single_tree_search(db, 30, 999, 0, 100);
 }
@@ -1197,49 +1197,54 @@ void fst_perf_test_insert_front_back()
 
 void fst_test_copy_ctor()
 {
+    stack_printer __stack_printer__("::fst_test_copy_ctor");
     typedef unsigned long key_type;
     typedef int           value_type;
     typedef flat_segment_tree<key_type, value_type> fst;
 
     // Test copy construction of node first.
 
-    // Original node.
-    fst::node_ptr node1(new fst::node(true));
-    node1->value_leaf.key   = 10;
-    node1->value_leaf.value = 500;
-    assert(node1->is_leaf);
-    assert(!node1->parent);
-    assert(!node1->left);
-    assert(!node1->right);
+    {
+        // Original node.
+        fst::node_ptr node1(new fst::node);
+        node1->value_leaf.key   = 10;
+        node1->value_leaf.value = 500;
+        assert(node1->is_leaf);
+        assert(!node1->parent);
+        assert(!node1->prev);
+        assert(!node1->next);
 
-    // Copy it to new node.
-    fst::node_ptr node2(new fst::node(*node1));
-    assert(node2->is_leaf);
-    assert(!node2->parent);
-    assert(!node2->left);
-    assert(!node2->right);
-    assert(node2->value_leaf.key == 10);
-    assert(node2->value_leaf.value == 500);
+        // Copy it to new node.
+        fst::node_ptr node2(new fst::node(*node1));
+        assert(node2->is_leaf);
+        assert(!node2->parent);
+        assert(!node2->prev);
+        assert(!node2->next);
+        assert(node2->value_leaf.key == 10);
+        assert(node2->value_leaf.value == 500);
 
-    // Changing the values of the original should not modify the second node.
-    node1->value_leaf.key   = 35;
-    node1->value_leaf.value = 200;
-    assert(node2->value_leaf.key == 10);
-    assert(node2->value_leaf.value == 500);
+        // Changing the values of the original should not modify the second node.
+        node1->value_leaf.key   = 35;
+        node1->value_leaf.value = 200;
+        assert(node2->value_leaf.key == 10);
+        assert(node2->value_leaf.value == 500);
+    }
 
-    // Change the original node to non leaf.
-    node1->is_leaf = false;
-    node1->value_nonleaf.low  = 123;
-    node1->value_nonleaf.high = 789;
+    {
+        // Test non-leaf node objects.
+        fst::nonleaf_node node1;
+        node1.value_nonleaf.low  = 123;
+        node1.value_nonleaf.high = 789;
 
-    // Test the copying of non-leaf values.
-    fst::node_ptr node3(new fst::node(*node1));
-    assert(!node3->is_leaf);
-    assert(!node3->parent);
-    assert(!node3->left);
-    assert(!node3->right);
-    assert(node3->value_nonleaf.low == 123);
-    assert(node3->value_nonleaf.high == 789);
+        // Test the copying of non-leaf values.
+        fst::nonleaf_node node2(node1);
+        assert(!node2.is_leaf);
+        assert(!node2.parent);
+        assert(!node2.left);
+        assert(!node2.right);
+        assert(node2.value_nonleaf.low == 123);
+        assert(node2.value_nonleaf.high == 789);
+    }
 
     // Now, test the copy construction of the flat_segment_tree.
 
@@ -1292,6 +1297,7 @@ void fst_test_copy_ctor()
 
 void fst_test_equality()
 {
+    stack_printer __stack_printer__("::fst_test_equality");
     typedef unsigned long key_type;
     typedef int           value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
