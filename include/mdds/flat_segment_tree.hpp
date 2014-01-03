@@ -76,18 +76,20 @@ public:
 
     // Handlers required by the node template class.
     struct fill_nonleaf_value_handler;
-    struct to_string_handler;
     struct init_handler;
     struct dispose_handler;
+#ifdef MDDS_UNIT_TEST
+    struct to_string_handler;
+#endif
 
-    typedef typename mdds::__st::node<flat_segment_tree> node;
+    typedef __st::node<flat_segment_tree> node;
     typedef typename node::node_ptr node_ptr;
 
-    typedef typename mdds::__st::nonleaf_node<flat_segment_tree> nonleaf_node;
+    typedef __st::nonleaf_node<flat_segment_tree> nonleaf_node;
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (nonleaf_node& _self, const __st::node_base* left_node, const __st::node_base* right_node)
+        void operator() (__st::nonleaf_node<flat_segment_tree>& _self, const __st::node_base* left_node, const __st::node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -131,6 +133,7 @@ public:
         }
     };
 
+#ifdef MDDS_UNIT_TEST
     struct to_string_handler
     {
         std::string operator() (const node& _self) const
@@ -140,24 +143,25 @@ public:
             return os.str();
         }
 
-        std::string operator() (const nonleaf_node& _self) const
+        std::string operator() (const mdds::__st::nonleaf_node<flat_segment_tree>& _self) const
         {
             std::ostringstream os;
             os << "(" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ") ";
             return os.str();
         }
     };
+#endif
 
     struct init_handler
     {
         void operator() (node& /*_self*/) {}
-        void operator() (nonleaf_node& /*_self*/) {}
+        void operator() (__st::nonleaf_node<flat_segment_tree>& /*_self*/) {}
     };
 
     struct dispose_handler
     {
         void operator() (node& /*_self*/) {}
-        void operator() (nonleaf_node& /*_self*/) {}
+        void operator() (__st::nonleaf_node<flat_segment_tree>& /*_self*/) {}
     };
 
 private:

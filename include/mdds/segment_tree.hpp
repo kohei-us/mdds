@@ -202,18 +202,20 @@ public:
     };
 
     struct fill_nonleaf_value_handler;
-    struct to_string_handler;
     struct init_handler;
     struct dispose_handler;
+#ifdef MDDS_UNIT_TEST
+    struct to_string_handler;
+#endif
 
-    typedef mdds::__st::node<segment_tree> node;
+    typedef __st::node<segment_tree> node;
     typedef typename node::node_ptr node_ptr;
 
-    typedef typename mdds::__st::nonleaf_node<segment_tree> nonleaf_node;
+    typedef typename __st::nonleaf_node<segment_tree> nonleaf_node;
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (nonleaf_node& _self, const __st::node_base* left_node, const __st::node_base* right_node)
+        void operator() (__st::nonleaf_node<segment_tree>& _self, const __st::node_base* left_node, const __st::node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -256,22 +258,18 @@ public:
         }
     };
 
+#ifdef MDDS_UNIT_TEST
     struct to_string_handler
     {
         std::string operator() (const node& _self) const
         {
-#ifdef MDDS_UNIT_TEST
             std::ostringstream os;
             os << "[" << _self.value_leaf.key << "] ";
             return os.str();
-#else
-            return ::std::string();
-#endif
         }
 
-        std::string operator() (const nonleaf_node& _self) const
+        std::string operator() (const __st::nonleaf_node<segment_tree>& _self) const
         {
-#ifdef MDDS_UNIT_TEST
             std::ostringstream os;
             os << "[" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
             if (_self.value_nonleaf.data_chain)
@@ -291,11 +289,9 @@ public:
             }
             os << " ";
             return os.str();
-#else
-            return std::string();
-#endif
         }
     };
+#endif
 
     struct init_handler
     {
@@ -304,7 +300,7 @@ public:
             _self.value_leaf.data_chain = NULL;
         }
 
-        void operator() (nonleaf_node& _self)
+        void operator() (__st::nonleaf_node<segment_tree>& _self)
         {
             _self.value_nonleaf.data_chain = NULL;
         }
@@ -317,7 +313,7 @@ public:
             delete _self.value_leaf.data_chain;
         }
 
-        void operator() (nonleaf_node& _self)
+        void operator() (__st::nonleaf_node<segment_tree>& _self)
         {
             delete _self.value_nonleaf.data_chain;
         }
