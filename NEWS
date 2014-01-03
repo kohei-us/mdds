@@ -1,3 +1,17 @@
+mdds 0.10.0
+
+* flat_segment_tree
+
+  * significant performance improvement on build_tree() and
+    search_tree(), by optimizing the non-leaf node object generation
+    and storage to achieve better locality of reference.
+
+* segment_tree
+
+  * slight performance improvement on build_tree(), as a result of the
+    optimization done for flat_segment_tree since these two structures
+    share the same tree generation code.
+
 * multi_type_vector
 
   * improved debug message on mis-matched block types (only when
