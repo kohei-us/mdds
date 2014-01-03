@@ -386,6 +386,37 @@ void disconnect_leaf_nodes(node<T>* left_node, node<T>* right_node)
     disconnect_all_nodes(right_node);
 }
 
+template<typename T>
+size_t count_leaf_nodes(const node<T>* left_end, const node<T>* right_end)
+{
+    size_t leaf_count = 1;
+    const node<T>* p = left_end;
+    const node<T>* p_end = right_end;
+    for (; p != p_end; p = p->next.get(), ++leaf_count)
+        ;
+
+    return leaf_count;
+}
+
+inline size_t count_needed_nonleaf_nodes(size_t leaf_count)
+{
+    size_t nonleaf_count = 0;
+    while (true)
+    {
+        if (leaf_count == 1)
+            break;
+
+        if ((leaf_count % 2) == 1)
+            // Add one to make it an even number.
+            ++leaf_count;
+
+        leaf_count /= 2;
+        nonleaf_count += leaf_count;
+    }
+
+    return nonleaf_count;
+}
+
 #ifdef MDDS_UNIT_TEST
 
 template<typename _Leaf, typename _NonLeaf>

@@ -219,7 +219,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 10};
         data_type* data_chain[] = {&A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(db_type::node::get_instance_count() == 3);
+        assert(db_type::node::get_instance_count() == db.leaf_size());
         assert(db.verify_node_lists());
     }
 
@@ -229,7 +229,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 5, 10};
         data_type* data_chain[] = {&A, &B, 0, &A, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(db_type::node::get_instance_count() == 6);
+        assert(db_type::node::get_instance_count() == db.leaf_size());
     }
 
     db.insert(5, 12, &C);
@@ -238,7 +238,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 5, 10, 12};
         data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(db_type::node::get_instance_count() == 7);
+        assert(db_type::node::get_instance_count() == db.leaf_size());
         assert(db.verify_node_lists());
     }
 
@@ -248,7 +248,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 5, 10, 12, 24};
         data_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, &D, 0, &D, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(db_type::node::get_instance_count() == 11);
+        assert(db_type::node::get_instance_count() == db.leaf_size());
         assert(db.verify_node_lists());
     }
 
@@ -258,7 +258,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 4, 5, 10, 12, 24};
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(db_type::node::get_instance_count() == 12);
+        assert(db_type::node::get_instance_count() == db.leaf_size());
         assert(db.verify_node_lists());
     }
 
@@ -268,7 +268,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &F, 0, &F, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(db_type::node::get_instance_count() == 14);
+        assert(db_type::node::get_instance_count() == db.leaf_size());
         assert(db.verify_node_lists());
     }
 
@@ -278,7 +278,7 @@ void st_test_insert_search_removal()
         key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
         data_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &F, &G, 0, &F, &G, 0, 0};
         assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
-        assert(db_type::node::get_instance_count() == 14);
+        assert(db_type::node::get_instance_count() == db.leaf_size());
         assert(db.verify_node_lists());
     }
 
@@ -709,7 +709,7 @@ void st_test_perf_insertion()
     }
     assert(db.is_tree_valid());
 
-    const test_data* test;
+    const test_data* test = NULL;
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results");
         for (key_type i = 0; i < 200; ++i)
@@ -718,7 +718,10 @@ void st_test_perf_insertion()
             db.search(0, result);
             db_type::search_result_type::const_iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
+            {
                 test = *itr;
+                assert(test);
+            }
         }
     }
 
@@ -729,7 +732,10 @@ void st_test_perf_insertion()
             db_type::search_result result = db.search(0);
             db_type::search_result::iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
+            {
                 test = *itr;
+                assert(test);
+            }
         }
     }
 
@@ -741,7 +747,10 @@ void st_test_perf_insertion()
             db.search(data_count/2, result);
             db_type::search_result_type::const_iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
+            {
                 test = *itr;
+                assert(test);
+            }
         }
     }
 
@@ -752,7 +761,10 @@ void st_test_perf_insertion()
             db_type::search_result result = db.search(data_count/2);
             db_type::search_result::iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
+            {
                 test = *itr;
+                assert(test);
+            }
         }
     }
 
@@ -764,7 +776,10 @@ void st_test_perf_insertion()
             db.search(data_count, result);
             db_type::search_result_type::const_iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
+            {
                 test = *itr;
+                assert(test);
+            }
         }
     }
 
@@ -775,7 +790,10 @@ void st_test_perf_insertion()
             db_type::search_result result = db.search(data_count);
             db_type::search_result::iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
+            {
                 test = *itr;
+                assert(test);
+            }
         }
     }
 

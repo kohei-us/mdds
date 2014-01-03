@@ -674,19 +674,7 @@ void flat_segment_tree<_Key, _Value>::build_tree()
     size_t leaf_count = leaf_size();
 
     // Determine the total number of non-leaf nodes needed to build the whole tree.
-    size_t nonleaf_count = 0;
-    while (true)
-    {
-        if (leaf_count == 1)
-            break;
-
-        if ((leaf_count % 2) == 1)
-            // Add one to make it an even number.
-            ++leaf_count;
-
-        leaf_count /= 2;
-        nonleaf_count += leaf_count;
-    }
+    size_t nonleaf_count = __st::count_needed_nonleaf_nodes(leaf_count);
 
     m_nonleaf_node_pool.resize(nonleaf_count);
     mdds::__st::tree_builder<flat_segment_tree> builder(m_nonleaf_node_pool);
@@ -697,13 +685,7 @@ void flat_segment_tree<_Key, _Value>::build_tree()
 template<typename _Key, typename _Value>
 size_t flat_segment_tree<_Key, _Value>::leaf_size() const
 {
-    size_t leaf_count = 1;
-    const node* p = m_left_leaf.get();
-    const node* p_end = m_right_leaf.get();
-    for (; p != p_end; p = p->next.get(), ++leaf_count)
-        ;
-
-    return leaf_count;
+    return __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 }
 
 template<typename _Key, typename _Value>

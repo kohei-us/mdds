@@ -1,7 +1,7 @@
 /*************************************************************************
  *
- * Copyright (c) 2010 Kohei Yoshida
- * 
+ * Copyright (c) 2010-2014 Kohei Yoshida
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -28,8 +28,9 @@
 #ifndef __MDDS_SEGMENTTREE_HPP__
 #define __MDDS_SEGMENTTREE_HPP__
 
-#include "node.hpp"
-#include "hash_container/map.hpp"
+#include "mdds/node.hpp"
+#include "mdds/hash_container/map.hpp"
+#include "mdds/global.hpp"
 
 #include <vector>
 #include <list>
@@ -48,13 +49,18 @@ namespace mdds {
 template<typename _Key, typename _Data>
 class rectangle_set;
 
-template<typename _Key, typename _Node, typename _NonLeaf, typename _Leaf, typename _Inserter>
-void descend_tree_for_search(_Key point, const _Node* pnode, _Inserter& result)
+namespace __st {
+
+template<typename T, typename _Inserter>
+void descend_tree_for_search(
+    typename T::key_type point, const __st::node_base* pnode, _Inserter& result)
 {
-    typedef _Key key_type;
-    typedef _Node node;
-    typedef _NonLeaf nonleaf_value_type;
-    typedef _Leaf leaf_value_type;
+    typedef typename T::node leaf_node;
+    typedef typename T::nonleaf_node nonleaf_node;
+
+    typedef typename T::key_type key_type;
+    typedef typename T::nonleaf_value_type nonleaf_value_type;
+    typedef typename T::leaf_value_type leaf_value_type;
     typedef _Inserter inserter_type;
 
     if (!pnode)
@@ -63,57 +69,68 @@ void descend_tree_for_search(_Key point, const _Node* pnode, _Inserter& result)
 
     if (pnode->is_leaf)
     {
-        result(pnode->value_leaf.data_chain);
+        result(static_cast<const leaf_node*>(pnode)->value_leaf.data_chain);
         return;
     }
 
-    const nonleaf_value_type& v = pnode->value_nonleaf;
+    const nonleaf_node* pnonleaf = static_cast<const nonleaf_node*>(pnode);
+    const nonleaf_value_type& v = pnonleaf->value_nonleaf;
     if (point < v.low || v.high <= point)
         // Query point is out-of-range.
         return;
 
-    result(pnode->value_nonleaf.data_chain);
+    result(v.data_chain);
 
     // Check the left child node first, then the right one.
-    node* pchild = pnode->left.get();
+    __st::node_base* pchild = pnonleaf->left;
     if (!pchild)
         return;
 
-    assert(pnode->right.get() ? pchild->is_leaf == pnode->right->is_leaf : true);
+    assert(pnonleaf->right ? pchild->is_leaf == pnonleaf->right->is_leaf : true);
+
     if (pchild->is_leaf)
     {
         // The child node are leaf nodes.
-        const leaf_value_type& vleft = pchild->value_leaf;
+        const leaf_value_type& vleft = static_cast<const leaf_node*>(pchild)->value_leaf;
         if (point < vleft.key)
         {
             // Out-of-range.  Nothing more to do.
             return;
         }
 
-        if (pnode->right.get())
+        if (pnonleaf->right)
         {
-            const leaf_value_type& vright = pnode->right->value_leaf;    
+            assert(pnonleaf->right->is_leaf);
+            const leaf_value_type& vright = static_cast<const leaf_node*>(pnonleaf->right)->value_leaf;
             if (vright.key <= point)
                 // Follow the right node.
-                pchild = pnode->right.get();
+                pchild = pnonleaf->right;
         }
     }
     else
     {
-        const nonleaf_value_type& vleft = pchild->value_nonleaf;
+        // This child nodes are non-leaf nodes.
+
+        const nonleaf_value_type& vleft =
+            static_cast<const nonleaf_node*>(pchild)->value_nonleaf;
+
         if (point < vleft.low)
         {
             // Out-of-range.  Nothing more to do.
             return;
         }
-        if (vleft.high <= point && pnode->right.get())
+        if (vleft.high <= point && pnonleaf->right)
             // Follow the right child.
-            pchild = pnode->right.get();
+            pchild = pnonleaf->right;
 
-        assert(pchild->value_nonleaf.low <= point && point < pchild->value_nonleaf.high);
+        assert(static_cast<const nonleaf_node*>(pchild)->value_nonleaf.low <= point &&
+               point < static_cast<const nonleaf_node*>(pchild)->value_nonleaf.high);
     }
-    ::mdds::descend_tree_for_search<_Key, _Node, _NonLeaf, _Leaf, _Inserter>(point, pchild, result);
+
+    descend_tree_for_search<T,_Inserter>(point, pchild, result);
 }
+
+} // namespace __st
 
 template<typename _Key, typename _Data>
 class segment_tree
@@ -189,19 +206,27 @@ public:
     struct init_handler;
     struct dispose_handler;
 
-    typedef ::mdds::node<segment_tree> node;
+    typedef mdds::__st::node<segment_tree> node;
     typedef typename node::node_ptr node_ptr;
+
+    typedef typename mdds::__st::nonleaf_node<segment_tree> nonleaf_node;
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (node& _self, const typename node::node_ptr& left_node, const typename node::node_ptr& right_node)
+        void operator() (nonleaf_node& _self, const __st::node_base* left_node, const __st::node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
-                _self.value_nonleaf.low  = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.low;
+            {
+                _self.value_nonleaf.low  = left_node->is_leaf ?
+                    static_cast<const node*>(left_node)->value_leaf.key :
+                    static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
+            }
             else
+            {
                 // Having a left node is prerequisite.
-                return;
+                throw general_error("segment_tree::fill_nonleaf_value_handler: Having a left node is prerequisite.");
+            }
 
             if (right_node)
             {
@@ -211,54 +236,63 @@ public:
                     // must be the value of the node that comes after the
                     // right leaf node (if such node exists).
 
-                    if (right_node->right)
-                        _self.value_nonleaf.high = right_node->right->value_leaf.key;
+                    const node* p = static_cast<const node*>(right_node);
+                    if (p->next)
+                        _self.value_nonleaf.high = p->next->value_leaf.key;
                     else
-                        _self.value_nonleaf.high = right_node->value_leaf.key;
+                        _self.value_nonleaf.high = p->value_leaf.key;
                 }
                 else
                 {
-                    _self.value_nonleaf.high = right_node->value_nonleaf.high;
+                    _self.value_nonleaf.high = static_cast<const nonleaf_node*>(right_node)->value_nonleaf.high;
                 }
             }
             else
-                _self.value_nonleaf.high = left_node->is_leaf ? left_node->value_leaf.key : left_node->value_nonleaf.high;
+            {
+                _self.value_nonleaf.high = left_node->is_leaf ?
+                    static_cast<const node*>(left_node)->value_leaf.key :
+                    static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
+            }
         }
     };
 
     struct to_string_handler
     {
-        ::std::string operator() (const node& _self) const
+        std::string operator() (const node& _self) const
         {
 #ifdef MDDS_UNIT_TEST
-            ::std::ostringstream os;
-            if (_self.is_leaf)
+            std::ostringstream os;
+            os << "[" << _self.value_leaf.key << "] ";
+            return os.str();
+#else
+            return ::std::string();
+#endif
+        }
+
+        std::string operator() (const nonleaf_node& _self) const
+        {
+#ifdef MDDS_UNIT_TEST
+            std::ostringstream os;
+            os << "[" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
+            if (_self.value_nonleaf.data_chain)
             {
-                os << "[" << _self.value_leaf.key << "]";
-            }
-            else
-            {
-                os << "[" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
-                if (_self.value_nonleaf.data_chain)
+                os << " { ";
+                typename data_chain_type::const_iterator
+                    itr,
+                    itr_beg = _self.value_nonleaf.data_chain->begin(),
+                    itr_end = _self.value_nonleaf.data_chain->end();
+                for (itr = itr_beg; itr != itr_end; ++itr)
                 {
-                    os << " { ";
-                    typename data_chain_type::const_iterator 
-                        itr, 
-                        itr_beg = _self.value_nonleaf.data_chain->begin(), 
-                        itr_end = _self.value_nonleaf.data_chain->end();
-                    for (itr = itr_beg; itr != itr_end; ++itr)
-                    {
-                        if (itr != itr_beg)
-                            os << ", ";
-                        os << (*itr)->name;
-                    }
-                    os << " }";
+                    if (itr != itr_beg)
+                        os << ", ";
+                    os << (*itr)->name;
                 }
+                os << " }";
             }
             os << " ";
             return os.str();
 #else
-            return ::std::string();
+            return std::string();
 #endif
         }
     };
@@ -267,10 +301,12 @@ public:
     {
         void operator() (node& _self)
         {
-            if (_self.is_leaf)
-                _self.value_leaf.data_chain = NULL;
-            else
-                _self.value_nonleaf.data_chain = NULL;
+            _self.value_leaf.data_chain = NULL;
+        }
+
+        void operator() (nonleaf_node& _self)
+        {
+            _self.value_nonleaf.data_chain = NULL;
         }
     };
 
@@ -278,27 +314,32 @@ public:
     {
         void operator() (node& _self)
         {
-            if (_self.is_leaf)
-                delete _self.value_leaf.data_chain;
-            else
-                delete _self.value_nonleaf.data_chain;
+            delete _self.value_leaf.data_chain;
+        }
+
+        void operator() (nonleaf_node& _self)
+        {
+            delete _self.value_nonleaf.data_chain;
         }
     };
 
 #ifdef MDDS_UNIT_TEST
-    struct node_printer : public ::std::unary_function<const node*, void>
+    struct node_printer : public ::std::unary_function<const __st::node_base*, void>
     {
-        void operator() (const node* p) const
+        void operator() (const __st::node_base* p) const
         {
-            ::std::cout << p->to_string() << " ";
+            if (p->is_leaf)
+                std::cout << static_cast<const node*>(p)->to_string() << " ";
+            else
+                std::cout << static_cast<const nonleaf_node*>(p)->to_string() << " ";
         }
     };
 #endif
 
 private:
 
-    /** 
-     * This base class takes care of collecting data chain pointers during 
+    /**
+     * This base class takes care of collecting data chain pointers during
      * tree descend for search.
      */
     class search_result_base
@@ -320,7 +361,7 @@ private:
             if (!mp_res_chains)
                 return combined;
 
-            typename res_chains_type::const_iterator 
+            typename res_chains_type::const_iterator
                 itr = mp_res_chains->begin(), itr_end = mp_res_chains->end();
             for (; itr != itr_end; ++itr)
                 combined += (*itr)->size();
@@ -359,13 +400,13 @@ private:
         typedef typename data_chain_type::reference         reference;
         typedef typename data_chain_type::difference_type   difference_type;
 
-        iterator_base() : 
+        iterator_base() :
             mp_res_chains(static_cast<res_chains_type*>(NULL)), m_end_pos(true) {}
 
         iterator_base(const iterator_base& r) :
-            mp_res_chains(r.mp_res_chains), 
-            m_cur_chain(r.m_cur_chain), 
-            m_cur_pos_in_chain(r.m_cur_pos_in_chain), 
+            mp_res_chains(r.mp_res_chains),
+            m_cur_chain(r.m_cur_chain),
+            m_cur_pos_in_chain(r.m_cur_pos_in_chain),
             m_end_pos(r.m_end_pos) {}
 
         iterator_base& operator= (const iterator_base& r)
@@ -383,7 +424,7 @@ private:
             // The caller is responsible for making sure not to increment past
             // end position.
 
-            // When reaching the end position, the internal iterators still 
+            // When reaching the end position, the internal iterators still
             // need to be pointing at the last item before the end position.
             // This is why we need to make copies of the iterators, and copy
             // them back once done.
@@ -472,7 +513,7 @@ private:
                 return;
             }
 
-            // We assume that there is at least one chain list, and no 
+            // We assume that there is at least one chain list, and no
             // empty chain list exists.  So, skip the check.
             m_cur_chain = mp_res_chains->begin();
             m_cur_pos_in_chain = (*m_cur_chain)->begin();
@@ -542,7 +583,7 @@ public:
 
             typename data_chain_type::const_iterator itr = node_data->begin(), itr_end = node_data->end();
             for (; itr != itr_end; ++itr)
-                m_result.push_back(*itr);   
+                m_result.push_back(*itr);
         }
     private:
         search_result_type& m_result;
@@ -556,7 +597,7 @@ public:
         {
             if (!node_data)
                 return;
-            
+
             m_result.push_back_chain(node_data);
         }
     private:
@@ -567,88 +608,95 @@ public:
     segment_tree(const segment_tree& r);
     ~segment_tree();
 
-    /** 
-     * Equality between two segment_tree instances is evaluated by comparing 
+    /**
+     * Equality between two segment_tree instances is evaluated by comparing
      * the segments that they store.  The trees are not compared.
      */
     bool operator==(const segment_tree& r) const;
 
     bool operator!=(const segment_tree& r) const { return !operator==(r); }
 
-    /** 
-     * Check whether or not the internal tree is in a valid state.  The tree 
-     * must be valid in order to perform searches. 
-     * 
+    /**
+     * Check whether or not the internal tree is in a valid state.  The tree
+     * must be valid in order to perform searches.
+     *
      * @return true if the tree is valid, false otherwise.
      */
     bool is_tree_valid() const { return m_valid_tree; }
 
-    /** 
+    /**
      * Build or re-build tree based on the current set of segments.
      */
     void build_tree();
 
-    /** 
+    /**
      * Insert a new segment.
-     *  
+     *
      * @param begin_key begin point of the segment.  The value is inclusive.
-     * @param end_key end point of the segment.  The value is non-inclusive. 
-     * @param pdata pointer to the data instance associated with this segment. 
+     * @param end_key end point of the segment.  The value is non-inclusive.
+     * @param pdata pointer to the data instance associated with this segment.
      *               Note that <i>the caller must manage the life cycle of the
      *               data instance</i>.
      */
     bool insert(key_type begin_key, key_type end_key, data_type* pdata);
 
-    /** 
-     * Search the tree and collect all segments that include a specified 
-     * point. 
-     *  
-     * @param point specified point value 
-     * @param result doubly-linked list of data instances associated with 
+    /**
+     * Search the tree and collect all segments that include a specified
+     * point.
+     *
+     * @param point specified point value
+     * @param result doubly-linked list of data instances associated with
      *                   the segments that include the specified point.
      *                   <i>Note that the search result gets appended to the
      *                   list; the list will not get emptied on each
      *                   search.</i>  It is caller's responsibility to empty
      *                   the list before passing it to this method in case the
      *                   caller so desires.
-     *  
-     * @return true if the search is performed successfully, false if the 
+     *
+     * @return true if the search is performed successfully, false if the
      *         search has ended prematurely due to error conditions.
      */
     bool search(key_type point, search_result_type& result) const;
 
-    /** 
-     * Search the tree and collect all segments that include a specified 
-     * point. 
+    /**
+     * Search the tree and collect all segments that include a specified
+     * point.
      *
-     * @param point specified point value 
-     *  
-     * @return object containing the result of the search, which can be 
+     * @param point specified point value
+     *
+     * @return object containing the result of the search, which can be
      *         accessed via iterator.
      */
     search_result search(key_type point) const;
 
-    /** 
-     * Remove a segment by the data pointer.  This will <i>not</i> invalidate 
-     * the tree; however, if you have removed lots of segments, you might want 
-     * to re-build the tree to shrink its size. 
+    /**
+     * Remove a segment by the data pointer.  This will <i>not</i> invalidate
+     * the tree; however, if you have removed lots of segments, you might want
+     * to re-build the tree to shrink its size.
      */
     void remove(data_type* pdata);
 
-    /** 
+    /**
      * Remove all segments data.
      */
     void clear();
 
-    /** 
+    /**
      * Return the number of segments currently stored in this container.
      */
     size_t size() const;
 
-    /** 
+    /**
      * Return whether or not the container stores any segments or none at all.
      */
     bool empty() const;
+
+    /**
+     * Return the number of leaf nodes.
+     *
+     * @return number of leaf nodes.
+     */
+    size_t leaf_size() const;
 
 #ifdef MDDS_UNIT_TEST
     void dump_tree() const;
@@ -664,37 +712,38 @@ public:
 
     bool verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const;
 
-    /** 
+    /**
      * Verify the validity of the segment data array.
-     *  
-     * @param checks null-terminated array of expected values.  The last item 
+     *
+     * @param checks null-terminated array of expected values.  The last item
      *               must have a NULL pdata value to terminate the array.
      */
     bool verify_segment_data(const segment_map_type& checks) const;
 #endif
 
 private:
-    /** 
+    /**
      * To be called from rectangle_set.
      */
     void search(key_type point, search_result_base& result) const;
 
-    typedef ::std::vector<node*> node_list_type;
+    typedef ::std::vector<__st::node_base*> node_list_type;
     typedef ::boost::ptr_map<data_type*, node_list_type> data_node_map_type;
 
     static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right);
 
-    /** 
-     * Descend the tree from the root node, and mark appropriate nodes, both 
-     * leaf and non-leaf, based on segment's end points.  When marking nodes, 
-     * record their positions as a list of node pointers. 
+    /**
+     * Descend the tree from the root node, and mark appropriate nodes, both
+     * leaf and non-leaf, based on segment's end points.  When marking nodes,
+     * record their positions as a list of node pointers.
      */
-    void descend_tree_and_mark(node* pnode, data_type* pdata, key_type begin_key, key_type end_key, node_list_type* plist);
+    void descend_tree_and_mark(
+        __st::node_base* pnode, data_type* pdata, key_type begin_key, key_type end_key, node_list_type* plist);
 
     void build_leaf_nodes();
 
-    /** 
-     * Go through the list of nodes, and remove the specified data pointer 
+    /**
+     * Go through the list of nodes, and remove the specified data pointer
      * value from the nodes.
      */
     void remove_data_from_nodes(node_list_type* plist, const data_type* pdata);
@@ -708,16 +757,18 @@ private:
 #endif
 
 private:
+    std::vector<nonleaf_node> m_nonleaf_node_pool;
+
     segment_map_type m_segment_data;
 
-    /** 
-     * For each data pointer, it keeps track of all nodes, leaf or non-leaf, 
-     * that stores the data pointer label.  This data is used when removing 
-     * segments by the data pointer value. 
+    /**
+     * For each data pointer, it keeps track of all nodes, leaf or non-leaf,
+     * that stores the data pointer label.  This data is used when removing
+     * segments by the data pointer value.
      */
     data_node_map_type m_tagged_node_map;
 
-    node_ptr   m_root_node;
+    nonleaf_node* m_root_node;
     node_ptr   m_left_leaf;
     node_ptr   m_right_leaf;
     bool m_valid_tree:1;
@@ -777,23 +828,33 @@ template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::build_tree()
 {
     build_leaf_nodes();
-    clear_tree(m_root_node.get());
-    m_root_node = ::mdds::build_tree<node_ptr, node>(m_left_leaf);
-    
+    m_nonleaf_node_pool.clear();
+
+    // Count the number of leaf nodes.
+    size_t leaf_count = __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+
+    // Determine the total number of non-leaf nodes needed to build the whole tree.
+    size_t nonleaf_count = __st::count_needed_nonleaf_nodes(leaf_count);
+
+    m_nonleaf_node_pool.resize(nonleaf_count);
+
+    mdds::__st::tree_builder<segment_tree> builder(m_nonleaf_node_pool);
+    m_root_node = builder.build(m_left_leaf);
+
     // Start "inserting" all segments from the root.
-    typename segment_map_type::const_iterator itr, 
+    typename segment_map_type::const_iterator itr,
         itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
 
     data_node_map_type tagged_node_map;
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
         data_type* pdata = itr->first;
-        ::std::pair<typename data_node_map_type::iterator, bool> r = 
+        ::std::pair<typename data_node_map_type::iterator, bool> r =
             tagged_node_map.insert(pdata, new node_list_type);
         node_list_type* plist = r.first->second;
         plist->reserve(10);
 
-        descend_tree_and_mark(m_root_node.get(), pdata, itr->second.first, itr->second.second, plist);
+        descend_tree_and_mark(m_root_node, pdata, itr->second.first, itr->second.second, plist);
     }
 
     m_tagged_node_map.swap(tagged_node_map);
@@ -802,7 +863,7 @@ void segment_tree<_Key, _Data>::build_tree()
 
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::descend_tree_and_mark(
-    node* pnode, data_type* pdata, key_type begin_key, key_type end_key, node_list_type* plist)
+    __st::node_base* pnode, data_type* pdata, key_type begin_key, key_type end_key, node_list_type* plist)
 {
     if (!pnode)
         return;
@@ -810,9 +871,10 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
     if (pnode->is_leaf)
     {
         // This is a leaf node.
-        if (begin_key <= pnode->value_leaf.key && pnode->value_leaf.key < end_key)
+        node* pleaf = static_cast<node*>(pnode);
+        if (begin_key <= pleaf->value_leaf.key && pleaf->value_leaf.key < end_key)
         {
-            leaf_value_type& v = pnode->value_leaf;
+            leaf_value_type& v = pleaf->value_leaf;
             if (!v.data_chain)
                 v.data_chain = new data_chain_type;
             v.data_chain->push_back(pdata);
@@ -820,11 +882,12 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
         }
         return;
     }
-    
-    if (end_key < pnode->value_nonleaf.low || pnode->value_nonleaf.high <= begin_key)
+
+    nonleaf_node* pnonleaf = static_cast<nonleaf_node*>(pnode);
+    if (end_key < pnonleaf->value_nonleaf.low || pnonleaf->value_nonleaf.high <= begin_key)
         return;
 
-    nonleaf_value_type& v = pnode->value_nonleaf;
+    nonleaf_value_type& v = pnonleaf->value_nonleaf;
     if (begin_key <= v.low && v.high < end_key)
     {
         // mark this non-leaf node and stop.
@@ -835,8 +898,8 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
         return;
     }
 
-    descend_tree_and_mark(pnode->left.get(), pdata, begin_key, end_key, plist);
-    descend_tree_and_mark(pnode->right.get(), pdata, begin_key, end_key, plist);
+    descend_tree_and_mark(pnonleaf->left, pdata, begin_key, end_key, plist);
+    descend_tree_and_mark(pnonleaf->right, pdata, begin_key, end_key, plist);
 }
 
 template<typename _Key, typename _Data>
@@ -873,28 +936,28 @@ void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<k
     typename ::std::vector<key_type>::const_iterator itr = keys.begin(), itr_end = keys.end();
 
     // left-most node
-    left.reset(new node(true));
+    left.reset(new node);
     left->value_leaf.key = *itr;
 
     // move on to next.
-    left->right.reset(new node(true));
+    left->next.reset(new node);
     node_ptr prev_node = left;
-    node_ptr cur_node = left->right;
-    cur_node->left = prev_node;
+    node_ptr cur_node = left->next;
+    cur_node->prev = prev_node;
 
     for (++itr; itr != itr_end; ++itr)
     {
         cur_node->value_leaf.key = *itr;
 
         // move on to next
-        cur_node->right.reset(new node(true));
+        cur_node->next.reset(new node);
         prev_node = cur_node;
-        cur_node = cur_node->right;
-        cur_node->left = prev_node;
+        cur_node = cur_node->next;
+        cur_node->prev = prev_node;
     }
 
     // Remove the excess node.
-    prev_node->right.reset();
+    prev_node->next.reset();
     right = prev_node;
 }
 
@@ -924,18 +987,15 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
         // Tree is invalidated.
         return false;
 
-    if (!m_root_node.get())
+    if (!m_root_node)
         // Tree doesn't exist.  Since the tree is flagged valid, this means no
         // segments have been inserted.
         return true;
 
     search_result_vector_inserter result_inserter(result);
     typedef segment_tree<_Key,_Data> tree_type;
-    ::mdds::descend_tree_for_search<
-        typename tree_type::key_type,
-        typename tree_type::node, typename tree_type::nonleaf_value_type, 
-        typename tree_type::leaf_value_type, search_result_vector_inserter>(
-            point, m_root_node.get(), result_inserter);
+    __st::descend_tree_for_search<
+        tree_type, search_result_vector_inserter>(point, m_root_node, result_inserter);
     return true;
 }
 
@@ -944,32 +1004,26 @@ typename segment_tree<_Key, _Data>::search_result
 segment_tree<_Key, _Data>::search(key_type point) const
 {
     search_result result;
-    if (!m_valid_tree || !m_root_node.get())
+    if (!m_valid_tree || !m_root_node)
         return result;
 
     search_result_inserter result_inserter(result);
     typedef segment_tree<_Key,_Data> tree_type;
-    ::mdds::descend_tree_for_search<
-        typename tree_type::key_type,
-        typename tree_type::node, typename tree_type::nonleaf_value_type, 
-        typename tree_type::leaf_value_type, search_result_inserter>(
-            point, m_root_node.get(), result_inserter);
+    __st::descend_tree_for_search<tree_type, search_result_inserter>(
+        point, m_root_node, result_inserter);
+
     return result;
 }
 
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::search(key_type point, search_result_base& result) const
 {
-    if (!m_valid_tree || !m_root_node.get())
+    if (!m_valid_tree || !m_root_node)
         return;
 
     search_result_inserter result_inserter(result);
     typedef segment_tree<_Key,_Data> tree_type;
-    ::mdds::descend_tree_for_search<
-        typename tree_type::key_type,
-        typename tree_type::node, typename tree_type::nonleaf_value_type, 
-        typename tree_type::leaf_value_type, search_result_inserter>(
-            point, m_root_node.get(), result_inserter);
+    __st::descend_tree_for_search<tree_type>(point, m_root_node, result_inserter);
 }
 
 template<typename _Key, typename _Data>
@@ -1016,6 +1070,12 @@ bool segment_tree<_Key, _Data>::empty() const
     return m_segment_data.empty();
 }
 
+template<typename _Key, typename _Value>
+size_t segment_tree<_Key, _Value>::leaf_size() const
+{
+    return __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+}
+
 template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, const data_type* pdata)
 {
@@ -1023,11 +1083,11 @@ void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, co
     for (; itr != itr_end; ++itr)
     {
         data_chain_type* chain = NULL;
-        node* p = *itr;
+        __st::node_base* p = *itr;
         if (p->is_leaf)
-            chain = p->value_leaf.data_chain;
+            chain = static_cast<node*>(p)->value_leaf.data_chain;
         else
-            chain = p->value_nonleaf.data_chain;
+            chain = static_cast<nonleaf_node*>(p)->value_nonleaf.data_chain;
 
         if (!chain)
             continue;
@@ -1051,11 +1111,10 @@ template<typename _Key, typename _Data>
 void segment_tree<_Key, _Data>::clear_all_nodes()
 {
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
-    clear_tree(m_root_node.get());
-    disconnect_all_nodes(m_root_node.get());
+    m_nonleaf_node_pool.clear();
     m_left_leaf.reset();
     m_right_leaf.reset();
-    m_root_node.reset();
+    m_root_node = NULL;
 }
 
 #ifdef MDDS_UNIT_TEST
@@ -1069,7 +1128,7 @@ void segment_tree<_Key, _Data>::dump_tree() const
         assert(!"attempted to dump an invalid tree!");
 
     cout << "dump tree ------------------------------------------------------" << endl;
-    size_t node_count = ::mdds::dump_tree<node_ptr>(m_root_node.get());
+    size_t node_count = mdds::__st::tree_dumper<node, nonleaf_node>::dump(m_root_node);
     size_t node_instance_count = node::get_instance_count();
 
     cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
@@ -1087,7 +1146,7 @@ void segment_tree<_Key, _Data>::dump_leaf_nodes() const
     while (p)
     {
         print_leaf_value(p->value_leaf);
-        p = p->right.get();
+        p = p->next.get();
     }
     cout << "  node instance count = " << node::get_instance_count() << endl;
 }
@@ -1107,7 +1166,7 @@ bool segment_tree<_Key, _Data>::verify_node_lists() const
 {
     using namespace std;
 
-    typename data_node_map_type::const_iterator 
+    typename data_node_map_type::const_iterator
         itr = m_tagged_node_map.begin(), itr_end = m_tagged_node_map.end();
     for (; itr != itr_end; ++itr)
     {
@@ -1175,7 +1234,7 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
                 return false;
         }
 
-        cur_node = cur_node->right.get();
+        cur_node = cur_node->next.get();
     }
 
     if (cur_node)
@@ -1221,16 +1280,16 @@ bool segment_tree<_Key, _Data>::has_data_pointer(const node_list_type& node_list
     {
         // Check each node, and make sure each node has the pdata pointer
         // listed.
-        const node* pnode = *itr;
+        const __st::node_base* pnode = *itr;
         const data_chain_type* chain = NULL;
         if (pnode->is_leaf)
-            chain = pnode->value_leaf.data_chain;
+            chain = static_cast<const node*>(pnode)->value_leaf.data_chain;
         else
-            chain = pnode->value_nonleaf.data_chain;
+            chain = static_cast<const nonleaf_node*>(pnode)->value_nonleaf.data_chain;
 
         if (!chain)
             return false;
-        
+
         if (find(chain->begin(), chain->end(), pdata) == chain->end())
             return false;
     }
