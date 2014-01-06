@@ -290,7 +290,7 @@ public:
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
         d.reserve(d.size() + len);
 #endif
-        std::copy(its.first, its.second, std::back_inserter(d));
+        d.insert(d.end(), its.first, its.second);
     }
 
     static void assign_values_from_block(
