@@ -240,6 +240,16 @@ void multi_type_matrix<_String>::set_empty(size_type row, size_type col)
 }
 
 template<typename _String>
+void multi_type_matrix<_String>::set_empty(size_type row, size_type col, size_type length)
+{
+    if (length == 0)
+        throw general_error("multi_type_matrix::set_empty: length of zero is not permitted.");
+
+    size_type pos1 = get_pos(row, col);
+    m_store.set_empty(pos1, pos1+length-1);
+}
+
+template<typename _String>
 typename multi_type_matrix<_String>::position_type
 multi_type_matrix<_String>::set_empty(const position_type& pos)
 {

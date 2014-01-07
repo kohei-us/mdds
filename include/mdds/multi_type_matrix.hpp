@@ -377,6 +377,15 @@ public:
     void set_empty(size_type row, size_type col);
 
     /**
+     * Set specified range of elements empty.
+     *
+     * @param row row position of the first element.
+     * @param col column position of the first element.
+     * @param length length of the range to set empty.
+     */
+    void set_empty(size_type row, size_type col, size_type length);
+
+    /**
      * Set element referenced by the position object empty.
      *
      * @param pos position object that references element.
