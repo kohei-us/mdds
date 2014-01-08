@@ -1,3 +1,10 @@
+* multi_type_matrix
+
+  * added a variant of set_empty() that takes an additional length
+    parameter.
+
+    * void set_empty(size_type row, size_type col, size_type length)
+
 mdds 0.10.0
 
 * flat_segment_tree
