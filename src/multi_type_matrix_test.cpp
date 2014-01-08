@@ -335,6 +335,38 @@ void mtm_test_set_empty()
         assert(mtx.get_type(2, 3) != mtm::element_empty);
         assert(mtx.get_type(2, 4) != mtm::element_empty);
     }
+
+    {
+        // Set a range of elements empty.
+        mtx_type mtx(5, 3, string("A"));
+        cout << "setting element (0,1) to (1,2) empty..." << endl;
+        mtx.set_empty(1, 0, 6); // rows 1-4 in column 0 and rows 0-1 in column 1.
+        assert(mtx.get_type(0, 0) == mtm::element_string);
+        assert(mtx.get_type(1, 0) == mtm::element_empty);
+        assert(mtx.get_type(2, 0) == mtm::element_empty);
+        assert(mtx.get_type(3, 0) == mtm::element_empty);
+        assert(mtx.get_type(4, 0) == mtm::element_empty);
+        assert(mtx.get_type(0, 1) == mtm::element_empty);
+        assert(mtx.get_type(1, 1) == mtm::element_empty);
+        assert(mtx.get_type(2, 1) == mtm::element_string);
+        assert(mtx.get_type(3, 1) == mtm::element_string);
+        assert(mtx.get_type(4, 1) == mtm::element_string);
+        assert(mtx.get_type(0, 2) == mtm::element_string);
+        assert(mtx.get_type(1, 2) == mtm::element_string);
+        assert(mtx.get_type(2, 2) == mtm::element_string);
+        assert(mtx.get_type(3, 2) == mtm::element_string);
+        assert(mtx.get_type(4, 2) == mtm::element_string);
+
+        try
+        {
+            mtx.set_empty(2, 2, 0);
+            assert(false);
+        }
+        catch (const std::exception&)
+        {
+            cout << "exception thrown on length of zero as expected" << endl;
+        }
+    }
 }
 
 void mtm_test_swap()
