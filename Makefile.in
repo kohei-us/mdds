@@ -42,7 +42,16 @@ HEADERS= \
 	@top_srcdir@/$(INCDIR)/mdds/quad_node.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/rectangle_set_def.inl \
 	@top_srcdir@/$(INCDIR)/mdds/rectangle_set.hpp \
-	@top_srcdir@/$(INCDIR)/mdds/segment_tree.hpp
+	@top_srcdir@/$(INCDIR)/mdds/segment_tree.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_custom_func1.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_custom_func2.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_custom_func3.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_itr.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_trait.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_types.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_macro.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_def.inl
 
 DEPENDS= \
 	$(HEADERS)

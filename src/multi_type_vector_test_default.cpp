@@ -4791,6 +4791,95 @@ void mtv_test_block_identifier()
     assert(mtv::uchar_element_block::block_type == mtv::element_type_uchar);
 }
 
+void mtv_test_transfer()
+{
+    stack_printer __stack_printer__("::mtv_test_transfer");
+    mtv_type db1(5), db2(5);
+    db1.set(0, 1.0);
+    db1.set(1, 2.0);
+    mtv_type::iterator it = db1.transfer(1, 2, db2, 1);
+
+    assert(db1.get<double>(0) == 1.0);
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db1.is_empty(3));
+    assert(db1.is_empty(4));
+
+    assert(db2.is_empty(0));
+    assert(db2.get<double>(1) == 2.0);
+    assert(db2.is_empty(2));
+    assert(db2.is_empty(3));
+    assert(db2.is_empty(4));
+
+    assert(it->size == 4);
+    assert(it->__private_data.block_index == 1);
+    assert(it->position == 1);
+
+    // Reset and start over.
+    db1.clear();
+    db1.resize(5);
+    db2.clear();
+    db2.resize(5);
+
+    db1.set(2, 1.2);
+    db1.set(3, 1.3);
+
+    // Transfer 1:2 in db1 to 2:3 in db2.
+    it = db1.transfer(1, 2, db2, 2);
+
+    assert(db1.is_empty(0));
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db1.get<double>(3) == 1.3);
+    assert(db1.is_empty(4));
+
+    assert(db2.is_empty(0));
+    assert(db2.is_empty(1));
+    assert(db2.is_empty(2));
+    assert(db2.get<double>(3) == 1.2);
+    assert(db2.is_empty(4));
+
+    assert(it->size == 3);
+    assert(it->position == 0);
+    assert(it->__private_data.block_index == 0);
+
+    // Reset and start over.
+    db1.clear();
+    db1.resize(4);
+    db2.clear();
+    db2.resize(4);
+
+    db1.set(0, string("A"));
+    db1.set(1, string("B"));
+    db1.set(2, 11.1);
+    db1.set(3, 11.2);
+
+    it = db1.transfer(1, 2, db2, 1);
+
+    assert(db1.get<string>(0) == "A");
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db1.get<double>(3) == 11.2);
+
+    assert(db2.is_empty(0));
+    assert(db2.get<string>(1) == "B");
+    assert(db2.get<double>(2) == 11.1);
+    assert(db2.is_empty(3));
+
+    assert(it->size == 2);
+    assert(it->position == 1);
+    assert(it->__private_data.block_index == 1);
+
+    // Reset and start over.
+    db1.clear();
+    db1.resize(4);
+    db2.clear();
+    db2.resize(4);
+
+    db1.set(2, 12.8);
+    it = db1.transfer(1, 2, db2, 1);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -4826,6 +4915,7 @@ int main (int argc, char **argv)
     mtv_test_swap_range();
     mtv_test_value_type();
     mtv_test_block_identifier();
+    mtv_test_transfer();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

@@ -1556,9 +1556,10 @@ multi_type_vector<_CellBlockFunc>::transfer_multi_blocks(
     else
     {
         // Copy to the middle of destination block. Insert slots for new
-        // blocks (plus one for the empty block) below current.
+        // blocks (plus one for the bottom empty block) below current.
         size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
         dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len+1, NULL);
+        assert(dest.m_blocks.size() > dest_block_index+block_len+1);
         dest.m_blocks[dest_block_index+block_len+1] = new block(blk2_size);
         blk_dest->m_size = dest_pos_in_block;
 
@@ -1657,7 +1658,39 @@ multi_type_vector<_CellBlockFunc>::transfer_multi_blocks(
     dest.merge_with_adjacent_blocks(dest_block_index1);
 
     // Delete all transferred blocks, and replace it with one empty block.
-    assert(del_index2 >= del_index1);
+    if (del_index2 < del_index1)
+    {
+        // No blocks will be deleted.  See if we can just extend one of the
+        // neighboring empty blocks.
+
+        block* blk1 = m_blocks[block_index1];
+        block* blk2 = m_blocks[block_index2];
+
+        if (!blk1->mp_data)
+        {
+            assert(blk2->mp_data);
+
+            // Block 1 is empty. Extend this block.
+            blk1->m_size += len;
+            return get_iterator(block_index1, start_pos_in_block1);
+        }
+
+        if (!blk2->mp_data)
+        {
+            assert(blk1->mp_data);
+
+            // Block 2 is empty. Extend this block.
+            blk2->m_size += len;
+            return get_iterator(block_index2, start_pos);
+        }
+
+        // Neither block1 nor block2 are empty. Just insert a new empty block
+        // between them. After the insertion, the old block2 position becomes
+        // the position of the inserted block.
+        m_blocks.insert(m_blocks.begin()+block_index2, new block(len));
+        return get_iterator(block_index2, start_pos);
+    }
+
     if (del_index1 > 0 && !m_blocks[del_index1-1]->mp_data)
     {
         // The block before the first block to be deleted is empty.  Simply
