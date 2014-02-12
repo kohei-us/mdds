@@ -1,3 +1,14 @@
+mdds 0.10.2
+
+* multi_type_vector
+
+  * fixed a bug in transfer() that would trigger an assertion and
+    eventually lead to a crash.  The problem occurred when a range of
+    data to be transferred spanned over 2 blocks and consisted of the
+    lower part of an upper block and the upper part of a lower block.
+
+mdds 0.10.1
+
 * multi_type_matrix
 
   * added a variant of set_empty() that takes an additional length
