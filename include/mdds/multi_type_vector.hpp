@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011-2013 Kohei Yoshida
+ * Copyright (c) 2011-2014 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -261,7 +261,7 @@ public:
      * position to yield any performance benefit.</p>
      *
      * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iteraotr is
+     * valid.  The behavior of this method when passing an invalid iterator is
      * undefined.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception
@@ -319,7 +319,7 @@ public:
      * position to yield any performance benefit.</p>
      *
      * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iteraotr is
+     * valid.  The behavior of this method when passing an invalid iterator is
      * undefined.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
@@ -343,6 +343,11 @@ public:
      */
     template<typename _T>
     iterator set(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
+
+    template<typename _T>
+    iterator push_back(const _T& value);
+
+    iterator push_back_empty();
 
     /**
      * Insert multiple values of identical type to a specified position.
@@ -384,7 +389,7 @@ public:
      * position to yield any performance benefit.</p>
      *
      * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iteraotr is
+     * valid.  The behavior of this method when passing an invalid iterator is
      * undefined.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception
@@ -661,7 +666,7 @@ public:
      * position to yield any performance benefit.</p>
      *
      * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iteraotr is
+     * valid.  The behavior of this method when passing an invalid iterator is
      * undefined.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
@@ -725,7 +730,7 @@ public:
      * position to yield any performance benefit.</p>
      *
      * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iteraotr is
+     * valid.  The behavior of this method when passing an invalid iterator is
      * undefined.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
@@ -1059,6 +1064,8 @@ private:
         const element_block_type& src_data, size_type src_offset,
         size_type dst_index1, size_type dst_offset1, size_type dst_index2, size_type dst_offset2,
         size_type len, blocks_type& new_blocks);
+
+    bool append_empty(size_type len);
 
     inline iterator get_iterator(size_type block_index, size_type start_row)
     {

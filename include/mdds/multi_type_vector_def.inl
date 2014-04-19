@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2013 Kohei Yoshida
+ * Copyright (c) 2012-2014 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -489,6 +489,69 @@ multi_type_vector<_CellBlockFunc>::set(const iterator& pos_hint, size_type pos, 
     get_block_position(pos_hint, pos, start_row1, block_index1);
 
     return set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
+}
+
+template<typename _CellBlockFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::push_back(const _T& value)
+{
+    element_category_type cat = mdds_mtv_get_element_type(value);
+
+    block* blk_last = m_blocks.empty() ? NULL : m_blocks.back();
+    if (!blk_last || !blk_last->mp_data || cat != get_block_type(*blk_last->mp_data))
+    {
+        // Either there is no block, or the last block is empty or of
+        // different type.  Append a new block.
+        size_type block_index = m_blocks.size();
+        size_type start_pos = m_cur_size;
+
+        m_blocks.push_back(new block(1));
+        block* blk = m_blocks.back();
+        create_new_block_with_new_cell(blk->mp_data, value);
+        ++m_cur_size;
+
+        return get_iterator(block_index, start_pos);
+    }
+
+    assert(blk_last);
+    assert(blk_last->mp_data);
+    assert(cat == get_block_type(*blk_last->mp_data));
+
+    // Append the new value to the last block.
+    size_type block_index = m_blocks.size() - 1;
+    size_type start_pos = m_cur_size - blk_last->m_size;
+
+    mdds_mtv_append_value(*blk_last->mp_data, value);
+    ++blk_last->m_size;
+    ++m_cur_size;
+
+    return get_iterator(block_index, start_pos);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::push_back_empty()
+{
+    size_type last_block_size = 0;
+    if (!m_blocks.empty())
+        last_block_size = m_blocks.back()->m_size;
+
+    size_type block_index = m_blocks.size();
+    size_type start_pos = m_cur_size;
+
+    if (!append_empty(1))
+    {
+        // Last empty block has been extended.
+        --block_index;
+        start_pos -= last_block_size;
+    }
+
+    // Get the iterator of the last block.
+    typename blocks_type::iterator block_pos = m_blocks.end();
+    --block_pos;
+
+    return iterator(block_pos, m_blocks.end(), start_pos, block_index);
 }
 
 template<typename _CellBlockFunc>
@@ -2838,6 +2901,39 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
 }
 
 template<typename _CellBlockFunc>
+bool multi_type_vector<_CellBlockFunc>::append_empty(size_type len)
+{
+    // Append empty cells.
+    if (m_blocks.empty())
+    {
+        // No existing block. Create a new one.
+        assert(m_cur_size == 0);
+        m_blocks.push_back(new block(len));
+        m_cur_size = len;
+        return true;
+    }
+
+    bool new_block_added = false;
+    block* blk_last = m_blocks.back();
+
+    if (!blk_last->mp_data)
+    {
+        // Last block is empty.  Just increase its size.
+        blk_last->m_size += len;
+    }
+    else
+    {
+        // Append a new empty block.
+        m_blocks.push_back(new block(len));
+        new_block_added = true;
+    }
+
+    m_cur_size += len;
+
+    return new_block_added;
+}
+
+template<typename _CellBlockFunc>
 void multi_type_vector<_CellBlockFunc>::exchange_elements(
     const element_block_type& src_data, size_type src_offset,
     size_type dst_index1, size_type dst_offset1, size_type dst_index2, size_type dst_offset2,
@@ -3452,29 +3548,7 @@ void multi_type_vector<_CellBlockFunc>::resize(size_type new_size)
     if (new_size > m_cur_size)
     {
         // Append empty cells.
-        if (m_blocks.empty())
-        {
-            // No existing block. Create a new one.
-            assert(m_cur_size == 0);
-            m_blocks.push_back(new block(new_size));
-            m_cur_size = new_size;
-            return;
-        }
-
-        block* blk_last = m_blocks.back();
-        size_type delta = new_size - m_cur_size;
-
-        if (!blk_last->mp_data)
-        {
-            // Last block is empty.  Just increase its size.
-            blk_last->m_size += delta;
-        }
-        else
-        {
-            // Append a new empty block.
-            m_blocks.push_back(new block(delta));
-        }
-        m_cur_size = new_size;
+        append_empty(new_size - m_cur_size);
         return;
     }
 

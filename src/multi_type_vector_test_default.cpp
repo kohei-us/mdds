@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011-2013 Kohei Yoshida
+ * Copyright (c) 2011-2014 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -4880,6 +4880,104 @@ void mtv_test_transfer()
     it = db1.transfer(1, 2, db2, 1);
 }
 
+void mtv_test_push_back()
+{
+    stack_printer __stack_printer__("::mtv_test_push_back");
+
+    mtv_type db;
+    assert(db.size() == 0);
+    assert(db.block_size() == 0);
+
+    // Append an empty element into an empty container.
+    mtv_type::iterator it = db.push_back_empty();
+    assert(db.size() == 1);
+    assert(db.block_size() == 1);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->__private_data.block_index == 0);
+    assert(it == db.begin());
+    ++it;
+    assert(it == db.end());
+
+    // ... and again.
+    it = db.push_back_empty();
+    assert(db.size() == 2);
+    assert(db.block_size() == 1);
+    assert(it->size == 2);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->__private_data.block_index == 0);
+    assert(it == db.begin());
+    ++it;
+    assert(it == db.end());
+
+    // Append non-empty this time.
+    it = db.push_back(1.1);
+    assert(db.size() == 3);
+    assert(db.block_size() == 2);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_numeric);
+    assert(it->__private_data.block_index == 1);
+    mtv_type::iterator check = it;
+    --check;
+    assert(check == db.begin());
+    ++it;
+    assert(it == db.end());
+
+    // followed by an empty element again.
+    it = db.push_back_empty();
+    assert(db.size() == 4);
+    assert(db.block_size() == 3);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_empty);
+    assert(it->__private_data.block_index == 2);
+    check = it;
+    --check;
+    --check;
+    assert(check == db.begin());
+    ++it;
+    assert(it == db.end());
+
+    // Check the values.
+    assert(db.is_empty(0));
+    assert(db.is_empty(1));
+    assert(db.get<double>(2) == 1.1);
+    assert(db.is_empty(3));
+
+    // Empty the container and push back a non-empty element.
+    db.clear();
+    it = db.push_back(string("push me"));
+    assert(db.size() == 1);
+    assert(db.block_size() == 1);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_string);
+    assert(it->__private_data.block_index == 0);
+    assert(it == db.begin());
+    ++it;
+    assert(it == db.end());
+    assert(db.get<string>(0) == "push me");
+
+    // Push back a non-empty element of the same type.
+    it = db.push_back(string("again"));
+    assert(db.size() == 2);
+    assert(db.block_size() == 1);
+    assert(it->size == 2);
+    assert(it->type == mtv::element_type_string);
+    assert(it->__private_data.block_index == 0);
+    assert(it == db.begin());
+    ++it;
+    assert(it == db.end());
+
+    assert(db.get<string>(0) == "push me");
+    assert(db.get<string>(1) == "again");
+
+    // Push back another non-empty element of a different type.
+    it = db.push_back(23.4);
+    assert(db.size() == 3);
+    assert(db.block_size() == 2);
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_numeric);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -4916,6 +5014,7 @@ int main (int argc, char **argv)
     mtv_test_value_type();
     mtv_test_block_identifier();
     mtv_test_transfer();
+    mtv_test_push_back();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
