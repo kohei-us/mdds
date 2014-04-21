@@ -1267,6 +1267,28 @@ void multi_type_vector<_CellBlockFunc>::release()
 }
 
 template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::release(size_type start_pos, size_type end_pos)
+{
+    size_type start_pos_in_block1 = 0;
+    size_type block_index1 = 0;
+    if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
+        throw std::out_of_range("Block position not found!");
+
+    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1, false);
+}
+
+template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::iterator
+multi_type_vector<_CellBlockFunc>::release(const iterator& pos_hint, size_type start_pos, size_type end_pos)
+{
+    size_type start_pos_in_block1 = 0;
+    size_type block_index1 = 0;
+    get_block_position(pos_hint, start_pos, start_pos_in_block1, block_index1);
+    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1, false);
+}
+
+template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::position_type
 multi_type_vector<_CellBlockFunc>::position(size_type pos)
 {
@@ -1424,7 +1446,7 @@ multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type end_
     if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
         throw std::out_of_range("Block position not found!");
 
-    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1);
+    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1, true);
 }
 
 template<typename _CellBlockFunc>
@@ -1434,7 +1456,7 @@ multi_type_vector<_CellBlockFunc>::set_empty(const iterator& pos_hint, size_type
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
     get_block_position(pos_hint, start_pos, start_pos_in_block1, block_index1);
-    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1);
+    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1, true);
 }
 
 template<typename _CellBlockFunc>
@@ -1807,7 +1829,8 @@ multi_type_vector<_CellBlockFunc>::transfer_multi_blocks(
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
 multi_type_vector<_CellBlockFunc>::set_empty_impl(
-    size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1)
+    size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+    bool overwrite)
 {
     if (start_pos > end_pos)
         throw std::out_of_range("Start row is larger than the end row.");
@@ -1824,10 +1847,10 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
 
     iterator ret_it;
     if (block_index1 == block_index2)
-        ret_it = set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, true);
+        ret_it = set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, overwrite);
     else
         ret_it = set_empty_in_multi_blocks(
-            start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2, true);
+            start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2, overwrite);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())

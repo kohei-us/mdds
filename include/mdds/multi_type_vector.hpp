@@ -518,6 +518,49 @@ public:
     void release();
 
     /**
+     * Make all elements within specified range empty, and relinquish the
+     * ownership of the elements in that range.  All elements in the managed
+     * blocks within the range will be released and the container will no
+     * longer manage their life cycles after the call.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size.</p>
+     *
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @return iterator position pointing to the block where the elements are
+     *         released.
+     */
+    iterator release(size_type start_pos, size_type end_pos);
+
+    /**
+     * Make all elements within specified range empty, and relinquish the
+     * ownership of the elements in that range.  All elements in the managed
+     * blocks within the range will be released and the container will no
+     * longer manage their life cycles after the call.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the first block
+     * to empty.  The other variant that doesn't take an iterator always
+     * starts the block lookup from the first block, which does not
+     * scale well as the block size grows.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right
+     *                 blocks in which elements are to be released.
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @return iterator position pointing to the block where the elements are
+     *         released.
+     */
+    iterator release(const iterator& pos_hint, size_type start_pos, size_type end_pos);
+
+    /**
      * Given the logical position of an element, get the iterator of the block
      * where the element is located, and its offset from the first element of
      * that block.
@@ -931,7 +974,9 @@ private:
         size_type start_pos_in_block2, size_type block_index2,
         multi_type_vector& dest, size_type dest_pos);
 
-    iterator set_empty_impl(size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1);
+    iterator set_empty_impl(
+        size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+        bool overwrite);
 
     void swap_impl(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
