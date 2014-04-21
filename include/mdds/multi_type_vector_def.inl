@@ -1466,7 +1466,12 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
     multi_type_vector& dest, size_type dest_pos)
 {
     if (start_pos > end_pos)
-        throw std::out_of_range("Start row is larger than the end row.");
+    {
+        std::ostringstream os;
+        os << "multi_type_vector::transfer_impl: start position is larger than the end position. (start=";
+        os << start_pos << ", end=" << end_pos << ")";
+        throw std::out_of_range(os.str());
+    }
 
     size_type start_pos_in_block2 = start_pos_in_block1;
     size_type block_index2 = block_index1;
