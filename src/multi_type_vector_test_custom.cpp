@@ -1447,7 +1447,7 @@ void mtv_test_release()
     assert(db.block_size() == 1);
 
     // Release those allocated on the stack to avoid double deletion.
-    mtv_type::iterator it = db.release(1, 2);
+    mtv_type::iterator it = db.release_range(1, 2);
 
     // Check the integrity of the returned iterator.
     assert(it->type == mtv::element_type_empty);
@@ -1469,7 +1469,7 @@ void mtv_test_release()
     assert(p2->value == 10.2);
 
     // Pass iterator as a position hint.
-    it = db.release(it, 3, 4);
+    it = db.release_range(it, 3, 4);
     assert(db.block_size() == 2);
 
     // Check the returned iterator.

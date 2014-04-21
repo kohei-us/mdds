@@ -532,7 +532,7 @@ public:
      * @return iterator position pointing to the block where the elements are
      *         released.
      */
-    iterator release(size_type start_pos, size_type end_pos);
+    iterator release_range(size_type start_pos, size_type end_pos);
 
     /**
      * Make all elements within specified range empty, and relinquish the
@@ -558,7 +558,7 @@ public:
      * @return iterator position pointing to the block where the elements are
      *         released.
      */
-    iterator release(const iterator& pos_hint, size_type start_pos, size_type end_pos);
+    iterator release_range(const iterator& pos_hint, size_type start_pos, size_type end_pos);
 
     /**
      * Given the logical position of an element, get the iterator of the block

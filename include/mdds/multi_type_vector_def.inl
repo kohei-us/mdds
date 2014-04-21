@@ -1268,7 +1268,7 @@ void multi_type_vector<_CellBlockFunc>::release()
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::release(size_type start_pos, size_type end_pos)
+multi_type_vector<_CellBlockFunc>::release_range(size_type start_pos, size_type end_pos)
 {
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
@@ -1280,7 +1280,8 @@ multi_type_vector<_CellBlockFunc>::release(size_type start_pos, size_type end_po
 
 template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::iterator
-multi_type_vector<_CellBlockFunc>::release(const iterator& pos_hint, size_type start_pos, size_type end_pos)
+multi_type_vector<_CellBlockFunc>::release_range(
+    const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
