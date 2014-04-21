@@ -1,3 +1,21 @@
+* multi_type_vector
+
+  * added 2 variants of release() that take start and end positions,
+    to allow releasing of elements in specified interval.  One of the
+    variants takes iterator as a block position hint.
+
+    * iterator release(size_type start_pos, size_type end_pos)
+
+    * iterator release(const iterator& pos_hint, size_type start_pos, size_type end_pos)
+
+  * added push_back() and push_back_empty(), to allow efficient way to
+    append new values to the end of the container.
+
+    * template<typename _T>
+      iterator push_back(const _T& value)
+
+    * iterator push_back_empty()
+
 mdds 0.10.2
 
 * multi_type_vector
