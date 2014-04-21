@@ -344,9 +344,25 @@ public:
     template<typename _T>
     iterator set(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
 
+    /**
+     * Append a new value to the end of the container.
+     *
+     * @param value new value to be appended to the end of the container.
+     *
+     * @return iterator position pointing to the block where the value is
+     *         appended, which in this case is always the last block of the
+     *         container.
+     */
     template<typename _T>
     iterator push_back(const _T& value);
 
+    /**
+     * Append a new empty element to the end of the container.
+     *
+     * @return iterator position pointing to the block where the new empty
+     *         element is appended, which in this case is always the last
+     *         block of the container.
+     */
     iterator push_back_empty();
 
     /**
