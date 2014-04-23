@@ -1,3 +1,5 @@
+mdds 0.10.3
+
 * multi_type_vector
 
   * added 2 variants of release_range() that take start and end positions,
