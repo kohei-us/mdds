@@ -1,3 +1,10 @@
+mdds 0.10.4
+
+* multi_type_vector
+
+  * fixed a bug in transfer() where two adjacent blocks of identical
+    type would fail to be merged in some circumstances.
+
 mdds 0.10.3
 
 * multi_type_vector
