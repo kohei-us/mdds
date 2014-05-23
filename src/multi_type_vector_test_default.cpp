@@ -4878,6 +4878,19 @@ void mtv_test_transfer()
 
     db1.set(2, 12.8);
     it = db1.transfer(1, 2, db2, 1);
+
+    // Reset and start over.
+    db1.clear();
+    db1.resize(20);
+    db2.clear();
+    db2.resize(20);
+
+    db1.set(9, 1.1);
+
+    db2.set(10, 1.2);
+    db2.set(11, 1.3);
+
+    db1.transfer(9, 9, db2, 9);
 }
 
 void mtv_test_push_back()

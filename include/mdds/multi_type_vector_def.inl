@@ -1545,6 +1545,7 @@ multi_type_vector<_CellBlockFunc>::transfer_single_block(
         dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, new block(len));
         blk_dest->m_size -= len;
         blk_dest = dest.m_blocks[dest_block_index+1];
+        ++dest_block_index; // Must point to the new copied block.
     }
     else
     {
@@ -1558,6 +1559,8 @@ multi_type_vector<_CellBlockFunc>::transfer_single_block(
         blk_dest->m_size = dest_pos_in_block;
 
         blk_dest = dest.m_blocks[dest_block_index+1];
+
+        ++dest_block_index; // Must point to the new copied block.
     }
 
     assert(blk_dest->m_size == len);
