@@ -4920,6 +4920,34 @@ void mtv_test_transfer()
     assert(db2.get<double>(9) == 1.1);
     assert(db2.get<double>(10) == 1.2);
     assert(db2.get<double>(11) == 1.3);
+
+    // Reset and start over.
+    db1.clear();
+    db1.resize(20);
+    db2.clear();
+    db2.resize(20);
+
+    db1.set(8, 1.0);
+    db1.set(9, 1.1);
+
+    db2.set(10, 1.2);
+    db2.set(11, 1.3);
+
+    it = db1.transfer(9, 9, db2, 9);
+    assert(it->__private_data.block_index == 2);
+    assert(db1.block_size() == 3);
+    assert(db1.get<double>(8) == 1.0);
+    it = db1.begin();
+    assert(it->size == 8);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it->size == 1);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it->size == 11);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db1.end());
 }
 
 void mtv_test_push_back()
