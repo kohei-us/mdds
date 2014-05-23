@@ -4890,7 +4890,36 @@ void mtv_test_transfer()
     db2.set(10, 1.2);
     db2.set(11, 1.3);
 
-    db1.transfer(9, 9, db2, 9);
+    it = db1.transfer(9, 9, db2, 9);
+
+    // The source should be entirely empty after the transfer.
+    assert(db1.block_size() == 1);
+    assert(it == db1.begin());
+    assert(it->__private_data.block_index == 0);
+    assert(it->size == 20);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db1.end());
+
+    // Check the destination as well.
+    assert(db2.block_size() == 3);
+    it = db2.begin();
+    assert(it->size == 9);
+    assert(it->__private_data.block_index == 0);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it->size == 3);
+    assert(it->__private_data.block_index == 1);
+    assert(it->type == mtv::element_type_numeric);
+    ++it;
+    assert(it->size == 8);
+    assert(it->__private_data.block_index == 2);
+    assert(it->type == mtv::element_type_empty);
+    ++it;
+    assert(it == db2.end());
+    assert(db2.get<double>(9) == 1.1);
+    assert(db2.get<double>(10) == 1.2);
+    assert(db2.get<double>(11) == 1.3);
 }
 
 void mtv_test_push_back()
