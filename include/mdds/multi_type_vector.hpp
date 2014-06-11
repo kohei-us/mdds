@@ -37,9 +37,9 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <sstream>
 
 #if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
-#include <sstream>
 #include <iostream>
 using std::cout;
 using std::cerr;
