@@ -63,6 +63,11 @@ struct std_string_trait
 
 }
 
+/**
+ * Matrix that can store double, bool, empty and string types.  The string
+ * type is specified by the string trait template parameter.  To use
+ * std::string as the string type, use mdds::mtm::std_string_trait.
+ */
 template<typename _StringTrait>
 class multi_type_matrix
 {
