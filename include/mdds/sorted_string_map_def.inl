@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2008-2014 Kohei Yoshida
+ * Copyright (c) 2014 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,36 +25,46 @@
  *
  ************************************************************************/
 
-#ifndef MDDS_GLOBAL_HPP
-#define MDDS_GLOBAL_HPP
-
-#include <exception>
-#include <string>
-
-#define MDDS_ASCII(literal) literal, sizeof(literal)-1
-
 namespace mdds {
 
-class general_error : public ::std::exception
-{
-public:
-    general_error(const ::std::string& msg) : m_msg(msg) {}
-    virtual ~general_error() throw() {}
+template<typename _ValueT>
+sorted_string_map<_ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value) :
+    m_entries(entries),
+    m_null_value(null_value),
+    m_entry_size(entry_size),
+    m_entry_end(m_entries+m_entry_size) {}
 
-    virtual const char* what() const throw()
+template<typename _ValueT>
+typename sorted_string_map<_ValueT>::value_type
+sorted_string_map<_ValueT>::find(const char* input, size_type len) const
+{
+    const entry* p = m_entries;
+    size_type pos = 0;
+    for (; p != m_entry_end; ++p)
     {
-        return m_msg.c_str();
+        const char* key = p->key;
+        size_type keylen = p->keylen;
+        for (; pos < len && pos < keylen; ++pos)
+        {
+            if (input[pos] != key[pos])
+                // Move to the next entry.
+                break;
+        }
+
+        if (pos == len && len == keylen)
+        {
+            // Match found!
+            return p->value;
+        }
     }
-private:
-    ::std::string m_msg;
-};
-
-class invalid_arg_error : public general_error
-{
-public:
-    invalid_arg_error(const ::std::string& msg) : general_error(msg) {}
-};
-
+    return m_null_value;
 }
 
-#endif
+template<typename _ValueT>
+typename sorted_string_map<_ValueT>::size_type
+sorted_string_map<_ValueT>::size() const
+{
+    return m_entry_size;
+}
+
+}
