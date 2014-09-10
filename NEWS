@@ -1,9 +1,9 @@
+mdds 0.11.0
+
 * sorted_string_map (new)
 
   * new data structure to support efficient mapping of textural keys
     to numeric values when the key values are known at compile time.
-
-mdds 0.10.4
 
 * multi_type_vector
 
