@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012 Kohei Yoshida
+ * Copyright (c) 2012-2014 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -376,6 +376,24 @@ public:
     {
         store_type& blk = get(block).m_array;
         blk.insert(blk.begin()+pos, it_begin, it_end);
+    }
+
+    static size_t capacity(const base_element_block& block)
+    {
+#ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
+        return 0;
+#else
+        const store_type& blk = get(block).m_array;
+        return blk.capacity();
+#endif
+    }
+
+    static void shrink_to_fit(base_element_block& block)
+    {
+#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
+        store_type& blk = get(block).m_array;
+        store_type(blk).swap(blk);
+#endif
     }
 
 private:

@@ -219,6 +219,18 @@ struct custom_block_func1
                 element_block_func::overwrite_values(block, pos, len);
         }
     }
+
+    static void shrink_to_fit(base_element_block& block)
+    {
+        switch (get_block_type(block))
+        {
+            case _Block::block_type:
+                _Block::shrink_to_fit(block);
+            break;
+            default:
+                element_block_func::shrink_to_fit(block);
+        }
+    }
 };
 
 }}

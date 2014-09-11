@@ -3676,6 +3676,19 @@ void multi_type_vector<_CellBlockFunc>::swap(size_type start_pos, size_type end_
 }
 
 template<typename _CellBlockFunc>
+void multi_type_vector<_CellBlockFunc>::shrink_to_fit()
+{
+    typename blocks_type::iterator it = m_blocks.begin(), it_end = m_blocks.end();
+    for (; it != it_end; ++it)
+    {
+        block* blk = *it;
+        assert(blk);
+        if (blk->mp_data)
+            element_block_func::shrink_to_fit(*blk->mp_data);
+    }
+}
+
+template<typename _CellBlockFunc>
 bool multi_type_vector<_CellBlockFunc>::operator== (const multi_type_vector& other) const
 {
     if (this == &other)

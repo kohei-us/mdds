@@ -5048,6 +5048,25 @@ void mtv_test_push_back()
     assert(it->type == mtv::element_type_numeric);
 }
 
+void mtv_test_capacity()
+{
+    stack_printer __stack_printer__("::mtv_test_capacity");
+    mtv_type db(10, 1.1);
+    assert(db.block_size() == 1);
+    mtv_type::const_iterator it = db.begin();
+    assert(it->type == mtv::element_type_numeric);
+    size_t cap = mtv::numeric_element_block::capacity(*it->data);
+    assert(cap == 10);
+
+    db.set_empty(3, 3);
+    assert(db.block_size() == 3);
+    db.shrink_to_fit();
+    it = db.begin();
+    assert(it->type == mtv::element_type_numeric);
+    cap = mtv::numeric_element_block::capacity(*it->data);
+    assert(cap == 3);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -5085,6 +5104,7 @@ int main (int argc, char **argv)
     mtv_test_block_identifier();
     mtv_test_transfer();
     mtv_test_push_back();
+    mtv_test_capacity();
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

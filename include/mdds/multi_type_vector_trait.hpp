@@ -74,6 +74,8 @@ struct element_block_func_base
      * store primitive values), this method can be left empty.
      */
     inline static void overwrite_values(base_element_block& block, size_t pos, size_t len);
+
+    inline static void shrink_to_fit(base_element_block& block);
 };
 
 base_element_block* element_block_func_base::create_new_block(element_t type, size_t init_size)
@@ -606,6 +608,48 @@ bool element_block_func_base::equal_block(const base_element_block& left, const 
 void element_block_func_base::overwrite_values(base_element_block&, size_t, size_t)
 {
     // Do nothing for the standard types.
+}
+
+void element_block_func_base::shrink_to_fit(base_element_block& block)
+{
+    switch (get_block_type(block))
+    {
+        case element_type_numeric:
+            numeric_element_block::shrink_to_fit(block);
+        break;
+        case element_type_string:
+            string_element_block::shrink_to_fit(block);
+        break;
+        case element_type_short:
+            short_element_block::shrink_to_fit(block);
+        break;
+        case element_type_ushort:
+            ushort_element_block::shrink_to_fit(block);
+        break;
+        case element_type_int:
+            int_element_block::shrink_to_fit(block);
+        break;
+        case element_type_uint:
+            uint_element_block::shrink_to_fit(block);
+        break;
+        case element_type_long:
+            long_element_block::shrink_to_fit(block);
+        break;
+        case element_type_ulong:
+            ulong_element_block::shrink_to_fit(block);
+        break;
+        case element_type_boolean:
+            boolean_element_block::shrink_to_fit(block);
+        break;
+        case element_type_char:
+            char_element_block::shrink_to_fit(block);
+        break;
+        case element_type_uchar:
+            uchar_element_block::shrink_to_fit(block);
+        break;
+        default:
+            throw general_error("shrink_to_fit: failed to print a block of unknown type.");
+    }
 }
 
 /**

@@ -10,6 +10,9 @@ mdds 0.11.0
   * fixed a bug in transfer() where two adjacent blocks of identical
     type would fail to be merged in some circumstances.
 
+  * added shrink_to_fit() to allow trimming of any excess capacity
+    from all non-empty blocks.
+
 mdds 0.10.3
 
 * multi_type_vector
