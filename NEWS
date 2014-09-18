@@ -13,6 +13,9 @@ mdds 0.11.0
   * added shrink_to_fit() to allow trimming of any excess capacity
     from all non-empty blocks.
 
+  * fixed a double-free bug in the variant of swap() that allows
+    segmented swapping.
+
 mdds 0.10.3
 
 * multi_type_vector

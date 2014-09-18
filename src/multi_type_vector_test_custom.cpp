@@ -1395,6 +1395,44 @@ void mtv_test_swap()
     db2.set(1, string("B"));
 
     db1.swap(2, 3, db2, 0);
+
+    // swap blocks of equal size, one managed, and one default.
+
+    db1.clear();
+    db1.resize(10);
+    db2.clear();
+    db2.resize(10);
+
+    db1.set(3, 2.1);
+    db1.set(4, 2.2);
+    db1.set(5, 2.3);
+
+    db2.set(3, new muser_cell(3.1));
+    db2.set(4, new muser_cell(3.2));
+    db2.set(5, new muser_cell(3.3));
+
+    db2.swap(3, 5, db1, 3);
+
+    assert(db1.size() == 10);
+    assert(db1.block_size() == 3);
+    assert(db2.size() == 10);
+    assert(db2.block_size() == 3);
+
+    assert(db1.get<muser_cell*>(3)->value == 3.1);
+    assert(db1.get<muser_cell*>(4)->value == 3.2);
+    assert(db1.get<muser_cell*>(5)->value == 3.3);
+    assert(db2.get<double>(3) == 2.1);
+    assert(db2.get<double>(4) == 2.2);
+    assert(db2.get<double>(5) == 2.3);
+
+    db2.swap(3, 5, db1, 3);
+
+    assert(db1.get<double>(3) == 2.1);
+    assert(db1.get<double>(4) == 2.2);
+    assert(db1.get<double>(5) == 2.3);
+    assert(db2.get<muser_cell*>(3)->value == 3.1);
+    assert(db2.get<muser_cell*>(4)->value == 3.2);
+    assert(db2.get<muser_cell*>(5)->value == 3.3);
 }
 
 void mtv_test_custom_block_func3()

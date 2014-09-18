@@ -1977,6 +1977,8 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
             mdds::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->mp_data);
             blk_src->mp_data = other.exchange_elements(
                 *src_data, src_offset, other_block_index, dst_offset, len);
+            // Release elements in the source block to prevent double-deletion.
+            element_block_func::resize_block(*src_data, 0);
             merge_with_adjacent_blocks(block_index);
             return;
         }
