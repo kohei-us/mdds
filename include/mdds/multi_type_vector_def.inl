@@ -31,6 +31,19 @@
 
 namespace mdds {
 
+namespace detail {
+
+inline void throw_block_position_not_found(
+    const char* method_sig, int line, size_t pos, size_t block_size, size_t container_size)
+{
+    std::ostringstream os;
+    os << method_sig << "#" << line << ": block position not found! (logical pos="
+        << pos << ", block size=" << block_size << ", logical size=" << container_size << ")";
+    throw std::out_of_range(os.str());
+}
+
+}
+
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_numeric, 0.0, mtv::numeric_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, mtv::element_type_string, std::string(), mtv::string_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(short, mtv::element_type_short, 0, mtv::short_element_block)
@@ -250,7 +263,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& value)
     size_type start_row = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -471,7 +484,7 @@ multi_type_vector<_CellBlockFunc>::set(size_type pos, const _T& it_begin, const 
 
     size_type block_index1 = 0, start_row1 = 0;
     if (!get_block_position(pos, start_row1, block_index1))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
     return set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
 }
@@ -561,7 +574,7 @@ multi_type_vector<_CellBlockFunc>::insert(size_type pos, const _T& it_begin, con
 {
     size_type block_index = 0, start_pos = 0;
     if (!get_block_position(pos, start_pos, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::insert", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -657,7 +670,7 @@ void multi_type_vector<_CellBlockFunc>::get_block_position(
     }
 
     if (!get_block_position(pos, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::get_block_position", __LINE__, pos, block_size(), size());
 }
 
 template<typename _CellBlockFunc>
@@ -1184,7 +1197,7 @@ void multi_type_vector<_CellBlockFunc>::get(size_type pos, _T& value) const
     size_type start_row = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::get", __LINE__, pos, block_size(), size());
 
     const block* blk = m_blocks[block_index];
     assert(blk);
@@ -1218,7 +1231,7 @@ _T multi_type_vector<_CellBlockFunc>::release(size_type pos)
     size_type start_pos = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_pos, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::release", __LINE__, pos, block_size(), size());
 
     _T value;
     release_impl(pos, start_pos, block_index, value);
@@ -1233,7 +1246,7 @@ multi_type_vector<_CellBlockFunc>::release(size_type pos, _T& value)
     size_type start_pos = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_pos, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::release", __LINE__, pos, block_size(), size());
 
     return release_impl(pos, start_pos, block_index, value);
 }
@@ -1273,7 +1286,7 @@ multi_type_vector<_CellBlockFunc>::release_range(size_type start_pos, size_type 
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
     if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
 
     return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1, false);
 }
@@ -1296,7 +1309,7 @@ multi_type_vector<_CellBlockFunc>::position(size_type pos)
     size_type start_pos = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_pos, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::position", __LINE__, pos, block_size(), size());
 
     iterator it = get_iterator(block_index, start_pos);
     return position_type(it, pos - start_pos);
@@ -1321,7 +1334,7 @@ multi_type_vector<_CellBlockFunc>::position(size_type pos) const
     size_type start_row = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::position", __LINE__, pos, block_size(), size());
 
     typename blocks_type::const_iterator block_pos = m_blocks.begin();
     std::advance(block_pos, block_index);
@@ -1352,7 +1365,7 @@ multi_type_vector<_CellBlockFunc>::transfer(
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
     if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -1418,7 +1431,7 @@ mtv::element_t multi_type_vector<_CellBlockFunc>::get_type(size_type pos) const
     size_type start_row = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::get_type", __LINE__, pos, block_size(), size());
 
     const block* blk = m_blocks[block_index];
     if (!blk->mp_data)
@@ -1433,7 +1446,7 @@ bool multi_type_vector<_CellBlockFunc>::is_empty(size_type pos) const
     size_type start_row = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_row, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::is_empty", __LINE__, pos, block_size(), size());
 
     return m_blocks[block_index]->mp_data == NULL;
 }
@@ -1445,7 +1458,7 @@ multi_type_vector<_CellBlockFunc>::set_empty(size_type start_pos, size_type end_
     size_type start_pos_in_block1 = 0;
     size_type block_index1 = 0;
     if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
 
     return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1, true);
 }
@@ -1477,7 +1490,7 @@ multi_type_vector<_CellBlockFunc>::transfer_impl(
     size_type start_pos_in_block2 = start_pos_in_block1;
     size_type block_index2 = block_index1;
     if (!get_block_position(end_pos, start_pos_in_block2, block_index2))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::transfer_impl", __LINE__, end_pos, block_size(), size());
 
     size_type len = end_pos - start_pos + 1;
     size_type last_dest_pos = dest_pos + len - 1;
@@ -1847,7 +1860,7 @@ multi_type_vector<_CellBlockFunc>::set_empty_impl(
     size_type start_pos_in_block2 = start_pos_in_block1;
     size_type block_index2 = block_index1;
     if (!get_block_position(end_pos, start_pos_in_block2, block_index2))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::set_empty_impl", __LINE__, end_pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -2275,12 +2288,12 @@ void multi_type_vector<_CellBlockFunc>::erase_impl(size_type start_row, size_typ
     size_type start_row_in_block1 = 0;
     size_type block_pos1 = 0;
     if (!get_block_position(start_row, start_row_in_block1, block_pos1))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::erase_impl", __LINE__, start_row, block_size(), size());
 
     size_type start_row_in_block2 = start_row_in_block1;
     size_type block_pos2 = block_pos1;
     if (!get_block_position(end_row, start_row_in_block2, block_pos2))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::erase_impl", __LINE__, end_row, block_size(), size());
 
     if (block_pos1 == block_pos2)
     {
@@ -2423,7 +2436,7 @@ multi_type_vector<_CellBlockFunc>::insert_empty(size_type pos, size_type length)
 
     size_type start_pos = 0, block_index = 0;
     if (!get_block_position(pos, start_pos, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -2566,7 +2579,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_impl(
     size_type start_row2 = start_row1;
     size_type block_index2 = block_index1;
     if (!get_block_position(end_row, start_row2, block_index2))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::set_cells_impl", __LINE__, end_row, block_size(), size());
 
     if (block_index1 == block_index2)
     {
@@ -3592,7 +3605,7 @@ void multi_type_vector<_CellBlockFunc>::resize(size_type new_size)
     size_type new_end_row = new_size - 1;
     size_type start_row_in_block = 0, block_index = 0;
     if (!get_block_position(new_end_row, start_row_in_block, block_index))
-        throw std::out_of_range("Block position not found!");
+        detail::throw_block_position_not_found("multi_type_vector::resize", __LINE__, new_end_row, block_size(), size());
 
     block* blk = m_blocks[block_index];
     size_type end_row_in_block = start_row_in_block + blk->m_size - 1;

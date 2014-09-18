@@ -16,6 +16,9 @@ mdds 0.11.0
   * fixed a double-free bug in the variant of swap() that allows
     segmented swapping.
 
+  * improved the exception message when the block position lookup
+    fails to find valid block position, to make it easier to debug.
+
 mdds 0.10.3
 
 * multi_type_vector
