@@ -19,7 +19,8 @@ EXECS= \
 	multi_type_matrix_test \
 	rectangle_set_test \
 	multi_type_vector_test_default \
-	multi_type_vector_test_custom
+	multi_type_vector_test_custom \
+	sorted_string_map_test
 
 HEADERS= \
 	@top_srcdir@/$(INCDIR)/mdds/compat/unique_ptr.hpp \
@@ -43,6 +44,7 @@ HEADERS= \
 	@top_srcdir@/$(INCDIR)/mdds/rectangle_set_def.inl \
 	@top_srcdir@/$(INCDIR)/mdds/rectangle_set.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/segment_tree.hpp \
+	@top_srcdir@/$(INCDIR)/mdds/sorted_string_map_def.inl \
 	@top_srcdir@/$(INCDIR)/mdds/sorted_string_map.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/multi_type_vector_custom_func1.hpp \
@@ -64,7 +66,8 @@ TESTS = \
 	test.st \
 	test.mtm \
 	test.mtv \
-	test.mtmatrix
+	test.mtmatrix \
+	test.ssmap
 
 TESTS_MEM = \
 	test.pqt.mem \
