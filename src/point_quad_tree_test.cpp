@@ -455,15 +455,24 @@ void pqt_test_node_access()
 
 int main()
 {
-    pqt_test_basic();
-    pqt_test_insertion_removal();
-    pqt_test_remove_root();
-    pqt_test_equality();
-    pqt_test_assignment();
-    pqt_test_swap();
-    pqt_test_find();
-    pqt_test_node_access();
-    assert(get_node_instance_count() == 0);
+    try
+    {
+        pqt_test_basic();
+        pqt_test_insertion_removal();
+        pqt_test_remove_root();
+        pqt_test_equality();
+        pqt_test_assignment();
+        pqt_test_swap();
+        pqt_test_find();
+        pqt_test_node_access();
+        assert(get_node_instance_count() == 0);
+    }
+    catch (const std::exception& e)
+    {
+        cout << "Test failed: " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }

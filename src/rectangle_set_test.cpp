@@ -943,24 +943,32 @@ void rect_test_invalid_range()
 
 int main(int argc, char** argv)
 {
-    cmd_options opt;
-    if (!parse_cmd_options(argc, argv, opt))
-        return EXIT_FAILURE;
-    if (opt.test_func)
+    try
     {
-        rect_test_insertion_removal();
-        rect_test_search();
-        rect_test_copy_constructor();
-        rect_test_assignment();
-        rect_test_equality();
-        rect_test_search_result_iterator();
-        rect_test_invalid_range();
-    }
+        cmd_options opt;
+        if (!parse_cmd_options(argc, argv, opt))
+            return EXIT_FAILURE;
+        if (opt.test_func)
+        {
+            rect_test_insertion_removal();
+            rect_test_search();
+            rect_test_copy_constructor();
+            rect_test_assignment();
+            rect_test_equality();
+            rect_test_search_result_iterator();
+            rect_test_invalid_range();
+        }
 
-    if (opt.test_perf)
+        if (opt.test_perf)
+        {
+            rect_test_perf_insertion_fixed_x();
+            rect_test_perf_insertion_fixed_y();
+        }
+    }
+    catch (const std::exception& e)
     {
-        rect_test_perf_insertion_fixed_x();
-        rect_test_perf_insertion_fixed_y();
+        fprintf(stdout, "Test failed: %s\n", e.what());
+        return EXIT_FAILURE;
     }
 
     fprintf(stdout, "Test finished successfully!\n");

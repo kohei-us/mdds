@@ -947,48 +947,56 @@ void mtm_perf_test_iterate_elements()
 
 int main(int argc, char** argv)
 {
-    cmd_options opt;
-    if (!parse_cmd_options(argc, argv, opt))
-        return EXIT_FAILURE;
-
-    if (opt.test_func)
+    try
     {
-        run_tests_on_all_density_types(mtm_test_resize);
-        run_tests_on_all_density_types(mtm_test_value_store);
-        run_tests_on_all_density_types(mtm_test_transpose);
-        run_tests_on_all_density_types(mtm_test_assignment);
+        cmd_options opt;
+        if (!parse_cmd_options(argc, argv, opt))
+            return EXIT_FAILURE;
 
-        mtm_test_initial_elements();
-        mtm_test_numeric_matrix();
-        mtm_test_assign(matrix_density_filled_zero, matrix_density_filled_zero);
-        mtm_test_assign(matrix_density_filled_empty, matrix_density_filled_zero);
-        mtm_test_assign(matrix_density_filled_zero, matrix_density_filled_empty);
-        mtm_test_assign(matrix_density_filled_empty, matrix_density_filled_empty);
+        if (opt.test_func)
+        {
+            run_tests_on_all_density_types(mtm_test_resize);
+            run_tests_on_all_density_types(mtm_test_value_store);
+            run_tests_on_all_density_types(mtm_test_transpose);
+            run_tests_on_all_density_types(mtm_test_assignment);
+    
+            mtm_test_initial_elements();
+            mtm_test_numeric_matrix();
+            mtm_test_assign(matrix_density_filled_zero, matrix_density_filled_zero);
+            mtm_test_assign(matrix_density_filled_empty, matrix_density_filled_zero);
+            mtm_test_assign(matrix_density_filled_zero, matrix_density_filled_empty);
+            mtm_test_assign(matrix_density_filled_empty, matrix_density_filled_empty);
 
-        run_tests_on_all_density_types(mtm_test_flag_storage);
+            run_tests_on_all_density_types(mtm_test_flag_storage);
 
-        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(1, 1);
-        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(3, 1);
-        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(1, 3);
-        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(3, 3);
-        mtm_test_iterator_access_filled<mx_type::filled_storage_type>(0, 0);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_type>(1, 1);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_type>(3, 1);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_type>(1, 3);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_type>(3, 3);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_type>(0, 0);
 
-        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(1, 1);
-        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(3, 1);
-        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(1, 3);
-        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(3, 3);
-        mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(0, 0);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(1, 1);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(3, 1);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(1, 3);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(3, 3);
+            mtm_test_iterator_access_filled<mx_type::filled_storage_zero_type>(0, 0);
 
-        mtm_test_iterator_access_sparse();
+            mtm_test_iterator_access_sparse();
 
-        mtm_test_const_iterator();
+            mtm_test_const_iterator();
+        }
+
+        if (opt.test_perf)
+        {
+            mtm_perf_test_storage_creation();
+            mtm_perf_test_storage_set_numeric();
+            mtm_perf_test_iterate_elements();
+        }
     }
-
-    if (opt.test_perf)
+    catch (const std::exception& e)
     {
-        mtm_perf_test_storage_creation();
-        mtm_perf_test_storage_set_numeric();
-        mtm_perf_test_iterate_elements();
+        cout << "Test failed: " << e.what() << endl;
+        return EXIT_FAILURE;
     }
 
     cout << "Test finished successfully!" << endl;

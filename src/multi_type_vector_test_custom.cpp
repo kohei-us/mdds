@@ -1569,17 +1569,25 @@ void mtv_test_construction_with_array()
 
 int main (int argc, char **argv)
 {
-    mtv_test_types();
-    mtv_test_block_identifier();
-    mtv_test_basic();
-    mtv_test_equality();
-    mtv_test_managed_block();
-    mtv_test_custom_block_func1();
-    mtv_test_transfer();
-    mtv_test_swap();
-    mtv_test_custom_block_func3();
-    mtv_test_release();
-    mtv_test_construction_with_array();
+    try
+    {
+        mtv_test_types();
+        mtv_test_block_identifier();
+        mtv_test_basic();
+        mtv_test_equality();
+        mtv_test_managed_block();
+        mtv_test_custom_block_func1();
+        mtv_test_transfer();
+        mtv_test_swap();
+        mtv_test_custom_block_func3();
+        mtv_test_release();
+        mtv_test_construction_with_array();
+    }
+    catch (const std::exception& e)
+    {
+        cout << "Test failed: " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
 
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;

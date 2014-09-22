@@ -969,34 +969,42 @@ void mtm_perf_test_insert_via_position_object()
 
 int main (int argc, char **argv)
 {
-    cmd_options opt;
-    if (!parse_cmd_options(argc, argv, opt))
-        return EXIT_FAILURE;
-
-    if (opt.test_func)
+    try
     {
-        mtm_test_construction();
-        mtm_test_data_insertion();
-        mtm_test_data_insertion_multiple();
-        mtm_test_set_empty();
-        mtm_test_swap();
-        mtm_test_transpose();
-        mtm_test_resize();
-        mtm_test_copy();
-        mtm_test_assignment();
-        mtm_test_numeric();
-        mtm_test_walk();
-        mtm_test_custom_string();
-        mtm_test_position();
-        mtm_test_set_data_via_position();
+        cmd_options opt;
+        if (!parse_cmd_options(argc, argv, opt))
+            return EXIT_FAILURE;
+
+        if (opt.test_func)
+        {
+            mtm_test_construction();
+            mtm_test_data_insertion();
+            mtm_test_data_insertion_multiple();
+            mtm_test_set_empty();
+            mtm_test_swap();
+            mtm_test_transpose();
+            mtm_test_resize();
+            mtm_test_copy();
+            mtm_test_assignment();
+            mtm_test_numeric();
+            mtm_test_walk();
+            mtm_test_custom_string();
+            mtm_test_position();
+            mtm_test_set_data_via_position();
+        }
+
+        if (opt.test_perf)
+        {
+            mtm_perf_test_storage_creation();
+            mtm_perf_test_storage_set_numeric();
+            mtm_perf_test_iterate_elements();
+            mtm_perf_test_insert_via_position_object();
+        }
     }
-
-    if (opt.test_perf)
+    catch (const std::exception& e)
     {
-        mtm_perf_test_storage_creation();
-        mtm_perf_test_storage_set_numeric();
-        mtm_perf_test_iterate_elements();
-        mtm_perf_test_insert_via_position_object();
+        fprintf(stdout, "Test failed: %s\n", e.what());
+        return EXIT_FAILURE;
     }
 
     cout << "Test finished successfully!" << endl;

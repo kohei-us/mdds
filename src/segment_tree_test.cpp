@@ -1084,36 +1084,43 @@ void st_test_empty_result_set()
 
 int main(int argc, char** argv)
 {
-    cmd_options opt;
-    if (!parse_cmd_options(argc, argv, opt))
+    try
+    {
+        cmd_options opt;
+        if (!parse_cmd_options(argc, argv, opt))
+            return EXIT_FAILURE;
+
+        if (opt.test_func)
+        {
+            st_test_insert_search_removal();
+            st_test_copy_constructor();
+            st_test_equality();
+            st_test_clear();
+            st_test_duplicate_insertion();
+            st_test_search_on_uneven_tree();
+            st_test_aggregated_search_results();
+            st_test_dense_tree_search();
+            st_test_search_on_empty_set();
+            st_test_search_iterator_basic();
+            st_test_search_iterator_result_check();
+            st_test_empty_result_set();
+        }
+
+        if (opt.test_perf)
+        {
+            st_test_perf_insertion();
+        }
+
+        // At this point, all of the nodes created during the test run should have
+        // been destroyed.  If not, we are leaking memory.
+        typedef segment_tree<uint32_t, void> db_type;
+        assert(db_type::node::get_instance_count() == 0);
+    }
+    catch (const std::exception& e)
+    {
+        fprintf(stdout, "Test failed: %s\n", e.what());
         return EXIT_FAILURE;
-
-    if (opt.test_func)
-    {
-        st_test_insert_search_removal();
-        st_test_copy_constructor();
-        st_test_equality();
-        st_test_clear();
-        st_test_duplicate_insertion();
-        st_test_search_on_uneven_tree();
-        st_test_aggregated_search_results();
-        st_test_dense_tree_search();
-        st_test_search_on_empty_set();
-        st_test_search_iterator_basic();
-        st_test_search_iterator_result_check();
-        st_test_empty_result_set();
     }
-
-    if (opt.test_perf)
-    {
-        st_test_perf_insertion();
-    }
-
-    // At this point, all of the nodes created during the test run should have
-    // been destroyed.  If not, we are leaking memory.
-    typedef segment_tree<uint32_t, void> db_type;
-    assert(db_type::node::get_instance_count() == 0);
-
     fprintf(stdout, "Test finished successfully!\n");
     return EXIT_SUCCESS;
 }
