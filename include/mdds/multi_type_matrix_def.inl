@@ -366,31 +366,31 @@ multi_type_matrix<_String>&
 multi_type_matrix<_String>::transpose()
 {
     multi_type_matrix tmp(m_size.column, m_size.row);
-    for (size_type row = 0; row < m_size.row; ++row)
+    for (size_type old_row_new_col = 0; old_row_new_col < m_size.row; ++old_row_new_col)
     {
-        for (size_type col = 0; col < m_size.column; ++col)
+        for (size_type old_col_new_row = 0; old_col_new_row < m_size.column; ++old_col_new_row)
         {
-            switch (get_type(row,col))
+            switch (get_type(old_row_new_col,old_col_new_row))
             {
                 case mtm::element_numeric:
                 {
                     double val;
-                    m_store.get(get_pos(row,col), val);
-                    tmp.set(col, row, val);
+                    m_store.get(get_pos(old_row_new_col,old_col_new_row), val);
+                    tmp.set(old_col_new_row, old_row_new_col, val);
                 }
                 break;
                 case mtm::element_boolean:
                 {
                     bool val;
-                    m_store.get(get_pos(row,col), val);
-                    tmp.set(col, row, val);
+                    m_store.get(get_pos(old_row_new_col,old_col_new_row), val);
+                    tmp.set(old_col_new_row, old_row_new_col, val);
                 }
                 break;
                 case mtm::element_string:
                 {
                     string_type val;
-                    m_store.get(get_pos(row,col), val);
-                    tmp.set(col, row, val);
+                    m_store.get(get_pos(old_row_new_col,old_col_new_row), val);
+                    tmp.set(old_col_new_row, old_row_new_col, val);
                 }
                 break;
                 case mtm::element_empty:
