@@ -2964,7 +2964,7 @@ void mtv_test_set_return_iterator()
     it = db.set(6, string("text"));
     assert(it->size == 1);
     assert(it->type == mtv::element_type_string);
-    assert(it->position = 6);
+    assert(it->position == 6);
     check = db.begin();
     std::advance(check, 2);
     assert(it == check);
