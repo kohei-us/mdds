@@ -61,6 +61,12 @@ public:
         {
             return low == r.low && high == r.high;
         }
+    
+        nonleaf_value_type()
+            : low(0)
+            , high(0)
+        {
+        }
     };
 
     struct leaf_value_type
@@ -71,6 +77,12 @@ public:
         bool operator== (const leaf_value_type& r) const
         {
             return key == r.key && value == r.value;
+        }
+
+        leaf_value_type()
+            : key(0)
+            , value(0)
+        {
         }
     };
 
