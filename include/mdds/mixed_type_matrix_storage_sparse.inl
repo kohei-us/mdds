@@ -79,7 +79,9 @@ public:
         m_rows(r.m_rows),
         m_empty_elem(r.m_empty_elem),
         m_row_size(r.m_row_size),
-        m_col_size(r.m_col_size) {}
+        m_col_size(r.m_col_size),
+        m_numeric(r.m_numeric),
+        m_valid(r.m_valid) {}
 
     ~storage_sparse() {}
 
