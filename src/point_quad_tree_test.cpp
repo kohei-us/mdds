@@ -188,7 +188,8 @@ void pqt_test_insertion_removal()
             db.remove(x, y);
             size_t n = db.size();
             cout << "removing node at (" << x << "," << y << ")  " << "size after removal: " << n << endl;
-            assert(--node_count == n);
+            --node_count;
+            assert(node_count == n);
         }
     }
 }
