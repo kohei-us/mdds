@@ -771,15 +771,17 @@ private:
 };
 
 template<typename _Key, typename _Data>
-segment_tree<_Key, _Data>::segment_tree() :
-    m_valid_tree(false)
+segment_tree<_Key, _Data>::segment_tree()
+    : m_root_node(NULL)
+    , m_valid_tree(false)
 {
 }
 
 template<typename _Key, typename _Data>
-segment_tree<_Key, _Data>::segment_tree(const segment_tree& r) :
-    m_segment_data(r.m_segment_data),
-    m_valid_tree(r.m_valid_tree)
+segment_tree<_Key, _Data>::segment_tree(const segment_tree& r)
+    : m_segment_data(r.m_segment_data)
+    , m_root_node(NULL)
+    , m_valid_tree(r.m_valid_tree)
 {
     if (m_valid_tree)
         build_tree();
