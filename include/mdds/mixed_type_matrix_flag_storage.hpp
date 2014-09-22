@@ -27,6 +27,7 @@
 
 #ifdef MDDS_UNIT_TEST
 #include <iostream>
+#include <boost/io/ios_state.hpp>
 #endif
 
 #include "mdds/hash_container/map.hpp"
@@ -85,6 +86,7 @@ public:
         }
 
         cout << "flags stored:" << endl;
+        boost::io::ios_flags_saver ifs(cout);
         typename flag_store_type::const_iterator itr = m_flags.begin(), itr_end = m_flags.end();
         for (; itr != itr_end; ++itr)
         {
