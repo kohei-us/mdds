@@ -804,7 +804,6 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
             adjust_quad(xrange, yrange, delete_node->southeast, dir_north, insert_list);
             set_new_root(xrange, yrange, delete_node->southwest, quad_northeast, insert_list);
             break;
-        case quad_unspecified:
         default:
             throw general_error("quadrant for the replacement node is unspecified.");
     }
@@ -837,7 +836,6 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
             reinsert_tree(delete_node, quad_southwest, root);
         }
         break;
-        case quad_unspecified:
         default:
             throw general_error("quadrant for the replacement node is unspecified.");
     }
@@ -869,7 +867,6 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
             delete_node->southwest = repl_node->southwest;
             repl_node->southwest.reset();
             break;
-        case quad_unspecified:
         default:
             throw general_error("quadrant for the replacement node is unspecified.");
     }
@@ -1533,7 +1530,6 @@ void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_quadrant_t 
                 root->parent = dest;
             }
             break;
-        case quad_unspecified:
         default:
             throw general_error("reinsert_tree: quadrant unspecified");
     }
