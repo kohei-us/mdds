@@ -1,3 +1,10 @@
+mdds 0.11.1
+
+* multi_type_vector
+
+  * fixed 2 cases of double-free bug in the variant of swap() that
+    allows segmented swapping.
+
 mdds 0.11.0
 
 * sorted_string_map (new)
