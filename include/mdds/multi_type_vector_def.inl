@@ -2009,6 +2009,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
         {
             // Append the new elements to the previous block.
             element_block_func::append_values_from_block(*blk_prev->mp_data, *dst_data);
+            element_block_func::resize_block(*dst_data, 0); // prevent double-delete.
             blk_prev->m_size += len;
         }
         else
@@ -2038,6 +2039,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
         {
             // Merge with the next block.
             element_block_func::prepend_values_from_block(*blk_next->mp_data, *dst_data, 0, len);
+            element_block_func::resize_block(*dst_data, 0); // prevent double-delete.
             blk_next->m_size += len;
         }
         else
