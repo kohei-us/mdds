@@ -40,6 +40,7 @@
 #include <boost/noncopyable.hpp>
 
 #if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 using std::cout;
