@@ -1170,7 +1170,10 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_top_of_data_block(size_type 
     block* blk = m_blocks[block_index];
     blk->m_size -= 1;
     if (blk->mp_data)
+    {
+        element_block_func::overwrite_values(*blk->mp_data, 0, 1);
         element_block_func::erase(*blk->mp_data, 0);
+    }
     m_blocks.insert(m_blocks.begin()+block_index, new block(1));
     blk = m_blocks[block_index];
     create_new_block_with_new_cell(blk->mp_data, cell);
@@ -1183,7 +1186,10 @@ void multi_type_vector<_CellBlockFunc>::set_cell_to_bottom_of_data_block(size_ty
     assert(block_index < m_blocks.size());
     block* blk = m_blocks[block_index];
     if (blk->mp_data)
+    {
+        element_block_func::overwrite_values(*blk->mp_data, blk->m_size-1, 1);
         element_block_func::erase(*blk->mp_data, blk->m_size-1);
+    }
     blk->m_size -= 1;
     m_blocks.insert(m_blocks.begin()+block_index+1, new block(1));
     blk = m_blocks[block_index+1];
