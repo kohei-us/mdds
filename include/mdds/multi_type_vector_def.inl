@@ -364,6 +364,7 @@ multi_type_vector<_CellBlockFunc>::set_impl(
             // Append to the previous block.
             size_type offset = blk_prev->m_size;
             blk->m_size -= 1;
+            element_block_func::overwrite_values(*blk->mp_data, 0, 1);
             element_block_func::erase(*blk->mp_data, 0);
             blk_prev->m_size += 1;
             mdds_mtv_append_value(*blk_prev->mp_data, value);
