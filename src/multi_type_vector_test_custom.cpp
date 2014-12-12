@@ -980,6 +980,7 @@ void mtv_test_managed_block()
         db.set(2, new muser_cell(1.3));
 
         db.set(2, 2.1); // Don't leak the overwritten muser_cell instance.
+        db.set(1, 2.0); // ditto
     }
 }
 

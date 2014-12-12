@@ -412,6 +412,7 @@ multi_type_vector<_CellBlockFunc>::set_impl(
 
         // Pop the last cell off the current block, and prepend the
         // new cell to the next block.
+        element_block_func::overwrite_values(*blk->mp_data, blk->m_size-1, 1);
         element_block_func::erase(*blk->mp_data, blk->m_size-1);
         blk->m_size -= 1;
         mdds_mtv_prepend_value(*blk_next->mp_data, value);
