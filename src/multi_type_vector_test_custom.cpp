@@ -982,6 +982,15 @@ void mtv_test_managed_block()
         db.set(2, 2.1); // Don't leak the overwritten muser_cell instance.
         db.set(1, 2.0); // ditto
     }
+
+    {
+        mtv_type db(8);
+        db.set(3, new muser_cell(1.1));
+        db.set(4, new muser_cell(1.2));
+        db.set(5, 1.3);
+
+        db.set(4, 2.2); // Overwrite muser_cell and don't leak.
+    }
 }
 
 void mtv_test_custom_block_func1()
