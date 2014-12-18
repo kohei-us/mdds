@@ -1,3 +1,8 @@
+* multi_type_vector
+
+  * fixed various memory leaks associated with the set() method when a
+    value overwrites an existing element in a managed block.
+
 mdds 0.11.1
 
 * all
