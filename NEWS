@@ -1,3 +1,5 @@
+mdds 0.11.2
+
 * multi_type_vector
 
   * fixed various memory leaks associated with the set() method when a
