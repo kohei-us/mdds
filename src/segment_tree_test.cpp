@@ -89,10 +89,10 @@ struct test_data
 
 template<typename key_type, typename data_type>
 bool check_leaf_nodes(
-    const segment_tree<key_type, data_type>& db,
+    const segment_tree<key_type, data_type*>& db,
     const key_type* keys, data_type** data_chain, size_t key_size)
 {
-    typedef segment_tree<key_type, data_type> st_type;
+    typedef segment_tree<key_type, data_type*> st_type;
     vector<typename st_type::leaf_node_check> checks;
     checks.reserve(key_size);
     size_t dcid = 0;
@@ -145,13 +145,13 @@ bool check_against_expected(const list<const data_type*>& test, data_type** expe
  */
 template<typename key_type, typename data_type>
 bool check_search_result_only(
-    const segment_tree<key_type, data_type>& db,
-    const typename segment_tree<key_type, data_type>::search_result_type& result,
+    const segment_tree<key_type, data_type*>& db,
+    const typename segment_tree<key_type, data_type*>::search_result_type& result,
     key_type key, data_type** expected)
 {
     cout << "search key: " << key << " ";
 
-    typedef typename segment_tree<key_type, data_type>::search_result_type search_result_type;
+    typedef typename segment_tree<key_type, data_type*>::search_result_type search_result_type;
     list<const data_type*> test;
     copy(result.begin(), result.end(), back_inserter(test));
     test.sort(test_data::sort_by_name());
@@ -168,12 +168,12 @@ bool check_search_result_only(
  */
 template<typename key_type, typename data_type>
 bool check_search_result(
-    const segment_tree<key_type, data_type>& db,
+    const segment_tree<key_type, data_type*>& db,
     key_type key, data_type** expected)
 {
     cout << "search key: " << key << " ";
 
-    typedef typename segment_tree<key_type, data_type>::search_result_type search_result_type;
+    typedef typename segment_tree<key_type, data_type*>::search_result_type search_result_type;
     search_result_type data_chain;
     db.search(key, data_chain);
     return check_search_result_only(db, data_chain, key, expected);
@@ -181,12 +181,12 @@ bool check_search_result(
 
 template<typename key_type, typename data_type>
 bool check_search_result_iterator(
-    const segment_tree<key_type, data_type>& db,
+    const segment_tree<key_type, data_type*>& db,
     key_type key, data_type** expected)
 {
     cout << "search key: " << key << " ";
 
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
     typename db_type::search_result result = db.search(key);
     list<const data_type*> test;
     copy(result.begin(), result.end(), back_inserter(test));
@@ -205,7 +205,7 @@ void st_test_insert_search_removal()
 
     typedef long key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     db_type db;
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
@@ -481,7 +481,7 @@ void st_test_copy_constructor()
 
     typedef long key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     db_type db;
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
@@ -532,7 +532,7 @@ void st_test_equality()
 
     typedef uint32_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     {
@@ -562,7 +562,7 @@ void st_test_clear()
 
     typedef uint8_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
@@ -607,7 +607,7 @@ void st_test_duplicate_insertion()
 
     typedef short key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
@@ -632,7 +632,7 @@ void st_test_search_on_uneven_tree()
 
     typedef int16_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     for (key_type data_count = 10; data_count < 20; ++data_count)
     {
@@ -674,7 +674,7 @@ void st_test_perf_insertion()
 
     typedef uint32_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     key_type data_count = 1000000;
 
@@ -819,7 +819,7 @@ void st_test_aggregated_search_results()
 
     typedef uint16_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
@@ -878,7 +878,7 @@ void st_test_dense_tree_search()
 
     typedef uint16_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     db_type db;
@@ -894,42 +894,42 @@ void st_test_dense_tree_search()
     db.dump_leaf_nodes();
 
     {
-        db_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        db_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         bool success = check_search_result<key_type, data_type>(db, 0, expected);
         assert(success);
     }
     {
-        db_type::data_type* expected[] = {&B, &C, &D, &E, &F, &G, 0};
+        db_type::data_type expected[] = {&B, &C, &D, &E, &F, &G, 0};
         bool success = check_search_result<key_type, data_type>(db, 1, expected);
         assert(success);
     }
     {
-        db_type::data_type* expected[] = {&C, &D, &E, &F, &G, 0};
+        db_type::data_type expected[] = {&C, &D, &E, &F, &G, 0};
         bool success = check_search_result<key_type, data_type>(db, 2, expected);
         assert(success);
     }
     {
-        db_type::data_type* expected[] = {&D, &E, &F, &G, 0};
+        db_type::data_type expected[] = {&D, &E, &F, &G, 0};
         bool success = check_search_result<key_type, data_type>(db, 3, expected);
         assert(success);
     }
     {
-        db_type::data_type* expected[] = {&E, &F, &G, 0};
+        db_type::data_type expected[] = {&E, &F, &G, 0};
         bool success = check_search_result<key_type, data_type>(db, 4, expected);
         assert(success);
     }
     {
-        db_type::data_type* expected[] = {&F, &G, 0};
+        db_type::data_type expected[] = {&F, &G, 0};
         bool success = check_search_result<key_type, data_type>(db, 5, expected);
         assert(success);
     }
     {
-        db_type::data_type* expected[] = {&G, 0};
+        db_type::data_type expected[] = {&G, 0};
         bool success = check_search_result<key_type, data_type>(db, 6, expected);
         assert(success);
     }
     {
-        db_type::data_type* expected[] = {0};
+        db_type::data_type expected[] = {0};
         bool success = check_search_result<key_type, data_type>(db, 7, expected);
         assert(success);
     }
@@ -941,7 +941,7 @@ void st_test_search_on_empty_set()
 
     typedef uint16_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     db_type db;
     db.build_tree();
@@ -959,7 +959,7 @@ void st_test_search_iterator_basic()
     stack_printer __stack_printer__("::st_test_search_iterator");
     typedef uint16_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     db_type db;
@@ -1013,7 +1013,7 @@ void st_test_search_iterator_result_check()
 
     typedef uint16_t key_type;
     typedef test_data data_type;
-    typedef segment_tree<key_type, data_type> db_type;
+    typedef segment_tree<key_type, data_type*> db_type;
 
     data_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     db_type db;
@@ -1075,7 +1075,7 @@ void st_test_search_iterator_result_check()
 void st_test_empty_result_set()
 {
     stack_printer __stack_printer__("::st_test_empty_result_set");
-    typedef segment_tree<long, string> db_type;
+    typedef segment_tree<long, string*> db_type;
     db_type db;
     db_type::search_result result = db.search(0);
     cout << "size of empty result set: " << result.size() << endl;
@@ -1113,7 +1113,7 @@ int main(int argc, char** argv)
 
         // At this point, all of the nodes created during the test run should have
         // been destroyed.  If not, we are leaking memory.
-        typedef segment_tree<uint32_t, void> db_type;
+        typedef segment_tree<uint32_t, void*> db_type;
         assert(db_type::node::get_instance_count() == 0);
     }
     catch (const std::exception& e)

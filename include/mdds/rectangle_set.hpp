@@ -83,8 +83,8 @@ private:
     };
     typedef _mdds_unordered_map_type<data_type*, rectangle>    dataset_type;
 private:
-    typedef segment_tree<key_type, data_type>   inner_type;
-    typedef segment_tree<key_type, inner_type>  outer_type;
+    typedef segment_tree<key_type, data_type*>   inner_type;
+    typedef segment_tree<key_type, inner_type*>  outer_type;
 
     typedef ::std::pair<key_type, key_type>             interval_type;
     typedef ::boost::ptr_map<interval_type, inner_type> inner_segment_map_type;
