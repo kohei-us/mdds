@@ -1082,6 +1082,23 @@ void st_test_empty_result_set()
     assert(result.size() == 0);
 }
 
+void st_test_non_pointer_data()
+{
+    stack_printer __stack_printer__("::st_test_non_pointer_data");
+
+    typedef uint16_t key_type;
+    typedef size_t data_type;
+    typedef segment_tree<key_type, data_type> db_type;
+
+    db_type db;
+    db.insert(0, 1, 10);
+    db.build_tree();
+
+    db_type::search_result result = db.search(0);
+    assert(result.size() == 1);
+    assert(*result.begin() == 10);
+}
+
 int main(int argc, char** argv)
 {
     try
@@ -1104,6 +1121,7 @@ int main(int argc, char** argv)
             st_test_search_iterator_basic();
             st_test_search_iterator_result_check();
             st_test_empty_result_set();
+            st_test_non_pointer_data();
         }
 
         if (opt.test_perf)
