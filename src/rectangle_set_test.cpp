@@ -30,12 +30,23 @@
 
 #include <iostream>
 #include <sstream>
-#include <type_traits>
 #include <boost/ptr_container/ptr_vector.hpp>
 
 using namespace std;
 using namespace mdds;
 using ::boost::ptr_vector;
+
+template<typename T>
+struct rm_pointer
+{
+    typedef T type;
+};
+
+template<typename T>
+struct rm_pointer<T*>
+{
+    typedef typename rm_pointer<T>::type type;
+};
 
 template<typename _ValueType>
 struct range
@@ -108,7 +119,7 @@ void print_search_result(typename _SetType::key_type x, typename _SetType::key_t
 {
     cout << "search result --------------------------------------------------" << endl;
     cout << "(x,y) = (" << x << "," << y << ")" << endl;
-    typedef typename std::remove_pointer<typename _SetType::data_type>::type type;
+    typedef typename rm_pointer<typename _SetType::data_type>::type type;
     for_each(result.begin(), result.end(), typename type::printer());
 }
 
@@ -125,7 +136,7 @@ bool check_search_result(_SetType& db,
         return false;
     }
 
-    typedef typename std::remove_pointer<typename _SetType::data_type>::type type;
+    typedef typename rm_pointer<typename _SetType::data_type>::type type;
     sort(result.begin(), result.end(), typename type::sort_by_name());
     print_search_result<_SetType>(x, y, result);
 
