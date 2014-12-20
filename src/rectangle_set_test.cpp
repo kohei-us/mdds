@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <type_traits>
 #include <boost/ptr_container/ptr_vector.hpp>
 
 using namespace std;
@@ -75,11 +76,11 @@ void insert_range(rectangle_set<_Key, _Data>& db, range<_Key>& range)
 }
 
 template<typename _SetType>
-bool check_rectangles(const _SetType& db, const typename _SetType::data_type** expected)
+bool check_rectangles(const _SetType& db, const typename _SetType::data_type* expected)
 {
     typename _SetType::dataset_type test;
     size_t i = 0;
-    const typename _SetType::data_type* data = expected[i++];
+    typename _SetType::data_type data = expected[i++];
     while (data)
     {
         typename _SetType::rectangle rect(data->x1, data->y1, data->x2, data->y2);
@@ -107,13 +108,14 @@ void print_search_result(typename _SetType::key_type x, typename _SetType::key_t
 {
     cout << "search result --------------------------------------------------" << endl;
     cout << "(x,y) = (" << x << "," << y << ")" << endl;
-    for_each(result.begin(), result.end(), typename _SetType::data_type::printer());
+    typedef typename std::remove_pointer<typename _SetType::data_type>::type type;
+    for_each(result.begin(), result.end(), typename type::printer());
 }
 
 template<typename _SetType>
 bool check_search_result(_SetType& db,
                          typename _SetType::key_type x, typename _SetType::key_type y,
-                         const typename _SetType::data_type** expected)
+                         const typename _SetType::data_type* expected)
 {
     typename _SetType::search_result_type result, test;
     bool success = db.search(x, y, result);
@@ -123,17 +125,18 @@ bool check_search_result(_SetType& db,
         return false;
     }
 
-    sort(result.begin(), result.end(), typename _SetType::data_type::sort_by_name());
+    typedef typename std::remove_pointer<typename _SetType::data_type>::type type;
+    sort(result.begin(), result.end(), typename type::sort_by_name());
     print_search_result<_SetType>(x, y, result);
 
     size_t i = 0;
-    const typename _SetType::data_type* data = expected[i++];
+    typename _SetType::data_type data = expected[i++];
     while (data)
     {
         test.push_back(data);
         data = expected[i++];
     }
-    sort(test.begin(), test.end(), typename _SetType::data_type::sort_by_name());
+    sort(test.begin(), test.end(), typename type::sort_by_name());
     return result == test;
 }
 
@@ -143,7 +146,7 @@ void rect_test_insertion_removal()
 
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, const range_type> set_type;
+    typedef rectangle_set<value_type, const range_type*> set_type;
 
     set_type db;
     assert(check_size(db, 0));
@@ -160,7 +163,7 @@ void rect_test_insertion_removal()
     insert_range(db, C);
     db.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {&A, &B, &C, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, 0};
         assert(check_rectangles(db, expected));
         assert(check_size(db, 3));
     }
@@ -170,7 +173,7 @@ void rect_test_insertion_removal()
     insert_range(db, F);
     db.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, 0};
         assert(check_rectangles(db, expected));
         assert(check_size(db, 6));
     }
@@ -181,7 +184,7 @@ void rect_test_insertion_removal()
     insert_range(db, E);
     db.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, 0};
         assert(check_rectangles(db, expected));
         assert(check_size(db, 6));
     }
@@ -191,7 +194,7 @@ void rect_test_insertion_removal()
     db.remove(&E);
     db.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &F, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &F, 0};
         assert(check_rectangles(db, expected));
         assert(check_size(db, 5));
     }
@@ -199,7 +202,7 @@ void rect_test_insertion_removal()
     db.remove(&E);
     db.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &F, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &F, 0};
         assert(check_rectangles(db, expected));
         assert(check_size(db, 5));
     }
@@ -208,7 +211,7 @@ void rect_test_insertion_removal()
     db.remove(&C);
     db.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {&D, &F, 0};
+        const set_type::data_type expected[] = {&D, &F, 0};
         assert(check_rectangles(db, expected));
         assert(check_size(db, 2));
     }
@@ -217,7 +220,7 @@ void rect_test_insertion_removal()
     db.remove(&F);
     db.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {0};
+        const set_type::data_type expected[] = {0};
         assert(check_rectangles(db, expected));
         assert(check_size(db, 0));
     }
@@ -228,7 +231,7 @@ void rect_test_search()
     stack_printer __stack_printer__("::rect_test_search");
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, const range_type> set_type;
+    typedef rectangle_set<value_type, const range_type*> set_type;
 
     range_type A(0, 0, 1, 1, "A");
     range_type B(0, 0, 2, 2, "B");
@@ -241,7 +244,7 @@ void rect_test_search()
     set_type db;
     {
         // Search before any data is inserted.
-        const set_type::data_type* expected[] = {0};
+        const set_type::data_type expected[] = {0};
         assert(check_search_result<set_type>(db, 0, 0, expected));
     }
     insert_range(db, A);
@@ -256,47 +259,47 @@ void rect_test_search()
 
     {
         // Hits all rectangles.
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 0, expected));
     }
     {
-        const set_type::data_type* expected[] = {&B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 1, expected));
         assert(check_search_result<set_type>(db, 1, 0, expected));
         assert(check_search_result<set_type>(db, 1, 1, expected));
     }
     {
-        const set_type::data_type* expected[] = {&C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 2, expected));
         assert(check_search_result<set_type>(db, 2, 0, expected));
         assert(check_search_result<set_type>(db, 2, 2, expected));
     }
     {
-        const set_type::data_type* expected[] = {&D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 3, expected));
         assert(check_search_result<set_type>(db, 3, 0, expected));
         assert(check_search_result<set_type>(db, 3, 3, expected));
     }
     {
-        const set_type::data_type* expected[] = {&E, &F, &G, 0};
+        const set_type::data_type expected[] = {&E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 4, expected));
         assert(check_search_result<set_type>(db, 4, 0, expected));
         assert(check_search_result<set_type>(db, 4, 4, expected));
     }
     {
-        const set_type::data_type* expected[] = {&F, &G, 0};
+        const set_type::data_type expected[] = {&F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 5, expected));
         assert(check_search_result<set_type>(db, 5, 0, expected));
         assert(check_search_result<set_type>(db, 5, 5, expected));
     }
     {
-        const set_type::data_type* expected[] = {&G, 0};
+        const set_type::data_type expected[] = {&G, 0};
         assert(check_search_result<set_type>(db, 0, 6, expected));
         assert(check_search_result<set_type>(db, 6, 0, expected));
         assert(check_search_result<set_type>(db, 6, 6, expected));
     }
     {
-        const set_type::data_type* expected[] = {0};
+        const set_type::data_type expected[] = {0};
         assert(check_search_result<set_type>(db, 0, 7, expected));
         assert(check_search_result<set_type>(db, 7, 0, expected));
         assert(check_search_result<set_type>(db, 7, 7, expected));
@@ -311,47 +314,47 @@ void rect_test_search()
 
     {
         // Hits all rectangles.
-        const set_type::data_type* expected[] = {&A, &C, &E, &G, 0};
+        const set_type::data_type expected[] = {&A, &C, &E, &G, 0};
         assert(check_search_result<set_type>(db, 0, 0, expected));
     }
     {
-        const set_type::data_type* expected[] = {&C, &E, &G, 0};
+        const set_type::data_type expected[] = {&C, &E, &G, 0};
         assert(check_search_result<set_type>(db, 0, 1, expected));
         assert(check_search_result<set_type>(db, 1, 0, expected));
         assert(check_search_result<set_type>(db, 1, 1, expected));
     }
     {
-        const set_type::data_type* expected[] = {&C, &E, &G, 0};
+        const set_type::data_type expected[] = {&C, &E, &G, 0};
         assert(check_search_result<set_type>(db, 0, 2, expected));
         assert(check_search_result<set_type>(db, 2, 0, expected));
         assert(check_search_result<set_type>(db, 2, 2, expected));
     }
     {
-        const set_type::data_type* expected[] = {&E, &G, 0};
+        const set_type::data_type expected[] = {&E, &G, 0};
         assert(check_search_result<set_type>(db, 0, 3, expected));
         assert(check_search_result<set_type>(db, 3, 0, expected));
         assert(check_search_result<set_type>(db, 3, 3, expected));
     }
     {
-        const set_type::data_type* expected[] = {&E, &G, 0};
+        const set_type::data_type expected[] = {&E, &G, 0};
         assert(check_search_result<set_type>(db, 0, 4, expected));
         assert(check_search_result<set_type>(db, 4, 0, expected));
         assert(check_search_result<set_type>(db, 4, 4, expected));
     }
     {
-        const set_type::data_type* expected[] = {&G, 0};
+        const set_type::data_type expected[] = {&G, 0};
         assert(check_search_result<set_type>(db, 0, 5, expected));
         assert(check_search_result<set_type>(db, 5, 0, expected));
         assert(check_search_result<set_type>(db, 5, 5, expected));
     }
     {
-        const set_type::data_type* expected[] = {&G, 0};
+        const set_type::data_type expected[] = {&G, 0};
         assert(check_search_result<set_type>(db, 0, 6, expected));
         assert(check_search_result<set_type>(db, 6, 0, expected));
         assert(check_search_result<set_type>(db, 6, 6, expected));
     }
     {
-        const set_type::data_type* expected[] = {0};
+        const set_type::data_type expected[] = {0};
         assert(check_search_result<set_type>(db, 0, 7, expected));
         assert(check_search_result<set_type>(db, 7, 0, expected));
         assert(check_search_result<set_type>(db, 7, 7, expected));
@@ -363,7 +366,7 @@ void rect_test_copy_constructor()
     stack_printer __stack_printer__("::rect_test_copy_constructor");
     typedef int16_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, const range_type> set_type;
+    typedef rectangle_set<value_type, const range_type*> set_type;
 
     range_type A(0, 0, 1, 1, "A");
     range_type B(0, 0, 2, 2, "B");
@@ -388,47 +391,47 @@ void rect_test_copy_constructor()
 
     {
         // Hits all rectangles.
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_copied, 0, 0, expected));
     }
     {
-        const set_type::data_type* expected[] = {&B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_copied, 0, 1, expected));
         assert(check_search_result<set_type>(db_copied, 1, 0, expected));
         assert(check_search_result<set_type>(db_copied, 1, 1, expected));
     }
     {
-        const set_type::data_type* expected[] = {&C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_copied, 0, 2, expected));
         assert(check_search_result<set_type>(db_copied, 2, 0, expected));
         assert(check_search_result<set_type>(db_copied, 2, 2, expected));
     }
     {
-        const set_type::data_type* expected[] = {&D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_copied, 0, 3, expected));
         assert(check_search_result<set_type>(db_copied, 3, 0, expected));
         assert(check_search_result<set_type>(db_copied, 3, 3, expected));
     }
     {
-        const set_type::data_type* expected[] = {&E, &F, &G, 0};
+        const set_type::data_type expected[] = {&E, &F, &G, 0};
         assert(check_search_result<set_type>(db_copied, 0, 4, expected));
         assert(check_search_result<set_type>(db_copied, 4, 0, expected));
         assert(check_search_result<set_type>(db_copied, 4, 4, expected));
     }
     {
-        const set_type::data_type* expected[] = {&F, &G, 0};
+        const set_type::data_type expected[] = {&F, &G, 0};
         assert(check_search_result<set_type>(db_copied, 0, 5, expected));
         assert(check_search_result<set_type>(db_copied, 5, 0, expected));
         assert(check_search_result<set_type>(db_copied, 5, 5, expected));
     }
     {
-        const set_type::data_type* expected[] = {&G, 0};
+        const set_type::data_type expected[] = {&G, 0};
         assert(check_search_result<set_type>(db_copied, 0, 6, expected));
         assert(check_search_result<set_type>(db_copied, 6, 0, expected));
         assert(check_search_result<set_type>(db_copied, 6, 6, expected));
     }
     {
-        const set_type::data_type* expected[] = {0};
+        const set_type::data_type expected[] = {0};
         assert(check_search_result<set_type>(db_copied, 0, 7, expected));
         assert(check_search_result<set_type>(db_copied, 7, 0, expected));
         assert(check_search_result<set_type>(db_copied, 7, 7, expected));
@@ -437,7 +440,7 @@ void rect_test_copy_constructor()
     check_size(db_copied, 0);
     {
         // There is no rectangle left, hence the search result should be empty.
-        const set_type::data_type* expected[] = {0};
+        const set_type::data_type expected[] = {0};
         assert(check_search_result<set_type>(db_copied, 0, 0, expected));
     }
 
@@ -458,14 +461,14 @@ void rect_test_copy_constructor()
     insert_range(db_copied, G1);
     db_copied.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {&A1, &B1, &C1, &D1, &E1, &F1, &G1, 0};
+        const set_type::data_type expected[] = {&A1, &B1, &C1, &D1, &E1, &F1, &G1, 0};
         assert(check_search_result<set_type>(db_copied, 0, 0, expected));
     }
 
     {
         // Check against the origintal dataset, to ensure modification of the
         // copy does not modify the original.
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 0, expected));
     }
 }
@@ -474,7 +477,7 @@ void rect_test_assignment()
 {
     typedef int16_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, const range_type> set_type;
+    typedef rectangle_set<value_type, const range_type*> set_type;
 
     range_type A(0, 0, 1, 1, "A");
     range_type B(0, 0, 2, 2, "B");
@@ -499,47 +502,47 @@ void rect_test_assignment()
 
     {
         // Hits all rectangles.
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 0, expected));
     }
     {
-        const set_type::data_type* expected[] = {&B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 1, expected));
         assert(check_search_result<set_type>(db_assigned, 1, 0, expected));
         assert(check_search_result<set_type>(db_assigned, 1, 1, expected));
     }
     {
-        const set_type::data_type* expected[] = {&C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 2, expected));
         assert(check_search_result<set_type>(db_assigned, 2, 0, expected));
         assert(check_search_result<set_type>(db_assigned, 2, 2, expected));
     }
     {
-        const set_type::data_type* expected[] = {&D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 3, expected));
         assert(check_search_result<set_type>(db_assigned, 3, 0, expected));
         assert(check_search_result<set_type>(db_assigned, 3, 3, expected));
     }
     {
-        const set_type::data_type* expected[] = {&E, &F, &G, 0};
+        const set_type::data_type expected[] = {&E, &F, &G, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 4, expected));
         assert(check_search_result<set_type>(db_assigned, 4, 0, expected));
         assert(check_search_result<set_type>(db_assigned, 4, 4, expected));
     }
     {
-        const set_type::data_type* expected[] = {&F, &G, 0};
+        const set_type::data_type expected[] = {&F, &G, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 5, expected));
         assert(check_search_result<set_type>(db_assigned, 5, 0, expected));
         assert(check_search_result<set_type>(db_assigned, 5, 5, expected));
     }
     {
-        const set_type::data_type* expected[] = {&G, 0};
+        const set_type::data_type expected[] = {&G, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 6, expected));
         assert(check_search_result<set_type>(db_assigned, 6, 0, expected));
         assert(check_search_result<set_type>(db_assigned, 6, 6, expected));
     }
     {
-        const set_type::data_type* expected[] = {0};
+        const set_type::data_type expected[] = {0};
         assert(check_search_result<set_type>(db_assigned, 0, 7, expected));
         assert(check_search_result<set_type>(db_assigned, 7, 0, expected));
         assert(check_search_result<set_type>(db_assigned, 7, 7, expected));
@@ -548,7 +551,7 @@ void rect_test_assignment()
     check_size(db_assigned, 0);
     {
         // There is no rectangle left, hence the search result should be empty.
-        const set_type::data_type* expected[] = {0};
+        const set_type::data_type expected[] = {0};
         assert(check_search_result<set_type>(db_assigned, 0, 0, expected));
     }
 
@@ -569,21 +572,21 @@ void rect_test_assignment()
     insert_range(db_assigned, G1);
     db_assigned.dump_rectangles();
     {
-        const set_type::data_type* expected[] = {&A1, &B1, &C1, &D1, &E1, &F1, &G1, 0};
+        const set_type::data_type expected[] = {&A1, &B1, &C1, &D1, &E1, &F1, &G1, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 0, expected));
     }
 
     {
         // Check against the origintal dataset, to ensure modification of the
         // copy does not modify the original.
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db, 0, 0, expected));
     }
 
     db_assigned = db;
     {
         // Hits all rectangles once again after reverting to the original data set.
-        const set_type::data_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
+        const set_type::data_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         assert(check_search_result<set_type>(db_assigned, 0, 0, expected));
     }
 }
@@ -594,7 +597,7 @@ void rect_test_equality()
 
     typedef int16_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, const range_type> set_type;
+    typedef rectangle_set<value_type, const range_type*> set_type;
 
     range_type A(0, 0, 1, 1, "A");
     range_type B(0, 0, 2, 2, "B");
@@ -634,7 +637,7 @@ void rect_test_perf_insertion_fixed_x()
     stack_printer __stack_printer__("::rect_test_perf_insertion_fixed_x");
     typedef size_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, const range_type> set_type;
+    typedef rectangle_set<value_type, const range_type*> set_type;
 
     size_t data_count = 1000000;
     cout << "data count: " << data_count << endl;
@@ -758,7 +761,7 @@ void rect_test_perf_insertion_fixed_y()
     stack_printer __stack_printer__("::rect_test_perf_insertion_fixed_y");
     typedef size_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, const range_type> set_type;
+    typedef rectangle_set<value_type, const range_type*> set_type;
 
     size_t data_count = 100000;
     cout << "data count: " << data_count << endl;
@@ -883,7 +886,7 @@ void rect_test_search_result_iterator()
 
     typedef uint32_t value_type;
     typedef range<value_type> range_type;
-    typedef rectangle_set<value_type, const range_type> set_type;
+    typedef rectangle_set<value_type, const range_type*> set_type;
 
     range_type A(0, 0, 1, 1, "A");
     range_type B(0, 0, 2, 2, "B");
@@ -912,7 +915,7 @@ void rect_test_search_result_iterator()
 void rect_test_invalid_range()
 {
     stack_printer __stack_printer__("::rect_test_invalid_range");
-    typedef rectangle_set<int, string> set_type;
+    typedef rectangle_set<int, string*> set_type;
     string A("A");
 
     int ranges[][4] = {

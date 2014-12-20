@@ -36,7 +36,6 @@
 #include <list>
 #include <iostream>
 #include <map>
-#include <type_traits>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
@@ -136,7 +135,7 @@ void descend_tree_for_search(
 template<typename _Key, typename _Data>
 class segment_tree
 {
-    friend class rectangle_set<_Key, typename std::remove_pointer<_Data>::type>;
+    friend class rectangle_set<_Key, _Data>;
 public:
     typedef _Key        key_type;
     typedef _Data       data_type;

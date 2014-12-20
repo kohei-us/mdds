@@ -81,9 +81,9 @@ private:
             return !operator==(r);
         }
     };
-    typedef _mdds_unordered_map_type<data_type*, rectangle>    dataset_type;
+    typedef _mdds_unordered_map_type<data_type, rectangle>    dataset_type;
 private:
-    typedef segment_tree<key_type, data_type*>   inner_type;
+    typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type*>  outer_type;
 
     typedef ::std::pair<key_type, key_type>             interval_type;
@@ -167,7 +167,7 @@ public:
      * 
      * @return true if a rectangle successfully inserted, false otherwise.
      */
-    bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data);
+    bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type data);
 
     /** 
      * Search and collect all rectangles that contains a given point.
@@ -197,7 +197,7 @@ public:
      * @param data pointer that points to the rectangle instance you wish to 
      *             remove from the set.
      */
-    void remove(data_type* data);
+    void remove(data_type data);
 
     /** 
      * Clear all rectangles stored in the set.

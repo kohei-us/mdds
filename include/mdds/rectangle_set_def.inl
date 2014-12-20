@@ -79,7 +79,7 @@ bool rectangle_set<_Key,_Data>::operator== (const rectangle_set& r) const
 }
 
 template<typename _Key, typename _Data>
-bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type* data)
+bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type data)
 {
     if (x1 >= x2 || y1 >= y2)
     {
@@ -170,7 +170,7 @@ rectangle_set<_Key,_Data>::search(key_type x, key_type y)
 }
 
 template<typename _Key, typename _Data>
-void rectangle_set<_Key,_Data>::remove(data_type* data)
+void rectangle_set<_Key,_Data>::remove(data_type data)
 {
     typename dataset_type::iterator itr_data = m_dataset.find(data);
     if (itr_data == m_dataset.end())
@@ -265,7 +265,7 @@ bool rectangle_set<_Key,_Data>::verify_rectangles(const dataset_type& expected) 
     typename dataset_type::const_iterator itr_data = m_dataset.begin(), itr_data_end = m_dataset.end();
     for (; itr_data != itr_data_end; ++itr_data)
     {
-        const data_type* data = itr_data->first;
+        const data_type data = itr_data->first;
         typename dataset_type::const_iterator itr_test = expected.find(data);
         if (itr_test == expected.end())
             // Pointer in one container but not in the other.
