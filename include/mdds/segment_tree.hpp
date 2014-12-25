@@ -810,10 +810,7 @@ bool segment_tree<_Key, _Data>::operator==(const segment_tree& r) const
         if (itr2 == itr2_end)
             return false;
 
-        if (itr1->first != itr2->first)
-            return false;
-
-        if (itr1->second != itr2->second)
+        if (*itr1 != *itr2)
             return false;
     }
     if (itr2 != itr2_end)
