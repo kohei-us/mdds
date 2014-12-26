@@ -277,13 +277,12 @@ public:
             // The left leaf node is empty.  Nothing to build.
             return NULL;
 
-        leaf_node_ptr node1, node2;
-        node1 = left_leaf_node;
+        leaf_node_ptr node1 = left_leaf_node;
 
         std::vector<nonleaf_node*> node_list;
         while (true)
         {
-            node2 = node1->next;
+            leaf_node_ptr node2 = node1->next;
             nonleaf_node* parent_node = make_parent_node(node1.get(), node2.get());
             node_list.push_back(parent_node);
 
@@ -329,14 +328,13 @@ private:
 
         std::vector<nonleaf_node*> new_node_list;
         nonleaf_node* node1 = NULL;
-        nonleaf_node* node2 = NULL;
         typename std::vector<nonleaf_node*>::const_iterator it = node_list.begin();
         typename std::vector<nonleaf_node*>::const_iterator it_end = node_list.end();
         for (bool even_itr = false; it != it_end; ++it, even_itr = !even_itr)
         {
             if (even_itr)
             {
-                node2 = *it;
+                nonleaf_node* node2 = *it;
                 nonleaf_node* parent_node = make_parent_node(node1, node2);
                 new_node_list.push_back(parent_node);
                 node1 = NULL;
