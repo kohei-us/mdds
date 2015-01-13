@@ -3736,12 +3736,28 @@ bool multi_type_vector<_CellBlockFunc>::operator== (const multi_type_vector& oth
         const block* blk1 = *it;
         const block* blk2 = *it2;
 
-        if (!blk1->mp_data)
-            return blk2->mp_data == NULL;
-
-        if (!blk2->mp_data)
-            // left is non-empty while right is empty.
+        if (blk1->m_size != blk2->m_size)
+            // Block sizes differ.
             return false;
+
+        if (blk1->mp_data)
+        {
+            if (!blk2->mp_data)
+                // left is non-empty while right is empty.
+                return false;
+        }
+        else
+        {
+            if (blk2->mp_data)
+                // left is empty while right is non-empty.
+                return false;
+        }
+
+        if (!blk1->mp_data)
+        {
+            assert(!blk2->mp_data);
+            continue;
+        }
 
         assert(blk1->mp_data && blk2->mp_data);
         if (!element_block_func::equal_block(*blk1->mp_data, *blk2->mp_data))

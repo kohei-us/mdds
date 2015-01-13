@@ -1275,6 +1275,38 @@ void mtv_test_equality()
         assert(db1 == db1);
         assert(db2 == db2);
     }
+
+    {
+        // Two containers both consisting of numeric - empty - numeric blocks,
+        // and the last numeric blocks differ.
+
+        mtv_type db1(5), db2(5);
+        db1.set(0, 1.1);
+        db1.set(3, 2.1);
+        db1.set(4, 2.2);
+
+        db2.set(0, 1.1);
+        db2.set(3, 2.1);
+        db2.set(4, 2.3); // different value
+
+        assert(db1 != db2);
+    }
+
+    {
+        mtv_type db1(2), db2(2);
+        db1.set(1, 10.1);
+        db2.set(1, 10.1);
+        assert(db1 == db2);
+
+        db2.set(0, string("foo"));
+        assert(db1 != db2);
+
+        db1.set(0, string("foo"));
+        assert(db1 == db2);
+
+        db2.set_empty(0, 0);
+        assert(db1 != db2);
+    }
 }
 
 void mtv_test_clone()

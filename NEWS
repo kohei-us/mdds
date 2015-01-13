@@ -1,3 +1,7 @@
+* multi_type_vector
+
+  * fixed a bug in the equality operator method.
+
 mdds 0.11.2
 
 * multi_type_vector
