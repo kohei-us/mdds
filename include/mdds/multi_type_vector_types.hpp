@@ -32,6 +32,8 @@
 #include "compat/unique_ptr.hpp"
 #include "global.hpp"
 
+#include <algorithm>
+
 #ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
 #include <deque>
 #else
@@ -40,7 +42,6 @@
 #include <boost/noncopyable.hpp>
 
 #if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
-#include <algorithm>
 #include <iostream>
 #include <sstream>
 using std::cout;
