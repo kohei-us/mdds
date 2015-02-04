@@ -1,4 +1,4 @@
-AC_INIT(mdds, 0.11.2, kohei.yoshida@gmail.com)
+AC_INIT(mdds, 0.12.0, kohei.yoshida@gmail.com)
 
 VERSION=AC_PACKAGE_VERSION
 AC_SUBST(VERSION)

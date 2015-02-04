@@ -1,3 +1,10 @@
+mdds 0.12.0
+
+* segment_tree
+
+  * remove pointer requirement from value_type to allow non-pointer
+    type to be stored.
+
 * multi_type_vector
 
   * fixed a bug in the equality operator method.
