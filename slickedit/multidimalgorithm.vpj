@@ -264,6 +264,7 @@
 				<F N="../include/mdds/rectangle_set.hpp"/>
 				<F N="../include/mdds/rectangle_set_def.inl"/>
 				<F N="../include/mdds/segment_tree.hpp"/>
+				<F N="../include/mdds/segment_tree_def.inl"/>
 				<F N="../include/mdds/sorted_string_map.hpp"/>
 				<F N="../include/mdds/sorted_string_map_def.inl"/>
 			</Folder>
