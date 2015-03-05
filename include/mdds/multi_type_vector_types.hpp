@@ -33,6 +33,7 @@
 #include "global.hpp"
 
 #include <algorithm>
+#include <cassert>
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
 #include <deque>

@@ -30,6 +30,8 @@
 
 #include "mdds/global.hpp"
 
+#include <cassert>
+
 #include <boost/intrusive_ptr.hpp>
 
 namespace mdds {
