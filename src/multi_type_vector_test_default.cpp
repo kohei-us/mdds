@@ -4265,6 +4265,35 @@ void mtv_test_next_position()
     assert(pos.first == db.end());
 }
 
+void mtv_test_advance_position()
+{
+    stack_printer __stack_printer__("::mtv_test_advance_position");
+    mtv_type db(10);
+    db.set(2, 1.1);
+    db.set(3, 1.2);
+    db.set(4, string("A"));
+    db.set(5, string("B"));
+    db.set(6, string("C"));
+
+    mtv_type::position_type pos = db.position(0);
+    assert(mtv_type::logical_position(pos) == 0);
+
+    pos = mtv_type::advance_position(pos, 4);
+    assert(mtv_type::logical_position(pos) == 4);
+
+    pos = mtv_type::advance_position(pos, 5);
+    assert(mtv_type::logical_position(pos) == 9);
+
+    pos = mtv_type::advance_position(pos, -3);
+    assert(mtv_type::logical_position(pos) == 6);
+
+    pos = mtv_type::advance_position(pos, -6);
+    assert(mtv_type::logical_position(pos) == 0);
+
+    pos = mtv_type::advance_position(pos, 10);
+    assert(pos.first == db.end());
+}
+
 void mtv_test_swap_range()
 {
     stack_printer __stack_printer__("::mtv_test_swap_range");
@@ -5133,6 +5162,7 @@ int main (int argc, char **argv)
         mtv_test_insert_empty_with_position();
         mtv_test_position();
         mtv_test_next_position();
+        mtv_test_advance_position();
         mtv_test_swap_range();
         mtv_test_value_type();
         mtv_test_block_identifier();
