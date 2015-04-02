@@ -152,6 +152,17 @@ public:
     static position_type next_position(const position_type& pos);
 
     /**
+     * Move the position object by n logical positions.  Caller must
+     * ensure the the position object is valid.
+     *
+     * @param pos position object.
+     * @param steps steps to advance the position object.
+     *
+     * @return position object that points to the next logical position.
+     */
+    static position_type advance_position(const position_type& pos, int steps);
+
+    /**
      * Move the position object to the next logical position.  Caller must
      * ensure the the position object is valid.
      *

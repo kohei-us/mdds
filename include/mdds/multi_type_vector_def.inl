@@ -99,6 +99,50 @@ multi_type_vector<_CellBlockFunc>::next_position(const position_type& pos)
 }
 
 template<typename _CellBlockFunc>
+typename multi_type_vector<_CellBlockFunc>::position_type
+multi_type_vector<_CellBlockFunc>::advance_position(const position_type& pos, int steps)
+{
+    position_type ret = pos;
+    if (steps > 0)
+    {
+        while (steps > 0)
+        {
+            if (ret.second + steps < ret.first->size)
+            {
+                // element is still in the same block.
+                ret.second += steps;
+                break;
+            }
+            else
+            {
+                steps -= (ret.first->size - ret.second);
+                ++ret.first;
+                ret.second = 0;
+            }
+        }
+    }
+    else
+    {
+        while (steps < 0)
+        {
+            if (ret.second >= -steps)
+            {
+                ret.second += steps;
+                break;
+            }
+            else
+            {
+                steps += ret.second + 1;
+                --ret.first;
+                ret.second = ret.first->size - 1;
+            }
+        }
+    }
+
+    return ret;
+}
+
+template<typename _CellBlockFunc>
 typename multi_type_vector<_CellBlockFunc>::const_position_type
 multi_type_vector<_CellBlockFunc>::next_position(const const_position_type& pos)
 {
