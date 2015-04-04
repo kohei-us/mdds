@@ -125,7 +125,7 @@ multi_type_vector<_CellBlockFunc>::advance_position(const position_type& pos, in
     {
         while (steps < 0)
         {
-            if (ret.second >= -steps)
+            if (static_cast<int>(ret.second) >= -steps)
             {
                 ret.second += steps;
                 break;
