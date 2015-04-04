@@ -1,21 +1,22 @@
 Multi-Dimensional Data Structure (mdds)
-
+=======================================
 A collection of multi-dimensional data structure and indexing 
 algorithm.  
 
-
-Overview
-========
+Overview of data structures included in mdds
+--------------------------------------------
 
 This library implements the following data structure:
 
-    * flat segment tree 
-    * segment tree
-    * rectangle set
-    * point quad tree
-    * mixed type matrix
+* flat segment tree 
+* segment tree
+* rectangle set
+* point quad tree
+* mixed type matrix (deprecated as of 0.6.0)
+* multi-type vector
+* multi-type matrix
 
-Segment Tree
+### Segment Tree
 
 Segment tree is a balanced-binary-tree based data structure efficient 
 for detecting all intervals (or segments) that contain a given point.  
@@ -24,7 +25,7 @@ segments are not inclusive, that is, when an interval spans from 2 to
 6, an arbitrary point x within that interval can take a value of 2 <= 
 x < 6.  
 
-Flat Segment Tree
+### Flat Segment Tree
 
 Flat segment tree is a variant of segment tree that is designed to 
 store a collection of non-overlapping segments.  This structure is 
@@ -32,7 +33,7 @@ efficient when you need to store values associated with 1 dimensional
 segments that never overlap with each other.  Like segment tree, 
 stored segments' end points are non-inclusive.  
 
-Rectangle Set
+### Rectangle Set
 
 Rectangle set stores 2-dimensional rectangles and provides an 
 efficient way to query all rectangles that contain a given point in 
@@ -43,12 +44,12 @@ instance, if a rectangle ranges from (x=2, y=2) to (x=10, y=20), then
 a 2-dimension point A (x,y) is said to be inside that rectangle only 
 when 2 <= x < 10 and 2 <= y < 20.
 
-Point Quad Tree
+### Point Quad Tree
 
 Point quad tree stores 2-dimensional points and provides an efficient 
 way to query all points within specified rectangular region.  
 
-Mixed Type Matrix
+### Mixed Type Matrix
 
 Mixed type matrix (MTM) allows storage of elements of various types: 
 boolean, numeric, string, and empty types.  It also allows storage of 
@@ -57,6 +58,17 @@ back-ends: filled storage and sparse storage.  Filled storage
 allocates memory for all elements at all times, whereas sparse storage 
 allocates memory only for elements having non-default values.  
 
+### Multi-type vector
+
+Multi-type vector allows storage of unspecified number of types in a single 
+logical array such that contiguous elements of identical type are stored in 
+contiguous segment in memory space. 
+
+### Multi-type matrix
+
+Multi-type matrix is a matrix structure that allows storage of four different 
+element types: numeric, string, boolean and empty. It uses multi-type vector as 
+its underlying storage. 
 
 How-To
 ======
@@ -64,13 +76,13 @@ How-To
 Please take a look at simple example files under the 'example' 
 directory on how to use these data structures.
 
-
 API Incompatibility Note
 ========================
 
 0.8.1 to 0.9.0
+--------------
 
-multi_type_vector
+### multi_type_vector
 
 * The number of template parameters in custom_block_func1,
   custom_block_func2 and custom_block_func3 have been reduced by half,
@@ -79,8 +91,9 @@ multi_type_vector
   the template arguments that are numerical block IDs.
 
 0.7.1 to 0.8.0
+--------------
 
-flat_segment_tree
+### flat_segment_tree
 
 * The search_tree() method in 0.8.0 returns std::pair<const_iterator,
   bool> instead of just returning bool as of 0.7.1.  If you use this
@@ -89,13 +102,13 @@ flat_segment_tree
   previous return value.
 
 0.4.0 to 0.5.0
+--------------
 
-flat_segment_tree
+### flat_segment_tree
 
 * The search() method now returns ::std::pair<const_iterator, bool>.  
   This method previously returned only bool.  Use the second parameter of 
   the new return value which is equivalent of the previous return value.
-
 
 License
 =======
@@ -114,4 +127,4 @@ Version detection
 When installing this library, file named VERSION that contains nothing 
 but the version number string gets installed in the document directory 
 (docdir).  This may be used to detect the version number of this 
-library via script.  
+library via script.
