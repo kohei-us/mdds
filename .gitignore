@@ -1,0 +1,13 @@
+autom4te.cache/
+config.log
+config.status
+configure
+Makefile
+misc/mdds.pc
+obj/
+VERSION
+
+# tests
+*_test
+multi_type_vector_test_custom
+multi_type_vector_test_default
