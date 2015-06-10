@@ -1,3 +1,11 @@
+mdds 0.12.1
+
+* flat_segment_tree
+
+  * removed construction-from-int requirement from value_type to allow
+    non-numeric types to be stored.
+  * removed construction-from-int requirement from key_type as well.
+
 mdds 0.12.0
 
 * segment_tree
