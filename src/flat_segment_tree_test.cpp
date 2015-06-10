@@ -1945,6 +1945,24 @@ void fst_test_non_numeric_value()
     assert(result == "hello world");
 }
 
+void fst_test_non_numeric_key()
+{
+    stack_printer __stack_printer__("::fst_test_non_numeric_key");
+
+    typedef flat_segment_tree<std::string, int> db_type;
+    db_type db("a", "h", 42);
+    db.insert_back("c", "f", 1);
+
+    assert(db.default_value() == 42);
+
+    int result(0);
+
+    db.search("d", result);
+    assert(result ==  1);
+    db.search("f", result);
+    assert(result ==  42);
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -2000,6 +2018,7 @@ int main (int argc, char **argv)
             fst_test_clear();
             fst_test_assignment();
             fst_test_non_numeric_value();
+            fst_test_non_numeric_key();
         }
 
         if (opt.test_perf)
