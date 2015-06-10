@@ -63,8 +63,8 @@ public:
         }
     
         nonleaf_value_type()
-            : low(0)
-            , high(0)
+            : low()
+            , high()
         {
         }
     };
@@ -80,7 +80,7 @@ public:
         }
 
         leaf_value_type()
-            : key(0)
+            : key()
             , value()
         {
         }
