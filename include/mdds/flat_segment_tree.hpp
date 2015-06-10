@@ -81,7 +81,7 @@ public:
 
         leaf_value_type()
             : key(0)
-            , value(0)
+            , value()
         {
         }
     };
