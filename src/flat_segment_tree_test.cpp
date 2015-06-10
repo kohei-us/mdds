@@ -30,6 +30,7 @@
 
 #include <list>
 #include <iostream>
+#include <string>
 #include <vector>
 #include <limits>
 #include <iterator>
@@ -1928,6 +1929,22 @@ void fst_test_assignment()
     assert(!db3.is_tree_valid());
 }
 
+void fst_test_non_numeric_value()
+{
+    stack_printer __stack_printer__("::fst_test_non_numeric_value");
+
+    typedef flat_segment_tree<int, std::string> db_type;
+    db_type db(0, 4, "42");
+    db.insert_back(1, 2, "hello world");
+
+    assert(db.default_value() == "42");
+
+    std::string result;
+    db.search(1, result);
+
+    assert(result == "hello world");
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -1982,6 +1999,7 @@ int main (int argc, char **argv)
             fst_test_swap();
             fst_test_clear();
             fst_test_assignment();
+            fst_test_non_numeric_value();
         }
 
         if (opt.test_perf)
