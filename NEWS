@@ -4,7 +4,6 @@ mdds 0.12.1
 
   * removed construction-from-int requirement from value_type to allow
     non-numeric types to be stored.
-  * removed construction-from-int requirement from key_type as well.
 
 mdds 0.12.0
 
