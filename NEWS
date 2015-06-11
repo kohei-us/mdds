@@ -5,6 +5,13 @@ mdds 0.12.1
   * removed construction-from-int requirement from value_type to allow
     non-numeric types to be stored.
 
+* multi_type_vector
+
+  * added static method advance_position() to allow incrementing or
+    decrementing the logical position of a position_type object:
+
+    * position_type advance_position(const position_type& pos, int steps)
+
 mdds 0.12.0
 
 * segment_tree
