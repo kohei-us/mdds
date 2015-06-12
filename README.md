@@ -133,6 +133,13 @@ library via script.
 Download
 ========
 
+0.12.1
+------
+  * release date: 2015-06-11
+  * http://kohei.us/files/mdds/src/mdds_0.12.1.tar.bz2
+  * md5sum: ef2560ed5416652a7fe195305b14cebe
+  * sha1sum: e7469349f8d0c65545896fe553918f3ea93bd84d
+
 0.12.0
 ------
   * release date: 2015-02-05 
