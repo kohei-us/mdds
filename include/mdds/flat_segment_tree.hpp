@@ -32,7 +32,6 @@
 #include <sstream>
 #include <utility>
 #include <cassert>
-#include <limits>
 
 #include "mdds/node.hpp"
 #include "mdds/flat_segment_tree_itr.hpp"

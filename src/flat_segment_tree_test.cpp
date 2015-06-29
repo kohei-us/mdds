@@ -1943,6 +1943,10 @@ void fst_test_non_numeric_value()
     db.search(1, result);
 
     assert(result == "hello world");
+
+    db_type db2(db);
+
+    assert(db == db2);
 }
 
 int main (int argc, char **argv)
