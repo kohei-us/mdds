@@ -76,11 +76,19 @@ How-To
 Please take a look at simple example files under the 'example' 
 directory on how to use these data structures.
 
-API Incompatibility Note
-========================
+API Incompatibility Notes
+=========================
 
-0.8.1 to 0.9.0
---------------
+0.13
+----
+
+* Starting with version 0.13.0, mdds now requires support for C++11.  Stick
+  with 0.12 or earlier versions if you use a compiler that doesn't support
+  C++11.
+
+
+0.9
+---
 
 ### multi_type_vector
 
@@ -90,8 +98,8 @@ API Incompatibility Note
   definition directly.  If you use the older variant, simply remove
   the template arguments that are numerical block IDs.
 
-0.7.1 to 0.8.0
---------------
+0.8
+---
 
 ### flat_segment_tree
 
@@ -101,8 +109,8 @@ API Incompatibility Note
   second parameter of the new return value which is equivalent of the
   previous return value.
 
-0.4.0 to 0.5.0
---------------
+0.5
+---
 
 ### flat_segment_tree
 
