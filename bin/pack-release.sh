@@ -3,7 +3,8 @@
 PROGDIR=`dirname $0`
 VERSION=`cat $PROGDIR/../VERSION`
 DIR=mdds_$VERSION
-git clone https://code.google.com/p/multidimalgorithm/ $DIR
+# do a shallow clone.
+git clone --depth 1 --branch $VERSION https://gitlab.com/mdds/mdds.git $DIR
 pushd .
 cd $DIR
 autoconf
