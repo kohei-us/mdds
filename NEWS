@@ -1,3 +1,10 @@
+mdds 0.13.0
+
+* all
+
+  * introduced API versioning to ease parallel installation of API
+    incompatible versions.
+
 mdds 0.12.1
 
 * flat_segment_tree
