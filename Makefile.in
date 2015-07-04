@@ -8,6 +8,7 @@ INCDIR=@INCDIR@
 MISCDIR=@MISCDIR@
 QUICKCHECKDIR=@QUICKCHECKDIR@
 INSTALL_INCDIR=@includedir@/mdds-@API_VERSION@
+INSTALL_DOCDIR=@docdir@-@API_VERSION@
 
 CPPFLAGS=@CPPFLAGS@ -I$(INCDIR)
 LDFLAGS=
@@ -239,7 +240,7 @@ install: $(HEADERS)
 	install -d $(DESTDIR)$(INSTALL_INCDIR)/mdds
 	install -d $(DESTDIR)$(INSTALL_INCDIR)/mdds/hash_container
 	install -d $(DESTDIR)$(INSTALL_INCDIR)/mdds/compat
-	install -d $(DESTDIR)@docdir@
+	install -d $(DESTDIR)$(INSTALL_DOCDIR)
 	install -d $(DESTDIR)@datarootdir@
 	install -d $(DESTDIR)@datarootdir@/pkgconfig
 	install -m 644 @top_srcdir@/$(INCDIR)/mdds/*.hpp $(DESTDIR)$(INSTALL_INCDIR)/mdds
@@ -247,7 +248,7 @@ install: $(HEADERS)
 	install -m 644 @top_srcdir@/$(INCDIR)/mdds/compat/*.hpp $(DESTDIR)$(INSTALL_INCDIR)/mdds/compat
 	install -m 644 @top_srcdir@/$(INCDIR)/mdds/hash_container/*.hpp $(DESTDIR)$(INSTALL_INCDIR)/mdds/hash_container
 	install -m 644 $(MISCDIR)/mdds.pc $(DESTDIR)@datarootdir@/pkgconfig/mdds-@API_VERSION@.pc
-	install -m 644 @top_srcdir@/AUTHORS @top_srcdir@/COPYING @top_srcdir@/NEWS @top_srcdir@/README.md @top_srcdir@/VERSION $(DESTDIR)@docdir@
+	install -m 644 @top_srcdir@/AUTHORS @top_srcdir@/COPYING @top_srcdir@/NEWS @top_srcdir@/README.md @top_srcdir@/VERSION $(DESTDIR)$(INSTALL_DOCDIR)
 
 check: $(ALL_TESTS)
 
