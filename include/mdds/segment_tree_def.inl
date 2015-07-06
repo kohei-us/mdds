@@ -36,10 +36,8 @@ void descend_tree_for_search(
     typedef typename T::node leaf_node;
     typedef typename T::nonleaf_node nonleaf_node;
 
-    typedef typename T::key_type key_type;
     typedef typename T::nonleaf_value_type nonleaf_value_type;
     typedef typename T::leaf_value_type leaf_value_type;
-    typedef _Inserter inserter_type;
 
     if (!pnode)
         // This should never happen, but just in case.

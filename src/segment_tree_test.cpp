@@ -151,7 +151,6 @@ bool check_search_result_only(
 {
     cout << "search key: " << key << " ";
 
-    typedef typename segment_tree<key_type, data_type>::search_result_type search_result_type;
     list<data_type> test;
     copy(result.begin(), result.end(), back_inserter(test));
     test.sort(test_data::sort_by_name());
