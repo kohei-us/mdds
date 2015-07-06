@@ -29,7 +29,6 @@
 #define MDDS_MULTI_TYPE_VECTOR_HPP
 
 #include "default_deleter.hpp"
-#include "compat/unique_ptr.hpp"
 #include "global.hpp"
 #include "multi_type_vector_types.hpp"
 #include "multi_type_vector_itr.hpp"

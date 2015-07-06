@@ -29,11 +29,11 @@
 #define MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
 
 #include "default_deleter.hpp"
-#include "compat/unique_ptr.hpp"
 #include "global.hpp"
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
 #include <deque>
@@ -538,7 +538,7 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
         if (init_size > 1)
             throw general_error("You can't create a managed block with initial value.");
 
-        unique_ptr<self_type> blk(new self_type(init_size));
+        std::unique_ptr<self_type> blk(new self_type(init_size));
         if (init_size == 1)
             set_value(*blk, 0, val);
 
@@ -587,7 +587,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
         if (init_size > 1)
             throw general_error("You can't create a managed block with initial value.");
 
-        unique_ptr<self_type> blk(new self_type(init_size));
+        std::unique_ptr<self_type> blk(new self_type(init_size));
         if (init_size == 1)
             set_value(*blk, 0, val);
 

@@ -229,9 +229,6 @@
 		</Folder>
 		<Folder Name="../include">
 			<Folder Name="mdds">
-				<Folder Name="compat">
-					<F N="../include/mdds/compat/unique_ptr.hpp"/>
-				</Folder>
 				<F N="../include/mdds/default_deleter.hpp"/>
 				<F N="../include/mdds/flat_segment_tree.hpp"/>
 				<F N="../include/mdds/flat_segment_tree_def.inl"/>

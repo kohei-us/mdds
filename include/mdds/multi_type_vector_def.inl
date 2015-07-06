@@ -28,6 +28,7 @@
 #include "multi_type_vector_macro.hpp"
 
 #include <stdexcept>
+#include <memory>
 
 namespace mdds {
 
@@ -260,7 +261,7 @@ multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const 
     if (!init_size)
         return;
 
-    mdds::unique_ptr<block> blk(new block(init_size));
+    std::unique_ptr<block> blk(new block(init_size));
     blk->mp_data = mdds_mtv_create_new_block(init_size, value);
     m_blocks.push_back(blk.release());
 }
@@ -277,7 +278,7 @@ multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const 
     if (m_cur_size != data_len)
         throw invalid_arg_error("Specified size does not match the size of the initial data array.");
 
-    mdds::unique_ptr<block> blk(new block(m_cur_size));
+    std::unique_ptr<block> blk(new block(m_cur_size));
     blk->mp_data = mdds_mtv_create_new_block(*it_begin, it_begin, it_end);
     m_blocks.push_back(blk.release());
 }
@@ -2040,7 +2041,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
         if (src_tail_len == 0)
         {
             // the whole block needs to be replaced.
-            mdds::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->mp_data);
+            std::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->mp_data);
             blk_src->mp_data = other.exchange_elements(
                 *src_data, src_offset, other_block_index, dst_offset, len);
             // Release elements in the source block to prevent double-deletion.
@@ -2050,7 +2051,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
         }
 
         // Get the new elements from the other container.
-        mdds::unique_ptr<element_block_type, element_block_deleter> dst_data(
+        std::unique_ptr<element_block_type, element_block_deleter> dst_data(
             other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
 
         // Shrink the current block by erasing the top part.
@@ -2076,7 +2077,7 @@ void multi_type_vector<_CellBlockFunc>::swap_single_blocks(
     }
 
     // Get the new elements from the other container.
-    mdds::unique_ptr<element_block_type, element_block_deleter> dst_data(
+    std::unique_ptr<element_block_type, element_block_deleter> dst_data(
         other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
 
     if (src_tail_len == 0)
@@ -2240,8 +2241,8 @@ void multi_type_vector<_CellBlockFunc>::prepare_blocks_to_transfer(
     assert(offset1 < m_blocks[block_index1]->m_size);
     assert(offset2 < m_blocks[block_index2]->m_size);
 
-    mdds::unique_ptr<block> block_first(NULL);
-    mdds::unique_ptr<block> block_last(NULL);
+    std::unique_ptr<block> block_first(nullptr);
+    std::unique_ptr<block> block_last(nullptr);
     typename blocks_type::iterator it_begin = m_blocks.begin();
     typename blocks_type::iterator it_end = m_blocks.begin();
 
@@ -2871,7 +2872,7 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
         if (blk->m_size == len)
         {
             // The whole block will get replaced.
-            mdds::unique_ptr<element_block_type, element_block_deleter> data(blk->mp_data);
+            std::unique_ptr<element_block_type, element_block_deleter> data(blk->mp_data);
             blk->mp_data = NULL; // Prevent its deletion when the parent block gets deleted.
 
             if (blk_prev)
@@ -2921,7 +2922,7 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
         }
 
         // New block to send back to the caller.
-        mdds::unique_ptr<element_block_type, element_block_deleter> data(NULL);
+        std::unique_ptr<element_block_type, element_block_deleter> data(nullptr);
 
         if (blk->mp_data)
         {
@@ -2954,7 +2955,7 @@ multi_type_vector<_CellBlockFunc>::exchange_elements(
     }
 
     // New block to send back to the caller.
-    mdds::unique_ptr<element_block_type, element_block_deleter> data(NULL);
+    std::unique_ptr<element_block_type, element_block_deleter> data(nullptr);
     if (blk->mp_data)
     {
         element_category_type cat_dst = mtv::get_block_type(*blk->mp_data);
@@ -3121,7 +3122,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_single_block(
         if (blk->mp_data)
         {
             // Erase the upper part of the data from the current data array.
-            mdds::unique_ptr<element_block_type, element_block_deleter> new_data(
+            std::unique_ptr<element_block_type, element_block_deleter> new_data(
                 element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->mp_data), 0));
 
             if (!new_data)
@@ -3261,7 +3262,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
     typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
 
     // Create the new data block first.
-    mdds::unique_ptr<block> data_blk(new block(length));
+    std::unique_ptr<block> data_blk(new block(length));
 
     bool blk0_copied = false;
     if (offset == 0)
