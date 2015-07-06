@@ -110,7 +110,7 @@ void descend_tree_for_search(
 
 template<typename _Key, typename _Data>
 segment_tree<_Key, _Data>::segment_tree()
-    : m_root_node(NULL)
+    : m_root_node(nullptr)
     , m_valid_tree(false)
 {
 }
@@ -118,7 +118,7 @@ segment_tree<_Key, _Data>::segment_tree()
 template<typename _Key, typename _Data>
 segment_tree<_Key, _Data>::segment_tree(const segment_tree& r)
     : m_segment_data(r.m_segment_data)
-    , m_root_node(NULL)
+    , m_root_node(nullptr)
     , m_valid_tree(r.m_valid_tree)
 {
     if (m_valid_tree)
@@ -415,7 +415,7 @@ void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, co
     typename node_list_type::iterator itr = plist->begin(), itr_end = plist->end();
     for (; itr != itr_end; ++itr)
     {
-        data_chain_type* chain = NULL;
+        data_chain_type* chain = nullptr;
         __st::node_base* p = *itr;
         if (p->is_leaf)
             chain = static_cast<node*>(p)->value_leaf.data_chain;
@@ -447,7 +447,7 @@ void segment_tree<_Key, _Data>::clear_all_nodes()
     m_nonleaf_node_pool.clear();
     m_left_leaf.reset();
     m_right_leaf.reset();
-    m_root_node = NULL;
+    m_root_node = nullptr;
 }
 
 #ifdef MDDS_UNIT_TEST
@@ -538,7 +538,7 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
         if (itr->data_chain.empty())
         {
             if (cur_node->value_leaf.data_chain)
-                // The data chain should be empty (i.e. the pointer should be NULL).
+                // The data chain should be empty (i.e. the pointer should be nullptr).
                 return false;
         }
         else
@@ -572,7 +572,7 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
 
     if (cur_node)
         // At this point, we expect the current node to be at the position
-        // past the right-most node, which is NULL.
+        // past the right-most node, which is nullptr.
         return false;
 
     return true;
@@ -614,7 +614,7 @@ bool segment_tree<_Key, _Data>::has_data_pointer(const node_list_type& node_list
         // Check each node, and make sure each node has the pdata pointer
         // listed.
         const __st::node_base* pnode = *itr;
-        const data_chain_type* chain = NULL;
+        const data_chain_type* chain = nullptr;
         if (pnode->is_leaf)
             chain = static_cast<const node*>(pnode)->value_leaf.data_chain;
         else

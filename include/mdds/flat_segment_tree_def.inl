@@ -29,7 +29,7 @@ namespace mdds {
 
 template<typename _Key, typename _Value>
 flat_segment_tree<_Key, _Value>::flat_segment_tree(key_type min_val, key_type max_val, value_type init_val) :
-    m_root_node(NULL),
+    m_root_node(nullptr),
     m_left_leaf(new node),
     m_right_leaf(new node),
     m_init_val(init_val),
@@ -51,9 +51,9 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(key_type min_val, key_type ma
 
 template<typename _Key, typename _Value>
 flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key, _Value>& r) :
-    m_root_node(NULL),
+    m_root_node(nullptr),
     m_left_leaf(new node(static_cast<const node&>(*r.m_left_leaf))),
-    m_right_leaf(static_cast<node*>(NULL)),
+    m_right_leaf(static_cast<node*>(nullptr)),
     m_init_val(r.m_init_val),
     m_valid_tree(false) // tree is invalid because we only copy the leaf nodes.
 {
@@ -625,7 +625,7 @@ flat_segment_tree<_Key, _Value>::search_tree(
     // Current node must be a non-leaf whose child nodes are leaf nodes.
     assert(cur_node->left->is_leaf && cur_node->right->is_leaf);
 
-    const node* dest_node = NULL;
+    const node* dest_node = nullptr;
     const node* leaf_left = static_cast<const node*>(cur_node->left);
     const node* leaf_right = static_cast<const node*>(cur_node->right);
     key_type key1 = leaf_left->value_leaf.key;
@@ -695,7 +695,7 @@ bool flat_segment_tree<_Key, _Value>::operator==(const flat_segment_tree<key_typ
     const node* n2 = r.m_left_leaf.get();
 
     if ((!n1 && n2) || (n1 && !n2))
-        // Either one of them is NULL;
+        // Either one of them is nullptr;
         return false;
 
     while (n1)
@@ -711,7 +711,7 @@ bool flat_segment_tree<_Key, _Value>::operator==(const flat_segment_tree<key_typ
     }
 
     if (n2)
-        // n1 is NULL, but n2 is not.
+        // n1 is nullptr, but n2 is not.
         return false;
 
     // All leaf nodes are equal.
@@ -733,7 +733,7 @@ flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
         }
         cur_node = cur_node->prev.get();
     }
-    return NULL;
+    return nullptr;
 }
 
 template<typename _Key, typename _Value>
@@ -750,7 +750,7 @@ flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(key_type key, const node
         }
         cur_node = cur_node->next.get();
     }
-    return NULL;
+    return nullptr;
 }
 
 template<typename _Key, typename _Value>
@@ -759,7 +759,7 @@ flat_segment_tree<_Key, _Value>::destroy()
 {
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
     m_nonleaf_node_pool.clear();
-    m_root_node = NULL;
+    m_root_node = nullptr;
 }
 
 }

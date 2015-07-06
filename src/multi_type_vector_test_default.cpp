@@ -2572,7 +2572,7 @@ void mtv_test_data_iterators()
     ++it_blk;
     assert(it_blk->type == mdds::mtv::element_type_empty);
     assert(it_blk->size == 1);
-    assert(it_blk->data == NULL);
+    assert(it_blk->data == nullptr);
 
     // Next block is a string block.
     ++it_blk;
@@ -2598,7 +2598,7 @@ void mtv_test_data_iterators()
     ++it_blk;
     assert(it_blk->type == mdds::mtv::element_type_empty);
     assert(it_blk->size == 2);
-    assert(it_blk->data == NULL);
+    assert(it_blk->data == nullptr);
 
     ++it_blk;
     assert(it_blk == it_blk_end);
@@ -2616,7 +2616,7 @@ void check_block_iterator(const mtv_type::iterator& it, mtv::element_t expected)
     mtv::element_t actual = it->type;
     const mtv_type::element_block_type* data = (*it).data;
     assert(actual == expected);
-    assert(data != NULL);
+    assert(data != nullptr);
 }
 
 void mtv_test_non_const_data_iterators()

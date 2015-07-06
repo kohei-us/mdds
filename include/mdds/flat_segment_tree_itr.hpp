@@ -105,7 +105,7 @@ public:
     typedef ::std::bidirectional_iterator_tag iterator_category;
 
     explicit const_iterator_base(const fst_type* _db, bool _end) : 
-        m_db(_db), m_pos(NULL), m_end_pos(_end)
+        m_db(_db), m_pos(nullptr), m_end_pos(_end)
     {
         if (!_db)
             return;

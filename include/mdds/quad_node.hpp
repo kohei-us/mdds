@@ -134,11 +134,11 @@ struct quad_node_base
 
     quad_node_base(key_type _x, key_type _y) :
         refcount(0),
-        parent(NULL),
-        northeast(NULL),
-        northwest(NULL),
-        southeast(NULL),
-        southwest(NULL),
+        parent(nullptr),
+        northeast(nullptr),
+        northwest(nullptr),
+        southeast(nullptr),
+        southwest(nullptr),
         x(_x), 
         y(_y)
     {
@@ -153,11 +153,11 @@ struct quad_node_base
      */
     quad_node_base(const quad_node_base& r) :
         refcount(0),
-        parent(NULL),
-        northeast(NULL),
-        northwest(NULL),
-        southeast(NULL),
-        southwest(NULL),
+        parent(nullptr),
+        northeast(nullptr),
+        northwest(nullptr),
+        southeast(nullptr),
+        southwest(nullptr),
         x(r.x), 
         y(r.y)
     {
@@ -219,13 +219,13 @@ struct quad_node_base
         switch (quad)
         {
             case quad_northeast:
-                return northeast.get() != NULL;
+                return northeast.get() != nullptr;
             case quad_northwest:
-                return northwest.get() != NULL;
+                return northwest.get() != nullptr;
             case quad_southeast:
-                return southeast.get() != NULL;
+                return southeast.get() != nullptr;
             case quad_southwest:
-                return southwest.get() != NULL;
+                return southwest.get() != nullptr;
             default:
                 throw general_error("unknown quadrant type");
         }

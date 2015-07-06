@@ -48,7 +48,7 @@ mixed_type_matrix<_String,_Flag>::create_storage(size_t rows, size_t cols, matri
 
 template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>::mixed_type_matrix() :
-    mp_storage(NULL),
+    mp_storage(nullptr),
     m_cached_size(0, 0)
 {
     mp_storage = create_storage(0, 0, matrix_density_filled_zero);
@@ -56,7 +56,7 @@ mixed_type_matrix<_String,_Flag>::mixed_type_matrix() :
 
 template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>::mixed_type_matrix(matrix_density_t density) :
-    mp_storage(NULL),
+    mp_storage(nullptr),
     m_cached_size(0, 0)
 {
     mp_storage = create_storage(0, 0, density);
@@ -64,7 +64,7 @@ mixed_type_matrix<_String,_Flag>::mixed_type_matrix(matrix_density_t density) :
 
 template<typename _String, typename _Flag>
 mixed_type_matrix<_String,_Flag>::mixed_type_matrix(size_t rows, size_t cols, matrix_density_t density) :
-    mp_storage(NULL),
+    mp_storage(nullptr),
     m_cached_size(rows, cols)
 {
     mp_storage = create_storage(rows, cols, density);

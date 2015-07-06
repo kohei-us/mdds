@@ -492,7 +492,7 @@ void st_test_copy_constructor()
     segments.push_back(db_type::segment_data( 4, 24, &E));
     segments.push_back(db_type::segment_data( 0, 26, &F));
     segments.push_back(db_type::segment_data(12, 26, &G));
-    segments.push_back(db_type::segment_data(0, 0, NULL)); // null-terminated
+    segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
     db_type::segment_map_type checks;
     for (size_t i = 0; segments[i].pdata; ++i)
@@ -573,7 +573,7 @@ void st_test_clear()
     segments.push_back(db_type::segment_data( 4, 24, &E));
     segments.push_back(db_type::segment_data( 0, 26, &F));
     segments.push_back(db_type::segment_data(12, 26, &G));
-    segments.push_back(db_type::segment_data(0, 0, NULL)); // null-terminated
+    segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
     db_type db;
     for (size_t i = 0; segments[i].pdata; ++i)
@@ -708,7 +708,7 @@ void st_test_perf_insertion()
     }
     assert(db.is_tree_valid());
 
-    const test_data* test = NULL;
+    const test_data* test = nullptr;
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results");
         for (key_type i = 0; i < 200; ++i)
@@ -830,7 +830,7 @@ void st_test_aggregated_search_results()
     segments.push_back(db_type::segment_data( 4, 24, &E));
     segments.push_back(db_type::segment_data( 0, 26, &F));
     segments.push_back(db_type::segment_data(12, 26, &G));
-    segments.push_back(db_type::segment_data(0, 0, NULL)); // null-terminated
+    segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
     db_type db;
     for (size_t i = 0; segments[i].pdata; ++i)

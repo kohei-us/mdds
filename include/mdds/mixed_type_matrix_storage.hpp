@@ -232,13 +232,13 @@ public:
         typedef ::std::bidirectional_iterator_tag   iterator_category;
 
         const_iterator() :
-            m_const_itr_access(NULL), m_type(matrix_storage_filled)
+            m_const_itr_access(nullptr), m_type(matrix_storage_filled)
         {}
 
         const_iterator(void* p, matrix_storage_t type, bool _end = false) :
             m_const_itr_access(p), m_type(type)
         {
-            assert(p != NULL);
+            assert(p != nullptr);
             if (_end)
             {
                 switch (m_type)
@@ -259,7 +259,7 @@ public:
         }
 
         const_iterator(const const_iterator& r) :
-            m_const_itr_access(NULL),
+            m_const_itr_access(nullptr),
             m_type(r.m_type)
         {
             if (!r.m_const_itr_access)
@@ -345,7 +345,7 @@ public:
                 default:
                     assert(!"unknown storage type");
             }
-            return NULL;
+            return nullptr;
         }
 
         const element* operator++()
@@ -365,7 +365,7 @@ public:
                 default:
                     assert(!"unknown storage type");
             }
-            return has_next ? operator->() : NULL;
+            return has_next ? operator->() : nullptr;
         }
 
         const element* operator--()
@@ -385,7 +385,7 @@ public:
                 default:
                     assert(!"unknown storage type");
             }
-            return has_next ? operator->() : NULL;
+            return has_next ? operator->() : nullptr;
         }
 
         bool operator== (const const_iterator& r) const
@@ -396,10 +396,10 @@ public:
 
             if (!m_const_itr_access)
                 // This instance has empty access.  The other one must be empty too.
-                return r.m_const_itr_access == NULL;
+                return r.m_const_itr_access == nullptr;
 
-            assert(m_const_itr_access != NULL);
-            assert(r.m_const_itr_access != NULL);
+            assert(m_const_itr_access != nullptr);
+            assert(r.m_const_itr_access != nullptr);
 
             switch (m_type)
             {

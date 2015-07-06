@@ -50,7 +50,7 @@ struct iterator_value_node
     element_block_type* data;
 
     iterator_value_node(size_type start_pos, size_type block_index) :
-        type(mdds::mtv::element_type_empty), position(start_pos), size(0), data(NULL), __private_data(block_index) {}
+        type(mdds::mtv::element_type_empty), position(start_pos), size(0), data(nullptr), __private_data(block_index) {}
 
     iterator_value_node(const iterator_value_node& other) :
         type(other.type), position(other.position), size(other.size), data(other.data), __private_data(other.__private_data) {}
@@ -180,7 +180,7 @@ protected:
     {
         ++m_pos;
         if (m_pos == m_end)
-            return NULL;
+            return nullptr;
 
         update_node();
         return &m_cur_node;

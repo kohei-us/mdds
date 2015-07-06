@@ -190,7 +190,7 @@ public:
         friend class flat_segment_tree;
     public:
         const_iterator() :
-            base_type(NULL, false) {}
+            base_type(nullptr, false) {}
 
     private:
         explicit const_iterator(const typename base_type::fst_type* _db, bool _end) :
@@ -209,7 +209,7 @@ public:
         friend class flat_segment_tree;
     public:
         const_reverse_iterator() :
-            base_type(NULL, false) {}
+            base_type(nullptr, false) {}
     private:
         explicit const_reverse_iterator(const typename base_type::fst_type* _db, bool _end) : 
             base_type(_db, _end) {}
@@ -356,7 +356,7 @@ public:
      * 
      */
     ::std::pair<const_iterator, bool>
-    search(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
+    search(key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
 
     /**
      * Perform leaf-node search for a value associated with a key.
@@ -377,7 +377,7 @@ public:
      *         whether or not the search has been successful.
      */
     ::std::pair<const_iterator, bool>
-    search(const const_iterator& pos, key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
+    search(const const_iterator& pos, key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
 
     /**
      * Perform tree search for a value associated with a key.  This method 
@@ -397,7 +397,7 @@ public:
      *         whether or not the search has been successful.
      */
     std::pair<const_iterator, bool>
-    search_tree(key_type key, value_type& value, key_type* start_key = NULL, key_type* end_key = NULL) const;
+    search_tree(key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
 
     void build_tree();
 
@@ -511,7 +511,7 @@ public:
 
             if (cur_node)
                 // At this point, we expect the current node to be at the position
-                // past the right-most node, which is NULL.
+                // past the right-most node, which is nullptr.
                 return false;
         }
 
@@ -534,7 +534,7 @@ public:
 
             if (cur_node)
                 // Likewise, we expect the current position to be past the
-                // left-most node, in which case the node value is NULL.
+                // left-most node, in which case the node value is nullptr.
                 return false;
         }
         

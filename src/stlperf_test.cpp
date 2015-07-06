@@ -66,7 +66,7 @@ private:
     double getTime() const
     {
         timeval tv;
-        gettimeofday(&tv, NULL);
+        gettimeofday(&tv, nullptr);
         return tv.tv_sec + tv.tv_usec / 1000000.0;
     }
 

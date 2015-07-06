@@ -119,8 +119,8 @@ typedef mdds::mtv::managed_element_block<element_type_muser_block, muser_cell> m
 typedef mdds::mtv::default_element_block<element_type_fruit_block, my_fruit_type> fruit_block;
 typedef mdds::mtv::default_element_block<element_type_date_block, date> date_block;
 
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(user_cell, element_type_user_block, NULL, user_cell_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(muser_cell, element_type_muser_block, NULL, muser_cell_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(user_cell, element_type_user_block, nullptr, user_cell_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(muser_cell, element_type_muser_block, nullptr, muser_cell_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(my_fruit_type, element_type_fruit_block, unknown_fruit, fruit_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(date, element_type_date_block, date(), date_block)
 
@@ -161,10 +161,10 @@ void mtv_test_types()
     assert(ct == mtv::element_type_boolean);
 
     // Custom cell type
-    user_cell* p = NULL;
+    user_cell* p = nullptr;
     ct = mtv_type::get_element_type(p);
     assert(ct == element_type_user_block && ct >= mtv::element_type_user_start);
-    ct = mtv_type::get_element_type(static_cast<muser_cell*>(NULL));
+    ct = mtv_type::get_element_type(static_cast<muser_cell*>(nullptr));
     assert(ct == element_type_muser_block && ct >= mtv::element_type_user_start);
     ct = mtv_fruit_type::get_element_type(unknown_fruit);
     assert(ct == element_type_fruit_block && ct >= mtv::element_type_user_start);
@@ -336,7 +336,7 @@ void mtv_test_basic()
         // Get empty value.
         mtv_type db(1);
         user_cell* p = db.get<user_cell*>(0);
-        assert(p == NULL);
+        assert(p == nullptr);
     }
 }
 

@@ -214,12 +214,12 @@ public:
     {
         void operator() (node& _self)
         {
-            _self.value_leaf.data_chain = NULL;
+            _self.value_leaf.data_chain = nullptr;
         }
 
         void operator() (__st::nonleaf_node<segment_tree>& _self)
         {
-            _self.value_nonleaf.data_chain = NULL;
+            _self.value_nonleaf.data_chain = nullptr;
         }
     };
 
@@ -263,7 +263,7 @@ private:
     public:
 
         search_result_base() :
-            mp_res_chains(static_cast<res_chains_type*>(NULL)) {}
+            mp_res_chains(static_cast<res_chains_type*>(nullptr)) {}
 
         search_result_base(const search_result_base& r) :
             mp_res_chains(r.mp_res_chains) {}
@@ -314,7 +314,7 @@ private:
         typedef typename data_chain_type::difference_type   difference_type;
 
         iterator_base() :
-            mp_res_chains(static_cast<res_chains_type*>(NULL)), m_end_pos(true) {}
+            mp_res_chains(static_cast<res_chains_type*>(nullptr)), m_end_pos(true) {}
 
         iterator_base(const iterator_base& r) :
             mp_res_chains(r.mp_res_chains),
@@ -352,7 +352,7 @@ private:
                 if (cur_chain == mp_res_chains->end())
                 {
                     m_end_pos = true;
-                    return NULL;
+                    return nullptr;
                 }
                 m_cur_chain = cur_chain;
                 m_cur_pos_in_chain = (*m_cur_chain)->begin();
@@ -366,7 +366,7 @@ private:
         typename data_chain_type::value_type* operator-- ()
         {
             if (!mp_res_chains)
-                return NULL;
+                return nullptr;
 
             if (m_end_pos)
             {
@@ -379,7 +379,7 @@ private:
                 if (m_cur_chain == mp_res_chains->begin())
                 {
                     // Already at the first data chain.  Don't move the iterator position.
-                    return NULL;
+                    return nullptr;
                 }
                 --m_cur_chain;
                 m_cur_pos_in_chain = (*m_cur_chain)->end();
@@ -629,7 +629,7 @@ public:
      * Verify the validity of the segment data array.
      *
      * @param checks null-terminated array of expected values.  The last item
-     *               must have a NULL pdata value to terminate the array.
+     *               must have a nullptr pdata value to terminate the array.
      */
     bool verify_segment_data(const segment_map_type& checks) const;
 #endif

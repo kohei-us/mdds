@@ -68,9 +68,9 @@ RangeTree::PrioSearchData::PrioSearchData(const char* _name, IntX _x, IntY _y, c
 
 RangeTree::Node::Node(const char* _name, IntX _x, IntY _y, bool _isLeaf) :
     data(new PrioSearchData(_name, _x, _y, NodePtr())),
-    left(static_cast<Node*>(NULL)), 
-    right(static_cast<Node*>(NULL)),
-    next(static_cast<Node*>(NULL)),
+    left(static_cast<Node*>(nullptr)),
+    right(static_cast<Node*>(nullptr)),
+    next(static_cast<Node*>(nullptr)),
     isLeaf(_isLeaf)
 {
 }
@@ -78,7 +78,7 @@ RangeTree::Node::Node(const char* _name, IntX _x, IntY _y, bool _isLeaf) :
 // ---------------------------------------------------------------------------
 
 RangeTree::RangeTree() :
-    mpLeftLeafNode(static_cast<Node*>(NULL))
+    mpLeftLeafNode(static_cast<Node*>(nullptr))
 {
 }
 
@@ -113,8 +113,8 @@ void RangeTree::insertPoint(const char* name, IntX x, IntY y)
 
             newNode->left  = pCurNode->left;
             newNode->right = pCurNode->right;
-            pCurNode->left.reset(static_cast<Node*>(NULL));
-            pCurNode->right.reset(static_cast<Node*>(NULL));
+            pCurNode->left.reset(static_cast<Node*>(nullptr));
+            pCurNode->right.reset(static_cast<Node*>(nullptr));
 
             if (newNode->left.get())
                 newNode->left->right = newNode;

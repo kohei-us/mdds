@@ -45,8 +45,8 @@ struct node_base
     node_base* parent; /// parent nonleaf_node
     bool is_leaf;
 
-    node_base(bool _is_leaf) : parent(NULL), is_leaf(_is_leaf) {}
-    node_base(const node_base& r) : parent(NULL), is_leaf(r.is_leaf) {}
+    node_base(bool _is_leaf) : parent(nullptr), is_leaf(_is_leaf) {}
+    node_base(const node_base& r) : parent(nullptr), is_leaf(r.is_leaf) {}
 };
 
 template<typename T>
@@ -75,8 +75,8 @@ private:
 public:
     nonleaf_node() :
         node_base(false),
-        left(NULL),
-        right(NULL)
+        left(nullptr),
+        right(nullptr)
     {
         _hdl_init(*this);
     }
@@ -87,8 +87,8 @@ public:
      */
     nonleaf_node(const nonleaf_node& r) :
         node_base(r),
-        left(NULL),
-        right(NULL)
+        left(nullptr),
+        right(nullptr)
     {
         value_nonleaf = r.value_nonleaf;
     }
@@ -275,7 +275,7 @@ public:
     {
         if (!left_leaf_node)
             // The left leaf node is empty.  Nothing to build.
-            return NULL;
+            return nullptr;
 
         leaf_node_ptr node1 = left_leaf_node;
 
@@ -324,10 +324,10 @@ private:
             return node_list.front();
         }
         else if (node_count == 0)
-            return NULL;
+            return nullptr;
 
         std::vector<nonleaf_node*> new_node_list;
-        nonleaf_node* node1 = NULL;
+        nonleaf_node* node1 = nullptr;
         typename std::vector<nonleaf_node*>::const_iterator it = node_list.begin();
         typename std::vector<nonleaf_node*>::const_iterator it_end = node_list.end();
         for (bool even_itr = false; it != it_end; ++it, even_itr = !even_itr)
@@ -337,8 +337,8 @@ private:
                 nonleaf_node* node2 = *it;
                 nonleaf_node* parent_node = make_parent_node(node1, node2);
                 new_node_list.push_back(parent_node);
-                node1 = NULL;
-                node2 = NULL;
+                node1 = nullptr;
+                node2 = nullptr;
             }
             else
                 node1 = *it;
@@ -347,7 +347,7 @@ private:
         if (node1)
         {
             // Un-paired node still needs a parent...
-            nonleaf_node* parent_node = make_parent_node(node1, NULL);
+            nonleaf_node* parent_node = make_parent_node(node1, nullptr);
             new_node_list.push_back(parent_node);
         }
 
@@ -369,7 +369,7 @@ void disconnect_all_nodes(node<T>* p)
 
     p->prev.reset();
     p->next.reset();
-    p->parent = NULL;
+    p->parent = nullptr;
 }
 
 template<typename T>

@@ -106,7 +106,7 @@ public:
         size_type size;
         const element_block_type* data;
 
-        element_block_node_type() : type(mtm::element_empty), size(0), data(NULL) {}
+        element_block_node_type() : type(mtm::element_empty), size(0), data(nullptr) {}
         element_block_node_type(const element_block_node_type& other) :
             type(other.type), size(other.size), data(other.data) {}
     };

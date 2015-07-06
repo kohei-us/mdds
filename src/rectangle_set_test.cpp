@@ -673,7 +673,7 @@ void rect_test_perf_insertion_fixed_x()
     }
     assert(db.size() == data_count);
 
-    const range_type* test = NULL;
+    const range_type* test = nullptr;
     {
         stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
@@ -797,7 +797,7 @@ void rect_test_perf_insertion_fixed_y()
     }
     assert(db.size() == data_count);
 
-    const range_type* test = NULL;
+    const range_type* test = nullptr;
     {
         stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)

@@ -170,7 +170,7 @@ public:
         key_type x() const { return mp->x; }
         key_type y() const { return mp->y; }
 
-        operator bool() const { return mp != NULL; }
+        operator bool() const { return mp != nullptr; }
         bool operator== (const node_access& r) const { return mp == r.mp; }
 
         node_access& operator= (const node_access& r)
@@ -179,7 +179,7 @@ public:
             return *this;
         }
 
-        node_access() : mp(NULL) {}
+        node_access() : mp(nullptr) {}
         node_access(const node_access& r) : mp(r.mp) {}
         ~node_access() {}
 
@@ -279,7 +279,7 @@ public:
                 if (++cur_pos == mp_res_nodes->end())
                 {
                     m_end_pos = true;
-                    return NULL;
+                    return nullptr;
                 }
                 m_cur_pos = cur_pos;
                 update_current_value();
@@ -343,7 +343,7 @@ public:
             bool m_end_pos:1;
         };
 
-        search_result() : mp_res_nodes(static_cast<res_nodes_type*>(NULL)) {}
+        search_result() : mp_res_nodes(static_cast<res_nodes_type*>(nullptr)) {}
         search_result(const search_result& r) : mp_res_nodes(r.mp_res_nodes) {}
 
         typename search_result::const_iterator begin()
@@ -574,7 +574,7 @@ private:
         key_type        dist;
         node_ptr        node;
 
-        node_distance() : quad(quad_unspecified), dist(0), node(NULL) {}
+        node_distance() : quad(quad_unspecified), dist(0), node(nullptr) {}
         node_distance(node_quadrant_t _quad, key_type _dist, const node_ptr& _node) : 
             quad(_quad), dist(_dist), node(_node) {}
     };
@@ -611,7 +611,7 @@ private:
 
 template<typename _Key, typename _Data>
 point_quad_tree<_Key,_Data>::point_quad_tree() :
-    m_root(NULL),
+    m_root(nullptr),
     m_xrange(0,0),
     m_yrange(0,0)
 {
@@ -619,7 +619,7 @@ point_quad_tree<_Key,_Data>::point_quad_tree() :
 
 template<typename _Key, typename _Data>
 point_quad_tree<_Key,_Data>::point_quad_tree(const point_quad_tree& r) :
-    m_root(NULL),
+    m_root(nullptr),
     m_xrange(0,0),
     m_yrange(0,0)
 {
@@ -896,7 +896,7 @@ void point_quad_tree<_Key,_Data>::clear()
 template<typename _Key, typename _Data>
 bool point_quad_tree<_Key,_Data>::empty() const
 {
-    return (m_root.get() == NULL);
+    return (m_root.get() == nullptr);
 }
 
 template<typename _Key, typename _Data>
@@ -1075,7 +1075,7 @@ template<typename _Key, typename _Data>
 bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& nac, const node* p)
 {
     if (!nac)
-        return (p == NULL);
+        return (p == nullptr);
 
     if (!p)
         return false;
@@ -1167,29 +1167,29 @@ point_quad_tree<_Key,_Data>::find_node_ptr(key_type x, key_type y) const
         {
             case quad_northeast:
                 if (!cur_node->northeast)
-                    return NULL;
+                    return nullptr;
                 cur_node = cur_node->northeast.get();
                 break;
             case quad_northwest:
                 if (!cur_node->northwest)
-                    return NULL;
+                    return nullptr;
                 cur_node = cur_node->northwest.get();
                 break;
             case quad_southeast:
                 if (!cur_node->southeast)
-                    return NULL;
+                    return nullptr;
                 cur_node = cur_node->southeast.get();
                 break;
             case quad_southwest:
                 if (!cur_node->southwest)
-                    return NULL;
+                    return nullptr;
                 cur_node = cur_node->southwest.get();
                 break;
             default:
                 throw general_error("unknown quadrant");
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 template<typename _Key, typename _Data>
