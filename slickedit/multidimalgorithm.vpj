@@ -262,10 +262,6 @@
 				<F N="../include/mdds/sorted_string_map.hpp"/>
 				<F N="../include/mdds/sorted_string_map_def.inl"/>
 			</Folder>
-			<Folder Name="obsolete">
-				<F N="../include/obsolete/nodecontainer.hpp"/>
-				<F N="../include/obsolete/rangetree.hpp"/>
-			</Folder>
 		</Folder>
 		<Folder Name="../src">
 			<F N="../src/array_creation_perf_test.cpp"/>
