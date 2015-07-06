@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -79,7 +79,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\mdds\global.hpp" />
-    <ClInclude Include="..\..\include\mdds\hash_container\map.hpp" />
     <ClInclude Include="..\..\include\mdds\node.hpp" />
     <ClInclude Include="..\..\include\mdds\quad_node.hpp" />
     <ClInclude Include="..\..\src\test_global.hpp" />

@@ -30,7 +30,7 @@
 #include <boost/io/ios_state.hpp>
 #endif
 
-#include "mdds/hash_container/map.hpp"
+#include <unordered_map>
 
 namespace mdds { namespace __mtm {
 
@@ -41,7 +41,7 @@ class flag_storage
     typedef _Key        key_type;
     typedef _KeyHash    key_hash_type;
 
-    typedef _mdds_unordered_map_type<key_type, flag_type, key_hash_type> flag_store_type;
+    typedef std::unordered_map<key_type, flag_type, key_hash_type> flag_store_type;
 
 public:
     flag_storage() {}

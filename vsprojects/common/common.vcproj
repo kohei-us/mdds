@@ -172,10 +172,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mdds\hash_container\map.hpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\include\mdds\node.hpp"
 				>
 			</File>

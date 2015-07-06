@@ -232,9 +232,6 @@
 				<Folder Name="compat">
 					<F N="../include/mdds/compat/unique_ptr.hpp"/>
 				</Folder>
-				<Folder Name="hash_container">
-					<F N="../include/mdds/hash_container/map.hpp"/>
-				</Folder>
 				<F N="../include/mdds/default_deleter.hpp"/>
 				<F N="../include/mdds/flat_segment_tree.hpp"/>
 				<F N="../include/mdds/flat_segment_tree_def.inl"/>

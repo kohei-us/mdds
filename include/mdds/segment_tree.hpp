@@ -29,13 +29,13 @@
 #define __MDDS_SEGMENTTREE_HPP__
 
 #include "mdds/node.hpp"
-#include "mdds/hash_container/map.hpp"
 #include "mdds/global.hpp"
 
 #include <vector>
 #include <list>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
@@ -92,7 +92,7 @@ public:
 
 public:
     typedef ::std::vector<data_type> data_chain_type;
-    typedef _mdds_unordered_map_type<data_type, ::std::pair<key_type, key_type> > segment_map_type;
+    typedef std::unordered_map<data_type, ::std::pair<key_type, key_type> > segment_map_type;
     typedef ::std::map<data_type, ::std::pair<key_type, key_type> >               sorted_segment_map_type;
 
     struct nonleaf_value_type

@@ -30,7 +30,6 @@
 
 #include "segment_tree.hpp"
 #include "global.hpp"
-#include "hash_container/map.hpp"
 
 #include <vector>
 #include <boost/ptr_container/ptr_map.hpp>
@@ -81,7 +80,7 @@ private:
             return !operator==(r);
         }
     };
-    typedef _mdds_unordered_map_type<data_type, rectangle>    dataset_type;
+    typedef std::unordered_map<data_type, rectangle>    dataset_type;
 private:
     typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type*>  outer_type;

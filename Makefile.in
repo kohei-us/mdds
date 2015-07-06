@@ -30,7 +30,6 @@ HEADERS= \
 	@top_srcdir@/$(INCDIR)/mdds/flat_segment_tree.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/flat_segment_tree_itr.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/global.hpp \
-	@top_srcdir@/$(INCDIR)/mdds/hash_container/map.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_def.inl \
 	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_element.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_flag_storage.hpp \
@@ -238,7 +237,6 @@ $(QUICKCHECKDIR)/flat_segment_tree: $(QUICKCHECKDIR)/flat_segment_tree.o pre
 
 install: $(HEADERS)
 	install -d $(DESTDIR)$(INSTALL_INCDIR)/mdds
-	install -d $(DESTDIR)$(INSTALL_INCDIR)/mdds/hash_container
 	install -d $(DESTDIR)$(INSTALL_INCDIR)/mdds/compat
 	install -d $(DESTDIR)$(INSTALL_DOCDIR)
 	install -d $(DESTDIR)@datarootdir@
@@ -246,7 +244,6 @@ install: $(HEADERS)
 	install -m 644 @top_srcdir@/$(INCDIR)/mdds/*.hpp $(DESTDIR)$(INSTALL_INCDIR)/mdds
 	install -m 644 @top_srcdir@/$(INCDIR)/mdds/*.inl $(DESTDIR)$(INSTALL_INCDIR)/mdds
 	install -m 644 @top_srcdir@/$(INCDIR)/mdds/compat/*.hpp $(DESTDIR)$(INSTALL_INCDIR)/mdds/compat
-	install -m 644 @top_srcdir@/$(INCDIR)/mdds/hash_container/*.hpp $(DESTDIR)$(INSTALL_INCDIR)/mdds/hash_container
 	install -m 644 $(MISCDIR)/mdds.pc $(DESTDIR)@datarootdir@/pkgconfig/mdds-@API_VERSION@.pc
 	install -m 644 @top_srcdir@/AUTHORS @top_srcdir@/COPYING @top_srcdir@/NEWS @top_srcdir@/README.md @top_srcdir@/VERSION $(DESTDIR)$(INSTALL_DOCDIR)
 
