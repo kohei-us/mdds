@@ -261,7 +261,7 @@ multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const 
     if (!init_size)
         return;
 
-    std::unique_ptr<block> blk(new block(init_size));
+    std::unique_ptr<block> blk = make_unique<block>(init_size);
     blk->mp_data = mdds_mtv_create_new_block(init_size, value);
     m_blocks.push_back(blk.release());
 }
@@ -278,7 +278,7 @@ multi_type_vector<_CellBlockFunc>::multi_type_vector(size_type init_size, const 
     if (m_cur_size != data_len)
         throw invalid_arg_error("Specified size does not match the size of the initial data array.");
 
-    std::unique_ptr<block> blk(new block(m_cur_size));
+    std::unique_ptr<block> blk = make_unique<block>(m_cur_size);
     blk->mp_data = mdds_mtv_create_new_block(*it_begin, it_begin, it_end);
     m_blocks.push_back(blk.release());
 }
@@ -3262,7 +3262,7 @@ multi_type_vector<_CellBlockFunc>::set_cells_to_multi_blocks_block1_non_equal(
     typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
 
     // Create the new data block first.
-    std::unique_ptr<block> data_blk(new block(length));
+    std::unique_ptr<block> data_blk = make_unique<block>(length);
 
     bool blk0_copied = false;
     if (offset == 0)

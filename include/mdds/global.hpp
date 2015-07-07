@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2008-2014 Kohei Yoshida
+ * Copyright (c) 2008-2015 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,11 +25,13 @@
  *
  ************************************************************************/
 
-#ifndef MDDS_GLOBAL_HPP
-#define MDDS_GLOBAL_HPP
+#ifndef INCLUDED_MDDS_GLOBAL_HPP
+#define INCLUDED_MDDS_GLOBAL_HPP
 
 #include <exception>
 #include <string>
+#include <memory>
+#include <utility>
 
 #define MDDS_ASCII(literal) literal, sizeof(literal)-1
 
@@ -54,6 +56,12 @@ class invalid_arg_error : public general_error
 public:
     invalid_arg_error(const ::std::string& msg) : general_error(msg) {}
 };
+
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique(Args&& ...args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
 
 }
 
