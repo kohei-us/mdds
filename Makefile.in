@@ -17,7 +17,6 @@ EXECS= \
 	flat_segment_tree_test \
 	segment_tree_test \
 	point_quad_tree_test \
-	mixed_type_matrix_test \
 	multi_type_matrix_test \
 	rectangle_set_test \
 	multi_type_vector_test_default \
@@ -29,13 +28,6 @@ HEADERS= \
 	@top_srcdir@/$(INCDIR)/mdds/flat_segment_tree.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/flat_segment_tree_itr.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/global.hpp \
-	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_def.inl \
-	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_element.hpp \
-	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_flag_storage.hpp \
-	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix.hpp \
-	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_storage_filled_linear.inl \
-	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_storage.hpp \
-	@top_srcdir@/$(INCDIR)/mdds/mixed_type_matrix_storage_sparse.inl \
 	@top_srcdir@/$(INCDIR)/mdds/multi_type_matrix.hpp \
 	@top_srcdir@/$(INCDIR)/mdds/multi_type_matrix_def.inl \
 	@top_srcdir@/$(INCDIR)/mdds/node.hpp \
@@ -64,7 +56,6 @@ TESTS = \
 	test.recset \
 	test.pqt \
 	test.st \
-	test.mtm \
 	test.mtv \
 	test.mtmatrix \
 	test.ssmap
@@ -74,7 +65,6 @@ TESTS_MEM = \
 	test.recset.mem \
 	test.fst.mem \
 	test.st.mem \
-	test.mtm.mem \
 	test.mtmatrix \
 	test.ssmap
 
@@ -100,9 +90,6 @@ $(OBJDIR)/rectangle_set_test.o: @top_srcdir@/$(SRCDIR)/rectangle_set_test.cpp  $
 
 $(OBJDIR)/point_quad_tree_test.o: @top_srcdir@/$(SRCDIR)/point_quad_tree_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/point_quad_tree_test.cpp
-
-$(OBJDIR)/mixed_type_matrix_test.o: @top_srcdir@/$(SRCDIR)/mixed_type_matrix_test.cpp $(DEPENDS)
-	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/mixed_type_matrix_test.cpp
 
 $(OBJDIR)/multi_type_vector_test_default.o: @top_srcdir@/$(SRCDIR)/multi_type_vector_test_default.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/multi_type_vector_test_default.cpp
@@ -130,9 +117,6 @@ rectangle_set_test: pre $(OBJDIR)/rectangle_set_test.o
 
 point_quad_tree_test: pre $(OBJDIR)/point_quad_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/point_quad_tree_test.o -o $@
-
-mixed_type_matrix_test: pre $(OBJDIR)/mixed_type_matrix_test.o
-	$(CXX) $(LDFLAGS) $(OBJDIR)/mixed_type_matrix_test.o -o $@
 
 multi_type_vector_test_default: pre $(OBJDIR)/multi_type_vector_test_default.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/multi_type_vector_test_default.o -o $@
@@ -189,15 +173,6 @@ test.st.perf: segment_tree_test
 
 test.st.mem: segment_tree_test
 	valgrind --tool=memcheck --leak-check=full ./segment_tree_test func
-
-test.mtm: mixed_type_matrix_test
-	./mixed_type_matrix_test func
-
-test.mtm.perf: mixed_type_matrix_test
-	./mixed_type_matrix_test perf
-
-test.mtm.mem: mixed_type_matrix_test
-	valgrind --tool=memcheck --leak-check=full ./mixed_type_matrix_test func
 
 test.mtv: multi_type_vector_test_default multi_type_vector_test_custom
 	./multi_type_vector_test_default
