@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010-2014 Kohei Yoshida
+ * Copyright (c) 2010-2015 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_SEGMENTTREE_HPP__
-#define __MDDS_SEGMENTTREE_HPP__
+#ifndef INCLUDED_MDDS_SEGMENTTREE_HPP
+#define INCLUDED_MDDS_SEGMENTTREE_HPP
 
 #include "mdds/node.hpp"
 #include "mdds/global.hpp"
@@ -36,8 +36,8 @@
 #include <iostream>
 #include <map>
 #include <unordered_map>
+#include <memory>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 
 #ifdef MDDS_UNIT_TEST
@@ -258,8 +258,8 @@ private:
     class search_result_base
     {
     public:
-        typedef ::std::vector<data_chain_type*>         res_chains_type;
-        typedef ::boost::shared_ptr<res_chains_type>    res_chains_ptr;
+        typedef std::vector<data_chain_type*>       res_chains_type;
+        typedef std::shared_ptr<res_chains_type>    res_chains_ptr;
     public:
 
         search_result_base() :

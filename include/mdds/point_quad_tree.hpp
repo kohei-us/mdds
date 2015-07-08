@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010 Kohei Yoshida
+ * Copyright (c) 2010-2015 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_POINT_QUAD_TREE_HPP__
-#define __MDDS_POINT_QUAD_TREE_HPP__
+#ifndef INCLUDED_MDDS_POINT_QUAD_TREE_HPP
+#define INCLUDED_MDDS_POINT_QUAD_TREE_HPP
 
 #include "mdds/quad_node.hpp"
 
@@ -36,8 +36,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #define DEBUG_POINT_QUAD_TREE 0
 
@@ -202,8 +201,8 @@ public:
     {
         friend class search_result_inserter;
 
-        typedef ::std::vector<const node*>          res_nodes_type;
-        typedef ::boost::shared_ptr<res_nodes_type> res_nodes_ptr;
+        typedef std::vector<const node*>        res_nodes_type;
+        typedef std::shared_ptr<res_nodes_type> res_nodes_ptr;
     public:
 
         class const_iterator
