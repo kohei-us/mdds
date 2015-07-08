@@ -1,10 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-PROGDIR=`dirname $0`
-VERSION=`cat $PROGDIR/../VERSION`
+VERSION=$1
 DIR=mdds_$VERSION
 # do a shallow clone.
-git clone --depth 1 --branch $VERSION https://gitlab.com/mdds/mdds.git $DIR
+git clone --depth 1 --branch $VERSION https://gitlab.com/mdds/mdds.git $DIR || exit 1
 pushd .
 cd $DIR
 autoconf
