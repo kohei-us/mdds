@@ -25,6 +25,8 @@
 *
 ************************************************************************/
 
+#include <algorithm>
+
 namespace mdds {
 
 namespace __st {
@@ -182,9 +184,11 @@ void segment_tree<_Key, _Data>::build_tree()
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
         data_type pdata = itr->first;
-        ::std::pair<typename data_node_map_type::iterator, bool> r =
-            tagged_node_map.insert(pdata, new node_list_type);
-        node_list_type* plist = r.first->second;
+        auto r = tagged_node_map.insert(
+            typename data_node_map_type::value_type(
+                pdata, make_unique<node_list_type>()));
+
+        node_list_type* plist = r.first->second.get();
         plist->reserve(10);
 
         descend_tree_and_mark(m_root_node, pdata, itr->second.first, itr->second.second, plist);
@@ -368,7 +372,7 @@ void segment_tree<_Key, _Data>::remove(data_type pdata)
     if (itr != m_tagged_node_map.end())
     {
         // Tagged node list found.  Remove all the tags from the tree nodes.
-        node_list_type* plist = itr->second;
+        node_list_type* plist = itr->second.get();
         if (!plist)
             return;
 
@@ -505,7 +509,7 @@ bool segment_tree<_Key, _Data>::verify_node_lists() const
     {
         // Print stored nodes.
         cout << "node list " << itr->first->name << ": ";
-        const node_list_type* plist = itr->second;
+        const node_list_type* plist = itr->second.get();
         assert(plist);
         node_printer func;
         for_each(plist->begin(), plist->end(), func);

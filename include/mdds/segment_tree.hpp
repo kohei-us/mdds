@@ -38,8 +38,6 @@
 #include <unordered_map>
 #include <memory>
 
-#include <boost/ptr_container/ptr_map.hpp>
-
 #ifdef MDDS_UNIT_TEST
 #include <sstream>
 #endif
@@ -640,8 +638,8 @@ private:
      */
     void search(key_type point, search_result_base& result) const;
 
-    typedef ::std::vector<__st::node_base*> node_list_type;
-    typedef ::boost::ptr_map<data_type, node_list_type> data_node_map_type;
+    typedef std::vector<__st::node_base*> node_list_type;
+    typedef std::map<data_type, std::unique_ptr<node_list_type>> data_node_map_type;
 
     static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right);
 
