@@ -36,9 +36,9 @@ rectangle_set<_Key,_Data>::rectangle_set()
 
 template<typename _Key, typename _Data>
 rectangle_set<_Key,_Data>::rectangle_set(const rectangle_set& r) :
-    m_inner_map(r.m_inner_map),
     m_dataset(r.m_dataset)
 {
+    build_inner_map(r.m_inner_map);
     build_outer_segment_tree();
 }
 
@@ -52,8 +52,8 @@ rectangle_set<_Key,_Data>& rectangle_set<_Key,_Data>::operator= (const rectangle
 {
     clear(); // Don't forget to clear the internal state beforehands.
 
-    m_inner_map = r.m_inner_map;
     m_dataset = r.m_dataset;
+    build_inner_map(r.m_inner_map);
     build_outer_segment_tree();
     return *this;
 }
@@ -99,8 +99,9 @@ bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
     {
         // this interval has not yet been stored.  Create a new inner segment
         // tree instance for this interval.
-        ::std::pair<typename inner_segment_map_type::iterator, bool> r =
-            m_inner_map.insert(outer_interval, new inner_type);
+        auto r = m_inner_map.insert(
+            typename inner_segment_map_type::value_type(
+                outer_interval, make_unique<inner_type>()));
         if (!r.second)
             throw general_error("inner segment tree insertion failed.");
 
@@ -108,12 +109,12 @@ bool rectangle_set<_Key,_Data>::insert(key_type x1, key_type y1, key_type x2, ke
 
         // Register the pointer to this inner segment tree instance with the
         // outer segment tree.
-        if (!m_outer_segments.insert(x1, x2, itr->second))
+        if (!m_outer_segments.insert(x1, x2, itr->second.get()))
             // This should never fail if my logic is correct.
             throw general_error("failed to insert an inner segment tree pointer into the outer segment tree.");
     }
 
-    inner_type* inner_tree = itr->second;
+    inner_type* inner_tree = itr->second.get();
     inner_tree->insert(y1, y2, data);
     m_dataset.insert(typename dataset_type::value_type(data, rectangle(x1, y1, x2, y2)));
 
@@ -186,7 +187,7 @@ void rectangle_set<_Key,_Data>::remove(data_type data)
         throw general_error("inconsistent internal state: failed to find an internal segment tree for an existing interval.");
 
     // Remove data from the inner segment tree.
-    inner_type* inner_tree = itr_seg->second;
+    inner_type* inner_tree = itr_seg->second.get();
     inner_tree->remove(data);
     if (inner_tree->empty())
     {
@@ -220,6 +221,18 @@ bool rectangle_set<_Key,_Data>::empty() const
 }
 
 template<typename _Key, typename _Data>
+void rectangle_set<_Key,_Data>::build_inner_map(const inner_segment_map_type& r)
+{
+    auto it = r.begin(), ite = r.end();
+    for (; it != ite; ++it)
+    {
+        m_inner_map.insert(
+            typename inner_segment_map_type::value_type(
+                it->first, make_unique<inner_type>(*it->second)));
+    }
+}
+
+template<typename _Key, typename _Data>
 void rectangle_set<_Key,_Data>::build_outer_segment_tree()
 {
     // Re-construct the outer segment tree from the authoritative inner tree
@@ -228,7 +241,7 @@ void rectangle_set<_Key,_Data>::build_outer_segment_tree()
     for (; itr != itr_end; ++itr)
     {
         const interval_type& interval = itr->first;
-        inner_type* tree = itr->second;
+        inner_type* tree = itr->second.get();
         m_outer_segments.insert(interval.first, interval.second, tree);
     }
 }

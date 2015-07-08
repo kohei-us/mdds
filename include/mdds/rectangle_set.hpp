@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010, 2011 Kohei Yoshida
+ * Copyright (c) 2010-2015 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,14 +25,11 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_RECTANGLE_SET_HPP__
-#define __MDDS_RECTANGLE_SET_HPP__
+#ifndef INCLUDED_MDDS_RECTANGLE_SET_HPP
+#define INCLUDED_MDDS_RECTANGLE_SET_HPP
 
 #include "segment_tree.hpp"
 #include "global.hpp"
-
-#include <vector>
-#include <boost/ptr_container/ptr_map.hpp>
 
 namespace mdds {
 
@@ -85,8 +82,8 @@ private:
     typedef segment_tree<key_type, data_type>   inner_type;
     typedef segment_tree<key_type, inner_type*>  outer_type;
 
-    typedef ::std::pair<key_type, key_type>             interval_type;
-    typedef ::boost::ptr_map<interval_type, inner_type> inner_segment_map_type;
+    typedef std::pair<key_type, key_type>             interval_type;
+    typedef std::map<interval_type, std::unique_ptr<inner_type>> inner_segment_map_type;
 
 public:
     typedef typename inner_type::search_result_type search_result_type;
@@ -218,6 +215,7 @@ public:
     bool empty() const;
 
 private:
+    void build_inner_map(const inner_segment_map_type& r);
     void build_outer_segment_tree();
 
 #ifdef MDDS_UNIT_TEST
