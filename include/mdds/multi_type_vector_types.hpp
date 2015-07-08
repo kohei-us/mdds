@@ -40,7 +40,6 @@
 #else
 #include <vector>
 #endif
-#include <boost/noncopyable.hpp>
 
 #if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
 #include <iostream>
@@ -434,7 +433,7 @@ public:
 };
 
 template<typename _Self, element_t _TypeId, typename _Data>
-class noncopyable_element_block : public element_block<_Self, _TypeId, _Data>, private boost::noncopyable
+class noncopyable_element_block : public element_block<_Self, _TypeId, _Data>
 {
     typedef element_block<_Self,_TypeId,_Data> base_type;
 protected:
@@ -446,6 +445,9 @@ protected:
     noncopyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
 
 public:
+    noncopyable_element_block(const noncopyable_element_block&) = delete;
+    noncopyable_element_block& operator=(const noncopyable_element_block&) = delete;
+
     static _Self* clone_block(const base_element_block&)
     {
         throw element_block_error("attempted to clone a noncopyable element block.");

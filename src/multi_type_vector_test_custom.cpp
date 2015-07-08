@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2014 Kohei Yoshida
+ * Copyright (c) 2012-2015 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,7 +39,6 @@
 #include <vector>
 
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/noncopyable.hpp>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -90,10 +89,14 @@ struct date
 };
 
 template<typename T>
-class cell_pool : boost::noncopyable
+class cell_pool
 {
     boost::ptr_vector<T> m_pool;
 public:
+    cell_pool() = default;
+    cell_pool(const cell_pool&) = delete;
+    cell_pool& operator=(const cell_pool&) = delete;
+
     T* construct()
     {
         m_pool.push_back(new T);
@@ -106,6 +109,7 @@ public:
 class user_cell_pool : public cell_pool<user_cell>
 {
 public:
+
     user_cell* construct(double val)
     {
         user_cell* p = cell_pool<user_cell>::construct();

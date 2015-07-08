@@ -36,7 +36,6 @@
 #include <deque>
 
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/noncopyable.hpp>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 

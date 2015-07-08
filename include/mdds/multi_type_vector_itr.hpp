@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2013 Kohei Yoshida
+ * Copyright (c) 2012-2015 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -29,6 +29,8 @@
 #define MDDS_MULTI_TYPE_VECTOR_ITR_HPP
 
 #include "multi_type_vector_types.hpp"
+
+#include <cstddef>
 
 namespace mdds { namespace __mtv {
 
