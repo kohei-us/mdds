@@ -3,7 +3,14 @@ mdds 0.13.0
 * all
 
   * introduced API versioning to ease parallel installation of API
-    incompatible versions.
+    incompatible versions.  Version 0.13.0 will have an API versoin of
+    1.0.
+
+  * C++11 is now a hard requirement.
+
+* mixed_type_matrix
+
+  * officially removed for good in favor of multi_type_matrix.
 
 mdds 0.12.1
 
