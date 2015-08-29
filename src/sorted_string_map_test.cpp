@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2014 Kohei Yoshida
+ * Copyright (c) 2014-2015 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -73,6 +73,36 @@ void ssmap_test_basic()
     assert(names.find("andy133", 7) == name_none);
 }
 
+void ssmap_test_mixed_case_null()
+{
+    stack_printer __stack_printer__("::ssmap_test_mixed_case_null");
+
+    typedef mdds::sorted_string_map<int> map_type;
+
+    map_type::entry entries[] =
+    {
+        { MDDS_ASCII("NULL"), 1 },
+        { MDDS_ASCII("Null"), 2 },
+        { MDDS_ASCII("null"), 3 },
+        { MDDS_ASCII("~"),    4 },
+    };
+
+    size_t entry_count = sizeof(entries)/sizeof(entries[0]);
+    map_type names(entries, entry_count, -1);
+    for (size_t i = 0; i < entry_count; ++i)
+    {
+        cout << "* key = " << entries[i].key << endl;
+        bool res = names.find(entries[i].key, strlen(entries[i].key)) == entries[i].value;
+        assert(res);
+    }
+
+    // Try invalid keys.
+    assert(names.find(MDDS_ASCII("NUll")) == -1);
+    assert(names.find(MDDS_ASCII("Oull")) == -1);
+    assert(names.find(MDDS_ASCII("Mull")) == -1);
+    assert(names.find(MDDS_ASCII("hell")) == -1);
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -82,6 +112,7 @@ int main (int argc, char **argv)
     if (opt.test_func)
     {
         ssmap_test_basic();
+        ssmap_test_mixed_case_null();
     }
 
     if (opt.test_perf)

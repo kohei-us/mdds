@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2014 Kohei Yoshida
+ * Copyright (c) 2014-2015 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,6 +24,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  ************************************************************************/
+
+#include <cstring>
 
 namespace mdds {
 
@@ -53,7 +55,12 @@ sorted_string_map<_ValueT>::find(const char* input, size_type len) const
 
         if (pos == len && len == keylen)
         {
-            // Match found!
+            // Potential match found!  Parse the whole string backward to
+            // make sure it's really a match.
+            if (std::memcmp(input, key, len))
+                // Not a match.
+                return m_null_value;
+
             return p->value;
         }
     }
