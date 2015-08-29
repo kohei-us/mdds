@@ -55,8 +55,8 @@ sorted_string_map<_ValueT>::find(const char* input, size_type len) const
 
         if (pos == len && len == keylen)
         {
-            // Potential match found!  Parse the whole string backward to
-            // make sure it's really a match.
+            // Potential match found!  Parse the whole string to make sure
+            // it's really a match.
             if (std::memcmp(input, key, len))
                 // Not a match.
                 return m_null_value;
