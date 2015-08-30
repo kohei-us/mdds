@@ -251,6 +251,13 @@ public:
     static void resize_block(base_element_block& blk, size_t new_size)
     {
         static_cast<_Self&>(blk).m_array.resize(new_size);
+
+        // Test if the vector have allocated capacity (thus memory) superior to 
+        // twice its current size. If yes thus, shrink its memory footprint
+        // Vector from STL does not free its memory when its downsized
+        if ((static_cast<_Self&>(blk).m_array.capacity() / 2 ) > new_size) {
+            static_cast<_Self&>(blk).m_array.shrink_to_fit();
+        }
     }
 
 #ifdef MDDS_UNIT_TEST
@@ -393,9 +400,9 @@ public:
     static void shrink_to_fit(base_element_block& block)
     {
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
-        store_type& blk = get(block).m_array;
-        store_type(blk).swap(blk);
+        get(block).m_array.shrink_to_fit();
 #endif
+// TODO : regarder comment utiliser shrink_to_fit du deque
     }
 
 private:
