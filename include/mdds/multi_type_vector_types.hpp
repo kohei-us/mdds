@@ -402,7 +402,6 @@ public:
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
         get(block).m_array.shrink_to_fit();
 #endif
-// TODO : regarder comment utiliser shrink_to_fit du deque
     }
 
 private:
