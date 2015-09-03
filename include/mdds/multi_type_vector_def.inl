@@ -914,15 +914,47 @@ multi_type_vector<_CellBlockFunc>::set_cell_to_empty_block(
                         // resize the next block to zero to prevent the
                         // transferred cells to be deleted.
                         block* blk_prev = m_blocks[block_index-1];
-                        blk_prev->m_size += 1 + blk_next->m_size;
-                        mdds_mtv_append_value(*blk_prev->mp_data, cell);
-                        element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
-                        element_block_func::resize_block(*blk_next->mp_data, 0);
 
-                        delete blk;
-                        delete blk_next;
-                        typename blocks_type::iterator it = m_blocks.begin() + block_index;
-                        m_blocks.erase(it, it+2);
+                        // Check if the next block is bigger
+                        if (blk_prev->m_size < blk_next->m_size) 
+                        {
+                            // Yes thus we prepend the new item to the nextblock, then prepend the content
+                            // of the previous block and release both previous and current blocks
+
+                            // Increase the size of block and prepend the new cell
+                            blk_next->m_size += 1;
+                            mdds_mtv_prepend_value(*blk_next->mp_data, cell);
+
+                            // Preprend the content of previous block to next one
+                            element_block_func::prepend_values_from_block(*blk_next->mp_data, *blk_prev->mp_data, 0, blk_prev->m_size);
+                            blk_next->m_size += blk_prev->m_size;
+
+                            // Resize the previous block to zero
+                            element_block_func::resize_block(*blk_prev->mp_data, 0);
+
+                            // Release both blocks which are no longer used
+                            delete blk;
+                            delete blk_prev;
+
+                            // Get an iterator to previous block
+                            typename blocks_type::iterator it = m_blocks.begin() + block_index - 1;
+        
+                            // So we can use it to remove the two blocks
+                            m_blocks.erase(it, it+2);
+                        }
+                        else
+                        {
+                            // Be sure to resize the next block to zero to prevent the
+                            // transferred cells to be deleted. 
+                            blk_prev->m_size += 1 + blk_next->m_size;
+                            mdds_mtv_append_value(*blk_prev->mp_data, cell);
+                            element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
+                            element_block_func::resize_block(*blk_next->mp_data, 0);
+                            delete blk;
+                            delete blk_next;
+                            typename blocks_type::iterator it = m_blocks.begin() + block_index;
+                            m_blocks.erase(it, it+2);
+                        }
                     }
                     else
                     {
