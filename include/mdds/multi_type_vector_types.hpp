@@ -255,7 +255,8 @@ public:
         // Test if the vector have allocated capacity (thus memory) superior to 
         // twice its current size. If yes thus, shrink its memory footprint
         // Vector from STL does not free its memory when its downsized
-        if ((static_cast<_Self&>(blk).m_array.capacity() / 2 ) > new_size) {
+        if ((static_cast<_Self&>(blk).m_array.capacity() / 2 ) > new_size) 
+        {
             static_cast<_Self&>(blk).m_array.shrink_to_fit();
         }
     }
