@@ -2629,34 +2629,27 @@ multi_type_vector<_CellBlockFunc>::insert_empty_impl(
     m_blocks[block_index+1] = new block(length);
     m_blocks[block_index+2] = new block(size_blk_next);
 
-    // If the block at block_ index keeps most of the data then we need then
-    // We need to allocate a new block, copy to the block the data then resize
-    // first block
-    //
-    // Otherwise, if the new block will contain most of the data, we need to 
-    // Create a new block, copy the data at begining to this one, then remove
-    // data from block at block_index and swap blocks
-    //
-    // This will really reduce the amount of data to be copied in some case
-
-    // Create the block data for block at index + 2
     block* blk_next = m_blocks[block_index+2];
-    blk_next->mp_data = element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->mp_data), 0);
+    blk_next->mp_data =
+        element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->mp_data), 0);
 
     // Check if the previous block is the biger one
     if (size_blk_prev > size_blk_next)
     {
+        // Upper (previous) block is larger than the lower (next) block. Copy
+        // the lower values to the next block.
         element_block_func::assign_values_from_block(*blk_next->mp_data, *blk->mp_data, size_blk_prev, size_blk_next);
         element_block_func::resize_block(*blk->mp_data, size_blk_prev);
         blk->m_size = size_blk_prev;
     } 
     else 
     {
-        // Copy the data from "head" to the new block
+        // Lower (next) block is larger than the upper (previous) block. Copy
+        // the upper values to the "next" block.
         element_block_func::assign_values_from_block(*blk_next->mp_data, *blk->mp_data, 0, size_blk_prev);
         blk_next->m_size = size_blk_prev;
 
-        // Remove the size_blk_prev element from the current block
+        // Remove the copied values and push the rest to the top.
         element_block_func::erase(*blk->mp_data, 0, size_blk_prev);
 
         // Set the size of the current block to its new size ( what is after the new block )
@@ -2859,26 +2852,19 @@ multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
 
     if (blk->mp_data)
     {
-        // Copy the lower values from the current block to the new non-empty block.
         size_type lower_data_start = offset + new_block_size;
         block* blk_lower = m_blocks[block_index+2];
         assert(blk_lower->m_size == lower_block_size);
         element_category_type cat = mtv::get_block_type(*blk->mp_data);
         blk_lower->mp_data = element_block_func::create_new_block(cat, 0);
 
-        // If the block at block_ index keeps most of the data then we need then
-        // we need to allocate a new block, copy to the block the data then resize
-        // first block
-        //
-        // Otherwise, if the new block will contain most of the data, we need to 
-        // Create a new block, copy the data at begining to this one, then remove
-        // data from block at block_index and swap blocks
-        //
-        // This will really reduce the amount of data to be copied in some case
+        // Try to copy the fewer amount of data to the new non-empty block.
         if (offset > lower_block_size) 
         {
-            // Copy the end of the block to the new one
-            element_block_func::assign_values_from_block(*blk_lower->mp_data, *blk->mp_data, lower_data_start, lower_block_size);
+            // Keep the upper values in the current block and copy the lower
+            // values to the new non-empty block.
+            element_block_func::assign_values_from_block(
+                *blk_lower->mp_data, *blk->mp_data, lower_data_start, lower_block_size);
 
             if (overwrite)
             {
@@ -2893,7 +2879,9 @@ multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
         } 
         else 
         {
-            // Copy the data from "head" to the new block
+            // Keep the lower values in the current block and copy the upper
+            // values to the new non-empty block (blk_lower), and swap the two
+            // later.
             element_block_func::assign_values_from_block(*blk_lower->mp_data, *blk->mp_data, 0, offset);
             blk_lower->m_size = offset;
 
@@ -2903,7 +2891,7 @@ multi_type_vector<_CellBlockFunc>::set_new_block_to_middle(
                 element_block_func::overwrite_values(*blk->mp_data, offset, new_block_size);
             }
 
-            // Remove the size_blk_prev element from the current block
+            // Remove the upper and middle values and push the rest to the top.
             element_block_func::erase(*blk->mp_data, 0, lower_data_start);
 
             // Set the size of the current block to its new size ( what is after the new block )
