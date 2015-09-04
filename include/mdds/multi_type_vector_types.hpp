@@ -250,15 +250,13 @@ public:
 
     static void resize_block(base_element_block& blk, size_t new_size)
     {
-        static_cast<_Self&>(blk).m_array.resize(new_size);
+        store_type& st = get(blk).m_array;
+        st.resize(new_size);
 
-        // Test if the vector have allocated capacity (thus memory) superior to 
-        // twice its current size. If yes thus, shrink its memory footprint
-        // Vector from STL does not free its memory when its downsized
-        if ((static_cast<_Self&>(blk).m_array.capacity() / 2 ) > new_size) 
-        {
-            static_cast<_Self&>(blk).m_array.shrink_to_fit();
-        }
+        // Test if the vector's capacity is larger than twice its current
+        // size, and if so, shrink its capacity to free up some memory.
+        if (new_size < (st.capacity() / 2))
+            st.shrink_to_fit();
     }
 
 #ifdef MDDS_UNIT_TEST
