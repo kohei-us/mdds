@@ -153,3 +153,5 @@ Download
 | 0.10.1 | 2014-01-08 | [mdds_0.10.1.tar.bz2](http://kohei.us/files/mdds/src/mdds_0.10.1.tar.bz2) | md5sum: 01a380acfec23bf617117ce98e318f3d<br/>sha1sum: 199e609afa5ae08d164754f7a0a54b01f88692d0 |
 | 0.10.0 | 2014-01-03 | [mdds_0.10.0.tar.bz2](http://kohei.us/files/mdds/src/mdds_0.10.0.tar.bz2) | md5sum: 26272a8e8c984d21ba800b4edcd3ada8<br/>sha1sum: 2234e98f9e36041d0a41f037f628f2178f707307 |
 | 0.9.1 | 2013-10-21 | [mdds_0.9.1.tar.bz2](http://kohei.us/files/mdds/src/mdds_0.9.1.tar.bz2) | md5sum: 8c853024fbcff39113d9285250dafc66<br/>sha1sum: d80f6b74827d5e36ecbb8975b0f8f42896162d95 |
+
+Older releases are archived [here](https://code.google.com/p/multidimalgorithm/downloads/list).
