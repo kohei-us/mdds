@@ -210,6 +210,8 @@ $(QUICKCHECKDIR)/flat_segment_tree: $(QUICKCHECKDIR)/flat_segment_tree.o pre
 	$(CXX) $(LDFLAGS) $< -o $@
 
 install: $(HEADERS)
+	cp -a LICENSE COPYING
+	cp -a CHANGELOG NEWS
 	install -d $(DESTDIR)$(INSTALL_INCDIR)/mdds
 	install -d $(DESTDIR)$(INSTALL_DOCDIR)
 	install -d $(DESTDIR)@datarootdir@
