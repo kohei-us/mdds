@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2008-2014 Kohei Yoshida
+ * Copyright (c) 2008-2015 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_FLAT_SEGMENT_TREE_HPP__
-#define __MDDS_FLAT_SEGMENT_TREE_HPP__
+#ifndef INCLUDED_MDDS_FLAT_SEGMENT_TREE_HPP
+#define INCLUDED_MDDS_FLAT_SEGMENT_TREE_HPP
 
 #include <iostream>
 #include <sstream>
@@ -50,6 +50,7 @@ class flat_segment_tree
 public:
     typedef _Key    key_type;
     typedef _Value  value_type;
+    typedef size_t  size_type;
 
     struct nonleaf_value_type
     {
@@ -438,7 +439,7 @@ public:
      *
      * @return number of leaf nodes.
      */
-    size_t leaf_size() const;
+    size_type leaf_size() const;
 
 #ifdef MDDS_UNIT_TEST
     nonleaf_node* get_root_node() const

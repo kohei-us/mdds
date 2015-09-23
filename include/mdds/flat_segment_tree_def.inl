@@ -683,7 +683,8 @@ void flat_segment_tree<_Key, _Value>::build_tree()
 }
 
 template<typename _Key, typename _Value>
-size_t flat_segment_tree<_Key, _Value>::leaf_size() const
+typename flat_segment_tree<_Key, _Value>::size_type
+flat_segment_tree<_Key, _Value>::leaf_size() const
 {
     return __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 }

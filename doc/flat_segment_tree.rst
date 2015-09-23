@@ -13,6 +13,8 @@ Flat Segment Tree
 
    .. cpp:type:: Value value_type
 
+   .. cpp:type:: size_t size_type
+
    .. cpp:type:: iterator
 
    .. cpp:type:: const_iterator
@@ -131,7 +133,7 @@ Flat Segment Tree
 
       :return: default value.
 
-   .. cpp:function:: size_t leaf_size() const
+   .. cpp:function:: size_type leaf_size() const
 
       :return: number of leaf nodes.
 
