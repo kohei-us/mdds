@@ -58,13 +58,13 @@ back-ends: filled storage and sparse storage.  Filled storage
 allocates memory for all elements at all times, whereas sparse storage 
 allocates memory only for elements having non-default values.  
 
-### Multi-type vector
+### Multi Type Vector
 
 Multi-type vector allows storage of unspecified number of types in a single 
 logical array such that contiguous elements of identical type are stored in 
 contiguous segment in memory space. 
 
-### Multi-type matrix
+### Multi Type Matrix
 
 Multi-type matrix is a matrix structure that allows storage of four different 
 element types: numeric, string, boolean and empty. It uses multi-type vector as 
