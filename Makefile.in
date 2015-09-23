@@ -230,3 +230,8 @@ clean:
 	rm -rf $(OBJDIR) 2>/dev/null || /bin/true
 	rm $(EXECS) 2>/dev/null || /bin/true
 	rm $(QUICKCHECKDIR)/flat_segment_tree $(QUICKCHECKDIR)/*.o 2>/dev/null || true
+
+build-doc:
+	@echo "Building documentation by Sphinx..."
+	sphinx-build -b html ./doc/ ./doc/_build
+
