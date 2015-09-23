@@ -12,7 +12,6 @@ This library implements the following data structure:
 * segment tree
 * rectangle set
 * point quad tree
-* mixed type matrix (deprecated as of 0.6.0)
 * multi-type vector
 * multi-type matrix
 
@@ -48,15 +47,6 @@ when 2 <= x < 10 and 2 <= y < 20.
 
 Point quad tree stores 2-dimensional points and provides an efficient 
 way to query all points within specified rectangular region.  
-
-### Mixed Type Matrix
-
-Mixed type matrix (MTM) allows storage of elements of various types: 
-boolean, numeric, string, and empty types.  It also allows storage of 
-additional value associated with each element.  MTM allows two storage 
-back-ends: filled storage and sparse storage.  Filled storage 
-allocates memory for all elements at all times, whereas sparse storage 
-allocates memory only for elements having non-default values.  
 
 ### Multi Type Vector
 
