@@ -1,0 +1,4 @@
+.. highlight:: cpp
+
+Segment tree
+============

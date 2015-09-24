@@ -1,6 +1,6 @@
 .. highlight:: cpp
 
-Flat Segment Tree
+Flat segment tree
 =================
 
 .. cpp:namespace:: mdds
