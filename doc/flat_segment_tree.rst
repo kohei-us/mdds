@@ -7,8 +7,6 @@ Flat segment tree
 
 .. cpp:class:: flat_segment_tree<Key,Value>
 
-   Write something about this class.
-
    .. cpp:type:: Key key_type
 
    .. cpp:type:: Value value_type
@@ -53,59 +51,131 @@ Flat segment tree
 
    .. cpp:function:: std::pair<const_iterator, bool> insert_front(key_type start_key, key_type end_key, value_type val)
 
-      :param start_key:
-      :param end_key:
-      :param val:
+      Insert a new segment into the tree.  It searches for the point of
+      insertion from the first leaf node.
+
+      :param start_key: start value of the segment being inserted.  The value
+         is inclusive.
+      :param end_key: end value of the segment being inserted.  The value is
+         not inclusive.
+      :param val: value associated with this segment.
+
+      :return: pair of const_iterator corresponding to the start position of
+         the inserted segment, and a boolean value indicating whether or not
+         the insertion has modified the tree.
 
    .. cpp:function:: std::pair<const_iterator, bool> insert_back(key_type start_key, key_type end_key, value_type val)
 
-      :param start_key:
-      :param end_key:
-      :param val:
+      Insert a new segment into the tree.  Unlike the :cpp:func:`~insert_front()`
+      counterpart, this method searches for the point of insertion from the
+      last leaf node toward the first.
+
+      :param start_key: start value of the segment being inserted.  The value
+         is inclusive.
+      :param end_key: end value of the segment being inserted.  The value is
+         not inclusive.
+      :param val: value associated with this segment.
+
+      :return: pair of const_iterator corresponding to the start position of
+         the inserted segment, and a boolean value indicating whether or not
+         the insertion has modified the tree.
 
    .. cpp:function:: std::pair<const_iterator, bool> insert(const const_iterator &pos, key_type start_key, key_type end_key, value_type val)
 
-      :param pos:
-      :param start_key:
-      :param end_key:
-      :param val:
+      Insert a new segment into the tree at or after specified point of
+      insertion.
+
+      :param pos: specified insertion point
+      :param start_key: start value of the segment being inserted.  The value
+         is inclusive.
+      :param end_key: end value of the segment being inserted.  The value is
+         not inclusive.
+      :param val: value associated with this segment.
+
+      :return: pair of const_iterator corresponding to the start position of
+         the inserted segment, and a boolean value indicating whether or not
+         the insertion has modified the tree.
 
    .. cpp:function:: void shift_left(key_type start_key, key_type end_key)
 
-      :param start_key:
-      :param end_key:
+      Remove a segment specified by the start and end key values, and shift
+      the remaining segments (i.e. those segments that come after the removed
+      segment) to left.  Note that the start and end positions of the segment
+      being removed **must** be within the base segment span.
+
+      :param start_key: start position of the segment being removed.
+      :param end_key: end position of the segment being removed.
 
    .. cpp:function:: void shift_right(key_type pos, key_type size, bool skip_start_node)
 
-      :param start_key:
-      :param end_key:
-      :param skip_start_node:
+      Shift all segments that occur at or after the specified start position
+      to right by the size specified.
+
+      :param pos: position where the right-shift occurs.
+      :param size: amount of shift (must be greater than 0)
+      :param skip_start_node: if true, and the specified position is at an
+         existing node position, that node will *not* be shifted.  This
+         argument has no effect if the position specified does not coincide
+         with any of the existing nodes.
 
    .. cpp:function:: std::pair<const_iterator, bool> search(key_type key, value_type& value, key_type* start_key=nullptr, key_type* end_key=nullptr) const
 
-      :param key:
-      :param value:
-      :param start_key:
-      :param end_key:
+      Perform leaf-node search for a value associated with a key.
+
+      :param key: key value
+      :param value: value associated with key specified gets stored upon
+         successful search.
+      :param start_key: pointer to a variable where the start key value of the
+         segment that contains the key gets stored upon successful search.
+      :param end_key: pointer to a varaible where the end key value of the
+         segment that contains the key gets stored upon successful search.
+      :return: a pair of const_iterator corresponding to the start position of
+         the segment containing the key, and a boolean value indicating
+         whether or not the search has been successful.
 
    .. cpp:function:: std::pair<const_iterator, bool> search(const const_iterator& pos, key_type key, value_type& value, key_type* start_key=nullptr, key_type* end_key=nullptr) const
 
-      :param pos:
-      :param key:
-      :param value:
-      :param start_key:
-      :param end_key:
+      Perform leaf-node search for a value associated with a key.
+
+      :param pos: position from which the search should start.  When the
+         position is invalid, it falls back to the normal search.
+      :param key: key value
+      :param value: value associated with key specified gets stored upon
+         successful search.
+      :param start_key: pointer to a variable where the start key value of the
+         segment that contains the key gets stored upon successful search.
+      :param end_key: pointer to a varaible where the end key value of the
+         segment that contains the key gets stored upon successful search.
+      :return: a pair of const_iterator corresponding to the start position of
+         the segment containing the key, and a boolean value indicating
+         whether or not the search has been successful.
 
    .. cpp:function:: std::pair<const_iterator, bool> search_tree(key_type key, value_type& value, key_type* start_key=nullptr, key_type* end_key=nullptr) const
 
-      :param key:
-      :param value:
-      :param start_key:
-      :param end_key:
+      Perform tree search for a value associated with a key.  This method
+      assumes that the tree is valid.
+
+      :param key: key value
+      :param value: value associated with key specified gets stored upon
+         successful search.
+      :param start_key: pointer to a variable where the start key value of the
+         segment that contains the key gets stored upon successful search.
+      :param end_key: pointer to a varaible where the end key value of the
+         segment that contains the key gets stored upon successful search.
+      :return: a pair of const_iterator corresponding to the start position of
+         the segment containing the key, and a boolean value indicating
+         whether or not the search has been successful.
 
    .. cpp:function:: void build_tree()
 
+      Build a tree of non-leaf nodes based on the values stored in the leaf
+      nodes.  The tree must be valid before you can call the
+      :cpp:func:`~search_tree()` method.
+
    .. cpp:function:: bool is_tree_valid() const
+
+      :return: true if the tree is valid, otherwise false.  The tree must be
+         valid before you can call the :cpp:func:`~search_tree()` method.
 
    .. cpp:function:: flat_segment_tree<key_type,value_type>& operator =(const flat_segment_tree<key_type, value_type>& other)
 
