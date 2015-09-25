@@ -103,7 +103,7 @@ void search_region_node(
 }
 
 
-template<typename _Key, typename _Data>
+template<typename _Key, typename _Value>
 class point_quad_tree
 {
 private:
@@ -111,9 +111,9 @@ private:
 
 public:
     typedef _Key    key_type;
-    typedef _Data   data_type;
+    typedef _Value  value_type;
     typedef size_t  size_type;
-    typedef ::std::vector<data_type> data_array_type;
+    typedef ::std::vector<value_type> data_array_type;
 
     class data_not_found : public ::std::exception {};
 
@@ -123,8 +123,8 @@ private:
 
     struct node : quad_node_base<node_ptr, node, key_type>
     {
-        data_type data;
-        node(key_type _x, key_type _y, data_type _data) :
+        value_type data;
+        node(key_type _x, key_type _y, value_type _data) :
             quad_node_base<node_ptr, node, key_type>(_x, _y),
             data(_data) {}
 
@@ -158,14 +158,14 @@ public:
      */
     class node_access
     {
-        friend class point_quad_tree<_Key,_Data>;
+        friend class point_quad_tree<_Key,_Value>;
     public:
         node_access northeast() const { return node_access(mp->northeast.get()); }
         node_access northwest() const { return node_access(mp->northwest.get()); }
         node_access southeast() const { return node_access(mp->southeast.get()); }
         node_access southwest() const { return node_access(mp->southwest.get()); }
 
-        data_type data() const { return mp->data; }
+        value_type data() const { return mp->data; }
         key_type x() const { return mp->x; }
         key_type y() const { return mp->y; }
 
@@ -207,13 +207,13 @@ public:
 
         class const_iterator
         {
-            friend class point_quad_tree<_Key,_Data>::search_result;
-            typedef typename point_quad_tree<_Key,_Data>::point point;
-            typedef typename point_quad_tree<_Key,_Data>::data_type data_type;
+            friend class point_quad_tree<_Key,_Value>::search_result;
+            typedef typename point_quad_tree<_Key,_Value>::point point;
+            typedef typename point_quad_tree<_Key,_Value>::value_type parent_value_type;
 
         public:
             // Iterator traits
-            typedef ::std::pair<point, data_type> value_type;
+            typedef std::pair<point, parent_value_type> value_type;
             typedef value_type*     pointer;
             typedef value_type&     reference;
             typedef ptrdiff_t       difference_type;
@@ -257,17 +257,17 @@ public:
                 return !operator==(r);
             }
 
-            const ::std::pair<point, data_type>& operator*() const
+            const value_type& operator*() const
             {
                 return m_cur_value;
             }
 
-            const ::std::pair<point, data_type>* operator->() const
+            const value_type* operator->() const
             {
                 return get_current_value();
             }
 
-            const ::std::pair<point, data_type>* operator++()
+            const value_type* operator++()
             {
                 // The only difference between the last data position and the 
                 // end iterator position must be the value of m_end_pos;
@@ -285,7 +285,7 @@ public:
                 return operator->();
             }
 
-            const ::std::pair<point, const data_type>* operator--()
+            const value_type* operator--()
             {
                 if (m_end_pos)
                 {
@@ -330,7 +330,7 @@ public:
                 m_cur_value.second = p->data;
             }
 
-            const ::std::pair<point, data_type>* get_current_value() const
+            const value_type* get_current_value() const
             {
                 return &m_cur_value;
             }
@@ -338,7 +338,7 @@ public:
         private:
             res_nodes_ptr mp_res_nodes;
             typename res_nodes_type::const_iterator m_cur_pos;
-            ::std::pair<point, data_type> m_cur_value;
+            value_type m_cur_value;
             bool m_end_pos:1;
         };
 
@@ -383,7 +383,7 @@ public:
      * @param y y coordinate of new data position
      * @param data data being inserted at the specified coordinates.
      */
-    void insert(key_type x, key_type y, data_type data);
+    void insert(key_type x, key_type y, value_type data);
 
     /**
      * Perform region search (aka window search), that is, find all points 
@@ -424,7 +424,7 @@ public:
      * 
      * @return data found at the specified coordinates.
      */
-    data_type find(key_type x, key_type y) const;
+    value_type find(key_type x, key_type y) const;
 
     /**
      * Remove data from specified coordinates.  This method does nothing if no 
@@ -487,8 +487,8 @@ private:
     {
         key_type    x;
         key_type    y;
-        data_type  data;
-        node_data(key_type _x, key_type _y, data_type _data) :
+        value_type  data;
+        node_data(key_type _x, key_type _y, value_type _data) :
             x(_x), y(_y), data(_data) {}
         node_data(const node_data& r) : 
             x(r.x), y(r.y), data(r.data) {}
@@ -608,16 +608,16 @@ private:
     key_range_type m_yrange;
 };
 
-template<typename _Key, typename _Data>
-point_quad_tree<_Key,_Data>::point_quad_tree() :
+template<typename _Key, typename _Value>
+point_quad_tree<_Key,_Value>::point_quad_tree() :
     m_root(nullptr),
     m_xrange(0,0),
     m_yrange(0,0)
 {
 }
 
-template<typename _Key, typename _Data>
-point_quad_tree<_Key,_Data>::point_quad_tree(const point_quad_tree& r) :
+template<typename _Key, typename _Value>
+point_quad_tree<_Key,_Value>::point_quad_tree(const point_quad_tree& r) :
     m_root(nullptr),
     m_xrange(0,0),
     m_yrange(0,0)
@@ -625,14 +625,14 @@ point_quad_tree<_Key,_Data>::point_quad_tree(const point_quad_tree& r) :
     insert_data_from(r);
 }
 
-template<typename _Key, typename _Data>
-point_quad_tree<_Key,_Data>::~point_quad_tree()
+template<typename _Key, typename _Value>
+point_quad_tree<_Key,_Value>::~point_quad_tree()
 {
     clear_all_nodes();
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type data)
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::insert(key_type x, key_type y, value_type data)
 {
     m_xrange.first  = ::std::min(m_xrange.first,  x);
     m_xrange.second = ::std::max(m_xrange.second, x);
@@ -706,8 +706,8 @@ void point_quad_tree<_Key,_Data>::insert(key_type x, key_type y, data_type data)
     assert(!"This should never be reached.");
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2, key_type y2, data_array_type& result) const
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::search_region(key_type x1, key_type y1, key_type x2, key_type y2, data_array_type& result) const
 {
     using namespace std;
     const node* p = m_root.get();
@@ -715,9 +715,9 @@ void point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_ty
     ::mdds::search_region_node(p, x1, y1, x2, y2, _inserter);
 }
 
-template<typename _Key, typename _Data>
-typename point_quad_tree<_Key,_Data>::search_result
-point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2, key_type y2) const
+template<typename _Key, typename _Value>
+typename point_quad_tree<_Key,_Value>::search_result
+point_quad_tree<_Key,_Value>::search_region(key_type x1, key_type y1, key_type x2, key_type y2) const
 {
     using namespace std;
     search_result result;
@@ -727,9 +727,9 @@ point_quad_tree<_Key,_Data>::search_region(key_type x1, key_type y1, key_type x2
     return result;
 }
 
-template<typename _Key, typename _Data>
-typename point_quad_tree<_Key,_Data>::data_type 
-point_quad_tree<_Key,_Data>::find(key_type x, key_type y) const
+template<typename _Key, typename _Value>
+typename point_quad_tree<_Key,_Value>::value_type
+point_quad_tree<_Key,_Value>::find(key_type x, key_type y) const
 {
     const node* p = find_node_ptr(x, y);
     if (!p)
@@ -737,8 +737,8 @@ point_quad_tree<_Key,_Data>::find(key_type x, key_type y) const
     return p->data;
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::remove(key_type x, key_type y)
 {
     using namespace std;
     node_ptr delete_node = find_node(x, y);
@@ -878,43 +878,43 @@ void point_quad_tree<_Key,_Data>::remove(key_type x, key_type y)
         reinsert_tree(delete_node, *itr);
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::swap(point_quad_tree& r)
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::swap(point_quad_tree& r)
 {
     m_root.swap(r.m_root);
     ::std::swap(m_xrange, r.m_xrange);
     ::std::swap(m_yrange, r.m_yrange);
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::clear()
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::clear()
 {
     clear_all_nodes();
 }
 
-template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::empty() const
+template<typename _Key, typename _Value>
+bool point_quad_tree<_Key,_Value>::empty() const
 {
     return (m_root.get() == nullptr);
 }
 
-template<typename _Key, typename _Data>
-size_t point_quad_tree<_Key,_Data>::size() const
+template<typename _Key, typename _Value>
+size_t point_quad_tree<_Key,_Value>::size() const
 {
     size_t node_count = 0;
     count_all_nodes(m_root.get(), node_count);
     return node_count;
 }
 
-template<typename _Key, typename _Data>
-typename point_quad_tree<_Key,_Data>::node_access
-point_quad_tree<_Key,_Data>::get_node_access() const
+template<typename _Key, typename _Value>
+typename point_quad_tree<_Key,_Value>::node_access
+point_quad_tree<_Key,_Value>::get_node_access() const
 {
     return node_access(m_root.get());
 }
 
-template<typename _Key, typename _Data>
-point_quad_tree<_Key,_Data>& point_quad_tree<_Key,_Data>::operator= (const point_quad_tree& r)
+template<typename _Key, typename _Value>
+point_quad_tree<_Key,_Value>& point_quad_tree<_Key,_Value>::operator= (const point_quad_tree& r)
 {
     m_xrange = key_range_type(0, 0);
     m_yrange = key_range_type(0, 0);
@@ -923,8 +923,8 @@ point_quad_tree<_Key,_Data>& point_quad_tree<_Key,_Data>::operator= (const point
     return *this;
 }
 
-template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::operator== (const point_quad_tree& r) const
+template<typename _Key, typename _Value>
+bool point_quad_tree<_Key,_Value>::operator== (const point_quad_tree& r) const
 {
     ::std::vector<node_data> v1, v2;
     get_all_stored_data(v1);
@@ -932,8 +932,8 @@ bool point_quad_tree<_Key,_Data>::operator== (const point_quad_tree& r) const
     return equals(v1, v2);
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::dump_tree_svg(const ::std::string& fpath) const
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::dump_tree_svg(const ::std::string& fpath) const
 {
     using namespace std;
     ofstream file(fpath.c_str());
@@ -964,8 +964,8 @@ void draw_svg_arrow(::std::ofstream& file, const _NodePtr start, const _NodePtr 
     file << "</g>" << endl;
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::dump_node_svg(const node* p, ::std::ofstream& file) const
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::dump_node_svg(const node* p, ::std::ofstream& file) const
 {
     using namespace std;
 
@@ -995,8 +995,8 @@ void point_quad_tree<_Key,_Data>::dump_node_svg(const node* p, ::std::ofstream& 
     dump_node_svg(p->southwest.get(), file);
 }
 
-template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::equals(::std::vector<node_data>& v1, ::std::vector<node_data>& v2)
+template<typename _Key, typename _Value>
+bool point_quad_tree<_Key,_Value>::equals(::std::vector<node_data>& v1, ::std::vector<node_data>& v2)
 {
     using namespace std;
 
@@ -1023,8 +1023,8 @@ bool point_quad_tree<_Key,_Data>::equals(::std::vector<node_data>& v1, ::std::ve
     return true;
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::get_all_stored_data(::std::vector<node_data>& stored_data) const
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::get_all_stored_data(::std::vector<node_data>& stored_data) const
 {
     stored_data.clear();
     if (!m_root)
@@ -1033,8 +1033,8 @@ void point_quad_tree<_Key,_Data>::get_all_stored_data(::std::vector<node_data>& 
     get_all_stored_data(m_root.get(), stored_data);
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::count_all_nodes(const node* p, size_t& node_count) const
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::count_all_nodes(const node* p, size_t& node_count) const
 {
     if (!p)
         return;
@@ -1047,8 +1047,8 @@ void point_quad_tree<_Key,_Data>::count_all_nodes(const node* p, size_t& node_co
     count_all_nodes(p->southwest.get(), node_count);
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::insert_data_from(const point_quad_tree& r)
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::insert_data_from(const point_quad_tree& r)
 {
     using namespace std;
     vector<node_data> all_data;
@@ -1056,22 +1056,22 @@ void point_quad_tree<_Key,_Data>::insert_data_from(const point_quad_tree& r)
     for_each(all_data.begin(), all_data.end(), data_inserter(*this));
 }
 
-template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::verify_data(::std::vector<node_data>& expected) const
+template<typename _Key, typename _Value>
+bool point_quad_tree<_Key,_Value>::verify_data(::std::vector<node_data>& expected) const
 {
     ::std::vector<node_data> stored;
     get_all_stored_data(stored);
     return equals(stored, expected);
 }
 
-template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& nac) const
+template<typename _Key, typename _Value>
+bool point_quad_tree<_Key,_Value>::verify_node_iterator(const node_access& nac) const
 {
     return verify_node_iterator(nac, m_root.get());
 }
 
-template<typename _Key, typename _Data>
-bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& nac, const node* p)
+template<typename _Key, typename _Value>
+bool point_quad_tree<_Key,_Value>::verify_node_iterator(const node_access& nac, const node* p)
 {
     if (!nac)
         return (p == nullptr);
@@ -1091,8 +1091,8 @@ bool point_quad_tree<_Key,_Data>::verify_node_iterator(const node_access& nac, c
     return true;
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::get_all_stored_data(const node* p, ::std::vector<node_data>& stored_data) const
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::get_all_stored_data(const node* p, ::std::vector<node_data>& stored_data) const
 {
     if (!p)
         return;
@@ -1105,9 +1105,9 @@ void point_quad_tree<_Key,_Data>::get_all_stored_data(const node* p, ::std::vect
     get_all_stored_data(p->southwest.get(), stored_data);
 }
 
-template<typename _Key, typename _Data>
-typename point_quad_tree<_Key,_Data>::node_ptr
-point_quad_tree<_Key,_Data>::find_node(key_type x, key_type y) const
+template<typename _Key, typename _Value>
+typename point_quad_tree<_Key,_Value>::node_ptr
+point_quad_tree<_Key,_Value>::find_node(key_type x, key_type y) const
 {
     node_ptr cur_node = m_root;
     while (cur_node)
@@ -1148,9 +1148,9 @@ point_quad_tree<_Key,_Data>::find_node(key_type x, key_type y) const
     return node_ptr();
 }
 
-template<typename _Key, typename _Data>
-const typename point_quad_tree<_Key,_Data>::node*
-point_quad_tree<_Key,_Data>::find_node_ptr(key_type x, key_type y) const
+template<typename _Key, typename _Value>
+const typename point_quad_tree<_Key,_Value>::node*
+point_quad_tree<_Key,_Value>::find_node_ptr(key_type x, key_type y) const
 {
     const node* cur_node = m_root.get();
     while (cur_node)
@@ -1191,9 +1191,9 @@ point_quad_tree<_Key,_Data>::find_node_ptr(key_type x, key_type y) const
     return nullptr;
 }
 
-template<typename _Key, typename _Data>
-typename point_quad_tree<_Key,_Data>::node_ptr
-point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const node_ptr& delete_node) const
+template<typename _Key, typename _Value>
+typename point_quad_tree<_Key,_Value>::node_ptr
+point_quad_tree<_Key,_Value>::find_replacement_node(key_type x, key_type y, const node_ptr& delete_node) const
 {
     using namespace std;
 
@@ -1261,8 +1261,8 @@ point_quad_tree<_Key,_Data>::find_replacement_node(key_type x, key_type y, const
     return node_ptr();
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::find_candidate_in_quad(
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::find_candidate_in_quad(
     key_type x, key_type y, 
     node_distance& dx_node, node_distance& dy_node, node_distance& min_city_block_node,
     const node_ptr& delete_node, node_quadrant_t quad) const
@@ -1303,8 +1303,8 @@ void point_quad_tree<_Key,_Data>::find_candidate_in_quad(
         min_city_block_node = node_distance(quad_unspecified, dx+dy, repl_node);
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::adjust_quad(
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::adjust_quad(
     const key_range_type& hatched_xrange, const key_range_type& hatched_yrange, 
     node_ptr quad_root, direction_t dir, reinsert_tree_array_type& insert_list)
 {
@@ -1353,8 +1353,8 @@ void point_quad_tree<_Key,_Data>::adjust_quad(
     }
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::set_new_root(
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::set_new_root(
     const key_range_type& hatched_xrange, const key_range_type& hatched_yrange, 
     node_ptr& quad_root, node_quadrant_t dir, reinsert_tree_array_type& insert_list)
 {
@@ -1386,8 +1386,8 @@ void point_quad_tree<_Key,_Data>::set_new_root(
     }
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::insert_node(node_ptr& dest, node_ptr& node)
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::insert_node(node_ptr& dest, node_ptr& node)
 {
     node_ptr cur_node = dest;
     while (true)
@@ -1450,8 +1450,8 @@ void point_quad_tree<_Key,_Data>::insert_node(node_ptr& dest, node_ptr& node)
     assert(!"This should never be reached.");
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_ptr& root)
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::reinsert_tree(node_ptr& dest, node_ptr& root)
 {
     assert(dest); // Destination node should not be null.
 
@@ -1484,8 +1484,8 @@ void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_ptr& root)
     insert_node(dest, root);
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_quadrant_t quad, node_ptr& root)
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::reinsert_tree(node_ptr& dest, node_quadrant_t quad, node_ptr& root)
 {
     if (!root)
         // Nothing to re-insert.  Bail out.
@@ -1534,8 +1534,8 @@ void point_quad_tree<_Key,_Data>::reinsert_tree(node_ptr& dest, node_quadrant_t 
     }
 }
 
-template<typename _Key, typename _Data>
-void point_quad_tree<_Key,_Data>::clear_all_nodes()
+template<typename _Key, typename _Value>
+void point_quad_tree<_Key,_Value>::clear_all_nodes()
 {
     ::mdds::disconnect_all_nodes(m_root);
     m_root.reset();

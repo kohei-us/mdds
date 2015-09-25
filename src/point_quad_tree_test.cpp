@@ -48,9 +48,9 @@ struct data_printer : public unary_function<string*, void>
 };
 
 template<typename _DbType>
-struct search_result_printer : public unary_function<pair<typename _DbType::point, typename _DbType::data_type>, void>
+struct search_result_printer : public unary_function<pair<typename _DbType::point, typename _DbType::value_type>, void>
 {
-    void operator() (const pair<const typename _DbType::point, const typename _DbType::data_type>& r) const
+    void operator() (const pair<const typename _DbType::point, const typename _DbType::value_type>& r) const
     {
         cout << "  (x=" << r.first.x << ", y=" << r.first.y << ", value='" << *r.second << "')" << endl;
     }
@@ -362,11 +362,11 @@ template<typename _DbType>
 bool verify_find(
     const _DbType& db,
     typename _DbType::key_type x, typename _DbType::key_type y,
-    const typename _DbType::data_type data)
+    const typename _DbType::value_type data)
 {
     try
     {
-        typename _DbType::data_type found = db.find(x, y);
+        typename _DbType::value_type found = db.find(x, y);
         cout << "found at (" << x << "," << y << "): " << found << endl;
         if (found == data)
             return true;

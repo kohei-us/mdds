@@ -44,27 +44,27 @@
 
 namespace mdds {
 
-template<typename _Key, typename _Data>
+template<typename _Key, typename _Value>
 class rectangle_set;
 
-template<typename _Key, typename _Data>
+template<typename _Key, typename _Value>
 class segment_tree
 {
-    friend class rectangle_set<_Key, _Data>;
+    friend class rectangle_set<_Key, _Value>;
 public:
     typedef _Key        key_type;
-    typedef _Data       data_type;
+    typedef _Value      value_type;
     typedef size_t      size_type;
-    typedef ::std::vector<data_type> search_result_type;
+    typedef ::std::vector<value_type> search_result_type;
 
 #ifdef MDDS_UNIT_TEST
     struct segment_data
     {
         key_type    begin_key;
         key_type    end_key;
-        data_type   pdata;
+        value_type   pdata;
 
-        segment_data(key_type _beg, key_type _end, data_type p) :
+        segment_data(key_type _beg, key_type _end, value_type p) :
             begin_key(_beg), end_key(_end), pdata(p) {}
 
         bool operator==(const segment_data& r) const
@@ -78,9 +78,9 @@ public:
         }
     };
 
-    struct segment_map_printer : public ::std::unary_function< ::std::pair<data_type, ::std::pair<key_type, key_type> >, void>
+    struct segment_map_printer : public ::std::unary_function< ::std::pair<value_type, ::std::pair<key_type, key_type> >, void>
     {
-        void operator() (const ::std::pair<data_type, ::std::pair<key_type, key_type> >& r) const
+        void operator() (const ::std::pair<value_type, ::std::pair<key_type, key_type> >& r) const
         {
             using namespace std;
             cout << r.second.first << "-" << r.second.second << ": " << r.first->name << endl;
@@ -89,9 +89,9 @@ public:
 #endif
 
 public:
-    typedef ::std::vector<data_type> data_chain_type;
-    typedef std::unordered_map<data_type, ::std::pair<key_type, key_type> > segment_map_type;
-    typedef ::std::map<data_type, ::std::pair<key_type, key_type> >               sorted_segment_map_type;
+    typedef ::std::vector<value_type> data_chain_type;
+    typedef std::unordered_map<value_type, ::std::pair<key_type, key_type> > segment_map_type;
+    typedef ::std::map<value_type, ::std::pair<key_type, key_type> >               sorted_segment_map_type;
 
     struct nonleaf_value_type
     {
@@ -461,7 +461,7 @@ public:
 
         class iterator : public iterator_base
         {
-            friend class segment_tree<_Key,_Data>::search_result;
+            friend class segment_tree<_Key,_Value>::search_result;
         private:
             iterator(const res_chains_ptr& p) : iterator_base(p) {}
         public:
@@ -549,7 +549,7 @@ public:
      *               Note that <i>the caller must manage the life cycle of the
      *               data instance</i>.
      */
-    bool insert(key_type begin_key, key_type end_key, data_type pdata);
+    bool insert(key_type begin_key, key_type end_key, value_type pdata);
 
     /**
      * Search the tree and collect all segments that include a specified
@@ -585,7 +585,7 @@ public:
      * the tree; however, if you have removed lots of segments, you might want
      * to re-build the tree to shrink its size.
      */
-    void remove(data_type pdata);
+    void remove(value_type pdata);
 
     /**
      * Remove all segments data.
@@ -639,7 +639,7 @@ private:
     void search(key_type point, search_result_base& result) const;
 
     typedef std::vector<__st::node_base*> node_list_type;
-    typedef std::map<data_type, std::unique_ptr<node_list_type>> data_node_map_type;
+    typedef std::map<value_type, std::unique_ptr<node_list_type>> data_node_map_type;
 
     static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right);
 
@@ -649,7 +649,7 @@ private:
      * record their positions as a list of node pointers.
      */
     void descend_tree_and_mark(
-        __st::node_base* pnode, data_type pdata, key_type begin_key, key_type end_key, node_list_type* plist);
+        __st::node_base* pnode, value_type pdata, key_type begin_key, key_type end_key, node_list_type* plist);
 
     void build_leaf_nodes();
 
@@ -657,13 +657,13 @@ private:
      * Go through the list of nodes, and remove the specified data pointer
      * value from the nodes.
      */
-    void remove_data_from_nodes(node_list_type* plist, const data_type pdata);
-    void remove_data_from_chain(data_chain_type& chain, const data_type pdata);
+    void remove_data_from_nodes(node_list_type* plist, const value_type pdata);
+    void remove_data_from_chain(data_chain_type& chain, const value_type pdata);
 
     void clear_all_nodes();
 
 #ifdef MDDS_UNIT_TEST
-    static bool has_data_pointer(const node_list_type& node_list, const data_type pdata);
+    static bool has_data_pointer(const node_list_type& node_list, const value_type pdata);
     static void print_leaf_value(const leaf_value_type& v);
 #endif
 

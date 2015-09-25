@@ -33,12 +33,12 @@
 
 namespace mdds {
 
-template<typename _Key, typename _Data>
+template<typename _Key, typename _Value>
 class rectangle_set
 {
 public:
     typedef _Key    key_type;
-    typedef _Data   data_type;
+    typedef _Value  value_type;
 
 #ifdef MDDS_UNIT_TEST
 public:
@@ -77,9 +77,9 @@ private:
             return !operator==(r);
         }
     };
-    typedef std::unordered_map<data_type, rectangle>    dataset_type;
+    typedef std::unordered_map<value_type, rectangle>    dataset_type;
 private:
-    typedef segment_tree<key_type, data_type>   inner_type;
+    typedef segment_tree<key_type, value_type>   inner_type;
     typedef segment_tree<key_type, inner_type*>  outer_type;
 
     typedef std::pair<key_type, key_type>             interval_type;
@@ -104,7 +104,7 @@ public:
 
         class iterator : public inner_type::iterator_base
         {
-            friend class rectangle_set<_Key,_Data>::search_result;
+            friend class rectangle_set<_Key,_Value>::search_result;
         private:
             iterator(const res_chains_ptr& p) : inner_type::iterator_base(p) {}
         public:
@@ -163,7 +163,7 @@ public:
      * 
      * @return true if a rectangle successfully inserted, false otherwise.
      */
-    bool insert(key_type x1, key_type y1, key_type x2, key_type y2, data_type data);
+    bool insert(key_type x1, key_type y1, key_type x2, key_type y2, value_type data);
 
     /** 
      * Search and collect all rectangles that contains a given point.
@@ -193,7 +193,7 @@ public:
      * @param data pointer that points to the rectangle instance you wish to 
      *             remove from the set.
      */
-    void remove(data_type data);
+    void remove(value_type data);
 
     /** 
      * Clear all rectangles stored in the set.

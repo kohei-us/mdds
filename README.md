@@ -69,12 +69,14 @@ directory on how to use these data structures.
 API Incompatibility Notes
 =========================
 
-0.13
-----
+1.0
+---
 
-* Starting with version 0.13.0, mdds now requires support for C++11.  Stick
-  with 0.12 or earlier versions if you use a compiler that doesn't support
-  C++11.
+* Starting with version 1.0, mdds now requires support for C++11.  Stick with
+  0.12 or earlier versions if you use a compiler that doesn't support C++11.
+
+* data_type has been renamed to value_type for segment_tree, rectangle_set,
+  and point_quad_tree.
 
 
 0.9

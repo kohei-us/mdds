@@ -110,15 +110,15 @@ void descend_tree_for_search(
 
 } // namespace __st
 
-template<typename _Key, typename _Data>
-segment_tree<_Key, _Data>::segment_tree()
+template<typename _Key, typename _Value>
+segment_tree<_Key, _Value>::segment_tree()
     : m_root_node(nullptr)
     , m_valid_tree(false)
 {
 }
 
-template<typename _Key, typename _Data>
-segment_tree<_Key, _Data>::segment_tree(const segment_tree& r)
+template<typename _Key, typename _Value>
+segment_tree<_Key, _Value>::segment_tree(const segment_tree& r)
     : m_segment_data(r.m_segment_data)
     , m_root_node(nullptr)
     , m_valid_tree(r.m_valid_tree)
@@ -127,14 +127,14 @@ segment_tree<_Key, _Data>::segment_tree(const segment_tree& r)
         build_tree();
 }
 
-template<typename _Key, typename _Data>
-segment_tree<_Key, _Data>::~segment_tree()
+template<typename _Key, typename _Value>
+segment_tree<_Key, _Value>::~segment_tree()
 {
     clear_all_nodes();
 }
 
-template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::operator==(const segment_tree& r) const
+template<typename _Key, typename _Value>
+bool segment_tree<_Key, _Value>::operator==(const segment_tree& r) const
 {
     if (m_valid_tree != r.m_valid_tree)
         return false;
@@ -159,8 +159,8 @@ bool segment_tree<_Key, _Data>::operator==(const segment_tree& r) const
     return true;
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::build_tree()
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::build_tree()
 {
     build_leaf_nodes();
     m_nonleaf_node_pool.clear();
@@ -183,7 +183,7 @@ void segment_tree<_Key, _Data>::build_tree()
     data_node_map_type tagged_node_map;
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
-        data_type pdata = itr->first;
+        value_type pdata = itr->first;
         auto r = tagged_node_map.insert(
             typename data_node_map_type::value_type(
                 pdata, make_unique<node_list_type>()));
@@ -198,9 +198,9 @@ void segment_tree<_Key, _Data>::build_tree()
     m_valid_tree = true;
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::descend_tree_and_mark(
-    __st::node_base* pnode, data_type pdata, key_type begin_key, key_type end_key, node_list_type* plist)
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::descend_tree_and_mark(
+    __st::node_base* pnode, value_type pdata, key_type begin_key, key_type end_key, node_list_type* plist)
 {
     if (!pnode)
         return;
@@ -239,8 +239,8 @@ void segment_tree<_Key, _Data>::descend_tree_and_mark(
     descend_tree_and_mark(pnonleaf->right, pdata, begin_key, end_key, plist);
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::build_leaf_nodes()
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::build_leaf_nodes()
 {
     using namespace std;
 
@@ -263,8 +263,8 @@ void segment_tree<_Key, _Data>::build_leaf_nodes()
     create_leaf_node_instances(keys_uniq, m_left_leaf, m_right_leaf);
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right)
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right)
 {
     if (keys.empty() || keys.size() < 2)
         // We need at least two keys in order to build tree.
@@ -298,8 +298,8 @@ void segment_tree<_Key, _Data>::create_leaf_node_instances(const ::std::vector<k
     right = prev_node;
 }
 
-template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, data_type pdata)
+template<typename _Key, typename _Value>
+bool segment_tree<_Key, _Value>::insert(key_type begin_key, key_type end_key, value_type pdata)
 {
     if (begin_key >= end_key)
         return false;
@@ -317,8 +317,8 @@ bool segment_tree<_Key, _Data>::insert(key_type begin_key, key_type end_key, dat
     return true;
 }
 
-template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& result) const
+template<typename _Key, typename _Value>
+bool segment_tree<_Key, _Value>::search(key_type point, search_result_type& result) const
 {
     if (!m_valid_tree)
         // Tree is invalidated.
@@ -330,41 +330,41 @@ bool segment_tree<_Key, _Data>::search(key_type point, search_result_type& resul
         return true;
 
     search_result_vector_inserter result_inserter(result);
-    typedef segment_tree<_Key,_Data> tree_type;
+    typedef segment_tree<_Key,_Value> tree_type;
     __st::descend_tree_for_search<
         tree_type, search_result_vector_inserter>(point, m_root_node, result_inserter);
     return true;
 }
 
-template<typename _Key, typename _Data>
-typename segment_tree<_Key, _Data>::search_result
-segment_tree<_Key, _Data>::search(key_type point) const
+template<typename _Key, typename _Value>
+typename segment_tree<_Key, _Value>::search_result
+segment_tree<_Key, _Value>::search(key_type point) const
 {
     search_result result;
     if (!m_valid_tree || !m_root_node)
         return result;
 
     search_result_inserter result_inserter(result);
-    typedef segment_tree<_Key,_Data> tree_type;
+    typedef segment_tree<_Key,_Value> tree_type;
     __st::descend_tree_for_search<tree_type, search_result_inserter>(
         point, m_root_node, result_inserter);
 
     return result;
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::search(key_type point, search_result_base& result) const
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::search(key_type point, search_result_base& result) const
 {
     if (!m_valid_tree || !m_root_node)
         return;
 
     search_result_inserter result_inserter(result);
-    typedef segment_tree<_Key,_Data> tree_type;
+    typedef segment_tree<_Key,_Value> tree_type;
     __st::descend_tree_for_search<tree_type>(point, m_root_node, result_inserter);
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::remove(data_type pdata)
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::remove(value_type pdata)
 {
     using namespace std;
 
@@ -386,8 +386,8 @@ void segment_tree<_Key, _Data>::remove(data_type pdata)
     m_segment_data.erase(pdata);
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::clear()
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::clear()
 {
     m_tagged_node_map.clear();
     m_segment_data.clear();
@@ -395,14 +395,14 @@ void segment_tree<_Key, _Data>::clear()
     m_valid_tree = false;
 }
 
-template<typename _Key, typename _Data>
-size_t segment_tree<_Key, _Data>::size() const
+template<typename _Key, typename _Value>
+size_t segment_tree<_Key, _Value>::size() const
 {
     return m_segment_data.size();
 }
 
-template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::empty() const
+template<typename _Key, typename _Value>
+bool segment_tree<_Key, _Value>::empty() const
 {
     return m_segment_data.empty();
 }
@@ -413,8 +413,8 @@ size_t segment_tree<_Key, _Value>::leaf_size() const
     return __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, const data_type pdata)
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::remove_data_from_nodes(node_list_type* plist, const value_type pdata)
 {
     typename node_list_type::iterator itr = plist->begin(), itr_end = plist->end();
     for (; itr != itr_end; ++itr)
@@ -433,8 +433,8 @@ void segment_tree<_Key, _Data>::remove_data_from_nodes(node_list_type* plist, co
     }
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::remove_data_from_chain(data_chain_type& chain, const data_type pdata)
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::remove_data_from_chain(data_chain_type& chain, const value_type pdata)
 {
     typename data_chain_type::iterator itr = ::std::find(chain.begin(), chain.end(), pdata);
     if (itr != chain.end())
@@ -444,8 +444,8 @@ void segment_tree<_Key, _Data>::remove_data_from_chain(data_chain_type& chain, c
     }
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::clear_all_nodes()
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::clear_all_nodes()
 {
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
     m_nonleaf_node_pool.clear();
@@ -455,8 +455,8 @@ void segment_tree<_Key, _Data>::clear_all_nodes()
 }
 
 #ifdef MDDS_UNIT_TEST
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::dump_tree() const
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::dump_tree() const
 {
     using ::std::cout;
     using ::std::endl;
@@ -471,8 +471,8 @@ void segment_tree<_Key, _Data>::dump_tree() const
     cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::dump_leaf_nodes() const
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::dump_leaf_nodes() const
 {
     using ::std::cout;
     using ::std::endl;
@@ -488,8 +488,8 @@ void segment_tree<_Key, _Data>::dump_leaf_nodes() const
     cout << "  node instance count = " << node::get_instance_count() << endl;
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::dump_segment_data() const
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::dump_segment_data() const
 {
     using namespace std;
     cout << "dump segment data ----------------------------------------------" << endl;
@@ -498,8 +498,8 @@ void segment_tree<_Key, _Data>::dump_segment_data() const
     for_each(m_segment_data.begin(), m_segment_data.end(), func);
 }
 
-template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::verify_node_lists() const
+template<typename _Key, typename _Value>
+bool segment_tree<_Key, _Value>::verify_node_lists() const
 {
     using namespace std;
 
@@ -522,8 +522,8 @@ bool segment_tree<_Key, _Data>::verify_node_lists() const
     return true;
 }
 
-template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const
+template<typename _Key, typename _Value>
+bool segment_tree<_Key, _Value>::verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const
 {
     using namespace std;
 
@@ -557,7 +557,7 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
             if (chain1.size() != chain2.size())
                 return false;
 
-            ::std::vector<data_type> test1, test2;
+            ::std::vector<value_type> test1, test2;
             test1.reserve(chain1.size());
             test2.reserve(chain2.size());
             copy(chain1.begin(), chain1.end(), back_inserter(test1));
@@ -582,8 +582,8 @@ bool segment_tree<_Key, _Data>::verify_leaf_nodes(const ::std::vector<leaf_node_
     return true;
 }
 
-template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::verify_segment_data(const segment_map_type& checks) const
+template<typename _Key, typename _Value>
+bool segment_tree<_Key, _Value>::verify_segment_data(const segment_map_type& checks) const
 {
     // Sort the data by key values first.
     sorted_segment_map_type seg1(checks.begin(), checks.end());
@@ -605,8 +605,8 @@ bool segment_tree<_Key, _Data>::verify_segment_data(const segment_map_type& chec
     return true;
 }
 
-template<typename _Key, typename _Data>
-bool segment_tree<_Key, _Data>::has_data_pointer(const node_list_type& node_list, const data_type pdata)
+template<typename _Key, typename _Value>
+bool segment_tree<_Key, _Value>::has_data_pointer(const node_list_type& node_list, const value_type pdata)
 {
     using namespace std;
 
@@ -633,8 +633,8 @@ bool segment_tree<_Key, _Data>::has_data_pointer(const node_list_type& node_list
     return true;
 }
 
-template<typename _Key, typename _Data>
-void segment_tree<_Key, _Data>::print_leaf_value(const leaf_value_type& v)
+template<typename _Key, typename _Value>
+void segment_tree<_Key, _Value>::print_leaf_value(const leaf_value_type& v)
 {
     using namespace std;
     cout << v.key << ": { ";
