@@ -77,12 +77,28 @@ Segment tree
       :return: object containing the result of the search, which can be
               accessed via iterator.
 
-   .. cpp:function:: void remove(value_type pdata)
+   .. cpp:function:: void remove(value_type value)
+
+      Remove a segment that matches by the value.  This will *not* invalidate
+      the tree; however, if you have removed lots of segments, you might want
+      to re-build the tree to shrink its size.
+
+      :param value: value to remove a segment by.
 
    .. cpp:function:: void clear()
 
+      Remove all segments data.
+
    .. cpp:function:: size_t size() const
+
+      Return the number of segments currently stored in this container.
 
    .. cpp:function:: bool empty() const
 
+      Return whether or not the container stores any segments or none at all.
+
    .. cpp:function:: size_t leaf_size() const
+
+      Return the number of leaf nodes.
+
+      :return: number of leaf nodes.

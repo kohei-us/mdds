@@ -581,11 +581,13 @@ public:
     search_result search(key_type point) const;
 
     /**
-     * Remove a segment by the data pointer.  This will <i>not</i> invalidate
-     * the tree; however, if you have removed lots of segments, you might want
-     * to re-build the tree to shrink its size.
+     * Remove a segment that matches by the value.  This will <i>not</i>
+     * invalidate the tree; however, if you have removed lots of segments, you
+     * might want to re-build the tree to shrink its size.
+     *
+     * @param value value to remove a segment by.
      */
-    void remove(value_type pdata);
+    void remove(value_type value);
 
     /**
      * Remove all segments data.

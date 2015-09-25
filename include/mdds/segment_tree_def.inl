@@ -364,11 +364,11 @@ void segment_tree<_Key, _Value>::search(key_type point, search_result_base& resu
 }
 
 template<typename _Key, typename _Value>
-void segment_tree<_Key, _Value>::remove(value_type pdata)
+void segment_tree<_Key, _Value>::remove(value_type value)
 {
     using namespace std;
 
-    typename data_node_map_type::iterator itr = m_tagged_node_map.find(pdata);
+    typename data_node_map_type::iterator itr = m_tagged_node_map.find(value);
     if (itr != m_tagged_node_map.end())
     {
         // Tagged node list found.  Remove all the tags from the tree nodes.
@@ -376,14 +376,14 @@ void segment_tree<_Key, _Value>::remove(value_type pdata)
         if (!plist)
             return;
 
-        remove_data_from_nodes(plist, pdata);
+        remove_data_from_nodes(plist, value);
 
         // Remove the tags associated with this pointer from the data set.
         m_tagged_node_map.erase(itr);
     }
 
     // Remove from the segment data array.
-    m_segment_data.erase(pdata);
+    m_segment_data.erase(value);
 }
 
 template<typename _Key, typename _Value>
