@@ -1,4 +1,4 @@
-mdds 0.13.0
+mdds 1.0
 
 * all
 
@@ -8,9 +8,24 @@ mdds 0.13.0
 
   * C++11 is now a hard requirement.
 
+  * added API documentation via Doxygen, Sphinx and Breathe.
+
 * mixed_type_matrix
 
   * officially removed for good in favor of multi_type_matrix.
+
+* multi_type_vector
+
+  * added memory usage reduction by conditionally shrinking the
+    capacity of the underlying vector containers.
+
+  * added slight performance gain by revising block adjustment policy
+    during splitting of blocks.
+
+* sorted_string_map
+
+  * fixed a bug where a non-matching key was incorrectly returned as a
+    matching key.
 
 mdds 0.12.1
 
