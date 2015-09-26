@@ -60,6 +60,10 @@ Multi-type matrix is a matrix structure that allows storage of four different
 element types: numeric, string, boolean and empty. It uses multi-type vector as 
 its underlying storage. 
 
+API Documentation
+=================
+API documentation is found [here](http://kohei.us/files/mdds/doc/).
+
 How-To
 ======
 
