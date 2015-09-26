@@ -3,14 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Multi-dimensional data structure (mdds)
-=======================================
+mdds documentation
+==================
 
 Multi-dimensional data structure, or mdds for short, is a collection of data
 structures and indexing algorithms that are useful for storing and indexing
 multi-dimensional data for C++ projects.
-
-The project home page is https://gitlab.com/mdds/mdds.
 
 Contents:
 

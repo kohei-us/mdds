@@ -231,9 +231,13 @@ clean:
 	rm $(EXECS) 2>/dev/null || /bin/true
 	rm $(QUICKCHECKDIR)/flat_segment_tree $(QUICKCHECKDIR)/*.o 2>/dev/null || true
 
-build-doc:
-	@echo "Building documentation by Sphinx..."
-	cd doc && \
-	doxygen doxygen.conf && \
-	sphinx-build -b html . ./_build
+build-doc-doxygen:
+	@echo "Building documentation by doxygen..."
+	@cd doc && doxygen doxygen.conf
+
+build-doc-sphinx:
+	@echo "Building documentation by sphinx..."
+	@sphinx-build -b html ./doc/ ./doc/_build
+
+build-doc: build-doc-doxygen build-doc-sphinx
 
