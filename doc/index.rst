@@ -23,6 +23,7 @@ Contents:
    point_quad_tree.rst
    multi_type_vector.rst
    multi_type_matrix.rst
+   sorted_string_map.rst
 
 
 Indices and tables

@@ -276,9 +276,9 @@ public:
     }
 
     /** 
-     * Insert a new segment into the tree.  Unlike 
-     * the <code>insert_front</code>, this method searches for the point of 
-     * insertion from the last leaf node toward the first. 
+     * Insert a new segment into the tree.  Unlike the insert_front()
+     * counterpart, this method searches for the point of insertion from the
+     * last leaf node toward the first.
      *  
      * @param start_key start value of the segment being inserted.  The value 
      *              is inclusive.
