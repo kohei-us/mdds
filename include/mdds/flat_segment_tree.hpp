@@ -269,7 +269,7 @@ public:
      *         the inserted segment, and a boolean value indicating whether or
      *         not the insertion has modified the tree.
      */
-    ::std::pair<const_iterator, bool>
+    std::pair<const_iterator, bool>
     insert_front(key_type start_key, key_type end_key, value_type val)
     {
         return insert_segment_impl(start_key, end_key, val, true);
@@ -290,7 +290,7 @@ public:
      *         the inserted segment, and a boolean value indicating whether or
      *         not the insertion has modified the tree.
      */
-    ::std::pair<const_iterator, bool>
+    std::pair<const_iterator, bool>
     insert_back(key_type start_key, key_type end_key, value_type val)
     {
         return insert_segment_impl(start_key, end_key, val, false);
@@ -311,7 +311,7 @@ public:
      *         the inserted segment, and a boolean value indicating whether or
      *         not the insertion has modified the tree.
      */
-    ::std::pair<const_iterator, bool>
+    std::pair<const_iterator, bool>
     insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
 
     /** 
@@ -356,7 +356,7 @@ public:
      *         whether or not the search has been successful.
      * 
      */
-    ::std::pair<const_iterator, bool>
+    std::pair<const_iterator, bool>
     search(key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
 
     /**
@@ -377,12 +377,14 @@ public:
      *         the segment containing the key, and a boolean value indicating
      *         whether or not the search has been successful.
      */
-    ::std::pair<const_iterator, bool>
+    std::pair<const_iterator, bool>
     search(const const_iterator& pos, key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
 
     /**
      * Perform tree search for a value associated with a key.  This method 
-     * assumes that the tree is valid. 
+     * assumes that the tree is valid.  Call is_tree_valid() to find out
+     * whether the tree is valid, and build_tree() to build a new tree in case
+     * it's not.
      * 
      * @param key key value
      * @param value value associated with key specified gets stored upon
@@ -400,8 +402,17 @@ public:
     std::pair<const_iterator, bool>
     search_tree(key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
 
+    /**
+     * Build a tree of non-leaf nodes based on the values stored in the leaf
+     * nodes.  The tree must be valid before you can call the search_tree()
+     * method.
+     */
     void build_tree();
 
+    /**
+     * @return true if the tree is valid, otherwise false.  The tree must be
+     *         valid before you can call the search_tree() method.
+     */
     bool is_tree_valid() const
     {
         return m_valid_tree;
