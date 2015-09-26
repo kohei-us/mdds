@@ -270,3 +270,5 @@ texinfo_documents = [
 breathe_projects = {"mdds": "./xml"}
 
 breathe_default_project = "mdds"
+
+breathe_default_members = ('members', 'undoc-members')
