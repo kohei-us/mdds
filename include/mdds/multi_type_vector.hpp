@@ -214,13 +214,35 @@ public:
      * specified is greater than 0, it initializes the container with empty
      * elements.
      *
-     * @param init_row_size initial container size
+     * @param init_size initial container size.
      */
     multi_type_vector(size_type init_size);
 
+    /**
+     * Constructor that takes initial size of the container and an element
+     * value to initialize the elements to. When the size specified is greater
+     * than 0, it initializes the container with elements that are copies of
+     * the value specified.
+     *
+     * @param init_size initial container size.
+     * @param value initial element value.
+     */
     template<typename _T>
     multi_type_vector(size_type init_size, const _T& value);
 
+    /**
+     * Constructor that takes initial size of the container and begin and end
+     * iterator positions that specify a series of elements to initialize the
+     * container to.  The container will contain copies of the elements
+     * specified after this call returns.
+     *
+     * @param init_size initial container size.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values the container is being initialized to.
+     * @param it_end iterator that points to the end position of the values
+     *               the container is being initialized to.  The end position
+     *               is <i>not</i> inclusive.
+                                                                              */
     template<typename _T>
     multi_type_vector(size_type init_size, const _T& it_begin, const _T& it_end);
 
