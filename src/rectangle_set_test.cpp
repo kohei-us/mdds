@@ -266,7 +266,7 @@ void rect_test_search()
     insert_range(db, F);
     insert_range(db, G);
     db.dump_rectangles();
-    check_size(db, 7);
+    assert(check_size(db, 7));
 
     {
         // Hits all rectangles.
@@ -320,7 +320,7 @@ void rect_test_search()
     db.remove(&B);
     db.remove(&D);
     db.remove(&F);
-    check_size(db, 4);
+    assert(check_size(db, 4));
     db.dump_rectangles();
 
     {
@@ -396,8 +396,8 @@ void rect_test_copy_constructor()
     insert_range(db, F);
     insert_range(db, G);
     set_type db_copied(db);
-    check_size(db, 7);
-    check_size(db_copied, 7);
+    assert(check_size(db, 7));
+    assert(check_size(db_copied, 7));
     db_copied.dump_rectangles();
 
     {
@@ -448,7 +448,7 @@ void rect_test_copy_constructor()
         assert(check_search_result<set_type>(db_copied, 7, 7, expected));
     }
     db_copied.clear();
-    check_size(db_copied, 0);
+    assert(check_size(db_copied, 0));
     {
         // There is no rectangle left, hence the search result should be empty.
         const set_type::value_type expected[] = {0};
@@ -507,8 +507,8 @@ void rect_test_assignment()
     insert_range(db, F);
     insert_range(db, G);
     set_type db_assigned = db;
-    check_size(db, 7);
-    check_size(db_assigned, 7);
+    assert(check_size(db, 7));
+    assert(check_size(db_assigned, 7));
     db_assigned.dump_rectangles();
 
     {
@@ -559,7 +559,7 @@ void rect_test_assignment()
         assert(check_search_result<set_type>(db_assigned, 7, 7, expected));
     }
     db_assigned.clear();
-    check_size(db_assigned, 0);
+    assert(check_size(db_assigned, 0));
     {
         // There is no rectangle left, hence the search result should be empty.
         const set_type::value_type expected[] = {0};
@@ -916,7 +916,7 @@ void rect_test_search_result_iterator()
     insert_range(db, F);
     insert_range(db, G);
     db.dump_rectangles();
-    check_size(db, 7);
+    assert(check_size(db, 7));
 
     set_type::search_result result = db.search(0, 0);
     cout << "result size: " << result.size() << endl;
