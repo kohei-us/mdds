@@ -1,9 +1,9 @@
-mdds 1.0
+mdds 1.0.0
 
 * all
 
   * introduced API versioning to ease parallel installation of API
-    incompatible versions.  Version 1.0 will have an API versoin of
+    incompatible versions.  Version 1.0.0 will have an API versoin of
     1.0.
 
   * C++11 is now a hard requirement.
