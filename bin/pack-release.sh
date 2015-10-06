@@ -2,8 +2,9 @@
 
 VERSION=$1
 DIR=mdds_$VERSION
+REPO_URL=https://gitlab.com/mdds/mdds.git
 # do a shallow clone.
-git clone --depth 1 --branch $VERSION https://gitlab.com/mdds/mdds.git $DIR || exit 1
+git clone --depth 1 --branch $VERSION $REPO_URL $DIR || exit 1
 pushd .
 cd $DIR
 autoconf
