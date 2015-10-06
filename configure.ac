@@ -1,4 +1,4 @@
-AC_INIT(mdds, 1.0, kohei.yoshida@gmail.com)
+AC_INIT(mdds, 1.0.0, kohei.yoshida@gmail.com)
 
 VERSION=AC_PACKAGE_VERSION
 API_VERSION=1.0
