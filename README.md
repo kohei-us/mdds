@@ -169,6 +169,6 @@ make install
 ```
 
 It will install the headers under `/usr/local` by default.  Use the `--prefix`
-option to specify custom install location if you wish to install it to a non-
-default location.
+option of the autogen.sh script to specify custom install location if you wish
+to install it to a non-default location.
 
