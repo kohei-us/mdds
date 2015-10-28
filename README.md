@@ -152,3 +152,23 @@ Download
 | 0.9.1 || 2013-10-21 | [mdds_0.9.1.tar.bz2](http://kohei.us/files/mdds/src/mdds_0.9.1.tar.bz2) | md5sum: 8c853024fbcff39113d9285250dafc66<br/>sha1sum: d80f6b74827d5e36ecbb8975b0f8f42896162d95 | - |
 
 Older releases are archived [here](https://code.google.com/p/multidimalgorithm/downloads/list).
+
+
+Installation
+============
+
+Once you have downloaded the package, run the following commands to install
+the mdds headers to your system:
+
+```bash
+tar xvf mdds_<version>.tar.bz2
+cd mdds_<version>
+./autogen.sh
+make check  # optional for executing tests.
+make install
+```
+
+It will install the headers under `/usr/local` by default.  Use the `--prefix`
+option to specify custom install location if you wish to install it to a non-
+default location.
+
