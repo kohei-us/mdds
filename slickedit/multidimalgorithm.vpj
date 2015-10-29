@@ -203,8 +203,7 @@
 	<CustomFolders>
 		<Folder
 			Name="Source Files"
-			Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl">
-		</Folder>
+			Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl"></Folder>
 		<Folder
 			Name="Header Files"
 			Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.inc;*.sh;*.cpy;*.if"/>
@@ -261,6 +260,8 @@
 				<F N="../include/mdds/segment_tree_def.inl"/>
 				<F N="../include/mdds/sorted_string_map.hpp"/>
 				<F N="../include/mdds/sorted_string_map_def.inl"/>
+				<F N="../include/mdds/trie_map.hpp"/>
+				<F N="../include/mdds/trie_map_def.inl"/>
 			</Folder>
 		</Folder>
 		<Folder Name="../src">
@@ -280,6 +281,7 @@
 			<F N="../src/stlperf_test.cpp"/>
 			<F N="../src/template_test.cpp"/>
 			<F N="../src/test_global.hpp"/>
+			<F N="../src/trie_map_test.cpp"/>
 		</Folder>
 	</Files>
 </Project>
