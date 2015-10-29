@@ -106,6 +106,9 @@ $(OBJDIR)/multi_type_matrix_test.o: @top_srcdir@/$(SRCDIR)/multi_type_matrix_tes
 $(OBJDIR)/sorted_string_map_test.o: @top_srcdir@/$(SRCDIR)/sorted_string_map_test.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/sorted_string_map_test.cpp
 
+$(OBJDIR)/trie_map_test.o: @top_srcdir@/$(SRCDIR)/trie_map_test.cpp $(DEPENDS)
+	$(CXX) $(CPPFLAGS) -c -o $@ @top_srcdir@/$(SRCDIR)/trie_map_test.cpp
+
 flat_segment_tree_test: pre $(OBJDIR)/flat_segment_tree_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/flat_segment_tree_test.o -o $@
 
@@ -132,6 +135,9 @@ multi_type_matrix_test: pre $(OBJDIR)/multi_type_matrix_test.o
 
 sorted_string_map_test: pre $(OBJDIR)/sorted_string_map_test.o
 	$(CXX) $(LDFLAGS) $(OBJDIR)/sorted_string_map_test.o -o $@
+
+trie_map_test: pre $(OBJDIR)/trie_map_test.o
+	$(CXX) $(LDFLAGS) $(OBJDIR)/trie_map_test.o -o $@
 
 multi_type_vector_test: multi_type_vector_test_default multi_type_vector_test_custom multi_type_vector_test_perf
 
@@ -202,6 +208,9 @@ test.ssmap.mem: sorted_string_map_test
 
 test.stl: stlperf_test
 	./stlperf_test
+
+test.trie: trie_map_test
+	./trie_map_test
 
 $(QUICKCHECKDIR)/flat_segment_tree.o: $(QUICKCHECKDIR)/flat_segment_tree.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $<

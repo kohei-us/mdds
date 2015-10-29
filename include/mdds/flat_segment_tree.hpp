@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
  * Copyright (c) 2008-2015 Kohei Yoshida
@@ -696,3 +697,5 @@ swap(flat_segment_tree<_Key, _Value>& left, flat_segment_tree<_Key, _Value>& rig
 #include "flat_segment_tree_def.inl"
 
 #endif
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */

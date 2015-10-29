@@ -1,6 +1,7 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2008-2015 Kohei Yoshida
+ * Copyright (c) 2015 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,45 +26,36 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_GLOBAL_HPP
-#define INCLUDED_MDDS_GLOBAL_HPP
+#include "mdds/trie_map.hpp"
+#include "mdds/global.hpp"
+#include "test_global.hpp"
 
-#include <exception>
-#include <string>
-#include <memory>
-#include <utility>
+using namespace std;
 
-#define MDDS_ASCII(literal) literal, sizeof(literal)-1
-#define MDDS_N_ELEMENTS(name) sizeof(name)/sizeof(name[0])
-
-namespace mdds {
-
-class general_error : public ::std::exception
+void trie_test()
 {
-public:
-    general_error(const ::std::string& msg) : m_msg(msg) {}
-    virtual ~general_error() throw() {}
+    stack_printer __stack_printer__("::trie_test");
 
-    virtual const char* what() const throw()
+    typedef mdds::draft::trie_map<int> map_type;
+
+    map_type::entry entries[] =
     {
-        return m_msg.c_str();
-    }
-private:
-    ::std::string m_msg;
-};
+        { MDDS_ASCII("andy"),    0 },
+        { MDDS_ASCII("andy1"),   1 },
+        { MDDS_ASCII("andy13"),  2 },
+        { MDDS_ASCII("bruce"),   3 },
+        { MDDS_ASCII("charlie"), 4 },
+        { MDDS_ASCII("david"),   5 },
+    };
 
-class invalid_arg_error : public general_error
-{
-public:
-    invalid_arg_error(const ::std::string& msg) : general_error(msg) {}
-};
-
-template<typename T, typename ...Args>
-std::unique_ptr<T> make_unique(Args&& ...args)
-{
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+    map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
 }
 
+int main(int argc, char** argv)
+{
+    trie_test();
+
+    return EXIT_SUCCESS;
 }
 
-#endif
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */

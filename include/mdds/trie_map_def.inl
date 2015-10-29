@@ -1,6 +1,7 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2008-2015 Kohei Yoshida
+ * Copyright (c) 2015 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,45 +26,14 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_GLOBAL_HPP
-#define INCLUDED_MDDS_GLOBAL_HPP
+namespace mdds { namespace draft {
 
-#include <exception>
-#include <string>
-#include <memory>
-#include <utility>
-
-#define MDDS_ASCII(literal) literal, sizeof(literal)-1
-#define MDDS_N_ELEMENTS(name) sizeof(name)/sizeof(name[0])
-
-namespace mdds {
-
-class general_error : public ::std::exception
+template<typename _ValueT>
+trie_map<_ValueT>::trie_map(
+    const entry* entries, size_type entry_size, value_type null_value)
 {
-public:
-    general_error(const ::std::string& msg) : m_msg(msg) {}
-    virtual ~general_error() throw() {}
-
-    virtual const char* what() const throw()
-    {
-        return m_msg.c_str();
-    }
-private:
-    ::std::string m_msg;
-};
-
-class invalid_arg_error : public general_error
-{
-public:
-    invalid_arg_error(const ::std::string& msg) : general_error(msg) {}
-};
-
-template<typename T, typename ...Args>
-std::unique_ptr<T> make_unique(Args&& ...args)
-{
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
-}
+}}
 
-#endif
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
