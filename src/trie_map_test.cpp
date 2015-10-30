@@ -40,12 +40,15 @@ void trie_test()
 
     map_type::entry entries[] =
     {
-        { MDDS_ASCII("andy"),    0 },
-        { MDDS_ASCII("andy1"),   1 },
-        { MDDS_ASCII("andy13"),  2 },
-        { MDDS_ASCII("bruce"),   3 },
-        { MDDS_ASCII("charlie"), 4 },
-        { MDDS_ASCII("david"),   5 },
+        { MDDS_ASCII("aaron"),     0 },
+        { MDDS_ASCII("aldi"),      1 },
+        { MDDS_ASCII("andy"),      2 },
+        { MDDS_ASCII("bison"),     3 },
+        { MDDS_ASCII("bruce"),     4 },
+        { MDDS_ASCII("charlie"),   5 },
+        { MDDS_ASCII("charlotte"), 6 },
+        { MDDS_ASCII("david"),     7 },
+        { MDDS_ASCII("dove"),      8 },
     };
 
     map_type db(entries, MDDS_N_ELEMENTS(entries), -1);

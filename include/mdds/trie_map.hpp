@@ -40,7 +40,7 @@ struct trie_node
     typedef _ValueT value_type;
 
     char key;
-    value_type* value;
+    value_type value;
 
     std::vector<std::unique_ptr<trie_node>> children;
 };
@@ -73,6 +73,9 @@ public:
      *                   find a matching entry.
      */
     trie_map(const entry* entries, size_type entry_size, value_type null_value);
+
+private:
+    void traverse_range(node_type& root, const entry* start, const entry* end, size_t pos);
 
 private:
     value_type m_null_value;

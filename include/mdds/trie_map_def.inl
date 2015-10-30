@@ -26,12 +26,76 @@
  *
  ************************************************************************/
 
+#include <iostream>
+#include <string>
+
+#include "mdds/global.hpp"
+
 namespace mdds { namespace draft {
 
 template<typename _ValueT>
 trie_map<_ValueT>::trie_map(
     const entry* entries, size_type entry_size, value_type null_value)
 {
+    const entry* p = entries;
+    const entry* p_end = p + entry_size;
+
+    traverse_range(m_root, p, p_end, 0);
+}
+
+template<typename _ValueT>
+void trie_map<_ValueT>::traverse_range(
+    node_type& root, const entry* start, const entry* end, size_t pos)
+{
+    using namespace std;
+
+    size_t n = std::distance(start, end);
+
+    const entry* p = start;
+    const entry* range_start = start;
+    const entry* range_end = nullptr;
+    char range_char = 0;
+    size_t range_count = 0;
+
+    for (; p != end; ++p)
+    {
+        if (pos == p->keylen)
+        {
+            root.value = p->value;
+            continue;
+        }
+
+        ++range_count;
+        char c = p->key[pos];
+
+        if (!range_char)
+            range_char = c;
+        else
+        {
+            if (range_char != c)
+            {
+                // End of current character range.
+                range_end = p;
+
+                root.children.push_back(make_unique<node_type>());
+                traverse_range(*root.children.back(), range_start, range_end, pos+1);
+                range_start = range_end;
+                range_char = range_start->key[pos];
+                range_end = nullptr;
+                range_count = 1;
+            }
+        }
+
+        for (size_t i = 0; i < pos; ++i)
+            cout << " ";
+        cout << n << ":" << pos << ":" << range_count << ": " << c << endl;
+    }
+
+    if (range_count)
+    {
+        root.children.push_back(make_unique<node_type>());
+        traverse_range(*root.children.back(), range_start, end, pos+1);
+    }
 }
 
 }}
