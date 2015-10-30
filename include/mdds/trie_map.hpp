@@ -43,6 +43,8 @@ struct trie_node
     value_type value;
 
     std::vector<std::unique_ptr<trie_node>> children;
+
+    trie_node(char _key) : key(_key) {}
 };
 
 template<typename _ValueT>

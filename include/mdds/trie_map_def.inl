@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <string>
+#include <cassert>
 
 #include "mdds/global.hpp"
 
@@ -35,7 +36,8 @@ namespace mdds { namespace draft {
 
 template<typename _ValueT>
 trie_map<_ValueT>::trie_map(
-    const entry* entries, size_type entry_size, value_type null_value)
+    const entry* entries, size_type entry_size, value_type null_value) :
+    m_root(0)
 {
     const entry* p = entries;
     const entry* p_end = p + entry_size;
@@ -77,7 +79,7 @@ void trie_map<_ValueT>::traverse_range(
                 // End of current character range.
                 range_end = p;
 
-                root.children.push_back(make_unique<node_type>());
+                root.children.push_back(make_unique<node_type>(range_char));
                 traverse_range(*root.children.back(), range_start, range_end, pos+1);
                 range_start = range_end;
                 range_char = range_start->key[pos];
@@ -93,7 +95,8 @@ void trie_map<_ValueT>::traverse_range(
 
     if (range_count)
     {
-        root.children.push_back(make_unique<node_type>());
+        assert(range_char);
+        root.children.push_back(make_unique<node_type>(range_char));
         traverse_range(*root.children.back(), range_start, end, pos+1);
     }
 }
