@@ -113,7 +113,7 @@ void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node)
     if (node.children.empty())
     {
         // This is a leaf node.
-        cout << buffer << endl;
+        cout << buffer << ":" << node.value << endl;
         return;
     }
 
