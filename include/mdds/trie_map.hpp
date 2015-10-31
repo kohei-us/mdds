@@ -31,6 +31,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 namespace mdds { namespace draft {
 
@@ -76,8 +77,14 @@ public:
      */
     trie_map(const entry* entries, size_type entry_size, value_type null_value);
 
+    /**
+     * Dump the content of the trie to stdout for debugging.
+     */
+    void dump_trie();
+
 private:
     void traverse_range(node_type& root, const entry* start, const entry* end, size_t pos);
+    void dump_node(std::string& buffer, const node_type& node);
 
 private:
     value_type m_null_value;

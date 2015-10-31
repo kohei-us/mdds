@@ -52,6 +52,7 @@ void trie_test()
     };
 
     map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
+    db.dump_trie();
 }
 
 int main(int argc, char** argv)

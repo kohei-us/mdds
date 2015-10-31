@@ -26,11 +26,11 @@
  *
  ************************************************************************/
 
-#include <iostream>
-#include <string>
-#include <cassert>
-
 #include "mdds/global.hpp"
+
+#include <iostream>
+#include <cassert>
+#include <algorithm>
 
 namespace mdds { namespace draft {
 
@@ -72,20 +72,17 @@ void trie_map<_ValueT>::traverse_range(
 
         if (!range_char)
             range_char = c;
-        else
+        else if (range_char != c)
         {
-            if (range_char != c)
-            {
-                // End of current character range.
-                range_end = p;
+            // End of current character range.
+            range_end = p;
 
-                root.children.push_back(make_unique<node_type>(range_char));
-                traverse_range(*root.children.back(), range_start, range_end, pos+1);
-                range_start = range_end;
-                range_char = range_start->key[pos];
-                range_end = nullptr;
-                range_count = 1;
-            }
+            root.children.push_back(make_unique<node_type>(range_char));
+            traverse_range(*root.children.back(), range_start, range_end, pos+1);
+            range_start = range_end;
+            range_char = range_start->key[pos];
+            range_end = nullptr;
+            range_count = 1;
         }
 
         for (size_t i = 0; i < pos; ++i)
@@ -99,6 +96,36 @@ void trie_map<_ValueT>::traverse_range(
         root.children.push_back(make_unique<node_type>(range_char));
         traverse_range(*root.children.back(), range_start, end, pos+1);
     }
+}
+
+template<typename _ValueT>
+void trie_map<_ValueT>::dump_trie()
+{
+    std::string buffer;
+    dump_node(buffer, m_root);
+}
+
+template<typename _ValueT>
+void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node)
+{
+    using namespace std;
+
+    if (node.children.empty())
+    {
+        // This is a leaf node.
+        cout << buffer << endl;
+        return;
+    }
+
+    std::for_each(node.children.begin(), node.children.end(),
+        [&](const std::unique_ptr<node_type>& p)
+        {
+            node_type& node = *p;
+            buffer.push_back(node.key);
+            dump_node(buffer, node);
+            buffer.pop_back();
+        }
+    );
 }
 
 }}
