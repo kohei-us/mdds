@@ -61,9 +61,13 @@ void trie_map<_ValueT>::traverse_range(
 
     for (; p != end; ++p)
     {
+        if (pos > p->keylen)
+            continue;
+
         if (pos == p->keylen)
         {
             root.value = p->value;
+            root.has_value = true;
             continue;
         }
 
@@ -110,11 +114,10 @@ void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node)
 {
     using namespace std;
 
-    if (node.children.empty())
+    if (node.has_value)
     {
         // This is a leaf node.
         cout << buffer << ":" << node.value << endl;
-        return;
     }
 
     std::for_each(node.children.begin(), node.children.end(),
