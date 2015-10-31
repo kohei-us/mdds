@@ -37,7 +37,7 @@ namespace mdds { namespace draft {
 template<typename _ValueT>
 trie_map<_ValueT>::trie_map(
     const entry* entries, size_type entry_size, value_type null_value) :
-    m_root(0)
+    m_null_value(null_value), m_entry_size(entry_size), m_root(0)
 {
     const entry* p = entries;
     const entry* p_end = p + entry_size;

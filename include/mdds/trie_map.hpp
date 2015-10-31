@@ -69,7 +69,9 @@ public:
     };
 
     /**
-     * Constructor.
+     * Constructor that initializes the content from a static list of
+     * key-value entries.  The caller <em>must</em> ensure that the key-value
+     * entries are sorted in ascending order, else the behavior is undefined.
      *
      * @param entries pointer to the array of key-value entries.
      * @param entry_size size of the key-value entry array.

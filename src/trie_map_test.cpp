@@ -50,6 +50,8 @@ void trie_test()
         { MDDS_ASCII("charlotte"), 7 },
         { MDDS_ASCII("david"),     8 },
         { MDDS_ASCII("dove"),      9 },
+        { MDDS_ASCII("e"),        10 },
+        { MDDS_ASCII("eva"),      11 },
     };
 
     map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
