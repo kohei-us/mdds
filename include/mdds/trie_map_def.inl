@@ -81,8 +81,8 @@ void trie_map<_ValueT>::traverse_range(
             // End of current character range.
             range_end = p;
 
-            root.children.push_back(make_unique<node_type>(range_char));
-            traverse_range(*root.children.back(), range_start, range_end, pos+1);
+            root.children.emplace_back(range_char);
+            traverse_range(root.children.back(), range_start, range_end, pos+1);
             range_start = range_end;
             range_char = range_start->key[pos];
             range_end = nullptr;
@@ -97,8 +97,8 @@ void trie_map<_ValueT>::traverse_range(
     if (range_count)
     {
         assert(range_char);
-        root.children.push_back(make_unique<node_type>(range_char));
-        traverse_range(*root.children.back(), range_start, end, pos+1);
+        root.children.emplace_back(range_char);
+        traverse_range(root.children.back(), range_start, end, pos+1);
     }
 }
 
@@ -116,14 +116,13 @@ void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node)
 
     if (node.has_value)
     {
-        // This is a leaf node.
+        // This node has value.
         cout << buffer << ":" << node.value << endl;
     }
 
     std::for_each(node.children.begin(), node.children.end(),
-        [&](const std::unique_ptr<node_type>& p)
+        [&](const node_type& node)
         {
-            node_type& node = *p;
             buffer.push_back(node.key);
             dump_node(buffer, node);
             buffer.pop_back();

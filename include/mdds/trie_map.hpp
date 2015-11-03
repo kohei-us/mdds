@@ -29,7 +29,7 @@
 #ifndef INCLUDED_MDDS_TRIE_MAP_HPP
 #define INCLUDED_MDDS_TRIE_MAP_HPP
 
-#include <vector>
+#include <deque>
 #include <memory>
 #include <string>
 
@@ -44,7 +44,7 @@ struct trie_node
     value_type value;
     bool has_value;
 
-    std::vector<std::unique_ptr<trie_node>> children;
+    std::deque<trie_node> children;
 
     trie_node(char _key) : key(_key), has_value(false) {}
 };
