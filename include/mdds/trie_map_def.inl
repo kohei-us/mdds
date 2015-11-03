@@ -51,8 +51,6 @@ void trie_map<_ValueT>::traverse_range(
 {
     using namespace std;
 
-    size_t n = std::distance(start, end);
-
     const entry* p = start;
     const entry* range_start = start;
     const entry* range_end = nullptr;
@@ -66,8 +64,7 @@ void trie_map<_ValueT>::traverse_range(
 
         if (pos == p->keylen)
         {
-            root.value = p->value;
-            root.has_value = true;
+            root.value = &p->value;
             continue;
         }
 
@@ -88,10 +85,6 @@ void trie_map<_ValueT>::traverse_range(
             range_end = nullptr;
             range_count = 1;
         }
-
-        for (size_t i = 0; i < pos; ++i)
-            cout << " ";
-        cout << n << ":" << pos << ":" << range_count << ": " << c << endl;
     }
 
     if (range_count)
@@ -114,10 +107,10 @@ void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node)
 {
     using namespace std;
 
-    if (node.has_value)
+    if (node.value)
     {
         // This node has value.
-        cout << buffer << ":" << node.value << endl;
+        cout << buffer << ":" << *node.value << endl;
     }
 
     std::for_each(node.children.begin(), node.children.end(),
@@ -128,6 +121,83 @@ void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node)
             buffer.pop_back();
         }
     );
+}
+
+template<typename _ValueT>
+void trie_map<_ValueT>::compact()
+{
+    using namespace std;
+
+    packed_type init(size_t(1), uintptr_t(0));
+    m_packed.swap(init);
+
+    size_t root_offset = compact_node(m_root);
+    m_packed[0] = root_offset;
+
+    cout << "packed size: " << m_packed.size() << endl;
+
+    size_t n = m_packed.size();
+    size_t i = 0;
+    cout << i << ": root node offset: " << m_packed[i] << endl;
+    ++i;
+
+    while (i < n)
+    {
+        const value_type* value = reinterpret_cast<const value_type*>(m_packed[i]);
+        cout << i << ": node value pointer: " << value;
+        if (value)
+            cout << ", value: " << *value;
+        cout << endl;
+        ++i;
+
+        size_t index_size = m_packed[i];
+        cout << i << ": index size: " << index_size << endl;
+        ++i;
+        index_size /= 2;
+
+        for (size_t j = 0; j < index_size; ++j)
+        {
+            char key = m_packed[i];
+            cout << i << ": key: " << key << endl;
+            ++i;
+            size_t offset = m_packed[i];
+            cout << i << ": offset: " << offset << endl;
+            ++i;
+        }
+    }
+}
+
+template<typename _ValueT>
+size_t trie_map<_ValueT>::compact_node(const node_type& node)
+{
+    std::vector<std::tuple<size_t,char>> child_offsets;
+    child_offsets.reserve(node.children.size());
+
+    // Process child nodes first.
+    std::for_each(node.children.begin(), node.children.end(),
+        [&](const node_type& node)
+        {
+            size_t child_offset = compact_node(node);
+            child_offsets.emplace_back(child_offset, node.key);
+        }
+    );
+
+    // Process this node.
+    size_t offset = m_packed.size();
+    m_packed.push_back(uintptr_t(node.value));
+    m_packed.push_back(uintptr_t(child_offsets.size()*2));
+
+    std::for_each(child_offsets.begin(), child_offsets.end(),
+        [&](const std::tuple<size_t,char>& v)
+        {
+            char key = std::get<1>(v);
+            size_t child_offset = std::get<0>(v);
+            m_packed.push_back(key);
+            m_packed.push_back(child_offset);
+        }
+    );
+
+    return offset;
 }
 
 }}

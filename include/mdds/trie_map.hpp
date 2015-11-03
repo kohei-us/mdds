@@ -30,7 +30,7 @@
 #define INCLUDED_MDDS_TRIE_MAP_HPP
 
 #include <deque>
-#include <memory>
+#include <vector>
 #include <string>
 
 namespace mdds { namespace draft {
@@ -41,17 +41,17 @@ struct trie_node
     typedef _ValueT value_type;
 
     char key;
-    value_type value;
-    bool has_value;
+    const value_type* value;
 
     std::deque<trie_node> children;
 
-    trie_node(char _key) : key(_key), has_value(false) {}
+    trie_node(char _key) : key(_key), value(nullptr) {}
 };
 
 template<typename _ValueT>
 class trie_map
 {
+    typedef std::vector<uintptr_t> packed_type;
 public:
     typedef _ValueT value_type;
     typedef size_t size_type;
@@ -85,15 +85,19 @@ public:
      */
     void dump_trie();
 
+    void compact();
+
 private:
     void traverse_range(node_type& root, const entry* start, const entry* end, size_t pos);
     void dump_node(std::string& buffer, const node_type& node);
+    size_t compact_node(const node_type& node);
 
 private:
     value_type m_null_value;
     size_type m_entry_size;
 
     node_type m_root;
+    packed_type m_packed;
 };
 
 }}
