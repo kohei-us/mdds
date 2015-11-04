@@ -193,7 +193,7 @@ size_t trie_map<_ValueT>::compact_node(const node_type& node)
             char key = std::get<1>(v);
             size_t child_offset = std::get<0>(v);
             m_packed.push_back(key);
-            m_packed.push_back(child_offset);
+            m_packed.push_back(offset-child_offset);
         }
     );
 
