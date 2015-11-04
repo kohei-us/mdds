@@ -52,10 +52,11 @@ template<typename _ValueT>
 class trie_map
 {
     typedef std::vector<uintptr_t> packed_type;
+    typedef trie_node<_ValueT> node_type;
 public:
     typedef _ValueT value_type;
     typedef size_t size_type;
-    typedef trie_node<value_type> node_type;
+
 
     /**
      * Single key-value entry.  Caller must provide at compile time a static
@@ -80,26 +81,19 @@ public:
      */
     trie_map(const entry* entries, size_type entry_size, value_type null_value);
 
-    /**
-     * Dump the content of the trie to stdout for debugging.
-     */
-    void dump_trie() const;
-
-    void compact();
-
     void dump_compact_trie() const;
 
 private:
     void traverse_range(node_type& root, const entry* start, const entry* end, size_t pos);
+    void dump_trie(const node_type& root) const;
     void dump_node(std::string& buffer, const node_type& node) const;
     void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;
+    void compact(const node_type& root);
     size_t compact_node(const node_type& node);
 
 private:
     value_type m_null_value;
-    size_type m_entry_size;
 
-    node_type m_root;
     packed_type m_packed;
 };
 

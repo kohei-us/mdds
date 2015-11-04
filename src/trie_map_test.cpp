@@ -32,13 +32,29 @@
 
 using namespace std;
 
-void trie_test()
+typedef mdds::draft::trie_map<int> int_map_type;
+
+void trie_test1()
 {
-    stack_printer __stack_printer__("::trie_test");
+    stack_printer __stack_printer__("::trie_test1");
 
-    typedef mdds::draft::trie_map<int> map_type;
+    int_map_type::entry entries[] =
+    {
+        { MDDS_ASCII("a"),  13 },
+        { MDDS_ASCII("aa"), 10 },
+        { MDDS_ASCII("ab"), 3 },
+        { MDDS_ASCII("b"),  7 },
+    };
 
-    map_type::entry entries[] =
+    int_map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
+    db.dump_compact_trie();
+}
+
+void trie_test2()
+{
+    stack_printer __stack_printer__("::trie_test2");
+
+    int_map_type::entry entries[] =
     {
         { MDDS_ASCII("aaron"),     0 },
         { MDDS_ASCII("al"),        1 },
@@ -54,23 +70,14 @@ void trie_test()
         { MDDS_ASCII("eva"),      11 },
     };
 
-//  map_type::entry entries[] =
-//  {
-//      { MDDS_ASCII("a"),  13 },
-//      { MDDS_ASCII("aa"), 10 },
-//      { MDDS_ASCII("ab"), 3 },
-//      { MDDS_ASCII("b"),  7 },
-//  };
-
-    map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
-    db.dump_trie();
-    db.compact();
+    int_map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
     db.dump_compact_trie();
 }
 
 int main(int argc, char** argv)
 {
-    trie_test();
+    trie_test1();
+    trie_test2();
 
     return EXIT_SUCCESS;
 }

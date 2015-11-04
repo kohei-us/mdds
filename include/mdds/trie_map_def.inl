@@ -37,12 +37,15 @@ namespace mdds { namespace draft {
 template<typename _ValueT>
 trie_map<_ValueT>::trie_map(
     const entry* entries, size_type entry_size, value_type null_value) :
-    m_null_value(null_value), m_entry_size(entry_size), m_root(0)
+    m_null_value(null_value)
 {
     const entry* p = entries;
     const entry* p_end = p + entry_size;
 
-    traverse_range(m_root, p, p_end, 0);
+    node_type root(0);
+    traverse_range(root, p, p_end, 0);
+    dump_trie(root);
+    compact(root);
 }
 
 template<typename _ValueT>
@@ -96,10 +99,10 @@ void trie_map<_ValueT>::traverse_range(
 }
 
 template<typename _ValueT>
-void trie_map<_ValueT>::dump_trie() const
+void trie_map<_ValueT>::dump_trie(const node_type& root) const
 {
     std::string buffer;
-    dump_node(buffer, m_root);
+    dump_node(buffer, root);
 }
 
 template<typename _ValueT>
@@ -124,14 +127,14 @@ void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node) co
 }
 
 template<typename _ValueT>
-void trie_map<_ValueT>::compact()
+void trie_map<_ValueT>::compact(const node_type& root)
 {
     using namespace std;
 
     packed_type init(size_t(1), uintptr_t(0));
     m_packed.swap(init);
 
-    size_t root_offset = compact_node(m_root);
+    size_t root_offset = compact_node(root);
     m_packed[0] = root_offset;
 
     cout << "packed size: " << m_packed.size() << endl;
