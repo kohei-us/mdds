@@ -38,33 +38,34 @@ void trie_test()
 
     typedef mdds::draft::trie_map<int> map_type;
 
-//  map_type::entry entries[] =
-//  {
-//      { MDDS_ASCII("aaron"),     0 },
-//      { MDDS_ASCII("al"),        1 },
-//      { MDDS_ASCII("aldi"),      2 },
-//      { MDDS_ASCII("andy"),      3 },
-//      { MDDS_ASCII("bison"),     4 },
-//      { MDDS_ASCII("bruce"),     5 },
-//      { MDDS_ASCII("charlie"),   6 },
-//      { MDDS_ASCII("charlotte"), 7 },
-//      { MDDS_ASCII("david"),     8 },
-//      { MDDS_ASCII("dove"),      9 },
-//      { MDDS_ASCII("e"),        10 },
-//      { MDDS_ASCII("eva"),      11 },
-//  };
-
     map_type::entry entries[] =
     {
-        { MDDS_ASCII("a"),  13 },
-        { MDDS_ASCII("aa"), 10 },
-        { MDDS_ASCII("ab"), 3 },
-        { MDDS_ASCII("b"),  7 },
+        { MDDS_ASCII("aaron"),     0 },
+        { MDDS_ASCII("al"),        1 },
+        { MDDS_ASCII("aldi"),      2 },
+        { MDDS_ASCII("andy"),      3 },
+        { MDDS_ASCII("bison"),     4 },
+        { MDDS_ASCII("bruce"),     5 },
+        { MDDS_ASCII("charlie"),   6 },
+        { MDDS_ASCII("charlotte"), 7 },
+        { MDDS_ASCII("david"),     8 },
+        { MDDS_ASCII("dove"),      9 },
+        { MDDS_ASCII("e"),        10 },
+        { MDDS_ASCII("eva"),      11 },
     };
+
+//  map_type::entry entries[] =
+//  {
+//      { MDDS_ASCII("a"),  13 },
+//      { MDDS_ASCII("aa"), 10 },
+//      { MDDS_ASCII("ab"), 3 },
+//      { MDDS_ASCII("b"),  7 },
+//  };
 
     map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
     db.dump_trie();
     db.compact();
+    db.dump_compact_trie();
 }
 
 int main(int argc, char** argv)

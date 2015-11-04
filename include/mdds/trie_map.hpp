@@ -83,13 +83,16 @@ public:
     /**
      * Dump the content of the trie to stdout for debugging.
      */
-    void dump_trie();
+    void dump_trie() const;
 
     void compact();
 
+    void dump_compact_trie() const;
+
 private:
     void traverse_range(node_type& root, const entry* start, const entry* end, size_t pos);
-    void dump_node(std::string& buffer, const node_type& node);
+    void dump_node(std::string& buffer, const node_type& node) const;
+    void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;
     size_t compact_node(const node_type& node);
 
 private:

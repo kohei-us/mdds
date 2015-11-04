@@ -96,14 +96,14 @@ void trie_map<_ValueT>::traverse_range(
 }
 
 template<typename _ValueT>
-void trie_map<_ValueT>::dump_trie()
+void trie_map<_ValueT>::dump_trie() const
 {
     std::string buffer;
     dump_node(buffer, m_root);
 }
 
 template<typename _ValueT>
-void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node)
+void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node) const
 {
     using namespace std;
 
@@ -198,6 +198,44 @@ size_t trie_map<_ValueT>::compact_node(const node_type& node)
     );
 
     return offset;
+}
+
+template<typename _ValueT>
+void trie_map<_ValueT>::dump_compact_trie() const
+{
+    if (m_packed.empty())
+        return;
+
+    std::string buffer;
+    size_t root_offset = m_packed[0];
+    const uintptr_t* p = m_packed.data() + root_offset;
+    dump_compact_trie_node(buffer, p);
+}
+
+template<typename _ValueT>
+void trie_map<_ValueT>::dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const
+{
+    using namespace std;
+
+    const uintptr_t* p0 = p; // store the head offset position of this node.
+
+    const value_type* v = reinterpret_cast<const value_type*>(*p);
+    if (v)
+        cout << buffer << ":" << *v << endl;
+
+    ++p;
+    size_t index_size = *p;
+    size_t n = index_size / 2;
+    ++p;
+    for (size_t i = 0; i < n; ++i)
+    {
+        char key = *p++;
+        size_t offset = *p++;
+        buffer.push_back(key);
+        const uintptr_t* p_child = p0 - offset;
+        dump_compact_trie_node(buffer, p_child);
+        buffer.pop_back();
+    }
 }
 
 }}
