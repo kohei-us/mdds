@@ -81,13 +81,15 @@ public:
      */
     trie_map(const entry* entries, size_type entry_size, value_type null_value);
 
-    void dump_compact_trie() const;
+#ifdef MDDS_TRIE_MAP_DEBUG
+    void dump() const;
+#endif
 
 private:
     void traverse_range(node_type& root, const entry* start, const entry* end, size_t pos);
-    void dump_trie(const node_type& root) const;
-    void dump_node(std::string& buffer, const node_type& node) const;
+#ifdef MDDS_TRIE_MAP_DEBUG
     void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;
+#endif
     void compact(const node_type& root);
     size_t compact_node(const node_type& node);
 

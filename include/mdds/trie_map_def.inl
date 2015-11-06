@@ -28,11 +28,91 @@
 
 #include "mdds/global.hpp"
 
-#include <iostream>
 #include <cassert>
 #include <algorithm>
 
+#ifdef MDDS_TRIE_MAP_DEBUG
+#include <iostream>
+#endif
+
 namespace mdds { namespace draft {
+
+namespace detail {
+
+#ifdef MDDS_TRIE_MAP_DEBUG
+
+template<typename _NodeT>
+void dump_node(std::string& buffer, const _NodeT& node)
+{
+    using namespace std;
+    using node_type = _NodeT;
+
+    if (node.value)
+    {
+        // This node has value.
+        cout << buffer << ":" << *node.value << endl;
+    }
+
+    std::for_each(node.children.begin(), node.children.end(),
+        [&](const node_type& node)
+        {
+            buffer.push_back(node.key);
+            dump_node(buffer, node);
+            buffer.pop_back();
+        }
+    );
+}
+
+template<typename _NodeT>
+void dump_trie(const _NodeT& root)
+{
+    std::string buffer;
+    dump_node(buffer, root);
+}
+
+template<typename _ValueT>
+void dump_packed_trie(const std::vector<uintptr_t>& packed)
+{
+    using namespace std;
+
+    using value_type = _ValueT;
+
+    cout << "packed size: " << packed.size() << endl;
+
+    size_t n = packed.size();
+    size_t i = 0;
+    cout << i << ": root node offset: " << packed[i] << endl;
+    ++i;
+
+    while (i < n)
+    {
+        const value_type* value = reinterpret_cast<const value_type*>(packed[i]);
+        cout << i << ": node value pointer: " << value;
+        if (value)
+            cout << ", value: " << *value;
+        cout << endl;
+        ++i;
+
+        size_t index_size = packed[i];
+        cout << i << ": index size: " << index_size << endl;
+        ++i;
+        index_size /= 2;
+
+        for (size_t j = 0; j < index_size; ++j)
+        {
+            char key = packed[i];
+            cout << i << ": key: " << key << endl;
+            ++i;
+            size_t offset = packed[i];
+            cout << i << ": offset: " << offset << endl;
+            ++i;
+        }
+    }
+}
+
+#endif
+
+}
 
 template<typename _ValueT>
 trie_map<_ValueT>::trie_map(
@@ -44,7 +124,9 @@ trie_map<_ValueT>::trie_map(
 
     node_type root(0);
     traverse_range(root, p, p_end, 0);
-    dump_trie(root);
+#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_TRIE)
+    detail::dump_trie(root);
+#endif
     compact(root);
 }
 
@@ -99,75 +181,17 @@ void trie_map<_ValueT>::traverse_range(
 }
 
 template<typename _ValueT>
-void trie_map<_ValueT>::dump_trie(const node_type& root) const
-{
-    std::string buffer;
-    dump_node(buffer, root);
-}
-
-template<typename _ValueT>
-void trie_map<_ValueT>::dump_node(std::string& buffer, const node_type& node) const
-{
-    using namespace std;
-
-    if (node.value)
-    {
-        // This node has value.
-        cout << buffer << ":" << *node.value << endl;
-    }
-
-    std::for_each(node.children.begin(), node.children.end(),
-        [&](const node_type& node)
-        {
-            buffer.push_back(node.key);
-            dump_node(buffer, node);
-            buffer.pop_back();
-        }
-    );
-}
-
-template<typename _ValueT>
 void trie_map<_ValueT>::compact(const node_type& root)
 {
-    using namespace std;
-
     packed_type init(size_t(1), uintptr_t(0));
     m_packed.swap(init);
 
     size_t root_offset = compact_node(root);
     m_packed[0] = root_offset;
 
-    cout << "packed size: " << m_packed.size() << endl;
-
-    size_t n = m_packed.size();
-    size_t i = 0;
-    cout << i << ": root node offset: " << m_packed[i] << endl;
-    ++i;
-
-    while (i < n)
-    {
-        const value_type* value = reinterpret_cast<const value_type*>(m_packed[i]);
-        cout << i << ": node value pointer: " << value;
-        if (value)
-            cout << ", value: " << *value;
-        cout << endl;
-        ++i;
-
-        size_t index_size = m_packed[i];
-        cout << i << ": index size: " << index_size << endl;
-        ++i;
-        index_size /= 2;
-
-        for (size_t j = 0; j < index_size; ++j)
-        {
-            char key = m_packed[i];
-            cout << i << ": key: " << key << endl;
-            ++i;
-            size_t offset = m_packed[i];
-            cout << i << ": offset: " << offset << endl;
-            ++i;
-        }
-    }
+#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_PACKED)
+    detail::dump_packed_trie<value_type>(m_packed);
+#endif
 }
 
 template<typename _ValueT>
@@ -203,8 +227,10 @@ size_t trie_map<_ValueT>::compact_node(const node_type& node)
     return offset;
 }
 
+#ifdef MDDS_TRIE_MAP_DEBUG
+
 template<typename _ValueT>
-void trie_map<_ValueT>::dump_compact_trie() const
+void trie_map<_ValueT>::dump() const
 {
     if (m_packed.empty())
         return;
@@ -240,6 +266,8 @@ void trie_map<_ValueT>::dump_compact_trie_node(std::string& buffer, const uintpt
         buffer.pop_back();
     }
 }
+
+#endif
 
 }}
 

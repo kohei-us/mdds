@@ -26,6 +26,10 @@
  *
  ************************************************************************/
 
+#define MDDS_TRIE_MAP_DEBUG 1
+#define MDDS_TREI_MAP_DEBUG_DUMP_TRIE 1
+#define MDDS_TREI_MAP_DEBUG_DUMP_PACKED 1
+
 #include "mdds/trie_map.hpp"
 #include "mdds/global.hpp"
 #include "test_global.hpp"
@@ -47,7 +51,7 @@ void trie_test1()
     };
 
     int_map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
-    db.dump_compact_trie();
+    db.dump();
 }
 
 void trie_test2()
@@ -71,7 +75,7 @@ void trie_test2()
     };
 
     int_map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
-    db.dump_compact_trie();
+    db.dump();
 }
 
 int main(int argc, char** argv)
