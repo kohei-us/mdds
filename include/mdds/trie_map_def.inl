@@ -122,12 +122,15 @@ void dump_packed_trie(const std::vector<uintptr_t>& packed)
 
 #endif
 
-template<typename _EntryT>
+template<typename _ValueT>
 void traverse_range(
-    trie_node& root, const _EntryT* start, const _EntryT* end, size_t pos)
+    trie_node& root,
+    const typename trie_map<_ValueT>::entry* start,
+    const typename trie_map<_ValueT>::entry* end,
+    size_t pos)
 {
     using namespace std;
-    using entry = _EntryT;
+    using entry = typename trie_map<_ValueT>::entry;
 
     const entry* p = start;
     const entry* range_start = start;
@@ -157,7 +160,7 @@ void traverse_range(
             range_end = p;
 
             root.children.emplace_back(range_char);
-            traverse_range(root.children.back(), range_start, range_end, pos+1);
+            traverse_range<_ValueT>(root.children.back(), range_start, range_end, pos+1);
             range_start = range_end;
             range_char = range_start->key[pos];
             range_end = nullptr;
@@ -169,7 +172,7 @@ void traverse_range(
     {
         assert(range_char);
         root.children.emplace_back(range_char);
-        traverse_range(root.children.back(), range_start, end, pos+1);
+        traverse_range<_ValueT>(root.children.back(), range_start, end, pos+1);
     }
 }
 
@@ -226,7 +229,7 @@ trie_map<_ValueT>::trie_map(
 
     // Populate the normal tree first.
     detail::trie_node root(0);
-    detail::traverse_range(root, p, p_end, 0);
+    detail::traverse_range<value_type>(root, p, p_end, 0);
 #if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_TRIE)
     detail::dump_trie<value_type>(root);
 #endif
