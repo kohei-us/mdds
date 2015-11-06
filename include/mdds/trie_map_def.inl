@@ -112,29 +112,12 @@ void dump_packed_trie(const std::vector<uintptr_t>& packed)
 
 #endif
 
-}
-
-template<typename _ValueT>
-trie_map<_ValueT>::trie_map(
-    const entry* entries, size_type entry_size, value_type null_value) :
-    m_null_value(null_value)
-{
-    const entry* p = entries;
-    const entry* p_end = p + entry_size;
-
-    node_type root(0);
-    traverse_range(root, p, p_end, 0);
-#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_TRIE)
-    detail::dump_trie(root);
-#endif
-    compact(root);
-}
-
-template<typename _ValueT>
-void trie_map<_ValueT>::traverse_range(
-    node_type& root, const entry* start, const entry* end, size_t pos)
+template<typename _NodeT, typename _EntryT>
+void traverse_range(
+    _NodeT& root, const _EntryT* start, const _EntryT* end, size_t pos)
 {
     using namespace std;
+    using entry = _EntryT;
 
     const entry* p = start;
     const entry* range_start = start;
@@ -178,6 +161,24 @@ void trie_map<_ValueT>::traverse_range(
         root.children.emplace_back(range_char);
         traverse_range(root.children.back(), range_start, end, pos+1);
     }
+}
+
+}
+
+template<typename _ValueT>
+trie_map<_ValueT>::trie_map(
+    const entry* entries, size_type entry_size, value_type null_value) :
+    m_null_value(null_value)
+{
+    const entry* p = entries;
+    const entry* p_end = p + entry_size;
+
+    node_type root(0);
+    detail::traverse_range(root, p, p_end, 0);
+#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_TRIE)
+    detail::dump_trie(root);
+#endif
+    compact(root);
 }
 
 template<typename _ValueT>

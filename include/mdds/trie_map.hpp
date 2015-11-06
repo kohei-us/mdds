@@ -86,7 +86,6 @@ public:
 #endif
 
 private:
-    void traverse_range(node_type& root, const entry* start, const entry* end, size_t pos);
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;
 #endif
