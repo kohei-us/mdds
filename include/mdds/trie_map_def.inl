@@ -208,6 +208,19 @@ void compact(std::vector<uintptr_t>& packed, const _NodeT& root)
     packed[0] = root_offset;
 }
 
+template<typename _ValueT>
+struct trie_node
+{
+    typedef _ValueT value_type;
+
+    char key;
+    const value_type* value;
+
+    std::deque<trie_node> children;
+
+    trie_node(char _key) : key(_key), value(nullptr) {}
+};
+
 }
 
 template<typename _ValueT>
@@ -218,7 +231,7 @@ trie_map<_ValueT>::trie_map(
     const entry* p = entries;
     const entry* p_end = p + entry_size;
 
-    trie_node<value_type> root(0);
+    detail::trie_node<value_type> root(0);
     detail::traverse_range(root, p, p_end, 0);
 #if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_TRIE)
     detail::dump_trie(root);

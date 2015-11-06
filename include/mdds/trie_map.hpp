@@ -36,19 +36,6 @@
 namespace mdds { namespace draft {
 
 template<typename _ValueT>
-struct trie_node
-{
-    typedef _ValueT value_type;
-
-    char key;
-    const value_type* value;
-
-    std::deque<trie_node> children;
-
-    trie_node(char _key) : key(_key), value(nullptr) {}
-};
-
-template<typename _ValueT>
 class trie_map
 {
     typedef std::vector<uintptr_t> packed_type;
