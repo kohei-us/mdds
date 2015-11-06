@@ -52,7 +52,6 @@ template<typename _ValueT>
 class trie_map
 {
     typedef std::vector<uintptr_t> packed_type;
-    typedef trie_node<_ValueT> node_type;
 public:
     typedef _ValueT value_type;
     typedef size_t size_type;
@@ -89,8 +88,6 @@ private:
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;
 #endif
-    void compact(const node_type& root);
-    size_t compact_node(const node_type& node);
 
 private:
     value_type m_null_value;
