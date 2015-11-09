@@ -36,7 +36,7 @@
 namespace mdds { namespace draft {
 
 template<typename _ValueT>
-class trie_map
+class packed_trie_map
 {
     typedef std::vector<uintptr_t> packed_type;
 public:
@@ -65,7 +65,7 @@ public:
      * @param null_value null value to return when the find method fails to
      *                   find a matching entry.
      */
-    trie_map(const entry* entries, size_type entry_size, value_type null_value);
+    packed_trie_map(const entry* entries, size_type entry_size, value_type null_value);
 
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump() const;

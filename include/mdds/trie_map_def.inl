@@ -125,12 +125,12 @@ void dump_packed_trie(const std::vector<uintptr_t>& packed)
 template<typename _ValueT>
 void traverse_range(
     trie_node& root,
-    const typename trie_map<_ValueT>::entry* start,
-    const typename trie_map<_ValueT>::entry* end,
+    const typename packed_trie_map<_ValueT>::entry* start,
+    const typename packed_trie_map<_ValueT>::entry* end,
     size_t pos)
 {
     using namespace std;
-    using entry = typename trie_map<_ValueT>::entry;
+    using entry = typename packed_trie_map<_ValueT>::entry;
 
     const entry* p = start;
     const entry* range_start = start;
@@ -220,7 +220,7 @@ inline void compact(std::vector<uintptr_t>& packed, const trie_node& root)
 }
 
 template<typename _ValueT>
-trie_map<_ValueT>::trie_map(
+packed_trie_map<_ValueT>::packed_trie_map(
     const entry* entries, size_type entry_size, value_type null_value) :
     m_null_value(null_value)
 {
@@ -244,7 +244,7 @@ trie_map<_ValueT>::trie_map(
 #ifdef MDDS_TRIE_MAP_DEBUG
 
 template<typename _ValueT>
-void trie_map<_ValueT>::dump() const
+void packed_trie_map<_ValueT>::dump() const
 {
     if (m_packed.empty())
         return;
@@ -256,7 +256,7 @@ void trie_map<_ValueT>::dump() const
 }
 
 template<typename _ValueT>
-void trie_map<_ValueT>::dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const
+void packed_trie_map<_ValueT>::dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const
 {
     using namespace std;
 

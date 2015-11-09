@@ -36,7 +36,7 @@
 
 using namespace std;
 
-typedef mdds::draft::trie_map<int> int_map_type;
+typedef mdds::draft::packed_trie_map<int> int_map_type;
 
 void trie_test1()
 {
