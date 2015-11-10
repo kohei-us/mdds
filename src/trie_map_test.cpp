@@ -107,10 +107,34 @@ void trie_test2()
     assert(db.find(MDDS_ASCII("dAvid")) == -1);
 }
 
+void trie_test3()
+{
+    stack_printer __stack_printer__("::trie_test3");
+
+    int_map_type::entry entries[] =
+    {
+        { MDDS_ASCII("NULL"), 1 },
+        { MDDS_ASCII("Null"), 2 },
+        { MDDS_ASCII("null"), 3 },
+        { MDDS_ASCII("~"),    4 },
+    };
+
+    size_t entry_size = MDDS_N_ELEMENTS(entries);
+    int_map_type db(entries, entry_size, -1);
+    assert(verify_entries(db, entries, entry_size));
+
+    // invalid keys
+    assert(db.find(MDDS_ASCII("NUll")) == -1);
+    assert(db.find(MDDS_ASCII("Oull")) == -1);
+    assert(db.find(MDDS_ASCII("Mull")) == -1);
+    assert(db.find(MDDS_ASCII("hell")) == -1);
+}
+
 int main(int argc, char** argv)
 {
     trie_test1();
     trie_test2();
+    trie_test3();
 
     return EXIT_SUCCESS;
 }
