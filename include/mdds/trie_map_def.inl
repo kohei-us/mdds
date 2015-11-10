@@ -274,10 +274,13 @@ packed_trie_map<_ValueT>::descend_node(
     size_t index_size = *p;
     size_t n = index_size / 2;
     ++p;
+
+    // TODO : turn this into a binary search.
     for (size_t i = 0; i < n; ++i)
     {
-        char node_key = *p++;
-        size_t offset = *p++;
+        const uintptr_t* p_this = p + i*2;
+        char node_key = *p_this;
+        size_t offset = *(p_this+1);
 
         if (*key != node_key)
             continue;
