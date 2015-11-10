@@ -27,8 +27,8 @@
  ************************************************************************/
 
 #define MDDS_TRIE_MAP_DEBUG 1
-#define MDDS_TREI_MAP_DEBUG_DUMP_TRIE 1
-#define MDDS_TREI_MAP_DEBUG_DUMP_PACKED 1
+//#define MDDS_TREI_MAP_DEBUG_DUMP_TRIE 1
+//#define MDDS_TREI_MAP_DEBUG_DUMP_PACKED 1
 
 #include "mdds/trie_map.hpp"
 #include "mdds/global.hpp"
@@ -37,6 +37,23 @@
 using namespace std;
 
 typedef mdds::draft::packed_trie_map<int> int_map_type;
+
+bool verify_entries(
+    const int_map_type& db, const int_map_type::entry* entries, size_t entry_size)
+{
+    db.dump();
+
+    const int_map_type::entry* p = entries;
+    const int_map_type::entry* p_end = p + entry_size;
+    for (; p != p_end; ++p)
+    {
+        int res = db.find(p->key, p->keylen);
+        if (res != p->value)
+            return false;
+    }
+
+    return true;
+}
 
 void trie_test1()
 {
@@ -50,8 +67,13 @@ void trie_test1()
         { MDDS_ASCII("b"),  7 },
     };
 
-    int_map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
-    db.dump();
+    size_t entry_size = MDDS_N_ELEMENTS(entries);
+    int_map_type db(entries, entry_size, -1);
+    assert(verify_entries(db, entries, entry_size));
+
+    // invalid keys
+    assert(db.find(MDDS_ASCII("ac")) == -1);
+    assert(db.find(MDDS_ASCII("c")) == -1);
 }
 
 void trie_test2()
@@ -74,8 +96,15 @@ void trie_test2()
         { MDDS_ASCII("eva"),      11 },
     };
 
-    int_map_type db(entries, MDDS_N_ELEMENTS(entries), -1);
-    db.dump();
+    size_t entry_size = MDDS_N_ELEMENTS(entries);
+    int_map_type db(entries, entry_size, -1);
+    assert(verify_entries(db, entries, entry_size));
+
+    // invalid keys
+    assert(db.find(MDDS_ASCII("aarons")) == -1);
+    assert(db.find(MDDS_ASCII("a")) == -1);
+    assert(db.find(MDDS_ASCII("biso")) == -1);
+    assert(db.find(MDDS_ASCII("dAvid")) == -1);
 }
 
 int main(int argc, char** argv)

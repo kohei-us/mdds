@@ -241,6 +241,55 @@ packed_trie_map<_ValueT>::packed_trie_map(
 #endif
 }
 
+template<typename _ValueT>
+typename packed_trie_map<_ValueT>::value_type
+packed_trie_map<_ValueT>::find(const char* input, size_type len) const
+{
+    if (m_packed.empty())
+        return m_null_value;
+
+    const char* key_end = input + len;
+    size_t root_offset = m_packed[0];
+    const uintptr_t* root = m_packed.data() + root_offset;
+
+    const value_type* pv = descend_node(root, input, key_end);
+    return pv ? *pv : m_null_value;
+}
+
+template<typename _ValueT>
+const typename packed_trie_map<_ValueT>::value_type*
+packed_trie_map<_ValueT>::descend_node(
+    const uintptr_t* p, const char* key, const char* key_end) const
+{
+    const value_type* v = reinterpret_cast<const value_type*>(*p);
+
+    if (key == key_end)
+        return v;
+
+    const uintptr_t* p0 = p; // store the head offset position of this node.
+
+    // Find the child node with a matching key character.
+
+    ++p;
+    size_t index_size = *p;
+    size_t n = index_size / 2;
+    ++p;
+    for (size_t i = 0; i < n; ++i)
+    {
+        char node_key = *p++;
+        size_t offset = *p++;
+
+        if (*key != node_key)
+            continue;
+
+        const uintptr_t* p_child = p0 - offset;
+        ++key;
+        return descend_node(p_child, key, key_end);
+    }
+
+    return nullptr;
+}
+
 #ifdef MDDS_TRIE_MAP_DEBUG
 
 template<typename _ValueT>
@@ -264,7 +313,7 @@ void packed_trie_map<_ValueT>::dump_compact_trie_node(std::string& buffer, const
 
     const value_type* v = reinterpret_cast<const value_type*>(*p);
     if (v)
-        cout << buffer << ":" << *v << endl;
+        cout << buffer << ": " << *v << endl;
 
     ++p;
     size_t index_size = *p;

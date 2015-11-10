@@ -67,11 +67,25 @@ public:
      */
     packed_trie_map(const entry* entries, size_type entry_size, value_type null_value);
 
+    /**
+     * Find a value associated with a specified string key.
+     *
+     * @param input pointer to a C-style string whose value represents the key
+     *              to match.
+     * @param len length of the matching string value.
+     *
+     * @return value associated with the key, or the null value in case the
+     *         key is not found.
+     */
+    value_type find(const char* input, size_type len) const;
+
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump() const;
 #endif
 
 private:
+    const value_type* descend_node(const uintptr_t* p, const char* key, const char* key_end) const;
+
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;
 #endif
