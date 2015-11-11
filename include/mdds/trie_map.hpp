@@ -98,6 +98,13 @@ public:
      */
     std::vector<key_value_type> prefix_search(const char* prefix, size_type len) const;
 
+    /**
+     * Return the number of entries in the map.
+     *
+     * @return the number of entries in the map.
+     */
+    size_type size() const;
+
 private:
     const uintptr_t* find_prefix_node(
         const uintptr_t* p, const char* prefix, const char* prefix_end) const;
@@ -111,6 +118,7 @@ private:
 
 private:
     value_type m_null_value;
+    size_type m_entry_size;
 
     packed_type m_packed;
 };

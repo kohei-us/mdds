@@ -226,7 +226,7 @@ inline void compact(std::vector<uintptr_t>& packed, const trie_node& root)
 template<typename _ValueT>
 packed_trie_map<_ValueT>::packed_trie_map(
     const entry* entries, size_type entry_size, value_type null_value) :
-    m_null_value(null_value)
+    m_null_value(null_value), m_entry_size(entry_size)
 {
     const entry* p = entries;
     const entry* p_end = p + entry_size;
@@ -286,6 +286,13 @@ packed_trie_map<_ValueT>::prefix_search(const char* prefix, size_type len) const
     std::string buffer(prefix, len);
     fill_child_node_items(matches, buffer, node);
     return matches;
+}
+
+template<typename _ValueT>
+typename packed_trie_map<_ValueT>::size_type
+packed_trie_map<_ValueT>::size() const
+{
+    return m_entry_size;
 }
 
 template<typename _ValueT>

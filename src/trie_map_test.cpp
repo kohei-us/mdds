@@ -72,6 +72,7 @@ void trie_test1()
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
     int_map_type db(entries, entry_size, -1);
+    assert(db.size() == 4);
     assert(verify_entries(db, entries, entry_size));
 
     // invalid keys
@@ -113,6 +114,7 @@ void trie_test2()
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
     int_map_type db(entries, entry_size, -1);
+    assert(db.size() == 12);
     assert(verify_entries(db, entries, entry_size));
 
     // invalid keys
@@ -136,6 +138,7 @@ void trie_test3()
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
     int_map_type db(entries, entry_size, -1);
+    assert(db.size() == 4);
     assert(verify_entries(db, entries, entry_size));
 
     // invalid keys
@@ -169,6 +172,7 @@ void trie_test4()
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
     int_map_type db(entries, entry_size, name_none);
+    assert(db.size() == 6);
     assert(verify_entries(db, entries, entry_size));
 
     // Try invalid keys.
