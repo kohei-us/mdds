@@ -371,48 +371,6 @@ void packed_trie_map<_ValueT>::fill_child_node_items(
     }
 }
 
-#ifdef MDDS_TRIE_MAP_DEBUG
-
-template<typename _ValueT>
-void packed_trie_map<_ValueT>::dump() const
-{
-    if (m_packed.empty())
-        return;
-
-    std::string buffer;
-    size_t root_offset = m_packed[0];
-    const uintptr_t* p = m_packed.data() + root_offset;
-    dump_compact_trie_node(buffer, p);
-}
-
-template<typename _ValueT>
-void packed_trie_map<_ValueT>::dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const
-{
-    using namespace std;
-
-    const uintptr_t* p0 = p; // store the head offset position of this node.
-
-    const value_type* v = reinterpret_cast<const value_type*>(*p);
-    if (v)
-        cout << buffer << ": " << *v << endl;
-
-    ++p;
-    size_t index_size = *p;
-    size_t n = index_size / 2;
-    ++p;
-    for (size_t i = 0; i < n; ++i)
-    {
-        char key = *p++;
-        size_t offset = *p++;
-        buffer.push_back(key);
-        const uintptr_t* p_child = p0 - offset;
-        dump_compact_trie_node(buffer, p_child);
-        buffer.pop_back();
-    }
-}
-
-#endif
-
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

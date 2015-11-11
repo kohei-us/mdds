@@ -41,7 +41,10 @@ typedef mdds::draft::packed_trie_map<int> int_map_type;
 bool verify_entries(
     const int_map_type& db, const int_map_type::entry* entries, size_t entry_size)
 {
-    db.dump();
+    auto items = db.prefix_search(nullptr, 0);
+    for (size_t i = 0, n = items.size(); i < n; ++i)
+        cout << items[i].first << ": " << items[i].second << endl;
+
 
     const int_map_type::entry* p = entries;
     const int_map_type::entry* p_end = p + entry_size;

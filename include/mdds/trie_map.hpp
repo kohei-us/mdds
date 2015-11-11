@@ -99,10 +99,6 @@ public:
      */
     std::vector<key_value_type> prefix_search(const char* prefix, size_type len) const;
 
-#ifdef MDDS_TRIE_MAP_DEBUG
-    void dump() const;
-#endif
-
 private:
     const uintptr_t* find_prefix_node(
         const uintptr_t* p, const char* prefix, const char* prefix_end) const;
