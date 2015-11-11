@@ -27,12 +27,13 @@
  ************************************************************************/
 
 #include "../include/mdds/sorted_string_map.hpp"
+#include "../include/mdds/trie_map.hpp"
+#include "../include/mdds/global.hpp"
 
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
-
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 using namespace std;
 
@@ -78,27 +79,43 @@ private:
 
 }
 
-enum name_type {
-    name_none = 0,
-    name_andy,
-    name_bruce,
-    name_charlie,
-    name_david
-};
-
-typedef mdds::sorted_string_map<name_type> map_type;
+typedef mdds::sorted_string_map<int> map_type;
 
 map_type::entry entries[] =
 {
-    { "andy", name_andy },
-    { "andy1", name_andy },
-    { "andy13", name_andy },
-    { "bruce", name_bruce },
-    { "charlie", name_charlie },
-    { "david", name_david },
+    { MDDS_ASCII("aaron"),     0 },
+    { MDDS_ASCII("al"),        1 },
+    { MDDS_ASCII("aldi"),      2 },
+    { MDDS_ASCII("andy"),      3 },
+    { MDDS_ASCII("bison"),     4 },
+    { MDDS_ASCII("bruce"),     5 },
+    { MDDS_ASCII("charlie"),   6 },
+    { MDDS_ASCII("charlotte"), 7 },
+    { MDDS_ASCII("david"),     8 },
+    { MDDS_ASCII("dove"),      9 },
+    { MDDS_ASCII("e"),        10 },
+    { MDDS_ASCII("eva"),      11 },
 };
 
-typedef boost::unordered_map<std::string, name_type> hashmap_type;
+typedef mdds::packed_trie_map<int> trie_map_type;
+
+trie_map_type::entry trie_entries[] =
+{
+    { MDDS_ASCII("aaron"),     0 },
+    { MDDS_ASCII("al"),        1 },
+    { MDDS_ASCII("aldi"),      2 },
+    { MDDS_ASCII("andy"),      3 },
+    { MDDS_ASCII("bison"),     4 },
+    { MDDS_ASCII("bruce"),     5 },
+    { MDDS_ASCII("charlie"),   6 },
+    { MDDS_ASCII("charlotte"), 7 },
+    { MDDS_ASCII("david"),     8 },
+    { MDDS_ASCII("dove"),      9 },
+    { MDDS_ASCII("e"),        10 },
+    { MDDS_ASCII("eva"),      11 },
+};
+
+typedef std::unordered_map<std::string, int> hashmap_type;
 
 void init_hash_map(hashmap_type& hm)
 {
@@ -111,41 +128,74 @@ void init_hash_map(hashmap_type& hm)
 
 void run(map_type& sm, const char* input)
 {
-    name_type type = sm.find(input, strlen(input));
+    static int sum = 0;
+    int type = sm.find(input, strlen(input));
+    sum += type;
+}
+
+void run(trie_map_type& sm, const char* input)
+{
+    static int sum = 0;
+    int type = sm.find(input, strlen(input));
+    sum += type;
 }
 
 void run_hash(hashmap_type& hm, const char* input)
 {
-    name_type type = name_none;
+    static int sum = 0;
+    int type = -1;
     hashmap_type::const_iterator it = hm.find(input);
     if (it != hm.end())
         type = it->second;
+    sum += type;
 }
 
 const char* tests[] = {
+    "aaron"
+    "al",
+    "aldi",
     "andy",
-    "david",
-    "charlie",
     "andy1",
-    "bruce",
+    "andy13",
+    "bison",
     "blah",
-    "andy13"
+    "bruce",
+    "bruce",
+    "charlie",
+    "charlotte",
+    "david",
+    "dove",
+    "e",
+    "eva"
 };
 
 int main()
 {
     static const size_t repeat_count = 10000000;
 
-    map_type sorted_map(entries, sizeof(entries)/sizeof(entries[0]), name_none);
+    map_type sorted_map(entries, MDDS_N_ELEMENTS(entries), -1);
     size_t n = sorted_map.size();
     cout << "entry count = " << n << endl;
 
     {
-        stack_printer __stack_printer__("sorted entry");
+        stack_printer __stack_printer__("sorted map");
         for (size_t rep = 0; rep < repeat_count; ++rep)
         {
             for (size_t i = 0; i < n; ++i)
                 run(sorted_map, tests[i]);
+        }
+    }
+
+    trie_map_type trie_map(trie_entries, MDDS_N_ELEMENTS(trie_entries), -1);
+    n = trie_map.size();
+    cout << "entry count = " << n << endl;
+
+    {
+        stack_printer __stack_printer__("trie map");
+        for (size_t rep = 0; rep < repeat_count; ++rep)
+        {
+            for (size_t i = 0; i < n; ++i)
+                run(trie_map, tests[i]);
         }
     }
 
