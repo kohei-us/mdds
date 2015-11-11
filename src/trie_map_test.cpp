@@ -130,11 +130,43 @@ void trie_test3()
     assert(db.find(MDDS_ASCII("hell")) == -1);
 }
 
+void trie_test4()
+{
+    stack_printer __stack_printer__("::trie_test4");
+
+    enum name_type {
+        name_none = 0,
+        name_andy,
+        name_bruce,
+        name_charlie,
+        name_david
+    };
+
+    int_map_type::entry entries[] =
+    {
+        { MDDS_ASCII("andy"),    name_andy },
+        { MDDS_ASCII("andy1"),   name_andy },
+        { MDDS_ASCII("andy13"),  name_andy },
+        { MDDS_ASCII("bruce"),   name_bruce },
+        { MDDS_ASCII("charlie"), name_charlie },
+        { MDDS_ASCII("david"),   name_david },
+    };
+
+    size_t entry_size = MDDS_N_ELEMENTS(entries);
+    int_map_type db(entries, entry_size, name_none);
+    assert(verify_entries(db, entries, entry_size));
+
+    // Try invalid keys.
+    assert(db.find("foo", 3) == name_none);
+    assert(db.find("andy133", 7) == name_none);
+}
+
 int main(int argc, char** argv)
 {
     trie_test1();
     trie_test2();
     trie_test3();
+    trie_test4();
 
     return EXIT_SUCCESS;
 }
