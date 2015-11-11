@@ -35,6 +35,12 @@
 
 namespace mdds { namespace draft {
 
+/**
+ * An immutable trie container that packs its content into a contiguous
+ * array to achieve both space efficiency and lookup performance.  The user
+ * of this data structure must provide a pre-constructed list of key-value
+ * entries that are sorted by the key in ascending order.
+ */
 template<typename _ValueT>
 class packed_trie_map
 {
