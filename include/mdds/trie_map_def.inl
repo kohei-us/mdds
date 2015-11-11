@@ -30,6 +30,8 @@
 
 #include <cassert>
 #include <algorithm>
+#include <deque>
+#include <memory>
 
 #ifdef MDDS_TRIE_MAP_DEBUG
 #include <iostream>
@@ -44,7 +46,7 @@ struct trie_node
     char key;
     const void* value;
 
-    std::deque<trie_node> children;
+    std::deque<std::unique_ptr<trie_node>> children;
 
     trie_node(char _key) : key(_key), value(nullptr) {}
 };
@@ -64,8 +66,9 @@ void dump_node(std::string& buffer, const trie_node& node)
     }
 
     std::for_each(node.children.begin(), node.children.end(),
-        [&](const trie_node& node)
+        [&](const std::unique_ptr<trie_node>& p)
         {
+            const trie_node& node = *p;
             buffer.push_back(node.key);
             dump_node<value_type>(buffer, node);
             buffer.pop_back();
@@ -159,8 +162,8 @@ void traverse_range(
             // End of current character range.
             range_end = p;
 
-            root.children.emplace_back(range_char);
-            traverse_range<_ValueT>(root.children.back(), range_start, range_end, pos+1);
+            root.children.push_back(make_unique<trie_node>(range_char));
+            traverse_range<_ValueT>(*root.children.back(), range_start, range_end, pos+1);
             range_start = range_end;
             range_char = range_start->key[pos];
             range_end = nullptr;
@@ -171,8 +174,8 @@ void traverse_range(
     if (range_count)
     {
         assert(range_char);
-        root.children.emplace_back(range_char);
-        traverse_range<_ValueT>(root.children.back(), range_start, end, pos+1);
+        root.children.push_back(make_unique<trie_node>(range_char));
+        traverse_range<_ValueT>(*root.children.back(), range_start, end, pos+1);
     }
 }
 
@@ -183,8 +186,9 @@ inline size_t compact_node(std::vector<uintptr_t>& packed, const trie_node& node
 
     // Process child nodes first.
     std::for_each(node.children.begin(), node.children.end(),
-        [&](const trie_node& node)
+        [&](const std::unique_ptr<trie_node>& p)
         {
+            const trie_node& node = *p;
             size_t child_offset = compact_node(packed, node);
             child_offsets.emplace_back(child_offset, node.key);
         }

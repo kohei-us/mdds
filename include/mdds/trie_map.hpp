@@ -29,7 +29,6 @@
 #ifndef INCLUDED_MDDS_TRIE_MAP_HPP
 #define INCLUDED_MDDS_TRIE_MAP_HPP
 
-#include <deque>
 #include <vector>
 #include <string>
 
