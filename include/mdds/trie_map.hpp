@@ -48,7 +48,7 @@ class packed_trie_map
 public:
     typedef _ValueT value_type;
     typedef size_t size_type;
-
+    typedef std::pair<std::string, value_type> key_value_type;
 
     /**
      * Single key-value entry.  Caller must provide at compile time a static
@@ -85,12 +85,30 @@ public:
      */
     value_type find(const char* input, size_type len) const;
 
+    /**
+     * Retrieve all key-value pairs whose keys start with specified prefix.
+     * You can also retrieve all key-value pairs by passing a null prefix and
+     * a length of zero.
+     *
+     * @param prefix pointer to a C-style string whose value represents the
+     *               prefix to match.
+     * @param len length of the prefix value to match.
+     *
+     * @return list of all matching key-value pairs sorted by the key in
+     *         ascending order.
+     */
+    std::vector<key_value_type> prefix_search(const char* prefix, size_type len) const;
+
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump() const;
 #endif
 
 private:
-    const value_type* descend_node(const uintptr_t* p, const char* key, const char* key_end) const;
+    const uintptr_t* find_prefix_node(
+        const uintptr_t* p, const char* prefix, const char* prefix_end) const;
+
+    void fill_child_node_items(
+        std::vector<key_value_type>& items, std::string& buffer, const uintptr_t* p) const;
 
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;

@@ -252,19 +252,44 @@ packed_trie_map<_ValueT>::find(const char* input, size_type len) const
     size_t root_offset = m_packed[0];
     const uintptr_t* root = m_packed.data() + root_offset;
 
-    const value_type* pv = descend_node(root, input, key_end);
+    const uintptr_t* node = find_prefix_node(root, input, key_end);
+    if (!node)
+        return m_null_value;
+
+    const value_type* pv = reinterpret_cast<const value_type*>(*node);
     return pv ? *pv : m_null_value;
 }
 
 template<typename _ValueT>
-const typename packed_trie_map<_ValueT>::value_type*
-packed_trie_map<_ValueT>::descend_node(
-    const uintptr_t* p, const char* key, const char* key_end) const
+std::vector<typename packed_trie_map<_ValueT>::key_value_type>
+packed_trie_map<_ValueT>::prefix_search(const char* prefix, size_type len) const
 {
-    const value_type* v = reinterpret_cast<const value_type*>(*p);
+    std::vector<key_value_type> matches;
 
-    if (key == key_end)
-        return v;
+    if (m_packed.empty())
+        return matches;
+
+    const char* prefix_end = prefix + len;
+
+    size_t root_offset = m_packed[0];
+    const uintptr_t* root = m_packed.data() + root_offset;
+
+    const uintptr_t* node = find_prefix_node(root, prefix, prefix_end);
+    if (!node)
+        return matches;
+
+    // Fill all its child nodes.
+    std::string buffer(prefix, len);
+    fill_child_node_items(matches, buffer, node);
+    return matches;
+}
+
+template<typename _ValueT>
+const uintptr_t* packed_trie_map<_ValueT>::find_prefix_node(
+    const uintptr_t* p, const char* prefix, const char* prefix_end) const
+{
+    if (prefix == prefix_end)
+        return p;
 
     const uintptr_t* p0 = p; // store the head offset position of this node.
 
@@ -287,12 +312,12 @@ packed_trie_map<_ValueT>::descend_node(
         char node_key = *p_this;
         size_t offset = *(p_this+1);
 
-        if (*key == node_key)
+        if (*prefix == node_key)
         {
             // Match found!
             const uintptr_t* p_child = p0 - offset;
-            ++key;
-            return descend_node(p_child, key, key_end);
+            ++prefix;
+            return find_prefix_node(p_child, prefix, prefix_end);
         }
 
         if (low == high)
@@ -310,7 +335,7 @@ packed_trie_map<_ValueT>::descend_node(
                 high = low;
             }
         }
-        else if (*key < node_key)
+        else if (*prefix < node_key)
             // Move on to the lower sub-group.
             high = i;
         else
@@ -319,6 +344,31 @@ packed_trie_map<_ValueT>::descend_node(
     }
 
     return nullptr;
+}
+
+template<typename _ValueT>
+void packed_trie_map<_ValueT>::fill_child_node_items(
+    std::vector<key_value_type>& items, std::string& buffer, const uintptr_t* p) const
+{
+    const uintptr_t* p0 = p; // store the head offset position of this node.
+
+    const value_type* v = reinterpret_cast<const value_type*>(*p);
+    if (v)
+        items.push_back(key_value_type(buffer, *v));
+
+    ++p;
+    size_t index_size = *p;
+    size_t n = index_size / 2;
+    ++p;
+    for (size_t i = 0; i < n; ++i)
+    {
+        char key = *p++;
+        size_t offset = *p++;
+        buffer.push_back(key);
+        const uintptr_t* p_child = p0 - offset;
+        fill_child_node_items(items, buffer, p_child);
+        buffer.pop_back();
+    }
 }
 
 #ifdef MDDS_TRIE_MAP_DEBUG

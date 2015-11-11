@@ -74,6 +74,18 @@ void trie_test1()
     // invalid keys
     assert(db.find(MDDS_ASCII("ac")) == -1);
     assert(db.find(MDDS_ASCII("c")) == -1);
+
+    // Get all key-value pairs.
+    auto prefix_list = db.prefix_search(nullptr, 0);
+    assert(prefix_list.size() == 4);
+    assert(prefix_list[0].first == "a");
+    assert(prefix_list[1].first == "aa");
+    assert(prefix_list[2].first == "ab");
+    assert(prefix_list[3].first == "b");
+    assert(prefix_list[0].second == 13);
+    assert(prefix_list[1].second == 10);
+    assert(prefix_list[2].second == 3);
+    assert(prefix_list[3].second == 7);
 }
 
 void trie_test2()
@@ -159,6 +171,24 @@ void trie_test4()
     // Try invalid keys.
     assert(db.find("foo", 3) == name_none);
     assert(db.find("andy133", 7) == name_none);
+
+    // Test prefix search on 'andy'.
+    auto prefix_list = db.prefix_search(MDDS_ASCII("andy"));
+    assert(prefix_list.size() == 3);
+    assert(prefix_list[0].first == "andy");
+    assert(prefix_list[1].first == "andy1");
+    assert(prefix_list[2].first == "andy13");
+
+    prefix_list = db.prefix_search(MDDS_ASCII("andy's toy"));
+    assert(prefix_list.empty());
+
+    prefix_list = db.prefix_search(MDDS_ASCII("e"));
+    assert(prefix_list.empty());
+
+    prefix_list = db.prefix_search(MDDS_ASCII("b"));
+    assert(prefix_list.size() == 1);
+    assert(prefix_list[0].first == "bruce");
+    assert(prefix_list[0].second == name_bruce);
 }
 
 int main(int argc, char** argv)
