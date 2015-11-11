@@ -275,19 +275,47 @@ packed_trie_map<_ValueT>::descend_node(
     size_t n = index_size / 2;
     ++p;
 
-    // TODO : turn this into a binary search.
-    for (size_t i = 0; i < n; ++i)
+    if (!n)
+        // This is a leaf node.
+        return nullptr;
+
+    for (size_type low = 0, high = n-1; low <= high; )
     {
+        size_type i = (low + high) / 2;
+
         const uintptr_t* p_this = p + i*2;
         char node_key = *p_this;
         size_t offset = *(p_this+1);
 
-        if (*key != node_key)
-            continue;
+        if (*key == node_key)
+        {
+            // Match found!
+            const uintptr_t* p_child = p0 - offset;
+            ++key;
+            return descend_node(p_child, key, key_end);
+        }
 
-        const uintptr_t* p_child = p0 - offset;
-        ++key;
-        return descend_node(p_child, key, key_end);
+        if (low == high)
+            // No more child node key to test. Bail out.
+            break;
+
+        if (high - low == 1)
+        {
+            // Only two more child keys left.
+            if (i == low)
+                low = high;
+            else
+            {
+                assert(i == high);
+                high = low;
+            }
+        }
+        else if (*key < node_key)
+            // Move on to the lower sub-group.
+            high = i;
+        else
+            // Move on to the higher sub-group.
+            low = i;
     }
 
     return nullptr;
