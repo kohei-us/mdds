@@ -32,7 +32,7 @@
 #include <vector>
 #include <string>
 
-namespace mdds {
+namespace mdds { namespace draft {
 
 /**
  * An immutable trie container that packs its content into a contiguous
@@ -123,7 +123,7 @@ private:
     packed_type m_packed;
 };
 
-}
+}}
 
 #include "packed_trie_map_def.inl"
 

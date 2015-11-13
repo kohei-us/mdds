@@ -36,7 +36,7 @@
 
 using namespace std;
 
-typedef mdds::packed_trie_map<int> int_map_type;
+typedef mdds::draft::packed_trie_map<int> int_map_type;
 
 bool verify_entries(
     const int_map_type& db, const int_map_type::entry* entries, size_t entry_size)

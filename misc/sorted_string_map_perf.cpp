@@ -97,7 +97,7 @@ map_type::entry entries[] =
     { MDDS_ASCII("eva"),      11 },
 };
 
-typedef mdds::packed_trie_map<int> trie_map_type;
+typedef mdds::draft::packed_trie_map<int> trie_map_type;
 
 trie_map_type::entry trie_entries[] =
 {

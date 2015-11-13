@@ -37,7 +37,7 @@
 #include <iostream>
 #endif
 
-namespace mdds {
+namespace mdds { namespace draft {
 
 namespace detail {
 
@@ -388,6 +388,6 @@ void packed_trie_map<_ValueT>::fill_child_node_items(
     }
 }
 
-}
+}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
