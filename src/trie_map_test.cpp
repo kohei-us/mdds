@@ -45,7 +45,6 @@ bool verify_entries(
     for (size_t i = 0, n = items.size(); i < n; ++i)
         cout << items[i].first << ": " << items[i].second << endl;
 
-
     const int_map_type::entry* p = entries;
     const int_map_type::entry* p_end = p + entry_size;
     for (; p != p_end; ++p)

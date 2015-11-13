@@ -260,8 +260,8 @@
 				<F N="../include/mdds/segment_tree_def.inl"/>
 				<F N="../include/mdds/sorted_string_map.hpp"/>
 				<F N="../include/mdds/sorted_string_map_def.inl"/>
-				<F N="../include/mdds/trie_map.hpp"/>
-				<F N="../include/mdds/trie_map_def.inl"/>
+				<F N="../include/mdds/packed_trie_map.hpp"/>
+				<F N="../include/mdds/packed_trie_map_def.inl"/>
 			</Folder>
 		</Folder>
 		<Folder Name="../src">

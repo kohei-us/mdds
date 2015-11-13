@@ -26,8 +26,8 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_TRIE_MAP_HPP
-#define INCLUDED_MDDS_TRIE_MAP_HPP
+#ifndef INCLUDED_MDDS_PACKED_TRIE_MAP_HPP
+#define INCLUDED_MDDS_PACKED_TRIE_MAP_HPP
 
 #include <vector>
 #include <string>
