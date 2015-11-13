@@ -27,7 +27,7 @@
  ************************************************************************/
 
 #include "../include/mdds/sorted_string_map.hpp"
-#include "../include/mdds/trie_map.hpp"
+#include "../include/mdds/packed_trie_map.hpp"
 #include "../include/mdds/global.hpp"
 
 #include <cstdlib>
