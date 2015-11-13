@@ -125,7 +125,7 @@ private:
 
 }
 
-#include "trie_map_def.inl"
+#include "packed_trie_map_def.inl"
 
 #endif
 
