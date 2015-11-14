@@ -592,21 +592,27 @@ public:
             case mtm::element_boolean:
             {
                 mtx_type::boolean_block_type::const_iterator it = mtx_type::boolean_block_type::begin(*node.data);
-                mtx_type::boolean_block_type::const_iterator it_end = mtx_type::boolean_block_type::end(*node.data);
+                std::advance(it, node.start_pos);
+                mtx_type::boolean_block_type::const_iterator it_end = it;
+                std::advance(it_end, node.size);
                 std::for_each(it, it_end, print_element<bool>());
             }
             break;
             case mtm::element_string:
             {
                 mtx_type::string_block_type::const_iterator it = mtx_type::string_block_type::begin(*node.data);
-                mtx_type::string_block_type::const_iterator it_end = mtx_type::string_block_type::end(*node.data);
+                std::advance(it, node.start_pos);
+                mtx_type::string_block_type::const_iterator it_end = it;
+                std::advance(it_end, node.size);
                 std::for_each(it, it_end, print_element<mtx_type::string_type>());
             }
             break;
             case mtm::element_numeric:
             {
                 mtx_type::numeric_block_type::const_iterator it = mtx_type::numeric_block_type::begin(*node.data);
-                mtx_type::numeric_block_type::const_iterator it_end = mtx_type::numeric_block_type::end(*node.data);
+                std::advance(it, node.start_pos);
+                mtx_type::numeric_block_type::const_iterator it_end = it;
+                std::advance(it_end, node.size);
                 std::for_each(it, it_end, print_element<double>());
             }
             break;
@@ -634,6 +640,20 @@ void mtm_test_walk()
     mtx.set(11, 0, true);
     walk_element_block func;
     mtx.walk(func);
+}
+
+void mtm_test_walk_subset()
+{
+    stack_printer __stack_printer__("::mtm_test_walk_subset");
+    mtx_type mtx(4, 4); // single column matrix to make it easier.
+    mtx.set(1, 1, 1.1);
+    mtx.set(2, 1, 1.2);
+    mtx.set(3, 1, 1.3);
+    mtx.set(0, 2, string("A1"));
+    mtx.set(1, 2, string("A2"));
+    mtx.set(2, 2, false);
+    walk_element_block func;
+    mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
 }
 
 void mtm_test_custom_string()
@@ -988,6 +1008,7 @@ int main (int argc, char **argv)
             mtm_test_assignment();
             mtm_test_numeric();
             mtm_test_walk();
+            mtm_test_walk_subset();
             mtm_test_custom_string();
             mtm_test_position();
             mtm_test_set_data_via_position();
