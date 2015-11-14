@@ -127,18 +127,18 @@ public:
         return *this;
     }
 
-    const value_type* operator++()
+    const_iterator_base& operator++()
     {
         assert(m_pos);
         handler_type::inc(m_db, m_pos, m_end_pos);
-        return operator->();
+        return *this;
     }
 
-    const value_type* operator--()
+    const_iterator_base operator--()
     {
         assert(m_pos);
         handler_type::dec(m_pos, m_end_pos);
-        return operator->();
+        return *this;
     }
 
     bool operator==(const const_iterator_base& r) const
