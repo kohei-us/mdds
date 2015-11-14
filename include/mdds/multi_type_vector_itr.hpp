@@ -295,17 +295,18 @@ public:
         return &m_cur_node;
     }
 
-    value_type* operator++()
+    iterator_base& operator++()
     {
         node_update_func::inc(m_cur_node);
-        return inc();
+        inc();
+        return *this;
     }
 
-    value_type* operator--()
+    iterator_base& operator--()
     {
-        value_type* ret = dec();
+        dec();
         node_update_func::dec(m_cur_node);
-        return ret;
+        return *this;
     }
 };
 
@@ -366,17 +367,18 @@ public:
         return &m_cur_node;
     }
 
-    const value_type* operator++()
+    const_iterator_base& operator++()
     {
         node_update_func::inc(m_cur_node);
-        return inc();
+        inc();
+        return *this;
     }
 
-    const value_type* operator--()
+    const_iterator_base& operator--()
     {
-        const value_type* ret = dec();
+        dec();
         node_update_func::dec(m_cur_node);
-        return ret;
+        return *this;
     }
 
     bool operator== (const const_iterator_base& other) const
