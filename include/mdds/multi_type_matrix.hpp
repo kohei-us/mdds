@@ -109,7 +109,7 @@ public:
 
         element_block_node_type() : type(mtm::element_empty), offset(0), size(0), data(nullptr) {}
         element_block_node_type(const element_block_node_type& other) :
-            type(other.type), offset(0), size(other.size), data(other.data) {}
+            type(other.type), offset(other.offset), size(other.size), data(other.data) {}
     };
 
     static mtm::element_t to_mtm_type(mdds::mtv::element_t mtv_type)
