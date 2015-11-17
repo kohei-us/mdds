@@ -532,6 +532,19 @@ public:
     template<typename _Func>
     void walk(_Func& func) const;
 
+    /**
+     * Walk the element blocks in the rectangle defined
+     * by start and end.
+     *
+     * @param func function object whose operator() gets called on the
+     *              element block.
+     *
+     * @param start the column/row position of the start corner
+     *
+     * @param end the column/row position of the end corner
+     *          Both column and row must be greater or equal to
+     *          the start position.
+     */
     template<typename _Func>
     void walk(_Func& func, const size_pair_type& start,
             const size_pair_type& end) const;
