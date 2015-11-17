@@ -1,3 +1,32 @@
+* draft::packed_trie_map (new)
+
+  * new data structure that implements a trie also known as a prefix
+    tree.  This implementation requires all key values be known at
+    construction time, after which its content is considered
+    immutable.  Internally it packs all its nodes in a single
+    contiguous array for space and lookup efficiencies.
+
+  * current in draft status as its API is still subject to change.
+
+* multi_type_matrix
+
+  * added a variant of walk() that takes the upper-left and
+    lower-right corners to allow walking through a subset of the
+    original matrix.
+
+* multi_type_vector
+
+  * fixed incorrect return values of the increment and decrement
+    operators of in-block iterators.  They would previously return a
+    value_type pointer which did not conform to the behaviors of STL
+    iterators.
+
+* flat_segment_tree
+
+  * fixed incorrect return values of the increment and decrement
+    operators of its leaf-node iterators as in multi_type_vector's
+    fix.
+
 mdds 1.0.0
 
 * all
