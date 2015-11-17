@@ -587,7 +587,7 @@ void multi_type_matrix<_String>::walk(_Func& func, const size_pair_type& start,
             element_block_node_type mtm_node;
             mtm_node.type = to_mtm_type(pos.first->type);
             mtm_node.data = pos.first->data;
-            mtm_node.start_pos = pos.second;
+            mtm_node.offset = pos.second;
 
             // handle the two possible cases:
             // 1.) the current block is completely contained in our selection

@@ -592,7 +592,7 @@ public:
             case mtm::element_boolean:
             {
                 mtx_type::boolean_block_type::const_iterator it = mtx_type::boolean_block_type::begin(*node.data);
-                std::advance(it, node.start_pos);
+                std::advance(it, node.offset);
                 mtx_type::boolean_block_type::const_iterator it_end = it;
                 std::advance(it_end, node.size);
                 std::for_each(it, it_end, print_element<bool>());
@@ -601,7 +601,7 @@ public:
             case mtm::element_string:
             {
                 mtx_type::string_block_type::const_iterator it = mtx_type::string_block_type::begin(*node.data);
-                std::advance(it, node.start_pos);
+                std::advance(it, node.offset);
                 mtx_type::string_block_type::const_iterator it_end = it;
                 std::advance(it_end, node.size);
                 std::for_each(it, it_end, print_element<mtx_type::string_type>());
@@ -610,7 +610,7 @@ public:
             case mtm::element_numeric:
             {
                 mtx_type::numeric_block_type::const_iterator it = mtx_type::numeric_block_type::begin(*node.data);
-                std::advance(it, node.start_pos);
+                std::advance(it, node.offset);
                 mtx_type::numeric_block_type::const_iterator it_end = it;
                 std::advance(it_end, node.size);
                 std::for_each(it, it_end, print_element<double>());

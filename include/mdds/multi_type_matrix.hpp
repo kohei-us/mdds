@@ -103,13 +103,13 @@ public:
     struct element_block_node_type
     {
         mtm::element_t type;
-        size_t start_pos;
+        size_t offset;
         size_type size;
         const element_block_type* data;
 
-        element_block_node_type() : type(mtm::element_empty), start_pos(0), size(0), data(nullptr) {}
+        element_block_node_type() : type(mtm::element_empty), offset(0), size(0), data(nullptr) {}
         element_block_node_type(const element_block_node_type& other) :
-            type(other.type), start_pos(0), size(other.size), data(other.data) {}
+            type(other.type), offset(0), size(other.size), data(other.data) {}
     };
 
     static mtm::element_t to_mtm_type(mdds::mtv::element_t mtv_type)
