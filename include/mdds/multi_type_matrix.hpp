@@ -533,21 +533,21 @@ public:
     void walk(_Func& func) const;
 
     /**
-     * Walk the element blocks in the rectangle defined
-     * by start and end.
+     * Walk through the element blocks that make up the sub-matrix defined by
+     * start and end positions.
      *
      * @param func function object whose operator() gets called on the
      *              element block.
      *
-     * @param start the column/row position of the start corner
+     * @param start the column/row position of the upper-left corner of the
+     *              sub-matrix.
      *
-     * @param end the column/row position of the end corner
-     *          Both column and row must be greater or equal to
-     *          the start position.
+     * @param end the column/row position of the lower-right corner of the
+     *          sub-matrix.  Both column and row must be greater or equal to
+     *          those of the start position.
      */
     template<typename _Func>
-    void walk(_Func& func, const size_pair_type& start,
-            const size_pair_type& end) const;
+    void walk(_Func& func, const size_pair_type& start, const size_pair_type& end) const;
 
 #ifdef MDDS_MULTI_TYPE_MATRIX_DEBUG
     void dump() const
