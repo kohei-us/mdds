@@ -1,0 +1,4 @@
+job1:
+  script: ./autogen.sh; make check; make install
+
+
