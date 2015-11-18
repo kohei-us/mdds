@@ -134,7 +134,7 @@ public:
         return *this;
     }
 
-    const_iterator_base operator--()
+    const_iterator_base& operator--()
     {
         assert(m_pos);
         handler_type::dec(m_pos, m_end_pos);
