@@ -644,16 +644,30 @@ void mtm_test_walk()
 
 void mtm_test_walk_subset()
 {
-    stack_printer __stack_printer__("::mtm_test_walk_subset");
-    mtx_type mtx(4, 4); // single column matrix to make it easier.
-    mtx.set(1, 1, 1.1);
-    mtx.set(2, 1, 1.2);
-    mtx.set(3, 1, 1.3);
-    mtx.set(0, 2, string("A1"));
-    mtx.set(1, 2, string("A2"));
-    mtx.set(2, 2, false);
-    walk_element_block func;
-    mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+    {
+        stack_printer __stack_printer__("::mtm_test_walk_subset test1");
+        mtx_type mtx(4, 4); // single column matrix to make it easier.
+        mtx.set(1, 1, 1.1);
+        mtx.set(2, 1, 1.2);
+        mtx.set(3, 1, 1.3);
+        mtx.set(0, 2, string("A1"));
+        mtx.set(1, 2, string("A2"));
+        mtx.set(2, 2, false);
+        walk_element_block func;
+        mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+    }
+    {
+        stack_printer __stack_printer__("::mtm_test_walk_subset test2");
+        mtx_type mtx(4, 4); // single column matrix to make it easier.
+        mtx.set(0, 1, 1.0);
+        mtx.set(1, 1, 1.1);
+        mtx.set(0, 2, string("A1"));
+        mtx.set(1, 2, string("A2"));
+        mtx.set(2, 2, string("A3"));
+        mtx.set(3, 2, string("A4"));
+        walk_element_block func;
+        mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+    }
 }
 
 void mtm_test_custom_string()
