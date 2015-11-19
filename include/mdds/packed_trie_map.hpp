@@ -128,10 +128,9 @@ private:
         trie_node& root, node_pool_type& node_pool, const entry* start, const entry* end,
         size_type pos);
 
-    size_type compact_node(
-        std::vector<uintptr_t>& packed, std::deque<value_type>& value_store, const trie_node& node);
+    size_type compact_node(const trie_node& node);
 
-    void compact(std::vector<uintptr_t>& packed, std::deque<value_type>& value_store, const trie_node& root);
+    void compact(const trie_node& root);
 
     const uintptr_t* find_prefix_node(
         const uintptr_t* p, const char* prefix, const char* prefix_end) const;
