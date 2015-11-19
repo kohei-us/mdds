@@ -184,7 +184,14 @@ packed_trie_map<_ValueT>::compact_node(const trie_node& node)
 
     // Process this node.
     size_t offset = m_packed.size();
-    m_packed.push_back(uintptr_t(node.value));
+    if (node.value)
+    {
+        m_value_store.push_back(*node.value);  // copy the value object.
+        m_packed.push_back(uintptr_t(&m_value_store.back()));
+    }
+    else
+        m_packed.push_back(uintptr_t(0));
+
     m_packed.push_back(uintptr_t(child_offsets.size()*2));
 
     std::for_each(child_offsets.begin(), child_offsets.end(),

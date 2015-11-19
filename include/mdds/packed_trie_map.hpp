@@ -58,6 +58,9 @@ public:
         const char* key;
         size_type keylen;
         value_type value;
+
+        entry(const char* _key, size_type _keylen, value_type _value) :
+            key(_key), keylen(_keylen), value(_value) {}
     };
 
 private:

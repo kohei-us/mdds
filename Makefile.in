@@ -212,6 +212,9 @@ test.stl: stlperf_test
 test.trie: trie_map_test
 	./trie_map_test
 
+test.trie.mem: trie_map_test
+	valgrind --tool=memcheck --leak-check=full ./trie_map_test
+
 $(QUICKCHECKDIR)/flat_segment_tree.o: $(QUICKCHECKDIR)/flat_segment_tree.cpp $(DEPENDS)
 	$(CXX) $(CPPFLAGS) -c -o $@ $<
 

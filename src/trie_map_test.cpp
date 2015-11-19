@@ -197,12 +197,60 @@ void trie_test4()
     assert(prefix_list[0].second == name_bruce);
 }
 
+struct value_wrapper
+{
+    int value;
+
+    value_wrapper(int _value) : value(_value) {}
+};
+
+std::ostream& operator<<(std::ostream& os, const value_wrapper& vw)
+{
+    os << vw.value;
+    return os;
+}
+
+typedef mdds::draft::packed_trie_map<value_wrapper> value_map_type;
+
+void trie_test_value_life_cycle()
+{
+    stack_printer __stack_printer__("::trie_test_value_life_cycle");
+
+    using entry = value_map_type::entry;
+
+    // Entries must be sorted by the key!
+    std::unique_ptr<vector<entry>> entries(new vector<entry>);
+    entries->push_back(entry(MDDS_ASCII("fifteen"), value_wrapper(15)));
+    entries->push_back(entry(MDDS_ASCII("ten"), value_wrapper(10)));
+    entries->push_back(entry(MDDS_ASCII("twelve"), value_wrapper(12)));
+    entries->push_back(entry(MDDS_ASCII("two"), value_wrapper(2)));
+
+    value_map_type db(entries->data(), entries->size(), value_wrapper(-1));
+
+    // Delete the original entry store.
+    entries.reset();
+
+    auto items = db.prefix_search(nullptr, 0);
+    for (size_t i = 0, n = items.size(); i < n; ++i)
+        cout << items[i].first << ": " << items[i].second.value << endl;
+
+    value_wrapper r = db.find(MDDS_ASCII("twelve"));
+    assert(r.value == 12);
+
+    r = db.find(MDDS_ASCII("two"));
+    assert(r.value == 2);
+
+    r = db.find(MDDS_ASCII("foo"));
+    assert(r.value == -1);
+}
+
 int main(int argc, char** argv)
 {
     trie_test1();
     trie_test2();
     trie_test3();
     trie_test4();
+    trie_test_value_life_cycle();
 
     return EXIT_SUCCESS;
 }
