@@ -30,7 +30,6 @@
 
 #include <cassert>
 #include <algorithm>
-#include <deque>
 #include <memory>
 
 #ifdef MDDS_TRIE_MAP_DEBUG
@@ -39,27 +38,12 @@
 
 namespace mdds { namespace draft {
 
-namespace detail {
-
-struct trie_node
-{
-    char key;
-    const void* value;
-
-    std::deque<trie_node*> children;
-
-    trie_node(char _key) : key(_key), value(nullptr) {}
-};
-
-typedef std::deque<trie_node> node_pool_type;
-
 #ifdef MDDS_TRIE_MAP_DEBUG
 
 template<typename _ValueT>
-void dump_node(std::string& buffer, const trie_node& node)
+void packed_trie_map<_ValueT>::dump_node(std::string& buffer, const trie_node& node) const
 {
     using namespace std;
-    using value_type = _ValueT;
 
     if (node.value)
     {
@@ -72,25 +56,23 @@ void dump_node(std::string& buffer, const trie_node& node)
         {
             const trie_node& node = *p;
             buffer.push_back(node.key);
-            dump_node<value_type>(buffer, node);
+            dump_node(buffer, node);
             buffer.pop_back();
         }
     );
 }
 
 template<typename _ValueT>
-void dump_trie(const trie_node& root)
+void packed_trie_map<_ValueT>::dump_trie(const trie_node& root) const
 {
     std::string buffer;
-    dump_node<_ValueT>(buffer, root);
+    dump_node(buffer, root);
 }
 
 template<typename _ValueT>
-void dump_packed_trie(const std::vector<uintptr_t>& packed)
+void packed_trie_map<_ValueT>::dump_packed_trie(const std::vector<uintptr_t>& packed) const
 {
     using namespace std;
-
-    using value_type = _ValueT;
 
     cout << "packed size: " << packed.size() << endl;
 
@@ -128,21 +110,20 @@ void dump_packed_trie(const std::vector<uintptr_t>& packed)
 #endif
 
 template<typename _ValueT>
-void traverse_range(
+void packed_trie_map<_ValueT>::traverse_range(
     trie_node& root,
     node_pool_type& node_pool,
     const typename packed_trie_map<_ValueT>::entry* start,
     const typename packed_trie_map<_ValueT>::entry* end,
-    size_t pos)
+    size_type pos)
 {
-    using namespace std;
     using entry = typename packed_trie_map<_ValueT>::entry;
 
     const entry* p = start;
     const entry* range_start = start;
     const entry* range_end = nullptr;
     char range_char = 0;
-    size_t range_count = 0;
+    size_type range_count = 0;
 
     for (; p != end; ++p)
     {
@@ -167,7 +148,7 @@ void traverse_range(
 
             node_pool.emplace_back(range_char);
             root.children.push_back(&node_pool.back());
-            traverse_range<_ValueT>(*root.children.back(), node_pool, range_start, range_end, pos+1);
+            traverse_range(*root.children.back(), node_pool, range_start, range_end, pos+1);
             range_start = range_end;
             range_char = range_start->key[pos];
             range_end = nullptr;
@@ -180,11 +161,14 @@ void traverse_range(
         assert(range_char);
         node_pool.emplace_back(range_char);
         root.children.push_back(&node_pool.back());
-        traverse_range<_ValueT>(*root.children.back(), node_pool, range_start, end, pos+1);
+        traverse_range(*root.children.back(), node_pool, range_start, end, pos+1);
     }
 }
 
-inline size_t compact_node(std::vector<uintptr_t>& packed, const trie_node& node)
+template<typename _ValueT>
+typename packed_trie_map<_ValueT>::size_type
+packed_trie_map<_ValueT>::compact_node(
+    std::vector<uintptr_t>& packed, std::deque<value_type>& value_store, const trie_node& node)
 {
     std::vector<std::tuple<size_t,char>> child_offsets;
     child_offsets.reserve(node.children.size());
@@ -194,7 +178,7 @@ inline size_t compact_node(std::vector<uintptr_t>& packed, const trie_node& node
         [&](const trie_node* p)
         {
             const trie_node& node = *p;
-            size_t child_offset = compact_node(packed, node);
+            size_t child_offset = compact_node(packed, value_store, node);
             child_offsets.emplace_back(child_offset, node.key);
         }
     );
@@ -217,15 +201,14 @@ inline size_t compact_node(std::vector<uintptr_t>& packed, const trie_node& node
     return offset;
 }
 
-inline void compact(std::vector<uintptr_t>& packed, const trie_node& root)
+template<typename _ValueT>
+void packed_trie_map<_ValueT>::compact(std::vector<uintptr_t>& packed, std::deque<_ValueT>& value_store, const trie_node& root)
 {
     std::vector<uintptr_t> init(size_t(1), uintptr_t(0));
     packed.swap(init);
 
-    size_t root_offset = compact_node(packed, root);
+    size_t root_offset = compact_node(packed, value_store, root);
     packed[0] = root_offset;
-}
-
 }
 
 template<typename _ValueT>
@@ -237,17 +220,17 @@ packed_trie_map<_ValueT>::packed_trie_map(
     const entry* p_end = p + entry_size;
 
     // Populate the normal tree first.
-    detail::trie_node root(0);
-    detail::node_pool_type node_pool;
-    detail::traverse_range<value_type>(root, node_pool, p, p_end, 0);
+    trie_node root(0);
+    node_pool_type node_pool;
+    traverse_range(root, node_pool, p, p_end, 0);
 #if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_TRIE)
-    detail::dump_trie<value_type>(root);
+    dump_trie(root);
 #endif
 
     // Compact the trie into a packed array.
-    detail::compact(m_packed, root);
+    compact(m_packed, m_value_store, root);
 #if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_PACKED)
-    detail::dump_packed_trie<value_type>(m_packed);
+    dump_packed_trie(m_packed);
 #endif
 }
 

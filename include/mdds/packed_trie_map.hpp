@@ -31,6 +31,7 @@
 
 #include <vector>
 #include <string>
+#include <deque>
 
 namespace mdds { namespace draft {
 
@@ -43,7 +44,6 @@ namespace mdds { namespace draft {
 template<typename _ValueT>
 class packed_trie_map
 {
-    typedef std::vector<uintptr_t> packed_type;
 public:
     typedef _ValueT value_type;
     typedef size_t size_type;
@@ -59,6 +59,24 @@ public:
         size_type keylen;
         value_type value;
     };
+
+private:
+    struct trie_node
+    {
+        char key;
+        const value_type* value;
+
+        std::deque<trie_node*> children;
+
+        trie_node(char _key) : key(_key), value(nullptr) {}
+    };
+
+    typedef std::deque<trie_node> node_pool_type;
+
+    typedef std::vector<uintptr_t> packed_type;
+    typedef std::deque<_ValueT> value_store_type;
+
+public:
 
     /**
      * Constructor that initializes the content from a static list of
@@ -106,6 +124,15 @@ public:
     size_type size() const;
 
 private:
+    void traverse_range(
+        trie_node& root, node_pool_type& node_pool, const entry* start, const entry* end,
+        size_type pos);
+
+    size_type compact_node(
+        std::vector<uintptr_t>& packed, std::deque<value_type>& value_store, const trie_node& node);
+
+    void compact(std::vector<uintptr_t>& packed, std::deque<value_type>& value_store, const trie_node& root);
+
     const uintptr_t* find_prefix_node(
         const uintptr_t* p, const char* prefix, const char* prefix_end) const;
 
@@ -113,6 +140,10 @@ private:
         std::vector<key_value_type>& items, std::string& buffer, const uintptr_t* p) const;
 
 #ifdef MDDS_TRIE_MAP_DEBUG
+    void dump_node(std::string& buffer, const trie_node& node) const;
+    void dump_trie(const trie_node& root) const;
+    void dump_packed_trie(const std::vector<uintptr_t>& packed) const;
+
     void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;
 #endif
 
@@ -120,6 +151,7 @@ private:
     value_type m_null_value;
     size_type m_entry_size;
 
+    value_store_type m_value_store;
     packed_type m_packed;
 };
 
