@@ -35,19 +35,57 @@
 
 namespace mdds { namespace draft {
 
+namespace trie {
+
+/**
+ * String trait that uses std::string as the key type.
+ */
+struct std_string_trait
+{
+    typedef std::string string_type;
+    typedef std::string buffer_type;
+    typedef char char_type;
+
+    static buffer_type init_buffer(const char_type* str, size_t length)
+    {
+        return buffer_type(str, length);
+    }
+
+    static void push_back(buffer_type& buffer, char_type c)
+    {
+        buffer.push_back(c);
+    }
+
+    static void pop_back(buffer_type& buffer)
+    {
+        buffer.pop_back();
+    }
+
+    static string_type to_string(const buffer_type& buf)
+    {
+        return buf;
+    }
+};
+
+}
+
 /**
  * An immutable trie container that packs its content into a contiguous
  * array to achieve both space efficiency and lookup performance.  The user
  * of this data structure must provide a pre-constructed list of key-value
  * entries that are sorted by the key in ascending order.
  */
-template<typename _ValueT>
+template<typename _KeyTrait, typename _ValueT>
 class packed_trie_map
 {
 public:
+    typedef _KeyTrait key_trait_type;
+    typedef typename key_trait_type::string_type string_type;
+    typedef typename key_trait_type::buffer_type buffer_type;
+    typedef typename key_trait_type::char_type   char_type;
     typedef _ValueT value_type;
     typedef size_t size_type;
-    typedef std::pair<std::string, value_type> key_value_type;
+    typedef std::pair<string_type, value_type> key_value_type;
 
     /**
      * Single key-value entry.  Caller must provide at compile time a static
@@ -55,23 +93,23 @@ public:
      */
     struct entry
     {
-        const char* key;
+        const char_type* key;
         size_type keylen;
         value_type value;
 
-        entry(const char* _key, size_type _keylen, value_type _value) :
+        entry(const char_type* _key, size_type _keylen, value_type _value) :
             key(_key), keylen(_keylen), value(_value) {}
     };
 
 private:
     struct trie_node
     {
-        char key;
+        char_type key;
         const value_type* value;
 
         std::deque<trie_node*> children;
 
-        trie_node(char _key) : key(_key), value(nullptr) {}
+        trie_node(char_type _key) : key(_key), value(nullptr) {}
     };
 
     typedef std::deque<trie_node> node_pool_type;
@@ -103,7 +141,7 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    value_type find(const char* input, size_type len) const;
+    value_type find(const char_type* input, size_type len) const;
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
@@ -117,7 +155,7 @@ public:
      * @return list of all matching key-value pairs sorted by the key in
      *         ascending order.
      */
-    std::vector<key_value_type> prefix_search(const char* prefix, size_type len) const;
+    std::vector<key_value_type> prefix_search(const char_type* prefix, size_type len) const;
 
     /**
      * Return the number of entries in the map.
@@ -136,17 +174,15 @@ private:
     void compact(const trie_node& root);
 
     const uintptr_t* find_prefix_node(
-        const uintptr_t* p, const char* prefix, const char* prefix_end) const;
+        const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const;
 
     void fill_child_node_items(
-        std::vector<key_value_type>& items, std::string& buffer, const uintptr_t* p) const;
+        std::vector<key_value_type>& items, buffer_type& buffer, const uintptr_t* p) const;
 
 #ifdef MDDS_TRIE_MAP_DEBUG
-    void dump_node(std::string& buffer, const trie_node& node) const;
+    void dump_node(buffer_type& buffer, const trie_node& node) const;
     void dump_trie(const trie_node& root) const;
     void dump_packed_trie(const std::vector<uintptr_t>& packed) const;
-
-    void dump_compact_trie_node(std::string& buffer, const uintptr_t* p) const;
 #endif
 
 private:

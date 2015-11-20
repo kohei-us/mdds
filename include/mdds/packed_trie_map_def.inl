@@ -40,10 +40,13 @@ namespace mdds { namespace draft {
 
 #ifdef MDDS_TRIE_MAP_DEBUG
 
-template<typename _ValueT>
-void packed_trie_map<_ValueT>::dump_node(std::string& buffer, const trie_node& node) const
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::dump_node(
+    buffer_type& buffer, const trie_node& node) const
 {
     using namespace std;
+
+    using ktt = key_trait_type;
 
     if (node.value)
     {
@@ -55,22 +58,22 @@ void packed_trie_map<_ValueT>::dump_node(std::string& buffer, const trie_node& n
         [&](const trie_node* p)
         {
             const trie_node& node = *p;
-            buffer.push_back(node.key);
+            ktt::push_back(buffer, node.key);
             dump_node(buffer, node);
-            buffer.pop_back();
+            ktt::pop_back(buffer);
         }
     );
 }
 
-template<typename _ValueT>
-void packed_trie_map<_ValueT>::dump_trie(const trie_node& root) const
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::dump_trie(const trie_node& root) const
 {
-    std::string buffer;
+    buffer_type buffer;
     dump_node(buffer, root);
 }
 
-template<typename _ValueT>
-void packed_trie_map<_ValueT>::dump_packed_trie(const std::vector<uintptr_t>& packed) const
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::dump_packed_trie(const std::vector<uintptr_t>& packed) const
 {
     using namespace std;
 
@@ -97,7 +100,7 @@ void packed_trie_map<_ValueT>::dump_packed_trie(const std::vector<uintptr_t>& pa
 
         for (size_t j = 0; j < index_size; ++j)
         {
-            char key = packed[i];
+            char_type key = packed[i];
             cout << i << ": key: " << key << endl;
             ++i;
             size_t offset = packed[i];
@@ -109,20 +112,20 @@ void packed_trie_map<_ValueT>::dump_packed_trie(const std::vector<uintptr_t>& pa
 
 #endif
 
-template<typename _ValueT>
-void packed_trie_map<_ValueT>::traverse_range(
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::traverse_range(
     trie_node& root,
     node_pool_type& node_pool,
-    const typename packed_trie_map<_ValueT>::entry* start,
-    const typename packed_trie_map<_ValueT>::entry* end,
+    const typename packed_trie_map<_KeyTrait,_ValueT>::entry* start,
+    const typename packed_trie_map<_KeyTrait,_ValueT>::entry* end,
     size_type pos)
 {
-    using entry = typename packed_trie_map<_ValueT>::entry;
+    using entry = typename packed_trie_map<_KeyTrait,_ValueT>::entry;
 
     const entry* p = start;
     const entry* range_start = start;
     const entry* range_end = nullptr;
-    char range_char = 0;
+    char_type range_char = 0;
     size_type range_count = 0;
 
     for (; p != end; ++p)
@@ -137,7 +140,7 @@ void packed_trie_map<_ValueT>::traverse_range(
         }
 
         ++range_count;
-        char c = p->key[pos];
+        char_type c = p->key[pos];
 
         if (!range_char)
             range_char = c;
@@ -165,11 +168,11 @@ void packed_trie_map<_ValueT>::traverse_range(
     }
 }
 
-template<typename _ValueT>
-typename packed_trie_map<_ValueT>::size_type
-packed_trie_map<_ValueT>::compact_node(const trie_node& node)
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::size_type
+packed_trie_map<_KeyTrait,_ValueT>::compact_node(const trie_node& node)
 {
-    std::vector<std::tuple<size_t,char>> child_offsets;
+    std::vector<std::tuple<size_t,char_type>> child_offsets;
     child_offsets.reserve(node.children.size());
 
     // Process child nodes first.
@@ -195,9 +198,9 @@ packed_trie_map<_ValueT>::compact_node(const trie_node& node)
     m_packed.push_back(uintptr_t(child_offsets.size()*2));
 
     std::for_each(child_offsets.begin(), child_offsets.end(),
-        [&](const std::tuple<size_t,char>& v)
+        [&](const std::tuple<size_t,char_type>& v)
         {
-            char key = std::get<1>(v);
+            char_type key = std::get<1>(v);
             size_t child_offset = std::get<0>(v);
             m_packed.push_back(key);
             m_packed.push_back(offset-child_offset);
@@ -207,8 +210,8 @@ packed_trie_map<_ValueT>::compact_node(const trie_node& node)
     return offset;
 }
 
-template<typename _ValueT>
-void packed_trie_map<_ValueT>::compact(const trie_node& root)
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::compact(const trie_node& root)
 {
     packed_type init(size_t(1), uintptr_t(0));
     m_packed.swap(init);
@@ -217,8 +220,8 @@ void packed_trie_map<_ValueT>::compact(const trie_node& root)
     m_packed[0] = root_offset;
 }
 
-template<typename _ValueT>
-packed_trie_map<_ValueT>::packed_trie_map(
+template<typename _KeyTrait, typename _ValueT>
+packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
     const entry* entries, size_type entry_size, value_type null_value) :
     m_null_value(null_value), m_entry_size(entry_size)
 {
@@ -240,14 +243,14 @@ packed_trie_map<_ValueT>::packed_trie_map(
 #endif
 }
 
-template<typename _ValueT>
-typename packed_trie_map<_ValueT>::value_type
-packed_trie_map<_ValueT>::find(const char* input, size_type len) const
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::value_type
+packed_trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
 {
     if (m_packed.empty())
         return m_null_value;
 
-    const char* key_end = input + len;
+    const char_type* key_end = input + len;
     size_t root_offset = m_packed[0];
     const uintptr_t* root = m_packed.data() + root_offset;
 
@@ -259,16 +262,18 @@ packed_trie_map<_ValueT>::find(const char* input, size_type len) const
     return pv ? *pv : m_null_value;
 }
 
-template<typename _ValueT>
-std::vector<typename packed_trie_map<_ValueT>::key_value_type>
-packed_trie_map<_ValueT>::prefix_search(const char* prefix, size_type len) const
+template<typename _KeyTrait, typename _ValueT>
+std::vector<typename packed_trie_map<_KeyTrait,_ValueT>::key_value_type>
+packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_type len) const
 {
+    using ktt = key_trait_type;
+
     std::vector<key_value_type> matches;
 
     if (m_packed.empty())
         return matches;
 
-    const char* prefix_end = prefix + len;
+    const char_type* prefix_end = prefix + len;
 
     size_t root_offset = m_packed[0];
     const uintptr_t* root = m_packed.data() + root_offset;
@@ -278,21 +283,21 @@ packed_trie_map<_ValueT>::prefix_search(const char* prefix, size_type len) const
         return matches;
 
     // Fill all its child nodes.
-    std::string buffer(prefix, len);
+    buffer_type buffer = ktt::init_buffer(prefix, len);
     fill_child_node_items(matches, buffer, node);
     return matches;
 }
 
-template<typename _ValueT>
-typename packed_trie_map<_ValueT>::size_type
-packed_trie_map<_ValueT>::size() const
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::size_type
+packed_trie_map<_KeyTrait,_ValueT>::size() const
 {
     return m_entry_size;
 }
 
-template<typename _ValueT>
-const uintptr_t* packed_trie_map<_ValueT>::find_prefix_node(
-    const uintptr_t* p, const char* prefix, const char* prefix_end) const
+template<typename _KeyTrait, typename _ValueT>
+const uintptr_t* packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node(
+    const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const
 {
     if (prefix == prefix_end)
         return p;
@@ -315,7 +320,7 @@ const uintptr_t* packed_trie_map<_ValueT>::find_prefix_node(
         size_type i = (low + high) / 2;
 
         const uintptr_t* p_this = p + i*2;
-        char node_key = *p_this;
+        char_type node_key = *p_this;
         size_t offset = *(p_this+1);
 
         if (*prefix == node_key)
@@ -352,15 +357,17 @@ const uintptr_t* packed_trie_map<_ValueT>::find_prefix_node(
     return nullptr;
 }
 
-template<typename _ValueT>
-void packed_trie_map<_ValueT>::fill_child_node_items(
-    std::vector<key_value_type>& items, std::string& buffer, const uintptr_t* p) const
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
+    std::vector<key_value_type>& items, buffer_type& buffer, const uintptr_t* p) const
 {
+    using ktt = key_trait_type;
+
     const uintptr_t* p0 = p; // store the head offset position of this node.
 
     const value_type* v = reinterpret_cast<const value_type*>(*p);
     if (v)
-        items.push_back(key_value_type(buffer, *v));
+        items.push_back(key_value_type(ktt::to_string(buffer), *v));
 
     ++p;
     size_t index_size = *p;
@@ -368,12 +375,12 @@ void packed_trie_map<_ValueT>::fill_child_node_items(
     ++p;
     for (size_t i = 0; i < n; ++i)
     {
-        char key = *p++;
+        char_type key = *p++;
         size_t offset = *p++;
-        buffer.push_back(key);
+        ktt::push_back(buffer, key);
         const uintptr_t* p_child = p0 - offset;
         fill_child_node_items(items, buffer, p_child);
-        buffer.pop_back();
+        ktt::pop_back(buffer);
     }
 }
 

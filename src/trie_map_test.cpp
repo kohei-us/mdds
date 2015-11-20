@@ -36,7 +36,8 @@
 
 using namespace std;
 
-typedef mdds::draft::packed_trie_map<int> int_map_type;
+typedef mdds::draft::packed_trie_map<
+    mdds::draft::trie::std_string_trait, int> int_map_type;
 
 bool verify_entries(
     const int_map_type& db, const int_map_type::entry* entries, size_t entry_size)
@@ -210,7 +211,8 @@ std::ostream& operator<<(std::ostream& os, const value_wrapper& vw)
     return os;
 }
 
-typedef mdds::draft::packed_trie_map<value_wrapper> value_map_type;
+typedef mdds::draft::packed_trie_map<
+    mdds::draft::trie::std_string_trait, value_wrapper> value_map_type;
 
 void trie_test_value_life_cycle()
 {
