@@ -30,7 +30,7 @@
 //#define MDDS_TREI_MAP_DEBUG_DUMP_TRIE 1
 //#define MDDS_TREI_MAP_DEBUG_DUMP_PACKED 1
 
-#include "mdds/packed_trie_map.hpp"
+#include "mdds/trie_map.hpp"
 #include "mdds/global.hpp"
 #include "test_global.hpp"
 
