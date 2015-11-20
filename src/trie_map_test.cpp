@@ -246,6 +246,89 @@ void trie_test_value_life_cycle()
     assert(r.value == -1);
 }
 
+struct custom_string
+{
+    std::string data;
+};
+
+struct custom_string_trait
+{
+    typedef uint16_t char_type;
+    typedef custom_string string_type;
+    typedef std::vector<char_type> buffer_type;
+
+    static buffer_type init_buffer(const char_type* str, size_t length)
+    {
+        buffer_type buf;
+        const char_type* str_end = str + length;
+        for (; str != str_end; ++str)
+            buf.push_back(*str);
+
+        return buf;
+    }
+
+    static void push_back(buffer_type& buffer, char_type c)
+    {
+        buffer.push_back(c);
+    }
+
+    static void pop_back(buffer_type& buffer)
+    {
+        buffer.pop_back();
+    }
+
+    static string_type to_string(const buffer_type& buf)
+    {
+        // Cast all uint16_t chars to regular chars.
+        string_type s;
+
+        std::for_each(buf.begin(), buf.end(),
+            [&](char_type c)
+            {
+                s.data.push_back(static_cast<char>(c));
+            }
+        );
+        return s;
+    }
+
+};
+
+typedef mdds::draft::packed_trie_map<custom_string_trait, std::string> custom_str_map_type;
+
+void trie_test_custom_string()
+{
+    stack_printer __stack_printer__("::trie_test_custom_string");
+
+    const uint16_t key_alex[] = { 0x41, 0x6C, 0x65, 0x78 };
+    const uint16_t key_bob[]  = { 0x42, 0x6F, 0x62 };
+    const uint16_t key_max[]  = { 0x4D, 0x61, 0x78 };
+    const uint16_t key_ming[] = { 0x4D, 0x69, 0x6E, 0x67 };
+
+    const custom_str_map_type::entry entries[] = {
+        { key_alex, 4, "Alex" },
+        { key_bob,  3, "Bob"  },
+        { key_max,  3, "Max"  },
+        { key_ming, 4, "Ming" },
+    };
+
+    size_t n_entries = MDDS_N_ELEMENTS(entries);
+    custom_str_map_type db(entries, n_entries, "-");
+    for (size_t i = 0; i < n_entries; ++i)
+    {
+        std::string v = db.find(entries[i].key, entries[i].keylen);
+        cout << v << endl;
+        assert(v == entries[i].value);
+    }
+
+    // Find all keys that start with 'M'.
+    std::vector<custom_str_map_type::key_value_type> vs = db.prefix_search(key_max, 1);
+    assert(vs.size() == 2);
+    assert(vs[0].first.data == vs[0].second);
+    assert(vs[0].second == "Max");
+    assert(vs[1].first.data == vs[1].second);
+    assert(vs[1].second == "Ming");
+}
+
 int main(int argc, char** argv)
 {
     trie_test1();
@@ -253,6 +336,7 @@ int main(int argc, char** argv)
     trie_test3();
     trie_test4();
     trie_test_value_life_cycle();
+    trie_test_custom_string();
 
     return EXIT_SUCCESS;
 }
