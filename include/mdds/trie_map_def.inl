@@ -38,6 +38,65 @@
 
 namespace mdds { namespace draft {
 
+template<typename _KeyTrait, typename _ValueT>
+trie_map<_KeyTrait,_ValueT>::trie_map(value_type null_value) :
+    m_null_value(null_value) {}
+
+template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::insert(
+    const char_type* key, size_type len, const value_type& value)
+{
+    const char_type* key_end = key + len;
+    insert_into_tree(m_root, key, key_end, value);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::insert_into_tree(
+    trie_node& node, const char_type* key, const char_type* key_end,
+    const value_type& value)
+{
+    if (key == key_end)
+    {
+        node.value = value;
+        return;
+    }
+
+    char_type c = *key;
+
+    auto it = node.children.lower_bound(c);
+    if (it == node.children.end() || node.children.key_comp()(c, it->first))
+    {
+        // Insert a new node.
+        it = node.children.insert(
+            it, typename trie_node::children_type::value_type(c, trie_node()));
+    }
+
+    ++key;
+    insert_into_tree(it->second, key, key_end, value);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::value_type
+trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
+{
+    return m_null_value;
+}
+
+template<typename _KeyTrait, typename _ValueT>
+std::vector<typename trie_map<_KeyTrait,_ValueT>::key_value_type>
+trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_type len) const
+{
+    std::vector<key_value_type> matches;
+    return matches;
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::size_type
+trie_map<_KeyTrait,_ValueT>::size() const
+{
+    return 0;
+}
+
 #ifdef MDDS_TRIE_MAP_DEBUG
 
 template<typename _KeyTrait, typename _ValueT>

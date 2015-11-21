@@ -32,6 +32,7 @@
 #include <vector>
 #include <string>
 #include <deque>
+#include <map>
 
 namespace mdds { namespace draft {
 
@@ -68,6 +69,85 @@ struct std_string_trait
 };
 
 }
+
+template<typename _KeyTrait, typename _ValueT>
+class trie_map
+{
+public:
+    typedef _KeyTrait key_trait_type;
+    typedef typename key_trait_type::string_type string_type;
+    typedef typename key_trait_type::buffer_type buffer_type;
+    typedef typename key_trait_type::char_type   char_type;
+    typedef _ValueT value_type;
+    typedef size_t size_type;
+    typedef std::pair<string_type, value_type> key_value_type;
+
+private:
+
+    struct trie_node
+    {
+        typedef std::map<char_type, trie_node> children_type;
+
+        value_type value;
+
+        children_type children;
+    };
+
+public:
+
+    trie_map() = delete;
+
+    /**
+     * Constructor.
+     *
+     * @param null_value null value to return when the find method fails to
+     *                   find a matching entry.
+     */
+    trie_map(value_type null_value);
+
+    void insert(const char_type* key, size_type len, const value_type& value);
+
+    /**
+     * Find a value associated with a specified string key.
+     *
+     * @param input pointer to a C-style string whose value represents the key
+     *              to match.
+     * @param len length of the matching string value.
+     *
+     * @return value associated with the key, or the null value in case the
+     *         key is not found.
+     */
+    value_type find(const char_type* input, size_type len) const;
+
+    /**
+     * Retrieve all key-value pairs whose keys start with specified prefix.
+     * You can also retrieve all key-value pairs by passing a null prefix and
+     * a length of zero.
+     *
+     * @param prefix pointer to a C-style string whose value represents the
+     *               prefix to match.
+     * @param len length of the prefix value to match.
+     *
+     * @return list of all matching key-value pairs sorted by the key in
+     *         ascending order.
+     */
+    std::vector<key_value_type> prefix_search(const char_type* prefix, size_type len) const;
+
+    /**
+     * Return the number of entries in the map.
+     *
+     * @return the number of entries in the map.
+     */
+    size_type size() const;
+
+private:
+    void insert_into_tree(
+        trie_node& node, const char_type* key, const char_type* key_end, const value_type& value);
+
+private:
+    value_type m_null_value;
+    trie_node m_root;
+};
 
 /**
  * An immutable trie container that packs its content into a contiguous
@@ -115,9 +195,11 @@ private:
     typedef std::deque<trie_node> node_pool_type;
 
     typedef std::vector<uintptr_t> packed_type;
-    typedef std::deque<_ValueT> value_store_type;
+    typedef std::deque<value_type> value_store_type;
 
 public:
+
+    packed_trie_map() = delete;
 
     /**
      * Constructor that initializes the content from a static list of
