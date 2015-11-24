@@ -341,6 +341,20 @@ void trie_test1()
     trie_map_type db(custom_string("-"));
     db.insert(MDDS_ASCII("Barak"), custom_string("Obama"));
     db.insert(MDDS_ASCII("Bob"), custom_string("Marley"));
+    db.insert(MDDS_ASCII("Hideki"), custom_string("Matsui"));
+
+    custom_string res = db.find(MDDS_ASCII("Barak"));
+    assert(res.data == "Obama");
+    res = db.find(MDDS_ASCII("Bob"));
+    assert(res.data == "Marley");
+    res = db.find(MDDS_ASCII("Hideki"));
+    assert(res.data == "Matsui");
+
+    // Non-existent key.
+    res = db.find(MDDS_ASCII("Von"));
+    assert(res.data == "-");
+    res = db.find(MDDS_ASCII("Bar"));
+    assert(res.data == "-");
 }
 
 int main(int argc, char** argv)

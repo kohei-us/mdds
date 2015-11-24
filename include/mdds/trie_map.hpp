@@ -88,9 +88,11 @@ private:
     {
         typedef std::map<char_type, trie_node> children_type;
 
-        value_type value;
-
         children_type children;
+        value_type value;
+        bool has_value;
+
+        trie_node() : has_value(false) {}
     };
 
 public:
@@ -143,6 +145,9 @@ public:
 private:
     void insert_into_tree(
         trie_node& node, const char_type* key, const char_type* key_end, const value_type& value);
+
+    const trie_node* find_prefix_node(
+        const trie_node& node, const char_type* prefix, const char_type* prefix_end) const;
 
 private:
     value_type m_null_value;

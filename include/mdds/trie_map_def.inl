@@ -58,6 +58,7 @@ void trie_map<_KeyTrait,_ValueT>::insert_into_tree(
     if (key == key_end)
     {
         node.value = value;
+        node.has_value = true;
         return;
     }
 
@@ -76,10 +77,32 @@ void trie_map<_KeyTrait,_ValueT>::insert_into_tree(
 }
 
 template<typename _KeyTrait, typename _ValueT>
+const typename trie_map<_KeyTrait,_ValueT>::trie_node*
+trie_map<_KeyTrait,_ValueT>::find_prefix_node(
+    const trie_node& node, const char_type* prefix, const char_type* prefix_end) const
+{
+    if (prefix == prefix_end)
+        // Right node is found.
+        return &node;
+
+    auto it = node.children.find(*prefix);
+    if (it == node.children.end())
+        return nullptr;
+
+    ++prefix;
+    return find_prefix_node(it->second, prefix, prefix_end);
+}
+
+template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::value_type
 trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
 {
-    return m_null_value;
+    const char_type* input_end = input + len;
+    const trie_node* node = find_prefix_node(m_root, input, input_end);
+    if (!node || !node->has_value)
+        return m_null_value;
+
+    return node->value;
 }
 
 template<typename _KeyTrait, typename _ValueT>
