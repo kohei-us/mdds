@@ -363,6 +363,17 @@ void trie_test1()
     assert(matches[0].second.data == "Obama");
     assert(matches[1].first == "Bob");
     assert(matches[1].second.data == "Marley");
+
+    matches = db.prefix_search(MDDS_ASCII("Hi"));
+    assert(matches.size() == 1);
+    assert(matches[0].first == "Hideki");
+    assert(matches[0].second.data == "Matsui");
+
+    // Invalid prefix searches.
+    matches = db.prefix_search(MDDS_ASCII("Bad"));
+    assert(matches.empty());
+    matches = db.prefix_search(MDDS_ASCII("Foo"));
+    assert(matches.empty());
 }
 
 int main(int argc, char** argv)
