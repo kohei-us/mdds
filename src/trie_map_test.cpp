@@ -293,7 +293,6 @@ struct custom_string_trait
         );
         return s;
     }
-
 };
 
 typedef packed_trie_map<custom_string_trait, std::string> packed_custom_str_map_type;
@@ -355,6 +354,15 @@ void trie_test1()
     assert(res.data == "-");
     res = db.find(MDDS_ASCII("Bar"));
     assert(res.data == "-");
+
+    // Perform prefix search on "B", which should return both "Barak" and "Bob".
+    // The results should be sorted.
+    auto matches = db.prefix_search(MDDS_ASCII("B"));
+    assert(matches.size() == 2);
+    assert(matches[0].first == "Barak");
+    assert(matches[0].second.data == "Obama");
+    assert(matches[1].first == "Bob");
+    assert(matches[1].second.data == "Marley");
 }
 
 int main(int argc, char** argv)

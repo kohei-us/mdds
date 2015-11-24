@@ -94,6 +94,25 @@ trie_map<_KeyTrait,_ValueT>::find_prefix_node(
 }
 
 template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
+    std::vector<key_value_type>& items, buffer_type& buffer, const trie_node& node) const
+{
+    using ktt = key_trait_type;
+
+    if (node.has_value)
+        items.push_back(key_value_type(ktt::to_string(buffer), node.value));
+
+    std::for_each(node.children.begin(), node.children.end(),
+        [&](const typename trie_node::children_type::value_type& v)
+        {
+            ktt::push_back(buffer, v.first);
+            fill_child_node_items(items, buffer, v.second);
+            ktt::pop_back(buffer);
+        }
+    );
+}
+
+template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::value_type
 trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
 {
@@ -109,7 +128,15 @@ template<typename _KeyTrait, typename _ValueT>
 std::vector<typename trie_map<_KeyTrait,_ValueT>::key_value_type>
 trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_type len) const
 {
+    const char_type* prefix_end = prefix + len;
     std::vector<key_value_type> matches;
+
+    const trie_node* node = find_prefix_node(m_root, prefix, prefix_end);
+    if (!node)
+        return matches;
+
+    buffer_type buffer = key_trait_type::init_buffer(prefix, len);
+    fill_child_node_items(matches, buffer, *node);
     return matches;
 }
 
