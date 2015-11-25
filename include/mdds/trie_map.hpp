@@ -152,6 +152,8 @@ private:
     void fill_child_node_items(
         std::vector<key_value_type>& items, buffer_type& buffer, const trie_node& node) const;
 
+    void count_values(size_type& n, const trie_node& node) const;
+
 private:
     value_type m_null_value;
     trie_node m_root;

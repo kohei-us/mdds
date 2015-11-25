@@ -113,6 +113,20 @@ void trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
 }
 
 template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::count_values(size_type& n, const trie_node& node) const
+{
+    if (node.has_value)
+        ++n;
+
+    std::for_each(node.children.begin(), node.children.end(),
+        [&](const typename trie_node::children_type::value_type& v)
+        {
+            count_values(n, v.second);
+        }
+    );
+}
+
+template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::value_type
 trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
 {
@@ -144,7 +158,9 @@ template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::size_type
 trie_map<_KeyTrait,_ValueT>::size() const
 {
-    return 0;
+    size_type n = 0;
+    count_values(n, m_root);
+    return n;
 }
 
 #ifdef MDDS_TRIE_MAP_DEBUG

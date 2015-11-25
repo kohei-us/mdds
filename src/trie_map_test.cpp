@@ -338,9 +338,13 @@ void trie_test1()
     stack_printer __stack_printer__("::trie_test1");
 
     trie_map_type db(custom_string("-"));
+    assert(db.size() == 0);
     db.insert(MDDS_ASCII("Barak"), custom_string("Obama"));
+    assert(db.size() == 1);
     db.insert(MDDS_ASCII("Bob"), custom_string("Marley"));
+    assert(db.size() == 2);
     db.insert(MDDS_ASCII("Hideki"), custom_string("Matsui"));
+    assert(db.size() == 3);
 
     custom_string res = db.find(MDDS_ASCII("Barak"));
     assert(res.data == "Obama");
