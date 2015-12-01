@@ -1,0 +1,198 @@
+headersdir = $(includedir)/mdds-@API_VERSION@/mdds
+pkgconfdir = $(datarootdir)/pkgconfig
+docsdir = $(docdir)-@API_VERSION@
+
+AM_CPPFLAGS = -I$(top_srcdir)/include
+
+headers_HEADERS = \
+	include/mdds/default_deleter.hpp \
+	include/mdds/flat_segment_tree_def.inl \
+	include/mdds/flat_segment_tree.hpp \
+	include/mdds/flat_segment_tree_itr.hpp \
+	include/mdds/global.hpp \
+	include/mdds/multi_type_matrix_def.inl \
+	include/mdds/multi_type_matrix.hpp \
+	include/mdds/multi_type_vector_custom_func1.hpp \
+	include/mdds/multi_type_vector_custom_func2.hpp \
+	include/mdds/multi_type_vector_custom_func3.hpp \
+	include/mdds/multi_type_vector_def.inl \
+	include/mdds/multi_type_vector.hpp \
+	include/mdds/multi_type_vector_itr.hpp \
+	include/mdds/multi_type_vector_macro.hpp \
+	include/mdds/multi_type_vector_trait.hpp \
+	include/mdds/multi_type_vector_types.hpp \
+	include/mdds/node.hpp \
+	include/mdds/point_quad_tree.hpp \
+	include/mdds/quad_node.hpp \
+	include/mdds/rectangle_set_def.inl \
+	include/mdds/rectangle_set.hpp \
+	include/mdds/segment_tree_def.inl \
+	include/mdds/segment_tree.hpp \
+	include/mdds/sorted_string_map_def.inl \
+	include/mdds/sorted_string_map.hpp \
+	include/mdds/trie_map_def.inl \
+	include/mdds/trie_map.hpp
+
+dist_docs_DATA = AUTHORS README.md
+nodist_docs_DATA = VERSION
+nodist_pkgconf_DATA = misc/mdds-@API_VERSION@.pc
+
+DISTCLEANFILES = misc/mdds-@API_VERSION@.pc
+
+EXTRA_DIST = \
+	CHANGELOG \
+	LICENSE \
+	doc/conf.py \
+	doc/doxygen.conf \
+	doc/flat_segment_tree.rst \
+	doc/index.rst \
+	doc/multi_type_matrix.rst \
+	doc/multi_type_vector.rst \
+	doc/packed_trie_map.rst \
+	doc/point_quad_tree.rst \
+	doc/rectangle_set.rst \
+	doc/segment_tree.rst \
+	doc/sorted_string_map.rst \
+	example/flat_segment_tree.cpp \
+	example/Makefile.in \
+	example/mixed_type_matrix.cpp \
+	example/multi_type_vector.cpp \
+	example/point_quad_tree.cpp \
+	example/rectangle_set.cpp \
+	example/segment_tree.cpp \
+	misc/matrix_perf.cpp \
+	misc/mdds.pc.in \
+	misc/sorted_string_map_perf.cpp \
+	quickcheck/flat_segment_tree.cpp
+
+EXECS = \
+	flat_segment_tree_test \
+	multi_type_matrix_test \
+	multi_type_vector_test_custom \
+	multi_type_vector_test_default \
+	multi_type_vector_test_perf \
+	point_quad_tree_test \
+	rectangle_set_test \
+	segment_tree_test \
+	sorted_string_map_test \
+	stlperf_test \
+	template_test \
+	trie_map_test
+
+check_PROGRAMS = $(EXECS)
+
+flat_segment_tree_test_SOURCES = src/flat_segment_tree_test.cpp src/test_global.hpp
+
+multi_type_matrix_test_SOURCES = src/multi_type_matrix_test.cpp src/test_global.hpp
+
+multi_type_vector_test_custom_SOURCES = src/multi_type_vector_test_custom.cpp src/test_global.hpp
+
+multi_type_vector_test_default_SOURCES = src/multi_type_vector_test_default.cpp src/test_global.hpp
+
+multi_type_vector_test_perf_SOURCES = src/multi_type_vector_test_perf.cpp src/test_global.hpp
+
+point_quad_tree_test_SOURCES = src/point_quad_tree_test.cpp src/test_global.hpp
+
+rectangle_set_test_SOURCES = src/rectangle_set_test.cpp src/test_global.hpp
+
+segment_tree_test_SOURCES = src/segment_tree_test.cpp src/test_global.hpp
+
+stlperf_test_SOURCES = src/stlperf_test.cpp
+
+sorted_string_map_test_SOURCES = src/sorted_string_map_test.cpp src/test_global.hpp
+
+template_test_SOURCES = src/template_test.cpp
+
+trie_map_test_SOURCES = src/trie_map_test.cpp src/test_global.hpp
+
+multi_type_vector_test: multi_type_vector_test_default multi_type_vector_test_custom multi_type_vector_test_perf
+
+test.fst: flat_segment_tree_test
+	./flat_segment_tree_test func
+
+test.fst.perf: flat_segment_tree_test
+	./flat_segment_tree_test perf
+
+test.fst.mem: flat_segment_tree_test
+	valgrind --tool=memcheck --leak-check=full ./flat_segment_tree_test func
+
+test.pqt: point_quad_tree_test
+	./point_quad_tree_test
+
+test.pqt.mem: point_quad_tree_test
+	valgrind --tool=memcheck --leak-check=full ./point_quad_tree_test
+
+test.recset: rectangle_set_test
+	./rectangle_set_test func
+
+test.recset.perf: rectangle_set_test
+	./rectangle_set_test perf
+
+test.recset.mem: rectangle_set_test
+	valgrind --tool=memcheck --leak-check=full ./rectangle_set_test func
+
+test.st: segment_tree_test
+	./segment_tree_test func
+
+test.st.perf: segment_tree_test
+	./segment_tree_test perf
+
+test.st.mem: segment_tree_test
+	valgrind --tool=memcheck --leak-check=full ./segment_tree_test func
+
+test.mtv: multi_type_vector_test_default multi_type_vector_test_custom
+	./multi_type_vector_test_default
+	./multi_type_vector_test_custom
+
+test.mtv.perf: multi_type_vector_test_perf
+	./multi_type_vector_test_perf
+
+test.mtv.mem: multi_type_vector_test_default multi_type_vector_test_custom
+	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_default
+	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_custom
+
+test.mtmatrix: multi_type_matrix_test
+	./multi_type_matrix_test func
+
+test.mtmatrix.perf: multi_type_matrix_test
+	./multi_type_matrix_test perf
+
+test.mtmatrix.mem: multi_type_matrix_test
+	valgrind --tool=memcheck --leak-check=full ./multi_type_matrix_test func
+
+test.ssmap: sorted_string_map_test
+	./sorted_string_map_test func
+
+test.ssmap.mem: sorted_string_map_test
+	valgrind --tool=memcheck --leak-check=full ./sorted_string_map_test func
+
+test.stl: stlperf_test
+	./stlperf_test
+
+test.trie: trie_map_test
+	./trie_map_test
+
+test.trie.mem: trie_map_test
+	valgrind --tool=memcheck --leak-check=full ./trie_map_test
+
+check-local: test.fst test.pqt test.recset test.st test.mtv test.mtmatrix test.ssmap test.trie
+
+memcheck: test.fst.mem test.pqt.mem test.recset.mem test.st.mem test.mtv.mem test.mtmatrix.mem test.ssmap.mem test.trie.mem
+
+install-data-local:
+	install -d -m 755 $(DESTDIR)$(docsdir)
+	install -p -m 644 $(top_srcdir)/LICENSE $(DESTDIR)$(docsdir)/COPYING
+	install -p -m 644 $(top_srcdir)/CHANGELOG $(DESTDIR)$(docsdir)/NEWS
+
+uninstall-local:
+	rm -f $(DESTDIR)$(docsdir)/COPYING $(DESTDIR)$(docsdir)/NEWS
+
+build-doc-doxygen:
+	@echo "Building documentation by doxygen..."
+	@cd doc && doxygen doxygen.conf
+
+build-doc-sphinx:
+	@echo "Building documentation by sphinx..."
+	@sphinx-build -b html ./doc/ ./doc/_build
+
+build-doc: build-doc-doxygen build-doc-sphinx

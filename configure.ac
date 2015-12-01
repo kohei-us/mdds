@@ -1,4 +1,6 @@
 AC_INIT(mdds, 1.0.0, kohei.yoshida@gmail.com)
+AM_INIT_AUTOMAKE([foreign dist-bzip2 subdir-objects])
+AM_MAINTAINER_MODE
 
 VERSION=AC_PACKAGE_VERSION
 API_VERSION=1.0
@@ -35,7 +37,12 @@ fi
 AC_SUBST(CPPFLAGS)
 AC_SUBST(CPPFLAGS_NODEBUG)
 
-AC_OUTPUT(Makefile)
-AC_OUTPUT(example/Makefile)
-AC_OUTPUT(misc/mdds.pc)
-AC_OUTPUT(VERSION)
+AC_PROG_CXX
+
+AC_CONFIG_FILES([
+  Makefile
+  example/Makefile
+  misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
+  VERSION
+])
+AC_OUTPUT
