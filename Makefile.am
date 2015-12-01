@@ -158,9 +158,9 @@ TESTS += \
 endif
 
 install-data-local:
-	install -d -m 755 $(DESTDIR)$(docsdir)
-	install -p -m 644 $(top_srcdir)/LICENSE $(DESTDIR)$(docsdir)/COPYING
-	install -p -m 644 $(top_srcdir)/CHANGELOG $(DESTDIR)$(docsdir)/NEWS
+	$(MKDIR_P) $(DESTDIR)$(docsdir)
+	$(INSTALL_DATA) $(top_srcdir)/LICENSE $(DESTDIR)$(docsdir)/COPYING
+	$(INSTALL_DATA) $(top_srcdir)/CHANGELOG $(DESTDIR)$(docsdir)/NEWS
 
 uninstall-local:
 	rm -f $(DESTDIR)$(docsdir)/COPYING $(DESTDIR)$(docsdir)/NEWS
