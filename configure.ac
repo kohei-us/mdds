@@ -46,6 +46,7 @@ AC_ARG_ENABLE([memory-tests],
 )
 AS_IF([test "$enable_memory_tests" = yes],
   [AC_PATH_PROG([VALGRIND], [valgrind])]
+  AS_IF([test -z "$VALGRIND"], [AC_MSG_ERROR([valgrind not found])])
 )
 AM_CONDITIONAL([RUN_MEMORY_TESTS], [test "$enable_memory_tests" = yes])
 
