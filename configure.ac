@@ -50,6 +50,21 @@ AS_IF([test "$enable_memory_tests" = yes],
 )
 AM_CONDITIONAL([RUN_MEMORY_TESTS], [test "$enable_memory_tests" = yes])
 
+AC_ARG_ENABLE([docs],
+  [AS_HELP_STRING([--enable-docs], [Generate docs during build.])],
+  [enable_docs=$enableval],
+  [enable_docs=no]
+)
+AS_IF([test "$enable_docs" = yes],
+  [
+    AC_PATH_PROG([DOXYGEN], [doxygen])
+    AS_IF([test -z "$DOXYGEN"], [AC_MSG_ERROR([doxygen not found])])
+    AC_PATH_PROG([SPHINX], [sphinx-build])
+    AS_IF([test -z "$SPHINX"], [AC_MSG_ERROR([sphinx-build not found])])
+  ]
+)
+AM_CONDITIONAL([BUILD_DOCS], [test "$enable_docs" = yes])
+
 AC_CONFIG_FILES([
 Makefile
 example/Makefile

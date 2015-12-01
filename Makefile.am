@@ -1,6 +1,7 @@
 headersdir = $(includedir)/mdds-@API_VERSION@/mdds
 pkgconfdir = $(datarootdir)/pkgconfig
 docsdir = $(docdir)-@API_VERSION@
+htmldir = $(docsdir)/html
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
@@ -165,12 +166,8 @@ install-data-local:
 uninstall-local:
 	rm -f $(DESTDIR)$(docsdir)/COPYING $(DESTDIR)$(docsdir)/NEWS
 
-build-doc-doxygen:
-	@echo "Building documentation by doxygen..."
-	@cd doc && doxygen doxygen.conf
-
-build-doc-sphinx:
-	@echo "Building documentation by sphinx..."
-	@sphinx-build -b html ./doc/ ./doc/_build
-
-build-doc: build-doc-doxygen build-doc-sphinx
+if BUILD_DOCS
+html-local:
+	(cd doc && $(DOXYGEN) doxygen.conf)
+	$(SPHINX) -b html ./doc/ ./doc/_build
+endif
