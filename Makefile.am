@@ -63,9 +63,12 @@ EXTRA_DIST = \
 	misc/matrix_perf.cpp \
 	misc/mdds.pc.in \
 	misc/sorted_string_map_perf.cpp \
-	quickcheck/flat_segment_tree.cpp
+	quickcheck/flat_segment_tree.cpp \
+	src/mem-wrapper.sh \
+	src/test-wrapper.sh \
+	src/test.mem.in
 
-EXECS = \
+check_PROGRAMS = \
 	flat_segment_tree_test \
 	multi_type_matrix_test \
 	multi_type_vector_test_custom \
@@ -78,8 +81,6 @@ EXECS = \
 	stlperf_test \
 	template_test \
 	trie_map_test
-
-check_PROGRAMS = $(EXECS)
 
 flat_segment_tree_test_SOURCES = src/flat_segment_tree_test.cpp src/test_global.hpp
 
@@ -105,79 +106,56 @@ template_test_SOURCES = src/template_test.cpp
 
 trie_map_test_SOURCES = src/trie_map_test.cpp src/test_global.hpp
 
-multi_type_vector_test: multi_type_vector_test_default multi_type_vector_test_custom multi_type_vector_test_perf
-
-test.fst: flat_segment_tree_test
-	./flat_segment_tree_test func
-
 test.fst.perf: flat_segment_tree_test
 	./flat_segment_tree_test perf
-
-test.fst.mem: flat_segment_tree_test
-	valgrind --tool=memcheck --leak-check=full ./flat_segment_tree_test func
-
-test.pqt: point_quad_tree_test
-	./point_quad_tree_test
-
-test.pqt.mem: point_quad_tree_test
-	valgrind --tool=memcheck --leak-check=full ./point_quad_tree_test
-
-test.recset: rectangle_set_test
-	./rectangle_set_test func
 
 test.recset.perf: rectangle_set_test
 	./rectangle_set_test perf
 
-test.recset.mem: rectangle_set_test
-	valgrind --tool=memcheck --leak-check=full ./rectangle_set_test func
-
-test.st: segment_tree_test
-	./segment_tree_test func
-
 test.st.perf: segment_tree_test
 	./segment_tree_test perf
-
-test.st.mem: segment_tree_test
-	valgrind --tool=memcheck --leak-check=full ./segment_tree_test func
-
-test.mtv: multi_type_vector_test_default multi_type_vector_test_custom
-	./multi_type_vector_test_default
-	./multi_type_vector_test_custom
 
 test.mtv.perf: multi_type_vector_test_perf
 	./multi_type_vector_test_perf
 
-test.mtv.mem: multi_type_vector_test_default multi_type_vector_test_custom
-	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_default
-	valgrind --tool=memcheck --leak-check=full ./multi_type_vector_test_custom
-
-test.mtmatrix: multi_type_matrix_test
-	./multi_type_matrix_test func
-
 test.mtmatrix.perf: multi_type_matrix_test
 	./multi_type_matrix_test perf
-
-test.mtmatrix.mem: multi_type_matrix_test
-	valgrind --tool=memcheck --leak-check=full ./multi_type_matrix_test func
-
-test.ssmap: sorted_string_map_test
-	./sorted_string_map_test func
-
-test.ssmap.mem: sorted_string_map_test
-	valgrind --tool=memcheck --leak-check=full ./sorted_string_map_test func
 
 test.stl: stlperf_test
 	./stlperf_test
 
-test.trie: trie_map_test
-	./trie_map_test
+TEST_EXTENSIONS = .mem
+LOG_COMPILER = $(top_srcdir)/src/test-wrapper.sh
+MEM_LOG_COMPILER = $(top_srcdir)/src/mem-wrapper.sh
+AM_TESTS_ENVIRONMENT = \
+	VALGRIND="$(VALGRIND)"; export VALGRIND; \
+	VALGRINDFLAGS="$(VALGRINDFLAGS)"; export VALGRINDFLAGS; \
+	EXEEXT="$(EXEEXT)"; export EXEEXT;
 
-test.trie.mem: trie_map_test
-	valgrind --tool=memcheck --leak-check=full ./trie_map_test
+TESTS = \
+	flat_segment_tree_test \
+	multi_type_matrix_test \
+	multi_type_vector_test_custom \
+	multi_type_vector_test_default \
+	point_quad_tree_test \
+	rectangle_set_test \
+	segment_tree_test \
+	trie_map_test
 
-check-local: test.fst test.pqt test.recset test.st test.mtv test.mtmatrix test.ssmap test.trie
-
-memcheck: test.fst.mem test.pqt.mem test.recset.mem test.st.mem test.mtv.mem test.mtmatrix.mem test.ssmap.mem test.trie.mem
+# NOTE: AFAIK automake does not support running the same test executable
+# in different ways. I workaround this limitation by creating dummy
+# test files and redirecting to the real executable inside the wrapper.
+if RUN_MEMORY_TESTS
+TESTS += \
+	flat_segment_tree_test_mem.mem \
+	multi_type_matrix_test_mem.mem \
+	multi_type_vector_test_custom_mem.mem \
+	multi_type_vector_test_default_mem.mem \
+	point_quad_tree_test_mem.mem \
+	rectangle_set_test_mem.mem \
+	segment_tree_test_mem.mem \
+	trie_map_test_mem.mem
+endif
 
 install-data-local:
 	install -d -m 755 $(DESTDIR)$(docsdir)

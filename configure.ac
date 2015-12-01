@@ -39,10 +39,28 @@ AC_SUBST(CPPFLAGS_NODEBUG)
 
 AC_PROG_CXX
 
+AC_ARG_ENABLE([memory-tests],
+  [AS_HELP_STRING([--enable-memory-tests], [Run memory tests.])],
+  [enable_memory_tests=$enableval],
+  [enable_memory_tests=no]
+)
+AS_IF([test "$enable_memory_tests" = yes],
+  [AC_PATH_PROG([VALGRIND], [valgrind])]
+)
+AM_CONDITIONAL([RUN_MEMORY_TESTS], [test "$enable_memory_tests" = yes])
+
 AC_CONFIG_FILES([
-  Makefile
-  example/Makefile
-  misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
-  VERSION
+Makefile
+example/Makefile
+flat_segment_tree_test_mem.mem:src/test.mem.in
+misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
+multi_type_matrix_test_mem.mem:src/test.mem.in
+multi_type_vector_test_custom_mem.mem:src/test.mem.in
+multi_type_vector_test_default_mem.mem:src/test.mem.in
+point_quad_tree_test_mem.mem:src/test.mem.in
+rectangle_set_test_mem.mem:src/test.mem.in
+segment_tree_test_mem.mem:src/test.mem.in
+trie_map_test_mem.mem:src/test.mem.in
+VERSION
 ])
 AC_OUTPUT

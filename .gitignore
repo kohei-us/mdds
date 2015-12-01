@@ -1,3 +1,6 @@
+*.log
+*.mem
+*.trs
 *.o
 *.obj
 .deps/
