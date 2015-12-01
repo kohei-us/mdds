@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-#include "segment_tree.hpp"
+#include "mdds/segment_tree.hpp"
 
 #include <string>
 
