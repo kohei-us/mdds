@@ -26,6 +26,7 @@
  ************************************************************************/
 
 #include <cstring>
+#include <algorithm>
 
 namespace mdds {
 
@@ -40,31 +41,35 @@ template<typename _ValueT>
 typename sorted_string_map<_ValueT>::value_type
 sorted_string_map<_ValueT>::find(const char* input, size_type len) const
 {
-    const entry* p = m_entries;
-    size_type pos = 0;
-    for (; p != m_entry_end; ++p)
-    {
-        const char* key = p->key;
-        size_type keylen = p->keylen;
-        for (; pos < len && pos < keylen; ++pos)
-        {
-            if (input[pos] != key[pos])
-                // Move to the next entry.
-                break;
-        }
+    if (m_entry_size == 0)
+        return m_null_value;
 
-        if (pos == len && len == keylen)
-        {
-            // Potential match found!  Parse the whole string to make sure
-            // it's really a match.
-            if (std::memcmp(input, key, len))
-                // Not a match.
-                return m_null_value;
+    entry ent;
+    ent.key = input;
+    ent.keylen = len;
 
-            return p->value;
-        }
-    }
-    return m_null_value;
+    auto comp = [](const entry& entry1, const entry* entry2)
+            {
+                if (entry1.keylen != entry2->keylen)
+                {
+                    size_type keylen = std::min(entry1.keylen, entry2->keylen);
+                    int ret = std::memcmp(entry1.key, entry2->key, keylen);
+                    if (ret == 0)
+                        return entry1.keylen < entry2->keylen;
+
+                    return ret < 0;
+                }
+                else
+                {
+                    return std::memcmp(entry1.key, entry2->key, entry1.keylen) < 0;
+                }
+            };
+
+    const entry* val = std::lower_bound(m_entries, m_entry_end, &ent, comp);
+    if (val == m_entry_end || val->keylen != len || std::memcmp(val->key, input, len))
+        return m_null_value;
+
+    return val->value;
 }
 
 template<typename _ValueT>
