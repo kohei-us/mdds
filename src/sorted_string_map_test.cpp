@@ -33,6 +33,10 @@
 
 #include <cassert>
 
+#include <cstring>
+#include <vector>
+#include <fstream>
+
 using namespace std;
 
 enum name_type {
@@ -103,6 +107,34 @@ void ssmap_test_mixed_case_null()
     assert(names.find(MDDS_ASCII("hell")) == -1);
 }
 
+void ssmap_test_perf()
+{
+    std::ifstream in("misc/sorted_string_data.dat");
+    typedef mdds::sorted_string_map<int> map_type;
+    std::vector<map_type::entry> data;
+    std::string line;
+    int i = 0;
+    while (std::getline(in, line))
+    {
+        data.push_back(map_type::entry());
+        data.back().keylen = line.size();
+        data.back().value = i;
+        char* str = new char[line.size()];
+        data.back().key = str;
+        strcpy(str, &line[0]);
+        ++i;
+    }
+
+
+    assert(data.size() > 1000);
+    {
+        stack_printer __stack_printer__("::ssmap_test_perf");
+        map_type names(data.data(), data.size(), -1);
+
+        assert(names.find(MDDS_ASCII("test")) == -1);
+    }
+}
+
 int main (int argc, char **argv)
 {
     cmd_options opt;
@@ -117,6 +149,7 @@ int main (int argc, char **argv)
 
     if (opt.test_perf)
     {
+        ssmap_test_perf();
     }
 
     fprintf(stdout, "Test finished successfully!\n");
