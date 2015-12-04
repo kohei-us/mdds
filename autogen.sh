@@ -34,3 +34,6 @@ autoconf || {
     echo "error: autoconf failed"
     exit 1
 }
+
+test x$NOCONFIGURE = x && ./configure $@
+
