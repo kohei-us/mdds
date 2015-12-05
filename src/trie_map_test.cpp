@@ -393,6 +393,10 @@ void trie_test1()
     erased = db.erase(MDDS_ASCII("Foo"));
     assert(!erased);
     assert(db.size() == 2);
+
+    // Clear the whole thing.
+    db.clear();
+    assert(db.size() == 0);
 }
 
 int main(int argc, char** argv)

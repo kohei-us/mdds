@@ -178,6 +178,14 @@ trie_map<_KeyTrait,_ValueT>::size() const
     return n;
 }
 
+template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::clear()
+{
+    m_root.children.clear();
+    m_root.has_value = false;
+    m_root.value = m_null_value;
+}
+
 #ifdef MDDS_TRIE_MAP_DEBUG
 
 template<typename _KeyTrait, typename _ValueT>

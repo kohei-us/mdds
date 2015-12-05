@@ -161,6 +161,11 @@ public:
      */
     size_type size() const;
 
+    /**
+     * Empty the container.
+     */
+    void clear();
+
 private:
     void insert_into_tree(
         trie_node& node, const char_type* key, const char_type* key_end, const value_type& value);
