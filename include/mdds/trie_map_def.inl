@@ -51,6 +51,21 @@ void trie_map<_KeyTrait,_ValueT>::insert(
 }
 
 template<typename _KeyTrait, typename _ValueT>
+bool trie_map<_KeyTrait,_ValueT>::erase(const char_type* key, size_type len)
+{
+    const char_type* key_end = key + len;
+    const trie_node* node = find_prefix_node(m_root, key, key_end);
+    if (!node || !node->has_value)
+        // Nothing is erased.
+        return false;
+
+    trie_node* node_mod = const_cast<trie_node*>(node);
+    node_mod->value = m_null_value;
+    node_mod->has_value = false;
+    return true;
+}
+
+template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::insert_into_tree(
     trie_node& node, const char_type* key, const char_type* key_end,
     const value_type& value)

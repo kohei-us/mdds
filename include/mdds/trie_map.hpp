@@ -107,7 +107,26 @@ public:
      */
     trie_map(value_type null_value);
 
+    /**
+     * Insert a new key-value pair.
+     *
+     * @param key pointer to the first character of a character array that
+     *            stores key value.
+     * @param len length of the character array storing the key.
+     * @param value value to associate with the key.
+     */
     void insert(const char_type* key, size_type len, const value_type& value);
+
+    /**
+     * Erase a key and the value associated with it.
+     *
+     * @param key pointer to the first character of a character array that
+     *            stores key value.
+     * @param len length of the character array storing the key.
+     *
+     * @return true if a key is erased, false otherwise.
+     */
+    bool erase(const char_type* key, size_type len);
 
     /**
      * Find a value associated with a specified string key.

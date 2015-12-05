@@ -337,7 +337,9 @@ void trie_test1()
 {
     stack_printer __stack_printer__("::trie_test1");
 
-    trie_map_type db(custom_string("-"));
+    custom_string null_value("-");
+    trie_map_type db(null_value);
+
     assert(db.size() == 0);
     db.insert(MDDS_ASCII("Barak"), custom_string("Obama"));
     assert(db.size() == 1);
@@ -378,6 +380,19 @@ void trie_test1()
     assert(matches.empty());
     matches = db.prefix_search(MDDS_ASCII("Foo"));
     assert(matches.empty());
+
+    // Erase an existing key.
+    bool erased = db.erase(MDDS_ASCII("Hideki"));
+    assert(erased);
+    assert(db.size() == 2);
+
+    res = db.find(MDDS_ASCII("Hideki"));
+    assert(res.data == null_value.data);
+
+    // Try to erase a key that doesn't exist.
+    erased = db.erase(MDDS_ASCII("Foo"));
+    assert(!erased);
+    assert(db.size() == 2);
 }
 
 int main(int argc, char** argv)
