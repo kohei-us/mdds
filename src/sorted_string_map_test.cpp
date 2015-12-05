@@ -133,6 +133,11 @@ void ssmap_test_perf()
 
         assert(names.find(MDDS_ASCII("test")) == -1);
     }
+
+    for (auto it = data.begin(), itEnd = data.end(); it != itEnd; ++it)
+    {
+        delete[] it->key;
+    }
 }
 
 int main (int argc, char **argv)
