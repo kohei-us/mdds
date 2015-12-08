@@ -327,9 +327,9 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(const trie_node& node)
     std::for_each(node.children.begin(), node.children.end(),
         [&](const trie_node* p)
         {
-            const trie_node& node = *p;
-            size_t child_offset = compact_node(node);
-            child_offsets.emplace_back(child_offset, node.key);
+            const trie_node& child_node = *p;
+            size_t child_offset = compact_node(child_node);
+            child_offsets.emplace_back(child_offset, child_node.key);
         }
     );
 
@@ -339,6 +339,53 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(const trie_node& node)
     {
         m_value_store.push_back(*node.value);  // copy the value object.
         m_packed.push_back(uintptr_t(&m_value_store.back()));
+    }
+    else
+        m_packed.push_back(uintptr_t(0));
+
+    m_packed.push_back(uintptr_t(child_offsets.size()*2));
+
+    std::for_each(child_offsets.begin(), child_offsets.end(),
+        [&](const std::tuple<size_t,char_type>& v)
+        {
+            char_type key = std::get<1>(v);
+            size_t child_offset = std::get<0>(v);
+            m_packed.push_back(key);
+            m_packed.push_back(offset-child_offset);
+        }
+    );
+
+    return offset;
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::size_type
+packed_trie_map<_KeyTrait,_ValueT>::compact_node(
+    const typename trie_map<_KeyTrait, _ValueT>::trie_node& node)
+{
+    using node_type = typename trie_map<_KeyTrait, _ValueT>::trie_node;
+
+    std::vector<std::tuple<size_t,char_type>> child_offsets;
+    child_offsets.reserve(node.children.size());
+
+    // Process child nodes first.
+    std::for_each(node.children.begin(), node.children.end(),
+        [&](const typename node_type::children_type::value_type& v)
+        {
+            char key = v.first;
+            const node_type& child_node = v.second;
+            size_t child_offset = compact_node(child_node);
+            child_offsets.emplace_back(child_offset, key);
+        }
+    );
+
+    // Process this node.
+    size_t offset = m_packed.size();
+    if (node.has_value)
+    {
+        m_value_store.push_back(node.value);  // copy the value object.
+        m_packed.push_back(uintptr_t(&m_value_store.back()));
+        ++m_entry_size;
     }
     else
         m_packed.push_back(uintptr_t(0));
@@ -369,6 +416,17 @@ void packed_trie_map<_KeyTrait,_ValueT>::compact(const trie_node& root)
 }
 
 template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::compact(
+    const typename trie_map<_KeyTrait, _ValueT>::trie_node& root)
+{
+    packed_type init(size_t(1), uintptr_t(0));
+    m_packed.swap(init);
+
+    size_t root_offset = compact_node(root);
+    m_packed[0] = root_offset;
+}
+
+template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
     const entry* entries, size_type entry_size, value_type null_value) :
     m_null_value(null_value), m_entry_size(entry_size)
@@ -389,6 +447,14 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
 #if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_PACKED)
     dump_packed_trie(m_packed);
 #endif
+}
+
+template<typename _KeyTrait, typename _ValueT>
+packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
+    const trie_map<key_trait_type, value_type>& other) :
+    m_null_value(other.m_null_value), m_entry_size(0)
+{
+    compact(other.m_root);
 }
 
 template<typename _KeyTrait, typename _ValueT>

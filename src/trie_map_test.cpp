@@ -331,11 +331,12 @@ void trie_packed_test_custom_string()
     assert(vs[1].second == "Ming");
 }
 
-typedef trie_map<trie::std_string_trait, custom_string> trie_map_type;
-
 void trie_test1()
 {
     stack_printer __stack_printer__("::trie_test1");
+
+    typedef trie_map<trie::std_string_trait, custom_string> trie_map_type;
+    typedef packed_trie_map<trie::std_string_trait, custom_string> packed_trie_map_type;
 
     custom_string null_value("-");
     trie_map_type db(null_value);
@@ -380,6 +381,9 @@ void trie_test1()
     assert(matches.empty());
     matches = db.prefix_search(MDDS_ASCII("Foo"));
     assert(matches.empty());
+
+    packed_trie_map_type packed(db);
+    assert(packed.size() == db.size());
 
     // Erase an existing key.
     bool erased = db.erase(MDDS_ASCII("Hideki"));

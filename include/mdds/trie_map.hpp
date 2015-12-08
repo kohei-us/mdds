@@ -71,8 +71,13 @@ struct std_string_trait
 }
 
 template<typename _KeyTrait, typename _ValueT>
+class packed_trie_map;
+
+template<typename _KeyTrait, typename _ValueT>
 class trie_map
 {
+    friend class packed_trie_map<_KeyTrait, _ValueT>;
+
 public:
     typedef _KeyTrait key_trait_type;
     typedef typename key_trait_type::string_type string_type;
@@ -247,6 +252,8 @@ public:
      */
     packed_trie_map(const entry* entries, size_type entry_size, value_type null_value);
 
+    packed_trie_map(const trie_map<key_trait_type, value_type>& other);
+
     /**
      * Find a value associated with a specified string key.
      *
@@ -286,8 +293,10 @@ private:
         size_type pos);
 
     size_type compact_node(const trie_node& node);
+    size_type compact_node(const typename trie_map<_KeyTrait, _ValueT>::trie_node& node);
 
     void compact(const trie_node& root);
+    void compact(const typename trie_map<_KeyTrait, _ValueT>::trie_node& root);
 
     const uintptr_t* find_prefix_node(
         const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const;
