@@ -232,9 +232,9 @@ private:
     };
 
     typedef std::deque<trie_node> node_pool_type;
-
     typedef std::vector<uintptr_t> packed_type;
     typedef std::deque<value_type> value_store_type;
+    typedef std::vector<std::tuple<size_t, char_type>> child_offsets_type;
 
 public:
 
@@ -294,6 +294,8 @@ private:
 
     size_type compact_node(const trie_node& node);
     size_type compact_node(const typename trie_map<_KeyTrait, _ValueT>::trie_node& node);
+
+    void push_child_offsets(size_type offset, const child_offsets_type& child_offsets);
 
     void compact(const trie_node& root);
     void compact(const typename trie_map<_KeyTrait, _ValueT>::trie_node& root);

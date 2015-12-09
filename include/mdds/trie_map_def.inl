@@ -328,13 +328,13 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(const trie_node& node)
         [&](const trie_node* p)
         {
             const trie_node& child_node = *p;
-            size_t child_offset = compact_node(child_node);
+            size_type child_offset = compact_node(child_node);
             child_offsets.emplace_back(child_offset, child_node.key);
         }
     );
 
     // Process this node.
-    size_t offset = m_packed.size();
+    size_type offset = m_packed.size();
     if (node.value)
     {
         m_value_store.push_back(*node.value);  // copy the value object.
@@ -343,18 +343,7 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(const trie_node& node)
     else
         m_packed.push_back(uintptr_t(0));
 
-    m_packed.push_back(uintptr_t(child_offsets.size()*2));
-
-    std::for_each(child_offsets.begin(), child_offsets.end(),
-        [&](const std::tuple<size_t,char_type>& v)
-        {
-            char_type key = std::get<1>(v);
-            size_t child_offset = std::get<0>(v);
-            m_packed.push_back(key);
-            m_packed.push_back(offset-child_offset);
-        }
-    );
-
+    push_child_offsets(offset, child_offsets);
     return offset;
 }
 
@@ -374,13 +363,13 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(
         {
             char key = v.first;
             const node_type& child_node = v.second;
-            size_t child_offset = compact_node(child_node);
+            size_type child_offset = compact_node(child_node);
             child_offsets.emplace_back(child_offset, key);
         }
     );
 
     // Process this node.
-    size_t offset = m_packed.size();
+    size_type offset = m_packed.size();
     if (node.has_value)
     {
         m_value_store.push_back(node.value);  // copy the value object.
@@ -390,6 +379,14 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(
     else
         m_packed.push_back(uintptr_t(0));
 
+    push_child_offsets(offset, child_offsets);
+    return offset;
+}
+
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::push_child_offsets(
+    size_type offset, const child_offsets_type& child_offsets)
+{
     m_packed.push_back(uintptr_t(child_offsets.size()*2));
 
     std::for_each(child_offsets.begin(), child_offsets.end(),
@@ -401,8 +398,6 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(
             m_packed.push_back(offset-child_offset);
         }
     );
-
-    return offset;
 }
 
 template<typename _KeyTrait, typename _ValueT>
