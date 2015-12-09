@@ -364,26 +364,50 @@ void trie_test1()
 
     // Perform prefix search on "B", which should return both "Barak" and "Bob".
     // The results should be sorted.
-    auto matches = db.prefix_search(MDDS_ASCII("B"));
-    assert(matches.size() == 2);
-    assert(matches[0].first == "Barak");
-    assert(matches[0].second.data == "Obama");
-    assert(matches[1].first == "Bob");
-    assert(matches[1].second.data == "Marley");
+    {
+        auto matches = db.prefix_search(MDDS_ASCII("B"));
+        assert(matches.size() == 2);
+        assert(matches[0].first == "Barak");
+        assert(matches[0].second.data == "Obama");
+        assert(matches[1].first == "Bob");
+        assert(matches[1].second.data == "Marley");
 
-    matches = db.prefix_search(MDDS_ASCII("Hi"));
-    assert(matches.size() == 1);
-    assert(matches[0].first == "Hideki");
-    assert(matches[0].second.data == "Matsui");
+        matches = db.prefix_search(MDDS_ASCII("Hi"));
+        assert(matches.size() == 1);
+        assert(matches[0].first == "Hideki");
+        assert(matches[0].second.data == "Matsui");
 
-    // Invalid prefix searches.
-    matches = db.prefix_search(MDDS_ASCII("Bad"));
-    assert(matches.empty());
-    matches = db.prefix_search(MDDS_ASCII("Foo"));
-    assert(matches.empty());
+        // Invalid prefix searches.
+        matches = db.prefix_search(MDDS_ASCII("Bad"));
+        assert(matches.empty());
+        matches = db.prefix_search(MDDS_ASCII("Foo"));
+        assert(matches.empty());
+    }
 
+    // Create a packed version from it, and make sure it still generates the
+    // same results.
     packed_trie_map_type packed(db);
     assert(packed.size() == db.size());
+
+    {
+        auto matches = packed.prefix_search(MDDS_ASCII("B"));
+        assert(matches.size() == 2);
+        assert(matches[0].first == "Barak");
+        assert(matches[0].second.data == "Obama");
+        assert(matches[1].first == "Bob");
+        assert(matches[1].second.data == "Marley");
+
+        matches = db.prefix_search(MDDS_ASCII("Hi"));
+        assert(matches.size() == 1);
+        assert(matches[0].first == "Hideki");
+        assert(matches[0].second.data == "Matsui");
+
+        // Invalid prefix searches.
+        matches = db.prefix_search(MDDS_ASCII("Bad"));
+        assert(matches.empty());
+        matches = db.prefix_search(MDDS_ASCII("Foo"));
+        assert(matches.empty());
+    }
 
     // Erase an existing key.
     bool erased = db.erase(MDDS_ASCII("Hideki"));
