@@ -34,7 +34,7 @@
 #include <deque>
 #include <map>
 
-namespace mdds { namespace draft {
+namespace mdds {
 
 namespace trie {
 
@@ -320,7 +320,7 @@ private:
     packed_type m_packed;
 };
 
-}}
+}
 
 #include "trie_map_def.inl"
 

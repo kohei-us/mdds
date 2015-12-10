@@ -36,7 +36,7 @@
 #include <iostream>
 #endif
 
-namespace mdds { namespace draft {
+namespace mdds {
 
 template<typename _KeyTrait, typename _ValueT>
 trie_map<_KeyTrait,_ValueT>::trie_map(value_type null_value) :
@@ -593,6 +593,6 @@ void packed_trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
     }
 }
 
-}}
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -35,7 +35,7 @@
 #include "test_global.hpp"
 
 using namespace std;
-using namespace mdds::draft;
+using namespace mdds;
 
 typedef packed_trie_map<trie::std_string_trait, int> packed_int_map_type;
 
