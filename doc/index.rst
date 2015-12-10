@@ -22,7 +22,7 @@ Contents:
    multi_type_vector.rst
    multi_type_matrix.rst
    sorted_string_map.rst
-   packed_trie_map.rst
+   trie_map.rst
 
 
 Indices and tables
