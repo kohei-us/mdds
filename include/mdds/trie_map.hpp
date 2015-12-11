@@ -73,6 +73,12 @@ struct std_string_trait
 template<typename _KeyTrait, typename _ValueT>
 class packed_trie_map;
 
+/**
+ * Trie map provides storage for multiple key-value pairs where keys are
+ * either strings, or otherwise consist of arrays of characters.  The keys
+ * are stored in an ordered tree structure known as trie, or sometimes
+ * referred to as prefix tree.
+ */
 template<typename _KeyTrait, typename _ValueT>
 class trie_map
 {
@@ -192,7 +198,11 @@ private:
  * An immutable trie container that packs its content into a contiguous
  * array to achieve both space efficiency and lookup performance.  The user
  * of this data structure must provide a pre-constructed list of key-value
- * entries that are sorted by the key in ascending order.
+ * entries that are sorted by the key in ascending order, or construct from
+ * an instance of mdds::trie_map.
+ *
+ * Note that, since this container is immutable, the content of the
+ * container cannot be modified once constructed.
  */
 template<typename _KeyTrait, typename _ValueT>
 class packed_trie_map
@@ -252,6 +262,12 @@ public:
      */
     packed_trie_map(const entry* entries, size_type entry_size, value_type null_value);
 
+    /**
+     * Constructor to allow construction of an instance from the content of a
+     * mdds::trie_map instance.
+     *
+     * @param other mdds::trie_map instance to build content from.
+     */
     packed_trie_map(const trie_map<key_trait_type, value_type>& other);
 
     /**
