@@ -1,4 +1,4 @@
-* draft::packed_trie_map (new)
+* packed_trie_map (new)
 
   * new data structure that implements a trie also known as a prefix
     tree.  This implementation requires all key values be known at
@@ -6,7 +6,10 @@
     immutable.  Internally it packs all its nodes in a single
     contiguous array for space and lookup efficiencies.
 
-  * current in draft status as its API is still subject to change.
+* trie_map (new)
+
+  * new data structure that implements a trie.  It works similar to
+    packed_trie_map except that this version is mutable.
 
 * multi_type_matrix
 
