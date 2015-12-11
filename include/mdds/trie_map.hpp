@@ -85,6 +85,7 @@ class trie_map
     friend class packed_trie_map<_KeyTrait, _ValueT>;
 
 public:
+    typedef packed_trie_map<_KeyTrait, _ValueT> packed_type;
     typedef _KeyTrait key_trait_type;
     typedef typename key_trait_type::string_type string_type;
     typedef typename key_trait_type::buffer_type buffer_type;
@@ -176,6 +177,15 @@ public:
      * Empty the container.
      */
     void clear();
+
+    /**
+     * Create a compressed and immutable version of the container which
+     * provides better search performance and requires much less memory
+     * footprint.
+     *
+     * @return an instance of mdds::packed_trie_map with the same content.
+     */
+    packed_type pack() const;
 
 private:
     void insert_into_tree(

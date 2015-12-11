@@ -186,6 +186,13 @@ void trie_map<_KeyTrait,_ValueT>::clear()
     m_root.value = m_null_value;
 }
 
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::packed_type
+trie_map<_KeyTrait,_ValueT>::pack() const
+{
+    return packed_type(*this);
+}
+
 #ifdef MDDS_TRIE_MAP_DEBUG
 
 template<typename _KeyTrait, typename _ValueT>

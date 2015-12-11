@@ -384,12 +384,12 @@ void trie_test1()
         assert(matches.empty());
     }
 
-    // Create a packed version from it, and make sure it still generates the
-    // same results.
-    packed_trie_map_type packed(db);
-    assert(packed.size() == db.size());
-
     {
+        // Create a packed version from it, and make sure it still generates the
+        // same results.
+        packed_trie_map_type packed(db);
+        assert(packed.size() == db.size());
+
         auto matches = packed.prefix_search(MDDS_ASCII("B"));
         assert(matches.size() == 2);
         assert(matches[0].first == "Barak");
@@ -407,6 +407,16 @@ void trie_test1()
         assert(matches.empty());
         matches = db.prefix_search(MDDS_ASCII("Foo"));
         assert(matches.empty());
+    }
+
+    {
+        auto packed = db.pack();
+        auto matches = packed.prefix_search(MDDS_ASCII("B"));
+        assert(matches.size() == 2);
+        assert(matches[0].first == "Barak");
+        assert(matches[0].second.data == "Obama");
+        assert(matches[1].first == "Bob");
+        assert(matches[1].second.data == "Marley");
     }
 
     // Erase an existing key.
