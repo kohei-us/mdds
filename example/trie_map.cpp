@@ -1,4 +1,5 @@
 
+#include <mdds/global.hpp>  // for MDDS_ASCII
 #include <mdds/trie_map.hpp>
 #include <iostream>
 
@@ -9,7 +10,9 @@ typedef mdds::trie_map<mdds::trie::std_string_trait, int> trie_map_type;
 int main()
 {
     // Cities in North Carolina and their populations in 2013.
-    trie_map_type nc_cities(-1);
+    trie_map_type nc_cities(-1); // Use -1 as the null value.
+
+    // Insert key-value pairs.
     nc_cities.insert(MDDS_ASCII("Charlotte"),     792862);
     nc_cities.insert(MDDS_ASCII("Raleigh"),       431746);
     nc_cities.insert(MDDS_ASCII("Greensboro"),    279639);
@@ -47,6 +50,24 @@ int main()
     {
         cout << "  " << kv.first << ": " << kv.second << endl;
     }
+
+    // Create a compressed version of the container.  It works nearly identically.
+    auto packed = nc_cities.pack();
+
+    cout << "Cities that start with 'C' and their populations:" << endl;
+    matches = packed.prefix_search(MDDS_ASCII("C"));
+    for (const auto& kv : matches)
+    {
+        cout << "  " << kv.first << ": " << kv.second << endl;
+    }
+
+    // Individual search.
+    int result = packed.find(MDDS_ASCII("Wilmington"));
+    cout << "Population of Wilmington: " << result << endl;
+
+    // You get a "null value" when the container doesn't have specified key.
+    result = packed.find(MDDS_ASCII("Asheboro"));
+    cout << "Population of Asheboro: " << result << endl;
 
     return EXIT_SUCCESS;
 }
