@@ -15,6 +15,7 @@ Contents:
 .. toctree::
    :maxdepth: 3
 
+   global.rst
    flat_segment_tree.rst
    segment_tree.rst
    rectangle_set.rst

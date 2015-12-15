@@ -100,6 +100,12 @@ and reduced memory footprint.
         return EXIT_SUCCESS;
     }
 
+One thing to note in the above example is the use of :c:macro:`MDDS_ASCII` macro,
+which expands a literal string definition into a literal string and its length
+as two parameters.  This macro comes in handy when you need to define a
+literal and immediately pass it to a function that expects a pointer to a
+string and its length.
+
 You'll get the following output when compiling the above code and executing it::
 
     Cities that start with 'Cha' and their populations:
@@ -195,3 +201,9 @@ Here is a version that uses :cpp:class:`~mdds::packed_trie_map`::
 This code generates exactly the same output as the first example that uses
 :cpp:class:`~mdds::trie_map`.  The only difference is that you need to provide
 the list of entries *pre-sorted* prior to instantiating the map object.
+
+This example uses another useful macro :c:macro:`MDDS_N_ELEMENTS` which
+computes the length of an array by dividing the size of the whole array by the
+size of its first element.  This macro is useful when the array definition is
+given in the same compilation unit and therefore its size is known at the call
+site where the macro is used.

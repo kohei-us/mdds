@@ -33,7 +33,24 @@
 #include <memory>
 #include <utility>
 
+/**
+ * \def MDDS_ASCII(literal)
+ *
+ * Expands a \a literal string into two arguments: the first one is the
+ * literal string itself, and the second one is the length of that string.
+ *
+ * Note that this macro only works with literal strings defined inline; it
+ * does not work with pointer values that point to strings defined
+ * elsewhere.
+ */
 #define MDDS_ASCII(literal) literal, sizeof(literal)-1
+
+/**
+ * \def MDDS_N_ELEMENTS(name)
+ *
+ * Calculates the length of \a name array provided that the array definition
+ * is given in the same compilation unit.
+ */
 #define MDDS_N_ELEMENTS(name) sizeof(name)/sizeof(name[0])
 
 namespace mdds {
