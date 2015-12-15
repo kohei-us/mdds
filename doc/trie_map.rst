@@ -17,6 +17,12 @@ Packed trie map
 .. doxygenclass:: mdds::packed_trie_map
    :members:
 
+String trait
+------------
+
+.. doxygenstruct:: mdds::trie::std_string_trait
+   :members:
+
 Example
 -------
 
