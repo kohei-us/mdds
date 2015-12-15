@@ -141,6 +141,7 @@ TESTS = \
 	point_quad_tree_test \
 	rectangle_set_test \
 	segment_tree_test \
+	sorted_string_map_test \
 	trie_map_test
 
 # NOTE: AFAIK automake does not support running the same test executable
@@ -155,6 +156,7 @@ TESTS += \
 	point_quad_tree_test_mem.mem \
 	rectangle_set_test_mem.mem \
 	segment_tree_test_mem.mem \
+	sorted_string_map_test_mem.mem \
 	trie_map_test_mem.mem
 endif
 

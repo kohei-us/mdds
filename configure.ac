@@ -77,6 +77,7 @@ multi_type_vector_test_default_mem.mem:src/test.mem.in
 point_quad_tree_test_mem.mem:src/test.mem.in
 rectangle_set_test_mem.mem:src/test.mem.in
 segment_tree_test_mem.mem:src/test.mem.in
+sorted_string_map_test_mem.mem:src/test.mem.in
 trie_map_test_mem.mem:src/test.mem.in
 VERSION
 ])
