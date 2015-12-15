@@ -8,7 +8,8 @@ EXEC= \
 	point_quad_tree \
 	mixed_type_matrix \
 	multi_type_vector \
-	trie_map
+	trie_map \
+	packed_trie_map
 
 all: $(EXEC)
 
@@ -25,6 +26,8 @@ mixed_type_matrix: mixed_type_matrix.cpp
 multi_type_vector: multi_type_vector.cpp
 
 trie_map: trie_map.cpp
+
+packed_trie_map: packed_trie_map.cpp
 
 clean:
 	rm -f $(EXEC)
