@@ -39,29 +39,72 @@ namespace mdds {
 namespace trie {
 
 /**
- * String trait that uses std::string as the key type.
+ * String trait that uses std::string as the key type.  This trait can be
+ * used with mdds::trie_map or mdds::packed_trie_map.
  */
 struct std_string_trait
 {
+    /** type used to store a final string content. */
     typedef std::string string_type;
+
+    /**
+     * type used to build an intermediate string value, from which a final
+     * string object is to be created.
+     */
     typedef std::string buffer_type;
+
+    /**
+     * type that represents a single character inside a string or a buffer
+     * object.  A string object is expected to store a series of characters of
+     * this type.
+     */
     typedef char char_type;
 
+    /**
+     * Function called to create and initialize a buffer object from a given
+     * initial string value.
+     *
+     * @param str pointer to the first character of string value.
+     * @param length length of the string value.
+     *
+     * @return buffer object containing the specified string value.
+     */
     static buffer_type init_buffer(const char_type* str, size_t length)
     {
         return buffer_type(str, length);
     }
 
+    /**
+     * Function called to append a single character to the end of a string
+     * buffer.
+     *
+     * @param buffer buffer object to append character to.
+     * @param c character to append to the buffer.
+     */
     static void push_back(buffer_type& buffer, char_type c)
     {
         buffer.push_back(c);
     }
 
+    /**
+     * Function called to remove a single character from the tail of an
+     * existing string buffer.
+     *
+     * @param buffer buffer object to remove character from.
+     */
     static void pop_back(buffer_type& buffer)
     {
         buffer.pop_back();
     }
 
+    /**
+     * Function called to create a final string object from an existing
+     * buffer.
+     *
+     * @param buf buffer object to create a final string object from.
+     *
+     * @return string object whose content is created from the buffer object.
+     */
     static string_type to_string(const buffer_type& buf)
     {
         return buf;
@@ -109,6 +152,9 @@ private:
 
 public:
 
+    /**
+     * Not implemented.
+     */
     trie_map() = delete;
 
     /**
@@ -258,6 +304,9 @@ private:
 
 public:
 
+    /**
+     * Not implemented.
+     */
     packed_trie_map() = delete;
 
     /**
