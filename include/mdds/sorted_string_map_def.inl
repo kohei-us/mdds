@@ -28,14 +28,46 @@
 #include <cstring>
 #include <algorithm>
 
+#include <cassert>
+
 namespace mdds {
+
+namespace {
+
+// don't use it!
+// Implementation detail!
+template<typename _ValueT>
+bool compare(const typename sorted_string_map<_ValueT>::entry& entry1,
+        const typename sorted_string_map<_ValueT>::entry& entry2)
+{
+    if (entry1.keylen != entry2.keylen)
+    {
+        typename sorted_string_map<_ValueT>::size_type keylen = std::min(entry1.keylen, entry2.keylen);
+        int ret = std::memcmp(entry1.key, entry2.key, keylen);
+        if (ret == 0)
+            return entry1.keylen < entry2.keylen;
+
+        return ret < 0;
+    }
+    else
+    {
+        return std::memcmp(entry1.key, entry2.key, entry1.keylen) < 0;
+    }
+}
+
+}
 
 template<typename _ValueT>
 sorted_string_map<_ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value) :
     m_entries(entries),
     m_null_value(null_value),
     m_entry_size(entry_size),
-    m_entry_end(m_entries+m_entry_size) {}
+    m_entry_end(m_entries+m_entry_size)
+{
+#ifdef _GLIBCXX_DEBUG
+    assert(std::is_sorted(m_entries, m_entry_end, compare<_ValueT>));
+#endif
+}
 
 template<typename _ValueT>
 typename sorted_string_map<_ValueT>::value_type
@@ -48,24 +80,7 @@ sorted_string_map<_ValueT>::find(const char* input, size_type len) const
     ent.key = input;
     ent.keylen = len;
 
-    auto comp = [](const entry& entry1, const entry* entry2)
-            {
-                if (entry1.keylen != entry2->keylen)
-                {
-                    size_type keylen = std::min(entry1.keylen, entry2->keylen);
-                    int ret = std::memcmp(entry1.key, entry2->key, keylen);
-                    if (ret == 0)
-                        return entry1.keylen < entry2->keylen;
-
-                    return ret < 0;
-                }
-                else
-                {
-                    return std::memcmp(entry1.key, entry2->key, entry1.keylen) < 0;
-                }
-            };
-
-    const entry* val = std::lower_bound(m_entries, m_entry_end, &ent, comp);
+    const entry* val = std::lower_bound(m_entries, m_entry_end, ent, compare<_ValueT>);
     if (val == m_entry_end || val->keylen != len || std::memcmp(val->key, input, len))
         return m_null_value;
 
