@@ -79,6 +79,7 @@ sorted_string_map<_ValueT>::find(const char* input, size_type len) const
     entry ent;
     ent.key = input;
     ent.keylen = len;
+    ent.value = 0;
 
     const entry* val = std::lower_bound(m_entries, m_entry_end, ent, compare<_ValueT>);
     if (val == m_entry_end || val->keylen != len || std::memcmp(val->key, input, len))
