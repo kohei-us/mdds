@@ -47,6 +47,25 @@ using std::endl;
 
 namespace mdds {
 
+namespace detail {
+
+struct mtv_callback_func
+{
+    static void block_created()
+    {
+    }
+
+    static void block_destroyed()
+    {
+    }
+
+    static void block_transferred()
+    {
+    }
+};
+
+}
+
 /**
  * Multi-type vector consists of a series of blocks, and each block stores a
  * series of non-empty elements of identical type.  In this container,
@@ -54,7 +73,7 @@ namespace mdds {
  * separate element objects that the user of this container needs to deal
  * with.  The user accesses directly with the raw values.
  */
-template<typename _ElemBlockFunc>
+template<typename _ElemBlockFunc, typename _CallbackFunc = detail::mtv_callback_func>
 class multi_type_vector
 {
 public:
