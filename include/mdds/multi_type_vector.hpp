@@ -51,15 +51,18 @@ namespace detail {
 
 struct mtv_callback_func
 {
-    static void block_created()
+    static void block_created(
+        const void* /*parent*/, const mdds::mtv::base_element_block* /*block*/)
     {
     }
 
-    static void block_destroyed()
+    static void block_destroyed(
+        const void* /*parent*/, const mdds::mtv::base_element_block* /*block*/)
     {
     }
 
-    static void block_transferred()
+    static void block_transferred(
+        const void* /*from*/, const void* /*to*/, const mdds::mtv::base_element_block* /*block*/)
     {
     }
 };

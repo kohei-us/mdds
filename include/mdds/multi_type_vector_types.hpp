@@ -433,6 +433,7 @@ public:
 
     static _Self* clone_block(const base_element_block& blk)
     {
+        // Use copy constructor to copy the data.
         return new _Self(get(blk));
     }
 };

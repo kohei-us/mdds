@@ -69,12 +69,14 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::block::block(const block& othe
 {
     if (other.mp_data)
         mp_data = element_block_func::clone_block(*other.mp_data);
+    assert(!"TESTME");
 }
 
 template<typename _CellBlockFunc, typename _CallbackFunc>
 multi_type_vector<_CellBlockFunc, _CallbackFunc>::block::~block()
 {
     element_block_func::delete_block(mp_data);
+    assert(!"TESTME");
 }
 
 template<typename _CellBlockFunc, typename _CallbackFunc>
@@ -263,6 +265,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::multi_type_vector(size_type in
 
     std::unique_ptr<block> blk = make_unique<block>(init_size);
     blk->mp_data = mdds_mtv_create_new_block(init_size, value);
+    assert(!"TESTME");
     m_blocks.push_back(blk.release());
 }
 
@@ -280,6 +283,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::multi_type_vector(size_type in
 
     std::unique_ptr<block> blk = make_unique<block>(m_cur_size);
     blk->mp_data = mdds_mtv_create_new_block(*it_begin, it_begin, it_end);
+    assert(!"TESTME");
     m_blocks.push_back(blk.release());
 }
 
@@ -726,12 +730,16 @@ template<typename _T>
 void multi_type_vector<_CellBlockFunc, _CallbackFunc>::create_new_block_with_new_cell(element_block_type*& data, const _T& cell)
 {
     if (data)
+    {
         element_block_func::delete_block(data);
+        assert(!"TESTME");
+    }
 
     // New cell block with size 1.
     data = mdds_mtv_create_new_block(1, cell);
     if (!data)
         throw general_error("Failed to create new block.");
+    assert(!"TESTME");
 }
 
 template<typename _CellBlockFunc, typename _CallbackFunc>
@@ -1681,6 +1689,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::transfer_single_block(
     }
 
     blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
+    assert(!"TESTME");
     assert(blk_dest->mp_data);
 
     // Shallow-copy the elements to the destination block.
@@ -1777,6 +1786,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::transfer_multi_blocks(
             element_category_type cat = mtv::get_block_type(*blk->mp_data);
             blk_dest = dest.m_blocks[dest_block_index1];
             blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
+            assert(!"TESTME");
             assert(blk_dest->mp_data);
 
             // Shallow-copy the elements to the destination block, and shrink
@@ -1829,6 +1839,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::transfer_multi_blocks(
             {
                 element_category_type cat = mtv::get_block_type(*blk->mp_data);
                 blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
+                assert(!"TESTME");
 
                 element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, 0, size_to_trans);
                 element_block_func::erase(*blk->mp_data, 0, size_to_trans);
@@ -2074,6 +2085,7 @@ void multi_type_vector<_CellBlockFunc, _CallbackFunc>::swap_single_blocks(
         {
             // the whole block needs to be replaced.
             std::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->mp_data);
+            assert(!"TESTME");
             blk_src->mp_data = other.exchange_elements(
                 *src_data, src_offset, other_block_index, dst_offset, len);
             // Release elements in the source block to prevent double-deletion.
@@ -2085,6 +2097,7 @@ void multi_type_vector<_CellBlockFunc, _CallbackFunc>::swap_single_blocks(
         // Get the new elements from the other container.
         std::unique_ptr<element_block_type, element_block_deleter> dst_data(
             other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
+        assert(!"TESTME");
 
         // Shrink the current block by erasing the top part.
         element_block_func::erase(*blk_src->mp_data, 0, len);
@@ -2111,6 +2124,7 @@ void multi_type_vector<_CellBlockFunc, _CallbackFunc>::swap_single_blocks(
     // Get the new elements from the other container.
     std::unique_ptr<element_block_type, element_block_deleter> dst_data(
         other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
+    assert(!"TESTME");
 
     if (src_tail_len == 0)
     {
@@ -2297,6 +2311,7 @@ void multi_type_vector<_CellBlockFunc, _CallbackFunc>::prepare_blocks_to_transfe
         if (blk->mp_data)
         {
             block_first->mp_data = element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
+            assert(!"TESTME");
             element_block_func::assign_values_from_block(*block_first->mp_data, *blk->mp_data, offset1, blk_size);
 
             // Shrink the existing block.
@@ -2320,6 +2335,7 @@ void multi_type_vector<_CellBlockFunc, _CallbackFunc>::prepare_blocks_to_transfe
         if (blk->mp_data)
         {
             block_last->mp_data = element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
+            assert(!"TESTME");
             element_block_func::assign_values_from_block(*block_last->mp_data, *blk->mp_data, 0, blk_size);
 
             // Shrink the existing block.
@@ -2632,6 +2648,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::insert_empty_impl(
     block* blk_next = m_blocks[block_index+2];
     blk_next->mp_data =
         element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->mp_data), 0);
+    assert(!"TESTME");
 
     // Check if the previous block is the biger one
     if (size_blk_prev > size_blk_next)
@@ -2739,6 +2756,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::insert_cells_impl(
             m_blocks.insert(m_blocks.begin()+block_index, new block(length));
             blk = m_blocks[block_index];
             blk->mp_data = element_block_func::create_new_block(cat, 0);
+            assert(!"TESTME");
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             blk->m_size = length;
             m_cur_size += length;
@@ -2783,6 +2801,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::insert_cells_impl(
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
         blk->mp_data = element_block_func::create_new_block(cat, 0);
+        assert(!"TESTME");
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         blk->m_size = length;
         m_cur_size += length;
@@ -2818,6 +2837,7 @@ void multi_type_vector<_CellBlockFunc, _CallbackFunc>::insert_cells_to_middle(
     // block for data series.
     block* blk2 = m_blocks[block_index+1];
     blk2->mp_data = element_block_func::create_new_block(cat, 0);
+    assert(!"TESTME");
     mdds_mtv_assign_values(*blk2->mp_data, *it_begin, it_begin, it_end);
 
     if (blk->mp_data)
@@ -2827,6 +2847,7 @@ void multi_type_vector<_CellBlockFunc, _CallbackFunc>::insert_cells_to_middle(
         // block to hold data from the lower part of the existing block.
         block* blk3 = m_blocks[block_index+2];
         blk3->mp_data = element_block_func::create_new_block(blk_cat, 0);
+        assert(!"TESTME");
 
         // Transfer the lower part of the current block to the new block.
         size_type offset = row - start_row;
@@ -2857,6 +2878,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_new_block_to_middle(
         assert(blk_lower->m_size == lower_block_size);
         element_category_type cat = mtv::get_block_type(*blk->mp_data);
         blk_lower->mp_data = element_block_func::create_new_block(cat, 0);
+        assert(!"TESTME");
 
         // Try to copy the fewer amount of data to the new non-empty block.
         if (offset > lower_block_size) 
@@ -2964,6 +2986,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::exchange_elements(
         {
             // The whole block will get replaced.
             std::unique_ptr<element_block_type, element_block_deleter> data(blk->mp_data);
+            assert(!"TESTME");
             blk->mp_data = nullptr; // Prevent its deletion when the parent block gets deleted.
 
             if (blk_prev)
@@ -3004,6 +3027,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::exchange_elements(
             else
             {
                 blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+                assert(!"TESTME");
                 assert(blk->mp_data && blk->mp_data != data.get());
                 element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
             }
@@ -3014,11 +3038,13 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::exchange_elements(
 
         // New block to send back to the caller.
         std::unique_ptr<element_block_type, element_block_deleter> data(nullptr);
+        assert(!"TESTME");
 
         if (blk->mp_data)
         {
             element_category_type cat_dst = mtv::get_block_type(*blk->mp_data);
             data.reset(element_block_func::create_new_block(cat_dst, 0));
+            assert(!"TESTME");
 
             // We need to keep the tail elements of the current block.
             element_block_func::assign_values_from_block(*data, *blk->mp_data, 0, len);
@@ -3039,6 +3065,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::exchange_elements(
             m_blocks.insert(m_blocks.begin()+dst_index, new block(len));
             blk = m_blocks[dst_index];
             blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+            assert(!"TESTME");
             element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
         }
 
@@ -3047,10 +3074,12 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::exchange_elements(
 
     // New block to send back to the caller.
     std::unique_ptr<element_block_type, element_block_deleter> data(nullptr);
+    assert(!"TESTME");
     if (blk->mp_data)
     {
         element_category_type cat_dst = mtv::get_block_type(*blk->mp_data);
         data.reset(element_block_func::create_new_block(cat_dst, 0));
+        assert(!"TESTME");
         element_block_func::assign_values_from_block(*data, *blk->mp_data, dst_offset, len);
     }
 
@@ -3076,6 +3105,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::exchange_elements(
             m_blocks.insert(m_blocks.begin()+dst_index+1, new block(len));
             blk = m_blocks[dst_index+1];
             blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+            assert(!"TESTME");
             assert(blk->mp_data);
             element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
         }
@@ -3087,6 +3117,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::exchange_elements(
         blk = set_new_block_to_middle(dst_index, dst_offset, len, false);
         assert(blk->m_size == len);
         blk->mp_data = element_block_func::create_new_block(cat_src, 0);
+        assert(!"TESTME");
         assert(blk->mp_data);
         element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
     }
@@ -3143,6 +3174,7 @@ void multi_type_vector<_CellBlockFunc, _CallbackFunc>::exchange_elements(
     m_blocks.insert(m_blocks.begin()+bucket.insert_index, new block(len));
     block* blk = m_blocks[bucket.insert_index];
     blk->mp_data = element_block_func::create_new_block(mtv::get_block_type(src_data), 0);
+    assert(!"TESTME");
     element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
     merge_with_adjacent_blocks(bucket.insert_index);
 
@@ -3197,9 +3229,13 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_cells_to_single_block(
 
             // Replace the whole block.
             if (blk->mp_data)
+            {
                 element_block_func::delete_block(blk->mp_data);
+                assert(!"TESTME");
+            }
 
             blk->mp_data = element_block_func::create_new_block(cat, 0);
+            assert(!"TESTME");
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             merge_with_next_block(block_index);
             return get_iterator(block_index, start_row_in_block);
@@ -3218,6 +3254,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_cells_to_single_block(
 
             if (!new_data)
                 throw std::logic_error("failed to instantiate a new data array.");
+            assert(!"TESTME");
 
             size_type pos = end_row - start_row_in_block + 1;
             element_block_func::assign_values_from_block(*new_data, *blk->mp_data, pos, length);
@@ -3228,6 +3265,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_cells_to_single_block(
             element_block_func::resize_block(*blk->mp_data, 0);
             element_block_func::delete_block(blk->mp_data);
             blk->mp_data = new_data.release();
+            assert(!"TESTME");
         }
 
         length = end_row - start_row + 1;
@@ -3240,6 +3278,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_cells_to_single_block(
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
         blk->mp_data = element_block_func::create_new_block(cat, 0);
+        assert(!"TESTME");
         blk->m_size = length;
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         return get_iterator(block_index, start_row_in_block);
@@ -3275,6 +3314,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_cells_to_single_block(
             m_blocks.insert(m_blocks.begin()+block_index+1, new block(new_size));
             blk = m_blocks[block_index+1];
             blk->mp_data = element_block_func::create_new_block(cat, 0);
+            assert(!"TESTME");
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             return get_iterator(block_index+1, start_row);
         }
@@ -3285,6 +3325,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_cells_to_single_block(
         m_blocks.push_back(new block(new_size));
         blk = m_blocks.back();
         blk->mp_data = element_block_func::create_new_block(cat, 0);
+        assert(!"TESTME");
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         return get_iterator(block_index+1, start_row);
     }
@@ -3296,6 +3337,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_cells_to_single_block(
         block_index, start_row-start_row_in_block, end_row-start_row+1, true);
 
     blk_new->mp_data = element_block_func::create_new_block(cat, 0);
+    assert(!"TESTME");
     mdds_mtv_assign_values(*blk_new->mp_data, *it_begin, it_begin, it_end);
 
     return get_iterator(block_index+1, start_row);
@@ -3396,6 +3438,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_cells_to_multi_blocks_bloc
     else
     {
         data_blk->mp_data = element_block_func::create_new_block(cat, 0);
+        assert(!"TESTME");
         mdds_mtv_assign_values(*data_blk->mp_data, *it_begin, it_begin, it_end);
     }
 
@@ -3935,6 +3978,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_whole_block_empty(
         element_block_func::resize_block(*blk->mp_data, 0);
 
     element_block_func::delete_block(blk->mp_data);
+    assert(!"TESTME");
     blk->mp_data = nullptr;
 
     block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
@@ -4103,6 +4147,7 @@ multi_type_vector<_CellBlockFunc, _CallbackFunc>::set_empty_in_multi_blocks(
                         element_block_func::resize_block(*blk->mp_data, 0);
 
                     element_block_func::delete_block(blk->mp_data);
+                    assert(!"TESTME");
                     blk->mp_data = nullptr;
                 }
             }
