@@ -30,6 +30,12 @@
     operators of its leaf-node iterators as in multi_type_vector's
     fix.
 
+* sorted_string_map
+
+  * significantly improved the performance of its find() method by
+    switching from using linear search to using binary search.  The
+    improvement is especially visible with a large number of elements.
+
 mdds 1.0.0
 
 * all
