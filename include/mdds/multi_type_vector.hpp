@@ -949,6 +949,8 @@ private:
 
     void delete_block(const block* p);
 
+    void delete_blocks(typename blocks_type::iterator it, typename blocks_type::iterator it_end);
+
     template<typename _T>
     iterator set_impl(size_type pos, size_type start_row, size_type block_index, const _T& value);
 
@@ -983,7 +985,7 @@ private:
     void get_block_position(const const_iterator& pos_hint, size_type pos, size_type& start_pos, size_type& block_index) const;
 
     template<typename _T>
-    static void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
+    void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
 
     template<typename _T>
     iterator set_cell_to_middle_of_block(

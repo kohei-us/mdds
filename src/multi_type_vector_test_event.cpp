@@ -71,6 +71,25 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count == 1);
         db.clear();
         assert(db.event_handler().block_count == 0);
+
+        db.push_back(5.5);  // create a new block.
+        assert(db.event_handler().block_count == 1);
+        db.push_back(6.6);  // no new block creation.
+        assert(db.event_handler().block_count == 1);
+        db.push_back(string("foo"));  // another new block.
+        assert(db.event_handler().block_count == 2);
+
+        // This should remove the last string block.
+        db.resize(2);
+        assert(db.event_handler().block_count == 1);
+
+        // This should have no effect on the block count.
+        db.resize(1);
+        assert(db.event_handler().block_count == 1);
+
+        // This should remove the last remaining block.
+        db.resize(0);
+        assert(db.event_handler().block_count == 0);
     }
 }
 

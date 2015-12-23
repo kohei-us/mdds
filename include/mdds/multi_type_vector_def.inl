@@ -314,12 +314,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(const multi_typ
 template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::~multi_type_vector()
 {
-    std::for_each(m_blocks.begin(), m_blocks.end(),
-        [&](const block* p)
-        {
-            delete_block(p);
-        }
-    );
+    delete_blocks(m_blocks.begin(), m_blocks.end());
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -388,6 +383,18 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_block(const block* p)
         m_hdl_event.element_block_destroyed(p->mp_data);
 
     delete p;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_blocks(
+    typename blocks_type::iterator it, typename blocks_type::iterator it_end)
+{
+    std::for_each(it, it_end,
+        [&](const block* p)
+        {
+            delete_block(p);
+        }
+    );
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -766,7 +773,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::create_new_block_with_new_ce
     data = mdds_mtv_create_new_block(1, cell);
     if (!data)
         throw general_error("Failed to create new block.");
-    assert(!"TESTME");
+
+    m_hdl_event.element_block_created(data);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -3808,12 +3816,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::append_to_prev_block(
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::clear()
 {
-    std::for_each(m_blocks.begin(), m_blocks.end(),
-        [&](const block* p)
-        {
-            delete_block(p);
-        }
-    );
+    delete_blocks(m_blocks.begin(), m_blocks.end());
     m_blocks.clear();
     m_cur_size = 0;
 }
@@ -3882,9 +3885,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::resize(size_type new_size)
 
     // Remove all blocks that are below this one.
     typename blocks_type::iterator it = m_blocks.begin() + block_index + 1;
-    std::for_each(it, m_blocks.end(), default_deleter<block>());
+    delete_blocks(it, m_blocks.end());
     m_blocks.erase(it, m_blocks.end());
-    assert(!"TESTME");
     m_cur_size = new_size;
 }
 
