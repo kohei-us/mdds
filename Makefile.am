@@ -72,6 +72,7 @@ EXTRA_DIST = \
 check_PROGRAMS = \
 	flat_segment_tree_test \
 	multi_type_matrix_test \
+	multi_type_vector_test_event \
 	multi_type_vector_test_custom \
 	multi_type_vector_test_default \
 	multi_type_vector_test_perf \
@@ -86,6 +87,8 @@ check_PROGRAMS = \
 flat_segment_tree_test_SOURCES = src/flat_segment_tree_test.cpp src/test_global.hpp
 
 multi_type_matrix_test_SOURCES = src/multi_type_matrix_test.cpp src/test_global.hpp
+
+multi_type_vector_test_event_SOURCES = src/multi_type_vector_test_event.cpp src/test_global.hpp
 
 multi_type_vector_test_custom_SOURCES = src/multi_type_vector_test_custom.cpp src/test_global.hpp
 
@@ -136,6 +139,7 @@ AM_TESTS_ENVIRONMENT = \
 TESTS = \
 	flat_segment_tree_test \
 	multi_type_matrix_test \
+	multi_type_vector_test_event \
 	multi_type_vector_test_custom \
 	multi_type_vector_test_default \
 	point_quad_tree_test \
@@ -151,6 +155,7 @@ if RUN_MEMORY_TESTS
 TESTS += \
 	flat_segment_tree_test_mem.mem \
 	multi_type_matrix_test_mem.mem \
+	multi_type_vector_test_event_mem.mem \
 	multi_type_vector_test_custom_mem.mem \
 	multi_type_vector_test_default_mem.mem \
 	point_quad_tree_test_mem.mem \

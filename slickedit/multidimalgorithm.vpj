@@ -269,6 +269,7 @@
 			<F N="../src/flat_segment_tree_test.cpp"/>
 			<F N="../src/mixed_type_matrix_test.cpp"/>
 			<F N="../src/multi_type_matrix_test.cpp"/>
+			<F N="../src/multi_type_vector_test_event.cpp"/>
 			<F N="../src/multi_type_vector_test_custom.cpp"/>
 			<F N="../src/multi_type_vector_test_default.cpp"/>
 			<F N="../src/multi_type_vector_test_perf.cpp"/>

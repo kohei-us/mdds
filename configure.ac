@@ -72,6 +72,7 @@ example/Makefile
 flat_segment_tree_test_mem.mem:src/test.mem.in
 misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
 multi_type_matrix_test_mem.mem:src/test.mem.in
+multi_type_vector_test_event_mem.mem:src/test.mem.in
 multi_type_vector_test_custom_mem.mem:src/test.mem.in
 multi_type_vector_test_default_mem.mem:src/test.mem.in
 point_quad_tree_test_mem.mem:src/test.mem.in

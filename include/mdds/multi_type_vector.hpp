@@ -49,22 +49,11 @@ namespace mdds {
 
 namespace detail {
 
-struct mtv_callback_func
+struct mtv_event_func
 {
-    static void block_created(
-        const void* /*parent*/, const mdds::mtv::base_element_block* /*block*/)
-    {
-    }
+    void block_created(const mdds::mtv::base_element_block* /*block*/) {}
 
-    static void block_destroyed(
-        const void* /*parent*/, const mdds::mtv::base_element_block* /*block*/)
-    {
-    }
-
-    static void block_transferred(
-        const void* /*from*/, const void* /*to*/, const mdds::mtv::base_element_block* /*block*/)
-    {
-    }
+    void block_destroyed(const mdds::mtv::base_element_block* /*block*/) {}
 };
 
 }
@@ -76,7 +65,7 @@ struct mtv_callback_func
  * separate element objects that the user of this container needs to deal
  * with.  The user accesses directly with the raw values.
  */
-template<typename _ElemBlockFunc, typename _CallbackFunc = detail::mtv_callback_func>
+template<typename _ElemBlockFunc, typename _EventFunc = detail::mtv_event_func>
 class multi_type_vector
 {
 public:
@@ -85,6 +74,7 @@ public:
     typedef typename mdds::mtv::base_element_block element_block_type;
     typedef typename mdds::mtv::element_t element_category_type;
     typedef _ElemBlockFunc element_block_func;
+    typedef _EventFunc event_func;
 
 private:
 
@@ -225,6 +215,9 @@ public:
 
     const_reverse_iterator rbegin() const;
     const_reverse_iterator rend() const;
+
+    event_func& event_handler();
+    const event_func& event_handler() const;
 
     /**
      * Default constructor.  It initializes the container with empty size.
@@ -954,6 +947,8 @@ public:
 
 private:
 
+    void delete_block(const block* p);
+
     template<typename _T>
     iterator set_impl(size_type pos, size_type start_row, size_type block_index, const _T& value);
 
@@ -1202,6 +1197,7 @@ private:
     }
 
 private:
+    event_func m_hdl_event;
     blocks_type m_blocks;
     size_type m_cur_size;
 };
