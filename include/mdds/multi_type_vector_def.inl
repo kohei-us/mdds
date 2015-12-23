@@ -2506,6 +2506,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
     // Now, erase all blocks in between.
     std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
     m_blocks.erase(it_erase_begin, it_erase_end);
+    assert(!"TESTME");
     m_cur_size -= end_row - start_row + 1;
 
     if (!m_blocks.empty())
@@ -3556,6 +3557,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
     // Remove the in-between blocks first.
     std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
     m_blocks.erase(it_erase_begin, it_erase_end);
+    assert(!"TESTME");
 
     // Insert the new data block.
     m_blocks.insert(m_blocks.begin()+insert_pos, data_blk.release());
@@ -3635,6 +3637,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
 
         std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
         m_blocks.erase(it_erase_begin, it_erase_end);
+        assert(!"TESTME");
         return get_iterator(block_index1, start_row_in_block1);
     }
 
@@ -3805,7 +3808,12 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::append_to_prev_block(
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::clear()
 {
-    std::for_each(m_blocks.begin(), m_blocks.end(), default_deleter<block>());
+    std::for_each(m_blocks.begin(), m_blocks.end(),
+        [&](const block* p)
+        {
+            delete_block(p);
+        }
+    );
     m_blocks.clear();
     m_cur_size = 0;
 }
@@ -3876,6 +3884,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::resize(size_type new_size)
     typename blocks_type::iterator it = m_blocks.begin() + block_index + 1;
     std::for_each(it, m_blocks.end(), default_deleter<block>());
     m_blocks.erase(it, m_blocks.end());
+    assert(!"TESTME");
     m_cur_size = new_size;
 }
 

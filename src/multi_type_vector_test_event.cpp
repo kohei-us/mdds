@@ -69,6 +69,8 @@ void mtv_test_block_counter()
         // Initializing with one element block of size 10.
         mtv_type db(10, 1.2);
         assert(db.event_handler().block_count == 1);
+        db.clear();
+        assert(db.event_handler().block_count == 0);
     }
 }
 
