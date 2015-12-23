@@ -42,12 +42,12 @@ struct event_block_counter
 
     event_block_counter() : block_count(0) {}
 
-    void block_created(const mtv::base_element_block* block)
+    void element_block_created(const mtv::base_element_block* block)
     {
         ++block_count;
     }
 
-    void block_destroyed(const mtv::base_element_block* block)
+    void element_block_destroyed(const mtv::base_element_block* block)
     {
         --block_count;
     }
@@ -59,8 +59,17 @@ void mtv_test_block_counter()
 
     typedef multi_type_vector<mtv::element_block_func, event_block_counter> mtv_type;
 
-    mtv_type db(10, 1.2);
-    assert(db.event_handler().block_count == 1);
+    {
+        // Initializing with an empty block should not create any element block.
+        mtv_type db(10);
+        assert(db.event_handler().block_count == 0);
+    }
+
+    {
+        // Initializing with one element block of size 10.
+        mtv_type db(10, 1.2);
+        assert(db.event_handler().block_count == 1);
+    }
 }
 
 int main (int argc, char **argv)

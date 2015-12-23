@@ -278,7 +278,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_
 
     std::unique_ptr<block> blk = make_unique<block>(init_size);
     blk->mp_data = mdds_mtv_create_new_block(init_size, value);
-    m_hdl_event.block_created(blk->mp_data);
+    m_hdl_event.element_block_created(blk->mp_data);
     m_blocks.push_back(blk.release());
 }
 
@@ -385,7 +385,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_block(const block* p)
 {
     if (p->mp_data)
-        m_hdl_event.block_destroyed(p->mp_data);
+        m_hdl_event.element_block_destroyed(p->mp_data);
 
     delete p;
 }
