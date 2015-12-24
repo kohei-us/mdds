@@ -947,8 +947,27 @@ public:
 
 private:
 
-    void delete_block(const block* p);
+    /**
+     * Delete only the element block owned by an outer block.
+     *
+     * @param p pointer to the instance of an outer block that may own an
+     *          element block instance.
+     */
+    void delete_element_block(block* p);
 
+    /**
+     * Delete an outer block.
+     *
+     * @param p pointer to the instance of an outer block to delete.
+     */
+    void delete_block(block* p);
+
+    /**
+     * Delete one or more outer blocks in the specified iterator ranges.
+     *
+     * @param it start position.
+     * @param it_end end position (not inclusive).
+     */
     void delete_blocks(typename blocks_type::iterator it, typename blocks_type::iterator it_end);
 
     template<typename _T>

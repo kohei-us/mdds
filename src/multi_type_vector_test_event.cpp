@@ -38,7 +38,7 @@ using namespace mdds;
 
 struct event_block_counter
 {
-    size_t block_count;
+    size_t block_count;  // number of element (data) blocks
 
     event_block_counter() : block_count(0) {}
 
@@ -89,6 +89,29 @@ void mtv_test_block_counter()
 
         // This should remove the last remaining block.
         db.resize(0);
+        assert(db.event_handler().block_count == 0);
+    }
+
+    {
+        mtv_type db(5);
+        assert(db.event_handler().block_count == 0);
+
+        db.set(0, true);
+        assert(db.event_handler().block_count == 1);
+        db.set(1, 12.2);
+        assert(db.event_handler().block_count == 2);
+
+        db.set(4, string("foo"));
+        assert(db.event_handler().block_count == 3);
+        db.set(3, string("bar"));
+        assert(db.event_handler().block_count == 3);
+
+        // This should delete the top two element blocks.
+        db.set_empty(0, 1);
+        assert(db.event_handler().block_count == 1);
+
+        // Now, delete the bottom one.
+        db.set_empty(3, 4);
         assert(db.event_handler().block_count == 0);
     }
 }

@@ -377,11 +377,21 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_block(const block* p)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_block(block* p)
 {
-    if (p->mp_data)
-        m_hdl_event.element_block_destroyed(p->mp_data);
+    if (!p->mp_data)
+        // This block is empty.
+        return;
 
+    m_hdl_event.element_block_destroyed(p->mp_data);
+    element_block_func::delete_block(p->mp_data);
+    p->mp_data = nullptr;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_block(block* p)
+{
+    delete_element_block(p);
     delete p;
 }
 
@@ -390,7 +400,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_blocks(
     typename blocks_type::iterator it, typename blocks_type::iterator it_end)
 {
     std::for_each(it, it_end,
-        [&](const block* p)
+        [&](block* p)
         {
             delete_block(p);
         }
@@ -4048,9 +4058,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
         // Resize block to 0 before deleting, to prevent its elements from getting deleted.
         element_block_func::resize_block(*blk->mp_data, 0);
 
-    element_block_func::delete_block(blk->mp_data);
-    assert(!"TESTME");
-    blk->mp_data = nullptr;
+    delete_element_block(blk);
 
     block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
     block* blk_next = get_next_block_of_type(block_index, mtv::element_type_empty);
@@ -4081,8 +4089,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
         // Only the preceding block is empty. Merge the current block with the previous.
         size_type offset = blk_prev->m_size;
         blk_prev->m_size += blk->m_size;
-        delete blk;
-        assert(!"TESTME");
+        delete_block(blk);
         typename blocks_type::iterator it = m_blocks.begin();
         std::advance(it, block_index);
         m_blocks.erase(it);
@@ -4221,9 +4228,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                     if (!overwrite)
                         element_block_func::resize_block(*blk->mp_data, 0);
 
-                    element_block_func::delete_block(blk->mp_data);
-                    assert(!"TESTME");
-                    blk->mp_data = nullptr;
+                    delete_element_block(blk);
                 }
             }
             else
@@ -4305,8 +4310,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
             if (!overwrite && blk->mp_data)
                 element_block_func::resize_block(*blk->mp_data, 0);
 
-            delete blk;
-            assert(!"TESTME");
+            delete_block(blk);
         }
 
         typename blocks_type::iterator it = m_blocks.begin() + block_index1 + 1;
