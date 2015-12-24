@@ -125,6 +125,19 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count == 2);
         db.set_empty(3, 3);
         assert(db.event_handler().block_count == 1);
+
+        // Start over.
+        db.clear();
+        assert(db.event_handler().block_count == 0);
+
+        db.push_back(1.1);
+        db.push_back(1.2);
+        db.push_back(1.3);
+        assert(db.event_handler().block_count == 1);
+
+        // Put empty block in the moddle.
+        db.set_empty(1, 1);
+        assert(db.event_handler().block_count == 2);
     }
 }
 

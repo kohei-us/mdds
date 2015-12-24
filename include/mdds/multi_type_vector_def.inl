@@ -2947,7 +2947,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_new_block_to_middle(
         assert(blk_lower->m_size == lower_block_size);
         element_category_type cat = mtv::get_block_type(*blk->mp_data);
         blk_lower->mp_data = element_block_func::create_new_block(cat, 0);
-        assert(!"TESTME");
+        m_hdl_event.element_block_created(blk_lower->mp_data);
 
         // Try to copy the fewer amount of data to the new non-empty block.
         if (offset > lower_block_size) 
