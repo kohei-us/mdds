@@ -113,6 +113,18 @@ void mtv_test_block_counter()
         // Now, delete the bottom one.
         db.set_empty(3, 4);
         assert(db.event_handler().block_count == 0);
+
+        // Create and delete a block in the middle.
+        db.set(3, false);
+        assert(db.event_handler().block_count == 1);
+        db.set_empty(3, 3);
+        assert(db.event_handler().block_count == 0);
+
+        db.set(2, 10.5);
+        db.set(3, string("hmm"));
+        assert(db.event_handler().block_count == 2);
+        db.set_empty(3, 3);
+        assert(db.event_handler().block_count == 1);
     }
 }
 

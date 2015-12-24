@@ -4073,10 +4073,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
             blk_prev->m_size += blk->m_size + blk_next->m_size;
 
             // Erase the current and next blocks.
-            delete blk;
-            assert(!"TESTME");
-            delete blk_next;
-            assert(!"TESTME");
+            delete_block(blk);
+            delete_block(blk_next);
+
             typename blocks_type::iterator it = m_blocks.begin();
             std::advance(it, block_index);
             typename blocks_type::iterator it_end = it;
@@ -4100,8 +4099,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
     {
         // Only the next block is empty. Merge the next block with the current.
         blk->m_size += blk_next->m_size;
-        delete blk_next;
-        assert(!"TESTME");
+        delete_block(blk_next);
         typename blocks_type::iterator it = m_blocks.begin();
         std::advance(it, block_index+1);
         m_blocks.erase(it);
