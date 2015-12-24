@@ -139,6 +139,15 @@ void mtv_test_block_counter()
         db.set_empty(1, 1);
         assert(db.event_handler().block_count == 2);
     }
+
+    {
+        mtv_type db(4, 1.2);
+        assert(db.event_handler().block_count == 1);
+
+        // Split the block into two.
+        db.insert_empty(2, 2);
+        assert(db.event_handler().block_count == 2);
+    }
 }
 
 int main (int argc, char **argv)

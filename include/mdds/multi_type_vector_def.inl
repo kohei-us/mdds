@@ -2717,7 +2717,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     block* blk_next = m_blocks[block_index+2];
     blk_next->mp_data =
         element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->mp_data), 0);
-    assert(!"TESTME");
+    m_hdl_event.element_block_created(blk_next->mp_data);
 
     // Check if the previous block is the biger one
     if (size_blk_prev > size_blk_next)
