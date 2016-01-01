@@ -1052,7 +1052,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                         blk_next->m_size += 1;
                         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
                         delete m_blocks[block_index];
-                        assert(!"TESTME");
                         m_blocks.erase(m_blocks.begin()+block_index);
                     }
                     else

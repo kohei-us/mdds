@@ -206,6 +206,16 @@ void mtv_test_block_counter()
         db.set(1, string("bar"));
         assert(db.event_handler().block_count == 2);
     }
+
+    {
+        mtv_type db(3);
+        db.set(0, string("test"));
+        assert(db.event_handler().block_count == 1);
+        db.set(2, 1.2);
+        assert(db.event_handler().block_count == 2);
+        db.set(1, 1.1); // This will get prepended to the next numeric block.
+        assert(db.event_handler().block_count == 2);
+    }
 }
 
 int main (int argc, char **argv)
