@@ -1016,7 +1016,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     {
                         // Ignore the next block. Just extend the previous block.
                         delete m_blocks[block_index];
-                        assert(!"TESTME");
                         m_blocks.erase(m_blocks.begin() + block_index);
                         append_cell_to_block(block_index-1, cell);
                     }
