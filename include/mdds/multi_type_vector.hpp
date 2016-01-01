@@ -1174,6 +1174,14 @@ private:
         size_type block_index, size_type offset, size_type new_block_size, bool overwrite);
 
     block* get_previous_block_of_type(size_type block_index, element_category_type cat);
+
+    /**
+     * @param block_index index of the current block.
+     * @param cat desired block type.
+     *
+     * @return pointer to the next block if the next block exists and it's of
+     *         specified type, otherwise nullptr will be returned.
+     */
     block* get_next_block_of_type(size_type block_index, element_category_type cat);
 
     /**

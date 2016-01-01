@@ -775,8 +775,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::create_new_block_with_new_ce
 {
     if (data)
     {
+        m_hdl_event.element_block_destroyed(data);
         element_block_func::delete_block(data);
-        assert(!"TESTME");
     }
 
     // New cell block with size 1.
@@ -880,7 +880,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     // Remove this one-cell empty block from the top, and
                     // prepend the cell to the next block.
                     delete m_blocks.front();
-                    assert(!"TESTME");
                     m_blocks.erase(m_blocks.begin());
                     blk = m_blocks.front();
                     blk->m_size += 1;

@@ -148,6 +148,24 @@ void mtv_test_block_counter()
         db.insert_empty(2, 2);
         assert(db.event_handler().block_count == 2);
     }
+
+    {
+        mtv_type db(2);
+        db.set(1, 1.2);  // This creates a new element block.
+        assert(db.event_handler().block_count == 1);
+        db.set(0, 1.1);  // The element block count should not change.
+        assert(db.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type db(2);
+        db.set(1, string("test"));
+        assert(db.event_handler().block_count == 1);
+        db.set(0, 1.1);
+        assert(db.event_handler().block_count == 2);
+        db.set(0, true);
+        assert(db.event_handler().block_count == 2);
+    }
 }
 
 int main (int argc, char **argv)
