@@ -32,6 +32,7 @@
 #include <mdds/multi_type_vector_trait.hpp>
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 using namespace mdds;
@@ -215,6 +216,12 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count == 2);
         db.set(1, 1.1); // This will get prepended to the next numeric block.
         assert(db.event_handler().block_count == 2);
+    }
+
+    {
+        vector<double> vals = { 1.1, 1.2, 1.3 };
+        mtv_type db(vals.size(), vals.begin(), vals.end());
+        assert(db.event_handler().block_count == 1);
     }
 }
 

@@ -296,7 +296,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_
 
     std::unique_ptr<block> blk = make_unique<block>(m_cur_size);
     blk->mp_data = mdds_mtv_create_new_block(*it_begin, it_begin, it_end);
-    assert(!"TESTME");
+    m_hdl_event.element_block_created(blk->mp_data);
     m_blocks.push_back(blk.release());
 }
 
