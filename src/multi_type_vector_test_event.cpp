@@ -166,6 +166,14 @@ void mtv_test_block_counter()
         db.set(0, true);
         assert(db.event_handler().block_count == 2);
     }
+
+    {
+        mtv_type db(2);
+        db.set(0, string("test")); // This creates a new string block.
+        assert(db.event_handler().block_count == 1);
+        db.set(1, string("foo"));  // This appends to the existing string block.
+        assert(db.event_handler().block_count == 1);
+    }
 }
 
 int main (int argc, char **argv)
