@@ -166,6 +166,14 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count == 2);
         db.set(0, true);
         assert(db.event_handler().block_count == 2);
+
+        db.set(0, string("foo"));
+        assert(db.event_handler().block_count == 1);
+
+        db.set(1, 1.2);
+        assert(db.event_handler().block_count == 2);
+        db.set(1, string("bar"));
+        assert(db.event_handler().block_count == 1);
     }
 
     {
@@ -229,6 +237,45 @@ void mtv_test_block_counter()
         assert(db2.event_handler().block_count == 2);
         mtv_type db3 = db2;
         assert(db3.event_handler().block_count == 2);
+    }
+
+    {
+        mtv_type db(3);
+        db.set(1, 1.1);
+        db.set(2, true);
+        assert(db.event_handler().block_count == 2);
+        db.set(1, false);
+        assert(db.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type db(3);
+        db.set(1, 1.1);
+        db.set(0, true);
+        assert(db.event_handler().block_count == 2);
+        db.set(1, false);
+        assert(db.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type db(3);
+        db.set(0, true);
+        db.set(1, 1.1);
+        db.set(2, false);
+        assert(db.event_handler().block_count == 3);
+        db.set(1, true);
+        assert(db.event_handler().block_count == 1);
+
+        db.set(1, 1.1);
+        assert(db.event_handler().block_count == 3);
+        db.set(2, long(10));
+        db.set(1, true);
+        assert(db.event_handler().block_count == 2);
+
+        db.set(1, 1.1);
+        assert(db.event_handler().block_count == 3);
+        db.set(1, long(20));
+        assert(db.event_handler().block_count == 2);
     }
 }
 
