@@ -1425,9 +1425,11 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::release()
     {
         block* blk = *it;
         if (blk->mp_data)
+        {
             element_block_func::resize_block(*blk->mp_data, 0);
+            m_hdl_event.element_block_destroyed(blk->mp_data);
+        }
         delete blk;
-        assert(!"TESTME");
     }
 
     m_blocks.clear();

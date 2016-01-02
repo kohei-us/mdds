@@ -276,6 +276,9 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count == 3);
         db.set(1, long(20));
         assert(db.event_handler().block_count == 2);
+
+        db.release();
+        assert(db.event_handler().block_count == 0);
     }
 }
 
