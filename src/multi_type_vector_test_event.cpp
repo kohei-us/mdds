@@ -222,6 +222,13 @@ void mtv_test_block_counter()
         vector<double> vals = { 1.1, 1.2, 1.3 };
         mtv_type db(vals.size(), vals.begin(), vals.end());
         assert(db.event_handler().block_count == 1);
+
+        mtv_type db2(db);
+        assert(db2.event_handler().block_count == 1);
+        db2.push_back(string("foo"));
+        assert(db2.event_handler().block_count == 2);
+        mtv_type db3 = db2;
+        assert(db3.event_handler().block_count == 2);
     }
 }
 

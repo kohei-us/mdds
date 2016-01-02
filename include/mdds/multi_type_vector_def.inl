@@ -69,7 +69,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(const block& other) 
 {
     if (other.mp_data)
         mp_data = element_block_func::clone_block(*other.mp_data);
-    assert(!"TESTME");
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -308,7 +307,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(const multi_typ
     m_blocks.reserve(other.m_blocks.size());
     typename blocks_type::const_iterator it = other.m_blocks.begin(), it_end = other.m_blocks.end();
     for (; it != it_end; ++it)
-        m_blocks.push_back(new block(**it));
+    {
+        block* blk = new block(**it);
+        m_blocks.push_back(blk);
+        if (blk->mp_data)
+            m_hdl_event.element_block_created(blk->mp_data);
+    }
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
