@@ -2549,50 +2549,53 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
     blk->m_size -= size_to_erase;
     m_cur_size -= size_to_erase;
 
-    if (blk->m_size == 0)
+    if (blk->m_size)
+        // Block still contains data.  Bail out.
+        return;
+
+    // Delete the current block since it's become empty.
+    delete_block(blk);
+    m_blocks.erase(m_blocks.begin()+block_pos);
+
+    if (block_pos == 0 || block_pos >= m_blocks.size())
+        // Deleted block was either the first or the last block.
+        return;
+
+    // Check the previous and next blocks to see if they should be merged.
+    block* blk_prev = m_blocks[block_pos-1];
+    block* blk_next = m_blocks[block_pos];
+    if (blk_prev->mp_data)
     {
-        delete_block(blk);
-        m_blocks.erase(m_blocks.begin()+block_pos);
+        // Previous block has data.
+        if (!blk_next->mp_data)
+            // Next block is empty.  Nothing to do.
+            return;
 
-        if (block_pos > 0 && block_pos < m_blocks.size())
+        element_category_type cat1 = mdds::mtv::get_block_type(*blk_prev->mp_data);
+        element_category_type cat2 = mdds::mtv::get_block_type(*blk_next->mp_data);
+        if (cat1 == cat2)
         {
-            // Check the previous and next blocks to see if they should be merged.
-            block* blk_prev = m_blocks[block_pos-1];
-            block* blk_next = m_blocks[block_pos];
-            if (blk_prev->mp_data)
-            {
-                // Previous block has data.
-                if (!blk_next->mp_data)
-                    // Next block is empty.  Nothing to do.
-                    return;
-
-                element_category_type cat1 = mdds::mtv::get_block_type(*blk_prev->mp_data);
-                element_category_type cat2 = mdds::mtv::get_block_type(*blk_next->mp_data);
-                if (cat1 == cat2)
-                {
-                    // Merge the two blocks.
-                    element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
-                    blk_prev->m_size += blk_next->m_size;
-                    // Resize to 0 to prevent deletion of cells in case of managed cells.
-                    element_block_func::resize_block(*blk_next->mp_data, 0);
-                    delete_block(blk_next);
-                    m_blocks.erase(m_blocks.begin()+block_pos);
-                }
-            }
-            else
-            {
-                // Previous block is empty.
-                if (blk_next->mp_data)
-                    // Next block is not empty.  Nothing to do.
-                    return;
-
-                // Both blocks are empty.  Simply increase the size of the
-                // previous block.
-                blk_prev->m_size += blk_next->m_size;
-                delete_block(blk_next);
-                m_blocks.erase(m_blocks.begin()+block_pos);
-            }
+            // Merge the two blocks.
+            element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
+            blk_prev->m_size += blk_next->m_size;
+            // Resize to 0 to prevent deletion of cells in case of managed cells.
+            element_block_func::resize_block(*blk_next->mp_data, 0);
+            delete_block(blk_next);
+            m_blocks.erase(m_blocks.begin()+block_pos);
         }
+    }
+    else
+    {
+        // Previous block is empty.
+        if (blk_next->mp_data)
+            // Next block is not empty.  Nothing to do.
+            return;
+
+        // Both blocks are empty.  Simply increase the size of the
+        // previous block.
+        blk_prev->m_size += blk_next->m_size;
+        delete_block(blk_next);
+        m_blocks.erase(m_blocks.begin()+block_pos);
     }
 }
 
