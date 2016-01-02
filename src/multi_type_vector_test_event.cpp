@@ -291,6 +291,32 @@ void mtv_test_block_counter()
         db.erase(0, 2);
         assert(db.event_handler().block_count == 0);
     }
+
+    {
+        mtv_type db;
+        db.push_back(1.1);
+        db.push_back_empty();
+        assert(db.event_handler().block_count == 1);
+        db.erase(0, 0);
+        assert(db.event_handler().block_count == 0);
+    }
+
+    {
+        mtv_type db(3);
+        db.set(0, string("top"));
+        db.set(2, string("bottom"));
+        assert(db.event_handler().block_count == 2);
+        db.erase(1, 1);
+        assert(db.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type db(3);
+        db.set(1, 1.1);
+        assert(db.event_handler().block_count == 1);
+        db.erase(1, 1);
+        assert(db.event_handler().block_count == 0);
+    }
 }
 
 int main (int argc, char **argv)

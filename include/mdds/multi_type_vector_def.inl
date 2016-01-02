@@ -2551,8 +2551,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
 
     if (blk->m_size == 0)
     {
-        delete blk;
-        assert(!"TESTME");
+        delete_block(blk);
         m_blocks.erase(m_blocks.begin()+block_pos);
 
         if (block_pos > 0 && block_pos < m_blocks.size())
@@ -2576,8 +2575,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
                     blk_prev->m_size += blk_next->m_size;
                     // Resize to 0 to prevent deletion of cells in case of managed cells.
                     element_block_func::resize_block(*blk_next->mp_data, 0);
-                    delete blk_next;
-                    assert(!"TESTME");
+                    delete_block(blk_next);
                     m_blocks.erase(m_blocks.begin()+block_pos);
                 }
             }
@@ -2591,8 +2589,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
                 // Both blocks are empty.  Simply increase the size of the
                 // previous block.
                 blk_prev->m_size += blk_next->m_size;
-                delete blk_next;
-                assert(!"TESTME");
+                delete_block(blk_next);
                 m_blocks.erase(m_blocks.begin()+block_pos);
             }
         }
