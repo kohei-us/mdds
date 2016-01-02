@@ -2523,9 +2523,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
         --block_pos1;
 
     // Now, erase all blocks in between.
-    std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
+    delete_blocks(it_erase_begin, it_erase_end);
     m_blocks.erase(it_erase_begin, it_erase_end);
-    assert(!"TESTME");
     m_cur_size -= end_row - start_row + 1;
 
     if (!m_blocks.empty())

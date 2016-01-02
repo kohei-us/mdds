@@ -136,7 +136,7 @@ void mtv_test_block_counter()
         db.push_back(1.3);
         assert(db.event_handler().block_count == 1);
 
-        // Put empty block in the moddle.
+        // Put empty block in the middle.
         db.set_empty(1, 1);
         assert(db.event_handler().block_count == 2);
     }
@@ -278,6 +278,17 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count == 2);
 
         db.release();
+        assert(db.event_handler().block_count == 0);
+    }
+
+    {
+        mtv_type db;
+        db.push_back(1.1);
+        db.push_back(long(10));
+        db.push_back(string("foo"));
+        assert(db.event_handler().block_count == 3);
+
+        db.erase(0, 2);
         assert(db.event_handler().block_count == 0);
     }
 }
