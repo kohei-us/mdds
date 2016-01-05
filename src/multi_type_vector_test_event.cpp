@@ -420,6 +420,24 @@ void mtv_test_block_counter()
         db.set(0, vals.begin(), vals.end()); // overwrite multiple blocks.
         assert(db.event_handler().block_count == 1);
     }
+
+    {
+        mtv_type db(6);
+        db.set(2, 1.1);
+        db.set(3, int(22));
+        assert(db.event_handler().block_count == 2);
+        db.erase(2, 3);
+        assert(db.event_handler().block_count == 0);
+    }
+
+    {
+        mtv_type db(6, char('a'));
+        db.set(2, 1.1);
+        db.set(3, int(22));
+        assert(db.event_handler().block_count == 4);
+        db.erase(2, 3);
+        assert(db.event_handler().block_count == 1);
+    }
 }
 
 int main (int argc, char **argv)

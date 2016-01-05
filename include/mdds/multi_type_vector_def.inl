@@ -3781,8 +3781,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::merge_with_next_block(size_t
 
         // Merge the two blocks.
         blk->m_size += blk_next->m_size;
-        delete m_blocks[block_index+1];
-        assert(!"TESTME");
+        delete blk_next; // this block is empty.
         m_blocks.erase(m_blocks.begin()+block_index+1);
         return true;
     }
@@ -3798,8 +3797,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::merge_with_next_block(size_t
     element_block_func::append_values_from_block(*blk->mp_data, *blk_next->mp_data);
     element_block_func::resize_block(*blk_next->mp_data, 0);
     blk->m_size += blk_next->m_size;
-    delete m_blocks[block_index+1];
-    assert(!"TESTME");
+    delete_block(blk_next);
     m_blocks.erase(m_blocks.begin()+block_index+1);
     return true;
 }
