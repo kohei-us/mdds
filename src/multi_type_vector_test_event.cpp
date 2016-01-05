@@ -237,6 +237,20 @@ void mtv_test_block_counter()
         assert(db2.event_handler().block_count == 2);
         mtv_type db3 = db2;
         assert(db3.event_handler().block_count == 2);
+
+        mtv_type db4(3);
+        db4.insert(0, vals.begin(), vals.end());
+        assert(db4.event_handler().block_count == 1);
+
+        mtv_type db5(3, long(10));
+        assert(db5.event_handler().block_count == 1);
+        db5.insert(0, vals.begin(), vals.end());
+        assert(db5.event_handler().block_count == 2);
+
+        mtv_type db6(2, int(30));
+        assert(db6.event_handler().block_count == 1);
+        db6.insert(1, vals.begin(), vals.end()); // Insert to split the block.
+        assert(db6.event_handler().block_count == 3);
     }
 
     {
