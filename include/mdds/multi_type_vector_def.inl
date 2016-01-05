@@ -3510,7 +3510,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
     else
     {
         data_blk->mp_data = element_block_func::create_new_block(cat, 0);
-        assert(!"TESTME");
+        m_hdl_event.element_block_created(data_blk->mp_data);
         mdds_mtv_assign_values(*data_blk->mp_data, *it_begin, it_begin, it_end);
     }
 
@@ -3572,9 +3572,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
     size_type insert_pos = std::distance(m_blocks.begin(), it_erase_begin);
 
     // Remove the in-between blocks first.
-    std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
+    delete_blocks(it_erase_begin, it_erase_end);
     m_blocks.erase(it_erase_begin, it_erase_end);
-    assert(!"TESTME");
 
     // Insert the new data block.
     m_blocks.insert(m_blocks.begin()+insert_pos, data_blk.release());
@@ -3652,9 +3651,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             blk2->m_size -= size_to_erase;
         }
 
-        std::for_each(it_erase_begin, it_erase_end, default_deleter<block>());
+        delete_blocks(it_erase_begin, it_erase_end);
         m_blocks.erase(it_erase_begin, it_erase_end);
-        assert(!"TESTME");
         return get_iterator(block_index1, start_row_in_block1);
     }
 

@@ -398,6 +398,28 @@ void mtv_test_block_counter()
         db.set(2, vals.begin(), vals.end()); // set the values to the middle of a block.
         assert(db.event_handler().block_count == 3);
     }
+
+    {
+        mtv_type db(1, 0.1);
+        db.push_back(short(1));
+        db.push_back(int(20));
+        assert(db.event_handler().block_count == 3);
+
+        vector<double> vals = { 1.1, 1.2, 1.3 }; // same type as the top block.
+        db.set(0, vals.begin(), vals.end()); // overwrite multiple blocks.
+        assert(db.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type db(1, string("foo"));
+        db.push_back(short(1));
+        db.push_back(int(20));
+        assert(db.event_handler().block_count == 3);
+
+        vector<double> vals = { 1.1, 1.2, 1.3 }; // differene type from that of the top block.
+        db.set(0, vals.begin(), vals.end()); // overwrite multiple blocks.
+        assert(db.event_handler().block_count == 1);
+    }
 }
 
 int main (int argc, char **argv)
