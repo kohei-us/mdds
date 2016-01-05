@@ -331,6 +331,73 @@ void mtv_test_block_counter()
         db.erase(1, 1);
         assert(db.event_handler().block_count == 0);
     }
+
+    {
+        vector<double> vals = { 1.1, 1.2 };
+        mtv_type db(4);
+        db.set(0, 0.1);
+        db.set(1, 0.2);
+        db.set(2, string("foo"));
+        db.set(3, string("bar"));
+        assert(db.event_handler().block_count == 2);
+        db.set(2, vals.begin(), vals.end()); // remove a block and append to previous one.
+        assert(db.event_handler().block_count == 1);
+    }
+
+    {
+        vector<double> vals = { 1.1, 1.2 };
+        mtv_type db(4);
+        db.set(0, int(5));
+        db.set(1, int(10));
+        assert(db.event_handler().block_count == 1);
+        db.set(2, vals.begin(), vals.end()); // set to empty block.
+        assert(db.event_handler().block_count == 2);
+    }
+
+    {
+        vector<double> vals = { 1.1, 1.2 };
+        mtv_type db(4);
+        db.set(0, int(5));
+        db.set(1, int(10));
+        db.set(2, string("foo"));
+        db.set(3, string("bar"));
+        assert(db.event_handler().block_count == 2);
+        db.set(2, vals.begin(), vals.end()); // replace a block.
+        assert(db.event_handler().block_count == 2);
+    }
+
+    {
+        vector<double> vals = { 1.1, 1.2 };
+        mtv_type db(4, string("foo"));
+        assert(db.event_handler().block_count == 1);
+        db.set(0, vals.begin(), vals.end()); // replace the upper part of a block.
+        assert(db.event_handler().block_count == 2);
+    }
+
+    {
+        vector<double> vals = { 1.1, 1.2 };
+        mtv_type db(4, string("foo"));
+        assert(db.event_handler().block_count == 1);
+        db.set(2, vals.begin(), vals.end()); // replace the lower part of the last block.
+        assert(db.event_handler().block_count == 2);
+    }
+
+    {
+        vector<double> vals = { 1.1, 1.2 };
+        mtv_type db(4, string("foo"));
+        db.push_back(long(100));
+        assert(db.event_handler().block_count == 2);
+        db.set(2, vals.begin(), vals.end()); // replace the lower part of a block.
+        assert(db.event_handler().block_count == 3);
+    }
+
+    {
+        vector<double> vals = { 1.1, 1.2 };
+        mtv_type db(6, string("foo"));
+        assert(db.event_handler().block_count == 1);
+        db.set(2, vals.begin(), vals.end()); // set the values to the middle of a block.
+        assert(db.event_handler().block_count == 3);
+    }
 }
 
 int main (int argc, char **argv)

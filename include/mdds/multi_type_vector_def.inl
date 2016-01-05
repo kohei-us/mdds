@@ -3290,8 +3290,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             size_type offset = block_index > 0 ? m_blocks[block_index-1]->m_size : 0;
             if (append_to_prev_block(block_index, cat, end_row-start_row+1, it_begin, it_end))
             {
-                delete blk;
-                assert(!"TESTME");
+                delete_block(blk);
                 m_blocks.erase(m_blocks.begin()+block_index);
 
                 // Check if we need to merge it with the next block.
@@ -3303,12 +3302,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             // Replace the whole block.
             if (blk->mp_data)
             {
+                m_hdl_event.element_block_destroyed(blk->mp_data);
                 element_block_func::delete_block(blk->mp_data);
-                assert(!"TESTME");
             }
 
             blk->mp_data = element_block_func::create_new_block(cat, 0);
-            assert(!"TESTME");
+            m_hdl_event.element_block_created(blk->mp_data);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             merge_with_next_block(block_index);
             return get_iterator(block_index, start_row_in_block);
@@ -3327,7 +3326,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
 
             if (!new_data)
                 throw std::logic_error("failed to instantiate a new data array.");
-            assert(!"TESTME");
 
             size_type pos = end_row - start_row_in_block + 1;
             element_block_func::assign_values_from_block(*new_data, *blk->mp_data, pos, length);
@@ -3338,7 +3336,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             element_block_func::resize_block(*blk->mp_data, 0);
             element_block_func::delete_block(blk->mp_data);
             blk->mp_data = new_data.release();
-            assert(!"TESTME");
+
+            // We don't call element block event listeners here.
         }
 
         length = end_row - start_row + 1;
@@ -3351,7 +3350,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
         blk->mp_data = element_block_func::create_new_block(cat, 0);
-        assert(!"TESTME");
+        m_hdl_event.element_block_created(blk->mp_data);
         blk->m_size = length;
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         return get_iterator(block_index, start_row_in_block);
@@ -3387,7 +3386,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             m_blocks.insert(m_blocks.begin()+block_index+1, new block(new_size));
             blk = m_blocks[block_index+1];
             blk->mp_data = element_block_func::create_new_block(cat, 0);
-            assert(!"TESTME");
+            m_hdl_event.element_block_created(blk->mp_data);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             return get_iterator(block_index+1, start_row);
         }
@@ -3398,7 +3397,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         m_blocks.push_back(new block(new_size));
         blk = m_blocks.back();
         blk->mp_data = element_block_func::create_new_block(cat, 0);
-        assert(!"TESTME");
+        m_hdl_event.element_block_created(blk->mp_data);
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         return get_iterator(block_index+1, start_row);
     }
@@ -3410,7 +3409,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         block_index, start_row-start_row_in_block, end_row-start_row+1, true);
 
     blk_new->mp_data = element_block_func::create_new_block(cat, 0);
-    assert(!"TESTME");
+    m_hdl_event.element_block_created(blk_new->mp_data);
     mdds_mtv_assign_values(*blk_new->mp_data, *it_begin, it_begin, it_end);
 
     return get_iterator(block_index+1, start_row);
