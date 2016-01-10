@@ -438,6 +438,19 @@ void mtv_test_block_counter()
         db.erase(2, 3);
         assert(db.event_handler().block_count == 1);
     }
+
+    {
+        mtv_type src(6, char('a')), dst(6);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 0);
+        src.transfer(0, 2, dst, 0);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 1);
+
+        src.transfer(3, 5, dst, 3);
+        assert(src.event_handler().block_count == 0);
+        assert(dst.event_handler().block_count == 1);
+    }
 }
 
 int main (int argc, char **argv)
