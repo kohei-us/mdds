@@ -277,7 +277,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_
 
     std::unique_ptr<block> blk = make_unique<block>(init_size);
     blk->mp_data = mdds_mtv_create_new_block(init_size, value);
-    m_hdl_event.element_block_created(blk->mp_data);
+    m_hdl_event.element_block_acquired(blk->mp_data);
     m_blocks.push_back(blk.release());
 }
 
@@ -295,7 +295,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_
 
     std::unique_ptr<block> blk = make_unique<block>(m_cur_size);
     blk->mp_data = mdds_mtv_create_new_block(*it_begin, it_begin, it_end);
-    m_hdl_event.element_block_created(blk->mp_data);
+    m_hdl_event.element_block_acquired(blk->mp_data);
     m_blocks.push_back(blk.release());
 }
 
@@ -311,7 +311,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(const multi_typ
         block* blk = new block(**it);
         m_blocks.push_back(blk);
         if (blk->mp_data)
-            m_hdl_event.element_block_created(blk->mp_data);
+            m_hdl_event.element_block_acquired(blk->mp_data);
     }
 }
 
@@ -387,7 +387,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_block(block* 
         // This block is empty.
         return;
 
-    m_hdl_event.element_block_destroyed(p->mp_data);
+    m_hdl_event.element_block_released(p->mp_data);
     element_block_func::delete_block(p->mp_data);
     p->mp_data = nullptr;
 }
@@ -779,7 +779,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::create_new_block_with_new_ce
 {
     if (data)
     {
-        m_hdl_event.element_block_destroyed(data);
+        m_hdl_event.element_block_released(data);
         element_block_func::delete_block(data);
     }
 
@@ -788,7 +788,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::create_new_block_with_new_ce
     if (!data)
         throw general_error("Failed to create new block.");
 
-    m_hdl_event.element_block_created(data);
+    m_hdl_event.element_block_acquired(data);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -989,7 +989,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
 
                             // Resize the previous block to zero
                             element_block_func::resize_block(*blk_prev->mp_data, 0);
-                            m_hdl_event.element_block_destroyed(blk_prev->mp_data);
+                            m_hdl_event.element_block_released(blk_prev->mp_data);
 
                             // Release both blocks which are no longer used
                             delete blk;
@@ -1009,7 +1009,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                             mdds_mtv_append_value(*blk_prev->mp_data, cell);
                             element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
                             element_block_func::resize_block(*blk_next->mp_data, 0);
-                            m_hdl_event.element_block_destroyed(blk_next->mp_data);
+                            m_hdl_event.element_block_released(blk_next->mp_data);
                             delete blk;
                             delete blk_next;
                             typename blocks_type::iterator it = m_blocks.begin() + block_index;
@@ -1157,7 +1157,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         // Delete the current block, and prepend the cell to the next block.
         blk_next->m_size += 1;
         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
-        m_hdl_event.element_block_destroyed(blk->mp_data);
+        m_hdl_event.element_block_released(blk->mp_data);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return begin();
@@ -1180,7 +1180,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
             // current block.
             mdds_mtv_append_value(*blk_prev->mp_data, cell);
             blk_prev->m_size += 1;
-            m_hdl_event.element_block_destroyed(blk->mp_data);
+            m_hdl_event.element_block_released(blk->mp_data);
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
         }
@@ -1211,7 +1211,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         if (blk_cat_next == cat)
         {
             // Delete the current block, and prepend the new cell to the next block.
-            m_hdl_event.element_block_destroyed(blk->mp_data);
+            m_hdl_event.element_block_released(blk->mp_data);
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
             blk = m_blocks[block_index];
@@ -1236,7 +1236,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
             size_type offset = blk_prev->m_size;
             blk_prev->m_size += 1;
             mdds_mtv_append_value(*blk_prev->mp_data, cell);
-            m_hdl_event.element_block_destroyed(blk->mp_data);
+            m_hdl_event.element_block_released(blk->mp_data);
             delete blk;
             m_blocks.erase(m_blocks.begin()+block_index);
             return get_iterator(block_index-1, start_row-offset);
@@ -1266,8 +1266,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
             element_block_func::resize_block(*blk_next->mp_data, 0);
 
             // Delete the current and next blocks.
-            m_hdl_event.element_block_destroyed(blk->mp_data);
-            m_hdl_event.element_block_destroyed(blk_next->mp_data);
+            m_hdl_event.element_block_released(blk->mp_data);
+            m_hdl_event.element_block_released(blk_next->mp_data);
             delete blk;
             delete blk_next;
             typename blocks_type::iterator it = m_blocks.begin() + block_index;
@@ -1289,7 +1289,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         size_type offset = blk_prev->m_size;
         blk_prev->m_size += 1;
         mdds_mtv_append_value(*blk_prev->mp_data, cell);
-        m_hdl_event.element_block_destroyed(blk->mp_data);
+        m_hdl_event.element_block_released(blk->mp_data);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return get_iterator(block_index-1, start_row-offset);
@@ -1300,7 +1300,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         // Prepend to the next block.
         blk_next->m_size += 1;
         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
-        m_hdl_event.element_block_destroyed(blk->mp_data);
+        m_hdl_event.element_block_released(blk->mp_data);
         delete blk;
         m_blocks.erase(m_blocks.begin()+block_index);
         return get_iterator(block_index, start_row);
@@ -1427,7 +1427,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::release()
         if (blk->mp_data)
         {
             element_block_func::resize_block(*blk->mp_data, 0);
-            m_hdl_event.element_block_destroyed(blk->mp_data);
+            m_hdl_event.element_block_released(blk->mp_data);
         }
         delete blk;
     }
@@ -2717,7 +2717,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     block* blk_next = m_blocks[block_index+2];
     blk_next->mp_data =
         element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->mp_data), 0);
-    m_hdl_event.element_block_created(blk_next->mp_data);
+    m_hdl_event.element_block_acquired(blk_next->mp_data);
 
     // Check if the previous block is the biger one
     if (size_blk_prev > size_blk_next)
@@ -2825,7 +2825,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
             m_blocks.insert(m_blocks.begin()+block_index, new block(length));
             blk = m_blocks[block_index];
             blk->mp_data = element_block_func::create_new_block(cat, 0);
-            m_hdl_event.element_block_created(blk->mp_data);
+            m_hdl_event.element_block_acquired(blk->mp_data);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             blk->m_size = length;
             m_cur_size += length;
@@ -2870,7 +2870,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
         blk->mp_data = element_block_func::create_new_block(cat, 0);
-        m_hdl_event.element_block_created(blk->mp_data);
+        m_hdl_event.element_block_acquired(blk->mp_data);
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         blk->m_size = length;
         m_cur_size += length;
@@ -2906,7 +2906,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
     // block for data series.
     block* blk2 = m_blocks[block_index+1];
     blk2->mp_data = element_block_func::create_new_block(cat, 0);
-    m_hdl_event.element_block_created(blk2->mp_data);
+    m_hdl_event.element_block_acquired(blk2->mp_data);
     mdds_mtv_assign_values(*blk2->mp_data, *it_begin, it_begin, it_end);
 
     if (blk->mp_data)
@@ -2916,7 +2916,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
         // block to hold data from the lower part of the existing block.
         block* blk3 = m_blocks[block_index+2];
         blk3->mp_data = element_block_func::create_new_block(blk_cat, 0);
-        m_hdl_event.element_block_created(blk3->mp_data);
+        m_hdl_event.element_block_acquired(blk3->mp_data);
 
         // Transfer the lower part of the current block to the new block.
         size_type offset = row - start_row;
@@ -2947,7 +2947,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_new_block_to_middle(
         assert(blk_lower->m_size == lower_block_size);
         element_category_type cat = mtv::get_block_type(*blk->mp_data);
         blk_lower->mp_data = element_block_func::create_new_block(cat, 0);
-        m_hdl_event.element_block_created(blk_lower->mp_data);
+        m_hdl_event.element_block_acquired(blk_lower->mp_data);
 
         // Try to copy the fewer amount of data to the new non-empty block.
         if (offset > lower_block_size) 
@@ -3302,12 +3302,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             // Replace the whole block.
             if (blk->mp_data)
             {
-                m_hdl_event.element_block_destroyed(blk->mp_data);
+                m_hdl_event.element_block_released(blk->mp_data);
                 element_block_func::delete_block(blk->mp_data);
             }
 
             blk->mp_data = element_block_func::create_new_block(cat, 0);
-            m_hdl_event.element_block_created(blk->mp_data);
+            m_hdl_event.element_block_acquired(blk->mp_data);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             merge_with_next_block(block_index);
             return get_iterator(block_index, start_row_in_block);
@@ -3350,7 +3350,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         m_blocks.insert(m_blocks.begin()+block_index, new block(length));
         blk = m_blocks[block_index];
         blk->mp_data = element_block_func::create_new_block(cat, 0);
-        m_hdl_event.element_block_created(blk->mp_data);
+        m_hdl_event.element_block_acquired(blk->mp_data);
         blk->m_size = length;
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         return get_iterator(block_index, start_row_in_block);
@@ -3386,7 +3386,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             m_blocks.insert(m_blocks.begin()+block_index+1, new block(new_size));
             blk = m_blocks[block_index+1];
             blk->mp_data = element_block_func::create_new_block(cat, 0);
-            m_hdl_event.element_block_created(blk->mp_data);
+            m_hdl_event.element_block_acquired(blk->mp_data);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
             return get_iterator(block_index+1, start_row);
         }
@@ -3397,7 +3397,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         m_blocks.push_back(new block(new_size));
         blk = m_blocks.back();
         blk->mp_data = element_block_func::create_new_block(cat, 0);
-        m_hdl_event.element_block_created(blk->mp_data);
+        m_hdl_event.element_block_acquired(blk->mp_data);
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         return get_iterator(block_index+1, start_row);
     }
@@ -3409,7 +3409,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         block_index, start_row-start_row_in_block, end_row-start_row+1, true);
 
     blk_new->mp_data = element_block_func::create_new_block(cat, 0);
-    m_hdl_event.element_block_created(blk_new->mp_data);
+    m_hdl_event.element_block_acquired(blk_new->mp_data);
     mdds_mtv_assign_values(*blk_new->mp_data, *it_begin, it_begin, it_end);
 
     return get_iterator(block_index+1, start_row);
@@ -3510,7 +3510,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
     else
     {
         data_blk->mp_data = element_block_func::create_new_block(cat, 0);
-        m_hdl_event.element_block_created(data_blk->mp_data);
+        m_hdl_event.element_block_acquired(data_blk->mp_data);
         mdds_mtv_assign_values(*data_blk->mp_data, *it_begin, it_begin, it_end);
     }
 

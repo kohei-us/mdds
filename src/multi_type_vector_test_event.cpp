@@ -43,12 +43,12 @@ struct event_block_counter
 
     event_block_counter() : block_count(0) {}
 
-    void element_block_created(const mtv::base_element_block* block)
+    void element_block_acquired(const mtv::base_element_block* block)
     {
         ++block_count;
     }
 
-    void element_block_destroyed(const mtv::base_element_block* block)
+    void element_block_released(const mtv::base_element_block* block)
     {
         --block_count;
     }
