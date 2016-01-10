@@ -2079,7 +2079,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_impl(
         if (dblock_index1 == dblock_index2)
         {
             // Destination range is also in a single block.
-            swap_single_blocks(
+            swap_single_block(
                 other, start_pos, end_pos, other_pos, start_pos_in_block1, block_index1,
                 start_pos_in_dblock1, dblock_index1);
         }
@@ -2112,7 +2112,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_impl(
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_blocks(
+void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
     multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
     size_type start_pos_in_block, size_type block_index, size_type start_pos_in_other_block, size_type other_block_index)
 {
