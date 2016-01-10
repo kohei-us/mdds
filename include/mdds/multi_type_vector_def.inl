@@ -1800,15 +1800,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         if (len < blk_dest->m_size)
         {
             // Shrink the existing block and insert slots for new blocks before it.
-            assert(len < blk_dest->m_size);
             blk_dest->m_size -= len;
             dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, block_len, nullptr);
         }
         else
         {
             // Destination block is exactly of the length of the elements being transferred.
-            delete dest.m_blocks[dest_block_index];
-            assert(!"TESTME");
+            dest.delete_block(dest.m_blocks[dest_block_index]);
             dest.m_blocks[dest_block_index] = nullptr;
             if (block_len > 1)
                 dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, block_len-1, nullptr);
@@ -1873,7 +1871,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     else
     {
         // Just move the whole block over.
-        dest.m_blocks[dest_block_index1] = m_blocks[block_index1];
+        block* blk = m_blocks[block_index1];
+        dest.m_blocks[dest_block_index1] = blk;
+        if (blk->mp_data)
+        {
+            dest.m_hdl_event.element_block_acquired(blk->mp_data);
+            m_hdl_event.element_block_released(blk->mp_data);
+        }
         m_blocks[block_index1] = nullptr;
     }
 
@@ -1885,7 +1889,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             size_type src_block_pos = block_index1 + 1 + i;
             size_type dest_block_pos = dest_block_index1 + 1 + i;
             assert(!dest.m_blocks[dest_block_pos]);
-            dest.m_blocks[dest_block_pos] = m_blocks[src_block_pos];
+            block* blk = m_blocks[src_block_pos];
+            dest.m_blocks[dest_block_pos] = blk;
+            if (blk->mp_data)
+            {
+                dest.m_hdl_event.element_block_acquired(blk->mp_data);
+                m_hdl_event.element_block_released(blk->mp_data);
+            }
             m_blocks[src_block_pos] = nullptr;
         }
     }
@@ -1918,7 +1928,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         else
         {
             // Just move the whole block over.
-            dest.m_blocks[dest_block_pos] = m_blocks[block_index2];
+            block* blk = m_blocks[block_index2];
+            dest.m_blocks[dest_block_pos] = blk;
+            if (blk->mp_data)
+            {
+                dest.m_hdl_event.element_block_acquired(blk->mp_data);
+                m_hdl_event.element_block_released(blk->mp_data);
+            }
             m_blocks[block_index2] = nullptr;
         }
     }
