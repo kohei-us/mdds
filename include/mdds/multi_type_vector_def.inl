@@ -1852,8 +1852,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             element_category_type cat = mtv::get_block_type(*blk->mp_data);
             blk_dest = dest.m_blocks[dest_block_index1];
             blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
-            assert(!"TESTME");
             assert(blk_dest->mp_data);
+            dest.m_hdl_event.element_block_acquired(blk_dest->mp_data);
 
             // Shallow-copy the elements to the destination block, and shrink
             // the source block to remove the transferred elements.
@@ -1917,7 +1917,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             {
                 element_category_type cat = mtv::get_block_type(*blk->mp_data);
                 blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
-                assert(!"TESTME");
+                dest.m_hdl_event.element_block_acquired(blk_dest->mp_data);
 
                 element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, 0, size_to_trans);
                 element_block_func::erase(*blk->mp_data, 0, size_to_trans);

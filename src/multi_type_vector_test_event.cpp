@@ -465,6 +465,32 @@ void mtv_test_block_counter()
         assert(src.event_handler().block_count == 0);
         assert(dst.event_handler().block_count == 4);
     }
+
+    {
+        mtv_type src(6), dst(6);
+        src.set(0, 1.1);
+        src.set(1, 1.2);
+        src.set(2, 1.3);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 0);
+
+        src.transfer(1, 3, dst, 1);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type src(6), dst(6);
+        src.set(3, 1.1);
+        src.set(4, 1.2);
+        src.set(5, 1.3);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 0);
+
+        src.transfer(1, 3, dst, 1);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 1);
+    }
 }
 
 int main (int argc, char **argv)
