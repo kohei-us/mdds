@@ -2169,9 +2169,11 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
         {
             // the whole block needs to be replaced.
             std::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->mp_data);
-            assert(!"TESTME");
+            m_hdl_event.element_block_released(blk_src->mp_data);
             blk_src->mp_data = other.exchange_elements(
                 *src_data, src_offset, other_block_index, dst_offset, len);
+            m_hdl_event.element_block_acquired(blk_src->mp_data);
+
             // Release elements in the source block to prevent double-deletion.
             element_block_func::resize_block(*src_data, 0);
             merge_with_adjacent_blocks(block_index);
@@ -3075,7 +3077,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
         {
             // The whole block will get replaced.
             std::unique_ptr<element_block_type, element_block_deleter> data(blk->mp_data);
-            assert(!"TESTME");
+            m_hdl_event.element_block_released(blk->mp_data);
             blk->mp_data = nullptr; // Prevent its deletion when the parent block gets deleted.
 
             if (blk_prev)
@@ -3119,7 +3121,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
             else
             {
                 blk->mp_data = element_block_func::create_new_block(cat_src, 0);
-                assert(!"TESTME");
+                m_hdl_event.element_block_acquired(blk->mp_data);
                 assert(blk->mp_data && blk->mp_data != data.get());
                 element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
             }
