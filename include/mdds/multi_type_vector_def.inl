@@ -2183,7 +2183,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
         // Get the new elements from the other container.
         std::unique_ptr<element_block_type, element_block_deleter> dst_data(
             other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
-        assert(!"TESTME");
 
         // Shrink the current block by erasing the top part.
         element_block_func::erase(*blk_src->mp_data, 0, len);
@@ -2196,6 +2195,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
             element_block_func::append_values_from_block(*blk_prev->mp_data, *dst_data);
             element_block_func::resize_block(*dst_data, 0); // prevent double-delete.
             blk_prev->m_size += len;
+            assert(!"TESTME");
         }
         else
         {
@@ -2203,6 +2203,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
             m_blocks.insert(m_blocks.begin()+block_index, new block(len));
             block* blk = m_blocks[block_index];
             blk->mp_data = dst_data.release();
+            m_hdl_event.element_block_acquired(blk->mp_data);
         }
         return;
     }
