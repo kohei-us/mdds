@@ -607,6 +607,46 @@ void mtv_test_block_counter()
         assert(src.event_handler().block_count == 3);
         assert(dst.event_handler().block_count == 1);
     }
+
+    {
+        mtv_type src(3), dst(3);
+        src.set(0, 1.1);
+        src.set(1, 1.2);
+        src.set(2, 1.3);
+
+        dst.set(0, string("2.1"));
+        dst.set(1, int(100));
+        dst.set(2, string("2.3"));
+
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 3);
+
+        src.swap(0, 2, dst, 0);
+        assert(src.event_handler().block_count == 3);
+        assert(dst.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type src(5), dst(5);
+        src.set(0, 1.1);
+        src.set(1, 1.2);
+        src.set(2, 1.3);
+        src.set(3, 1.4);
+        src.set(4, 1.5);
+
+        dst.set(0, string("2.1"));
+        dst.set(1, string("2.2"));
+        dst.set(2, int(100));
+        dst.set(3, string("2.3"));
+        dst.set(4, string("2.4"));
+
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 3);
+
+        src.swap(1, 3, dst, 1);
+        assert(src.event_handler().block_count == 5);
+        assert(dst.event_handler().block_count == 3);
+    }
 }
 
 int main (int argc, char **argv)

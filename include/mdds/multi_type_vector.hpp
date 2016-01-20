@@ -1072,6 +1072,8 @@ private:
         size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
         size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2);
 
+    void insert_blocks_at(size_type insert_pos, blocks_type& new_blocks);
+
     void prepare_blocks_to_transfer(blocks_to_transfer& bucket, size_type block_index1, size_type offset1, size_type block_index2, size_type offset2);
 
     iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block, bool overwrite);

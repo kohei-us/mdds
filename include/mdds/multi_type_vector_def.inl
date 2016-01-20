@@ -2288,8 +2288,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
         if (src_tail_len == 0)
         {
             // the whole block needs to be replaced.
-            delete blk_src;
-            assert(!"TESTME");
+            delete_block(blk_src);
             m_blocks.erase(m_blocks.begin()+block_index);
         }
         else
@@ -2299,7 +2298,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
             blk_src->m_size -= len;
         }
 
-        m_blocks.insert(m_blocks.begin()+block_index, new_blocks.begin(), new_blocks.end());
+        insert_blocks_at(block_index, new_blocks);
         merge_with_next_block(block_index+new_blocks.size()-1); // last block inserted.
         if (block_index > 0)
             merge_with_next_block(block_index-1); // block before the first block inserted.
@@ -2322,12 +2321,11 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
 
         // This creates an empty block at block_index+1.
         set_new_block_to_middle(block_index, src_offset, len, false);
-        delete m_blocks[block_index+1];
-        assert(!"TESTME");
+        delete_block(m_blocks[block_index+1]);
         m_blocks.erase(m_blocks.begin()+block_index+1);
     }
 
-    m_blocks.insert(m_blocks.begin()+block_index+1, new_blocks.begin(), new_blocks.end());
+    insert_blocks_at(block_index+1, new_blocks);
     merge_with_next_block(block_index+new_blocks.size()); // last block inserted.
     merge_with_next_block(block_index); // block before the first block inserted.
 }
@@ -2369,6 +2367,20 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_multi_to_multi_blocks(
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_blocks_at(
+    size_type insert_pos, blocks_type& new_blocks)
+{
+    std::for_each(new_blocks.begin(), new_blocks.end(),
+        [&](block* p)
+        {
+            if (p->mp_data)
+                m_hdl_event.element_block_acquired(p->mp_data);
+        }
+    );
+    m_blocks.insert(m_blocks.begin()+insert_pos, new_blocks.begin(), new_blocks.end());
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
     blocks_to_transfer& bucket, size_type block_index1, size_type offset1, size_type block_index2, size_type offset2)
 {
@@ -2400,7 +2412,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
         if (blk->mp_data)
         {
             block_first->mp_data = element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
-            assert(!"TESTME");
             element_block_func::assign_values_from_block(*block_first->mp_data, *blk->mp_data, offset1, blk_size);
 
             // Shrink the existing block.
@@ -2424,7 +2435,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
         if (blk->mp_data)
         {
             block_last->mp_data = element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
-            assert(!"TESTME");
             element_block_func::assign_values_from_block(*block_last->mp_data, *blk->mp_data, 0, blk_size);
 
             // Shrink the existing block.
@@ -2438,7 +2448,14 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
     if (block_first)
         bucket.blocks.push_back(block_first.release());
 
-    std::copy(it_begin, it_end, std::back_inserter(bucket.blocks));
+    std::for_each(it_begin, it_end,
+        [&](block* p)
+        {
+            if (p->mp_data)
+                m_hdl_event.element_block_released(p->mp_data);
+            bucket.blocks.push_back(p);
+        }
+    );
 
     if (block_last)
         bucket.blocks.push_back(block_last.release());
@@ -3269,7 +3286,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
     m_blocks.insert(m_blocks.begin()+bucket.insert_index, new block(len));
     block* blk = m_blocks[bucket.insert_index];
     blk->mp_data = element_block_func::create_new_block(mtv::get_block_type(src_data), 0);
-    assert(!"TESTME");
+    m_hdl_event.element_block_acquired(blk->mp_data);
     element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
     merge_with_adjacent_blocks(bucket.insert_index);
 
