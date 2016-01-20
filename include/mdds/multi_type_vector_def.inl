@@ -2195,7 +2195,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
             element_block_func::append_values_from_block(*blk_prev->mp_data, *dst_data);
             element_block_func::resize_block(*dst_data, 0); // prevent double-delete.
             blk_prev->m_size += len;
-            assert(!"TESTME");
         }
         else
         {
