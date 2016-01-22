@@ -3150,13 +3150,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
 
         // New block to send back to the caller.
         std::unique_ptr<element_block_type, element_block_deleter> data(nullptr);
-        assert(!"TESTME");
 
         if (blk->mp_data)
         {
             element_category_type cat_dst = mtv::get_block_type(*blk->mp_data);
             data.reset(element_block_func::create_new_block(cat_dst, 0));
-            assert(!"TESTME");
 
             // We need to keep the tail elements of the current block.
             element_block_func::assign_values_from_block(*data, *blk->mp_data, 0, len);
@@ -3177,7 +3175,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
             m_blocks.insert(m_blocks.begin()+dst_index, new block(len));
             blk = m_blocks[dst_index];
             blk->mp_data = element_block_func::create_new_block(cat_src, 0);
-            assert(!"TESTME");
+            m_hdl_event.element_block_acquired(blk->mp_data);
             element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
         }
 
