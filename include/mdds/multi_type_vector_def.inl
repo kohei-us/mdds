@@ -3107,16 +3107,17 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
                 std::advance(it, dst_index);
                 typename blocks_type::iterator it_end = it;
                 ++it_end;
-                delete blk;
-                assert(!"TESTME");
+
+                assert(!blk->mp_data);
+                delete blk; // no need to call delete_block since mp_data is null.
+
                 if (blk_next)
                 {
                     // Apend elements from the next block too.
                     element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
                     blk_prev->m_size += blk_next->m_size;
                     ++it_end;
-                    delete blk_next;
-                    assert(!"TESTME");
+                    delete_block(blk_next);
                 }
 
                 m_blocks.erase(it, it_end);
@@ -3129,8 +3130,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
                 // We need to merge with the next block.  Remove the current
                 // block and use the next block to store the new elements as
                 // well as the existing ones.
-                delete blk;
-                assert(!"TESTME");
+                delete_block(blk);
                 m_blocks.erase(m_blocks.begin()+dst_index);
                 blk = blk_next;
                 element_block_func::prepend_values_from_block(*blk->mp_data, src_data, src_offset, len);

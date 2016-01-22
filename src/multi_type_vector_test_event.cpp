@@ -647,6 +647,64 @@ void mtv_test_block_counter()
         assert(src.event_handler().block_count == 5);
         assert(dst.event_handler().block_count == 3);
     }
+
+    {
+        mtv_type src(3), dst(4);
+        src.set(0, 1.1);
+        src.set(1, 1.2);
+        src.set(2, 1.3);
+
+        dst.set(0, 2.1);
+        dst.set(1, int(5));
+        dst.set(2, int(6));
+        dst.set(3, int(7));
+
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 2);
+
+        src.swap(0, 2, dst, 1);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type src(3), dst(5);
+        src.set(0, 1.1);
+        src.set(1, 1.2);
+        src.set(2, 1.3);
+
+        dst.set(0, 2.1);
+        dst.set(1, int(5));
+        dst.set(2, int(6));
+        dst.set(3, int(7));
+        dst.set(4, 2.2);
+
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 3);
+
+        src.swap(0, 2, dst, 1);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 1);
+    }
+
+    {
+        mtv_type src(3), dst(4);
+        src.set(0, 1.1);
+        src.set(1, 1.2);
+        src.set(2, 1.3);
+
+        dst.set(0, int(5));
+        dst.set(1, int(6));
+        dst.set(2, int(7));
+        dst.set(3, 2.1);
+
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 2);
+
+        src.swap(0, 2, dst, 0);
+        assert(src.event_handler().block_count == 1);
+        assert(dst.event_handler().block_count == 1);
+    }
 }
 
 int main (int argc, char **argv)
