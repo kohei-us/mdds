@@ -3184,12 +3184,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
 
     // New block to send back to the caller.
     std::unique_ptr<element_block_type, element_block_deleter> data(nullptr);
-    assert(!"TESTME");
+
     if (blk->mp_data)
     {
+        // Copy the elements of the current block to the block being returned.
         element_category_type cat_dst = mtv::get_block_type(*blk->mp_data);
         data.reset(element_block_func::create_new_block(cat_dst, 0));
-        assert(!"TESTME");
         element_block_func::assign_values_from_block(*data, *blk->mp_data, dst_offset, len);
     }
 
@@ -3215,8 +3215,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
             m_blocks.insert(m_blocks.begin()+dst_index+1, new block(len));
             blk = m_blocks[dst_index+1];
             blk->mp_data = element_block_func::create_new_block(cat_src, 0);
-            assert(!"TESTME");
             assert(blk->mp_data);
+            m_hdl_event.element_block_acquired(blk->mp_data);
             element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
         }
     }
@@ -3227,8 +3227,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
         blk = set_new_block_to_middle(dst_index, dst_offset, len, false);
         assert(blk->m_size == len);
         blk->mp_data = element_block_func::create_new_block(cat_src, 0);
-        assert(!"TESTME");
         assert(blk->mp_data);
+        m_hdl_event.element_block_acquired(blk->mp_data);
         element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
     }
 
