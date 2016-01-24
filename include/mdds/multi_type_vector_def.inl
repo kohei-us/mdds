@@ -3744,10 +3744,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::merge_with_adjacent_blocks(size_t
             element_block_func::resize_block(*blk->mp_data, 0);
             element_block_func::resize_block(*blk_next->mp_data, 0);
 
-            delete blk;
-            assert(!"TESTME");
-            delete blk_next;
-            assert(!"TESTME");
+            delete_block(blk);
+            delete_block(blk_next);
+
             typename blocks_type::iterator it = m_blocks.begin();
             std::advance(it, block_index);
             typename blocks_type::iterator it_end = it;
