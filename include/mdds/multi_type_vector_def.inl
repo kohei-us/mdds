@@ -3763,7 +3763,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::merge_with_adjacent_blocks(size_t
         return size_prev;
     }
 
-    // Previous block is empty.
+    assert(!blk_prev->mp_data); // Previous block is empty.
+
     if (blk->mp_data)
     {
         // Current block is not empty. Check with the next block.
@@ -3772,11 +3773,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::merge_with_adjacent_blocks(size_t
     }
 
     // Previous and current blocks are both empty.
+    assert(!blk->mp_data);
+
     if (blk_next && !blk_next->mp_data)
     {
         // Next block is empty too. Merge all three.
         blk_prev->m_size += blk->m_size + blk_next->m_size;
-        assert(!blk->mp_data);
         delete blk; // No need to call delete_block since we know it's an empty block.
         delete blk_next; // Same here.
         typename blocks_type::iterator it = m_blocks.begin();
