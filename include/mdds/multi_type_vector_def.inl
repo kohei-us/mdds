@@ -258,6 +258,14 @@ template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector() : m_cur_size(0) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
+multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(const event_func& hdl) :
+    m_hdl_event(hdl), m_cur_size(0) {}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(event_func&& hdl) :
+    m_hdl_event(std::move(hdl)), m_cur_size(0) {}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_size) : m_cur_size(init_size)
 {
     if (!init_size)

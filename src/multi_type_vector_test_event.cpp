@@ -156,6 +156,19 @@ struct event_block_counter
     }
 };
 
+struct event_block_init
+{
+    std::string name;
+    std::string ctor_type;
+
+    event_block_init(const std::string& _name) : name(_name), ctor_type("normal") {}
+    event_block_init(const event_block_init& other) : name(other.name), ctor_type("copy") {}
+    event_block_init(event_block_init&& other) : name(std::move(other.name)), ctor_type("move") {}
+
+    void element_block_acquired(const mtv::base_element_block* /*block*/) {}
+    void element_block_released(const mtv::base_element_block* /*block*/) {}
+};
+
 void mtv_test_block_counter()
 {
     stack_printer __stack_printer__("::mtv_test_block_counter");
@@ -1085,11 +1098,33 @@ void mtv_test_block_counter()
     }
 }
 
+void mtv_test_block_init()
+{
+    stack_printer __stack_printer__("::mtv_test_block_init");
+
+    typedef multi_type_vector<mtv::element_block_func, event_block_init> mtv_type;
+
+    {
+        mtv_type db(event_block_init("some name")); // pass an rvalue
+        assert(db.event_handler().name == "some name");
+        assert(db.event_handler().ctor_type == "move");
+    }
+
+    {
+        event_block_init ebi("other name");
+        assert(ebi.ctor_type == "normal");
+        mtv_type db(ebi); // pass an lvalue
+        assert(db.event_handler().name == "other name");
+        assert(db.event_handler().ctor_type == "copy");
+    }
+}
+
 int main (int argc, char **argv)
 {
     try
     {
         mtv_test_block_counter();
+        mtv_test_block_init();
     }
     catch (const std::exception& e)
     {
