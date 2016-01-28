@@ -62,7 +62,8 @@ its underlying storage.
 
 API Documentation
 =================
-API documentation is found [here](http://kohei.us/files/mdds/doc/).
+* [Official API documentation](http://kohei.us/files/mdds/doc/).
+* [Doxygen code documentation](http://kohei.us/files/mdds/doxygen/).
 
 How-To
 ======
