@@ -1,6 +1,6 @@
 .. highlight:: cpp
 
-Flat segment tree
+Flat Segment Tree
 =================
 
 .. doxygenclass:: mdds::flat_segment_tree

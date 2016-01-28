@@ -49,6 +49,12 @@ namespace mdds {
 
 namespace detail {
 
+/**
+ * Empty event function handler structure, used when no custom function
+ * handler is specified.
+ *
+ * @see mdds::multi_type_vector
+ */
 struct mtv_event_func
 {
     void element_block_acquired(const mdds::mtv::base_element_block* /*block*/) {}
@@ -74,6 +80,24 @@ public:
     typedef typename mdds::mtv::base_element_block element_block_type;
     typedef typename mdds::mtv::element_t element_category_type;
     typedef _ElemBlockFunc element_block_func;
+
+    /**
+     * Optional event handler function structure, whose functions get called
+     * at specific events.  The following events are currently supported:
+     *
+     * <ul>
+     * <li><strong>element_block_acquired</strong> - this gets called whenever
+     * the container acquires a new element block either as a result of a new
+     * element block creation or a tranfer of an existing
+     * element block from another container.</li>
+     * <li><strong>element_block_released</strong> - this gets called whenever
+     * the container releases an existing element block either because
+     * the block gets deleted or gets transferred to another container.</li>
+     * </ul>
+     *
+     * @see mdds::detail::mtv_event_func for the precise function signatures
+     *      of the event handler functions.
+     */
     typedef _EventFunc event_func;
 
 private:

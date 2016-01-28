@@ -8,6 +8,7 @@ EXEC= \
 	point_quad_tree \
 	mixed_type_matrix \
 	multi_type_vector \
+	multi_type_vector_event1 \
 	trie_map \
 	packed_trie_map
 
@@ -24,6 +25,7 @@ point_quad_tree: point_quad_tree.cpp
 mixed_type_matrix: mixed_type_matrix.cpp
 
 multi_type_vector: multi_type_vector.cpp
+multi_type_vector_event1: multi_type_vector_event1.cpp
 
 trie_map: trie_map.cpp
 

@@ -1,23 +1,23 @@
 .. highlight:: cpp
 
 
-Trie maps
+Trie Maps
 =========
 
-Trie map
+Trie Map
 --------
 
 .. doxygenclass:: mdds::trie_map
    :members:
 
 
-Packed trie map
+Packed Trie Map
 ---------------
 
 .. doxygenclass:: mdds::packed_trie_map
    :members:
 
-String trait
+String Trait
 ------------
 
 .. doxygenstruct:: mdds::trie::std_string_trait

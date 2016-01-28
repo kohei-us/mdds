@@ -1,6 +1,6 @@
 .. highlight:: cpp
 
-Sorted string map
+Sorted String Map
 =================
 
 .. doxygenclass:: mdds::sorted_string_map

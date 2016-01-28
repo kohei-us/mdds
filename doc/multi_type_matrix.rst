@@ -1,6 +1,6 @@
 .. highlight:: cpp
 
-Multi type matrix
+Multi Type Matrix
 =================
 
 .. doxygenclass:: mdds::multi_type_matrix

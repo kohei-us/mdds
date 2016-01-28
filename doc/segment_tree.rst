@@ -1,6 +1,6 @@
 .. highlight:: cpp
 
-Segment tree
+Segment Tree
 ============
 
 .. doxygenclass:: mdds::segment_tree
