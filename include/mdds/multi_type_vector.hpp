@@ -65,11 +65,29 @@ struct mtv_event_func
 }
 
 /**
- * Multi-type vector consists of a series of blocks, and each block stores a
- * series of non-empty elements of identical type.  In this container,
- * elements are represented simply as values that they store; there are no
- * separate element objects that the user of this container needs to deal
- * with.  The user accesses directly with the raw values.
+ * Multi-type vector consists of a series of one or more blocks, and each
+ * block may either be empty, or stores a series of non-empty elements of
+ * identical type.  These blocks collectively represent a single
+ * one-dimension array that may store elements of different types.  It is
+ * guaranteed that the block types of neighboring blocks are always
+ * different.
+ *
+ * Structurally, the primary array stores block instances whose types
+ * are of <code>value_type</code>, which in turn consists of the following
+ * data members:
+ *
+ * <ul>
+ * <li><code>type</code> which indicates the block type,</li>
+ * <li><code>position</code> which stores the logical position of the
+ * first element of the block,</li>
+ * <li><code>size</code> which stores the logical size of the block,
+ * and</li>
+ * <li><code>data</code> which stores the pointer to a secondary array
+ * (a.k.a. element block) which stores the actual element values, or
+ * <code>nullptr</code> in case the block represents an empty segment.</li>
+ * </ul>
+ *
+ * @see mdds::multi_type_vector::value_type
  */
 template<typename _ElemBlockFunc, typename _EventFunc = detail::mtv_event_func>
 class multi_type_vector
@@ -86,11 +104,11 @@ public:
      * at specific events.  The following events are currently supported:
      *
      * <ul>
-     * <li><strong>element_block_acquired</strong> - this gets called whenever
+     * <li><code>element_block_acquired</code> - this gets called whenever
      * the container acquires a new element block either as a result of a new
      * element block creation or a tranfer of an existing
      * element block from another container.</li>
-     * <li><strong>element_block_released</strong> - this gets called whenever
+     * <li><code>element_block_released</code> - this gets called whenever
      * the container releases an existing element block either because
      * the block gets deleted or gets transferred to another container.</li>
      * </ul>
@@ -171,6 +189,21 @@ public:
     typedef __mtv::const_iterator_base<const_iterator_trait, itr_forward_update, iterator> const_iterator;
     typedef __mtv::const_iterator_base<const_reverse_iterator_trait, itr_no_update, reverse_iterator> const_reverse_iterator;
 
+    /**
+     * value_type is the type of a block stored in the primary array.  It
+     * consists of the following data members:
+     *
+     * <ul>
+     * <li><code>type</code> which indicates the block type,</li>
+     * <li><code>position</code> which stores the logical position of the
+     * first element of the block,</li>
+     * <li><code>size</code> which stores the logical size of the block,
+     * and</li>
+     * <li><code>data</code> which stores the pointer to a secondary array
+     * (a.k.a. element block) which stores the actual element values, or
+     * <code>nullptr</code> in case the block represents an empty segment.</li>
+     * </ul>
+     */
     typedef itr_node value_type;
 
     typedef std::pair<iterator, size_type> position_type;

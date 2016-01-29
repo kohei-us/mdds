@@ -37,9 +37,8 @@ int main()
     con.set(2, 1.3);
 
     // Set a sequence of values in one step.
-    double vals[] = { 10.1, 10.2, 10.3, 10.4, 10.5 };
-    double* p = &vals[0];
-    con.set(3, p, p + 5);
+    std::vector<double> vals = { 10.1, 10.2, 10.3, 10.4, 10.5 };
+    con.set(3, vals.begin(), vals.end());
 
     // Set string values.
     con.set(10, std::string("Andy"));

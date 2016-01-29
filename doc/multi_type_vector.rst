@@ -16,7 +16,9 @@ Example
 Simple use case
 ^^^^^^^^^^^^^^^
 
-TODO: Annotate this.
+The following code demonstrates a simple use case of storing values of double
+and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds::multi_type_vector`.
+
 ::
 
    #include <mdds/multi_type_vector.hpp>
@@ -57,9 +59,8 @@ TODO: Annotate this.
        con.set(2, 1.3);
 
        // Set a sequence of values in one step.
-       double vals[] = { 10.1, 10.2, 10.3, 10.4, 10.5 };
-       double* p = &vals[0];
-       con.set(3, p, p + 5);
+       std::vector<double> vals = { 10.1, 10.2, 10.3, 10.4, 10.5 };
+       con.set(3, vals.begin(), vals.end());
 
        // Set string values.
        con.set(10, std::string("Andy"));
@@ -116,6 +117,12 @@ You'll see the following console output when you compile and execute this code:
    empty block of size 7
     - no data -
 
+Each container instance consists of an array of blocks each of which stores
+``type``, ``position``, ``size`` and ``data`` members.  In this example code,
+the ``type`` member is referenced to determine the block type and its logical
+size is inferred from the ``size`` member.  For the numeric and string blocks,
+the ``data`` member is dereferenced to gain access to their respective element
+blocks in order to print them out to stdout inside the ``print_block`` function.
 
 Use custom event handlers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
