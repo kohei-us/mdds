@@ -119,10 +119,11 @@ You'll see the following console output when you compile and execute this code:
 
 Each container instance consists of an array of blocks each of which stores
 ``type``, ``position``, ``size`` and ``data`` members.  In this example code,
-the ``type`` member is referenced to determine the block type and its logical
-size is inferred from the ``size`` member.  For the numeric and string blocks,
-the ``data`` member is dereferenced to gain access to their respective element
-blocks in order to print them out to stdout inside the ``print_block`` function.
+the ``type`` member is referenced to determine its block type and its logical
+size is determine from the ``size`` member.  For the numeric and string blocks,
+their ``data`` members, which should point to valid memory addresses of their
+respective element blocks, are dereferenced to gain access to them in order to
+print out their contents to stdout inside the ``print_block`` function.
 
 Use custom event handlers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
