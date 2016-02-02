@@ -117,6 +117,12 @@ You'll see the following console output when you compile and execute this code:
    empty block of size 7
     - no data -
 
+.. figure:: _static/images/mtv_block_structure.png
+   :align: right
+
+   Figure depicting the ownership structure between the primary array, blocks,
+   and element blocks.
+
 Each container instance consists of an array of blocks each of which stores
 ``type``, ``position``, ``size`` and ``data`` members.  In this example code,
 the ``type`` member is referenced to determine its block type and its logical
@@ -210,3 +216,4 @@ thing to keep in mind is that since these two handlers pertain to element
 blocks which are owned by non-empty blocks, and empty blocks don't own element
 block instances, creations or deletions of empty blocks don't trigger these
 event handlers.
+
