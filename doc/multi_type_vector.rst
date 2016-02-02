@@ -128,8 +128,19 @@ print out their contents to stdout inside the ``print_block`` function.
 Use custom event handlers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO: Annotate this.
-::
+It is also possible to define custom event handlers that get called when
+certain events take place.  To define custom event handlers, you need to
+define either a class or a struct that has the following methods:
+
+* **void element_block_acquired(mdds::mtv::base_element_block* block)**
+* **void element_block_released(mdds::mtv::base_element_block* block)**
+
+as its public methods, then pass it as the second template argument when
+instantiating your :cpp:class:`~mdds::multi_type_vector` type.  Refer to
+:cpp:member:`mdds::multi_type_vector::event_func` for the details on when each
+event handler method gets triggered.
+
+The following code example demonstrates how this all works::
 
    #include <mdds/multi_type_vector.hpp>
    #include <mdds/multi_type_vector_trait.hpp>
@@ -190,3 +201,12 @@ You'll see the following console output when you compile and execute this code:
      * element block released
    exiting program...
 
+In this example, the **element_block_acquired** handler gets triggered each
+time the container creates (thus acquires) a new element block to store a value.
+It does *not* get called when a new value is appended to a pre-existing element
+block.  Similarly, the **element_block_releasd** handler gets triggered each
+time an existing element block storing non-empty values gets deleted.  One
+thing to keep in mind is that since these two handlers pertain to element
+blocks which are owned by non-empty blocks, and empty blocks don't own element
+block instances, creations or deletions of empty blocks don't trigger these
+event handlers.
