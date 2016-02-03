@@ -26,6 +26,7 @@ mixed_type_matrix: mixed_type_matrix.cpp
 
 multi_type_vector: multi_type_vector.cpp
 multi_type_vector_event1: multi_type_vector_event1.cpp
+multi_type_vector_element_block1: multi_type_vector_element_block1.cpp
 
 trie_map: trie_map.cpp
 
