@@ -2,8 +2,6 @@
 #include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector_trait.hpp>
 #include <iostream>
-#include <vector>
-#include <string>
 
 using namespace std;
 using mdds::mtv::numeric_element_block;
