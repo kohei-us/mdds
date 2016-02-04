@@ -24,6 +24,9 @@
     value_type pointer which did not conform to the behaviors of STL
     iterators.
 
+  * added support for custom event handlers for element block
+    acquisitions and releases.
+
 * flat_segment_tree
 
   * fixed incorrect return values of the increment and decrement
