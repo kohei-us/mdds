@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (default)
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (custom)", "multi_type_vector_custom\multi_type_vector_custom.vcxproj", "{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (event)", "multi_type_vector_event\multi_type_vector_event.vcxproj", "{9697547D-F26F-4AD7-85C6-273E141CB59A}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_matrix", "multi_type_matrix\multi_type_matrix.vcxproj", "{831A2583-F85F-4AF1-9851-8978D8BC8409}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (perf)", "multi_type_vector_perf\multi_type_vector_perf.vcxproj", "{2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4}"
@@ -55,6 +57,10 @@ Global
 		{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}.Debug|Win32.Build.0 = Debug|Win32
 		{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}.Release|Win32.ActiveCfg = Release|Win32
 		{9B0A2A1D-C861-4526-A4DA-F44D888AFBEF}.Release|Win32.Build.0 = Release|Win32
+		{9697547D-F26F-4AD7-85C6-273E141CB59A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9697547D-F26F-4AD7-85C6-273E141CB59A}.Debug|Win32.Build.0 = Debug|Win32
+		{9697547D-F26F-4AD7-85C6-273E141CB59A}.Release|Win32.ActiveCfg = Release|Win32
+		{9697547D-F26F-4AD7-85C6-273E141CB59A}.Release|Win32.Build.0 = Release|Win32
 		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Debug|Win32.ActiveCfg = Debug|Win32
 		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Debug|Win32.Build.0 = Debug|Win32
 		{831A2583-F85F-4AF1-9851-8978D8BC8409}.Release|Win32.ActiveCfg = Release|Win32

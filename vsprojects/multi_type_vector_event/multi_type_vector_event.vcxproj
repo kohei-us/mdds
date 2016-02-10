@@ -11,8 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7C7AC06B-6C02-420B-8BAE-6330C8DB83AC}</ProjectGuid>
-    <RootNamespace>mixed_type_matrix</RootNamespace>
+    <ProjectName>multi_type_vector (event)</ProjectName>
+    <ProjectGuid>{9697547D-F26F-4AD7-85C6-273E141CB59A}</ProjectGuid>
+    <RootNamespace>multi_type_vector</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -82,18 +83,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\mixed_type_matrix_test.cpp" />
+    <ClCompile Include="..\..\src\multi_type_vector_test_event.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\mdds\mixed_type_matrix.hpp" />
-    <ClInclude Include="..\..\include\mdds\mixed_type_matrix_element.hpp" />
-    <ClInclude Include="..\..\include\mdds\mixed_type_matrix_flag_storage.hpp" />
-    <ClInclude Include="..\..\include\mdds\mixed_type_matrix_storage.hpp" />
+    <ClInclude Include="..\..\include\mdds\multi_type_vector.hpp" />
+    <ClInclude Include="..\..\include\mdds\multi_type_vector_itr.hpp" />
+    <ClInclude Include="..\..\include\mdds\multi_type_vector_macro.hpp" />
+    <ClInclude Include="..\..\include\mdds\multi_type_vector_trait.hpp" />
+    <ClInclude Include="..\..\include\mdds\multi_type_vector_types.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\include\mdds\mixed_type_matrix_def.inl" />
-    <None Include="..\..\include\mdds\mixed_type_matrix_storage_filled_linear.inl" />
-    <None Include="..\..\include\mdds\mixed_type_matrix_storage_sparse.inl" />
+    <None Include="..\..\include\mdds\multi_type_vector_def.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
