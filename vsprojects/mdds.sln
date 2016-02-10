@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxproj", "{3D33EFFC-5A65-4375-81AA-FCEA29016A50}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rectangle_set", "rectangle_set\rectangle_set.vcxproj", "{F00F70DF-E414-4B53-871F-33520245D338}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "point_quad_tree", "point_quad_tree\point_quad_tree.vcxproj", "{A77E2B1A-7535-4770-8DDC-0DB088E5929A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mixed_type_matrix", "mixed_type_matrix\mixed_type_matrix.vcxproj", "{7C7AC06B-6C02-420B-8BAE-6330C8DB83AC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (default)", "multi_type_vector_default\multi_type_vector_default.vcxproj", "{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}"
 EndProject
@@ -49,10 +47,6 @@ Global
 		{A77E2B1A-7535-4770-8DDC-0DB088E5929A}.Debug|Win32.Build.0 = Debug|Win32
 		{A77E2B1A-7535-4770-8DDC-0DB088E5929A}.Release|Win32.ActiveCfg = Release|Win32
 		{A77E2B1A-7535-4770-8DDC-0DB088E5929A}.Release|Win32.Build.0 = Release|Win32
-		{7C7AC06B-6C02-420B-8BAE-6330C8DB83AC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{7C7AC06B-6C02-420B-8BAE-6330C8DB83AC}.Debug|Win32.Build.0 = Debug|Win32
-		{7C7AC06B-6C02-420B-8BAE-6330C8DB83AC}.Release|Win32.ActiveCfg = Release|Win32
-		{7C7AC06B-6C02-420B-8BAE-6330C8DB83AC}.Release|Win32.Build.0 = Release|Win32
 		{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}.Debug|Win32.ActiveCfg = Debug|Win32
 		{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}.Debug|Win32.Build.0 = Debug|Win32
 		{8A8EA8ED-3F6B-49FE-8B83-495EFF8E560C}.Release|Win32.ActiveCfg = Release|Win32
