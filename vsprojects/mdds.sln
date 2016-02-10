@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxproj", "{3D33EFFC-5A65-4375-81AA-FCEA29016A50}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9697547D-F26F-4AD7-85C6-273E141CB59A} = {9697547D-F26F-4AD7-85C6-273E141CB59A}
+		{994478DE-6081-4C12-B366-1BBC19949015} = {994478DE-6081-4C12-B366-1BBC19949015}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flat_segment_tree", "flat_segment_tree\flat_segment_tree.vcxproj", "{DE2B238C-D05D-4FB1-AC00-B4B847F43B1C}"
 EndProject
@@ -24,6 +28,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_type_vector (perf)", "multi_type_vector_perf\multi_type_vector_perf.vcxproj", "{2B6E6C8A-20A9-44D9-84B9-3C575C37E8B4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sorted_string_map", "sorted_string_map\sorted_string_map.vcxproj", "{E863C7CA-CF4F-4E83-9532-DA5FE61C4877}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "trie_map", "trie_map\trie_map.vcxproj", "{994478DE-6081-4C12-B366-1BBC19949015}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +79,10 @@ Global
 		{E863C7CA-CF4F-4E83-9532-DA5FE61C4877}.Debug|Win32.Build.0 = Debug|Win32
 		{E863C7CA-CF4F-4E83-9532-DA5FE61C4877}.Release|Win32.ActiveCfg = Release|Win32
 		{E863C7CA-CF4F-4E83-9532-DA5FE61C4877}.Release|Win32.Build.0 = Release|Win32
+		{994478DE-6081-4C12-B366-1BBC19949015}.Debug|Win32.ActiveCfg = Debug|Win32
+		{994478DE-6081-4C12-B366-1BBC19949015}.Debug|Win32.Build.0 = Debug|Win32
+		{994478DE-6081-4C12-B366-1BBC19949015}.Release|Win32.ActiveCfg = Release|Win32
+		{994478DE-6081-4C12-B366-1BBC19949015}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
