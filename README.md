@@ -140,6 +140,7 @@ Download
 
 | Version | API Version | Release Date | Download | Check Sum | File Size (bytes) |
 |---------|-------------|--------------|----------|-----------|-------------------|
+| 1.1.0 | 1.0 | 2016-02-10 | [mdds_1.1.0.tar.bz2](http://kohei.us/files/mdds/src/mdds_1.1.0.tar.bz2) | sha256sum: 4253ab93fe8bb579321a50e247f1f800191ab99fe2d8c6c181741b8bd3fb161f | 258691 |
 | 1.0.0 | 1.0 | 2015-10-06 | [mdds_1.0.0.tar.bz2](http://kohei.us/files/mdds/src/mdds_1.0.0.tar.bz2) | sha256sum: ef8abc1236b54c7ca16ae1ee38abfb9cdbc5d1e6a2427c65b92b8c1003e3bf56 | 166619 |
 | 0.12.1 || 2015-06-11 | [mdds_0.12.1.tar.bz2](http://kohei.us/files/mdds/src/mdds_0.12.1.tar.bz2) | md5sum: ef2560ed5416652a7fe195305b14cebe<br/>sha1sum: e7469349f8d0c65545896fe553918f3ea93bd84d | - |
 | 0.12.0 || 2015-02-05 | [mdds_0.12.0.tar.bz2](http://kohei.us/files/mdds/src/mdds_0.12.0.tar.bz2) | md5sum: 17edb780d4054e4205cd956910672b83<br/>sha1sum: 043590edde76a1df3e96070c46cbc7ae5f88f081 | - |
