@@ -41,6 +41,7 @@ nodist_pkgconf_DATA = misc/mdds-@API_VERSION@.pc
 DISTCLEANFILES = misc/mdds-@API_VERSION@.pc
 
 EXTRA_DIST = \
+	autogen.sh \
 	CHANGELOG \
 	LICENSE \
 	doc/conf.py \
@@ -54,6 +55,7 @@ EXTRA_DIST = \
 	doc/segment_tree.rst \
 	doc/sorted_string_map.rst \
 	doc/trie_map.rst \
+	doc/_static/images/mtv_block_structure.png \
 	example/flat_segment_tree.cpp \
 	example/Makefile.in \
 	example/mixed_type_matrix.cpp \
