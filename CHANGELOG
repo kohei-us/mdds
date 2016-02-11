@@ -1,5 +1,9 @@
 mdds 1.1.0
 
+* all
+
+  * switched our build system to using automake.
+
 * packed_trie_map (new)
 
   * new data structure that implements a trie also known as a prefix
