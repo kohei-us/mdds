@@ -49,11 +49,11 @@ EXTRA_DIST = \
 	doc/index.rst \
 	doc/multi_type_matrix.rst \
 	doc/multi_type_vector.rst \
-	doc/packed_trie_map.rst \
 	doc/point_quad_tree.rst \
 	doc/rectangle_set.rst \
 	doc/segment_tree.rst \
 	doc/sorted_string_map.rst \
+	doc/trie_map.rst \
 	example/flat_segment_tree.cpp \
 	example/Makefile.in \
 	example/mixed_type_matrix.cpp \
