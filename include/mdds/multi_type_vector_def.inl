@@ -1936,7 +1936,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         else
         {
             // Just move the whole block over.
-            block* blk = m_blocks[block_index2];
             dest.m_blocks[dest_block_pos] = blk;
             if (blk->mp_data)
             {
