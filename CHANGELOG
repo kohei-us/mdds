@@ -1,3 +1,13 @@
+mdds 1.1.1
+
+* sorted_string_map
+
+  * fix build failure with _GLIBCXX_DEBUG defined.
+
+* multi_type_vector
+
+  * remove compiler warning about shadowed variable.
+
 mdds 1.1.0
 
 * all
