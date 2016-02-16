@@ -252,7 +252,7 @@ public:
      *
      * @return 0-based row and column positions.
      */
-    size_pair_type matrix_position(const const_position_type& pos);
+    size_pair_type matrix_position(const const_position_type& pos) const;
 
     /**
      * Return a position type that represents an end position.  This can be

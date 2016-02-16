@@ -129,7 +129,7 @@ multi_type_matrix<_String>::position(const const_position_type& pos_hint, size_t
 
 template<typename _String>
 typename multi_type_matrix<_String>::size_pair_type
-multi_type_matrix<_String>::matrix_position(const const_position_type& pos)
+multi_type_matrix<_String>::matrix_position(const const_position_type& pos) const
 {
     size_type mtv_pos = store_type::logical_position(pos);
     size_type col = mtv_pos / m_size.row;
