@@ -437,6 +437,30 @@ void trie_test1()
     assert(db.size() == 0);
 }
 
+void trie_test_iterator()
+{
+    stack_printer __stack_printer__("::trie_test_iterator");
+    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+
+    trie_map_type db(-1);
+
+    // empty container
+    trie_map_type::const_iterator it = db.begin();
+    trie_map_type::const_iterator ite = db.end();
+
+    // The end iterator will never get invalidated since it only references
+    // the root node which will never get modified as long as the parent
+    // container is alive.
+
+    assert(it == ite);
+
+    db.insert(MDDS_ASCII("a"), 1);
+    it = db.begin();
+    assert(it != ite);
+    assert(it->first == "a");
+    assert(it->second == 1);
+}
+
 int main(int argc, char** argv)
 {
     trie_packed_test1();
@@ -447,6 +471,7 @@ int main(int argc, char** argv)
     trie_packed_test_custom_string();
 
     trie_test1();
+    trie_test_iterator();
 
     return EXIT_SUCCESS;
 }

@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2015 Kohei Yoshida
+ * Copyright (c) 2015-2016 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,6 +28,8 @@
 
 #ifndef INCLUDED_MDDS_TRIE_MAP_HPP
 #define INCLUDED_MDDS_TRIE_MAP_HPP
+
+#include "trie_map_itr.hpp"
 
 #include <vector>
 #include <string>
@@ -126,7 +128,7 @@ template<typename _KeyTrait, typename _ValueT>
 class trie_map
 {
     friend class packed_trie_map<_KeyTrait, _ValueT>;
-
+    friend class trie::iterator_base<trie_map>;
 public:
     typedef packed_trie_map<_KeyTrait, _ValueT> packed_type;
     typedef _KeyTrait key_trait_type;
@@ -136,6 +138,8 @@ public:
     typedef _ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<string_type, value_type> key_value_type;
+
+    typedef trie::iterator_base<trie_map> const_iterator;
 
 private:
 
@@ -149,6 +153,20 @@ private:
 
         trie_node() : has_value(false) {}
     };
+
+    struct stack_item
+    {
+        typedef typename trie_node::children_type::const_iterator child_pos_type;
+        const trie_node* node;
+        child_pos_type child_pos;
+
+        stack_item(const trie_node* _node, const child_pos_type& _child_pos) :
+            node(_node), child_pos(_child_pos) {}
+
+        stack_item(const trie_node* _node) : node(_node) {}
+    };
+
+    typedef std::vector<stack_item> node_stack_type;
 
 public:
 
@@ -164,6 +182,10 @@ public:
      *                   find a matching entry.
      */
     trie_map(value_type null_value);
+
+    const_iterator begin() const;
+
+    const_iterator end() const;
 
     /**
      * Insert a new key-value pair.

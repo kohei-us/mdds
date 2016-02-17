@@ -32,7 +32,8 @@ headers_HEADERS = \
 	include/mdds/sorted_string_map_def.inl \
 	include/mdds/sorted_string_map.hpp \
 	include/mdds/trie_map_def.inl \
-	include/mdds/trie_map.hpp
+	include/mdds/trie_map.hpp \
+	include/mdds/trie_map_itr.hpp
 
 dist_docs_DATA = AUTHORS README.md
 nodist_docs_DATA = VERSION

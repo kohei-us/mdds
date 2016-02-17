@@ -43,6 +43,48 @@ trie_map<_KeyTrait,_ValueT>::trie_map(value_type null_value) :
     m_null_value(null_value) {}
 
 template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::const_iterator
+trie_map<_KeyTrait,_ValueT>::begin() const
+{
+    if (m_root.children.empty())
+        // empty container
+        return end();
+
+    using ktt = key_trait_type;
+
+    // Push the root node.
+    buffer_type buf;
+    node_stack_type node_stack;
+    node_stack.emplace_back(&m_root);
+
+    // Push root's first child node.
+    auto it = m_root.children.begin();
+    ktt::push_back(buf, it->first);
+    node_stack.emplace_back(&it->second, it);
+
+    // In theory there should always be at least one value node along the
+    // left-most branch.
+
+    while (!node_stack.back().node->has_value)
+    {
+        auto it = node_stack.back().node->children.begin();
+        ktt::push_back(buf, it->first);
+        node_stack.emplace_back(&it->second, it);
+    }
+
+    return const_iterator(std::move(node_stack), std::move(buf));
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::const_iterator
+trie_map<_KeyTrait,_ValueT>::end() const
+{
+    node_stack_type node_stack;
+    node_stack.emplace_back(&m_root);
+    return const_iterator(std::move(node_stack), buffer_type());
+}
+
+template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::insert(
     const char_type* key, size_type len, const value_type& value)
 {
