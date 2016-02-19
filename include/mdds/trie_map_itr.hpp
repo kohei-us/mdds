@@ -125,8 +125,8 @@ public:
             {
                 // Current node has child nodes.  Follow the first child node.
                 auto child_pos = cur_node->children.begin();
-                ktt::push_back(m_buffer, child_pos->first);
                 cur_node = &child_pos->second;
+                ktt::push_back(m_buffer, child_pos->first);
                 m_node_stack.emplace_back(cur_node, cur_node->children.begin());
             }
         }

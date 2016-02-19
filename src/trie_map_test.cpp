@@ -488,6 +488,8 @@ void trie_test_iterator()
     assert(*it == kv("abc", 5));
     ++it;
     assert(*it == kv("bcd", 6));
+    assert(it->first == "bcd");
+    assert(it->second == 6);
     ++it;
     assert(it == ite);
 }
