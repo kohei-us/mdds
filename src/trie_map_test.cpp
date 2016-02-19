@@ -441,7 +441,7 @@ void trie_test_iterator()
 {
     stack_printer __stack_printer__("::trie_test_iterator");
     typedef trie_map<trie::std_string_trait, int> trie_map_type;
-
+    using kv = trie_map_type::key_value_type;
     trie_map_type db(-1);
 
     // empty container
@@ -457,8 +457,39 @@ void trie_test_iterator()
     db.insert(MDDS_ASCII("a"), 1);
     it = db.begin();
     assert(it != ite);
-    assert(it->first == "a");
-    assert(it->second == 1);
+    assert(*it == kv("a", 1));
+    ++it;
+    assert(it == ite);
+
+    db.insert(MDDS_ASCII("ab"), 2);
+    it = db.begin();
+    assert(it != ite);
+    assert(*it == kv("a", 1));
+    ++it;
+    assert(it != ite);
+    assert(*it == kv("ab", 2));
+    ++it;
+    assert(it == ite);
+
+    db.insert(MDDS_ASCII("aba"), 3);
+    db.insert(MDDS_ASCII("abb"), 4);
+    db.insert(MDDS_ASCII("abc"), 5);
+    db.insert(MDDS_ASCII("bcd"), 6);
+
+    it = db.begin();
+    assert(*it == kv("a", 1));
+    ++it;
+    assert(*it == kv("ab", 2));
+    ++it;
+    assert(*it == kv("aba", 3));
+    ++it;
+    assert(*it == kv("abb", 4));
+    ++it;
+    assert(*it == kv("abc", 5));
+    ++it;
+    assert(*it == kv("bcd", 6));
+    ++it;
+    assert(it == ite);
 }
 
 int main(int argc, char** argv)

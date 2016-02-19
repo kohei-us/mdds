@@ -162,8 +162,6 @@ private:
 
         stack_item(const trie_node* _node, const child_pos_type& _child_pos) :
             node(_node), child_pos(_child_pos) {}
-
-        stack_item(const trie_node* _node) : node(_node) {}
     };
 
     typedef std::vector<stack_item> node_stack_type;

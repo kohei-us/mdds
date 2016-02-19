@@ -55,21 +55,23 @@ trie_map<_KeyTrait,_ValueT>::begin() const
     // Push the root node.
     buffer_type buf;
     node_stack_type node_stack;
-    node_stack.emplace_back(&m_root);
+    node_stack.emplace_back(&m_root, m_root.children.begin());
 
     // Push root's first child node.
-    auto it = m_root.children.begin();
+    auto it = node_stack.back().child_pos;
     ktt::push_back(buf, it->first);
-    node_stack.emplace_back(&it->second, it);
+    const trie_node* node = &it->second;
+    node_stack.emplace_back(node, node->children.begin());
 
     // In theory there should always be at least one value node along the
     // left-most branch.
 
     while (!node_stack.back().node->has_value)
     {
-        auto it = node_stack.back().node->children.begin();
+        auto it = node_stack.back().child_pos;
         ktt::push_back(buf, it->first);
-        node_stack.emplace_back(&it->second, it);
+        node = &it->second;
+        node_stack.emplace_back(node, node->children.begin());
     }
 
     return const_iterator(std::move(node_stack), std::move(buf));
@@ -80,7 +82,7 @@ typename trie_map<_KeyTrait,_ValueT>::const_iterator
 trie_map<_KeyTrait,_ValueT>::end() const
 {
     node_stack_type node_stack;
-    node_stack.emplace_back(&m_root);
+    node_stack.emplace_back(&m_root, m_root.children.end());
     return const_iterator(std::move(node_stack), buffer_type());
 }
 

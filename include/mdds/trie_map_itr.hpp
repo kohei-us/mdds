@@ -29,6 +29,7 @@
 #define INCLUDED_MDDS_TRIE_MAP_ITR_HPP
 
 #include <utility>
+#include <iostream>
 
 namespace mdds { namespace trie {
 
@@ -65,6 +66,8 @@ public:
 
     bool operator== (const iterator_base& other) const
     {
+        // Only compare by the node's memory addresses on the stack.
+
         if (m_node_stack.size() != other.m_node_stack.size())
             return false;
 
@@ -94,6 +97,58 @@ public:
     const value_type* operator->()
     {
         return &m_current_value;
+    }
+
+    iterator_base& operator++()
+    {
+        using ktt = key_trait_type;
+
+        const trie_node* cur_node = m_node_stack.back().node;
+
+        do
+        {
+            if (cur_node->children.empty())
+            {
+                // Current node is a leaf node.  Keep moving up the stack until we
+                // reach a parent node with unvisited children.
+
+                while (true)
+                {
+                    // Move up one parent and see if it has an unvisited child node.
+                    ktt::pop_back(m_buffer);
+                    m_node_stack.pop_back();
+                    typename node_stack_type::value_type& si = m_node_stack.back();
+                    ++si.child_pos;
+
+                    if (si.child_pos != si.node->children.end())
+                    {
+                        // Move down to this unvisited child node.
+                        cur_node = &si.child_pos->second;
+                        ktt::push_back(m_buffer, si.child_pos->first);
+                        m_node_stack.emplace_back(cur_node, cur_node->children.begin());
+                        break;
+                    }
+
+                    if (m_node_stack.size() == 1)
+                    {
+                        // We've reached the end position. Bail out.
+                        return *this;
+                    }
+                }
+            }
+            else
+            {
+                // Current node has child nodes.  Follow the first child node.
+                auto child_pos = cur_node->children.begin();
+                ktt::push_back(m_buffer, child_pos->first);
+                cur_node = &child_pos->second;
+                m_node_stack.emplace_back(cur_node, cur_node->children.begin());
+            }
+        }
+        while (!cur_node->has_value);
+
+        m_current_value = value_type(ktt::to_string(m_buffer), cur_node->value);
+        return *this;
     }
 };
 
