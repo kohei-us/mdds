@@ -37,6 +37,8 @@ template<typename _TrieType>
 class iterator_base
 {
     typedef _TrieType trie_type;
+    friend trie_type;
+
     typedef typename trie_type::node_stack_type node_stack_type;
 
     typedef typename trie_type::trie_node trie_node;
@@ -55,7 +57,21 @@ class iterator_base
     buffer_type m_buffer;
     value_type m_current_value;
 
+    static const trie_node* push_child_node_to_stack(
+        node_stack_type& node_stack, buffer_type& buf,
+        typename trie_node::children_type::const_iterator child_pos)
+    {
+        using ktt = key_trait_type;
+
+        const trie_node* node = &child_pos->second;
+        ktt::push_back(buf, child_pos->first);
+        node_stack.emplace_back(node, node->children.begin());
+
+        return node;
+    }
+
 public:
+
     iterator_base() {}
 
     iterator_base(node_stack_type&& node_stack, buffer_type&& buf) :
@@ -108,9 +124,7 @@ public:
                     if (si.child_pos != si.node->children.end())
                     {
                         // Move down to this unvisited child node.
-                        cur_node = &si.child_pos->second;
-                        ktt::push_back(m_buffer, si.child_pos->first);
-                        m_node_stack.emplace_back(cur_node, cur_node->children.begin());
+                        cur_node = push_child_node_to_stack(m_node_stack, m_buffer, si.child_pos);
                         break;
                     }
 
@@ -125,9 +139,7 @@ public:
             {
                 // Current node has child nodes.  Follow the first child node.
                 auto child_pos = cur_node->children.begin();
-                cur_node = &child_pos->second;
-                ktt::push_back(m_buffer, child_pos->first);
-                m_node_stack.emplace_back(cur_node, cur_node->children.begin());
+                cur_node = push_child_node_to_stack(m_node_stack, m_buffer, child_pos);
             }
         }
         while (!cur_node->has_value);
