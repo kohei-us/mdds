@@ -66,22 +66,7 @@ public:
 
     bool operator== (const iterator_base& other) const
     {
-        // Only compare by the node's memory addresses on the stack.
-
-        if (m_node_stack.size() != other.m_node_stack.size())
-            return false;
-
-        auto it = m_node_stack.begin();
-        auto ite = m_node_stack.end();
-        auto it2 = other.m_node_stack.begin();
-
-        for (; it != ite; ++it, ++it2)
-        {
-            if (it->node != it2->node)
-                return false;
-        }
-
-        return true;
+        return m_node_stack.back().node == other.m_node_stack.back().node;
     }
 
     bool operator!= (const iterator_base& other) const
