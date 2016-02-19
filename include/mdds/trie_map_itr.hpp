@@ -59,7 +59,7 @@ class iterator_base
 
     static const trie_node* push_child_node_to_stack(
         node_stack_type& node_stack, buffer_type& buf,
-        typename trie_node::children_type::const_iterator child_pos)
+        const typename trie_node::children_type::const_iterator& child_pos)
     {
         using ktt = key_trait_type;
 
