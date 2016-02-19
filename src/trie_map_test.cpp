@@ -478,16 +478,11 @@ void trie_test_iterator()
 
     it = db.begin();
     assert(*it == kv("a", 1));
-    ++it;
-    assert(*it == kv("ab", 2));
-    ++it;
-    assert(*it == kv("aba", 3));
-    ++it;
-    assert(*it == kv("abb", 4));
-    ++it;
-    assert(*it == kv("abc", 5));
-    ++it;
-    assert(*it == kv("bcd", 6));
+    assert(*(++it) == kv("ab", 2));
+    assert(*(++it) == kv("aba", 3));
+    assert(*(++it) == kv("abb", 4));
+    assert(*(++it) == kv("abc", 5));
+    assert(*(++it) == kv("bcd", 6));
     assert(it->first == "bcd");
     assert(it->second == 6);
     ++it;
