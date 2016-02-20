@@ -234,7 +234,7 @@ public:
                     // Root node reached.
                     --si.child_pos;
                     cur_node = descend_to_previus_leaf_node(m_node_stack, m_buffer);
-                    break;
+                    assert(cur_node->has_value);
                 }
             }
             while (!cur_node->has_value);
