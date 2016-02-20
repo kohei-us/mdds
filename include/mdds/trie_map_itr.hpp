@@ -177,6 +177,13 @@ public:
         return *this;
     }
 
+    iterator_base operator++(int)
+    {
+        iterator_base tmp(*this);
+        operator++();
+        return tmp;
+    }
+
     iterator_base& operator--()
     {
         using ktt = key_trait_type;

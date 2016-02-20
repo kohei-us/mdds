@@ -531,6 +531,22 @@ void trie_test_iterator()
     assert(*it == kv("aba", 3));
 }
 
+void trie_test_iterator_with_erase()
+{
+    stack_printer __stack_printer__("::trie_test_iterator_with_erase");
+    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    using kv = trie_map_type::key_value_type;
+    trie_map_type db(-1);
+
+    db.insert(MDDS_ASCII("Python"), 1);
+    db.insert(MDDS_ASCII("C++"),    2);
+
+    auto it = db.begin(), ite = db.end();
+    assert(*it++ == kv("C++",    2));
+    assert(*it++ == kv("Python", 1));
+    assert(it == ite);
+}
+
 int main(int argc, char** argv)
 {
     trie_packed_test1();
@@ -544,6 +560,7 @@ int main(int argc, char** argv)
 
     trie_test_iterator_empty();
     trie_test_iterator();
+    trie_test_iterator_with_erase();
 
     return EXIT_SUCCESS;
 }
