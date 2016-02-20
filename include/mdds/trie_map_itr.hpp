@@ -252,6 +252,13 @@ public:
         m_current_value = value_type(ktt::to_string(m_buffer), cur_node->value);
         return *this;
     }
+
+    iterator_base operator--(int)
+    {
+        iterator_base tmp(*this);
+        operator--();
+        return tmp;
+    }
 };
 
 }}

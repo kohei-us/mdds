@@ -584,6 +584,11 @@ void trie_test_iterator_with_erase()
     assert(*(--it) == kv("AB", 2));
     assert(*(--it) == kv("A",  1));
     assert(it == db.begin());
+
+    it = ite;
+    --it;
+    assert(*it-- == kv("AB", 2)); // test post-decrement operator.
+    assert(*it == kv("A",  1));
 }
 
 int main(int argc, char** argv)
