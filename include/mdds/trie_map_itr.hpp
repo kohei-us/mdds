@@ -29,6 +29,7 @@
 #define INCLUDED_MDDS_TRIE_MAP_ITR_HPP
 
 #include <utility>
+#include <cassert>
 #include <iostream>
 
 namespace mdds { namespace trie {
@@ -68,6 +69,34 @@ class iterator_base
         node_stack.emplace_back(node, node->children.begin());
 
         return node;
+    }
+
+    /**
+     * From the current node, move to its previous child node and descend all
+     * the way to the leaf node.
+     */
+    static const trie_node* descend_to_previus_leaf_node(
+        node_stack_type& node_stack, buffer_type& buf)
+    {
+        using ktt = key_trait_type;
+
+        const trie_node* cur_node = nullptr;
+
+        do
+        {
+            // Keep moving down on the right-most child nodes until the
+            // leaf node is reached.
+
+            auto& si = node_stack.back();
+
+            --si.child_pos;
+            ktt::push_back(buf, si.child_pos->first);
+            cur_node = &si.child_pos->second;
+            node_stack.emplace_back(cur_node, cur_node->children.end());
+        }
+        while (!cur_node->children.empty());
+
+        return cur_node;
     }
 
 public:
@@ -118,7 +147,7 @@ public:
                     // Move up one parent and see if it has an unvisited child node.
                     ktt::pop_back(m_buffer);
                     m_node_stack.pop_back();
-                    typename node_stack_type::value_type& si = m_node_stack.back();
+                    auto& si = m_node_stack.back();
                     ++si.child_pos;
 
                     if (si.child_pos != si.node->children.end())
@@ -144,6 +173,74 @@ public:
         }
         while (!cur_node->has_value);
 
+        m_current_value = value_type(ktt::to_string(m_buffer), cur_node->value);
+        return *this;
+    }
+
+    iterator_base& operator--()
+    {
+        using ktt = key_trait_type;
+        const trie_node* cur_node = m_node_stack.back().node;
+
+        if (m_node_stack.size() == 1)
+        {
+            // This is the end position aka root node.  Move to the righ-most
+            // leaf node.
+            auto& si = m_node_stack.back();
+            assert(si.child_pos == cur_node->children.end());
+            cur_node = descend_to_previus_leaf_node(m_node_stack, m_buffer);
+        }
+        else if (cur_node->children.empty())
+        {
+            // This is a leaf node.
+
+            do
+            {
+                // Go up one node.
+
+                ktt::pop_back(m_buffer);
+                m_node_stack.pop_back();
+                auto& si = m_node_stack.back();
+                cur_node = si.node;
+
+                if (si.child_pos != cur_node->children.begin())
+                {
+                    // Move to the previous unvisited child node and move down
+                    // to the leaf node.
+                    cur_node = descend_to_previus_leaf_node(m_node_stack, m_buffer);
+                    assert(cur_node->has_value);
+                }
+            }
+            while (!cur_node->has_value);
+        }
+        else
+        {
+            // Non-leaf node with value.  Keep going up until either the root
+            // node or a node with value is reached.
+
+            assert(cur_node->has_value);
+            assert(m_node_stack.back().child_pos == cur_node->children.begin());
+
+            do
+            {
+                // Go up.
+                ktt::pop_back(m_buffer);
+                m_node_stack.pop_back();
+                auto& si = m_node_stack.back();
+                cur_node = si.node;
+
+                if (m_node_stack.size() == 1)
+                {
+                    // Root node reached.
+                    --si.child_pos;
+                    cur_node = descend_to_previus_leaf_node(m_node_stack, m_buffer);
+                    break;
+                }
+            }
+            while (!cur_node->has_value);
+        }
+
+        assert(cur_node->has_value);
         m_current_value = value_type(ktt::to_string(m_buffer), cur_node->value);
         return *this;
     }

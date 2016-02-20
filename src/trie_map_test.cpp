@@ -437,6 +437,20 @@ void trie_test1()
     assert(db.size() == 0);
 }
 
+void trie_test_iterator_empty()
+{
+    stack_printer __stack_printer__("::trie_test_iterator_empty");
+    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    using kv = trie_map_type::key_value_type;
+    trie_map_type db(-1);
+
+    // empty container
+    trie_map_type::const_iterator it = db.begin();
+    trie_map_type::const_iterator ite = db.end();
+
+    assert(it == ite);
+}
+
 void trie_test_iterator()
 {
     stack_printer __stack_printer__("::trie_test_iterator");
@@ -474,7 +488,8 @@ void trie_test_iterator()
     db.insert(MDDS_ASCII("aba"), 3);
     db.insert(MDDS_ASCII("abb"), 4);
     db.insert(MDDS_ASCII("abc"), 5);
-    db.insert(MDDS_ASCII("bcd"), 6);
+    db.insert(MDDS_ASCII("bc"),  6);
+    db.insert(MDDS_ASCII("bcd"), 7);
 
     it = db.begin();
     assert(*it == kv("a", 1));
@@ -482,11 +497,39 @@ void trie_test_iterator()
     assert(*(++it) == kv("aba", 3));
     assert(*(++it) == kv("abb", 4));
     assert(*(++it) == kv("abc", 5));
-    assert(*(++it) == kv("bcd", 6));
+    assert(*(++it) == kv("bc",  6));
+    assert(*(++it) == kv("bcd", 7));
     assert(it->first == "bcd");
-    assert(it->second == 6);
+    assert(it->second == 7);
     ++it;
     assert(it == ite);
+
+    --it;
+    assert(it != ite);
+    assert(*it == kv("bcd", 7));
+    --it;
+    assert(*it == kv("bc", 6));
+    --it;
+    assert(*it == kv("abc", 5));
+    --it;
+    assert(*it == kv("abb", 4));
+    --it;
+    assert(*it == kv("aba", 3));
+    --it;
+    assert(*it == kv("ab", 2));
+    assert(*(--it) == kv("a", 1));
+    assert(it == db.begin());
+
+    assert(*(++it) == kv("ab",  2));
+    assert(*(++it) == kv("aba", 3));
+    --it;
+    assert(*it == kv("ab", 2));
+    --it;
+    assert(*it == kv("a",  1));
+    ++it;
+    assert(*it == kv("ab", 2));
+    ++it;
+    assert(*it == kv("aba", 3));
 }
 
 int main(int argc, char** argv)
@@ -499,6 +542,8 @@ int main(int argc, char** argv)
     trie_packed_test_custom_string();
 
     trie_test1();
+
+    trie_test_iterator_empty();
     trie_test_iterator();
 
     return EXIT_SUCCESS;
