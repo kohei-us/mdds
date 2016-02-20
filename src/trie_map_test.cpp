@@ -441,7 +441,6 @@ void trie_test_iterator_empty()
 {
     stack_printer __stack_printer__("::trie_test_iterator_empty");
     typedef trie_map<trie::std_string_trait, int> trie_map_type;
-    using kv = trie_map_type::key_value_type;
     trie_map_type db(-1);
 
     // empty container
