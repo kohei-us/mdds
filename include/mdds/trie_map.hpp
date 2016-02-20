@@ -260,6 +260,10 @@ private:
     const trie_node* find_prefix_node(
         const trie_node& node, const char_type* prefix, const char_type* prefix_end) const;
 
+    void find_prefix_node_with_stack(
+        node_stack_type& node_stack,
+        const trie_node& node, const char_type* prefix, const char_type* prefix_end) const;
+
     void fill_child_node_items(
         std::vector<key_value_type>& items, buffer_type& buffer, const trie_node& node) const;
 

@@ -92,14 +92,31 @@ template<typename _KeyTrait, typename _ValueT>
 bool trie_map<_KeyTrait,_ValueT>::erase(const char_type* key, size_type len)
 {
     const char_type* key_end = key + len;
-    const trie_node* node = find_prefix_node(m_root, key, key_end);
-    if (!node || !node->has_value)
+
+    node_stack_type node_stack;
+    find_prefix_node_with_stack(node_stack, m_root, key, key_end);
+
+    if (node_stack.empty() || !node_stack.back().node->has_value)
         // Nothing is erased.
         return false;
 
+    const trie_node* node = node_stack.back().node;
     trie_node* node_mod = const_cast<trie_node*>(node);
     node_mod->value = m_null_value;
     node_mod->has_value = false;
+
+    // If this is a leaf node, remove it, and keep removing its parents until
+    // we reach a parent node that still has at least one child node.
+
+    while (!node->has_value && node->children.empty() && node_stack.size() > 1)
+    {
+        node_stack.pop_back();
+        auto& si = node_stack.back();
+
+        const_cast<trie_node*>(si.node)->children.erase(si.child_pos);
+        node = si.node;
+    }
+
     return true;
 }
 
@@ -144,6 +161,28 @@ trie_map<_KeyTrait,_ValueT>::find_prefix_node(
 
     ++prefix;
     return find_prefix_node(it->second, prefix, prefix_end);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
+    node_stack_type& node_stack,
+    const trie_node& node, const char_type* prefix, const char_type* prefix_end) const
+{
+    if (prefix == prefix_end)
+    {
+        // Right node is found.
+        node_stack.emplace_back(&node, node.children.begin());
+        return;
+    }
+
+    auto it = node.children.find(*prefix);
+    if (it == node.children.end())
+        return;
+
+    node_stack.emplace_back(&node, it);
+
+    ++prefix;
+    find_prefix_node_with_stack(node_stack, it->second, prefix, prefix_end);
 }
 
 template<typename _KeyTrait, typename _ValueT>

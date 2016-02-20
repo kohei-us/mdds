@@ -545,6 +545,13 @@ void trie_test_iterator_with_erase()
     assert(*it++ == kv("C++",    2));
     assert(*it++ == kv("Python", 1));
     assert(it == ite);
+
+    db.erase(MDDS_ASCII("C++"));
+    it = db.begin();
+    assert(*it++ == kv("Python", 1));
+    assert(it == ite);
+    assert(*(--it) == kv("Python", 1));
+    assert(it == db.begin());
 }
 
 int main(int argc, char** argv)
