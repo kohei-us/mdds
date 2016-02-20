@@ -552,6 +552,38 @@ void trie_test_iterator_with_erase()
     assert(it == ite);
     assert(*(--it) == kv("Python", 1));
     assert(it == db.begin());
+
+    db.clear();
+    assert(db.begin() == db.end());
+
+    db.insert(MDDS_ASCII("A"),   1);
+    db.insert(MDDS_ASCII("AB"),  2);
+    db.insert(MDDS_ASCII("ABC"), 3);
+    db.erase(MDDS_ASCII("AB"));
+
+    it = db.begin();
+    assert(*it++ == kv("A",  1));
+    assert(*it++ == kv("ABC", 3));
+    assert(it == ite);
+
+    assert(*(--it) == kv("ABC", 3));
+    assert(*(--it) == kv("A", 1));
+    assert(it == db.begin());
+
+    db.clear();
+    db.insert(MDDS_ASCII("A"),   1);
+    db.insert(MDDS_ASCII("AB"),  2);
+    db.insert(MDDS_ASCII("ABC"), 3);
+    db.erase(MDDS_ASCII("ABC"));
+
+    it = db.begin();
+    assert(*it++ == kv("A",  1));
+    assert(*it++ == kv("AB", 2));
+    assert(it == ite);
+
+    assert(*(--it) == kv("AB", 2));
+    assert(*(--it) == kv("A",  1));
+    assert(it == db.begin());
 }
 
 int main(int argc, char** argv)
