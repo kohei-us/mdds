@@ -184,15 +184,17 @@ public:
 
         if (m_node_stack.size() == 1)
         {
-            // This is the end position aka root node.  Move to the righ-most
-            // leaf node.
+            // This is the end position aka root node.  Move down to the
+            // right-most leaf node.
             auto& si = m_node_stack.back();
             assert(si.child_pos == cur_node->children.end());
             cur_node = descend_to_previus_leaf_node(m_node_stack, m_buffer);
         }
         else if (cur_node->children.empty())
         {
-            // This is a leaf node.
+            // This is a leaf node.  Keep going up until it finds a parent
+            // node with unvisited child nodes on the left side, then descend
+            // on that path all the way to its leaf.
 
             do
             {
@@ -205,8 +207,7 @@ public:
 
                 if (si.child_pos != cur_node->children.begin())
                 {
-                    // Move to the previous unvisited child node and move down
-                    // to the leaf node.
+                    // Left and down.
                     cur_node = descend_to_previus_leaf_node(m_node_stack, m_buffer);
                     assert(cur_node->has_value);
                 }
@@ -216,7 +217,7 @@ public:
         else
         {
             // Non-leaf node with value.  Keep going up until either the root
-            // node or a node with value is reached.
+            // node or another node with value is reached.
 
             assert(cur_node->has_value);
             assert(m_node_stack.back().child_pos == cur_node->children.begin());
