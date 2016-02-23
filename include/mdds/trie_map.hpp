@@ -287,6 +287,8 @@ private:
 template<typename _KeyTrait, typename _ValueT>
 class packed_trie_map
 {
+    friend class trie::packed_iterator_base<packed_trie_map>;
+
 public:
     typedef _KeyTrait key_trait_type;
     typedef typename key_trait_type::string_type string_type;
@@ -295,6 +297,7 @@ public:
     typedef _ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<string_type, value_type> key_value_type;
+    typedef trie::packed_iterator_base<packed_trie_map> const_iterator;
 
     /**
      * Single key-value entry.  Caller must provide at compile time a static
@@ -320,6 +323,18 @@ private:
 
         trie_node(char_type _key) : key(_key), value(nullptr) {}
     };
+
+    struct stack_item
+    {
+        const uintptr_t* node_pos;
+        const uintptr_t* child_pos;
+        const uintptr_t* child_end;
+
+        stack_item(const uintptr_t* _node_pos, const uintptr_t* _child_pos, const uintptr_t* _child_end) :
+            node_pos(_node_pos), child_pos(_child_pos), child_end(_child_end) {}
+    };
+
+    typedef std::vector<stack_item> node_stack_type;
 
     typedef std::deque<trie_node> node_pool_type;
     typedef std::vector<uintptr_t> packed_type;
@@ -352,6 +367,10 @@ public:
      * @param other mdds::trie_map instance to build content from.
      */
     packed_trie_map(const trie_map<key_trait_type, value_type>& other);
+
+    const_iterator begin() const;
+
+    const_iterator end() const;
 
     /**
      * Find a value associated with a specified string key.
@@ -387,6 +406,8 @@ public:
     size_type size() const;
 
 private:
+    node_stack_type get_root_stack() const;
+
     void traverse_range(
         trie_node& root, node_pool_type& node_pool, const entry* start, const entry* end,
         size_type pos);

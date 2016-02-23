@@ -537,6 +537,95 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
 }
 
 template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
+packed_trie_map<_KeyTrait,_ValueT>::begin() const
+{
+    using ktt = key_trait_type;
+
+    node_stack_type node_stack = get_root_stack();
+
+    const stack_item* si = &node_stack.back();
+    if (si->child_pos == si->child_end)
+        // empty container.
+        return const_iterator(std::move(node_stack), buffer_type());
+
+    const uintptr_t* node_pos = si->node_pos;
+    const uintptr_t* child_pos = si->child_pos;
+    const uintptr_t* child_end = si->child_end;
+    const uintptr_t* p = child_pos;
+
+    // Follow the root node's left-most child.
+    buffer_type buf;
+    char_type c = *p;
+    ktt::push_back(buf, c);
+    ++p;
+    size_t offset = *p;
+
+    node_pos -= offset;  // jump to the child node.
+    p = node_pos;
+    ++p;
+    size_t index_size = *p;
+    ++p;
+    child_pos = p;
+    child_end = child_pos + index_size;
+
+    // Push this child node onto the stack.
+    node_stack.emplace_back(node_pos, child_pos, child_end);
+
+    const value_type* pv = reinterpret_cast<const value_type*>(*node_pos);
+    while (!pv)
+    {
+        // Keep following the left child node until we reach a node with value.
+        c = *child_pos;
+        ktt::push_back(buf, c);
+        ++child_pos;
+        offset = *child_pos;
+        node_pos -= offset;
+        p = node_pos;
+        ++p;
+        index_size = *p;
+        ++p;
+        child_pos = p;
+        child_end = child_pos + index_size;
+
+        // Push it onto the stack.
+        node_stack.emplace_back(node_pos, child_pos, child_end);
+
+        pv = reinterpret_cast<const value_type*>(*node_pos);
+    }
+
+    return const_iterator(std::move(node_stack), std::move(buf), *pv);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
+packed_trie_map<_KeyTrait,_ValueT>::end() const
+{
+    node_stack_type node_stack = get_root_stack();
+    node_stack.back().child_pos = node_stack.back().child_end;
+    return const_iterator(std::move(node_stack), buffer_type());
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::node_stack_type
+packed_trie_map<_KeyTrait,_ValueT>::get_root_stack() const
+{
+    size_t root_offset = m_packed[0];
+    const uintptr_t* p = m_packed.data() + root_offset;
+    const uintptr_t* node_pos = p;
+    ++p;
+    size_t index_size = *p;
+    ++p;
+    const uintptr_t* child_pos = p;
+    const uintptr_t* child_end = child_pos + index_size;
+
+    node_stack_type node_stack;
+    node_stack.emplace_back(node_pos, child_pos, child_end);
+
+    return node_stack;
+}
+
+template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::value_type
 packed_trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
 {

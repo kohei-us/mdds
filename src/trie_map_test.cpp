@@ -331,6 +331,37 @@ void trie_packed_test_custom_string()
     assert(vs[1].second == "Ming");
 }
 
+void trie_packed_test_iterator_empty()
+{
+    stack_printer __stack_printer__("::trie_packed_test_iterator_empty");
+    packed_int_map_type db(-1);
+
+    // empty container
+    packed_int_map_type::const_iterator it = db.begin();
+    packed_int_map_type::const_iterator ite = db.end();
+
+    assert(it == ite);
+}
+
+void trie_packed_test_iterator()
+{
+    stack_printer __stack_printer__("::trie_packed_test_iterator");
+
+    using trie_map_type = trie_map<trie::std_string_trait, int>;
+    using packed_type = trie_map_type::packed_type;
+    using kv = packed_type::key_value_type;
+
+    trie_map_type db(-1);
+
+    db.insert(MDDS_ASCII("a"), 1);
+    packed_type packed = db.pack();
+    packed_type::const_iterator it = packed.begin();
+    packed_type::const_iterator ite = packed.end();
+    assert(it != ite);
+    assert(it->first == "a");
+    assert(it->second == 1);
+}
+
 void trie_test1()
 {
     stack_printer __stack_printer__("::trie_test1");
@@ -599,6 +630,8 @@ int main(int argc, char** argv)
     trie_packed_test4();
     trie_packed_test_value_life_cycle();
     trie_packed_test_custom_string();
+    trie_packed_test_iterator_empty();
+    trie_packed_test_iterator();
 
     trie_test1();
 

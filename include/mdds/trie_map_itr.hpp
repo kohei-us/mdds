@@ -261,6 +261,62 @@ public:
     }
 };
 
+template<typename _TrieType>
+class packed_iterator_base
+{
+    typedef _TrieType trie_type;
+    friend trie_type;
+
+    typedef typename trie_type::node_stack_type node_stack_type;
+
+    typedef typename trie_type::key_trait_type key_trait_type;
+    typedef typename key_trait_type::string_type string_type;
+    typedef typename key_trait_type::buffer_type buffer_type;
+    typedef typename key_trait_type::char_type   char_type;
+
+    // iterator traits
+    typedef typename trie_type::key_value_type value_type;
+    typedef value_type*     pointer;
+    typedef value_type&     reference;
+    typedef std::ptrdiff_t  difference_type;
+
+    node_stack_type m_node_stack;
+    buffer_type m_buffer;
+    value_type m_current_value;
+
+public:
+    packed_iterator_base() {}
+
+    packed_iterator_base(node_stack_type&& node_stack, buffer_type&& buf) :
+        m_node_stack(std::move(node_stack)),
+        m_buffer(std::move(buf)) {}
+
+    packed_iterator_base(node_stack_type&& node_stack, buffer_type&& buf, const typename trie_type::value_type& v) :
+        m_node_stack(std::move(node_stack)),
+        m_buffer(std::move(buf)),
+        m_current_value(key_trait_type::to_string(m_buffer), v) {}
+
+    bool operator== (const packed_iterator_base& other) const
+    {
+        return m_node_stack.back().node_pos == other.m_node_stack.back().node_pos;
+    }
+
+    bool operator!= (const packed_iterator_base& other) const
+    {
+        return !operator==(other);
+    }
+
+    const value_type& operator*()
+    {
+        return m_current_value;
+    }
+
+    const value_type* operator->()
+    {
+        return &m_current_value;
+    }
+};
+
 }}
 
 #endif
