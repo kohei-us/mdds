@@ -373,6 +373,28 @@ void trie_packed_test_iterator()
     ++it;
     assert(*it++ == kv("ab", 2));
     assert(it == ite);
+
+    db.insert(MDDS_ASCII("aba"), 3);
+    db.insert(MDDS_ASCII("abb"), 4);
+    db.insert(MDDS_ASCII("abc"), 5);
+    db.insert(MDDS_ASCII("bc"),  6);
+    db.insert(MDDS_ASCII("bcd"), 7);
+
+    packed = db.pack();
+    it = packed.begin();
+    ite = packed.end();
+
+    assert(*it == kv("a", 1));
+    assert(*(++it) == kv("ab", 2));
+    assert(*(++it) == kv("aba", 3));
+    assert(*(++it) == kv("abb", 4));
+    assert(*(++it) == kv("abc", 5));
+    assert(*(++it) == kv("bc",  6));
+    assert(*(++it) == kv("bcd", 7));
+    assert(it->first == "bcd");
+    assert(it->second == 7);
+    ++it;
+    assert(it == ite);
 }
 
 void trie_test1()

@@ -576,7 +576,7 @@ packed_trie_map<_KeyTrait,_ValueT>::begin() const
     while (!pv)
     {
         // Keep following the left child node until we reach a node with value.
-        const_iterator::push_child_node_to_stack(node_stack, buf, child_pos);
+        const_iterator::push_child_node_to_stack(node_stack, buf, node_stack.back().child_pos);
         pv = reinterpret_cast<const value_type*>(*node_stack.back().node_pos);
     }
 

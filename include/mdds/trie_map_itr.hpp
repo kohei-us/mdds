@@ -383,7 +383,9 @@ public:
                 push_child_node_to_stack(m_node_stack, m_buffer, si->child_pos);
             }
 
-            pv = reinterpret_cast<const typename trie_type::value_type*>(*m_node_stack.back().node_pos);
+            si = &m_node_stack.back();
+            pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+            index_size = *(si->node_pos+1);
         }
         while (!pv);
 
