@@ -267,6 +267,7 @@ class packed_iterator_base
     typedef _TrieType trie_type;
     friend trie_type;
 
+    typedef typename trie_type::stack_item stack_item;
     typedef typename trie_type::node_stack_type node_stack_type;
 
     typedef typename trie_type::key_trait_type key_trait_type;
@@ -283,6 +284,29 @@ class packed_iterator_base
     node_stack_type m_node_stack;
     buffer_type m_buffer;
     value_type m_current_value;
+
+    static void push_child_node_to_stack(
+        node_stack_type& node_stack, buffer_type& buf, const uintptr_t* child_pos)
+    {
+        using ktt = key_trait_type;
+
+        const uintptr_t* node_pos = node_stack.back().node_pos;
+
+        char_type c = *child_pos;
+        ktt::push_back(buf, c);
+        ++child_pos;
+        size_t offset = *child_pos;
+        node_pos -= offset; // Jump to the head of the child node.
+        const uintptr_t* p = node_pos;
+        ++p;
+        size_t index_size = *p;
+        ++p;
+        child_pos = p;
+        const uintptr_t* child_end = child_pos + index_size;
+
+        // Push it onto the stack.
+        node_stack.emplace_back(node_pos, child_pos, child_end);
+    }
 
 public:
     packed_iterator_base() {}
@@ -314,6 +338,59 @@ public:
     const value_type* operator->()
     {
         return &m_current_value;
+    }
+
+    packed_iterator_base& operator++()
+    {
+        using ktt = key_trait_type;
+
+        stack_item* si = &m_node_stack.back();
+        const typename trie_type::value_type* pv = nullptr;
+        size_t index_size = *(si->node_pos+1);
+
+        do
+        {
+            if (!index_size)
+            {
+                // Current node is a leaf node.  Keep moving up the stack until we
+                // reach a parent node with unvisited children.
+
+                while (true)
+                {
+                    // Move up one parent and see if it has an unvisited child node.
+                    ktt::pop_back(m_buffer);
+                    m_node_stack.pop_back();
+                    si = &m_node_stack.back();
+                    std::advance(si->child_pos, 2);
+
+                    if (si->child_pos != si->child_end)
+                    {
+                        // Move down to this unvisited child node.
+                        push_child_node_to_stack(m_node_stack, m_buffer, si->child_pos);
+                        break;
+                    }
+
+                    if (m_node_stack.size() == 1)
+                    {
+                        // We've reached the end position. Bail out.
+                        return *this;
+                    }
+                }
+            }
+            else
+            {
+                // Current node has child nodes.  Follow the first child node.
+                push_child_node_to_stack(m_node_stack, m_buffer, si->child_pos);
+            }
+
+            pv = reinterpret_cast<const typename trie_type::value_type*>(*m_node_stack.back().node_pos);
+        }
+        while (!pv);
+
+        assert(pv);
+        m_current_value = value_type(ktt::to_string(m_buffer), *pv);
+
+        return *this;
     }
 };
 

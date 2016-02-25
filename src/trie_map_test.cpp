@@ -360,6 +360,17 @@ void trie_packed_test_iterator()
     assert(it != ite);
     assert(it->first == "a");
     assert(it->second == 1);
+
+    db.insert(MDDS_ASCII("ab"), 2);
+    packed = db.pack(); // this invalidates the end position.
+
+    it = packed.begin();
+    ite = packed.end();
+    assert(it != ite);
+    assert(it->first == "a");
+    assert(it->second == 1);
+
+    ++it;
 }
 
 void trie_test1()

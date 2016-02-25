@@ -576,22 +576,8 @@ packed_trie_map<_KeyTrait,_ValueT>::begin() const
     while (!pv)
     {
         // Keep following the left child node until we reach a node with value.
-        c = *child_pos;
-        ktt::push_back(buf, c);
-        ++child_pos;
-        offset = *child_pos;
-        node_pos -= offset;
-        p = node_pos;
-        ++p;
-        index_size = *p;
-        ++p;
-        child_pos = p;
-        child_end = child_pos + index_size;
-
-        // Push it onto the stack.
-        node_stack.emplace_back(node_pos, child_pos, child_end);
-
-        pv = reinterpret_cast<const value_type*>(*node_pos);
+        const_iterator::push_child_node_to_stack(node_stack, buf, child_pos);
+        pv = reinterpret_cast<const value_type*>(*node_stack.back().node_pos);
     }
 
     return const_iterator(std::move(node_stack), std::move(buf), *pv);
