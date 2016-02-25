@@ -371,6 +371,8 @@ void trie_packed_test_iterator()
     assert(it->second == 1);
 
     ++it;
+    assert(*it++ == kv("ab", 2));
+    assert(it == ite);
 }
 
 void trie_test1()

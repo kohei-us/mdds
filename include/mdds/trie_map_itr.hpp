@@ -392,6 +392,13 @@ public:
 
         return *this;
     }
+
+    packed_iterator_base operator++(int)
+    {
+        packed_iterator_base tmp(*this);
+        operator++();
+        return tmp;
+    }
 };
 
 }}
