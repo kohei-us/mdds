@@ -1,4 +1,11 @@
-mdds 1.1.1
+
+* packed_trie_map
+
+  * added begin() and end() methods that return read-only iterators.
+
+* trie_map
+
+  * added begin() and end() methods that return read-only iterators.
 
 * sorted_string_map
 
