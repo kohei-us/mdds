@@ -239,8 +239,7 @@ public:
 
                 if (m_node_stack.size() == 1)
                 {
-                    // Root node reached.
-                    --si.child_pos;
+                    // Root node reached.  Left and down.
                     cur_node = descend_to_previus_leaf_node(m_node_stack, m_buffer);
                     assert(cur_node->has_value);
                 }
@@ -306,6 +305,39 @@ class packed_iterator_base
 
         // Push it onto the stack.
         node_stack.emplace_back(node_pos, child_pos, child_end);
+    }
+
+    static const void descend_to_previus_leaf_node(
+        node_stack_type& node_stack, buffer_type& buf)
+    {
+        using ktt = key_trait_type;
+
+        const uintptr_t* node_pos = nullptr;
+        size_t index_size = 0;
+
+        do
+        {
+            // Keep moving down on the right-most child nodes until the
+            // leaf node is reached.
+
+            stack_item* si = &node_stack.back();
+            node_pos = si->node_pos;
+            --si->child_pos;
+            size_t offset = *si->child_pos;
+            --si->child_pos;
+            char_type c = *si->child_pos;
+            node_pos -= offset; // Jump to the head of the child node.
+            ktt::push_back(buf, c);
+
+            const uintptr_t* p = node_pos;
+            ++p;
+            index_size = *p;
+            ++p;
+            const uintptr_t* child_pos = p;
+            const uintptr_t* child_end = child_pos + index_size;
+            node_stack.emplace_back(node_pos, child_end, child_end);
+        }
+        while (index_size);
     }
 
 public:
@@ -400,6 +432,89 @@ public:
         packed_iterator_base tmp(*this);
         operator++();
         return tmp;
+    }
+
+    packed_iterator_base& operator--()
+    {
+        using ktt = key_trait_type;
+
+        stack_item* si = &m_node_stack.back();
+        const typename trie_type::value_type* pv = nullptr;
+        size_t index_size = *(si->node_pos+1); // index size for child nodes.
+
+        if (m_node_stack.size() == 1)
+        {
+            // This is the end position aka root node.  Move down to the
+            // right-most leaf node.
+            assert(si->child_pos == si->child_end);
+            descend_to_previus_leaf_node(m_node_stack, m_buffer);
+            si = &m_node_stack.back();
+            pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+        }
+        else if (!index_size)
+        {
+            // This is a leaf node.  Keep going up until it finds a parent
+            // node with unvisited child nodes on the left side, then descend
+            // on that path all the way to its leaf.
+
+            do
+            {
+                // Go up one node.
+
+                ktt::pop_back(m_buffer);
+                m_node_stack.pop_back();
+                si = &m_node_stack.back();
+                const uintptr_t* p = si->node_pos;
+                pv = reinterpret_cast<const typename trie_type::value_type*>(*p);
+                ++p;
+                index_size = *p;
+                ++p;
+                const uintptr_t* first_child = p;
+
+                if (si->child_pos != first_child)
+                {
+                    // Left and down.
+                    descend_to_previus_leaf_node(m_node_stack, m_buffer);
+                    si = &m_node_stack.back();
+                    p = si->node_pos;
+                    pv = reinterpret_cast<const typename trie_type::value_type*>(*p);
+                    assert(pv);
+                }
+            }
+            while (!pv);
+        }
+        else
+        {
+            // Non-leaf node with value.  Keep going up until either the root
+            // node or another node with value is reached.
+
+            assert(*si->node_pos); // this node should have a value.
+            assert(si->child_pos == (si->node_pos+2));
+
+            do
+            {
+                // Go up.
+                ktt::pop_back(m_buffer);
+                m_node_stack.pop_back();
+                si = &m_node_stack.back();
+                pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+
+                if (m_node_stack.size() == 1)
+                {
+                    // Root node reached.
+                    descend_to_previus_leaf_node(m_node_stack, m_buffer);
+                    si = &m_node_stack.back();
+                    pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+                    assert(pv);
+                }
+            }
+            while (!pv);
+        }
+
+        assert(pv);
+        m_current_value = value_type(ktt::to_string(m_buffer), *pv);
+
+        return *this;
     }
 };
 

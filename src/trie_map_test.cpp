@@ -395,6 +395,33 @@ void trie_packed_test_iterator()
     assert(it->second == 7);
     ++it;
     assert(it == ite);
+
+    --it;
+    assert(it != ite);
+    assert(*it == kv("bcd", 7));
+    --it;
+    assert(*it == kv("bc", 6));
+    --it;
+    assert(*it == kv("abc", 5));
+    --it;
+    assert(*it == kv("abb", 4));
+    --it;
+    assert(*it == kv("aba", 3));
+    --it;
+    assert(*it == kv("ab", 2));
+    assert(*(--it) == kv("a", 1));
+    assert(it == packed.begin());
+
+    assert(*(++it) == kv("ab",  2));
+    assert(*(++it) == kv("aba", 3));
+    --it;
+    assert(*it == kv("ab", 2));
+    --it;
+    assert(*it == kv("a",  1));
+    ++it;
+    assert(*it == kv("ab", 2));
+    ++it;
+    assert(*it == kv("aba", 3));
 }
 
 void trie_test1()
