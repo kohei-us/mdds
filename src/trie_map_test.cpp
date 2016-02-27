@@ -422,6 +422,10 @@ void trie_packed_test_iterator()
     assert(*it == kv("ab", 2));
     ++it;
     assert(*it == kv("aba", 3));
+
+    // Post-decrement operator.
+    assert(*it-- == kv("aba", 3));
+    assert(*it == kv("ab", 2));
 }
 
 void trie_test1()
