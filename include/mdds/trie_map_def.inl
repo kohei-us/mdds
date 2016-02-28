@@ -192,7 +192,7 @@ void trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
     using ktt = key_trait_type;
 
     if (node.has_value)
-        items.push_back(key_value_type(ktt::to_string(buffer), node.value));
+        items.push_back(key_value_type(ktt::to_key(buffer), node.value));
 
     std::for_each(node.children.begin(), node.children.end(),
         [&](const typename trie_node::children_type::value_type& v)
@@ -241,7 +241,7 @@ trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_type le
     if (!node)
         return matches;
 
-    buffer_type buffer = key_trait_type::init_buffer(prefix, len);
+    buffer_type buffer = key_trait_type::to_key_buffer(prefix, len);
     fill_child_node_items(matches, buffer, *node);
     return matches;
 }
@@ -651,7 +651,7 @@ packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_
         return matches;
 
     // Fill all its child nodes.
-    buffer_type buffer = ktt::init_buffer(prefix, len);
+    buffer_type buffer = ktt::to_key_buffer(prefix, len);
     fill_child_node_items(matches, buffer, node);
     return matches;
 }
@@ -735,7 +735,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
 
     const value_type* v = reinterpret_cast<const value_type*>(*p);
     if (v)
-        items.push_back(key_value_type(ktt::to_string(buffer), *v));
+        items.push_back(key_value_type(ktt::to_key(buffer), *v));
 
     ++p;
     size_t index_size = *p;

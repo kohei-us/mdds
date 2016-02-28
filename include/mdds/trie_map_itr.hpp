@@ -44,9 +44,9 @@ class iterator_base
 
     typedef typename trie_type::trie_node trie_node;
     typedef typename trie_type::key_trait_type key_trait_type;
-    typedef typename key_trait_type::string_type string_type;
-    typedef typename key_trait_type::buffer_type buffer_type;
-    typedef typename key_trait_type::char_type   char_type;
+    typedef typename key_trait_type::key_type string_type;
+    typedef typename key_trait_type::key_buffer_type buffer_type;
+    typedef typename key_trait_type::key_unit_type   char_type;
 
     // iterator traits
     typedef typename trie_type::key_value_type value_type;
@@ -106,7 +106,7 @@ public:
     iterator_base(node_stack_type&& node_stack, buffer_type&& buf) :
         m_node_stack(std::move(node_stack)),
         m_buffer(std::move(buf)),
-        m_current_value(key_trait_type::to_string(m_buffer), m_node_stack.back().node->value)
+        m_current_value(key_trait_type::to_key(m_buffer), m_node_stack.back().node->value)
     {}
 
     bool operator== (const iterator_base& other) const
@@ -173,7 +173,7 @@ public:
         }
         while (!cur_node->has_value);
 
-        m_current_value = value_type(ktt::to_string(m_buffer), cur_node->value);
+        m_current_value = value_type(ktt::to_key(m_buffer), cur_node->value);
         return *this;
     }
 
@@ -248,7 +248,7 @@ public:
         }
 
         assert(cur_node->has_value);
-        m_current_value = value_type(ktt::to_string(m_buffer), cur_node->value);
+        m_current_value = value_type(ktt::to_key(m_buffer), cur_node->value);
         return *this;
     }
 
@@ -270,9 +270,9 @@ class packed_iterator_base
     typedef typename trie_type::node_stack_type node_stack_type;
 
     typedef typename trie_type::key_trait_type key_trait_type;
-    typedef typename key_trait_type::string_type string_type;
-    typedef typename key_trait_type::buffer_type buffer_type;
-    typedef typename key_trait_type::char_type   char_type;
+    typedef typename key_trait_type::key_type string_type;
+    typedef typename key_trait_type::key_buffer_type buffer_type;
+    typedef typename key_trait_type::key_unit_type   char_type;
 
     // iterator traits
     typedef typename trie_type::key_value_type value_type;
@@ -350,7 +350,7 @@ public:
     packed_iterator_base(node_stack_type&& node_stack, buffer_type&& buf, const typename trie_type::value_type& v) :
         m_node_stack(std::move(node_stack)),
         m_buffer(std::move(buf)),
-        m_current_value(key_trait_type::to_string(m_buffer), v) {}
+        m_current_value(key_trait_type::to_key(m_buffer), v) {}
 
     bool operator== (const packed_iterator_base& other) const
     {
@@ -422,7 +422,7 @@ public:
         while (!pv);
 
         assert(pv);
-        m_current_value = value_type(ktt::to_string(m_buffer), *pv);
+        m_current_value = value_type(ktt::to_key(m_buffer), *pv);
 
         return *this;
     }
@@ -512,7 +512,7 @@ public:
         }
 
         assert(pv);
-        m_current_value = value_type(ktt::to_string(m_buffer), *pv);
+        m_current_value = value_type(ktt::to_key(m_buffer), *pv);
 
         return *this;
     }

@@ -256,37 +256,37 @@ struct custom_string
 
 struct custom_string_trait
 {
-    typedef uint16_t char_type;
-    typedef custom_string string_type;
-    typedef std::vector<char_type> buffer_type;
+    typedef uint16_t key_unit_type;
+    typedef custom_string key_type;
+    typedef std::vector<key_unit_type> key_buffer_type;
 
-    static buffer_type init_buffer(const char_type* str, size_t length)
+    static key_buffer_type to_key_buffer(const key_unit_type* str, size_t length)
     {
-        buffer_type buf;
-        const char_type* str_end = str + length;
+        key_buffer_type buf;
+        const key_unit_type* str_end = str + length;
         for (; str != str_end; ++str)
             buf.push_back(*str);
 
         return buf;
     }
 
-    static void push_back(buffer_type& buffer, char_type c)
+    static void push_back(key_buffer_type& buffer, key_unit_type c)
     {
         buffer.push_back(c);
     }
 
-    static void pop_back(buffer_type& buffer)
+    static void pop_back(key_buffer_type& buffer)
     {
         buffer.pop_back();
     }
 
-    static string_type to_string(const buffer_type& buf)
+    static key_type to_key(const key_buffer_type& buf)
     {
         // Cast all uint16_t chars to regular chars.
-        string_type s;
+        key_type s;
 
         std::for_each(buf.begin(), buf.end(),
-            [&](char_type c)
+            [&](key_unit_type c)
             {
                 s.data.push_back(static_cast<char>(c));
             }

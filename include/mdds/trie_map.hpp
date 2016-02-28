@@ -47,20 +47,20 @@ namespace trie {
 struct std_string_trait
 {
     /** type used to store a final string content. */
-    typedef std::string string_type;
+    typedef std::string key_type;
 
     /**
      * type used to build an intermediate string value, from which a final
      * string object is to be created.
      */
-    typedef std::string buffer_type;
+    typedef std::string key_buffer_type;
 
     /**
      * type that represents a single character inside a string or a buffer
      * object.  A string object is expected to store a series of characters of
      * this type.
      */
-    typedef char char_type;
+    typedef char key_unit_type;
 
     /**
      * Function called to create and initialize a buffer object from a given
@@ -71,9 +71,9 @@ struct std_string_trait
      *
      * @return buffer object containing the specified string value.
      */
-    static buffer_type init_buffer(const char_type* str, size_t length)
+    static key_buffer_type to_key_buffer(const key_unit_type* str, size_t length)
     {
-        return buffer_type(str, length);
+        return key_buffer_type(str, length);
     }
 
     /**
@@ -83,7 +83,7 @@ struct std_string_trait
      * @param buffer buffer object to append character to.
      * @param c character to append to the buffer.
      */
-    static void push_back(buffer_type& buffer, char_type c)
+    static void push_back(key_buffer_type& buffer, key_unit_type c)
     {
         buffer.push_back(c);
     }
@@ -94,7 +94,7 @@ struct std_string_trait
      *
      * @param buffer buffer object to remove character from.
      */
-    static void pop_back(buffer_type& buffer)
+    static void pop_back(key_buffer_type& buffer)
     {
         buffer.pop_back();
     }
@@ -107,7 +107,7 @@ struct std_string_trait
      *
      * @return string object whose content is created from the buffer object.
      */
-    static string_type to_string(const buffer_type& buf)
+    static key_type to_key(const key_buffer_type& buf)
     {
         return buf;
     }
@@ -132,9 +132,9 @@ class trie_map
 public:
     typedef packed_trie_map<_KeyTrait, _ValueT> packed_type;
     typedef _KeyTrait key_trait_type;
-    typedef typename key_trait_type::string_type string_type;
-    typedef typename key_trait_type::buffer_type buffer_type;
-    typedef typename key_trait_type::char_type   char_type;
+    typedef typename key_trait_type::key_type string_type;
+    typedef typename key_trait_type::key_buffer_type buffer_type;
+    typedef typename key_trait_type::key_unit_type   char_type;
     typedef _ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<string_type, value_type> key_value_type;
@@ -291,9 +291,9 @@ class packed_trie_map
 
 public:
     typedef _KeyTrait key_trait_type;
-    typedef typename key_trait_type::string_type string_type;
-    typedef typename key_trait_type::buffer_type buffer_type;
-    typedef typename key_trait_type::char_type   char_type;
+    typedef typename key_trait_type::key_type string_type;
+    typedef typename key_trait_type::key_buffer_type buffer_type;
+    typedef typename key_trait_type::key_unit_type   char_type;
     typedef _ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<string_type, value_type> key_value_type;
