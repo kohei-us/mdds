@@ -46,19 +46,19 @@ namespace trie {
  */
 struct std_string_trait
 {
-    /** type used to store a final string content. */
+    /** type used to store a key value. */
     typedef std::string key_type;
 
     /**
-     * type used to build an intermediate string value, from which a final
-     * string object is to be created.
+     * type used to build an intermediate key value, from which a final key
+     * value is to be created.
      */
     typedef std::string key_buffer_type;
 
     /**
-     * type that represents a single character inside a string or a buffer
-     * object.  A string object is expected to store a series of characters of
-     * this type.
+     * type that represents a single character inside a key or a key buffer
+     * object.  A key object is expected to store a series of elements of this
+     * type.
      */
     typedef char key_unit_type;
 
@@ -132,12 +132,12 @@ class trie_map
 public:
     typedef packed_trie_map<_KeyTrait, _ValueT> packed_type;
     typedef _KeyTrait key_trait_type;
-    typedef typename key_trait_type::key_type string_type;
-    typedef typename key_trait_type::key_buffer_type buffer_type;
-    typedef typename key_trait_type::key_unit_type   char_type;
+    typedef typename key_trait_type::key_type key_type;
+    typedef typename key_trait_type::key_buffer_type key_buffer_type;
+    typedef typename key_trait_type::key_unit_type   key_unit_type;
     typedef _ValueT value_type;
     typedef size_t size_type;
-    typedef std::pair<string_type, value_type> key_value_type;
+    typedef std::pair<key_type, value_type> key_value_type;
 
     typedef trie::iterator_base<trie_map> const_iterator;
 
@@ -145,7 +145,7 @@ private:
 
     struct trie_node
     {
-        typedef std::map<char_type, trie_node> children_type;
+        typedef std::map<key_unit_type, trie_node> children_type;
 
         children_type children;
         value_type value;
@@ -193,7 +193,7 @@ public:
      * @param len length of the character array storing the key.
      * @param value value to associate with the key.
      */
-    void insert(const char_type* key, size_type len, const value_type& value);
+    void insert(const key_unit_type* key, size_type len, const value_type& value);
 
     /**
      * Erase a key and the value associated with it.
@@ -204,7 +204,7 @@ public:
      *
      * @return true if a key is erased, false otherwise.
      */
-    bool erase(const char_type* key, size_type len);
+    bool erase(const key_unit_type* key, size_type len);
 
     /**
      * Find a value associated with a specified string key.
@@ -216,7 +216,7 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    value_type find(const char_type* input, size_type len) const;
+    value_type find(const key_unit_type* input, size_type len) const;
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
@@ -230,7 +230,7 @@ public:
      * @return list of all matching key-value pairs sorted by the key in
      *         ascending order.
      */
-    std::vector<key_value_type> prefix_search(const char_type* prefix, size_type len) const;
+    std::vector<key_value_type> prefix_search(const key_unit_type* prefix, size_type len) const;
 
     /**
      * Return the number of entries in the map.
@@ -255,17 +255,17 @@ public:
 
 private:
     void insert_into_tree(
-        trie_node& node, const char_type* key, const char_type* key_end, const value_type& value);
+        trie_node& node, const key_unit_type* key, const key_unit_type* key_end, const value_type& value);
 
     const trie_node* find_prefix_node(
-        const trie_node& node, const char_type* prefix, const char_type* prefix_end) const;
+        const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     void find_prefix_node_with_stack(
         node_stack_type& node_stack,
-        const trie_node& node, const char_type* prefix, const char_type* prefix_end) const;
+        const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     void fill_child_node_items(
-        std::vector<key_value_type>& items, buffer_type& buffer, const trie_node& node) const;
+        std::vector<key_value_type>& items, key_buffer_type& buffer, const trie_node& node) const;
 
     void count_values(size_type& n, const trie_node& node) const;
 

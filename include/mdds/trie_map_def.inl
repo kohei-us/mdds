@@ -51,7 +51,7 @@ trie_map<_KeyTrait,_ValueT>::begin() const
         return end();
 
     // Push the root node.
-    buffer_type buf;
+    key_buffer_type buf;
     node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.begin());
 
@@ -77,21 +77,21 @@ trie_map<_KeyTrait,_ValueT>::end() const
 {
     node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.end());
-    return const_iterator(std::move(node_stack), buffer_type());
+    return const_iterator(std::move(node_stack), key_buffer_type());
 }
 
 template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::insert(
-    const char_type* key, size_type len, const value_type& value)
+    const key_unit_type* key, size_type len, const value_type& value)
 {
-    const char_type* key_end = key + len;
+    const key_unit_type* key_end = key + len;
     insert_into_tree(m_root, key, key_end, value);
 }
 
 template<typename _KeyTrait, typename _ValueT>
-bool trie_map<_KeyTrait,_ValueT>::erase(const char_type* key, size_type len)
+bool trie_map<_KeyTrait,_ValueT>::erase(const key_unit_type* key, size_type len)
 {
-    const char_type* key_end = key + len;
+    const key_unit_type* key_end = key + len;
 
     node_stack_type node_stack;
     find_prefix_node_with_stack(node_stack, m_root, key, key_end);
@@ -122,7 +122,7 @@ bool trie_map<_KeyTrait,_ValueT>::erase(const char_type* key, size_type len)
 
 template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::insert_into_tree(
-    trie_node& node, const char_type* key, const char_type* key_end,
+    trie_node& node, const key_unit_type* key, const key_unit_type* key_end,
     const value_type& value)
 {
     if (key == key_end)
@@ -132,7 +132,7 @@ void trie_map<_KeyTrait,_ValueT>::insert_into_tree(
         return;
     }
 
-    char_type c = *key;
+    key_unit_type c = *key;
 
     auto it = node.children.lower_bound(c);
     if (it == node.children.end() || node.children.key_comp()(c, it->first))
@@ -149,7 +149,7 @@ void trie_map<_KeyTrait,_ValueT>::insert_into_tree(
 template<typename _KeyTrait, typename _ValueT>
 const typename trie_map<_KeyTrait,_ValueT>::trie_node*
 trie_map<_KeyTrait,_ValueT>::find_prefix_node(
-    const trie_node& node, const char_type* prefix, const char_type* prefix_end) const
+    const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const
 {
     if (prefix == prefix_end)
         // Right node is found.
@@ -166,7 +166,7 @@ trie_map<_KeyTrait,_ValueT>::find_prefix_node(
 template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
     node_stack_type& node_stack,
-    const trie_node& node, const char_type* prefix, const char_type* prefix_end) const
+    const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const
 {
     if (prefix == prefix_end)
     {
@@ -187,7 +187,7 @@ void trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
 
 template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
-    std::vector<key_value_type>& items, buffer_type& buffer, const trie_node& node) const
+    std::vector<key_value_type>& items, key_buffer_type& buffer, const trie_node& node) const
 {
     using ktt = key_trait_type;
 
@@ -220,9 +220,9 @@ void trie_map<_KeyTrait,_ValueT>::count_values(size_type& n, const trie_node& no
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::value_type
-trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
+trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) const
 {
-    const char_type* input_end = input + len;
+    const key_unit_type* input_end = input + len;
     const trie_node* node = find_prefix_node(m_root, input, input_end);
     if (!node || !node->has_value)
         return m_null_value;
@@ -232,16 +232,16 @@ trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
 
 template<typename _KeyTrait, typename _ValueT>
 std::vector<typename trie_map<_KeyTrait,_ValueT>::key_value_type>
-trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_type len) const
+trie_map<_KeyTrait,_ValueT>::prefix_search(const key_unit_type* prefix, size_type len) const
 {
-    const char_type* prefix_end = prefix + len;
+    const key_unit_type* prefix_end = prefix + len;
     std::vector<key_value_type> matches;
 
     const trie_node* node = find_prefix_node(m_root, prefix, prefix_end);
     if (!node)
         return matches;
 
-    buffer_type buffer = key_trait_type::to_key_buffer(prefix, len);
+    key_buffer_type buffer = key_trait_type::to_key_buffer(prefix, len);
     fill_child_node_items(matches, buffer, *node);
     return matches;
 }

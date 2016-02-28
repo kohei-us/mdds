@@ -44,9 +44,9 @@ class iterator_base
 
     typedef typename trie_type::trie_node trie_node;
     typedef typename trie_type::key_trait_type key_trait_type;
-    typedef typename key_trait_type::key_type string_type;
-    typedef typename key_trait_type::key_buffer_type buffer_type;
-    typedef typename key_trait_type::key_unit_type   char_type;
+    typedef typename key_trait_type::key_type key_type;
+    typedef typename key_trait_type::key_buffer_type key_buffer_type;
+    typedef typename key_trait_type::key_unit_type   key_unit_type;
 
     // iterator traits
     typedef typename trie_type::key_value_type value_type;
@@ -55,11 +55,11 @@ class iterator_base
     typedef std::ptrdiff_t  difference_type;
 
     node_stack_type m_node_stack;
-    buffer_type m_buffer;
+    key_buffer_type m_buffer;
     value_type m_current_value;
 
     static const trie_node* push_child_node_to_stack(
-        node_stack_type& node_stack, buffer_type& buf,
+        node_stack_type& node_stack, key_buffer_type& buf,
         const typename trie_node::children_type::const_iterator& child_pos)
     {
         using ktt = key_trait_type;
@@ -76,7 +76,7 @@ class iterator_base
      * the way to the leaf node.
      */
     static const trie_node* descend_to_previus_leaf_node(
-        node_stack_type& node_stack, buffer_type& buf)
+        node_stack_type& node_stack, key_buffer_type& buf)
     {
         using ktt = key_trait_type;
 
@@ -103,7 +103,7 @@ public:
 
     iterator_base() {}
 
-    iterator_base(node_stack_type&& node_stack, buffer_type&& buf) :
+    iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf) :
         m_node_stack(std::move(node_stack)),
         m_buffer(std::move(buf)),
         m_current_value(key_trait_type::to_key(m_buffer), m_node_stack.back().node->value)
@@ -270,9 +270,9 @@ class packed_iterator_base
     typedef typename trie_type::node_stack_type node_stack_type;
 
     typedef typename trie_type::key_trait_type key_trait_type;
-    typedef typename key_trait_type::key_type string_type;
-    typedef typename key_trait_type::key_buffer_type buffer_type;
-    typedef typename key_trait_type::key_unit_type   char_type;
+    typedef typename key_trait_type::key_type key_type;
+    typedef typename key_trait_type::key_buffer_type key_buffer_type;
+    typedef typename key_trait_type::key_unit_type   key_unit_type;
 
     // iterator traits
     typedef typename trie_type::key_value_type value_type;
@@ -281,17 +281,17 @@ class packed_iterator_base
     typedef std::ptrdiff_t  difference_type;
 
     node_stack_type m_node_stack;
-    buffer_type m_buffer;
+    key_buffer_type m_buffer;
     value_type m_current_value;
 
     static void push_child_node_to_stack(
-        node_stack_type& node_stack, buffer_type& buf, const uintptr_t* child_pos)
+        node_stack_type& node_stack, key_buffer_type& buf, const uintptr_t* child_pos)
     {
         using ktt = key_trait_type;
 
         const uintptr_t* node_pos = node_stack.back().node_pos;
 
-        char_type c = *child_pos;
+        key_unit_type c = *child_pos;
         ktt::push_back(buf, c);
         ++child_pos;
         size_t offset = *child_pos;
@@ -308,7 +308,7 @@ class packed_iterator_base
     }
 
     static const void descend_to_previus_leaf_node(
-        node_stack_type& node_stack, buffer_type& buf)
+        node_stack_type& node_stack, key_buffer_type& buf)
     {
         using ktt = key_trait_type;
 
@@ -325,7 +325,7 @@ class packed_iterator_base
             --si->child_pos;
             size_t offset = *si->child_pos;
             --si->child_pos;
-            char_type c = *si->child_pos;
+            key_unit_type c = *si->child_pos;
             node_pos -= offset; // Jump to the head of the child node.
             ktt::push_back(buf, c);
 
@@ -343,11 +343,11 @@ class packed_iterator_base
 public:
     packed_iterator_base() {}
 
-    packed_iterator_base(node_stack_type&& node_stack, buffer_type&& buf) :
+    packed_iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf) :
         m_node_stack(std::move(node_stack)),
         m_buffer(std::move(buf)) {}
 
-    packed_iterator_base(node_stack_type&& node_stack, buffer_type&& buf, const typename trie_type::value_type& v) :
+    packed_iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf, const typename trie_type::value_type& v) :
         m_node_stack(std::move(node_stack)),
         m_buffer(std::move(buf)),
         m_current_value(key_trait_type::to_key(m_buffer), v) {}
