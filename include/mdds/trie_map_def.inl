@@ -232,7 +232,7 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
     // Build the key value from the stack.
     key_buffer_type buf;
     auto end = node_stack.end();
-    --end;  // Skip the leaf node which doesn't store key element.
+    --end;  // Skip the node with value which doesn't store a key element.
     std::for_each(node_stack.begin(), end,
         [&](const stack_item& si)
         {
