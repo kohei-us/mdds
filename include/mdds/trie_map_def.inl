@@ -219,15 +219,29 @@ void trie_map<_KeyTrait,_ValueT>::count_values(size_type& n, const trie_node& no
 }
 
 template<typename _KeyTrait, typename _ValueT>
-typename trie_map<_KeyTrait,_ValueT>::value_type
+typename trie_map<_KeyTrait,_ValueT>::const_iterator
 trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) const
 {
     const key_unit_type* input_end = input + len;
-    const trie_node* node = find_prefix_node(m_root, input, input_end);
-    if (!node || !node->has_value)
-        return m_null_value;
+    node_stack_type node_stack;
+    find_prefix_node_with_stack(node_stack, m_root, input, input_end);
+    if (node_stack.empty() || !node_stack.back().node->has_value)
+        // Specified key doesn't exist.
+        return end();
 
-    return node->value;
+    // Build the key value from the stack.
+    key_buffer_type buf;
+    auto end = node_stack.end();
+    --end;  // Skip the leaf node which doesn't store key element.
+    std::for_each(node_stack.begin(), end,
+        [&](const stack_item& si)
+        {
+            using ktt = key_trait_type;
+            ktt::push_back(buf, si.child_pos->first);
+        }
+    );
+
+    return const_iterator(std::move(node_stack), std::move(buf));
 }
 
 template<typename _KeyTrait, typename _ValueT>

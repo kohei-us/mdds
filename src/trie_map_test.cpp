@@ -446,18 +446,21 @@ void trie_test1()
     db.insert(MDDS_ASCII("Hideki"), custom_string("Matsui"));
     assert(db.size() == 3);
 
-    custom_string res = db.find(MDDS_ASCII("Barak"));
+    auto it = db.find(MDDS_ASCII("Barak"));
+    assert(it->first == "Barak");
+    custom_string res = it->second;
     assert(res.data == "Obama");
-    res = db.find(MDDS_ASCII("Bob"));
+
+    res = db.find(MDDS_ASCII("Bob"))->second;
     assert(res.data == "Marley");
-    res = db.find(MDDS_ASCII("Hideki"));
+    res = db.find(MDDS_ASCII("Hideki"))->second;
     assert(res.data == "Matsui");
 
     // Non-existent key.
-    res = db.find(MDDS_ASCII("Von"));
-    assert(res.data == "-");
-    res = db.find(MDDS_ASCII("Bar"));
-    assert(res.data == "-");
+    it = db.find(MDDS_ASCII("Von"));
+    assert(it == db.end());
+    it = db.find(MDDS_ASCII("Bar"));
+    assert(it == db.end());
 
     // Perform prefix search on "B", which should return both "Barak" and "Bob".
     // The results should be sorted.
@@ -521,8 +524,8 @@ void trie_test1()
     assert(erased);
     assert(db.size() == 2);
 
-    res = db.find(MDDS_ASCII("Hideki"));
-    assert(res.data == null_value.data);
+    it = db.find(MDDS_ASCII("Hideki"));
+    assert(it == db.end());
 
     // Try to erase a key that doesn't exist.
     erased = db.erase(MDDS_ASCII("Foo"));

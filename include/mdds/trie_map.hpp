@@ -213,10 +213,10 @@ public:
      *              to match.
      * @param len length of the matching string value.
      *
-     * @return value associated with the key, or the null value in case the
-     *         key is not found.
+     * @return iterator that references a value associated with the key, or
+     *         the end position in case the key is not found.
      */
-    value_type find(const key_unit_type* input, size_type len) const;
+    const_iterator find(const key_unit_type* input, size_type len) const;
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
