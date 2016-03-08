@@ -382,7 +382,7 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    value_type find(const char_type* input, size_type len) const;
+    const_iterator find(const char_type* input, size_type len) const;
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
@@ -421,6 +421,10 @@ private:
     void compact(const typename trie_map<_KeyTrait, _ValueT>::trie_node& root);
 
     const uintptr_t* find_prefix_node(
+        const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const;
+
+    void find_prefix_node_with_stack(
+        node_stack_type& node_stack,
         const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const;
 
     void fill_child_node_items(

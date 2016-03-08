@@ -626,22 +626,39 @@ packed_trie_map<_KeyTrait,_ValueT>::get_root_stack() const
 }
 
 template<typename _KeyTrait, typename _ValueT>
-typename packed_trie_map<_KeyTrait,_ValueT>::value_type
+typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
 packed_trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
 {
     if (m_packed.empty())
-        return m_null_value;
+        return end();
 
     const char_type* key_end = input + len;
     size_t root_offset = m_packed[0];
     const uintptr_t* root = m_packed.data() + root_offset;
 
-    const uintptr_t* node = find_prefix_node(root, input, key_end);
-    if (!node)
-        return m_null_value;
+    node_stack_type node_stack;
+    find_prefix_node_with_stack(node_stack, root, input, key_end);
+    if (node_stack.empty() || !node_stack.back().node_pos)
+        return end();
 
-    const value_type* pv = reinterpret_cast<const value_type*>(*node);
-    return pv ? *pv : m_null_value;
+    const stack_item& si = node_stack.back();
+    const value_type* pv = reinterpret_cast<const value_type*>(*si.node_pos);
+    if (!pv)
+        return end();
+
+    // Build the key value from the stack.
+    buffer_type buf;
+    auto end = node_stack.end();
+    --end;  // Skip the node with value which doesn't store a key element.
+    std::for_each(node_stack.begin(), end,
+        [&](const stack_item& si)
+        {
+            using ktt = key_trait_type;
+            ktt::push_back(buf, *si.child_pos);
+        }
+    );
+
+    return const_iterator(std::move(node_stack), std::move(buf), *pv);
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -737,6 +754,80 @@ const uintptr_t* packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node(
     }
 
     return nullptr;
+}
+
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
+    node_stack_type& node_stack,
+    const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const
+{
+    if (prefix == prefix_end)
+    {
+        const uintptr_t* child_pos = p + 2;
+        node_stack.emplace_back(p, child_pos, child_pos);
+        return;
+    }
+
+    const uintptr_t* p0 = p; // store the head offset position of this node.
+
+    // Find the child node with a matching key character.
+
+    ++p;
+    size_t index_size = *p;
+    size_t n = index_size / 2;
+    ++p;
+
+    if (!n)
+    {
+        // This is a leaf node.
+        node_stack.emplace_back(nullptr, nullptr, nullptr);
+        return;
+    }
+
+    const uintptr_t* child_end = p + index_size;
+
+    for (size_type low = 0, high = n-1; low <= high; )
+    {
+        size_type i = (low + high) / 2;
+
+        const uintptr_t* child_pos = p + i*2;
+        char_type node_key = *child_pos;
+        size_t offset = *(child_pos+1);
+
+        if (*prefix == node_key)
+        {
+            // Match found!
+            node_stack.emplace_back(p0, child_pos, child_end);
+            const uintptr_t* p_child = p0 - offset;
+            ++prefix;
+            find_prefix_node_with_stack(node_stack, p_child, prefix, prefix_end);
+            return;
+        }
+
+        if (low == high)
+            // No more child node key to test. Bail out.
+            break;
+
+        if (high - low == 1)
+        {
+            // Only two more child keys left.
+            if (i == low)
+                low = high;
+            else
+            {
+                assert(i == high);
+                high = low;
+            }
+        }
+        else if (*prefix < node_key)
+            // Move on to the lower sub-group.
+            high = i;
+        else
+            // Move on to the higher sub-group.
+            low = i;
+    }
+
+    node_stack.emplace_back(nullptr, nullptr, nullptr);
 }
 
 template<typename _KeyTrait, typename _ValueT>

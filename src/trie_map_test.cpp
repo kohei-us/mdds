@@ -51,8 +51,8 @@ bool verify_entries(
     const packed_int_map_type::entry* p_end = p + entry_size;
     for (; p != p_end; ++p)
     {
-        int res = db.find(p->key, p->keylen);
-        if (res != p->value)
+        auto it = db.find(p->key, p->keylen);
+        if (it == db.end() || it->second != p->value)
             return false;
     }
 
@@ -77,8 +77,8 @@ void trie_packed_test1()
     assert(verify_entries(db, entries, entry_size));
 
     // invalid keys
-    assert(db.find(MDDS_ASCII("ac")) == -1);
-    assert(db.find(MDDS_ASCII("c")) == -1);
+    assert(db.find(MDDS_ASCII("ac")) == db.end());
+    assert(db.find(MDDS_ASCII("c")) == db.end());
 
     // Get all key-value pairs.
     auto prefix_list = db.prefix_search(nullptr, 0);
@@ -91,6 +91,21 @@ void trie_packed_test1()
     assert(prefix_list[1].second == 10);
     assert(prefix_list[2].second == 3);
     assert(prefix_list[3].second == 7);
+
+    auto it = db.find(MDDS_ASCII("a"));
+    assert(it->first == "a");
+    assert(it->second == 13);
+    ++it;
+    assert(it->first == "aa");
+    assert(it->second == 10);
+    ++it;
+    assert(it->first == "ab");
+    assert(it->second == 3);
+    ++it;
+    assert(it->first == "b");
+    assert(it->second == 7);
+    ++it;
+    assert(it == db.end());
 }
 
 void trie_packed_test2()
@@ -119,10 +134,10 @@ void trie_packed_test2()
     assert(verify_entries(db, entries, entry_size));
 
     // invalid keys
-    assert(db.find(MDDS_ASCII("aarons")) == -1);
-    assert(db.find(MDDS_ASCII("a")) == -1);
-    assert(db.find(MDDS_ASCII("biso")) == -1);
-    assert(db.find(MDDS_ASCII("dAvid")) == -1);
+    assert(db.find(MDDS_ASCII("aarons")) == db.end());
+    assert(db.find(MDDS_ASCII("a")) == db.end());
+    assert(db.find(MDDS_ASCII("biso")) == db.end());
+    assert(db.find(MDDS_ASCII("dAvid")) == db.end());
 }
 
 void trie_packed_test3()
@@ -143,10 +158,10 @@ void trie_packed_test3()
     assert(verify_entries(db, entries, entry_size));
 
     // invalid keys
-    assert(db.find(MDDS_ASCII("NUll")) == -1);
-    assert(db.find(MDDS_ASCII("Oull")) == -1);
-    assert(db.find(MDDS_ASCII("Mull")) == -1);
-    assert(db.find(MDDS_ASCII("hell")) == -1);
+    assert(db.find(MDDS_ASCII("NUll")) == db.end());
+    assert(db.find(MDDS_ASCII("Oull")) == db.end());
+    assert(db.find(MDDS_ASCII("Mull")) == db.end());
+    assert(db.find(MDDS_ASCII("hell")) == db.end());
 }
 
 void trie_packed_test4()
@@ -177,8 +192,8 @@ void trie_packed_test4()
     assert(verify_entries(db, entries, entry_size));
 
     // Try invalid keys.
-    assert(db.find("foo", 3) == name_none);
-    assert(db.find("andy133", 7) == name_none);
+    assert(db.find("foo", 3) == db.end());
+    assert(db.find("andy133", 7) == db.end());
 
     // Test prefix search on 'andy'.
     auto prefix_list = db.prefix_search(MDDS_ASCII("andy"));
@@ -203,6 +218,7 @@ struct value_wrapper
 {
     int value;
 
+    value_wrapper() : value(0) {}
     value_wrapper(int _value) : value(_value) {}
 };
 
@@ -236,14 +252,14 @@ void trie_packed_test_value_life_cycle()
     for (size_t i = 0, n = items.size(); i < n; ++i)
         cout << items[i].first << ": " << items[i].second.value << endl;
 
-    value_wrapper r = db.find(MDDS_ASCII("twelve"));
-    assert(r.value == 12);
+    auto it = db.find(MDDS_ASCII("twelve"));
+    assert(it->second.value == 12);
 
-    r = db.find(MDDS_ASCII("two"));
-    assert(r.value == 2);
+    it = db.find(MDDS_ASCII("two"));
+    assert(it->second.value == 2);
 
-    r = db.find(MDDS_ASCII("foo"));
-    assert(r.value == -1);
+    it = db.find(MDDS_ASCII("foo"));
+    assert(it == db.end());
 }
 
 struct custom_string
@@ -317,9 +333,9 @@ void trie_packed_test_custom_string()
     packed_custom_str_map_type db(entries, n_entries, "-");
     for (size_t i = 0; i < n_entries; ++i)
     {
-        std::string v = db.find(entries[i].key, entries[i].keylen);
-        cout << v << endl;
-        assert(v == entries[i].value);
+        auto it = db.find(entries[i].key, entries[i].keylen);
+        cout << it->second << endl;
+        assert(it->second == entries[i].value);
     }
 
     // Find all keys that start with 'M'.
