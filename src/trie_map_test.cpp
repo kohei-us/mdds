@@ -731,6 +731,33 @@ void trie_test_find_iterator()
         assert(it->second == 4);
         ++it;
         assert(it == db.end());
+
+        it = db.find(MDDS_ASCII("aa"));
+        assert(it->first == "aa");
+        assert(it->second == 2);
+        ++it;
+        assert(it->first == "ab");
+        assert(it->second == 3);
+        ++it;
+        assert(it->first == "b");
+        assert(it->second == 4);
+        ++it;
+        assert(it == db.end());
+
+        it = db.find(MDDS_ASCII("ab"));
+        assert(it->first == "ab");
+        assert(it->second == 3);
+        ++it;
+        assert(it->first == "b");
+        assert(it->second == 4);
+        ++it;
+        assert(it == db.end());
+
+        it = db.find(MDDS_ASCII("b"));
+        assert(it->first == "b");
+        assert(it->second == 4);
+        ++it;
+        assert(it == db.end());
     }
 
     trie_map_type::packed_type packed = db.pack();
@@ -745,6 +772,33 @@ void trie_test_find_iterator()
         assert(it->first == "ab");
         assert(it->second == 3);
         ++it;
+        assert(it->first == "b");
+        assert(it->second == 4);
+        ++it;
+        assert(it == packed.end());
+
+        it = packed.find(MDDS_ASCII("aa"));
+        assert(it->first == "aa");
+        assert(it->second == 2);
+        ++it;
+        assert(it->first == "ab");
+        assert(it->second == 3);
+        ++it;
+        assert(it->first == "b");
+        assert(it->second == 4);
+        ++it;
+        assert(it == packed.end());
+
+        it = packed.find(MDDS_ASCII("ab"));
+        assert(it->first == "ab");
+        assert(it->second == 3);
+        ++it;
+        assert(it->first == "b");
+        assert(it->second == 4);
+        ++it;
+        assert(it == packed.end());
+
+        it = packed.find(MDDS_ASCII("b"));
         assert(it->first == "b");
         assert(it->second == 4);
         ++it;
