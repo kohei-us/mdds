@@ -291,12 +291,12 @@ class packed_trie_map
 
 public:
     typedef _KeyTrait key_trait_type;
-    typedef typename key_trait_type::key_type string_type;
-    typedef typename key_trait_type::key_buffer_type buffer_type;
-    typedef typename key_trait_type::key_unit_type   char_type;
+    typedef typename key_trait_type::key_type key_type;
+    typedef typename key_trait_type::key_buffer_type key_buffer_type;
+    typedef typename key_trait_type::key_unit_type   key_unit_type;
     typedef _ValueT value_type;
     typedef size_t size_type;
-    typedef std::pair<string_type, value_type> key_value_type;
+    typedef std::pair<key_type, value_type> key_value_type;
     typedef trie::packed_iterator_base<packed_trie_map> const_iterator;
 
     /**
@@ -305,23 +305,23 @@ public:
      */
     struct entry
     {
-        const char_type* key;
+        const key_unit_type* key;
         size_type keylen;
         value_type value;
 
-        entry(const char_type* _key, size_type _keylen, value_type _value) :
+        entry(const key_unit_type* _key, size_type _keylen, value_type _value) :
             key(_key), keylen(_keylen), value(_value) {}
     };
 
 private:
     struct trie_node
     {
-        char_type key;
+        key_unit_type key;
         const value_type* value;
 
         std::deque<trie_node*> children;
 
-        trie_node(char_type _key) : key(_key), value(nullptr) {}
+        trie_node(key_unit_type _key) : key(_key), value(nullptr) {}
     };
 
     struct stack_item
@@ -339,7 +339,7 @@ private:
     typedef std::deque<trie_node> node_pool_type;
     typedef std::vector<uintptr_t> packed_type;
     typedef std::deque<value_type> value_store_type;
-    typedef std::vector<std::tuple<size_t, char_type>> child_offsets_type;
+    typedef std::vector<std::tuple<size_t, key_unit_type>> child_offsets_type;
 
 public:
 
@@ -382,7 +382,7 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    const_iterator find(const char_type* input, size_type len) const;
+    const_iterator find(const key_unit_type* input, size_type len) const;
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
@@ -396,7 +396,7 @@ public:
      * @return list of all matching key-value pairs sorted by the key in
      *         ascending order.
      */
-    std::vector<key_value_type> prefix_search(const char_type* prefix, size_type len) const;
+    std::vector<key_value_type> prefix_search(const key_unit_type* prefix, size_type len) const;
 
     /**
      * Return the number of entries in the map.
@@ -421,17 +421,17 @@ private:
     void compact(const typename trie_map<_KeyTrait, _ValueT>::trie_node& root);
 
     const uintptr_t* find_prefix_node(
-        const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const;
+        const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     void find_prefix_node_with_stack(
         node_stack_type& node_stack,
-        const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const;
+        const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     void fill_child_node_items(
-        std::vector<key_value_type>& items, buffer_type& buffer, const uintptr_t* p) const;
+        std::vector<key_value_type>& items, key_buffer_type& buffer, const uintptr_t* p) const;
 
 #ifdef MDDS_TRIE_MAP_DEBUG
-    void dump_node(buffer_type& buffer, const trie_node& node) const;
+    void dump_node(key_buffer_type& buffer, const trie_node& node) const;
     void dump_trie(const trie_node& root) const;
     void dump_packed_trie(const std::vector<uintptr_t>& packed) const;
 #endif

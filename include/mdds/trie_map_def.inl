@@ -288,7 +288,7 @@ trie_map<_KeyTrait,_ValueT>::pack() const
 
 template<typename _KeyTrait, typename _ValueT>
 void packed_trie_map<_KeyTrait,_ValueT>::dump_node(
-    buffer_type& buffer, const trie_node& node) const
+    key_buffer_type& buffer, const trie_node& node) const
 {
     using namespace std;
 
@@ -314,7 +314,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::dump_node(
 template<typename _KeyTrait, typename _ValueT>
 void packed_trie_map<_KeyTrait,_ValueT>::dump_trie(const trie_node& root) const
 {
-    buffer_type buffer;
+    key_buffer_type buffer;
     dump_node(buffer, root);
 }
 
@@ -346,7 +346,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::dump_packed_trie(const std::vector<uint
 
         for (size_t j = 0; j < index_size; ++j)
         {
-            char_type key = packed[i];
+            key_unit_type key = packed[i];
             cout << i << ": key: " << key << endl;
             ++i;
             size_t offset = packed[i];
@@ -371,7 +371,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::traverse_range(
     const entry* p = start;
     const entry* range_start = start;
     const entry* range_end = nullptr;
-    char_type range_char = 0;
+    key_unit_type range_char = 0;
     size_type range_count = 0;
 
     for (; p != end; ++p)
@@ -386,7 +386,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::traverse_range(
         }
 
         ++range_count;
-        char_type c = p->key[pos];
+        key_unit_type c = p->key[pos];
 
         if (!range_char)
             range_char = c;
@@ -418,7 +418,7 @@ template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::size_type
 packed_trie_map<_KeyTrait,_ValueT>::compact_node(const trie_node& node)
 {
-    std::vector<std::tuple<size_t,char_type>> child_offsets;
+    std::vector<std::tuple<size_t,key_unit_type>> child_offsets;
     child_offsets.reserve(node.children.size());
 
     // Process child nodes first.
@@ -452,7 +452,7 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(
 {
     using node_type = typename trie_map<_KeyTrait, _ValueT>::trie_node;
 
-    std::vector<std::tuple<size_t,char_type>> child_offsets;
+    std::vector<std::tuple<size_t,key_unit_type>> child_offsets;
     child_offsets.reserve(node.children.size());
 
     // Process child nodes first.
@@ -488,9 +488,9 @@ void packed_trie_map<_KeyTrait,_ValueT>::push_child_offsets(
     m_packed.push_back(uintptr_t(child_offsets.size()*2));
 
     std::for_each(child_offsets.begin(), child_offsets.end(),
-        [&](const std::tuple<size_t,char_type>& v)
+        [&](const std::tuple<size_t,key_unit_type>& v)
         {
-            char_type key = std::get<1>(v);
+            key_unit_type key = std::get<1>(v);
             size_t child_offset = std::get<0>(v);
             m_packed.push_back(key);
             m_packed.push_back(offset-child_offset);
@@ -561,7 +561,7 @@ packed_trie_map<_KeyTrait,_ValueT>::begin() const
     const stack_item* si = &node_stack.back();
     if (si->child_pos == si->child_end)
         // empty container.
-        return const_iterator(std::move(node_stack), buffer_type());
+        return const_iterator(std::move(node_stack), key_buffer_type());
 
     const uintptr_t* node_pos = si->node_pos;
     const uintptr_t* child_pos = si->child_pos;
@@ -569,8 +569,8 @@ packed_trie_map<_KeyTrait,_ValueT>::begin() const
     const uintptr_t* p = child_pos;
 
     // Follow the root node's left-most child.
-    buffer_type buf;
-    char_type c = *p;
+    key_buffer_type buf;
+    key_unit_type c = *p;
     ktt::push_back(buf, c);
     ++p;
     size_t offset = *p;
@@ -603,7 +603,7 @@ packed_trie_map<_KeyTrait,_ValueT>::end() const
 {
     node_stack_type node_stack = get_root_stack();
     node_stack.back().child_pos = node_stack.back().child_end;
-    return const_iterator(std::move(node_stack), buffer_type());
+    return const_iterator(std::move(node_stack), key_buffer_type());
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -627,12 +627,12 @@ packed_trie_map<_KeyTrait,_ValueT>::get_root_stack() const
 
 template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
-packed_trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) const
+packed_trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) const
 {
     if (m_packed.empty())
         return end();
 
-    const char_type* key_end = input + len;
+    const key_unit_type* key_end = input + len;
     size_t root_offset = m_packed[0];
     const uintptr_t* root = m_packed.data() + root_offset;
 
@@ -647,7 +647,7 @@ packed_trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) 
         return end();
 
     // Build the key value from the stack.
-    buffer_type buf;
+    key_buffer_type buf;
     auto end = node_stack.end();
     --end;  // Skip the node with value which doesn't store a key element.
     std::for_each(node_stack.begin(), end,
@@ -663,7 +663,7 @@ packed_trie_map<_KeyTrait,_ValueT>::find(const char_type* input, size_type len) 
 
 template<typename _KeyTrait, typename _ValueT>
 std::vector<typename packed_trie_map<_KeyTrait,_ValueT>::key_value_type>
-packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_type len) const
+packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const key_unit_type* prefix, size_type len) const
 {
     using ktt = key_trait_type;
 
@@ -672,7 +672,7 @@ packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_
     if (m_packed.empty())
         return matches;
 
-    const char_type* prefix_end = prefix + len;
+    const key_unit_type* prefix_end = prefix + len;
 
     size_t root_offset = m_packed[0];
     const uintptr_t* root = m_packed.data() + root_offset;
@@ -682,7 +682,7 @@ packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const char_type* prefix, size_
         return matches;
 
     // Fill all its child nodes.
-    buffer_type buffer = ktt::to_key_buffer(prefix, len);
+    key_buffer_type buffer = ktt::to_key_buffer(prefix, len);
     fill_child_node_items(matches, buffer, node);
     return matches;
 }
@@ -696,7 +696,7 @@ packed_trie_map<_KeyTrait,_ValueT>::size() const
 
 template<typename _KeyTrait, typename _ValueT>
 const uintptr_t* packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node(
-    const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const
+    const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const
 {
     if (prefix == prefix_end)
         return p;
@@ -719,7 +719,7 @@ const uintptr_t* packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node(
         size_type i = (low + high) / 2;
 
         const uintptr_t* p_this = p + i*2;
-        char_type node_key = *p_this;
+        key_unit_type node_key = *p_this;
         size_t offset = *(p_this+1);
 
         if (*prefix == node_key)
@@ -759,7 +759,7 @@ const uintptr_t* packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node(
 template<typename _KeyTrait, typename _ValueT>
 void packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
     node_stack_type& node_stack,
-    const uintptr_t* p, const char_type* prefix, const char_type* prefix_end) const
+    const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const
 {
     if (prefix == prefix_end)
     {
@@ -793,7 +793,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
         size_type i = (low + high) / 2;
 
         const uintptr_t* child_pos = p + i*2;
-        char_type node_key = *child_pos;
+        key_unit_type node_key = *child_pos;
         size_t offset = *(child_pos+1);
 
         if (*prefix == node_key)
@@ -834,7 +834,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
 
 template<typename _KeyTrait, typename _ValueT>
 void packed_trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
-    std::vector<key_value_type>& items, buffer_type& buffer, const uintptr_t* p) const
+    std::vector<key_value_type>& items, key_buffer_type& buffer, const uintptr_t* p) const
 {
     using ktt = key_trait_type;
 
@@ -850,7 +850,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
     ++p;
     for (size_t i = 0; i < n; ++i)
     {
-        char_type key = *p++;
+        key_unit_type key = *p++;
         size_t offset = *p++;
         ktt::push_back(buffer, key);
         const uintptr_t* p_child = p0 - offset;
