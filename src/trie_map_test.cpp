@@ -707,6 +707,51 @@ void trie_test_iterator_with_erase()
     assert(*it == kv("A",  1));
 }
 
+void trie_test_find_iterator()
+{
+    stack_printer __stack_printer__("::trie_test_find_iterator");
+    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    trie_map_type db(-1);
+    db.insert(MDDS_ASCII("a"),  1);
+    db.insert(MDDS_ASCII("aa"), 2);
+    db.insert(MDDS_ASCII("ab"), 3);
+    db.insert(MDDS_ASCII("b"),  4);
+    {
+        auto it = db.find(MDDS_ASCII("a"));
+        assert(it->first == "a");
+        assert(it->second == 1);
+        ++it;
+        assert(it->first == "aa");
+        assert(it->second == 2);
+        ++it;
+        assert(it->first == "ab");
+        assert(it->second == 3);
+        ++it;
+        assert(it->first == "b");
+        assert(it->second == 4);
+        ++it;
+        assert(it == db.end());
+    }
+
+    trie_map_type::packed_type packed = db.pack();
+    {
+        auto it = packed.find(MDDS_ASCII("a"));
+        assert(it->first == "a");
+        assert(it->second == 1);
+        ++it;
+        assert(it->first == "aa");
+        assert(it->second == 2);
+        ++it;
+        assert(it->first == "ab");
+        assert(it->second == 3);
+        ++it;
+        assert(it->first == "b");
+        assert(it->second == 4);
+        ++it;
+        assert(it == packed.end());
+    }
+}
+
 int main(int argc, char** argv)
 {
     trie_packed_test1();
@@ -723,6 +768,7 @@ int main(int argc, char** argv)
     trie_test_iterator_empty();
     trie_test_iterator();
     trie_test_iterator_with_erase();
+    trie_test_find_iterator();
 
     return EXIT_SUCCESS;
 }

@@ -763,8 +763,10 @@ void packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
 {
     if (prefix == prefix_end)
     {
-        const uintptr_t* child_pos = p + 2;
-        node_stack.emplace_back(p, child_pos, child_pos);
+        size_t index_size = *(p+1);
+        const uintptr_t* child_pos = p+2;
+        const uintptr_t* child_end = child_pos + index_size;
+        node_stack.emplace_back(p, child_pos, child_end);
         return;
     }
 
