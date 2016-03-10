@@ -48,12 +48,14 @@ class iterator_base
     typedef typename key_trait_type::key_buffer_type key_buffer_type;
     typedef typename key_trait_type::key_unit_type   key_unit_type;
 
+public:
     // iterator traits
     typedef typename trie_type::key_value_type value_type;
     typedef value_type*     pointer;
     typedef value_type&     reference;
     typedef std::ptrdiff_t  difference_type;
 
+private:
     node_stack_type m_node_stack;
     key_buffer_type m_buffer;
     value_type m_current_value;
@@ -274,12 +276,14 @@ class packed_iterator_base
     typedef typename key_trait_type::key_buffer_type key_buffer_type;
     typedef typename key_trait_type::key_unit_type   key_unit_type;
 
+public:
     // iterator traits
     typedef typename trie_type::key_value_type value_type;
     typedef value_type*     pointer;
     typedef value_type&     reference;
     typedef std::ptrdiff_t  difference_type;
 
+private:
     node_stack_type m_node_stack;
     key_buffer_type m_buffer;
     value_type m_current_value;
