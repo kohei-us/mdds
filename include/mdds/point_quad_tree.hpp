@@ -197,7 +197,7 @@ public:
         point() : x(0), y(0) {}
     };
 
-    class search_result
+    class search_results
     {
         friend class search_result_inserter;
 
@@ -207,7 +207,7 @@ public:
 
         class const_iterator
         {
-            friend class point_quad_tree<_Key,_Value>::search_result;
+            friend class point_quad_tree<_Key,_Value>::search_results;
             typedef typename point_quad_tree<_Key,_Value>::point point;
             typedef typename point_quad_tree<_Key,_Value>::value_type parent_value_type;
 
@@ -342,19 +342,19 @@ public:
             bool m_end_pos:1;
         };
 
-        search_result() : mp_res_nodes(static_cast<res_nodes_type*>(nullptr)) {}
-        search_result(const search_result& r) : mp_res_nodes(r.mp_res_nodes) {}
+        search_results() : mp_res_nodes(static_cast<res_nodes_type*>(nullptr)) {}
+        search_results(const search_results& r) : mp_res_nodes(r.mp_res_nodes) {}
 
-        typename search_result::const_iterator begin()
+        typename search_results::const_iterator begin()
         {
-            typename search_result::const_iterator itr(mp_res_nodes);
+            typename search_results::const_iterator itr(mp_res_nodes);
             itr.move_to_front();
             return itr;
         }
     
-        typename search_result::const_iterator end()
+        typename search_results::const_iterator end()
         {
-            typename search_result::const_iterator itr(mp_res_nodes);
+            typename search_results::const_iterator itr(mp_res_nodes);
             itr.move_to_end();
             return itr;
         }
@@ -412,7 +412,7 @@ public:
      * @return search result object containing all data found within the 
      *         specified region.
      */
-    search_result search_region(key_type x1, key_type y1, key_type x2, key_type y2) const;
+    search_results search_region(key_type x1, key_type y1, key_type x2, key_type y2) const;
 
     /**
      * Find data at specified coordinates.  If no data exists at the specified 
@@ -544,14 +544,14 @@ private:
     class search_result_inserter : public ::std::unary_function<const node*, void>
     {
     public:
-        search_result_inserter(search_result& result) : m_result(result) {}
+        search_result_inserter(search_results& result) : m_result(result) {}
 
         void operator() (const node* p)
         {
             m_result.push_back(p);
         }
     private:
-        search_result& m_result;
+        search_results& m_result;
     };
 
     class data_inserter : public ::std::unary_function<node_data, void>
@@ -716,11 +716,11 @@ void point_quad_tree<_Key,_Value>::search_region(key_type x1, key_type y1, key_t
 }
 
 template<typename _Key, typename _Value>
-typename point_quad_tree<_Key,_Value>::search_result
+typename point_quad_tree<_Key,_Value>::search_results
 point_quad_tree<_Key,_Value>::search_region(key_type x1, key_type y1, key_type x2, key_type y2) const
 {
     using namespace std;
-    search_result result;
+    search_results result;
     const node* p = m_root.get();
     search_result_inserter _inserter(result);
     ::mdds::search_region_node(p, x1, y1, x2, y2, _inserter);

@@ -30,11 +30,11 @@ int main()
     db.insert(139.850006, 35.633331, &tokyo);
 
     // Perform region search.
-    db_type::search_result result = db.search_region(100, 30, 140, 40);
+    db_type::search_results result = db.search_region(100, 30, 140, 40);
 
     // Print out the result of the search.
     cout << "Cities located between longitudes 100 and 140 east and latitudes 30 and 40 north are:" << endl;
-    db_type::search_result::const_iterator itr = result.begin(), itr_end = result.end();
+    db_type::search_results::const_iterator itr = result.begin(), itr_end = result.end();
     for (; itr != itr_end; ++itr)
     {
         cout << "  " << *itr->second 

@@ -113,8 +113,8 @@ void pqt_test_basic()
         cout << endl;
     }
 
-    db_type::search_result result = db.search_region(10, 10, 60, 20);
-    db_type::search_result::const_iterator itr = result.begin(), itr_end = result.end();
+    db_type::search_results result = db.search_region(10, 10, 60, 20);
+    db_type::search_results::const_iterator itr = result.begin(), itr_end = result.end();
     cout << "result: " << endl;
     for_each(result.begin(), result.end(), search_result_printer<db_type>());
 
