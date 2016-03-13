@@ -68,7 +68,8 @@ trie_map<_KeyTrait,_ValueT>::begin() const
         const_iterator::push_child_node_to_stack(node_stack, buf, it);
     }
 
-    return const_iterator(std::move(node_stack), std::move(buf));
+    return const_iterator(
+        std::move(node_stack), std::move(buf), trie::iterator_type::normal);
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -77,7 +78,8 @@ trie_map<_KeyTrait,_ValueT>::end() const
 {
     node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.end());
-    return const_iterator(std::move(node_stack), key_buffer_type());
+    return const_iterator(
+        std::move(node_stack), key_buffer_type(), trie::iterator_type::end);
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -241,23 +243,21 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
         }
     );
 
-    return const_iterator(std::move(node_stack), std::move(buf));
+    return const_iterator(
+        std::move(node_stack), std::move(buf), trie::iterator_type::normal);
 }
 
 template<typename _KeyTrait, typename _ValueT>
-std::vector<typename trie_map<_KeyTrait,_ValueT>::key_value_type>
+typename trie_map<_KeyTrait,_ValueT>::search_results
 trie_map<_KeyTrait,_ValueT>::prefix_search(const key_unit_type* prefix, size_type len) const
 {
+    using ktt = key_trait_type;
+
     const key_unit_type* prefix_end = prefix + len;
     std::vector<key_value_type> matches;
 
     const trie_node* node = find_prefix_node(m_root, prefix, prefix_end);
-    if (!node)
-        return matches;
-
-    key_buffer_type buffer = key_trait_type::to_key_buffer(prefix, len);
-    fill_child_node_items(matches, buffer, *node);
-    return matches;
+    return search_results(node, ktt::to_key_buffer(prefix, len));
 }
 
 template<typename _KeyTrait, typename _ValueT>

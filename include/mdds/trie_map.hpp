@@ -129,6 +129,8 @@ class trie_map
 {
     friend class packed_trie_map<_KeyTrait, _ValueT>;
     friend class trie::iterator_base<trie_map>;
+    friend class trie::search_results<trie_map>;
+
 public:
     typedef packed_trie_map<_KeyTrait, _ValueT> packed_type;
     typedef _KeyTrait key_trait_type;
@@ -140,6 +142,7 @@ public:
     typedef std::pair<key_type, value_type> key_value_type;
 
     typedef trie::iterator_base<trie_map> const_iterator;
+    typedef trie::search_results<trie_map> search_results;
 
 private:
 
@@ -162,6 +165,16 @@ private:
 
         stack_item(const trie_node* _node, const child_pos_type& _child_pos) :
             node(_node), child_pos(_child_pos) {}
+
+        bool operator== (const stack_item& r) const
+        {
+            return node == r.node && child_pos == r.child_pos;
+        }
+
+        bool operator!= (const stack_item& r) const
+        {
+            return !operator== (r);
+        }
     };
 
     typedef std::vector<stack_item> node_stack_type;
@@ -230,7 +243,7 @@ public:
      * @return list of all matching key-value pairs sorted by the key in
      *         ascending order.
      */
-    std::vector<key_value_type> prefix_search(const key_unit_type* prefix, size_type len) const;
+    search_results prefix_search(const key_unit_type* prefix, size_type len) const;
 
     /**
      * Return the number of entries in the map.

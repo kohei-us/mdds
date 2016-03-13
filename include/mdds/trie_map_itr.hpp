@@ -31,14 +31,25 @@
 #include <utility>
 #include <cassert>
 #include <iostream>
+#ifdef MDDS_TRIE_MAP_DEBUG
+#include <sstream>
+#endif
+
+#include "mdds/global.hpp"
 
 namespace mdds { namespace trie {
+
+enum class iterator_type { normal, end, empty };
+
+template<typename _TrieType>
+class search_results;
 
 template<typename _TrieType>
 class iterator_base
 {
     typedef _TrieType trie_type;
     friend trie_type;
+    friend search_results<trie_type>;
 
     typedef typename trie_type::node_stack_type node_stack_type;
 
@@ -48,17 +59,21 @@ class iterator_base
     typedef typename key_trait_type::key_buffer_type key_buffer_type;
     typedef typename key_trait_type::key_unit_type   key_unit_type;
 
+    enum empty_iterator_type { empty_iterator };
+
 public:
     // iterator traits
     typedef typename trie_type::key_value_type value_type;
     typedef value_type*     pointer;
     typedef value_type&     reference;
     typedef std::ptrdiff_t  difference_type;
+    typedef std::bidirectional_iterator_tag iterator_category;
 
 private:
     node_stack_type m_node_stack;
     key_buffer_type m_buffer;
     value_type m_current_value;
+    iterator_type m_type;
 
     static const trie_node* push_child_node_to_stack(
         node_stack_type& node_stack, key_buffer_type& buf,
@@ -101,19 +116,27 @@ private:
         return cur_node;
     }
 
+    iterator_base(empty_iterator_type) : m_type(iterator_type::empty) {}
 public:
 
-    iterator_base() {}
+    iterator_base() : m_type(iterator_type::normal) {}
 
-    iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf) :
+    iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type) :
         m_node_stack(std::move(node_stack)),
         m_buffer(std::move(buf)),
-        m_current_value(key_trait_type::to_key(m_buffer), m_node_stack.back().node->value)
+        m_current_value(key_trait_type::to_key(m_buffer), m_node_stack.back().node->value),
+        m_type(type)
     {}
 
     bool operator== (const iterator_base& other) const
     {
-        return m_node_stack.back().node == other.m_node_stack.back().node;
+        if (m_type != other.m_type)
+            return false;
+
+        if (m_type == iterator_type::empty)
+            return true;
+
+        return m_node_stack.back() == other.m_node_stack.back();
     }
 
     bool operator!= (const iterator_base& other) const
@@ -146,6 +169,21 @@ public:
 
                 while (true)
                 {
+                    if (m_node_stack.size() == 1)
+                    {
+#ifdef MDDS_TRIE_MAP_DEBUG
+                        if (m_type == iterator_type::end)
+                        {
+                            std::ostringstream os;
+                            os << "iterator_base::operator++#" << __LINE__ << ": moving past the end position!";
+                            throw general_error(os.str());
+                        }
+#endif
+                        // We've reached the end position. Bail out.
+                        m_type = iterator_type::end;
+                        return *this;
+                    }
+
                     // Move up one parent and see if it has an unvisited child node.
                     ktt::pop_back(m_buffer);
                     m_node_stack.pop_back();
@@ -157,12 +195,6 @@ public:
                         // Move down to this unvisited child node.
                         cur_node = push_child_node_to_stack(m_node_stack, m_buffer, si.child_pos);
                         break;
-                    }
-
-                    if (m_node_stack.size() == 1)
-                    {
-                        // We've reached the end position. Bail out.
-                        return *this;
                     }
                 }
             }
@@ -191,13 +223,19 @@ public:
         using ktt = key_trait_type;
         const trie_node* cur_node = m_node_stack.back().node;
 
-        if (m_node_stack.size() == 1)
+        if (m_type == iterator_type::end && cur_node->has_value)
+        {
+            assert(m_node_stack.size() == 1);
+            m_type = iterator_type::normal;
+        }
+        else if (m_node_stack.size() == 1)
         {
             // This is the end position aka root node.  Move down to the
             // right-most leaf node.
             auto& si = m_node_stack.back();
             assert(si.child_pos == cur_node->children.end());
             cur_node = descend_to_previus_leaf_node(m_node_stack, m_buffer);
+            m_type = iterator_type::normal;
         }
         else if (cur_node->children.empty())
         {
@@ -263,6 +301,66 @@ public:
 };
 
 template<typename _TrieType>
+class search_results
+{
+    typedef _TrieType trie_type;
+    friend trie_type;
+    typedef typename trie_type::node_stack_type node_stack_type;
+
+    typedef typename trie_type::trie_node trie_node;
+    typedef typename trie_type::key_trait_type key_trait_type;
+    typedef typename key_trait_type::key_type key_type;
+    typedef typename key_trait_type::key_buffer_type key_buffer_type;
+    typedef typename key_trait_type::key_unit_type   key_unit_type;
+
+    const trie_node* m_node;
+    key_buffer_type m_buffer;
+    node_stack_type m_node_stack;
+
+    search_results(const trie_node* node, key_buffer_type&& buf) :
+        m_node(node), m_buffer(buf) {}
+
+public:
+    typedef iterator_base<trie_type> const_iterator;
+
+    const_iterator begin() const
+    {
+        if (!m_node)
+            // empty results.
+            return const_iterator(const_iterator::empty_iterator);
+
+        // Push the root node.
+        key_buffer_type buf(m_buffer);
+        node_stack_type node_stack;
+        node_stack.emplace_back(m_node, m_node->children.begin());
+
+        while (!node_stack.back().node->has_value)
+        {
+            // There should always be at least one value node along the
+            // left-most branch.
+
+            auto it = node_stack.back().child_pos;
+            const_iterator::push_child_node_to_stack(node_stack, buf, it);
+        }
+
+        return const_iterator(
+            std::move(node_stack), std::move(buf), iterator_type::normal);
+    }
+
+    const_iterator end() const
+    {
+        if (!m_node)
+            // empty results.
+            return const_iterator(const_iterator::empty_iterator);
+
+        node_stack_type node_stack;
+        node_stack.emplace_back(m_node, m_node->children.end());
+        return const_iterator(
+            std::move(node_stack), key_buffer_type(m_buffer), iterator_type::end);
+    }
+};
+
+template<typename _TrieType>
 class packed_iterator_base
 {
     typedef _TrieType trie_type;
@@ -282,6 +380,7 @@ public:
     typedef value_type*     pointer;
     typedef value_type&     reference;
     typedef std::ptrdiff_t  difference_type;
+    typedef std::bidirectional_iterator_tag iterator_category;
 
 private:
     node_stack_type m_node_stack;

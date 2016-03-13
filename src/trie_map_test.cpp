@@ -34,6 +34,8 @@
 #include "mdds/global.hpp"
 #include "test_global.hpp"
 
+#include <iterator>
+
 using namespace std;
 using namespace mdds;
 
@@ -482,22 +484,27 @@ void trie_test1()
     // The results should be sorted.
     {
         auto matches = db.prefix_search(MDDS_ASCII("B"));
-        assert(matches.size() == 2);
-        assert(matches[0].first == "Barak");
-        assert(matches[0].second.data == "Obama");
-        assert(matches[1].first == "Bob");
-        assert(matches[1].second.data == "Marley");
+        size_t n = std::distance(matches.begin(), matches.end());
+        assert(n == 2);
+        auto it = matches.begin();
+        assert(it->first == "Barak");
+        assert(it->second.data == "Obama");
+        ++it;
+        assert(it->first == "Bob");
+        assert(it->second.data == "Marley");
 
         matches = db.prefix_search(MDDS_ASCII("Hi"));
-        assert(matches.size() == 1);
-        assert(matches[0].first == "Hideki");
-        assert(matches[0].second.data == "Matsui");
+        n = std::distance(matches.begin(), matches.end());
+        assert(n == 1);
+        it = matches.begin();
+        assert(it->first == "Hideki");
+        assert(it->second.data == "Matsui");
 
         // Invalid prefix searches.
         matches = db.prefix_search(MDDS_ASCII("Bad"));
-        assert(matches.empty());
+        assert(matches.begin() == matches.end());
         matches = db.prefix_search(MDDS_ASCII("Foo"));
-        assert(matches.empty());
+        assert(matches.begin() == matches.end());
     }
 
     {
@@ -513,16 +520,18 @@ void trie_test1()
         assert(matches[1].first == "Bob");
         assert(matches[1].second.data == "Marley");
 
-        matches = db.prefix_search(MDDS_ASCII("Hi"));
-        assert(matches.size() == 1);
-        assert(matches[0].first == "Hideki");
-        assert(matches[0].second.data == "Matsui");
+        auto results = db.prefix_search(MDDS_ASCII("Hi"));
+        size_t n = std::distance(results.begin(), results.end());
+        assert(n == 1);
+        auto it = results.begin();
+        assert(it->first == "Hideki");
+        assert(it->second.data == "Matsui");
 
         // Invalid prefix searches.
-        matches = db.prefix_search(MDDS_ASCII("Bad"));
-        assert(matches.empty());
-        matches = db.prefix_search(MDDS_ASCII("Foo"));
-        assert(matches.empty());
+        results = db.prefix_search(MDDS_ASCII("Bad"));
+        assert(results.begin() == results.end());
+        results = db.prefix_search(MDDS_ASCII("Foo"));
+        assert(results.begin() == results.end());
     }
 
     {
@@ -806,6 +815,63 @@ void trie_test_find_iterator()
     }
 }
 
+void trie_test_prefix_search()
+{
+    stack_printer __stack_printer__("::trie_test_prefix_search");
+
+    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    trie_map_type db(-1);
+    db.insert(MDDS_ASCII("a"),  1);
+    db.insert(MDDS_ASCII("aa"), 2);
+    db.insert(MDDS_ASCII("ab"), 3);
+    db.insert(MDDS_ASCII("b"),  4);
+
+    trie_map_type::search_results results = db.prefix_search(MDDS_ASCII("a"));
+    auto it = results.begin();
+    auto ite = results.end();
+    assert(it != ite);
+    assert(it->first == "a");
+    assert(it->second == 1);
+    ++it;
+    assert(it->first == "aa");
+    assert(it->second == 2);
+    ++it;
+    assert(it->first == "ab");
+    assert(it->second == 3);
+    ++it;
+    assert(it == ite);
+    size_t n = std::distance(results.begin(), results.end());
+    assert(n == 3);
+
+    results = db.prefix_search(MDDS_ASCII("b"));
+    it = results.begin();
+    ite = results.end();
+    assert(it != ite);
+    assert(it->first == "b");
+    assert(it->second == 4);
+    ++it;
+    assert(it == ite);
+    --it;
+    assert(it->first == "b");
+    assert(it->second == 4);
+    n = std::distance(results.begin(), results.end());
+    assert(n == 1);
+
+    // Only one element.
+    db.clear();
+    db.insert(MDDS_ASCII("dust"), 10);
+    results = db.prefix_search(MDDS_ASCII("du"));
+    it = results.begin();
+    assert(it->first == "dust");
+    assert(it->second == 10);
+    assert(++it == results.end());
+    --it;
+    assert(it->first == "dust");
+    assert(it->second == 10);
+    n = std::distance(results.begin(), results.end());
+    assert(n == 1);
+}
+
 int main(int argc, char** argv)
 {
     trie_packed_test1();
@@ -823,6 +889,7 @@ int main(int argc, char** argv)
     trie_test_iterator();
     trie_test_iterator_with_erase();
     trie_test_find_iterator();
+    trie_test_prefix_search();
 
     return EXIT_SUCCESS;
 }
