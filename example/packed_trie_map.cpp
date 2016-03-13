@@ -38,36 +38,51 @@ int main()
     };
 
     // Cities in North Carolina and their populations in 2013.
-    trie_map_type nc_cities(entries, MDDS_N_ELEMENTS(entries), -1); // Use -1 as the null value.
+    trie_map_type nc_cities(entries, MDDS_N_ELEMENTS(entries));
 
     cout << "Cities that start with 'Cha' and their populations:" << endl;
-    auto matches = nc_cities.prefix_search(MDDS_ASCII("Cha"));
-    for (const auto& kv : matches)
-    {
-        cout << "  " << kv.first << ": " << kv.second << endl;
-    }
+    auto results = nc_cities.prefix_search(MDDS_ASCII("Cha"));
+    for_each(results.begin(), results.end(),
+        [](const trie_map_type::key_value_type& kv)
+        {
+            cout << "  " << kv.first << ": " << kv.second << endl;
+        }
+    );
 
     cout << "Cities that start with 'W' and their populations:" << endl;
-    matches = nc_cities.prefix_search(MDDS_ASCII("W"));
-    for (const auto& kv : matches)
-    {
-        cout << "  " << kv.first << ": " << kv.second << endl;
-    }
+    results = nc_cities.prefix_search(MDDS_ASCII("W"));
+    for_each(results.begin(), results.end(),
+        [](const trie_map_type::key_value_type& kv)
+        {
+            cout << "  " << kv.first << ": " << kv.second << endl;
+        }
+    );
 
     cout << "Cities that start with 'C' and their populations:" << endl;
-    matches = nc_cities.prefix_search(MDDS_ASCII("C"));
-    for (const auto& kv : matches)
-    {
-        cout << "  " << kv.first << ": " << kv.second << endl;
-    }
+    results = nc_cities.prefix_search(MDDS_ASCII("C"));
+    for_each(results.begin(), results.end(),
+        [](const trie_map_type::key_value_type& kv)
+        {
+            cout << "  " << kv.first << ": " << kv.second << endl;
+        }
+    );
 
     // Individual search.
-    int result = nc_cities.find(MDDS_ASCII("Wilmington"));
-    cout << "Population of Wilmington: " << result << endl;
+    auto it = nc_cities.find(MDDS_ASCII("Wilmington"));
+    cout << "Population of Wilmington: " << it->second << endl;
 
-    // You get a "null value" when the container doesn't have specified key.
-    result = nc_cities.find(MDDS_ASCII("Asheboro"));
-    cout << "Population of Asheboro: " << result << endl;
+    // You get an end position iterator when the container doesn't have the
+    // specified key.
+    it = nc_cities.find(MDDS_ASCII("Asheboro"));
+
+    cout << "Population of Asheboro: ";
+
+    if (it == nc_cities.end())
+        cout << "not found";
+    else
+        cout << it->second;
+
+    cout << endl;
 
     return EXIT_SUCCESS;
 }
