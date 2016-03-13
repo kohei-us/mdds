@@ -39,7 +39,26 @@
 
 namespace mdds { namespace trie { namespace detail {
 
-enum class iterator_type { normal, end, empty };
+enum class iterator_type
+{
+    /**
+     * Normal iterator is expected to have at least one element on the node
+     * stack i.e. root.
+     */
+    normal,
+    /**
+     * End iterator is the same as a normal iterator except that it is
+     * positioned past the last node position.  A normal iterator becomes an
+     * end iterator when incrementing past the last node position.
+     */
+    end,
+    /**
+     * Empty iterator doesn't reference any node in the tree but still is a
+     * valid iterator (therefore differs from a singular iterator).  Its node
+     * stack is empty.
+     */
+    empty
+};
 
 template<typename _TrieType>
 class search_results;
