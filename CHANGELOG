@@ -1,11 +1,26 @@
+mdds 1.2.0
 
 * packed_trie_map
 
   * added begin() and end() methods that return read-only iterators.
 
+  * find() method now returns a const_iterator instance.
+
+  * prefix_search() method now returns a search_results instance that
+    can be iterated.
+
+  * null value no longer needs to be passed to the constructor.
+
 * trie_map
 
   * added begin() and end() methods that return read-only iterators.
+
+  * find() method now returns a const_iterator instance.
+
+  * prefix_search() method now returns a search_results instance that
+    can be iterated.
+
+  * null value no longer needs to be passed to the constructor.
 
 * sorted_string_map
 
@@ -14,6 +29,10 @@
 * multi_type_vector
 
   * remove compiler warning about shadowed variable.
+
+* point_quad_tree
+
+  * search_result has been renamed to search_results.
 
 mdds 1.1.0
 

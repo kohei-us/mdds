@@ -8,12 +8,15 @@ Overview of data structures included in mdds
 
 This library implements the following data structure:
 
-* flat segment tree 
-* segment tree
-* rectangle set
-* point quad tree
-* multi-type vector
-* multi-type matrix
+* segment_tree
+* flat_segment_tree
+* rectangle_set
+* point_quad_tree
+* multi_type_vector
+* multi_type_matrix
+* sorted_string_map
+* trie_map
+* packed_trie_map
 
 ### Segment Tree
 
@@ -60,6 +63,24 @@ Multi-type matrix is a matrix structure that allows storage of four different
 element types: numeric, string, boolean and empty. It uses multi-type vector as 
 its underlying storage. 
 
+### Sorted String Map
+
+Sorted string map is a simple data structure that takes a pre-sorted list of
+key-value pairs that are known at compile time, and allows efficient lookup.
+It does not allocate memory to duplicate its content, as it directly uses the
+pre-sorted list provided by the caller.
+
+### Trie Map
+
+Trie map is an associative container that stores multiple key-value pairs
+where keys are stored in a trie structure to optimize for prefix searches.
+
+### Packed Trie Map
+
+Packed trie map is nearly identical to the trie map counterpart except that
+this one is immutable.  It packs all its content in a contiguous array for
+optimium storage and lookup efficiency.
+
 API Documentation
 =================
 * [Official API documentation](http://kohei.us/files/mdds/doc/)
@@ -73,6 +94,37 @@ directory on how to use these data structures.
 
 API Incompatibility Notes
 =========================
+
+1.2
+---
+
+### trie_map
+
+* The find() method now returns a const_iterator instance rather than a value
+  type.  It returns an end position iterator when the method fails to find a
+  match.
+
+* The prefix_search() method now returns a search_results instance that has
+  begin() and end() methods to allow iterating through the result set.
+
+* The constructor no longer takes a null value parameter.
+
+### packed_trie_map
+
+* The find() method now returns a const_iterator instance rather than a value
+  type.  It returns an end position iterator when the method fails to find a
+  match.
+
+* The prefix_search() method now returns a search_results instance that has
+  begin() and end() methods to allow iterating through the result set.
+
+* The constructor no longer takes a null value parameter.
+
+### quad_point_tree
+
+* The search_result nested class has been renamed to search_results, to keep
+  the name consistent with that of the same name in trie_map and
+  packed_trie_map.
 
 1.0
 ---
