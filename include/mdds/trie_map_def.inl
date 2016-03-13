@@ -39,8 +39,7 @@
 namespace mdds {
 
 template<typename _KeyTrait, typename _ValueT>
-trie_map<_KeyTrait,_ValueT>::trie_map(value_type null_value) :
-    m_null_value(null_value) {}
+trie_map<_KeyTrait,_ValueT>::trie_map() {}
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::const_iterator
@@ -104,7 +103,6 @@ bool trie_map<_KeyTrait,_ValueT>::erase(const key_unit_type* key, size_type len)
 
     const trie_node* node = node_stack.back().node;
     trie_node* node_mod = const_cast<trie_node*>(node);
-    node_mod->value = m_null_value;
     node_mod->has_value = false;
 
     // If this is a leaf node, remove it, and keep removing its parents until
@@ -274,7 +272,6 @@ void trie_map<_KeyTrait,_ValueT>::clear()
 {
     m_root.children.clear();
     m_root.has_value = false;
-    m_root.value = m_null_value;
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -521,8 +518,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::compact(
 
 template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
-    const entry* entries, size_type entry_size, value_type null_value) :
-    m_null_value(null_value), m_entry_size(entry_size)
+    const entry* entries, size_type entry_size) : m_entry_size(entry_size)
 {
     const entry* p = entries;
     const entry* p_end = p + entry_size;
@@ -544,8 +540,7 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
 
 template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
-    const trie_map<key_trait_type, value_type>& other) :
-    m_null_value(other.m_null_value), m_entry_size(0)
+    const trie_map<key_trait_type, value_type>& other) : m_entry_size(0)
 {
     compact(other.m_root);
 }

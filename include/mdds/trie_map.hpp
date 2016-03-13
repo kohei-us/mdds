@@ -182,17 +182,9 @@ private:
 public:
 
     /**
-     * Not implemented.
+     * Default constructor.
      */
-    trie_map() = delete;
-
-    /**
-     * Constructor.
-     *
-     * @param null_value null value to return when the find method fails to
-     *                   find a matching entry.
-     */
-    trie_map(value_type null_value);
+    trie_map();
 
     const_iterator begin() const;
 
@@ -283,7 +275,6 @@ private:
     void count_values(size_type& n, const trie_node& node) const;
 
 private:
-    value_type m_null_value;
     trie_node m_root;
 };
 
@@ -394,7 +385,7 @@ public:
      * @param null_value null value to return when the find method fails to
      *                   find a matching entry.
      */
-    packed_trie_map(const entry* entries, size_type entry_size, value_type null_value);
+    packed_trie_map(const entry* entries, size_type entry_size);
 
     /**
      * Constructor to allow construction of an instance from the content of a
@@ -473,7 +464,6 @@ private:
 #endif
 
 private:
-    value_type m_null_value;
     size_type m_entry_size;
 
     value_store_type m_value_store;

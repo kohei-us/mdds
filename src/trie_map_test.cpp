@@ -74,7 +74,7 @@ void trie_packed_test1()
     };
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
-    packed_int_map_type db(entries, entry_size, -1);
+    packed_int_map_type db(entries, entry_size);
     assert(db.size() == 4);
     assert(verify_entries(db, entries, entry_size));
 
@@ -142,7 +142,7 @@ void trie_packed_test2()
     };
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
-    packed_int_map_type db(entries, entry_size, -1);
+    packed_int_map_type db(entries, entry_size);
     assert(db.size() == 12);
     assert(verify_entries(db, entries, entry_size));
 
@@ -166,7 +166,7 @@ void trie_packed_test3()
     };
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
-    packed_int_map_type db(entries, entry_size, -1);
+    packed_int_map_type db(entries, entry_size);
     assert(db.size() == 4);
     assert(verify_entries(db, entries, entry_size));
 
@@ -200,7 +200,7 @@ void trie_packed_test4()
     };
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
-    packed_int_map_type db(entries, entry_size, name_none);
+    packed_int_map_type db(entries, entry_size);
     assert(db.size() == 6);
     assert(verify_entries(db, entries, entry_size));
 
@@ -268,7 +268,7 @@ void trie_packed_test_value_life_cycle()
     entries->push_back(entry(MDDS_ASCII("twelve"), value_wrapper(12)));
     entries->push_back(entry(MDDS_ASCII("two"), value_wrapper(2)));
 
-    packed_value_map_type db(entries->data(), entries->size(), value_wrapper(-1));
+    packed_value_map_type db(entries->data(), entries->size());
 
     // Delete the original entry store.
     entries.reset();
@@ -359,7 +359,7 @@ void trie_packed_test_custom_string()
     };
 
     size_t n_entries = MDDS_N_ELEMENTS(entries);
-    packed_custom_str_map_type db(entries, n_entries, "-");
+    packed_custom_str_map_type db(entries, n_entries);
     for (size_t i = 0; i < n_entries; ++i)
     {
         auto it = db.find(entries[i].key, entries[i].keylen);
@@ -384,7 +384,7 @@ void trie_packed_test_custom_string()
 void trie_packed_test_iterator_empty()
 {
     stack_printer __stack_printer__("::trie_packed_test_iterator_empty");
-    packed_int_map_type db(-1);
+    packed_int_map_type db(nullptr, 0);
 
     // empty container
     packed_int_map_type::const_iterator it = db.begin();
@@ -401,7 +401,7 @@ void trie_packed_test_iterator()
     using packed_type = trie_map_type::packed_type;
     using kv = packed_type::key_value_type;
 
-    trie_map_type db(-1);
+    trie_map_type db;
 
     db.insert(MDDS_ASCII("a"), 1);
     packed_type packed = db.pack();
@@ -486,7 +486,7 @@ void trie_packed_test_prefix_search1()
     using packed_type = trie_map_type::packed_type;
     using kv = packed_type::key_value_type;
 
-    trie_map_type db(-1);
+    trie_map_type db;
     db.insert(MDDS_ASCII("andy"),   1);
     db.insert(MDDS_ASCII("andy1"),  2);
     db.insert(MDDS_ASCII("andy12"), 3);
@@ -532,8 +532,7 @@ void trie_test1()
     typedef trie_map<trie::std_string_trait, custom_string> trie_map_type;
     typedef packed_trie_map<trie::std_string_trait, custom_string> packed_trie_map_type;
 
-    custom_string null_value("-");
-    trie_map_type db(null_value);
+    trie_map_type db;
 
     assert(db.size() == 0);
     db.insert(MDDS_ASCII("Barak"), custom_string("Obama"));
@@ -657,7 +656,7 @@ void trie_test_iterator_empty()
 {
     stack_printer __stack_printer__("::trie_test_iterator_empty");
     typedef trie_map<trie::std_string_trait, int> trie_map_type;
-    trie_map_type db(-1);
+    trie_map_type db;
 
     // empty container
     trie_map_type::const_iterator it = db.begin();
@@ -671,7 +670,7 @@ void trie_test_iterator()
     stack_printer __stack_printer__("::trie_test_iterator");
     typedef trie_map<trie::std_string_trait, int> trie_map_type;
     using kv = trie_map_type::key_value_type;
-    trie_map_type db(-1);
+    trie_map_type db;
 
     // empty container
     trie_map_type::const_iterator it = db.begin();
@@ -752,7 +751,7 @@ void trie_test_iterator_with_erase()
     stack_printer __stack_printer__("::trie_test_iterator_with_erase");
     typedef trie_map<trie::std_string_trait, int> trie_map_type;
     using kv = trie_map_type::key_value_type;
-    trie_map_type db(-1);
+    trie_map_type db;
 
     db.insert(MDDS_ASCII("Python"), 1);
     db.insert(MDDS_ASCII("C++"),    2);
@@ -811,7 +810,7 @@ void trie_test_find_iterator()
 {
     stack_printer __stack_printer__("::trie_test_find_iterator");
     typedef trie_map<trie::std_string_trait, int> trie_map_type;
-    trie_map_type db(-1);
+    trie_map_type db;
     db.insert(MDDS_ASCII("a"),  1);
     db.insert(MDDS_ASCII("aa"), 2);
     db.insert(MDDS_ASCII("ab"), 3);
@@ -911,7 +910,7 @@ void trie_test_prefix_search()
     stack_printer __stack_printer__("::trie_test_prefix_search");
 
     typedef trie_map<trie::std_string_trait, int> trie_map_type;
-    trie_map_type db(-1);
+    trie_map_type db;
     db.insert(MDDS_ASCII("a"),  1);
     db.insert(MDDS_ASCII("aa"), 2);
     db.insert(MDDS_ASCII("ab"), 3);
