@@ -490,7 +490,13 @@ public:
 
     bool operator== (const packed_iterator_base& other) const
     {
-        return m_node_stack.back().node_pos == other.m_node_stack.back().node_pos;
+        if (m_type != other.m_type)
+            return false;
+
+        if (m_type == iterator_type::empty)
+            return true;
+
+        return m_node_stack.back() == other.m_node_stack.back();
     }
 
     bool operator!= (const packed_iterator_base& other) const
@@ -742,7 +748,10 @@ public:
             // empty results.
             return const_iterator(empty_iterator);
 
-        return const_iterator(get_root_node(), key_buffer_type(m_buffer));
+        node_stack_type node_stack = get_root_node();
+        auto& si = node_stack.back();
+        si.child_pos = si.child_end;
+        return const_iterator(std::move(node_stack), key_buffer_type(m_buffer));
     }
 };
 

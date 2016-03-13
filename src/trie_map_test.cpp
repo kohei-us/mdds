@@ -478,6 +478,53 @@ void trie_packed_test_iterator()
     assert(*it == kv("ab", 2));
 }
 
+void trie_packed_test_prefix_search1()
+{
+    stack_printer __stack_printer__("::trie_packed_test_prefix_search1");
+
+    using trie_map_type = trie_map<trie::std_string_trait, int>;
+    using packed_type = trie_map_type::packed_type;
+    using kv = packed_type::key_value_type;
+
+    trie_map_type db(-1);
+    db.insert(MDDS_ASCII("andy"),   1);
+    db.insert(MDDS_ASCII("andy1"),  2);
+    db.insert(MDDS_ASCII("andy12"), 3);
+
+    {
+        auto results = db.prefix_search(MDDS_ASCII("andy"));
+        auto it = results.begin();
+        assert(it != results.end());
+        assert(it->first == "andy");
+        ++it;
+        assert(it->first == "andy1");
+        ++it;
+        assert(it->first == "andy12");
+        ++it;
+        assert(it == results.end());
+
+        size_t n = std::distance(results.begin(), results.end());
+        assert(n == 3);
+    }
+
+    packed_type packed = db.pack();
+    {
+        auto results = packed.prefix_search(MDDS_ASCII("andy"));
+        auto it = results.begin();
+        assert(it != results.end());
+        assert(it->first == "andy");
+        ++it;
+        assert(it->first == "andy1");
+        ++it;
+        assert(it->first == "andy12");
+        ++it;
+        assert(it == results.end());
+
+        size_t n = std::distance(results.begin(), results.end());
+        assert(n == 3);
+    }
+}
+
 void trie_test1()
 {
     stack_printer __stack_printer__("::trie_test1");
@@ -926,6 +973,7 @@ int main(int argc, char** argv)
     trie_packed_test_custom_string();
     trie_packed_test_iterator_empty();
     trie_packed_test_iterator();
+    trie_packed_test_prefix_search1();
 
     trie_test1();
 

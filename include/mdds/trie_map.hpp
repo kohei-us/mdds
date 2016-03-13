@@ -348,6 +348,16 @@ private:
         stack_item(const uintptr_t* _node_pos, const uintptr_t* _child_pos, const uintptr_t* _child_end) :
             node_pos(_node_pos), child_pos(_child_pos), child_end(_child_end) {}
 
+        bool operator== (const stack_item& other) const
+        {
+            return node_pos == other.node_pos && child_pos == other.child_pos;
+        }
+
+        bool operator!= (const stack_item& other) const
+        {
+            return !operator==(other);
+        }
+
         bool has_value() const
         {
             const value_type* pv = reinterpret_cast<const value_type*>(*node_pos);
