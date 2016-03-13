@@ -60,6 +60,8 @@ enum class iterator_type
     empty
 };
 
+enum empty_iterator_type { empty_iterator };
+
 template<typename _TrieType>
 class search_results;
 
@@ -77,8 +79,6 @@ class iterator_base
     typedef typename key_trait_type::key_type key_type;
     typedef typename key_trait_type::key_buffer_type key_buffer_type;
     typedef typename key_trait_type::key_unit_type   key_unit_type;
-
-    enum empty_iterator_type { empty_iterator };
 
 public:
     // iterator traits
@@ -194,7 +194,8 @@ public:
                         if (m_type == iterator_type::end)
                         {
                             std::ostringstream os;
-                            os << "iterator_base::operator++#" << __LINE__ << ": moving past the end position!";
+                            os << "iterator_base::operator++#" << __LINE__
+                                << ": moving past the end position!";
                             throw general_error(os.str());
                         }
 #endif
@@ -346,7 +347,7 @@ public:
     {
         if (!m_node)
             // empty results.
-            return const_iterator(const_iterator::empty_iterator);
+            return const_iterator(empty_iterator);
 
         // Push the root node.
         key_buffer_type buf(m_buffer);
@@ -370,7 +371,7 @@ public:
     {
         if (!m_node)
             // empty results.
-            return const_iterator(const_iterator::empty_iterator);
+            return const_iterator(empty_iterator);
 
         node_stack_type node_stack;
         node_stack.emplace_back(m_node, m_node->children.end());
@@ -405,6 +406,7 @@ private:
     node_stack_type m_node_stack;
     key_buffer_type m_buffer;
     value_type m_current_value;
+    iterator_type m_type;
 
     static void push_child_node_to_stack(
         node_stack_type& node_stack, key_buffer_type& buf, const uintptr_t* child_pos)
@@ -462,17 +464,21 @@ private:
         while (index_size);
     }
 
+    packed_iterator_base(empty_iterator_type) : m_type(iterator_type::empty) {}
+
 public:
-    packed_iterator_base() {}
+    packed_iterator_base() : m_type(iterator_type::normal) {}
 
     packed_iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf) :
         m_node_stack(std::move(node_stack)),
-        m_buffer(std::move(buf)) {}
+        m_buffer(std::move(buf)),
+        m_type(iterator_type::end) {}
 
     packed_iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf, const typename trie_type::value_type& v) :
         m_node_stack(std::move(node_stack)),
         m_buffer(std::move(buf)),
-        m_current_value(key_trait_type::to_key(m_buffer), v) {}
+        m_current_value(key_trait_type::to_key(m_buffer), v),
+        m_type(iterator_type::normal) {}
 
     bool operator== (const packed_iterator_base& other) const
     {
@@ -511,6 +517,22 @@ public:
 
                 while (true)
                 {
+                    if (m_node_stack.size() == 1)
+                    {
+#ifdef MDDS_TRIE_MAP_DEBUG
+                        if (m_type == iterator_type::end)
+                        {
+                            std::ostringstream os;
+                            os << "packed_iterator_base::operator++#"
+                                << __LINE__ << ": moving past the end position!";
+                            throw general_error(os.str());
+                        }
+#endif
+                        // We've reached the end position. Bail out.
+                        m_type = iterator_type::end;
+                        return *this;
+                    }
+
                     // Move up one parent and see if it has an unvisited child node.
                     ktt::pop_back(m_buffer);
                     m_node_stack.pop_back();
@@ -522,12 +544,6 @@ public:
                         // Move down to this unvisited child node.
                         push_child_node_to_stack(m_node_stack, m_buffer, si->child_pos);
                         break;
-                    }
-
-                    if (m_node_stack.size() == 1)
-                    {
-                        // We've reached the end position. Bail out.
-                        return *this;
                     }
                 }
             }
@@ -561,10 +577,16 @@ public:
         using ktt = key_trait_type;
 
         stack_item* si = &m_node_stack.back();
-        const typename trie_type::value_type* pv = nullptr;
+        const typename trie_type::value_type* pv =
+            reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
         size_t index_size = *(si->node_pos+1); // index size for child nodes.
 
-        if (m_node_stack.size() == 1)
+        if (m_type == iterator_type::end && pv)
+        {
+            assert(m_node_stack.size() == 1);
+            m_type = iterator_type::normal;
+        }
+        else if (m_node_stack.size() == 1)
         {
             // This is the end position aka root node.  Move down to the
             // right-most leaf node.
@@ -572,6 +594,7 @@ public:
             descend_to_previus_leaf_node(m_node_stack, m_buffer);
             si = &m_node_stack.back();
             pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+            m_type = iterator_type::normal;
         }
         else if (!index_size)
         {
