@@ -69,7 +69,7 @@ trie_map<_KeyTrait,_ValueT>::begin() const
     }
 
     return const_iterator(
-        std::move(node_stack), std::move(buf), trie::iterator_type::normal);
+        std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -79,7 +79,7 @@ trie_map<_KeyTrait,_ValueT>::end() const
     node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.end());
     return const_iterator(
-        std::move(node_stack), key_buffer_type(), trie::iterator_type::end);
+        std::move(node_stack), key_buffer_type(), trie::detail::iterator_type::end);
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -244,7 +244,7 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
     );
 
     return const_iterator(
-        std::move(node_stack), std::move(buf), trie::iterator_type::normal);
+        std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
 }
 
 template<typename _KeyTrait, typename _ValueT>

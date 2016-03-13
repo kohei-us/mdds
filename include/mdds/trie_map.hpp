@@ -128,8 +128,8 @@ template<typename _KeyTrait, typename _ValueT>
 class trie_map
 {
     friend class packed_trie_map<_KeyTrait, _ValueT>;
-    friend class trie::iterator_base<trie_map>;
-    friend class trie::search_results<trie_map>;
+    friend class trie::detail::iterator_base<trie_map>;
+    friend class trie::detail::search_results<trie_map>;
 
 public:
     typedef packed_trie_map<_KeyTrait, _ValueT> packed_type;
@@ -141,8 +141,8 @@ public:
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
 
-    typedef trie::iterator_base<trie_map> const_iterator;
-    typedef trie::search_results<trie_map> search_results;
+    typedef trie::detail::iterator_base<trie_map> const_iterator;
+    typedef trie::detail::search_results<trie_map> search_results;
 
 private:
 
@@ -300,7 +300,7 @@ private:
 template<typename _KeyTrait, typename _ValueT>
 class packed_trie_map
 {
-    friend class trie::packed_iterator_base<packed_trie_map>;
+    friend class trie::detail::packed_iterator_base<packed_trie_map>;
 
 public:
     typedef _KeyTrait key_trait_type;
@@ -310,7 +310,7 @@ public:
     typedef _ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
-    typedef trie::packed_iterator_base<packed_trie_map> const_iterator;
+    typedef trie::detail::packed_iterator_base<packed_trie_map> const_iterator;
 
     /**
      * Single key-value entry.  Caller must provide at compile time a static

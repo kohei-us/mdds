@@ -37,7 +37,7 @@
 
 #include "mdds/global.hpp"
 
-namespace mdds { namespace trie {
+namespace mdds { namespace trie { namespace detail {
 
 enum class iterator_type { normal, end, empty };
 
@@ -628,6 +628,6 @@ public:
     }
 };
 
-}}
+}}}
 
 #endif
