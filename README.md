@@ -98,7 +98,7 @@ API Incompatibility Notes
 1.2
 ---
 
-### trie_map
+### trie_map / packed_trie_map
 
 * The find() method now returns a const_iterator instance rather than a value
   type.  It returns an end position iterator when the method fails to find a
@@ -109,16 +109,16 @@ API Incompatibility Notes
 
 * The constructor no longer takes a null value parameter.
 
-### packed_trie_map
+* Some nested type names have been renamed:
 
-* The find() method now returns a const_iterator instance rather than a value
-  type.  It returns an end position iterator when the method fails to find a
-  match.
+  * string_type -> key_type
+  * char_type -> key_unit_type
+  * string_buffer_type -> key_buffer_type
 
-* The prefix_search() method now returns a search_results instance that has
-  begin() and end() methods to allow iterating through the result set.
+* Some functions expected from the key trait class have been renamed:
 
-* The constructor no longer takes a null value parameter.
+  * init_buffer() -> to_key_buffer()
+  * to_string() -> to_key()
 
 ### quad_point_tree
 
