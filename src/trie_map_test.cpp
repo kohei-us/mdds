@@ -45,9 +45,9 @@ bool verify_entries(
     const packed_int_map_type& db, const packed_int_map_type::entry* entries,
     size_t entry_size)
 {
-    auto items = db.prefix_search(nullptr, 0);
-    for (size_t i = 0, n = items.size(); i < n; ++i)
-        cout << items[i].first << ": " << items[i].second << endl;
+    auto results = db.prefix_search(nullptr, 0);
+    for (auto it = results.begin(), ite = results.end(); it != ite; ++it)
+        cout << it->first << ": " << it->second << endl;
 
     const packed_int_map_type::entry* p = entries;
     const packed_int_map_type::entry* p_end = p + entry_size;
@@ -82,32 +82,43 @@ void trie_packed_test1()
     assert(db.find(MDDS_ASCII("ac")) == db.end());
     assert(db.find(MDDS_ASCII("c")) == db.end());
 
-    // Get all key-value pairs.
-    auto prefix_list = db.prefix_search(nullptr, 0);
-    assert(prefix_list.size() == 4);
-    assert(prefix_list[0].first == "a");
-    assert(prefix_list[1].first == "aa");
-    assert(prefix_list[2].first == "ab");
-    assert(prefix_list[3].first == "b");
-    assert(prefix_list[0].second == 13);
-    assert(prefix_list[1].second == 10);
-    assert(prefix_list[2].second == 3);
-    assert(prefix_list[3].second == 7);
+    {
+        // Get all key-value pairs.
+        auto results = db.prefix_search(nullptr, 0);
+        size_t n = std::distance(results.begin(), results.end());
+        assert(n == 4);
+        auto it = results.begin();
+        assert(it->first == "a");
+        assert(it->second == 13);
+        ++it;
+        assert(it->first == "aa");
+        assert(it->second == 10);
+        ++it;
+        assert(it->first == "ab");
+        assert(it->second == 3);
+        ++it;
+        assert(it->first == "b");
+        assert(it->second == 7);
+        ++it;
+        assert(it == results.end());
+    }
 
-    auto it = db.find(MDDS_ASCII("a"));
-    assert(it->first == "a");
-    assert(it->second == 13);
-    ++it;
-    assert(it->first == "aa");
-    assert(it->second == 10);
-    ++it;
-    assert(it->first == "ab");
-    assert(it->second == 3);
-    ++it;
-    assert(it->first == "b");
-    assert(it->second == 7);
-    ++it;
-    assert(it == db.end());
+    {
+        auto it = db.find(MDDS_ASCII("a"));
+        assert(it->first == "a");
+        assert(it->second == 13);
+        ++it;
+        assert(it->first == "aa");
+        assert(it->second == 10);
+        ++it;
+        assert(it->first == "ab");
+        assert(it->second == 3);
+        ++it;
+        assert(it->first == "b");
+        assert(it->second == 7);
+        ++it;
+        assert(it == db.end());
+    }
 }
 
 void trie_packed_test2()
@@ -198,22 +209,34 @@ void trie_packed_test4()
     assert(db.find("andy133", 7) == db.end());
 
     // Test prefix search on 'andy'.
-    auto prefix_list = db.prefix_search(MDDS_ASCII("andy"));
-    assert(prefix_list.size() == 3);
-    assert(prefix_list[0].first == "andy");
-    assert(prefix_list[1].first == "andy1");
-    assert(prefix_list[2].first == "andy13");
+    auto results = db.prefix_search(MDDS_ASCII("andy"));
+    size_t n = std::distance(results.begin(), results.end());
+    assert(n == 3);
+    auto it = results.begin();
+    assert(it->first == "andy");
+    ++it;
+    assert(it->first == "andy1");
+    ++it;
+    assert(it->first == "andy13");
+    ++it;
+    assert(it == results.end());
 
-    prefix_list = db.prefix_search(MDDS_ASCII("andy's toy"));
-    assert(prefix_list.empty());
+    results = db.prefix_search(MDDS_ASCII("andy's toy"));
+    n = std::distance(results.begin(), results.end());
+    assert(n == 0);
 
-    prefix_list = db.prefix_search(MDDS_ASCII("e"));
-    assert(prefix_list.empty());
+    results = db.prefix_search(MDDS_ASCII("e"));
+    n = std::distance(results.begin(), results.end());
+    assert(n == 0);
 
-    prefix_list = db.prefix_search(MDDS_ASCII("b"));
-    assert(prefix_list.size() == 1);
-    assert(prefix_list[0].first == "bruce");
-    assert(prefix_list[0].second == name_bruce);
+    results = db.prefix_search(MDDS_ASCII("b"));
+    n = std::distance(results.begin(), results.end());
+    assert(n == 1);
+    it = results.begin();
+    assert(it->first == "bruce");
+    assert(it->second == name_bruce);
+    ++it;
+    assert(it == results.end());
 }
 
 struct value_wrapper
@@ -250,9 +273,13 @@ void trie_packed_test_value_life_cycle()
     // Delete the original entry store.
     entries.reset();
 
-    auto items = db.prefix_search(nullptr, 0);
-    for (size_t i = 0, n = items.size(); i < n; ++i)
-        cout << items[i].first << ": " << items[i].second.value << endl;
+    auto results = db.prefix_search(nullptr, 0);
+    std::for_each(results.begin(), results.end(),
+        [](const packed_value_map_type::const_iterator::value_type& v)
+        {
+            cout << v.first << ": " << v.second.value << endl;
+        }
+    );
 
     auto it = db.find(MDDS_ASCII("twelve"));
     assert(it->second.value == 12);
@@ -341,12 +368,17 @@ void trie_packed_test_custom_string()
     }
 
     // Find all keys that start with 'M'.
-    std::vector<packed_custom_str_map_type::key_value_type> vs = db.prefix_search(key_max, 1);
-    assert(vs.size() == 2);
-    assert(vs[0].first.data == vs[0].second);
-    assert(vs[0].second == "Max");
-    assert(vs[1].first.data == vs[1].second);
-    assert(vs[1].second == "Ming");
+    auto results = db.prefix_search(key_max, 1);
+    size_t n = std::distance(results.begin(), results.end());
+    assert(n == 2);
+    auto it = results.begin();
+    assert(it->first.data == it->second);
+    assert(it->second == "Max");
+    ++it;
+    assert(it->first.data == it->second);
+    assert(it->second == "Ming");
+    ++it;
+    assert(it == results.end());
 }
 
 void trie_packed_test_iterator_empty()
@@ -513,22 +545,31 @@ void trie_test1()
         packed_trie_map_type packed(db);
         assert(packed.size() == db.size());
 
-        auto matches = packed.prefix_search(MDDS_ASCII("B"));
-        assert(matches.size() == 2);
-        assert(matches[0].first == "Barak");
-        assert(matches[0].second.data == "Obama");
-        assert(matches[1].first == "Bob");
-        assert(matches[1].second.data == "Marley");
+        {
+            auto results = packed.prefix_search(MDDS_ASCII("B"));
+            size_t n = std::distance(results.begin(), results.end());
+            assert(n == 2);
+            auto it = results.begin();
+            assert(it->first == "Barak");
+            assert(it->second.data == "Obama");
+            ++it;
+            assert(it->first == "Bob");
+            assert(it->second.data == "Marley");
+            ++it;
+            assert(it == results.end());
+        }
 
-        auto results = db.prefix_search(MDDS_ASCII("Hi"));
-        size_t n = std::distance(results.begin(), results.end());
-        assert(n == 1);
-        auto it = results.begin();
-        assert(it->first == "Hideki");
-        assert(it->second.data == "Matsui");
+        {
+            auto results = db.prefix_search(MDDS_ASCII("Hi"));
+            size_t n = std::distance(results.begin(), results.end());
+            assert(n == 1);
+            auto it = results.begin();
+            assert(it->first == "Hideki");
+            assert(it->second.data == "Matsui");
+        }
 
         // Invalid prefix searches.
-        results = db.prefix_search(MDDS_ASCII("Bad"));
+        auto results = db.prefix_search(MDDS_ASCII("Bad"));
         assert(results.begin() == results.end());
         results = db.prefix_search(MDDS_ASCII("Foo"));
         assert(results.begin() == results.end());
@@ -536,12 +577,15 @@ void trie_test1()
 
     {
         auto packed = db.pack();
-        auto matches = packed.prefix_search(MDDS_ASCII("B"));
-        assert(matches.size() == 2);
-        assert(matches[0].first == "Barak");
-        assert(matches[0].second.data == "Obama");
-        assert(matches[1].first == "Bob");
-        assert(matches[1].second.data == "Marley");
+        auto results = packed.prefix_search(MDDS_ASCII("B"));
+        size_t n = std::distance(results.begin(), results.end());
+        assert(n == 2);
+        auto it = results.begin();
+        assert(it->first == "Barak");
+        assert(it->second.data == "Obama");
+        ++it;
+        assert(it->first == "Bob");
+        assert(it->second.data == "Marley");
     }
 
     // Erase an existing key.

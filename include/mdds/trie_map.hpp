@@ -301,6 +301,7 @@ template<typename _KeyTrait, typename _ValueT>
 class packed_trie_map
 {
     friend class trie::detail::packed_iterator_base<packed_trie_map>;
+    friend class trie::detail::packed_search_results<packed_trie_map>;
 
 public:
     typedef _KeyTrait key_trait_type;
@@ -311,6 +312,7 @@ public:
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
     typedef trie::detail::packed_iterator_base<packed_trie_map> const_iterator;
+    typedef trie::detail::packed_search_results<packed_trie_map> search_results;
 
     /**
      * Single key-value entry.  Caller must provide at compile time a static
@@ -345,6 +347,17 @@ private:
 
         stack_item(const uintptr_t* _node_pos, const uintptr_t* _child_pos, const uintptr_t* _child_end) :
             node_pos(_node_pos), child_pos(_child_pos), child_end(_child_end) {}
+
+        bool has_value() const
+        {
+            const value_type* pv = reinterpret_cast<const value_type*>(*node_pos);
+            return pv;
+        }
+
+        const value_type* get_value() const
+        {
+            return reinterpret_cast<const value_type*>(*node_pos);
+        }
     };
 
     typedef std::vector<stack_item> node_stack_type;
@@ -409,7 +422,7 @@ public:
      * @return list of all matching key-value pairs sorted by the key in
      *         ascending order.
      */
-    std::vector<key_value_type> prefix_search(const key_unit_type* prefix, size_type len) const;
+    search_results prefix_search(const key_unit_type* prefix, size_type len) const;
 
     /**
      * Return the number of entries in the map.

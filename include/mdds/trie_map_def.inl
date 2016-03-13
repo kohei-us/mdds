@@ -662,15 +662,13 @@ packed_trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type l
 }
 
 template<typename _KeyTrait, typename _ValueT>
-std::vector<typename packed_trie_map<_KeyTrait,_ValueT>::key_value_type>
+typename packed_trie_map<_KeyTrait,_ValueT>::search_results
 packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const key_unit_type* prefix, size_type len) const
 {
     using ktt = key_trait_type;
 
-    std::vector<key_value_type> matches;
-
     if (m_packed.empty())
-        return matches;
+        return search_results(nullptr, key_buffer_type());
 
     const key_unit_type* prefix_end = prefix + len;
 
@@ -678,13 +676,8 @@ packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const key_unit_type* prefix, s
     const uintptr_t* root = m_packed.data() + root_offset;
 
     const uintptr_t* node = find_prefix_node(root, prefix, prefix_end);
-    if (!node)
-        return matches;
-
-    // Fill all its child nodes.
-    key_buffer_type buffer = ktt::to_key_buffer(prefix, len);
-    fill_child_node_items(matches, buffer, node);
-    return matches;
+    key_buffer_type buf = ktt::to_key_buffer(prefix, len);
+    return search_results(node, std::move(buf));
 }
 
 template<typename _KeyTrait, typename _ValueT>
