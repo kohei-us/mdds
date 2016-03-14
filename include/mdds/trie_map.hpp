@@ -232,8 +232,8 @@ public:
      *               prefix to match.
      * @param len length of the prefix value to match.
      *
-     * @return list of all matching key-value pairs sorted by the key in
-     *         ascending order.
+     * @return results object that contains all matching key-value pairs. The
+     *         results are sorted by the key in ascending order.
      */
     search_results prefix_search(const key_unit_type* prefix, size_type len) const;
 
@@ -406,8 +406,8 @@ public:
      *              to match.
      * @param len length of the matching string value.
      *
-     * @return value associated with the key, or the null value in case the
-     *         key is not found.
+     * @return iterator that references a value associated with the key, or
+     *         the end position in case the key is not found.
      */
     const_iterator find(const key_unit_type* input, size_type len) const;
 
@@ -420,8 +420,8 @@ public:
      *               prefix to match.
      * @param len length of the prefix value to match.
      *
-     * @return list of all matching key-value pairs sorted by the key in
-     *         ascending order.
+     * @return results object that contains all matching key-value pairs. The
+     *         results are sorted by the key in ascending order.
      */
     search_results prefix_search(const key_unit_type* prefix, size_type len) const;
 
