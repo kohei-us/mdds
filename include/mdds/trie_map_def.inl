@@ -186,25 +186,6 @@ void trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
 }
 
 template<typename _KeyTrait, typename _ValueT>
-void trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
-    std::vector<key_value_type>& items, key_buffer_type& buffer, const trie_node& node) const
-{
-    using ktt = key_trait_type;
-
-    if (node.has_value)
-        items.push_back(key_value_type(ktt::to_key(buffer), node.value));
-
-    std::for_each(node.children.begin(), node.children.end(),
-        [&](const typename trie_node::children_type::value_type& v)
-        {
-            ktt::push_back(buffer, v.first);
-            fill_child_node_items(items, buffer, v.second);
-            ktt::pop_back(buffer);
-        }
-    );
-}
-
-template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::count_values(size_type& n, const trie_node& node) const
 {
     if (node.has_value)
@@ -818,33 +799,6 @@ void packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
     }
 
     node_stack.emplace_back(nullptr, nullptr, nullptr);
-}
-
-template<typename _KeyTrait, typename _ValueT>
-void packed_trie_map<_KeyTrait,_ValueT>::fill_child_node_items(
-    std::vector<key_value_type>& items, key_buffer_type& buffer, const uintptr_t* p) const
-{
-    using ktt = key_trait_type;
-
-    const uintptr_t* p0 = p; // store the head offset position of this node.
-
-    const value_type* v = reinterpret_cast<const value_type*>(*p);
-    if (v)
-        items.push_back(key_value_type(ktt::to_key(buffer), *v));
-
-    ++p;
-    size_t index_size = *p;
-    size_t n = index_size / 2;
-    ++p;
-    for (size_t i = 0; i < n; ++i)
-    {
-        key_unit_type key = *p++;
-        size_t offset = *p++;
-        ktt::push_back(buffer, key);
-        const uintptr_t* p_child = p0 - offset;
-        fill_child_node_items(items, buffer, p_child);
-        ktt::pop_back(buffer);
-    }
 }
 
 }

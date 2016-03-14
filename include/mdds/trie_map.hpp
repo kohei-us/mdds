@@ -269,9 +269,6 @@ private:
         node_stack_type& node_stack,
         const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
-    void fill_child_node_items(
-        std::vector<key_value_type>& items, key_buffer_type& buffer, const trie_node& node) const;
-
     void count_values(size_type& n, const trie_node& node) const;
 
 private:
@@ -453,9 +450,6 @@ private:
     void find_prefix_node_with_stack(
         node_stack_type& node_stack,
         const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
-
-    void fill_child_node_items(
-        std::vector<key_value_type>& items, key_buffer_type& buffer, const uintptr_t* p) const;
 
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump_node(key_buffer_type& buffer, const trie_node& node) const;
