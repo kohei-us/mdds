@@ -639,6 +639,18 @@ packed_trie_map<_KeyTrait,_ValueT>::get_root_stack() const
 
 template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
+packed_trie_map<_KeyTrait,_ValueT>::find(const key_type& key) const
+{
+    using ktt = key_trait_type;
+    key_buffer_type buf = ktt::to_key_buffer(key);
+    const key_unit_type* p = ktt::buffer_data(buf);
+    size_t n = ktt::buffer_size(buf);
+
+    return find(p, n);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
 packed_trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) const
 {
     if (m_packed.empty())
@@ -671,6 +683,18 @@ packed_trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type l
     );
 
     return const_iterator(std::move(node_stack), std::move(buf), *pv);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::search_results
+packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const key_type& key) const
+{
+    using ktt = key_trait_type;
+    key_buffer_type buf = ktt::to_key_buffer(key);
+    const key_unit_type* p = ktt::buffer_data(buf);
+    size_t n = ktt::buffer_size(buf);
+
+    return prefix_search(p, n);
 }
 
 template<typename _KeyTrait, typename _ValueT>

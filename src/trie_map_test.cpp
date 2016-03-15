@@ -525,6 +525,31 @@ void trie_packed_test_prefix_search1()
     }
 }
 
+void trie_packed_test_key_as_input()
+{
+    stack_printer __stack_printer__("::trie_packed_test_key_as_input");
+
+    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    trie_map_type db;
+
+    db.insert(std::string("string as key"), 1);
+    db.insert("literal as key", 2);
+    auto packed = db.pack();
+
+    auto it = packed.find("literal as key");
+    assert(it != packed.end());
+    assert(it->first == "literal as key");
+    assert(it->second == 2);
+
+    auto results = packed.prefix_search("str");
+    auto rit = results.begin();
+    assert(rit != results.end());
+    assert(rit->first == "string as key");
+    assert(rit->second == 1);
+    ++rit;
+    assert(rit == results.end());
+}
+
 void trie_test1()
 {
     stack_printer __stack_printer__("::trie_test1");
@@ -997,6 +1022,7 @@ int main(int argc, char** argv)
     trie_packed_test_iterator_empty();
     trie_packed_test_iterator();
     trie_packed_test_prefix_search1();
+    trie_packed_test_key_as_input();
 
     trie_test1();
 
