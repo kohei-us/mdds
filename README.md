@@ -95,8 +95,8 @@ directory on how to use these data structures.
 API Incompatibility Notes
 =========================
 
-1.2
----
+1.2 (not yet released)
+----------------------
 
 ### trie_map / packed_trie_map
 
