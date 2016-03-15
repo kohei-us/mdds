@@ -120,6 +120,12 @@ API Incompatibility Notes
   * init_buffer() -> to_key_buffer()
   * to_string() -> to_key()
 
+* The kay trait class now expects the following additional static methods:
+
+  * key_buffer_type to_key_buffer(const key_type& key)
+  * key_unit_type* buffer_data(const key_buffer_type& buf)
+  * size_t buffer_size(const key_buffer_type& buf)
+
 ### quad_point_tree
 
 * The search_result nested class has been renamed to search_results, to keep
