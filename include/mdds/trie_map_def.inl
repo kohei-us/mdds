@@ -82,6 +82,18 @@ trie_map<_KeyTrait,_ValueT>::end() const
 }
 
 template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::insert(const key_type& key, const value_type& value)
+{
+    using ktt = key_trait_type;
+
+    key_buffer_type buf = ktt::to_key_buffer(key);
+    const key_unit_type* p = ktt::buffer_data(buf);
+    size_t n = ktt::buffer_size(buf);
+    const key_unit_type* p_end = p + n;
+    insert_into_tree(m_root, p, p_end, value);
+}
+
+template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::insert(
     const key_unit_type* key, size_type len, const value_type& value)
 {
@@ -201,6 +213,18 @@ void trie_map<_KeyTrait,_ValueT>::count_values(size_type& n, const trie_node& no
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::const_iterator
+trie_map<_KeyTrait,_ValueT>::find(const key_type& key) const
+{
+    using ktt = key_trait_type;
+    key_buffer_type buf = ktt::to_key_buffer(key);
+    const key_unit_type* p = ktt::buffer_data(buf);
+    size_t n = ktt::buffer_size(buf);
+
+    return find(p, n);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::const_iterator
 trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) const
 {
     const key_unit_type* input_end = input + len;
@@ -224,6 +248,18 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
 
     return const_iterator(
         std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::search_results
+trie_map<_KeyTrait,_ValueT>::prefix_search(const key_type& key) const
+{
+    using ktt = key_trait_type;
+    key_buffer_type buf = ktt::to_key_buffer(key);
+    const key_unit_type* p = ktt::buffer_data(buf);
+    size_t n = ktt::buffer_size(buf);
+
+    return prefix_search(p, n);
 }
 
 template<typename _KeyTrait, typename _ValueT>

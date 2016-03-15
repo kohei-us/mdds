@@ -51,7 +51,9 @@ struct std_string_trait
 
     /**
      * type used to build an intermediate key value, from which a final key
-     * value is to be created.
+     * value is to be created.  It is expected to be an array structure whose
+     * content is contiguous in memory.  Its elements must be of
+     * key_unit_type.
      */
     typedef std::string key_buffer_type;
 
@@ -64,12 +66,12 @@ struct std_string_trait
 
     /**
      * Function called to create and initialize a buffer object from a given
-     * initial string value.
+     * initial key value.
      *
-     * @param str pointer to the first character of string value.
-     * @param length length of the string value.
+     * @param str pointer to the first character of the key value.
+     * @param length length of the key value.
      *
-     * @return buffer object containing the specified string value.
+     * @return buffer object containing the specified key value.
      */
     static key_buffer_type to_key_buffer(const key_unit_type* str, size_t length)
     {
@@ -77,7 +79,30 @@ struct std_string_trait
     }
 
     /**
-     * Function called to append a single character to the end of a string
+     * Function called to create and initialize a buffer object from a given
+     * initial key value.
+     *
+     * @param key key value
+     *
+     * @return buffer object containing the specified key value.
+     */
+    static key_buffer_type to_key_buffer(const key_type& key)
+    {
+        return key_buffer_type(key);
+    }
+
+    static const key_unit_type* buffer_data(const key_buffer_type& buf)
+    {
+        return buf.data();
+    }
+
+    static size_t buffer_size(const key_buffer_type& buf)
+    {
+        return buf.size();
+    }
+
+    /**
+     * Function called to append a single character to the end of a key
      * buffer.
      *
      * @param buffer buffer object to append character to.
@@ -90,7 +115,7 @@ struct std_string_trait
 
     /**
      * Function called to remove a single character from the tail of an
-     * existing string buffer.
+     * existing key buffer.
      *
      * @param buffer buffer object to remove character from.
      */
@@ -193,6 +218,14 @@ public:
     /**
      * Insert a new key-value pair.
      *
+     * @param key key value.
+     * @param value value to associate with the key.
+     */
+    void insert(const key_type& key, const value_type& value);
+
+    /**
+     * Insert a new key-value pair.
+     *
      * @param key pointer to the first character of a character array that
      *            stores key value.
      * @param len length of the character array storing the key.
@@ -212,11 +245,21 @@ public:
     bool erase(const key_unit_type* key, size_type len);
 
     /**
-     * Find a value associated with a specified string key.
+     * Find a value associated with a specified key.
      *
-     * @param input pointer to a C-style string whose value represents the key
-     *              to match.
-     * @param len length of the matching string value.
+     * @param key key to match.
+     *
+     * @return iterator that references a value associated with the key, or
+     *         the end position in case the key is not found.
+     */
+    const_iterator find(const key_type& key) const;
+
+    /**
+     * Find a value associated with a specified key.
+     *
+     * @param input pointer to an array whose value represents the key to
+     *              match.
+     * @param len length of the matching key value.
      *
      * @return iterator that references a value associated with the key, or
      *         the end position in case the key is not found.
@@ -228,8 +271,19 @@ public:
      * You can also retrieve all key-value pairs by passing a null prefix and
      * a length of zero.
      *
-     * @param prefix pointer to a C-style string whose value represents the
-     *               prefix to match.
+     * @param prefix prefix to match.
+     *
+     * @return results object containing all matching key-value pairs.
+     */
+    search_results prefix_search(const key_type& prefix) const;
+
+    /**
+     * Retrieve all key-value pairs whose keys start with specified prefix.
+     * You can also retrieve all key-value pairs by passing a null prefix and
+     * a length of zero.
+     *
+     * @param prefix pointer to an array whose value represents the prefix to
+     *               match.
      * @param len length of the prefix value to match.
      *
      * @return results object that contains all matching key-value pairs. The
