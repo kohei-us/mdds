@@ -67,8 +67,8 @@ struct mtv_event_func
 /**
  * Multi-type vector consists of a series of one or more blocks, and each
  * block may either be empty, or stores a series of non-empty elements of
- * identical type.  These blocks collectively represent a single
- * one-dimension array that may store elements of different types.  It is
+ * identical type.  These blocks collectively represent a single logical
+ * one-dimensional array that may store elements of different types.  It is
  * guaranteed that the block types of neighboring blocks are always
  * different.
  *
@@ -578,9 +578,10 @@ public:
 
     /**
      * Return the value of an element at specified position and set that
-     * position empty.  If the element resides in a managed block, this call
-     * will release that element from that block.  If the element is on a
-     * non-managed block, this call is equivalent to set_empty(pos, pos).
+     * position empty.  If the element resides in a managed element block,
+     * this call will release that element from that block.  If the element is
+     * on a non-managed element block, this call is equivalent to
+     * set_empty(pos, pos).
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
@@ -594,9 +595,10 @@ public:
 
     /**
      * Retrieve the value of an element at specified position and set that
-     * position empty.  If the element resides in a managed block, this call
-     * will release that element from that block.  If the element is on a
-     * non-managed block, this call is equivalent to set_empty(pos, pos).
+     * position empty.  If the element resides in a managed element block,
+     * this call will release that element from that block.  If the element is
+     * on a non-managed element block, this call is equivalent to
+     * set_empty(pos, pos).
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
@@ -612,9 +614,10 @@ public:
 
     /**
      * Retrieve the value of an element at specified position and set that
-     * position empty.  If the element resides in a managed block, this call
-     * will release that element from that block.  If the element is on a
-     * non-managed block, this call is equivalent to set_empty(pos, pos).
+     * position empty.  If the element resides in a managed element block,
+     * this call will release that element from that block.  If the element is
+     * on a non-managed element block, this call is equivalent to
+     * set_empty(pos, pos).
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
@@ -630,18 +633,19 @@ public:
 
     /**
      * Release all its elements, and empties its content.  Calling this method
-     * relinquishes the ownership of all elements stored in managed blocks.
+     * relinquishes the ownership of all elements stored in managed element
+     * blocks if any.
      *
      * <p>This call is equivalent of clear() if the container consists of no
-     * managed blocks.</p>
+     * managed element blocks.</p>
      */
     void release();
 
     /**
      * Make all elements within specified range empty, and relinquish the
      * ownership of the elements in that range.  All elements in the managed
-     * blocks within the range will be released and the container will no
-     * longer manage their life cycles after the call.
+     * element blocks within the range will be released and the container will
+     * no longer manage their life cycles after the call.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * either the starting or the ending position is outside the current
@@ -657,8 +661,8 @@ public:
     /**
      * Make all elements within specified range empty, and relinquish the
      * ownership of the elements in that range.  All elements in the managed
-     * blocks within the range will be released and the container will no
-     * longer manage their life cycles after the call.
+     * element blocks within the range will be released and the container will
+     * no longer manage their life cycles after the call.
      *
      * <p>This variant takes an iterator as an additional parameter, which is
      * used as a block position hint to speed up the lookup of the first block
@@ -689,8 +693,9 @@ public:
      * the specified position is outside the current container range.</p>
      *
      * @param pos logical position of the element.
-     * @return iterator referencing the block where the element resides, and
-     *         its offset within the block.
+     * @return position object that stores an iterator referencing the element
+     *         block where the element resides, and its offset within that
+     *         block.
      */
     position_type position(size_type pos);
 
@@ -706,29 +711,31 @@ public:
      *                 which block to start when searching for the element
      *                 position.
      * @param pos logical position of the element.
-     * @return iterator referencing the block where the element resides, and
-     *         its offset within the block.
+     * @return position object that stores an iterator referencing the element
+     *         block where the element resides, and its offset within that
+     *         block.
      */
     position_type position(const iterator& pos_hint, size_type pos);
 
     /**
-     * Given the logical position of an element, get the iterator of the block
-     * where the element is located, and its offset from the first element of
-     * that block.
+     * Given the logical position of an element, get an iterator referencing
+     * the element block where the element is located, and its offset from the
+     * first element of that block.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
      * @param pos position of the element.
-     * @return iterator referencing the block where the element resides, and
-     *         its offset within the block.
+     * @return position object that stores an iterator referencing the element
+     *         block where the element resides, and its offset within that
+     *         block.
      */
     const_position_type position(size_type pos) const;
 
     /**
-     * Given the logical position of an element, get the iterator of the block
-     * where the element is located, and its offset from the first element of
-     * that block.
+     * Given the logical position of an element, get an iterator referencing
+     * the element block where the element is located, and its offset from the
+     * first element of that block.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
@@ -737,23 +744,25 @@ public:
      *                 which block to start when searching for the element
      *                 position.
      * @param pos logical position of the element.
-     * @return iterator referencing the block where the element resides, and
-     *         its offset within the block.
+     * @return position object that stores an iterator referencing the element
+     *         block where the element resides, and its offset within the
+     *         block.
      */
     const_position_type position(const const_iterator& pos_hint, size_type pos) const;
 
     /**
      * Move elements from one container to another. After the move, the
-     * segment where the elements were in the original container becomes
-     * empty.  When transferring managed elements, this call transfers
-     * ownership of the moved elements to the new container.  The moved
-     * elements will overwrite any existing elements in the destination range.
-     * Transfer of elements within the same container is not allowed.
+     * segment where the elements were in the source container becomes empty.
+     * When transferring managed elements, this call transfers ownership of
+     * the moved elements to the destination container.  The moved elements
+     * will overwrite any existing elements in the destination range of the
+     * receiving container. Transfer of elements within the same container is
+     * not allowed.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * either the starting or the ending position is outside the current
-     * container size, or the destination container is not large enough to
-     * accommodate the transferred elements.</p>
+     * either the starting or the ending position is greater than or equal to
+     * the source container size, or the destination container is not
+     * large enough to accommodate the transferred elements.</p>
      *
      * @param start_pos starting position
      * @param end_pos ending position, inclusive.
@@ -769,16 +778,17 @@ public:
 
     /**
      * Move elements from one container to another. After the move, the
-     * segment where the elements were in the original container becomes
-     * empty.  When transferring managed elements, this call transfers
-     * ownership of the moved elements to the new container.  The moved
-     * elements will overwrite any existing elements in the destination range.
-     * Transfer of elements within the same container is not allowed.
+     * segment where the elements were in the source container becomes empty.
+     * When transferring managed elements, this call transfers ownership of
+     * the moved elements to the new container.  The moved elements will
+     * overwrite any existing elements in the destination range of the
+     * receiving container. Transfer of elements within the same container is
+     * not allowed.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * either the starting or the ending position is outside the current
-     * container size, or the destination container is not large enough to
-     * accommodate the transferred elements.</p>
+     * either the starting or the ending position is greater than or equal to
+     * the source container size, or the destination container is not large
+     * enough to accommodate the transferred elements.</p>
      *
      * @param pos_hint iterator used as a block position hint, to specify
      *                 which block to start when searching for the blocks
@@ -808,7 +818,8 @@ public:
      * Check if element at specified position is empty of not.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * the specified position is outside the current container range.</p>
+     * the specified position is outside the current container
+     * range.</p>
      *
      * @param pos position of the element to check.
      *
@@ -864,7 +875,8 @@ public:
 
     /**
      * Erase elements located between specified start and end positions. The
-     * end positions are both inclusive.
+     * end positions are both inclusive.  Those elements originally located
+     * after the specified end position will get shifted up after the erasure.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * either the starting or the ending position is outside the current
@@ -879,7 +891,9 @@ public:
     void erase(size_type start_pos, size_type end_pos);
 
     /**
-     * Insert a range of empty elements at specified position.
+     * Insert a range of empty elements at specified position.  Those elements
+     * originally located after the insertion position will get shifted down
+     * after the insertion.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * either the specified position is outside the current container
@@ -897,7 +911,9 @@ public:
     iterator insert_empty(size_type pos, size_type length);
 
     /**
-     * Insert a range of empty elements at specified position.
+     * Insert a range of empty elements at specified position.  Those elements
+     * originally located after the insertion position will get shifted down
+     * after the insertion.
      *
      * <p>This variant takes an iterator as an additional parameter, which is
      * used as a block position hint to speed up the lookup of the block in
@@ -944,18 +960,21 @@ public:
     size_type size() const;
 
     /**
-     * Return the current number of data blocks.  Each data block stores a
-     * series of contiguous elements of identical type.  A series of empty
-     * elements is also represented by a separate data block.
+     * Return the current number of blocks in the primary array.  Each
+     * non-empty block stores a secondary block that stores elements in a
+     * contiguous region in memory (element block) and the number of elements
+     * it stores.  An empty block only stores its logical size and does not
+     * store an actual element block.
      *
      * <p>For instance, if the container stores values of double-precision
      * type at rows 0 to 2, values of std::string type at 3 to 7, and empty
-     * values at 8 to 10, it consists of 3 data blocks: one that stores double
-     * values, one that stores std::string values, and one that represents the
-     * empty value range. In this specific scenario, <code>block_size()</code>
-     * returns 3, and <code>size()</code> returns 11.</p>
+     * values at 8 to 10, it would consist of three blocks: one that stores
+     * double values, one that stores std::string values, and one that
+     * represents the empty value range in this exact order.  In this specific
+     * scenario, <code>block_size()</code> returns 3, and <code>size()</code>
+     * returns 11.</p>
      *
-     * @return current number of data blocks.
+     * @return current number of blocks in the primary array.
      */
     size_type block_size() const;
 
