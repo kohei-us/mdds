@@ -306,3 +306,54 @@ Compiling and execute this code produces the following output:
    D
    E
 
+Use of position hint to avoid expensive block position lookup
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Consider the following code::
+
+   typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+
+   size_t size = 50000;
+
+   // Initialize the container with one empty block of size 50000.
+   mtv_type db(size);
+
+   // Set non-empty value at every other logical position from top down.
+   for (size_t i = 0; i < size; ++i)
+   {
+       if (i % 2)
+           db.set<double>(i, 1.0);
+   }
+
+which, when executed, takes quite sometime to complete.  This particular example
+exposes one weakness that multi_type_vector has; because it needs to first
+look up the position of the block with operate with, and that lookup
+*always* start from the first block, the time it takes to find the correct
+block increases as the number of blocks goes up.  This example demonstrates
+the worst case scenario of such lookup complexity since it always inserts the
+next value at the last block position.
+
+Fortunately, there is a simple solution to this which the following code
+demonstrates::
+
+   typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+
+   size_t size = 50000;
+
+   // Initialize the container with one empty block of size 50000.
+   mtv_type db(size);
+   mtv_type::iterator pos = db.begin();
+
+   // Set non-empty value at every other logical position from top down.
+   for (size_t i = 0; i < size; ++i)
+   {
+       if (i % 2)
+           pos = db.set<double>(pos, i, 1.0);
+   }
+
+The only difference between the second version and the initial one is that the
+second one uses an interator as a position hint to keep track of the position
+of the last modified block.  When the :cpp:member:`~mdds::multi_type_vector::set`
+method is called each time, it returns an iterator, which can then be passed
+to the next :cpp:member:`~mdds::multi_type_vector::set` call as the position
+hint.
