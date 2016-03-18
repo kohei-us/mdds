@@ -351,9 +351,19 @@ demonstrates::
            pos = db.set<double>(pos, i, 1.0);
    }
 
-The only difference between the second version and the initial one is that the
+Compiling and executing this code should take only a fraction of a second.
+
+The only difference between the second example and the first one is that the
 second one uses an interator as a position hint to keep track of the position
-of the last modified block.  When the :cpp:member:`~mdds::multi_type_vector::set`
-method is called each time, it returns an iterator, which can then be passed
-to the next :cpp:member:`~mdds::multi_type_vector::set` call as the position
-hint.
+of the last modified block.  Each :cpp:member:`~mdds::multi_type_vector::set`
+method call returns an iterator which can then be passed to the next
+:cpp:member:`~mdds::multi_type_vector::set` call as the position hint.
+Because an iterator object internally stores the location of the block the
+value was inserted to, this lets the method to start the block position lookup
+process from the last modified block, which in this example is always one
+block behind the one the new value needs to go.  Using the big-O notation, the
+use of the position hint essentially turns the complexity of O(n^2) in the
+first example into O(1) in the second one.
+
+This strategy should work with any of those methods that take a position hint
+as the first argument.
