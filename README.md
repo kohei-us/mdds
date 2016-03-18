@@ -79,7 +79,7 @@ where keys are stored in a trie structure to optimize for prefix searches.
 
 Packed trie map is nearly identical to the trie map counterpart except that
 this one is immutable.  It packs all its content in a contiguous array for
-optimium storage and lookup efficiency.
+optimum storage and lookup efficiency.
 
 API Documentation
 =================
