@@ -309,7 +309,7 @@ Compiling and execute this code produces the following output:
 Use of position hint to avoid expensive block position lookup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Consider the following code::
+Consider the following example code::
 
    typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
 
@@ -327,11 +327,11 @@ Consider the following code::
 
 which, when executed, takes quite sometime to complete.  This particular example
 exposes one weakness that multi_type_vector has; because it needs to first
-look up the position of the block with operate with, and that lookup
-*always* start from the first block, the time it takes to find the correct
-block increases as the number of blocks goes up.  This example demonstrates
-the worst case scenario of such lookup complexity since it always inserts the
-next value at the last block position.
+look up the position of the block to operate with, and that lookup *always*
+starts from the first block, the time it takes to find the correct block
+increases as the number of blocks goes up.  This example demonstrates the
+worst case scenario of such lookup complexity since it always inserts the next
+value at the last block position.
 
 Fortunately, there is a simple solution to this which the following code
 demonstrates::
