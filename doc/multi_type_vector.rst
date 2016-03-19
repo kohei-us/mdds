@@ -348,6 +348,8 @@ demonstrates::
    for (size_t i = 0; i < size; ++i)
    {
        if (i % 2)
+           // Pass the position hint as the first argument, and receive a new
+           // one returned from the method for the next call.
            pos = db.set<double>(pos, i, 1.0);
    }
 
