@@ -365,5 +365,5 @@ block behind the one the new value needs to go.  Using the big-O notation, the
 use of the position hint essentially turns the complexity of O(n^2) in the
 first example into O(1) in the second one.
 
-This strategy should work with any of those methods that take a position hint
-as the first argument.
+This strategy should work with any methods in :cpp:class:`~mdds::multi_type_vector`
+that take a position hint as the first argument.
