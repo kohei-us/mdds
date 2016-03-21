@@ -13,7 +13,7 @@ multi-dimensional data for C++ projects.
 Contents:
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    global.rst
    flat_segment_tree.rst
