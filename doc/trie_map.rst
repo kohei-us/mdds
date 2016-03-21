@@ -4,21 +4,24 @@
 Trie Maps
 =========
 
+API Reference
+-------------
+
 Trie Map
---------
+````````
 
 .. doxygenclass:: mdds::trie_map
    :members:
 
 
 Packed Trie Map
----------------
+```````````````
 
 .. doxygenclass:: mdds::packed_trie_map
    :members:
 
 String Trait
-------------
+````````````
 
 .. doxygenstruct:: mdds::trie::std_string_trait
    :members:

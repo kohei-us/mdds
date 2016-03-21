@@ -3,6 +3,9 @@
 Multi Type Vector
 =================
 
+API Reference
+-------------
+
 .. doxygenstruct:: mdds::detail::mtv_event_func
    :members:
 
@@ -305,6 +308,9 @@ Compiling and execute this code produces the following output:
    C
    D
    E
+
+Performance Considerations
+--------------------------
 
 Use of position hint to avoid expensive block position lookup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
