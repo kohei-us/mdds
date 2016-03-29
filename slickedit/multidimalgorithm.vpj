@@ -228,6 +228,10 @@
         </Folder>
         <Folder Name="../include">
             <Folder Name="mdds">
+                <Folder Name="multi_type_vector">
+                    <F N="../include/mdds/multi_type_vector/side_iterator.hpp"/>
+                    <F N="../include/mdds/multi_type_vector/side_iterator_def.inl"/>
+                </Folder>
                 <F N="../include/mdds/default_deleter.hpp"/>
                 <F N="../include/mdds/flat_segment_tree.hpp"/>
                 <F N="../include/mdds/flat_segment_tree_def.inl"/>
@@ -274,6 +278,7 @@
             <F N="../src/multi_type_vector_test_default.cpp"/>
             <F N="../src/multi_type_vector_test_event.cpp"/>
             <F N="../src/multi_type_vector_test_perf.cpp"/>
+            <F N="../src/multi_type_vector_test_side_iterator.cpp"/>
             <F N="../src/nodecontainer.cpp"/>
             <F N="../src/point_quad_tree_test.cpp"/>
             <F N="../src/rangetree.cpp"/>
