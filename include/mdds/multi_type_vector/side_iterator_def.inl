@@ -33,6 +33,9 @@ template<typename _MtvT>
 template<typename _T>
 side_iterator<_MtvT>::side_iterator(const _T& begin, const _T& end)
 {
+    size_type n = std::distance(begin, end);
+    m_vectors.reserve(n);
+
     for (_T it = begin; it != end; ++it)
         init_insert_vector(*it);
 }
