@@ -47,6 +47,20 @@ void side_iterator<_MtvT>::init_insert_vector(
 }
 
 template<typename _MtvT>
+void side_iterator<_MtvT>::init_insert_vector(const std::unique_ptr<mtv_type>& p)
+{
+    std::cout << "unique pointer: " << p.get() << std::endl;
+    m_vectors.emplace_back(p->begin(), p->end());
+}
+
+template<typename _MtvT>
+void side_iterator<_MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
+{
+    std::cout << "shared pointer: " << p.get() << std::endl;
+    m_vectors.emplace_back(p->begin(), p->end());
+}
+
+template<typename _MtvT>
 template<typename _T>
 void side_iterator<_MtvT>::init_insert_vector(
     const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type*)

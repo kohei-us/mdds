@@ -34,6 +34,7 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
 using namespace std;
 using namespace mdds;
@@ -54,6 +55,28 @@ void mtv_test_pointer_size1()
     for_each(vectors.begin(), vectors.end(), [](const mtv_type* p) { delete p; });
 }
 
+void mtv_test_unique_pointer_size1()
+{
+    stack_printer __stack_printer__("::mtv_test_unique_pointer_size1");
+
+    vector<unique_ptr<mtv_type>> vectors;
+    for (size_t i = 0; i < 2; ++i)
+        vectors.push_back(mdds::make_unique<mtv_type>(1));
+
+    side_iterator_type side_iterator(vectors.begin(), vectors.end());
+}
+
+void mtv_test_shared_pointer_size1()
+{
+    stack_printer __stack_printer__("::mtv_test_unique_pointer_size1");
+
+    vector<shared_ptr<mtv_type>> vectors;
+    for (size_t i = 0; i < 2; ++i)
+        vectors.push_back(make_shared<mtv_type>(1));
+
+    side_iterator_type side_iterator(vectors.begin(), vectors.end());
+}
+
 void mtv_test_non_pointer_size1()
 {
     stack_printer __stack_printer__("::mtv_test_non_pointer_size1");
@@ -71,6 +94,8 @@ int main (int argc, char **argv)
     try
     {
         mtv_test_pointer_size1();
+        mtv_test_unique_pointer_size1();
+        mtv_test_shared_pointer_size1();
         mtv_test_non_pointer_size1();
     }
     catch (const std::exception& e)

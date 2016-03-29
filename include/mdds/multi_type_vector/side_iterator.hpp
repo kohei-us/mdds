@@ -32,6 +32,7 @@
 
 #include <type_traits>
 #include <vector>
+#include <memory>
 
 namespace mdds { namespace mtv {
 
@@ -72,6 +73,10 @@ public:
     side_iterator(const _T& begin, const _T& end);
 
 private:
+    void init_insert_vector(const std::unique_ptr<mtv_type>& p);
+
+    void init_insert_vector(const std::shared_ptr<mtv_type>& p);
+
     template<typename _T>
     void init_insert_vector(const _T& t,  typename std::enable_if<std::is_pointer<_T>::value>::type* = 0);
 
