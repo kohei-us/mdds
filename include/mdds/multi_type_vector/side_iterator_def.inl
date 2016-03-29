@@ -33,27 +33,26 @@ template<typename _MtvT>
 template<typename _T>
 side_iterator<_MtvT>::side_iterator(const _T& begin, const _T& end)
 {
-    _T it = begin;
-    for (; it != end; ++it)
-    {
+    for (_T it = begin; it != end; ++it)
         init_insert_vector(*it);
-    }
 }
 
 template<typename _MtvT>
 template<typename _T>
 void side_iterator<_MtvT>::init_insert_vector(
-    _T t,  typename std::enable_if<std::is_pointer<_T>::value>::type*)
+    const _T& t,  typename std::enable_if<std::is_pointer<_T>::value>::type*)
 {
     std::cout << "pointer: " << t << std::endl;
+    m_vectors.emplace_back(t->begin(), t->end());
 }
 
 template<typename _MtvT>
 template<typename _T>
 void side_iterator<_MtvT>::init_insert_vector(
-    _T t,  typename std::enable_if<!std::is_pointer<_T>::value>::type*)
+    const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type*)
 {
     std::cout << "non-pointer: " << &t << std::endl;
+    m_vectors.emplace_back(t.begin(), t.end());
 }
 
 }}

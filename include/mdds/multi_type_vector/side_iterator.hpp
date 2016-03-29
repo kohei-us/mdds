@@ -31,6 +31,7 @@
 #include "mdds/multi_type_vector_types.hpp"
 
 #include <type_traits>
+#include <vector>
 
 namespace mdds { namespace mtv {
 
@@ -44,7 +45,20 @@ class side_iterator
 {
     typedef _MtvT mtv_type;
     typedef typename mtv_type::size_type size_type;
+    typedef typename mtv_type::const_iterator const_iterator;
     typedef typename mtv_type::const_position_type const_position_type;
+
+    /** meta-data about each mtv instance.  */
+    struct mtv_item
+    {
+        const_iterator block_pos;
+        const_iterator block_end;
+
+        mtv_item(const const_iterator& bp, const const_iterator& be) :
+            block_pos(bp), block_end(be) {}
+    };
+
+    std::vector<mtv_item> m_vectors;
 
 public:
     struct value_type
@@ -59,10 +73,10 @@ public:
 
 private:
     template<typename _T>
-    void init_insert_vector(_T t,  typename std::enable_if<std::is_pointer<_T>::value>::type* = 0);
+    void init_insert_vector(const _T& t,  typename std::enable_if<std::is_pointer<_T>::value>::type* = 0);
 
     template<typename _T>
-    void init_insert_vector(_T t,  typename std::enable_if<!std::is_pointer<_T>::value>::type* = 0);
+    void init_insert_vector(const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type* = 0);
 };
 
 }}
