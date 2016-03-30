@@ -47,6 +47,8 @@ void mtv_test_pointer_size1()
 {
     stack_printer __stack_printer__("::mtv_test_pointer_size1");
 
+    // Two vectors of size 1, both of which are totally empty.
+
     vector<mtv_type*> vectors;
     for (size_t i = 0; i < 2; ++i)
         vectors.push_back(new mtv_type(1));
@@ -56,6 +58,10 @@ void mtv_test_pointer_size1()
     assert(it->type == mtv::element_type_empty);
     assert(it->index == 0);
 
+    ++it;
+    assert(it->type == mtv::element_type_empty);
+    assert(it->index == 1);
+
     for_each(vectors.begin(), vectors.end(), [](const mtv_type* p) { delete p; });
 }
 
@@ -63,14 +69,22 @@ void mtv_test_unique_pointer_size1()
 {
     stack_printer __stack_printer__("::mtv_test_unique_pointer_size1");
 
+    // Two vector of size 1, with empty and numeric values.
+
     vector<unique_ptr<mtv_type>> vectors;
     for (size_t i = 0; i < 2; ++i)
         vectors.push_back(mdds::make_unique<mtv_type>(1));
+
+    vectors[1]->set(0, 1.1);
 
     cols_type collection(vectors.begin(), vectors.end());
     cols_type::const_iterator it = collection.begin(), ite = collection.end();
     assert((*it).type == mtv::element_type_empty);
     assert((*it).index == 0);
+
+    ++it;
+    assert((*it).type == mtv::element_type_numeric);
+    assert((*it).index == 1);
 }
 
 void mtv_test_shared_pointer_size1()
