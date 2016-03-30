@@ -41,6 +41,7 @@ using namespace mdds;
 
 typedef multi_type_vector<mtv::element_block_func> mtv_type;
 typedef mtv::side_iterator<mtv_type> side_iterator_type;
+typedef mtv::collection<mtv_type> cols_type;
 
 void mtv_test_pointer_size1()
 {
@@ -50,7 +51,10 @@ void mtv_test_pointer_size1()
     for (size_t i = 0; i < 2; ++i)
         vectors.push_back(new mtv_type(1));
 
-    side_iterator_type side_iterator(vectors.begin(), vectors.end());
+    cols_type collection(vectors.begin(), vectors.end());
+    cols_type::const_iterator it = collection.begin(), ite = collection.end();
+    assert(it->type == mtv::element_type_empty);
+    assert(it->index == 0);
 
     for_each(vectors.begin(), vectors.end(), [](const mtv_type* p) { delete p; });
 }
@@ -63,7 +67,10 @@ void mtv_test_unique_pointer_size1()
     for (size_t i = 0; i < 2; ++i)
         vectors.push_back(mdds::make_unique<mtv_type>(1));
 
-    side_iterator_type side_iterator(vectors.begin(), vectors.end());
+    cols_type collection(vectors.begin(), vectors.end());
+    cols_type::const_iterator it = collection.begin(), ite = collection.end();
+    assert((*it).type == mtv::element_type_empty);
+    assert((*it).index == 0);
 }
 
 void mtv_test_shared_pointer_size1()
@@ -74,7 +81,7 @@ void mtv_test_shared_pointer_size1()
     for (size_t i = 0; i < 2; ++i)
         vectors.push_back(make_shared<mtv_type>(1));
 
-    side_iterator_type side_iterator(vectors.begin(), vectors.end());
+    cols_type collection(vectors.begin(), vectors.end());
 }
 
 void mtv_test_non_pointer_size1()
@@ -86,7 +93,7 @@ void mtv_test_non_pointer_size1()
     vectors.emplace_back(1);
     vectors.emplace_back(1);
 
-    side_iterator_type side_iterator(vectors.begin(), vectors.end());
+    cols_type collection(vectors.begin(), vectors.end());
 }
 
 int main (int argc, char **argv)

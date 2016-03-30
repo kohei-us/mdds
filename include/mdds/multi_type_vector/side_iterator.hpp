@@ -36,15 +36,15 @@
 
 namespace mdds { namespace mtv {
 
-/**
- * Special-purpose iterator to enable multiple multi_type_vector instances
- * to be traversed "sideways".  All involved multi_type_vector instances
- * must be of the same type and length.
- */
+template<typename _MtvT>
+class collection;
+
 template<typename _MtvT>
 class side_iterator
 {
     typedef _MtvT mtv_type;
+    friend collection<mtv_type>;
+
     typedef typename mtv_type::size_type size_type;
     typedef typename mtv_type::const_iterator const_iterator;
     typedef typename mtv_type::const_position_type const_position_type;
@@ -52,27 +52,80 @@ class side_iterator
     /** meta-data about each mtv instance.  */
     struct mtv_item
     {
+        const mtv_type* vector;
         const_iterator block_pos;
         const_iterator block_end;
 
-        mtv_item(const const_iterator& bp, const const_iterator& be) :
-            block_pos(bp), block_end(be) {}
+        mtv_item(const mtv_type* v, const const_iterator& bp, const const_iterator& be) :
+            vector(v), block_pos(bp), block_end(be) {}
     };
 
-    std::vector<mtv_item> m_vectors;
-
-public:
-    struct value_type
+    /** single element value. */
+    struct node
     {
+        /** type of current element */
         mdds::mtv::element_t type;
+        /** index of current mtv instance */
         size_type index;
+        /** position of current element within the mtv instance.  */
         const_position_type position;
     };
+
+    enum begin_state_type { begin_state };
+    enum end_state_type { end_state };
+
+    std::vector<mtv_item> m_vectors;
+    node m_cur_node;
+    size_t m_elem_pos;
+
+    side_iterator(std::vector<mtv_item>&& vectors, begin_state_type);
+    side_iterator(std::vector<mtv_item>&& vectors, end_state_type);
+
+public:
+    typedef node value_type;
 
     template<typename _T>
     side_iterator(const _T& begin, const _T& end);
 
+    const value_type& operator*() const
+    {
+        return m_cur_node;
+    }
+
+    const value_type* operator->() const
+    {
+        return &m_cur_node;
+    }
+};
+
+/**
+ * Special-purpose collection of multiple multi_type_vector instances to
+ * allow them to be traversed "sideways". All involved multi_type_vector
+ * instances must be of the same type and length.
+ */
+template<typename _MtvT>
+class collection
+{
+    typedef _MtvT mtv_type;
+    typedef typename mtv_type::size_type size_type;
+
+    std::vector<const mtv_type*> m_vectors;
+
+public:
+
+    typedef side_iterator<mtv_type> const_iterator;
+
+    template<typename _T>
+    collection(const _T& begin, const _T& end);
+
+    const_iterator begin() const;
+
+    const_iterator end() const;
+
 private:
+
+    std::vector<typename const_iterator::mtv_item> build_iterator_state() const;
+
     void init_insert_vector(const std::unique_ptr<mtv_type>& p);
 
     void init_insert_vector(const std::shared_ptr<mtv_type>& p);

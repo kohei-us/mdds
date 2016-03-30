@@ -30,8 +30,27 @@
 namespace mdds { namespace mtv {
 
 template<typename _MtvT>
+side_iterator<_MtvT>::side_iterator(std::vector<mtv_item>&& vectors, begin_state_type) :
+    m_vectors(std::move(vectors)), m_elem_pos(0)
+{
+    const mtv_item& col1 = m_vectors.front();
+
+    m_cur_node.index = 0;
+    m_cur_node.type = col1.block_pos->type;
+    m_cur_node.position = typename mtv_type::const_position_type(col1.block_pos, 0);
+}
+
+template<typename _MtvT>
+side_iterator<_MtvT>::side_iterator(std::vector<mtv_item>&& vectors, end_state_type) :
+    m_vectors(std::move(vectors)),
+    m_elem_pos(0)
+{
+    // TODO : to be worked on.
+}
+
+template<typename _MtvT>
 template<typename _T>
-side_iterator<_MtvT>::side_iterator(const _T& begin, const _T& end)
+collection<_MtvT>::collection(const _T& begin, const _T& end)
 {
     size_type n = std::distance(begin, end);
     m_vectors.reserve(n);
@@ -41,35 +60,66 @@ side_iterator<_MtvT>::side_iterator(const _T& begin, const _T& end)
 }
 
 template<typename _MtvT>
+typename collection<_MtvT>::const_iterator
+collection<_MtvT>::begin() const
+{
+    return const_iterator(build_iterator_state(), const_iterator::begin_state);
+}
+
+template<typename _MtvT>
+typename collection<_MtvT>::const_iterator
+collection<_MtvT>::end() const
+{
+    return const_iterator(build_iterator_state(), const_iterator::end_state);
+}
+
+template<typename _MtvT>
+std::vector<typename collection<_MtvT>::const_iterator::mtv_item>
+collection<_MtvT>::build_iterator_state() const
+{
+    std::vector<typename const_iterator::mtv_item> cols;
+    cols.reserve(m_vectors.size());
+
+    std::for_each(m_vectors.begin(), m_vectors.end(),
+        [&](const mtv_type* p)
+        {
+            cols.emplace_back(p, p->begin(), p->end());
+        }
+    );
+
+    return cols;
+}
+
+template<typename _MtvT>
 template<typename _T>
-void side_iterator<_MtvT>::init_insert_vector(
+void collection<_MtvT>::init_insert_vector(
     const _T& t,  typename std::enable_if<std::is_pointer<_T>::value>::type*)
 {
     std::cout << "pointer: " << t << std::endl;
-    m_vectors.emplace_back(t->begin(), t->end());
+    m_vectors.emplace_back(t);
 }
 
 template<typename _MtvT>
-void side_iterator<_MtvT>::init_insert_vector(const std::unique_ptr<mtv_type>& p)
+void collection<_MtvT>::init_insert_vector(const std::unique_ptr<mtv_type>& p)
 {
     std::cout << "unique pointer: " << p.get() << std::endl;
-    m_vectors.emplace_back(p->begin(), p->end());
+    m_vectors.emplace_back(p.get());
 }
 
 template<typename _MtvT>
-void side_iterator<_MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
+void collection<_MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
 {
     std::cout << "shared pointer: " << p.get() << std::endl;
-    m_vectors.emplace_back(p->begin(), p->end());
+    m_vectors.emplace_back(p.get());
 }
 
 template<typename _MtvT>
 template<typename _T>
-void side_iterator<_MtvT>::init_insert_vector(
+void collection<_MtvT>::init_insert_vector(
     const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type*)
 {
     std::cout << "non-pointer: " << &t << std::endl;
-    m_vectors.emplace_back(t.begin(), t.end());
+    m_vectors.emplace_back(&t);
 }
 
 }}
