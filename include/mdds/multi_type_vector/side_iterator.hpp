@@ -76,10 +76,11 @@ class side_iterator
 
     std::vector<mtv_item> m_vectors;
     node m_cur_node;
-    size_t m_elem_pos;
+    size_type m_elem_pos;
+    size_type m_mtv_size;
 
-    side_iterator(std::vector<mtv_item>&& vectors, begin_state_type);
-    side_iterator(std::vector<mtv_item>&& vectors, end_state_type);
+    side_iterator(std::vector<mtv_item>&& vectors, size_type mtv_size, begin_state_type);
+    side_iterator(std::vector<mtv_item>&& vectors, size_type mtv_size, end_state_type);
 
 public:
     typedef node value_type;
@@ -110,6 +111,7 @@ class collection
     typedef typename mtv_type::size_type size_type;
 
     std::vector<const mtv_type*> m_vectors;
+    size_type m_mtv_size;
 
 public:
 
@@ -135,6 +137,8 @@ private:
 
     template<typename _T>
     void init_insert_vector(const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type* = 0);
+
+    void check_vector_size(const mtv_type& t);
 };
 
 }}

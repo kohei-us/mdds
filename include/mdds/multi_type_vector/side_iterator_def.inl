@@ -30,9 +30,13 @@
 namespace mdds { namespace mtv {
 
 template<typename _MtvT>
-side_iterator<_MtvT>::side_iterator(std::vector<mtv_item>&& vectors, begin_state_type) :
-    m_vectors(std::move(vectors)), m_elem_pos(0)
+side_iterator<_MtvT>::side_iterator(
+    std::vector<mtv_item>&& vectors, size_type mtv_size, begin_state_type) :
+    m_vectors(std::move(vectors)),
+    m_elem_pos(0),
+    m_mtv_size(mtv_size)
 {
+    assert(m_mtv_size);
     const mtv_item& col1 = m_vectors.front();
 
     m_cur_node.index = 0;
@@ -41,16 +45,20 @@ side_iterator<_MtvT>::side_iterator(std::vector<mtv_item>&& vectors, begin_state
 }
 
 template<typename _MtvT>
-side_iterator<_MtvT>::side_iterator(std::vector<mtv_item>&& vectors, end_state_type) :
+side_iterator<_MtvT>::side_iterator(
+    std::vector<mtv_item>&& vectors, size_type mtv_size, end_state_type) :
     m_vectors(std::move(vectors)),
-    m_elem_pos(0)
+    m_elem_pos(0),
+    m_mtv_size(mtv_size)
 {
+    assert(m_mtv_size);
     // TODO : to be worked on.
 }
 
 template<typename _MtvT>
 template<typename _T>
-collection<_MtvT>::collection(const _T& begin, const _T& end)
+collection<_MtvT>::collection(const _T& begin, const _T& end) :
+    m_mtv_size(0)
 {
     size_type n = std::distance(begin, end);
     m_vectors.reserve(n);
@@ -63,14 +71,16 @@ template<typename _MtvT>
 typename collection<_MtvT>::const_iterator
 collection<_MtvT>::begin() const
 {
-    return const_iterator(build_iterator_state(), const_iterator::begin_state);
+    return const_iterator(
+        build_iterator_state(), m_mtv_size, const_iterator::begin_state);
 }
 
 template<typename _MtvT>
 typename collection<_MtvT>::const_iterator
 collection<_MtvT>::end() const
 {
-    return const_iterator(build_iterator_state(), const_iterator::end_state);
+    return const_iterator(
+        build_iterator_state(), m_mtv_size, const_iterator::end_state);
 }
 
 template<typename _MtvT>
@@ -96,6 +106,7 @@ void collection<_MtvT>::init_insert_vector(
     const _T& t,  typename std::enable_if<std::is_pointer<_T>::value>::type*)
 {
     std::cout << "pointer: " << t << std::endl;
+    check_vector_size(*t);
     m_vectors.emplace_back(t);
 }
 
@@ -103,6 +114,7 @@ template<typename _MtvT>
 void collection<_MtvT>::init_insert_vector(const std::unique_ptr<mtv_type>& p)
 {
     std::cout << "unique pointer: " << p.get() << std::endl;
+    check_vector_size(*p);
     m_vectors.emplace_back(p.get());
 }
 
@@ -110,6 +122,7 @@ template<typename _MtvT>
 void collection<_MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
 {
     std::cout << "shared pointer: " << p.get() << std::endl;
+    check_vector_size(*p);
     m_vectors.emplace_back(p.get());
 }
 
@@ -119,7 +132,20 @@ void collection<_MtvT>::init_insert_vector(
     const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type*)
 {
     std::cout << "non-pointer: " << &t << std::endl;
+    check_vector_size(t);
     m_vectors.emplace_back(&t);
+}
+
+template<typename _MtvT>
+void collection<_MtvT>::check_vector_size(const mtv_type& t)
+{
+    if (t.empty())
+        throw invalid_arg_error("Empty multi_type_vector instance is not allowed.");
+
+    if (!m_mtv_size)
+        m_mtv_size = t.size();
+    else if (m_mtv_size != t.size())
+        throw invalid_arg_error("All multi_type_vector instances must be of the same length.");
 }
 
 }}
