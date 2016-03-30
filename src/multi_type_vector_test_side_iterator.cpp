@@ -85,6 +85,7 @@ void mtv_test_unique_pointer_size1()
     ++it;
     assert((*it).type == mtv::element_type_numeric);
     assert((*it).index == 1);
+    assert(it->get<mtv::numeric_element_block>() == 1.1);
 }
 
 void mtv_test_shared_pointer_size1()

@@ -69,6 +69,12 @@ class side_iterator
         size_type index;
         /** position of current element within the mtv instance.  */
         const_position_type position;
+
+        template<typename _Blk>
+        typename _Blk::value_type get() const
+        {
+            return _Blk::at(*position.first->data, position.second);
+        }
     };
 
     enum begin_state_type { begin_state };
