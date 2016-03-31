@@ -42,7 +42,8 @@ side_iterator<_MtvT>::side_iterator(
 
     m_cur_node.index = 0;
     m_cur_node.type = col1.block_pos->type;
-    m_cur_node.position = typename mtv_type::const_position_type(col1.block_pos, 0);
+    m_cur_node.__position = typename mtv_type::const_position_type(col1.block_pos, 0);
+    m_cur_node.position = m_elem_pos;
 }
 
 template<typename _MtvT>
@@ -82,8 +83,9 @@ side_iterator<_MtvT>::operator++()
     mtv_item& col = m_vectors[m_cur_node.index];
 
     // Update the current node.
-    m_cur_node.position = col.vector->position(col.block_pos, m_elem_pos);
-    col.block_pos = m_cur_node.position.first;
+    m_cur_node.__position = col.vector->position(col.block_pos, m_elem_pos);
+    m_cur_node.position = m_elem_pos;
+    col.block_pos = m_cur_node.__position.first;
     m_cur_node.type = col.block_pos->type;
 
     return *this;
@@ -141,6 +143,13 @@ collection<_MtvT>::end() const
 {
     return const_iterator(
         build_iterator_state(), m_mtv_size, m_identity, const_iterator::end_state);
+}
+
+template<typename _MtvT>
+typename collection<_MtvT>::size_type
+collection<_MtvT>::size() const
+{
+    return m_mtv_size;
 }
 
 template<typename _MtvT>

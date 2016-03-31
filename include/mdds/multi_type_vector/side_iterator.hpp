@@ -63,18 +63,26 @@ class side_iterator
     /** single element value. */
     struct node
     {
+        friend class side_iterator;
+
         /** type of current element */
         mdds::mtv::element_t type;
+
         /** index of current mtv instance */
         size_type index;
-        /** position of current element within the mtv instance.  */
-        const_position_type position;
+
+        /** logical position of the current element within the mtv.  */
+        size_type position;
 
         template<typename _Blk>
         typename _Blk::value_type get() const
         {
-            return _Blk::at(*position.first->data, position.second);
+            return _Blk::at(*__position.first->data, __position.second);
         }
+
+    private:
+        /** position object of current element within the mtv instance.  */
+        const_position_type __position;
     };
 
     enum begin_state_type { begin_state };
@@ -135,6 +143,8 @@ public:
     const_iterator begin() const;
 
     const_iterator end() const;
+
+    size_type size() const;
 
 private:
 
