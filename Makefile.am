@@ -22,7 +22,7 @@ headers_HEADERS = \
 	include/mdds/multi_type_vector_macro.hpp \
 	include/mdds/multi_type_vector_trait.hpp \
 	include/mdds/multi_type_vector_types.hpp \
-	include/mdds/multi_type_vector/side_iterator.hpp \
+	include/mdds/multi_type_vector/collection.hpp \
 	include/mdds/node.hpp \
 	include/mdds/point_quad_tree.hpp \
 	include/mdds/quad_node.hpp \
@@ -80,7 +80,7 @@ check_PROGRAMS = \
 	multi_type_vector_test_custom \
 	multi_type_vector_test_default \
 	multi_type_vector_test_perf \
-	multi_type_vector_test_side_iterator \
+	multi_type_vector_test_collection \
 	point_quad_tree_test \
 	rectangle_set_test \
 	segment_tree_test \
@@ -101,7 +101,7 @@ multi_type_vector_test_default_SOURCES = src/multi_type_vector_test_default.cpp 
 
 multi_type_vector_test_perf_SOURCES = src/multi_type_vector_test_perf.cpp src/test_global.hpp
 
-multi_type_vector_test_side_iterator_SOURCES = src/multi_type_vector_test_side_iterator.cpp src/test_global.hpp
+multi_type_vector_test_collection_SOURCES = src/multi_type_vector_test_collection.cpp src/test_global.hpp
 
 point_quad_tree_test_SOURCES = src/point_quad_tree_test.cpp src/test_global.hpp
 
@@ -149,7 +149,7 @@ TESTS = \
 	multi_type_vector_test_event \
 	multi_type_vector_test_custom \
 	multi_type_vector_test_default \
-	multi_type_vector_test_side_iterator \
+	multi_type_vector_test_collection \
 	point_quad_tree_test \
 	rectangle_set_test \
 	segment_tree_test \
@@ -166,7 +166,7 @@ TESTS += \
 	multi_type_vector_test_event_mem.mem \
 	multi_type_vector_test_custom_mem.mem \
 	multi_type_vector_test_default_mem.mem \
-	multi_type_vector_test_side_iterator_mem.mem \
+	multi_type_vector_test_collection_mem.mem \
 	point_quad_tree_test_mem.mem \
 	rectangle_set_test_mem.mem \
 	segment_tree_test_mem.mem \

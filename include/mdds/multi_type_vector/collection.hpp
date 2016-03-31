@@ -165,6 +165,6 @@ private:
 
 }}
 
-#include "side_iterator_def.inl"
+#include "collection_def.inl"
 
 #endif

@@ -30,7 +30,7 @@
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector_trait.hpp>
-#include <mdds/multi_type_vector/side_iterator.hpp>
+#include <mdds/multi_type_vector/collection.hpp>
 
 #include <iostream>
 #include <vector>
