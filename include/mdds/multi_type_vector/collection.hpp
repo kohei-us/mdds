@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_SIDE_ITERATOR_HPP
-#define INCLUDED_MDDS_SIDE_ITERATOR_HPP
+#ifndef INCLUDED_MDDS_COLLECTION_HPP
+#define INCLUDED_MDDS_COLLECTION_HPP
 
 #include "mdds/multi_type_vector_types.hpp"
 
