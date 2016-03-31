@@ -31,10 +31,11 @@ namespace mdds { namespace mtv {
 
 template<typename _MtvT>
 side_iterator<_MtvT>::side_iterator(
-    std::vector<mtv_item>&& vectors, size_type mtv_size, begin_state_type) :
+    std::vector<mtv_item>&& vectors, size_type mtv_size, uintptr_t identity, begin_state_type) :
     m_vectors(std::move(vectors)),
     m_elem_pos(0),
-    m_mtv_size(mtv_size)
+    m_mtv_size(mtv_size),
+    m_identity(identity)
 {
     assert(m_mtv_size);
     const mtv_item& col1 = m_vectors.front();
@@ -46,10 +47,11 @@ side_iterator<_MtvT>::side_iterator(
 
 template<typename _MtvT>
 side_iterator<_MtvT>::side_iterator(
-    std::vector<mtv_item>&& vectors, size_type mtv_size, end_state_type) :
+    std::vector<mtv_item>&& vectors, size_type mtv_size, uintptr_t identity, end_state_type) :
     m_vectors(std::move(vectors)),
     m_elem_pos(0),
-    m_mtv_size(mtv_size)
+    m_mtv_size(mtv_size),
+    m_identity(identity)
 {
     assert(m_mtv_size);
 
@@ -90,19 +92,39 @@ side_iterator<_MtvT>::operator++()
 template<typename _MtvT>
 bool side_iterator<_MtvT>::operator== (const side_iterator& other) const
 {
+    if (m_identity != other.m_identity)
+        return false;
+
+    if (m_mtv_size != other.m_mtv_size)
+        return false;
+
     return m_cur_node.index == other.m_cur_node.index && m_elem_pos == other.m_elem_pos;
 }
 
 template<typename _MtvT>
 template<typename _T>
 collection<_MtvT>::collection(const _T& begin, const _T& end) :
-    m_mtv_size(0)
+    m_mtv_size(0), m_identity(0)
 {
     size_type n = std::distance(begin, end);
     m_vectors.reserve(n);
 
     for (_T it = begin; it != end; ++it)
         init_insert_vector(*it);
+
+    // Create a single value that identifies the whole collection.
+    auto it = m_vectors.begin();
+    uintptr_t identity = reinterpret_cast<uintptr_t>(*it);
+    ++it;
+    std::for_each(it, m_vectors.end(),
+        [&](const mtv_type* p0)
+        {
+            uintptr_t p = reinterpret_cast<uintptr_t>(p0);
+            identity = identity << 1;
+            identity &= p;
+        }
+    );
+    m_identity = identity;
 }
 
 template<typename _MtvT>
@@ -110,7 +132,7 @@ typename collection<_MtvT>::const_iterator
 collection<_MtvT>::begin() const
 {
     return const_iterator(
-        build_iterator_state(), m_mtv_size, const_iterator::begin_state);
+        build_iterator_state(), m_mtv_size, m_identity, const_iterator::begin_state);
 }
 
 template<typename _MtvT>
@@ -118,7 +140,7 @@ typename collection<_MtvT>::const_iterator
 collection<_MtvT>::end() const
 {
     return const_iterator(
-        build_iterator_state(), m_mtv_size, const_iterator::end_state);
+        build_iterator_state(), m_mtv_size, m_identity, const_iterator::end_state);
 }
 
 template<typename _MtvT>
