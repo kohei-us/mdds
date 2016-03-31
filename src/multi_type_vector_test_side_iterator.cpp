@@ -153,6 +153,42 @@ void mtv_test_non_pointer_size1()
     assert(++it == collection.end());
 }
 
+void mtv_test_invalid_collection()
+{
+    stack_printer __stack_printer__("::mtv_test_invalid_collection");
+
+    vector<mtv_type> vectors;
+    vectors.reserve(2);
+    vectors.emplace_back(1, char('c'));
+    vectors.emplace_back(2);
+
+    try
+    {
+        // Grouping vectors of different lengths is not allowed.
+        cols_type collection(vectors.begin(), vectors.end());
+        assert(false);
+    }
+    catch (const mdds::invalid_arg_error&)
+    {
+        // Good.
+    }
+
+    vectors.clear();
+    vectors.emplace_back(0);
+    vectors.emplace_back(0);
+
+    try
+    {
+        // Grouping of empty vectors is not allowed.
+        cols_type collection(vectors.begin(), vectors.end());
+        assert(false);
+    }
+    catch (const mdds::invalid_arg_error&)
+    {
+        // Good.
+    }
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -161,6 +197,7 @@ int main (int argc, char **argv)
         mtv_test_unique_pointer_size1();
         mtv_test_shared_pointer_size2();
         mtv_test_non_pointer_size1();
+        mtv_test_invalid_collection();
     }
     catch (const std::exception& e)
     {
