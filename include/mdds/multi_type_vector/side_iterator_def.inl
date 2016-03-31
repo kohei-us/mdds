@@ -121,7 +121,7 @@ collection<_MtvT>::collection(const _T& begin, const _T& end) :
         {
             uintptr_t p = reinterpret_cast<uintptr_t>(p0);
             identity = identity << 1;
-            identity &= p;
+            identity ^= p;
         }
     );
     m_identity = identity;
