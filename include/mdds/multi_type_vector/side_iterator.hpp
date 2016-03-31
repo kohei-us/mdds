@@ -104,30 +104,9 @@ public:
         return &m_cur_node;
     }
 
-    side_iterator& operator++()
-    {
-        ++m_cur_node.index;
-        if (m_cur_node.index >= m_vectors.size())
-        {
-            // Move to the next element position.
-            m_cur_node.index = 0;
-            ++m_elem_pos;
-            if (m_elem_pos >= m_mtv_size)
-                // End position has been reached.  Don't update the current node.
-                return *this;
-        }
+    side_iterator& operator++();
 
-        // Get the current vector.
-        assert(m_cur_node.index < m_vectors.size());
-        mtv_item& col = m_vectors[m_cur_node.index];
-
-        // Update the current node.
-        m_cur_node.position = col.vector->position(col.block_pos, m_elem_pos);
-        col.block_pos = m_cur_node.position.first;
-        m_cur_node.type = col.block_pos->type;
-
-        return *this;
-    }
+    bool operator== (const side_iterator& other) const;
 };
 
 /**

@@ -52,7 +52,45 @@ side_iterator<_MtvT>::side_iterator(
     m_mtv_size(mtv_size)
 {
     assert(m_mtv_size);
-    // TODO : to be worked on.
+
+    m_elem_pos = m_mtv_size;
+    m_cur_node.index = 0;
+
+    // We can leave the position and type uninitialized since this is an end
+    // position which doesn't reference an actual element.
+}
+
+template<typename _MtvT>
+typename side_iterator<_MtvT>::side_iterator&
+side_iterator<_MtvT>::operator++()
+{
+    ++m_cur_node.index;
+    if (m_cur_node.index >= m_vectors.size())
+    {
+        // Move to the next element position.
+        m_cur_node.index = 0;
+        ++m_elem_pos;
+        if (m_elem_pos >= m_mtv_size)
+            // End position has been reached.  Don't update the current node.
+            return *this;
+    }
+
+    // Get the current vector.
+    assert(m_cur_node.index < m_vectors.size());
+    mtv_item& col = m_vectors[m_cur_node.index];
+
+    // Update the current node.
+    m_cur_node.position = col.vector->position(col.block_pos, m_elem_pos);
+    col.block_pos = m_cur_node.position.first;
+    m_cur_node.type = col.block_pos->type;
+
+    return *this;
+}
+
+template<typename _MtvT>
+bool side_iterator<_MtvT>::operator== (const side_iterator& other) const
+{
+    return m_cur_node.index == other.m_cur_node.index && m_elem_pos == other.m_elem_pos;
 }
 
 template<typename _MtvT>

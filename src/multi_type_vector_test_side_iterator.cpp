@@ -62,6 +62,8 @@ void mtv_test_pointer_size1()
     assert(it->type == mtv::element_type_empty);
     assert(it->index == 1);
 
+    assert(++it == ite);
+
     for_each(vectors.begin(), vectors.end(), [](const mtv_type* p) { delete p; });
 }
 
@@ -86,6 +88,8 @@ void mtv_test_unique_pointer_size1()
     assert((*it).type == mtv::element_type_numeric);
     assert((*it).index == 1);
     assert(it->get<mtv::numeric_element_block>() == 1.1);
+
+    assert(++it == ite);
 }
 
 void mtv_test_shared_pointer_size1()
