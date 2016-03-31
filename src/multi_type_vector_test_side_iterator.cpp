@@ -135,12 +135,22 @@ void mtv_test_non_pointer_size1()
 {
     stack_printer __stack_printer__("::mtv_test_non_pointer_size1");
 
+    // Test 1 by 1 grid.
+
     vector<mtv_type> vectors;
-    vectors.reserve(2);
-    vectors.emplace_back(1);
-    vectors.emplace_back(1);
+    vectors.reserve(1);
+    vectors.emplace_back(1, char('c'));
 
     cols_type collection(vectors.begin(), vectors.end());
+    assert(collection.size() == 1);
+
+    auto it = collection.begin();
+    assert(it->type == mtv::element_type_char);
+    assert(it->index == 0);
+    assert(it->position == 0);
+    assert(it->get<mtv::char_element_block>() == 'c');
+
+    assert(++it == collection.end());
 }
 
 int main (int argc, char **argv)
