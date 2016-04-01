@@ -29,32 +29,35 @@ namespace mdds { namespace mtv {
 
 template<typename _MtvT>
 side_iterator<_MtvT>::side_iterator(
-    std::vector<mtv_item>&& vectors, size_type mtv_size, uintptr_t identity, begin_state_type) :
+    std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
+    uintptr_t identity, begin_state_type) :
     m_vectors(std::move(vectors)),
-    m_elem_pos(0),
-    m_mtv_size(mtv_size),
+    m_elem_pos(elem_pos),
+    m_elem_pos_end(elem_pos+elem_size),
     m_identity(identity)
 {
-    assert(m_mtv_size);
-    const mtv_item& col1 = m_vectors.front();
+    assert(m_elem_pos_end);
+    mtv_item& col1 = m_vectors.front();
 
     m_cur_node.index = 0;
+    m_cur_node.__position = col1.vector->position(col1.block_pos, m_elem_pos);
+    col1.block_pos = m_cur_node.__position.first;
     m_cur_node.type = col1.block_pos->type;
-    m_cur_node.__position = typename mtv_type::const_position_type(col1.block_pos, 0);
     m_cur_node.position = m_elem_pos;
 }
 
 template<typename _MtvT>
 side_iterator<_MtvT>::side_iterator(
-    std::vector<mtv_item>&& vectors, size_type mtv_size, uintptr_t identity, end_state_type) :
+    std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
+    uintptr_t identity, end_state_type) :
     m_vectors(std::move(vectors)),
-    m_elem_pos(0),
-    m_mtv_size(mtv_size),
+    m_elem_pos(elem_pos),
+    m_elem_pos_end(elem_pos+elem_size),
     m_identity(identity)
 {
-    assert(m_mtv_size);
+    assert(m_elem_pos_end);
 
-    m_elem_pos = m_mtv_size;
+    m_elem_pos = m_elem_pos_end;
     m_cur_node.index = 0;
 
     // We can leave the position and type uninitialized since this is an end
@@ -71,7 +74,7 @@ side_iterator<_MtvT>::operator++()
         // Move to the next element position.
         m_cur_node.index = 0;
         ++m_elem_pos;
-        if (m_elem_pos >= m_mtv_size)
+        if (m_elem_pos >= m_elem_pos_end)
             // End position has been reached.  Don't update the current node.
             return *this;
     }
@@ -104,7 +107,7 @@ bool side_iterator<_MtvT>::operator== (const side_iterator& other) const
     if (m_identity != other.m_identity)
         return false;
 
-    if (m_mtv_size != other.m_mtv_size)
+    if (m_elem_pos_end != other.m_elem_pos_end)
         return false;
 
     return m_cur_node.index == other.m_cur_node.index && m_elem_pos == other.m_elem_pos;
@@ -134,6 +137,13 @@ collection<_MtvT>::collection(const _T& begin, const _T& end) :
         }
     );
     m_identity = identity;
+
+    assert(m_mtv_size); // This should have been set by this point.
+    m_elem_range.start = 0;
+    m_elem_range.size = m_mtv_size;
+
+    m_col_range.start = 0;
+    m_col_range.size = n;
 }
 
 template<typename _MtvT>
@@ -141,7 +151,8 @@ typename collection<_MtvT>::const_iterator
 collection<_MtvT>::begin() const
 {
     return const_iterator(
-        build_iterator_state(), m_mtv_size, m_identity, const_iterator::begin_state);
+        build_iterator_state(), m_elem_range.start, m_elem_range.size,
+        m_identity, const_iterator::begin_state);
 }
 
 template<typename _MtvT>
@@ -149,7 +160,8 @@ typename collection<_MtvT>::const_iterator
 collection<_MtvT>::end() const
 {
     return const_iterator(
-        build_iterator_state(), m_mtv_size, m_identity, const_iterator::end_state);
+        build_iterator_state(), m_elem_range.start, m_elem_range.size,
+        m_identity, const_iterator::end_state);
 }
 
 template<typename _MtvT>
@@ -157,6 +169,20 @@ typename collection<_MtvT>::size_type
 collection<_MtvT>::size() const
 {
     return m_mtv_size;
+}
+
+template<typename _MtvT>
+void collection<_MtvT>::set_collection_range(size_type start, size_type size)
+{
+    m_col_range.start = start;
+    m_col_range.size = size;
+}
+
+template<typename _MtvT>
+void collection<_MtvT>::set_element_range(size_type start, size_type size)
+{
+    m_elem_range.start = start;
+    m_elem_range.size = size;
 }
 
 template<typename _MtvT>
@@ -179,7 +205,7 @@ collection<_MtvT>::build_iterator_state() const
 template<typename _MtvT>
 template<typename _T>
 void collection<_MtvT>::init_insert_vector(
-    const _T& t,  typename std::enable_if<std::is_pointer<_T>::value>::type*)
+    const _T& t, typename std::enable_if<std::is_pointer<_T>::value>::type*)
 {
     check_vector_size(*t);
     m_vectors.emplace_back(t);
@@ -202,7 +228,7 @@ void collection<_MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
 template<typename _MtvT>
 template<typename _T>
 void collection<_MtvT>::init_insert_vector(
-    const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type*)
+    const _T& t, typename std::enable_if<!std::is_pointer<_T>::value>::type*)
 {
     check_vector_size(t);
     m_vectors.emplace_back(&t);

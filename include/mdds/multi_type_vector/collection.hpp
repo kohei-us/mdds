@@ -91,11 +91,16 @@ class side_iterator
     std::vector<mtv_item> m_vectors;
     node m_cur_node;
     size_type m_elem_pos;
-    size_type m_mtv_size;
+    size_type m_elem_pos_end;
     uintptr_t m_identity;
 
-    side_iterator(std::vector<mtv_item>&& vectors, size_type mtv_size, uintptr_t identity, begin_state_type);
-    side_iterator(std::vector<mtv_item>&& vectors, size_type mtv_size, uintptr_t identity, end_state_type);
+    side_iterator(
+        std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
+        uintptr_t identity, begin_state_type);
+
+    side_iterator(
+        std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
+        uintptr_t identity, end_state_type);
 
 public:
     typedef node value_type;
@@ -128,12 +133,24 @@ public:
 template<typename _MtvT>
 class collection
 {
+public:
     typedef _MtvT mtv_type;
     typedef typename mtv_type::size_type size_type;
+
+private:
+
+    struct range
+    {
+        size_type start;
+        size_type size;
+    };
 
     std::vector<const mtv_type*> m_vectors;
     size_type m_mtv_size;
     uintptr_t m_identity;
+
+    range m_elem_range;
+    range m_col_range;
 
 public:
 
@@ -148,6 +165,10 @@ public:
 
     size_type size() const;
 
+    void set_collection_range(size_type start, size_type size);
+
+    void set_element_range(size_type start, size_type size);
+
 private:
 
     std::vector<typename const_iterator::mtv_item> build_iterator_state() const;
@@ -157,10 +178,10 @@ private:
     void init_insert_vector(const std::shared_ptr<mtv_type>& p);
 
     template<typename _T>
-    void init_insert_vector(const _T& t,  typename std::enable_if<std::is_pointer<_T>::value>::type* = 0);
+    void init_insert_vector(const _T& t, typename std::enable_if<std::is_pointer<_T>::value>::type* = 0);
 
     template<typename _T>
-    void init_insert_vector(const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type* = 0);
+    void init_insert_vector(const _T& t, typename std::enable_if<!std::is_pointer<_T>::value>::type* = 0);
 
     void check_vector_size(const mtv_type& t);
 };

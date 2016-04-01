@@ -34,6 +34,7 @@
 
 #include <iostream>
 #include <vector>
+#include <deque>
 #include <memory>
 
 using namespace std;
@@ -188,6 +189,78 @@ void mtv_test_invalid_collection()
     }
 }
 
+void mtv_test_sub_ranges()
+{
+    stack_printer __stack_printer__("::mtv_test_sub_ranges");
+
+    deque<mtv_type> vectors;
+    vectors.emplace_back(0);
+    vectors.emplace_back(0);
+    vectors.emplace_back(0);
+
+    mtv_type* p = &vectors[0];
+    p->push_back<int>(0);
+    p->push_back<int>(1);
+    p->push_back<int>(2);
+
+    p = &vectors[1];
+    p->push_back<int>(3);
+    p->push_back<int>(4);
+    p->push_back<int>(5);
+
+    p = &vectors[2];
+    p->push_back<int>(6);
+    p->push_back<int>(7);
+    p->push_back<int>(8);
+
+    // +---+---+---+
+    // | 0 | 3 | 6 |
+    // | 1 | 4 | 7 |
+    // | 2 | 5 | 8 |
+    // +---+---+---+
+
+    cols_type collection(vectors.begin(), vectors.end());
+    collection.set_element_range(1, 2);
+
+    cols_type::const_iterator it = collection.begin();
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 1);
+    assert(it->index == 0);
+    assert(it->position == 1);
+
+    ++it;
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 4);
+    assert(it->index == 1);
+    assert(it->position == 1);
+
+    ++it;
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 7);
+    assert(it->index == 2);
+    assert(it->position == 1);
+
+    ++it;
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 2);
+    assert(it->index == 0);
+    assert(it->position == 2);
+
+    ++it;
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 5);
+    assert(it->index == 1);
+    assert(it->position == 2);
+
+    ++it;
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 8);
+    assert(it->index == 2);
+    assert(it->position == 2);
+
+    assert(++it == collection.end());
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -197,6 +270,7 @@ int main (int argc, char **argv)
         mtv_test_shared_pointer_size2();
         mtv_test_non_pointer_size1();
         mtv_test_invalid_collection();
+        mtv_test_sub_ranges();
     }
     catch (const std::exception& e)
     {
