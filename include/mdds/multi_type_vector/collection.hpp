@@ -115,6 +115,8 @@ public:
 
     side_iterator& operator++();
 
+    side_iterator operator++(int);
+
     bool operator== (const side_iterator& other) const;
 };
 

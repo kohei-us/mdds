@@ -92,6 +92,15 @@ side_iterator<_MtvT>::operator++()
 }
 
 template<typename _MtvT>
+typename side_iterator<_MtvT>::side_iterator
+side_iterator<_MtvT>::operator++(int)
+{
+    side_iterator tmp(*this);
+    operator++();
+    return tmp;
+}
+
+template<typename _MtvT>
 bool side_iterator<_MtvT>::operator== (const side_iterator& other) const
 {
     if (m_identity != other.m_identity)

@@ -56,9 +56,8 @@ void mtv_test_pointer_size1()
     cols_type collection(vectors.begin(), vectors.end());
     cols_type::const_iterator it = collection.begin(), ite = collection.end();
     assert(it->type == mtv::element_type_empty);
-    assert(it->index == 0);
+    assert((it++)->index == 0);
 
-    ++it;
     assert(it->type == mtv::element_type_empty);
     assert(it->index == 1);
 
