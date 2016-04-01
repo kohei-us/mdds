@@ -1,9 +1,9 @@
-AC_INIT(mdds, 1.1.0, kohei.yoshida@gmail.com)
+AC_INIT(mdds, 1.2.0, kohei.yoshida@gmail.com)
 AM_INIT_AUTOMAKE([foreign dist-bzip2 subdir-objects])
 AM_MAINTAINER_MODE
 
 VERSION=AC_PACKAGE_VERSION
-API_VERSION=1.0
+API_VERSION=1.2
 
 AC_SUBST(VERSION)
 AC_SUBST(API_VERSION)

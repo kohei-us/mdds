@@ -36,6 +36,11 @@ mdds 1.2.0
 
   * remove compiler warning about shadowed variable.
 
+  * added a supplemental class mdds::mtv::collection which allows
+    multiple multi_type_vector instances of the same length to be
+    grouped together in order to iterate through their elements
+    sideways.
+
 * point_quad_tree
 
   * search_result has been renamed to search_results.
