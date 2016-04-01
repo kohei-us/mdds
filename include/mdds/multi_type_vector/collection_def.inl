@@ -25,8 +25,6 @@
  *
  ************************************************************************/
 
-#include <iostream>
-
 namespace mdds { namespace mtv {
 
 template<typename _MtvT>
@@ -183,7 +181,6 @@ template<typename _T>
 void collection<_MtvT>::init_insert_vector(
     const _T& t,  typename std::enable_if<std::is_pointer<_T>::value>::type*)
 {
-    std::cout << "pointer: " << t << std::endl;
     check_vector_size(*t);
     m_vectors.emplace_back(t);
 }
@@ -191,7 +188,6 @@ void collection<_MtvT>::init_insert_vector(
 template<typename _MtvT>
 void collection<_MtvT>::init_insert_vector(const std::unique_ptr<mtv_type>& p)
 {
-    std::cout << "unique pointer: " << p.get() << std::endl;
     check_vector_size(*p);
     m_vectors.emplace_back(p.get());
 }
@@ -199,7 +195,6 @@ void collection<_MtvT>::init_insert_vector(const std::unique_ptr<mtv_type>& p)
 template<typename _MtvT>
 void collection<_MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
 {
-    std::cout << "shared pointer: " << p.get() << std::endl;
     check_vector_size(*p);
     m_vectors.emplace_back(p.get());
 }
@@ -209,7 +204,6 @@ template<typename _T>
 void collection<_MtvT>::init_insert_vector(
     const _T& t,  typename std::enable_if<!std::is_pointer<_T>::value>::type*)
 {
-    std::cout << "non-pointer: " << &t << std::endl;
     check_vector_size(t);
     m_vectors.emplace_back(&t);
 }
