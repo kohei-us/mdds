@@ -114,7 +114,10 @@ bool side_iterator<_MtvT>::operator== (const side_iterator& other) const
     if (m_elem_pos_end != other.m_elem_pos_end)
         return false;
 
-    return m_cur_node.index == other.m_cur_node.index && m_elem_pos == other.m_elem_pos;
+    if (m_elem_pos != other.m_elem_pos || m_elem_pos_end != other.m_elem_pos_end)
+        return false;
+
+    return m_cur_node.index == other.m_cur_node.index;
 }
 
 }
