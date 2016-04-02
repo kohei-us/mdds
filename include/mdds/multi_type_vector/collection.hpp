@@ -189,7 +189,8 @@ public:
 
 private:
 
-    void check_range(size_type start, size_type size) const;
+    void check_collection_range(size_type start, size_type size) const;
+    void check_element_range(size_type start, size_type size) const;
 
     std::vector<typename const_iterator::mtv_item> build_iterator_state() const;
 

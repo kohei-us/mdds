@@ -311,6 +311,43 @@ void mtv_test_sub_element_ranges_invalid()
     catch (const invalid_arg_error&) {}
 }
 
+void mtv_test_sub_collection_ranges_invalid()
+{
+    stack_printer __stack_printer__("::mtv_test_sub_collection_ranges_invalid");
+
+    deque<mtv_type> vectors;
+    vectors.emplace_back(1);
+    vectors.emplace_back(1);
+    vectors.emplace_back(1);
+    vectors.emplace_back(1);
+    vectors.emplace_back(1);
+
+    cols_type collection(vectors.begin(), vectors.end());
+    try
+    {
+        // Empty size.
+        collection.set_collection_range(0, 0);
+        assert(!"invalid_arg_error is expected to be thrown");
+    }
+    catch (const invalid_arg_error&) {}
+
+    try
+    {
+        // out-of-range start position.
+        collection.set_collection_range(5, 1);
+        assert(!"invalid_arg_error is expected to be thrown");
+    }
+    catch (const invalid_arg_error&) {}
+
+    try
+    {
+        // out-of-range end position.
+        collection.set_collection_range(0, 6);
+        assert(!"invalid_arg_error is expected to be thrown");
+    }
+    catch (const invalid_arg_error&) {}
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -322,6 +359,7 @@ int main (int argc, char **argv)
         mtv_test_invalid_collection();
         mtv_test_sub_element_ranges();
         mtv_test_sub_element_ranges_invalid();
+        mtv_test_sub_collection_ranges_invalid();
     }
     catch (const std::exception& e)
     {

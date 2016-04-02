@@ -187,7 +187,7 @@ collection<_MtvT>::size() const
 template<typename _MtvT>
 void collection<_MtvT>::set_collection_range(size_type start, size_type size)
 {
-    check_range(start, size);
+    check_collection_range(start, size);
     m_col_range.start = start;
     m_col_range.size = size;
 }
@@ -195,13 +195,30 @@ void collection<_MtvT>::set_collection_range(size_type start, size_type size)
 template<typename _MtvT>
 void collection<_MtvT>::set_element_range(size_type start, size_type size)
 {
-    check_range(start, size);
+    check_element_range(start, size);
     m_elem_range.start = start;
     m_elem_range.size = size;
 }
 
 template<typename _MtvT>
-void collection<_MtvT>::check_range(size_type start, size_type size) const
+void collection<_MtvT>::check_collection_range(size_type start, size_type size) const
+{
+    if (start >= m_vectors.size())
+    {
+        std::ostringstream os;
+        os << "range start position must be less than " << m_vectors.size();
+        throw invalid_arg_error(os.str());
+    }
+
+    if (!size)
+        throw invalid_arg_error("size of 0 is not allowed.");
+
+    if ((start+size) > m_vectors.size())
+        throw invalid_arg_error("size is too large.");
+}
+
+template<typename _MtvT>
+void collection<_MtvT>::check_element_range(size_type start, size_type size) const
 {
     if (start >= m_mtv_size)
     {
