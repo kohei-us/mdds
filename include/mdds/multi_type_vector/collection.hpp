@@ -39,6 +39,8 @@ namespace mdds { namespace mtv {
 template<typename _MtvT>
 class collection;
 
+namespace detail {
+
 template<typename _MtvT>
 class side_iterator
 {
@@ -125,6 +127,8 @@ public:
     bool operator== (const side_iterator& other) const;
 };
 
+}
+
 /**
  * Special-purpose collection of multiple multi_type_vector instances to
  * allow them to be traversed "sideways". All involved multi_type_vector
@@ -154,7 +158,7 @@ private:
 
 public:
 
-    typedef side_iterator<mtv_type> const_iterator;
+    typedef detail::side_iterator<mtv_type> const_iterator;
 
     template<typename _T>
     collection(const _T& begin, const _T& end);

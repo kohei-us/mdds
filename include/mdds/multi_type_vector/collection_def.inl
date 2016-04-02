@@ -29,6 +29,8 @@
 
 namespace mdds { namespace mtv {
 
+namespace detail {
+
 template<typename _MtvT>
 side_iterator<_MtvT>::side_iterator(
     std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
@@ -113,6 +115,8 @@ bool side_iterator<_MtvT>::operator== (const side_iterator& other) const
         return false;
 
     return m_cur_node.index == other.m_cur_node.index && m_elem_pos == other.m_elem_pos;
+}
+
 }
 
 template<typename _MtvT>

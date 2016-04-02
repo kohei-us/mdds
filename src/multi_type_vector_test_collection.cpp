@@ -41,7 +41,6 @@ using namespace std;
 using namespace mdds;
 
 typedef multi_type_vector<mtv::element_block_func> mtv_type;
-typedef mtv::side_iterator<mtv_type> side_iterator_type;
 typedef mtv::collection<mtv_type> cols_type;
 
 void mtv_test_pointer_size1()
