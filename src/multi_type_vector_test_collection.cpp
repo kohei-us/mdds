@@ -186,9 +186,9 @@ void mtv_test_invalid_collection()
     }
 }
 
-void mtv_test_sub_ranges()
+void mtv_test_sub_element_ranges()
 {
-    stack_printer __stack_printer__("::mtv_test_sub_ranges");
+    stack_printer __stack_printer__("::mtv_test_sub_element_ranges");
 
     deque<mtv_type> vectors;
     vectors.emplace_back(0);
@@ -258,9 +258,9 @@ void mtv_test_sub_ranges()
     assert(++it == collection.end());
 }
 
-void mtv_test_sub_ranges_invalid()
+void mtv_test_sub_element_ranges_invalid()
 {
-    stack_printer __stack_printer__("::mtv_test_sub_ranges_invalid");
+    stack_printer __stack_printer__("::mtv_test_sub_element_ranges_invalid");
 
     deque<mtv_type> vectors;
     vectors.emplace_back(5);
@@ -302,8 +302,8 @@ int main (int argc, char **argv)
         mtv_test_shared_pointer_size2();
         mtv_test_non_pointer_size1();
         mtv_test_invalid_collection();
-        mtv_test_sub_ranges();
-        mtv_test_sub_ranges_invalid();
+        mtv_test_sub_element_ranges();
+        mtv_test_sub_element_ranges_invalid();
     }
     catch (const std::exception& e)
     {
