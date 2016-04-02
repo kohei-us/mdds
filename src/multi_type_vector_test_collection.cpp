@@ -166,12 +166,9 @@ void mtv_test_invalid_collection()
     {
         // Grouping vectors of different lengths is not allowed.
         cols_type collection(vectors.begin(), vectors.end());
-        assert(false);
+        assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const mdds::invalid_arg_error&)
-    {
-        // Good.
-    }
+    catch (const mdds::invalid_arg_error&) {}
 
     vectors.clear();
     vectors.emplace_back(0);
@@ -261,6 +258,41 @@ void mtv_test_sub_ranges()
     assert(++it == collection.end());
 }
 
+void mtv_test_sub_ranges_invalid()
+{
+    stack_printer __stack_printer__("::mtv_test_sub_ranges_invalid");
+
+    deque<mtv_type> vectors;
+    vectors.emplace_back(5);
+    vectors.emplace_back(5);
+    vectors.emplace_back(5);
+
+    cols_type collection(vectors.begin(), vectors.end());
+    try
+    {
+        // Empty size.
+        collection.set_element_range(0, 0);
+        assert(!"invalid_arg_error is expected to be thrown");
+    }
+    catch (const invalid_arg_error&) {}
+
+    try
+    {
+        // out-of-range start position.
+        collection.set_element_range(5, 1);
+        assert(!"invalid_arg_error is expected to be thrown");
+    }
+    catch (const invalid_arg_error&) {}
+
+    try
+    {
+        // out-of-range end position.
+        collection.set_element_range(0, 6);
+        assert(!"invalid_arg_error is expected to be thrown");
+    }
+    catch (const invalid_arg_error&) {}
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -271,6 +303,7 @@ int main (int argc, char **argv)
         mtv_test_non_pointer_size1();
         mtv_test_invalid_collection();
         mtv_test_sub_ranges();
+        mtv_test_sub_ranges_invalid();
     }
     catch (const std::exception& e)
     {

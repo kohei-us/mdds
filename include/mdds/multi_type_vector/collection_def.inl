@@ -25,6 +25,8 @@
  *
  ************************************************************************/
 
+#include <sstream>
+
 namespace mdds { namespace mtv {
 
 template<typename _MtvT>
@@ -181,6 +183,19 @@ void collection<_MtvT>::set_collection_range(size_type start, size_type size)
 template<typename _MtvT>
 void collection<_MtvT>::set_element_range(size_type start, size_type size)
 {
+    if (start >= m_mtv_size)
+    {
+        std::ostringstream os;
+        os << "range start position must be less than " << m_mtv_size;
+        throw invalid_arg_error(os.str());
+    }
+
+    if (!size)
+        throw invalid_arg_error("size of 0 is not allowed.");
+
+    if ((start+size) > m_mtv_size)
+        throw invalid_arg_error("size is too large.");
+
     m_elem_range.start = start;
     m_elem_range.size = size;
 }
