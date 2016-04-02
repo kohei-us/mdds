@@ -86,12 +86,6 @@ API Documentation
 * [Official API documentation](http://kohei.us/files/mdds/doc/)
 * [Doxygen code documentation](http://kohei.us/files/mdds/doxygen/)
 
-How-To
-======
-
-Please take a look at simple example files under the 'example' 
-directory on how to use these data structures.
-
 API Incompatibility Notes
 =========================
 
