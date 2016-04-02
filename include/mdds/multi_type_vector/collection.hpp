@@ -94,15 +94,16 @@ class side_iterator
     node m_cur_node;
     size_type m_elem_pos;
     size_type m_elem_pos_end;
+    size_type m_index_offset;
     uintptr_t m_identity;
 
     side_iterator(
         std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
-        uintptr_t identity, begin_state_type);
+        size_type index_offset, uintptr_t identity, begin_state_type);
 
     side_iterator(
         std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
-        uintptr_t identity, end_state_type);
+        size_type index_offset, uintptr_t identity, end_state_type);
 
 public:
     typedef node value_type;
@@ -153,8 +154,8 @@ private:
     size_type m_mtv_size;
     uintptr_t m_identity;
 
-    range m_elem_range;
-    range m_col_range;
+    range m_elem_range; /// element range.
+    range m_col_range;  /// collection range.
 
 public:
 
@@ -169,11 +170,26 @@ public:
 
     size_type size() const;
 
+    /**
+     * Set the sub-range of the collection to iterate.
+     *
+     * @param start start position.
+     * @param size length of the collection range.
+     */
     void set_collection_range(size_type start, size_type size);
 
+    /**
+     * Set the sub element range to iterate.
+     *
+     *
+     * @param start start element position.
+     * @param size length of the element range.
+     */
     void set_element_range(size_type start, size_type size);
 
 private:
+
+    void check_range(size_type start, size_type size) const;
 
     std::vector<typename const_iterator::mtv_item> build_iterator_state() const;
 

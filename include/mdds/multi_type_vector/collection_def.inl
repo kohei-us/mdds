@@ -34,16 +34,17 @@ namespace detail {
 template<typename _MtvT>
 side_iterator<_MtvT>::side_iterator(
     std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
-    uintptr_t identity, begin_state_type) :
+    size_type index_offset, uintptr_t identity, begin_state_type) :
     m_vectors(std::move(vectors)),
     m_elem_pos(elem_pos),
     m_elem_pos_end(elem_pos+elem_size),
+    m_index_offset(index_offset),
     m_identity(identity)
 {
     assert(m_elem_pos_end);
     mtv_item& col1 = m_vectors.front();
 
-    m_cur_node.index = 0;
+    m_cur_node.index = index_offset;
     m_cur_node.__position = col1.vector->position(col1.block_pos, m_elem_pos);
     col1.block_pos = m_cur_node.__position.first;
     m_cur_node.type = col1.block_pos->type;
@@ -53,16 +54,17 @@ side_iterator<_MtvT>::side_iterator(
 template<typename _MtvT>
 side_iterator<_MtvT>::side_iterator(
     std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
-    uintptr_t identity, end_state_type) :
+    size_type index_offset, uintptr_t identity, end_state_type) :
     m_vectors(std::move(vectors)),
     m_elem_pos(elem_pos),
     m_elem_pos_end(elem_pos+elem_size),
+    m_index_offset(index_offset),
     m_identity(identity)
 {
     assert(m_elem_pos_end);
 
     m_elem_pos = m_elem_pos_end;
-    m_cur_node.index = 0;
+    m_cur_node.index = index_offset;
 
     // We can leave the position and type uninitialized since this is an end
     // position which doesn't reference an actual element.
@@ -73,19 +75,21 @@ typename side_iterator<_MtvT>::side_iterator&
 side_iterator<_MtvT>::operator++()
 {
     ++m_cur_node.index;
-    if (m_cur_node.index >= m_vectors.size())
+    size_type pos = m_cur_node.index - m_index_offset;
+    if (pos >= m_vectors.size())
     {
         // Move to the next element position.
-        m_cur_node.index = 0;
+        m_cur_node.index = m_index_offset;
         ++m_elem_pos;
         if (m_elem_pos >= m_elem_pos_end)
             // End position has been reached.  Don't update the current node.
             return *this;
     }
 
+    pos = m_cur_node.index - m_index_offset;
     // Get the current vector.
-    assert(m_cur_node.index < m_vectors.size());
-    mtv_item& col = m_vectors[m_cur_node.index];
+    assert(pos < m_vectors.size());
+    mtv_item& col = m_vectors[pos];
 
     // Update the current node.
     m_cur_node.__position = col.vector->position(col.block_pos, m_elem_pos);
@@ -161,7 +165,7 @@ collection<_MtvT>::begin() const
 {
     return const_iterator(
         build_iterator_state(), m_elem_range.start, m_elem_range.size,
-        m_identity, const_iterator::begin_state);
+        m_col_range.start, m_identity, const_iterator::begin_state);
 }
 
 template<typename _MtvT>
@@ -170,7 +174,7 @@ collection<_MtvT>::end() const
 {
     return const_iterator(
         build_iterator_state(), m_elem_range.start, m_elem_range.size,
-        m_identity, const_iterator::end_state);
+        m_col_range.start, m_identity, const_iterator::end_state);
 }
 
 template<typename _MtvT>
@@ -183,12 +187,21 @@ collection<_MtvT>::size() const
 template<typename _MtvT>
 void collection<_MtvT>::set_collection_range(size_type start, size_type size)
 {
+    check_range(start, size);
     m_col_range.start = start;
     m_col_range.size = size;
 }
 
 template<typename _MtvT>
 void collection<_MtvT>::set_element_range(size_type start, size_type size)
+{
+    check_range(start, size);
+    m_elem_range.start = start;
+    m_elem_range.size = size;
+}
+
+template<typename _MtvT>
+void collection<_MtvT>::check_range(size_type start, size_type size) const
 {
     if (start >= m_mtv_size)
     {
@@ -202,9 +215,6 @@ void collection<_MtvT>::set_element_range(size_type start, size_type size)
 
     if ((start+size) > m_mtv_size)
         throw invalid_arg_error("size is too large.");
-
-    m_elem_range.start = start;
-    m_elem_range.size = size;
 }
 
 template<typename _MtvT>
@@ -212,9 +222,14 @@ std::vector<typename collection<_MtvT>::const_iterator::mtv_item>
 collection<_MtvT>::build_iterator_state() const
 {
     std::vector<typename const_iterator::mtv_item> cols;
-    cols.reserve(m_vectors.size());
+    cols.reserve(m_col_range.size);
 
-    std::for_each(m_vectors.begin(), m_vectors.end(),
+    auto it = m_vectors.begin();
+    std::advance(it, m_col_range.start);
+    auto it_end = it;
+    std::advance(it_end, m_col_range.size);
+
+    std::for_each(it, it_end,
         [&](const mtv_type* p)
         {
             cols.emplace_back(p, p->begin(), p->end());

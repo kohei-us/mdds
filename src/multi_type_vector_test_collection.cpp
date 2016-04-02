@@ -216,6 +216,9 @@ void mtv_test_sub_element_ranges()
     // +---+---+---+
 
     cols_type collection(vectors.begin(), vectors.end());
+
+    // Limit the element range.
+
     collection.set_element_range(1, 2);
 
     cols_type::const_iterator it = collection.begin();
@@ -252,6 +255,22 @@ void mtv_test_sub_element_ranges()
     assert(it->type == mtv::element_type_int);
     assert(it->get<mtv::int_element_block>() == 8);
     assert(it->index == 2);
+    assert(it->position == 2);
+
+    assert(++it == collection.end());
+
+    // Limit the collection range.
+    collection.set_collection_range(1, 1);
+    it = collection.begin();
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 4);
+    assert(it->index == 1);
+    assert(it->position == 1);
+
+    ++it;
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 5);
+    assert(it->index == 1);
     assert(it->position == 2);
 
     assert(++it == collection.end());
