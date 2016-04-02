@@ -23,6 +23,7 @@ headers_HEADERS = \
 	include/mdds/multi_type_vector_trait.hpp \
 	include/mdds/multi_type_vector_types.hpp \
 	include/mdds/multi_type_vector/collection.hpp \
+	include/mdds/multi_type_vector/collection_def.inl \
 	include/mdds/node.hpp \
 	include/mdds/point_quad_tree.hpp \
 	include/mdds/quad_node.hpp \
