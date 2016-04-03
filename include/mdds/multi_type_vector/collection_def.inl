@@ -41,10 +41,13 @@ side_iterator<_MtvT>::side_iterator(
     m_index_offset(index_offset),
     m_identity(identity)
 {
-    assert(m_elem_pos_end);
+    m_cur_node.index = index_offset;
+
+    if (m_vectors.empty())
+        return;
+
     mtv_item& col1 = m_vectors.front();
 
-    m_cur_node.index = index_offset;
     m_cur_node.__position = col1.vector->position(col1.block_pos, m_elem_pos);
     col1.block_pos = m_cur_node.__position.first;
     m_cur_node.type = col1.block_pos->type;
@@ -61,8 +64,6 @@ side_iterator<_MtvT>::side_iterator(
     m_index_offset(index_offset),
     m_identity(identity)
 {
-    assert(m_elem_pos_end);
-
     m_elem_pos = m_elem_pos_end;
     m_cur_node.index = index_offset;
 
@@ -127,6 +128,11 @@ bool side_iterator<_MtvT>::operator== (const side_iterator& other) const
 }
 
 template<typename _MtvT>
+collection<_MtvT>::collection() :
+    m_mtv_size(0), m_identity(0)
+{}
+
+template<typename _MtvT>
 template<typename _T>
 collection<_MtvT>::collection(const _T& begin, const _T& end) :
     m_mtv_size(0), m_identity(0)
@@ -182,6 +188,16 @@ typename collection<_MtvT>::size_type
 collection<_MtvT>::size() const
 {
     return m_mtv_size;
+}
+
+template<typename _MtvT>
+void collection<_MtvT>::swap(collection& other)
+{
+    m_vectors.swap(other.m_vectors);
+    std::swap(m_mtv_size, other.m_mtv_size);
+    std::swap(m_identity, other.m_identity);
+    std::swap(m_elem_range, other.m_elem_range);
+    std::swap(m_col_range, other.m_col_range);
 }
 
 template<typename _MtvT>

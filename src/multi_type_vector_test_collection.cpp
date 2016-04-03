@@ -43,6 +43,13 @@ using namespace mdds;
 typedef multi_type_vector<mtv::element_block_func> mtv_type;
 typedef mtv::collection<mtv_type> cols_type;
 
+void mtv_test_empty()
+{
+    stack_printer __stack_printer__("::mtv_test_empty");
+    cols_type empty;
+    assert(empty.begin() == empty.end());
+}
+
 void mtv_test_pointer_size1()
 {
     stack_printer __stack_printer__("::mtv_test_pointer_size1");
@@ -274,6 +281,23 @@ void mtv_test_sub_element_ranges()
     assert(it->position == 2);
 
     assert(++it == collection.end());
+
+    // Swap and try again.
+    cols_type swapped;
+    collection.swap(swapped);
+    it = swapped.begin();
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 4);
+    assert(it->index == 1);
+    assert(it->position == 1);
+
+    ++it;
+    assert(it->type == mtv::element_type_int);
+    assert(it->get<mtv::int_element_block>() == 5);
+    assert(it->index == 1);
+    assert(it->position == 2);
+
+    assert(++it == swapped.end());
 }
 
 void mtv_test_sub_element_ranges_invalid()
@@ -352,6 +376,7 @@ int main (int argc, char **argv)
 {
     try
     {
+        mtv_test_empty();
         mtv_test_pointer_size1();
         mtv_test_unique_pointer_size1();
         mtv_test_shared_pointer_size2();

@@ -148,6 +148,8 @@ private:
     {
         size_type start;
         size_type size;
+
+        range() : start(0), size(0) {}
     };
 
     std::vector<const mtv_type*> m_vectors;
@@ -161,6 +163,8 @@ public:
 
     typedef detail::side_iterator<mtv_type> const_iterator;
 
+    collection();
+
     template<typename _T>
     collection(const _T& begin, const _T& end);
 
@@ -169,6 +173,8 @@ public:
     const_iterator end() const;
 
     size_type size() const;
+
+    void swap(collection& other);
 
     /**
      * Set the sub-range of the collection to iterate.
