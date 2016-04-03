@@ -1,41 +1,10 @@
-headersdir = $(includedir)/mdds-@API_VERSION@/mdds
+SUBDIRS = include
+
 pkgconfdir = $(datarootdir)/pkgconfig
 docsdir = $(docdir)-@API_VERSION@
 htmldir = $(docsdir)/html
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
-
-headers_HEADERS = \
-	include/mdds/default_deleter.hpp \
-	include/mdds/flat_segment_tree_def.inl \
-	include/mdds/flat_segment_tree.hpp \
-	include/mdds/flat_segment_tree_itr.hpp \
-	include/mdds/global.hpp \
-	include/mdds/multi_type_matrix_def.inl \
-	include/mdds/multi_type_matrix.hpp \
-	include/mdds/multi_type_vector_custom_func1.hpp \
-	include/mdds/multi_type_vector_custom_func2.hpp \
-	include/mdds/multi_type_vector_custom_func3.hpp \
-	include/mdds/multi_type_vector_def.inl \
-	include/mdds/multi_type_vector.hpp \
-	include/mdds/multi_type_vector_itr.hpp \
-	include/mdds/multi_type_vector_macro.hpp \
-	include/mdds/multi_type_vector_trait.hpp \
-	include/mdds/multi_type_vector_types.hpp \
-	include/mdds/multi_type_vector/collection.hpp \
-	include/mdds/multi_type_vector/collection_def.inl \
-	include/mdds/node.hpp \
-	include/mdds/point_quad_tree.hpp \
-	include/mdds/quad_node.hpp \
-	include/mdds/rectangle_set_def.inl \
-	include/mdds/rectangle_set.hpp \
-	include/mdds/segment_tree_def.inl \
-	include/mdds/segment_tree.hpp \
-	include/mdds/sorted_string_map_def.inl \
-	include/mdds/sorted_string_map.hpp \
-	include/mdds/trie_map_def.inl \
-	include/mdds/trie_map.hpp \
-	include/mdds/trie_map_itr.hpp
 
 dist_docs_DATA = AUTHORS README.md
 nodist_docs_DATA = VERSION

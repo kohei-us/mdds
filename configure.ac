@@ -68,6 +68,9 @@ AM_CONDITIONAL([BUILD_DOCS], [test "$enable_docs" = yes])
 
 AC_CONFIG_FILES([
 Makefile
+include/Makefile
+include/mdds/Makefile
+include/mdds/multi_type_vector/Makefile
 example/Makefile
 flat_segment_tree_test_mem.mem:src/test.mem.in
 misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
