@@ -61,7 +61,9 @@ void mtv_test_pointer_size1()
         vectors.push_back(new mtv_type(1));
 
     cols_type collection(vectors.begin(), vectors.end());
-    cols_type::const_iterator it = collection.begin(), ite = collection.end();
+    cols_type::const_iterator it, ite;
+    it = collection.begin();
+    ite = collection.end();
     assert(it->type == mtv::element_type_empty);
     assert((it++)->index == 0);
 

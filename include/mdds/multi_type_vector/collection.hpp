@@ -108,6 +108,8 @@ class side_iterator
 public:
     typedef node value_type;
 
+    side_iterator();
+
     template<typename _T>
     side_iterator(const _T& begin, const _T& end);
 
