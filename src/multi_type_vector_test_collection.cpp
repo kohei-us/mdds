@@ -66,6 +66,7 @@ void mtv_test_pointer_size1()
     ite = collection.end();
     assert(it->type == mtv::element_type_empty);
     assert((it++)->index == 0);
+    assert(it != ite);
 
     assert(it->type == mtv::element_type_empty);
     assert(it->index == 1);

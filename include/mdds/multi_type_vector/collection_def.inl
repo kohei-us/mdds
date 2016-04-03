@@ -128,6 +128,12 @@ bool side_iterator<_MtvT>::operator== (const side_iterator& other) const
     return m_cur_node.index == other.m_cur_node.index;
 }
 
+template<typename _MtvT>
+bool side_iterator<_MtvT>::operator!= (const side_iterator& other) const
+{
+    return !operator==(other);
+}
+
 }
 
 template<typename _MtvT>
