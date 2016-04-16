@@ -41,6 +41,10 @@ mdds 1.2.0
     grouped together in order to iterate through their elements
     sideways.
 
+* multi_type_matrix
+
+  * matrix_position has been changed to const
+
 * point_quad_tree
 
   * search_result has been renamed to search_results.
