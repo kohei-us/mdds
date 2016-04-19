@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012 Kohei Yoshida
+ * Copyright (c) 2012-2016 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -103,13 +103,21 @@ public:
     struct element_block_node_type
     {
         mtm::element_t type;
-        size_t offset;
+        size_type offset;
         size_type size;
         const element_block_type* data;
 
-        element_block_node_type() : type(mtm::element_empty), offset(0), size(0), data(nullptr) {}
-        element_block_node_type(const element_block_node_type& other) :
-            type(other.type), offset(other.offset), size(other.size), data(other.data) {}
+        element_block_node_type();
+        element_block_node_type(const element_block_node_type& other);
+
+        void assign(const const_position_type& pos, size_type segment_size);
+
+        template<typename _Blk>
+        typename _Blk::const_iterator begin() const;
+
+        template<typename _Blk>
+        typename _Blk::const_iterator end() const;
+
     };
 
     static mtm::element_t to_mtm_type(mdds::mtv::element_t mtv_type)
@@ -549,6 +557,9 @@ public:
     template<typename _Func>
     void walk(_Func& func, const size_pair_type& start, const size_pair_type& end) const;
 
+    template<typename _Func>
+    void walk(_Func& func, const multi_type_matrix& right) const;
+
 #ifdef MDDS_MULTI_TYPE_MATRIX_DEBUG
     void dump() const
     {
@@ -561,7 +572,7 @@ private:
     /**
      * Get an array position of the data referenced by the row and column
      * indices.  The array consists of multiple columns, the content of column
-     * 0 followded by the content of column 1, and so on.  <b>Note that no
+     * 0 followed by the content of column 1, and so on.  <b>Note that no
      * boundary check is performed in this method.</b>
      *
      * @param row 0-based row index.

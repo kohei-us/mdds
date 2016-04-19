@@ -28,6 +28,44 @@
 namespace mdds {
 
 template<typename _String>
+multi_type_matrix<_String>::element_block_node_type::element_block_node_type() :
+    type(mtm::element_empty), offset(0), size(0), data(nullptr) {}
+
+template<typename _String>
+multi_type_matrix<_String>::element_block_node_type::element_block_node_type(const element_block_node_type& other) :
+    type(other.type), offset(other.offset), size(other.size), data(other.data) {}
+
+template<typename _String>
+void multi_type_matrix<_String>::element_block_node_type::assign(
+    const const_position_type& pos, size_type segment_size)
+{
+    type = to_mtm_type(pos.first->type);
+    offset = pos.second;
+    size = segment_size;
+    data = pos.first->data;
+}
+
+template<typename _String>
+template<typename _Blk>
+typename _Blk::const_iterator
+multi_type_matrix<_String>::element_block_node_type::begin() const
+{
+    typename _Blk::const_iterator it = _Blk::begin(*data);
+    std::advance(it, offset);
+    return it;
+}
+
+template<typename _String>
+template<typename _Blk>
+typename _Blk::const_iterator
+multi_type_matrix<_String>::element_block_node_type::end() const
+{
+    typename _Blk::const_iterator it = _Blk::begin(*data);
+    std::advance(it, offset+size);
+    return it;
+}
+
+template<typename _String>
 typename multi_type_matrix<_String>::position_type
 multi_type_matrix<_String>::next_position(const position_type& pos)
 {
@@ -602,6 +640,39 @@ void multi_type_matrix<_String>::walk(_Func& func, const size_pair_type& start,
             pos = const_position_type(++pos.first, 0);
         }
         while(remaining_rows != 0);
+    }
+}
+
+template<typename _String>
+template<typename _Func>
+void multi_type_matrix<_String>::walk(_Func& func, const multi_type_matrix& right) const
+{
+    if (size() != right.size())
+        throw general_error("multi_type_matrix: left and right matrices must have the same geometry.");
+
+    if (m_store.empty())
+        return;
+
+    size_t remaining_size = m_store.size();
+
+    typename store_type::const_iterator it1 = m_store.begin();
+    typename store_type::const_iterator it2 = right.m_store.begin();
+    const_position_type pos1(it1, 0), pos2(it2, 0);
+    element_block_node_type node1, node2;
+
+    while (remaining_size)
+    {
+        size_t segment_size = std::min(pos1.first->size - pos1.second, pos2.first->size - pos2.second);
+
+        node1.assign(pos1, segment_size);
+        node2.assign(pos2, segment_size);
+
+        func(node1, node2);
+
+        pos1 = store_type::advance_position(pos1, segment_size);
+        pos2 = store_type::advance_position(pos2, segment_size);
+
+        remaining_size -= segment_size;
     }
 }
 

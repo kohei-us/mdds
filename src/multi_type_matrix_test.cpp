@@ -646,7 +646,7 @@ void mtm_test_walk_subset()
 {
     {
         stack_printer __stack_printer__("::mtm_test_walk_subset test1");
-        mtx_type mtx(4, 4); // single column matrix to make it easier.
+        mtx_type mtx(4, 4);
         mtx.set(1, 1, 1.1);
         mtx.set(2, 1, 1.2);
         mtx.set(3, 1, 1.3);
@@ -658,7 +658,7 @@ void mtm_test_walk_subset()
     }
     {
         stack_printer __stack_printer__("::mtm_test_walk_subset test2");
-        mtx_type mtx(4, 4); // single column matrix to make it easier.
+        mtx_type mtx(4, 4);
         mtx.set(0, 1, 1.0);
         mtx.set(1, 1, 1.1);
         mtx.set(0, 2, string("A1"));
@@ -668,6 +668,112 @@ void mtm_test_walk_subset()
         walk_element_block func;
         mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
     }
+}
+
+class parallel_walk_element_block : std::binary_function<mtx_type::element_block_node_type, mtx_type::element_block_node_type, void>
+{
+    std::vector<string> m_ls;
+    std::vector<string> m_rs;
+
+    template<typename _Blk>
+    void push_to_buffer(const mtx_type::element_block_node_type& node, std::vector<string>& buf)
+    {
+        auto it = node.begin<_Blk>();
+        auto ite = node.end<_Blk>();
+        std::for_each(it, ite,
+            [&](const typename _Blk::value_type& v)
+            {
+                ostringstream os;
+                os << v;
+                buf.push_back(os.str());
+            }
+        );
+    }
+
+    void process_node(const mtx_type::element_block_node_type& node, std::vector<string>& buf)
+    {
+        switch (node.type)
+        {
+            case mtm::element_boolean:
+                push_to_buffer<mtx_type::boolean_block_type>(node, buf);
+            break;
+            case mtm::element_string:
+                push_to_buffer<mtx_type::string_block_type>(node, buf);
+            break;
+            case mtm::element_numeric:
+                push_to_buffer<mtx_type::numeric_block_type>(node, buf);
+            break;
+            case mtm::element_empty:
+                for (size_t i = 0; i < node.size; ++i)
+                    buf.push_back("' '");
+            break;
+            default:
+                ;
+        }
+    }
+public:
+    void operator() (const mtx_type::element_block_node_type& left, const mtx_type::element_block_node_type& right)
+    {
+        cout << "--" << endl;
+        cout << "l: offset=" << left.offset << ", size=" << left.size << ", type=" << left.type << endl;
+        cout << "r: offset=" << right.offset << ", size=" << right.size << ", type=" << right.type << endl;
+        process_node(left, m_ls);
+        process_node(right, m_rs);
+    }
+
+    std::vector<string> get_concat_buffer() const
+    {
+        std::vector<string> buf;
+        assert(m_ls.size() == m_rs.size());
+        auto it = m_ls.begin(), it2 = m_rs.begin();
+        auto ite = m_ls.end();
+        for (; it != ite; ++it, ++it2)
+        {
+            ostringstream os;
+            os << *it << ":" << *it2;
+            buf.push_back(os.str());
+        }
+
+        return buf;
+    }
+};
+
+void mtm_test_parallel_walk()
+{
+    stack_printer __stack_printer__("::mtm_test_parallel_walk");
+
+    parallel_walk_element_block func;
+    mtx_type left(10, 1), right(10, 1, string("'+'"));
+
+    right.set(2, 0, 1.2);
+    right.set(8, 0, false);
+    right.set(9, 0, true);
+
+    left.set(0, 0, 122.0);
+    left.set(4, 0, string("A12"));
+    left.set(5, 0, string("A25"));
+
+    left.walk(func, right);
+
+    const char* expected[] = {
+        "122:'+'",
+        "' ':'+'",
+        "' ':1.2",
+        "' ':'+'",
+        "A12:'+'",
+        "A25:'+'",
+        "' ':'+'",
+        "' ':'+'",
+        "' ':0",
+        "' ':1",
+    };
+
+    size_t n = MDDS_N_ELEMENTS(expected);
+
+    std::vector<string> concat = func.get_concat_buffer();
+    assert(concat.size() == n);
+    for (size_t i = 0; i < n; ++i)
+        assert(concat[i] == expected[i]);
 }
 
 void mtm_test_custom_string()
@@ -1023,6 +1129,7 @@ int main (int argc, char **argv)
             mtm_test_numeric();
             mtm_test_walk();
             mtm_test_walk_subset();
+            mtm_test_parallel_walk();
             mtm_test_custom_string();
             mtm_test_position();
             mtm_test_set_data_via_position();
