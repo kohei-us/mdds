@@ -41,9 +41,12 @@ mdds 1.2.0
     grouped together in order to iterate through their elements
     sideways.
 
+  * a variant of advance_position() that takes const_position_type has
+    been added.
+
 * multi_type_matrix
 
-  * matrix_position has been changed to const
+  * matrix_position() is now a const method.
 
 * point_quad_tree
 
