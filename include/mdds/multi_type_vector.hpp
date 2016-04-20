@@ -62,6 +62,9 @@ struct mtv_event_func
     void element_block_released(const mdds::mtv::base_element_block* /*block*/) {}
 };
 
+template<typename T>
+T mtv_advance_position(const T& pos, int steps);
+
 }
 
 /**
@@ -239,6 +242,17 @@ public:
      * @return position object that points to the next logical position.
      */
     static const_position_type next_position(const const_position_type& pos);
+
+    /**
+     * Increment or decrement the position object by specified steps. Caller
+     * must ensure the the position object is valid.
+     *
+     * @param pos position object.
+     * @param steps steps to advance the position object.
+     *
+     * @return position object that points to the new logical position.
+     */
+    static const_position_type advance_position(const const_position_type& pos, int steps);
 
     /**
      * Extract the logical position from a position object.

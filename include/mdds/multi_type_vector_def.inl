@@ -43,6 +43,50 @@ inline void throw_block_position_not_found(
     throw std::out_of_range(os.str());
 }
 
+template<typename T>
+T mtv_advance_position(const T& pos, int steps)
+{
+    T ret = pos;
+
+    if (steps > 0)
+    {
+        while (steps > 0)
+        {
+            if (ret.second + steps < ret.first->size)
+            {
+                // element is still in the same block.
+                ret.second += steps;
+                break;
+            }
+            else
+            {
+                steps -= (ret.first->size - ret.second);
+                ++ret.first;
+                ret.second = 0;
+            }
+        }
+    }
+    else
+    {
+        while (steps < 0)
+        {
+            if (static_cast<int>(ret.second) >= -steps)
+            {
+                ret.second += steps;
+                break;
+            }
+            else
+            {
+                steps += ret.second + 1;
+                --ret.first;
+                ret.second = ret.first->size - 1;
+            }
+        }
+    }
+
+    return ret;
+}
+
 }
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_numeric, 0.0, mtv::numeric_element_block)
@@ -103,44 +147,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::position_type
 multi_type_vector<_CellBlockFunc, _EventFunc>::advance_position(const position_type& pos, int steps)
 {
-    position_type ret = pos;
-    if (steps > 0)
-    {
-        while (steps > 0)
-        {
-            if (ret.second + steps < ret.first->size)
-            {
-                // element is still in the same block.
-                ret.second += steps;
-                break;
-            }
-            else
-            {
-                steps -= (ret.first->size - ret.second);
-                ++ret.first;
-                ret.second = 0;
-            }
-        }
-    }
-    else
-    {
-        while (steps < 0)
-        {
-            if (static_cast<int>(ret.second) >= -steps)
-            {
-                ret.second += steps;
-                break;
-            }
-            else
-            {
-                steps += ret.second + 1;
-                --ret.first;
-                ret.second = ret.first->size - 1;
-            }
-        }
-    }
-
-    return ret;
+    return detail::mtv_advance_position<position_type>(pos, steps);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -160,6 +167,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::next_position(const const_positio
     }
 
     return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::advance_position(const const_position_type& pos, int steps)
+{
+    return detail::mtv_advance_position<const_position_type>(pos, steps);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
