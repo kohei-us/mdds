@@ -484,7 +484,6 @@ void trie_packed_test_prefix_search1()
 
     using trie_map_type = trie_map<trie::std_string_trait, int>;
     using packed_type = trie_map_type::packed_type;
-    using kv = packed_type::key_value_type;
 
     trie_map_type db;
     db.insert(MDDS_ASCII("andy"),   1);
