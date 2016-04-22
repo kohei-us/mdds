@@ -267,7 +267,7 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
-breathe_projects = {"mdds": "./xml"}
+breathe_projects = {"mdds": "./_doxygen/xml"}
 
 breathe_default_project = "mdds"
 
