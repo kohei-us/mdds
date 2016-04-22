@@ -109,7 +109,7 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 html_theme_options = {
     'navbar_site_name': "Section",
     'navbar_pagenav': "Page",
-    'bootswatch_theme': "simplex",
+    'bootswatch_theme': "sandstone",
     'navbar_links': [
         ("mdds on GitLab", "http://gitlab.com/mdds/mdds", True)
     ]

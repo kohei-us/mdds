@@ -557,6 +557,16 @@ public:
     template<typename _Func>
     void walk(_Func& func, const size_pair_type& start, const size_pair_type& end) const;
 
+    /**
+     * Walk through all element blocks in parallel with another matrix
+     * instance.  It stops at the block boundaries of both matrix instances
+     * during the walk.
+     *
+     * @param func function object whose operator() gets called on each
+     *             element block.
+     *
+     * @param right another matrix instance to parallel-walk with.
+     */
     template<typename _Func>
     void walk(_Func& func, const multi_type_matrix& right) const;
 
