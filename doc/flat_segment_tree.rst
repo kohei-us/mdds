@@ -6,7 +6,11 @@ Flat Segment Tree
 Code Example
 ------------
 
-::
+Simple use case
+^^^^^^^^^^^^^^^
+
+The following code demonstrates a simple use case of storing non-overlapping
+ranged values and performing queries using :cpp:class:`~mdds::flat_segment_tree`::
 
     #include <mdds/flat_segment_tree.hpp>
     #include <string>
@@ -42,6 +46,15 @@ Code Example
         db.search_tree(62, value, &beg, &end);
         cout << "The value at 62 is " << value << ", and this segment spans from " << beg << " to " << end << endl;;
     }
+
+Two types of searches are available.  One is linear search via
+:cpp:func:`~mdds::flat_segment_tree::search` which performs its search only
+through the leaf nodes.
+
+Another one is tree search via :cpp:func:`~mdds::flat_segment_tree::search_tree`
+which performs better than the linear search counterpart, but it does require
+the search tree to be built ahead of time by calling
+:cpp:func:`~mdds::flat_segment_tree::build_tree`.
 
 API Reference
 -------------
