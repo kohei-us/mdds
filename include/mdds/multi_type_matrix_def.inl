@@ -648,7 +648,7 @@ template<typename _Func>
 void multi_type_matrix<_String>::walk(_Func& func, const multi_type_matrix& right) const
 {
     if (size() != right.size())
-        throw general_error("multi_type_matrix: left and right matrices must have the same geometry.");
+        throw size_error("multi_type_matrix: left and right matrices must have the same geometry.");
 
     if (m_store.empty())
         return;

@@ -75,6 +75,12 @@ public:
     invalid_arg_error(const ::std::string& msg) : general_error(msg) {}
 };
 
+class size_error : public general_error
+{
+public:
+    size_error(const std::string& msg) : general_error(msg) {}
+};
+
 template<typename T, typename ...Args>
 std::unique_ptr<T> make_unique(Args&& ...args)
 {
