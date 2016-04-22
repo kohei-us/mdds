@@ -28,7 +28,7 @@ AC_SUBST(INCDIR)
 AC_SUBST(MISCDIR)
 AC_SUBST(QUICKCHECKDIR)
 
-CPPFLAGS="$CPPFLAGS -Wall -Os -g -pedantic-errors -DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST -std=c++11"
+CPPFLAGS="$CPPFLAGS -Wall -O2 -g -pedantic-errors -DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST -std=c++11"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
 
 if test "$debug_stdcxx" = "yes"; then
