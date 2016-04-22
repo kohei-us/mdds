@@ -3,15 +3,8 @@
 Flat Segment Tree
 =================
 
-API Reference
--------------
-
-.. doxygenclass:: mdds::flat_segment_tree
-   :members:
-
-
-Example
--------
+Code Example
+------------
 
 ::
 
@@ -49,3 +42,9 @@ Example
         db.search_tree(62, value, &beg, &end);
         cout << "The value at 62 is " << value << ", and this segment spans from " << beg << " to " << end << endl;;
     }
+
+API Reference
+-------------
+
+.. doxygenclass:: mdds::flat_segment_tree
+   :members:
