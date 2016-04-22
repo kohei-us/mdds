@@ -607,11 +607,12 @@ void multi_type_matrix<_String>::walk(_Func& func) const
 
 template<typename _String>
 template<typename _Func>
-void multi_type_matrix<_String>::walk(_Func& func, const size_pair_type& start,
-        const size_pair_type& end) const
+void multi_type_matrix<_String>::walk(
+    _Func& func, const size_pair_type& start, const size_pair_type& end) const
 {
-    assert(end.row >= start.row);
-    assert(end.column >= start.column);
+    if (end.row < start.row || end.column < start.column)
+        throw size_error("multi_type_matrix: invalid start/end position pair.");
+
     size_t rows = end.row - start.row + 1;
 
     // we need to handle columns manually, as the columns are continuously in memory.
