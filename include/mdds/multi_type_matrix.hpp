@@ -138,6 +138,7 @@ public:
         }
     }
 
+private:
     template<typename _Func>
     struct walk_func : std::unary_function<typename store_type::const_iterator::value_type, void>
     {
@@ -154,6 +155,7 @@ public:
         }
     };
 
+public:
     /**
      * Move to the next logical position. The movement is in the top-to-bottom
      * then left-to-right direction.
