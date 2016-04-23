@@ -39,6 +39,8 @@ template<typename _String>
 void multi_type_matrix<_String>::element_block_node_type::assign(
     const const_position_type& pos, size_type section_size)
 {
+    assert(section_size <= pos.first->size - pos.second);
+
     type = to_mtm_type(pos.first->type);
     offset = pos.second;
     size = section_size;

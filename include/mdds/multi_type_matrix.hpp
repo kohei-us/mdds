@@ -102,6 +102,8 @@ public:
 
     struct element_block_node_type
     {
+        friend class multi_type_matrix;
+
         mtm::element_t type;
         size_type offset;
         size_type size;
@@ -110,14 +112,14 @@ public:
         element_block_node_type();
         element_block_node_type(const element_block_node_type& other);
 
-        void assign(const const_position_type& pos, size_type section_size);
-
         template<typename _Blk>
         typename _Blk::const_iterator begin() const;
 
         template<typename _Blk>
         typename _Blk::const_iterator end() const;
 
+    private:
+        void assign(const const_position_type& pos, size_type section_size);
     };
 
     static mtm::element_t to_mtm_type(mdds::mtv::element_t mtv_type)
