@@ -350,6 +350,28 @@ void mtm_test_parallel_walk_non_equal_size()
         size_t n = MDDS_N_ELEMENTS(expected);
         assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
+
+    // Break up the blocks a little.
+    left.set(1, 0, true);
+    left.set(0, 1, false);
+    right.set(0, 0, -99.0);
+    right.set(1, 1, -9.9);
+
+    {
+        // Only walk the top-left 2x2 range.
+        parallel_walk_element_block func;
+        left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
+
+        const char* expected[] = {
+            "10:-99",
+            "true:B",
+            "false:C",
+            "50:-9.9",
+        };
+
+        size_t n = MDDS_N_ELEMENTS(expected);
+        assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
+    }
 }
 
 int main (int argc, char **argv)
