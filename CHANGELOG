@@ -41,12 +41,29 @@ mdds 1.2.0
     grouped together in order to iterate through their elements
     sideways.
 
-  * a variant of advance_position() that takes const_position_type has
-    been added.
+  * a variant of advance_position() static method that takes
+    const_position_type has been added.
+
+    * const_position_type advance_position(const const_position_type& pos, int steps)
 
 * multi_type_matrix
 
   * matrix_position() is now a const method.
+
+  * the sub-matrix variant of walk() method now throws size_error
+    exception when invalid start and end positions are passed.
+
+  * slight performance improvement with the sub-matrix variant of
+    walk() method that involves multiple column traversal.
+
+  * added 2 new variants of walk() methods that allow parallel walking
+    with another matrix instance.
+
+    * template<typename _Func>
+      void walk(_Func& func, const multi_type_matrix& right) const
+
+    * template<typename _Func>
+      void walk(_Func& func, const multi_type_matrix& right, const size_pair_type& start, const size_pair_type& end) const
 
 * point_quad_tree
 
