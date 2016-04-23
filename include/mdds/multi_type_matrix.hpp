@@ -545,8 +545,8 @@ public:
     void walk(_Func& func) const;
 
     /**
-     * Walk through the element blocks that make up the sub-matrix defined by
-     * start and end positions.
+     * Walk through the element blocks in a sub-matrix range defined by start
+     * and end positions passed to this method.
      *
      * @param func function object whose operator() gets called on the
      *              element block.
@@ -574,6 +574,24 @@ public:
     template<typename _Func>
     void walk(_Func& func, const multi_type_matrix& right) const;
 
+    /**
+     * Walk through the element blocks in a sub-matrix range in parallel with
+     * another matrix instance. It stops at the block boundaries of both
+     * matrix instances during the walk.  The sub-matrix range is defined by
+     * start and end positions passed to this method.
+     *
+     * @param func function object whose operator() gets called on each
+     *             element block.
+     *
+     * @param right another matrix instance to parallel-walk with.
+     *
+     * @param start the column/row position of the upper-left corner of the
+     *              sub-matrix.
+     *
+     * @param end the column/row position of the lower-right corner of the
+     *          sub-matrix.  Both column and row must be greater or equal to
+     *          those of the start position.
+     */
     template<typename _Func>
     void walk(_Func& func, const multi_type_matrix& right,
         const size_pair_type& start, const size_pair_type& end) const;
