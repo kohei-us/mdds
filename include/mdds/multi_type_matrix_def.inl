@@ -614,6 +614,7 @@ void multi_type_matrix<_String>::walk(
         throw size_error("multi_type_matrix: invalid start/end position pair.");
 
     size_t rows = end.row - start.row + 1;
+    element_block_node_type mtm_node;
 
     // we need to handle columns manually, as the columns are continuously in memory.
     // To go from one column to the next we need to jump in the memory.
@@ -621,23 +622,22 @@ void multi_type_matrix<_String>::walk(
     {
         const_position_type pos = position(start.row, col);
         size_t remaining_rows = rows;
+
         do
         {
-            element_block_node_type mtm_node;
-            mtm_node.type = to_mtm_type(pos.first->type);
-            mtm_node.data = pos.first->data;
-            mtm_node.offset = pos.second;
+            size_type remaining_blk_size = pos.first->size - pos.second;
 
             // handle the two possible cases:
             // 1.) the current block is completely contained in our selection
             // 2.) the current block contains the end of the selection
-            if (remaining_rows > pos.first->size - pos.second)
-                mtm_node.size = pos.first->size - pos.second;
-            else
-                mtm_node.size = remaining_rows;
 
-            remaining_rows -= mtm_node.size;
+            size_type segment_size = std::min(remaining_blk_size, remaining_rows);
+            mtm_node.assign(pos, segment_size);
+
+            remaining_rows -= segment_size;
             func(mtm_node);
+
+            // Move to the head of the next block in the column
             pos = const_position_type(++pos.first, 0);
         }
         while(remaining_rows != 0);
