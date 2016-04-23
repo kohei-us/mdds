@@ -110,7 +110,7 @@ public:
         element_block_node_type();
         element_block_node_type(const element_block_node_type& other);
 
-        void assign(const const_position_type& pos, size_type segment_size);
+        void assign(const const_position_type& pos, size_type section_size);
 
         template<typename _Blk>
         typename _Blk::const_iterator begin() const;

@@ -37,11 +37,11 @@ multi_type_matrix<_String>::element_block_node_type::element_block_node_type(con
 
 template<typename _String>
 void multi_type_matrix<_String>::element_block_node_type::assign(
-    const const_position_type& pos, size_type segment_size)
+    const const_position_type& pos, size_type section_size)
 {
     type = to_mtm_type(pos.first->type);
     offset = pos.second;
-    size = segment_size;
+    size = section_size;
     data = pos.first->data;
 }
 
@@ -625,19 +625,19 @@ void multi_type_matrix<_String>::walk(
 
         do
         {
-            size_type remaining_blk_size = pos.first->size - pos.second;
+            size_type remaining_blk = pos.first->size - pos.second;
 
             // handle the two possible cases:
             // 1.) the current block is completely contained in our selection
             // 2.) the current block contains the end of the selection
 
-            size_type segment_size = std::min(remaining_blk_size, remaining_rows);
-            mtm_node.assign(pos, segment_size);
+            size_type section_size = std::min(remaining_blk, remaining_rows);
+            mtm_node.assign(pos, section_size);
 
-            remaining_rows -= segment_size;
+            remaining_rows -= section_size;
             func(mtm_node);
 
-            // Move to the head of the next block in the column
+            // Move to the head of the next block in the column.
             pos = const_position_type(++pos.first, 0);
         }
         while(remaining_rows != 0);
@@ -663,17 +663,17 @@ void multi_type_matrix<_String>::walk(_Func& func, const multi_type_matrix& righ
 
     while (remaining_size)
     {
-        size_t segment_size = std::min(pos1.first->size - pos1.second, pos2.first->size - pos2.second);
+        size_t section_size = std::min(pos1.first->size - pos1.second, pos2.first->size - pos2.second);
 
-        node1.assign(pos1, segment_size);
-        node2.assign(pos2, segment_size);
+        node1.assign(pos1, section_size);
+        node2.assign(pos2, section_size);
 
         func(node1, node2);
 
-        pos1 = store_type::advance_position(pos1, segment_size);
-        pos2 = store_type::advance_position(pos2, segment_size);
+        pos1 = store_type::advance_position(pos1, section_size);
+        pos2 = store_type::advance_position(pos2, section_size);
 
-        remaining_size -= segment_size;
+        remaining_size -= section_size;
     }
 }
 
