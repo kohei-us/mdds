@@ -572,6 +572,11 @@ public:
     template<typename _Func>
     void walk(_Func& func, const multi_type_matrix& right) const;
 
+    template<typename _Func>
+    void walk(_Func& func, const multi_type_matrix& right,
+        const size_pair_type& start, const size_pair_type& end) const;
+
+
 #ifdef MDDS_MULTI_TYPE_MATRIX_DEBUG
     void dump() const
     {

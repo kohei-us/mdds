@@ -615,14 +615,18 @@ void multi_type_matrix<_String>::walk(
     if (end.row < start.row || end.column < start.column)
         throw size_error("multi_type_matrix: invalid start/end position pair.");
 
+    if (end.row > m_size.row || end.column > m_size.column)
+        throw size_error("multi_type_matrix: end position is out-of-bound.");
+
     size_t rows = end.row - start.row + 1;
     element_block_node_type mtm_node;
+    const_position_type pos = position(0, 0);
 
     // we need to handle columns manually, as the columns are continuously in memory.
     // To go from one column to the next we need to jump in the memory.
     for (size_t col = start.column; col <= end.column; ++col)
     {
-        const_position_type pos = position(start.row, col);
+        pos = position(pos, start.row, col);
         size_t remaining_rows = rows;
 
         do
@@ -676,6 +680,56 @@ void multi_type_matrix<_String>::walk(_Func& func, const multi_type_matrix& righ
         pos2 = store_type::advance_position(pos2, section_size);
 
         remaining_size -= section_size;
+    }
+}
+
+template<typename _String>
+template<typename _Func>
+void multi_type_matrix<_String>::walk(
+    _Func& func, const multi_type_matrix& right,
+    const size_pair_type& start, const size_pair_type& end) const
+{
+    if (end.row < start.row || end.column < start.column)
+        throw size_error("multi_type_matrix: invalid start/end position pair.");
+
+    if (end.row > m_size.row || end.column > m_size.column ||
+        end.row > right.size().row || end.column > right.size().column)
+        throw size_error("multi_type_matrix: end position is out-of-bound.");
+
+    size_t rows = end.row - start.row + 1;
+
+    element_block_node_type node1, node2;
+    const_position_type pos1 = position(0, 0), pos2 = right.position(0, 0);
+
+    for (size_t col = start.column; col <= end.column; ++col)
+    {
+        pos1 = position(pos1, start.row, col);
+        pos2 = right.position(pos2, start.row, col);
+
+        size_t remaining_rows = rows;
+
+        do
+        {
+            size_type blk1_left = pos1.first->size - pos1.second;
+            size_type blk2_left = pos2.first->size - pos2.second;
+
+            // Section size should be the smallest of blk1_left, blk2_left and remaining_rows.
+            size_type section_size = std::min(blk1_left, blk2_left);
+            section_size = std::min(section_size, remaining_rows);
+
+            node1.assign(pos1, section_size);
+            node2.assign(pos2, section_size);
+
+            remaining_rows -= section_size;
+
+            func(node1, node2);
+
+            pos1 = store_type::advance_position(pos1, section_size);
+            pos2 = store_type::advance_position(pos2, section_size);
+
+            remaining_rows -= section_size;
+        }
+        while (remaining_rows);
     }
 }
 
