@@ -669,7 +669,9 @@ void multi_type_matrix<_String>::walk(_Func& func, const multi_type_matrix& righ
 
     while (remaining_size)
     {
-        size_t section_size = std::min(pos1.first->size - pos1.second, pos2.first->size - pos2.second);
+        size_t section_size = std::min(
+            pos1.first->size - pos1.second,
+            pos2.first->size - pos2.second);
 
         node1.assign(pos1, section_size);
         node2.assign(pos2, section_size);
@@ -719,8 +721,6 @@ void multi_type_matrix<_String>::walk(
 
             node1.assign(pos1, section_size);
             node2.assign(pos2, section_size);
-
-            remaining_rows -= section_size;
 
             func(node1, node2);
 

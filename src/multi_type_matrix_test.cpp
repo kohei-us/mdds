@@ -736,6 +736,12 @@ public:
 
         return buf;
     }
+
+    void clear()
+    {
+        m_ls.clear();
+        m_rs.clear();
+    }
 };
 
 void mtm_test_parallel_walk()
@@ -753,27 +759,70 @@ void mtm_test_parallel_walk()
     left.set(4, 0, string("A12"));
     left.set(5, 0, string("A25"));
 
-    left.walk(func, right);
+    {
+        left.walk(func, right);
 
-    const char* expected[] = {
-        "122:'+'",
-        "' ':'+'",
-        "' ':1.2",
-        "' ':'+'",
-        "A12:'+'",
-        "A25:'+'",
-        "' ':'+'",
-        "' ':'+'",
-        "' ':0",
-        "' ':1",
-    };
+        const char* expected[] = {
+            "122:'+'",
+            "' ':'+'",
+            "' ':1.2",
+            "' ':'+'",
+            "A12:'+'",
+            "A25:'+'",
+            "' ':'+'",
+            "' ':'+'",
+            "' ':0",
+            "' ':1",
+        };
 
-    size_t n = MDDS_N_ELEMENTS(expected);
+        size_t n = MDDS_N_ELEMENTS(expected);
 
-    std::vector<string> concat = func.get_concat_buffer();
-    assert(concat.size() == n);
-    for (size_t i = 0; i < n; ++i)
-        assert(concat[i] == expected[i]);
+        std::vector<string> concat = func.get_concat_buffer();
+        assert(concat.size() == n);
+        for (size_t i = 0; i < n; ++i)
+            assert(concat[i] == expected[i]);
+    }
+
+    func.clear();
+
+    {
+        left.walk(func, right, mtx_type::size_pair_type(2, 0), mtx_type::size_pair_type(8, 0));
+
+        const char* expected[] = {
+            "' ':1.2",
+            "' ':'+'",
+            "A12:'+'",
+            "A25:'+'",
+            "' ':'+'",
+            "' ':'+'",
+            "' ':0",
+        };
+
+        size_t n = MDDS_N_ELEMENTS(expected);
+
+        std::vector<string> concat = func.get_concat_buffer();
+        assert(concat.size() == n);
+        for (size_t i = 0; i < n; ++i)
+            assert(concat[i] == expected[i]);
+    }
+
+    func.clear();
+
+    {
+        // Only one row.
+        left.walk(func, right, mtx_type::size_pair_type(4, 0), mtx_type::size_pair_type(4, 0));
+
+        const char* expected[] = {
+            "A12:'+'",
+        };
+
+        size_t n = MDDS_N_ELEMENTS(expected);
+
+        std::vector<string> concat = func.get_concat_buffer();
+        assert(concat.size() == n);
+        for (size_t i = 0; i < n; ++i)
+            assert(concat[i] == expected[i]);
+    }
 }
 
 void mtm_test_custom_string()
