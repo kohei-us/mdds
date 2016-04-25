@@ -626,8 +626,6 @@ private:
         return pos.first->position + pos.second;
     }
 
-    void copy_store(store_type& dest, size_type rows, size_type cols) const;
-
 private:
     store_type m_store;
     size_pair_type m_size;

@@ -452,6 +452,9 @@ void multi_type_matrix<_String>::copy(const multi_type_matrix& src)
         // Self assignment.
         return;
 
+    if (src.empty())
+        return;
+
     size_type rows = std::min(m_size.row, src.m_size.row);
     size_type cols = std::min(m_size.column, src.m_size.column);
 
@@ -530,36 +533,6 @@ void multi_type_matrix<_String>::copy(const multi_type_matrix& src)
 }
 
 template<typename _String>
-void multi_type_matrix<_String>::copy_store(store_type& dest, size_type rows, size_type cols) const
-{
-    size_type row_count = std::min(rows, m_size.row);
-    size_type col_count = std::min(cols, m_size.column);
-    for (size_type c = 0; c < col_count; ++c)
-    {
-        for (size_type r = 0; r < row_count; ++r)
-        {
-            switch (get_type(r, c))
-            {
-                case mtm::element_numeric:
-                    dest.set(rows*c+r, get<double>(r,c));
-                break;
-                case mtm::element_boolean:
-                    dest.set(rows*c+r, get<bool>(r,c));
-                break;
-                case mtm::element_string:
-                    dest.set(rows*c+r, get<string_type>(r,c));
-                break;
-                case mtm::element_empty:
-                    // Do nothing since the temp store has been initialized with empty elements.
-                break;
-                default:
-                    throw general_error("multi_type_matrix: unknown element type.");
-            }
-        }
-    }
-}
-
-template<typename _String>
 void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
 {
     if (!rows || !cols)
@@ -570,12 +543,9 @@ void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
         return;
     }
 
-    store_type temp_store(rows*cols);
-    copy_store(temp_store, rows, cols);
-
-    m_size.row = rows;
-    m_size.column = cols;
-    m_store.swap(temp_store);
+    multi_type_matrix temp(rows, cols);
+    temp.copy(*this);
+    temp.swap(*this);
 }
 
 template<typename _String>
@@ -590,12 +560,9 @@ void multi_type_matrix<_String>::resize(size_type rows, size_type cols, const _T
         return;
     }
 
-    store_type temp_store(rows*cols, value);
-    copy_store(temp_store, rows, cols);
-
-    m_size.row = rows;
-    m_size.column = cols;
-    m_store.swap(temp_store);
+    multi_type_matrix temp(rows, cols, value);
+    temp.copy(*this);
+    temp.swap(*this);
 }
 
 template<typename _String>
