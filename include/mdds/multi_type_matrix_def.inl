@@ -446,37 +446,86 @@ multi_type_matrix<_String>::transpose()
 }
 
 template<typename _String>
-void multi_type_matrix<_String>::copy(const multi_type_matrix& r)
+void multi_type_matrix<_String>::copy(const multi_type_matrix& src)
 {
-    if (&r == this)
+    if (&src == this)
         // Self assignment.
         return;
 
-    size_type rows = std::min(m_size.row, r.m_size.row);
-    size_type cols = std::min(m_size.column, r.m_size.column);
+    size_type rows = std::min(m_size.row, src.m_size.row);
+    size_type cols = std::min(m_size.column, src.m_size.column);
 
-    for (size_type col = 0; col < cols; ++col)
+    position_type pos_dest = position(0, 0);
+    const_position_type pos_src = src.position(0, 0);
+
+    element_block_node_type src_node;
+
+    for (size_t col = 0; col < cols; ++col)
     {
-        for (size_type row = 0; row < rows; ++row)
+        pos_dest = position(pos_dest, 0, col);
+        pos_src = src.position(pos_src, 0, col);
+
+        size_t remaining_rows = rows;
+
+        do
         {
-            switch (r.get_type(row, col))
+            size_type src_blk_left = pos_src.first->size - pos_src.second;
+            size_type section_size = std::min(src_blk_left, remaining_rows);
+            src_node.assign(pos_src, section_size);
+
+            size_type logical_pos_dest = store_type::logical_position(pos_dest);
+
+            typename store_type::iterator blk_pos;
+
+            switch (to_mtm_type(pos_src.first->type))
             {
                 case mtm::element_numeric:
-                    m_store.set(get_pos(row,col), r.get<double>(row,col));
+                {
+                    auto it = src_node.template begin<numeric_block_type>();
+                    auto ite = src_node.template end<numeric_block_type>();
+
+                    blk_pos = m_store.set(pos_dest.first, logical_pos_dest, it, ite);
+                }
                 break;
                 case mtm::element_boolean:
-                    m_store.set(get_pos(row,col), r.get<bool>(row,col));
+                {
+                    auto it = src_node.template begin<boolean_block_type>();
+                    auto ite = src_node.template end<boolean_block_type>();
+
+                    blk_pos = m_store.set(pos_dest.first, logical_pos_dest, it, ite);
+                }
                 break;
                 case mtm::element_string:
-                    m_store.set(get_pos(row,col), r.get<string_type>(row,col));
+                {
+                    auto it = src_node.template begin<string_block_type>();
+                    auto ite = src_node.template end<string_block_type>();
+
+                    blk_pos = m_store.set(pos_dest.first, logical_pos_dest, it, ite);
+                }
                 break;
                 case mtm::element_empty:
-                    m_store.set_empty(get_pos(row,col), get_pos(row,col));
+                {
+                    size_type end = logical_pos_dest + section_size - 1;
+                    blk_pos = m_store.set_empty(pos_dest.first, logical_pos_dest, end);
+                }
                 break;
                 default:
                     throw general_error("multi_type_matrix: unknown element type.");
             }
+
+            remaining_rows -= section_size;
+
+            size_type logical_pos_next = logical_pos_dest + section_size;
+            if (logical_pos_next >= m_store.size())
+                // No more room left in the destination store.  Bail out.
+                return;
+
+            pos_dest = m_store.position(blk_pos, logical_pos_next);
+
+            // Move source to the head of the next block in the column.
+            pos_src = const_position_type(++pos_src.first, 0);
         }
+        while (remaining_rows);
     }
 }
 

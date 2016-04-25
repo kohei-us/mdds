@@ -481,9 +481,9 @@ public:
      * passed matrix instance is larger, then only the elements within the
      * size of this matrix instance will get copied.
      *
-     * @param r passed matrix object to copy element values from.
+     * @param src passed matrix object to copy element values from.
      */
-    void copy(const multi_type_matrix& r);
+    void copy(const multi_type_matrix& src);
 
     /**
      * Resize the matrix to specified size.  This method supports resizing to
