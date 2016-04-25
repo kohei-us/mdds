@@ -485,6 +485,9 @@ public:
      */
     void copy(const multi_type_matrix& src);
 
+    template<typename _T>
+    void copy(size_type rows, size_type cols, const _T& it_begin, const _T& it_end);
+
     /**
      * Resize the matrix to specified size.  This method supports resizing to
      * zero-sized matrix; however, either specifying the row or column size to

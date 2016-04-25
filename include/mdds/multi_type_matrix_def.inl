@@ -533,6 +533,14 @@ void multi_type_matrix<_String>::copy(const multi_type_matrix& src)
 }
 
 template<typename _String>
+template<typename _T>
+void multi_type_matrix<_String>::copy(
+    size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
+{
+    assert(!"TODO: implement this");
+}
+
+template<typename _String>
 void multi_type_matrix<_String>::resize(size_type rows, size_type cols)
 {
     if (!rows || !cols)
