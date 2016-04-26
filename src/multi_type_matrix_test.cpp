@@ -531,6 +531,16 @@ void mtm_test_copy()
     assert(success);
 }
 
+void mtm_test_copy_empty_destination()
+{
+    stack_printer __stack_printer__("::mtm_test_copy_empty_destination");
+
+    mtx_type mx1, mx2(1, 1);
+    mx1.copy(mx2); // This should not throw.
+
+    mx2.copy(mx1); // This should not throw either.
+}
+
 void mtm_test_assignment()
 {
     stack_printer __stack_printer__("::mtm_test_assignment");
@@ -922,6 +932,7 @@ int main (int argc, char **argv)
             mtm_test_transpose();
             mtm_test_resize();
             mtm_test_copy();
+            mtm_test_copy_empty_destination();
             mtm_test_assignment();
             mtm_test_numeric();
             mtm_test_custom_string();

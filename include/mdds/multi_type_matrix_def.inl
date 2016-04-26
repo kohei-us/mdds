@@ -82,7 +82,7 @@ multi_type_matrix<_String>::next_position(const const_position_type& pos)
 }
 
 template<typename _String>
-multi_type_matrix<_String>::multi_type_matrix() {}
+multi_type_matrix<_String>::multi_type_matrix() : m_size(0, 0) {}
 
 template<typename _String>
 multi_type_matrix<_String>::multi_type_matrix(size_type rows, size_type cols) :
@@ -452,7 +452,7 @@ void multi_type_matrix<_String>::copy(const multi_type_matrix& src)
         // Self assignment.
         return;
 
-    if (src.empty())
+    if (empty() || src.empty())
         return;
 
     size_type rows = std::min(m_size.row, src.m_size.row);
