@@ -537,7 +537,34 @@ template<typename _T>
 void multi_type_matrix<_String>::copy(
     size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
 {
-    assert(!"TODO: implement this");
+    size_t n = std::distance(it_begin, it_end);
+    if (!n || empty())
+        return;
+
+    if (n != rows*cols)
+        throw size_error(
+            "multi_type_matrix: size of the array does not match the destination size.");
+
+    if (rows > m_size.row || cols > m_size.column)
+        throw size_error(
+            "multi_type_matrix: specified destination size is larger than the current matrix.");
+
+    // Ensure that the passed array is supported by this matrix.
+    to_mtm_type(mdds_mtv_get_element_type(*it_begin));
+
+    auto it = it_begin;
+    position_type pos_dest = position(0, 0);
+
+    for (size_t col = 0; col < cols; ++col)
+    {
+        pos_dest = position(pos_dest, 0, col);
+
+        auto it_this_end = it;
+        std::advance(it_this_end, rows);
+
+        pos_dest.first = m_store.set(pos_dest.first, get_pos(0,col), it, it_this_end);
+        it = it_this_end;
+    }
 }
 
 template<typename _String>

@@ -541,6 +541,29 @@ void mtm_test_copy_empty_destination()
     mx2.copy(mx1); // This should not throw either.
 }
 
+void mtm_test_copy_from_array()
+{
+    stack_printer __stack_printer__("::mtm_test_copy_from_array");
+
+    vector<double> src;
+    src.reserve(9);
+    for (size_t i = 0; i < 9; ++i)
+        src.push_back(i);
+
+    mtx_type mx(4, 4);
+    mx.copy(3, 3, src.begin(), src.end());
+
+    assert(mx.get<double>(0, 0) == 0.0);
+    assert(mx.get<double>(1, 0) == 1.0);
+    assert(mx.get<double>(2, 0) == 2.0);
+    assert(mx.get<double>(0, 1) == 3.0);
+    assert(mx.get<double>(1, 1) == 4.0);
+    assert(mx.get<double>(2, 1) == 5.0);
+    assert(mx.get<double>(0, 2) == 6.0);
+    assert(mx.get<double>(1, 2) == 7.0);
+    assert(mx.get<double>(2, 2) == 8.0);
+}
+
 void mtm_test_assignment()
 {
     stack_printer __stack_printer__("::mtm_test_assignment");
@@ -933,6 +956,7 @@ int main (int argc, char **argv)
             mtm_test_resize();
             mtm_test_copy();
             mtm_test_copy_empty_destination();
+            mtm_test_copy_from_array();
             mtm_test_assignment();
             mtm_test_numeric();
             mtm_test_custom_string();
