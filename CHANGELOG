@@ -65,6 +65,13 @@ mdds 1.2.0
     * template<typename _Func>
       void walk(_Func& func, const multi_type_matrix& right, const size_pair_type& start, const size_pair_type& end) const
 
+  * improved performance of copy() and resize() methods.
+
+  * added a variant of copy() that takes an array of values.
+
+    * template<typename _T>
+      void copy(size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
+
 * point_quad_tree
 
   * search_result has been renamed to search_results.
