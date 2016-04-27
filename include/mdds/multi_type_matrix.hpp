@@ -485,6 +485,17 @@ public:
      */
     void copy(const multi_type_matrix& src);
 
+    /**
+     * Copy values from an array or array-like container, to a specified
+     * sub-matrix range.  The length of the array must match the number of
+     * elements in the destination range, else it will throw a
+     * mdds::size_error.
+     *
+     * @param rows row size of the destination range.
+     * @param cols column size of the destination range.
+     * @param it_begin iterator pointing to the beginning of the input array.
+     * @param it_end iterator pointing to the end position of the input array.
+     */
     template<typename _T>
     void copy(size_type rows, size_type cols, const _T& it_begin, const _T& it_end);
 
