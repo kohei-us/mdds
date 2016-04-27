@@ -134,7 +134,7 @@ public:
                 // These types share the same numeric values.
                 return static_cast<mtm::element_t>(mtv_type);
             default:
-                throw general_error("multi_type_matrix: unknown element type.");
+                throw type_error("multi_type_matrix: unknown element type.");
         }
     }
 

@@ -597,6 +597,33 @@ void mtm_test_copy_from_array()
     assert(mx.get_type(1, 3) == mtm::element_empty);
     assert(mx.get_type(2, 3) == mtm::element_empty);
     assert(mx.get_type(3, 3) == mtm::element_empty);
+
+    vector<bool> src3;
+    src3.push_back(true);
+    src3.push_back(false);
+    src3.push_back(true);
+    src3.push_back(false);
+
+    mx.copy(4, 1, src3.begin(), src3.end());
+    assert(mx.get<bool>(0, 0) == true);
+    assert(mx.get<bool>(1, 0) == false);
+    assert(mx.get<bool>(2, 0) == true);
+    assert(mx.get<bool>(3, 0) == false);
+
+    // Try to copy from an array of invalid type.
+    vector<char> src_invalid;
+    src_invalid.push_back('a');
+    src_invalid.push_back('b');
+
+    try
+    {
+        mx.copy(2, 1, src_invalid.begin(), src_invalid.end());
+        assert(!"type_error did not get thrown.");
+    }
+    catch (const mdds::type_error& e)
+    {
+        cout << "expected exception was thrown: '" << e.what() << "'" << endl;
+    }
 }
 
 void mtm_test_assignment()

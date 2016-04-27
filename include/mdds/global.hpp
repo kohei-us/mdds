@@ -81,6 +81,12 @@ public:
     size_error(const std::string& msg) : general_error(msg) {}
 };
 
+class type_error : public general_error
+{
+public:
+    type_error(const std::string& msg) : general_error(msg) {}
+};
+
 template<typename T, typename ...Args>
 std::unique_ptr<T> make_unique(Args&& ...args)
 {
