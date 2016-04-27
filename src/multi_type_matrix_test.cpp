@@ -562,6 +562,41 @@ void mtm_test_copy_from_array()
     assert(mx.get<double>(0, 2) == 6.0);
     assert(mx.get<double>(1, 2) == 7.0);
     assert(mx.get<double>(2, 2) == 8.0);
+    assert(mx.get_type(3, 0) == mtm::element_empty);
+    assert(mx.get_type(3, 1) == mtm::element_empty);
+    assert(mx.get_type(3, 2) == mtm::element_empty);
+    assert(mx.get_type(3, 3) == mtm::element_empty);
+    assert(mx.get_type(0, 3) == mtm::element_empty);
+    assert(mx.get_type(1, 3) == mtm::element_empty);
+    assert(mx.get_type(2, 3) == mtm::element_empty);
+    assert(mx.get_type(3, 3) == mtm::element_empty);
+
+    vector<std::string> src2;
+    src2.reserve(4);
+    src2.push_back("A");
+    src2.push_back("B");
+    src2.push_back("C");
+    src2.push_back("D");
+
+    mx.copy(2, 2, src2.begin(), src2.end());
+
+    assert(mx.get<std::string>(0, 0) == "A");
+    assert(mx.get<std::string>(1, 0) == "B");
+    assert(mx.get<std::string>(0, 1) == "C");
+    assert(mx.get<std::string>(1, 1) == "D");
+    assert(mx.get<double>(2, 0) == 2.0);
+    assert(mx.get<double>(2, 1) == 5.0);
+    assert(mx.get<double>(0, 2) == 6.0);
+    assert(mx.get<double>(1, 2) == 7.0);
+    assert(mx.get<double>(2, 2) == 8.0);
+    assert(mx.get_type(3, 0) == mtm::element_empty);
+    assert(mx.get_type(3, 1) == mtm::element_empty);
+    assert(mx.get_type(3, 2) == mtm::element_empty);
+    assert(mx.get_type(3, 3) == mtm::element_empty);
+    assert(mx.get_type(0, 3) == mtm::element_empty);
+    assert(mx.get_type(1, 3) == mtm::element_empty);
+    assert(mx.get_type(2, 3) == mtm::element_empty);
+    assert(mx.get_type(3, 3) == mtm::element_empty);
 }
 
 void mtm_test_assignment()
