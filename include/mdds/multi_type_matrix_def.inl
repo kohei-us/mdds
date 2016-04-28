@@ -218,6 +218,8 @@ double multi_type_matrix<_String>::get_numeric(const const_position_type& pos) c
     {
         case mtv::element_type_numeric:
             return mtv::numeric_element_block::at(*pos.first->data, pos.second);
+        case integer_block_type::block_type:
+            return integer_block_type::at(*pos.first->data, pos.second);
         case mtv::element_type_boolean:
         {
             // vector<bool> cannot return reference i.e. we can't use at() here.
@@ -232,6 +234,20 @@ double multi_type_matrix<_String>::get_numeric(const const_position_type& pos) c
         default:
             throw general_error("multi_type_matrix: unknown element type.");
     }
+}
+
+template<typename _String>
+typename multi_type_matrix<_String>::integer_type
+multi_type_matrix<_String>::get_integer(size_type row, size_type col) const
+{
+    return get_integer(m_store.position(get_pos(row,col)));
+}
+
+template<typename _String>
+typename multi_type_matrix<_String>::integer_type
+multi_type_matrix<_String>::get_integer(const const_position_type& pos) const
+{
+    return static_cast<integer_type>(get_numeric(pos));
 }
 
 template<typename _String>
@@ -356,6 +372,21 @@ multi_type_matrix<_String>::set(const position_type& pos, const string_type& str
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, str);
+    return position_type(it, store_pos - it->position);
+}
+
+template<typename _String>
+void multi_type_matrix<_String>::set(size_type row, size_type col, integer_type val)
+{
+    m_store.set(get_pos(row,col), val);
+}
+
+template<typename _String>
+typename multi_type_matrix<_String>::position_type
+multi_type_matrix<_String>::set(const position_type& pos, integer_type val)
+{
+    size_type store_pos = get_pos(pos);
+    typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
     return position_type(it, store_pos - it->position);
 }
 
@@ -622,6 +653,7 @@ bool multi_type_matrix<_String>::numeric() const
         {
             case mtv::element_type_numeric:
             case mtv::element_type_boolean:
+            case integer_block_type::block_type:
                 // These are numeric types.
                 continue;
             case string_block_type::block_type:

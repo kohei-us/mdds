@@ -293,6 +293,39 @@ void mtm_test_data_insertion_multiple()
     }
 }
 
+void mtm_test_data_insertion_integer()
+{
+    stack_printer __stack_printer__("::mtm_test_data_insertion_integer");
+
+    mtx_type mtx(2, 2);
+    mtx.set(0, 0, int(0));
+    mtx.set(1, 1, int(22));
+    mtx.set(0, 1, double(10));
+    mtx.set(1, 0, double(22));
+
+    assert(mtx.get_type(0, 0) == mtm::element_integer);
+    assert(mtx.get_type(1, 1) == mtm::element_integer);
+    assert(mtx.get_type(0, 1) == mtm::element_numeric);
+    assert(mtx.get_type(1, 0) == mtm::element_numeric);
+
+    assert(mtx.get_integer(0, 0) == 0);
+    assert(mtx.get_integer(1, 1) == 22);
+    assert(mtx.get_integer(0, 1) == 10);
+    assert(mtx.get_integer(1, 0) == 22);
+
+    assert(mtx.get_numeric(0, 0) == 0.0);
+    assert(mtx.get_numeric(1, 1) == 22.0);
+    assert(mtx.get_numeric(0, 1) == 10.0);
+    assert(mtx.get_numeric(1, 0) == 22.0);
+
+    assert(mtx.get_boolean(0, 0) == false);
+    assert(mtx.get_boolean(1, 1) == true);
+    assert(mtx.get_boolean(0, 1) == true);
+    assert(mtx.get_boolean(1, 0) == true);
+
+    assert(mtx.numeric());  // integers are considered numeric.
+}
+
 void mtm_test_set_empty()
 {
     stack_printer __stack_printer__("::mtm_test_set_empty");
@@ -1010,6 +1043,7 @@ int main (int argc, char **argv)
             mtm_test_construction();
             mtm_test_data_insertion();
             mtm_test_data_insertion_multiple();
+            mtm_test_data_insertion_integer();
             mtm_test_set_empty();
             mtm_test_swap();
             mtm_test_transpose();

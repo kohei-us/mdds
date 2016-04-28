@@ -46,10 +46,11 @@ namespace mtm {
  */
 enum element_t
 {
-    element_empty = mdds::mtv::element_type_empty,
+    element_empty   = mdds::mtv::element_type_empty,
     element_boolean = mdds::mtv::element_type_boolean,
-    element_string = mdds::mtv::element_type_string,
-    element_numeric = mdds::mtv::element_type_numeric
+    element_string  = mdds::mtv::element_type_string,
+    element_numeric = mdds::mtv::element_type_numeric,
+    element_integer = mdds::mtv::element_type_int
 };
 
 /**
@@ -133,6 +134,8 @@ public:
         {
             case string_block_type::block_type:
                 return mdds::mtm::element_string;
+            case integer_block_type::block_type:
+                return mdds::mtm::element_integer;
             case mdds::mtv::element_type_numeric:
             case mdds::mtv::element_type_boolean:
             case mdds::mtv::element_type_empty:
@@ -332,6 +335,10 @@ public:
      */
     double get_numeric(const const_position_type& pos) const;
 
+    integer_type get_integer(size_type row, size_type col) const;
+
+    integer_type get_integer(const const_position_type& pos) const;
+
     /**
      * Get a boolean representation of the element.  If the element is of
      * numeric type, true is returned if it's non-zero, otherwise false is
@@ -426,6 +433,9 @@ public:
 
     void set(size_type row, size_type col, const string_type& str);
     position_type set(const position_type& pos, const string_type& str);
+
+    void set(size_type row, size_type col, integer_type val);
+    position_type set(const position_type& pos, integer_type val);
 
     /**
      * Set values of multiple elements at once, starting at specified element
