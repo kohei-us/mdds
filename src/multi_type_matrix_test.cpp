@@ -66,10 +66,8 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(custom_string, element_type_custom_string, cus
 
 struct custom_string_trait
 {
-    typedef custom_string string_type;
+    typedef mdds::mtv::int_element_block integer_element_block;
     typedef custom_string_block string_element_block;
-
-    static const mdds::mtv::element_t string_type_identifier = element_type_custom_string;
 
     typedef mtv::custom_block_func1<string_element_block> element_block_func;
 };

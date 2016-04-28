@@ -57,11 +57,10 @@ enum element_t
  */
 struct std_string_trait
 {
-    typedef std::string string_type;
+    typedef mdds::mtv::int_element_block integer_element_block;
     typedef mdds::mtv::string_element_block string_element_block;
-    typedef mdds::mtv::element_block_func element_block_func;
 
-    static const mdds::mtv::element_t string_type_identifier = mdds::mtv::element_type_string;
+    typedef mdds::mtv::element_block_func element_block_func;
 };
 
 }
@@ -76,7 +75,11 @@ class multi_type_matrix
 {
     typedef _MtxTrait matrix_trait;
 public:
-    typedef typename matrix_trait::string_type string_type;
+    typedef typename matrix_trait::string_element_block string_block_type;
+    typedef typename matrix_trait::integer_element_block integer_block_type;
+
+    typedef typename string_block_type::value_type string_type;
+    typedef typename integer_block_type::value_type integer_type;
     typedef size_t      size_type;
 
 private:
@@ -90,7 +93,6 @@ public:
 
     typedef typename mtv::boolean_element_block boolean_block_type;
     typedef typename mtv::numeric_element_block numeric_block_type;
-    typedef typename matrix_trait::string_element_block string_block_type;
 
     struct size_pair_type
     {
@@ -129,7 +131,7 @@ public:
     {
         switch (mtv_type)
         {
-            case matrix_trait::string_type_identifier:
+            case string_block_type::block_type:
                 return mdds::mtm::element_string;
             case mdds::mtv::element_type_numeric:
             case mdds::mtv::element_type_boolean:
