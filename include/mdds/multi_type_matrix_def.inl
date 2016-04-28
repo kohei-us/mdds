@@ -226,7 +226,7 @@ double multi_type_matrix<_String>::get_numeric(const const_position_type& pos) c
             std::advance(it, pos.second);
             return *it;
         }
-        case string_trait::string_type_identifier:
+        case matrix_trait::string_type_identifier:
         case mtv::element_type_empty:
             return 0.0;
         default:
@@ -257,7 +257,7 @@ template<typename _String>
 const typename multi_type_matrix<_String>::string_type&
 multi_type_matrix<_String>::get_string(const const_position_type& pos) const
 {
-    if (pos.first->type != string_trait::string_type_identifier)
+    if (pos.first->type != matrix_trait::string_type_identifier)
         throw general_error("multi_type_matrix: unknown element type.");
 
     return string_block_type::at(*pos.first->data, pos.second);
@@ -624,7 +624,7 @@ bool multi_type_matrix<_String>::numeric() const
             case mtv::element_type_boolean:
                 // These are numeric types.
                 continue;
-            case string_trait::string_type_identifier:
+            case matrix_trait::string_type_identifier:
             case mtv::element_type_empty:
                 // These are not.
                 return false;

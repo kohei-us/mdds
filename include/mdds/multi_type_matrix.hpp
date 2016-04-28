@@ -52,6 +52,9 @@ enum element_t
     element_numeric = mdds::mtv::element_type_numeric
 };
 
+/**
+ * Default matrix trait that uses std::string as its string type.
+ */
 struct std_string_trait
 {
     typedef std::string string_type;
@@ -68,16 +71,16 @@ struct std_string_trait
  * type is specified by the string trait template parameter.  To use
  * std::string as the string type, use mdds::mtm::std_string_trait.
  */
-template<typename _StringTrait>
+template<typename _MtxTrait>
 class multi_type_matrix
 {
-    typedef _StringTrait string_trait;
+    typedef _MtxTrait matrix_trait;
 public:
-    typedef typename string_trait::string_type string_type;
+    typedef typename matrix_trait::string_type string_type;
     typedef size_t      size_type;
 
 private:
-    typedef mdds::multi_type_vector<typename string_trait::element_block_func> store_type;
+    typedef mdds::multi_type_vector<typename matrix_trait::element_block_func> store_type;
 
 public:
     typedef typename store_type::position_type position_type;
@@ -87,7 +90,7 @@ public:
 
     typedef typename mtv::boolean_element_block boolean_block_type;
     typedef typename mtv::numeric_element_block numeric_block_type;
-    typedef typename string_trait::string_element_block string_block_type;
+    typedef typename matrix_trait::string_element_block string_block_type;
 
     struct size_pair_type
     {
@@ -126,7 +129,7 @@ public:
     {
         switch (mtv_type)
         {
-            case string_trait::string_type_identifier:
+            case matrix_trait::string_type_identifier:
                 return mdds::mtm::element_string;
             case mdds::mtv::element_type_numeric:
             case mdds::mtv::element_type_boolean:
