@@ -297,6 +297,12 @@ void mtm_test_data_insertion_integer()
 {
     stack_printer __stack_printer__("::mtm_test_data_insertion_integer");
 
+    // +--------+--------+
+    // |  int   | double |
+    // +--------+--------+
+    // | double |  int   |
+    // +--------+--------+
+
     mtx_type mtx(2, 2);
     mtx.set(0, 0, int(0));
     mtx.set(1, 1, int(22));
@@ -324,6 +330,13 @@ void mtm_test_data_insertion_integer()
     assert(mtx.get_boolean(1, 0) == true);
 
     assert(mtx.numeric());  // integers are considered numeric.
+
+    assert(mtx.get<int>(0, 0) == 0);
+    assert(mtx.get<int>(1, 1) == 22);
+
+    mtx_type::position_type pos = mtx.position(0, 1);
+    mtx.set(pos, int(987));
+    assert(mtx.get<int>(0, 1) == 987);
 }
 
 void mtm_test_set_empty()
