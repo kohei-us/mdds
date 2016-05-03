@@ -72,6 +72,11 @@ mdds 1.2.0
     * template<typename _T>
       void copy(size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
 
+  * integer type has been added to the list of types the matrix can
+    store.  In conjunction with this change, what was formerly known
+    as the string trait structure is now known as the matrix trait,
+    which specifies the actual integer type the matrix stores.
+
 * point_quad_tree
 
   * search_result has been renamed to search_results.

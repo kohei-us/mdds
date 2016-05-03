@@ -126,6 +126,12 @@ API Incompatibility Notes
   the name consistent with that of the same name in trie_map and
   packed_trie_map.
 
+### multi_type_matrix
+
+* The matrix trait structure (formerly known as the string trait structure)
+  now needs to specify the type of block that stores integer values as its
+  **integer_element_block** member.
+
 1.0
 ---
 
