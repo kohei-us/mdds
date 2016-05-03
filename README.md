@@ -182,17 +182,6 @@ with this package. This license is the same as the MIT/X Consortium
 license.
 
 
-Miscellaneous
-=============
-
-Version detection
-
-When installing this library, file named VERSION that contains nothing 
-but the version number string gets installed in the document directory 
-(docdir).  This may be used to detect the version number of this 
-library via script.
-
-
 Download
 ========
 
