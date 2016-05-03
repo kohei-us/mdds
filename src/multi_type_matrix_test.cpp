@@ -337,6 +337,40 @@ void mtm_test_data_insertion_integer()
     mtx_type::position_type pos = mtx.position(0, 1);
     mtx.set(pos, int(987));
     assert(mtx.get<int>(0, 1) == 987);
+
+    // +--------+--------+
+    // |  int   |  int   |
+    // +--------+--------+
+    // | double |  int   |
+    // +--------+--------+
+
+    vector<mtx_type::element_block_node_type> nodes;
+
+    std::function<void(const mtx_type::element_block_node_type&)> f =
+        [&nodes](const mtx_type::element_block_node_type& node)
+        {
+            nodes.push_back(node);
+        };
+
+    mtx.walk(f);
+
+    assert(nodes.size() == 3);
+    assert(nodes[0].type == mtm::element_integer);
+    assert(nodes[0].size == 1);
+    assert(nodes[1].type == mtm::element_numeric);
+    assert(nodes[1].size == 1);
+    assert(nodes[2].type == mtm::element_integer);
+    assert(nodes[2].size == 2);
+
+    {
+        auto it  = nodes[2].begin<mtx_type::integer_block_type>();
+        auto ite = nodes[2].end<mtx_type::integer_block_type>();
+        assert(*it == 987);
+        ++it;
+        assert(*it == 22);
+        ++it;
+        assert(it == ite);
+    }
 }
 
 void mtm_test_set_empty()
