@@ -6,7 +6,6 @@ EXEC= \
 	flat_segment_tree \
 	rectangle_set \
 	point_quad_tree \
-	mixed_type_matrix \
 	multi_type_vector \
 	multi_type_vector_event1 \
 	trie_map \
@@ -21,8 +20,6 @@ flat_segment_tree: flat_segment_tree.cpp
 rectangle_set: rectangle_set.cpp
 
 point_quad_tree: point_quad_tree.cpp
-
-mixed_type_matrix: mixed_type_matrix.cpp
 
 multi_type_vector: multi_type_vector.cpp
 multi_type_vector_event1: multi_type_vector_event1.cpp
