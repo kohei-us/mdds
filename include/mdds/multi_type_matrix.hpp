@@ -336,8 +336,29 @@ public:
      */
     double get_numeric(const const_position_type& pos) const;
 
+    /**
+     * Get an integer representation of the element.  If the element is of
+     * integer type, its value is returned.  If it's of boolean type, either 1
+     * or 0 is returned depending on whether it's true or false.  If it's of
+     * empty or string type, 0 is returned.
+     *
+     * @param row row position of the element.
+     * @param col column position of the element.
+     *
+     * @return integer representation of the element.
+     */
     integer_type get_integer(size_type row, size_type col) const;
 
+    /**
+     * Get an integer representation of the element.  If the element is of
+     * integer type, its value is returned.  If it's of boolean type, either 1
+     * or 0 is returned depending on whether it's true or false.  If it's of
+     * empty or string type, 0 is returned.
+     *
+     * @param pos position object of an element
+     *
+     * @return integer representation of the element.
+     */
     integer_type get_integer(const const_position_type& pos) const;
 
     /**
@@ -423,7 +444,18 @@ public:
      */
     position_type set_empty(const position_type& pos);
 
+    /**
+     * Set the entire column empty.
+     *
+     * @param col index of the column to empty.
+     */
     void set_column_empty(size_type col);
+
+    /**
+     * Set the entire row empty.
+     *
+     * @param row index of the row to empty.
+     */
     void set_row_empty(size_type row);
 
     void set(size_type row, size_type col, double val);
