@@ -458,16 +458,80 @@ public:
      */
     void set_row_empty(size_type row);
 
+    /**
+     * Set a numeric value to an element at specified position.
+     *
+     * @param row row index of the element.
+     * @param col column index of the element.
+     * @param val new value to set.
+     */
     void set(size_type row, size_type col, double val);
+
+    /**
+     * Set a numeric value to an element at specified position.
+     *
+     * @param pos position of the element to update.
+     * @param val new value to set.
+     *
+     * @return position of the element block where the new value has been set.
+     */
     position_type set(const position_type& pos, double val);
 
+    /**
+     * Set a boolean value to an element at specified position.
+     *
+     * @param row row index of the element.
+     * @param col column index of the element.
+     * @param val new value to set.
+     */
     void set(size_type row, size_type col, bool val);
+
+    /**
+     * Set a boolean value to an element at specified position.
+     *
+     * @param pos position of the element to update.
+     * @param val new value to set.
+     *
+     * @return position of the element block where the new value has been set.
+     */
     position_type set(const position_type& pos, bool val);
 
+    /**
+     * Set a string value to an element at specified position.
+     *
+     * @param row row index of the element.
+     * @param col column index of the element.
+     * @param val new value to set.
+     */
     void set(size_type row, size_type col, const string_type& str);
+
+    /**
+     * Set a string value to an element at specified position.
+     *
+     * @param pos position of the element to update.
+     * @param val new value to set.
+     *
+     * @return position of the element block where the new value has been set.
+     */
     position_type set(const position_type& pos, const string_type& str);
 
+    /**
+     * Set an integer value to an element at specified position.
+     *
+     * @param row row index of the element.
+     * @param col column index of the element.
+     * @param val new value to set.
+     */
     void set(size_type row, size_type col, integer_type val);
+
+    /**
+     * Set an integer value to an element at specified position.
+     *
+     * @param pos position of the element to update.
+     * @param val new value to set.
+     *
+     * @return position of the element block where the new value has been set.
+     */
     position_type set(const position_type& pos, integer_type val);
 
     /**
