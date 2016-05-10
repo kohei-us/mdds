@@ -86,6 +86,8 @@ and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds
                }
            }
        );
+
+       return EXIT_SUCCESS;
    }
 
 You'll see the following console output when you compile and execute this code:
