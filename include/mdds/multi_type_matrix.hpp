@@ -193,17 +193,45 @@ public:
     multi_type_matrix();
 
     /**
-     * Construct a matrix of specified size with specified density type.
+     * Construct a matrix of specified size.
+     *
+     * @param rows size of rows.
+     * @param cols size of columns.
      */
     multi_type_matrix(size_type rows, size_type cols);
 
+    /**
+     * Construct a matrix of specified size and initialize all its elements
+     * with specified value.
+     *
+     * @param rows size of rows.
+     * @param cols size of columns.
+     * @param value value to initialize all its elements with.
+     */
     template<typename _T>
     multi_type_matrix(size_type rows, size_type cols, const _T& value);
 
+    /**
+     * Construct a matrix of specified size and initialize its elements with
+     * specified values.
+     *
+     * @param rows size of rows.
+     * @param cols size of columns.
+     * @param it_begin iterator that points to the value of the first element.
+     * @param it_end iterator that points to the position after the last
+     *               element value.
+     */
     template<typename _T>
     multi_type_matrix(size_type rows, size_type cols, const _T& it_begin, const _T& it_end);
 
+    /**
+     * Copy constructor.
+     */
     multi_type_matrix(const multi_type_matrix& r);
+
+    /**
+     * Destructor.
+     */
     ~multi_type_matrix();
 
     bool operator== (const multi_type_matrix& other) const;
@@ -280,7 +308,7 @@ public:
      * used to compare with another position object to see if it is past the
      * last element position.
      *
-     * @return end position object
+     * @return end position object.
      */
     position_type end_position();
 
@@ -289,7 +317,7 @@ public:
      * used to compare with another position object to see if it is past the
      * last element position.
      *
-     * @return end position object
+     * @return end position object.
      */
     const_position_type end_position() const;
 
@@ -441,6 +469,8 @@ public:
      * Set element referenced by the position object empty.
      *
      * @param pos position object that references element.
+     *
+     * @return position of the element that has just been made empty.
      */
     position_type set_empty(const position_type& pos);
 
@@ -492,7 +522,7 @@ public:
      * @param pos position of the element to update.
      * @param val new value to set.
      *
-     * @return position of the element block where the new value has been set.
+     * @return position of the element where the new value has been set.
      */
     position_type set(const position_type& pos, bool val);
 
@@ -537,8 +567,8 @@ public:
     /**
      * Set values of multiple elements at once, starting at specified element
      * position following the direction of columns.  When the new value series
-     * does not fit in the column of the start element, it gets wrapped into
-     * the next column(s).
+     * does not fit in the first column, it gets wrapped into the next
+     * column(s).
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception
      * if the specified position is outside the current container range.</p>
@@ -553,6 +583,20 @@ public:
     template<typename _T>
     void set(size_type row, size_type col, const _T& it_begin, const _T& it_end);
 
+    /**
+     * Set values of multiple elements at once, starting at specified element
+     * position following the direction of columns.  When the new value series
+     * does not fit in the first column, it gets wrapped into the next
+     * column(s).
+     *
+     * @param pos position of the first element.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being set.
+     * @param it_end iterator that points to the end position of the values
+     *               being set.
+     *
+     * @return position of the first element that has been modified.
+     */
     template<typename _T>
     position_type set(const position_type& pos, const _T& it_begin, const _T& it_end);
 
