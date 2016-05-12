@@ -29,12 +29,16 @@ EXTRA_DIST = \
 	doc/trie_map.rst \
 	doc/_static/images/mtv_block_structure.png \
 	example/flat_segment_tree.cpp \
-	example/Makefile.in \
-	example/mixed_type_matrix.cpp \
+	example/multi_type_matrix.cpp \
 	example/multi_type_vector.cpp \
+	example/multi_type_vector_element_block1.cpp \
+	example/multi_type_vector_event1.cpp \
+	example/multi_type_vector_pos_hint.cpp \
+	example/packed_trie_map.cpp \
 	example/point_quad_tree.cpp \
 	example/rectangle_set.cpp \
 	example/segment_tree.cpp \
+	example/trie_map.cpp \
 	misc/matrix_perf.cpp \
 	misc/mdds.pc.in \
 	misc/sorted_string_map_perf.cpp \
