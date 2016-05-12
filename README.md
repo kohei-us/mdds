@@ -141,8 +141,8 @@ to install it to a non-default location.
 API Incompatibility Notes
 =========================
 
-1.2 (not yet released)
-----------------------
+1.2
+---
 
 ### trie_map / packed_trie_map
 
