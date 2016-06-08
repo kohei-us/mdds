@@ -227,6 +227,11 @@ public:
         val = get(blk).m_array[pos];
     }
 
+    static value_type get_value(const base_element_block& blk, size_t pos)
+    {
+        return get(blk).m_array[pos];
+    }
+
     static void append_value(base_element_block& blk, const _Data& val)
     {
         get(blk).m_array.push_back(val);

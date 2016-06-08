@@ -375,6 +375,32 @@ void mtv_test_sub_collection_ranges_invalid()
     catch (const invalid_arg_error&) {}
 }
 
+void mtv_test_boolean_block()
+{
+    stack_printer __stack_printer__("::mtv_test_boolean_block");
+
+    vector<mtv_type> vectors;
+    vectors.reserve(2);
+    vectors.emplace_back(1, true);
+    vectors.emplace_back(1, false);
+
+    cols_type collection(vectors.begin(), vectors.end());
+
+    auto it = collection.begin();
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->index == 0);
+    assert(it->position == 0);
+    assert(it->get<mtv::boolean_element_block>() == true);
+
+    ++it;
+    assert(it->type == mtv::element_type_boolean);
+    assert(it->index == 1);
+    assert(it->position == 0);
+    assert(it->get<mtv::boolean_element_block>() == false);
+
+    assert(++it == collection.end());
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -388,6 +414,7 @@ int main (int argc, char **argv)
         mtv_test_sub_element_ranges();
         mtv_test_sub_element_ranges_invalid();
         mtv_test_sub_collection_ranges_invalid();
+        mtv_test_boolean_block();
     }
     catch (const std::exception& e)
     {

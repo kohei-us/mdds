@@ -79,7 +79,7 @@ class side_iterator
         template<typename _Blk>
         typename _Blk::value_type get() const
         {
-            return _Blk::at(*__position.first->data, __position.second);
+            return _Blk::get_value(*__position.first->data, __position.second);
         }
 
     private:
