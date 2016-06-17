@@ -2306,6 +2306,9 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
     {
         // Source range is at the top of a block.
 
+        // Shrink the current block by erasing the top part.
+        element_block_func::erase(*blk_src->mp_data, 0, len);
+
         if (src_tail_len == 0)
         {
             // the whole block needs to be replaced.
@@ -2314,8 +2317,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
         }
         else
         {
-            // Shrink the current block by erasing the top part.
-            element_block_func::erase(*blk_src->mp_data, 0, len);
             blk_src->m_size -= len;
         }
 
