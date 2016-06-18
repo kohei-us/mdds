@@ -2306,17 +2306,19 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
     {
         // Source range is at the top of a block.
 
-        // Shrink the current block by erasing the top part.
-        element_block_func::erase(*blk_src->mp_data, 0, len);
-
         if (src_tail_len == 0)
         {
-            // the whole block needs to be replaced.
+            // the whole block needs to be replaced.  Delete the block, but
+            // don't delete the managed elements the block contains since they
+            // have been transferred over to the destination block.
+            element_block_func::resize_block(*blk_src->mp_data, 0);
             delete_block(blk_src);
             m_blocks.erase(m_blocks.begin()+block_index);
         }
         else
         {
+            // Shrink the current block by erasing the top part.
+            element_block_func::erase(*blk_src->mp_data, 0, len);
             blk_src->m_size -= len;
         }
 
