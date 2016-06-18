@@ -1564,10 +1564,18 @@ void mtv_test_swap_2()
     db1.swap(0, 1, db2, 0);
     assert(db1.check_block_integrity());
     assert(db2.check_block_integrity());
+    assert(db2.get<muser_cell*>(0)->value == 1.1);
+    assert(db2.get<muser_cell*>(1)->value == 1.2);
+    assert(db1.get<double>(0) == 1.2);
+    assert(db1.get<std::string>(1) == "foo");
 
     db1.swap(0, 1, db2, 0);
     assert(db1.check_block_integrity());
     assert(db2.check_block_integrity());
+    assert(db1.get<muser_cell*>(0)->value == 1.1);
+    assert(db1.get<muser_cell*>(1)->value == 1.2);
+    assert(db2.get<double>(0) == 1.2);
+    assert(db2.get<std::string>(1) == "foo");
 }
 
 void mtv_test_custom_block_func3()
