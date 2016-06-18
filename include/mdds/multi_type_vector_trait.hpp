@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012 Kohei Yoshida
+ * Copyright (c) 2012-2016 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP__
-#define __MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP__
+#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP
+#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP
 
 #include "multi_type_vector_types.hpp"
 
@@ -76,6 +76,8 @@ struct element_block_func_base
     inline static void overwrite_values(base_element_block& block, size_t pos, size_t len);
 
     inline static void shrink_to_fit(base_element_block& block);
+
+    inline static size_t size(const base_element_block& block);
 };
 
 base_element_block* element_block_func_base::create_new_block(element_t type, size_t init_size)
@@ -649,6 +651,37 @@ void element_block_func_base::shrink_to_fit(base_element_block& block)
         break;
         default:
             throw general_error("shrink_to_fit: failed to print a block of unknown type.");
+    }
+}
+
+size_t element_block_func_base::size(const base_element_block& block)
+{
+    switch (get_block_type(block))
+    {
+        case element_type_numeric:
+            return numeric_element_block::size(block);
+        case element_type_string:
+            return string_element_block::size(block);
+        case element_type_short:
+            return short_element_block::size(block);
+        case element_type_ushort:
+            return ushort_element_block::size(block);
+        case element_type_int:
+            return int_element_block::size(block);
+        case element_type_uint:
+            return uint_element_block::size(block);
+        case element_type_long:
+            return long_element_block::size(block);
+        case element_type_ulong:
+            return ulong_element_block::size(block);
+        case element_type_boolean:
+            return boolean_element_block::size(block);
+        case element_type_char:
+            return char_element_block::size(block);
+        case element_type_uchar:
+            return uchar_element_block::size(block);
+        default:
+            throw general_error("size: failed to print a block of unknown type.");
     }
 }
 

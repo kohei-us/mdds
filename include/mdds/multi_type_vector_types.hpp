@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2014 Kohei Yoshida
+ * Copyright (c) 2012-2016 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -149,6 +149,11 @@ public:
     static value_type& at(base_element_block& block, typename store_type::size_type pos)
     {
         return get(block).m_array.at(pos);
+    }
+
+    static typename store_type::size_type size(const base_element_block& block)
+    {
+        return get(block).m_array.size();
     }
 
     static iterator begin(base_element_block& block)

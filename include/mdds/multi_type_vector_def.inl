@@ -4436,7 +4436,15 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::check_block_integrity() cons
 
         element_category_type cat = mtv::element_type_empty;
         if (blk->mp_data)
+        {
             cat = mtv::get_block_type(*blk->mp_data);
+
+            if (element_block_func::size(*blk->mp_data) != blk->m_size)
+            {
+                cerr << "block size cache and the actual element block size differ!" << endl;
+                return false;
+            }
+        }
 
         if (cat_prev == cat)
         {

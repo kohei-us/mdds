@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2013 Kohei Yoshida
+ * Copyright (c) 2013-2016 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef MDDS_MULTI_TYPE_VECTOR_CUSTOM_FUNC2_HPP
-#define MDDS_MULTI_TYPE_VECTOR_CUSTOM_FUNC2_HPP
+#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_CUSTOM_FUNC2_HPP
+#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_CUSTOM_FUNC2_HPP
 
 #include "multi_type_vector_types.hpp"
 #include "multi_type_vector_trait.hpp"
@@ -279,6 +279,19 @@ struct custom_block_func2
             break;
             default:
                 element_block_func::shrink_to_fit(block);
+        }
+    }
+
+    static size_t size(const base_element_block& block)
+    {
+        switch (get_block_type(block))
+        {
+            case _Block1::block_type:
+                return _Block1::size(block);
+            case _Block2::block_type:
+                return _Block2::size(block);
+            default:
+                return element_block_func::size(block);
         }
     }
 };
