@@ -1,3 +1,19 @@
+mdds 1.2.1 (not yet released)
+
+* multi_type_vector
+
+  * added size() method to the element block type, which returns the
+    actual size of the element block, instead of the cached size value
+    stored in the parent structure that stores the element block.
+
+  * fixed a double-deletion bug in the swap() method which would
+    triggered when used with a managed element block.
+
+* mtv::collection
+
+  * fixed collection iterator's get() method to properly return values
+    from the boolean element block.
+
 mdds 1.2.0
 
 * packed_trie_map
