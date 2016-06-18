@@ -1549,6 +1549,27 @@ void mtv_test_swap()
     assert(db2.check_block_integrity());
 }
 
+void mtv_test_swap_2()
+{
+    stack_printer __stack_printer__("::mtv_test_swap_2");
+    mtv3_type db1(3), db2(3);
+
+    db1.set(0, new muser_cell(1.1));
+    db1.set(1, new muser_cell(1.2));
+
+    db2.set(0, 1.2);
+    db2.set(1, std::string("foo"));
+
+    // Repeat the same swap twice.
+    db1.swap(0, 1, db2, 0);
+    assert(db1.check_block_integrity());
+    assert(db2.check_block_integrity());
+
+    db1.swap(0, 1, db2, 0);
+    assert(db1.check_block_integrity());
+    assert(db2.check_block_integrity());
+}
+
 void mtv_test_custom_block_func3()
 {
     stack_printer __stack_printer__("::mtv_test_custom_block_func3");
@@ -1677,6 +1698,7 @@ int main (int argc, char **argv)
         mtv_test_custom_block_func1();
         mtv_test_transfer();
         mtv_test_swap();
+        mtv_test_swap_2();
         mtv_test_custom_block_func3();
         mtv_test_release();
         mtv_test_construction_with_array();
