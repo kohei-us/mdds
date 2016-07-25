@@ -64,7 +64,7 @@ sorted_string_map<_ValueT>::sorted_string_map(const entry* entries, size_type en
     m_entry_size(entry_size),
     m_entry_end(m_entries+m_entry_size)
 {
-#ifdef _GLIBCXX_DEBUG
+#if defined(_GLIBCXX_DEBUG) || defined(MDDS_ASSERT_STRING_MAP)
     assert(std::is_sorted(m_entries, m_entry_end, detail::compare<_ValueT>));
 #endif
 }
