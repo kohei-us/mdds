@@ -1,3 +1,10 @@
+mdds 1.2.2 (not-yet-released)
+
+* flat_segment_tree
+
+  * fixed a bug that would cause segmentation faults with the insert()
+    method with out-of-bound segment value pair.
+
 mdds 1.2.1
 
 * multi_type_vector
