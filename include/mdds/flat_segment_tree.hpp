@@ -675,6 +675,15 @@ private:
 
     void destroy();
 
+    /**
+     * Check and optionally adjust the start and end key values if one of them
+     * is out-of-bound.
+     *
+     * @return true if the start and end key values are valid, either with or
+     *         without adjustments, otherwise false.
+     */
+    bool adjust_segment_range(key_type& start_key, key_type& end_key) const;
+
 private:
     std::vector<nonleaf_node> m_nonleaf_node_pool;
 

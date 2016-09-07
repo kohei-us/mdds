@@ -130,21 +130,9 @@ template<typename _Key, typename _Value>
 ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
 flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward)
 {
-    typedef ::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> ret_type;
+    typedef std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> ret_type;
 
-    if (end_key < m_left_leaf->value_leaf.key || start_key > m_right_leaf->value_leaf.key)
-        // The new segment does not overlap the current interval.
-        return ret_type(const_iterator(this, true), false);
-
-    if (start_key < m_left_leaf->value_leaf.key)
-        // The start value should not be smaller than the current minimum.
-        start_key = m_left_leaf->value_leaf.key;
-
-    if (end_key > m_right_leaf->value_leaf.key)
-        // The end value should not be larger than the current maximum.
-        end_key = m_right_leaf->value_leaf.key;
-
-    if (start_key >= end_key)
+    if (!adjust_segment_range(start_key, end_key))
         return ret_type(const_iterator(this, true), false);
 
     // Find the node with value that either equals or is greater than the
@@ -323,6 +311,12 @@ flat_segment_tree<_Key, _Value>::insert(
     {
         // Specified position is already past the start key position.  Not good.
         return insert_front(start_key, end_key, val);
+    }
+
+    if (!adjust_segment_range(start_key, end_key))
+    {
+        typedef std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> ret_type;
+        return ret_type(const_iterator(this, true), false);
     }
 
     p = get_insertion_pos_leaf(start_key, p);
@@ -761,6 +755,28 @@ flat_segment_tree<_Key, _Value>::destroy()
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
     m_nonleaf_node_pool.clear();
     m_root_node = nullptr;
+}
+
+template<typename _Key, typename _Value>
+bool flat_segment_tree<_Key, _Value>::adjust_segment_range(key_type& start_key, key_type& end_key) const
+{
+    if (start_key >= end_key)
+        // Invalid order of segment range.
+        return false;
+
+    if (end_key < m_left_leaf->value_leaf.key || start_key > m_right_leaf->value_leaf.key)
+        // The new segment does not overlap the current interval.
+        return false;
+
+    if (start_key < m_left_leaf->value_leaf.key)
+        // The start value should not be smaller than the current minimum.
+        start_key = m_left_leaf->value_leaf.key;
+
+    if (end_key > m_right_leaf->value_leaf.key)
+        // The end value should not be larger than the current maximum.
+        end_key = m_right_leaf->value_leaf.key;
+
+    return true;
 }
 
 }

@@ -1949,6 +1949,44 @@ void fst_test_non_numeric_value()
     assert(db == db2);
 }
 
+void fst_test_insert_out_of_bound()
+{
+    stack_printer __stack_printer__("::fst_test_insert_out_of_bound");
+
+    typedef flat_segment_tree<int, bool> db_type;
+    db_type db(0, 10, false);
+
+    // An out-of-bound range, whether it's in part or in its entirety, should
+    // be handled gracefully without throwing exceptions or causing segfaults.
+
+    // ranges that are entirely out-of-bound.
+
+    auto ret = db.insert_front(-10, -8, false);
+    assert(!ret.second);
+    db.insert_back(12, 13, false);
+    assert(!ret.second);
+
+    db_type::const_iterator pos = db.end();
+
+    ret = db.insert(pos, -10, -8, false);
+    assert(!ret.second);
+    pos = ret.first;
+
+    ret = db.insert(pos, 12, 13, false);
+    assert(!ret.second);
+    pos = ret.first;
+
+    // partial overflows.
+
+    ret = db.insert(pos, -2, 2, true);
+    assert(ret.second); // content modified
+    pos = ret.first;
+
+    ret = db.insert(pos, 8, 20, true);
+    assert(ret.second); // content modified
+    pos = ret.first;
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -2004,6 +2042,7 @@ int main (int argc, char **argv)
             fst_test_clear();
             fst_test_assignment();
             fst_test_non_numeric_value();
+            fst_test_insert_out_of_bound();
         }
 
         if (opt.test_perf)
