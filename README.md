@@ -226,3 +226,14 @@ API Incompatibility Notes
 * The search() method now returns ::std::pair<const_iterator, bool>.
   This method previously returned only bool.  Use the second parameter of
   the new return value which is equivalent of the previous return value.
+
+
+Who uses mdds?
+==============
+
+These are the projects that are known to use mdds.
+
+* [LibreOffice](http://www.libreoffice.org)
+* [Calligra](https://www.calligra.org/)
+* [Libetonyek](https://wiki.documentfoundation.org/DLP/Libraries/libetonyek)
+
