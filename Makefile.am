@@ -1,13 +1,11 @@
 SUBDIRS = include
 
 pkgconfdir = $(datarootdir)/pkgconfig
-docsdir = $(docdir)-@API_VERSION@
-htmldir = $(docsdir)/html
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-dist_docs_DATA = AUTHORS README.md
-nodist_docs_DATA = VERSION
+dist_doc_DATA = AUTHORS README.md
+nodist_doc_DATA = VERSION
 nodist_pkgconf_DATA = misc/mdds-@API_VERSION@.pc
 
 DISTCLEANFILES = misc/mdds-@API_VERSION@.pc
@@ -154,12 +152,12 @@ TESTS += \
 endif
 
 install-data-local:
-	$(MKDIR_P) $(DESTDIR)$(docsdir)
-	$(INSTALL_DATA) $(top_srcdir)/LICENSE $(DESTDIR)$(docsdir)/COPYING
-	$(INSTALL_DATA) $(top_srcdir)/CHANGELOG $(DESTDIR)$(docsdir)/NEWS
+	$(MKDIR_P) $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) $(top_srcdir)/LICENSE $(DESTDIR)$(docdir)/COPYING
+	$(INSTALL_DATA) $(top_srcdir)/CHANGELOG $(DESTDIR)$(docdir)/NEWS
 
 uninstall-local:
-	rm -f $(DESTDIR)$(docsdir)/COPYING $(DESTDIR)$(docsdir)/NEWS
+	rm -f $(DESTDIR)$(docdir)/COPYING $(DESTDIR)$(docdir)/NEWS
 
 if BUILD_DOCS
 html-local:
