@@ -236,4 +236,5 @@ These are the projects that are known to use mdds.
 * [LibreOffice](http://www.libreoffice.org)
 * [Calligra](https://www.calligra.org/)
 * [Libetonyek](https://wiki.documentfoundation.org/DLP/Libraries/libetonyek)
-
+* [Ixion](https://gitlab.com/ixion/ixion)
+* [Orcus](https://gitlab.com/orcus/orcus)
