@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2008-2015 Kohei Yoshida
+ * Copyright (c) 2008-2017 Kohei Yoshida
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -217,6 +217,8 @@ public:
             base_type(_db, _end) {}
     };
 
+    using const_segment_iterator = mdds::__fst::const_segment_iterator<flat_segment_tree>;
+
     const_iterator begin() const
     {
         return const_iterator(this, false);
@@ -236,6 +238,10 @@ public:
     {
         return const_reverse_iterator(this, true);
     }
+
+    const_segment_iterator begin_segment() const;
+
+    const_segment_iterator end_segment() const;
 
     flat_segment_tree(key_type min_val, key_type max_val, value_type init_val);
 

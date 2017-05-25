@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010-2014 Kohei Yoshida
+ * Copyright (c) 2010-2017 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,20 @@
  ************************************************************************/
 
 namespace mdds {
+
+template<typename _Key, typename _Value>
+typename flat_segment_tree<_Key, _Value>::const_segment_iterator
+flat_segment_tree<_Key, _Value>::begin_segment() const
+{
+    return const_segment_iterator(m_left_leaf.get(), m_left_leaf->next.get());
+}
+
+template<typename _Key, typename _Value>
+typename flat_segment_tree<_Key, _Value>::const_segment_iterator
+flat_segment_tree<_Key, _Value>::end_segment() const
+{
+    return const_segment_iterator(m_right_leaf.get(), nullptr);
+}
 
 template<typename _Key, typename _Value>
 flat_segment_tree<_Key, _Value>::flat_segment_tree(key_type min_val, key_type max_val, value_type init_val) :

@@ -1987,6 +1987,79 @@ void fst_test_insert_out_of_bound()
     pos = ret.first;
 }
 
+void fst_test_segment_iterator()
+{
+    stack_printer __stack_printer__("::fst_test_segment_iterator");
+
+    typedef flat_segment_tree<int16_t, bool> db_type;
+    db_type db(0, 100, false);
+
+    db_type::const_segment_iterator it = db.begin_segment();
+    db_type::const_segment_iterator ite = db.end_segment();
+
+    assert(it != ite);
+    assert(it->start == 0);
+    assert(it->end == 100);
+    assert(it->value == false);
+
+    const auto& v = *it;
+    assert(v.start == 0);
+    assert(v.end == 100);
+    assert(v.value == false);
+
+    ++it;
+    assert(it == ite);
+
+    --it;
+    assert(it != ite);
+    assert(it->start == 0);
+    assert(it->end == 100);
+    assert(it->value == false);
+
+    db_type::const_segment_iterator it2; // default constructor
+    it2 = it; // assignment operator
+    assert(it2 == it);
+    assert(it2->start == 0);
+    assert(it2->end == 100);
+    assert(it2->value == false);
+
+    auto it3(it2); // copy constructor
+    assert(it3 == it2);
+    assert(it3->start == 0);
+    assert(it3->end == 100);
+    assert(it3->value == false);
+
+    db.insert_back(20, 50, true); // this invalidates the iterators.
+
+    it = db.begin_segment();
+    ite = db.end_segment();
+
+    assert(it->start == 0);
+    assert(it->end == 20);
+    assert(it->value == false);
+
+    it2 = it++; // post-increment
+
+    assert(it2->start == 0);
+    assert(it2->end == 20);
+    assert(it2->value == false);
+
+    assert(it->start == 20);
+    assert(it->end == 50);
+    assert(it->value == true);
+
+    ++it;
+    assert(it->start == 50);
+    assert(it->end == 100);
+    assert(it->value == false);
+
+    ++it;
+    assert(it == ite);
+
+    it2 = it--; // post-decrement.
+    assert(it2 == ite);
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -2043,6 +2116,7 @@ int main (int argc, char **argv)
             fst_test_assignment();
             fst_test_non_numeric_value();
             fst_test_insert_out_of_bound();
+            fst_test_segment_iterator();
         }
 
         if (opt.test_perf)

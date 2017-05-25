@@ -1,3 +1,10 @@
+* flat_segment_tree
+
+  * added a segment iterator whose node value consists of the start
+    and end keys and the value associated with each segment.  its
+    start and end positions can be retrieved via begin_segment() and
+    end_segment() methods.
+
 mdds 1.2.2
 
 * flat_segment_tree
