@@ -1,3 +1,7 @@
+* all
+
+  * changed the configure script to use --docdir unmodified.
+
 * flat_segment_tree
 
   * added a segment iterator whose node value consists of the start
