@@ -1,3 +1,5 @@
+mdds 1.2.3
+
 * all
 
   * changed the configure script to use --docdir unmodified.
