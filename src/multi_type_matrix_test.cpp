@@ -191,7 +191,7 @@ void mtm_test_construction()
         {
             // Trying to initialize a matrix with array of unsupported data
             // type should end with an exception thrown.
-            vector<size_t> vals_ptr(4, 22);
+            vector<char> vals_ptr(4, 22);
             mtx_type mtx3(2, 2, vals_ptr.begin(), vals_ptr.end());
             assert(!"Construction of this matrix should have failed!");
         }
