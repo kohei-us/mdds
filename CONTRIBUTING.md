@@ -21,7 +21,7 @@ mkdir -p stage/x64
 where you may change the part `-j 16` which controls how many concurrent
 processes to use for the build.
 
-## Using CMake to build the test binaries.
+## Using CMake to build the test binaries
 
 Since mdds is a header-only library, you technically don't need to build
 anything in order to use mdds in your project.  That said, the following
@@ -37,3 +37,19 @@ cmake --build build
 This will create a `build` directory along with a whole bunch of build-related
 files.  You do need to specify the boost header directory to use since mdds
 has hard dependency on boost.  The final executables are found in `build/Debug`.
+
+# Linux
+
+## Using autotools to build the test binaries
+
+You need to use GNU Autotools to build the test binaries on Linux.  The
+process follows a standard autotools workflow, which basically includes:
+
+```bash
+./autogen.sh
+make check
+make install
+```
+
+The `make check` step is necessary only when you wish to build and execute the
+test binaries to ensure integrity of the code.
