@@ -53,3 +53,6 @@ make install
 
 The `make check` step is necessary only when you wish to build and execute the
 test binaries to ensure integrity of the code.
+
+Make sure you have the boost headers installed on your system, as mdds has
+hard dependency on boost.
