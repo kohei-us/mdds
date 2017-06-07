@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
+cmake_policy(SET CMP0048 NEW)
 
-project(mdds)
+project(mdds VERSION 1.2.3 LANGUAGES CXX)
 
 option(BOOST_INCLUDE_DIR "path to boost header include directory.")
 
