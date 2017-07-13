@@ -4,6 +4,10 @@ cmake_policy(SET CMP0048 NEW)
 project(mdds VERSION 1.2.3 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /MP")
+endif(MSVC)
+
 option(BOOST_INCLUDE_DIR "path to boost header include directory.")
 
 add_definitions(-DMDDS_UNIT_TEST)
