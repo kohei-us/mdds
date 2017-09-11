@@ -28,7 +28,6 @@
 #ifndef MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
 #define MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
 
-#include "default_deleter.hpp"
 #include "global.hpp"
 
 #include <algorithm>
@@ -547,7 +546,7 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
 
     ~managed_element_block()
     {
-        std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
+        std::for_each(m_array.begin(), m_array.end(), std::default_delete<_Data>());
     }
 
     static self_type* create_block_with_value(size_t init_size, _Data* val)
@@ -574,7 +573,7 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
         managed_element_block& blk = get(block);
         typename managed_element_block::store_type::iterator it = blk.m_array.begin() + pos;
         typename managed_element_block::store_type::iterator it_end = it + len;
-        std::for_each(it, it_end, mdds::default_deleter<_Data>());
+        std::for_each(it, it_end, std::default_delete<_Data>());
     }
 };
 
@@ -596,7 +595,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
 
     ~noncopyable_managed_element_block()
     {
-        std::for_each(m_array.begin(), m_array.end(), mdds::default_deleter<_Data>());
+        std::for_each(m_array.begin(), m_array.end(), std::default_delete<_Data>());
     }
 
     static self_type* create_block_with_value(size_t init_size, _Data* val)
@@ -623,7 +622,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
         noncopyable_managed_element_block& blk = get(block);
         typename noncopyable_managed_element_block::store_type::iterator it = blk.m_array.begin() + pos;
         typename noncopyable_managed_element_block::store_type::iterator it_end = it + len;
-        std::for_each(it, it_end, mdds::default_deleter<_Data>());
+        std::for_each(it, it_end, std::default_delete<_Data>());
     }
 };
 
