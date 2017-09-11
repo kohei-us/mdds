@@ -32,6 +32,7 @@
 
 #include <string>
 #include <ostream>
+#include <functional>
 
 using namespace mdds;
 using namespace std;
