@@ -35,5 +35,6 @@ autoconf || {
     exit 1
 }
 
-test x$NOCONFIGURE = x && ./configure $@
-
+if test x$NOCONFIGURE = x; then
+    ./configure $@
+fi
