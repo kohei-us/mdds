@@ -3,7 +3,6 @@ SUBDIRS = multi_type_vector
 headersdir = $(includedir)/mdds-@API_VERSION@/mdds
 
 headers_HEADERS = \
-	default_deleter.hpp \
 	flat_segment_tree_def.inl \
 	flat_segment_tree.hpp \
 	flat_segment_tree_itr.hpp \

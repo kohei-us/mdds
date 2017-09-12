@@ -232,7 +232,6 @@
                     <F N="../include/mdds/multi_type_vector/collection.hpp"/>
                     <F N="../include/mdds/multi_type_vector/collection_def.inl"/>
                 </Folder>
-                <F N="../include/mdds/default_deleter.hpp"/>
                 <F N="../include/mdds/flat_segment_tree.hpp"/>
                 <F N="../include/mdds/flat_segment_tree_def.inl"/>
                 <F N="../include/mdds/flat_segment_tree_itr.hpp"/>
