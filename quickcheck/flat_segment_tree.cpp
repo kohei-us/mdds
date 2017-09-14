@@ -1,12 +1,11 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
+#include <memory>
 #include <ostream>
 #include <set>
 #include <string>
 #include <sstream>
-
-#include <boost/shared_ptr.hpp>
 
 #include <mdds/flat_segment_tree.hpp>
 
@@ -55,7 +54,7 @@ public:
     }
 
 private:
-    boost::shared_ptr<fst_type> m_pimpl;
+    std::shared_ptr<fst_type> m_pimpl;
 };
 
 template<typename Key, typename Value>

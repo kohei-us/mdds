@@ -30,10 +30,10 @@
 
 #include "global.hxx"
 #include "nodecontainer.hxx"
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <list>
 #include <map>
+#include <memory>
 #include <vector>
 
 namespace mdds {
@@ -91,8 +91,8 @@ private:
     struct Data;
     struct PrioSearchData;
 
-    typedef ::boost::shared_ptr<Node> NodePtr;
-    typedef ::boost::shared_ptr<Data> DataPtr;
+    typedef ::std::shared_ptr<Node> NodePtr;
+    typedef ::std::shared_ptr<Data> DataPtr;
     typedef ::std::multimap<int, NodePtr>  HeapMap;
 
     struct Data
