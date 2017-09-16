@@ -29,12 +29,12 @@
 #include "test_global.hpp"
 
 #include <iostream>
+#include <memory>
+#include <vector>
 #include <sstream>
-#include <boost/ptr_container/ptr_vector.hpp>
 
 using namespace std;
 using namespace mdds;
-using ::boost::ptr_vector;
 
 template<typename T>
 struct rm_pointer
@@ -654,7 +654,7 @@ void rect_test_perf_insertion_fixed_x()
     cout << "data count: " << data_count << endl;
 
     set_type db;
-    ptr_vector<range_type> data_store;
+    vector<unique_ptr<range_type>> data_store;
     data_store.reserve(data_count);
     {
         stack_printer __stack_printer2__("::rect_test_perf_insertion range instance creation");
@@ -662,14 +662,14 @@ void rect_test_perf_insertion_fixed_x()
         {
             ostringstream os;
             os << hex << i;
-            data_store.push_back(new range_type(0, 0, 10, i+1, os.str()));
+            data_store.emplace_back(new range_type(0, 0, 10, i+1, os.str()));
         }
     }
 
     {
         stack_printer __stack_printer2__("::rect_test_perf_insertion data insertion");
         for (size_t i = 0; i < data_count; ++i)
-            insert_range(db, data_store[i]);
+            insert_range(db, *data_store[i]);
     }
     assert(db.size() == data_count);
 
@@ -758,7 +758,7 @@ void rect_test_perf_insertion_fixed_x()
     {
         stack_printer __stack_printer__("::rect_test_perf_insertion 10000 removals");
         for (size_t i = 0; i < 10000; ++i)
-            db.remove(&data_store[i]);
+            db.remove(data_store[i].get());
     }
 
     {
@@ -778,7 +778,7 @@ void rect_test_perf_insertion_fixed_y()
     cout << "data count: " << data_count << endl;
 
     set_type db;
-    ptr_vector<range_type> data_store;
+    vector<unique_ptr<range_type>> data_store;
     data_store.reserve(data_count);
     {
         stack_printer __stack_printer2__("::rect_test_perf_insertion range instance creation");
@@ -786,14 +786,14 @@ void rect_test_perf_insertion_fixed_y()
         {
             ostringstream os;
             os << hex << i;
-            data_store.push_back(new range_type(0, 0, i+1, 10, os.str()));
+            data_store.emplace_back(new range_type(0, 0, i+1, 10, os.str()));
         }
     }
 
     {
         stack_printer __stack_printer2__("::rect_test_perf_insertion data insertion");
         for (size_t i = 0; i < data_count; ++i)
-            insert_range(db, data_store[i]);
+            insert_range(db, *data_store[i]);
     }
     assert(db.size() == data_count);
 
@@ -882,7 +882,7 @@ void rect_test_perf_insertion_fixed_y()
     {
         stack_printer __stack_printer__("::rect_test_perf_insertion 10000 removals");
         for (size_t i = 0; i < 10000; ++i)
-            db.remove(&data_store[i]);
+            db.remove(data_store[i].get());
     }
 
     {

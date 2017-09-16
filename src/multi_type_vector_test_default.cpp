@@ -36,8 +36,6 @@
 #include <vector>
 #include <deque>
 
-#include <boost/ptr_container/ptr_vector.hpp>
-
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
 using namespace std;

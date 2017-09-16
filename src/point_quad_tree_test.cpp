@@ -29,14 +29,13 @@
 #include "test_global.hpp"
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 #include <sstream>
-#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/cstdint.hpp>
 
 using namespace std;
 using namespace mdds;
-using ::boost::ptr_vector;
 using ::boost::uint16_t;
 
 struct data_printer : public unary_function<string*, void>
@@ -144,13 +143,13 @@ void pqt_test_insertion_removal()
     assert(db.size() == 0);
 
     // Create all data instances.
-    ptr_vector<string> data_store;
+    vector<unique_ptr<string>> data_store;
     data_store.reserve(100);
     for (size_t i = 0; i < 100; ++i)
     {
         ostringstream os;
         os << "0x" << hex << i;
-        data_store.push_back(new string(os.str()));
+        data_store.emplace_back(new string(os.str()));
     }
 
     vector<db_type::node_data> expected;
@@ -162,7 +161,7 @@ void pqt_test_insertion_removal()
         {
             int32_t x = i*10 + 1, y = j*10 + 1;
             size_t index = i*10 + j;
-            const string* data_ptr = &data_store[index];
+            const string* data_ptr = data_store[index].get();
             cout << "inserting '" << *data_ptr << "' at (" << x << "," << y << ")" << endl;
             db.insert(x, y, data_ptr);
             expected.push_back(db_type::node_data(x, y, data_ptr));

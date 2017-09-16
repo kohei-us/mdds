@@ -33,10 +33,10 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
-
-#include <boost/ptr_container/ptr_vector.hpp>
+#include <vector>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -635,20 +635,20 @@ void st_test_search_on_uneven_tree()
 
     for (key_type data_count = 10; data_count < 20; ++data_count)
     {
-        boost::ptr_vector<test_data> data_store;
+        vector<unique_ptr<test_data>> data_store;
         data_store.reserve(data_count);
         for (key_type i = 0; i < data_count; ++i)
         {
             ostringstream os;
             os << hex << showbase << i;
-            data_store.push_back(new test_data(os.str()));
+            data_store.emplace_back(new test_data(os.str()));
         }
         assert(data_store.size() == static_cast<size_t>(data_count));
 
         db_type db;
         for (key_type i = 0; i < data_count; ++i)
         {
-            test_data* p = &data_store[i];
+            test_data* p = data_store[i].get();
             db.insert(0, i+1, p);
         }
         assert(db.size() == static_cast<size_t>(data_count));
@@ -678,7 +678,7 @@ void st_test_perf_insertion()
     key_type data_count = 1000000;
 
     // First, create test data instances and store them into a vector.
-    boost::ptr_vector<test_data> data_store;
+    vector<unique_ptr<test_data>> data_store;
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: data array creation");
         data_store.reserve(data_count);
@@ -686,7 +686,7 @@ void st_test_perf_insertion()
         {
             ostringstream os;
             os << hex << i;
-            data_store.push_back(new test_data(os.str()));
+            data_store.emplace_back(new test_data(os.str()));
         }
     }
     assert(data_store.size() == data_count);
@@ -696,7 +696,7 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: data array insertion into segment tree");
         for (key_type i = 0; i < data_count; ++i)
         {
-            test_data* p = &data_store[i];
+            test_data* p = data_store[i].get();
             db.insert(0, i+1, p);
         }
     }
@@ -800,7 +800,7 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 10000 segment removals");
         for (key_type i = 0; i < 10000; ++i)
         {
-            test_data* p = &data_store[i];
+            test_data* p = data_store[i].get();
             db.remove(p);
         }
     }

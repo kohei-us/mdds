@@ -30,7 +30,6 @@
 
 #include <cassert>
 
-#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 // Boost.Pool indirectly pulls in Boost.System, causing linking error
 // with Boost 1.50, because some (deprecated) symbols from System are

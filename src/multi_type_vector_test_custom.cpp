@@ -35,10 +35,9 @@
 #include <mdds/multi_type_vector_custom_func3.hpp>
 
 #include <cassert>
+#include <memory>
 #include <sstream>
 #include <vector>
-
-#include <boost/ptr_container/ptr_vector.hpp>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -91,7 +90,7 @@ struct date
 template<typename T>
 class cell_pool
 {
-    boost::ptr_vector<T> m_pool;
+    std::vector<std::unique_ptr<T>> m_pool;
 public:
     cell_pool() = default;
     cell_pool(const cell_pool&) = delete;
@@ -99,8 +98,8 @@ public:
 
     T* construct()
     {
-        m_pool.push_back(new T);
-        return &m_pool.back();
+        m_pool.emplace_back(new T);
+        return m_pool.back().get();
     }
 
     void clear() { m_pool.clear(); }
