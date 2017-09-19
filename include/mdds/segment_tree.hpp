@@ -32,7 +32,6 @@
 #include "mdds/global.hpp"
 
 #include <vector>
-#include <list>
 #include <iostream>
 #include <map>
 #include <unordered_map>

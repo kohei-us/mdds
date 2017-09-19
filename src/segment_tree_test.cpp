@@ -33,6 +33,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include <list>
 #include <memory>
 #include <sstream>
 #include <string>

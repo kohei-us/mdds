@@ -28,7 +28,6 @@
 #include "mdds/flat_segment_tree.hpp"
 #include "test_global.hpp"
 
-#include <list>
 #include <iostream>
 #include <string>
 #include <vector>
