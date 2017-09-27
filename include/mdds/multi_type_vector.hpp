@@ -129,8 +129,21 @@ private:
 
         block();
         block(size_type _size);
+        block(size_type _size, element_block_type* _data);
         block(const block& other);
         ~block();
+        void swap(block& other);
+        void clone_to(block& other) const;
+    };
+
+    struct mutationrec
+    {
+        size_type pos;
+        size_type len;
+        bool is_insert;
+        mutationrec(size_type loc, size_type length, bool insert);
+        mutationrec(const mutationrec& other);
+        void adjust_index(size_type& index) const;
     };
 
     struct element_block_deleter : public std::unary_function<void, const element_block_type*>
@@ -141,7 +154,7 @@ private:
         }
     };
 
-    typedef std::vector<block*> blocks_type;
+    typedef std::vector<block> blocks_type;
 
     struct blocks_to_transfer
     {
@@ -1275,21 +1288,21 @@ private:
      * @param new_block_size size of the new block
      * @param overwrite whether or not to overwrite the elements replaced by
      *                  the new block.
-     * @return pointer to the middle block
+     * @return index to the middle block
      */
-    block* set_new_block_to_middle(
+    size_type set_new_block_to_middle(
         size_type block_index, size_type offset, size_type new_block_size, bool overwrite);
 
-    block* get_previous_block_of_type(size_type block_index, element_category_type cat);
+    size_type get_previous_block_of_type(size_type block_index, element_category_type cat);
 
     /**
      * @param block_index index of the current block.
      * @param cat desired block type.
      *
-     * @return pointer to the next block if the next block exists and it's of
-     *         specified type, otherwise nullptr will be returned.
+     * @return index to the next block if the next block exists and it's of
+     *         specified type, otherwise invalid_index will be returned.
      */
-    block* get_next_block_of_type(size_type block_index, element_category_type cat);
+    size_type get_next_block_of_type(size_type block_index, element_category_type cat);
 
     /**
      * Send elements from a source block to place them in a destination block.

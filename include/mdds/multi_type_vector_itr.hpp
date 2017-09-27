@@ -168,14 +168,14 @@ protected:
             throw general_error("Current node position should never equal the end position during node update.");
 #endif
         // blocks_type::value_type is a pointer to multi_type_vector::block.
-        typename blocks_type::value_type blk = *m_pos;
-        if (blk->mp_data)
-            m_cur_node.type = mdds::mtv::get_block_type(*blk->mp_data);
+        const typename blocks_type::value_type& blk = *m_pos;
+        if (blk.mp_data)
+            m_cur_node.type = mdds::mtv::get_block_type(*blk.mp_data);
         else
             m_cur_node.type = mdds::mtv::element_type_empty;
 
-        m_cur_node.size = blk->m_size;
-        m_cur_node.data = blk->mp_data;
+        m_cur_node.size = blk.m_size;
+        m_cur_node.data = blk.mp_data;
     }
 
     node* inc()
