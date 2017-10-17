@@ -677,10 +677,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::push_back(const _T& value)
 {
     element_category_type cat = mdds_mtv_get_element_type(value);
 
-    size_type blk_last_index = m_blocks.empty() ? invalid_index : m_blocks.size() - 1;
-    if (blk_last_index == invalid_index ||
-        !m_blocks[blk_last_index].mp_data ||
-        cat != get_block_type(*m_blocks[blk_last_index].mp_data))
+    block* blk_last = m_blocks.empty() ? nullptr : &m_blocks.back();
+    if (!blk_last || !blk_last->mp_data || cat != get_block_type(*blk_last->mp_data))
     {
         // Either there is no block, or the last block is empty or of
         // different type.  Append a new block.
@@ -694,16 +692,16 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::push_back(const _T& value)
         return get_iterator(block_index, start_pos);
     }
 
-    assert(blk_last_index != invalid_index);
-    assert(m_blocks[blk_last_index].mp_data);
-    assert(cat == get_block_type(*m_blocks[blk_last_index].mp_data));
+    assert(blk_last);
+    assert(blk_last->mp_data);
+    assert(cat == get_block_type(*blk_last->mp_data));
 
     // Append the new value to the last block.
     size_type block_index = m_blocks.size() - 1;
-    size_type start_pos = m_cur_size - m_blocks[blk_last_index].m_size;
+    size_type start_pos = m_cur_size - blk_last->m_size;
 
-    mdds_mtv_append_value(*m_blocks[blk_last_index].mp_data, value);
-    ++m_blocks[blk_last_index].m_size;
+    mdds_mtv_append_value(*blk_last->mp_data, value);
+    ++blk_last->m_size;
     ++m_cur_size;
 
     return get_iterator(block_index, start_pos);
