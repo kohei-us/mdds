@@ -621,10 +621,9 @@ typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::release_impl(
     size_type pos, size_type start_pos, size_type block_index, _T& value)
 {
-    const size_type blk_index = block_index;
-    assert(blk_index != invalid_index);
+    const block& blk = m_blocks[block_index];
 
-    if (!m_blocks[blk_index].mp_data)
+    if (!blk.mp_data)
     {
         // Empty cell block.  There is no element to release.
         mdds_mtv_get_empty_value(value);
@@ -632,9 +631,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::release_impl(
     }
 
     assert(pos >= start_pos);
-    assert(m_blocks[blk_index].mp_data); // data for non-empty blocks should never be nullptr.
+    assert(blk.mp_data); // data for non-empty blocks should never be nullptr.
     size_type idx = pos - start_pos;
-    mdds_mtv_get_value(*m_blocks[blk_index].mp_data, idx, value);
+    mdds_mtv_get_value(*blk.mp_data, idx, value);
 
     // Set the element slot empty without overwriting it.
     return set_empty_in_single_block(pos, pos, block_index, start_pos, false);
