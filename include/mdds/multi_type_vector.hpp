@@ -1295,7 +1295,7 @@ private:
     size_type set_new_block_to_middle(
         size_type block_index, size_type offset, size_type new_block_size, bool overwrite);
 
-    size_type get_previous_block_of_type(size_type block_index, element_category_type cat);
+    block* get_previous_block_of_type(size_type block_index, element_category_type cat);
 
     /**
      * @param block_index index of the current block.
