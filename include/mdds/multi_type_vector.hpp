@@ -1076,12 +1076,13 @@ private:
     void delete_element_block(block& blk);
 
     /**
-     * Delete one or more outer blocks in the specified iterator ranges.
+     * Delete the element block(s) owned by one or more outer blocks in the
+     * specified iterator ranges.
      *
      * @param it start position.
      * @param it_end end position (not inclusive).
      */
-    void delete_blocks(typename blocks_type::iterator it, typename blocks_type::iterator it_end);
+    void delete_element_blocks(typename blocks_type::iterator it, typename blocks_type::iterator it_end);
 
     template<typename _T>
     iterator set_impl(size_type pos, size_type start_row, size_type block_index, const _T& value);

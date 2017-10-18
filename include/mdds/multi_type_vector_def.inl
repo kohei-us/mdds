@@ -386,7 +386,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(const multi_typ
 template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::~multi_type_vector()
 {
-    delete_blocks(m_blocks.begin(), m_blocks.end());
+    delete_element_blocks(m_blocks.begin(), m_blocks.end());
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -461,7 +461,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_block(block& 
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_blocks(
+void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_blocks(
     typename blocks_type::iterator it, typename blocks_type::iterator it_end)
 {
     std::for_each(it, it_end,
@@ -2667,7 +2667,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
         --block_pos1;
 
     // Now, erase all blocks in between.
-    delete_blocks(it_erase_begin, it_erase_end);
+    delete_element_blocks(it_erase_begin, it_erase_end);
     m_blocks.erase(it_erase_begin, it_erase_end);
     m_cur_size -= end_row - start_row + 1;
 
@@ -3727,7 +3727,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
     size_type insert_pos = std::distance(m_blocks.begin(), it_erase_begin);
 
     // Remove the in-between blocks first.
-    delete_blocks(it_erase_begin, it_erase_end);
+    delete_element_blocks(it_erase_begin, it_erase_end);
     m_blocks.erase(it_erase_begin, it_erase_end);
 
     // Insert the new data block.
@@ -3806,7 +3806,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             m_blocks[blk2_index].m_size -= size_to_erase;
         }
 
-        delete_blocks(it_erase_begin, it_erase_end);
+        delete_element_blocks(it_erase_begin, it_erase_end);
         m_blocks.erase(it_erase_begin, it_erase_end);
 
         return get_iterator(block_index1, start_row_in_block1);
@@ -3980,7 +3980,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::append_to_prev_block(
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::clear()
 {
-    delete_blocks(m_blocks.begin(), m_blocks.end());
+    delete_element_blocks(m_blocks.begin(), m_blocks.end());
     m_blocks.clear();
     m_cur_size = 0;
 }
@@ -4049,7 +4049,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::resize(size_type new_size)
 
     // Remove all blocks that are below this one.
     typename blocks_type::iterator it = m_blocks.begin() + block_index + 1;
-    delete_blocks(it, m_blocks.end());
+    delete_element_blocks(it, m_blocks.end());
     m_blocks.erase(it, m_blocks.end());
     m_cur_size = new_size;
 }
