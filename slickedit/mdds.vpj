@@ -236,13 +236,6 @@
                 <F N="../include/mdds/flat_segment_tree_def.inl"/>
                 <F N="../include/mdds/flat_segment_tree_itr.hpp"/>
                 <F N="../include/mdds/global.hpp"/>
-                <F N="../include/mdds/mixed_type_matrix.hpp"/>
-                <F N="../include/mdds/mixed_type_matrix_def.inl"/>
-                <F N="../include/mdds/mixed_type_matrix_element.hpp"/>
-                <F N="../include/mdds/mixed_type_matrix_flag_storage.hpp"/>
-                <F N="../include/mdds/mixed_type_matrix_storage.hpp"/>
-                <F N="../include/mdds/mixed_type_matrix_storage_filled_linear.inl"/>
-                <F N="../include/mdds/mixed_type_matrix_storage_sparse.inl"/>
                 <F N="../include/mdds/multi_type_matrix.hpp"/>
                 <F N="../include/mdds/multi_type_matrix_def.inl"/>
                 <F N="../include/mdds/multi_type_vector.hpp"/>
