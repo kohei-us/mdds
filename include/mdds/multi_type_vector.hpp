@@ -1301,10 +1301,10 @@ private:
      * @param block_index index of the current block.
      * @param cat desired block type.
      *
-     * @return index to the next block if the next block exists and it's of
-     *         specified type, otherwise invalid_index will be returned.
+     * @return pointer to the next block if the next block exists and it's of
+     *         specified type, otherwise nullptr will be returned.
      */
-    size_type get_next_block_of_type(size_type block_index, element_category_type cat);
+    block* get_next_block_of_type(size_type block_index, element_category_type cat);
 
     /**
      * Send elements from a source block to place them in a destination block.
