@@ -1076,13 +1076,6 @@ private:
     void delete_element_block(block* p);
 
     /**
-     * Delete an outer block.
-     *
-     * @param p pointer to the instance of an outer block to delete.
-     */
-    void delete_block(block* p);
-
-    /**
      * Delete one or more outer blocks in the specified iterator ranges.
      *
      * @param it start position.
