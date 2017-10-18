@@ -1070,10 +1070,10 @@ private:
     /**
      * Delete only the element block owned by an outer block.
      *
-     * @param p pointer to the instance of an outer block that may own an
+     * @param blk reference to the instance of an outer block that may own an
      *          element block instance.
      */
-    void delete_element_block(block* p);
+    void delete_element_block(block& blk);
 
     /**
      * Delete one or more outer blocks in the specified iterator ranges.

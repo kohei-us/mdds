@@ -449,15 +449,15 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_block(block* p)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_block(block& blk)
 {
-    if (!p->mp_data)
+    if (!blk.mp_data)
         // This block is empty.
         return;
 
-    m_hdl_event.element_block_released(p->mp_data);
-    element_block_func::delete_block(p->mp_data);
-    p->mp_data = nullptr;
+    m_hdl_event.element_block_released(blk.mp_data);
+    element_block_func::delete_block(blk.mp_data);
+    blk.mp_data = nullptr;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -467,7 +467,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_blocks(
     std::for_each(it, it_end,
         [&](block& r)
         {
-            delete_element_block(&r);
+            delete_element_block(r);
         }
     );
 }
@@ -940,7 +940,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                 {
                     // Remove this one-cell empty block from the top, and
                     // prepend the cell to the next block.
-                    delete_element_block(&m_blocks.front());
+                    delete_element_block(m_blocks.front());
                     m_blocks.erase(m_blocks.begin());
                     blk_index = 0;
                     m_blocks[blk_index].m_size += 1;
@@ -1014,7 +1014,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                 {
                     // Last block.  Delete this block and extend the previous
                     // block by one.
-                    delete_element_block(&m_blocks[block_index]);
+                    delete_element_block(m_blocks[block_index]);
                     m_blocks.pop_back();
                     mutationrec mr(block_index, 1, false);
                     mr.adjust_index(blk_index);
@@ -1081,7 +1081,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     else
                     {
                         // Ignore the next block. Just extend the previous block.
-                        delete_element_block(&m_blocks[block_index]);
+                        delete_element_block(m_blocks[block_index]);
                         m_blocks.erase(m_blocks.begin() + block_index);
                         append_cell_to_block(block_index-1, cell);
                     }
@@ -1117,7 +1117,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                         // Remove this empty block, and prepend the cell to the next block.
                         blk_next->m_size += 1;
                         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
-                        delete_element_block(&m_blocks[block_index]);
+                        delete_element_block(m_blocks[block_index]);
                         m_blocks.erase(m_blocks.begin()+block_index);
                     }
                     else
@@ -1220,7 +1220,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         // Delete the current block, and prepend the cell to the next block.
         blk_next->m_size += 1;
         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
-        delete_element_block(&m_blocks[blk_index]);
+        delete_element_block(m_blocks[blk_index]);
         m_blocks.erase(m_blocks.begin()+block_index);
         return begin();
     }
@@ -1882,7 +1882,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         else
         {
             // Destination block is exactly of the length of the elements being transferred.
-            dest.delete_element_block(&dest.m_blocks[dest_block_index]);
+            dest.delete_element_block(dest.m_blocks[dest_block_index]);
             dest.m_blocks[dest_block_index].m_size = 0;
             if (block_len > 1)
             {
@@ -2388,7 +2388,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
             // don't delete the managed elements the block contains since they
             // have been transferred over to the destination block.
             element_block_func::resize_block(*m_blocks[blk_src_index].mp_data, 0);
-            delete_element_block(&m_blocks[blk_src_index]);
+            delete_element_block(m_blocks[blk_src_index]);
             m_blocks.erase(m_blocks.begin()+block_index);
             // No need to update blk_src_index as it is not used till return statement in
             // this path.
@@ -2424,7 +2424,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
 
         // This creates an empty block at block_index+1.
         set_new_block_to_middle(block_index, src_offset, len, false);
-        delete_element_block(&m_blocks[block_index+1]);
+        delete_element_block(m_blocks[block_index+1]);
         m_blocks.erase(m_blocks.begin()+block_index+1);
         // No need to update blk_src_index as it is not used again
     }
@@ -2698,7 +2698,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         return;
 
     // Delete the current block since it's become empty.
-    delete_element_block(&m_blocks[blk_index]);
+    delete_element_block(m_blocks[blk_index]);
     m_blocks.erase(m_blocks.begin()+block_pos);
     // No need to update blk_index which is not used again.
 
@@ -2725,7 +2725,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
             m_blocks[blk_prev_index].m_size += m_blocks[blk_next_index].m_size;
             // Resize to 0 to prevent deletion of cells in case of managed cells.
             element_block_func::resize_block(*m_blocks[blk_next_index].mp_data, 0);
-            delete_element_block(&m_blocks[blk_next_index]);
+            delete_element_block(m_blocks[blk_next_index]);
             m_blocks.erase(m_blocks.begin()+block_pos);
             // No need to update local index vars since it is the end of the path
         }
@@ -2740,7 +2740,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         // Both blocks are empty.  Simply increase the size of the
         // previous block.
         m_blocks[blk_prev_index].m_size += m_blocks[blk_next_index].m_size;
-        delete_element_block(&m_blocks[blk_next_index]);
+        delete_element_block(m_blocks[blk_next_index]);
         m_blocks.erase(m_blocks.begin()+block_pos);
     }
 }
@@ -3231,7 +3231,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
                     element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
                     blk_prev->m_size += blk_next->m_size;
                     ++it_end;
-                    delete_element_block(blk_next);
+                    delete_element_block(*blk_next);
                 }
 
                 m_blocks.erase(it, it_end);
@@ -3443,7 +3443,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             size_type offset = block_index > 0 ? m_blocks[block_index-1].m_size : 0;
             if (append_to_prev_block(block_index, cat, end_row-start_row+1, it_begin, it_end))
             {
-                delete_element_block(&m_blocks[blk_index]);
+                delete_element_block(m_blocks[blk_index]);
                 m_blocks.erase(m_blocks.begin()+block_index);
 
                 // Check if we need to merge it with the next block.
@@ -3864,8 +3864,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::merge_with_adjacent_blocks(size_t
             element_block_func::resize_block(*m_blocks[blk_index].mp_data, 0);
             element_block_func::resize_block(*m_blocks[blk_next_index].mp_data, 0);
 
-            delete_element_block(&m_blocks[blk_index]);
-            delete_element_block(&m_blocks[blk_next_index]);
+            delete_element_block(m_blocks[blk_index]);
+            delete_element_block(m_blocks[blk_next_index]);
 
             typename blocks_type::iterator it = m_blocks.begin();
             std::advance(it, block_index);
@@ -3956,7 +3956,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::merge_with_next_block(size_t
     element_block_func::append_values_from_block(*m_blocks[blk_index].mp_data, *m_blocks[blk_next_index].mp_data);
     element_block_func::resize_block(*m_blocks[blk_next_index].mp_data, 0);
     m_blocks[blk_index].m_size += m_blocks[blk_next_index].m_size;
-    delete_element_block(&m_blocks[blk_next_index]);
+    delete_element_block(m_blocks[blk_next_index]);
     m_blocks.erase(m_blocks.begin()+block_index+1);
     return true;
 }
@@ -4213,7 +4213,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
         element_block_func::resize_block(*m_blocks[blk_index].mp_data, 0);
 
     // delete mp_data member and set it to nullptr
-    delete_element_block(&m_blocks[blk_index]);
+    delete_element_block(m_blocks[blk_index]);
 
     block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
     block* blk_next = get_next_block_of_type(block_index, mtv::element_type_empty);
@@ -4382,7 +4382,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                     if (!overwrite)
                         element_block_func::resize_block(*m_blocks[blk_index].mp_data, 0);
 
-                    delete_element_block(&m_blocks[blk_index]);
+                    delete_element_block(m_blocks[blk_index]);
                 }
             }
             else
@@ -4465,7 +4465,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
             if (!overwrite && blk.mp_data)
                 element_block_func::resize_block(*blk.mp_data, 0);
 
-            delete_element_block(&blk);
+            delete_element_block(blk);
         }
 
         typename blocks_type::iterator it = m_blocks.begin() + block_index1 + 1;
