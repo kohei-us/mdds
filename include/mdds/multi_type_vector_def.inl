@@ -878,7 +878,7 @@ typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
     size_type start_row, size_type block_index, size_type pos_in_block, const _T& cell)
 {
-    size_type blk_index = block_index;
+    block* blk = &m_blocks[block_index];
 
     if (block_index == 0)
     {
@@ -886,12 +886,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
         if (m_blocks.size() == 1)
         {
             // this is the only block.
-            assert(m_blocks[blk_index].m_size == m_cur_size);
+            assert(blk->m_size == m_cur_size);
             if (m_cur_size == 1)
             {
                 // This column is allowed to have only one row!
                 assert(pos_in_block == 0);
-                create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+                create_new_block_with_new_cell(blk->mp_data, cell);
                 return begin();
             }
 
@@ -899,25 +899,25 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             if (pos_in_block == 0)
             {
                 // Insert into the first cell in block.
-                m_blocks[blk_index].m_size -= 1;
-                assert(m_blocks[blk_index].m_size > 0);
+                blk->m_size -= 1;
+                assert(blk->m_size > 0);
 
                 m_blocks.emplace(m_blocks.begin(), 1);
-                blk_index = block_index;
-                create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+                blk = &m_blocks[block_index]; // old pointer is invalid.
+                create_new_block_with_new_cell(blk->mp_data, cell);
                 return begin();
             }
 
-            if (pos_in_block == m_blocks[blk_index].m_size - 1)
+            if (pos_in_block == blk->m_size - 1)
             {
                 // Insert into the last cell in block.
-                m_blocks[blk_index].m_size -= 1;
-                assert(m_blocks[blk_index].m_size > 0);
+                blk->m_size -= 1;
+                assert(blk->m_size > 0);
 
                 m_blocks.emplace_back(1);
-                blk_index = m_blocks.size() - 1;
+                blk = &m_blocks.back(); // old pointer is invalid.
 
-                create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+                create_new_block_with_new_cell(blk->mp_data, cell);
                 iterator ret = end();
                 --ret;
                 return ret;
@@ -932,7 +932,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
         if (pos_in_block == 0)
         {
             assert(block_index < m_blocks.size()-1);
-            if (m_blocks[blk_index].m_size == 1)
+            if (blk->m_size == 1)
             {
                 // Top empty block with only one cell size.
                 element_category_type cat = mdds_mtv_get_element_type(cell);
@@ -943,52 +943,49 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     // prepend the cell to the next block.
                     delete_element_block(m_blocks.front());
                     m_blocks.erase(m_blocks.begin());
-                    blk_index = 0;
-                    m_blocks[blk_index].m_size += 1;
-                    mdds_mtv_prepend_value(*m_blocks[blk_index].mp_data, cell);
+                    blk = &m_blocks.front(); // old pointer is invalid.
+                    blk->m_size += 1;
+                    mdds_mtv_prepend_value(*blk->mp_data, cell);
                 }
                 else
-                    create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
             }
             else
             {
-                assert(m_blocks[blk_index].m_size > 1);
-                m_blocks[blk_index].m_size -= 1;
+                assert(blk->m_size > 1);
+                blk->m_size -= 1;
                 m_blocks.emplace(m_blocks.begin(), 1);
-                blk_index = 0;
-                create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+                create_new_block_with_new_cell(m_blocks.front().mp_data, cell);
             }
 
             return begin();
         }
 
-        if (pos_in_block == m_blocks[blk_index].m_size - 1)
+        if (pos_in_block == blk->m_size - 1)
         {
             // Immediately above a non-empty block.
             element_category_type cat = mdds_mtv_get_element_type(cell);
             block* blk_next = get_next_block_of_type(block_index, cat);
             if (blk_next)
             {
-                assert(m_blocks[blk_index].m_size > 1);
+                assert(blk->m_size > 1);
                 // Shrink this empty block by one, and prepend the cell to the next block.
-                m_blocks[blk_index].m_size -= 1;
+                blk->m_size -= 1;
                 blk_next->m_size += 1;
                 mdds_mtv_prepend_value(*blk_next->mp_data, cell);
             }
             else
             {
-                m_blocks[blk_index].m_size -= 1;
+                blk->m_size -= 1;
                 typename blocks_type::iterator it = m_blocks.begin();
                 std::advance(it, block_index+1);
                 m_blocks.emplace(it, 1);
-                // Adjust blk_index for this mutation
-                mutationrec mr(block_index+1, 1, true);
-                mr.adjust_index(blk_index);
-                size_type blk2_index = block_index+1;
-                create_new_block_with_new_cell(m_blocks[blk2_index].mp_data, cell);
+                blk = &m_blocks[block_index]; // old pointer is invalid.
+                block* blk2 = &m_blocks[block_index+1];
+                create_new_block_with_new_cell(blk2->mp_data, cell);
             }
 
-            return get_iterator(block_index+1, start_row+m_blocks[blk_index].m_size);
+            return get_iterator(block_index+1, start_row+blk->m_size);
         }
 
         // Inserting into the middle of an empty block.
@@ -1008,7 +1005,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             // Extend the previous block by one to insert this cell.
             size_type offset = m_blocks[block_index-1].m_size; // for returned iterator
 
-            if (m_blocks[blk_index].m_size == 1)
+            if (blk->m_size == 1)
             {
                 // Check if we need to merge with the following block.
                 if (block_index == m_blocks.size()-1)
@@ -1017,8 +1014,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     // block by one.
                     delete_element_block(m_blocks[block_index]);
                     m_blocks.pop_back();
-                    mutationrec mr(block_index, 1, false);
-                    mr.adjust_index(blk_index);
                     append_cell_to_block(block_index-1, cell);
                 }
                 else
@@ -1055,7 +1050,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                             m_hdl_event.element_block_released(blk_prev.mp_data);
 
                             // Release both blocks which are no longer used
-                            element_block_func::delete_block(m_blocks[blk_index].mp_data);
+                            element_block_func::delete_block(blk->mp_data);
                             element_block_func::delete_block(blk_prev.mp_data);
 
                             // Get an iterator to previous block
@@ -1073,7 +1068,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                             element_block_func::append_values_from_block(*blk_prev.mp_data, *blk_next->mp_data);
                             element_block_func::resize_block(*blk_next->mp_data, 0);
                             m_hdl_event.element_block_released(blk_next->mp_data);
-                            element_block_func::delete_block(m_blocks[blk_index].mp_data);
+                            element_block_func::delete_block(blk->mp_data);
                             element_block_func::delete_block(blk_next->mp_data);
                             typename blocks_type::iterator it = m_blocks.begin() + block_index;
                             m_blocks.erase(it, it+2);
@@ -1091,8 +1086,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             else
             {
                 // Extend the previous block to append the cell.
-                assert(m_blocks[blk_index].m_size > 1);
-                m_blocks[blk_index].m_size -= 1;
+                assert(blk->m_size > 1);
+                blk->m_size -= 1;
                 append_cell_to_block(block_index-1, cell);
             }
 
@@ -1101,12 +1096,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
         else
         {
             // Cell type is different from the type of the previous block.
-            if (m_blocks[blk_index].m_size == 1)
+            if (blk->m_size == 1)
             {
                 if (block_index == m_blocks.size()-1)
                 {
                     // There is no more block below.
-                    create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+                    create_new_block_with_new_cell(blk->mp_data, cell);
                 }
                 else
                 {
@@ -1123,7 +1118,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     }
                     else
                     {
-                        create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+                        create_new_block_with_new_cell(blk->mp_data, cell);
                     }
                 }
             }
@@ -1133,26 +1128,26 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                 // non-empty block of size 1, and insert a new empty block
                 // below whose size is one shorter than the current empty
                 // block.
-                size_type new_block_size = m_blocks[blk_index].m_size - 1;
-                m_blocks[blk_index].m_size = 1;
-                create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+                size_type new_block_size = blk->m_size - 1;
+                blk->m_size = 1;
+                create_new_block_with_new_cell(blk->mp_data, cell);
                 m_blocks.emplace(m_blocks.begin()+block_index+1, new_block_size);
             }
 
             return get_iterator(block_index, start_row);
         }
     }
-    else if (pos_in_block == m_blocks[blk_index].m_size - 1)
+    else if (pos_in_block == blk->m_size - 1)
     {
         // New cell is at the last cell position.
-        assert(m_blocks[blk_index].m_size > 1);
+        assert(blk->m_size > 1);
         if (block_index == m_blocks.size()-1)
         {
             // This is the last block.
-            m_blocks[blk_index].m_size -= 1;
+            blk->m_size -= 1;
             m_blocks.emplace_back(1);
-            blk_index = m_blocks.size() - 1;
-            create_new_block_with_new_cell(m_blocks[blk_index].mp_data, cell);
+            blk = &m_blocks.back(); // old pointer is invalid.
+            create_new_block_with_new_cell(blk->mp_data, cell);
             iterator it = end();
             --it;
             return it;
@@ -1165,20 +1160,21 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             if (blk_next)
             {
                 // Shrink this empty block and extend the next block.
-                m_blocks[blk_index].m_size -= 1;
+                blk->m_size -= 1;
                 blk_next->m_size += 1;
                 mdds_mtv_prepend_value(*blk_next->mp_data, cell);
             }
             else
             {
                 // Just insert this new cell.
-                m_blocks[blk_index].m_size -= 1;
+                blk->m_size -= 1;
                 m_blocks.emplace(m_blocks.begin()+block_index+1, 1);
+                blk = &m_blocks[block_index]; // old pointer is invalid.
                 block& blk2 = m_blocks[block_index+1];
                 create_new_block_with_new_cell(blk2.mp_data, cell);
             }
 
-            size_type offset = m_blocks[blk_index].m_size;
+            size_type offset = blk->m_size;
             return get_iterator(block_index+1, start_row+offset);
         }
     }
