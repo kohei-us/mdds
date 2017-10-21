@@ -138,16 +138,6 @@ private:
         void clone_to(block& other) const;
     };
 
-    struct mutationrec
-    {
-        size_type pos;
-        size_type len;
-        bool is_insert;
-        mutationrec(size_type loc, size_type length, bool insert);
-        mutationrec(const mutationrec& other);
-        void adjust_index(size_type& index) const;
-    };
-
     struct element_block_deleter : public std::unary_function<void, const element_block_type*>
     {
         void operator() (const element_block_type* p)
