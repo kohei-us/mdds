@@ -1335,15 +1335,14 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_top_of_data_block(size_type block_index, const _T& cell)
 {
-    size_type blk_index = block_index;
-    m_blocks[blk_index].m_size -= 1;
-    if (m_blocks[blk_index].mp_data)
+    block& blk = m_blocks[block_index];
+    blk.m_size -= 1;
+    if (blk.mp_data)
     {
-        element_block_func::overwrite_values(*m_blocks[blk_index].mp_data, 0, 1);
-        element_block_func::erase(*m_blocks[blk_index].mp_data, 0);
+        element_block_func::overwrite_values(*blk.mp_data, 0, 1);
+        element_block_func::erase(*blk.mp_data, 0);
     }
     m_blocks.emplace(m_blocks.begin()+block_index, 1);
-    // No need to update local index vars
     create_new_block_with_new_cell(m_blocks[block_index].mp_data, cell);
 }
 
@@ -1352,15 +1351,14 @@ template<typename _T>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell)
 {
     assert(block_index < m_blocks.size());
-    size_type blk_index = block_index;
-    if (m_blocks[blk_index].mp_data)
+    block& blk = m_blocks[block_index];
+    if (blk.mp_data)
     {
-        element_block_func::overwrite_values(*m_blocks[blk_index].mp_data, m_blocks[blk_index].m_size-1, 1);
-        element_block_func::erase(*m_blocks[blk_index].mp_data, m_blocks[blk_index].m_size-1);
+        element_block_func::overwrite_values(*blk.mp_data, blk.m_size-1, 1);
+        element_block_func::erase(*blk.mp_data, blk.m_size-1);
     }
-    m_blocks[blk_index].m_size -= 1;
+    blk.m_size -= 1;
     m_blocks.emplace(m_blocks.begin()+block_index+1, 1);
-    // No need to update local index vars
     create_new_block_with_new_cell(m_blocks[block_index+1].mp_data, cell);
 }
 
