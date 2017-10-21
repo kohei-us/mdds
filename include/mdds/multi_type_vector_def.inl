@@ -29,7 +29,6 @@
 
 #include <stdexcept>
 #include <memory>
-#include <limits>
 
 namespace mdds {
 
@@ -101,10 +100,6 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned long, mtv::element_type_ulong, 0, mtv
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(char, mtv::element_type_char, 0, mtv::char_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned char, mtv::element_type_uchar, 0, mtv::uchar_element_block)
-
-template<typename _CellBlockFunc, typename _EventFunc>
-const typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
-multi_type_vector<_CellBlockFunc, _EventFunc>::invalid_index = std::numeric_limits<size_type>::max();
 
 template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::block::block() : m_size(0), mp_data(nullptr) {}
@@ -4297,38 +4292,38 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
 
     {
         // Empty the lower part of the first block.
-        size_type blk_index = block_index1;
-        if (m_blocks[blk_index].mp_data)
+        block* blk = &m_blocks[block_index1];
+        if (blk->mp_data)
         {
             if (start_row_in_block1 == start_row)
             {
                 // Empty the whole block.
 
                 // Check if the previos block (if exists) is also empty.
-                size_type blk_prev_index = invalid_index;
+                block* blk_prev = nullptr;
                 if (block_index1 > 0)
                 {
-                    blk_prev_index = block_index1-1;
-                    if (m_blocks[blk_prev_index].mp_data)
+                    blk_prev = &m_blocks[block_index1-1];
+                    if (blk_prev->mp_data)
                         // Not empty.  Ignore it.
-                        blk_prev_index = invalid_index;
+                        blk_prev = nullptr;
                 }
 
-                if (blk_prev_index != invalid_index)
+                if (blk_prev)
                 {
                     // Previous block is empty.  Move the start row to the
                     // first row of the previous block, and make the previous
                     // block 'block 1'.
-                    start_row -= m_blocks[blk_prev_index].m_size;
+                    start_row -= blk_prev->m_size;
                     --block_index1;
                 }
                 else
                 {
                     // Make block 1 empty.
                     if (!overwrite)
-                        element_block_func::resize_block(*m_blocks[blk_index].mp_data, 0);
+                        element_block_func::resize_block(*blk->mp_data, 0);
 
-                    delete_element_block(m_blocks[blk_index]);
+                    delete_element_block(*blk);
                 }
             }
             else
@@ -4336,11 +4331,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                 // Empty the lower part.
                 size_type new_size = start_row - start_row_in_block1;
                 if (overwrite)
-                    element_block_func::overwrite_values(*m_blocks[blk_index].mp_data,
-                                                         new_size, m_blocks[blk_index].m_size-new_size);
+                    element_block_func::overwrite_values(*blk->mp_data, new_size, blk->m_size-new_size);
 
-                element_block_func::resize_block(*m_blocks[blk_index].mp_data, new_size);
-                m_blocks[blk_index].m_size = new_size;
+                element_block_func::resize_block(*blk->mp_data, new_size);
+                blk->m_size = new_size;
             }
         }
         else
@@ -4355,9 +4349,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
 
     {
         // Empty the upper part of the last block.
-        size_type blk_index = block_index2;
-        size_type last_row_in_block = start_row_in_block2 + m_blocks[blk_index].m_size - 1;
-        if (m_blocks[blk_index].mp_data)
+        block* blk = &m_blocks[block_index2];
+        size_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
+        if (blk->mp_data)
         {
             if (last_row_in_block == end_row)
             {
@@ -4365,19 +4359,19 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                 ++end_block_to_erase;
 
                 // Check if the following block (if exists) is also empty.
-                size_type blk_next_index = invalid_index;
+                block* blk_next = nullptr;
                 if (block_index2+1 < m_blocks.size())
                 {
-                    blk_next_index = block_index2+1;
-                    if (m_blocks[blk_next_index].mp_data)
+                    blk_next = &m_blocks[block_index2+1];
+                    if (blk_next->mp_data)
                         // Not empty.  Ignore it.
-                        blk_next_index = invalid_index;
+                        blk_next = nullptr;
                 }
 
-                if (blk_next_index != invalid_index)
+                if (blk_next)
                 {
                     // The following block is also empty.
-                    end_row += m_blocks[blk_next_index].m_size;
+                    end_row += blk_next->m_size;
                     ++end_block_to_erase;
                 }
             }
@@ -4386,10 +4380,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                 // Empty the upper part.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
                 if (overwrite)
-                    element_block_func::overwrite_values(*m_blocks[blk_index].mp_data, 0, size_to_erase);
+                    element_block_func::overwrite_values(*blk->mp_data, 0, size_to_erase);
 
-                element_block_func::erase(*m_blocks[blk_index].mp_data, 0, size_to_erase);
-                m_blocks[blk_index].m_size -= size_to_erase;
+                element_block_func::erase(*blk->mp_data, 0, size_to_erase);
+                blk->m_size -= size_to_erase;
             }
         }
         else
@@ -4419,9 +4413,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
         m_blocks.erase(it, it_end);
     }
 
-    size_type blk_index = block_index1;
+    block* blk = &m_blocks[block_index1];
     size_type empty_block_size = end_row - start_row + 1;
-    if (m_blocks[blk_index].mp_data)
+    if (blk->mp_data)
     {
         // Insert a new empty block after the first block.
         m_blocks.emplace(m_blocks.begin()+block_index1+1, empty_block_size);
@@ -4429,7 +4423,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
     }
 
     // Current block is already empty. Just extend its size.
-    m_blocks[blk_index].m_size = empty_block_size;
+    blk->m_size = empty_block_size;
     return get_iterator(block_index1, start_row);
 }
 

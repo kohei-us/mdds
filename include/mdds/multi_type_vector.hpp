@@ -122,8 +122,6 @@ public:
 
 private:
 
-    static const size_type invalid_index;
-
     struct block
     {
         size_type m_size;
