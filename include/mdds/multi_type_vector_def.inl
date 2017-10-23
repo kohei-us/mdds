@@ -2143,15 +2143,15 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
     multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
     size_type start_pos_in_block, size_type block_index, size_type start_pos_in_other_block, size_type other_block_index)
 {
-    size_type blk_src_index = block_index;
-    size_type blk_dst_index = other_block_index;
+    block* blk_src = &m_blocks[block_index];
+    block* blk_dst = &other.m_blocks[other_block_index];
     element_category_type cat_src = mtv::element_type_empty;
     element_category_type cat_dst = mtv::element_type_empty;
 
-    if (m_blocks[blk_src_index].mp_data)
-        cat_src = mtv::get_block_type(*m_blocks[blk_src_index].mp_data);
-    if (other.m_blocks[blk_dst_index].mp_data)
-        cat_dst = mtv::get_block_type(*other.m_blocks[blk_dst_index].mp_data);
+    if (blk_src->mp_data)
+        cat_src = mtv::get_block_type(*blk_src->mp_data);
+    if (blk_dst->mp_data)
+        cat_dst = mtv::get_block_type(*blk_dst->mp_data);
 
     size_t other_end_pos = other_pos + end_pos - start_pos;
     size_t len = end_pos - start_pos + 1; // length of elements to swap.
@@ -2159,7 +2159,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
     size_type dst_offset = other_pos - start_pos_in_other_block;
 
     // length of the tail that will not be swapped.
-    size_type src_tail_len = m_blocks[blk_src_index].m_size - src_offset - len;
+    size_type src_tail_len = blk_src->m_size - src_offset - len;
 
     if (cat_src == cat_dst)
     {
@@ -2168,7 +2168,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
             // Both are empty blocks. Nothing to swap.
             return;
 
-        element_block_func::swap_values(*m_blocks[blk_src_index].mp_data, *other.m_blocks[blk_dst_index].mp_data, src_offset, dst_offset, len);
+        element_block_func::swap_values(*blk_src->mp_data, *blk_dst->mp_data, src_offset, dst_offset, len);
         return;
     }
 
@@ -2197,27 +2197,25 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
         if (src_tail_len == 0)
         {
             // the whole block needs to be replaced.
-            std::unique_ptr<element_block_type, element_block_deleter> src_data(m_blocks[blk_src_index].mp_data);
-            m_hdl_event.element_block_released(m_blocks[blk_src_index].mp_data);
-            m_blocks[blk_src_index].mp_data = other.exchange_elements(
+            std::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->mp_data);
+            m_hdl_event.element_block_released(blk_src->mp_data);
+            blk_src->mp_data = other.exchange_elements(
                 *src_data, src_offset, other_block_index, dst_offset, len);
-            m_hdl_event.element_block_acquired(m_blocks[blk_src_index].mp_data);
+            m_hdl_event.element_block_acquired(blk_src->mp_data);
 
             // Release elements in the source block to prevent double-deletion.
             element_block_func::resize_block(*src_data, 0);
             merge_with_adjacent_blocks(block_index);
-            // No update of local index vars needed.
             return;
         }
 
         // Get the new elements from the other container.
         std::unique_ptr<element_block_type, element_block_deleter> dst_data(
-            other.exchange_elements(*m_blocks[blk_src_index].mp_data, src_offset, other_block_index, dst_offset, len));
-        // No need to update blk_dest_index as we are not going to use it in this scope till return statement.
+            other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
 
         // Shrink the current block by erasing the top part.
-        element_block_func::erase(*m_blocks[blk_src_index].mp_data, 0, len);
-        m_blocks[blk_src_index].m_size -= len;
+        element_block_func::erase(*blk_src->mp_data, 0, len);
+        blk_src->m_size -= len;
 
         block* blk_prev = get_previous_block_of_type(block_index, cat_dst);
         if (blk_prev)
@@ -2231,26 +2229,24 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
         {
             // Insert a new block to store the new elements.
             m_blocks.emplace(m_blocks.begin()+block_index, len);
-            // No need to update local vars as they are not used till next return statement
-            size_type blk_index = block_index;
-            m_blocks[blk_index].mp_data = dst_data.release();
-            m_hdl_event.element_block_acquired(m_blocks[blk_index].mp_data);
+            block& blk = m_blocks[block_index];
+            blk.mp_data = dst_data.release();
+            m_hdl_event.element_block_acquired(blk.mp_data);
         }
         return;
     }
 
     // Get the new elements from the other container.
     std::unique_ptr<element_block_type, element_block_deleter> dst_data(
-        other.exchange_elements(*m_blocks[blk_src_index].mp_data, src_offset, other_block_index, dst_offset, len));
-    // No need to update blk_dest_index as we are not going to use it in the rest of the method.
+        other.exchange_elements(*blk_src->mp_data, src_offset, other_block_index, dst_offset, len));
 
     if (src_tail_len == 0)
     {
         // Source range is at the bottom of a block.
 
         // Shrink the current block.
-        element_block_func::resize_block(*m_blocks[blk_src_index].mp_data, src_offset);
-        m_blocks[blk_src_index].m_size = src_offset;
+        element_block_func::resize_block(*blk_src->mp_data, src_offset);
+        blk_src->m_size = src_offset;
 
         block* blk_next = get_next_block_of_type(block_index, cat_dst);
         if (blk_next)
@@ -2263,10 +2259,9 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
         else
         {
             m_blocks.emplace(m_blocks.begin()+block_index+1, len);
-            // No need to update local index vars as they are not used in rest of the method
-            size_type blk_index = block_index+1;
-            m_blocks[blk_index].mp_data = dst_data.release();
-            m_hdl_event.element_block_acquired(m_blocks[blk_index].mp_data);
+            block& blk = m_blocks[block_index+1];
+            blk.mp_data = dst_data.release();
+            m_hdl_event.element_block_acquired(blk.mp_data);
         }
         return;
     }
