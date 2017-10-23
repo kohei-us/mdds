@@ -1694,35 +1694,35 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
     size_type last_dest_pos = dest_pos + len - 1;
 
     // All elements are in the same block.
-    size_type blk_index = block_index1;
+    block* blk = &m_blocks[block_index1];
 
     // Empty the region in the destination container where the elements
     // are to be transferred to. This ensures that the destination region
     // consists of a single block.
     iterator it_dest_blk = dest.set_empty(dest_pos, last_dest_pos);
 
-    if (!m_blocks[blk_index].mp_data)
+    if (!blk->mp_data)
         return get_iterator(block_index1, start_pos_in_block1);
 
-    element_category_type cat = get_block_type(*m_blocks[blk_index].mp_data);
+    element_category_type cat = get_block_type(*blk->mp_data);
 
     size_type dest_block_index = it_dest_blk->__private_data.block_index;
-    size_type blk_dest_index = dest_block_index;
+    block* blk_dest = &dest.m_blocks[dest_block_index];
 
     size_type dest_pos_in_block = dest_pos - it_dest_blk->position;
     if (dest_pos_in_block == 0)
     {
         // Copy to the top part of destination block.
 
-        assert(!dest.m_blocks[blk_dest_index].mp_data); // should be already emptied.
+        assert(!blk_dest->mp_data); // should be already emptied.
 
-        if (len < dest.m_blocks[blk_dest_index].m_size)
+        if (len < blk_dest->m_size)
         {
             // Shrink the existing block and insert a new block before it.
-            assert(len < dest.m_blocks[blk_dest_index].m_size);
-            dest.m_blocks[blk_dest_index].m_size -= len;
+            assert(len < blk_dest->m_size);
+            blk_dest->m_size -= len;
             dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index, len);
-            // No need to update local index var blk_dest_index
+            blk_dest = &dest.m_blocks[dest_block_index]; // The old pointer is invalid.
         }
     }
     else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
@@ -1731,10 +1731,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
 
         // Insert a new block below current, and shrink the current block.
         dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index+1, len);
-        // No need to update blk_dest_index as insertion was done
-        // after it.
-        dest.m_blocks[blk_dest_index].m_size -= len;
-        blk_dest_index = dest_block_index+1;
+        dest.m_blocks[dest_block_index].m_size -= len;
+        blk_dest = &dest.m_blocks[dest_block_index+1];
         ++dest_block_index; // Must point to the new copied block.
     }
     else
@@ -1742,33 +1740,30 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
         // Copy to the middle of destination block.
 
         // Insert two new blocks below current.
-        size_type blk2_size = dest.m_blocks[blk_dest_index].m_size - dest_pos_in_block - len;
+        size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
         dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, 2u, block());
+        dest.m_blocks[dest_block_index].m_size = dest_pos_in_block;
         dest.m_blocks[dest_block_index+1].m_size = len;
         dest.m_blocks[dest_block_index+2].m_size = blk2_size;
-        // No need to update blk_dest_index as insertion was done
-        // after it.
-        dest.m_blocks[blk_dest_index].m_size = dest_pos_in_block;
 
-        blk_dest_index = dest_block_index+1;
+        blk_dest = &dest.m_blocks[dest_block_index+1];
 
         ++dest_block_index; // Must point to the new copied block.
     }
 
-    assert(dest.m_blocks[blk_dest_index].m_size == len);
+    assert(blk_dest->m_size == len);
     size_type offset = start_pos - start_pos_in_block1;
-    if (offset == 0 && len == m_blocks[blk_index].m_size)
+    if (offset == 0 && len == blk->m_size)
     {
         // Just move the whole data array.
-        dest.m_blocks[blk_dest_index].mp_data = m_blocks[blk_index].mp_data;
-        dest.m_hdl_event.element_block_acquired(dest.m_blocks[blk_dest_index].mp_data);
+        blk_dest->mp_data = blk->mp_data;
+        dest.m_hdl_event.element_block_acquired(blk_dest->mp_data);
 
-        m_hdl_event.element_block_released(m_blocks[blk_index].mp_data);
-        m_blocks[blk_index].mp_data = nullptr;
+        m_hdl_event.element_block_released(blk->mp_data);
+        blk->mp_data = nullptr;
 
         dest.merge_with_adjacent_blocks(dest_block_index);
         size_type start_pos_offset = merge_with_adjacent_blocks(block_index1);
-        // Local index vars are not used anymore in this branch, so no need to update
         if (start_pos_offset)
         {
             // Merged with the previous block. Adjust the return block position.
@@ -1778,14 +1773,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
         return get_iterator(block_index1, start_pos_in_block1);
     }
 
-    dest.m_blocks[blk_dest_index].mp_data = element_block_func::create_new_block(cat, 0);
-    assert(dest.m_blocks[blk_dest_index].mp_data);
-    dest.m_hdl_event.element_block_acquired(dest.m_blocks[blk_dest_index].mp_data);
+    blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
+    assert(blk_dest->mp_data);
+    dest.m_hdl_event.element_block_acquired(blk_dest->mp_data);
 
     // Shallow-copy the elements to the destination block.
-    element_block_func::assign_values_from_block(*dest.m_blocks[blk_dest_index].mp_data, *m_blocks[blk_index].mp_data, offset, len);
+    element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, offset, len);
     dest.merge_with_adjacent_blocks(dest_block_index);
-    // Local index vars are not used anymore in this branch, so no need to update
 
     // Set the source range empty without overwriting the elements.
     return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, false);
