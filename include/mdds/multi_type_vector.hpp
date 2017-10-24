@@ -131,9 +131,12 @@ private:
         block(size_type _size);
         block(size_type _size, element_block_type* _data);
         block(const block& other);
+        block(block&& other);
         ~block();
         void swap(block& other);
         void clone_to(block& other) const;
+
+        block& operator=(block);
     };
 
     struct element_block_deleter : public std::unary_function<void, const element_block_type*>
