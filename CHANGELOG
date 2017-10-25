@@ -1,3 +1,8 @@
+* multi_type_vector
+
+  * changed the primary block array storage to remove additional
+    indirection.
+
 mdds 1.2.3
 
 * all
