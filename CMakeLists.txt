@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0048 NEW)
 
-project(mdds VERSION 1.2.3 LANGUAGES CXX)
+project(mdds VERSION 1.3.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 if(MSVC)
