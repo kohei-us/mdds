@@ -1986,6 +1986,22 @@ void fst_test_insert_out_of_bound()
     pos = ret.first;
 }
 
+void fst_test_insert_out_of_bound_2()
+{
+    stack_printer __stack_printer__("::fst_test_insert_out_of_bound_2");
+
+    typedef flat_segment_tree<int, bool> db_type;
+    db_type db(0, 256, false);
+
+    // The range is entirely out-of-bound, but the start range equals the
+    // upper bound of the valid range.
+    auto ret = db.insert_back(256, 1024, true);
+
+    // Insertion never took place.
+    assert(ret.first == db.end());
+    assert(!ret.second);
+}
+
 void fst_test_segment_iterator()
 {
     stack_printer __stack_printer__("::fst_test_segment_iterator");
@@ -2115,6 +2131,7 @@ int main (int argc, char **argv)
             fst_test_assignment();
             fst_test_non_numeric_value();
             fst_test_insert_out_of_bound();
+            fst_test_insert_out_of_bound_2();
             fst_test_segment_iterator();
         }
 

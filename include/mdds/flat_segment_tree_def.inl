@@ -778,7 +778,7 @@ bool flat_segment_tree<_Key, _Value>::adjust_segment_range(key_type& start_key, 
         // Invalid order of segment range.
         return false;
 
-    if (end_key < m_left_leaf->value_leaf.key || start_key > m_right_leaf->value_leaf.key)
+    if (end_key < m_left_leaf->value_leaf.key || start_key >= m_right_leaf->value_leaf.key)
         // The new segment does not overlap the current interval.
         return false;
 
