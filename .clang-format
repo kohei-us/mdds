@@ -5,11 +5,11 @@ AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakTemplateDeclarations: false
+AlwaysBreakTemplateDeclarations: true
 AlwaysBreakBeforeMultilineStrings: false
 BreakBeforeBinaryOperators: true
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: true
+BreakConstructorInitializers: AfterColon
 BinPackParameters: true
 ColumnLimit:     100
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -29,6 +29,7 @@ PenaltyReturnTypeOnItsOwnLine: 60
 PointerBindsToType: true
 ReflowComments: false
 SpacesBeforeTrailingComments: 1
+SpaceAfterTemplateKeyword: false
 Cpp11BracedListStyle: false
 Standard:        Cpp11
 IndentWidth:     4
