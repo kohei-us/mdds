@@ -149,7 +149,7 @@ public:
 
 private:
     template<typename _Func>
-    struct walk_func : std::unary_function<typename store_type::const_iterator::value_type, void>
+    struct walk_func
     {
         _Func& m_func;
         walk_func(_Func& func) : m_func(func) {}

@@ -139,7 +139,7 @@ private:
         block& operator=(block);
     };
 
-    struct element_block_deleter : public std::unary_function<void, const element_block_type*>
+    struct element_block_deleter
     {
         void operator() (const element_block_type* p)
         {
