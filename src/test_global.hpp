@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef __TEST_GLOBAL_HPP__
-#define __TEST_GLOBAL_HPP__
+#ifndef INCLUDED_TEST_GLOBAL_HPP
+#define INCLUDED_TEST_GLOBAL_HPP
 
 #include <stdio.h>
 #include <string>
@@ -34,23 +34,12 @@
 #include <windows.h>
 #undef max
 #undef min
-#else
-#include <sys/time.h>
 #endif
 
 #include <iostream>
 #include <cstring>
-
-#ifdef _WIN32
-typedef unsigned char   uint8_t;
-typedef unsigned short  uint16_t;
-typedef unsigned int    uint32_t;
-#if _MSC_VER < 1600
-typedef char            int8_t;
-#endif
-typedef short           int16_t;
-typedef int             int32_t;
-#endif
+#include <chrono>
+#include <cstdint>
 
 struct cmd_options
 {
@@ -89,16 +78,11 @@ bool parse_cmd_options(int argc, char** argv, cmd_options& opt)
 
 double get_current_time()
 {
-#ifdef _WIN32
-    FILETIME ft;
-    __int64 *time64 = reinterpret_cast<__int64 *>(&ft);
-    GetSystemTimeAsFileTime(&ft);
-    return *time64 / 10000000.0;
-#else
-    timeval tv;
-    gettimeofday(&tv, nullptr);
-    return tv.tv_sec + tv.tv_usec / 1000000.0;
-#endif
+    unsigned long usec_since_epoch =
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
+
+    return usec_since_epoch / 1000000.0;
 }
 
 class stack_watch
@@ -118,20 +102,20 @@ public:
     explicit stack_printer(const char* msg) :
         m_msg(msg)
     {
-        fprintf(stdout, "%s: --begin\n", m_msg.c_str());
+        std::cout << m_msg << ": --begin" << std::endl;
         m_start_time = get_current_time();
     }
 
     ~stack_printer()
     {
         double end_time = get_current_time();
-        fprintf(stdout, "%s: --end (duration: %g sec)\n", m_msg.c_str(), (end_time-m_start_time));
+        std::cout << m_msg << ": --end (duration: " << (end_time-m_start_time) << " sec)" << std::endl;
     }
 
     void print_time(int line) const
     {
         double end_time = get_current_time();
-        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", m_msg.c_str(), line, (end_time-m_start_time));
+        std::cout << m_msg << ": --(" << line << ") (duration: " << (end_time-m_start_time) << " sec)" << std::endl;
     }
 
 private:
