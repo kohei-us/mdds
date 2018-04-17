@@ -798,7 +798,7 @@ void mtv_test_basic()
         assert(it != db.end());
         assert(it->type == mtv::element_type_uchar);
         {
-            const unsigned char* p = &mtv::uchar_element_block::at(*it->data, 0);
+            const unsigned char* p = mtv::uchar_element_block::data(*it->data);
             assert(*p == 'd');
             ++p;
             assert(*p == 'e');

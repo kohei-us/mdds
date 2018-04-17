@@ -150,6 +150,11 @@ public:
         return get(block).m_array.at(pos);
     }
 
+    static value_type* data(base_element_block& block)
+    {
+        return get(block).m_array.data();
+    }
+
     static typename store_type::size_type size(const base_element_block& block)
     {
         return get(block).m_array.size();
