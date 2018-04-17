@@ -753,7 +753,7 @@ public:
      * @param right another matrix instance to parallel-walk with.
      */
     template<typename _Func>
-    void walk(_Func& func, const multi_type_matrix& right) const;
+    void walk(_Func func, const multi_type_matrix& right) const;
 
     /**
      * Walk through the element blocks in a sub-matrix range in parallel with

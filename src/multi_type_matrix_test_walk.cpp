@@ -31,6 +31,7 @@
 
 #include <string>
 #include <ostream>
+#include <memory>
 
 using namespace mdds;
 using namespace std;
@@ -168,10 +169,12 @@ void push_to_buffer<mtx_type::boolean_block_type>(const mtx_type::element_block_
 
 class parallel_walk_element_block : std::binary_function<mtx_type::element_block_node_type, mtx_type::element_block_node_type, void>
 {
-    std::vector<string> m_ls;
-    std::vector<string> m_rs;
+    using strlist_type = std::vector<string>;
 
-    void process_node(const mtx_type::element_block_node_type& node, std::vector<string>& buf)
+    std::shared_ptr<strlist_type> m_ls;
+    std::shared_ptr<strlist_type> m_rs;
+
+    void process_node(const mtx_type::element_block_node_type& node, strlist_type& buf)
     {
         switch (node.type)
         {
@@ -193,21 +196,27 @@ class parallel_walk_element_block : std::binary_function<mtx_type::element_block
         }
     }
 public:
+    parallel_walk_element_block() : m_ls(std::make_shared<strlist_type>()), m_rs(std::make_shared<strlist_type>()) {}
+    parallel_walk_element_block(const parallel_walk_element_block& other) :
+        m_ls(other.m_ls), m_rs(other.m_rs) {}
+    parallel_walk_element_block(parallel_walk_element_block&& other) :
+        m_ls(std::move(other.m_ls)), m_rs(std::move(other.m_rs)) {}
+
     void operator() (const mtx_type::element_block_node_type& left, const mtx_type::element_block_node_type& right)
     {
         cout << "--" << endl;
         cout << "l: offset=" << left.offset << ", size=" << left.size << ", type=" << left.type << endl;
         cout << "r: offset=" << right.offset << ", size=" << right.size << ", type=" << right.type << endl;
-        process_node(left, m_ls);
-        process_node(right, m_rs);
+        process_node(left, *m_ls);
+        process_node(right, *m_rs);
     }
 
-    std::vector<string> get_concat_buffer() const
+    strlist_type get_concat_buffer() const
     {
-        std::vector<string> buf;
-        assert(m_ls.size() == m_rs.size());
-        auto it = m_ls.begin(), it2 = m_rs.begin();
-        auto ite = m_ls.end();
+        strlist_type buf;
+        assert(m_ls->size() == m_rs->size());
+        auto it = m_ls->begin(), it2 = m_rs->begin();
+        auto ite = m_ls->end();
         for (; it != ite; ++it, ++it2)
         {
             ostringstream os;
@@ -220,8 +229,8 @@ public:
 
     void clear()
     {
-        m_ls.clear();
-        m_rs.clear();
+        m_ls->clear();
+        m_rs->clear();
     }
 };
 
@@ -426,6 +435,66 @@ void mtm_test_walk_with_lambda()
     assert(expected == actual);
 }
 
+void mtm_test_parallel_walk_with_lambda()
+{
+    stack_printer __stack_printer__("::mtm_test_parallel_walk_with_lambda");
+
+    vector<double> values = { 1.1, 1.2, 1.3, 1.4 };
+    mtx_type mtx1(2, 2, values.begin(), values.end());
+
+    mtx_type mtx2(2, 2);
+    mtx2.set(0, 0, 2.2);
+    mtx2.set(1, 0, 2.5);
+    mtx2.set(0, 1, true);
+    mtx2.set(1, 1, false);
+
+    struct section
+    {
+        mdds::mtm::element_t type;
+        size_t offset;
+        size_t size;
+
+        bool operator== (const section& other) const
+        {
+            return type == other.type && offset == other.offset && size == other.size;
+        }
+    };
+
+    struct section_pair
+    {
+        section left;
+        section right;
+
+        bool operator== (const section_pair& other) const
+        {
+            return left == other.left && right == other.right;
+        }
+    };
+
+    std::vector<section_pair> expected = {
+        { { mdds::mtm::element_numeric, 0, 2 }, { mdds::mtm::element_numeric, 0, 2 } },
+        { { mdds::mtm::element_numeric, 2, 2 }, { mdds::mtm::element_boolean, 0, 2 } },
+    };
+
+    std::vector<section_pair> actual;
+
+    mtx1.walk(
+        [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r)
+        {
+            actual.emplace_back();
+            actual.back().left.type   = l.type;
+            actual.back().left.offset = l.offset;
+            actual.back().left.size   = l.size;
+            actual.back().right.type   = r.type;
+            actual.back().right.offset = r.offset;
+            actual.back().right.size   = r.size;
+        },
+        mtx2
+    );
+
+    assert(expected == actual);
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -441,6 +510,7 @@ int main (int argc, char **argv)
             mtm_test_parallel_walk();
             mtm_test_parallel_walk_non_equal_size();
             mtm_test_walk_with_lambda();
+            mtm_test_parallel_walk_with_lambda();
         }
 
         if (opt.test_perf)

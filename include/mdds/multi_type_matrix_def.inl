@@ -740,7 +740,7 @@ void multi_type_matrix<_MtxTrait>::walk(
 
 template<typename _MtxTrait>
 template<typename _Func>
-void multi_type_matrix<_MtxTrait>::walk(_Func& func, const multi_type_matrix& right) const
+void multi_type_matrix<_MtxTrait>::walk(_Func func, const multi_type_matrix& right) const
 {
     if (size() != right.size())
         throw size_error("multi_type_matrix: left and right matrices must have the same geometry.");
