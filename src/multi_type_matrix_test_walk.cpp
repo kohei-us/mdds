@@ -39,6 +39,12 @@ using namespace std;
 // Standard matrix that uses std::string as its string type.
 typedef multi_type_matrix<mtm::std_string_trait> mtx_type;
 
+inline std::ostream& operator<< (std::ostream& os, const mtx_type::element_block_node_type& node)
+{
+    os << "(type=" << node.type << "; offset=" << node.offset << "; size=" << node.size << ")";
+    return os;
+}
+
 template<typename _T>
 struct print_element : std::unary_function<_T, void>
 {
@@ -205,8 +211,8 @@ public:
     void operator() (const mtx_type::element_block_node_type& left, const mtx_type::element_block_node_type& right)
     {
         cout << "--" << endl;
-        cout << "l: offset=" << left.offset << ", size=" << left.size << ", type=" << left.type << endl;
-        cout << "r: offset=" << right.offset << ", size=" << right.size << ", type=" << right.type << endl;
+        cout << "l: " << left << endl;
+        cout << "r: " << right << endl;
         process_node(left, *m_ls);
         process_node(right, *m_rs);
     }
@@ -478,9 +484,12 @@ void mtm_test_parallel_walk_with_lambda()
 
     std::vector<section_pair> actual;
 
+    cout << "--" << endl;
+
     mtx1.walk(
         [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r)
         {
+            cout << "left: " << l << "; right: " << r << endl;
             actual.emplace_back();
             actual.back().left.type   = l.type;
             actual.back().left.offset = l.offset;
@@ -493,6 +502,57 @@ void mtm_test_parallel_walk_with_lambda()
     );
 
     assert(expected == actual);
+
+    mtx_type mtx3(4, 4, 1.0), mtx4(4, 4, std::string("A"));
+    mtx3.set(2, 0, true);
+    mtx3.set(3, 0, true);
+    mtx4.set(0, 1, 2.2);
+    mtx4.set(1, 1, 2.3);
+    mtx4.set(0, 2, 1.1);
+    mtx4.set(1, 2, 1.1);
+    mtx3.set(1, 2, true);
+    mtx3.set(2, 2, false);
+
+    expected = {
+        { { mdds::mtm::element_numeric, 0, 2 }, { mdds::mtm::element_string, 0, 2 } },
+        { { mdds::mtm::element_boolean, 0, 1 }, { mdds::mtm::element_string, 2, 1 } },
+
+        { { mdds::mtm::element_numeric, 0, 2 }, { mdds::mtm::element_numeric, 0, 2 } },
+        { { mdds::mtm::element_numeric, 2, 1 }, { mdds::mtm::element_string, 0, 1 } },
+
+        { { mdds::mtm::element_numeric, 4, 1 }, { mdds::mtm::element_numeric, 0, 1 } },
+        { { mdds::mtm::element_boolean, 0, 1 }, { mdds::mtm::element_numeric, 1, 1 } },
+        { { mdds::mtm::element_boolean, 1, 1 }, { mdds::mtm::element_string, 0, 1 } },
+    };
+
+    actual.clear();
+
+    cout << "--" << endl;
+
+    mtx3.walk(
+        [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r)
+        {
+            cout << "left: " << l << "; right: " << r << endl;
+            actual.emplace_back();
+            actual.back().left.type   = l.type;
+            actual.back().left.offset = l.offset;
+            actual.back().left.size   = l.size;
+            actual.back().right.type   = r.type;
+            actual.back().right.offset = r.offset;
+            actual.back().right.size   = r.size;
+        },
+        mtx4,
+        { 0, 0 }, { 2, 2 }
+    );
+
+    assert(expected.size() == actual.size());
+    assert(expected[0] == actual[0]);
+    assert(expected[1] == actual[1]);
+    assert(expected[2] == actual[2]);
+    assert(expected[3] == actual[3]);
+    assert(expected[4] == actual[4]);
+    assert(expected[5] == actual[5]);
+    assert(expected[6] == actual[6]);
 }
 
 int main (int argc, char **argv)

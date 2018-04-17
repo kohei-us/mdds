@@ -776,11 +776,16 @@ void multi_type_matrix<_MtxTrait>::walk(_Func func, const multi_type_matrix& rig
 template<typename _MtxTrait>
 template<typename _Func>
 void multi_type_matrix<_MtxTrait>::walk(
-    _Func& func, const multi_type_matrix& right,
+    _Func func, const multi_type_matrix& right,
     const size_pair_type& start, const size_pair_type& end) const
 {
     if (end.row < start.row || end.column < start.column)
-        throw size_error("multi_type_matrix: invalid start/end position pair.");
+    {
+        std::ostringstream os;
+        os << "multi_type_matrix: invalid start/end position pair: (row="
+            << start.row << "; column=" << start.column << ") - (row=" << end.row << "; column=" << end.column << ")";
+        throw size_error(os.str());
+    }
 
     if (end.row > m_size.row || end.column > m_size.column ||
         end.row > right.size().row || end.column > right.size().column)

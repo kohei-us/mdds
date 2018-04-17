@@ -774,7 +774,7 @@ public:
      *          those of the start position.
      */
     template<typename _Func>
-    void walk(_Func& func, const multi_type_matrix& right,
+    void walk(_Func func, const multi_type_matrix& right,
         const size_pair_type& start, const size_pair_type& end) const;
 
 
