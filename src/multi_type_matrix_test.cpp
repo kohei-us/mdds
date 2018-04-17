@@ -219,6 +219,13 @@ void mtm_test_construction()
         assert(mtx.get_type(0,2) == mtm::element_string);
         assert(mtx.get_type(0,3) == mtm::element_string);
     }
+
+    {
+        // Construct size_pair_type from initializer list.
+        mtx_type::size_pair_type sz({3, 4});
+        assert(sz.row == 3);
+        assert(sz.column == 4);
+    }
 }
 
 void mtm_test_data_insertion()

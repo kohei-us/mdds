@@ -684,19 +684,24 @@ void multi_type_matrix<_MtxTrait>::swap(multi_type_matrix& r)
 
 template<typename _MtxTrait>
 template<typename _Func>
-void multi_type_matrix<_MtxTrait>::walk(_Func& func) const
+void multi_type_matrix<_MtxTrait>::walk(_Func func) const
 {
-    walk_func<_Func> wf(func);
+    walk_func<_Func> wf(std::move(func));
     std::for_each(m_store.begin(), m_store.end(), wf);
 }
 
 template<typename _MtxTrait>
 template<typename _Func>
 void multi_type_matrix<_MtxTrait>::walk(
-    _Func& func, const size_pair_type& start, const size_pair_type& end) const
+    _Func func, const size_pair_type& start, const size_pair_type& end) const
 {
     if (end.row < start.row || end.column < start.column)
-        throw size_error("multi_type_matrix: invalid start/end position pair.");
+    {
+        std::ostringstream os;
+        os << "multi_type_matrix: invalid start/end position pair: (row="
+            << start.row << "; column=" << start.column << ") - (row=" << end.row << "; column=" << end.column << ")";
+        throw size_error(os.str());
+    }
 
     if (end.row > m_size.row || end.column > m_size.column)
         throw size_error("multi_type_matrix: end position is out-of-bound.");

@@ -374,6 +374,58 @@ void mtm_test_parallel_walk_non_equal_size()
     }
 }
 
+/**
+ * Make sure the walk methods can take lambdas.
+ */
+void mtm_test_walk_with_lambda()
+{
+    stack_printer __stack_printer__("::mtm_test_walk_with_lambda");
+    vector<double> values = { 1.1, 1.2, 1.3, 1.4 };
+    mtx_type mtx(2, 2, values.begin(), values.end());
+
+    mtx.walk(
+        [](const mtx_type::element_block_node_type& node)
+        {
+            assert(node.type == mdds::mtm::element_numeric);
+            assert(node.offset == 0);
+            assert(node.size == 4);
+        }
+    );
+
+    struct section
+    {
+        mdds::mtm::element_t type;
+        size_t offset;
+        size_t size;
+
+        bool operator== (const section& other) const
+        {
+            return type == other.type && offset == other.offset && size == other.size;
+        }
+    };
+
+    std::vector<section> expected = {
+        { mdds::mtm::element_numeric, 0, 1 },
+        { mdds::mtm::element_numeric, 2, 1 },
+    };
+
+    std::vector<section> actual;
+
+    mtx.walk(
+        [&](const mtx_type::element_block_node_type& node)
+        {
+            actual.emplace_back();
+            actual.back().type = node.type;
+            actual.back().offset = node.offset;
+            actual.back().size = node.size;
+        }
+        ,
+        { 0, 0 }, { 0, 1 } // (row=0, column=0) to (row=0, column=1)
+    );
+
+    assert(expected == actual);
+}
+
 int main (int argc, char **argv)
 {
     try
@@ -388,6 +440,7 @@ int main (int argc, char **argv)
             mtm_test_walk_subset();
             mtm_test_parallel_walk();
             mtm_test_parallel_walk_non_equal_size();
+            mtm_test_walk_with_lambda();
         }
 
         if (opt.test_perf)

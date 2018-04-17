@@ -101,7 +101,18 @@ public:
         size_type row;
         size_type column;
         size_pair_type() : row(0), column(0) {}
-        size_pair_type(size_type _row, size_type _column) : row(_row), column(_column) {}
+        size_pair_type(size_type row, size_type column) : row(row), column(column) {}
+        size_pair_type(std::initializer_list<size_type> vs)
+        {
+            if (vs.size() != 2)
+                throw invalid_arg_error("size_pair_type requires exactly 2 elements.");
+
+            size_type* ptrs[2] = { &row, &column };
+            size_type** p = ptrs;
+
+            for (size_type v : vs)
+                **p++ = v;
+        }
 
         bool operator== (const size_pair_type& r) const { return row == r.row && column == r.column; }
         bool operator!= (const size_pair_type& r) const { return !operator== (r); }
@@ -151,8 +162,8 @@ private:
     template<typename _Func>
     struct walk_func
     {
-        _Func& m_func;
-        walk_func(_Func& func) : m_func(func) {}
+        _Func m_func;
+        walk_func(_Func func) : m_func(std::move(func)) {}
 
         void operator() (const typename store_type::const_iterator::value_type& mtv_node)
         {
@@ -712,7 +723,7 @@ public:
      *             element block.
      */
     template<typename _Func>
-    void walk(_Func& func) const;
+    void walk(_Func func) const;
 
     /**
      * Walk through the element blocks in a sub-matrix range defined by start
@@ -729,7 +740,7 @@ public:
      *          those of the start position.
      */
     template<typename _Func>
-    void walk(_Func& func, const size_pair_type& start, const size_pair_type& end) const;
+    void walk(_Func func, const size_pair_type& start, const size_pair_type& end) const;
 
     /**
      * Walk through all element blocks in parallel with another matrix
