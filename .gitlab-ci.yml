@@ -1,4 +1,11 @@
-job1:
-  script: ./autogen.sh; make check; make install
+image: gcc
 
-
+build:
+  stage: build
+  before_script: 
+    - apt update
+    - apt -y install make autoconf automake libtool pkg-config git python3-dev
+    - apt -y install libboost-all-dev || apt-get -y install libboost-all-dev
+    - ldconfig
+  script: 
+    - ./autogen.sh && make -j $(nproc) && make -j $(nproc) check
