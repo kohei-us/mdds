@@ -1,3 +1,11 @@
+* multi_type_vector
+
+  * mtv::elemnt_block now has the following methods: data(), cbegin(),
+    cend(), crbegin() and crend().
+
+  * multi_type_vector now has cbegin(), cend(), crbegin(), and crend()
+    methods.
+
 * multi_type_matrix
 
   * all of its walk() methods now allow in-line lambdas to be used, by

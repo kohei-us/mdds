@@ -2502,6 +2502,29 @@ void mtv_test_iterators()
             ++it;
             assert(it == it_end);
         }
+
+        {
+            // Reverse iterator (C++11)
+            mtv_type::const_reverse_iterator it = db.crbegin(), it_end = db.crend();
+            size_t len = std::distance(it, it_end);
+            assert(len == 3);
+            assert(it != it_end);
+            assert(it->type == mdds::mtv::element_type_string);
+            assert(it->size == 2);
+
+            ++it;
+            assert(it != it_end);
+            assert(it->type == mdds::mtv::element_type_empty);
+            assert(it->size == 2);
+
+            ++it;
+            assert(it != it_end);
+            assert(it->type == mdds::mtv::element_type_numeric);
+            assert(it->size == 2);
+
+            ++it;
+            assert(it == it_end);
+        }
     }
 
     {

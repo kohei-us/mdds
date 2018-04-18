@@ -295,6 +295,9 @@ public:
     const_reverse_iterator rbegin() const;
     const_reverse_iterator rend() const;
 
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
+
     event_func& event_handler();
     const event_func& event_handler() const;
 

@@ -260,14 +260,14 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::cbegin() const
 {
-    return const_iterator(m_blocks.begin(), m_blocks.end(), 0, 0);
+    return const_iterator(m_blocks.cbegin(), m_blocks.cend(), 0, 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::cend() const
 {
-    return const_iterator(m_blocks.end(), m_blocks.end(), 0, 0);
+    return const_iterator(m_blocks.cend(), m_blocks.cend(), 0, 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -296,6 +296,20 @@ typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::rend() const
 {
     return const_reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0, 0);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::crbegin() const
+{
+    return const_reverse_iterator(m_blocks.crbegin(), m_blocks.crend(), 0, 0);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::crend() const
+{
+    return const_reverse_iterator(m_blocks.crend(), m_blocks.crend(), 0, 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
