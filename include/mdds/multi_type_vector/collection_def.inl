@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2016 Kohei Yoshida
+ * Copyright (c) 2016-2018 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -274,7 +274,7 @@ collection<_MtvT>::build_iterator_state() const
     std::for_each(it, it_end,
         [&](const mtv_type* p)
         {
-            cols.emplace_back(p, p->begin(), p->end());
+            cols.emplace_back(p, p->cbegin(), p->cend());
         }
     );
 

@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2016 Kohei Yoshida
+ * Copyright (c) 2012-2018 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -176,6 +176,16 @@ public:
     }
 
     static const_iterator end(const base_element_block& block)
+    {
+        return get(block).m_array.end();
+    }
+
+    static const_iterator cbegin(const base_element_block& block)
+    {
+        return get(block).m_array.begin();
+    }
+
+    static const_iterator cend(const base_element_block& block)
     {
         return get(block).m_array.end();
     }

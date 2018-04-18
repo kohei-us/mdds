@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011-2016 Kohei Yoshida
+ * Copyright (c) 2011-2018 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -285,6 +285,9 @@ public:
 
     const_iterator begin() const;
     const_iterator end() const;
+
+    const_iterator cbegin() const;
+    const_iterator cend() const;
 
     reverse_iterator rbegin();
     reverse_iterator rend();

@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2014 Kohei Yoshida
+ * Copyright (c) 2012-2018 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -252,6 +252,20 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::begin() const
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::end() const
+{
+    return const_iterator(m_blocks.end(), m_blocks.end(), 0, 0);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::cbegin() const
+{
+    return const_iterator(m_blocks.begin(), m_blocks.end(), 0, 0);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::cend() const
 {
     return const_iterator(m_blocks.end(), m_blocks.end(), 0, 0);
 }
