@@ -2591,6 +2591,23 @@ void mtv_test_data_iterators()
         assert(it_data == it_data_end);
     }
 
+    {
+        // Test crbegin() and crend() too, which should be identical to the
+        // const variants of rbegin() and rend() from above.
+        mtv::string_element_block::const_reverse_iterator it_data = mtv::string_element_block::crbegin(*it_blk->data);
+        mtv::string_element_block::const_reverse_iterator it_data_end = mtv::string_element_block::crend(*it_blk->data);
+        assert(it_data != it_data_end);
+        assert(*it_data == "D");
+        ++it_data;
+        assert(*it_data == "C");
+        ++it_data;
+        assert(*it_data == "B");
+        ++it_data;
+        assert(*it_data == "A");
+        ++it_data;
+        assert(it_data == it_data_end);
+    }
+
     // Another empty block follows.
     ++it_blk;
     assert(it_blk->type == mdds::mtv::element_type_empty);

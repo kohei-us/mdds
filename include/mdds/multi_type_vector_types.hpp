@@ -210,6 +210,16 @@ public:
         return get(block).m_array.rend();
     }
 
+    static const_reverse_iterator crbegin(const base_element_block& block)
+    {
+        return get(block).m_array.rbegin();
+    }
+
+    static const_reverse_iterator crend(const base_element_block& block)
+    {
+        return get(block).m_array.rend();
+    }
+
     static _Self& get(base_element_block& block)
     {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
