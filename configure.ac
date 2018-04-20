@@ -85,6 +85,7 @@ rectangle_set_test_mem.mem:src/test.mem.in
 segment_tree_test_mem.mem:src/test.mem.in
 sorted_string_map_test_mem.mem:src/test.mem.in
 trie_map_test_mem.mem:src/test.mem.in
+rtree_test_mem.mem:src/test.mem.in
 VERSION
 ])
 AC_OUTPUT

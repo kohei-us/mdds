@@ -252,6 +252,8 @@
 				<F N="../include/mdds/quad_node.hpp"/>
 				<F N="../include/mdds/rectangle_set.hpp"/>
 				<F N="../include/mdds/rectangle_set_def.inl"/>
+				<F N="../include/mdds/rtree.hpp"/>
+				<F N="../include/mdds/rtree_def.inl"/>
 				<F N="../include/mdds/segment_tree.hpp"/>
 				<F N="../include/mdds/segment_tree_def.inl"/>
 				<F N="../include/mdds/sorted_string_map.hpp"/>
@@ -276,6 +278,7 @@
 			<F N="../src/point_quad_tree_test.cpp"/>
 			<F N="../src/rangetree.cpp"/>
 			<F N="../src/rectangle_set_test.cpp"/>
+			<F N="../src/rtree_test.cpp"/>
 			<F N="../src/segment_tree_test.cpp"/>
 			<F N="../src/sorted_string_map_test.cpp"/>
 			<F N="../src/stlperf_test.cpp"/>
