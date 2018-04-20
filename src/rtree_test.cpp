@@ -30,8 +30,11 @@
 
 #include <string>
 
+#include "test_global.hpp"
+
 void rtree_test_basic()
 {
+    stack_printer __stack_printer__("::rtree_test_basic");
     using rt_type = mdds::rtree<int16_t, std::string>;
 
     rt_type tree;

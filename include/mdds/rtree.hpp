@@ -29,6 +29,7 @@
 #ifndef INCLUDED_MDDS_RTREE_HPP
 #define INCLUDED_MDDS_RTREE_HPP
 
+#include <vector>
 #include <cstdlib>
 
 namespace mdds {
@@ -44,23 +45,55 @@ class rtree
     struct point
     {
         key_type d[dimensions];
+
+        point();
     };
 
     struct bounding_box
     {
         point start;
         point end;
+
+        bounding_box();
     };
 
-    struct node_base
-    {
-        bounding_box box;
-        bool leaf;
+    enum class node_type { unspecified, directory, value };
 
+    struct node
+    {
+        node_type type;
+        bounding_box box;
+
+        std::vector<node*> store;
+
+        node() = delete;
+        node(node_type type);
+        ~node();
+    };
+
+    struct value_node : public node
+    {
+        value_type value;
+
+        value_node();
+        ~value_node();
+    };
+
+    struct directory_node : public node
+    {
+        directory_node();
+        ~directory_node();
     };
 
 public:
     rtree();
+    ~rtree();
+
+    rtree(const rtree&) = delete;
+    rtree& operator= (const rtree&) = delete;
+
+private:
+    directory_node* m_root;
 };
 
 }
