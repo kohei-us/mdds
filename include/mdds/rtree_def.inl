@@ -26,7 +26,12 @@
  *
  ************************************************************************/
 
+#include "mdds/global.hpp"
+
 #include <stdexcept>
+#include <iostream>
+#include <sstream>
+#include <memory>
 
 namespace mdds {
 
@@ -42,10 +47,53 @@ rtree<_Key,_Value,_Dim>::point::point()
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
+rtree<_Key,_Value,_Dim>::point::point(std::initializer_list<key_type> vs)
+{
+    // Initialize the point values with the key type's default value.
+    key_type* dst = d;
+    key_type* dst_end = dst + dimensions;
+
+    for (const key_type& v : vs)
+    {
+        if (dst == dst_end)
+            throw std::range_error("number of elements exceeds the dimension size.");
+
+        *dst = v;
+        ++dst;
+    }
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+std::string
+rtree<_Key,_Value,_Dim>::point::to_string() const
+{
+    std::ostringstream os;
+
+    os << "(";
+    for (size_t i = 0; i < dimensions; ++i)
+    {
+        if (i > 0)
+            os << ", ";
+        os << d[i];
+    }
+    os << ")";
+
+    return os.str();
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::bounding_box::bounding_box() {}
 
 template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node::node(node_type type) : type(type) {}
+rtree<_Key,_Value,_Dim>::bounding_box::bounding_box(const point& start, const point& end) :
+    start(start), end(end) {}
+
+template<typename _Key, typename _Value, size_t _Dim>
+rtree<_Key,_Value,_Dim>::node::node(node_type type) : type(type), parent(nullptr) {}
+
+template<typename _Key, typename _Value, size_t _Dim>
+rtree<_Key,_Value,_Dim>::node::node(node_type type, const bounding_box& bb) :
+    type(type), box(bb), parent(nullptr) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node::~node()
@@ -68,7 +116,11 @@ rtree<_Key,_Value,_Dim>::node::~node()
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::value_node::value_node() : node(node_type::value) {}
+rtree<_Key,_Value,_Dim>::value_node::value_node(const bounding_box& bb, value_type value) :
+    node(node_type::value), value(std::move(value))
+{
+
+}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::value_node::~value_node() {}
@@ -80,6 +132,15 @@ template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::directory_node::~directory_node() {}
 
 template<typename _Key, typename _Value, size_t _Dim>
+void rtree<_Key,_Value,_Dim>::directory_node::insert(node* p)
+{
+    p->parent = this;
+    store.push_back(p);
+
+    throw std::runtime_error("TODO: propagate the bbox adjustment upward.");
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::rtree() : m_root(new directory_node) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
@@ -88,7 +149,34 @@ rtree<_Key,_Value,_Dim>::~rtree()
     delete m_root;
 }
 
+template<typename _Key, typename _Value, size_t _Dim>
+void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value_type value)
+{
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): start=" << start.to_string() << "; end=" << end.to_string() << std::endl;
+    bounding_box bb(start, end);
+    directory_node* dir = find_node_for_insertion(bb);
+    if (!dir->has_capacity())
+        throw std::runtime_error("WIP");
+
+    // Insert the new value to this node.
+    dir->insert(new value_node(bb, std::move(value)));
+
+    // Propagate the bounding box adjustment upward.
+
 }
+
+template<typename _Key, typename _Value, size_t _Dim>
+typename rtree<_Key,_Value,_Dim>::directory_node*
+rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
+{
+    directory_node* dst = m_root;
+    if (dst->is_leaf())
+        return dst;
+
+    throw std::runtime_error("WIP");
+}
+
+} // namespace mdds
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

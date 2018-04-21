@@ -31,14 +31,18 @@
 
 #include <vector>
 #include <cstdlib>
+#include <string>
 
 namespace mdds {
 
 template<typename _Key, typename _Value, size_t _Dim = 2>
 class rtree
 {
-    static const size_t dimensions = _Dim;
+    static const size_t min_node_size = 40;
+    static const size_t max_node_size = 100;
 
+public:
+    static const size_t dimensions = _Dim;
     using key_type = _Key;
     using value_type = _Value;
 
@@ -47,6 +51,9 @@ class rtree
         key_type d[dimensions];
 
         point();
+        point(std::initializer_list<key_type> vs);
+
+        std::string to_string() const;
     };
 
     struct bounding_box
@@ -55,8 +62,10 @@ class rtree
         point end;
 
         bounding_box();
+        bounding_box(const point& start, const point& end);
     };
 
+private:
     enum class node_type { unspecified, directory, value };
 
     struct node
@@ -66,8 +75,12 @@ class rtree
 
         std::vector<node*> store;
 
+        node* parent;
+
         node() = delete;
+        node(const node&) = delete;
         node(node_type type);
+        node(node_type type, const bounding_box& bb);
         ~node();
     };
 
@@ -75,22 +88,44 @@ class rtree
     {
         value_type value;
 
-        value_node();
+        value_node() = delete;
+        value_node(const bounding_box& bb, value_type value);
         ~value_node();
     };
 
     struct directory_node : public node
     {
+        using node::store;
+        using node::parent;
+
         directory_node();
         ~directory_node();
+
+        bool is_leaf() const
+        {
+            return store.empty();
+        }
+
+        bool has_capacity() const
+        {
+            return store.size() < max_node_size;
+        }
+
+        void insert(node* p);
     };
 
 public:
+
     rtree();
     ~rtree();
 
     rtree(const rtree&) = delete;
     rtree& operator= (const rtree&) = delete;
+
+    void insert(const point& start, const point& end, value_type value);
+
+private:
+    directory_node* find_node_for_insertion(const bounding_box& bb);
 
 private:
     directory_node* m_root;

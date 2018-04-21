@@ -38,6 +38,8 @@ void rtree_test_basic()
     using rt_type = mdds::rtree<int16_t, std::string>;
 
     rt_type tree;
+
+    tree.insert({0, 0}, {2, 2}, "test");
 }
 
 int main(int argc, char** argv)
