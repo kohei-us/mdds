@@ -32,6 +32,7 @@
 #include <iostream>
 #include <sstream>
 #include <memory>
+#include <cassert>
 
 namespace mdds {
 
@@ -89,24 +90,35 @@ rtree<_Key,_Value,_Dim>::bounding_box::bounding_box(const point& start, const po
     start(start), end(end) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node::node(node_type type) : type(type), parent(nullptr) {}
+rtree<_Key,_Value,_Dim>::node_store::node_store() :
+    type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node::node(node_type type, const bounding_box& bb) :
-    type(type), box(bb), parent(nullptr) {}
-
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node::~node()
+rtree<_Key,_Value,_Dim>::node_store::node_store(node_store&& r) :
+    type(r.type), box(r.box), parent(r.parent), node_ptr(r.node_ptr), count(r.count)
 {
-    for (node* p : store)
+    r.type = node_type::unspecified;
+    r.parent = nullptr;
+    r.node_ptr = nullptr;
+    r.count = 0;
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+rtree<_Key,_Value,_Dim>::node_store::node_store(node_type type, const bounding_box& box, node* node_ptr) :
+    type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0) {}
+
+template<typename _Key, typename _Value, size_t _Dim>
+rtree<_Key,_Value,_Dim>::node_store::~node_store()
+{
+    if (node_ptr)
     {
-        switch (p->type)
+        switch (type)
         {
             case node_type::directory:
-                delete static_cast<directory_node*>(p);
+                delete static_cast<directory_node*>(node_ptr);
                 break;
             case node_type::value:
-                delete static_cast<value_node*>(p);
+                delete static_cast<value_node*>(node_ptr);
                 break;
             case node_type::unspecified:
             default:
@@ -116,37 +128,52 @@ rtree<_Key,_Value,_Dim>::node::~node()
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::value_node::value_node(const bounding_box& bb, value_type value) :
-    node(node_type::value), value(std::move(value))
+typename rtree<_Key,_Value,_Dim>::node_store
+rtree<_Key,_Value,_Dim>::node_store::create_directory_node()
 {
-
+    node_store ret(node_type::directory, bounding_box(), new directory_node);
+    return ret;
 }
+
+template<typename _Key, typename _Value, size_t _Dim>
+typename rtree<_Key,_Value,_Dim>::node_store
+rtree<_Key,_Value,_Dim>::node_store::create_value_node(const bounding_box& box, value_type v)
+{
+    node_store ret(node_type::value, box, new value_node(std::move(v)));
+    return ret;
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+rtree<_Key,_Value,_Dim>::node::node() {}
+
+template<typename _Key, typename _Value, size_t _Dim>
+rtree<_Key,_Value,_Dim>::node::~node() {}
+
+template<typename _Key, typename _Value, size_t _Dim>
+rtree<_Key,_Value,_Dim>::value_node::value_node(value_type value) :
+    value(std::move(value)) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::value_node::~value_node() {}
 
 template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::directory_node::directory_node() : node(node_type::directory) {}
+rtree<_Key,_Value,_Dim>::directory_node::directory_node() {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::directory_node::~directory_node() {}
 
 template<typename _Key, typename _Value, size_t _Dim>
-void rtree<_Key,_Value,_Dim>::directory_node::insert(node* p)
+void rtree<_Key,_Value,_Dim>::directory_node::insert(node_store&& ns)
 {
-    p->parent = this;
-    store.push_back(p);
-
-    throw std::runtime_error("TODO: propagate the bbox adjustment upward.");
+    children.push_back(std::move(ns));
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::rtree() : m_root(new directory_node) {}
+rtree<_Key,_Value,_Dim>::rtree() : m_root(node_store::create_directory_node()) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::~rtree()
 {
-    delete m_root;
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
@@ -154,23 +181,32 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
 {
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): start=" << start.to_string() << "; end=" << end.to_string() << std::endl;
     bounding_box bb(start, end);
-    directory_node* dir = find_node_for_insertion(bb);
-    if (!dir->has_capacity())
+    node_store* ns = find_node_for_insertion(bb);
+    assert(ns);
+
+    if (!ns->has_capacity())
+    {
+        // TODO : implement the "split tree".
         throw std::runtime_error("WIP");
+    }
+
+    assert(ns->type == node_type::directory);
+    directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
 
     // Insert the new value to this node.
-    dir->insert(new value_node(bb, std::move(value)));
+    node_store new_ns = node_store::create_value_node(bb, std::move(value));
+    new_ns.parent = ns;
+    dir->insert(std::move(new_ns));
 
-    // Propagate the bounding box adjustment upward.
-
+    // Propagate the bounding box update up the tree all the way to the root.
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
-typename rtree<_Key,_Value,_Dim>::directory_node*
+typename rtree<_Key,_Value,_Dim>::node_store*
 rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 {
-    directory_node* dst = m_root;
-    if (dst->is_leaf())
+    node_store* dst = &m_root;
+    if (!dst->count)
         return dst;
 
     throw std::runtime_error("WIP");

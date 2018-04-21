@@ -68,19 +68,47 @@ public:
 private:
     enum class node_type { unspecified, directory, value };
 
-    struct node
+    struct node;
+
+    struct node_store
     {
         node_type type;
         bounding_box box;
+        node_store* parent = nullptr;
+        node* node_ptr = nullptr;
+        size_t count = 0;
 
-        std::vector<node*> store;
+        node_store();
+        node_store(node_store&& r);
+        node_store(node_type type, const bounding_box& box, node* node_ptr);
+        ~node_store();
 
-        node* parent;
+        static node_store create_directory_node();
+        static node_store create_value_node(const bounding_box& box, value_type v);
 
-        node() = delete;
+        node_store(const node_store&) = delete;
+
+        bool is_leaf() const
+        {
+            if (type != node_type::directory)
+                return false;
+
+            return count == 0;
+        }
+
+        bool has_capacity() const
+        {
+            if (type != node_type::directory)
+                return false;
+
+            return count < max_node_size;
+        }
+    };
+
+    struct node
+    {
+        node();
         node(const node&) = delete;
-        node(node_type type);
-        node(node_type type, const bounding_box& bb);
         ~node();
     };
 
@@ -89,29 +117,18 @@ private:
         value_type value;
 
         value_node() = delete;
-        value_node(const bounding_box& bb, value_type value);
+        value_node(value_type value);
         ~value_node();
     };
 
     struct directory_node : public node
     {
-        using node::store;
-        using node::parent;
+        std::vector<node_store> children;
 
         directory_node();
         ~directory_node();
 
-        bool is_leaf() const
-        {
-            return store.empty();
-        }
-
-        bool has_capacity() const
-        {
-            return store.size() < max_node_size;
-        }
-
-        void insert(node* p);
+        void insert(node_store&& ns);
     };
 
 public:
@@ -125,10 +142,10 @@ public:
     void insert(const point& start, const point& end, value_type value);
 
 private:
-    directory_node* find_node_for_insertion(const bounding_box& bb);
+    node_store* find_node_for_insertion(const bounding_box& bb);
 
 private:
-    directory_node* m_root;
+    node_store m_root;
 };
 
 }
