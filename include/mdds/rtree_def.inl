@@ -197,6 +197,7 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
     node_store new_ns = node_store::create_value_node(bb, std::move(value));
     new_ns.parent = ns;
     dir->insert(std::move(new_ns));
+    ++ns->count;
 
     // Propagate the bounding box update up the tree all the way to the root.
 }
