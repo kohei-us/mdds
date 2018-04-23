@@ -54,6 +54,9 @@ public:
         point(std::initializer_list<key_type> vs);
 
         std::string to_string() const;
+
+        bool operator== (const point& other) const;
+        bool operator!= (const point& other) const;
     };
 
     struct bounding_box
@@ -63,6 +66,11 @@ public:
 
         bounding_box();
         bounding_box(const point& start, const point& end);
+
+        std::string to_string() const;
+
+        bool operator== (const bounding_box& other) const;
+        bool operator!= (const bounding_box& other) const;
     };
 
 private:
@@ -141,8 +149,12 @@ public:
 
     void insert(const point& start, const point& end, value_type value);
 
+    const bounding_box& get_total_extent() const;
+
 private:
     node_store* find_node_for_insertion(const bounding_box& bb);
+
+    void expand_box_to_fit(bounding_box& parent, const bounding_box& child) const;
 
 private:
     node_store m_root;

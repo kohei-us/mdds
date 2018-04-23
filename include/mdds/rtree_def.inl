@@ -83,11 +83,54 @@ rtree<_Key,_Value,_Dim>::point::to_string() const
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
+bool rtree<_Key,_Value,_Dim>::point::operator== (const point& other) const
+{
+    const key_type* left = d;
+    const key_type* right = other.d;
+    const key_type* left_end = left + dimensions;
+
+    for (; left != left_end; ++left, ++right)
+    {
+        if (*left != *right)
+            return false;
+    }
+
+    return true;
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+bool rtree<_Key,_Value,_Dim>::point::operator!= (const point& other) const
+{
+    return !operator== (other);
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::bounding_box::bounding_box() {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::bounding_box::bounding_box(const point& start, const point& end) :
     start(start), end(end) {}
+
+template<typename _Key, typename _Value, size_t _Dim>
+std::string
+rtree<_Key,_Value,_Dim>::bounding_box::to_string() const
+{
+    std::ostringstream os;
+    os << start.to_string() << " - " << end.to_string();
+    return os.str();
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+bool rtree<_Key,_Value,_Dim>::bounding_box::operator== (const bounding_box& other) const
+{
+    return start == other.start && end == other.end;
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+bool rtree<_Key,_Value,_Dim>::bounding_box::operator!= (const bounding_box& other) const
+{
+    return !operator== (other);
+}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::node_store() :
@@ -199,7 +242,32 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
     dir->insert(std::move(new_ns));
     ++ns->count;
 
+    if (ns->count == 1)
+        ns->box = bb;
+    else
+        expand_box_to_fit(ns->box, bb);
+
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << ns->count << std::endl;
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
+
+    bb = ns->box; // grab the parent bounding box.
+
     // Propagate the bounding box update up the tree all the way to the root.
+    for (ns = ns->parent; ns; ns = ns->parent)
+    {
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << ns->count << std::endl;
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
+
+        assert(ns->count > 0);
+        expand_box_to_fit(ns->box, bb);
+    }
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+const typename rtree<_Key,_Value,_Dim>::bounding_box&
+rtree<_Key,_Value,_Dim>::get_total_extent() const
+{
+    return m_root.box;
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
@@ -209,6 +277,15 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
     node_store* dst = &m_root;
     if (!dst->count)
         return dst;
+
+    throw std::runtime_error("WIP");
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+void rtree<_Key,_Value,_Dim>::expand_box_to_fit(bounding_box& parent, const bounding_box& child) const
+{
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:expand_box_to_fit): parent="
+        << parent.to_string() << " ; child=" << child.to_string() << std::endl;
 
     throw std::runtime_error("WIP");
 }

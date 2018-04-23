@@ -40,6 +40,10 @@ void rtree_test_basic()
     rt_type tree;
 
     tree.insert({0, 0}, {2, 2}, "test");
+
+    rt_type::bounding_box expected({0, 0}, {2, 2});
+
+    assert(tree.get_total_extent() == expected);
 }
 
 int main(int argc, char** argv)
