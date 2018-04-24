@@ -134,7 +134,7 @@ bool rtree<_Key,_Value,_Dim>::bounding_box::operator!= (const bounding_box& othe
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::node_store() :
-    type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0), leaf(true) {}
+    type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::node_store(node_store&& r) :
@@ -142,19 +142,17 @@ rtree<_Key,_Value,_Dim>::node_store::node_store(node_store&& r) :
     box(r.box),
     parent(r.parent),
     node_ptr(r.node_ptr),
-    count(r.count),
-    leaf(r.leaf)
+    count(r.count)
 {
     r.type = node_type::unspecified;
     r.parent = nullptr;
     r.node_ptr = nullptr;
     r.count = 0;
-    r.leaf = true;
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::node_store(node_type type, const bounding_box& box, node* node_ptr) :
-    type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0), leaf(true) {}
+    type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::~node_store()
@@ -163,7 +161,7 @@ rtree<_Key,_Value,_Dim>::node_store::~node_store()
     {
         switch (type)
         {
-            case node_type::directory:
+            case node_type::directory_leaf:
                 delete static_cast<directory_node*>(node_ptr);
                 break;
             case node_type::value:
@@ -180,7 +178,7 @@ template<typename _Key, typename _Value, size_t _Dim>
 typename rtree<_Key,_Value,_Dim>::node_store
 rtree<_Key,_Value,_Dim>::node_store::create_directory_node()
 {
-    node_store ret(node_type::directory, bounding_box(), new directory_node);
+    node_store ret(node_type::directory_leaf, bounding_box(), new directory_node);
     return ret;
 }
 
@@ -239,7 +237,7 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
         throw std::runtime_error("TODO: implement the 'split tree' algorithm.");
     }
 
-    assert(ns->type == node_type::directory);
+    assert(ns->type == node_type::directory_leaf);
     directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
 
     // Insert the new value to this node.
@@ -281,7 +279,7 @@ typename rtree<_Key,_Value,_Dim>::node_store*
 rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 {
     node_store* dst = &m_root;
-    if (dst->leaf)
+    if (dst->type == node_type::directory_leaf)
         return dst;
 
     throw std::runtime_error("TODO: descend into sub-trees.");

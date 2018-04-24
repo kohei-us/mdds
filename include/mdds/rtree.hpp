@@ -74,7 +74,7 @@ public:
     };
 
 private:
-    enum class node_type { unspecified, directory, value };
+    enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
 
     struct node;
 
@@ -85,7 +85,6 @@ private:
         node_store* parent;
         node* node_ptr;
         size_t count;
-        bool leaf;
 
         node_store();
         node_store(node_store&& r);
@@ -99,7 +98,7 @@ private:
 
         bool has_capacity() const
         {
-            if (type != node_type::directory)
+            if (type != node_type::directory_leaf)
                 return false;
 
             return count < max_node_size;
