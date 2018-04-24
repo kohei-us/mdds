@@ -82,9 +82,10 @@ private:
     {
         node_type type;
         bounding_box box;
-        node_store* parent = nullptr;
-        node* node_ptr = nullptr;
-        size_t count = 0;
+        node_store* parent;
+        node* node_ptr;
+        size_t count;
+        bool leaf;
 
         node_store();
         node_store(node_store&& r);
@@ -95,14 +96,6 @@ private:
         static node_store create_value_node(const bounding_box& box, value_type v);
 
         node_store(const node_store&) = delete;
-
-        bool is_leaf() const
-        {
-            if (type != node_type::directory)
-                return false;
-
-            return count == 0;
-        }
 
         bool has_capacity() const
         {

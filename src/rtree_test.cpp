@@ -38,11 +38,18 @@ void rtree_test_basic()
     using rt_type = mdds::rtree<int16_t, std::string>;
 
     rt_type tree;
+    rt_type::bounding_box expected;
 
     tree.insert({0, 0}, {2, 2}, "test");
+    expected = {{0, 0}, {2, 2}};
+    assert(tree.get_total_extent() == expected);
 
-    rt_type::bounding_box expected({0, 0}, {2, 2});
+    tree.insert({3, 3}, {5, 5}, "test again");
+    expected = {{0, 0}, {5, 5}};
+    assert(tree.get_total_extent() == expected);
 
+    tree.insert({-2, 1}, {3, 6}, "more test");
+    expected = {{-2, 0}, {5, 6}};
     assert(tree.get_total_extent() == expected);
 }
 

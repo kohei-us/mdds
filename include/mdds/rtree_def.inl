@@ -134,21 +134,27 @@ bool rtree<_Key,_Value,_Dim>::bounding_box::operator!= (const bounding_box& othe
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::node_store() :
-    type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0) {}
+    type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0), leaf(true) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::node_store(node_store&& r) :
-    type(r.type), box(r.box), parent(r.parent), node_ptr(r.node_ptr), count(r.count)
+    type(r.type),
+    box(r.box),
+    parent(r.parent),
+    node_ptr(r.node_ptr),
+    count(r.count),
+    leaf(r.leaf)
 {
     r.type = node_type::unspecified;
     r.parent = nullptr;
     r.node_ptr = nullptr;
     r.count = 0;
+    r.leaf = true;
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::node_store(node_type type, const bounding_box& box, node* node_ptr) :
-    type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0) {}
+    type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0), leaf(true) {}
 
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::node_store::~node_store()
@@ -230,7 +236,7 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
     if (!ns->has_capacity())
     {
         // TODO : implement the "split tree".
-        throw std::runtime_error("WIP");
+        throw std::runtime_error("TODO: implement the 'split tree' algorithm.");
     }
 
     assert(ns->type == node_type::directory);
@@ -275,19 +281,23 @@ typename rtree<_Key,_Value,_Dim>::node_store*
 rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 {
     node_store* dst = &m_root;
-    if (!dst->count)
+    if (dst->leaf)
         return dst;
 
-    throw std::runtime_error("WIP");
+    throw std::runtime_error("TODO: descend into sub-trees.");
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
 void rtree<_Key,_Value,_Dim>::expand_box_to_fit(bounding_box& parent, const bounding_box& child) const
 {
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:expand_box_to_fit): parent="
-        << parent.to_string() << " ; child=" << child.to_string() << std::endl;
+    for (size_t dim = 0; dim < dimensions; ++dim)
+    {
+        if (child.start.d[dim] < parent.start.d[dim])
+            parent.start.d[dim] = child.start.d[dim];
 
-    throw std::runtime_error("WIP");
+        if (parent.end.d[dim] < child.end.d[dim])
+            parent.end.d[dim] = child.end.d[dim];
+    }
 }
 
 } // namespace mdds
