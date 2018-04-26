@@ -29,8 +29,58 @@
 #include <mdds/rtree.hpp>
 
 #include <string>
+#include <vector>
 
 #include "test_global.hpp"
+
+using namespace mdds;
+
+void rtree_test_intersection()
+{
+    stack_printer __stack_printer__("::rtree_test_intersection");
+    using rt_type = rtree<int16_t, std::string, 2u>;
+    using bounding_box = rt_type::bounding_box;
+    using detail::rtree::calc_linear_intersection;
+    using detail::rtree::calc_intersection;
+
+    struct check
+    {
+        bounding_box bb1;
+        bounding_box bb2;
+        int16_t expected_length1;
+        int16_t expected_length2;
+    };
+
+    std::vector<check> checks =
+    {
+        { {{0, 0}, {3,  6}}, {{1,  2}, { 7,  5}}, 2, 3 },
+        { {{3, 2}, {7, 10}}, {{1, 10}, {10, 11}}, 4, 0 },
+        { {{3, 2}, {7, 10}}, {{1,  9}, {10, 11}}, 4, 1 },
+        { {{3, 2}, {7,  6}}, {{5,  4}, {11,  8}}, 2, 2 },
+    };
+
+    for (const check& c : checks)
+    {
+        int16_t length1 = calc_linear_intersection<int16_t,bounding_box>(0, c.bb1, c.bb2);
+        assert(length1 == c.expected_length1);
+        int16_t length2 = calc_linear_intersection<int16_t,bounding_box>(1, c.bb1, c.bb2);
+        assert(length2 == c.expected_length2);
+
+        int16_t area = calc_intersection<int16_t,bounding_box,2>(c.bb1, c.bb2);
+        int16_t expected_area = c.expected_length1 * c.expected_length2;
+        assert(area == expected_area);
+
+        // Swap the boxes and run the same tests. We should get the same results.
+
+        length1 = calc_linear_intersection<int16_t,bounding_box>(0, c.bb2, c.bb1);
+        assert(length1 == c.expected_length1);
+        length2 = calc_linear_intersection<int16_t,bounding_box>(1, c.bb2, c.bb1);
+        assert(length2 == c.expected_length2);
+
+        area = calc_intersection<int16_t,bounding_box,2>(c.bb2, c.bb1);
+        assert(area == expected_area);
+    }
+}
 
 void rtree_test_basic()
 {
@@ -55,9 +105,11 @@ void rtree_test_basic()
 
 int main(int argc, char** argv)
 {
+    rtree_test_intersection();
     rtree_test_basic();
 
     return EXIT_SUCCESS;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+

@@ -148,6 +148,8 @@ private:
 
     void expand_box_to_fit(bounding_box& parent, const bounding_box& child) const;
 
+    key_type calc_overlap_cost(directory_node& dir) const;
+
 private:
     node_store m_root;
 };

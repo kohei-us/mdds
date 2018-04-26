@@ -36,6 +36,74 @@
 
 namespace mdds {
 
+namespace detail { namespace rtree {
+
+template<typename _Key, typename _BB>
+_Key calc_linear_intersection(size_t dim, const _BB& bb1, const _BB& bb2)
+{
+    using key_type = _Key;
+
+    key_type start1 = bb1.start.d[dim], end1 = bb1.end.d[dim];
+    key_type start2 = bb2.start.d[dim], end2 = bb2.end.d[dim];
+
+    // Ensure that start1 < start2.
+
+    if (start1 > start2)
+    {
+        std::swap(start1, start2);
+        std::swap(end1, end2);
+    }
+
+    assert(start1 < start2);
+
+    if (end1 < start2)
+    {
+        // 1 : |------|
+        // 2 :           |-------|
+
+        // These two are not intersected at all. Bail out.
+        return key_type();
+    }
+
+    if (end1 < end2)
+    {
+        // 1 : |---------|
+        // 2 :      |----------|
+
+        return end1 - start2;
+    }
+
+    // 1 : |--------------|
+    // 2 :      |-----|
+
+    return end2 - start2;
+}
+
+template<typename _Key, typename _BB, size_t _Dim>
+_Key calc_intersection(const _BB& bb1, const _BB& bb2)
+{
+    static_assert(_Dim > 0, "Dimension cannot be zero.");
+
+    using key_type = _Key;
+
+    key_type total_volume = calc_linear_intersection<_Key,_BB>(0, bb1, bb2);
+    if (!total_volume)
+        return key_type();
+
+    for (size_t dim = 1; dim < _Dim; ++dim)
+    {
+        key_type segment_len = calc_linear_intersection<_Key,_BB>(dim, bb1, bb2);
+        if (!segment_len)
+            return key_type();
+
+        total_volume *= segment_len;
+    }
+
+    return total_volume;
+}
+
+}}
+
 template<typename _Key, typename _Value, size_t _Dim>
 rtree<_Key,_Value,_Dim>::point::point()
 {
@@ -279,8 +347,20 @@ typename rtree<_Key,_Value,_Dim>::node_store*
 rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 {
     node_store* dst = &m_root;
-    if (dst->type == node_type::directory_leaf)
-        return dst;
+
+    while (true)
+    {
+        if (dst->type == node_type::directory_leaf)
+            return dst;
+
+        assert(dst->type == node_type::directory_nonleaf);
+
+        // If this non-leaf directory contains at least one leaf directory,
+        // pick the entry with minimum overlap cost.  If all of its child
+        // nodes are non-leaf directories, then pick the entry with minimum
+        // area enlargement.
+    }
+
 
     throw std::runtime_error("TODO: descend into sub-trees.");
 }
@@ -296,6 +376,26 @@ void rtree<_Key,_Value,_Dim>::expand_box_to_fit(bounding_box& parent, const boun
         if (parent.end.d[dim] < child.end.d[dim])
             parent.end.d[dim] = child.end.d[dim];
     }
+}
+
+template<typename _Key, typename _Value, size_t _Dim>
+typename rtree<_Key,_Value,_Dim>::key_type
+rtree<_Key,_Value,_Dim>::calc_overlap_cost(directory_node& dir) const
+{
+    key_type total_overlap_cost = key_type();
+
+    for (const node_store& outer : dir.children)
+    {
+        for (const node_store& inner : dir.children)
+        {
+            if (&outer == &inner)
+                continue;
+
+            total_overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,_Dim>(outer.box, inner.box);
+        }
+    }
+
+    return total_overlap_cost;
 }
 
 } // namespace mdds
