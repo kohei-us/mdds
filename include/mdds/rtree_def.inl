@@ -33,6 +33,7 @@
 #include <sstream>
 #include <memory>
 #include <cassert>
+#include <algorithm>
 
 namespace mdds {
 
@@ -422,12 +423,33 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 
         assert(dst->type == node_type::directory_nonleaf);
 
+        directory_node* dir = static_cast<directory_node*>(dst->node_ptr);
+        std::vector<node_store>& children = dir->children;
+
         // If this non-leaf directory contains at least one leaf directory,
         // pick the entry with minimum overlap cost.  If all of its child
         // nodes are non-leaf directories, then pick the entry with minimum
         // area enlargement.
-    }
 
+        auto it = std::find_if(children.cbegin(), children.cend(),
+            [](const node_store& ns) -> bool
+            {
+                return ns.type == node_type::directory_leaf;
+            }
+        );
+
+        bool has_leaf_dir = it != children.cend();
+        if (has_leaf_dir)
+        {
+            // Compare the costs of overlap.
+        }
+        else
+        {
+            // Compare the costs of area enlargements.
+        }
+
+        throw std::runtime_error("WIP");
+    }
 
     throw std::runtime_error("TODO: descend into sub-trees.");
 }

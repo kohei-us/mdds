@@ -121,6 +121,10 @@ private:
         ~value_node();
     };
 
+    /**
+     * Directory node can either contain all value nodes, or all directory
+     * nodes as its child nodes.
+     */
     struct directory_node : public node
     {
         std::vector<node_store> children;
