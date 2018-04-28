@@ -146,8 +146,6 @@ public:
 private:
     node_store* find_node_for_insertion(const bounding_box& bb);
 
-    void expand_box_to_fit(bounding_box& parent, const bounding_box& child) const;
-
     key_type calc_overlap_cost(directory_node& dir) const;
 
 private:

@@ -84,6 +84,36 @@ void rtree_test_intersection()
     }
 }
 
+void rtree_test_area_enlargement()
+{
+    stack_printer __stack_printer__("::rtree_test_area_enlargement");
+    using rt_type = rtree<int16_t, std::string, 2u>;
+    using bounding_box = rt_type::bounding_box;
+    using detail::rtree::calc_area_enlargement;
+
+    struct check
+    {
+        bounding_box host;
+        bounding_box guest;
+        int16_t expected_area;
+    };
+
+    std::vector<check> checks =
+    {
+        { {{0,0}, {2,2}}, {{ 2, 2}, { 3, 3}},  5 }, // 3x3 - 2x2 = 5
+        { {{0,0}, {2,2}}, {{ 0, 1}, { 1, 2}},  0 }, // no enlargement
+        { {{0,0}, {3,3}}, {{-3, 1}, { 7, 2}}, 21 }, // 10x3 - 3x3 = 21
+        { {{0,0}, {0,0}}, {{-1,-1}, { 0, 0}},  1 }, // 1x1 = 1
+        { {{0,0}, {1,1}}, {{-4,-3}, {-3,-2}}, 19 }, // 5x4 - 1x1 = 19
+    };
+
+    for (const check& c : checks)
+    {
+        int16_t area = calc_area_enlargement<int16_t,bounding_box,2u>(c.host, c.guest);
+        assert(area == c.expected_area);
+    }
+}
+
 void rtree_test_basic()
 {
     stack_printer __stack_printer__("::rtree_test_basic");
@@ -108,6 +138,7 @@ void rtree_test_basic()
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
+    rtree_test_area_enlargement();
     rtree_test_basic();
 
     return EXIT_SUCCESS;

@@ -102,6 +102,73 @@ _Key calc_intersection(const _BB& bb1, const _BB& bb2)
     return total_volume;
 }
 
+template<typename _Key, typename _BB, size_t _Dim>
+bool enlarge_box_to_fit(_BB& parent, const _BB& child)
+{
+    bool enlarged = false;
+
+    for (size_t dim = 0; dim < _Dim; ++dim)
+    {
+        if (child.start.d[dim] < parent.start.d[dim])
+        {
+            parent.start.d[dim] = child.start.d[dim];
+            enlarged = true;
+        }
+
+        if (parent.end.d[dim] < child.end.d[dim])
+        {
+            parent.end.d[dim] = child.end.d[dim];
+            enlarged = true;
+        }
+    }
+
+    return enlarged;
+}
+
+template<typename _Key, typename _BB, size_t _Dim>
+_Key calc_area(const _BB& bb)
+{
+    static_assert(_Dim > 0, "Dimension cannot be zero.");
+    using key_type = _Key;
+
+    key_type area = bb.end.d[0] - bb.start.d[0];
+    for (size_t dim = 1; dim < _Dim; ++dim)
+        area *= bb.end.d[dim] - bb.start.d[dim];
+
+    return area;
+}
+
+/**
+ * Area enlargement is calculated by calculating the area of the enlarged
+ * box subtracted by the area of the original box prior to the enlargement.
+ *
+ * @param bb_host bounding box of the area receiving the new object.
+ * @param bb_guest bounding of the new object being inserted.
+ *
+ * @return quantity of the area enlargement.
+ */
+template<typename _Key, typename _BB, size_t _Dim>
+_Key calc_area_enlargement(const _BB& bb_host, const _BB& bb_guest)
+{
+    static_assert(_Dim > 0, "Dimension cannot be zero.");
+    using key_type = _Key;
+    using bounding_box = _BB;
+
+    // Calculate the original area.
+    key_type original_area = calc_area<_Key,_BB,_Dim>(bb_host);
+
+    // Enlarge the box for the new object if needed.
+    bounding_box bb_host_enlarged = bb_host; // make a copy.
+    bool enlarged = enlarge_box_to_fit<_Key,_BB,_Dim>(bb_host_enlarged, bb_guest);
+    if (!enlarged)
+        // Area enlargement did not take place.
+        return key_type();
+
+    key_type enlarged_area = calc_area<_Key,_BB,_Dim>(bb_host_enlarged);
+
+    return enlarged_area - original_area;
+}
+
 }}
 
 template<typename _Key, typename _Value, size_t _Dim>
@@ -317,7 +384,7 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
     if (ns->count == 1)
         ns->box = bb;
     else
-        expand_box_to_fit(ns->box, bb);
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,dimensions>(ns->box, bb);
 
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << ns->count << std::endl;
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
@@ -331,7 +398,7 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
         std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
 
         assert(ns->count > 0);
-        expand_box_to_fit(ns->box, bb);
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,dimensions>(ns->box, bb);
     }
 }
 
@@ -363,19 +430,6 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 
 
     throw std::runtime_error("TODO: descend into sub-trees.");
-}
-
-template<typename _Key, typename _Value, size_t _Dim>
-void rtree<_Key,_Value,_Dim>::expand_box_to_fit(bounding_box& parent, const bounding_box& child) const
-{
-    for (size_t dim = 0; dim < dimensions; ++dim)
-    {
-        if (child.start.d[dim] < parent.start.d[dim])
-            parent.start.d[dim] = child.start.d[dim];
-
-        if (parent.end.d[dim] < child.end.d[dim])
-            parent.end.d[dim] = child.end.d[dim];
-    }
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
