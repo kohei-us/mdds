@@ -39,8 +39,8 @@ namespace mdds {
 
 namespace detail { namespace rtree {
 
-template<typename _Key, typename _BB>
-_Key calc_linear_intersection(size_t dim, const _BB& bb1, const _BB& bb2)
+template<typename _Key, typename _BBox>
+_Key calc_linear_intersection(const size_t dim, const _BBox& bb1, const _BBox& bb2)
 {
     using key_type = _Key;
 
@@ -80,20 +80,20 @@ _Key calc_linear_intersection(size_t dim, const _BB& bb1, const _BB& bb2)
     return end2 - start2;
 }
 
-template<typename _Key, typename _BB, size_t _Dim>
-_Key calc_intersection(const _BB& bb1, const _BB& bb2)
+template<typename _Key, typename _BBox, size_t _Dim>
+_Key calc_intersection(const _BBox& bb1, const _BBox& bb2)
 {
     static_assert(_Dim > 0, "Dimension cannot be zero.");
 
     using key_type = _Key;
 
-    key_type total_volume = calc_linear_intersection<_Key,_BB>(0, bb1, bb2);
+    key_type total_volume = calc_linear_intersection<_Key,_BBox>(0, bb1, bb2);
     if (!total_volume)
         return key_type();
 
     for (size_t dim = 1; dim < _Dim; ++dim)
     {
-        key_type segment_len = calc_linear_intersection<_Key,_BB>(dim, bb1, bb2);
+        key_type segment_len = calc_linear_intersection<_Key,_BBox>(dim, bb1, bb2);
         if (!segment_len)
             return key_type();
 
@@ -103,8 +103,8 @@ _Key calc_intersection(const _BB& bb1, const _BB& bb2)
     return total_volume;
 }
 
-template<typename _Key, typename _BB, size_t _Dim>
-bool enlarge_box_to_fit(_BB& parent, const _BB& child)
+template<typename _Key, typename _BBox, size_t _Dim>
+bool enlarge_box_to_fit(_BBox& parent, const _BBox& child)
 {
     bool enlarged = false;
 
@@ -126,8 +126,8 @@ bool enlarge_box_to_fit(_BB& parent, const _BB& child)
     return enlarged;
 }
 
-template<typename _Key, typename _BB, size_t _Dim>
-_Key calc_area(const _BB& bb)
+template<typename _Key, typename _BBox, size_t _Dim>
+_Key calc_area(const _BBox& bb)
 {
     static_assert(_Dim > 0, "Dimension cannot be zero.");
     using key_type = _Key;
@@ -148,24 +148,24 @@ _Key calc_area(const _BB& bb)
  *
  * @return quantity of the area enlargement.
  */
-template<typename _Key, typename _BB, size_t _Dim>
-_Key calc_area_enlargement(const _BB& bb_host, const _BB& bb_guest)
+template<typename _Key, typename _BBox, size_t _Dim>
+_Key calc_area_enlargement(const _BBox& bb_host, const _BBox& bb_guest)
 {
     static_assert(_Dim > 0, "Dimension cannot be zero.");
     using key_type = _Key;
-    using bounding_box = _BB;
+    using bounding_box = _BBox;
 
     // Calculate the original area.
-    key_type original_area = calc_area<_Key,_BB,_Dim>(bb_host);
+    key_type original_area = calc_area<_Key,_BBox,_Dim>(bb_host);
 
     // Enlarge the box for the new object if needed.
     bounding_box bb_host_enlarged = bb_host; // make a copy.
-    bool enlarged = enlarge_box_to_fit<_Key,_BB,_Dim>(bb_host_enlarged, bb_guest);
+    bool enlarged = enlarge_box_to_fit<_Key,_BBox,_Dim>(bb_host_enlarged, bb_guest);
     if (!enlarged)
         // Area enlargement did not take place.
         return key_type();
 
-    key_type enlarged_area = calc_area<_Key,_BB,_Dim>(bb_host_enlarged);
+    key_type enlarged_area = calc_area<_Key,_BBox,_Dim>(bb_host_enlarged);
 
     return enlarged_area - original_area;
 }

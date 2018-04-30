@@ -32,6 +32,7 @@ add_executable(multi-type-vector-test-custom EXCLUDE_FROM_ALL ${PROJECT_SOURCE_D
 add_executable(multi-type-vector-test-default EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/multi_type_vector_test_default.cpp)
 add_executable(multi-type-vector-test-event EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/multi_type_vector_test_event.cpp)
 add_executable(multi-type-vector-test-perf EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/multi_type_vector_test_perf.cpp)
+add_executable(rtree-test EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/rtree_test.cpp)
 
 add_test(flat-segment-tree-test flat-segment-tree-test func)
 add_test(segment-tree-test segment-tree-test func)
@@ -49,6 +50,7 @@ add_test(multi-type-vector-test-default multi-type-vector-test-default func)
 add_test(multi-type-vector-test-event multi-type-vector-test-event func)
 #TODO: performance test does not need to be executed by the build.
 #add_test(multi-type-vector-test-perf multi-type-vector-test-perf)
+add_test(rtree-test rtree-test)
 
 add_dependencies(check flat-segment-tree-test)
 add_dependencies(check segment-tree-test)
@@ -63,3 +65,4 @@ add_dependencies(check multi-type-vector-test-custom)
 add_dependencies(check multi-type-vector-test-default)
 add_dependencies(check multi-type-vector-test-event)
 add_dependencies(check multi-type-vector-test-perf)
+add_dependencies(check rtree-test)
