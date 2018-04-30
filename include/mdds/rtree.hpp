@@ -150,7 +150,7 @@ public:
 private:
     node_store* find_node_for_insertion(const bounding_box& bb);
 
-    key_type calc_overlap_cost(directory_node& dir) const;
+    key_type calc_overlap_cost(const bounding_box& bb, const directory_node& dir) const;
 
 private:
     node_store m_root;

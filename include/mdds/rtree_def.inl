@@ -40,7 +40,7 @@ namespace mdds {
 namespace detail { namespace rtree {
 
 template<typename _Key, typename _BBox>
-_Key calc_linear_intersection(const size_t dim, const _BBox& bb1, const _BBox& bb2)
+_Key calc_linear_intersection(size_t dim, const _BBox& bb1, const _BBox& bb2)
 {
     using key_type = _Key;
 
@@ -441,7 +441,24 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
         bool has_leaf_dir = it != children.cend();
         if (has_leaf_dir)
         {
-            // Compare the costs of overlap.
+            // Compare the amounts of overlap increase.
+
+            key_type min_cost = key_type();
+            dst = nullptr;
+
+            for (node_store& ns : children)
+            {
+                directory_node* dir = static_cast<directory_node*>(ns.node_ptr);
+                key_type cost = calc_overlap_cost(bb, *dir);
+
+                if (cost < min_cost || !dst)
+                {
+                    dst = &ns;
+                    min_cost = cost;
+                }
+            }
+
+            return dst;
         }
         else
         {
@@ -456,22 +473,15 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 
 template<typename _Key, typename _Value, size_t _Dim>
 typename rtree<_Key,_Value,_Dim>::key_type
-rtree<_Key,_Value,_Dim>::calc_overlap_cost(directory_node& dir) const
+rtree<_Key,_Value,_Dim>::calc_overlap_cost(
+    const bounding_box& bb, const directory_node& dir) const
 {
-    key_type total_overlap_cost = key_type();
+    key_type overlap_cost = key_type();
 
-    for (const node_store& outer : dir.children)
-    {
-        for (const node_store& inner : dir.children)
-        {
-            if (&outer == &inner)
-                continue;
+    for (const node_store& ns : dir.children)
+        overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,_Dim>(ns.box, bb);
 
-            total_overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,_Dim>(outer.box, inner.box);
-        }
-    }
-
-    return total_overlap_cost;
+    return overlap_cost;
 }
 
 } // namespace mdds
