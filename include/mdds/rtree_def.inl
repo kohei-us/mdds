@@ -416,7 +416,7 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 {
     node_store* dst = &m_root;
 
-    while (true)
+    while (true) // TODO : do we need to set the max iteration limit?
     {
         if (dst->type == node_type::directory_leaf)
             return dst;
@@ -427,7 +427,7 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
         std::vector<node_store>& children = dir->children;
 
         // If this non-leaf directory contains at least one leaf directory,
-        // pick the entry with minimum overlap cost.  If all of its child
+        // pick the entry with minimum overlap increase.  If all of its child
         // nodes are non-leaf directories, then pick the entry with minimum
         // area enlargement.
 
@@ -439,6 +439,7 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
         );
 
         bool has_leaf_dir = it != children.cend();
+
         if (has_leaf_dir)
         {
             // Compare the amounts of overlap increase.
@@ -458,14 +459,28 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
                 }
             }
 
-            return dst;
-        }
-        else
-        {
-            // Compare the costs of area enlargements.
+            // TODO: resolve ties by picking the one with less area
+            // enlargement, then the one with the smallest area rectangle.
+
+            continue;
         }
 
-        throw std::runtime_error("WIP");
+        // Compare the costs of area enlargements.
+        key_type min_cost = key_type();
+        dst = nullptr;
+
+        for (node_store& ns : children)
+        {
+            key_type cost = detail::rtree::calc_area_enlargement<_Key,bounding_box,_Dim>(ns.box, bb);
+            if (cost < min_cost || !dst)
+            {
+                dst = &ns;
+                min_cost = cost;
+            }
+
+            // TODO: resolve ties by picking the with on the smallest area
+            // rectangle.
+        }
     }
 
     throw std::runtime_error("TODO: descend into sub-trees.");
