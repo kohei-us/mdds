@@ -416,7 +416,7 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 {
     node_store* dst = &m_root;
 
-    while (true) // TODO : do we need to set the max iteration limit?
+    for (int8_t i = 0; i < 100; ++i) // Set the max depth to 100 for now.
     {
         if (dst->type == node_type::directory_leaf)
             return dst;
@@ -514,6 +514,8 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
             }
         }
     }
+
+    throw std::runtime_error("Maximum tree depth has been reached.");
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
