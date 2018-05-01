@@ -444,46 +444,76 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
         {
             // Compare the amounts of overlap increase.
 
-            key_type min_cost = key_type();
+            key_type min_overlap = key_type();
+            key_type min_area_enlargement = key_type();
+            key_type min_area = key_type();
+
             dst = nullptr;
 
             for (node_store& ns : children)
             {
                 directory_node* dir = static_cast<directory_node*>(ns.node_ptr);
-                key_type cost = calc_overlap_cost(bb, *dir);
+                key_type overlap = calc_overlap_cost(bb, *dir);
+                key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,bounding_box,_Dim>(ns.box, bb);
+                key_type area = detail::rtree::calc_area<_Key,bounding_box,_Dim>(ns.box);
 
-                if (cost < min_cost || !dst)
+                bool pick_this = false;
+
+                if (!dst)
+                    pick_this = true;
+                else if (overlap < min_overlap)
+                    // Pick the entry with the smaller overlap cost increase.
+                    pick_this = true;
+                else if (area_enlargement < min_area_enlargement)
+                    // Pick the entry with the smaller area enlargment.
+                    pick_this = true;
+                else if (area < min_area)
+                    // Resolve ties by picking the one with on the smaller area
+                    // rectangle.
+                    pick_this = true;
+
+                if (pick_this)
                 {
+                    min_overlap = overlap;
+                    min_area_enlargement = area_enlargement;
+                    min_area = area;
                     dst = &ns;
-                    min_cost = cost;
                 }
             }
-
-            // TODO: resolve ties by picking the one with less area
-            // enlargement, then the one with the smallest area rectangle.
 
             continue;
         }
 
         // Compare the costs of area enlargements.
         key_type min_cost = key_type();
+        key_type min_area = key_type();
         dst = nullptr;
 
         for (node_store& ns : children)
         {
             key_type cost = detail::rtree::calc_area_enlargement<_Key,bounding_box,_Dim>(ns.box, bb);
-            if (cost < min_cost || !dst)
-            {
-                dst = &ns;
-                min_cost = cost;
-            }
+            key_type area = detail::rtree::calc_area<_Key,bounding_box,_Dim>(ns.box);
 
-            // TODO: resolve ties by picking the with on the smallest area
-            // rectangle.
+            bool pick_this = false;
+
+            if (!dst)
+                pick_this = true;
+            else if (cost < min_cost)
+                // Pick the entry with the smaller area enlargment.
+                pick_this = true;
+            else if (area < min_area)
+                // Resolve ties by picking the one with on the smaller area
+                // rectangle.
+                pick_this = true;
+
+            if (pick_this)
+            {
+                min_cost = cost;
+                min_area = area;
+                dst = &ns;
+            }
         }
     }
-
-    throw std::runtime_error("TODO: descend into sub-trees.");
 }
 
 template<typename _Key, typename _Value, size_t _Dim>
