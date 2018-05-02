@@ -35,20 +35,30 @@
 
 namespace mdds {
 
-template<typename _Key, typename _Value, size_t _Dim = 2>
+namespace detail { namespace rtree {
+
+struct default_rtree_trait
+{
+    constexpr static const size_t dimensions = 2;
+    constexpr static const size_t min_node_size = 40;
+    constexpr static const size_t max_node_size = 100;
+    constexpr static const size_t max_tree_depth = 100;
+};
+
+}}
+
+template<typename _Key, typename _Value, typename _Trait = detail::rtree::default_rtree_trait>
 class rtree
 {
-    static const size_t min_node_size = 40;
-    static const size_t max_node_size = 100;
+    using trait_type = _Trait;
 
 public:
-    static const size_t dimensions = _Dim;
     using key_type = _Key;
     using value_type = _Value;
 
     struct point
     {
-        key_type d[dimensions];
+        key_type d[trait_type::dimensions];
 
         point();
         point(std::initializer_list<key_type> vs);
@@ -101,7 +111,7 @@ private:
             if (type != node_type::directory_leaf)
                 return false;
 
-            return count < max_node_size;
+            return count < trait_type::max_node_size;
         }
     };
 

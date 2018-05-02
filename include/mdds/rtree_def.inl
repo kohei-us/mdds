@@ -172,23 +172,23 @@ _Key calc_area_enlargement(const _BBox& bb_host, const _BBox& bb_guest)
 
 }}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::point::point()
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::point::point()
 {
     // Initialize the point values with the key type's default value.
     key_type* p = d;
-    key_type* p_end = p + dimensions;
+    key_type* p_end = p + trait_type::dimensions;
 
     for (; p != p_end; ++p)
         *p = key_type{};
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::point::point(std::initializer_list<key_type> vs)
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::point::point(std::initializer_list<key_type> vs)
 {
     // Initialize the point values with the key type's default value.
     key_type* dst = d;
-    key_type* dst_end = dst + dimensions;
+    key_type* dst_end = dst + trait_type::dimensions;
 
     for (const key_type& v : vs)
     {
@@ -200,14 +200,14 @@ rtree<_Key,_Value,_Dim>::point::point(std::initializer_list<key_type> vs)
     }
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
+template<typename _Key, typename _Value, typename _Trait>
 std::string
-rtree<_Key,_Value,_Dim>::point::to_string() const
+rtree<_Key,_Value,_Trait>::point::to_string() const
 {
     std::ostringstream os;
 
     os << "(";
-    for (size_t i = 0; i < dimensions; ++i)
+    for (size_t i = 0; i < trait_type::dimensions; ++i)
     {
         if (i > 0)
             os << ", ";
@@ -218,12 +218,12 @@ rtree<_Key,_Value,_Dim>::point::to_string() const
     return os.str();
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-bool rtree<_Key,_Value,_Dim>::point::operator== (const point& other) const
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::point::operator== (const point& other) const
 {
     const key_type* left = d;
     const key_type* right = other.d;
-    const key_type* left_end = left + dimensions;
+    const key_type* left_end = left + trait_type::dimensions;
 
     for (; left != left_end; ++left, ++right)
     {
@@ -234,46 +234,46 @@ bool rtree<_Key,_Value,_Dim>::point::operator== (const point& other) const
     return true;
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-bool rtree<_Key,_Value,_Dim>::point::operator!= (const point& other) const
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::point::operator!= (const point& other) const
 {
     return !operator== (other);
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::bounding_box::bounding_box() {}
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::bounding_box::bounding_box() {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::bounding_box::bounding_box(const point& start, const point& end) :
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::bounding_box::bounding_box(const point& start, const point& end) :
     start(start), end(end) {}
 
-template<typename _Key, typename _Value, size_t _Dim>
+template<typename _Key, typename _Value, typename _Trait>
 std::string
-rtree<_Key,_Value,_Dim>::bounding_box::to_string() const
+rtree<_Key,_Value,_Trait>::bounding_box::to_string() const
 {
     std::ostringstream os;
     os << start.to_string() << " - " << end.to_string();
     return os.str();
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-bool rtree<_Key,_Value,_Dim>::bounding_box::operator== (const bounding_box& other) const
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::bounding_box::operator== (const bounding_box& other) const
 {
     return start == other.start && end == other.end;
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-bool rtree<_Key,_Value,_Dim>::bounding_box::operator!= (const bounding_box& other) const
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::bounding_box::operator!= (const bounding_box& other) const
 {
     return !operator== (other);
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node_store::node_store() :
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::node_store::node_store() :
     type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0) {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node_store::node_store(node_store&& r) :
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::node_store::node_store(node_store&& r) :
     type(r.type),
     box(r.box),
     parent(r.parent),
@@ -286,12 +286,12 @@ rtree<_Key,_Value,_Dim>::node_store::node_store(node_store&& r) :
     r.count = 0;
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node_store::node_store(node_type type, const bounding_box& box, node* node_ptr) :
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::node_store::node_store(node_type type, const bounding_box& box, node* node_ptr) :
     type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0) {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node_store::~node_store()
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::node_store::~node_store()
 {
     if (node_ptr)
     {
@@ -310,57 +310,61 @@ rtree<_Key,_Value,_Dim>::node_store::~node_store()
     }
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-typename rtree<_Key,_Value,_Dim>::node_store
-rtree<_Key,_Value,_Dim>::node_store::create_directory_node()
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store
+rtree<_Key,_Value,_Trait>::node_store::create_directory_node()
 {
     node_store ret(node_type::directory_leaf, bounding_box(), new directory_node);
     return ret;
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-typename rtree<_Key,_Value,_Dim>::node_store
-rtree<_Key,_Value,_Dim>::node_store::create_value_node(const bounding_box& box, value_type v)
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store
+rtree<_Key,_Value,_Trait>::node_store::create_value_node(const bounding_box& box, value_type v)
 {
     node_store ret(node_type::value, box, new value_node(std::move(v)));
     return ret;
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node::node() {}
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::node::node() {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::node::~node() {}
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::node::~node() {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::value_node::value_node(value_type value) :
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::value_node::value_node(value_type value) :
     value(std::move(value)) {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::value_node::~value_node() {}
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::value_node::~value_node() {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::directory_node::directory_node() {}
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::directory_node::directory_node() {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::directory_node::~directory_node() {}
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::directory_node::~directory_node() {}
 
-template<typename _Key, typename _Value, size_t _Dim>
-void rtree<_Key,_Value,_Dim>::directory_node::insert(node_store&& ns)
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::directory_node::insert(node_store&& ns)
 {
     children.push_back(std::move(ns));
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::rtree() : m_root(node_store::create_directory_node()) {}
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_directory_node())
+{
+    static_assert(trait_type::min_node_size < trait_type::max_node_size,
+        "Minimum node size must be less than half of the maximum node size.");
+}
 
-template<typename _Key, typename _Value, size_t _Dim>
-rtree<_Key,_Value,_Dim>::~rtree()
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::~rtree()
 {
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value_type value)
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, value_type value)
 {
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): start=" << start.to_string() << "; end=" << end.to_string() << std::endl;
     bounding_box bb(start, end);
@@ -385,7 +389,7 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
     if (ns->count == 1)
         ns->box = bb;
     else
-        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,dimensions>(ns->box, bb);
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(ns->box, bb);
 
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << ns->count << std::endl;
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
@@ -399,24 +403,24 @@ void rtree<_Key,_Value,_Dim>::insert(const point& start, const point& end, value
         std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
 
         assert(ns->count > 0);
-        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,dimensions>(ns->box, bb);
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(ns->box, bb);
     }
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-const typename rtree<_Key,_Value,_Dim>::bounding_box&
-rtree<_Key,_Value,_Dim>::get_total_extent() const
+template<typename _Key, typename _Value, typename _Trait>
+const typename rtree<_Key,_Value,_Trait>::bounding_box&
+rtree<_Key,_Value,_Trait>::get_total_extent() const
 {
     return m_root.box;
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-typename rtree<_Key,_Value,_Dim>::node_store*
-rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store*
+rtree<_Key,_Value,_Trait>::find_node_for_insertion(const bounding_box& bb)
 {
     node_store* dst = &m_root;
 
-    for (int8_t i = 0; i < 100; ++i) // Set the max depth to 100 for now.
+    for (size_t i = 0; i < trait_type::max_tree_depth; ++i)
     {
         if (dst->type == node_type::directory_leaf)
             return dst;
@@ -454,8 +458,8 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
             {
                 directory_node* dir = static_cast<directory_node*>(ns.node_ptr);
                 key_type overlap = calc_overlap_cost(bb, *dir);
-                key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,bounding_box,_Dim>(ns.box, bb);
-                key_type area = detail::rtree::calc_area<_Key,bounding_box,_Dim>(ns.box);
+                key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
+                key_type area = detail::rtree::calc_area<_Key,bounding_box,trait_type::dimensions>(ns.box);
 
                 bool pick_this = false;
 
@@ -491,8 +495,8 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
 
         for (node_store& ns : children)
         {
-            key_type cost = detail::rtree::calc_area_enlargement<_Key,bounding_box,_Dim>(ns.box, bb);
-            key_type area = detail::rtree::calc_area<_Key,bounding_box,_Dim>(ns.box);
+            key_type cost = detail::rtree::calc_area_enlargement<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
+            key_type area = detail::rtree::calc_area<_Key,bounding_box,trait_type::dimensions>(ns.box);
 
             bool pick_this = false;
 
@@ -518,15 +522,15 @@ rtree<_Key,_Value,_Dim>::find_node_for_insertion(const bounding_box& bb)
     throw std::runtime_error("Maximum tree depth has been reached.");
 }
 
-template<typename _Key, typename _Value, size_t _Dim>
-typename rtree<_Key,_Value,_Dim>::key_type
-rtree<_Key,_Value,_Dim>::calc_overlap_cost(
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::key_type
+rtree<_Key,_Value,_Trait>::calc_overlap_cost(
     const bounding_box& bb, const directory_node& dir) const
 {
     key_type overlap_cost = key_type();
 
     for (const node_store& ns : dir.children)
-        overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,_Dim>(ns.box, bb);
+        overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
 
     return overlap_cost;
 }

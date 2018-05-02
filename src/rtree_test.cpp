@@ -38,7 +38,7 @@ using namespace mdds;
 void rtree_test_intersection()
 {
     stack_printer __stack_printer__("::rtree_test_intersection");
-    using rt_type = rtree<int16_t, std::string, 2u>;
+    using rt_type = rtree<int16_t, std::string>;
     using bounding_box = rt_type::bounding_box;
     using detail::rtree::calc_linear_intersection;
     using detail::rtree::calc_intersection;
@@ -87,7 +87,7 @@ void rtree_test_intersection()
 void rtree_test_area_enlargement()
 {
     stack_printer __stack_printer__("::rtree_test_area_enlargement");
-    using rt_type = rtree<int16_t, std::string, 2u>;
+    using rt_type = rtree<int16_t, std::string>;
     using bounding_box = rt_type::bounding_box;
     using detail::rtree::calc_area_enlargement;
 
