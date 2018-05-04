@@ -269,6 +269,18 @@ bool rtree<_Key,_Value,_Trait>::bounding_box::operator!= (const bounding_box& ot
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::bounding_box::contains(const point& pt) const
+{
+    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    {
+        if (pt.d[dim] < start.d[dim] || end.d[dim] < pt.d[dim])
+            return false;
+    }
+
+    return true;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node_store::node_store() :
     type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0) {}
 
@@ -352,6 +364,101 @@ void rtree<_Key,_Value,_Trait>::directory_node::insert(node_store&& ns)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::const_search_results::add_node_store(const node_store* ns)
+{
+    m_store.push_back(ns);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_search_results::const_iterator
+rtree<_Key,_Value,_Trait>::const_search_results::cbegin() const
+{
+    return const_iterator(m_store.cbegin());
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_search_results::const_iterator
+rtree<_Key,_Value,_Trait>::const_search_results::cend() const
+{
+    return const_iterator(m_store.cend());
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::const_search_results_iterator::const_search_results_iterator(
+    typename store_type::const_iterator pos) : m_pos(pos) {}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::const_search_results_iterator::update_current_node()
+{
+    const node_store* p = *m_pos;
+    assert(p->type == node_type::value);
+    m_cur_node.box = p->box;
+    m_cur_node.value = static_cast<const value_node*>(p->node_ptr)->value;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator== (const const_search_results_iterator& other) const
+{
+    return m_pos == other.m_pos;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator!= (const const_search_results_iterator& other) const
+{
+    return !operator== (other);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_search_results_iterator&
+rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator++ ()
+{
+    ++m_pos;
+    return *this;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_search_results_iterator
+rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator++ (int)
+{
+    const_search_results_iterator ret(m_pos);
+    ++m_pos;
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_search_results_iterator&
+rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator-- ()
+{
+    --m_pos;
+    return *this;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_search_results_iterator
+rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator-- (int)
+{
+    const_search_results_iterator ret(m_pos);
+    --m_pos;
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+const typename rtree<_Key,_Value,_Trait>::const_search_results_iterator::value_type&
+rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator*()
+{
+    update_current_node();
+    return m_cur_node;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+const typename rtree<_Key,_Value,_Trait>::const_search_results_iterator::value_type*
+rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator->()
+{
+    update_current_node();
+    return &m_cur_node;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_directory_node())
 {
     static_assert(trait_type::min_node_size < trait_type::max_node_size,
@@ -405,6 +512,15 @@ void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, val
         assert(ns->count > 0);
         detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(ns->box, bb);
     }
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_search_results
+rtree<_Key,_Value,_Trait>::search(const point& pt) const
+{
+    const_search_results ret;
+    search_descend(pt, m_root, ret);
+    return ret;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -533,6 +649,33 @@ rtree<_Key,_Value,_Trait>::calc_overlap_cost(
         overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
 
     return overlap_cost;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::search_descend(
+    const point& pt, const node_store& ns, const_search_results& results) const
+{
+    if (!ns.box.contains(pt))
+        return;
+
+    switch (ns.type)
+    {
+        case node_type::directory_nonleaf:
+        case node_type::directory_leaf:
+        {
+            const directory_node* node = static_cast<const directory_node*>(ns.node_ptr);
+            for (const node_store& child : node->children)
+                search_descend(pt, child, results);
+            break;
+        }
+        case node_type::value:
+        {
+            results.add_node_store(&ns);
+            break;
+        }
+        case node_type::unspecified:
+            throw std::runtime_error("unspecified node type.");
+    }
 }
 
 } // namespace mdds

@@ -81,6 +81,8 @@ public:
 
         bool operator== (const bounding_box& other) const;
         bool operator!= (const bounding_box& other) const;
+
+        bool contains(const point& pt) const;
     };
 
 private:
@@ -147,6 +149,60 @@ private:
 
 public:
 
+    class const_search_results_iterator;
+
+    class const_search_results
+    {
+        friend class const_search_results_iterator;
+        friend class rtree;
+
+        using store_type = std::vector<const node_store*>;
+        std::vector<const node_store*> m_store;
+
+        void add_node_store(const node_store* ns);
+    public:
+        using const_iterator = const_search_results_iterator;
+
+        const_iterator cbegin() const;
+        const_iterator cend() const;
+    };
+
+    class const_search_results_iterator
+    {
+        struct node
+        {
+            bounding_box box;
+            value_type value;
+        };
+
+        using store_type = typename const_search_results::store_type;
+        typename store_type::const_iterator m_pos;
+        node m_cur_node;
+
+        void update_current_node();
+
+    public:
+        const_search_results_iterator(typename store_type::const_iterator pos);
+
+        // iterator traits
+        typedef node value_type;
+        typedef value_type* pointer;
+        typedef value_type& reference;
+        typedef std::ptrdiff_t difference_type;
+        typedef std::bidirectional_iterator_tag iterator_category;
+
+        bool operator== (const const_search_results_iterator& other) const;
+        bool operator!= (const const_search_results_iterator& other) const;
+
+        const_search_results_iterator& operator++();
+        const_search_results_iterator operator++(int);
+        const_search_results_iterator& operator--();
+        const_search_results_iterator operator--(int);
+
+        const value_type& operator*();
+        const value_type* operator->();
+    };
+
     rtree();
     ~rtree();
 
@@ -155,6 +211,8 @@ public:
 
     void insert(const point& start, const point& end, value_type value);
 
+    const_search_results search(const point& pt) const;
+
     const bounding_box& get_total_extent() const;
 
 private:
@@ -162,6 +220,7 @@ private:
 
     key_type calc_overlap_cost(const bounding_box& bb, const directory_node& dir) const;
 
+    void search_descend(const point& pt, const node_store& ns, const_search_results& results) const;
 private:
     node_store m_root;
 };

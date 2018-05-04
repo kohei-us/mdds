@@ -30,10 +30,12 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "test_global.hpp"
 
 using namespace mdds;
+using namespace std;
 
 void rtree_test_intersection()
 {
@@ -133,6 +135,18 @@ void rtree_test_basic()
     tree.insert({-2, 1}, {3, 6}, "more test");
     expected = {{-2, 0}, {5, 6}};
     assert(tree.get_total_extent() == expected);
+
+    rt_type::const_search_results res = tree.search({1, 1});
+
+    auto it = res.cbegin(), it_end = res.cend();
+
+    size_t n = std::distance(it, it_end);
+    assert(n == 2);
+
+    for (; it != it_end; ++it)
+    {
+        cout << "bounding box: " << it->box.to_string() << "; value: " << it->value << endl;
+    }
 }
 
 int main(int argc, char** argv)
