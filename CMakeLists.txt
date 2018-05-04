@@ -51,17 +51,19 @@ add_test(multi-type-vector-test-event multi-type-vector-test-event func)
 #add_test(multi-type-vector-test-perf multi-type-vector-test-perf)
 add_test(rtree-test rtree-test)
 
-add_dependencies(check flat-segment-tree-test)
-add_dependencies(check segment-tree-test)
-add_dependencies(check rectangle-set-test)
-add_dependencies(check point-quad-tree-test)
-add_dependencies(check sorted-string-map-test)
-add_dependencies(check trie-map-test)
-add_dependencies(check multi-type-matrix-test)
-add_dependencies(check multi-type-matrix-test-walk)
-add_dependencies(check multi-type-vector-test-collection)
-add_dependencies(check multi-type-vector-test-custom)
-add_dependencies(check multi-type-vector-test-default)
-add_dependencies(check multi-type-vector-test-event)
-add_dependencies(check multi-type-vector-test-perf)
-add_dependencies(check rtree-test)
+add_dependencies(check
+    flat-segment-tree-test
+    multi-type-matrix-test
+    multi-type-matrix-test-walk
+    multi-type-vector-test-collection
+    multi-type-vector-test-custom
+    multi-type-vector-test-default
+    multi-type-vector-test-event
+    multi-type-vector-test-perf
+    point-quad-tree-test
+    rectangle-set-test
+    rtree-test
+    segment-tree-test
+    sorted-string-map-test
+    trie-map-test
+)
