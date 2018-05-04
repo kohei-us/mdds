@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 
 #include "test_global.hpp"
 
@@ -122,19 +123,21 @@ void rtree_test_basic()
     using rt_type = mdds::rtree<int16_t, std::string>;
 
     rt_type tree;
-    rt_type::bounding_box expected;
+    rt_type::bounding_box expected_bb;
 
     tree.insert({0, 0}, {2, 2}, "test");
-    expected = {{0, 0}, {2, 2}};
-    assert(tree.get_total_extent() == expected);
+    expected_bb = {{0, 0}, {2, 2}};
+    assert(tree.get_total_extent() == expected_bb);
 
     tree.insert({3, 3}, {5, 5}, "test again");
-    expected = {{0, 0}, {5, 5}};
-    assert(tree.get_total_extent() == expected);
+    expected_bb = {{0, 0}, {5, 5}};
+    assert(tree.get_total_extent() == expected_bb);
 
     tree.insert({-2, 1}, {3, 6}, "more test");
-    expected = {{-2, 0}, {5, 6}};
-    assert(tree.get_total_extent() == expected);
+    expected_bb = {{-2, 0}, {5, 6}};
+    assert(tree.get_total_extent() == expected_bb);
+
+    // Verify the search method works.
 
     rt_type::const_search_results res = tree.search({1, 1});
 
@@ -143,9 +146,32 @@ void rtree_test_basic()
     size_t n = std::distance(it, it_end);
     assert(n == 2);
 
+    std::unordered_map<std::string, rt_type::bounding_box> expected_values =
+    {
+        { "test",      {{ 0, 0}, {2, 2}} },
+        { "more test", {{-2, 1}, {3, 6}} },
+    };
+
     for (; it != it_end; ++it)
     {
         cout << "bounding box: " << it->box.to_string() << "; value: " << it->value << endl;
+        auto itv = expected_values.find(it->value);
+        assert(itv != expected_values.end());
+        assert(itv->second == it->box);
+    }
+
+    // Perform an out-of-bound search by point.
+    std::vector<rt_type::point> pts =
+    {
+        {-10, -10},
+        {1, 7},
+        {6, 3},
+    };
+
+    for (const rt_type::point& pt : pts)
+    {
+        res = tree.search(pt);
+        assert(res.cbegin() == res.cend());
     }
 }
 
