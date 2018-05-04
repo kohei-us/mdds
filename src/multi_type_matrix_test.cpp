@@ -634,7 +634,7 @@ void mtm_test_copy_from_array()
     vector<double> src;
     src.reserve(9);
     for (size_t i = 0; i < 9; ++i)
-        src.push_back(i);
+        src.push_back(double(i));
 
     mtx_type mx(4, 4);
     mx.copy(3, 3, src.begin(), src.end());

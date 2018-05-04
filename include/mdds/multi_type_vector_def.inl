@@ -60,7 +60,7 @@ T mtv_advance_position(const T& pos, int steps)
             }
             else
             {
-                steps -= (ret.first->size - ret.second);
+                steps -= static_cast<int>(ret.first->size - ret.second);
                 ++ret.first;
                 ret.second = 0;
             }
@@ -77,7 +77,7 @@ T mtv_advance_position(const T& pos, int steps)
             }
             else
             {
-                steps += ret.second + 1;
+                steps += static_cast<int>(ret.second + 1);
                 --ret.first;
                 ret.second = ret.first->size - 1;
             }

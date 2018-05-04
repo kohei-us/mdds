@@ -1715,7 +1715,7 @@ void mtv_test_set_cells()
             vector<double> vals;
             vals.reserve(5);
             for (size_t i = 0; i < db.size(); ++i)
-                vals.push_back(i+1);
+                vals.push_back(double(i+1));
 
             db.set(0, vals.begin(), vals.end());
 
