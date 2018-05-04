@@ -696,6 +696,8 @@ void trie_test_iterator()
     using kv = trie_map_type::key_value_type;
     trie_map_type db;
 
+    cout << "empty container" << endl;
+
     // empty container
     trie_map_type::const_iterator it = db.begin();
     trie_map_type::const_iterator ite = db.end();
@@ -706,12 +708,16 @@ void trie_test_iterator()
 
     assert(it == ite);
 
+    cout << "one element" << endl;
+
     db.insert(MDDS_ASCII("a"), 1);
     it = db.begin();
     assert(it != ite);
     assert(*it == kv("a", 1));
     ++it;
     assert(it == ite);
+
+    cout << "two elements" << endl;
 
     db.insert(MDDS_ASCII("ab"), 2);
     it = db.begin();
@@ -722,6 +728,8 @@ void trie_test_iterator()
     assert(*it == kv("ab", 2));
     ++it;
     assert(it == ite);
+
+    cout << "more than two elements" << endl;
 
     db.insert(MDDS_ASCII("aba"), 3);
     db.insert(MDDS_ASCII("abb"), 4);
@@ -940,6 +948,8 @@ void trie_test_prefix_search()
     db.insert(MDDS_ASCII("ab"), 3);
     db.insert(MDDS_ASCII("b"),  4);
 
+    cout << "Performing prefix search on 'a'..." << endl;
+
     trie_map_type::search_results results = db.prefix_search(MDDS_ASCII("a"));
     auto it = results.begin();
     auto ite = results.end();
@@ -956,6 +966,8 @@ void trie_test_prefix_search()
     assert(it == ite);
     size_t n = std::distance(results.begin(), results.end());
     assert(n == 3);
+
+    cout << "Performing prefix search on 'b'..." << endl;
 
     results = db.prefix_search(MDDS_ASCII("b"));
     it = results.begin();
@@ -974,6 +986,9 @@ void trie_test_prefix_search()
     // Only one element.
     db.clear();
     db.insert(MDDS_ASCII("dust"), 10);
+
+    cout << "Performing prefix search on 'du'..." << endl;
+
     results = db.prefix_search(MDDS_ASCII("du"));
     it = results.begin();
     assert(it->first == "dust");

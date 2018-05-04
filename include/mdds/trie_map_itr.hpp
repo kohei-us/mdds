@@ -423,10 +423,10 @@ private:
 
         const uintptr_t* node_pos = node_stack.back().node_pos;
 
-        key_unit_type c = *child_pos;
+        key_unit_type c = static_cast<key_unit_type>(*child_pos);
         ktt::push_back(buf, c);
         ++child_pos;
-        size_t offset = *child_pos;
+        size_t offset = static_cast<size_t>(*child_pos);
         node_pos -= offset; // Jump to the head of the child node.
         const uintptr_t* p = node_pos;
         ++p;
@@ -700,7 +700,7 @@ class packed_search_results
     key_buffer_type m_buffer;
 
     packed_search_results(const uintptr_t* node, key_buffer_type&& buf) :
-        m_node(node), m_buffer(buf) {}
+        m_node(node), m_buffer(std::move(buf)) {}
 
     node_stack_type get_root_node() const
     {
@@ -717,8 +717,32 @@ class packed_search_results
         return node_stack;
     }
 
+    void swap(packed_search_results& other)
+    {
+        std::swap(m_node, other.m_node);
+        std::swap(m_buffer, other.m_buffer);
+    }
+
 public:
     typedef packed_iterator_base<trie_type> const_iterator;
+
+    packed_search_results() : m_node(nullptr) {}
+
+    packed_search_results(const packed_search_results& other) :
+        m_node(other.m_node), m_buffer(other.m_buffer) {}
+
+    packed_search_results(packed_search_results&& other) :
+        m_node(other.m_node), m_buffer(std::move(other.m_buffer))
+    {
+        other.m_node = nullptr;
+    }
+
+    packed_search_results& operator= (packed_search_results other)
+    {
+        packed_search_results tmp(std::move(other));
+        swap(tmp);
+        return *this;
+    }
 
     const_iterator begin() const
     {
