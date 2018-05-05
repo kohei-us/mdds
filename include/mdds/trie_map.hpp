@@ -179,7 +179,7 @@ private:
         value_type value;
         bool has_value;
 
-        trie_node() : has_value(false) {}
+        trie_node() : value(value_type()), has_value(false) {}
     };
 
     struct stack_item
