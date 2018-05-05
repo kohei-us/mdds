@@ -281,6 +281,18 @@ bool rtree<_Key,_Value,_Trait>::bounding_box::contains(const point& pt) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::bounding_box::contains_at_boundary(const bounding_box& bb) const
+{
+    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    {
+        if (start.d[dim] == bb.start.d[dim] || bb.end.d[dim] == end.d[dim])
+            return true;
+    }
+
+    return false;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node_store::node_store() :
     type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0) {}
 
@@ -345,6 +357,49 @@ rtree<_Key,_Value,_Trait>::node_store::operator= (node_store&& other)
     node_store tmp(std::move(other));
     swap(tmp);
     return *this;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::node_store::pack()
+{
+    if (!is_directory())
+        return false;
+
+    const directory_node* dir = static_cast<const directory_node*>(node_ptr);
+    const std::vector<node_store>& children = dir->children;
+    if (children.empty())
+        return false;
+
+    auto it = children.cbegin(), ite = children.cend();
+
+    bounding_box new_box = it->box;
+    for (++it; it != ite; ++it)
+        detail::rtree::enlarge_box_to_fit<_Key,bounding_box,trait_type::dimensions>(new_box, it->box);
+
+    bool changed = new_box != box;
+    box = new_box; // update the bounding box.
+    return changed;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::node_store::is_directory() const
+{
+    switch (type)
+    {
+        case node_type::directory_leaf:
+        case node_type::directory_nonleaf:
+            return true;
+        default:
+            ;
+    }
+
+    return false;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::node_store::is_root() const
+{
+    return parent == nullptr;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -592,6 +647,9 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     assert(it != children.end());
     children.erase(it);
 
+    if (!parent->is_root() && children.size() < trait_type::min_node_size)
+        throw std::runtime_error("TODO: reduce tree and perform re-insertion.");
+
     shrink_tree_upward(parent, bb_erased);
 }
 
@@ -753,7 +811,21 @@ void rtree<_Key,_Value,_Trait>::search_descend(
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::shrink_tree_upward(node_store* ns, const bounding_box& bb_affected)
 {
-    throw std::runtime_error("WIP");
+    if (!ns)
+        return;
+
+    // Check if the affected bounding box is at a corner.
+    if (!ns->box.contains_at_boundary(bb_affected))
+        return;
+
+    bounding_box original_bb = ns->box; // Store the original bounding box before the packing.
+    bool updated = ns->pack();
+
+    if (!updated)
+        // The extent hasn't changed. There is no point going upward.
+        return;
+
+    shrink_tree_upward(ns->parent, original_bb);
 }
 
 } // namespace mdds

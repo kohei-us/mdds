@@ -83,6 +83,12 @@ public:
         bool operator!= (const bounding_box& other) const;
 
         bool contains(const point& pt) const;
+
+        /**
+         * Determine whether or not another bounding box is within this
+         * bounding box and touches at least one boundary.
+         */
+        bool contains_at_boundary(const bounding_box& other) const;
     };
 
 private:
@@ -110,6 +116,14 @@ private:
 
         node_store& operator= (node_store&& other);
 
+        /**
+         * Re-calculate the extent based on its current children.
+         *
+         * @return true if the extent has changed, false otherwise.
+         */
+        bool pack();
+        bool is_directory() const;
+        bool is_root() const;
         bool has_capacity() const;
         void swap(node_store& other);
     };
