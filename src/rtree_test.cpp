@@ -117,9 +117,9 @@ void rtree_test_area_enlargement()
     }
 }
 
-void rtree_test_basic()
+void rtree_test_basic_search()
 {
-    stack_printer __stack_printer__("::rtree_test_basic");
+    stack_printer __stack_printer__("::rtree_test_basic_search");
     using rt_type = mdds::rtree<int16_t, std::string>;
 
     rt_type tree;
@@ -175,11 +175,31 @@ void rtree_test_basic()
     }
 }
 
+void rtree_test_basic_erase()
+{
+    stack_printer __stack_printer__("::rtree_test_basic_erase");
+    using rt_type = mdds::rtree<int16_t, std::string>;
+
+    rt_type tree;
+    tree.insert({-2,-2}, {2,2}, "erase me");
+
+    rt_type::const_search_results res = tree.search({0,0});
+
+    size_t n = std::distance(res.begin(), res.end());
+    assert(n == 1);
+
+    rt_type::const_iterator it = res.begin();
+    assert(it != res.end());
+
+    tree.erase(it);
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
     rtree_test_area_enlargement();
-    rtree_test_basic();
+    rtree_test_basic_search();
+    rtree_test_basic_erase();
 
     return EXIT_SUCCESS;
 }

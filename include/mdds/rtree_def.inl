@@ -339,6 +339,34 @@ rtree<_Key,_Value,_Trait>::node_store::create_value_node(const bounding_box& box
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store&
+rtree<_Key,_Value,_Trait>::node_store::operator= (node_store&& other)
+{
+    node_store tmp(std::move(other));
+    swap(tmp);
+    return *this;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::node_store::has_capacity() const
+{
+    if (type != node_type::directory_leaf)
+        return false;
+
+    return count < trait_type::max_node_size;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::node_store::swap(node_store& other)
+{
+    std::swap(type, other.type);
+    std::swap(box, other.box);
+    std::swap(parent, other.parent);
+    std::swap(node_ptr, other.node_ptr);
+    std::swap(count, other.count);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node::node() {}
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -379,6 +407,20 @@ rtree<_Key,_Value,_Trait>::const_search_results::cbegin() const
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_iterator
 rtree<_Key,_Value,_Trait>::const_search_results::cend() const
+{
+    return const_iterator(m_store.cend());
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_iterator
+rtree<_Key,_Value,_Trait>::const_search_results::begin() const
+{
+    return const_iterator(m_store.cbegin());
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_iterator
+rtree<_Key,_Value,_Trait>::const_search_results::end() const
 {
     return const_iterator(m_store.cend());
 }
@@ -521,6 +563,36 @@ rtree<_Key,_Value,_Trait>::search(const point& pt) const
     const_search_results ret;
     search_descend(pt, m_root, ret);
     return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
+{
+    const node_store* ns = *pos.m_pos;
+    assert(ns->type == node_type::value);
+    assert(ns->parent);
+
+    bounding_box bb_erased = ns->box;
+
+    // Move up to the parent and find its stored location.
+    node_store* parent = ns->parent;
+    assert(parent->type == node_type::directory_leaf);
+    directory_node* dir = static_cast<directory_node*>(parent->node_ptr);
+
+    std::vector<node_store>& children = dir->children;
+
+    auto it = std::find_if(children.begin(), children.end(),
+        [ns](const node_store& this_ns) -> bool
+        {
+            return &this_ns == ns;
+        }
+    );
+
+    // Remove its entry from the parent node.
+    assert(it != children.end());
+    children.erase(it);
+
+    shrink_tree_upward(parent, bb_erased);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -676,6 +748,12 @@ void rtree<_Key,_Value,_Trait>::search_descend(
         case node_type::unspecified:
             throw std::runtime_error("unspecified node type.");
     }
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::shrink_tree_upward(node_store* ns, const bounding_box& bb_affected)
+{
+    throw std::runtime_error("WIP");
 }
 
 } // namespace mdds

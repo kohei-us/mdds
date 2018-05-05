@@ -98,6 +98,8 @@ private:
         node* node_ptr;
         size_t count;
 
+        node_store(const node_store&) = delete;
+
         node_store();
         node_store(node_store&& r);
         node_store(node_type type, const bounding_box& box, node* node_ptr);
@@ -106,15 +108,10 @@ private:
         static node_store create_directory_node();
         static node_store create_value_node(const bounding_box& box, value_type v);
 
-        node_store(const node_store&) = delete;
+        node_store& operator= (node_store&& other);
 
-        bool has_capacity() const
-        {
-            if (type != node_type::directory_leaf)
-                return false;
-
-            return count < trait_type::max_node_size;
-        }
+        bool has_capacity() const;
+        void swap(node_store& other);
     };
 
     struct node
@@ -163,10 +160,14 @@ public:
     public:
         const_iterator cbegin() const;
         const_iterator cend() const;
+        const_iterator begin() const;
+        const_iterator end() const;
     };
 
     class const_iterator
     {
+        friend class rtree;
+
         struct node
         {
             bounding_box box;
@@ -211,6 +212,8 @@ public:
 
     const_search_results search(const point& pt) const;
 
+    void erase(const_iterator pos);
+
     const bounding_box& get_total_extent() const;
 
 private:
@@ -219,6 +222,9 @@ private:
     key_type calc_overlap_cost(const bounding_box& bb, const directory_node& dir) const;
 
     void search_descend(const point& pt, const node_store& ns, const_search_results& results) const;
+
+    void shrink_tree_upward(node_store* ns, const bounding_box& bb_affected);
+
 private:
     node_store m_root;
 };
