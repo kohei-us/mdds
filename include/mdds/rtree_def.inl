@@ -370,25 +370,25 @@ void rtree<_Key,_Value,_Trait>::const_search_results::add_node_store(const node_
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_search_results::const_iterator
+typename rtree<_Key,_Value,_Trait>::const_iterator
 rtree<_Key,_Value,_Trait>::const_search_results::cbegin() const
 {
     return const_iterator(m_store.cbegin());
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_search_results::const_iterator
+typename rtree<_Key,_Value,_Trait>::const_iterator
 rtree<_Key,_Value,_Trait>::const_search_results::cend() const
 {
     return const_iterator(m_store.cend());
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::const_search_results_iterator::const_search_results_iterator(
+rtree<_Key,_Value,_Trait>::const_iterator::const_iterator(
     typename store_type::const_iterator pos) : m_pos(pos) {}
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::const_search_results_iterator::update_current_node()
+void rtree<_Key,_Value,_Trait>::const_iterator::update_current_node()
 {
     const node_store* p = *m_pos;
     assert(p->type == node_type::value);
@@ -397,62 +397,62 @@ void rtree<_Key,_Value,_Trait>::const_search_results_iterator::update_current_no
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator== (const const_search_results_iterator& other) const
+bool rtree<_Key,_Value,_Trait>::const_iterator::operator== (const const_iterator& other) const
 {
     return m_pos == other.m_pos;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator!= (const const_search_results_iterator& other) const
+bool rtree<_Key,_Value,_Trait>::const_iterator::operator!= (const const_iterator& other) const
 {
     return !operator== (other);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_search_results_iterator&
-rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator++ ()
+typename rtree<_Key,_Value,_Trait>::const_iterator&
+rtree<_Key,_Value,_Trait>::const_iterator::operator++ ()
 {
     ++m_pos;
     return *this;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_search_results_iterator
-rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator++ (int)
+typename rtree<_Key,_Value,_Trait>::const_iterator
+rtree<_Key,_Value,_Trait>::const_iterator::operator++ (int)
 {
-    const_search_results_iterator ret(m_pos);
+    const_iterator ret(m_pos);
     ++m_pos;
     return ret;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_search_results_iterator&
-rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator-- ()
+typename rtree<_Key,_Value,_Trait>::const_iterator&
+rtree<_Key,_Value,_Trait>::const_iterator::operator-- ()
 {
     --m_pos;
     return *this;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_search_results_iterator
-rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator-- (int)
+typename rtree<_Key,_Value,_Trait>::const_iterator
+rtree<_Key,_Value,_Trait>::const_iterator::operator-- (int)
 {
-    const_search_results_iterator ret(m_pos);
+    const_iterator ret(m_pos);
     --m_pos;
     return ret;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-const typename rtree<_Key,_Value,_Trait>::const_search_results_iterator::value_type&
-rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator*()
+const typename rtree<_Key,_Value,_Trait>::const_iterator::value_type&
+rtree<_Key,_Value,_Trait>::const_iterator::operator*()
 {
     update_current_node();
     return m_cur_node;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-const typename rtree<_Key,_Value,_Trait>::const_search_results_iterator::value_type*
-rtree<_Key,_Value,_Trait>::const_search_results_iterator::operator->()
+const typename rtree<_Key,_Value,_Trait>::const_iterator::value_type*
+rtree<_Key,_Value,_Trait>::const_iterator::operator->()
 {
     update_current_node();
     return &m_cur_node;

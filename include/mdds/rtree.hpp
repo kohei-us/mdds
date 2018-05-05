@@ -149,25 +149,23 @@ private:
 
 public:
 
-    class const_search_results_iterator;
+    class const_iterator;
 
     class const_search_results
     {
-        friend class const_search_results_iterator;
+        friend class const_iterator;
         friend class rtree;
 
         using store_type = std::vector<const node_store*>;
-        std::vector<const node_store*> m_store;
+        store_type m_store;
 
         void add_node_store(const node_store* ns);
     public:
-        using const_iterator = const_search_results_iterator;
-
         const_iterator cbegin() const;
         const_iterator cend() const;
     };
 
-    class const_search_results_iterator
+    class const_iterator
     {
         struct node
         {
@@ -182,7 +180,7 @@ public:
         void update_current_node();
 
     public:
-        const_search_results_iterator(typename store_type::const_iterator pos);
+        const_iterator(typename store_type::const_iterator pos);
 
         // iterator traits
         typedef node value_type;
@@ -191,13 +189,13 @@ public:
         typedef std::ptrdiff_t difference_type;
         typedef std::bidirectional_iterator_tag iterator_category;
 
-        bool operator== (const const_search_results_iterator& other) const;
-        bool operator!= (const const_search_results_iterator& other) const;
+        bool operator== (const const_iterator& other) const;
+        bool operator!= (const const_iterator& other) const;
 
-        const_search_results_iterator& operator++();
-        const_search_results_iterator operator++(int);
-        const_search_results_iterator& operator--();
-        const_search_results_iterator operator--(int);
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        const_iterator& operator--();
+        const_iterator operator--(int);
 
         const value_type& operator*();
         const value_type* operator->();
