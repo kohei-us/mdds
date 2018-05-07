@@ -127,15 +127,15 @@ void rtree_test_basic_search()
 
     tree.insert({0, 0}, {2, 2}, "test");
     expected_bb = {{0, 0}, {2, 2}};
-    assert(tree.get_total_extent() == expected_bb);
+    assert(tree.get_root_extent() == expected_bb);
 
     tree.insert({3, 3}, {5, 5}, "test again");
     expected_bb = {{0, 0}, {5, 5}};
-    assert(tree.get_total_extent() == expected_bb);
+    assert(tree.get_root_extent() == expected_bb);
 
     tree.insert({-2, 1}, {3, 6}, "more test");
     expected_bb = {{-2, 0}, {5, 6}};
-    assert(tree.get_total_extent() == expected_bb);
+    assert(tree.get_root_extent() == expected_bb);
 
     // Verify the search method works.
 
@@ -182,6 +182,7 @@ void rtree_test_basic_erase()
 
     rt_type tree;
     tree.insert({-2,-2}, {2,2}, "erase me");
+    assert(!tree.empty());
 
     rt_type::const_search_results res = tree.search({0,0});
 
@@ -192,6 +193,8 @@ void rtree_test_basic_erase()
     assert(it != res.end());
 
     tree.erase(it);
+    assert(tree.empty());
+    assert(rt_type::bounding_box() == tree.get_root_extent());
 }
 
 int main(int argc, char** argv)

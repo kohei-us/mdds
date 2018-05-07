@@ -228,7 +228,9 @@ public:
 
     void erase(const_iterator pos);
 
-    const bounding_box& get_total_extent() const;
+    const bounding_box& get_root_extent() const;
+
+    bool empty() const;
 
 private:
     node_store* find_node_for_insertion(const bounding_box& bb);

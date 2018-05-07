@@ -368,7 +368,13 @@ bool rtree<_Key,_Value,_Trait>::node_store::pack()
     const directory_node* dir = static_cast<const directory_node*>(node_ptr);
     const std::vector<node_store>& children = dir->children;
     if (children.empty())
-        return false;
+    {
+        // This node has not children.  Reset the bounding box to empty.
+        bounding_box new_box;
+        bool changed = new_box != box;
+        box = new_box;
+        return changed;
+    }
 
     auto it = children.cbegin(), ite = children.cend();
 
@@ -646,6 +652,8 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     // Remove its entry from the parent node.
     assert(it != children.end());
     children.erase(it);
+    --parent->count;
+    assert(parent->count == children.size());
 
     if (!parent->is_root() && children.size() < trait_type::min_node_size)
         throw std::runtime_error("TODO: reduce tree and perform re-insertion.");
@@ -655,9 +663,15 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
 
 template<typename _Key, typename _Value, typename _Trait>
 const typename rtree<_Key,_Value,_Trait>::bounding_box&
-rtree<_Key,_Value,_Trait>::get_total_extent() const
+rtree<_Key,_Value,_Trait>::get_root_extent() const
 {
     return m_root.box;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::empty() const
+{
+    return !m_root.count;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
