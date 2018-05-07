@@ -195,6 +195,20 @@ void rtree_test_basic_erase()
     tree.erase(it);
     assert(tree.empty());
     assert(rt_type::bounding_box() == tree.get_root_extent());
+
+    tree.insert({0,0}, {2,2}, "erase me");
+    tree.insert({-10,-4}, {0,0}, "erase me");
+    rt_type::bounding_box expected_bb({-10,-4}, {2,2});
+    assert(tree.get_root_extent() == expected_bb);
+
+    res = tree.search({-5,-2});
+    n = std::distance(res.begin(), res.end());
+    assert(n == 1);
+    it = res.begin();
+    tree.erase(it);
+    assert(!tree.empty()); // there should be one value stored in the tree.
+    expected_bb = {{0,0}, {2,2}};
+    assert(tree.get_root_extent() == expected_bb);
 }
 
 int main(int argc, char** argv)
