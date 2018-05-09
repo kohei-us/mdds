@@ -38,6 +38,14 @@
 using namespace mdds;
 using namespace std;
 
+struct tiny_trait
+{
+    constexpr static const size_t dimensions = 2;
+    constexpr static const size_t min_node_size = 2;
+    constexpr static const size_t max_node_size = 5;
+    constexpr static const size_t max_tree_depth = 100;
+};
+
 void rtree_test_intersection()
 {
     stack_printer __stack_printer__("::rtree_test_intersection");
@@ -211,12 +219,27 @@ void rtree_test_basic_erase()
     assert(tree.get_root_extent() == expected_bb);
 }
 
+void rtree_test_node_split()
+{
+    stack_printer __stack_printer__("::rtree_test_node_split");
+    using rt_type = rtree<int16_t, std::string, tiny_trait>;
+
+    rt_type tree;
+
+    for (int16_t i = 0; i < 6; ++i)
+    {
+        int16_t w = 1;
+        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, "foo");
+    }
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
     rtree_test_area_enlargement();
     rtree_test_basic_search();
     rtree_test_basic_erase();
+    rtree_test_node_split();
 
     return EXIT_SUCCESS;
 }

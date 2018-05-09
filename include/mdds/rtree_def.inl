@@ -329,7 +329,7 @@ rtree<_Key,_Value,_Trait>::node_store::~node_store()
                 break;
             case node_type::unspecified:
             default:
-                throw std::logic_error("node::~node: unknown node type!");
+                assert(!"node::~node: unknown node type!");
         }
     }
 }
@@ -564,7 +564,7 @@ rtree<_Key,_Value,_Trait>::const_iterator::operator->()
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_directory_node())
 {
-    static_assert(trait_type::min_node_size < trait_type::max_node_size,
+    static_assert(trait_type::min_node_size <= trait_type::max_node_size / 2,
         "Minimum node size must be less than half of the maximum node size.");
 }
 
@@ -583,8 +583,8 @@ void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, val
 
     if (!ns->has_capacity())
     {
-        // TODO : implement the "split tree".
-        throw std::runtime_error("TODO: implement the 'split tree' algorithm.");
+        insert_after_split(ns, start, end, std::move(value));
+        return;
     }
 
     assert(ns->type == node_type::directory_leaf);
@@ -672,6 +672,39 @@ template<typename _Key, typename _Value, typename _Trait>
 bool rtree<_Key,_Value,_Trait>::empty() const
 {
     return !m_root.count;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert_after_split(
+    node_store* ns, const point& start, const point& end, value_type value)
+{
+    assert(ns->type == node_type::directory_leaf);
+    directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
+    std::vector<node_store>& children = dir->children;
+
+    size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
+
+    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    {
+        // Sort the entries by the lower then by the upper value of their bounding boxes.
+
+        std::sort(children.begin(), children.end(),
+            [dim](const node_store& a, const node_store& b) -> bool
+            {
+                if (a.box.start.d[dim] != b.box.start.d[dim])
+                    return a.box.start.d[dim] < b.box.start.d[dim];
+
+                return a.box.end.d[dim] < b.box.end.d[dim];
+            }
+        );
+
+        for (size_t dist = 1; dist <= dist_max; ++dist)
+        {
+
+        }
+    }
+
+    throw std::runtime_error("TODO: implement the 'split tree' algorithm.");
 }
 
 template<typename _Key, typename _Value, typename _Trait>

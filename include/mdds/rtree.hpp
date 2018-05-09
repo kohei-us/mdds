@@ -233,6 +233,9 @@ public:
     bool empty() const;
 
 private:
+
+    void insert_after_split(node_store* ns, const point& start, const point& end, value_type value);
+
     node_store* find_node_for_insertion(const bounding_box& bb);
 
     key_type calc_overlap_cost(const bounding_box& bb, const directory_node& dir) const;
