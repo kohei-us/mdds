@@ -188,6 +188,16 @@ _Key calc_area_enlargement(const _BBox& bb_host, const _BBox& bb_guest)
     return enlarged_area - original_area;
 }
 
+template<typename _Key, typename _BBox, typename _Iter, size_t _Dim>
+_BBox calc_bounding_box(_Iter it, _Iter it_end)
+{
+    _BBox bb = it->box;
+    for (++it; it != it_end; ++it)
+        detail::rtree::enlarge_box_to_fit<_Key,_BBox,_Dim>(bb, it->box);
+
+    return bb;
+}
+
 }}
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -387,7 +397,7 @@ bool rtree<_Key,_Value,_Trait>::node_store::pack()
     const std::vector<node_store>& children = dir->children;
     if (children.empty())
     {
-        // This node has not children.  Reset the bounding box to empty.
+        // This node has no children.  Reset the bounding box to empty.
         bounding_box new_box;
         bool changed = new_box != box;
         box = new_box;
@@ -396,9 +406,8 @@ bool rtree<_Key,_Value,_Trait>::node_store::pack()
 
     auto it = children.cbegin(), ite = children.cend();
 
-    bounding_box new_box = it->box;
-    for (++it; it != ite; ++it)
-        detail::rtree::enlarge_box_to_fit<_Key,bounding_box,trait_type::dimensions>(new_box, it->box);
+    bounding_box new_box =
+        detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, ite);
 
     bool changed = new_box != box;
     box = new_box; // update the bounding box.
@@ -730,21 +739,18 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
             auto it_end = it;
             std::advance(it_end, trait_type::min_node_size - 1 + dist);
 
-            bounding_box bb1 = it->box;
-            for (++it; it != it_end; ++it)
-                detail::rtree::enlarge_box_to_fit<_Key,bounding_box,trait_type::dimensions>(bb1, it->box);
-
+            bounding_box bb1 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, it_end);
+            it = it_end;
             it_end = children.end();
             assert(it != it_end);
-            bounding_box bb2 = it->box;
-            for (++it; it != it_end; ++it)
-                detail::rtree::enlarge_box_to_fit<_Key,bounding_box,trait_type::dimensions>(bb2, it->box);
+            bounding_box bb2 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, it_end);
 
             // Compute the half margins of the first and second groups.
-            key_type margins = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb1);
-            margins += detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb2);
+            key_type margin1 = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb1);
+            key_type margin2 = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb2);
+            key_type margins = margin1 + margin2;
 
-            std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; margins = " << margins << std::endl;
+            std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; margin1 = " << margin1 << "; margin2 = " << margin2 << std::endl;
 
             sum_of_margins += margins;
         }
