@@ -140,6 +140,24 @@ _Key calc_area(const _BBox& bb)
 }
 
 /**
+ * The margin here is defined as the sum of the lengths of the edges of a
+ * bounding box, per the original paper on R*-tree.  It's half-margin
+ * because it only adds one of the two edges in each dimension.
+ */
+template<typename _Key, typename _BBox, size_t _Dim>
+_Key calc_half_margin(const _BBox& bb)
+{
+    static_assert(_Dim > 0, "Dimension cannot be zero.");
+    using key_type = _Key;
+
+    key_type margin = bb.end.d[0] - bb.start.d[0];
+    for (size_t dim = 1; dim < _Dim; ++dim)
+        margin += bb.end.d[dim] - bb.start.d[dim];
+
+    return margin;
+}
+
+/**
  * Area enlargement is calculated by calculating the area of the enlarged
  * box subtracted by the area of the original box prior to the enlargement.
  *
@@ -409,12 +427,12 @@ bool rtree<_Key,_Value,_Trait>::node_store::is_root() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::node_store::has_capacity() const
+bool rtree<_Key,_Value,_Trait>::node_store::exceeds_capacity() const
 {
     if (type != node_type::directory_leaf)
         return false;
 
-    return count < trait_type::max_node_size;
+    return count > trait_type::max_node_size;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -580,13 +598,6 @@ void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, val
     bounding_box bb(start, end);
     node_store* ns = find_node_for_insertion(bb);
     assert(ns);
-
-    if (!ns->has_capacity())
-    {
-        insert_after_split(ns, start, end, std::move(value));
-        return;
-    }
-
     assert(ns->type == node_type::directory_leaf);
     directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
 
@@ -595,6 +606,12 @@ void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, val
     new_ns.parent = ns;
     dir->insert(std::move(new_ns));
     ++ns->count;
+
+    if (ns->exceeds_capacity())
+    {
+        split_node(ns);
+        return;
+    }
 
     if (ns->count == 1)
         ns->box = bb;
@@ -675,14 +692,18 @@ bool rtree<_Key,_Value,_Trait>::empty() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::insert_after_split(
-    node_store* ns, const point& start, const point& end, value_type value)
+void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 {
     assert(ns->type == node_type::directory_leaf);
+    assert(ns->count == trait_type::max_node_size+1);
+
     directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
     std::vector<node_store>& children = dir->children;
 
-    size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
+    constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
+
+    // Store the sum of margins for each dimension axis.
+    std::vector<key_type> dim_margins(trait_type::dimensions, key_type());
 
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
@@ -698,11 +719,44 @@ void rtree<_Key,_Value,_Trait>::insert_after_split(
             }
         );
 
+        key_type sum_of_margins = key_type(); // it's actually the sum of half margins.
+
         for (size_t dist = 1; dist <= dist_max; ++dist)
         {
+            // The first group contains m-1+dist entries, while the second
+            // group contains the rest.
 
+            auto it = children.begin();
+            auto it_end = it;
+            std::advance(it_end, trait_type::min_node_size - 1 + dist);
+
+            bounding_box bb1 = it->box;
+            for (++it; it != it_end; ++it)
+                detail::rtree::enlarge_box_to_fit<_Key,bounding_box,trait_type::dimensions>(bb1, it->box);
+
+            it_end = children.end();
+            assert(it != it_end);
+            bounding_box bb2 = it->box;
+            for (++it; it != it_end; ++it)
+                detail::rtree::enlarge_box_to_fit<_Key,bounding_box,trait_type::dimensions>(bb2, it->box);
+
+            // Compute the half margins of the first and second groups.
+            key_type margins = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb1);
+            margins += detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb2);
+
+            std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; margins = " << margins << std::endl;
+
+            sum_of_margins += margins;
         }
+
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim = " << dim << "; sum margins = " << sum_of_margins << std::endl;
+        dim_margins[dim] = sum_of_margins;
     }
+
+    // Pick the dimension axis with the lowest sum of margins.
+    auto it_min = std::min_element(dim_margins.begin(), dim_margins.end());
+    size_t min_dim = std::distance(dim_margins.begin(), it_min);
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim picked = " << min_dim << std::endl;
 
     throw std::runtime_error("TODO: implement the 'split tree' algorithm.");
 }

@@ -124,7 +124,7 @@ private:
         bool pack();
         bool is_directory() const;
         bool is_root() const;
-        bool has_capacity() const;
+        bool exceeds_capacity() const;
         void swap(node_store& other);
     };
 
@@ -234,7 +234,7 @@ public:
 
 private:
 
-    void insert_after_split(node_store* ns, const point& start, const point& end, value_type value);
+    void split_node(node_store* ns);
 
     node_store* find_node_for_insertion(const bounding_box& bb);
 
