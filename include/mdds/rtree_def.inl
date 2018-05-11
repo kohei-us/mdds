@@ -369,6 +369,7 @@ rtree<_Key,_Value,_Trait>::node_store::~node_store()
         switch (type)
         {
             case node_type::directory_leaf:
+            case node_type::directory_nonleaf:
                 delete static_cast<directory_node*>(node_ptr);
                 break;
             case node_type::value:
@@ -383,9 +384,17 @@ rtree<_Key,_Value,_Trait>::node_store::~node_store()
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store
-rtree<_Key,_Value,_Trait>::node_store::create_directory_node()
+rtree<_Key,_Value,_Trait>::node_store::create_leaf_directory_node()
 {
     node_store ret(node_type::directory_leaf, bounding_box(), new directory_node);
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store
+rtree<_Key,_Value,_Trait>::node_store::create_nonleaf_directory_node()
+{
+    node_store ret(node_type::directory_nonleaf, bounding_box(), new directory_node);
     return ret;
 }
 
@@ -608,7 +617,7 @@ rtree<_Key,_Value,_Trait>::const_iterator::operator->()
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_directory_node())
+rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_leaf_directory_node())
 {
     static_assert(trait_type::min_node_size <= trait_type::max_node_size / 2,
         "Minimum node size must be less than half of the maximum node size.");
@@ -809,7 +818,36 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist picked = " << min_overlap_dist.pos << std::endl;
     distribution dist_picked(min_overlap_dist.pos, children);
 
-    throw std::runtime_error("TODO: implement the 'split tree' algorithm.");
+    // Move the child nodes in group 2 into a brand-new sibling node.
+    node_store node_g2 = node_store::create_leaf_directory_node();
+    directory_node* dir_sibling = static_cast<directory_node*>(node_g2.node_ptr);
+
+    for (auto it = dist_picked.g2.begin; it != dist_picked.g2.end; ++it)
+        dir_sibling->children.push_back(std::move(*it));
+    node_g2.pack();
+
+    // Remove the nodes in group 2 from the original node by shrinking the node store.
+    ns->count = dist_picked.g1.size;
+    dir->children.resize(dist_picked.g1.size);
+    ns->pack(); // Re-calculate the bounding box.
+
+    if (ns->is_root())
+    {
+        // Create a new root node and make it the parent of the original root
+        // and the new sibling nodes.
+        assert(ns == &m_root);
+        node_store node_g1 = node_store::create_nonleaf_directory_node();
+        m_root.swap(node_g1);
+        node_g1.parent = &m_root;
+        node_g2.parent = &m_root;
+        directory_node* dir_root = static_cast<directory_node*>(m_root.node_ptr);
+        dir_root->children.emplace_back(std::move(node_g1));
+        dir_root->children.emplace_back(std::move(node_g2));
+    }
+    else
+    {
+        throw std::runtime_error("TODO: not implemented yet.");
+    }
 }
 
 template<typename _Key, typename _Value, typename _Trait>

@@ -111,7 +111,8 @@ private:
         node_store(node_type type, const bounding_box& box, node* node_ptr);
         ~node_store();
 
-        static node_store create_directory_node();
+        static node_store create_leaf_directory_node();
+        static node_store create_nonleaf_directory_node();
         static node_store create_value_node(const bounding_box& box, value_type v);
 
         node_store& operator= (node_store&& other);
@@ -132,6 +133,7 @@ private:
     {
         typename std::vector<node_store>::iterator begin;
         typename std::vector<node_store>::iterator end;
+        size_t size;
     };
 
     struct distribution
@@ -143,10 +145,12 @@ private:
         {
             g1.begin = nodes.begin();
             g1.end = g1.begin;
-            std::advance(g1.end, trait_type::min_node_size - 1 + dist);
+            g1.size = trait_type::min_node_size - 1 + dist;
+            std::advance(g1.end, g1.size);
 
             g2.begin = g1.end;
             g2.end = nodes.end();
+            g2.size = nodes.size() - g1.size;
         }
     };
 
