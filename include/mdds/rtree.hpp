@@ -128,6 +128,28 @@ private:
         void swap(node_store& other);
     };
 
+    struct dist_group
+    {
+        typename std::vector<node_store>::iterator begin;
+        typename std::vector<node_store>::iterator end;
+    };
+
+    struct distribution
+    {
+        dist_group g1;
+        dist_group g2;
+
+        distribution(size_t dist, std::vector<node_store>& nodes)
+        {
+            g1.begin = nodes.begin();
+            g1.end = g1.begin;
+            std::advance(g1.end, trait_type::min_node_size - 1 + dist);
+
+            g2.begin = g1.end;
+            g2.end = nodes.end();
+        }
+    };
+
     struct node
     {
         node();

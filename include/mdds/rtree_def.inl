@@ -198,6 +198,25 @@ _BBox calc_bounding_box(_Iter it, _Iter it_end)
     return bb;
 }
 
+template<typename _Key>
+struct min_value_pos
+{
+    _Key value;
+    size_t pos;
+
+    void assign(_Key new_value, size_t new_pos)
+    {
+        value = new_value;
+        pos = new_pos;
+    }
+
+    void assign_if_less(_Key new_value, size_t new_pos)
+    {
+        if (new_value < value)
+            assign(new_value, new_pos);
+    }
+};
+
 }}
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -712,7 +731,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
     constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
 
     // Store the sum of margins for each dimension axis.
-    std::vector<key_type> dim_margins(trait_type::dimensions, key_type());
+    detail::rtree::min_value_pos<key_type> min_margin_dim;
 
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
@@ -756,13 +775,39 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         }
 
         std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim = " << dim << "; sum margins = " << sum_of_margins << std::endl;
-        dim_margins[dim] = sum_of_margins;
+
+        if (dim > 0)
+            min_margin_dim.assign_if_less(sum_of_margins, dim);
+        else
+            min_margin_dim.assign(sum_of_margins, dim);
     }
 
     // Pick the dimension axis with the lowest sum of margins.
-    auto it_min = std::min_element(dim_margins.begin(), dim_margins.end());
-    size_t min_dim = std::distance(dim_margins.begin(), it_min);
+    size_t min_dim = min_margin_dim.pos;
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim picked = " << min_dim << std::endl;
+
+    // Along the chosen dimension axis, pick the distribution with the minimum
+    // overlap value.
+    detail::rtree::min_value_pos<key_type> min_overlap_dist;
+
+    for (size_t dist = 1; dist <= dist_max; ++dist)
+    {
+        // The first group contains m-1+dist entries, while the second
+        // group contains the rest.
+        distribution dist_data(dist, children);
+        bounding_box bb1 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(dist_data.g1.begin),trait_type::dimensions>(dist_data.g1.begin, dist_data.g1.end);
+        bounding_box bb2 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(dist_data.g2.begin),trait_type::dimensions>(dist_data.g2.begin, dist_data.g2.end);
+
+        key_type overlap = detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(bb1, bb2);
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; overlap = " << overlap << std::endl;
+        if (dist == 1)
+            min_overlap_dist.assign(overlap, dist);
+        else
+            min_overlap_dist.assign_if_less(overlap, dist);
+    }
+
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist picked = " << min_overlap_dist.pos << std::endl;
+    distribution dist_picked(min_overlap_dist.pos, children);
 
     throw std::runtime_error("TODO: implement the 'split tree' algorithm.");
 }
