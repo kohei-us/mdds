@@ -34,6 +34,7 @@
 #include <memory>
 #include <cassert>
 #include <algorithm>
+#include <functional>
 
 namespace mdds {
 
@@ -726,6 +727,41 @@ template<typename _Key, typename _Value, typename _Trait>
 bool rtree<_Key,_Value,_Trait>::empty() const
 {
     return !m_root.count;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _Func>
+void rtree<_Key,_Value,_Trait>::walk(_Func func) const
+{
+    std::function<void(const node_store*)> func_descend = [&](const node_store* ns)
+    {
+        node_properties np;
+        np.type = ns->type;
+        np.box = ns->box;
+        func(np);
+
+        switch (ns->type)
+        {
+            case node_type::directory_leaf:
+            case node_type::directory_nonleaf:
+            {
+                const directory_node* dir =
+                    static_cast<const directory_node*>(ns->node_ptr);
+
+                for (const node_store& ns_child : dir->children)
+                    func_descend(&ns_child);
+
+                break;
+            }
+            case node_type::value:
+                // Do nothing.
+                break;
+            default:
+                assert(!"The tree should not contain node of this type!");
+        }
+    };
+
+    func_descend(&m_root);
 }
 
 template<typename _Key, typename _Value, typename _Trait>

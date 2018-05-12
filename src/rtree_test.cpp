@@ -231,6 +231,34 @@ void rtree_test_node_split()
         int16_t w = 1;
         tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, "foo");
     }
+
+    size_t count_values = 0;
+    size_t count_leaf = 0;
+    size_t count_nonleaf = 0;
+
+    auto walker = [&](const rt_type::node_properties& np)
+    {
+        switch (np.type)
+        {
+            case rt_type::node_type::value:
+                ++count_values;
+                break;
+            case rt_type::node_type::directory_leaf:
+                ++count_leaf;
+                break;
+            case rt_type::node_type::directory_nonleaf:
+                ++count_nonleaf;
+                break;
+            default:
+                ;
+        }
+    };
+
+    tree.walk(walker);
+
+    assert(count_values == 6);
+    assert(count_leaf == 2);
+    assert(count_nonleaf == 1);
 }
 
 int main(int argc, char** argv)

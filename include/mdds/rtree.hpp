@@ -91,9 +91,15 @@ public:
         bool contains_at_boundary(const bounding_box& other) const;
     };
 
-private:
     enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
 
+    struct node_properties
+    {
+        node_type type;
+        bounding_box box;
+    };
+
+private:
     struct node;
 
     struct node_store
@@ -258,6 +264,14 @@ public:
 
     bool empty() const;
 
+    /**
+     * Walk down the entire tree depth first.
+     *
+     * @func function or function object that gets called at each node in the
+     *       tree.
+     */
+    template<typename _Func>
+    void walk(_Func func) const;
 private:
 
     void split_node(node_store* ns);
