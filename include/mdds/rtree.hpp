@@ -29,6 +29,7 @@
 #ifndef INCLUDED_MDDS_RTREE_HPP
 #define INCLUDED_MDDS_RTREE_HPP
 
+#include <deque>
 #include <vector>
 #include <cstdlib>
 #include <string>
@@ -133,12 +134,16 @@ private:
         bool is_root() const;
         bool exceeds_capacity() const;
         void swap(node_store& other);
+
+        void reset_parent_of_children();
     };
+
+    using dir_store_type = std::deque<node_store>;
 
     struct dist_group
     {
-        typename std::vector<node_store>::iterator begin;
-        typename std::vector<node_store>::iterator end;
+        typename dir_store_type::iterator begin;
+        typename dir_store_type::iterator end;
         size_t size;
     };
 
@@ -147,7 +152,7 @@ private:
         dist_group g1;
         dist_group g2;
 
-        distribution(size_t dist, std::vector<node_store>& nodes)
+        distribution(size_t dist, dir_store_type& nodes)
         {
             g1.begin = nodes.begin();
             g1.end = g1.begin;
@@ -182,7 +187,7 @@ private:
      */
     struct directory_node : public node
     {
-        std::vector<node_store> children;
+        dir_store_type children;
 
         directory_node();
         ~directory_node();
@@ -272,6 +277,14 @@ public:
      */
     template<typename _Func>
     void walk(_Func func) const;
+
+    /**
+     * Check the integrity of the entire tree structure.
+     *
+     * @exception integrity_error if the integrity check fails.
+     */
+    void check_integrity() const;
+
 private:
 
     void split_node(node_store* ns);

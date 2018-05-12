@@ -145,6 +145,8 @@ void rtree_test_basic_search()
     expected_bb = {{-2, 0}, {5, 6}};
     assert(tree.get_root_extent() == expected_bb);
 
+    tree.check_integrity();
+
     // Verify the search method works.
 
     rt_type::const_search_results res = tree.search({1, 1});
@@ -217,6 +219,8 @@ void rtree_test_basic_erase()
     assert(!tree.empty()); // there should be one value stored in the tree.
     expected_bb = {{0,0}, {2,2}};
     assert(tree.get_root_extent() == expected_bb);
+
+    tree.check_integrity();
 }
 
 void rtree_test_node_split()
@@ -259,6 +263,8 @@ void rtree_test_node_split()
     assert(count_values == 6);
     assert(count_leaf == 2);
     assert(count_nonleaf == 1);
+
+    tree.check_integrity();
 }
 
 int main(int argc, char** argv)

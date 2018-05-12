@@ -423,7 +423,7 @@ bool rtree<_Key,_Value,_Trait>::node_store::pack()
         return false;
 
     const directory_node* dir = static_cast<const directory_node*>(node_ptr);
-    const std::vector<node_store>& children = dir->children;
+    const dir_store_type& children = dir->children;
     if (children.empty())
     {
         // This node has no children.  Reset the bounding box to empty.
@@ -481,6 +481,17 @@ void rtree<_Key,_Value,_Trait>::node_store::swap(node_store& other)
     std::swap(parent, other.parent);
     std::swap(node_ptr, other.node_ptr);
     std::swap(count, other.count);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_children()
+{
+    if (!is_directory())
+        return;
+
+    directory_node* dir = static_cast<directory_node*>(node_ptr);
+    for (node_store& ns : dir->children)
+        ns.parent = this;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -695,7 +706,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     assert(parent->type == node_type::directory_leaf);
     directory_node* dir = static_cast<directory_node*>(parent->node_ptr);
 
-    std::vector<node_store>& children = dir->children;
+    dir_store_type& children = dir->children;
 
     auto it = std::find_if(children.begin(), children.end(),
         [ns](const node_store& this_ns) -> bool
@@ -765,13 +776,102 @@ void rtree<_Key,_Value,_Trait>::walk(_Func func) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::check_integrity() const
+{
+    switch (m_root.type)
+    {
+        case node_type::directory_leaf:
+        case node_type::directory_nonleaf:
+            // Good.
+            break;
+        default:
+            throw integrity_error("The root node must be a directory node.");
+    }
+
+    if (m_root.parent)
+        throw integrity_error("The root node should not have a non-null parent.");
+
+    std::vector<const node_store*> ns_stack;
+
+    auto to_string = [](node_type nt) -> const char*
+    {
+        switch (nt)
+        {
+            case node_type::unspecified:
+                return "unspecified";
+            case node_type::directory_leaf:
+                return "directory-leaf";
+            case node_type::directory_nonleaf:
+                return "directory-nonleaf";
+            case node_type::value:
+                return "value";
+        }
+
+        return "???";
+    };
+
+    std::function<void(const node_store*, int)> func_descend = [&ns_stack,&func_descend, to_string](const node_store* ns, int level)
+    {
+        std::string indent;
+        for (int i = 0; i < level; ++i)
+            indent += "  ";
+
+        std::cout << indent << "node: " << ns << "; type: " << to_string(ns->type) << std::endl;
+
+        const node_store* parent = nullptr;
+        if (!ns_stack.empty())
+            parent = ns_stack.back();
+
+        if (parent && ns->parent != parent)
+        {
+            std::ostringstream os;
+            os << "The parent node pointer does not point to the real parent. (expected: " << parent << "; actual: " << ns->parent << ")";
+            throw integrity_error(os.str());
+        }
+
+        ns_stack.push_back(ns);
+
+        switch (ns->type)
+        {
+            case node_type::directory_leaf:
+            case node_type::directory_nonleaf:
+            {
+                const directory_node* dir =
+                    static_cast<const directory_node*>(ns->node_ptr);
+
+                if (ns->count != dir->children.size())
+                {
+                    std::ostringstream os;
+                    os << "Incorrect count of child nodes detected. (expected: " << dir->children.size() << "; actual: " << ns->count << ")";
+                    throw integrity_error(os.str());
+                }
+
+                for (const node_store& ns_child : dir->children)
+                    func_descend(&ns_child, level+1);
+
+                break;
+            }
+            case node_type::value:
+                // Do nothing.
+                break;
+            default:
+                throw integrity_error("Unexpected node type!");
+        }
+
+        ns_stack.pop_back();
+    };
+
+    func_descend(&m_root, 0);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 {
     assert(ns->type == node_type::directory_leaf);
     assert(ns->count == trait_type::max_node_size+1);
 
     directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
-    std::vector<node_store>& children = dir->children;
+    dir_store_type& children = dir->children;
 
     constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
 
@@ -860,6 +960,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
     for (auto it = dist_picked.g2.begin; it != dist_picked.g2.end; ++it)
         dir_sibling->children.push_back(std::move(*it));
+    node_g2.count = dir_sibling->children.size();
     node_g2.pack();
 
     // Remove the nodes in group 2 from the original node by shrinking the node store.
@@ -879,6 +980,10 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         directory_node* dir_root = static_cast<directory_node*>(m_root.node_ptr);
         dir_root->children.emplace_back(std::move(node_g1));
         dir_root->children.emplace_back(std::move(node_g2));
+        m_root.count = 2;
+
+        for (node_store& ns_child : dir_root->children)
+            ns_child.reset_parent_of_children();
     }
     else
     {
@@ -900,7 +1005,7 @@ rtree<_Key,_Value,_Trait>::find_node_for_insertion(const bounding_box& bb)
         assert(dst->type == node_type::directory_nonleaf);
 
         directory_node* dir = static_cast<directory_node*>(dst->node_ptr);
-        std::vector<node_store>& children = dir->children;
+        dir_store_type& children = dir->children;
 
         // If this non-leaf directory contains at least one leaf directory,
         // pick the entry with minimum overlap increase.  If all of its child
