@@ -230,6 +230,10 @@ void rtree_test_node_split()
 
     rt_type tree;
 
+    // Inserting 6 entries should cause the root directory node to split.
+    // After the split, the root node should become a non-leaf directory
+    // storing two leaf directory nodes as its children.
+
     for (int16_t i = 0; i < 6; ++i)
     {
         int16_t w = 1;
