@@ -269,6 +269,28 @@ void rtree_test_node_split()
     assert(count_nonleaf == 1);
 
     tree.check_integrity();
+
+    // Adding two more entries will cause one of the leaf directory nodes
+    // below the root node to split.
+
+    for (int16_t i = 6; i < 8; ++i)
+    {
+        int16_t w = 1;
+        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, "bar");
+    }
+
+    tree.check_integrity();
+
+    // Count all the nodes again.
+    count_values = 0;
+    count_leaf = 0;
+    count_nonleaf = 0;
+
+    tree.walk(walker);
+
+    assert(count_values == 8);
+    assert(count_leaf == 3);
+    assert(count_nonleaf == 1);
 }
 
 int main(int argc, char** argv)

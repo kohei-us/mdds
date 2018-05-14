@@ -1033,7 +1033,20 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
     }
     else
     {
-        throw std::runtime_error("TODO: not implemented yet.");
+        // Place the new siblig under the same parent.
+        assert(ns->parent);
+        node_g2.parent = ns->parent;
+        node_store& ns_parent = *ns->parent;
+        assert(ns_parent.type == node_type::directory_nonleaf);
+        directory_node* dir_parent = static_cast<directory_node*>(ns_parent.node_ptr);
+        dir_parent->children.emplace_back(std::move(node_g2));
+        ++ns_parent.count;
+        ns_parent.pack();
+
+        // Update the parent pointer of the children _after_ the group 2 node
+        // has been inserted into the buffer, as the pointer value of the node
+        // changes after the insertion.
+        dir_parent->children.back().reset_parent_of_children();
     }
 }
 
