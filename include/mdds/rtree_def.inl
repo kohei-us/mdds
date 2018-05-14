@@ -329,6 +329,18 @@ bool rtree<_Key,_Value,_Trait>::bounding_box::contains(const point& pt) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::bounding_box::contains(const bounding_box& bb) const
+{
+    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    {
+        if (bb.start.d[dim] < start.d[dim] || end.d[dim] < bb.end.d[dim])
+            return false;
+    }
+
+    return true;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 bool rtree<_Key,_Value,_Trait>::bounding_box::contains_at_boundary(const bounding_box& bb) const
 {
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
@@ -433,11 +445,7 @@ bool rtree<_Key,_Value,_Trait>::node_store::pack()
         return changed;
     }
 
-    auto it = children.cbegin(), ite = children.cend();
-
-    bounding_box new_box =
-        detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, ite);
-
+    bounding_box new_box = dir->calc_extent();
     bool changed = new_box != box;
     box = new_box; // update the bounding box.
     return changed;
@@ -517,6 +525,18 @@ template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::directory_node::insert(node_store&& ns)
 {
     children.push_back(std::move(ns));
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::bounding_box
+rtree<_Key,_Value,_Trait>::directory_node::calc_extent() const
+{
+    auto it = children.cbegin(), ite = children.cend();
+
+    bounding_box box =
+        detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, ite);
+
+    return box;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -810,7 +830,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
         return "???";
     };
 
-    std::function<void(const node_store*, int)> func_descend = [&ns_stack,&func_descend, to_string](const node_store* ns, int level)
+    std::function<void(const node_store*, int)> func_descend = [&ns_stack,&func_descend,to_string](const node_store* ns, int level)
     {
         std::string indent;
         for (int i = 0; i < level; ++i)
@@ -819,14 +839,28 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
         std::cout << indent << "node: " << ns << "; type: " << to_string(ns->type) << "; extent: " << ns->box.to_string() << std::endl;
 
         const node_store* parent = nullptr;
+        bounding_box parent_bb;
         if (!ns_stack.empty())
-            parent = ns_stack.back();
-
-        if (parent && ns->parent != parent)
         {
-            std::ostringstream os;
-            os << "The parent node pointer does not point to the real parent. (expected: " << parent << "; actual: " << ns->parent << ")";
-            throw integrity_error(os.str());
+            parent = ns_stack.back();
+            parent_bb = parent->box;
+        }
+
+        if (parent)
+        {
+            if (ns->parent != parent)
+            {
+                std::ostringstream os;
+                os << "The parent node pointer does not point to the real parent. (expected: " << parent << "; actual: " << ns->parent << ")";
+                throw integrity_error(os.str());
+            }
+
+            if (!parent_bb.contains(ns->box))
+            {
+                std::ostringstream os;
+                os << "The extent of the child " << ns->box.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
+                throw integrity_error(os.str());
+            }
         }
 
         ns_stack.push_back(ns);
@@ -843,6 +877,17 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
                 {
                     std::ostringstream os;
                     os << "Incorrect count of child nodes detected. (expected: " << dir->children.size() << "; actual: " << ns->count << ")";
+                    throw integrity_error(os.str());
+                }
+
+                // Check to make sure the bounding box of the current node is
+                // tightly packed.
+                bounding_box bb_expected = dir->calc_extent();
+
+                if (bb_expected != ns->box)
+                {
+                    std::ostringstream os;
+                    os << "The extent of the node " << ns->box.to_string() << " does not equal truly tight extent " << bb_expected.to_string();
                     throw integrity_error(os.str());
                 }
 
@@ -981,6 +1026,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         dir_root->children.emplace_back(std::move(node_g1));
         dir_root->children.emplace_back(std::move(node_g2));
         m_root.count = 2;
+        m_root.pack();
 
         for (node_store& ns_child : dir_root->children)
             ns_child.reset_parent_of_children();

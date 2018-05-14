@@ -84,6 +84,7 @@ public:
         bool operator!= (const bounding_box& other) const;
 
         bool contains(const point& pt) const;
+        bool contains(const bounding_box& bb) const;
 
         /**
          * Determine whether or not another bounding box is within this
@@ -130,6 +131,7 @@ private:
          * @return true if the extent has changed, false otherwise.
          */
         bool pack();
+
         bool is_directory() const;
         bool is_root() const;
         bool exceeds_capacity() const;
@@ -193,6 +195,8 @@ private:
         ~directory_node();
 
         void insert(node_store&& ns);
+
+        bounding_box calc_extent() const;
     };
 
 public:
