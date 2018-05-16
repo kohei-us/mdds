@@ -207,10 +207,8 @@ void rtree_test_basic_erase()
     assert(rt_type::bounding_box() == tree.get_root_extent());
 
     tree.insert({0,0}, {2,2}, "erase me");
-    rt_type::bounding_box expected_bb({0,0}, {2,2});
-    assert(tree.get_root_extent() == expected_bb);
     tree.insert({-10,-4}, {0,0}, "erase me");
-    expected_bb = {{-10,-4}, {2,2}};
+    rt_type::bounding_box expected_bb({-10,-4}, {2,2});
     assert(tree.get_root_extent() == expected_bb);
 
     res = tree.search({-5,-2});
@@ -239,9 +237,7 @@ void rtree_test_node_split()
     for (int16_t i = 0; i < 6; ++i)
     {
         int16_t w = 1;
-        std::ostringstream os;
-        os << "foo" << i;
-        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
+        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, "foo");
     }
 
     size_t count_values = 0;
@@ -280,9 +276,7 @@ void rtree_test_node_split()
     for (int16_t i = 6; i < 8; ++i)
     {
         int16_t w = 1;
-        std::ostringstream os;
-        os << "bar" << i;
-        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
+        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, "bar");
     }
 
     tree.check_integrity();
@@ -297,15 +291,6 @@ void rtree_test_node_split()
     assert(count_values == 8);
     assert(count_leaf == 3);
     assert(count_nonleaf == 1);
-
-    // Erase the entry at (0, 0).  There should be only one match.  Erasing
-    // this entry will cause the node to be underfilled.
-
-    rt_type::const_search_results res = tree.search({0,0});
-    auto it = res.cbegin();
-    assert(it != res.cend());
-    assert(std::distance(it, res.cend()) == 1);
-//  tree.erase(it);
 }
 
 int main(int argc, char** argv)

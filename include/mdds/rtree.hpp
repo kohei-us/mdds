@@ -46,8 +46,6 @@ struct default_rtree_trait
     constexpr static const size_t max_tree_depth = 100;
 };
 
-enum class node_type { unspecified, deleted, directory_leaf, directory_nonleaf, value };
-
 }}
 
 template<typename _Key, typename _Value, typename _Trait = detail::rtree::default_rtree_trait>
@@ -95,7 +93,7 @@ public:
         bool contains_at_boundary(const bounding_box& other) const;
     };
 
-    using node_type = detail::rtree::node_type;
+    enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
 
     struct node_properties
     {
@@ -143,7 +141,6 @@ private:
     };
 
     using dir_store_type = std::deque<node_store>;
-    using dir_ptr_store_type = std::vector<node_store*>;
 
     struct dist_group
     {
@@ -193,7 +190,6 @@ private:
     struct directory_node : public node
     {
         dir_store_type children;
-        dir_ptr_store_type deleted_slots;
 
         directory_node();
         ~directory_node();
@@ -201,18 +197,6 @@ private:
         void insert(node_store&& ns);
 
         bounding_box calc_extent() const;
-
-        size_t size() const;
-        bool empty() const;
-
-        /**
-         * Remove deleted entries from the store.  Note that this may
-         * invalidate the parent pointers of all stored child nodes.
-         *
-         * @return true if the parent pointers of the child nodes have become
-         *         invalid, false if they are still valid.
-         */
-        bool purge();
     };
 
 public:
@@ -306,13 +290,10 @@ public:
     void check_integrity() const;
 
 private:
-    void insert(node_store&& new_ns);
 
     void split_node(node_store* ns);
 
     node_store* find_node_for_insertion(const bounding_box& bb);
-
-    dir_store_type remove_underfilled_nodes(node_store* ns);
 
     key_type calc_overlap_cost(const bounding_box& bb, const directory_node& dir) const;
 
