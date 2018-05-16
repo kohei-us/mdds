@@ -137,7 +137,19 @@ private:
         bool exceeds_capacity() const;
         void swap(node_store& other);
 
+        /**
+         * Have all its child nodes update their parent pointers to new memory
+         * location.  Call this when the memory location of the node changes.
+         */
         void reset_parent_of_children();
+
+        /**
+         * Go through each child node and have its child nodes update their
+         * parent pointers.  Call this when the memory locations of the child
+         * nodes change.  That can happen when the child nodes get sorted, for
+         * instance.
+         */
+        void reset_parent_of_grand_children();
     };
 
     using dir_store_type = std::deque<node_store>;
@@ -291,6 +303,13 @@ public:
 
 private:
 
+    /**
+     * Split an overfilled node.  The node to split is expected to have
+     * exactly M+1 child nodes where M is the maximum number of child nodes a
+     * single node is allowed to have.
+     *
+     * @param ns node to split.
+     */
     void split_node(node_store* ns);
 
     node_store* find_node_for_insertion(const bounding_box& bb);

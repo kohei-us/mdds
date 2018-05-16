@@ -503,6 +503,25 @@ void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_children()
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_grand_children()
+{
+    if (!is_directory())
+        return;
+
+    directory_node* dir = static_cast<directory_node*>(node_ptr);
+    for (node_store& ns_child : dir->children)
+    {
+        if (!ns_child.is_directory())
+            // This child is a value node.  Skip it.
+            continue;
+
+        directory_node* dir_child = static_cast<directory_node*>(ns_child.node_ptr);
+        for (node_store& ns_grand_child : dir_child->children)
+            ns_grand_child.reset_parent_of_children();
+    }
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node::node() {}
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -912,7 +931,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 {
-    assert(ns->type == node_type::directory_leaf);
+    assert(ns->is_directory());
     assert(ns->count == trait_type::max_node_size+1);
 
     directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
@@ -925,7 +944,8 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
-        // Sort the entries by the lower then by the upper value of their bounding boxes.
+        // Sort the entries by the lower then by the upper value of their
+        // bounding boxes.  This invalidates the pointers of the child nodes.
 
         std::sort(children.begin(), children.end(),
             [dim](const node_store& a, const node_store& b) -> bool
@@ -1029,24 +1049,38 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         m_root.pack();
 
         for (node_store& ns_child : dir_root->children)
+        {
             ns_child.reset_parent_of_children();
+            ns_child.reset_parent_of_grand_children();
+        }
     }
     else
     {
-        // Place the new siblig under the same parent.
+        // Place the new sibling (node_g2) under the same parent as ns.
         assert(ns->parent);
         node_g2.parent = ns->parent;
-        node_store& ns_parent = *ns->parent;
-        assert(ns_parent.type == node_type::directory_nonleaf);
-        directory_node* dir_parent = static_cast<directory_node*>(ns_parent.node_ptr);
+        node_store* ns_parent = ns->parent;
+        assert(ns_parent->type == node_type::directory_nonleaf);
+        directory_node* dir_parent = static_cast<directory_node*>(ns_parent->node_ptr);
         dir_parent->children.emplace_back(std::move(node_g2));
-        ++ns_parent.count;
-        ns_parent.pack();
+        ++ns_parent->count;
+        ns_parent->pack();
 
         // Update the parent pointer of the children _after_ the group 2 node
         // has been inserted into the buffer, as the pointer value of the node
         // changes after the insertion.
         dir_parent->children.back().reset_parent_of_children();
+
+        // We need to update the parent pointers of the grand children because
+        // the child nodes have been sorted earlier.
+        dir_parent->children.back().reset_parent_of_grand_children();
+        ns->reset_parent_of_grand_children();
+
+        if (ns_parent->count > trait_type::max_node_size)
+        {
+            throw std::runtime_error("TESTME");
+            split_node(ns_parent);
+        }
     }
 }
 
