@@ -431,10 +431,10 @@ rtree<_Key,_Value,_Trait>::node_store::operator= (node_store&& other)
 template<typename _Key, typename _Value, typename _Trait>
 bool rtree<_Key,_Value,_Trait>::node_store::pack()
 {
-    if (!is_directory())
+    const directory_node* dir = get_directory_node();
+    if (!dir)
         return false;
 
-    const directory_node* dir = static_cast<const directory_node*>(node_ptr);
     const dir_store_type& children = dir->children;
     if (children.empty())
     {
@@ -494,10 +494,10 @@ void rtree<_Key,_Value,_Trait>::node_store::swap(node_store& other)
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_children()
 {
-    if (!is_directory())
+    directory_node* dir = get_directory_node();
+    if (!dir)
         return;
 
-    directory_node* dir = static_cast<directory_node*>(node_ptr);
     for (node_store& ns : dir->children)
         ns.parent = this;
 }
@@ -505,20 +505,40 @@ void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_children()
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_grand_children()
 {
-    if (!is_directory())
+    directory_node* dir = get_directory_node();
+    if (!dir)
         return;
 
-    directory_node* dir = static_cast<directory_node*>(node_ptr);
     for (node_store& ns_child : dir->children)
     {
-        if (!ns_child.is_directory())
+        directory_node* dir_child = ns_child.get_directory_node();
+        if (!dir_child)
             // This child is a value node.  Skip it.
             continue;
 
-        directory_node* dir_child = static_cast<directory_node*>(ns_child.node_ptr);
         for (node_store& ns_grand_child : dir_child->children)
             ns_grand_child.reset_parent_of_children();
     }
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::directory_node*
+rtree<_Key,_Value,_Trait>::node_store::get_directory_node()
+{
+    if (!is_directory())
+        return nullptr;
+
+    return static_cast<directory_node*>(node_ptr);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+const typename rtree<_Key,_Value,_Trait>::directory_node*
+rtree<_Key,_Value,_Trait>::node_store::get_directory_node() const
+{
+    if (!is_directory())
+        return nullptr;
+
+    return static_cast<const directory_node*>(node_ptr);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -931,10 +951,11 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 {
-    assert(ns->is_directory());
+    directory_node* dir = ns->get_directory_node();
+
+    assert(dir);
     assert(ns->count == trait_type::max_node_size+1);
 
-    directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
     dir_store_type& children = dir->children;
 
     constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;

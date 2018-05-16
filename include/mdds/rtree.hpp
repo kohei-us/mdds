@@ -103,6 +103,7 @@ public:
 
 private:
     struct node;
+    struct directory_node;
 
     struct node_store
     {
@@ -150,6 +151,9 @@ private:
          * instance.
          */
         void reset_parent_of_grand_children();
+
+        directory_node* get_directory_node();
+        const directory_node* get_directory_node() const;
     };
 
     using dir_store_type = std::deque<node_store>;
