@@ -192,9 +192,22 @@ _Key calc_area_enlargement(const _BBox& bb_host, const _BBox& bb_guest)
 template<typename _Key, typename _BBox, typename _Iter, size_t _Dim>
 _BBox calc_bounding_box(_Iter it, _Iter it_end)
 {
-    _BBox bb = it->box;
-    for (++it; it != it_end; ++it)
-        detail::rtree::enlarge_box_to_fit<_Key,_BBox,_Dim>(bb, it->box);
+    _BBox bb;
+    bool first = true;
+
+    for (; it != it_end; ++it)
+    {
+        if (it->type == node_type::deleted)
+            continue;
+
+        if (first)
+        {
+            bb = it->box;
+            first = false;
+        }
+        else
+            detail::rtree::enlarge_box_to_fit<_Key,_BBox,_Dim>(bb, it->box);
+    }
 
     return bb;
 }
@@ -388,9 +401,10 @@ rtree<_Key,_Value,_Trait>::node_store::~node_store()
             case node_type::value:
                 delete static_cast<value_node*>(node_ptr);
                 break;
+            case node_type::deleted:
             case node_type::unspecified:
-            default:
-                assert(!"node::~node: unknown node type!");
+                assert(!node_ptr);
+                break;
         }
     }
 }
@@ -435,8 +449,7 @@ bool rtree<_Key,_Value,_Trait>::node_store::pack()
         return false;
 
     const directory_node* dir = static_cast<const directory_node*>(node_ptr);
-    const dir_store_type& children = dir->children;
-    if (children.empty())
+    if (dir->empty())
     {
         // This node has no children.  Reset the bounding box to empty.
         bounding_box new_box;
@@ -499,7 +512,10 @@ void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_children()
 
     directory_node* dir = static_cast<directory_node*>(node_ptr);
     for (node_store& ns : dir->children)
-        ns.parent = this;
+    {
+        if (ns.type != node_type::deleted)
+            ns.parent = this;
+    }
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -524,7 +540,14 @@ rtree<_Key,_Value,_Trait>::directory_node::~directory_node() {}
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::directory_node::insert(node_store&& ns)
 {
-    children.push_back(std::move(ns));
+    if (deleted_slots.empty())
+        children.push_back(std::move(ns));
+    else
+    {
+        node_store* slot = deleted_slots.back();
+        deleted_slots.pop_back();
+        slot->swap(ns);
+    }
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -537,6 +560,36 @@ rtree<_Key,_Value,_Trait>::directory_node::calc_extent() const
         detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, ite);
 
     return box;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+size_t rtree<_Key,_Value,_Trait>::directory_node::size() const
+{
+    return children.size() - deleted_slots.size();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::directory_node::empty() const
+{
+    return children.empty() || children.size() == deleted_slots.size();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::directory_node::purge()
+{
+    bool purged = !deleted_slots.empty();
+
+    auto it = std::remove_if(children.begin(), children.end(),
+        [](const node_store& ns) -> bool
+        {
+            return ns.type == node_type::deleted;
+        }
+    );
+
+    children.erase(it, children.end());
+    deleted_slots.clear();
+
+    return purged;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -665,14 +718,21 @@ void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, val
 {
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): start=" << start.to_string() << "; end=" << end.to_string() << std::endl;
     bounding_box bb(start, end);
-    node_store* ns = find_node_for_insertion(bb);
+    node_store new_ns = node_store::create_value_node(bb, std::move(value));
+    insert(std::move(new_ns));
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert(node_store&& new_ns)
+{
+    node_store* ns = find_node_for_insertion(new_ns.box);
     assert(ns);
     assert(ns->type == node_type::directory_leaf);
     directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
 
     // Insert the new value to this node.
-    node_store new_ns = node_store::create_value_node(bb, std::move(value));
     new_ns.parent = ns;
+    bounding_box new_box = new_ns.box;
     dir->insert(std::move(new_ns));
     ++ns->count;
 
@@ -683,14 +743,14 @@ void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, val
     }
 
     if (ns->count == 1)
-        ns->box = bb;
+        ns->box = new_box;
     else
-        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(ns->box, bb);
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(ns->box, new_box);
 
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << ns->count << std::endl;
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
 
-    bb = ns->box; // grab the parent bounding box.
+    bounding_box bb = ns->box; // grab the parent bounding box.
 
     // Propagate the bounding box update up the tree all the way to the root.
     for (ns = ns->parent; ns; ns = ns->parent)
@@ -722,13 +782,11 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     bounding_box bb_erased = ns->box;
 
     // Move up to the parent and find its stored location.
-    node_store* parent = ns->parent;
-    assert(parent->type == node_type::directory_leaf);
-    directory_node* dir = static_cast<directory_node*>(parent->node_ptr);
+    node_store* dir_store = ns->parent;
+    assert(dir_store->type == node_type::directory_leaf);
+    directory_node* dir = static_cast<directory_node*>(dir_store->node_ptr);
 
-    dir_store_type& children = dir->children;
-
-    auto it = std::find_if(children.begin(), children.end(),
+    auto it = std::find_if(dir->children.begin(), dir->children.end(),
         [ns](const node_store& this_ns) -> bool
         {
             return &this_ns == ns;
@@ -736,15 +794,16 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     );
 
     // Remove its entry from the parent node.
-    assert(it != children.end());
-    children.erase(it);
-    --parent->count;
-    assert(parent->count == children.size());
+    assert(it != dir->children.end());
+    dir->deleted_slots.push_back(const_cast<node_store*>(ns));
+    node_store ns_deleted;
+    ns_deleted.type = node_type::deleted;
+    it->swap(ns_deleted);
+    --dir_store->count;
+    assert(dir_store->count == dir->size());
 
-    if (!parent->is_root() && children.size() < trait_type::min_node_size)
-        throw std::runtime_error("TODO: reduce tree and perform re-insertion.");
-
-    shrink_tree_upward(parent, bb_erased);
+    dir_store_type to_be_reinserted = remove_underfilled_nodes(dir_store);
+    shrink_tree_upward(dir_store, bb_erased);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -825,6 +884,8 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
                 return "directory-nonleaf";
             case node_type::value:
                 return "value";
+            case node_type::deleted:
+                return "deleted";
         }
 
         return "???";
@@ -873,10 +934,10 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
                 const directory_node* dir =
                     static_cast<const directory_node*>(ns->node_ptr);
 
-                if (ns->count != dir->children.size())
+                if (ns->count != dir->size())
                 {
                     std::ostringstream os;
-                    os << "Incorrect count of child nodes detected. (expected: " << dir->children.size() << "; actual: " << ns->count << ")";
+                    os << "Incorrect count of child nodes detected. (expected: " << dir->size() << "; actual: " << ns->count << ")";
                     throw integrity_error(os.str());
                 }
 
@@ -892,7 +953,11 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
                 }
 
                 for (const node_store& ns_child : dir->children)
+                {
+                    if (ns_child.type == node_type::deleted)
+                        continue;
                     func_descend(&ns_child, level+1);
+                }
 
                 break;
             }
@@ -916,6 +981,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
     assert(ns->count == trait_type::max_node_size+1);
 
     directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
+    dir->purge();
     dir_store_type& children = dir->children;
 
     constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
@@ -925,7 +991,9 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
-        // Sort the entries by the lower then by the upper value of their bounding boxes.
+        // Sort the entries by the lower then by the upper value of their
+        // bounding boxes.  Note that by sorting, the parent pointers of the
+        // children will become invalid.
 
         std::sort(children.begin(), children.end(),
             [dim](const node_store& a, const node_store& b) -> bool
@@ -1043,6 +1111,10 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         ++ns_parent.count;
         ns_parent.pack();
 
+        // Don't forget to update the parent pointer of the children in the
+        // group 1 node.
+        ns->reset_parent_of_children();
+
         // Update the parent pointer of the children _after_ the group 2 node
         // has been inserted into the buffer, as the pointer value of the node
         // changes after the insertion.
@@ -1159,6 +1231,25 @@ rtree<_Key,_Value,_Trait>::find_node_for_insertion(const bounding_box& bb)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::dir_store_type
+rtree<_Key,_Value,_Trait>::remove_underfilled_nodes(node_store* ns)
+{
+    dir_store_type to_reinsert;
+
+    while (!ns->is_root())
+    {
+        assert(ns->is_directory());
+        directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
+        if (dir->size() < trait_type::min_node_size)
+        {
+            throw std::runtime_error("TODO: reduce tree and perform re-insertion.");
+        }
+    }
+
+    return to_reinsert;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::key_type
 rtree<_Key,_Value,_Trait>::calc_overlap_cost(
     const bounding_box& bb, const directory_node& dir) const
@@ -1166,7 +1257,11 @@ rtree<_Key,_Value,_Trait>::calc_overlap_cost(
     key_type overlap_cost = key_type();
 
     for (const node_store& ns : dir.children)
+    {
+        if (ns.type == node_type::deleted)
+            continue;
         overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
+    }
 
     return overlap_cost;
 }
@@ -1185,7 +1280,11 @@ void rtree<_Key,_Value,_Trait>::search_descend(
         {
             const directory_node* node = static_cast<const directory_node*>(ns.node_ptr);
             for (const node_store& child : node->children)
+            {
+                if (child.type == node_type::deleted)
+                    continue;
                 search_descend(pt, child, results);
+            }
             break;
         }
         case node_type::value:
@@ -1193,8 +1292,9 @@ void rtree<_Key,_Value,_Trait>::search_descend(
             results.add_node_store(&ns);
             break;
         }
+        case node_type::deleted:
         case node_type::unspecified:
-            throw std::runtime_error("unspecified node type.");
+            throw std::runtime_error("unspecified or deleted node type.");
     }
 }
 
