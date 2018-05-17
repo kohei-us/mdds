@@ -970,25 +970,8 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
     sort_dir_store_by_split_dimension(children);
 
-    // Along the chosen dimension axis, pick the distribution with the minimum
-    // overlap value.
-    detail::rtree::min_value_pos<key_type> min_overlap_dist;
-
-    for (size_t dist = 1; dist <= max_dist_size; ++dist)
-    {
-        // The first group contains m-1+dist entries, while the second
-        // group contains the rest.
-        distribution dist_data(dist, children);
-        bounding_box bb1 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(dist_data.g1.begin),trait_type::dimensions>(dist_data.g1.begin, dist_data.g1.end);
-        bounding_box bb2 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(dist_data.g2.begin),trait_type::dimensions>(dist_data.g2.begin, dist_data.g2.end);
-
-        key_type overlap = detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(bb1, bb2);
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; overlap = " << overlap << std::endl;
-        min_overlap_dist.assign(overlap, dist);
-    }
-
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist picked = " << min_overlap_dist.pos << std::endl;
-    distribution dist_picked(min_overlap_dist.pos, children);
+    size_t dist = pick_optimal_distribution(children);
+    distribution dist_picked(dist, children);
 
     // Move the child nodes in group 2 into a brand-new sibling node.
     node_store node_g2 = node_store::create_leaf_directory_node();
@@ -1117,6 +1100,30 @@ void rtree<_Key,_Value,_Trait>::sort_dir_store_by_dimension(size_t dim, dir_stor
             return a.box.end.d[dim] < b.box.end.d[dim];
         }
     );
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& children) const
+{
+    // Along the chosen dimension axis, pick the distribution with the minimum
+    // overlap value.
+    detail::rtree::min_value_pos<key_type> min_overlap_dist;
+
+    for (size_t dist = 1; dist <= max_dist_size; ++dist)
+    {
+        // The first group contains m-1+dist entries, while the second
+        // group contains the rest.
+        distribution dist_data(dist, children);
+        bounding_box bb1 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(dist_data.g1.begin),trait_type::dimensions>(dist_data.g1.begin, dist_data.g1.end);
+        bounding_box bb2 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(dist_data.g2.begin),trait_type::dimensions>(dist_data.g2.begin, dist_data.g2.end);
+
+        key_type overlap = detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(bb1, bb2);
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; overlap = " << overlap << std::endl;
+        min_overlap_dist.assign(overlap, dist);
+    }
+
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist picked = " << min_overlap_dist.pos << std::endl;
+    return min_overlap_dist.pos;
 }
 
 template<typename _Key, typename _Value, typename _Trait>

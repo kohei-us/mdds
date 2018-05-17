@@ -328,6 +328,8 @@ private:
 
     void sort_dir_store_by_dimension(size_t dim, dir_store_type& children);
 
+    size_t pick_optimal_distribution(dir_store_type& children) const;
+
     node_store* find_node_for_insertion(const bounding_box& bb);
 
     key_type calc_overlap_cost(const bounding_box& bb, const directory_node& dir) const;
