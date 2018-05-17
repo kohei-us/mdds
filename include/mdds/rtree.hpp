@@ -316,6 +316,16 @@ private:
      */
     void split_node(node_store* ns);
 
+    /**
+     * Determine the best dimension to split by, and sort the child nodes by
+     * that dimension.
+     *
+     * @param children child nodes to sort.
+     */
+    void sort_dir_store_by_split_dimension(dir_store_type& children);
+
+    void sort_dir_store_by_dimension(size_t dim, dir_store_type& children);
+
     node_store* find_node_for_insertion(const bounding_box& bb);
 
     key_type calc_overlap_cost(const bounding_box& bb, const directory_node& dir) const;

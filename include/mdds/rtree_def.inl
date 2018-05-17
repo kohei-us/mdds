@@ -960,62 +960,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
     constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
 
-    // Store the sum of margins for each dimension axis.
-    detail::rtree::min_value_pos<key_type> min_margin_dim;
-
-    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
-    {
-        // Sort the entries by the lower then by the upper value of their
-        // bounding boxes.  This invalidates the pointers of the child nodes.
-
-        std::sort(children.begin(), children.end(),
-            [dim](const node_store& a, const node_store& b) -> bool
-            {
-                if (a.box.start.d[dim] != b.box.start.d[dim])
-                    return a.box.start.d[dim] < b.box.start.d[dim];
-
-                return a.box.end.d[dim] < b.box.end.d[dim];
-            }
-        );
-
-        key_type sum_of_margins = key_type(); // it's actually the sum of half margins.
-
-        for (size_t dist = 1; dist <= dist_max; ++dist)
-        {
-            // The first group contains m-1+dist entries, while the second
-            // group contains the rest.
-
-            auto it = children.begin();
-            auto it_end = it;
-            std::advance(it_end, trait_type::min_node_size - 1 + dist);
-
-            bounding_box bb1 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, it_end);
-            it = it_end;
-            it_end = children.end();
-            assert(it != it_end);
-            bounding_box bb2 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, it_end);
-
-            // Compute the half margins of the first and second groups.
-            key_type margin1 = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb1);
-            key_type margin2 = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb2);
-            key_type margins = margin1 + margin2;
-
-            std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; margin1 = " << margin1 << "; margin2 = " << margin2 << std::endl;
-
-            sum_of_margins += margins;
-        }
-
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim = " << dim << "; sum margins = " << sum_of_margins << std::endl;
-
-        if (dim > 0)
-            min_margin_dim.assign_if_less(sum_of_margins, dim);
-        else
-            min_margin_dim.assign(sum_of_margins, dim);
-    }
-
-    // Pick the dimension axis with the lowest sum of margins.
-    size_t min_dim = min_margin_dim.pos;
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim picked = " << min_dim << std::endl;
+    sort_dir_store_by_split_dimension(children);
 
     // Along the chosen dimension axis, pick the distribution with the minimum
     // overlap value.
@@ -1103,6 +1048,76 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
             split_node(ns_parent);
         }
     }
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type& children)
+{
+    constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
+
+    // Store the sum of margins for each dimension axis.
+    detail::rtree::min_value_pos<key_type> min_margin_dim;
+
+    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    {
+        // Sort the entries by the lower then by the upper value of their
+        // bounding boxes.  This invalidates the pointers of the child nodes.
+        sort_dir_store_by_dimension(dim, children);
+
+        key_type sum_of_margins = key_type(); // it's actually the sum of half margins.
+
+        for (size_t dist = 1; dist <= dist_max; ++dist)
+        {
+            // The first group contains m-1+dist entries, while the second
+            // group contains the rest.
+
+            auto it = children.begin();
+            auto it_end = it;
+            std::advance(it_end, trait_type::min_node_size - 1 + dist);
+
+            bounding_box bb1 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, it_end);
+            it = it_end;
+            it_end = children.end();
+            assert(it != it_end);
+            bounding_box bb2 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, it_end);
+
+            // Compute the half margins of the first and second groups.
+            key_type margin1 = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb1);
+            key_type margin2 = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb2);
+            key_type margins = margin1 + margin2;
+
+            std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; margin1 = " << margin1 << "; margin2 = " << margin2 << std::endl;
+
+            sum_of_margins += margins;
+        }
+
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim = " << dim << "; sum margins = " << sum_of_margins << std::endl;
+
+        if (dim > 0)
+            min_margin_dim.assign_if_less(sum_of_margins, dim);
+        else
+            min_margin_dim.assign(sum_of_margins, dim);
+    }
+
+    // Pick the dimension axis with the lowest sum of margins.
+    size_t min_dim = min_margin_dim.pos;
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim picked = " << min_dim << std::endl;
+
+    sort_dir_store_by_dimension(min_dim, children);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::sort_dir_store_by_dimension(size_t dim, dir_store_type& children)
+{
+    std::sort(children.begin(), children.end(),
+        [dim](const node_store& a, const node_store& b) -> bool
+        {
+            if (a.box.start.d[dim] != b.box.start.d[dim])
+                return a.box.start.d[dim] < b.box.start.d[dim];
+
+            return a.box.end.d[dim] < b.box.end.d[dim];
+        }
+    );
 }
 
 template<typename _Key, typename _Value, typename _Trait>
