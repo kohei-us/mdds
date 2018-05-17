@@ -526,6 +526,8 @@ void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_grand_children()
             // This child is a value node.  Skip it.
             continue;
 
+        throw std::runtime_error("TESTME");
+
         for (node_store& ns_grand_child : dir_child->children)
             ns_grand_child.reset_parent_of_children();
     }
@@ -987,6 +989,12 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
     dir->children.resize(dist_picked.g1.size);
     ns->pack(); // Re-calculate the bounding box.
 
+    // We need to update the parent pointers of the grand children because
+    // the child nodes have been sorted earlier.  This matter only when
+    // splitting a non-leaf directory node.
+    node_g2.reset_parent_of_grand_children();
+    ns->reset_parent_of_grand_children();
+
     if (ns->is_root())
     {
         // Create a new root node and make it the parent of the original root
@@ -1003,10 +1011,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         m_root.pack();
 
         for (node_store& ns_child : dir_root->children)
-        {
             ns_child.reset_parent_of_children();
-            ns_child.reset_parent_of_grand_children();
-        }
     }
     else
     {
@@ -1024,11 +1029,6 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         // has been inserted into the buffer, as the pointer value of the node
         // changes after the insertion.
         dir_parent->children.back().reset_parent_of_children();
-
-        // We need to update the parent pointers of the grand children because
-        // the child nodes have been sorted earlier.
-        dir_parent->children.back().reset_parent_of_grand_children();
-        ns->reset_parent_of_grand_children();
 
         if (ns_parent->count > trait_type::max_node_size)
         {
