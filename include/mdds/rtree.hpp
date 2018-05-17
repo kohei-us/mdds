@@ -40,10 +40,10 @@ namespace detail { namespace rtree {
 
 struct default_rtree_trait
 {
-    constexpr static const size_t dimensions = 2;
-    constexpr static const size_t min_node_size = 40;
-    constexpr static const size_t max_node_size = 100;
-    constexpr static const size_t max_tree_depth = 100;
+    constexpr static size_t dimensions = 2;
+    constexpr static size_t min_node_size = 40;
+    constexpr static size_t max_node_size = 100;
+    constexpr static size_t max_tree_depth = 100;
 };
 
 }}
@@ -52,6 +52,8 @@ template<typename _Key, typename _Value, typename _Trait = detail::rtree::defaul
 class rtree
 {
     using trait_type = _Trait;
+
+    constexpr static size_t max_dist_size = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
 
 public:
     using key_type = _Key;

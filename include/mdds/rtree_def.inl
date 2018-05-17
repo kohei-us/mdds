@@ -968,15 +968,13 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
     dir_store_type& children = dir->children;
 
-    constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
-
     sort_dir_store_by_split_dimension(children);
 
     // Along the chosen dimension axis, pick the distribution with the minimum
     // overlap value.
     detail::rtree::min_value_pos<key_type> min_overlap_dist;
 
-    for (size_t dist = 1; dist <= dist_max; ++dist)
+    for (size_t dist = 1; dist <= max_dist_size; ++dist)
     {
         // The first group contains m-1+dist entries, while the second
         // group contains the rest.
@@ -1060,8 +1058,6 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type& children)
 {
-    constexpr size_t dist_max = trait_type::max_node_size - trait_type::min_node_size * 2 + 2;
-
     // Store the sum of margins for each dimension axis.
     detail::rtree::min_value_pos<key_type> min_margin_dim;
 
@@ -1073,7 +1069,7 @@ void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type
 
         key_type sum_of_margins = key_type(); // it's actually the sum of half margins.
 
-        for (size_t dist = 1; dist <= dist_max; ++dist)
+        for (size_t dist = 1; dist <= max_dist_size; ++dist)
         {
             // The first group contains m-1+dist entries, while the second
             // group contains the rest.

@@ -40,10 +40,10 @@ using namespace std;
 
 struct tiny_trait
 {
-    constexpr static const size_t dimensions = 2;
-    constexpr static const size_t min_node_size = 2;
-    constexpr static const size_t max_node_size = 5;
-    constexpr static const size_t max_tree_depth = 100;
+    constexpr static size_t dimensions = 2;
+    constexpr static size_t min_node_size = 2;
+    constexpr static size_t max_node_size = 5;
+    constexpr static size_t max_tree_depth = 100;
 };
 
 void rtree_test_intersection()
