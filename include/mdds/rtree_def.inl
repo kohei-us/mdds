@@ -202,19 +202,29 @@ _BBox calc_bounding_box(_Iter it, _Iter it_end)
 template<typename _Key>
 struct min_value_pos
 {
-    _Key value;
-    size_t pos;
+    _Key value = _Key();
+    size_t pos = 0;
+    size_t count = 0;
 
     void assign(_Key new_value, size_t new_pos)
     {
-        value = new_value;
-        pos = new_pos;
-    }
+        if (count)
+        {
+            // Assign only if it's less than the current value.
+            if (new_value < value)
+            {
+                value = new_value;
+                pos = new_pos;
+            }
+        }
+        else
+        {
+            // The very first value. Just take it.
+            value = new_value;
+            pos = new_pos;
+        }
 
-    void assign_if_less(_Key new_value, size_t new_pos)
-    {
-        if (new_value < value)
-            assign(new_value, new_pos);
+        ++count;
     }
 };
 
@@ -976,10 +986,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
         key_type overlap = detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(bb1, bb2);
         std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; overlap = " << overlap << std::endl;
-        if (dist == 1)
-            min_overlap_dist.assign(overlap, dist);
-        else
-            min_overlap_dist.assign_if_less(overlap, dist);
+        min_overlap_dist.assign(overlap, dist);
     }
 
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist picked = " << min_overlap_dist.pos << std::endl;
@@ -1092,11 +1099,7 @@ void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type
         }
 
         std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim = " << dim << "; sum margins = " << sum_of_margins << std::endl;
-
-        if (dim > 0)
-            min_margin_dim.assign_if_less(sum_of_margins, dim);
-        else
-            min_margin_dim.assign(sum_of_margins, dim);
+        min_margin_dim.assign(sum_of_margins, dim);
     }
 
     // Pick the dimension axis with the lowest sum of margins.
