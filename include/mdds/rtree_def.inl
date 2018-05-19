@@ -962,6 +962,39 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
                 os << "The extent of the child " << ns->box.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
                 throw integrity_error(os.str());
             }
+
+            switch (ns->type)
+            {
+                case node_type::directory_leaf:
+                {
+                    if (parent->type != node_type::directory_nonleaf)
+                    {
+                        std::cout << indent << "* Parent of a leaf directory node must be non-leaf." << std::endl;
+                        valid = false;
+                    }
+                    break;
+                }
+                case node_type::directory_nonleaf:
+                {
+                    if (parent->type != node_type::directory_nonleaf)
+                    {
+                        std::cout << indent << "* Parent of a non-leaf directory node must also be non-leaf." << std::endl;
+                        valid = false;
+                    }
+                    break;
+                }
+                case node_type::value:
+                {
+                    if (parent->type != node_type::directory_leaf)
+                    {
+                        std::cout << indent << "* Parent of a value node must be a leaf directory node." << std::endl;
+                        valid = false;
+                    }
+                    break;
+                }
+                default:
+                    throw integrity_error("Unexpected node type!");
+            }
         }
 
         ns_stack.push_back(ns);
@@ -1036,6 +1069,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
     // Move the child nodes in group 2 into a brand-new sibling node.
     node_store node_g2 = node_store::create_leaf_directory_node();
+    node_g2.type = ns->type;
     directory_node* dir_sibling = static_cast<directory_node*>(node_g2.node_ptr);
 
     for (auto it = dist_picked.g2.begin; it != dist_picked.g2.end; ++it)
