@@ -56,7 +56,7 @@ _Key calc_linear_intersection(size_t dim, const _BBox& bb1, const _BBox& bb2)
         std::swap(end1, end2);
     }
 
-    assert(start1 < start2);
+    assert(start1 <= start2);
 
     if (end1 < start2)
     {
@@ -931,8 +931,10 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
         return "???";
     };
 
-    std::function<void(const node_store*, int)> func_descend = [&ns_stack,&func_descend,to_string](const node_store* ns, int level)
+    std::function<bool(const node_store*, int)> func_descend = [&ns_stack,&func_descend,to_string](const node_store* ns, int level) -> bool
     {
+        bool valid = true;
+
         std::string indent;
         for (int i = 0; i < level; ++i)
             indent += "  ";
@@ -952,8 +954,9 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
             if (ns->parent != parent)
             {
                 std::ostringstream os;
-                os << "The parent node pointer does not point to the real parent. (expected: " << parent << "; actual: " << ns->parent << ")";
-                throw integrity_error(os.str());
+                os << "* The parent node pointer does not point to the real parent. (expected: " << parent << "; actual: " << ns->parent << ")";
+                std::cout << indent << os.str() << std::endl;
+                valid = false;
             }
 
             if (!parent_bb.contains(ns->box))
@@ -993,7 +996,11 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
                 }
 
                 for (const node_store& ns_child : dir->children)
-                    func_descend(&ns_child, level+1);
+                {
+                    bool valid_subtree = func_descend(&ns_child, level+1);
+                    if (!valid_subtree)
+                        valid = false;
+                }
 
                 break;
             }
@@ -1005,9 +1012,14 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
         }
 
         ns_stack.pop_back();
+
+        return valid;
     };
 
-    func_descend(&m_root, 0);
+    bool valid = func_descend(&m_root, 0);
+
+    if (!valid)
+        throw integrity_error("Tree contains one or more errors.");
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1081,10 +1093,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         dir_parent->children.back().reset_parent_of_children();
 
         if (ns_parent->count > trait_type::max_node_size)
-        {
-            throw std::runtime_error("TESTME");
             split_node(ns_parent);
-        }
     }
 }
 

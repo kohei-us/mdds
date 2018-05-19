@@ -64,12 +64,14 @@ void rtree_test_intersection()
 
     std::vector<check> checks =
     {
-        { { {0, 0}, {3, 6} }, { {1, 2}, {7, 5} }, 2, 3 },
-        { { {3, 2}, {7, 10} }, { {1, 10}, {10, 11} }, 4, 0 },
-        { { {3, 2}, {7, 10} }, { {1, 9}, {10, 11} }, 4, 1 },
-        { { {3, 2}, {7, 6} }, { {5, 4}, {11, 8} }, 2, 2 },
-        { { {-2, -8}, {2, -5} }, { {0, -10}, {8, -1} }, 2, 3 },
-        { { {2, 2}, {20, 12} }, { {5, 6}, {16, 9} }, 11, 3 },
+        // bounding box 1           bounding box 2
+        { { { 0,  0}, { 3,   6} }, { {1,   2}, { 7,  5} },  2, 3 },
+        { { { 3,  2}, { 7,  10} }, { {1,  10}, {10, 11} },  4, 0 },
+        { { { 3,  2}, { 7,  10} }, { {1,   9}, {10, 11} },  4, 1 },
+        { { { 3,  2}, { 7,   6} }, { {5,   4}, {11,  8} },  2, 2 },
+        { { {-2, -8}, { 2,  -5} }, { {0, -10}, { 8, -1} },  2, 3 },
+        { { { 2,  2}, {20,  12} }, { {5,   6}, {16,  9} }, 11, 3 },
+        { { { 0,  0}, { 6,   6} }, { {0,   0}, { 2,  3} },  2, 3 },
     };
 
     for (const check& c : checks)
@@ -319,6 +321,48 @@ void rtree_test_node_split()
     assert(count_nonleaf == 1);
 }
 
+void rtree_test_directory_node_split()
+{
+    stack_printer __stack_printer__("::rtree_test_directory_node_split");
+    using rt_type = rtree<int16_t, std::string, tiny_trait>;
+
+    rt_type tree;
+    using point = rt_type::point;
+    using bounding_box = rt_type::bounding_box;
+
+    bool stay_in_loop = true;
+    for (int16_t x = 0; x < 4; ++x)
+    {
+        for (int16_t y = 0; y < 4; ++y)
+        {
+            if (x == 3 && y == 3)
+            {
+                // This insertion would cause a directory node split.  Exit the
+                // loop and do the insertion outside it.
+                stay_in_loop = false;
+                break;
+            }
+
+            std::ostringstream os;
+            os << "(x=" << x << ",y=" << y << ")";
+            std::string v = os.str();
+            int16_t xe = x + 1, ye = y + 1;
+            point s({x,y}), e({xe,ye});
+            bounding_box bb(s, e);
+            cout << "Inserting value '" << v << "' to {" << bb.to_string() << "} ..." << endl;
+            tree.insert(s, e, v);
+        }
+
+        if (!stay_in_loop)
+            break;
+    }
+
+    tree.check_integrity();
+
+    tree.insert({3,3}, {4,4}, "extra");
+//  tree.check_integrity();
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
@@ -326,6 +370,7 @@ int main(int argc, char** argv)
     rtree_test_basic_search();
     rtree_test_basic_erase();
     rtree_test_node_split();
+    rtree_test_directory_node_split();
 
     return EXIT_SUCCESS;
 }
