@@ -147,10 +147,11 @@ private:
         void reset_parent_of_children();
 
         /**
-         * Go through each child node and have its child nodes update their
-         * parent pointers.  Call this when the memory locations of the child
-         * nodes change.  That can happen when the child nodes get sorted, for
-         * instance.
+         * Go through each child node of this directory node and have its
+         * child nodes (i.e. grand-child nodes of the original directory node)
+         * update their parent pointers. Call this when the memory locations
+         * of the child nodes change. That can happen when the child nodes get
+         * sorted, or one of the child nodes gets removed.
          */
         void reset_parent_of_grand_children();
 
@@ -308,6 +309,8 @@ public:
     void check_integrity() const;
 
 private:
+
+    void insert(node_store&& ns);
 
     /**
      * Split an overfilled node.  The node to split is expected to have

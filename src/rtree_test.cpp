@@ -303,7 +303,20 @@ void rtree_test_node_split()
     auto it = res.cbegin();
     assert(it != res.cend());
     assert(std::distance(it, res.cend()) == 1);
-//  tree.erase(it);
+    tree.erase(it);
+
+    tree.check_integrity();
+
+    // Count all the nodes again.
+    count_values = 0;
+    count_leaf = 0;
+    count_nonleaf = 0;
+
+    tree.walk(walker);
+
+    assert(count_values == 7);
+    assert(count_leaf == 2);
+    assert(count_nonleaf == 1);
 }
 
 int main(int argc, char** argv)

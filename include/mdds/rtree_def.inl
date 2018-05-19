@@ -526,8 +526,6 @@ void rtree<_Key,_Value,_Trait>::node_store::reset_parent_of_grand_children()
             // This child is a value node.  Skip it.
             continue;
 
-        throw std::runtime_error("TESTME");
-
         for (node_store& ns_grand_child : dir_child->children)
             ns_grand_child.reset_parent_of_children();
     }
@@ -716,41 +714,47 @@ void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, val
 {
     std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): start=" << start.to_string() << "; end=" << end.to_string() << std::endl;
     bounding_box bb(start, end);
-    node_store* ns = find_node_for_insertion(bb);
-    assert(ns);
-    assert(ns->type == node_type::directory_leaf);
-    directory_node* dir = static_cast<directory_node*>(ns->node_ptr);
+    node_store new_ns = node_store::create_value_node(bb, std::move(value));
+    insert(std::move(new_ns));
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert(node_store&& ns)
+{
+    node_store* dir_ns = find_node_for_insertion(ns.box);
+    assert(dir_ns);
+    assert(dir_ns->type == node_type::directory_leaf);
+    directory_node* dir = static_cast<directory_node*>(dir_ns->node_ptr);
 
     // Insert the new value to this node.
-    node_store new_ns = node_store::create_value_node(bb, std::move(value));
-    new_ns.parent = ns;
-    dir->insert(std::move(new_ns));
-    ++ns->count;
+    ns.parent = dir_ns;
+    dir->insert(std::move(ns));
+    ++dir_ns->count;
 
-    if (ns->exceeds_capacity())
+    if (dir_ns->exceeds_capacity())
     {
-        split_node(ns);
+        split_node(dir_ns);
         return;
     }
 
-    if (ns->count == 1)
-        ns->box = bb;
+    if (dir_ns->count == 1)
+        dir_ns->box = ns.box;
     else
-        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(ns->box, bb);
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(dir_ns->box, ns.box);
 
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << ns->count << std::endl;
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << dir_ns->count << std::endl;
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << dir_ns->box.to_string() << std::endl;
 
-    bb = ns->box; // grab the parent bounding box.
+    bounding_box bb = dir_ns->box; // grab the parent bounding box.
 
     // Propagate the bounding box update up the tree all the way to the root.
-    for (ns = ns->parent; ns; ns = ns->parent)
+    for (dir_ns = dir_ns->parent; dir_ns; dir_ns = dir_ns->parent)
     {
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << ns->count << std::endl;
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << ns->box.to_string() << std::endl;
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << dir_ns->count << std::endl;
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << dir_ns->box.to_string() << std::endl;
 
-        assert(ns->count > 0);
-        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(ns->box, bb);
+        assert(dir_ns->count > 0);
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(dir_ns->box, bb);
     }
 }
 
@@ -773,29 +777,75 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     bounding_box bb_erased = ns->box;
 
     // Move up to the parent and find its stored location.
-    node_store* parent = ns->parent;
-    assert(parent->type == node_type::directory_leaf);
-    directory_node* dir = static_cast<directory_node*>(parent->node_ptr);
+    node_store* dir_ns = ns->parent;
+    assert(dir_ns->type == node_type::directory_leaf);
+    directory_node* dir = static_cast<directory_node*>(dir_ns->node_ptr);
 
-    dir_store_type& children = dir->children;
+    dir_store_type* dir_entries = &dir->children;
 
-    auto it = std::find_if(children.begin(), children.end(),
+    auto it = std::find_if(dir_entries->begin(), dir_entries->end(),
         [ns](const node_store& this_ns) -> bool
         {
             return &this_ns == ns;
         }
     );
 
-    // Remove its entry from the parent node.
-    assert(it != children.end());
-    children.erase(it);
-    --parent->count;
-    assert(parent->count == children.size());
+    // Remove its entry from the leaf directory node.
+    assert(it != dir_entries->end());
+    dir_entries->erase(it);
+    --dir_ns->count;
+    assert(dir_ns->count == dir_entries->size());
 
-    if (!parent->is_root() && children.size() < trait_type::min_node_size)
+    if (dir_ns->is_root())
+    {
+        shrink_tree_upward(dir_ns, bb_erased);
+        return;
+    }
+
+    if (dir_entries->size() >= trait_type::min_node_size)
+    {
+        shrink_tree_upward(dir_ns, bb_erased);
+        return;
+    }
+
+    assert(!dir_ns->is_root());
+    assert(dir_entries->size() < trait_type::min_node_size);
+
+    // Dissolve the node the erased value node belongs to, and reinsert
+    // all its siblings.
+
+    dir_store_type orphan_nodes;
+    dir_entries->swap(orphan_nodes); // moves all the rest of the value node entries to the orphan store.
+
+    // Move up one level, and remove this directory node from its parent directory node.
+    node_store* child_ns = dir_ns;
+    dir_ns = dir_ns->parent;
+    dir = static_cast<directory_node*>(dir_ns->node_ptr);
+    dir_entries = &dir->children;
+
+    it = std::find_if(dir_entries->begin(), dir_entries->end(),
+        [child_ns](const node_store& this_ns) -> bool
+        {
+            return &this_ns == child_ns;
+        }
+    );
+
+    assert(it != dir_entries->end());
+    dir_entries->erase(it); // This invalidates the pointers of the siblings.
+    --dir_ns->count;
+    dir_ns->reset_parent_of_grand_children();
+    dir_ns->pack();
+
+    if (dir_entries->size() < trait_type::min_node_size)
+    {
         throw std::runtime_error("TODO: reduce tree and perform re-insertion.");
+    }
 
-    shrink_tree_upward(parent, bb_erased);
+    while (!orphan_nodes.empty())
+    {
+        insert(std::move(orphan_nodes.back()));
+        orphan_nodes.pop_back();
+    }
 }
 
 template<typename _Key, typename _Value, typename _Trait>
