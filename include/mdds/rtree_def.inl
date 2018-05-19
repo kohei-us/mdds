@@ -939,8 +939,6 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
         for (int i = 0; i < level; ++i)
             indent += "  ";
 
-        std::cout << indent << "node: " << ns << "; type: " << to_string(ns->type) << "; extent: " << ns->box.to_string() << std::endl;
-
         const node_store* parent = nullptr;
         bounding_box parent_bb;
         if (!ns_stack.empty())
@@ -948,6 +946,8 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
             parent = ns_stack.back();
             parent_bb = parent->box;
         }
+
+        std::cout << indent << "node: " << ns << "; parent: " << parent << "; type: " << to_string(ns->type) << "; extent: " << ns->box.to_string() << std::endl;
 
         if (parent)
         {
