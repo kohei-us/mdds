@@ -115,6 +115,8 @@ private:
         node* node_ptr;
         size_t count;
 
+        bool valid_pointer;
+
         node_store(const node_store&) = delete;
 
         node_store();
@@ -141,19 +143,11 @@ private:
         void swap(node_store& other);
 
         /**
-         * Have all its child nodes update their parent pointers to new memory
-         * location.  Call this when the memory location of the node changes.
+         * Have all its child nodes update their parent pointers if the memory
+         * location of this node has been invalidated.  Run the tree
+         * recursively until no more invalid pointers have been found.
          */
-        void reset_parent_of_children();
-
-        /**
-         * Go through each child node of this directory node and have its
-         * child nodes (i.e. grand-child nodes of the original directory node)
-         * update their parent pointers. Call this when the memory locations
-         * of the child nodes change. That can happen when the child nodes get
-         * sorted, or one of the child nodes gets removed.
-         */
-        void reset_parent_of_grand_children();
+        void reset_parent_pointers();
 
         directory_node* get_directory_node();
         const directory_node* get_directory_node() const;

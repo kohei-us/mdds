@@ -335,14 +335,6 @@ void rtree_test_directory_node_split()
     {
         for (int16_t y = 0; y < 4; ++y)
         {
-            if (x == 3 && y == 3)
-            {
-                // This insertion would cause a directory node split.  Exit the
-                // loop and do the insertion outside it.
-                stay_in_loop = false;
-                break;
-            }
-
             std::ostringstream os;
             os << "(x=" << x << ",y=" << y << ")";
             std::string v = os.str();
@@ -358,9 +350,6 @@ void rtree_test_directory_node_split()
     }
 
     tree.check_integrity();
-
-    tree.insert({3,3}, {4,4}, "extra");
-//  tree.check_integrity();
 }
 
 int main(int argc, char** argv)
