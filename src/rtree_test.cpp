@@ -147,7 +147,7 @@ void rtree_test_basic_search()
     expected_bb = {{-2, 0}, {5, 6}};
     assert(tree.get_root_extent() == expected_bb);
 
-    tree.check_integrity();
+    tree.check_integrity(rt_type::output_mode_type::none);
 
     // Verify the search method works.
 
@@ -222,7 +222,7 @@ void rtree_test_basic_erase()
     expected_bb = {{0,0}, {2,2}};
     assert(tree.get_root_extent() == expected_bb);
 
-    tree.check_integrity();
+    tree.check_integrity(rt_type::output_mode_type::none);
 }
 
 void rtree_test_node_split()
@@ -272,7 +272,7 @@ void rtree_test_node_split()
     assert(count_leaf == 2);
     assert(count_nonleaf == 1);
 
-    tree.check_integrity();
+    tree.check_integrity(rt_type::output_mode_type::none);
 
     // Adding two more entries will cause one of the leaf directory nodes
     // below the root node to split.
@@ -285,7 +285,7 @@ void rtree_test_node_split()
         tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
     }
 
-    tree.check_integrity();
+    tree.check_integrity(rt_type::output_mode_type::none);
 
     // Count all the nodes again.
     count_values = 0;
@@ -307,7 +307,7 @@ void rtree_test_node_split()
     assert(std::distance(it, res.cend()) == 1);
     tree.erase(it);
 
-    tree.check_integrity();
+    tree.check_integrity(rt_type::output_mode_type::none);
 
     // Count all the nodes again.
     count_values = 0;
@@ -342,7 +342,7 @@ void rtree_test_directory_node_split()
             bounding_box bb(s, e);
             cout << "Inserting value '" << v << "' to {" << bb.to_string() << "} ..." << endl;
             tree.insert(s, e, v);
-            tree.check_integrity();
+            tree.check_integrity(rt_type::output_mode_type::none);
         }
     }
 }

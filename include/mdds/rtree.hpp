@@ -97,6 +97,8 @@ public:
 
     enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
 
+    enum class output_mode_type { none, full };
+
     struct node_properties
     {
         node_type type;
@@ -306,7 +308,7 @@ public:
      *
      * @exception integrity_error if the integrity check fails.
      */
-    void check_integrity() const;
+    void check_integrity(output_mode_type mode) const;
 
 private:
 
