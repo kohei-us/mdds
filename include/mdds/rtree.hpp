@@ -137,6 +137,12 @@ private:
          */
         bool pack();
 
+        /**
+         * Re-calculate the extent of the parent nodes recursively all the way
+         * up to the root node.
+         */
+        void pack_upward();
+
         bool is_directory() const;
         bool is_root() const;
         bool exceeds_capacity() const;

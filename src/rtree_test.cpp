@@ -330,7 +330,7 @@ void rtree_test_directory_node_split()
     using point = rt_type::point;
     using bounding_box = rt_type::bounding_box;
 
-    for (int16_t x = 0; x < 8; ++x)
+    for (int16_t x = 0; x < 10; ++x)
     {
         for (int16_t y = 0; y < 10; ++y)
         {

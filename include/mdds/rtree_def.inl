@@ -468,6 +468,14 @@ bool rtree<_Key,_Value,_Trait>::node_store::pack()
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::node_store::pack_upward()
+{
+    bool propagate = true;
+    for (node_store* p = parent; propagate && p; p = p->parent)
+        propagate = p->pack();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 bool rtree<_Key,_Value,_Trait>::node_store::is_directory() const
 {
     switch (type)
@@ -1085,6 +1093,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 
     // Remove the nodes in group 2 from the original node by shrinking the node store.
     ns->count = dist_picked.g1.size;
+    assert(dist_picked.g1.size < dir->children.size());
     dir->children.resize(dist_picked.g1.size);
     ns->pack(); // Re-calculate the bounding box.
 
@@ -1116,7 +1125,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         directory_node* dir_parent = static_cast<directory_node*>(ns_parent->node_ptr);
         dir_parent->children.emplace_back(std::move(node_g2));
         ++ns_parent->count;
-        ns_parent->pack();
+        bool parent_size_changed = ns_parent->pack();
 
         // Update the parent pointer of the children _after_ the group 2 node
         // has been inserted into the buffer, as the pointer value of the node
@@ -1126,7 +1135,11 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         dir_parent->children.back().reset_parent_pointers();
 
         if (ns_parent->count > trait_type::max_node_size)
+            // The parent node is overfilled.  Split it and keep working upward.
             split_node(ns_parent);
+        else if (parent_size_changed)
+            // The extent of the parent node has changed. Propagate the change upward.
+            ns_parent->pack_upward();
     }
 }
 
