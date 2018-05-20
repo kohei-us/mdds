@@ -330,10 +330,9 @@ void rtree_test_directory_node_split()
     using point = rt_type::point;
     using bounding_box = rt_type::bounding_box;
 
-    bool stay_in_loop = true;
-    for (int16_t x = 0; x < 4; ++x)
+    for (int16_t x = 0; x < 8; ++x)
     {
-        for (int16_t y = 0; y < 4; ++y)
+        for (int16_t y = 0; y < 10; ++y)
         {
             std::ostringstream os;
             os << "(x=" << x << ",y=" << y << ")";
@@ -343,13 +342,9 @@ void rtree_test_directory_node_split()
             bounding_box bb(s, e);
             cout << "Inserting value '" << v << "' to {" << bb.to_string() << "} ..." << endl;
             tree.insert(s, e, v);
+            tree.check_integrity();
         }
-
-        if (!stay_in_loop)
-            break;
     }
-
-    tree.check_integrity();
 }
 
 int main(int argc, char** argv)

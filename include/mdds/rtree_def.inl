@@ -934,7 +934,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
 
         std::string indent;
         for (int i = 0; i < level; ++i)
-            indent += "  ";
+            indent += "    ";
 
         const node_store* parent = nullptr;
         bounding_box parent_bb;
@@ -960,7 +960,8 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
             {
                 std::ostringstream os;
                 os << "The extent of the child " << ns->box.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
-                throw integrity_error(os.str());
+                std::cout << indent << "* " << os.str() << std::endl;
+                valid = false;
             }
 
             switch (ns->type)
@@ -1022,7 +1023,8 @@ void rtree<_Key,_Value,_Trait>::check_integrity() const
                 {
                     std::ostringstream os;
                     os << "The extent of the node " << ns->box.to_string() << " does not equal truly tight extent " << bb_expected.to_string();
-                    throw integrity_error(os.str());
+                    std::cout << indent << "* " << os.str() << std::endl;
+                    valid = false;
                 }
 
                 for (const node_store& ns_child : dir->children)
@@ -1073,7 +1075,11 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
     directory_node* dir_sibling = static_cast<directory_node*>(node_g2.node_ptr);
 
     for (auto it = dist_picked.g2.begin; it != dist_picked.g2.end; ++it)
+    {
+        assert(!it->valid_pointer);
         dir_sibling->children.push_back(std::move(*it));
+    }
+
     node_g2.count = dir_sibling->children.size();
     node_g2.pack();
 
@@ -1115,6 +1121,8 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         // Update the parent pointer of the children _after_ the group 2 node
         // has been inserted into the buffer, as the pointer value of the node
         // changes after the insertion.
+        ns->valid_pointer = false;
+        ns->reset_parent_pointers();
         dir_parent->children.back().reset_parent_pointers();
 
         if (ns_parent->count > trait_type::max_node_size)
