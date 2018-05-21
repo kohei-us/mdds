@@ -1040,6 +1040,18 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                     throw integrity_error(os.str());
                 }
 
+                if (!ns->is_root() && (ns->count < trait_type::min_node_size || trait_type::max_node_size < ns->count))
+                {
+                    std::ostringstream os;
+                    os << "The number of child nodes (" << ns->count << ") is not within the permitted range of "
+                       << trait_type::min_node_size << " - " << trait_type::max_node_size;
+
+                    if (mode == output_mode_type::none)
+                        throw integrity_error(os.str());
+                    std::cout << indent << "* " << os.str() << std::endl;
+                    valid = false;
+                }
+
                 // Check to make sure the bounding box of the current node is
                 // tightly packed.
                 bounding_box bb_expected = dir->calc_extent();
