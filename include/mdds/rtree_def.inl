@@ -581,6 +581,88 @@ void rtree<_Key,_Value,_Trait>::directory_node::insert(node_store&& ns)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store*
+rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_overlap(const bounding_box& bb)
+{
+    key_type min_overlap = key_type();
+    key_type min_area_enlargement = key_type();
+    key_type min_area = key_type();
+
+    node_store* dst = nullptr;
+
+    for (node_store& ns : children)
+    {
+        directory_node* dir = static_cast<directory_node*>(ns.node_ptr);
+        key_type overlap = dir->calc_overlap_cost(bb);
+        key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
+        key_type area = detail::rtree::calc_area<_Key,bounding_box,trait_type::dimensions>(ns.box);
+
+        bool pick_this = false;
+
+        if (!dst)
+            pick_this = true;
+        else if (overlap < min_overlap)
+            // Pick the entry with the smaller overlap cost increase.
+            pick_this = true;
+        else if (area_enlargement < min_area_enlargement)
+            // Pick the entry with the smaller area enlargment.
+            pick_this = true;
+        else if (area < min_area)
+            // Resolve ties by picking the one with on the smaller area
+            // rectangle.
+            pick_this = true;
+
+        if (pick_this)
+        {
+            min_overlap = overlap;
+            min_area_enlargement = area_enlargement;
+            min_area = area;
+            dst = &ns;
+        }
+    }
+
+    return dst;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store*
+rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_area_enlargement(const bounding_box& bb)
+{
+    // Compare the costs of area enlargements.
+    key_type min_cost = key_type();
+    key_type min_area = key_type();
+
+    node_store* dst = nullptr;
+
+    for (node_store& ns : children)
+    {
+        key_type cost = detail::rtree::calc_area_enlargement<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
+        key_type area = detail::rtree::calc_area<_Key,bounding_box,trait_type::dimensions>(ns.box);
+
+        bool pick_this = false;
+
+        if (!dst)
+            pick_this = true;
+        else if (cost < min_cost)
+            // Pick the entry with the smaller area enlargment.
+            pick_this = true;
+        else if (area < min_area)
+            // Resolve ties by picking the one with on the smaller area
+            // rectangle.
+            pick_this = true;
+
+        if (pick_this)
+        {
+            min_cost = cost;
+            min_area = area;
+            dst = &ns;
+        }
+    }
+
+    return dst;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::bounding_box
 rtree<_Key,_Value,_Trait>::directory_node::calc_extent() const
 {
@@ -590,6 +672,30 @@ rtree<_Key,_Value,_Trait>::directory_node::calc_extent() const
         detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, ite);
 
     return box;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::key_type
+rtree<_Key,_Value,_Trait>::directory_node::calc_overlap_cost(const bounding_box& bb) const
+{
+    key_type overlap_cost = key_type();
+
+    for (const node_store& ns : children)
+        overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
+
+    return overlap_cost;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::directory_node::has_leaf_directory() const
+{
+    for (const auto& ns : children)
+    {
+        if (ns.type == node_type::directory_leaf)
+            return true;
+    }
+
+    return false;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1277,111 +1383,19 @@ rtree<_Key,_Value,_Trait>::find_node_for_insertion(const bounding_box& bb)
         assert(dst->type == node_type::directory_nonleaf);
 
         directory_node* dir = static_cast<directory_node*>(dst->node_ptr);
-        dir_store_type& children = dir->children;
 
         // If this non-leaf directory contains at least one leaf directory,
         // pick the entry with minimum overlap increase.  If all of its child
         // nodes are non-leaf directories, then pick the entry with minimum
         // area enlargement.
 
-        auto it = std::find_if(children.cbegin(), children.cend(),
-            [](const node_store& ns) -> bool
-            {
-                return ns.type == node_type::directory_leaf;
-            }
-        );
-
-        bool has_leaf_dir = it != children.cend();
-
-        if (has_leaf_dir)
-        {
-            // Compare the amounts of overlap increase.
-
-            key_type min_overlap = key_type();
-            key_type min_area_enlargement = key_type();
-            key_type min_area = key_type();
-
-            dst = nullptr;
-
-            for (node_store& ns : children)
-            {
-                directory_node* dir = static_cast<directory_node*>(ns.node_ptr);
-                key_type overlap = calc_overlap_cost(bb, *dir);
-                key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
-                key_type area = detail::rtree::calc_area<_Key,bounding_box,trait_type::dimensions>(ns.box);
-
-                bool pick_this = false;
-
-                if (!dst)
-                    pick_this = true;
-                else if (overlap < min_overlap)
-                    // Pick the entry with the smaller overlap cost increase.
-                    pick_this = true;
-                else if (area_enlargement < min_area_enlargement)
-                    // Pick the entry with the smaller area enlargment.
-                    pick_this = true;
-                else if (area < min_area)
-                    // Resolve ties by picking the one with on the smaller area
-                    // rectangle.
-                    pick_this = true;
-
-                if (pick_this)
-                {
-                    min_overlap = overlap;
-                    min_area_enlargement = area_enlargement;
-                    min_area = area;
-                    dst = &ns;
-                }
-            }
-
-            continue;
-        }
-
-        // Compare the costs of area enlargements.
-        key_type min_cost = key_type();
-        key_type min_area = key_type();
-        dst = nullptr;
-
-        for (node_store& ns : children)
-        {
-            key_type cost = detail::rtree::calc_area_enlargement<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
-            key_type area = detail::rtree::calc_area<_Key,bounding_box,trait_type::dimensions>(ns.box);
-
-            bool pick_this = false;
-
-            if (!dst)
-                pick_this = true;
-            else if (cost < min_cost)
-                // Pick the entry with the smaller area enlargment.
-                pick_this = true;
-            else if (area < min_area)
-                // Resolve ties by picking the one with on the smaller area
-                // rectangle.
-                pick_this = true;
-
-            if (pick_this)
-            {
-                min_cost = cost;
-                min_area = area;
-                dst = &ns;
-            }
-        }
+        if (dir->has_leaf_directory())
+            dst = dir->get_child_with_minimal_overlap(bb);
+        else
+            dst = dir->get_child_with_minimal_area_enlargement(bb);
     }
 
     throw std::runtime_error("Maximum tree depth has been reached.");
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::key_type
-rtree<_Key,_Value,_Trait>::calc_overlap_cost(
-    const bounding_box& bb, const directory_node& dir) const
-{
-    key_type overlap_cost = key_type();
-
-    for (const node_store& ns : dir.children)
-        overlap_cost += detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(ns.box, bb);
-
-    return overlap_cost;
 }
 
 template<typename _Key, typename _Value, typename _Trait>

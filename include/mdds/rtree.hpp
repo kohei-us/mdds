@@ -148,6 +148,7 @@ private:
         bool is_directory() const;
         bool is_root() const;
         bool exceeds_capacity() const;
+
         void swap(node_store& other);
 
         /**
@@ -217,7 +218,12 @@ private:
 
         void insert(node_store&& ns);
 
+        node_store* get_child_with_minimal_overlap(const bounding_box& bb);
+        node_store* get_child_with_minimal_area_enlargement(const bounding_box& bb);
+
         bounding_box calc_extent() const;
+        key_type calc_overlap_cost(const bounding_box& bb) const;
+        bool has_leaf_directory() const;
     };
 
 public:
@@ -336,8 +342,6 @@ private:
     size_t pick_optimal_distribution(dir_store_type& children) const;
 
     node_store* find_node_for_insertion(const bounding_box& bb);
-
-    key_type calc_overlap_cost(const bounding_box& bb, const directory_node& dir) const;
 
     void search_descend(const point& pt, const node_store& ns, const_search_results& results) const;
 
