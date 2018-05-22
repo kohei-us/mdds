@@ -699,10 +699,15 @@ bool rtree<_Key,_Value,_Trait>::directory_node::has_leaf_directory() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::const_search_results::add_node_store(const node_store* ns)
+void rtree<_Key,_Value,_Trait>::const_search_results::add_node_store(
+    const node_store* ns, size_t depth)
 {
-    m_store.push_back(ns);
+    m_store.emplace_back(ns, depth);
 }
+
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::const_search_results::entry::entry(const node_store* ns, size_t depth) :
+    ns(ns), depth(depth) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_iterator
@@ -739,7 +744,7 @@ rtree<_Key,_Value,_Trait>::const_iterator::const_iterator(
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::const_iterator::update_current_node()
 {
-    const node_store* p = *m_pos;
+    const node_store* p = m_pos->ns;
     assert(p->type == node_type::value);
     m_cur_node.box = p->box;
     m_cur_node.value = static_cast<const value_node*>(p->node_ptr)->value;
@@ -832,7 +837,7 @@ template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::insert(node_store&& ns)
 {
     bounding_box ns_box = ns.box;
-    node_store* dir_ns = find_node_for_insertion(ns_box);
+    node_store* dir_ns = find_leaf_directory_node_for_insertion(ns_box);
     assert(dir_ns);
     assert(dir_ns->type == node_type::directory_leaf);
     directory_node* dir = static_cast<directory_node*>(dir_ns->node_ptr);
@@ -874,14 +879,14 @@ typename rtree<_Key,_Value,_Trait>::const_search_results
 rtree<_Key,_Value,_Trait>::search(const point& pt) const
 {
     const_search_results ret;
-    search_descend(pt, m_root, ret);
+    search_descend(0, pt, m_root, ret);
     return ret;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
 {
-    const node_store* ns = *pos.m_pos;
+    const node_store* ns = pos.m_pos->ns;
     assert(ns->type == node_type::value);
     assert(ns->parent);
 
@@ -1371,7 +1376,7 @@ size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& chil
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store*
-rtree<_Key,_Value,_Trait>::find_node_for_insertion(const bounding_box& bb)
+rtree<_Key,_Value,_Trait>::find_leaf_directory_node_for_insertion(const bounding_box& bb)
 {
     node_store* dst = &m_root;
 
@@ -1400,7 +1405,7 @@ rtree<_Key,_Value,_Trait>::find_node_for_insertion(const bounding_box& bb)
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::search_descend(
-    const point& pt, const node_store& ns, const_search_results& results) const
+    size_t depth, const point& pt, const node_store& ns, const_search_results& results) const
 {
     if (!ns.box.contains(pt))
         return;
@@ -1412,12 +1417,12 @@ void rtree<_Key,_Value,_Trait>::search_descend(
         {
             const directory_node* node = static_cast<const directory_node*>(ns.node_ptr);
             for (const node_store& child : node->children)
-                search_descend(pt, child, results);
+                search_descend(depth+1, pt, child, results);
             break;
         }
         case node_type::value:
         {
-            results.add_node_store(&ns);
+            results.add_node_store(&ns, depth);
             break;
         }
         case node_type::unspecified:

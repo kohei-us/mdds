@@ -235,10 +235,18 @@ public:
         friend class const_iterator;
         friend class rtree;
 
-        using store_type = std::vector<const node_store*>;
+        struct entry
+        {
+            const node_store* ns;
+            size_t depth;
+
+            entry(const node_store* ns, size_t depth);
+        };
+
+        using store_type = std::vector<entry>;
         store_type m_store;
 
-        void add_node_store(const node_store* ns);
+        void add_node_store(const node_store* ns, size_t depth);
     public:
         const_iterator cbegin() const;
         const_iterator cend() const;
@@ -341,9 +349,10 @@ private:
 
     size_t pick_optimal_distribution(dir_store_type& children) const;
 
-    node_store* find_node_for_insertion(const bounding_box& bb);
+    node_store* find_leaf_directory_node_for_insertion(const bounding_box& bb);
 
-    void search_descend(const point& pt, const node_store& ns, const_search_results& results) const;
+    void search_descend(
+        size_t depth, const point& pt, const node_store& ns, const_search_results& results) const;
 
     void shrink_tree_upward(node_store* ns, const bounding_box& bb_affected);
 
