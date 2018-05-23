@@ -748,6 +748,7 @@ void rtree<_Key,_Value,_Trait>::const_iterator::update_current_node()
     assert(p->type == node_type::value);
     m_cur_node.box = p->box;
     m_cur_node.value = static_cast<const value_node*>(p->node_ptr)->value;
+    m_cur_node.depth = m_pos->depth;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1380,7 +1381,7 @@ rtree<_Key,_Value,_Trait>::find_leaf_directory_node_for_insertion(const bounding
 {
     node_store* dst = &m_root;
 
-    for (size_t i = 0; i < trait_type::max_tree_depth; ++i)
+    for (size_t i = 0; i <= trait_type::max_tree_depth; ++i)
     {
         if (dst->type == node_type::directory_leaf)
             return dst;
@@ -1398,6 +1399,32 @@ rtree<_Key,_Value,_Trait>::find_leaf_directory_node_for_insertion(const bounding
             dst = dir->get_child_with_minimal_overlap(bb);
         else
             dst = dir->get_child_with_minimal_area_enlargement(bb);
+    }
+
+    throw std::runtime_error("Maximum tree depth has been reached.");
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store*
+rtree<_Key,_Value,_Trait>::find_nonleaf_directory_node_for_insertion(
+    const bounding_box& bb, size_t max_depth)
+{
+    node_store* dst = &m_root;
+
+    for (size_t i = 0; i <= trait_type::max_tree_depth; ++i)
+    {
+        assert(dst->type == node_type::directory_nonleaf);
+
+        if (i == max_depth)
+            return dst;
+
+        directory_node* dir = static_cast<directory_node*>(dst->node_ptr);
+
+        if (dir->has_leaf_directory())
+            return dst;
+
+        assert(dst->type == node_type::directory_nonleaf);
+        dst = dir->get_child_with_minimal_area_enlargement(bb);
     }
 
     throw std::runtime_error("Maximum tree depth has been reached.");

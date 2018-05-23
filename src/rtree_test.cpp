@@ -166,10 +166,11 @@ void rtree_test_basic_search()
 
     for (; it != it_end; ++it)
     {
-        cout << "bounding box: " << it->box.to_string() << "; value: " << it->value << endl;
+        cout << "bounding box: " << it->box.to_string() << "; value: " << it->value << "; depth: " << it->depth << endl;
         auto itv = expected_values.find(it->value);
         assert(itv != expected_values.end());
         assert(itv->second == it->box);
+        assert(it->depth == 1);
     }
 
     // Perform an out-of-bound search by point.
@@ -344,6 +345,24 @@ void rtree_test_directory_node_split()
             tree.insert(s, e, v);
             tree.check_integrity(rt_type::output_mode_type::none);
         }
+    }
+
+    // All value nodes in this tree should be at depth 4 (root having the
+    // depth of 0).  Just check a few of them.
+
+    std::vector<point> pts =
+    {
+        { 5, 5 },
+        { 2, 3 },
+        { 7, 9 },
+    };
+
+    for (const point& pt : pts)
+    {
+        auto res = tree.search(pt);
+        auto it = res.cbegin();
+        assert(it != res.cend());
+        assert(it->depth == 4);
     }
 }
 

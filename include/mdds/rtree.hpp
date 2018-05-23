@@ -262,6 +262,7 @@ public:
         {
             bounding_box box;
             value_type value;
+            size_t depth;
         };
 
         using store_type = typename const_search_results::store_type;
@@ -350,6 +351,7 @@ private:
     size_t pick_optimal_distribution(dir_store_type& children) const;
 
     node_store* find_leaf_directory_node_for_insertion(const bounding_box& bb);
+    node_store* find_nonleaf_directory_node_for_insertion(const bounding_box& bb, size_t max_depth);
 
     void search_descend(
         size_t depth, const point& pt, const node_store& ns, const_search_results& results) const;
