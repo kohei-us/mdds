@@ -160,6 +160,8 @@ private:
 
         directory_node* get_directory_node();
         const directory_node* get_directory_node() const;
+
+        bool erase_child(const node_store* p);
     };
 
     using dir_store_type = std::deque<node_store>;
@@ -217,6 +219,7 @@ private:
         ~directory_node();
 
         void insert(node_store&& ns);
+        bool erase(const node_store* p);
 
         node_store* get_child_with_minimal_overlap(const bounding_box& bb);
         node_store* get_child_with_minimal_area_enlargement(const bounding_box& bb);

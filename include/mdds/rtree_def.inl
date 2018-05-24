@@ -556,6 +556,21 @@ rtree<_Key,_Value,_Trait>::node_store::get_directory_node() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::node_store::erase_child(const node_store* p)
+{
+    if (!is_directory())
+        return false;
+
+    directory_node* dir = static_cast<directory_node*>(node_ptr);
+    bool erased = dir->erase(p);
+    if (erased)
+        --count;
+
+    assert(count == dir->children.size());
+    return erased;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node::node() {}
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -578,6 +593,23 @@ template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::directory_node::insert(node_store&& ns)
 {
     children.push_back(std::move(ns));
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::directory_node::erase(const node_store* ns)
+{
+    auto it = std::find_if(children.begin(), children.end(),
+        [ns](const node_store& this_ns) -> bool
+        {
+            return &this_ns == ns;
+        }
+    );
+
+    if (it == children.end())
+        return false;
+
+    children.erase(it);
+    return true;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -896,22 +928,8 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     // Move up to the parent and find its stored location.
     node_store* dir_ns = ns->parent;
     assert(dir_ns->type == node_type::directory_leaf);
-    directory_node* dir = static_cast<directory_node*>(dir_ns->node_ptr);
-
-    dir_store_type* dir_entries = &dir->children;
-
-    auto it = std::find_if(dir_entries->begin(), dir_entries->end(),
-        [ns](const node_store& this_ns) -> bool
-        {
-            return &this_ns == ns;
-        }
-    );
-
-    // Remove its entry from the leaf directory node.
-    assert(it != dir_entries->end());
-    dir_entries->erase(it);
-    --dir_ns->count;
-    assert(dir_ns->count == dir_entries->size());
+    bool erased = dir_ns->erase_child(ns);
+    assert(erased);
 
     if (dir_ns->is_root())
     {
@@ -919,49 +937,41 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
         return;
     }
 
-    if (dir_entries->size() >= trait_type::min_node_size)
+    if (dir_ns->count >= trait_type::min_node_size)
     {
+        // The parent directory still contains enough nodes. No need to dissolve it.
         shrink_tree_upward(dir_ns, bb_erased);
         return;
     }
 
-    assert(!dir_ns->is_root());
-    assert(dir_entries->size() < trait_type::min_node_size);
-
     // Dissolve the node the erased value node belongs to, and reinsert
     // all its siblings.
 
-    dir_store_type orphan_nodes;
-    dir_entries->swap(orphan_nodes); // moves all the rest of the value node entries to the orphan store.
+    assert(!dir_ns->is_root());
+    assert(dir_ns->count < trait_type::min_node_size);
+
+    dir_store_type orphan_value_nodes;
+    directory_node* dir = static_cast<directory_node*>(dir_ns->node_ptr);
+    dir->children.swap(orphan_value_nodes); // moves all the rest of the value node entries to the orphan store.
 
     // Move up one level, and remove this directory node from its parent directory node.
     node_store* child_ns = dir_ns;
     dir_ns = dir_ns->parent;
-    dir = static_cast<directory_node*>(dir_ns->node_ptr);
-    dir_entries = &dir->children;
+    erased = dir_ns->erase_child(child_ns);
+    assert(erased);
 
-    it = std::find_if(dir_entries->begin(), dir_entries->end(),
-        [child_ns](const node_store& this_ns) -> bool
-        {
-            return &this_ns == child_ns;
-        }
-    );
-
-    assert(it != dir_entries->end());
-    dir_entries->erase(it); // This invalidates the pointers of the siblings.
-    --dir_ns->count;
     dir_ns->reset_parent_pointers();
     dir_ns->pack();
 
-    if (dir_entries->size() < trait_type::min_node_size)
+    if (dir_ns->count < trait_type::min_node_size)
     {
         throw std::runtime_error("TODO: reduce tree and perform re-insertion.");
     }
 
-    while (!orphan_nodes.empty())
+    while (!orphan_value_nodes.empty())
     {
-        insert(std::move(orphan_nodes.back()));
-        orphan_nodes.pop_back();
+        insert(std::move(orphan_value_nodes.back()));
+        orphan_value_nodes.pop_back();
     }
 }
 
