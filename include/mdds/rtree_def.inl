@@ -1522,18 +1522,14 @@ void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type
             key_type margin2 = detail::rtree::calc_half_margin<_Key,bounding_box,trait_type::dimensions>(bb2);
             key_type margins = margin1 + margin2;
 
-            std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; margin1 = " << margin1 << "; margin2 = " << margin2 << std::endl;
-
             sum_of_margins += margins;
         }
 
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim = " << dim << "; sum margins = " << sum_of_margins << std::endl;
         min_margin_dim.assign(sum_of_margins, dim);
     }
 
     // Pick the dimension axis with the lowest sum of margins.
     size_t min_dim = min_margin_dim.pos;
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dim picked = " << min_dim << std::endl;
 
     sort_dir_store_by_dimension(min_dim, children);
 }
@@ -1571,11 +1567,9 @@ size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& chil
         bounding_box bb2 = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(dist_data.g2.begin),trait_type::dimensions>(dist_data.g2.begin, dist_data.g2.end);
 
         key_type overlap = detail::rtree::calc_intersection<_Key,bounding_box,trait_type::dimensions>(bb1, bb2);
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist = " << dist << "; overlap = " << overlap << std::endl;
         min_overlap_dist.assign(overlap, dist);
     }
 
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:split_node): dist picked = " << min_overlap_dist.pos << std::endl;
     return min_overlap_dist.pos;
 }
 
