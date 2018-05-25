@@ -409,7 +409,7 @@ void rtree_test_erase_directories()
 
             tree.erase(it);
 
-            tree.check_integrity(rt_type::output_mode_type::full);
+            tree.check_integrity(rt_type::output_mode_type::none);
 
             res = tree.search({x2, y2});
             n = std::distance(res.begin(), res.end());

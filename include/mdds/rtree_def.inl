@@ -386,7 +386,7 @@ rtree<_Key,_Value,_Trait>::node_store::node_store(node_store&& r) :
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node_store::node_store(node_type type, const bounding_box& box, node* node_ptr) :
-    type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0) {}
+    type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0), valid_pointer(true) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node_store::~node_store()
