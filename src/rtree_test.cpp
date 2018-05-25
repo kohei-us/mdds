@@ -366,6 +366,58 @@ void rtree_test_directory_node_split()
     }
 }
 
+void rtree_test_erase_directories()
+{
+    stack_printer __stack_printer__("::rtree_test_erase_directories");
+    using rt_type = rtree<int16_t, std::string, tiny_trait>;
+
+    rt_type tree;
+    using point = rt_type::point;
+    using bounding_box = rt_type::bounding_box;
+
+    for (int16_t x = 0; x < 5; ++x)
+    {
+        for (int16_t y = 0; y < 5; ++y)
+        {
+            std::ostringstream os;
+            int16_t x2 = x * 2;
+            int16_t y2 = y * 2;
+            os << "(x=" << x2 << ",y=" << y2 << ")";
+            std::string v = os.str();
+            int16_t xe = x2 + 2, ye = y2 + 2;
+            point s({x2, y2}), e({xe, ye});
+            bounding_box bb(s, e);
+            tree.insert(s, e, v);
+        }
+    }
+
+    tree.check_integrity(rt_type::output_mode_type::full);
+
+    for (int16_t x = 0; x < 5; ++x)
+    {
+        for (int16_t y = 0; y < 5; ++y)
+        {
+            int16_t x2 = x * 2 + 1;
+            int16_t y2 = y * 2 + 1;
+
+            cout << "erase at (" << x2 << ", " << y2 << ")" << endl;
+
+            auto res = tree.search({x2, y2});
+            auto it = res.begin(), ite = res.end();
+            size_t n = std::distance(it, ite);
+            assert(n == 1);
+
+            tree.erase(it);
+
+            tree.check_integrity(rt_type::output_mode_type::full);
+
+            res = tree.search({x2, y2});
+            n = std::distance(res.begin(), res.end());
+            assert(n == 0);
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
@@ -374,6 +426,7 @@ int main(int argc, char** argv)
     rtree_test_basic_erase();
     rtree_test_node_split();
     rtree_test_directory_node_split();
+    rtree_test_erase_directories();
 
     return EXIT_SUCCESS;
 }

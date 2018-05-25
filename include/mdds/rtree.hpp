@@ -218,7 +218,6 @@ private:
         directory_node();
         ~directory_node();
 
-        void insert(node_store&& ns);
         bool erase(const node_store* p);
 
         node_store* get_child_with_minimal_overlap(const bounding_box& bb);
@@ -228,6 +227,14 @@ private:
         key_type calc_overlap_cost(const bounding_box& bb) const;
         bool has_leaf_directory() const;
     };
+
+    struct orphan_node_entry
+    {
+        node_store ns;
+        size_t depth;
+    };
+
+    using orphan_node_entries_type = std::deque<orphan_node_entry>;
 
 public:
 
@@ -328,9 +335,12 @@ public:
      */
     void check_integrity(output_mode_type mode) const;
 
+    void dump_tree() const;
+
 private:
 
     void insert(node_store&& ns);
+    void insert_dir(node_store&& ns, size_t max_depth);
 
     /**
      * Split an overfilled node.  The node to split is expected to have

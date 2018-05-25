@@ -590,12 +590,6 @@ template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::directory_node::~directory_node() {}
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::directory_node::insert(node_store&& ns)
-{
-    children.push_back(std::move(ns));
-}
-
-template<typename _Key, typename _Value, typename _Trait>
 bool rtree<_Key,_Value,_Trait>::directory_node::erase(const node_store* ns)
 {
     auto it = std::find_if(children.begin(), children.end(),
@@ -608,7 +602,18 @@ bool rtree<_Key,_Value,_Trait>::directory_node::erase(const node_store* ns)
     if (it == children.end())
         return false;
 
-    children.erase(it);
+    it = children.erase(it);
+
+    // All nodes that occur after the erased node have their memory addresses
+    // shifted.
+
+    std::for_each(it, children.end(),
+        [](node_store& this_ns)
+        {
+            this_ns.valid_pointer = false;
+        }
+    );
+
     return true;
 }
 
@@ -700,8 +705,9 @@ rtree<_Key,_Value,_Trait>::directory_node::calc_extent() const
 {
     auto it = children.cbegin(), ite = children.cend();
 
-    bounding_box box =
-        detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, ite);
+    bounding_box box;
+    if (it != ite)
+        box = detail::rtree::calc_bounding_box<_Key,bounding_box,decltype(it),trait_type::dimensions>(it, ite);
 
     return box;
 }
@@ -860,7 +866,6 @@ rtree<_Key,_Value,_Trait>::~rtree()
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, value_type value)
 {
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): start=" << start.to_string() << "; end=" << end.to_string() << std::endl;
     bounding_box bb(start, end);
     node_store new_ns = node_store::create_value_node(bb, std::move(value));
     insert(std::move(new_ns));
@@ -877,7 +882,7 @@ void rtree<_Key,_Value,_Trait>::insert(node_store&& ns)
 
     // Insert the new value to this node.
     ns.parent = dir_ns;
-    dir->insert(std::move(ns));
+    dir->children.push_back(std::move(ns));
     ++dir_ns->count;
 
     if (dir_ns->exceeds_capacity())
@@ -891,17 +896,49 @@ void rtree<_Key,_Value,_Trait>::insert(node_store&& ns)
     else
         detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(dir_ns->box, ns_box);
 
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << dir_ns->count << std::endl;
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << dir_ns->box.to_string() << std::endl;
+    bounding_box bb = dir_ns->box; // grab the parent bounding box.
+
+    // Propagate the bounding box update up the tree all the way to the root.
+    for (dir_ns = dir_ns->parent; dir_ns; dir_ns = dir_ns->parent)
+    {
+        assert(dir_ns->count > 0);
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(dir_ns->box, bb);
+    }
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert_dir(node_store&& ns, size_t max_depth)
+{
+    assert(ns.is_directory());
+    bounding_box ns_box = ns.box;
+    node_store* dir_ns = find_nonleaf_directory_node_for_insertion(ns_box, max_depth);
+    assert(dir_ns);
+    assert(dir_ns->type == node_type::directory_nonleaf);
+    directory_node* dir = static_cast<directory_node*>(dir_ns->node_ptr);
+
+    // Insert the new directory to this node.
+    ns.parent = dir_ns;
+    ns.valid_pointer = false;
+    dir->children.push_back(std::move(ns));
+    ++dir_ns->count;
+    dir->children.back().reset_parent_pointers();
+
+    if (dir_ns->exceeds_capacity())
+    {
+        split_node(dir_ns);
+        return;
+    }
+
+    if (dir_ns->count == 1)
+        dir_ns->box = ns_box;
+    else
+        detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(dir_ns->box, ns_box);
 
     bounding_box bb = dir_ns->box; // grab the parent bounding box.
 
     // Propagate the bounding box update up the tree all the way to the root.
     for (dir_ns = dir_ns->parent; dir_ns; dir_ns = dir_ns->parent)
     {
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns count = " << dir_ns->count << std::endl;
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:insert): ns box = " << dir_ns->box.to_string() << std::endl;
-
         assert(dir_ns->count > 0);
         detail::rtree::enlarge_box_to_fit<key_type,bounding_box,trait_type::dimensions>(dir_ns->box, bb);
     }
@@ -920,6 +957,8 @@ template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
 {
     const node_store* ns = pos.m_pos->ns;
+    size_t depth = pos.m_pos->depth;
+
     assert(ns->type == node_type::value);
     assert(ns->parent);
 
@@ -927,6 +966,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
 
     // Move up to the parent and find its stored location.
     node_store* dir_ns = ns->parent;
+    --depth;
     assert(dir_ns->type == node_type::directory_leaf);
     bool erased = dir_ns->erase_child(ns);
     assert(erased);
@@ -957,21 +997,67 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     // Move up one level, and remove this directory node from its parent directory node.
     node_store* child_ns = dir_ns;
     dir_ns = dir_ns->parent;
+    --depth;
     erased = dir_ns->erase_child(child_ns);
     assert(erased);
 
+    dir_ns->valid_pointer = false;
     dir_ns->reset_parent_pointers();
     dir_ns->pack();
 
-    if (dir_ns->count < trait_type::min_node_size)
+    orphan_node_entries_type orphan_dir_nodes;
+
+    while (!dir_ns->is_root() && dir_ns->count < trait_type::min_node_size)
     {
-        throw std::runtime_error("TODO: reduce tree and perform re-insertion.");
+        // This directory node is now underfilled. Move all its children out
+        // for re-insertion and dissolve this node.
+        dir = static_cast<directory_node*>(dir_ns->node_ptr);
+
+        while (!dir->children.empty())
+        {
+            orphan_dir_nodes.emplace_back();
+            orphan_dir_nodes.back().ns.swap(dir->children.back());
+            orphan_dir_nodes.back().depth = depth + 1; // depth of the children.
+            dir->children.pop_back();
+        }
+
+        // Find and remove this node from its parent store.
+        node_store* dir_ns_child = dir_ns;
+        dir_ns = dir_ns->parent;
+        --depth;
+        erased = dir_ns->erase_child(dir_ns_child);
+        assert(erased);
+        dir_ns->reset_parent_pointers();
+        dir_ns->pack();
+    }
+
+    while (!orphan_dir_nodes.empty())
+    {
+        orphan_node_entry& entry = orphan_dir_nodes.back();
+        insert_dir(std::move(entry.ns), entry.depth);
+        orphan_dir_nodes.pop_back();
     }
 
     while (!orphan_value_nodes.empty())
     {
         insert(std::move(orphan_value_nodes.back()));
         orphan_value_nodes.pop_back();
+    }
+
+    if (m_root.count == 1)
+    {
+        // If the root node only has one child, make that child the new root.
+
+        dir = static_cast<directory_node*>(m_root.node_ptr);
+        assert(dir->children.size() == 1);
+        dir->children.front().swap(m_root);
+
+        dir->children.front().node_ptr = nullptr;
+        dir->children.clear();
+
+        m_root.parent = nullptr;
+        m_root.valid_pointer = false;
+        m_root.reset_parent_pointers();
     }
 }
 
@@ -1214,6 +1300,114 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::dump_tree() const
+{
+    auto to_string = [](node_type nt) -> const char*
+    {
+        switch (nt)
+        {
+            case node_type::unspecified:
+                return "unspecified";
+            case node_type::directory_leaf:
+                return "directory-leaf";
+            case node_type::directory_nonleaf:
+                return "directory-nonleaf";
+            case node_type::value:
+                return "value";
+        }
+
+        return "???";
+    };
+
+    std::function<void(const node_store*, int)> func_descend = [&func_descend,to_string](const node_store* ns, int level)
+    {
+        std::string indent;
+        for (int i = 0; i < level; ++i)
+            indent += "    ";
+
+        const node_store* parent = nullptr;
+        bounding_box parent_bb;
+
+        std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->box.to_string() << std::endl;
+
+        if (parent)
+        {
+            if (ns->parent != parent)
+            {
+                std::ostringstream os;
+                os << "The parent node pointer does not point to the real parent. (expected: " << parent << "; stored in node: " << ns->parent << ")";
+                std::cout << indent << "* " << os.str() << std::endl;
+            }
+
+            if (!parent_bb.contains(ns->box))
+            {
+                std::ostringstream os;
+                os << "The extent of the child " << ns->box.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
+                std::cout << indent << "* " << os.str() << std::endl;
+            }
+
+            switch (ns->type)
+            {
+                case node_type::directory_leaf:
+                {
+                    if (parent->type != node_type::directory_nonleaf)
+                    {
+                        std::ostringstream os;
+                        os << "Parent of a leaf directory node must be non-leaf.";
+                        std::cout << indent << "* " << os.str() << std::endl;
+                    }
+                    break;
+                }
+                case node_type::directory_nonleaf:
+                {
+                    if (parent->type != node_type::directory_nonleaf)
+                    {
+                        std::ostringstream os;
+                        os << "Parent of a non-leaf directory node must also be non-leaf.";
+                        std::cout << indent << "* " << os.str() << std::endl;
+                    }
+                    break;
+                }
+                case node_type::value:
+                {
+                    if (parent->type != node_type::directory_leaf)
+                    {
+                        std::ostringstream os;
+                        os << "Parent of a value node must be a leaf directory node.";
+                        std::cout << indent << "* " << os.str() << std::endl;
+                    }
+                    break;
+                }
+                default:
+                    throw integrity_error("Unexpected node type!");
+            }
+        }
+
+        switch (ns->type)
+        {
+            case node_type::directory_leaf:
+            case node_type::directory_nonleaf:
+            {
+                const directory_node* dir =
+                    static_cast<const directory_node*>(ns->node_ptr);
+
+                for (const node_store& ns_child : dir->children)
+                    func_descend(&ns_child, level+1);
+
+                break;
+            }
+            case node_type::value:
+                // Do nothing.
+                break;
+            default:
+                throw integrity_error("Unexpected node type!");
+        }
+    };
+
+    func_descend(&m_root, 0);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 {
     directory_node* dir = ns->get_directory_node();
@@ -1423,6 +1617,12 @@ rtree<_Key,_Value,_Trait>::find_nonleaf_directory_node_for_insertion(
 
     for (size_t i = 0; i <= trait_type::max_tree_depth; ++i)
     {
+        assert(dst->is_directory());
+
+        if (!dst->count)
+            // This node has no chilren.
+            return dst;
+
         assert(dst->type == node_type::directory_nonleaf);
 
         if (i == max_depth)
@@ -1435,6 +1635,7 @@ rtree<_Key,_Value,_Trait>::find_nonleaf_directory_node_for_insertion(
 
         assert(dst->type == node_type::directory_nonleaf);
         dst = dir->get_child_with_minimal_area_enlargement(bb);
+        assert(dst);
     }
 
     throw std::runtime_error("Maximum tree depth has been reached.");
