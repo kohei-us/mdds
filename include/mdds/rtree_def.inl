@@ -1047,15 +1047,15 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     if (m_root.count == 1)
     {
         // If the root node only has one child, make that child the new root.
+        // Be careful not to leak memory here...
 
         dir = static_cast<directory_node*>(m_root.node_ptr);
         assert(dir->children.size() == 1);
-        dir->children.front().swap(m_root);
-
-        dir->children.front().node_ptr = nullptr;
+        node_store new_root(std::move(dir->children.back()));
         dir->children.clear();
 
-        m_root.parent = nullptr;
+        new_root.parent = nullptr;
+        m_root.swap(new_root);
         m_root.valid_pointer = false;
         m_root.reset_parent_pointers();
     }

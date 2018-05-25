@@ -120,6 +120,7 @@ private:
         bool valid_pointer;
 
         node_store(const node_store&) = delete;
+        node_store& operator= (const node_store&) = delete;
 
         node_store();
         node_store(node_store&& r);
@@ -214,6 +215,9 @@ private:
     struct directory_node : public node
     {
         dir_store_type children;
+
+        directory_node(const directory_node&) = delete;
+        directory_node& operator=(const directory_node&) = delete;
 
         directory_node();
         ~directory_node();
