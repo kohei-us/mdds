@@ -1127,24 +1127,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
 
     std::vector<const node_store*> ns_stack;
 
-    auto to_string = [](node_type nt) -> const char*
-    {
-        switch (nt)
-        {
-            case node_type::unspecified:
-                return "unspecified";
-            case node_type::directory_leaf:
-                return "directory-leaf";
-            case node_type::directory_nonleaf:
-                return "directory-nonleaf";
-            case node_type::value:
-                return "value";
-        }
-
-        return "???";
-    };
-
-    std::function<bool(const node_store*, int)> func_descend = [&ns_stack,&func_descend,mode,to_string](const node_store* ns, int level) -> bool
+    std::function<bool(const node_store*, int)> func_descend = [&ns_stack,&func_descend,mode](const node_store* ns, int level) -> bool
     {
         bool valid = true;
 
@@ -1302,24 +1285,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::dump_tree() const
 {
-    auto to_string = [](node_type nt) -> const char*
-    {
-        switch (nt)
-        {
-            case node_type::unspecified:
-                return "unspecified";
-            case node_type::directory_leaf:
-                return "directory-leaf";
-            case node_type::directory_nonleaf:
-                return "directory-nonleaf";
-            case node_type::value:
-                return "value";
-        }
-
-        return "???";
-    };
-
-    std::function<void(const node_store*, int)> func_descend = [&func_descend,to_string](const node_store* ns, int level)
+    std::function<void(const node_store*, int)> func_descend = [&func_descend](const node_store* ns, int level)
     {
         std::string indent;
         for (int i = 0; i < level; ++i)

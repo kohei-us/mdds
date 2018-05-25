@@ -46,6 +46,25 @@ struct default_rtree_trait
     constexpr static size_t max_tree_depth = 100;
 };
 
+enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
+
+inline const char* to_string(node_type nt)
+{
+    switch (nt)
+    {
+        case node_type::unspecified:
+            return "unspecified";
+        case node_type::directory_leaf:
+            return "directory-leaf";
+        case node_type::directory_nonleaf:
+            return "directory-nonleaf";
+        case node_type::value:
+            return "value";
+    }
+
+    return "???";
+}
+
 }}
 
 template<typename _Key, typename _Value, typename _Trait = detail::rtree::default_rtree_trait>
@@ -95,7 +114,7 @@ public:
         bool contains_at_boundary(const bounding_box& other) const;
     };
 
-    enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
+    using node_type = detail::rtree::node_type;
 
     enum class output_mode_type { none, full };
 
@@ -106,6 +125,7 @@ public:
     };
 
 private:
+
     struct node;
     struct directory_node;
 

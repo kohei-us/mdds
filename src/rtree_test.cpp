@@ -391,7 +391,8 @@ void rtree_test_erase_directories()
         }
     }
 
-    tree.check_integrity(rt_type::output_mode_type::full);
+    tree.check_integrity(rt_type::output_mode_type::none);
+    tree.dump_tree();
 
     for (int16_t x = 0; x < 5; ++x)
     {
