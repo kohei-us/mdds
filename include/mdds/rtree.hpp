@@ -116,7 +116,7 @@ public:
 
     using node_type = detail::rtree::node_type;
 
-    enum class output_mode_type { none, full };
+    enum class integrity_check_type { throw_on_fail, whole_tree };
 
     struct node_properties
     {
@@ -355,9 +355,11 @@ public:
     /**
      * Check the integrity of the entire tree structure.
      *
+     * @param mode specify how the check is to be performed.
+     *
      * @exception integrity_error if the integrity check fails.
      */
-    void check_integrity(output_mode_type mode) const;
+    void check_integrity(integrity_check_type mode) const;
 
     void dump_tree() const;
 

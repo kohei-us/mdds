@@ -1110,7 +1110,7 @@ void rtree<_Key,_Value,_Trait>::walk(_Func func) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
+void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
 {
     switch (m_root.type)
     {
@@ -1143,7 +1143,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
             parent_bb = parent->box;
         }
 
-        if (mode == output_mode_type::full)
+        if (mode == integrity_check_type::whole_tree)
             std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->box.to_string() << std::endl;
 
         if (parent)
@@ -1152,7 +1152,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
             {
                 std::ostringstream os;
                 os << "The parent node pointer does not point to the real parent. (expected: " << parent << "; stored in node: " << ns->parent << ")";
-                if (mode == output_mode_type::none)
+                if (mode == integrity_check_type::throw_on_fail)
                     throw integrity_error(os.str());
                 std::cout << indent << "* " << os.str() << std::endl;
                 valid = false;
@@ -1162,7 +1162,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
             {
                 std::ostringstream os;
                 os << "The extent of the child " << ns->box.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
-                if (mode == output_mode_type::none)
+                if (mode == integrity_check_type::throw_on_fail)
                     throw integrity_error(os.str());
                 std::cout << indent << "* " << os.str() << std::endl;
                 valid = false;
@@ -1176,7 +1176,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                     {
                         std::ostringstream os;
                         os << "Parent of a leaf directory node must be non-leaf.";
-                        if (mode == output_mode_type::none)
+                        if (mode == integrity_check_type::throw_on_fail)
                             throw integrity_error(os.str());
                         std::cout << indent << "* " << os.str() << std::endl;
                         valid = false;
@@ -1189,7 +1189,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                     {
                         std::ostringstream os;
                         os << "Parent of a non-leaf directory node must also be non-leaf.";
-                        if (mode == output_mode_type::none)
+                        if (mode == integrity_check_type::throw_on_fail)
                             throw integrity_error(os.str());
                         std::cout << indent << "* " << os.str() << std::endl;
                         valid = false;
@@ -1202,7 +1202,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                     {
                         std::ostringstream os;
                         os << "Parent of a value node must be a leaf directory node.";
-                        if (mode == output_mode_type::none)
+                        if (mode == integrity_check_type::throw_on_fail)
                             throw integrity_error(os.str());
                         std::cout << indent << "* " << os.str() << std::endl;
                         valid = false;
@@ -1229,7 +1229,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                     std::ostringstream os;
                     os << "Incorrect count of child nodes detected. (expected: " << dir->children.size() << "; actual: " << ns->count << ")";
 
-                    if (mode == output_mode_type::none)
+                    if (mode == integrity_check_type::throw_on_fail)
                         throw integrity_error(os.str());
 
                     std::cout << indent << "* " << os.str() << std::endl;
@@ -1242,7 +1242,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                     os << "The number of child nodes (" << ns->count << ") is not within the permitted range of "
                        << trait_type::min_node_size << " - " << trait_type::max_node_size;
 
-                    if (mode == output_mode_type::none)
+                    if (mode == integrity_check_type::throw_on_fail)
                         throw integrity_error(os.str());
 
                     std::cout << indent << "* " << os.str() << std::endl;
@@ -1258,7 +1258,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                     std::ostringstream os;
                     os << "The extent of the node " << ns->box.to_string() << " does not equal truly tight extent " << bb_expected.to_string();
 
-                    if (mode == output_mode_type::none)
+                    if (mode == integrity_check_type::throw_on_fail)
                         throw integrity_error(os.str());
 
                     std::cout << indent << "* " << os.str() << std::endl;
@@ -1301,63 +1301,9 @@ void rtree<_Key,_Value,_Trait>::dump_tree() const
         for (int i = 0; i < level; ++i)
             indent += "    ";
 
-        const node_store* parent = nullptr;
         bounding_box parent_bb;
 
         std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->box.to_string() << std::endl;
-
-        if (parent)
-        {
-            if (ns->parent != parent)
-            {
-                std::ostringstream os;
-                os << "The parent node pointer does not point to the real parent. (expected: " << parent << "; stored in node: " << ns->parent << ")";
-                std::cout << indent << "* " << os.str() << std::endl;
-            }
-
-            if (!parent_bb.contains(ns->box))
-            {
-                std::ostringstream os;
-                os << "The extent of the child " << ns->box.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
-                std::cout << indent << "* " << os.str() << std::endl;
-            }
-
-            switch (ns->type)
-            {
-                case node_type::directory_leaf:
-                {
-                    if (parent->type != node_type::directory_nonleaf)
-                    {
-                        std::ostringstream os;
-                        os << "Parent of a leaf directory node must be non-leaf.";
-                        std::cout << indent << "* " << os.str() << std::endl;
-                    }
-                    break;
-                }
-                case node_type::directory_nonleaf:
-                {
-                    if (parent->type != node_type::directory_nonleaf)
-                    {
-                        std::ostringstream os;
-                        os << "Parent of a non-leaf directory node must also be non-leaf.";
-                        std::cout << indent << "* " << os.str() << std::endl;
-                    }
-                    break;
-                }
-                case node_type::value:
-                {
-                    if (parent->type != node_type::directory_leaf)
-                    {
-                        std::ostringstream os;
-                        os << "Parent of a value node must be a leaf directory node.";
-                        std::cout << indent << "* " << os.str() << std::endl;
-                    }
-                    break;
-                }
-                default:
-                    throw integrity_error("Unexpected node type!");
-            }
-        }
 
         switch (ns->type)
         {
