@@ -1228,7 +1228,12 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                 {
                     std::ostringstream os;
                     os << "Incorrect count of child nodes detected. (expected: " << dir->children.size() << "; actual: " << ns->count << ")";
-                    throw integrity_error(os.str());
+
+                    if (mode == output_mode_type::none)
+                        throw integrity_error(os.str());
+
+                    std::cout << indent << "* " << os.str() << std::endl;
+                    valid = false;
                 }
 
                 if (!ns->is_root() && (ns->count < trait_type::min_node_size || trait_type::max_node_size < ns->count))
@@ -1239,6 +1244,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
 
                     if (mode == output_mode_type::none)
                         throw integrity_error(os.str());
+
                     std::cout << indent << "* " << os.str() << std::endl;
                     valid = false;
                 }
@@ -1251,6 +1257,10 @@ void rtree<_Key,_Value,_Trait>::check_integrity(output_mode_type mode) const
                 {
                     std::ostringstream os;
                     os << "The extent of the node " << ns->box.to_string() << " does not equal truly tight extent " << bb_expected.to_string();
+
+                    if (mode == output_mode_type::none)
+                        throw integrity_error(os.str());
+
                     std::cout << indent << "* " << os.str() << std::endl;
                     valid = false;
                 }
