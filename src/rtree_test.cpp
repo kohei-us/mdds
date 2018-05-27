@@ -417,6 +417,8 @@ void rtree_test_erase_directories()
             assert(n == 0);
         }
     }
+
+    assert(tree.empty());
 }
 
 int main(int argc, char** argv)
