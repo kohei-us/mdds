@@ -1075,38 +1075,25 @@ bool rtree<_Key,_Value,_Trait>::empty() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+size_t rtree<_Key,_Value,_Trait>::size() const
+{
+    size_t n = 0;
+    descend_with_func(
+        [&n](const node_properties& np)
+        {
+            if (np.type == node_type::value)
+                ++n;
+        }
+    );
+
+    return n;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 template<typename _Func>
 void rtree<_Key,_Value,_Trait>::walk(_Func func) const
 {
-    std::function<void(const node_store*)> func_descend = [&](const node_store* ns)
-    {
-        node_properties np;
-        np.type = ns->type;
-        np.extent = ns->extent;
-        func(np);
-
-        switch (ns->type)
-        {
-            case node_type::directory_leaf:
-            case node_type::directory_nonleaf:
-            {
-                const directory_node* dir =
-                    static_cast<const directory_node*>(ns->node_ptr);
-
-                for (const node_store& ns_child : dir->children)
-                    func_descend(&ns_child);
-
-                break;
-            }
-            case node_type::value:
-                // Do nothing.
-                break;
-            default:
-                assert(!"The tree should not contain node of this type!");
-        }
-    };
-
-    func_descend(&m_root);
+    descend_with_func(std::move(func));
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1560,6 +1547,41 @@ rtree<_Key,_Value,_Trait>::find_nonleaf_directory_node_for_insertion(
     }
 
     throw std::runtime_error("Maximum tree depth has been reached.");
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _Func>
+void rtree<_Key,_Value,_Trait>::descend_with_func(_Func func) const
+{
+    std::function<void(const node_store*)> func_descend = [&](const node_store* ns)
+    {
+        node_properties np;
+        np.type = ns->type;
+        np.extent = ns->extent;
+        func(np);
+
+        switch (ns->type)
+        {
+            case node_type::directory_leaf:
+            case node_type::directory_nonleaf:
+            {
+                const directory_node* dir =
+                    static_cast<const directory_node*>(ns->node_ptr);
+
+                for (const node_store& ns_child : dir->children)
+                    func_descend(&ns_child);
+
+                break;
+            }
+            case node_type::value:
+                // Do nothing.
+                break;
+            default:
+                assert(!"The tree should not contain node of this type!");
+        }
+    };
+
+    func_descend(&m_root);
 }
 
 template<typename _Key, typename _Value, typename _Trait>

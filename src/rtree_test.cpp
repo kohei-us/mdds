@@ -138,14 +138,17 @@ void rtree_test_basic_search()
     tree.insert({0, 0}, {2, 2}, "test");
     expected_bb = {{0, 0}, {2, 2}};
     assert(tree.get_root_extent() == expected_bb);
+    assert(tree.size() == 1);
 
     tree.insert({3, 3}, {5, 5}, "test again");
     expected_bb = {{0, 0}, {5, 5}};
     assert(tree.get_root_extent() == expected_bb);
+    assert(tree.size() == 2);
 
     tree.insert({-2, 1}, {3, 6}, "more test");
     expected_bb = {{-2, 0}, {5, 6}};
     assert(tree.get_root_extent() == expected_bb);
+    assert(tree.size() == 3);
 
     tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
 
@@ -196,6 +199,7 @@ void rtree_test_basic_erase()
     rt_type tree;
     tree.insert({-2,-2}, {2,2}, "erase me");
     assert(!tree.empty());
+    assert(tree.size() == 1);
 
     rt_type::const_search_results res = tree.search({0,0});
 
@@ -207,12 +211,14 @@ void rtree_test_basic_erase()
 
     tree.erase(it);
     assert(tree.empty());
+    assert(tree.size() == 0);
     assert(rt_type::extent_type() == tree.get_root_extent());
 
     tree.insert({0,0}, {2,2}, "erase me");
     tree.insert({-10,-4}, {0,0}, "erase me");
     rt_type::extent_type expected_bb({-10,-4}, {2,2});
     assert(tree.get_root_extent() == expected_bb);
+    assert(tree.size() == 2);
 
     res = tree.search({-5,-2});
     n = std::distance(res.begin(), res.end());
@@ -220,6 +226,7 @@ void rtree_test_basic_erase()
     it = res.begin();
     tree.erase(it);
     assert(!tree.empty()); // there should be one value stored in the tree.
+    assert(tree.size() == 1);
     expected_bb = {{0,0}, {2,2}};
     assert(tree.get_root_extent() == expected_bb);
 
@@ -244,6 +251,8 @@ void rtree_test_node_split()
         os << "foo" << i;
         tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
     }
+
+    assert(tree.size() == 6);
 
     size_t count_values = 0;
     size_t count_leaf = 0;
@@ -286,6 +295,7 @@ void rtree_test_node_split()
         tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
     }
 
+    assert(tree.size() == 8);
     tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
 
     // Count all the nodes again.
@@ -308,6 +318,7 @@ void rtree_test_node_split()
     assert(std::distance(it, res.cend()) == 1);
     tree.erase(it);
 
+    assert(tree.size() == 7);
     tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
 
     // Count all the nodes again.
@@ -346,6 +357,8 @@ void rtree_test_directory_node_split()
             tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
         }
     }
+
+    assert(tree.size() == 100);
 
     // All value nodes in this tree should be at depth 4 (root having the
     // depth of 0).  Just check a few of them.
@@ -391,8 +404,11 @@ void rtree_test_erase_directories()
         }
     }
 
+    assert(tree.size() == 25);
     tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
     tree.dump_tree();
+
+    size_t expected_size = 25;
 
     for (int16_t x = 0; x < 5; ++x)
     {
@@ -410,6 +426,7 @@ void rtree_test_erase_directories()
 
             tree.erase(it);
 
+            assert(tree.size() == --expected_size);
             tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
 
             res = tree.search({x2, y2});
@@ -419,6 +436,7 @@ void rtree_test_erase_directories()
     }
 
     assert(tree.empty());
+    assert(tree.size() == 0);
 }
 
 int main(int argc, char** argv)

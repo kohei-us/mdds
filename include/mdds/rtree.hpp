@@ -344,6 +344,13 @@ public:
     bool empty() const;
 
     /**
+     * Return the number of value nodes currently stored in the tree.
+     *
+     * @return number of value nodes currently in the tree.
+     */
+    size_t size() const;
+
+    /**
      * Walk down the entire tree depth first.
      *
      * @func function or function object that gets called at each node in the
@@ -391,6 +398,9 @@ private:
 
     node_store* find_leaf_directory_node_for_insertion(const extent_type& bb);
     node_store* find_nonleaf_directory_node_for_insertion(const extent_type& bb, size_t max_depth);
+
+    template<typename _Func>
+    void descend_with_func(_Func func) const;
 
     void search_descend(
         size_t depth, const point_type& pt, const node_store& ns, const_search_results& results) const;
