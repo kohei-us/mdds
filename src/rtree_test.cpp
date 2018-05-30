@@ -50,7 +50,7 @@ void rtree_test_intersection()
 {
     stack_printer __stack_printer__("::rtree_test_intersection");
     using rt_type = rtree<int16_t, std::string>;
-    using bounding_box = rt_type::extent;
+    using bounding_box = rt_type::extent_type;
     using detail::rtree::calc_linear_intersection;
     using detail::rtree::calc_intersection;
 
@@ -101,7 +101,7 @@ void rtree_test_area_enlargement()
 {
     stack_printer __stack_printer__("::rtree_test_area_enlargement");
     using rt_type = rtree<int16_t, std::string>;
-    using bounding_box = rt_type::extent;
+    using bounding_box = rt_type::extent_type;
     using detail::rtree::calc_area_enlargement;
 
     struct check
@@ -133,7 +133,7 @@ void rtree_test_basic_search()
     using rt_type = mdds::rtree<int16_t, std::string>;
 
     rt_type tree;
-    rt_type::extent expected_bb;
+    rt_type::extent_type expected_bb;
 
     tree.insert({0, 0}, {2, 2}, "test");
     expected_bb = {{0, 0}, {2, 2}};
@@ -158,7 +158,7 @@ void rtree_test_basic_search()
     size_t n = std::distance(it, it_end);
     assert(n == 2);
 
-    std::unordered_map<std::string, rt_type::extent> expected_values =
+    std::unordered_map<std::string, rt_type::extent_type> expected_values =
     {
         { "test",      {{ 0, 0}, {2, 2}} },
         { "more test", {{-2, 1}, {3, 6}} },
@@ -174,14 +174,14 @@ void rtree_test_basic_search()
     }
 
     // Perform an out-of-bound search by point.
-    std::vector<rt_type::point> pts =
+    std::vector<rt_type::point_type> pts =
     {
         {-10, -10},
         {1, 7},
         {6, 3},
     };
 
-    for (const rt_type::point& pt : pts)
+    for (const rt_type::point_type& pt : pts)
     {
         res = tree.search(pt);
         assert(res.cbegin() == res.cend());
@@ -207,11 +207,11 @@ void rtree_test_basic_erase()
 
     tree.erase(it);
     assert(tree.empty());
-    assert(rt_type::extent() == tree.get_root_extent());
+    assert(rt_type::extent_type() == tree.get_root_extent());
 
     tree.insert({0,0}, {2,2}, "erase me");
     tree.insert({-10,-4}, {0,0}, "erase me");
-    rt_type::extent expected_bb({-10,-4}, {2,2});
+    rt_type::extent_type expected_bb({-10,-4}, {2,2});
     assert(tree.get_root_extent() == expected_bb);
 
     res = tree.search({-5,-2});
@@ -328,8 +328,8 @@ void rtree_test_directory_node_split()
     using rt_type = rtree<int16_t, std::string, tiny_trait>;
 
     rt_type tree;
-    using point = rt_type::point;
-    using bounding_box = rt_type::extent;
+    using point = rt_type::point_type;
+    using bounding_box = rt_type::extent_type;
 
     for (int16_t x = 0; x < 10; ++x)
     {
@@ -372,8 +372,8 @@ void rtree_test_erase_directories()
     using rt_type = rtree<int16_t, std::string, tiny_trait>;
 
     rt_type tree;
-    using point = rt_type::point;
-    using bounding_box = rt_type::extent;
+    using point = rt_type::point_type;
+    using bounding_box = rt_type::extent_type;
 
     for (int16_t x = 0; x < 5; ++x)
     {

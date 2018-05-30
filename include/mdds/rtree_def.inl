@@ -192,9 +192,9 @@ _Key calc_area_enlargement(const _Exent& bb_host, const _Exent& bb_guest)
 template<typename _Key, typename _Exent, typename _Iter, size_t _Dim>
 _Exent calc_extent(_Iter it, _Iter it_end)
 {
-    _Exent bb = it->box;
+    _Exent bb = it->extent;
     for (++it; it != it_end; ++it)
-        detail::rtree::enlarge_extent_to_fit<_Key,_Exent,_Dim>(bb, it->box);
+        detail::rtree::enlarge_extent_to_fit<_Key,_Exent,_Dim>(bb, it->extent);
 
     return bb;
 }
@@ -231,7 +231,7 @@ struct min_value_pos
 }}
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::point::point()
+rtree<_Key,_Value,_Trait>::point_type::point_type()
 {
     // Initialize the point values with the key type's default value.
     key_type* p = d;
@@ -242,7 +242,7 @@ rtree<_Key,_Value,_Trait>::point::point()
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::point::point(std::initializer_list<key_type> vs)
+rtree<_Key,_Value,_Trait>::point_type::point_type(std::initializer_list<key_type> vs)
 {
     // Initialize the point values with the key type's default value.
     key_type* dst = d;
@@ -260,7 +260,7 @@ rtree<_Key,_Value,_Trait>::point::point(std::initializer_list<key_type> vs)
 
 template<typename _Key, typename _Value, typename _Trait>
 std::string
-rtree<_Key,_Value,_Trait>::point::to_string() const
+rtree<_Key,_Value,_Trait>::point_type::to_string() const
 {
     std::ostringstream os;
 
@@ -277,7 +277,7 @@ rtree<_Key,_Value,_Trait>::point::to_string() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::point::operator== (const point& other) const
+bool rtree<_Key,_Value,_Trait>::point_type::operator== (const point_type& other) const
 {
     const key_type* left = d;
     const key_type* right = other.d;
@@ -293,21 +293,21 @@ bool rtree<_Key,_Value,_Trait>::point::operator== (const point& other) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::point::operator!= (const point& other) const
+bool rtree<_Key,_Value,_Trait>::point_type::operator!= (const point_type& other) const
 {
     return !operator== (other);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::extent::extent() {}
+rtree<_Key,_Value,_Trait>::extent_type::extent_type() {}
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::extent::extent(const point& start, const point& end) :
+rtree<_Key,_Value,_Trait>::extent_type::extent_type(const point_type& start, const point_type& end) :
     start(start), end(end) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 std::string
-rtree<_Key,_Value,_Trait>::extent::to_string() const
+rtree<_Key,_Value,_Trait>::extent_type::to_string() const
 {
     std::ostringstream os;
     os << start.to_string() << " - " << end.to_string();
@@ -315,19 +315,19 @@ rtree<_Key,_Value,_Trait>::extent::to_string() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::extent::operator== (const extent& other) const
+bool rtree<_Key,_Value,_Trait>::extent_type::operator== (const extent_type& other) const
 {
     return start == other.start && end == other.end;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::extent::operator!= (const extent& other) const
+bool rtree<_Key,_Value,_Trait>::extent_type::operator!= (const extent_type& other) const
 {
     return !operator== (other);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::extent::contains(const point& pt) const
+bool rtree<_Key,_Value,_Trait>::extent_type::contains(const point_type& pt) const
 {
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
@@ -339,7 +339,7 @@ bool rtree<_Key,_Value,_Trait>::extent::contains(const point& pt) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::extent::contains(const extent& bb) const
+bool rtree<_Key,_Value,_Trait>::extent_type::contains(const extent_type& bb) const
 {
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
@@ -351,7 +351,7 @@ bool rtree<_Key,_Value,_Trait>::extent::contains(const extent& bb) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::extent::contains_at_boundary(const extent& bb) const
+bool rtree<_Key,_Value,_Trait>::extent_type::contains_at_boundary(const extent_type& bb) const
 {
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
@@ -370,14 +370,14 @@ rtree<_Key,_Value,_Trait>::node_store::node_store() :
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node_store::node_store(node_store&& r) :
     type(r.type),
-    box(r.box),
+    extent(r.extent),
     parent(r.parent),
     node_ptr(r.node_ptr),
     count(r.count),
     valid_pointer(r.valid_pointer)
 {
     r.type = node_type::unspecified;
-    r.box = extent();
+    r.extent = extent_type();
     r.parent = nullptr;
     r.node_ptr = nullptr;
     r.count = 0;
@@ -385,8 +385,8 @@ rtree<_Key,_Value,_Trait>::node_store::node_store(node_store&& r) :
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::node_store::node_store(node_type type, const extent& box, node* node_ptr) :
-    type(type), box(box), parent(nullptr), node_ptr(node_ptr), count(0), valid_pointer(true) {}
+rtree<_Key,_Value,_Trait>::node_store::node_store(node_type type, const extent_type& extent, node* node_ptr) :
+    type(type), extent(extent), parent(nullptr), node_ptr(node_ptr), count(0), valid_pointer(true) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node_store::~node_store()
@@ -413,7 +413,7 @@ template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store
 rtree<_Key,_Value,_Trait>::node_store::create_leaf_directory_node()
 {
-    node_store ret(node_type::directory_leaf, extent(), new directory_node);
+    node_store ret(node_type::directory_leaf, extent_type(), new directory_node);
     ret.valid_pointer = false;
     return ret;
 }
@@ -422,16 +422,16 @@ template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store
 rtree<_Key,_Value,_Trait>::node_store::create_nonleaf_directory_node()
 {
-    node_store ret(node_type::directory_nonleaf, extent(), new directory_node);
+    node_store ret(node_type::directory_nonleaf, extent_type(), new directory_node);
     ret.valid_pointer = false;
     return ret;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store
-rtree<_Key,_Value,_Trait>::node_store::create_value_node(const extent& box, value_type v)
+rtree<_Key,_Value,_Trait>::node_store::create_value_node(const extent_type& extent, value_type v)
 {
-    node_store ret(node_type::value, box, new value_node(std::move(v)));
+    node_store ret(node_type::value, extent, new value_node(std::move(v)));
     return ret;
 }
 
@@ -455,15 +455,15 @@ bool rtree<_Key,_Value,_Trait>::node_store::pack()
     if (children.empty())
     {
         // This node has no children.  Reset the bounding box to empty.
-        extent new_box;
-        bool changed = new_box != box;
-        box = new_box;
+        extent_type new_box;
+        bool changed = new_box != extent;
+        extent = new_box;
         return changed;
     }
 
-    extent new_box = dir->calc_extent();
-    bool changed = new_box != box;
-    box = new_box; // update the bounding box.
+    extent_type new_box = dir->calc_extent();
+    bool changed = new_box != extent;
+    extent = new_box; // update the bounding box.
     return changed;
 }
 
@@ -509,7 +509,7 @@ template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::node_store::swap(node_store& other)
 {
     std::swap(type, other.type);
-    std::swap(box, other.box);
+    std::swap(extent, other.extent);
     std::swap(parent, other.parent);
     std::swap(node_ptr, other.node_ptr);
     std::swap(count, other.count);
@@ -619,7 +619,7 @@ bool rtree<_Key,_Value,_Trait>::directory_node::erase(const node_store* ns)
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store*
-rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_overlap(const extent& bb)
+rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_overlap(const extent_type& bb)
 {
     key_type min_overlap = key_type();
     key_type min_area_enlargement = key_type();
@@ -631,8 +631,8 @@ rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_overlap(const 
     {
         directory_node* dir = static_cast<directory_node*>(ns.node_ptr);
         key_type overlap = dir->calc_overlap_cost(bb);
-        key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,extent,trait_type::dimensions>(ns.box, bb);
-        key_type area = detail::rtree::calc_area<_Key,extent,trait_type::dimensions>(ns.box);
+        key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,extent_type,trait_type::dimensions>(ns.extent, bb);
+        key_type area = detail::rtree::calc_area<_Key,extent_type,trait_type::dimensions>(ns.extent);
 
         bool pick_this = false;
 
@@ -663,7 +663,7 @@ rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_overlap(const 
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store*
-rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_area_enlargement(const extent& bb)
+rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_area_enlargement(const extent_type& bb)
 {
     // Compare the costs of area enlargements.
     key_type min_cost = key_type();
@@ -673,8 +673,8 @@ rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_area_enlargeme
 
     for (node_store& ns : children)
     {
-        key_type cost = detail::rtree::calc_area_enlargement<_Key,extent,trait_type::dimensions>(ns.box, bb);
-        key_type area = detail::rtree::calc_area<_Key,extent,trait_type::dimensions>(ns.box);
+        key_type cost = detail::rtree::calc_area_enlargement<_Key,extent_type,trait_type::dimensions>(ns.extent, bb);
+        key_type area = detail::rtree::calc_area<_Key,extent_type,trait_type::dimensions>(ns.extent);
 
         bool pick_this = false;
 
@@ -700,26 +700,26 @@ rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_area_enlargeme
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::extent
+typename rtree<_Key,_Value,_Trait>::extent_type
 rtree<_Key,_Value,_Trait>::directory_node::calc_extent() const
 {
     auto it = children.cbegin(), ite = children.cend();
 
-    extent box;
+    extent_type box;
     if (it != ite)
-        box = detail::rtree::calc_extent<_Key,extent,decltype(it),trait_type::dimensions>(it, ite);
+        box = detail::rtree::calc_extent<_Key,extent_type,decltype(it),trait_type::dimensions>(it, ite);
 
     return box;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::key_type
-rtree<_Key,_Value,_Trait>::directory_node::calc_overlap_cost(const extent& bb) const
+rtree<_Key,_Value,_Trait>::directory_node::calc_overlap_cost(const extent_type& bb) const
 {
     key_type overlap_cost = key_type();
 
     for (const node_store& ns : children)
-        overlap_cost += detail::rtree::calc_intersection<_Key,extent,trait_type::dimensions>(ns.box, bb);
+        overlap_cost += detail::rtree::calc_intersection<_Key,extent_type,trait_type::dimensions>(ns.extent, bb);
 
     return overlap_cost;
 }
@@ -784,7 +784,7 @@ void rtree<_Key,_Value,_Trait>::const_iterator::update_current_node()
 {
     const node_store* p = m_pos->ns;
     assert(p->type == node_type::value);
-    m_cur_node.box = p->box;
+    m_cur_node.box = p->extent;
     m_cur_node.value = static_cast<const value_node*>(p->node_ptr)->value;
     m_cur_node.depth = m_pos->depth;
 }
@@ -864,9 +864,9 @@ rtree<_Key,_Value,_Trait>::~rtree()
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, value_type value)
+void rtree<_Key,_Value,_Trait>::insert(const point_type& start, const point_type& end, value_type value)
 {
-    extent bb(start, end);
+    extent_type bb(start, end);
     node_store new_ns = node_store::create_value_node(bb, std::move(value));
     insert(std::move(new_ns));
 }
@@ -874,7 +874,7 @@ void rtree<_Key,_Value,_Trait>::insert(const point& start, const point& end, val
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::insert(node_store&& ns)
 {
-    extent ns_box = ns.box;
+    extent_type ns_box = ns.extent;
     node_store* dir_ns = find_leaf_directory_node_for_insertion(ns_box);
     assert(dir_ns);
     assert(dir_ns->type == node_type::directory_leaf);
@@ -892,17 +892,17 @@ void rtree<_Key,_Value,_Trait>::insert(node_store&& ns)
     }
 
     if (dir_ns->count == 1)
-        dir_ns->box = ns_box;
+        dir_ns->extent = ns_box;
     else
-        detail::rtree::enlarge_extent_to_fit<key_type,extent,trait_type::dimensions>(dir_ns->box, ns_box);
+        detail::rtree::enlarge_extent_to_fit<key_type,extent_type,trait_type::dimensions>(dir_ns->extent, ns_box);
 
-    extent bb = dir_ns->box; // grab the parent bounding box.
+    extent_type bb = dir_ns->extent; // grab the parent bounding box.
 
     // Propagate the bounding box update up the tree all the way to the root.
     for (dir_ns = dir_ns->parent; dir_ns; dir_ns = dir_ns->parent)
     {
         assert(dir_ns->count > 0);
-        detail::rtree::enlarge_extent_to_fit<key_type,extent,trait_type::dimensions>(dir_ns->box, bb);
+        detail::rtree::enlarge_extent_to_fit<key_type,extent_type,trait_type::dimensions>(dir_ns->extent, bb);
     }
 }
 
@@ -910,7 +910,7 @@ template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::insert_dir(node_store&& ns, size_t max_depth)
 {
     assert(ns.is_directory());
-    extent ns_box = ns.box;
+    extent_type ns_box = ns.extent;
     node_store* dir_ns = find_nonleaf_directory_node_for_insertion(ns_box, max_depth);
     assert(dir_ns);
     assert(dir_ns->type == node_type::directory_nonleaf);
@@ -930,23 +930,23 @@ void rtree<_Key,_Value,_Trait>::insert_dir(node_store&& ns, size_t max_depth)
     }
 
     if (dir_ns->count == 1)
-        dir_ns->box = ns_box;
+        dir_ns->extent = ns_box;
     else
-        detail::rtree::enlarge_extent_to_fit<key_type,extent,trait_type::dimensions>(dir_ns->box, ns_box);
+        detail::rtree::enlarge_extent_to_fit<key_type,extent_type,trait_type::dimensions>(dir_ns->extent, ns_box);
 
-    extent bb = dir_ns->box; // grab the parent bounding box.
+    extent_type bb = dir_ns->extent; // grab the parent bounding box.
 
     // Propagate the bounding box update up the tree all the way to the root.
     for (dir_ns = dir_ns->parent; dir_ns; dir_ns = dir_ns->parent)
     {
         assert(dir_ns->count > 0);
-        detail::rtree::enlarge_extent_to_fit<key_type,extent,trait_type::dimensions>(dir_ns->box, bb);
+        detail::rtree::enlarge_extent_to_fit<key_type,extent_type,trait_type::dimensions>(dir_ns->extent, bb);
     }
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_search_results
-rtree<_Key,_Value,_Trait>::search(const point& pt) const
+rtree<_Key,_Value,_Trait>::search(const point_type& pt) const
 {
     const_search_results ret;
     search_descend(0, pt, m_root, ret);
@@ -962,7 +962,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     assert(ns->type == node_type::value);
     assert(ns->parent);
 
-    extent bb_erased = ns->box;
+    extent_type bb_erased = ns->extent;
 
     // Move up to the parent and find its stored location.
     node_store* dir_ns = ns->parent;
@@ -1062,10 +1062,10 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-const typename rtree<_Key,_Value,_Trait>::extent&
+const typename rtree<_Key,_Value,_Trait>::extent_type&
 rtree<_Key,_Value,_Trait>::get_root_extent() const
 {
-    return m_root.box;
+    return m_root.extent;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1082,7 +1082,7 @@ void rtree<_Key,_Value,_Trait>::walk(_Func func) const
     {
         node_properties np;
         np.type = ns->type;
-        np.box = ns->box;
+        np.extent = ns->extent;
         func(np);
 
         switch (ns->type)
@@ -1136,15 +1136,15 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
             indent += "    ";
 
         const node_store* parent = nullptr;
-        extent parent_bb;
+        extent_type parent_bb;
         if (!ns_stack.empty())
         {
             parent = ns_stack.back();
-            parent_bb = parent->box;
+            parent_bb = parent->extent;
         }
 
         if (mode == integrity_check_type::whole_tree)
-            std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->box.to_string() << std::endl;
+            std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->extent.to_string() << std::endl;
 
         if (parent)
         {
@@ -1158,10 +1158,10 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
                 valid = false;
             }
 
-            if (!parent_bb.contains(ns->box))
+            if (!parent_bb.contains(ns->extent))
             {
                 std::ostringstream os;
-                os << "The extent of the child " << ns->box.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
+                os << "The extent of the child " << ns->extent.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
                 if (mode == integrity_check_type::throw_on_fail)
                     throw integrity_error(os.str());
                 std::cout << indent << "* " << os.str() << std::endl;
@@ -1256,12 +1256,12 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
 
                 // Check to make sure the bounding box of the current node is
                 // tightly packed.
-                extent bb_expected = dir->calc_extent();
+                extent_type bb_expected = dir->calc_extent();
 
-                if (bb_expected != ns->box)
+                if (bb_expected != ns->extent)
                 {
                     std::ostringstream os;
-                    os << "The extent of the node " << ns->box.to_string() << " does not equal truly tight extent " << bb_expected.to_string();
+                    os << "The extent of the node " << ns->extent.to_string() << " does not equal truly tight extent " << bb_expected.to_string();
 
                     if (mode == integrity_check_type::throw_on_fail)
                         throw integrity_error(os.str());
@@ -1306,9 +1306,9 @@ void rtree<_Key,_Value,_Trait>::dump_tree() const
         for (int i = 0; i < level; ++i)
             indent += "    ";
 
-        extent parent_bb;
+        extent_type parent_bb;
 
-        std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->box.to_string() << std::endl;
+        std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->extent.to_string() << std::endl;
 
         switch (ns->type)
         {
@@ -1438,15 +1438,15 @@ void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type
             auto it_end = it;
             std::advance(it_end, trait_type::min_node_size - 1 + dist);
 
-            extent bb1 = detail::rtree::calc_extent<_Key,extent,decltype(it),trait_type::dimensions>(it, it_end);
+            extent_type bb1 = detail::rtree::calc_extent<_Key,extent_type,decltype(it),trait_type::dimensions>(it, it_end);
             it = it_end;
             it_end = children.end();
             assert(it != it_end);
-            extent bb2 = detail::rtree::calc_extent<_Key,extent,decltype(it),trait_type::dimensions>(it, it_end);
+            extent_type bb2 = detail::rtree::calc_extent<_Key,extent_type,decltype(it),trait_type::dimensions>(it, it_end);
 
             // Compute the half margins of the first and second groups.
-            key_type margin1 = detail::rtree::calc_half_margin<_Key,extent,trait_type::dimensions>(bb1);
-            key_type margin2 = detail::rtree::calc_half_margin<_Key,extent,trait_type::dimensions>(bb2);
+            key_type margin1 = detail::rtree::calc_half_margin<_Key,extent_type,trait_type::dimensions>(bb1);
+            key_type margin2 = detail::rtree::calc_half_margin<_Key,extent_type,trait_type::dimensions>(bb2);
             key_type margins = margin1 + margin2;
 
             sum_of_margins += margins;
@@ -1467,10 +1467,10 @@ void rtree<_Key,_Value,_Trait>::sort_dir_store_by_dimension(size_t dim, dir_stor
     std::sort(children.begin(), children.end(),
         [dim](const node_store& a, const node_store& b) -> bool
         {
-            if (a.box.start.d[dim] != b.box.start.d[dim])
-                return a.box.start.d[dim] < b.box.start.d[dim];
+            if (a.extent.start.d[dim] != b.extent.start.d[dim])
+                return a.extent.start.d[dim] < b.extent.start.d[dim];
 
-            return a.box.end.d[dim] < b.box.end.d[dim];
+            return a.extent.end.d[dim] < b.extent.end.d[dim];
         }
     );
 
@@ -1490,10 +1490,10 @@ size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& chil
         // The first group contains m-1+dist entries, while the second
         // group contains the rest.
         distribution dist_data(dist, children);
-        extent bb1 = detail::rtree::calc_extent<_Key,extent,decltype(dist_data.g1.begin),trait_type::dimensions>(dist_data.g1.begin, dist_data.g1.end);
-        extent bb2 = detail::rtree::calc_extent<_Key,extent,decltype(dist_data.g2.begin),trait_type::dimensions>(dist_data.g2.begin, dist_data.g2.end);
+        extent_type bb1 = detail::rtree::calc_extent<_Key,extent_type,decltype(dist_data.g1.begin),trait_type::dimensions>(dist_data.g1.begin, dist_data.g1.end);
+        extent_type bb2 = detail::rtree::calc_extent<_Key,extent_type,decltype(dist_data.g2.begin),trait_type::dimensions>(dist_data.g2.begin, dist_data.g2.end);
 
-        key_type overlap = detail::rtree::calc_intersection<_Key,extent,trait_type::dimensions>(bb1, bb2);
+        key_type overlap = detail::rtree::calc_intersection<_Key,extent_type,trait_type::dimensions>(bb1, bb2);
         min_overlap_dist.assign(overlap, dist);
     }
 
@@ -1502,7 +1502,7 @@ size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& chil
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store*
-rtree<_Key,_Value,_Trait>::find_leaf_directory_node_for_insertion(const extent& bb)
+rtree<_Key,_Value,_Trait>::find_leaf_directory_node_for_insertion(const extent_type& bb)
 {
     node_store* dst = &m_root;
 
@@ -1532,7 +1532,7 @@ rtree<_Key,_Value,_Trait>::find_leaf_directory_node_for_insertion(const extent& 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store*
 rtree<_Key,_Value,_Trait>::find_nonleaf_directory_node_for_insertion(
-    const extent& bb, size_t max_depth)
+    const extent_type& bb, size_t max_depth)
 {
     node_store* dst = &m_root;
 
@@ -1564,9 +1564,9 @@ rtree<_Key,_Value,_Trait>::find_nonleaf_directory_node_for_insertion(
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::search_descend(
-    size_t depth, const point& pt, const node_store& ns, const_search_results& results) const
+    size_t depth, const point_type& pt, const node_store& ns, const_search_results& results) const
 {
-    if (!ns.box.contains(pt))
+    if (!ns.extent.contains(pt))
         return;
 
     switch (ns.type)
@@ -1590,16 +1590,16 @@ void rtree<_Key,_Value,_Trait>::search_descend(
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::shrink_tree_upward(node_store* ns, const extent& bb_affected)
+void rtree<_Key,_Value,_Trait>::shrink_tree_upward(node_store* ns, const extent_type& bb_affected)
 {
     if (!ns)
         return;
 
     // Check if the affected bounding box is at a corner.
-    if (!ns->box.contains_at_boundary(bb_affected))
+    if (!ns->extent.contains_at_boundary(bb_affected))
         return;
 
-    extent original_bb = ns->box; // Store the original bounding box before the packing.
+    extent_type original_bb = ns->extent; // Store the original bounding box before the packing.
     bool updated = ns->pack();
 
     if (!updated)

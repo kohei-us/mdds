@@ -78,40 +78,40 @@ public:
     using key_type = _Key;
     using value_type = _Value;
 
-    struct point
+    struct point_type
     {
         key_type d[trait_type::dimensions];
 
-        point();
-        point(std::initializer_list<key_type> vs);
+        point_type();
+        point_type(std::initializer_list<key_type> vs);
 
         std::string to_string() const;
 
-        bool operator== (const point& other) const;
-        bool operator!= (const point& other) const;
+        bool operator== (const point_type& other) const;
+        bool operator!= (const point_type& other) const;
     };
 
-    struct extent
+    struct extent_type
     {
-        point start;
-        point end;
+        point_type start;
+        point_type end;
 
-        extent();
-        extent(const point& start, const point& end);
+        extent_type();
+        extent_type(const point_type& start, const point_type& end);
 
         std::string to_string() const;
 
-        bool operator== (const extent& other) const;
-        bool operator!= (const extent& other) const;
+        bool operator== (const extent_type& other) const;
+        bool operator!= (const extent_type& other) const;
 
-        bool contains(const point& pt) const;
-        bool contains(const extent& bb) const;
+        bool contains(const point_type& pt) const;
+        bool contains(const extent_type& bb) const;
 
         /**
          * Determine whether or not another bounding box is within this
          * bounding box and touches at least one boundary.
          */
-        bool contains_at_boundary(const extent& other) const;
+        bool contains_at_boundary(const extent_type& other) const;
     };
 
     using node_type = detail::rtree::node_type;
@@ -121,7 +121,7 @@ public:
     struct node_properties
     {
         node_type type;
-        extent box;
+        extent_type extent;
     };
 
 private:
@@ -132,7 +132,7 @@ private:
     struct node_store
     {
         node_type type;
-        extent box;
+        extent_type extent;
         node_store* parent;
         node* node_ptr;
         size_t count;
@@ -144,12 +144,12 @@ private:
 
         node_store();
         node_store(node_store&& r);
-        node_store(node_type type, const extent& box, node* node_ptr);
+        node_store(node_type type, const extent_type& extent, node* node_ptr);
         ~node_store();
 
         static node_store create_leaf_directory_node();
         static node_store create_nonleaf_directory_node();
-        static node_store create_value_node(const extent& box, value_type v);
+        static node_store create_value_node(const extent_type& extent, value_type v);
 
         node_store& operator= (node_store&& other);
 
@@ -244,11 +244,11 @@ private:
 
         bool erase(const node_store* p);
 
-        node_store* get_child_with_minimal_overlap(const extent& bb);
-        node_store* get_child_with_minimal_area_enlargement(const extent& bb);
+        node_store* get_child_with_minimal_overlap(const extent_type& bb);
+        node_store* get_child_with_minimal_area_enlargement(const extent_type& bb);
 
-        extent calc_extent() const;
-        key_type calc_overlap_cost(const extent& bb) const;
+        extent_type calc_extent() const;
+        key_type calc_overlap_cost(const extent_type& bb) const;
         bool has_leaf_directory() const;
     };
 
@@ -294,7 +294,7 @@ public:
 
         struct node
         {
-            extent box;
+            extent_type box;
             value_type value;
             size_t depth;
         };
@@ -333,13 +333,13 @@ public:
     rtree(const rtree&) = delete;
     rtree& operator= (const rtree&) = delete;
 
-    void insert(const point& start, const point& end, value_type value);
+    void insert(const point_type& start, const point_type& end, value_type value);
 
-    const_search_results search(const point& pt) const;
+    const_search_results search(const point_type& pt) const;
 
     void erase(const_iterator pos);
 
-    const extent& get_root_extent() const;
+    const extent_type& get_root_extent() const;
 
     bool empty() const;
 
@@ -389,13 +389,13 @@ private:
 
     size_t pick_optimal_distribution(dir_store_type& children) const;
 
-    node_store* find_leaf_directory_node_for_insertion(const extent& bb);
-    node_store* find_nonleaf_directory_node_for_insertion(const extent& bb, size_t max_depth);
+    node_store* find_leaf_directory_node_for_insertion(const extent_type& bb);
+    node_store* find_nonleaf_directory_node_for_insertion(const extent_type& bb, size_t max_depth);
 
     void search_descend(
-        size_t depth, const point& pt, const node_store& ns, const_search_results& results) const;
+        size_t depth, const point_type& pt, const node_store& ns, const_search_results& results) const;
 
-    void shrink_tree_upward(node_store* ns, const extent& bb_affected);
+    void shrink_tree_upward(node_store* ns, const extent_type& bb_affected);
 
 private:
     node_store m_root;
