@@ -48,23 +48,6 @@ struct default_rtree_trait
 
 enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
 
-inline const char* to_string(node_type nt)
-{
-    switch (nt)
-    {
-        case node_type::unspecified:
-            return "unspecified";
-        case node_type::directory_leaf:
-            return "directory-leaf";
-        case node_type::directory_nonleaf:
-            return "directory-nonleaf";
-        case node_type::value:
-            return "value";
-    }
-
-    return "???";
-}
-
 }}
 
 template<typename _Key, typename _Value, typename _Trait = detail::rtree::default_rtree_trait>

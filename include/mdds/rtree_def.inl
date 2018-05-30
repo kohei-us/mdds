@@ -40,6 +40,23 @@ namespace mdds {
 
 namespace detail { namespace rtree {
 
+inline const char* to_string(node_type nt)
+{
+    switch (nt)
+    {
+        case node_type::unspecified:
+            return "unspecified";
+        case node_type::directory_leaf:
+            return "directory-leaf";
+        case node_type::directory_nonleaf:
+            return "directory-nonleaf";
+        case node_type::value:
+            return "value";
+    }
+
+    return "???";
+}
+
 template<typename _Key, typename _Exent>
 _Key calc_linear_intersection(size_t dim, const _Exent& bb1, const _Exent& bb2)
 {
