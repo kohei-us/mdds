@@ -57,8 +57,8 @@ inline const char* to_string(node_type nt)
     return "???";
 }
 
-template<typename _Key, typename _Exent>
-_Key calc_linear_intersection(size_t dim, const _Exent& bb1, const _Exent& bb2)
+template<typename _Key, typename _Extent>
+_Key calc_linear_intersection(size_t dim, const _Extent& bb1, const _Extent& bb2)
 {
     using key_type = _Key;
 
@@ -98,20 +98,20 @@ _Key calc_linear_intersection(size_t dim, const _Exent& bb1, const _Exent& bb2)
     return end2 - start2;
 }
 
-template<typename _Key, typename _Exent, size_t _Dim>
-_Key calc_intersection(const _Exent& bb1, const _Exent& bb2)
+template<typename _Key, typename _Extent, size_t _Dim>
+_Key calc_intersection(const _Extent& bb1, const _Extent& bb2)
 {
     static_assert(_Dim > 0, "Dimension cannot be zero.");
 
     using key_type = _Key;
 
-    key_type total_volume = calc_linear_intersection<_Key,_Exent>(0, bb1, bb2);
+    key_type total_volume = calc_linear_intersection<_Key,_Extent>(0, bb1, bb2);
     if (!total_volume)
         return key_type();
 
     for (size_t dim = 1; dim < _Dim; ++dim)
     {
-        key_type segment_len = calc_linear_intersection<_Key,_Exent>(dim, bb1, bb2);
+        key_type segment_len = calc_linear_intersection<_Key,_Extent>(dim, bb1, bb2);
         if (!segment_len)
             return key_type();
 
@@ -121,8 +121,8 @@ _Key calc_intersection(const _Exent& bb1, const _Exent& bb2)
     return total_volume;
 }
 
-template<typename _Key, typename _Exent, size_t _Dim>
-bool enlarge_extent_to_fit(_Exent& parent, const _Exent& child)
+template<typename _Key, typename _Extent, size_t _Dim>
+bool enlarge_extent_to_fit(_Extent& parent, const _Extent& child)
 {
     bool enlarged = false;
 
@@ -144,8 +144,8 @@ bool enlarge_extent_to_fit(_Exent& parent, const _Exent& child)
     return enlarged;
 }
 
-template<typename _Key, typename _Exent, size_t _Dim>
-_Key calc_area(const _Exent& bb)
+template<typename _Key, typename _Extent, size_t _Dim>
+_Key calc_area(const _Extent& bb)
 {
     static_assert(_Dim > 0, "Dimension cannot be zero.");
     using key_type = _Key;
@@ -185,8 +185,8 @@ _Key calc_square_distance(const _Pt& pt1, const _Pt& pt2)
  * bounding box, per the original paper on R*-tree.  It's half-margin
  * because it only adds one of the two edges in each dimension.
  */
-template<typename _Key, typename _Exent, size_t _Dim>
-_Key calc_half_margin(const _Exent& bb)
+template<typename _Key, typename _Extent, size_t _Dim>
+_Key calc_half_margin(const _Extent& bb)
 {
     static_assert(_Dim > 0, "Dimension cannot be zero.");
     using key_type = _Key;
@@ -207,34 +207,34 @@ _Key calc_half_margin(const _Exent& bb)
  *
  * @return quantity of the area enlargement.
  */
-template<typename _Key, typename _Exent, size_t _Dim>
-_Key calc_area_enlargement(const _Exent& bb_host, const _Exent& bb_guest)
+template<typename _Key, typename _Extent, size_t _Dim>
+_Key calc_area_enlargement(const _Extent& bb_host, const _Extent& bb_guest)
 {
     static_assert(_Dim > 0, "Dimension cannot be zero.");
     using key_type = _Key;
-    using extent = _Exent;
+    using extent = _Extent;
 
     // Calculate the original area.
-    key_type original_area = calc_area<_Key,_Exent,_Dim>(bb_host);
+    key_type original_area = calc_area<_Key,_Extent,_Dim>(bb_host);
 
     // Enlarge the box for the new object if needed.
     extent bb_host_enlarged = bb_host; // make a copy.
-    bool enlarged = enlarge_extent_to_fit<_Key,_Exent,_Dim>(bb_host_enlarged, bb_guest);
+    bool enlarged = enlarge_extent_to_fit<_Key,_Extent,_Dim>(bb_host_enlarged, bb_guest);
     if (!enlarged)
         // Area enlargement did not take place.
         return key_type();
 
-    key_type enlarged_area = calc_area<_Key,_Exent,_Dim>(bb_host_enlarged);
+    key_type enlarged_area = calc_area<_Key,_Extent,_Dim>(bb_host_enlarged);
 
     return enlarged_area - original_area;
 }
 
-template<typename _Key, typename _Exent, typename _Iter, size_t _Dim>
-_Exent calc_extent(_Iter it, _Iter it_end)
+template<typename _Key, typename _Extent, typename _Iter, size_t _Dim>
+_Extent calc_extent(_Iter it, _Iter it_end)
 {
-    _Exent bb = it->extent;
+    _Extent bb = it->extent;
     for (++it; it != it_end; ++it)
-        detail::rtree::enlarge_extent_to_fit<_Key,_Exent,_Dim>(bb, it->extent);
+        detail::rtree::enlarge_extent_to_fit<_Key,_Extent,_Dim>(bb, it->extent);
 
     return bb;
 }
