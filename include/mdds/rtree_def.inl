@@ -157,6 +157,29 @@ _Key calc_area(const _Exent& bb)
     return area;
 }
 
+template<typename _Key, typename _Pt, size_t _Dim>
+_Key calc_square_distance(const _Pt& pt1, const _Pt& pt2)
+{
+    static_assert(_Dim > 0, "Dimension cannot be zero.");
+    using key_type = _Key;
+
+    key_type dist = key_type();
+    for (size_t dim = 0; dim < _Dim; ++dim)
+    {
+        key_type v1 = pt1.d[dim], v2 = pt2.d[dim];
+
+        if (v1 > v2)
+            std::swap(v1, v2); // ensure that v1 <= v2.
+
+        assert(v1 <= v2);
+
+        key_type diff = v2 - v1;
+        dist += diff * diff;
+    }
+
+    return dist;
+}
+
 /**
  * The margin here is defined as the sum of the lengths of the edges of a
  * bounding box, per the original paper on R*-tree.  It's half-margin

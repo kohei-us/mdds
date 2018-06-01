@@ -38,7 +38,18 @@
 using namespace mdds;
 using namespace std;
 
-struct tiny_trait
+struct tiny_trait_1d
+{
+    constexpr static size_t dimensions = 1;
+    constexpr static size_t min_node_size = 2;
+    constexpr static size_t max_node_size = 5;
+    constexpr static size_t max_tree_depth = 100;
+
+    constexpr static bool enable_forced_reinsertion = false;
+    constexpr static size_t reinsertion_rate = 30;
+};
+
+struct tiny_trait_2d
 {
     constexpr static size_t dimensions = 2;
     constexpr static size_t min_node_size = 2;
@@ -97,6 +108,77 @@ void rtree_test_intersection()
 
         area = calc_intersection<int16_t,bounding_box,2>(c.bb2, c.bb1);
         assert(area == expected_area);
+    }
+}
+
+void rtree_test_square_distance()
+{
+    stack_printer __stack_printer__("::rtree_test_square_distance");
+    using detail::rtree::calc_square_distance;
+
+    {
+        // 1 dimensional unsigned
+        using rt_type = rtree<uint16_t, std::string, tiny_trait_1d>;
+        using point_type = rt_type::point_type;
+
+        struct test_case
+        {
+            point_type p1;
+            point_type p2;
+            uint16_t expected;
+        };
+
+        std::vector<test_case> tcs =
+        {
+            { {3}, {5},  4 },
+            { {9}, {2}, 49 },
+            { {0}, {0},  0 },
+        };
+
+        for (const test_case& tc : tcs)
+        {
+            cout << "p1: " << tc.p1.to_string() << "; p2: " << tc.p2.to_string() << endl;
+
+            uint16_t dist = calc_square_distance<uint16_t, point_type, 1>(tc.p1, tc.p2);
+            assert(dist == tc.expected);
+
+            // Flip the value to make sure we still get the same result.
+            dist = calc_square_distance<uint16_t, point_type, 1>(tc.p2, tc.p1);
+            assert(dist == tc.expected);
+        }
+    }
+
+    {
+        // 2 dimensional unsigned
+        using rt_type = rtree<uint16_t, std::string, tiny_trait_2d>;
+        using point_type = rt_type::point_type;
+
+        struct test_case
+        {
+            point_type p1;
+            point_type p2;
+            uint16_t expected;
+        };
+
+        std::vector<test_case> tcs =
+        {
+            { {0, 0}, {0, 0},  0 },
+            { {0, 0}, {1, 1},  2 },
+            { {0, 0}, {2, 2},  8 },
+            { {3, 0}, {0, 4},  25 },
+        };
+
+        for (const test_case& tc : tcs)
+        {
+            cout << "p1: " << tc.p1.to_string() << "; p2: " << tc.p2.to_string() << endl;
+
+            uint16_t dist = calc_square_distance<uint16_t, point_type, 2>(tc.p1, tc.p2);
+            assert(dist == tc.expected);
+
+            // Flip the value to make sure we still get the same result.
+            dist = calc_square_distance<uint16_t, point_type, 2>(tc.p2, tc.p1);
+            assert(dist == tc.expected);
+        }
     }
 }
 
@@ -239,7 +321,7 @@ void rtree_test_basic_erase()
 void rtree_test_node_split()
 {
     stack_printer __stack_printer__("::rtree_test_node_split");
-    using rt_type = rtree<int16_t, std::string, tiny_trait>;
+    using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
 
     rt_type tree;
 
@@ -339,7 +421,7 @@ void rtree_test_node_split()
 void rtree_test_directory_node_split()
 {
     stack_printer __stack_printer__("::rtree_test_directory_node_split");
-    using rt_type = rtree<int16_t, std::string, tiny_trait>;
+    using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
 
     rt_type tree;
     using point = rt_type::point_type;
@@ -385,7 +467,7 @@ void rtree_test_directory_node_split()
 void rtree_test_erase_directories()
 {
     stack_printer __stack_printer__("::rtree_test_erase_directories");
-    using rt_type = rtree<int16_t, std::string, tiny_trait>;
+    using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
 
     rt_type tree;
     using point = rt_type::point_type;
@@ -445,6 +527,7 @@ void rtree_test_erase_directories()
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
+    rtree_test_square_distance();
     rtree_test_area_enlargement();
     rtree_test_basic_search();
     rtree_test_basic_erase();
