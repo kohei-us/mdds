@@ -33,6 +33,7 @@
 #include <vector>
 #include <cstdlib>
 #include <string>
+#include <unordered_set>
 
 namespace mdds {
 
@@ -44,6 +45,9 @@ struct default_rtree_trait
     constexpr static size_t min_node_size = 40;
     constexpr static size_t max_node_size = 100;
     constexpr static size_t max_tree_depth = 100;
+
+    constexpr static bool enable_forced_reinsertion = false;
+    constexpr static size_t reinsertion_rate = 30;
 };
 
 enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
@@ -243,6 +247,12 @@ private:
 
     using orphan_node_entries_type = std::deque<orphan_node_entry>;
 
+    struct insertion_point
+    {
+        node_store* ns;
+        size_t depth;
+    };
+
 public:
 
     class const_iterator;
@@ -355,7 +365,7 @@ public:
 
 private:
 
-    void insert(node_store&& ns);
+    void insert(node_store&& ns, std::unordered_set<size_t>* reinserted_depths);
     void insert_dir(node_store&& ns, size_t max_depth);
 
     /**
@@ -366,6 +376,8 @@ private:
      * @param ns node to split.
      */
     void split_node(node_store* ns);
+
+    void perform_forced_reinsertion(node_store* ns);
 
     /**
      * Determine the best dimension to split by, and sort the child nodes by
@@ -379,7 +391,7 @@ private:
 
     size_t pick_optimal_distribution(dir_store_type& children) const;
 
-    node_store* find_leaf_directory_node_for_insertion(const extent_type& bb);
+    insertion_point find_leaf_directory_node_for_insertion(const extent_type& bb);
     node_store* find_nonleaf_directory_node_for_insertion(const extent_type& bb, size_t max_depth);
 
     template<typename _Func>

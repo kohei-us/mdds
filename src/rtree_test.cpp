@@ -44,6 +44,9 @@ struct tiny_trait
     constexpr static size_t min_node_size = 2;
     constexpr static size_t max_node_size = 5;
     constexpr static size_t max_tree_depth = 100;
+
+    constexpr static bool enable_forced_reinsertion = false;
+    constexpr static size_t reinsertion_rate = 30;
 };
 
 void rtree_test_intersection()

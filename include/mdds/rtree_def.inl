@@ -885,26 +885,43 @@ void rtree<_Key,_Value,_Trait>::insert(const point_type& start, const point_type
 {
     extent_type bb(start, end);
     node_store new_ns = node_store::create_value_node(bb, std::move(value));
-    insert(std::move(new_ns));
+
+    std::unordered_set<size_t> reinserted_depths;
+    insert(std::move(new_ns), &reinserted_depths);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::insert(node_store&& ns)
+void rtree<_Key,_Value,_Trait>::insert(node_store&& ns, std::unordered_set<size_t>* reinserted_depths)
 {
     extent_type ns_box = ns.extent;
-    node_store* dir_ns = find_leaf_directory_node_for_insertion(ns_box);
+
+    insertion_point insert_pt = find_leaf_directory_node_for_insertion(ns_box);
+    node_store* dir_ns = insert_pt.ns;
+    size_t depth = insert_pt.depth;
+
     assert(dir_ns);
     assert(dir_ns->type == node_type::directory_leaf);
     directory_node* dir = static_cast<directory_node*>(dir_ns->node_ptr);
 
     // Insert the new value to this node.
-    ns.parent = dir_ns;
+    ns.parent = insert_pt.ns;
     dir->children.push_back(std::move(ns));
     ++dir_ns->count;
 
     if (dir_ns->exceeds_capacity())
     {
-        split_node(dir_ns);
+        if (trait_type::enable_forced_reinsertion)
+        {
+            if (reinserted_depths && !reinserted_depths->count(depth))
+            {
+                // We perform forced re-insertion exactly once per depth level.
+                perform_forced_reinsertion(dir_ns);
+                reinserted_depths->insert(depth);
+            }
+        }
+        else
+            split_node(dir_ns);
+
         return;
     }
 
@@ -1057,7 +1074,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
 
     while (!orphan_value_nodes.empty())
     {
-        insert(std::move(orphan_value_nodes.back()));
+        insert(std::move(orphan_value_nodes.back()), nullptr);
         orphan_value_nodes.pop_back();
     }
 
@@ -1420,6 +1437,21 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(node_store* ns)
+{
+    // Compute the distance between the centers of the value extents and the
+    // center of the extent of the parent directory.
+
+    // Sort the value entries in decreasing order of their distances.
+
+    // Remove the first set of entries from the parent directory.
+
+    // Re-insert the values from the closest to farthest.
+
+    throw std::runtime_error("WIP");
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type& children)
 {
     // Store the sum of margins for each dimension axis.
@@ -1505,19 +1537,23 @@ size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& chil
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::node_store*
+typename rtree<_Key,_Value,_Trait>::insertion_point
 rtree<_Key,_Value,_Trait>::find_leaf_directory_node_for_insertion(const extent_type& bb)
 {
-    node_store* dst = &m_root;
+    insertion_point ret;
+    ret.ns = &m_root;
 
     for (size_t i = 0; i <= trait_type::max_tree_depth; ++i)
     {
-        if (dst->type == node_type::directory_leaf)
-            return dst;
+        if (ret.ns->type == node_type::directory_leaf)
+        {
+            ret.depth = i;
+            return ret;
+        }
 
-        assert(dst->type == node_type::directory_nonleaf);
+        assert(ret.ns->type == node_type::directory_nonleaf);
 
-        directory_node* dir = static_cast<directory_node*>(dst->node_ptr);
+        directory_node* dir = static_cast<directory_node*>(ret.ns->node_ptr);
 
         // If this non-leaf directory contains at least one leaf directory,
         // pick the entry with minimum overlap increase.  If all of its child
@@ -1525,9 +1561,9 @@ rtree<_Key,_Value,_Trait>::find_leaf_directory_node_for_insertion(const extent_t
         // area enlargement.
 
         if (dir->has_leaf_directory())
-            dst = dir->get_child_with_minimal_overlap(bb);
+            ret.ns = dir->get_child_with_minimal_overlap(bb);
         else
-            dst = dir->get_child_with_minimal_area_enlargement(bb);
+            ret.ns = dir->get_child_with_minimal_area_enlargement(bb);
     }
 
     throw std::runtime_error("Maximum tree depth has been reached.");
