@@ -101,17 +101,18 @@ _Key calc_linear_intersection(size_t dim, const _Extent& bb1, const _Extent& bb2
     return end2 - start2;
 }
 
-template<typename _Extent, size_t _Dim>
+template<typename _Extent>
 auto calc_intersection(const _Extent& bb1, const _Extent& bb2) -> remove_cvref_t<decltype(bb1.start.d[0])>
 {
-    static_assert(_Dim > 0, "Dimension cannot be zero.");
+    constexpr size_t dim_size = sizeof(bb1.start.d) / sizeof(bb1.start.d[0]);
+    static_assert(dim_size > 0, "Dimension cannot be zero.");
     using key_type = remove_cvref_t<decltype(bb1.start.d[0])>;
 
     key_type total_volume = calc_linear_intersection<key_type,_Extent>(0, bb1, bb2);
     if (!total_volume)
         return key_type();
 
-    for (size_t dim = 1; dim < _Dim; ++dim)
+    for (size_t dim = 1; dim < dim_size; ++dim)
     {
         key_type segment_len = calc_linear_intersection<key_type,_Extent>(dim, bb1, bb2);
         if (!segment_len)
@@ -778,7 +779,7 @@ rtree<_Key,_Value,_Trait>::directory_node::calc_overlap_cost(const extent_type& 
     key_type overlap_cost = key_type();
 
     for (const node_store& ns : children)
-        overlap_cost += detail::rtree::calc_intersection<extent_type,trait_type::dimensions>(ns.extent, bb);
+        overlap_cost += detail::rtree::calc_intersection<extent_type>(ns.extent, bb);
 
     return overlap_cost;
 }
@@ -1571,7 +1572,7 @@ size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& chil
         extent_type bb1 = detail::rtree::calc_extent<_Key,extent_type,decltype(dist_data.g1.begin),trait_type::dimensions>(dist_data.g1.begin, dist_data.g1.end);
         extent_type bb2 = detail::rtree::calc_extent<_Key,extent_type,decltype(dist_data.g2.begin),trait_type::dimensions>(dist_data.g2.begin, dist_data.g2.end);
 
-        key_type overlap = detail::rtree::calc_intersection<extent_type,trait_type::dimensions>(bb1, bb2);
+        key_type overlap = detail::rtree::calc_intersection<extent_type>(bb1, bb2);
         min_overlap_dist.assign(overlap, dist);
     }
 
