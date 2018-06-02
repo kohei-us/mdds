@@ -182,6 +182,35 @@ void rtree_test_square_distance()
     }
 }
 
+void rtree_test_center_point()
+{
+    stack_printer __stack_printer__("::rtree_test_center_point");
+    using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
+    using detail::rtree::get_center_point;
+    using extent_type = rt_type::extent_type;
+    using point_type = rt_type::point_type;
+
+    struct test_case
+    {
+        extent_type extent;
+        point_type expected;
+    };
+
+    std::vector<test_case> tcs =
+    {
+        { {{0, 0}, {2, 2}}, {1, 1} },
+        { {{-2, -4}, {2, 4}}, {0, 0} },
+        { {{3, 5}, {8, 10}}, {5, 7} },
+    };
+
+    for (const test_case& tc : tcs)
+    {
+        cout << "extent: " << tc.extent.to_string() << endl;
+        auto pt = get_center_point<extent_type,2>(tc.extent);
+        assert(pt == tc.expected);
+    }
+}
+
 void rtree_test_area_enlargement()
 {
     stack_printer __stack_printer__("::rtree_test_area_enlargement");
@@ -528,6 +557,7 @@ int main(int argc, char** argv)
 {
     rtree_test_intersection();
     rtree_test_square_distance();
+    rtree_test_center_point();
     rtree_test_area_enlargement();
     rtree_test_basic_search();
     rtree_test_basic_erase();

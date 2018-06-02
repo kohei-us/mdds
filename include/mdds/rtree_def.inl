@@ -234,9 +234,26 @@ _Extent calc_extent(_Iter it, _Iter it_end)
 {
     _Extent bb = it->extent;
     for (++it; it != it_end; ++it)
-        detail::rtree::enlarge_extent_to_fit<_Key,_Extent,_Dim>(bb, it->extent);
+        enlarge_extent_to_fit<_Key,_Extent,_Dim>(bb, it->extent);
 
     return bb;
+}
+
+template<typename _Extent, size_t _Dim>
+auto get_center_point(const _Extent& extent) -> decltype(extent.start)
+{
+    static_assert(_Dim > 0, "Dimension cannot be zero.");
+    using point_type = decltype(extent.start);
+    using key_type = decltype(extent.start.d[0]);
+
+    point_type ret;
+
+    static const key_type two = 2;
+
+    for (size_t dim = 0; dim < _Dim; ++dim)
+        ret.d[dim] = (extent.end.d[dim] + extent.start.d[dim]) / two;
+
+    return ret;
 }
 
 template<typename _Key>
