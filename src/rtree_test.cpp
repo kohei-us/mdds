@@ -90,9 +90,9 @@ void rtree_test_intersection()
 
     for (const check& c : checks)
     {
-        int16_t length1 = calc_linear_intersection<int16_t,bounding_box>(0, c.bb1, c.bb2);
+        int16_t length1 = calc_linear_intersection<bounding_box>(0, c.bb1, c.bb2);
         assert(length1 == c.expected_length1);
-        int16_t length2 = calc_linear_intersection<int16_t,bounding_box>(1, c.bb1, c.bb2);
+        int16_t length2 = calc_linear_intersection<bounding_box>(1, c.bb1, c.bb2);
         assert(length2 == c.expected_length2);
 
         int16_t area = calc_intersection<bounding_box>(c.bb1, c.bb2);
@@ -101,9 +101,9 @@ void rtree_test_intersection()
 
         // Swap the boxes and run the same tests. We should get the same results.
 
-        length1 = calc_linear_intersection<int16_t,bounding_box>(0, c.bb2, c.bb1);
+        length1 = calc_linear_intersection<bounding_box>(0, c.bb2, c.bb1);
         assert(length1 == c.expected_length1);
-        length2 = calc_linear_intersection<int16_t,bounding_box>(1, c.bb2, c.bb1);
+        length2 = calc_linear_intersection<bounding_box>(1, c.bb2, c.bb1);
         assert(length2 == c.expected_length2);
 
         area = calc_intersection<bounding_box>(c.bb2, c.bb1);

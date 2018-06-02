@@ -60,10 +60,10 @@ inline const char* to_string(node_type nt)
     return "???";
 }
 
-template<typename _Key, typename _Extent>
-_Key calc_linear_intersection(size_t dim, const _Extent& bb1, const _Extent& bb2)
+template<typename _Extent>
+auto calc_linear_intersection(size_t dim, const _Extent& bb1, const _Extent& bb2) -> remove_cvref_t<decltype(bb1.start.d[0])>
 {
-    using key_type = _Key;
+    using key_type = remove_cvref_t<decltype(bb1.start.d[0])>;
 
     key_type start1 = bb1.start.d[dim], end1 = bb1.end.d[dim];
     key_type start2 = bb2.start.d[dim], end2 = bb2.end.d[dim];
@@ -108,13 +108,13 @@ auto calc_intersection(const _Extent& bb1, const _Extent& bb2) -> remove_cvref_t
     static_assert(dim_size > 0, "Dimension cannot be zero.");
     using key_type = remove_cvref_t<decltype(bb1.start.d[0])>;
 
-    key_type total_volume = calc_linear_intersection<key_type,_Extent>(0, bb1, bb2);
+    key_type total_volume = calc_linear_intersection<_Extent>(0, bb1, bb2);
     if (!total_volume)
         return key_type();
 
     for (size_t dim = 1; dim < dim_size; ++dim)
     {
-        key_type segment_len = calc_linear_intersection<key_type,_Extent>(dim, bb1, bb2);
+        key_type segment_len = calc_linear_intersection<_Extent>(dim, bb1, bb2);
         if (!segment_len)
             return key_type();
 
