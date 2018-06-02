@@ -95,7 +95,7 @@ void rtree_test_intersection()
         int16_t length2 = calc_linear_intersection<int16_t,bounding_box>(1, c.bb1, c.bb2);
         assert(length2 == c.expected_length2);
 
-        int16_t area = calc_intersection<int16_t,bounding_box,2>(c.bb1, c.bb2);
+        int16_t area = calc_intersection<bounding_box,2>(c.bb1, c.bb2);
         int16_t expected_area = c.expected_length1 * c.expected_length2;
         assert(area == expected_area);
 
@@ -106,7 +106,7 @@ void rtree_test_intersection()
         length2 = calc_linear_intersection<int16_t,bounding_box>(1, c.bb2, c.bb1);
         assert(length2 == c.expected_length2);
 
-        area = calc_intersection<int16_t,bounding_box,2>(c.bb2, c.bb1);
+        area = calc_intersection<bounding_box,2>(c.bb2, c.bb1);
         assert(area == expected_area);
     }
 }
