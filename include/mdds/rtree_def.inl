@@ -192,14 +192,15 @@ auto calc_square_distance(const _Pt& pt1, const _Pt& pt2) -> remove_cvref_t<decl
  * bounding box, per the original paper on R*-tree.  It's half-margin
  * because it only adds one of the two edges in each dimension.
  */
-template<typename _Key, typename _Extent, size_t _Dim>
-_Key calc_half_margin(const _Extent& bb)
+template<typename _Extent>
+auto calc_half_margin(const _Extent& bb) -> remove_cvref_t<decltype(bb.start.d[0])>
 {
-    static_assert(_Dim > 0, "Dimension cannot be zero.");
-    using key_type = _Key;
+    constexpr size_t dim_size = sizeof(bb.start.d) / sizeof(bb.start.d[0]);
+    static_assert(dim_size > 0, "Dimension cannot be zero.");
+    using key_type = remove_cvref_t<decltype(bb.start.d[0])>;
 
     key_type margin = bb.end.d[0] - bb.start.d[0];
-    for (size_t dim = 1; dim < _Dim; ++dim)
+    for (size_t dim = 1; dim < dim_size; ++dim)
         margin += bb.end.d[dim] - bb.start.d[dim];
 
     return margin;
@@ -214,11 +215,12 @@ _Key calc_half_margin(const _Extent& bb)
  *
  * @return quantity of the area enlargement.
  */
-template<typename _Key, typename _Extent, size_t _Dim>
-_Key calc_area_enlargement(const _Extent& bb_host, const _Extent& bb_guest)
+template<typename _Extent>
+auto calc_area_enlargement(const _Extent& bb_host, const _Extent& bb_guest) -> remove_cvref_t<decltype(bb_host.start.d[0])>
 {
-    static_assert(_Dim > 0, "Dimension cannot be zero.");
-    using key_type = _Key;
+    constexpr size_t dim_size = sizeof(bb_host.start.d) / sizeof(bb_host.start.d[0]);
+    static_assert(dim_size > 0, "Dimension cannot be zero.");
+    using key_type = remove_cvref_t<decltype(bb_host.start.d[0])>;
     using extent = _Extent;
 
     // Calculate the original area.
@@ -236,7 +238,7 @@ _Key calc_area_enlargement(const _Extent& bb_host, const _Extent& bb_guest)
     return enlarged_area - original_area;
 }
 
-template<typename _Key, typename _Extent, typename _Iter, size_t _Dim>
+template<typename _Extent, typename _Iter>
 _Extent calc_extent(_Iter it, _Iter it_end)
 {
     _Extent bb = it->extent;
@@ -246,10 +248,11 @@ _Extent calc_extent(_Iter it, _Iter it_end)
     return bb;
 }
 
-template<typename _Extent, size_t _Dim>
+template<typename _Extent>
 auto get_center_point(const _Extent& extent) -> decltype(extent.start)
 {
-    static_assert(_Dim > 0, "Dimension cannot be zero.");
+    constexpr size_t dim_size = sizeof(extent.start.d) / sizeof(extent.start.d[0]);
+    static_assert(dim_size > 0, "Dimension cannot be zero.");
     using point_type = decltype(extent.start);
     using key_type = decltype(extent.start.d[0]);
 
@@ -257,7 +260,7 @@ auto get_center_point(const _Extent& extent) -> decltype(extent.start)
 
     static const key_type two = 2;
 
-    for (size_t dim = 0; dim < _Dim; ++dim)
+    for (size_t dim = 0; dim < dim_size; ++dim)
         ret.d[dim] = (extent.end.d[dim] + extent.start.d[dim]) / two;
 
     return ret;
@@ -290,6 +293,15 @@ struct min_value_pos
 
         ++count;
     }
+};
+
+template<typename _Key>
+struct reinsertion_bucket
+{
+    using key_type = _Key;
+
+    key_type distance;
+    size_t src_pos;
 };
 
 }}
@@ -695,7 +707,7 @@ rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_overlap(const 
     {
         directory_node* dir = static_cast<directory_node*>(ns.node_ptr);
         key_type overlap = dir->calc_overlap_cost(bb);
-        key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,extent_type,trait_type::dimensions>(ns.extent, bb);
+        key_type area_enlargement = detail::rtree::calc_area_enlargement<extent_type>(ns.extent, bb);
         key_type area = detail::rtree::calc_area<extent_type>(ns.extent);
 
         bool pick_this = false;
@@ -737,8 +749,8 @@ rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_area_enlargeme
 
     for (node_store& ns : children)
     {
-        key_type cost = detail::rtree::calc_area_enlargement<_Key,extent_type,trait_type::dimensions>(ns.extent, bb);
-        key_type area = detail::rtree::calc_area<extent_type>(ns.extent);
+        key_type cost = detail::rtree::calc_area_enlargement(ns.extent, bb);
+        key_type area = detail::rtree::calc_area(ns.extent);
 
         bool pick_this = false;
 
@@ -771,7 +783,7 @@ rtree<_Key,_Value,_Trait>::directory_node::calc_extent() const
 
     extent_type box;
     if (it != ite)
-        box = detail::rtree::calc_extent<_Key,extent_type,decltype(it),trait_type::dimensions>(it, ite);
+        box = detail::rtree::calc_extent<extent_type,decltype(it)>(it, ite);
 
     return box;
 }
@@ -962,8 +974,8 @@ void rtree<_Key,_Value,_Trait>::insert(node_store&& ns, std::unordered_set<size_
             if (reinserted_depths && !reinserted_depths->count(depth))
             {
                 // We perform forced re-insertion exactly once per depth level.
-                perform_forced_reinsertion(dir_ns);
                 reinserted_depths->insert(depth);
+                perform_forced_reinsertion(dir_ns, *reinserted_depths);
             }
         }
         else
@@ -1484,10 +1496,29 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(node_store* ns)
+void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
+    node_store* ns, std::unordered_set<size_t>& reinserted_depth)
 {
     // Compute the distance between the centers of the value extents and the
     // center of the extent of the parent directory.
+
+    point_type center_of_dir = detail::rtree::get_center_point(ns->extent);
+
+    directory_node* dir = ns->get_directory_node();
+    assert(dir);
+
+    std::vector<detail::rtree::reinsertion_bucket<key_type>> buckets;
+    buckets.reserve(ns->count);
+
+    size_t pos = 0;
+    for (const node_store& ns_child : dir->children)
+    {
+        buckets.emplace_back();
+        buckets.back().src_pos = pos++;
+
+        point_type center_of_child = detail::rtree::get_center_point(ns_child.extent);
+        buckets.back().distance = detail::rtree::calc_square_distance(center_of_dir, center_of_child);
+    }
 
     // Sort the value entries in decreasing order of their distances.
 
@@ -1521,15 +1552,15 @@ void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type
             auto it_end = it;
             std::advance(it_end, trait_type::min_node_size - 1 + dist);
 
-            extent_type bb1 = detail::rtree::calc_extent<_Key,extent_type,decltype(it),trait_type::dimensions>(it, it_end);
+            extent_type bb1 = detail::rtree::calc_extent<extent_type,decltype(it)>(it, it_end);
             it = it_end;
             it_end = children.end();
             assert(it != it_end);
-            extent_type bb2 = detail::rtree::calc_extent<_Key,extent_type,decltype(it),trait_type::dimensions>(it, it_end);
+            extent_type bb2 = detail::rtree::calc_extent<extent_type,decltype(it)>(it, it_end);
 
             // Compute the half margins of the first and second groups.
-            key_type margin1 = detail::rtree::calc_half_margin<_Key,extent_type,trait_type::dimensions>(bb1);
-            key_type margin2 = detail::rtree::calc_half_margin<_Key,extent_type,trait_type::dimensions>(bb2);
+            key_type margin1 = detail::rtree::calc_half_margin<extent_type>(bb1);
+            key_type margin2 = detail::rtree::calc_half_margin<extent_type>(bb2);
             key_type margins = margin1 + margin2;
 
             sum_of_margins += margins;
@@ -1573,8 +1604,8 @@ size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& chil
         // The first group contains m-1+dist entries, while the second
         // group contains the rest.
         distribution dist_data(dist, children);
-        extent_type bb1 = detail::rtree::calc_extent<_Key,extent_type,decltype(dist_data.g1.begin),trait_type::dimensions>(dist_data.g1.begin, dist_data.g1.end);
-        extent_type bb2 = detail::rtree::calc_extent<_Key,extent_type,decltype(dist_data.g2.begin),trait_type::dimensions>(dist_data.g2.begin, dist_data.g2.end);
+        extent_type bb1 = detail::rtree::calc_extent<extent_type,decltype(dist_data.g1.begin)>(dist_data.g1.begin, dist_data.g1.end);
+        extent_type bb2 = detail::rtree::calc_extent<extent_type,decltype(dist_data.g2.begin)>(dist_data.g2.begin, dist_data.g2.end);
 
         key_type overlap = detail::rtree::calc_intersection<extent_type>(bb1, bb2);
         min_overlap_dist.assign(overlap, dist);

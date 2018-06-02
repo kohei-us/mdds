@@ -377,7 +377,7 @@ private:
      */
     void split_node(node_store* ns);
 
-    void perform_forced_reinsertion(node_store* ns);
+    void perform_forced_reinsertion(node_store* ns, std::unordered_set<size_t>& reinserted_depth);
 
     /**
      * Determine the best dimension to split by, and sort the child nodes by

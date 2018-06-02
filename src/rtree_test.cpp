@@ -206,7 +206,7 @@ void rtree_test_center_point()
     for (const test_case& tc : tcs)
     {
         cout << "extent: " << tc.extent.to_string() << endl;
-        auto pt = get_center_point<extent_type,2>(tc.extent);
+        auto pt = get_center_point(tc.extent);
         assert(pt == tc.expected);
     }
 }
@@ -236,7 +236,7 @@ void rtree_test_area_enlargement()
 
     for (const check& c : checks)
     {
-        int16_t area = calc_area_enlargement<int16_t,bounding_box,2u>(c.host, c.guest);
+        int16_t area = calc_area_enlargement(c.host, c.guest);
         assert(area == c.expected_area);
     }
 }
