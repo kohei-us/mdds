@@ -124,12 +124,14 @@ auto calc_intersection(const _Extent& bb1, const _Extent& bb2) -> remove_cvref_t
     return total_volume;
 }
 
-template<typename _Key, typename _Extent, size_t _Dim>
+template<typename _Extent>
 bool enlarge_extent_to_fit(_Extent& parent, const _Extent& child)
 {
+    constexpr size_t dim_size = sizeof(parent.start.d) / sizeof(parent.start.d[0]);
+    static_assert(dim_size > 0, "Dimension cannot be zero.");
     bool enlarged = false;
 
-    for (size_t dim = 0; dim < _Dim; ++dim)
+    for (size_t dim = 0; dim < dim_size; ++dim)
     {
         if (child.start.d[dim] < parent.start.d[dim])
         {
@@ -147,27 +149,29 @@ bool enlarge_extent_to_fit(_Extent& parent, const _Extent& child)
     return enlarged;
 }
 
-template<typename _Key, typename _Extent, size_t _Dim>
-_Key calc_area(const _Extent& bb)
+template<typename _Extent>
+auto calc_area(const _Extent& bb) -> remove_cvref_t<decltype(bb.start.d[0])>
 {
-    static_assert(_Dim > 0, "Dimension cannot be zero.");
-    using key_type = _Key;
+    constexpr size_t dim_size = sizeof(bb.start.d) / sizeof(bb.start.d[0]);
+    static_assert(dim_size > 0, "Dimension cannot be zero.");
+    using key_type = remove_cvref_t<decltype(bb.start.d[0])>;
 
     key_type area = bb.end.d[0] - bb.start.d[0];
-    for (size_t dim = 1; dim < _Dim; ++dim)
+    for (size_t dim = 1; dim < dim_size; ++dim)
         area *= bb.end.d[dim] - bb.start.d[dim];
 
     return area;
 }
 
-template<typename _Key, typename _Pt, size_t _Dim>
-_Key calc_square_distance(const _Pt& pt1, const _Pt& pt2)
+template<typename _Pt>
+auto calc_square_distance(const _Pt& pt1, const _Pt& pt2) -> remove_cvref_t<decltype(pt1.d[0])>
 {
-    static_assert(_Dim > 0, "Dimension cannot be zero.");
-    using key_type = _Key;
+    constexpr size_t dim_size = sizeof(pt1.d) / sizeof(pt1.d[0]);
+    static_assert(dim_size > 0, "Dimension cannot be zero.");
+    using key_type = remove_cvref_t<decltype(pt1.d[0])>;
 
     key_type dist = key_type();
-    for (size_t dim = 0; dim < _Dim; ++dim)
+    for (size_t dim = 0; dim < dim_size; ++dim)
     {
         key_type v1 = pt1.d[dim], v2 = pt2.d[dim];
 
@@ -218,16 +222,16 @@ _Key calc_area_enlargement(const _Extent& bb_host, const _Extent& bb_guest)
     using extent = _Extent;
 
     // Calculate the original area.
-    key_type original_area = calc_area<_Key,_Extent,_Dim>(bb_host);
+    key_type original_area = calc_area<_Extent>(bb_host);
 
     // Enlarge the box for the new object if needed.
     extent bb_host_enlarged = bb_host; // make a copy.
-    bool enlarged = enlarge_extent_to_fit<_Key,_Extent,_Dim>(bb_host_enlarged, bb_guest);
+    bool enlarged = enlarge_extent_to_fit<_Extent>(bb_host_enlarged, bb_guest);
     if (!enlarged)
         // Area enlargement did not take place.
         return key_type();
 
-    key_type enlarged_area = calc_area<_Key,_Extent,_Dim>(bb_host_enlarged);
+    key_type enlarged_area = calc_area<_Extent>(bb_host_enlarged);
 
     return enlarged_area - original_area;
 }
@@ -237,7 +241,7 @@ _Extent calc_extent(_Iter it, _Iter it_end)
 {
     _Extent bb = it->extent;
     for (++it; it != it_end; ++it)
-        enlarge_extent_to_fit<_Key,_Extent,_Dim>(bb, it->extent);
+        enlarge_extent_to_fit<_Extent>(bb, it->extent);
 
     return bb;
 }
@@ -692,7 +696,7 @@ rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_overlap(const 
         directory_node* dir = static_cast<directory_node*>(ns.node_ptr);
         key_type overlap = dir->calc_overlap_cost(bb);
         key_type area_enlargement = detail::rtree::calc_area_enlargement<_Key,extent_type,trait_type::dimensions>(ns.extent, bb);
-        key_type area = detail::rtree::calc_area<_Key,extent_type,trait_type::dimensions>(ns.extent);
+        key_type area = detail::rtree::calc_area<extent_type>(ns.extent);
 
         bool pick_this = false;
 
@@ -734,7 +738,7 @@ rtree<_Key,_Value,_Trait>::directory_node::get_child_with_minimal_area_enlargeme
     for (node_store& ns : children)
     {
         key_type cost = detail::rtree::calc_area_enlargement<_Key,extent_type,trait_type::dimensions>(ns.extent, bb);
-        key_type area = detail::rtree::calc_area<_Key,extent_type,trait_type::dimensions>(ns.extent);
+        key_type area = detail::rtree::calc_area<extent_type>(ns.extent);
 
         bool pick_this = false;
 
@@ -971,7 +975,7 @@ void rtree<_Key,_Value,_Trait>::insert(node_store&& ns, std::unordered_set<size_
     if (dir_ns->count == 1)
         dir_ns->extent = ns_box;
     else
-        detail::rtree::enlarge_extent_to_fit<key_type,extent_type,trait_type::dimensions>(dir_ns->extent, ns_box);
+        detail::rtree::enlarge_extent_to_fit<extent_type>(dir_ns->extent, ns_box);
 
     extent_type bb = dir_ns->extent; // grab the parent bounding box.
 
@@ -979,7 +983,7 @@ void rtree<_Key,_Value,_Trait>::insert(node_store&& ns, std::unordered_set<size_
     for (dir_ns = dir_ns->parent; dir_ns; dir_ns = dir_ns->parent)
     {
         assert(dir_ns->count > 0);
-        detail::rtree::enlarge_extent_to_fit<key_type,extent_type,trait_type::dimensions>(dir_ns->extent, bb);
+        detail::rtree::enlarge_extent_to_fit<extent_type>(dir_ns->extent, bb);
     }
 }
 
@@ -1009,7 +1013,7 @@ void rtree<_Key,_Value,_Trait>::insert_dir(node_store&& ns, size_t max_depth)
     if (dir_ns->count == 1)
         dir_ns->extent = ns_box;
     else
-        detail::rtree::enlarge_extent_to_fit<key_type,extent_type,trait_type::dimensions>(dir_ns->extent, ns_box);
+        detail::rtree::enlarge_extent_to_fit<extent_type>(dir_ns->extent, ns_box);
 
     extent_type bb = dir_ns->extent; // grab the parent bounding box.
 
@@ -1017,7 +1021,7 @@ void rtree<_Key,_Value,_Trait>::insert_dir(node_store&& ns, size_t max_depth)
     for (dir_ns = dir_ns->parent; dir_ns; dir_ns = dir_ns->parent)
     {
         assert(dir_ns->count > 0);
-        detail::rtree::enlarge_extent_to_fit<key_type,extent_type,trait_type::dimensions>(dir_ns->extent, bb);
+        detail::rtree::enlarge_extent_to_fit<extent_type>(dir_ns->extent, bb);
     }
 }
 

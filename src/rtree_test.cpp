@@ -139,11 +139,11 @@ void rtree_test_square_distance()
         {
             cout << "p1: " << tc.p1.to_string() << "; p2: " << tc.p2.to_string() << endl;
 
-            uint16_t dist = calc_square_distance<uint16_t, point_type, 1>(tc.p1, tc.p2);
+            uint16_t dist = calc_square_distance<point_type>(tc.p1, tc.p2);
             assert(dist == tc.expected);
 
             // Flip the value to make sure we still get the same result.
-            dist = calc_square_distance<uint16_t, point_type, 1>(tc.p2, tc.p1);
+            dist = calc_square_distance<point_type>(tc.p2, tc.p1);
             assert(dist == tc.expected);
         }
     }
@@ -172,11 +172,11 @@ void rtree_test_square_distance()
         {
             cout << "p1: " << tc.p1.to_string() << "; p2: " << tc.p2.to_string() << endl;
 
-            uint16_t dist = calc_square_distance<uint16_t, point_type, 2>(tc.p1, tc.p2);
+            uint16_t dist = calc_square_distance<point_type>(tc.p1, tc.p2);
             assert(dist == tc.expected);
 
             // Flip the value to make sure we still get the same result.
-            dist = calc_square_distance<uint16_t, point_type, 2>(tc.p2, tc.p1);
+            dist = calc_square_distance<point_type>(tc.p2, tc.p1);
             assert(dist == tc.expected);
         }
     }
