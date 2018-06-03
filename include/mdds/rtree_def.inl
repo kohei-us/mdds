@@ -238,12 +238,12 @@ auto calc_area_enlargement(const _Extent& bb_host, const _Extent& bb_guest) -> r
     return enlarged_area - original_area;
 }
 
-template<typename _Extent, typename _Iter>
-_Extent calc_extent(_Iter it, _Iter it_end)
+template<typename _Iter>
+auto calc_extent(_Iter it, _Iter it_end) -> decltype(it->extent)
 {
-    _Extent bb = it->extent;
+    auto bb = it->extent;
     for (++it; it != it_end; ++it)
-        enlarge_extent_to_fit<_Extent>(bb, it->extent);
+        enlarge_extent_to_fit(bb, it->extent);
 
     return bb;
 }
@@ -783,7 +783,7 @@ rtree<_Key,_Value,_Trait>::directory_node::calc_extent() const
 
     extent_type box;
     if (it != ite)
-        box = detail::rtree::calc_extent<extent_type,decltype(it)>(it, ite);
+        box = detail::rtree::calc_extent(it, ite);
 
     return box;
 }
@@ -1608,11 +1608,11 @@ void rtree<_Key,_Value,_Trait>::sort_dir_store_by_split_dimension(dir_store_type
             auto it_end = it;
             std::advance(it_end, trait_type::min_node_size - 1 + dist);
 
-            extent_type bb1 = detail::rtree::calc_extent<extent_type,decltype(it)>(it, it_end);
+            extent_type bb1 = detail::rtree::calc_extent(it, it_end);
             it = it_end;
             it_end = children.end();
             assert(it != it_end);
-            extent_type bb2 = detail::rtree::calc_extent<extent_type,decltype(it)>(it, it_end);
+            extent_type bb2 = detail::rtree::calc_extent(it, it_end);
 
             // Compute the half margins of the first and second groups.
             key_type margin1 = detail::rtree::calc_half_margin<extent_type>(bb1);
@@ -1660,8 +1660,8 @@ size_t rtree<_Key,_Value,_Trait>::pick_optimal_distribution(dir_store_type& chil
         // The first group contains m-1+dist entries, while the second
         // group contains the rest.
         distribution dist_data(dist, children);
-        extent_type bb1 = detail::rtree::calc_extent<extent_type,decltype(dist_data.g1.begin)>(dist_data.g1.begin, dist_data.g1.end);
-        extent_type bb2 = detail::rtree::calc_extent<extent_type,decltype(dist_data.g2.begin)>(dist_data.g2.begin, dist_data.g2.end);
+        extent_type bb1 = detail::rtree::calc_extent(dist_data.g1.begin, dist_data.g1.end);
+        extent_type bb2 = detail::rtree::calc_extent(dist_data.g2.begin, dist_data.g2.end);
 
         key_type overlap = detail::rtree::calc_intersection<extent_type>(bb1, bb2);
         min_overlap_dist.assign(overlap, dist);
