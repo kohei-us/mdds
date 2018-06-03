@@ -50,7 +50,8 @@ struct default_rtree_trait
 
     /**
      * Number of nodes to get re-inserted during forced reinsertion.  This
-     * should be roughly 30% of the maximum node size + 1.
+     * should be roughly 30% of max_node_size + 1, and should not be greater
+     * than max_node_size - min_node_size + 1.
      */
     constexpr static size_t reinsertion_size = 30;
 };

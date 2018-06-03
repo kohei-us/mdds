@@ -980,6 +980,8 @@ void rtree<_Key,_Value,_Trait>::insert(node_store&& ns, std::unordered_set<size_
                 reinserted_depths->insert(depth);
                 perform_forced_reinsertion(dir_ns, *reinserted_depths);
             }
+            else
+                split_node(dir_ns);
         }
         else
             split_node(dir_ns);
@@ -1566,12 +1568,7 @@ void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
     ns->count -= nodes_to_reinsert.size();
     assert(ns->count == dir->children.size());
 
-    // Invalidate the node pointers.
-    for (node_store& this_ns : dir->children)
-    {
-        this_ns.valid_pointer = false;
-        this_ns.reset_parent_pointers();
-    }
+    // No need to invalidate pointers since they are all value nodes.
 
     if (ns->pack())
         ns->pack_upward();
@@ -1586,8 +1583,6 @@ void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
 
         insert(std::move(ns_to_reinsert), &reinserted_depth);
     }
-
-    throw std::runtime_error("TESTME");
 }
 
 template<typename _Key, typename _Value, typename _Trait>

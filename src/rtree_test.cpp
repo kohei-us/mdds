@@ -60,6 +60,17 @@ struct tiny_trait_2d
     constexpr static size_t reinsertion_size = 2;
 };
 
+struct tiny_trait_2d_forced_reinsertion
+{
+    constexpr static size_t dimensions = 2;
+    constexpr static size_t min_node_size = 2;
+    constexpr static size_t max_node_size = 5;
+    constexpr static size_t max_tree_depth = 100;
+
+    constexpr static bool enable_forced_reinsertion = true;
+    constexpr static size_t reinsertion_size = 2;
+};
+
 void rtree_test_intersection()
 {
     stack_printer __stack_printer__("::rtree_test_intersection");
@@ -555,6 +566,26 @@ void rtree_test_erase_directories()
     assert(tree.size() == 0);
 }
 
+void rtree_test_forced_reinsertion()
+{
+    stack_printer __stack_printer__("::rtree_test_forced_reinsertion");
+
+    using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
+
+    rt_type tree;
+
+    for (int16_t i = 0; i < 6; ++i)
+    {
+        int16_t w = 1;
+        std::ostringstream os;
+        os << "foo" << i;
+        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
+    }
+
+    assert(tree.size() == 6);
+    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
@@ -566,6 +597,7 @@ int main(int argc, char** argv)
     rtree_test_node_split();
     rtree_test_directory_node_split();
     rtree_test_erase_directories();
+    rtree_test_forced_reinsertion();
 
     return EXIT_SUCCESS;
 }
