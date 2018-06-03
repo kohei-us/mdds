@@ -932,6 +932,9 @@ rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_leaf_directory_no
 {
     static_assert(trait_type::min_node_size <= trait_type::max_node_size / 2,
         "Minimum node size must be less than half of the maximum node size.");
+
+    static_assert(trait_type::reinsertion_size <= (trait_type::max_node_size - trait_type::min_node_size + 1),
+        "Reinsertion size is too large.");
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1499,6 +1502,8 @@ template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
     node_store* ns, std::unordered_set<size_t>& reinserted_depth)
 {
+    assert(ns->count == trait_type::max_node_size+1);
+
     // Compute the distance between the centers of the value extents and the
     // center of the extent of the parent directory.
 
@@ -1507,7 +1512,8 @@ void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
     directory_node* dir = ns->get_directory_node();
     assert(dir);
 
-    std::vector<detail::rtree::reinsertion_bucket<key_type>> buckets;
+    using buckets_type = std::vector<detail::rtree::reinsertion_bucket<key_type>>;
+    buckets_type buckets;
     buckets.reserve(ns->count);
 
     size_t pos = 0;
@@ -1522,11 +1528,66 @@ void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
 
     // Sort the value entries in decreasing order of their distances.
 
+    std::sort(buckets.begin(), buckets.end(),
+        [](const typename buckets_type::value_type& left, const typename buckets_type::value_type& right) -> bool
+        {
+            return left.distance < right.distance;
+        }
+    );
+
+    for (const auto& b : buckets)
+    {
+        std::cout << __FILE__ << ":" << __LINE__ << " (rtree:perform_forced_reinsertion): src_pos="
+            << b.src_pos << "; distance=" << b.distance << "; extent=" << dir->children[b.src_pos].extent.to_string() << std::endl;
+    }
+
+    assert(trait_type::reinsertion_size < buckets.size());
+
     // Remove the first set of entries from the parent directory.
+    std::deque<node_store> nodes_to_reinsert(trait_type::reinsertion_size);
+
+    for (size_t i = 0; i < trait_type::reinsertion_size; ++i)
+    {
+        size_t pos = buckets[i].src_pos;
+        std::cout << __FILE__ << ":" << __LINE__ << " (rtree:perform_forced_reinsertion): removing " << pos << std::endl;
+
+        dir->children[pos].swap(nodes_to_reinsert[i]);
+    }
+
+    // Erase the swapped out nodes from the directory.
+    auto it = std::remove_if(dir->children.begin(), dir->children.end(),
+        [](const node_store& this_ns) -> bool
+        {
+            return this_ns.type == node_type::unspecified;
+        }
+    );
+
+    dir->children.erase(it, dir->children.end());
+    ns->count -= nodes_to_reinsert.size();
+    assert(ns->count == dir->children.size());
+
+    // Invalidate the node pointers.
+    for (node_store& this_ns : dir->children)
+    {
+        this_ns.valid_pointer = false;
+        this_ns.reset_parent_pointers();
+    }
+
+    if (ns->pack())
+        ns->pack_upward();
 
     // Re-insert the values from the closest to farthest.
 
-    throw std::runtime_error("WIP");
+    while (!nodes_to_reinsert.empty())
+    {
+        node_store ns_to_reinsert(std::move(nodes_to_reinsert.front()));
+        nodes_to_reinsert.pop_front();
+        std::cout << __FILE__ << ":" << __LINE__ << " (rtree:perform_forced_reinsertion): re-insert " << ns_to_reinsert.extent.to_string() << std::endl;
+
+        insert(std::move(ns_to_reinsert), &reinserted_depth);
+    }
+
+    throw std::runtime_error("TESTME");
 }
 
 template<typename _Key, typename _Value, typename _Trait>

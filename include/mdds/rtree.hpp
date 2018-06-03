@@ -47,7 +47,12 @@ struct default_rtree_trait
     constexpr static size_t max_tree_depth = 100;
 
     constexpr static bool enable_forced_reinsertion = false;
-    constexpr static size_t reinsertion_rate = 30;
+
+    /**
+     * Number of nodes to get re-inserted during forced reinsertion.  This
+     * should be roughly 30% of the maximum node size + 1.
+     */
+    constexpr static size_t reinsertion_size = 30;
 };
 
 enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };

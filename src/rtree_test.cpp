@@ -46,7 +46,7 @@ struct tiny_trait_1d
     constexpr static size_t max_tree_depth = 100;
 
     constexpr static bool enable_forced_reinsertion = false;
-    constexpr static size_t reinsertion_rate = 30;
+    constexpr static size_t reinsertion_size = 2;
 };
 
 struct tiny_trait_2d
@@ -57,7 +57,7 @@ struct tiny_trait_2d
     constexpr static size_t max_tree_depth = 100;
 
     constexpr static bool enable_forced_reinsertion = false;
-    constexpr static size_t reinsertion_rate = 30;
+    constexpr static size_t reinsertion_size = 2;
 };
 
 void rtree_test_intersection()
@@ -367,6 +367,8 @@ void rtree_test_node_split()
     }
 
     assert(tree.size() == 6);
+
+    tree.dump_tree();
 
     size_t count_values = 0;
     size_t count_leaf = 0;
