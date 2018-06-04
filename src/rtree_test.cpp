@@ -572,18 +572,41 @@ void rtree_test_forced_reinsertion()
 
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
 
-    rt_type tree;
-
-    for (int16_t i = 0; i < 6; ++i)
     {
-        int16_t w = 1;
-        std::ostringstream os;
-        os << "foo" << i;
-        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
+        rt_type tree;
+
+        for (int16_t i = 0; i < 6; ++i)
+        {
+            int16_t w = 1;
+            std::ostringstream os;
+            os << "foo" << i;
+            tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
+        }
+
+        assert(tree.size() == 6);
+        tree.check_integrity(rt_type::integrity_check_type::whole_tree);
     }
 
-    assert(tree.size() == 6);
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    {
+        rt_type tree;
+
+        for (int16_t x = 0; x < 5; ++x)
+        {
+            for (int16_t y = 0; y < 5; ++y)
+            {
+                std::ostringstream os;
+                int16_t x2 = x * 2;
+                int16_t y2 = y * 2;
+                os << "(x=" << x2 << ",y=" << y2 << ")";
+                std::string v = os.str();
+                int16_t xe = x2 + 2, ye = y2 + 2;
+                tree.insert({x2, y2}, {xe, ye}, v);
+            }
+        }
+
+        tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+        assert(tree.size() == 25);
+    }
 }
 
 int main(int argc, char** argv)
