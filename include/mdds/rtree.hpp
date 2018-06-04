@@ -350,6 +350,11 @@ public:
     size_t size() const;
 
     /**
+     * Empty the entire container.
+     */
+    void clear();
+
+    /**
      * Walk down the entire tree depth first.
      *
      * @func function or function object that gets called at each node in the

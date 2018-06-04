@@ -1188,6 +1188,13 @@ size_t rtree<_Key,_Value,_Trait>::size() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::clear()
+{
+    node_store new_root = node_store::create_leaf_directory_node();
+    m_root.swap(new_root);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 template<typename _Func>
 void rtree<_Key,_Value,_Trait>::walk(_Func func) const
 {
