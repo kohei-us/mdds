@@ -35,7 +35,7 @@
 
 #include "test_global.hpp"
 
-using namespace mdds;
+using namespace mdds::draft;
 using namespace std;
 
 struct tiny_trait_1d
@@ -255,7 +255,7 @@ void rtree_test_area_enlargement()
 void rtree_test_basic_search()
 {
     stack_printer __stack_printer__("::rtree_test_basic_search");
-    using rt_type = mdds::rtree<int16_t, std::string>;
+    using rt_type = rtree<int16_t, std::string>;
 
     rt_type tree;
     rt_type::extent_type expected_bb;
@@ -319,7 +319,7 @@ void rtree_test_basic_search()
 void rtree_test_basic_erase()
 {
     stack_printer __stack_printer__("::rtree_test_basic_erase");
-    using rt_type = mdds::rtree<int16_t, std::string>;
+    using rt_type = rtree<int16_t, std::string>;
 
     rt_type tree;
     tree.insert({-2,-2}, {2,2}, "erase me");

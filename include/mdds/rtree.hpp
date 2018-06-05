@@ -35,7 +35,7 @@
 #include <string>
 #include <unordered_set>
 
-namespace mdds {
+namespace mdds { namespace draft {
 
 namespace detail { namespace rtree {
 
@@ -417,7 +417,7 @@ private:
     node_store m_root;
 };
 
-}
+}}
 
 #include "rtree_def.inl"
 
