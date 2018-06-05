@@ -146,6 +146,15 @@ to install it to a non-default location.
 API Incompatibility Notes
 =========================
 
+1.4
+---
+
+### multi_type_matrix
+
+* The walk() methods previously took the function object by reference, but the
+  newer versions now take the function object by value.  With this change, it
+  is now possible to pass inline lambda function.
+
 1.2
 ---
 
