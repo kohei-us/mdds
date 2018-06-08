@@ -379,7 +379,7 @@ void rtree_test_node_split()
 
     assert(tree.size() == 6);
 
-    tree.dump_tree();
+    cout << tree.export_tree(rt_type::export_tree_type::formatted_node_properties) << endl;
 
     size_t count_values = 0;
     size_t count_leaf = 0;
@@ -533,7 +533,7 @@ void rtree_test_erase_directories()
 
     assert(tree.size() == 25);
     tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
-    tree.dump_tree();
+    cout << tree.export_tree(rt_type::export_tree_type::formatted_node_properties) << endl;
 
     size_t expected_size = 25;
 

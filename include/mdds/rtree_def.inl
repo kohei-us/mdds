@@ -1390,9 +1390,25 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::dump_tree() const
+std::string rtree<_Key,_Value,_Trait>::export_tree(export_tree_type mode) const
 {
-    std::function<void(const node_store*, int)> func_descend = [&func_descend](const node_store* ns, int level)
+    switch (mode)
+    {
+        case export_tree_type::formatted_node_properties:
+            return export_tree_formatted();
+        case export_tree_type::extent_as_obj:
+            return export_tree_extent_as_obj();
+        default:
+            throw std::runtime_error("unhandled export tree type.");
+    }
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+std::string rtree<_Key,_Value,_Trait>::export_tree_formatted() const
+{
+    std::ostringstream os;
+
+    std::function<void(const node_store*, int)> func_descend = [&func_descend,&os](const node_store* ns, int level)
     {
         std::string indent;
         for (int i = 0; i < level; ++i)
@@ -1400,7 +1416,7 @@ void rtree<_Key,_Value,_Trait>::dump_tree() const
 
         extent_type parent_bb;
 
-        std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->extent.to_string() << std::endl;
+        os << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->extent.to_string() << std::endl;
 
         switch (ns->type)
         {
@@ -1424,6 +1440,17 @@ void rtree<_Key,_Value,_Trait>::dump_tree() const
     };
 
     func_descend(&m_root, 0);
+
+    return os.str();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_obj() const
+{
+    if (trait_type::dimensions != 2u)
+        throw size_error("Only 2-dimensional trees are supported for now.");
+
+    throw std::runtime_error("TODO: implement this.");
 }
 
 template<typename _Key, typename _Value, typename _Trait>

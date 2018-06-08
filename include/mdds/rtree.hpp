@@ -58,6 +58,28 @@ struct default_rtree_trait
 
 enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
 
+enum class export_tree_type
+{
+    /**
+     * Textural representation of a tree structure.  Indent levels represent
+     * depths, and each line represents a single node.
+     */
+    formatted_node_properties,
+
+    /**
+     * The extents of all directory and value nodes are exported as Wavefront
+     * .obj format.  Only 2 dimensional trees are supported for now.
+     *
+     * For a 2-dimensional tree, each depth is represented by a 2D plane
+     * filled with rectangles representing the extents of either value or
+     * directory nodes at that depth level.  The depth planes are then stacked
+     * vertically.
+     */
+    extent_as_obj
+};
+
+enum class integrity_check_type { throw_on_fail, whole_tree };
+
 }}
 
 template<typename _Key, typename _Value, typename _Trait = detail::rtree::default_rtree_trait>
@@ -108,8 +130,8 @@ public:
     };
 
     using node_type = detail::rtree::node_type;
-
-    enum class integrity_check_type { throw_on_fail, whole_tree };
+    using export_tree_type = detail::rtree::export_tree_type;
+    using integrity_check_type = detail::rtree::integrity_check_type;
 
     struct node_properties
     {
@@ -372,9 +394,20 @@ public:
      */
     void check_integrity(integrity_check_type mode) const;
 
-    void dump_tree() const;
+    /**
+     * Export the structure of a tree in textural format.
+     *
+     * @param mode specify the format in which to represent the structure of a
+     *             tree.
+     *
+     * @return string representation of the tree structure.
+     */
+    std::string export_tree(export_tree_type mode) const;
 
 private:
+
+    std::string export_tree_formatted() const;
+    std::string export_tree_extent_as_obj() const;
 
     void insert(node_store&& ns, std::unordered_set<size_t>* reinserted_depths);
     void insert_dir(node_store&& ns, size_t max_depth);
