@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
 
 #include "test_global.hpp"
@@ -606,6 +607,9 @@ void rtree_test_forced_reinsertion()
 
     tree.check_integrity(rt_type::integrity_check_type::whole_tree);
     assert(tree.size() == 25);
+
+    std::ofstream fout("rtree-test-forced-reinsertion.obj");
+    fout << tree.export_tree(rt_type::export_tree_type::extent_as_obj);
 }
 
 int main(int argc, char** argv)

@@ -1450,7 +1450,52 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_obj() const
     if (trait_type::dimensions != 2u)
         throw size_error("Only 2-dimensional trees are supported for now.");
 
-    throw std::runtime_error("TODO: implement this.");
+    double unit_height =
+        ((m_root.extent.end.d[0] - m_root.extent.start.d[0]) +
+         (m_root.extent.end.d[1] - m_root.extent.start.d[1])) / 2;
+
+    std::ostringstream os;
+    size_t counter = 0;
+
+    std::function<void(const node_store*, int)> func_descend = [&](const node_store* ns, int level)
+    {
+        size_t offset = counter * 4;
+        const point_type& s = ns->extent.start;
+        const point_type& e = ns->extent.end;
+
+        os << "o extent " << counter << " (level " << level << ") " << s.to_string() << " - " << e.to_string() << std::endl;
+        os << "v " << s.d[0] << ' ' << (level*unit_height) << ' ' << s.d[1] << std::endl;
+        os << "v " << s.d[0] << ' ' << (level*unit_height) << ' ' << e.d[1] << std::endl;
+        os << "v " << e.d[0] << ' ' << (level*unit_height) << ' ' << e.d[1] << std::endl;
+        os << "v " << e.d[0] << ' ' << (level*unit_height) << ' ' << s.d[1] << std::endl;
+        os << "f " << (offset+1) << ' ' << (offset+2) << ' ' << (offset+3) << ' ' << (offset+4) << std::endl;
+
+        ++counter;
+
+        switch (ns->type)
+        {
+            case node_type::directory_leaf:
+            case node_type::directory_nonleaf:
+            {
+                const directory_node* dir =
+                    static_cast<const directory_node*>(ns->node_ptr);
+
+                for (const node_store& ns_child : dir->children)
+                    func_descend(&ns_child, level+1);
+
+                break;
+            }
+            case node_type::value:
+                // Do nothing.
+                break;
+            default:
+                throw integrity_error("Unexpected node type!");
+        }
+    };
+
+    func_descend(&m_root, 0);
+
+    return os.str();
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1571,12 +1616,6 @@ void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
         }
     );
 
-    for (const auto& b : buckets)
-    {
-        std::cout << __FILE__ << ":" << __LINE__ << " (rtree:perform_forced_reinsertion): src_pos="
-            << b.src_pos << "; distance=" << b.distance << "; extent=" << dir->children[b.src_pos].extent.to_string() << std::endl;
-    }
-
     assert(trait_type::reinsertion_size < buckets.size());
 
     // Remove the first set of entries from the parent directory.
@@ -1585,7 +1624,6 @@ void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
     for (size_t i = 0; i < trait_type::reinsertion_size; ++i)
     {
         size_t pos = buckets[i].src_pos;
-        std::cout << __FILE__ << ":" << __LINE__ << " (rtree:perform_forced_reinsertion): removing " << pos << std::endl;
 
         dir->children[pos].swap(nodes_to_reinsert[i]);
     }
@@ -1613,7 +1651,6 @@ void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
     {
         node_store ns_to_reinsert(std::move(nodes_to_reinsert.front()));
         nodes_to_reinsert.pop_front();
-        std::cout << __FILE__ << ":" << __LINE__ << " (rtree:perform_forced_reinsertion): re-insert " << ns_to_reinsert.extent.to_string() << std::endl;
 
         insert(std::move(ns_to_reinsert), &reinserted_depth);
     }
