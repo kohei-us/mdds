@@ -938,8 +938,28 @@ rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_leaf_directory_no
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::rtree(rtree&& other) : m_root(std::move(other.m_root))
+{
+    // The root node must be a valid directory at all times.
+    other.m_root = node_store::create_leaf_directory_node();
+
+    // Since the moved root has its memory location changed, we need to update
+    // the parent pointers in its child nodes.
+    m_root.valid_pointer = false;
+    m_root.reset_parent_pointers();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::~rtree()
 {
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>& rtree<_Key,_Value,_Trait>::operator= (rtree&& other)
+{
+    rtree tmp(std::move(other));
+    tmp.swap(*this);
+    return *this;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1185,6 +1205,16 @@ size_t rtree<_Key,_Value,_Trait>::size() const
     );
 
     return n;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::swap(rtree& other)
+{
+    m_root.swap(other.m_root);
+    m_root.valid_pointer = false;
+    other.m_root.valid_pointer = false;
+    m_root.reset_parent_pointers();
+    other.m_root.reset_parent_pointers();
 }
 
 template<typename _Key, typename _Value, typename _Trait>

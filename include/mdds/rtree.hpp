@@ -349,10 +349,13 @@ public:
     };
 
     rtree();
+    rtree(rtree&& other);
     ~rtree();
 
     rtree(const rtree&) = delete;
     rtree& operator= (const rtree&) = delete;
+
+    rtree& operator= (rtree&& other);
 
     void insert(const point_type& start, const point_type& end, value_type value);
 
@@ -370,6 +373,13 @@ public:
      * @return number of value nodes currently in the tree.
      */
     size_t size() const;
+
+    /**
+     * Swap the content of the tree with another instance.
+     *
+     * @param other another instance to swap the content with.
+     */
+    void swap(rtree& other);
 
     /**
      * Empty the entire container.

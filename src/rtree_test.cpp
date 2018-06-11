@@ -612,6 +612,50 @@ void rtree_test_forced_reinsertion()
     fout << tree.export_tree(rt_type::export_tree_type::extent_as_obj);
 }
 
+void rtree_test_move()
+{
+    stack_printer __stack_printer__("::rtree_test_move");
+
+    using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
+
+    rt_type tree;
+
+    for (int16_t x = 0; x < 5; ++x)
+    {
+        for (int16_t y = 0; y < 5; ++y)
+        {
+            std::ostringstream os;
+            int16_t x2 = x * 2;
+            int16_t y2 = y * 2;
+            os << "(x=" << x2 << ",y=" << y2 << ")";
+            std::string v = os.str();
+            int16_t xe = x2 + 2, ye = y2 + 2;
+            tree.insert({x2, y2}, {xe, ye}, v);
+        }
+    }
+
+    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    assert(tree.size() == 25);
+
+    // moved via constructor.
+    rt_type tree_moved(std::move(tree));
+    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree_moved.check_integrity(rt_type::integrity_check_type::whole_tree);
+    assert(tree.empty());
+    assert(tree.size() == 0);
+    assert(tree_moved.size() == 25);
+
+    // moved via assignment operator.
+    rt_type tree_moved_2;
+    tree_moved_2.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree_moved_2 = std::move(tree_moved);
+    tree_moved.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree_moved_2.check_integrity(rt_type::integrity_check_type::whole_tree);
+    assert(tree_moved.empty());
+    assert(tree_moved.size() == 0);
+    assert(tree_moved_2.size() == 25);
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
@@ -624,6 +668,7 @@ int main(int argc, char** argv)
     rtree_test_directory_node_split();
     rtree_test_erase_directories();
     rtree_test_forced_reinsertion();
+    rtree_test_move();
 
     return EXIT_SUCCESS;
 }
