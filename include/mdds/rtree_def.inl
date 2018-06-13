@@ -1482,7 +1482,7 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_obj() const
 
     double unit_height =
         ((m_root.extent.end.d[0] - m_root.extent.start.d[0]) +
-         (m_root.extent.end.d[1] - m_root.extent.start.d[1])) / 2;
+         (m_root.extent.end.d[1] - m_root.extent.start.d[1])) / 5;
 
     std::ostringstream os;
     size_t counter = 0;

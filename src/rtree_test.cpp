@@ -72,6 +72,19 @@ struct tiny_trait_2d_forced_reinsertion
     constexpr static size_t reinsertion_size = 2;
 };
 
+class only_movable
+{
+    double m_value;
+public:
+    only_movable() : m_value(0.0) {}
+    only_movable(double v) : m_value(v) {}
+    only_movable(const only_movable&) = delete;
+    only_movable(only_movable&& other) : m_value(other.m_value)
+    {
+        other.m_value = 0.0;
+    }
+};
+
 void rtree_test_intersection()
 {
     stack_printer __stack_printer__("::rtree_test_intersection");
@@ -656,6 +669,63 @@ void rtree_test_move()
     assert(tree_moved_2.size() == 25);
 }
 
+/**
+ * Make sure we can 1) store objects that are only movable but not copyable,
+ * and 2) the whole tree can still be moved.
+ */
+void rtree_test_move_custom_type()
+{
+    stack_printer __stack_printer__("::rtree_test_move_custom_type");
+
+    using rt_type = rtree<double, only_movable, tiny_trait_2d_forced_reinsertion>;
+    using point_type = rt_type::point_type;
+
+    {
+        // Make sure you can actually move an object of this type.
+        only_movable v1(1.5);
+        only_movable v2(std::move(v1));
+    }
+
+    struct input
+    {
+        point_type start;
+        point_type end;
+        double value;
+    };
+
+    std::vector<input> inputs =
+    {
+        {    {0.0, 0.0},    {1.0, 1.0},   1.0 },
+        {    {2.0, 2.0},    {2.1, 2.1},   2.4 },
+        { {100.0, 80.0}, {101.0, 85.0}, 100.0 },
+        {   {1.0, 75.0},   {2.0, 78.0},  65.0 },
+        {   {1.0, 80.0},   {2.0, 82.0},  68.0 },
+        {   {1.2,  1.0},    {2.2, 1.5},   2.1 },
+        {   {2.2,  2.2},    {2.3, 2.4},   3.5 },
+        {   {3.0,  3.0},    {3.3, 3.4},   3.8 },
+        {   {4.0,  4.0},   {8.3, 12.4},  13.8 },
+        {   {3.0,  5.0},   {4.3, 11.4},  13.9 },
+    };
+
+    rt_type tree;
+
+    for (const input& i : inputs)
+        tree.insert(i.start, i.end, only_movable(i.value));
+
+    assert(tree.size() == inputs.size());
+
+    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    std::ofstream fout("rtree-test-move-custom-type.obj");
+    fout << tree.export_tree(rt_type::export_tree_type::extent_as_obj);
+
+    // Now move the tree.
+    rt_type tree_moved = std::move(tree);
+    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree_moved.check_integrity(rt_type::integrity_check_type::whole_tree);
+    assert(tree.empty());
+    assert(tree_moved.size() == inputs.size());
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
@@ -669,6 +739,7 @@ int main(int argc, char** argv)
     rtree_test_erase_directories();
     rtree_test_forced_reinsertion();
     rtree_test_move();
+    rtree_test_move_custom_type();
 
     return EXIT_SUCCESS;
 }
