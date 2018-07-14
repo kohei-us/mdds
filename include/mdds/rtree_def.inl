@@ -487,6 +487,49 @@ rtree<_Key,_Value,_Trait>::node_store::~node_store()
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store
+rtree<_Key,_Value,_Trait>::node_store::clone() const
+{
+    switch (type)
+    {
+        case node_type::directory_leaf:
+        {
+            const directory_node* dn = static_cast<const directory_node*>(node_ptr);
+            node_store cloned = create_leaf_directory_node();
+            directory_node* dir = cloned.get_directory_node();
+            assert(dir);
+            for (const node_store& ns : dn->children)
+                dir->children.push_back(ns.clone());
+
+            cloned.count = count;
+            cloned.extent = extent;
+            return cloned;
+        }
+        case node_type::directory_nonleaf:
+        {
+            const directory_node* dn = static_cast<const directory_node*>(node_ptr);
+            node_store cloned = create_nonleaf_directory_node();
+            directory_node* dir = cloned.get_directory_node();
+            assert(dir);
+            for (const node_store& ns : dn->children)
+                dir->children.push_back(ns.clone());
+
+            cloned.count = count;
+            cloned.extent = extent;
+            return cloned;
+        }
+        case node_type::value:
+        {
+            const value_node* vn = static_cast<const value_node*>(node_ptr);
+            return create_value_node(extent, vn->value);
+        }
+        case node_type::unspecified:
+        default:
+            assert(!"node::~node: unknown node type!");
+    }
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store
 rtree<_Key,_Value,_Trait>::node_store::create_leaf_directory_node()
 {
     node_store ret(node_type::directory_leaf, extent_type(), new directory_node);
@@ -945,6 +988,13 @@ rtree<_Key,_Value,_Trait>::rtree(rtree&& other) : m_root(std::move(other.m_root)
 
     // Since the moved root has its memory location changed, we need to update
     // the parent pointers in its child nodes.
+    m_root.valid_pointer = false;
+    m_root.reset_parent_pointers();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::rtree(const rtree& other) : m_root(other.m_root.clone())
+{
     m_root.valid_pointer = false;
     m_root.reset_parent_pointers();
 }

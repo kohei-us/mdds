@@ -726,6 +726,44 @@ void rtree_test_move_custom_type()
     assert(tree_moved.size() == inputs.size());
 }
 
+void rtree_test_copy()
+{
+    stack_printer __stack_printer__("::rtree_test_copy");
+
+    using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
+    using point_type = rt_type::point_type;
+
+    struct input
+    {
+        point_type start;
+        point_type end;
+        double value;
+    };
+
+    std::vector<input> inputs =
+    {
+        {    {0.0, 0.0},    {1.0, 1.0},   1.0 },
+        {    {2.0, 2.0},    {2.1, 2.1},   2.4 },
+        { {100.0, 80.0}, {101.0, 85.0}, 100.0 },
+        {   {1.0, 75.0},   {2.0, 78.0},  65.0 },
+        {   {1.0, 80.0},   {2.0, 82.0},  68.0 },
+        {   {1.2,  1.0},    {2.2, 1.5},   2.1 },
+        {   {2.2,  2.2},    {2.3, 2.4},   3.5 },
+        {   {3.0,  3.0},    {3.3, 3.4},   3.8 },
+        {   {4.0,  4.0},   {8.3, 12.4},  13.8 },
+        {   {3.0,  5.0},   {4.3, 11.4},  13.9 },
+    };
+
+    rt_type tree;
+    for (const input& i : inputs)
+        tree.insert(i.start, i.end, i.value);
+
+    auto copied(tree);
+
+    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    copied.check_integrity(rt_type::integrity_check_type::whole_tree);
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
@@ -740,6 +778,7 @@ int main(int argc, char** argv)
     rtree_test_forced_reinsertion();
     rtree_test_move();
     rtree_test_move_custom_type();
+    rtree_test_copy();
 
     return EXIT_SUCCESS;
 }

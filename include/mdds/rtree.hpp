@@ -162,6 +162,8 @@ private:
         node_store(node_type type, const extent_type& extent, node* node_ptr);
         ~node_store();
 
+        node_store clone() const;
+
         static node_store create_leaf_directory_node();
         static node_store create_nonleaf_directory_node();
         static node_store create_value_node(const extent_type& extent, value_type v);
@@ -350,9 +352,9 @@ public:
 
     rtree();
     rtree(rtree&& other);
+    rtree(const rtree& other);
     ~rtree();
 
-    rtree(const rtree&) = delete;
     rtree& operator= (const rtree&) = delete;
 
     rtree& operator= (rtree&& other);
