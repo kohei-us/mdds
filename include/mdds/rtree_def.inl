@@ -636,7 +636,7 @@ void rtree<_Key,_Value,_Trait>::node_store::swap(node_store& other)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::node_store::reset_parent_pointers()
+void rtree<_Key,_Value,_Trait>::node_store::reset_parent_pointers_of_children()
 {
     if (valid_pointer)
         return;
@@ -648,7 +648,7 @@ void rtree<_Key,_Value,_Trait>::node_store::reset_parent_pointers()
     for (node_store& ns : dir->children)
     {
         ns.parent = this;
-        ns.reset_parent_pointers();
+        ns.reset_parent_pointers_of_children();
     }
 
     valid_pointer = true;
@@ -989,14 +989,14 @@ rtree<_Key,_Value,_Trait>::rtree(rtree&& other) : m_root(std::move(other.m_root)
     // Since the moved root has its memory location changed, we need to update
     // the parent pointers in its child nodes.
     m_root.valid_pointer = false;
-    m_root.reset_parent_pointers();
+    m_root.reset_parent_pointers_of_children();
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::rtree(const rtree& other) : m_root(other.m_root.clone())
 {
     m_root.valid_pointer = false;
-    m_root.reset_parent_pointers();
+    m_root.reset_parent_pointers_of_children();
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1089,7 +1089,7 @@ void rtree<_Key,_Value,_Trait>::insert_dir(node_store&& ns, size_t max_depth)
     ns.valid_pointer = false;
     dir->children.push_back(std::move(ns));
     ++dir_ns->count;
-    dir->children.back().reset_parent_pointers();
+    dir->children.back().reset_parent_pointers_of_children();
 
     if (dir_ns->exceeds_capacity())
     {
@@ -1170,7 +1170,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     assert(erased);
 
     dir_ns->valid_pointer = false;
-    dir_ns->reset_parent_pointers();
+    dir_ns->reset_parent_pointers_of_children();
     dir_ns->pack();
 
     orphan_node_entries_type orphan_dir_nodes;
@@ -1195,7 +1195,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
         --depth;
         erased = dir_ns->erase_child(dir_ns_child);
         assert(erased);
-        dir_ns->reset_parent_pointers();
+        dir_ns->reset_parent_pointers_of_children();
         dir_ns->pack();
     }
 
@@ -1225,7 +1225,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
         new_root.parent = nullptr;
         m_root.swap(new_root);
         m_root.valid_pointer = false;
-        m_root.reset_parent_pointers();
+        m_root.reset_parent_pointers_of_children();
     }
 }
 
@@ -1263,8 +1263,8 @@ void rtree<_Key,_Value,_Trait>::swap(rtree& other)
     m_root.swap(other.m_root);
     m_root.valid_pointer = false;
     other.m_root.valid_pointer = false;
-    m_root.reset_parent_pointers();
-    other.m_root.reset_parent_pointers();
+    m_root.reset_parent_pointers_of_children();
+    other.m_root.reset_parent_pointers_of_children();
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1629,7 +1629,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         m_root.pack();
 
         for (node_store& ns_child : dir_root->children)
-            ns_child.reset_parent_pointers();
+            ns_child.reset_parent_pointers_of_children();
     }
     else
     {
@@ -1647,8 +1647,8 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         // has been inserted into the buffer, as the pointer value of the node
         // changes after the insertion.
         ns->valid_pointer = false;
-        ns->reset_parent_pointers();
-        dir_parent->children.back().reset_parent_pointers();
+        ns->reset_parent_pointers_of_children();
+        dir_parent->children.back().reset_parent_pointers_of_children();
 
         if (ns_parent->count > trait_type::max_node_size)
             // The parent node is overfilled.  Split it and keep working upward.

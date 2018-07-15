@@ -194,7 +194,7 @@ private:
          * location of this node has been invalidated.  Run the tree
          * recursively until no more invalid pointers have been found.
          */
-        void reset_parent_pointers();
+        void reset_parent_pointers_of_children();
 
         directory_node* get_directory_node();
         const directory_node* get_directory_node() const;
