@@ -196,6 +196,13 @@ private:
          */
         void reset_parent_pointers_of_children();
 
+        /**
+         * Update its parent pointer and all its child nodes' parent pointers
+         * if the memory location of this node has been invalidated. Run the
+         * tree recursively until no more invalid pointers have been found.
+         */
+        void reset_parent_pointers();
+
         directory_node* get_directory_node();
         const directory_node* get_directory_node() const;
 

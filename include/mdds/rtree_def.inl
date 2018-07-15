@@ -655,6 +655,13 @@ void rtree<_Key,_Value,_Trait>::node_store::reset_parent_pointers_of_children()
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::node_store::reset_parent_pointers()
+{
+    valid_pointer = false;
+    reset_parent_pointers_of_children();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::directory_node*
 rtree<_Key,_Value,_Trait>::node_store::get_directory_node()
 {
@@ -988,15 +995,13 @@ rtree<_Key,_Value,_Trait>::rtree(rtree&& other) : m_root(std::move(other.m_root)
 
     // Since the moved root has its memory location changed, we need to update
     // the parent pointers in its child nodes.
-    m_root.valid_pointer = false;
-    m_root.reset_parent_pointers_of_children();
+    m_root.reset_parent_pointers();
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::rtree(const rtree& other) : m_root(other.m_root.clone())
 {
-    m_root.valid_pointer = false;
-    m_root.reset_parent_pointers_of_children();
+    m_root.reset_parent_pointers();
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1169,8 +1174,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
     erased = dir_ns->erase_child(child_ns);
     assert(erased);
 
-    dir_ns->valid_pointer = false;
-    dir_ns->reset_parent_pointers_of_children();
+    dir_ns->reset_parent_pointers();
     dir_ns->pack();
 
     orphan_node_entries_type orphan_dir_nodes;
@@ -1224,8 +1228,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
 
         new_root.parent = nullptr;
         m_root.swap(new_root);
-        m_root.valid_pointer = false;
-        m_root.reset_parent_pointers_of_children();
+        m_root.reset_parent_pointers();
     }
 }
 
@@ -1261,10 +1264,8 @@ template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::swap(rtree& other)
 {
     m_root.swap(other.m_root);
-    m_root.valid_pointer = false;
-    other.m_root.valid_pointer = false;
-    m_root.reset_parent_pointers_of_children();
-    other.m_root.reset_parent_pointers_of_children();
+    m_root.reset_parent_pointers();
+    other.m_root.reset_parent_pointers();
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1646,8 +1647,7 @@ void rtree<_Key,_Value,_Trait>::split_node(node_store* ns)
         // Update the parent pointer of the children _after_ the group 2 node
         // has been inserted into the buffer, as the pointer value of the node
         // changes after the insertion.
-        ns->valid_pointer = false;
-        ns->reset_parent_pointers_of_children();
+        ns->reset_parent_pointers();
         dir_parent->children.back().reset_parent_pointers_of_children();
 
         if (ns_parent->count > trait_type::max_node_size)
