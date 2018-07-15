@@ -489,32 +489,31 @@ template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store
 rtree<_Key,_Value,_Trait>::node_store::clone() const
 {
+    auto func_copy_dir = [this](node_store& cloned, const directory_node* src)
+    {
+        directory_node* dir = cloned.get_directory_node();
+        assert(dir);
+        for (const node_store& ns : src->children)
+            dir->children.push_back(ns.clone());
+
+        cloned.count = count;
+        cloned.extent = extent;
+    };
+
     switch (type)
     {
         case node_type::directory_leaf:
         {
-            const directory_node* dn = static_cast<const directory_node*>(node_ptr);
+            const directory_node* src = static_cast<const directory_node*>(node_ptr);
             node_store cloned = create_leaf_directory_node();
-            directory_node* dir = cloned.get_directory_node();
-            assert(dir);
-            for (const node_store& ns : dn->children)
-                dir->children.push_back(ns.clone());
-
-            cloned.count = count;
-            cloned.extent = extent;
+            func_copy_dir(cloned, src);
             return cloned;
         }
         case node_type::directory_nonleaf:
         {
-            const directory_node* dn = static_cast<const directory_node*>(node_ptr);
+            const directory_node* src = static_cast<const directory_node*>(node_ptr);
             node_store cloned = create_nonleaf_directory_node();
-            directory_node* dir = cloned.get_directory_node();
-            assert(dir);
-            for (const node_store& ns : dn->children)
-                dir->children.push_back(ns.clone());
-
-            cloned.count = count;
-            cloned.extent = extent;
+            func_copy_dir(cloned, src);
             return cloned;
         }
         case node_type::value:
