@@ -304,6 +304,29 @@ struct reinsertion_bucket
     size_t src_pos;
 };
 
+template<typename _NodePtrT>
+struct ptr_to_string
+{
+    using node_ptr_type = _NodePtrT;
+    using node_ptr_map_type = std::unordered_map<node_ptr_type, std::string>;
+
+    node_ptr_map_type node_ptr_map;
+
+    std::string operator() (node_ptr_type np) const
+    {
+        auto it = node_ptr_map.find(np);
+        return (it == node_ptr_map.end()) ? "(*, *)" : it->second;
+    }
+
+    ptr_to_string()
+    {
+        static_assert(std::is_pointer<node_ptr_type>::value, "Node pointer type must be a real pointer type.");
+    }
+
+    ptr_to_string(const ptr_to_string&) = delete;
+    ptr_to_string(ptr_to_string&& other) : node_ptr_map(std::move(other.node_ptr_map)) {}
+};
+
 }}
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1484,16 +1507,16 @@ std::string rtree<_Key,_Value,_Trait>::export_tree(export_tree_type mode) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-std::string rtree<_Key,_Value,_Trait>::export_tree_formatted() const
+detail::rtree::ptr_to_string<const typename rtree<_Key,_Value,_Trait>::node_store*>
+rtree<_Key,_Value,_Trait>::build_ptr_to_string_map() const
 {
-    using node_ptr_map_type = std::unordered_map<const node_store*, std::string>;
-    node_ptr_map_type node_ptr_map;
+    detail::rtree::ptr_to_string<const node_store*> func;
 
-    std::function<void(const node_store*, int, int)> func_build_node_ptr = [&func_build_node_ptr,&node_ptr_map](const node_store* ns, int level, int pos)
+    std::function<void(const node_store*, int, int)> func_build_node_ptr = [&func_build_node_ptr,&func](const node_store* ns, int level, int pos)
     {
         std::ostringstream os;
         os << "(" << level << ", " << pos << ")";
-        node_ptr_map.insert(std::make_pair(ns, os.str()));
+        func.node_ptr_map.insert(std::make_pair(ns, os.str()));
 
         switch (ns->type)
         {
@@ -1519,21 +1542,23 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_formatted() const
 
     func_build_node_ptr(&m_root, 0, 0);
 
+    return func;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+std::string rtree<_Key,_Value,_Trait>::export_tree_formatted() const
+{
+    auto func_ptr_to_string = build_ptr_to_string_map();
+
     std::ostringstream os;
 
-    std::function<std::string(const node_store*)> ptr_to_string = [&node_ptr_map](const node_store* ns) -> std::string
-    {
-        auto it = node_ptr_map.find(ns);
-        return (it == node_ptr_map.end()) ? "(*, *)" : it->second;
-    };
-
-    std::function<void(const node_store*, int)> func_descend = [&func_descend,&os,&ptr_to_string](const node_store* ns, int level)
+    std::function<void(const node_store*, int)> func_descend = [&func_descend,&os,&func_ptr_to_string](const node_store* ns, int level)
     {
         std::string indent;
         for (int i = 0; i < level; ++i)
             indent += "    ";
 
-        os << indent << "node: " << ptr_to_string(ns) << "; parent: " << ptr_to_string(ns->parent)
+        os << indent << "node: " << func_ptr_to_string(ns) << "; parent: " << func_ptr_to_string(ns->parent)
             << "; type: " << to_string(ns->type) << "; extent: " << ns->extent.to_string() << std::endl;
 
         switch (ns->type)

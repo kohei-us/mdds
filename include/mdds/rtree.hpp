@@ -81,6 +81,9 @@ enum class export_tree_type
 
 enum class integrity_check_type { throw_on_fail, whole_tree };
 
+template<typename _NodePtrT>
+struct ptr_to_string;
+
 }}
 
 template<typename _Key, typename _Value, typename _Trait = detail::rtree::default_rtree_trait>
@@ -425,6 +428,8 @@ public:
     std::string export_tree(export_tree_type mode) const;
 
 private:
+
+    detail::rtree::ptr_to_string<const node_store*> build_ptr_to_string_map() const;
 
     std::string export_tree_formatted() const;
     std::string export_tree_extent_as_obj() const;
