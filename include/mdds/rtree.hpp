@@ -429,6 +429,11 @@ public:
 
 private:
 
+    /**
+     * Build and return a callable function object that you can call in order
+     * to convert node's memory location to a normalized unique string still
+     * representative of that node.
+     */
     detail::rtree::ptr_to_string<const node_store*> build_ptr_to_string_map() const;
 
     std::string export_tree_formatted() const;
