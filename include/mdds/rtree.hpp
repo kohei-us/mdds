@@ -34,6 +34,7 @@
 #include <cstdlib>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 
 namespace mdds { namespace draft {
 

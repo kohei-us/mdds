@@ -1486,17 +1486,55 @@ std::string rtree<_Key,_Value,_Trait>::export_tree(export_tree_type mode) const
 template<typename _Key, typename _Value, typename _Trait>
 std::string rtree<_Key,_Value,_Trait>::export_tree_formatted() const
 {
+    using node_ptr_map_type = std::unordered_map<const node_store*, std::string>;
+    node_ptr_map_type node_ptr_map;
+
+    std::function<void(const node_store*, int, int)> func_build_node_ptr = [&func_build_node_ptr,&node_ptr_map](const node_store* ns, int level, int pos)
+    {
+        std::ostringstream os;
+        os << "(" << level << ", " << pos << ")";
+        node_ptr_map.insert(std::make_pair(ns, os.str()));
+
+        switch (ns->type)
+        {
+            case node_type::directory_leaf:
+            case node_type::directory_nonleaf:
+            {
+                const directory_node* dir =
+                    static_cast<const directory_node*>(ns->node_ptr);
+
+                int child_pos = 0;
+                for (const node_store& ns_child : dir->children)
+                    func_build_node_ptr(&ns_child, level+1, child_pos++);
+
+                break;
+            }
+            case node_type::value:
+                // Do nothing.
+                break;
+            default:
+                throw integrity_error("Unexpected node type!");
+        }
+    };
+
+    func_build_node_ptr(&m_root, 0, 0);
+
     std::ostringstream os;
 
-    std::function<void(const node_store*, int)> func_descend = [&func_descend,&os](const node_store* ns, int level)
+    std::function<std::string(const node_store*)> ptr_to_string = [&node_ptr_map](const node_store* ns) -> std::string
+    {
+        auto it = node_ptr_map.find(ns);
+        return (it == node_ptr_map.end()) ? "(*, *)" : it->second;
+    };
+
+    std::function<void(const node_store*, int)> func_descend = [&func_descend,&os,&ptr_to_string](const node_store* ns, int level)
     {
         std::string indent;
         for (int i = 0; i < level; ++i)
             indent += "    ";
 
-        extent_type parent_bb;
-
-        os << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->extent.to_string() << std::endl;
+        os << indent << "node: " << ptr_to_string(ns) << "; parent: " << ptr_to_string(ns->parent)
+            << "; type: " << to_string(ns->type) << "; extent: " << ns->extent.to_string() << std::endl;
 
         switch (ns->type)
         {
