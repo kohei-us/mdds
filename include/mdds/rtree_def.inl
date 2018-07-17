@@ -1307,6 +1307,8 @@ void rtree<_Key,_Value,_Trait>::walk(_Func func) const
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
 {
+    auto func_ptr_to_string = build_ptr_to_string_map();
+
     switch (m_root.type)
     {
         case node_type::directory_leaf:
@@ -1322,7 +1324,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
 
     std::vector<const node_store*> ns_stack;
 
-    std::function<bool(const node_store*, int)> func_descend = [&ns_stack,&func_descend,mode](const node_store* ns, int level) -> bool
+    std::function<bool(const node_store*, int)> func_descend = [&ns_stack,&func_descend,&func_ptr_to_string,mode](const node_store* ns, int level) -> bool
     {
         bool valid = true;
 
@@ -1339,7 +1341,12 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
         }
 
         if (mode == integrity_check_type::whole_tree)
-            std::cout << indent << "node: " << ns << "; parent: " << ns->parent << "; type: " << to_string(ns->type) << "; extent: " << ns->extent.to_string() << std::endl;
+        {
+            std::cout << indent << "node: " << func_ptr_to_string(ns)
+                << "; parent: " << func_ptr_to_string(ns->parent)
+                << "; type: " << to_string(ns->type)
+                << "; extent: " << ns->extent.to_string() << std::endl;
+        }
 
         if (parent)
         {
