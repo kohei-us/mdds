@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011-2014 Kohei Yoshida
+ * Copyright (c) 2011-2018 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -5165,6 +5165,22 @@ void mtv_test_capacity()
     assert(cap == 3);
 }
 
+void mtv_test_position_type_end_position()
+{
+    stack_printer __stack_printer__("::mtv_test_position_type_end_position");
+    mtv_type db(10);
+    mtv_type::position_type pos1 = db.position(9); // last valid position.
+    pos1 = mtv_type::next_position(pos1);
+    auto pos2 = db.position(10); // end position - one position past the last valid position
+    assert(pos1 == pos2);
+
+    // Move back from the end position by one. It should point to the last
+    // valid position.
+    pos2 = mtv_type::advance_position(pos2, -1);
+    pos1 = db.position(9);
+//  assert(pos1 == pos2);
+}
+
 }
 
 int main (int argc, char **argv)
@@ -5206,6 +5222,7 @@ int main (int argc, char **argv)
         mtv_test_transfer();
         mtv_test_push_back();
         mtv_test_capacity();
+        mtv_test_position_type_end_position();
     }
     catch (const std::exception& e)
     {
