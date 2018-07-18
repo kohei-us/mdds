@@ -762,6 +762,11 @@ void rtree_test_copy()
 
     tree.check_integrity(rt_type::integrity_check_type::whole_tree);
     copied.check_integrity(rt_type::integrity_check_type::whole_tree);
+
+    std::string str_src = tree.export_tree(rt_type::export_tree_type::formatted_node_properties);
+    std::string str_dst = tree.export_tree(rt_type::export_tree_type::formatted_node_properties);
+
+    assert(!str_src.empty() && str_src == str_dst);
 }
 
 int main(int argc, char** argv)
