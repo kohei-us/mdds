@@ -1032,6 +1032,14 @@ rtree<_Key,_Value,_Trait>::~rtree()
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>& rtree<_Key,_Value,_Trait>::operator= (const rtree& other)
+{
+    rtree tmp(other);
+    tmp.swap(*this);
+    return *this;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>& rtree<_Key,_Value,_Trait>::operator= (rtree&& other)
 {
     rtree tmp(std::move(other));

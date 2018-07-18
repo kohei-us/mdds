@@ -767,6 +767,13 @@ void rtree_test_copy()
     std::string str_dst = tree.export_tree(rt_type::export_tree_type::formatted_node_properties);
 
     assert(!str_src.empty() && str_src == str_dst);
+
+    // Test the "copy via assignment" scenario too.
+    auto copied_via_assign = tree;
+    copied_via_assign.check_integrity(rt_type::integrity_check_type::whole_tree);
+    str_dst = copied_via_assign.export_tree(rt_type::export_tree_type::formatted_node_properties);
+
+    assert(!str_src.empty() && str_src == str_dst);
 }
 
 int main(int argc, char** argv)

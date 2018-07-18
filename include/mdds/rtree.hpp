@@ -366,7 +366,7 @@ public:
     rtree(const rtree& other);
     ~rtree();
 
-    rtree& operator= (const rtree&) = delete;
+    rtree& operator= (const rtree& other);
 
     rtree& operator= (rtree&& other);
 
