@@ -5178,7 +5178,7 @@ void mtv_test_position_type_end_position()
     // valid position.
     pos2 = mtv_type::advance_position(pos2, -1);
     pos1 = db.position(9);
-//  assert(pos1 == pos2);
+    assert(pos1 == pos2);
 }
 
 }

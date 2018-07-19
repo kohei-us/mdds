@@ -1529,8 +1529,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::position(size_type pos)
     {
         // This is a valid end position.  Create a valid position object that
         // represents a valid end position.
-        iterator it(m_blocks.end(), m_blocks.end(), 0, m_blocks.size());
-        return position_type(it, 0);
+        return position_type(end(), 0);
     }
 
     size_type start_pos = 0;
