@@ -5179,6 +5179,12 @@ void mtv_test_position_type_end_position()
     pos2 = mtv_type::advance_position(pos2, -1);
     pos1 = db.position(9);
     assert(pos1 == pos2);
+
+    // Try the variant of position() method that takes position hint as its first argument.
+    pos1 = db.position(db.begin(), 10);
+    pos1 = mtv_type::advance_position(pos1, -10);
+    pos2 = db.position(0);
+    assert(pos1 == pos2);
 }
 
 }

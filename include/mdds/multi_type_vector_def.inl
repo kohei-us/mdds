@@ -1545,6 +1545,13 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::position_type
 multi_type_vector<_CellBlockFunc, _EventFunc>::position(const iterator& pos_hint, size_type pos)
 {
+    if (pos == m_cur_size)
+    {
+        // This is a valid end position.  Create a valid position object that
+        // represents a valid end position.
+        return position_type(end(), 0);
+    }
+
     size_type start_pos = 0;
     size_type block_index = 0;
     get_block_position(pos_hint, pos, start_pos, block_index);
