@@ -715,7 +715,10 @@ public:
      * that block.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * the specified position is outside the current container range.</p>
+     * the specified position is outside the current container range, except
+     * when the specified position is the position immediately after the last
+     * valid position, it will return a valid position object representing
+     * the end position.</p>
      *
      * @param pos logical position of the element.
      * @return position object that stores an iterator referencing the element
@@ -730,7 +733,10 @@ public:
      * that block.
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
-     * the specified position is outside the current container range.</p>
+     * the specified position is outside the current container range, except
+     * when the specified position is the position immediately after the last
+     * valid position, it will return a valid position object representing
+     * the end position.</p>
      *
      * @param pos_hint iterator used as a block position hint, to specify
      *                 which block to start when searching for the element
