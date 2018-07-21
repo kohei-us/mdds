@@ -5185,6 +5185,40 @@ void mtv_test_position_type_end_position()
     pos1 = mtv_type::advance_position(pos1, -10);
     pos2 = db.position(0);
     assert(pos1 == pos2);
+
+    // A position more than one past the last valid position is considered out-of-range.
+
+    try
+    {
+        pos1 = db.position(11);
+        assert(!"No exceptions thrown, but one was expected to be thrown.");
+    }
+    catch (const std::out_of_range&)
+    {
+        // good.
+        cout << "Out of range exception was thrown as expected." << endl;
+    }
+    catch (...)
+    {
+        assert(!"An unexpected exception was thrown.");
+    }
+
+    // Try again with the variant that takes a position hint.
+
+    try
+    {
+        pos1 = db.position(db.begin(), 11);
+        assert(!"No exceptions thrown, but one was expected to be thrown.");
+    }
+    catch (const std::out_of_range&)
+    {
+        // good.
+        cout << "Out of range exception was thrown as expected." << endl;
+    }
+    catch (...)
+    {
+        assert(!"An unexpected exception was thrown.");
+    }
 }
 
 }
