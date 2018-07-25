@@ -85,6 +85,17 @@ public:
     }
 };
 
+class only_copyable
+{
+    double m_value;
+public:
+    only_copyable() : m_value(0.0) {}
+    only_copyable(double v) : m_value(v) {}
+    only_copyable(const only_copyable& other) : m_value(other.m_value) {}
+
+    only_copyable(only_copyable&&) = delete;
+};
+
 void rtree_test_intersection()
 {
     stack_printer __stack_printer__("::rtree_test_intersection");
@@ -776,6 +787,38 @@ void rtree_test_copy()
     assert(!str_src.empty() && str_src == str_dst);
 }
 
+void rtree_test_point_objects()
+{
+    stack_printer __stack_printer__("::rtree_test_point_objects");
+
+    using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
+    using key_type = rt_type::key_type;
+
+    rt_type tree;
+
+    for (key_type x = 0; x < 10; ++x)
+    {
+        for (key_type y = 0; y < 10; ++y)
+        {
+            tree.insert({x, y}, x*y);
+        }
+    }
+
+    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+
+    for (key_type x = 0; x < 10; ++x)
+    {
+        for (key_type y = 0; y < 10; ++y)
+        {
+            auto results = tree.search({x, y});
+            assert(std::distance(results.begin(), results.end()) == 1);
+            double expected = x*y;
+            auto it = results.begin();
+            assert(expected == it->value);
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
@@ -791,6 +834,7 @@ int main(int argc, char** argv)
     rtree_test_move();
     rtree_test_move_custom_type();
     rtree_test_copy();
+    rtree_test_point_objects();
 
     return EXIT_SUCCESS;
 }

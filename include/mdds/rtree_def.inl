@@ -409,8 +409,18 @@ std::string
 rtree<_Key,_Value,_Trait>::extent_type::to_string() const
 {
     std::ostringstream os;
-    os << start.to_string() << " - " << end.to_string();
+    os << start.to_string();
+
+    if (!is_point())
+        os << " - " << end.to_string();
+
     return os.str();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::extent_type::is_point() const
+{
+    return start == end;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1049,6 +1059,18 @@ rtree<_Key,_Value,_Trait>& rtree<_Key,_Value,_Trait>::operator= (rtree&& other)
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::insert(const point_type& start, const point_type& end, value_type value)
+{
+    insert_impl(start, end, std::move(value));
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert(const point_type& position, value_type value)
+{
+    insert_impl(position, position, std::move(value));
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert_impl(const point_type& start, const point_type& end, value_type&& value)
 {
     extent_type bb(start, end);
     node_store new_ns = node_store::create_value_node(bb, std::move(value));

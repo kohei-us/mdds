@@ -120,6 +120,8 @@ public:
 
         std::string to_string() const;
 
+        bool is_point() const;
+
         bool operator== (const extent_type& other) const;
         bool operator!= (const extent_type& other) const;
 
@@ -372,6 +374,8 @@ public:
 
     void insert(const point_type& start, const point_type& end, value_type value);
 
+    void insert(const point_type& position, value_type value);
+
     const_search_results search(const point_type& pt) const;
 
     void erase(const_iterator pos);
@@ -428,6 +432,8 @@ public:
     std::string export_tree(export_tree_type mode) const;
 
 private:
+
+    void insert_impl(const point_type& start, const point_type& end, value_type&& value);
 
     /**
      * Build and return a callable function object that you can call in order
