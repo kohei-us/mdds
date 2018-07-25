@@ -35,6 +35,7 @@
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
+#include <functional>
 
 namespace mdds { namespace draft {
 
@@ -125,8 +126,29 @@ public:
         bool operator== (const extent_type& other) const;
         bool operator!= (const extent_type& other) const;
 
+        /**
+         * Determine whether or not the specified point lies within this
+         * extent.
+         *
+         * @param pt point to query with.
+         *
+         * @return true if the point lies within this extent, or false
+         *         otherwise.
+         */
         bool contains(const point_type& pt) const;
+
+        /**
+         * Determine whether or not the specified extent lies <i>entirely</i>
+         * within this extent.
+         *
+         * @param bb extent to query with.
+         *
+         * @return true if the specified extent lies entirely within this
+         *         extent, or otherwise false.
+         */
         bool contains(const extent_type& bb) const;
+
+        bool intersects(const extent_type& bb) const;
 
         /**
          * Determine whether or not another bounding box is within this
@@ -378,6 +400,8 @@ public:
 
     const_search_results search(const point_type& pt) const;
 
+    const_search_results search(const point_type& start, const point_type& end) const;
+
     void erase(const_iterator pos);
 
     const extent_type& get_root_extent() const;
@@ -477,8 +501,10 @@ private:
     template<typename _Func>
     void descend_with_func(_Func func) const;
 
+    using search_condition_type = std::function<bool(const node_store&)>;
+
     void search_descend(
-        size_t depth, const point_type& pt, const node_store& ns, const_search_results& results) const;
+        size_t depth, const search_condition_type& func, const node_store& ns, const_search_results& results) const;
 
     void shrink_tree_upward(node_store* ns, const extent_type& bb_affected);
 

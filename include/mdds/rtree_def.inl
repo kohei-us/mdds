@@ -34,7 +34,6 @@
 #include <memory>
 #include <cassert>
 #include <algorithm>
-#include <functional>
 
 namespace mdds { namespace draft {
 
@@ -99,6 +98,40 @@ auto calc_linear_intersection(size_t dim, const _Extent& bb1, const _Extent& bb2
     // 2 :      |-----|
 
     return end2 - start2;
+}
+
+template<typename _Extent>
+bool intersects(const _Extent& bb1, const _Extent& bb2)
+{
+    constexpr size_t dim_size = sizeof(bb1.start.d) / sizeof(bb1.start.d[0]);
+    using key_type = remove_cvref_t<decltype(bb1.start.d[0])>;
+
+    for (size_t dim = 0; dim < dim_size; ++dim)
+    {
+        key_type start1 = bb1.start.d[dim], end1 = bb1.end.d[dim];
+        key_type start2 = bb2.start.d[dim], end2 = bb2.end.d[dim];
+
+        // Ensure that start1 <= start2.
+
+        if (start1 > start2)
+        {
+            std::swap(start1, start2);
+            std::swap(end1, end2);
+        }
+
+        assert(start1 <= start2);
+
+        if (end1 < start2)
+        {
+            // 1 : |------|
+            // 2 :           |-------|
+
+            // These two are not intersected at all. Bail out.
+            return false;
+        }
+    }
+
+    return true;
 }
 
 template<typename _Extent>
@@ -457,6 +490,12 @@ bool rtree<_Key,_Value,_Trait>::extent_type::contains(const extent_type& bb) con
     }
 
     return true;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::extent_type::intersects(const extent_type& bb) const
+{
+    return detail::rtree::intersects(bb, *this);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1173,8 +1212,29 @@ template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_search_results
 rtree<_Key,_Value,_Trait>::search(const point_type& pt) const
 {
+    search_condition_type cond = [&pt](const node_store& ns) -> bool
+    {
+        return ns.extent.contains(pt);
+    };
+
     const_search_results ret;
-    search_descend(0, pt, m_root, ret);
+    search_descend(0, cond, m_root, ret);
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::const_search_results
+rtree<_Key,_Value,_Trait>::search(const point_type& start, const point_type& end) const
+{
+    extent_type bb(start, end);
+
+    search_condition_type cond = [&bb](const node_store& ns) -> bool
+    {
+        return ns.extent.intersects(bb);
+    };
+
+    const_search_results ret;
+    search_descend(0, cond, m_root, ret);
     return ret;
 }
 
@@ -2023,9 +2083,9 @@ void rtree<_Key,_Value,_Trait>::descend_with_func(_Func func) const
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::search_descend(
-    size_t depth, const point_type& pt, const node_store& ns, const_search_results& results) const
+    size_t depth, const search_condition_type& conditional, const node_store& ns, const_search_results& results) const
 {
-    if (!ns.extent.contains(pt))
+    if (!conditional(ns))
         return;
 
     switch (ns.type)
@@ -2035,7 +2095,7 @@ void rtree<_Key,_Value,_Trait>::search_descend(
         {
             const directory_node* node = static_cast<const directory_node*>(ns.node_ptr);
             for (const node_store& child : node->children)
-                search_descend(depth+1, pt, child, results);
+                search_descend(depth+1, conditional, child, results);
             break;
         }
         case node_type::value:
