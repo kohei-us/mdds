@@ -822,6 +822,9 @@ void rtree_test_point_objects()
     auto results = tree.search({0, 0}, {3, 3});
     size_t n_results = std::distance(results.cbegin(), results.cend());
     assert(n_results == 16);
+
+    std::ofstream fout("rtree-test-point-objects.obj");
+    fout << tree.export_tree(rt_type::export_tree_type::extent_as_obj);
 }
 
 int main(int argc, char** argv)

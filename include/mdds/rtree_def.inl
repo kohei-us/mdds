@@ -1694,14 +1694,28 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_obj() const
         ((m_root.extent.end.d[0] - m_root.extent.start.d[0]) +
          (m_root.extent.end.d[1] - m_root.extent.start.d[1])) / 5;
 
+    // Calculate the width to use for point data.
+    double pt_width = std::min<double>(
+        m_root.extent.end.d[0] - m_root.extent.start.d[0],
+        m_root.extent.end.d[1] - m_root.extent.start.d[1]);
+    pt_width /= 400.0;
+    pt_width = std::min<double>(pt_width, 1.0);
+
     std::ostringstream os;
     size_t counter = 0;
 
     std::function<void(const node_store*, int)> func_descend = [&](const node_store* ns, int level)
     {
         size_t offset = counter * 4;
-        const point_type& s = ns->extent.start;
-        const point_type& e = ns->extent.end;
+        point_type s = ns->extent.start;
+        point_type e = ns->extent.end;
+        if (s == e)
+        {
+            s.d[0] -= pt_width;
+            s.d[1] -= pt_width;
+            e.d[0] += pt_width;
+            e.d[1] += pt_width;
+        }
 
         os << "o extent " << counter << " (level " << level << ") " << s.to_string() << " - " << e.to_string() << std::endl;
         os << "v " << s.d[0] << ' ' << (level*unit_height) << ' ' << s.d[1] << std::endl;
