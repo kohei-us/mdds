@@ -365,10 +365,10 @@ public:
 
         // iterator traits
         using value_type = rtree::value_type;
-        typedef value_type* pointer;
-        typedef value_type& reference;
-        typedef std::ptrdiff_t difference_type;
-        typedef std::bidirectional_iterator_tag iterator_category;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using difference_type = std::ptrdiff_t;
+        using iterator_category = std::bidirectional_iterator_tag;
 
         bool operator== (const const_iterator& other) const;
         bool operator!= (const const_iterator& other) const;
