@@ -94,6 +94,9 @@ public:
     only_copyable(const only_copyable& other) : m_value(other.m_value) {}
 
     only_copyable(only_copyable&&) = delete;
+
+    void set(double v) { m_value = v; }
+    double get() const { return m_value; }
 };
 
 void rtree_test_intersection()
@@ -319,11 +322,11 @@ void rtree_test_basic_search()
 
     for (; it != it_end; ++it)
     {
-        cout << "bounding box: " << it->box.to_string() << "; value: " << it->value << "; depth: " << it->depth << endl;
-        auto itv = expected_values.find(it->value);
+        cout << "bounding box: " << it.extent().to_string() << "; value: " << *it << "; depth: " << it.depth() << endl;
+        auto itv = expected_values.find(*it);
         assert(itv != expected_values.end());
-        assert(itv->second == it->box);
-        assert(it->depth == 1);
+        assert(itv->second == it.extent());
+        assert(it.depth() == 1);
     }
 
     // Perform an out-of-bound search by point.
@@ -505,7 +508,7 @@ void rtree_test_directory_node_split()
             point s({x,y}), e({xe,ye});
             bounding_box bb(s, e);
             cout << "Inserting value '" << v << "' to {" << bb.to_string() << "} ..." << endl;
-            tree.insert(s, e, v);
+            tree.insert(s, e, std::move(v));
             tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
         }
     }
@@ -527,7 +530,7 @@ void rtree_test_directory_node_split()
         auto res = tree.search(pt);
         auto it = res.cbegin();
         assert(it != res.cend());
-        assert(it->depth == 4);
+        assert(it.depth() == 4);
     }
 }
 
@@ -552,7 +555,7 @@ void rtree_test_erase_directories()
             int16_t xe = x2 + 2, ye = y2 + 2;
             point s({x2, y2}), e({xe, ye});
             bounding_box bb(s, e);
-            tree.insert(s, e, v);
+            tree.insert(s, e, std::move(v));
         }
     }
 
@@ -625,7 +628,7 @@ void rtree_test_forced_reinsertion()
             os << "(x=" << x2 << ",y=" << y2 << ")";
             std::string v = os.str();
             int16_t xe = x2 + 2, ye = y2 + 2;
-            tree.insert({x2, y2}, {xe, ye}, v);
+            tree.insert({x2, y2}, {xe, ye}, std::move(v));
         }
     }
 
@@ -654,7 +657,7 @@ void rtree_test_move()
             os << "(x=" << x2 << ",y=" << y2 << ")";
             std::string v = os.str();
             int16_t xe = x2 + 2, ye = y2 + 2;
-            tree.insert({x2, y2}, {xe, ye}, v);
+            tree.insert({x2, y2}, {xe, ye}, std::move(v));
         }
     }
 
@@ -767,7 +770,7 @@ void rtree_test_copy()
 
     rt_type tree;
     for (const input& i : inputs)
-        tree.insert(i.start, i.end, i.value);
+        tree.insert(i.start, i.end, double(i.value));
 
     auto copied(tree);
 
@@ -814,7 +817,7 @@ void rtree_test_point_objects()
             assert(std::distance(results.begin(), results.end()) == 1);
             double expected = x*y;
             auto it = results.begin();
-            assert(expected == it->value);
+            assert(expected == *it);
         }
     }
 
@@ -825,6 +828,33 @@ void rtree_test_point_objects()
 
     std::ofstream fout("rtree-test-point-objects.obj");
     fout << tree.export_tree(rt_type::export_tree_type::extent_as_obj);
+}
+
+/**
+ * Make sure the rtree works with values that are only copyable (i.e. not
+ * movable).
+ */
+void rtree_test_only_copyable()
+{
+    stack_printer __stack_printer__("::rtree_test_only_copyable");
+
+    using rt_type = rtree<float, only_copyable, tiny_trait_2d_forced_reinsertion>;
+
+    rt_type tree;
+    only_copyable v(11.2);
+    tree.insert({0, 0}, {2, 5}, v);
+    v.set(12.5);
+    tree.insert({9, 9}, v);
+
+    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+
+    auto res = tree.search({1, 1});
+    assert(std::distance(res.begin(), res.end()) == 1);
+    assert(res.begin()->get() == 11.2);
+
+    res = tree.search({9, 9});
+    assert(std::distance(res.cbegin(), res.cend()) == 1);
+    assert(res.cbegin()->get() == 12.5);
 }
 
 int main(int argc, char** argv)
@@ -843,6 +873,7 @@ int main(int argc, char** argv)
     rtree_test_move_custom_type();
     rtree_test_copy();
     rtree_test_point_objects();
+    rtree_test_only_copyable();
 
     return EXIT_SUCCESS;
 }

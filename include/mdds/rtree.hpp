@@ -172,6 +172,11 @@ private:
     struct node;
     struct directory_node;
 
+    /**
+     * This class is intentionally only movable and non-copyable, to prevent
+     * accidental copying of its object. To "copy" this class, you must use
+     * its clone() method explicitly.
+     */
     struct node_store
     {
         node_type type;
@@ -194,7 +199,8 @@ private:
 
         static node_store create_leaf_directory_node();
         static node_store create_nonleaf_directory_node();
-        static node_store create_value_node(const extent_type& extent, value_type v);
+        static node_store create_value_node(const extent_type& extent, value_type&& v);
+        static node_store create_value_node(const extent_type& extent, const value_type& v);
 
         node_store& operator= (node_store&& other);
 
@@ -276,7 +282,8 @@ private:
         value_type value;
 
         value_node() = delete;
-        value_node(value_type value);
+        value_node(value_type&& value);
+        value_node(const value_type& value);
         ~value_node();
     };
 
@@ -350,24 +357,14 @@ public:
     {
         friend class rtree;
 
-        struct node
-        {
-            extent_type box;
-            value_type value;
-            size_t depth;
-        };
-
         using store_type = typename const_search_results::store_type;
         typename store_type::const_iterator m_pos;
-        node m_cur_node;
-
-        void update_current_node();
 
     public:
         const_iterator(typename store_type::const_iterator pos);
 
         // iterator traits
-        typedef node value_type;
+        using value_type = rtree::value_type;
         typedef value_type* pointer;
         typedef value_type& reference;
         typedef std::ptrdiff_t difference_type;
@@ -381,8 +378,11 @@ public:
         const_iterator& operator--();
         const_iterator operator--(int);
 
-        const value_type& operator*();
-        const value_type* operator->();
+        const value_type& operator*() const;
+        const value_type* operator->() const;
+
+        const extent_type& extent() const;
+        size_t depth() const;
     };
 
     rtree();
@@ -394,9 +394,11 @@ public:
 
     rtree& operator= (rtree&& other);
 
-    void insert(const point_type& start, const point_type& end, value_type value);
+    void insert(const point_type& start, const point_type& end, value_type&& value);
+    void insert(const point_type& start, const point_type& end, const value_type& value);
 
-    void insert(const point_type& position, value_type value);
+    void insert(const point_type& position, value_type&& value);
+    void insert(const point_type& position, const value_type& value);
 
     const_search_results search(const point_type& pt) const;
 
@@ -458,6 +460,7 @@ public:
 private:
 
     void insert_impl(const point_type& start, const point_type& end, value_type&& value);
+    void insert_impl(const point_type& start, const point_type& end, const value_type& value);
 
     /**
      * Build and return a callable function object that you can call in order

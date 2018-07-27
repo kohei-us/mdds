@@ -619,9 +619,17 @@ rtree<_Key,_Value,_Trait>::node_store::create_nonleaf_directory_node()
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::node_store
-rtree<_Key,_Value,_Trait>::node_store::create_value_node(const extent_type& extent, value_type v)
+rtree<_Key,_Value,_Trait>::node_store::create_value_node(const extent_type& extent, value_type&& v)
 {
     node_store ret(node_type::value, extent, new value_node(std::move(v)));
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::node_store
+rtree<_Key,_Value,_Trait>::node_store::create_value_node(const extent_type& extent, const value_type& v)
+{
+    node_store ret(node_type::value, extent, new value_node(v));
     return ret;
 }
 
@@ -774,8 +782,12 @@ template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node::~node() {}
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::value_node::value_node(value_type value) :
+rtree<_Key,_Value,_Trait>::value_node::value_node(value_type&& value) :
     value(std::move(value)) {}
+
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::value_node::value_node(const value_type& value) :
+    value(value) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::value_node::~value_node() {}
@@ -977,16 +989,6 @@ rtree<_Key,_Value,_Trait>::const_iterator::const_iterator(
     typename store_type::const_iterator pos) : m_pos(pos) {}
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::const_iterator::update_current_node()
-{
-    const node_store* p = m_pos->ns;
-    assert(p->type == node_type::value);
-    m_cur_node.box = p->extent;
-    m_cur_node.value = static_cast<const value_node*>(p->node_ptr)->value;
-    m_cur_node.depth = m_pos->depth;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
 bool rtree<_Key,_Value,_Trait>::const_iterator::operator== (const const_iterator& other) const
 {
     return m_pos == other.m_pos;
@@ -1034,18 +1036,29 @@ rtree<_Key,_Value,_Trait>::const_iterator::operator-- (int)
 
 template<typename _Key, typename _Value, typename _Trait>
 const typename rtree<_Key,_Value,_Trait>::const_iterator::value_type&
-rtree<_Key,_Value,_Trait>::const_iterator::operator*()
+rtree<_Key,_Value,_Trait>::const_iterator::operator*() const
 {
-    update_current_node();
-    return m_cur_node;
+    return static_cast<const value_node*>(m_pos->ns->node_ptr)->value;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 const typename rtree<_Key,_Value,_Trait>::const_iterator::value_type*
-rtree<_Key,_Value,_Trait>::const_iterator::operator->()
+rtree<_Key,_Value,_Trait>::const_iterator::operator->() const
 {
-    update_current_node();
-    return &m_cur_node;
+    return &operator*();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+const typename rtree<_Key,_Value,_Trait>::extent_type&
+rtree<_Key,_Value,_Trait>::const_iterator::extent() const
+{
+    return m_pos->ns->extent;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+size_t rtree<_Key,_Value,_Trait>::const_iterator::depth() const
+{
+    return m_pos->depth;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1097,13 +1110,25 @@ rtree<_Key,_Value,_Trait>& rtree<_Key,_Value,_Trait>::operator= (rtree&& other)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::insert(const point_type& start, const point_type& end, value_type value)
+void rtree<_Key,_Value,_Trait>::insert(const point_type& start, const point_type& end, value_type&& value)
 {
     insert_impl(start, end, std::move(value));
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::insert(const point_type& position, value_type value)
+void rtree<_Key,_Value,_Trait>::insert(const point_type& start, const point_type& end, const value_type& value)
+{
+    insert_impl(start, end, value);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert(const point_type& position, value_type&& value)
+{
+    insert_impl(position, position, std::move(value));
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert(const point_type& position, const value_type& value)
 {
     insert_impl(position, position, std::move(value));
 }
@@ -1113,6 +1138,16 @@ void rtree<_Key,_Value,_Trait>::insert_impl(const point_type& start, const point
 {
     extent_type bb(start, end);
     node_store new_ns = node_store::create_value_node(bb, std::move(value));
+
+    std::unordered_set<size_t> reinserted_depths;
+    insert(std::move(new_ns), &reinserted_depths);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::insert_impl(const point_type& start, const point_type& end, const value_type& value)
+{
+    extent_type bb(start, end);
+    node_store new_ns = node_store::create_value_node(bb, value);
 
     std::unordered_set<size_t> reinserted_depths;
     insert(std::move(new_ns), &reinserted_depths);
