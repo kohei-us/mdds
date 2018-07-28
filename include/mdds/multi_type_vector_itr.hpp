@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2015 Kohei Yoshida
+ * Copyright (c) 2012-2018 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,14 +25,14 @@
  *
  ************************************************************************/
 
-#ifndef MDDS_MULTI_TYPE_VECTOR_ITR_HPP
-#define MDDS_MULTI_TYPE_VECTOR_ITR_HPP
+#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_ITR_HPP
+#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_ITR_HPP
 
 #include "multi_type_vector_types.hpp"
 
 #include <cstddef>
 
-namespace mdds { namespace __mtv {
+namespace mdds { namespace detail { namespace mtv {
 
 /**
  * Node that represents the content of each iterator.  The private data part
@@ -392,6 +392,6 @@ public:
     }
 };
 
-}}
+}}}
 
 #endif

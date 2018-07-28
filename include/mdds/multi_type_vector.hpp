@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
-#ifndef MDDS_MULTI_TYPE_VECTOR_HPP
-#define MDDS_MULTI_TYPE_VECTOR_HPP
+#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_HPP
+#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_HPP
 
 #include "global.hpp"
 #include "multi_type_vector_types.hpp"
@@ -46,7 +46,7 @@ using std::endl;
 
 namespace mdds {
 
-namespace detail {
+namespace detail { namespace mtv {
 
 /**
  * Empty event function handler structure, used when no custom function
@@ -54,7 +54,7 @@ namespace detail {
  *
  * @see mdds::multi_type_vector
  */
-struct mtv_event_func
+struct event_func
 {
     void element_block_acquired(const mdds::mtv::base_element_block* /*block*/) {}
 
@@ -62,9 +62,9 @@ struct mtv_event_func
 };
 
 template<typename T>
-T mtv_advance_position(const T& pos, int steps);
+T advance_position(const T& pos, int steps);
 
-}
+}}
 
 /**
  * Multi-type vector consists of a series of one or more blocks, and each
@@ -91,7 +91,7 @@ T mtv_advance_position(const T& pos, int steps);
  *
  * @see mdds::multi_type_vector::value_type
  */
-template<typename _ElemBlockFunc, typename _EventFunc = detail::mtv_event_func>
+template<typename _ElemBlockFunc, typename _EventFunc = detail::mtv::event_func>
 class multi_type_vector
 {
 public:
@@ -185,17 +185,17 @@ private:
         typedef typename blocks_type::const_reverse_iterator base_iterator;
     };
 
-    typedef __mtv::iterator_value_node<size_type, element_block_type> itr_node;
-    typedef __mtv::private_data_forward_update<itr_node> itr_forward_update;
-    typedef __mtv::private_data_no_update<itr_node> itr_no_update;
+    typedef detail::mtv::iterator_value_node<size_type, element_block_type> itr_node;
+    typedef detail::mtv::private_data_forward_update<itr_node> itr_forward_update;
+    typedef detail::mtv::private_data_no_update<itr_node> itr_no_update;
 
 public:
 
-    typedef __mtv::iterator_base<iterator_trait, itr_forward_update> iterator;
-    typedef __mtv::iterator_base<reverse_iterator_trait, itr_no_update> reverse_iterator;
+    typedef detail::mtv::iterator_base<iterator_trait, itr_forward_update> iterator;
+    typedef detail::mtv::iterator_base<reverse_iterator_trait, itr_no_update> reverse_iterator;
 
-    typedef __mtv::const_iterator_base<const_iterator_trait, itr_forward_update, iterator> const_iterator;
-    typedef __mtv::const_iterator_base<const_reverse_iterator_trait, itr_no_update, reverse_iterator> const_reverse_iterator;
+    typedef detail::mtv::const_iterator_base<const_iterator_trait, itr_forward_update, iterator> const_iterator;
+    typedef detail::mtv::const_iterator_base<const_reverse_iterator_trait, itr_no_update, reverse_iterator> const_reverse_iterator;
 
     /**
      * value_type is the type of a block stored in the primary array.  It
