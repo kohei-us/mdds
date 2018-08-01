@@ -822,7 +822,7 @@ void rtree_test_point_objects()
     }
 
     // Test an extent-based search on point data.
-    auto results = tree.search({0, 0}, {3, 3});
+    auto results = tree.search({{0, 0}, {3, 3}});
     size_t n_results = std::distance(results.cbegin(), results.cend());
     assert(n_results == 16);
 

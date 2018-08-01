@@ -402,7 +402,7 @@ public:
 
     const_search_results search(const point_type& pt) const;
 
-    const_search_results search(const point_type& start, const point_type& end) const;
+    const_search_results search(const extent_type& extent) const;
 
     void erase(const_iterator pos);
 

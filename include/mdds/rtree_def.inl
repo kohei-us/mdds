@@ -1259,13 +1259,11 @@ rtree<_Key,_Value,_Trait>::search(const point_type& pt) const
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_search_results
-rtree<_Key,_Value,_Trait>::search(const point_type& start, const point_type& end) const
+rtree<_Key,_Value,_Trait>::search(const extent_type& extent) const
 {
-    extent_type bb(start, end);
-
-    search_condition_type cond = [&bb](const node_store& ns) -> bool
+    search_condition_type cond = [&extent](const node_store& ns) -> bool
     {
-        return ns.extent.intersects(bb);
+        return ns.extent.intersects(extent);
     };
 
     const_search_results ret;
