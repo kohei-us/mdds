@@ -1110,15 +1110,15 @@ rtree<_Key,_Value,_Trait>& rtree<_Key,_Value,_Trait>::operator= (rtree&& other)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::insert(const point_type& start, const point_type& end, value_type&& value)
+void rtree<_Key,_Value,_Trait>::insert(const extent_type& extent, value_type&& value)
 {
-    insert_impl(start, end, std::move(value));
+    insert_impl(extent.start, extent.end, std::move(value));
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::insert(const point_type& start, const point_type& end, const value_type& value)
+void rtree<_Key,_Value,_Trait>::insert(const extent_type& extent, const value_type& value)
 {
-    insert_impl(start, end, value);
+    insert_impl(extent.start, extent.end, value);
 }
 
 template<typename _Key, typename _Value, typename _Trait>

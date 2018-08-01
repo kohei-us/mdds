@@ -288,17 +288,17 @@ void rtree_test_basic_search()
     rt_type tree;
     rt_type::extent_type expected_bb;
 
-    tree.insert({0, 0}, {2, 2}, "test");
+    tree.insert({{0, 0}, {2, 2}}, "test");
     expected_bb = {{0, 0}, {2, 2}};
     assert(tree.get_root_extent() == expected_bb);
     assert(tree.size() == 1);
 
-    tree.insert({3, 3}, {5, 5}, "test again");
+    tree.insert({{3, 3}, {5, 5}}, "test again");
     expected_bb = {{0, 0}, {5, 5}};
     assert(tree.get_root_extent() == expected_bb);
     assert(tree.size() == 2);
 
-    tree.insert({-2, 1}, {3, 6}, "more test");
+    tree.insert({{-2, 1}, {3, 6}}, "more test");
     expected_bb = {{-2, 0}, {5, 6}};
     assert(tree.get_root_extent() == expected_bb);
     assert(tree.size() == 3);
@@ -350,7 +350,7 @@ void rtree_test_basic_erase()
     using rt_type = rtree<int16_t, std::string>;
 
     rt_type tree;
-    tree.insert({-2,-2}, {2,2}, "erase me");
+    tree.insert({{-2,-2}, {2,2}}, "erase me");
     assert(!tree.empty());
     assert(tree.size() == 1);
 
@@ -367,8 +367,8 @@ void rtree_test_basic_erase()
     assert(tree.size() == 0);
     assert(rt_type::extent_type() == tree.get_root_extent());
 
-    tree.insert({0,0}, {2,2}, "erase me");
-    tree.insert({-10,-4}, {0,0}, "erase me");
+    tree.insert({{0,0}, {2,2}}, "erase me");
+    tree.insert({{-10,-4}, {0,0}}, "erase me");
     rt_type::extent_type expected_bb({-10,-4}, {2,2});
     assert(tree.get_root_extent() == expected_bb);
     assert(tree.size() == 2);
@@ -402,7 +402,7 @@ void rtree_test_node_split()
         int16_t w = 1;
         std::ostringstream os;
         os << "foo" << i;
-        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
+        tree.insert({{i, i}, {int16_t(i+w), int16_t(i+w)}}, os.str());
     }
 
     assert(tree.size() == 6);
@@ -447,7 +447,7 @@ void rtree_test_node_split()
         int16_t w = 1;
         std::ostringstream os;
         os << "bar" << i;
-        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
+        tree.insert({{i, i}, {int16_t(i+w), int16_t(i+w)}}, os.str());
     }
 
     assert(tree.size() == 8);
@@ -508,7 +508,7 @@ void rtree_test_directory_node_split()
             point s({x,y}), e({xe,ye});
             bounding_box bb(s, e);
             cout << "Inserting value '" << v << "' to {" << bb.to_string() << "} ..." << endl;
-            tree.insert(s, e, std::move(v));
+            tree.insert({s, e}, std::move(v));
             tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
         }
     }
@@ -555,7 +555,7 @@ void rtree_test_erase_directories()
             int16_t xe = x2 + 2, ye = y2 + 2;
             point s({x2, y2}), e({xe, ye});
             bounding_box bb(s, e);
-            tree.insert(s, e, std::move(v));
+            tree.insert({s, e}, std::move(v));
         }
     }
 
@@ -607,7 +607,7 @@ void rtree_test_forced_reinsertion()
         int16_t w = 1;
         std::ostringstream os;
         os << "foo" << i;
-        tree.insert({i, i}, {int16_t(i+w), int16_t(i+w)}, os.str());
+        tree.insert({{i, i}, {int16_t(i+w), int16_t(i+w)}}, os.str());
     }
 
     assert(tree.size() == 6);
@@ -628,7 +628,7 @@ void rtree_test_forced_reinsertion()
             os << "(x=" << x2 << ",y=" << y2 << ")";
             std::string v = os.str();
             int16_t xe = x2 + 2, ye = y2 + 2;
-            tree.insert({x2, y2}, {xe, ye}, std::move(v));
+            tree.insert({{x2, y2}, {xe, ye}}, std::move(v));
         }
     }
 
@@ -657,7 +657,7 @@ void rtree_test_move()
             os << "(x=" << x2 << ",y=" << y2 << ")";
             std::string v = os.str();
             int16_t xe = x2 + 2, ye = y2 + 2;
-            tree.insert({x2, y2}, {xe, ye}, std::move(v));
+            tree.insert({{x2, y2}, {xe, ye}}, std::move(v));
         }
     }
 
@@ -724,7 +724,7 @@ void rtree_test_move_custom_type()
     rt_type tree;
 
     for (const input& i : inputs)
-        tree.insert(i.start, i.end, only_movable(i.value));
+        tree.insert({i.start, i.end}, only_movable(i.value));
 
     assert(tree.size() == inputs.size());
 
@@ -770,7 +770,7 @@ void rtree_test_copy()
 
     rt_type tree;
     for (const input& i : inputs)
-        tree.insert(i.start, i.end, double(i.value));
+        tree.insert({i.start, i.end}, double(i.value));
 
     auto copied(tree);
 
@@ -842,7 +842,7 @@ void rtree_test_only_copyable()
 
     rt_type tree;
     only_copyable v(11.2);
-    tree.insert({0, 0}, {2, 5}, v);
+    tree.insert({{0, 0}, {2, 5}}, v);
     v.set(12.5);
     tree.insert({9, 9}, v);
 

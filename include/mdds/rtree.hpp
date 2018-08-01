@@ -394,8 +394,8 @@ public:
 
     rtree& operator= (rtree&& other);
 
-    void insert(const point_type& start, const point_type& end, value_type&& value);
-    void insert(const point_type& start, const point_type& end, const value_type& value);
+    void insert(const extent_type& extent, value_type&& value);
+    void insert(const extent_type& extent, const value_type& value);
 
     void insert(const point_type& position, value_type&& value);
     void insert(const point_type& position, const value_type& value);
