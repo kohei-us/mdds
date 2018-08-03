@@ -82,6 +82,21 @@ enum class export_tree_type
 
 enum class integrity_check_type { throw_on_fail, whole_tree };
 
+enum class search_type
+{
+    /**
+     * Pick up all objects whose extents overlap with the specified search
+     * extent.
+     */
+    overlap,
+
+    /**
+     * Pick up all objects whose extents exactly match the specified search
+     * extent.
+     */
+    match,
+};
+
 template<typename _NodePtrT>
 struct ptr_to_string;
 
@@ -160,6 +175,7 @@ public:
     using node_type = detail::rtree::node_type;
     using export_tree_type = detail::rtree::export_tree_type;
     using integrity_check_type = detail::rtree::integrity_check_type;
+    using search_type = detail::rtree::search_type;
 
     struct node_properties
     {
@@ -402,7 +418,7 @@ public:
 
     const_search_results search(const point_type& pt) const;
 
-    const_search_results search(const extent_type& extent) const;
+    const_search_results search(const extent_type& extent, search_type st) const;
 
     void erase(const_iterator pos);
 
@@ -507,7 +523,8 @@ private:
     using search_condition_type = std::function<bool(const node_store&)>;
 
     void search_descend(
-        size_t depth, const search_condition_type& func, const node_store& ns, const_search_results& results) const;
+        size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
+        const node_store& ns, const_search_results& results) const;
 
     void shrink_tree_upward(node_store* ns, const extent_type& bb_affected);
 

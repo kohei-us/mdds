@@ -1253,21 +1253,48 @@ rtree<_Key,_Value,_Trait>::search(const point_type& pt) const
     };
 
     const_search_results ret;
-    search_descend(0, cond, m_root, ret);
+    search_descend(0, cond, cond, m_root, ret);
     return ret;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_search_results
-rtree<_Key,_Value,_Trait>::search(const extent_type& extent) const
+rtree<_Key,_Value,_Trait>::search(const extent_type& extent, search_type st) const
 {
-    search_condition_type cond = [&extent](const node_store& ns) -> bool
+    search_condition_type dir_cond, value_cond;
+
+    switch (st)
     {
-        return ns.extent.intersects(extent);
-    };
+        case search_type::overlap:
+        {
+            dir_cond = [&extent](const node_store& ns) -> bool
+            {
+                return ns.extent.intersects(extent);
+            };
+
+            value_cond = dir_cond;
+            break;
+        }
+        case search_type::match:
+        {
+            dir_cond = [&extent](const node_store& ns) -> bool
+            {
+                return ns.extent.contains(extent);
+            };
+
+            value_cond = [&extent](const node_store& ns) -> bool
+            {
+                return ns.extent == extent;
+            };
+
+            break;
+        }
+        default:
+            throw std::runtime_error("Unhandled search type.");
+    }
 
     const_search_results ret;
-    search_descend(0, cond, m_root, ret);
+    search_descend(0, dir_cond, value_cond, m_root, ret);
     return ret;
 }
 
@@ -2130,23 +2157,27 @@ void rtree<_Key,_Value,_Trait>::descend_with_func(_Func func) const
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::search_descend(
-    size_t depth, const search_condition_type& conditional, const node_store& ns, const_search_results& results) const
+    size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
+    const node_store& ns, const_search_results& results) const
 {
-    if (!conditional(ns))
-        return;
-
     switch (ns.type)
     {
         case node_type::directory_nonleaf:
         case node_type::directory_leaf:
         {
+            if (!dir_cond(ns))
+                return;
+
             const directory_node* node = static_cast<const directory_node*>(ns.node_ptr);
             for (const node_store& child : node->children)
-                search_descend(depth+1, conditional, child, results);
+                search_descend(depth+1, dir_cond, value_cond, child, results);
             break;
         }
         case node_type::value:
         {
+            if (!value_cond(ns))
+                return;
+
             results.add_node_store(&ns, depth);
             break;
         }
