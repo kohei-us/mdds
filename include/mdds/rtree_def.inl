@@ -1438,7 +1438,7 @@ void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
 
 template<typename _Key, typename _Value, typename _Trait>
 const typename rtree<_Key,_Value,_Trait>::extent_type&
-rtree<_Key,_Value,_Trait>::get_root_extent() const
+rtree<_Key,_Value,_Trait>::extent() const
 {
     return m_root.extent;
 }

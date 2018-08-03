@@ -291,17 +291,17 @@ void rtree_test_basic_search()
 
     tree.insert({{0, 0}, {2, 2}}, "test");
     expected_bb = {{0, 0}, {2, 2}};
-    assert(tree.get_root_extent() == expected_bb);
+    assert(tree.extent() == expected_bb);
     assert(tree.size() == 1);
 
     tree.insert({{3, 3}, {5, 5}}, "test again");
     expected_bb = {{0, 0}, {5, 5}};
-    assert(tree.get_root_extent() == expected_bb);
+    assert(tree.extent() == expected_bb);
     assert(tree.size() == 2);
 
     tree.insert({{-2, 1}, {3, 6}}, "more test");
     expected_bb = {{-2, 0}, {5, 6}};
-    assert(tree.get_root_extent() == expected_bb);
+    assert(tree.extent() == expected_bb);
     assert(tree.size() == 3);
 
     tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
@@ -367,12 +367,12 @@ void rtree_test_basic_erase()
     tree.erase(it);
     assert(tree.empty());
     assert(tree.size() == 0);
-    assert(rt_type::extent_type() == tree.get_root_extent());
+    assert(rt_type::extent_type() == tree.extent());
 
     tree.insert({{0,0}, {2,2}}, "erase me");
     tree.insert({{-10,-4}, {0,0}}, "erase me");
     rt_type::extent_type expected_bb({-10,-4}, {2,2});
-    assert(tree.get_root_extent() == expected_bb);
+    assert(tree.extent() == expected_bb);
     assert(tree.size() == 2);
 
     res = tree.search({-5, -2}, search_type::overlap);
@@ -383,7 +383,7 @@ void rtree_test_basic_erase()
     assert(!tree.empty()); // there should be one value stored in the tree.
     assert(tree.size() == 1);
     expected_bb = {{0,0}, {2,2}};
-    assert(tree.get_root_extent() == expected_bb);
+    assert(tree.extent() == expected_bb);
 
     tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
 }

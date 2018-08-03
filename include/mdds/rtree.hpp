@@ -422,7 +422,7 @@ public:
 
     void erase(const_iterator pos);
 
-    const extent_type& get_root_extent() const;
+    const extent_type& extent() const;
 
     bool empty() const;
 
