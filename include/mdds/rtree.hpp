@@ -416,7 +416,7 @@ public:
     void insert(const point_type& position, value_type&& value);
     void insert(const point_type& position, const value_type& value);
 
-    const_search_results search(const point_type& pt) const;
+    const_search_results search(const point_type& pt, search_type st) const;
 
     const_search_results search(const extent_type& extent, search_type st) const;
 

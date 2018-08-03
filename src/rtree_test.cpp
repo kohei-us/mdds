@@ -284,6 +284,7 @@ void rtree_test_basic_search()
 {
     stack_printer __stack_printer__("::rtree_test_basic_search");
     using rt_type = rtree<int16_t, std::string>;
+    using search_type = rt_type::search_type;
 
     rt_type tree;
     rt_type::extent_type expected_bb;
@@ -307,7 +308,7 @@ void rtree_test_basic_search()
 
     // Verify the search method works.
 
-    rt_type::const_search_results res = tree.search({1, 1});
+    rt_type::const_search_results res = tree.search({1, 1}, search_type::overlap);
 
     auto it = res.cbegin(), it_end = res.cend();
 
@@ -339,7 +340,7 @@ void rtree_test_basic_search()
 
     for (const rt_type::point_type& pt : pts)
     {
-        res = tree.search(pt);
+        res = tree.search(pt, search_type::overlap);
         assert(res.cbegin() == res.cend());
     }
 }
@@ -348,13 +349,14 @@ void rtree_test_basic_erase()
 {
     stack_printer __stack_printer__("::rtree_test_basic_erase");
     using rt_type = rtree<int16_t, std::string>;
+    using search_type = rt_type::search_type;
 
     rt_type tree;
     tree.insert({{-2,-2}, {2,2}}, "erase me");
     assert(!tree.empty());
     assert(tree.size() == 1);
 
-    rt_type::const_search_results res = tree.search({0,0});
+    rt_type::const_search_results res = tree.search({0, 0}, search_type::overlap);
 
     size_t n = std::distance(res.begin(), res.end());
     assert(n == 1);
@@ -373,7 +375,7 @@ void rtree_test_basic_erase()
     assert(tree.get_root_extent() == expected_bb);
     assert(tree.size() == 2);
 
-    res = tree.search({-5,-2});
+    res = tree.search({-5, -2}, search_type::overlap);
     n = std::distance(res.begin(), res.end());
     assert(n == 1);
     it = res.begin();
@@ -390,6 +392,7 @@ void rtree_test_node_split()
 {
     stack_printer __stack_printer__("::rtree_test_node_split");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
+    using search_type = rt_type::search_type;
 
     rt_type tree;
 
@@ -467,7 +470,7 @@ void rtree_test_node_split()
     // Erase the entry at (0, 0).  There should be only one match.  Erasing
     // this entry will cause the node to be underfilled.
 
-    rt_type::const_search_results res = tree.search({0,0});
+    rt_type::const_search_results res = tree.search({0, 0}, search_type::overlap);
     auto it = res.cbegin();
     assert(it != res.cend());
     assert(std::distance(it, res.cend()) == 1);
@@ -492,6 +495,7 @@ void rtree_test_directory_node_split()
 {
     stack_printer __stack_printer__("::rtree_test_directory_node_split");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
+    using search_type = rt_type::search_type;
 
     rt_type tree;
     using point = rt_type::point_type;
@@ -527,7 +531,7 @@ void rtree_test_directory_node_split()
 
     for (const point& pt : pts)
     {
-        auto res = tree.search(pt);
+        auto res = tree.search(pt, search_type::overlap);
         auto it = res.cbegin();
         assert(it != res.cend());
         assert(it.depth() == 4);
@@ -538,6 +542,7 @@ void rtree_test_erase_directories()
 {
     stack_printer __stack_printer__("::rtree_test_erase_directories");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
+    using search_type = rt_type::search_type;
 
     rt_type tree;
     using point = rt_type::point_type;
@@ -574,7 +579,7 @@ void rtree_test_erase_directories()
 
             cout << "erase at (" << x2 << ", " << y2 << ")" << endl;
 
-            auto res = tree.search({x2, y2});
+            auto res = tree.search({x2, y2}, search_type::overlap);
             auto it = res.begin(), ite = res.end();
             size_t n = std::distance(it, ite);
             assert(n == 1);
@@ -584,7 +589,7 @@ void rtree_test_erase_directories()
             assert(tree.size() == --expected_size);
             tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
 
-            res = tree.search({x2, y2});
+            res = tree.search({x2, y2}, search_type::overlap);
             n = std::distance(res.begin(), res.end());
             assert(n == 0);
         }
@@ -796,6 +801,7 @@ void rtree_test_point_objects()
 
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using key_type = rt_type::key_type;
+    using search_type = rt_type::search_type;
 
     rt_type tree;
 
@@ -813,7 +819,7 @@ void rtree_test_point_objects()
     {
         for (key_type y = 0; y < 10; ++y)
         {
-            auto results = tree.search({x, y});
+            auto results = tree.search({x, y}, search_type::overlap);
             assert(std::distance(results.begin(), results.end()) == 1);
             double expected = x*y;
             auto it = results.begin();
@@ -822,7 +828,7 @@ void rtree_test_point_objects()
     }
 
     // Test an extent-based search on point data.
-    auto results = tree.search({{0, 0}, {3, 3}}, rt_type::search_type::overlap);
+    auto results = tree.search({{0, 0}, {3, 3}}, search_type::overlap);
     size_t n_results = std::distance(results.cbegin(), results.cend());
     assert(n_results == 16);
 
@@ -839,6 +845,7 @@ void rtree_test_only_copyable()
     stack_printer __stack_printer__("::rtree_test_only_copyable");
 
     using rt_type = rtree<float, only_copyable, tiny_trait_2d_forced_reinsertion>;
+    using search_type = rt_type::search_type;
 
     rt_type tree;
     only_copyable v(11.2);
@@ -848,18 +855,18 @@ void rtree_test_only_copyable()
 
     tree.check_integrity(rt_type::integrity_check_type::whole_tree);
 
-    auto res = tree.search({1, 1});
+    auto res = tree.search({1, 1}, search_type::overlap);
     assert(std::distance(res.begin(), res.end()) == 1);
     assert(res.begin()->get() == 11.2);
 
-    res = tree.search({9, 9});
+    res = tree.search({9, 9}, search_type::overlap);
     assert(std::distance(res.cbegin(), res.cend()) == 1);
     assert(res.cbegin()->get() == 12.5);
 }
 
-void rtree_test_exact_search()
+void rtree_test_exact_search_by_extent()
 {
-    stack_printer __stack_printer__("::rtree_test_exact_search");
+    stack_printer __stack_printer__("::rtree_test_exact_search_by_extent");
 
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using extent_type = rt_type::extent_type;
@@ -885,6 +892,61 @@ void rtree_test_exact_search()
     assert(it.depth() == 1);
 }
 
+void rtree_test_exact_search_by_point()
+{
+    stack_printer __stack_printer__("::rtree_test_exact_search_by_point");
+
+    using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
+    using point_type = rt_type::point_type;
+    using extent_type = rt_type::extent_type;
+    using integrity_check_type = rt_type::integrity_check_type;
+    using search_type = rt_type::search_type;
+
+    rt_type tree;
+    tree.insert({{0, 0}, {4, 4}}, 10.0);
+    tree.insert({1, 1}, 11.0);
+    tree.insert({3, 3}, 33.0);
+    tree.check_integrity(integrity_check_type::whole_tree);
+
+    rt_type::const_search_results res = tree.search({1, 1}, search_type::overlap);
+    size_t n = std::distance(res.begin(), res.end());
+    assert(n == 2);
+
+    res = tree.search({3, 3}, search_type::overlap);
+    n = std::distance(res.begin(), res.end());
+    assert(n == 2);
+
+    res = tree.search({2, 2}, search_type::overlap);
+    n = std::distance(res.begin(), res.end());
+    assert(n == 1);
+    rt_type::const_iterator it = res.begin();
+    assert(*it == 10.0);
+    assert(it.extent() == extent_type({{0, 0}, {4, 4}}));
+
+    res = tree.search({1, 1}, search_type::match);
+    n = std::distance(res.begin(), res.end());
+    assert(n == 1);
+    it = res.begin();
+    assert(*it == 11.0);
+    assert(it.extent().is_point());
+    assert(it.extent().start == point_type({1, 1}));
+
+    res = tree.search({3, 3}, search_type::match);
+    n = std::distance(res.begin(), res.end());
+    assert(n == 1);
+    it = res.begin();
+    assert(*it == 33.0);
+    assert(it.extent().is_point());
+    assert(it.extent().start == point_type({3, 3}));
+
+    res = tree.search({{0, 0}, {4, 4}}, search_type::match);
+    n = std::distance(res.begin(), res.end());
+    assert(n == 1);
+    it = res.begin();
+    assert(*it == 10.0);
+    assert(it.extent() == extent_type({{0, 0}, {4, 4}}));
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_intersection();
@@ -902,7 +964,8 @@ int main(int argc, char** argv)
     rtree_test_copy();
     rtree_test_point_objects();
     rtree_test_only_copyable();
-    rtree_test_exact_search();
+    rtree_test_exact_search_by_extent();
+    rtree_test_exact_search_by_point();
 
     return EXIT_SUCCESS;
 }

@@ -1245,15 +1245,47 @@ void rtree<_Key,_Value,_Trait>::insert_dir(node_store&& ns, size_t max_depth)
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_search_results
-rtree<_Key,_Value,_Trait>::search(const point_type& pt) const
+rtree<_Key,_Value,_Trait>::search(const point_type& pt, search_type st) const
 {
+    search_condition_type dir_cond, value_cond;
+
+    switch (st)
+    {
+        case search_type::overlap:
+        {
+            dir_cond = [&pt](const node_store& ns) -> bool
+            {
+                return ns.extent.contains(pt);
+            };
+
+            value_cond = dir_cond;
+            break;
+        }
+        case search_type::match:
+        {
+            dir_cond = [&pt](const node_store& ns) -> bool
+            {
+                return ns.extent.contains(pt);
+            };
+
+            value_cond = [&pt](const node_store& ns) -> bool
+            {
+                return ns.extent.start == pt && ns.extent.end == pt;
+            };
+
+            break;
+        }
+        default:
+            throw std::runtime_error("Unhandled search type.");
+    }
+
     search_condition_type cond = [&pt](const node_store& ns) -> bool
     {
         return ns.extent.contains(pt);
     };
 
     const_search_results ret;
-    search_descend(0, cond, cond, m_root, ret);
+    search_descend(0, dir_cond, value_cond, m_root, ret);
     return ret;
 }
 
