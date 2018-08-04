@@ -416,14 +416,55 @@ public:
     void insert(const point_type& position, value_type&& value);
     void insert(const point_type& position, const value_type& value);
 
+    /**
+     * Search the tree and collect all value objects whose extents either
+     * contain the specified point, or exactly match the specified point.
+     *
+     * @param pt reference point to use for the search.
+     * @param st search type that determines the satisfying condition of the
+     *           search with respect to the reference point.
+     *
+     * @return collection of all value objects that satisfy the specified
+     *         search condition.  This collection is immutable.
+     */
     const_search_results search(const point_type& pt, search_type st) const;
 
+    /**
+     * Search the tree and collect all value objects whose extents either
+     * overlaps with the specified extent, or exactly match the specified
+     * extent.
+     *
+     * @param extent reference extent to use for the search.
+     * @param st search type that determines the satisfying condition of the
+     *           search with respect to the reference extent.
+     *
+     * @return collection of all value objects that satisfy the specified
+     *         search condition.  This collection is immutable.
+     */
     const_search_results search(const extent_type& extent, search_type st) const;
 
+    /**
+     * Erase the value object referenced by the iterator passed to this
+     * method.
+     *
+     * @param pos iterator that refernces the value object to erase.
+     */
     void erase(const_iterator pos);
 
+    /**
+     * Get the minimum bounding extent of the root node of the tree. The
+     * extent returned from this method is the minimum extent that contains
+     * the extents of all objects stored in the tree.
+     *
+     * @return immutable reference to the extent of the root node of the tree.
+     */
     const extent_type& extent() const;
 
+    /**
+     * Check whether or not the tree stores any objects.
+     *
+     * @return true if the tree is empty, otherwise false.
+     */
     bool empty() const;
 
     /**
