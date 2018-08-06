@@ -343,25 +343,34 @@ private:
 
 public:
 
-    class const_iterator;
-
-    class const_search_results
+    template<typename _NS>
+    class search_results_base
     {
-        friend class const_iterator;
+    protected:
+        using node_store_type = _NS;
+
         friend class rtree;
 
         struct entry
         {
-            const node_store* ns;
+            node_store_type* ns;
             size_t depth;
 
-            entry(const node_store* ns, size_t depth);
+            entry(node_store_type* ns, size_t depth);
         };
 
         using store_type = std::vector<entry>;
         store_type m_store;
 
-        void add_node_store(const node_store* ns, size_t depth);
+        void add_node_store(node_store_type* ns, size_t depth);
+    };
+
+    class const_iterator;
+
+    class const_search_results : public search_results_base<const node_store>
+    {
+        using base_type = search_results_base<const node_store>;
+        using base_type::m_store;
     public:
         const_iterator cbegin() const;
         const_iterator cend() const;

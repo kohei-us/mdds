@@ -946,14 +946,16 @@ bool rtree<_Key,_Value,_Trait>::directory_node::has_leaf_directory() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::const_search_results::add_node_store(
-    const node_store* ns, size_t depth)
+template<typename _NS>
+void rtree<_Key,_Value,_Trait>::search_results_base<_NS>::add_node_store(
+    node_store_type* ns, size_t depth)
 {
     m_store.emplace_back(ns, depth);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::const_search_results::entry::entry(const node_store* ns, size_t depth) :
+template<typename _NS>
+rtree<_Key,_Value,_Trait>::search_results_base<_NS>::entry::entry(node_store_type* ns, size_t depth) :
     ns(ns), depth(depth) {}
 
 template<typename _Key, typename _Value, typename _Trait>
