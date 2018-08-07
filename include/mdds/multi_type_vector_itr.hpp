@@ -54,9 +54,6 @@ struct iterator_value_node
     iterator_value_node(size_type start_pos, size_type block_index) :
         type(mdds::mtv::element_type_empty), position(start_pos), size(0), data(nullptr), __private_data(block_index) {}
 
-    iterator_value_node(const iterator_value_node& other) :
-        type(other.type), position(other.position), size(other.size), data(other.data), __private_data(other.__private_data) {}
-
     void swap(iterator_value_node& other)
     {
         std::swap(type, other.type);
@@ -272,9 +269,6 @@ public:
         size_type start_pos, size_type block_index) :
         common_base(pos, end, start_pos, block_index) {}
 
-    iterator_base(const iterator_base& other) :
-        common_base(other) {}
-
     value_type& operator*()
     {
         return m_cur_node;
@@ -344,9 +338,6 @@ public:
         const base_iterator_type& pos, const base_iterator_type& end,
         size_type start_pos, size_type block_index) :
         common_base(pos, end, start_pos, block_index) {}
-
-    const_iterator_base(const const_iterator_base& other) :
-        common_base(other) {}
 
     /**
      * Take the non-const iterator counterpart to create a const iterator.

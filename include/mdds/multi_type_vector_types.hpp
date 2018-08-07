@@ -90,7 +90,6 @@ struct base_element_block
 protected:
     element_t type;
     base_element_block(element_t _t) : type(_t) {}
-    ~base_element_block() {}
 };
 
 template<typename _Self, element_t _TypeId, typename _Data>
