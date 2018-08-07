@@ -1064,6 +1064,83 @@ size_t rtree<_Key,_Value,_Trait>::const_iterator::depth() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::iterator::iterator(
+    typename store_type::iterator pos) : m_pos(pos) {}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::iterator::operator== (const iterator& other) const
+{
+    return m_pos == other.m_pos;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+bool rtree<_Key,_Value,_Trait>::iterator::operator!= (const iterator& other) const
+{
+    return !operator== (other);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::iterator&
+rtree<_Key,_Value,_Trait>::iterator::operator++ ()
+{
+    ++m_pos;
+    return *this;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::iterator
+rtree<_Key,_Value,_Trait>::iterator::operator++ (int)
+{
+    iterator ret(m_pos);
+    ++m_pos;
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::iterator&
+rtree<_Key,_Value,_Trait>::iterator::operator-- ()
+{
+    --m_pos;
+    return *this;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::iterator
+rtree<_Key,_Value,_Trait>::iterator::operator-- (int)
+{
+    iterator ret(m_pos);
+    --m_pos;
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::iterator::value_type&
+rtree<_Key,_Value,_Trait>::iterator::operator*()
+{
+    return static_cast<const value_node*>(m_pos->ns->node_ptr)->value;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::iterator::value_type*
+rtree<_Key,_Value,_Trait>::iterator::operator->()
+{
+    return &operator*();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+const typename rtree<_Key,_Value,_Trait>::extent_type&
+rtree<_Key,_Value,_Trait>::iterator::extent() const
+{
+    return m_pos->ns->extent;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+size_t rtree<_Key,_Value,_Trait>::iterator::depth() const
+{
+    return m_pos->depth;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_leaf_directory_node())
 {
     static_assert(trait_type::min_node_size <= trait_type::max_node_size / 2,
