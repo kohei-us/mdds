@@ -1037,14 +1037,14 @@ rtree<_Key,_Value,_Trait>::const_iterator::operator-- (int)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-const typename rtree<_Key,_Value,_Trait>::const_iterator::value_type&
+typename rtree<_Key,_Value,_Trait>::const_iterator::value_type&
 rtree<_Key,_Value,_Trait>::const_iterator::operator*() const
 {
     return static_cast<const value_node*>(m_pos->ns->node_ptr)->value;
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-const typename rtree<_Key,_Value,_Trait>::const_iterator::value_type*
+typename rtree<_Key,_Value,_Trait>::const_iterator::value_type*
 rtree<_Key,_Value,_Trait>::const_iterator::operator->() const
 {
     return &operator*();

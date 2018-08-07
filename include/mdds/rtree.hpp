@@ -389,7 +389,7 @@ public:
         const_iterator(typename store_type::const_iterator pos);
 
         // iterator traits
-        using value_type = rtree::value_type;
+        using value_type = const rtree::value_type;
         using pointer = value_type*;
         using reference = value_type&;
         using difference_type = std::ptrdiff_t;
@@ -403,8 +403,8 @@ public:
         const_iterator& operator--();
         const_iterator operator--(int);
 
-        const value_type& operator*() const;
-        const value_type* operator->() const;
+        value_type& operator*() const;
+        value_type* operator->() const;
 
         const extent_type& extent() const;
         size_t depth() const;
