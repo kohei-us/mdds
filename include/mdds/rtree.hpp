@@ -385,6 +385,25 @@ public:
     public:
     };
 
+    template<typename _StoreIter, typename _ValueT>
+    class iterator_base
+    {
+    protected:
+        using store_iterator_type = _StoreIter;
+
+        store_iterator_type m_pos;
+
+        iterator_base(store_iterator_type pos);
+
+    public:
+        // iterator traits
+        using value_type = _ValueT;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using difference_type = std::ptrdiff_t;
+        using iterator_category = std::bidirectional_iterator_tag;
+    };
+
     class const_iterator
     {
         friend class rtree;

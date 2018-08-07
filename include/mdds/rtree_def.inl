@@ -959,6 +959,11 @@ rtree<_Key,_Value,_Trait>::search_results_base<_NS>::entry::entry(node_store_typ
     ns(ns), depth(depth) {}
 
 template<typename _Key, typename _Value, typename _Trait>
+template<typename _StoreIter, typename _ValueT>
+rtree<_Key,_Value,_Trait>::iterator_base<_StoreIter,_ValueT>::iterator_base(store_iterator_type pos) :
+    m_pos(std::move(pos)) {}
+
+template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_iterator
 rtree<_Key,_Value,_Trait>::const_search_results::cbegin() const
 {
