@@ -440,6 +440,16 @@ public:
             --m_pos;
             return ret;
         }
+
+        const extent_type& extent() const
+        {
+            return m_pos->ns->extent;
+        }
+
+        size_t depth() const
+        {
+            return m_pos->depth;
+        }
     };
 
     class const_iterator : public iterator_base<
@@ -458,16 +468,12 @@ public:
 
         friend class rtree;
 
+        const_iterator(store_iterator_type pos);
     public:
         using typename base_type::value_type;
 
-        const_iterator(store_iterator_type pos);
-
         value_type& operator*() const;
         value_type* operator->() const;
-
-        const extent_type& extent() const;
-        size_t depth() const;
     };
 
     class iterator

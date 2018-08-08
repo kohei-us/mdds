@@ -1010,19 +1010,6 @@ rtree<_Key,_Value,_Trait>::const_iterator::operator->() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-const typename rtree<_Key,_Value,_Trait>::extent_type&
-rtree<_Key,_Value,_Trait>::const_iterator::extent() const
-{
-    return m_pos->ns->extent;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-size_t rtree<_Key,_Value,_Trait>::const_iterator::depth() const
-{
-    return m_pos->depth;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::iterator::iterator(
     typename store_type::iterator pos) : m_pos(pos) {}
 
