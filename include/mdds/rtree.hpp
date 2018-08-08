@@ -442,36 +442,28 @@ public:
         value_type* operator->() const;
     };
 
-    class iterator
+    class iterator : public iterator_base<
+        iterator,
+        typename search_results::store_type::iterator,
+        const rtree::value_type>
     {
+        using base_type = iterator_base<
+            iterator,
+            typename search_results::store_type::iterator,
+            rtree::value_type>;
+
+        using store_type = typename const_search_results::store_type;
+        using typename base_type::store_iterator_type;
+        using base_type::m_pos;
+
         friend class rtree;
 
-        using store_type = typename search_results::store_type;
-        typename store_type::iterator m_pos;
-
+        iterator(store_iterator_type pos);
     public:
-        iterator(typename store_type::iterator pos);
-
-        // iterator traits
-        using value_type = rtree::value_type;
-        using pointer = value_type*;
-        using reference = value_type&;
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::bidirectional_iterator_tag;
-
-        bool operator== (const iterator& other) const;
-        bool operator!= (const iterator& other) const;
-
-        iterator& operator++();
-        iterator operator++(int);
-        iterator& operator--();
-        iterator operator--(int);
+        using typename base_type::value_type;
 
         value_type& operator*();
         value_type* operator->();
-
-        const extent_type& extent() const;
-        size_t depth() const;
     };
 
     rtree();
