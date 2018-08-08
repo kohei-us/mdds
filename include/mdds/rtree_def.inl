@@ -959,8 +959,8 @@ rtree<_Key,_Value,_Trait>::search_results_base<_NS>::entry::entry(node_store_typ
     ns(ns), depth(depth) {}
 
 template<typename _Key, typename _Value, typename _Trait>
-template<typename _StoreIter, typename _ValueT>
-rtree<_Key,_Value,_Trait>::iterator_base<_StoreIter,_ValueT>::iterator_base(store_iterator_type pos) :
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::iterator_base(store_iterator_type pos) :
     m_pos(std::move(pos)) {}
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -992,54 +992,8 @@ rtree<_Key,_Value,_Trait>::const_search_results::end() const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::const_iterator::const_iterator(
-    typename store_type::const_iterator pos) : m_pos(pos) {}
-
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::const_iterator::operator== (const const_iterator& other) const
-{
-    return m_pos == other.m_pos;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key,_Value,_Trait>::const_iterator::operator!= (const const_iterator& other) const
-{
-    return !operator== (other);
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_iterator&
-rtree<_Key,_Value,_Trait>::const_iterator::operator++ ()
-{
-    ++m_pos;
-    return *this;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_iterator
-rtree<_Key,_Value,_Trait>::const_iterator::operator++ (int)
-{
-    const_iterator ret(m_pos);
-    ++m_pos;
-    return ret;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_iterator&
-rtree<_Key,_Value,_Trait>::const_iterator::operator-- ()
-{
-    --m_pos;
-    return *this;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_iterator
-rtree<_Key,_Value,_Trait>::const_iterator::operator-- (int)
-{
-    const_iterator ret(m_pos);
-    --m_pos;
-    return ret;
-}
+rtree<_Key,_Value,_Trait>::const_iterator::const_iterator(store_iterator_type pos) :
+    base_type(std::move(pos)) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_iterator::value_type&

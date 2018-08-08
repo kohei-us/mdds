@@ -385,12 +385,14 @@ public:
     public:
     };
 
-    template<typename _StoreIter, typename _ValueT>
+    template<typename _SelfIter, typename _StoreIter, typename _ValueT>
     class iterator_base
     {
-    protected:
+    public:
         using store_iterator_type = _StoreIter;
+        using self_iterator_type = _SelfIter;
 
+    protected:
         store_iterator_type m_pos;
 
         iterator_base(store_iterator_type pos);
@@ -402,32 +404,64 @@ public:
         using reference = value_type&;
         using difference_type = std::ptrdiff_t;
         using iterator_category = std::bidirectional_iterator_tag;
+
+        bool operator== (const self_iterator_type& other) const
+        {
+            return m_pos == other.m_pos;
+        }
+
+        bool operator!= (const self_iterator_type& other) const
+        {
+            return !operator==(other);
+        }
+
+        self_iterator_type& operator++()
+        {
+            ++m_pos;
+            return static_cast<self_iterator_type&>(*this);
+        }
+
+        self_iterator_type operator++(int)
+        {
+            self_iterator_type ret(m_pos);
+            ++m_pos;
+            return ret;
+        }
+
+        self_iterator_type& operator--()
+        {
+            --m_pos;
+            return static_cast<self_iterator_type&>(*this);
+        }
+
+        self_iterator_type operator--(int)
+        {
+            self_iterator_type ret(m_pos);
+            --m_pos;
+            return ret;
+        }
     };
 
-    class const_iterator
+    class const_iterator : public iterator_base<
+        const_iterator,
+        typename const_search_results::store_type::const_iterator,
+        const rtree::value_type>
     {
-        friend class rtree;
+        using base_type = iterator_base<
+            const_iterator,
+            typename const_search_results::store_type::const_iterator,
+            const rtree::value_type>;
 
         using store_type = typename const_search_results::store_type;
-        typename store_type::const_iterator m_pos;
+        using typename base_type::store_iterator_type;
+        using base_type::m_pos;
+
+        friend class rtree;
 
     public:
-        const_iterator(typename store_type::const_iterator pos);
+        using typename base_type::value_type;
 
-        // iterator traits
-        using value_type = const rtree::value_type;
-        using pointer = value_type*;
-        using reference = value_type&;
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::bidirectional_iterator_tag;
-
-        bool operator== (const const_iterator& other) const;
-        bool operator!= (const const_iterator& other) const;
-
-        const_iterator& operator++();
-        const_iterator operator++(int);
-        const_iterator& operator--();
-        const_iterator operator--(int);
+        const_iterator(store_iterator_type pos);
 
         value_type& operator*() const;
         value_type* operator->() const;
