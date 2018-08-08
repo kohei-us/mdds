@@ -964,6 +964,73 @@ rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::iterator
     m_pos(std::move(pos)) {}
 
 template<typename _Key, typename _Value, typename _Trait>
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+bool rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::operator== (const self_iterator_type& other) const
+{
+    return m_pos == other.m_pos;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+bool rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::operator!= (const self_iterator_type& other) const
+{
+    return !operator==(other);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+typename rtree<_Key,_Value,_Trait>::template iterator_base<_SelfIter,_StoreIter,_ValueT>::self_iterator_type&
+rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::operator++()
+{
+    ++m_pos;
+    return static_cast<self_iterator_type&>(*this);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+typename rtree<_Key,_Value,_Trait>::template iterator_base<_SelfIter,_StoreIter,_ValueT>::self_iterator_type
+rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::operator++(int)
+{
+    self_iterator_type ret(m_pos);
+    ++m_pos;
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+typename rtree<_Key,_Value,_Trait>::template iterator_base<_SelfIter,_StoreIter,_ValueT>::self_iterator_type&
+rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::operator--()
+{
+    --m_pos;
+    return static_cast<self_iterator_type&>(*this);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+typename rtree<_Key,_Value,_Trait>::template iterator_base<_SelfIter,_StoreIter,_ValueT>::self_iterator_type
+rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::operator--(int)
+{
+    self_iterator_type ret(m_pos);
+    --m_pos;
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+const typename rtree<_Key,_Value,_Trait>::extent_type&
+rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::extent() const
+{
+    return m_pos->ns->extent;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+size_t rtree<_Key,_Value,_Trait>::iterator_base<_SelfIter,_StoreIter,_ValueT>::depth() const
+{
+    return m_pos->depth;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_iterator
 rtree<_Key,_Value,_Trait>::const_search_results::cbegin() const
 {

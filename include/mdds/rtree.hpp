@@ -405,51 +405,17 @@ public:
         using difference_type = std::ptrdiff_t;
         using iterator_category = std::bidirectional_iterator_tag;
 
-        bool operator== (const self_iterator_type& other) const
-        {
-            return m_pos == other.m_pos;
-        }
+        bool operator== (const self_iterator_type& other) const;
+        bool operator!= (const self_iterator_type& other) const;
 
-        bool operator!= (const self_iterator_type& other) const
-        {
-            return !operator==(other);
-        }
+        self_iterator_type& operator++();
+        self_iterator_type operator++(int);
 
-        self_iterator_type& operator++()
-        {
-            ++m_pos;
-            return static_cast<self_iterator_type&>(*this);
-        }
+        self_iterator_type& operator--();
+        self_iterator_type operator--(int);
 
-        self_iterator_type operator++(int)
-        {
-            self_iterator_type ret(m_pos);
-            ++m_pos;
-            return ret;
-        }
-
-        self_iterator_type& operator--()
-        {
-            --m_pos;
-            return static_cast<self_iterator_type&>(*this);
-        }
-
-        self_iterator_type operator--(int)
-        {
-            self_iterator_type ret(m_pos);
-            --m_pos;
-            return ret;
-        }
-
-        const extent_type& extent() const
-        {
-            return m_pos->ns->extent;
-        }
-
-        size_t depth() const
-        {
-            return m_pos->depth;
-        }
+        const extent_type& extent() const;
+        size_t depth() const;
     };
 
     class const_iterator : public iterator_base<
