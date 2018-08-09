@@ -511,6 +511,18 @@ public:
      */
     const_search_results search(const extent_type& extent, search_type st) const;
 
+    /**
+     * Search the tree and collect all value objects whose extents either
+     * overlaps with the specified extent, or exactly match the specified
+     * extent.
+     *
+     * @param extent reference extent to use for the search.
+     * @param st search type that determines the satisfying condition of the
+     *           search with respect to the reference extent.
+     *
+     * @return collection of all value objects that satisfy the specified
+     *         search condition.  This collection is mutable.
+     */
     search_results search(const extent_type& extent, search_type st);
 
     /**
