@@ -2276,9 +2276,10 @@ void rtree<_Key,_Value,_Trait>::descend_with_func(_Func func) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+template<typename _ResT>
 void rtree<_Key,_Value,_Trait>::search_descend(
     size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
-    const node_store& ns, const_search_results& results) const
+    typename _ResT::node_store_type& ns, _ResT& results) const
 {
     switch (ns.type)
     {
@@ -2288,39 +2289,8 @@ void rtree<_Key,_Value,_Trait>::search_descend(
             if (!dir_cond(ns))
                 return;
 
-            const directory_node* node = static_cast<const directory_node*>(ns.node_ptr);
-            for (const node_store& child : node->children)
-                search_descend(depth+1, dir_cond, value_cond, child, results);
-            break;
-        }
-        case node_type::value:
-        {
-            if (!value_cond(ns))
-                return;
-
-            results.add_node_store(&ns, depth);
-            break;
-        }
-        case node_type::unspecified:
-            throw std::runtime_error("unspecified node type.");
-    }
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::search_descend(
-    size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
-    node_store& ns, search_results& results)
-{
-    switch (ns.type)
-    {
-        case node_type::directory_nonleaf:
-        case node_type::directory_leaf:
-        {
-            if (!dir_cond(ns))
-                return;
-
-            directory_node* node = static_cast<directory_node*>(ns.node_ptr);
-            for (node_store& child : node->children)
+            auto* node = ns.get_directory_node();
+            for (auto& child : node->children)
                 search_descend(depth+1, dir_cond, value_cond, child, results);
             break;
         }

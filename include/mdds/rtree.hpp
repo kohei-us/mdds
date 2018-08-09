@@ -346,10 +346,9 @@ public:
     template<typename _NS>
     class search_results_base
     {
+        friend class rtree;
     protected:
         using node_store_type = _NS;
-
-        friend class rtree;
 
         struct entry
         {
@@ -634,13 +633,10 @@ private:
 
     using search_condition_type = std::function<bool(const node_store&)>;
 
+    template<typename _ResT>
     void search_descend(
         size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
-        const node_store& ns, const_search_results& results) const;
-
-    void search_descend(
-        size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
-        node_store& ns, search_results& results);
+        typename _ResT::node_store_type& ns, _ResT& results) const;
 
     void shrink_tree_upward(node_store* ns, const extent_type& bb_affected);
 
