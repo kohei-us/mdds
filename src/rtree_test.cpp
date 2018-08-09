@@ -287,6 +287,7 @@ void rtree_test_basic_search()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
     rt_type::extent_type expected_bb;
 
     tree.insert({{0, 0}, {2, 2}}, "test");
@@ -308,7 +309,7 @@ void rtree_test_basic_search()
 
     // Verify the search method works.
 
-    rt_type::const_search_results res = tree.search({1, 1}, search_type::overlap);
+    rt_type::const_search_results res = ctree.search({1, 1}, search_type::overlap);
 
     auto it = res.cbegin(), it_end = res.cend();
 
@@ -340,7 +341,7 @@ void rtree_test_basic_search()
 
     for (const rt_type::point_type& pt : pts)
     {
-        res = tree.search(pt, search_type::overlap);
+        res = ctree.search(pt, search_type::overlap);
         assert(res.cbegin() == res.cend());
     }
 }
@@ -352,11 +353,12 @@ void rtree_test_basic_erase()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
     tree.insert({{-2,-2}, {2,2}}, "erase me");
     assert(!tree.empty());
     assert(tree.size() == 1);
 
-    rt_type::const_search_results res = tree.search({0, 0}, search_type::overlap);
+    rt_type::const_search_results res = ctree.search({0, 0}, search_type::overlap);
 
     size_t n = std::distance(res.begin(), res.end());
     assert(n == 1);
@@ -375,7 +377,7 @@ void rtree_test_basic_erase()
     assert(tree.extent() == expected_bb);
     assert(tree.size() == 2);
 
-    res = tree.search({-5, -2}, search_type::overlap);
+    res = ctree.search({-5, -2}, search_type::overlap);
     n = std::distance(res.begin(), res.end());
     assert(n == 1);
     it = res.begin();
@@ -395,6 +397,7 @@ void rtree_test_node_split()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
 
     // Inserting 6 entries should cause the root directory node to split.
     // After the split, the root node should become a non-leaf directory
@@ -470,7 +473,7 @@ void rtree_test_node_split()
     // Erase the entry at (0, 0).  There should be only one match.  Erasing
     // this entry will cause the node to be underfilled.
 
-    rt_type::const_search_results res = tree.search({0, 0}, search_type::overlap);
+    rt_type::const_search_results res = ctree.search({0, 0}, search_type::overlap);
     auto it = res.cbegin();
     assert(it != res.cend());
     assert(std::distance(it, res.cend()) == 1);
@@ -498,6 +501,7 @@ void rtree_test_directory_node_split()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
     using point = rt_type::point_type;
     using bounding_box = rt_type::extent_type;
 
@@ -531,7 +535,7 @@ void rtree_test_directory_node_split()
 
     for (const point& pt : pts)
     {
-        auto res = tree.search(pt, search_type::overlap);
+        auto res = ctree.search(pt, search_type::overlap);
         auto it = res.cbegin();
         assert(it != res.cend());
         assert(it.depth() == 4);
@@ -545,6 +549,7 @@ void rtree_test_erase_directories()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
     using point = rt_type::point_type;
     using bounding_box = rt_type::extent_type;
 
@@ -579,7 +584,7 @@ void rtree_test_erase_directories()
 
             cout << "erase at (" << x2 << ", " << y2 << ")" << endl;
 
-            auto res = tree.search({x2, y2}, search_type::overlap);
+            auto res = ctree.search({x2, y2}, search_type::overlap);
             auto it = res.begin(), ite = res.end();
             size_t n = std::distance(it, ite);
             assert(n == 1);
@@ -589,7 +594,7 @@ void rtree_test_erase_directories()
             assert(tree.size() == --expected_size);
             tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
 
-            res = tree.search({x2, y2}, search_type::overlap);
+            res = ctree.search({x2, y2}, search_type::overlap);
             n = std::distance(res.begin(), res.end());
             assert(n == 0);
         }
@@ -849,6 +854,7 @@ void rtree_test_only_copyable()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
     only_copyable v(11.2);
     tree.insert({{0, 0}, {2, 5}}, v);
     v.set(12.5);
@@ -856,11 +862,11 @@ void rtree_test_only_copyable()
 
     tree.check_integrity(rt_type::integrity_check_type::whole_tree);
 
-    auto res = tree.search({1, 1}, search_type::overlap);
+    auto res = ctree.search({1, 1}, search_type::overlap);
     assert(std::distance(res.begin(), res.end()) == 1);
     assert(res.begin()->get() == 11.2);
 
-    res = tree.search({9, 9}, search_type::overlap);
+    res = ctree.search({9, 9}, search_type::overlap);
     assert(std::distance(res.cbegin(), res.cend()) == 1);
     assert(res.cbegin()->get() == 12.5);
 }
@@ -930,22 +936,22 @@ void rtree_test_exact_search_by_point()
     tree.insert({3, 3}, 33.0);
     tree.check_integrity(integrity_check_type::whole_tree);
 
-    rt_type::const_search_results res = tree.search({1, 1}, search_type::overlap);
+    rt_type::const_search_results res = ctree.search({1, 1}, search_type::overlap);
     size_t n = std::distance(res.begin(), res.end());
     assert(n == 2);
 
-    res = tree.search({3, 3}, search_type::overlap);
+    res = ctree.search({3, 3}, search_type::overlap);
     n = std::distance(res.begin(), res.end());
     assert(n == 2);
 
-    res = tree.search({2, 2}, search_type::overlap);
+    res = ctree.search({2, 2}, search_type::overlap);
     n = std::distance(res.begin(), res.end());
     assert(n == 1);
     rt_type::const_iterator it = res.begin();
     assert(*it == 10.0);
     assert(it.extent() == extent_type({{0, 0}, {4, 4}}));
 
-    res = tree.search({1, 1}, search_type::match);
+    res = ctree.search({1, 1}, search_type::match);
     n = std::distance(res.begin(), res.end());
     assert(n == 1);
     it = res.begin();
@@ -953,7 +959,7 @@ void rtree_test_exact_search_by_point()
     assert(it.extent().is_point());
     assert(it.extent().start == point_type({1, 1}));
 
-    res = tree.search({3, 3}, search_type::match);
+    res = ctree.search({3, 3}, search_type::match);
     n = std::distance(res.begin(), res.end());
     assert(n == 1);
     it = res.begin();

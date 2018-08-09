@@ -1337,6 +1337,52 @@ rtree<_Key,_Value,_Trait>::search(const point_type& pt, search_type st) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+typename rtree<_Key,_Value,_Trait>::search_results
+rtree<_Key,_Value,_Trait>::search(const point_type& pt, search_type st)
+{
+    search_condition_type dir_cond, value_cond;
+
+    switch (st)
+    {
+        case search_type::overlap:
+        {
+            dir_cond = [&pt](const node_store& ns) -> bool
+            {
+                return ns.extent.contains(pt);
+            };
+
+            value_cond = dir_cond;
+            break;
+        }
+        case search_type::match:
+        {
+            dir_cond = [&pt](const node_store& ns) -> bool
+            {
+                return ns.extent.contains(pt);
+            };
+
+            value_cond = [&pt](const node_store& ns) -> bool
+            {
+                return ns.extent.start == pt && ns.extent.end == pt;
+            };
+
+            break;
+        }
+        default:
+            throw std::runtime_error("Unhandled search type.");
+    }
+
+    search_condition_type cond = [&pt](const node_store& ns) -> bool
+    {
+        return ns.extent.contains(pt);
+    };
+
+    search_results ret;
+    search_descend(0, dir_cond, value_cond, m_root, ret);
+    return ret;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 typename rtree<_Key,_Value,_Trait>::const_search_results
 rtree<_Key,_Value,_Trait>::search(const extent_type& extent, search_type st) const
 {

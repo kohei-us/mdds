@@ -499,6 +499,19 @@ public:
 
     /**
      * Search the tree and collect all value objects whose extents either
+     * contain the specified point, or exactly match the specified point.
+     *
+     * @param pt reference point to use for the search.
+     * @param st search type that determines the satisfying condition of the
+     *           search with respect to the reference point.
+     *
+     * @return collection of all value objects that satisfy the specified
+     *         search condition.  This collection is mutable.
+     */
+    search_results search(const point_type& pt, search_type st);
+
+    /**
+     * Search the tree and collect all value objects whose extents either
      * overlaps with the specified extent, or exactly match the specified
      * extent.
      *
