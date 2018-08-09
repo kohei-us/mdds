@@ -804,6 +804,7 @@ void rtree_test_point_objects()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
 
     for (key_type x = 0; x < 10; ++x)
     {
@@ -828,7 +829,7 @@ void rtree_test_point_objects()
     }
 
     // Test an extent-based search on point data.
-    auto results = tree.search({{0, 0}, {3, 3}}, search_type::overlap);
+    auto results = ctree.search({{0, 0}, {3, 3}}, search_type::overlap);
     size_t n_results = std::distance(results.cbegin(), results.cend());
     assert(n_results == 16);
 
@@ -874,22 +875,42 @@ void rtree_test_exact_search_by_extent()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
     tree.insert({{0, 0}, {2, 2}}, 1.1);
     tree.insert({{1, 1}, {3, 3}}, 1.2);
     tree.insert({{2, 2}, {4, 4}}, 1.3);
     tree.check_integrity(integrity_check_type::whole_tree);
 
-    auto res = tree.search({{1, 1}, {3, 3}}, search_type::overlap);
-    size_t n = std::distance(res.begin(), res.end());
-    assert(n == 3);
+    {
+        // Immutable search
+        rt_type::const_search_results cres = ctree.search({{1, 1}, {3, 3}}, search_type::overlap);
+        size_t n = std::distance(cres.begin(), cres.end());
+        assert(n == 3);
 
-    res = tree.search({{1, 1}, {3, 3}}, search_type::match);
-    n = std::distance(res.begin(), res.end());
-    assert(n == 1);
-    auto it = res.cbegin();
-    assert(*it == 1.2);
-    assert(it.extent() == extent_type({{1, 1}, {3, 3}}));
-    assert(it.depth() == 1);
+        cres = ctree.search({{1, 1}, {3, 3}}, search_type::match);
+        n = std::distance(cres.begin(), cres.end());
+        assert(n == 1);
+        auto it = cres.cbegin();
+        assert(*it == 1.2);
+        assert(it.extent() == extent_type({{1, 1}, {3, 3}}));
+        assert(it.depth() == 1);
+    }
+
+    {
+        // Mutable search
+        rt_type::search_results res = tree.search({{1, 1}, {3, 3}}, search_type::overlap);
+        size_t n = std::distance(res.begin(), res.end());
+        assert(n == 3);
+
+        // Modify the values.
+        for (double& v : res)
+            v += 1.0;
+
+        res = tree.search({{1, 1}, {3, 3}}, search_type::match);
+        n = std::distance(res.begin(), res.end());
+        assert(n == 1);
+        assert(*res.begin() == 2.2); // The value should be updated.
+    }
 }
 
 void rtree_test_exact_search_by_point()
@@ -903,6 +924,7 @@ void rtree_test_exact_search_by_point()
     using search_type = rt_type::search_type;
 
     rt_type tree;
+    const rt_type& ctree = tree;
     tree.insert({{0, 0}, {4, 4}}, 10.0);
     tree.insert({1, 1}, 11.0);
     tree.insert({3, 3}, 33.0);
@@ -939,7 +961,7 @@ void rtree_test_exact_search_by_point()
     assert(it.extent().is_point());
     assert(it.extent().start == point_type({3, 3}));
 
-    res = tree.search({{0, 0}, {4, 4}}, search_type::match);
+    res = ctree.search({{0, 0}, {4, 4}}, search_type::match);
     n = std::distance(res.begin(), res.end());
     assert(n == 1);
     it = res.begin();

@@ -366,6 +366,8 @@ public:
     };
 
     class const_iterator;
+    class iterator;
+    class search_results;
 
     class const_search_results : public search_results_base<const node_store>
     {
@@ -383,6 +385,8 @@ public:
         using base_type = search_results_base<node_store>;
         using base_type::m_store;
     public:
+        iterator begin();
+        iterator end();
     };
 
     template<typename _SelfIter, typename _StoreIter, typename _ValueT>
@@ -445,7 +449,7 @@ public:
     class iterator : public iterator_base<
         iterator,
         typename search_results::store_type::iterator,
-        const rtree::value_type>
+        rtree::value_type>
     {
         using base_type = iterator_base<
             iterator,
@@ -507,6 +511,8 @@ public:
      *         search condition.  This collection is immutable.
      */
     const_search_results search(const extent_type& extent, search_type st) const;
+
+    search_results search(const extent_type& extent, search_type st);
 
     /**
      * Erase the value object referenced by the iterator passed to this
@@ -631,6 +637,10 @@ private:
     void search_descend(
         size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
         const node_store& ns, const_search_results& results) const;
+
+    void search_descend(
+        size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
+        node_store& ns, search_results& results);
 
     void shrink_tree_upward(node_store* ns, const extent_type& bb_affected);
 
