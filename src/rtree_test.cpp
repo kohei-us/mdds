@@ -862,13 +862,29 @@ void rtree_test_only_copyable()
 
     tree.check_integrity(rt_type::integrity_check_type::whole_tree);
 
-    auto res = ctree.search({1, 1}, search_type::overlap);
-    assert(std::distance(res.begin(), res.end()) == 1);
-    assert(res.begin()->get() == 11.2);
+    {
+        // Immutable search.
+        auto cres = ctree.search({1, 1}, search_type::overlap);
+        assert(std::distance(cres.begin(), cres.end()) == 1);
+        assert(cres.begin()->get() == 11.2);
 
-    res = ctree.search({9, 9}, search_type::overlap);
-    assert(std::distance(res.cbegin(), res.cend()) == 1);
-    assert(res.cbegin()->get() == 12.5);
+        cres = ctree.search({9, 9}, search_type::overlap);
+        assert(std::distance(cres.cbegin(), cres.cend()) == 1);
+        assert(cres.cbegin()->get() == 12.5);
+    }
+
+    {
+        // Mutable search
+        auto res = tree.search({9, 9}, search_type::match);
+        assert(std::distance(res.begin(), res.end()) == 1);
+        assert(res.begin()->get() == 12.5);
+        auto it = res.begin();
+        (*it).set(34.5);
+
+        res = tree.search({9, 9}, search_type::match);
+        assert(std::distance(res.begin(), res.end()) == 1);
+        assert(res.begin()->get() == 34.5);
+    }
 }
 
 void rtree_test_exact_search_by_extent()
