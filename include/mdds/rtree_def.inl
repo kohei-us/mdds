@@ -1995,11 +1995,19 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_svg() const
     const std::string indent = "    ";
 
     // Uniform attributes to use for all drawing objects.
-    std::string attrs;
+
+    std::string attrs_dir;
     {
         std::ostringstream os;
         os << " stroke=\"#999999\" stroke-width=\"" << stroke_w << "\" fill=\"green\" fill-opacity=\"0.05\"";
-        attrs = os.str();
+        attrs_dir = os.str();
+    }
+
+    std::string attrs_value;
+    {
+        std::ostringstream os;
+        os << " stroke=\"brown\" stroke-width=\"" << stroke_w << "\" fill=\"brown\" fill-opacity=\"0.2\"";
+        attrs_value = os.str();
     }
 
     std::ostringstream os;
@@ -2017,6 +2025,8 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_svg() const
 
         if (level > 0)
         {
+            const char* attrs = (ns->type == node_type::value) ? attrs_value.data() : attrs_dir.data();
+
             if (ext.is_point())
             {
                 os << indent << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\"" << attrs << "/>";
