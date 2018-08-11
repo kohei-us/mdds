@@ -48,7 +48,7 @@ struct default_rtree_trait
     constexpr static size_t max_node_size = 100;
     constexpr static size_t max_tree_depth = 100;
 
-    constexpr static bool enable_forced_reinsertion = false;
+    constexpr static bool enable_forced_reinsertion = true;
 
     /**
      * Number of nodes to get re-inserted during forced reinsertion.  This
