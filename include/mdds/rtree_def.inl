@@ -1824,6 +1824,8 @@ std::string rtree<_Key,_Value,_Trait>::export_tree(export_tree_type mode) const
             return export_tree_formatted();
         case export_tree_type::extent_as_obj:
             return export_tree_extent_as_obj();
+        case export_tree_type::extent_as_svg:
+            return export_tree_extent_as_svg();
         default:
             throw std::runtime_error("unhandled export tree type.");
     }
@@ -1914,7 +1916,7 @@ template<typename _Key, typename _Value, typename _Trait>
 std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_obj() const
 {
     if (trait_type::dimensions != 2u)
-        throw size_error("Only 2-dimensional trees are supported for now.");
+        throw size_error("Only 2-dimensional trees are supported.");
 
     double unit_height =
         ((m_root.extent.end.d[0] - m_root.extent.start.d[0]) +
@@ -1974,6 +1976,79 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_obj() const
     };
 
     func_descend(&m_root, 0);
+
+    return os.str();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_svg() const
+{
+    if (trait_type::dimensions != 2u)
+        throw size_error("Only 2-dimensional trees are supported.");
+
+    key_type root_w = m_root.extent.end.d[0] - m_root.extent.start.d[0];
+    key_type root_h = m_root.extent.end.d[1] - m_root.extent.start.d[1];
+
+    const key_type r = std::min(root_w, root_h) / key_type(100);
+    const key_type stroke_w = r / key_type(10); // stroke width
+
+    const std::string indent = "    ";
+
+    // Uniform attributes to use for all drawing objects.
+    std::string attrs;
+    {
+        std::ostringstream os;
+        os << " stroke=\"#999999\" stroke-width=\"" << stroke_w << "\" fill=\"green\" fill-opacity=\"0.05\"";
+        attrs = os.str();
+    }
+
+    std::ostringstream os;
+    os << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    os << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+
+    std::function<void(const node_store*, int)> func_descend = [&](const node_store* ns, int level)
+    {
+        const extent_type& ext = ns->extent;
+
+        key_type w = ext.end.d[0] - ext.start.d[0];
+        key_type h = ext.end.d[1] - ext.start.d[1];
+        key_type x = ext.start.d[0];
+        key_type y = ext.start.d[1];
+
+        if (ext.is_point())
+        {
+            os << indent << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\"" << attrs << "/>";
+        }
+        else
+        {
+            os << indent << "<rect x=\"" << x << "\" y=\"" << y << "\" width=\"" << w << "\" height=\"" << h << "\""
+               << attrs << "/>";
+        }
+
+        switch (ns->type)
+        {
+            case node_type::directory_leaf:
+            case node_type::directory_nonleaf:
+            {
+                const directory_node* dir =
+                    static_cast<const directory_node*>(ns->node_ptr);
+
+                for (const node_store& ns_child : dir->children)
+                    func_descend(&ns_child, level+1);
+
+                break;
+            }
+            case node_type::value:
+                // Do nothing.
+                break;
+            default:
+                throw integrity_error("Unexpected node type!");
+        }
+    };
+
+    os << "<svg version=\"1.2\" width=\"" << root_w << "\" height=\"" << root_h << "\">\n";
+    func_descend(&m_root, 0);
+    os << "</svg>";
 
     return os.str();
 }

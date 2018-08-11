@@ -99,6 +99,20 @@ public:
     double get() const { return m_value; }
 };
 
+template<typename T>
+void export_tree(const T& tree, const std::string& basename)
+{
+    {
+        std::ofstream fout(basename + ".obj");
+        fout << tree.export_tree(T::export_tree_type::extent_as_obj);
+    }
+
+    {
+        std::ofstream fout(basename + ".svg");
+        fout << tree.export_tree(T::export_tree_type::extent_as_svg);
+    }
+}
+
 void rtree_test_intersection()
 {
     stack_printer __stack_printer__("::rtree_test_intersection");
@@ -645,8 +659,7 @@ void rtree_test_forced_reinsertion()
     tree.check_integrity(rt_type::integrity_check_type::whole_tree);
     assert(tree.size() == 25);
 
-    std::ofstream fout("rtree-test-forced-reinsertion.obj");
-    fout << tree.export_tree(rt_type::export_tree_type::extent_as_obj);
+    export_tree(tree, "rtree-test-forced-reinsertion");
 }
 
 void rtree_test_move()
@@ -739,8 +752,8 @@ void rtree_test_move_custom_type()
     assert(tree.size() == inputs.size());
 
     tree.check_integrity(rt_type::integrity_check_type::whole_tree);
-    std::ofstream fout("rtree-test-move-custom-type.obj");
-    fout << tree.export_tree(rt_type::export_tree_type::extent_as_obj);
+
+    export_tree(tree, "rtree-test-move-custom-type");
 
     // Now move the tree.
     rt_type tree_moved = std::move(tree);
@@ -838,8 +851,7 @@ void rtree_test_point_objects()
     size_t n_results = std::distance(results.cbegin(), results.cend());
     assert(n_results == 16);
 
-    std::ofstream fout("rtree-test-point-objects.obj");
-    fout << tree.export_tree(rt_type::export_tree_type::extent_as_obj);
+    export_tree(tree, "rtree-test-point-objects");
 }
 
 /**

@@ -77,7 +77,13 @@ enum class export_tree_type
      * directory nodes at that depth level.  The depth planes are then stacked
      * vertically.
      */
-    extent_as_obj
+    extent_as_obj,
+
+    /**
+     * The extents of all directory and value nodes are exported as a scalable
+     * vector graphics (SVG) format.  Only 2 dimensional trees are supported.
+     */
+    extent_as_svg
 };
 
 enum class integrity_check_type { throw_on_fail, whole_tree };
@@ -623,6 +629,7 @@ private:
 
     std::string export_tree_formatted() const;
     std::string export_tree_extent_as_obj() const;
+    std::string export_tree_extent_as_svg() const;
 
     void insert(node_store&& ns, std::unordered_set<size_t>* reinserted_depths);
     void insert_dir(node_store&& ns, size_t max_depth);
