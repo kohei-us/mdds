@@ -2015,14 +2015,17 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_svg() const
         key_type x = ext.start.d[0];
         key_type y = ext.start.d[1];
 
-        if (ext.is_point())
+        if (level > 0)
         {
-            os << indent << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\"" << attrs << "/>";
-        }
-        else
-        {
-            os << indent << "<rect x=\"" << x << "\" y=\"" << y << "\" width=\"" << w << "\" height=\"" << h << "\""
-               << attrs << "/>";
+            if (ext.is_point())
+            {
+                os << indent << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\"" << attrs << "/>";
+            }
+            else
+            {
+                os << indent << "<rect x=\"" << x << "\" y=\"" << y << "\" width=\"" << w << "\" height=\"" << h << "\""
+                   << attrs << "/>";
+            }
         }
 
         switch (ns->type)
