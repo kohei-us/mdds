@@ -548,9 +548,23 @@ public:
      * Erase the value object referenced by the iterator passed to this
      * method.
      *
+     * <p>The iterator object will become invalid if the call results in an
+     * erasure of a value.</p>
+     *
      * @param pos iterator that refernces the value object to erase.
      */
-    void erase(const_iterator pos);
+    void erase(const const_iterator& pos);
+
+    /**
+     * Erase the value object referenced by the iterator passed to this
+     * method.
+     *
+     * <p>The iterator object will become invalid if the call results in an
+     * erasure of a value.</p>
+     *
+     * @param pos iterator that refernces the value object to erase.
+     */
+    void erase(const iterator& pos);
 
     /**
      * Get the minimum bounding extent of the root node of the tree. The
@@ -619,6 +633,8 @@ private:
 
     void insert_impl(const point_type& start, const point_type& end, value_type&& value);
     void insert_impl(const point_type& start, const point_type& end, const value_type& value);
+
+    void erase_impl(const node_store* ns, size_t depth);
 
     /**
      * Build and return a callable function object that you can call in order

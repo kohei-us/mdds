@@ -864,6 +864,7 @@ void rtree_test_only_copyable()
 
     using rt_type = rtree<float, only_copyable, tiny_trait_2d_forced_reinsertion>;
     using search_type = rt_type::search_type;
+    using extent_type = rt_type::extent_type;
 
     rt_type tree;
     const rt_type& ctree = tree;
@@ -896,6 +897,24 @@ void rtree_test_only_copyable()
         res = tree.search({9, 9}, search_type::match);
         assert(std::distance(res.begin(), res.end()) == 1);
         assert(res.begin()->get() == 34.5);
+    }
+
+    {
+        // Erase the only object via mutable iterator.
+        assert(tree.size() == 2);
+        rt_type::search_results res = tree.search({{0, 0}, {100, 100}}, search_type::overlap);
+        assert(std::distance(res.begin(), res.end()) == 2);
+
+        res = tree.search({9, 9}, search_type::match);
+        assert(std::distance(res.begin(), res.end()) == 1);
+        tree.erase(res.begin());
+
+        assert(tree.size() == 1);
+        res = tree.search({{0, 0}, {100, 100}}, search_type::overlap);
+        assert(std::distance(res.begin(), res.end()) == 1);
+        auto it = res.begin();
+        assert(it.extent() == extent_type({{0, 0}, {2, 5}}));
+        assert(it->get() == 11.2);
     }
 }
 

@@ -1465,11 +1465,24 @@ rtree<_Key,_Value,_Trait>::search(const extent_type& extent, search_type st)
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::erase(const_iterator pos)
+void rtree<_Key,_Value,_Trait>::erase(const const_iterator& pos)
 {
     const node_store* ns = pos.m_pos->ns;
     size_t depth = pos.m_pos->depth;
+    erase_impl(ns, depth);
+}
 
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::erase(const iterator& pos)
+{
+    const node_store* ns = pos.m_pos->ns;
+    size_t depth = pos.m_pos->depth;
+    erase_impl(ns, depth);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::erase_impl(const node_store* ns, size_t depth)
+{
     assert(ns->type == node_type::value);
     assert(ns->parent);
 
