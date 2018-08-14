@@ -279,6 +279,7 @@
 			<F N="../src/rangetree.cpp"/>
 			<F N="../src/rectangle_set_test.cpp"/>
 			<F N="../src/rtree_test.cpp"/>
+			<F N="../src/rtree_test_bulkload.cpp"/>
 			<F N="../src/segment_tree_test.cpp"/>
 			<F N="../src/sorted_string_map_test.cpp"/>
 			<F N="../src/stlperf_test.cpp"/>

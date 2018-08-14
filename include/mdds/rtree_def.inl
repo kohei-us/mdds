@@ -1109,6 +1109,38 @@ rtree<_Key,_Value,_Trait>::iterator::operator->()
 }
 
 template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::bulk_loader::bulk_loader()
+{
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const extent_type& extent, value_type&& value)
+{
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const extent_type& extent, const value_type& value)
+{
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const point_type& position, value_type&& value)
+{
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const point_type& position, const value_type& value)
+{
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait> rtree<_Key,_Value,_Trait>::bulk_loader::pack()
+{
+    rtree tree;
+    return tree;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::rtree() : m_root(node_store::create_leaf_directory_node())
 {
     static_assert(trait_type::min_node_size <= trait_type::max_node_size / 2,

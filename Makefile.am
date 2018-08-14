@@ -61,7 +61,8 @@ check_PROGRAMS = \
 	stlperf_test \
 	template_test \
 	trie_map_test \
-	rtree_test
+	rtree_test \
+	rtree_test_bulkload
 
 flat_segment_tree_test_SOURCES = src/flat_segment_tree_test.cpp src/test_global.hpp
 
@@ -94,6 +95,8 @@ template_test_SOURCES = src/template_test.cpp
 trie_map_test_SOURCES = src/trie_map_test.cpp src/test_global.hpp
 
 rtree_test_SOURCES = src/rtree_test.cpp src/test_global.hpp
+
+rtree_test_bulkload_SOURCES = src/rtree_test_bulkload.cpp src/test_global.hpp
 
 test.fst.perf: flat_segment_tree_test
 	./flat_segment_tree_test perf
@@ -134,7 +137,8 @@ TESTS = \
 	segment_tree_test \
 	sorted_string_map_test \
 	trie_map_test \
-	rtree_test
+	rtree_test \
+	rtree_test_bulkload
 
 # NOTE: AFAIK automake does not support running the same test executable
 # in different ways. I workaround this limitation by creating dummy
@@ -153,7 +157,8 @@ TESTS += \
 	segment_tree_test_mem.mem \
 	sorted_string_map_test_mem.mem \
 	trie_map_test_mem.mem \
-	rtree_test_mem.mem
+	rtree_test_mem.mem \
+	rtree_test_bulkload_mem.mem
 endif
 
 install-data-local:
