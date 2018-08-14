@@ -1209,7 +1209,7 @@ void rtree<_Key,_Value,_Trait>::insert(const point_type& position, value_type&& 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::insert(const point_type& position, const value_type& value)
 {
-    insert_impl(position, position, std::move(value));
+    insert_impl(position, position, value);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
