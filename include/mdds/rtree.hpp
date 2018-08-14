@@ -478,10 +478,6 @@ public:
     class bulk_loader
     {
     public:
-        using extent_type = rtree::extent_type;
-        using point_type = rtree::point_type;
-        using value_type = rtree::value_type;
-
         bulk_loader();
 
         void insert(const extent_type& extent, value_type&& value);
