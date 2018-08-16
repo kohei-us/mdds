@@ -267,17 +267,27 @@ private:
 
     using dir_store_type = std::deque<node_store>;
 
-    struct dist_group
+    struct dir_store_segment
     {
         typename dir_store_type::iterator begin;
         typename dir_store_type::iterator end;
         size_t size;
+
+        dir_store_segment() : size(0) {}
+
+        dir_store_segment(
+            typename dir_store_type::iterator begin,
+            typename dir_store_type::iterator end,
+            size_t size) :
+            begin(std::move(begin)),
+            end(std::move(end)),
+            size(size) {}
     };
 
     struct distribution
     {
-        dist_group g1;
-        dist_group g2;
+        dir_store_segment g1;
+        dir_store_segment g2;
 
         distribution(size_t dist, dir_store_type& nodes)
         {
@@ -477,6 +487,8 @@ public:
 
     class bulk_loader
     {
+        dir_store_type m_store;
+
     public:
         bulk_loader();
 
@@ -487,6 +499,10 @@ public:
         void insert(const point_type& position, const value_type& value);
 
         rtree pack();
+
+    private:
+        void insert_impl(const extent_type& extent, value_type&& value);
+        void insert_impl(const extent_type& extent, const value_type& value);
     };
 
     rtree();

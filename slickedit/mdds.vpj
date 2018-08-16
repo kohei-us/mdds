@@ -285,6 +285,7 @@
 			<F N="../src/stlperf_test.cpp"/>
 			<F N="../src/template_test.cpp"/>
 			<F N="../src/test_global.hpp"/>
+			<F N="../src/test_global_rtree.hpp"/>
 			<F N="../src/trie_map_test.cpp"/>
 		</Folder>
 	</Files>

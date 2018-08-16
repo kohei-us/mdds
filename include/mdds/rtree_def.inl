@@ -34,6 +34,7 @@
 #include <memory>
 #include <cassert>
 #include <algorithm>
+#include <cmath>
 
 namespace mdds { namespace draft {
 
@@ -1116,26 +1117,152 @@ rtree<_Key,_Value,_Trait>::bulk_loader::bulk_loader()
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const extent_type& extent, value_type&& value)
 {
+    assert(!"TESTME");
+    insert_impl(extent, std::move(value));
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const extent_type& extent, const value_type& value)
 {
+    assert(!"TESTME");
+    insert_impl(extent, value);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const point_type& position, value_type&& value)
 {
+    insert_impl(extent_type({position, position}), std::move(value));
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const point_type& position, const value_type& value)
 {
+    assert(!"TESTME");
+    insert_impl(extent_type({position, position}), value);
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::bulk_loader::insert_impl(const extent_type& extent, value_type&& value)
+{
+    node_store ns_value = node_store::create_value_node(extent, std::move(value));
+    m_store.emplace_back(std::move(ns_value));
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::bulk_loader::insert_impl(const extent_type& extent, const value_type& value)
+{
+
 }
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait> rtree<_Key,_Value,_Trait>::bulk_loader::pack()
 {
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): size = " << m_store.size() << std::endl;
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): max node size = " << trait_type::max_node_size << std::endl;
+    float n_total_node = std::ceil(m_store.size() / float(trait_type::max_node_size));
+    float n_splits_per_dim = std::ceil(
+        std::pow(n_total_node, 1.0f / float(trait_type::dimensions)));
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): total node count = " << n_total_node << std::endl;
+    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): splits per dim = " << n_splits_per_dim << std::endl;
+
+    // The first dimension will start with one segment.
+    std::vector<dir_store_segment> segments;
+    segments.emplace_back(m_store.begin(), m_store.end(), m_store.size());
+
+    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    {
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): -- dimension " << dim << std::endl;
+        std::vector<dir_store_segment> next_segments;
+
+        for (dir_store_segment& seg : segments)
+        {
+            std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): -- segment (size=" << seg.size << ")" << std::endl;
+            assert(seg.size == size_t(std::distance(seg.begin, seg.end)));
+
+            if (seg.size <= trait_type::max_node_size)
+                break;
+
+            // Sort by the current dimension key.
+            std::sort(seg.begin, seg.end,
+                [dim](const node_store& left, const node_store& right) -> bool
+                {
+                    // Compare the middle points.
+                    float left_key = (left.extent.end.d[dim] + left.extent.start.d[dim]) / 2.0f;
+                    float right_key = (right.extent.end.d[dim] + right.extent.start.d[dim]) / 2.0f;
+
+                    return left_key < right_key;
+                }
+            );
+
+            // Size of each segment in this dimension splits.  It should never
+            // be smaller than the max node size except for the last segment.
+
+            size_t segment_size = std::ceil(seg.size / n_splits_per_dim);
+            assert(segment_size >= trait_type::max_node_size);
+
+            size_t n_cur_segment = 0;
+            auto begin = seg.begin;
+            for (auto it = begin; it != seg.end; ++it, ++n_cur_segment)
+            {
+                if (n_cur_segment == segment_size)
+                {
+                    // Push a new segment.
+                    next_segments.emplace_back(begin, it, n_cur_segment);
+                    begin = it;
+                    n_cur_segment = 0;
+                }
+            }
+
+            if (begin != seg.end)
+            {
+                size_t n = std::distance(begin, seg.end);
+                next_segments.emplace_back(begin, seg.end, n);
+            }
+        }
+
+#ifdef MDDS_RTREE_DEBUG
+        size_t test_total = 0;
+        for (const auto& seg : next_segments)
+            test_total += seg.size;
+
+        if (test_total != m_store.size())
+            throw std::logic_error(
+                "The total combined segment sizes must equal the size of the inserted values!");
+#endif
+        segments.swap(next_segments);
+    }
+
+#ifdef MDDS_RTREE_DEBUG
+    // Check the final segment.
+    size_t test_total = 0;
+    for (const auto& seg : segments)
+        test_total += seg.size;
+
+    if (test_total != m_store.size())
+        throw std::logic_error(
+            "The total combined segment sizes must equal the size of the inserted values!");
+#endif
+
+    if (!segments.empty())
+    {
+        // Create a set of directory nodes from the current segments.
+        dir_store_type next_store;
+        for (dir_store_segment& seg : segments)
+        {
+            node_store ns = node_store::create_leaf_directory_node();
+            directory_node* dir = ns.get_directory_node();
+
+            for (auto it = seg.begin; it != seg.end; ++it)
+                dir->children.push_back(std::move(*it));
+
+            ns.pack();
+            next_store.push_back(std::move(ns));
+        }
+
+        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): next store size = " << next_store.size() << std::endl;
+        throw std::runtime_error("WIP: keep going.");
+    }
+
     rtree tree;
     return tree;
 }

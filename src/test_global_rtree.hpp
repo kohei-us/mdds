@@ -29,9 +29,8 @@
 #ifndef INCLUDED_MDDS_TEST_GLOBAL_RTREE_HPP
 #define INCLUDED_MDDS_TEST_GLOBAL_RTREE_HPP
 
+#define MDDS_RTREE_DEBUG 1
 #include <mdds/rtree.hpp>
-
-#include "test_global_rtree.hpp"
 
 struct tiny_trait_1d
 {

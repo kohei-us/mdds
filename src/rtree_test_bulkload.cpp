@@ -36,21 +36,47 @@
 using namespace mdds::draft;
 using namespace std;
 
-void rtree_test_bulkload_empty()
+void rtree_test_bl_empty()
 {
-    stack_printer __stack_printer__("::rtree_test_bulkload_empty");
-
+    stack_printer __stack_printer__("::rtree_test_bl_empty");
     using rt_type = rtree<int16_t, std::string>;
+    using integrity_check_type = rt_type::integrity_check_type;
 
     // Load nothing.
     rt_type::bulk_loader loader;
     rt_type tree = loader.pack();
     assert(tree.empty());
+    tree.check_integrity(integrity_check_type::whole_tree);
+}
+
+void rtree_test_bl_insert_points()
+{
+    stack_printer __stack_printer__("::rtree_test_bl_insert_points");
+    using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
+    using integrity_check_type = rt_type::integrity_check_type;
+    using key_type = rt_type::key_type;
+
+    rt_type::bulk_loader loader;
+    for (key_type x = 0; x < 20; ++x)
+    {
+        key_type yn = (x == 0) ? 19 : 20;
+        for (key_type y = 0; y < yn; ++y)
+        {
+            std::ostringstream os;
+            os << '(' << x << ',' << y << ')';
+            loader.insert({x, y}, os.str());
+        }
+    }
+
+    auto tree = loader.pack();
+    assert(tree.size() == 399);
+    tree.check_integrity(integrity_check_type::whole_tree);
 }
 
 int main(int argc, char** argv)
 {
-    rtree_test_bulkload_empty();
+    rtree_test_bl_empty();
+    rtree_test_bl_insert_points();
 
     return EXIT_SUCCESS;
 }
