@@ -71,6 +71,7 @@ void rtree_test_bl_insert_points()
     auto tree = loader.pack();
     assert(tree.size() == 399);
     tree.check_integrity(integrity_check_type::whole_tree);
+    export_tree(tree, "rtree-test-bl-insert-points");
 }
 
 int main(int argc, char** argv)

@@ -1157,26 +1157,49 @@ void rtree<_Key,_Value,_Trait>::bulk_loader::insert_impl(const extent_type& exte
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait> rtree<_Key,_Value,_Trait>::bulk_loader::pack()
 {
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): size = " << m_store.size() << std::endl;
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): max node size = " << trait_type::max_node_size << std::endl;
-    float n_total_node = std::ceil(m_store.size() / float(trait_type::max_node_size));
+    size_t depth = 0;
+    for (; m_store.size() > trait_type::max_node_size; ++depth)
+        pack_level(m_store, depth);
+
+    // By this point, the number of directory nodes should have been reduced
+    // below the max node size. Create a root directory and store them there.
+
+    assert(m_store.size() <= trait_type::max_node_size);
+
+    node_store root = node_store::create_leaf_directory_node();
+    if (depth > 0)
+        root.type = node_type::directory_nonleaf;
+
+    directory_node* dir = root.get_directory_node();
+    assert(dir);
+    dir->children.swap(m_store);
+
+    root.count = dir->children.size();
+    root.pack();
+
+    rtree tree(std::move(root));
+    return tree;
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+void rtree<_Key,_Value,_Trait>::bulk_loader::pack_level(dir_store_type& store, size_t depth)
+{
+    assert(!store.empty());
+
+    float n_total_node = std::ceil(store.size() / float(trait_type::max_node_size));
     float n_splits_per_dim = std::ceil(
         std::pow(n_total_node, 1.0f / float(trait_type::dimensions)));
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): total node count = " << n_total_node << std::endl;
-    std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): splits per dim = " << n_splits_per_dim << std::endl;
 
     // The first dimension will start with one segment.
     std::vector<dir_store_segment> segments;
-    segments.emplace_back(m_store.begin(), m_store.end(), m_store.size());
+    segments.emplace_back(store.begin(), store.end(), store.size());
 
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): -- dimension " << dim << std::endl;
         std::vector<dir_store_segment> next_segments;
 
         for (dir_store_segment& seg : segments)
         {
-            std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): -- segment (size=" << seg.size << ")" << std::endl;
             assert(seg.size == size_t(std::distance(seg.begin, seg.end)));
 
             if (seg.size <= trait_type::max_node_size)
@@ -1194,11 +1217,8 @@ rtree<_Key,_Value,_Trait> rtree<_Key,_Value,_Trait>::bulk_loader::pack()
                 }
             );
 
-            // Size of each segment in this dimension splits.  It should never
-            // be smaller than the max node size except for the last segment.
-
+            // Size of each segment in this dimension splits.
             size_t segment_size = std::ceil(seg.size / n_splits_per_dim);
-            assert(segment_size >= trait_type::max_node_size);
 
             size_t n_cur_segment = 0;
             auto begin = seg.begin;
@@ -1225,7 +1245,7 @@ rtree<_Key,_Value,_Trait> rtree<_Key,_Value,_Trait>::bulk_loader::pack()
         for (const auto& seg : next_segments)
             test_total += seg.size;
 
-        if (test_total != m_store.size())
+        if (test_total != store.size())
             throw std::logic_error(
                 "The total combined segment sizes must equal the size of the inserted values!");
 #endif
@@ -1238,33 +1258,32 @@ rtree<_Key,_Value,_Trait> rtree<_Key,_Value,_Trait>::bulk_loader::pack()
     for (const auto& seg : segments)
         test_total += seg.size;
 
-    if (test_total != m_store.size())
+    if (test_total != store.size())
         throw std::logic_error(
             "The total combined segment sizes must equal the size of the inserted values!");
 #endif
 
-    if (!segments.empty())
+    assert(!segments.empty());
+
+    // Create a set of directory nodes from the current segments.
+    dir_store_type next_store;
+    for (dir_store_segment& seg : segments)
     {
-        // Create a set of directory nodes from the current segments.
-        dir_store_type next_store;
-        for (dir_store_segment& seg : segments)
-        {
-            node_store ns = node_store::create_leaf_directory_node();
-            directory_node* dir = ns.get_directory_node();
+        node_store ns = node_store::create_leaf_directory_node();
+        if (depth > 0)
+            ns.type = node_type::directory_nonleaf;
 
-            for (auto it = seg.begin; it != seg.end; ++it)
-                dir->children.push_back(std::move(*it));
+        directory_node* dir = ns.get_directory_node();
 
-            ns.pack();
-            next_store.push_back(std::move(ns));
-        }
+        for (auto it = seg.begin; it != seg.end; ++it)
+            dir->children.push_back(std::move(*it));
 
-        std::cout << __FILE__ << "#" << __LINE__ << " (rtree:bulk_loader:pack): next store size = " << next_store.size() << std::endl;
-        throw std::runtime_error("WIP: keep going.");
+        ns.count = dir->children.size();
+        ns.pack();
+        next_store.push_back(std::move(ns));
     }
 
-    rtree tree;
-    return tree;
+    store.swap(next_store);
 }
 
 template<typename _Key, typename _Value, typename _Trait>
@@ -1290,6 +1309,12 @@ rtree<_Key,_Value,_Trait>::rtree(rtree&& other) : m_root(std::move(other.m_root)
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::rtree(const rtree& other) : m_root(other.m_root.clone())
+{
+    m_root.reset_parent_pointers();
+}
+
+template<typename _Key, typename _Value, typename _Trait>
+rtree<_Key,_Value,_Trait>::rtree(node_store&& root) : m_root(std::move(root))
 {
     m_root.reset_parent_pointers();
 }
@@ -2161,8 +2186,8 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_svg() const
     key_type root_w = m_root.extent.end.d[0] - m_root.extent.start.d[0];
     key_type root_h = m_root.extent.end.d[1] - m_root.extent.start.d[1];
 
-    const key_type r = std::min(root_w, root_h) / key_type(100);
-    const key_type stroke_w = r / key_type(10); // stroke width
+    const float r = std::min(root_w, root_h) / 100.0f;
+    const float stroke_w = r / 10.0f; // stroke width
 
     const std::string indent = "    ";
 

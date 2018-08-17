@@ -92,6 +92,20 @@ public:
     double get() const { return m_value; }
 };
 
+template<typename T>
+void export_tree(const T& tree, const std::string& basename)
+{
+    {
+        std::ofstream fout(basename + ".obj");
+        fout << tree.export_tree(T::export_tree_type::extent_as_obj);
+    }
+
+    {
+        std::ofstream fout(basename + ".svg");
+        fout << tree.export_tree(T::export_tree_type::extent_as_svg);
+    }
+}
+
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

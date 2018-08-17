@@ -38,20 +38,6 @@
 using namespace mdds::draft;
 using namespace std;
 
-template<typename T>
-void export_tree(const T& tree, const std::string& basename)
-{
-    {
-        std::ofstream fout(basename + ".obj");
-        fout << tree.export_tree(T::export_tree_type::extent_as_obj);
-    }
-
-    {
-        std::ofstream fout(basename + ".svg");
-        fout << tree.export_tree(T::export_tree_type::extent_as_svg);
-    }
-}
-
 void rtree_test_intersection()
 {
     stack_printer __stack_printer__("::rtree_test_intersection");

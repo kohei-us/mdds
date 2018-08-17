@@ -501,6 +501,8 @@ public:
         rtree pack();
 
     private:
+        void pack_level(dir_store_type& store, size_t depth);
+
         void insert_impl(const extent_type& extent, value_type&& value);
         void insert_impl(const extent_type& extent, const value_type& value);
     };
@@ -508,6 +510,11 @@ public:
     rtree();
     rtree(rtree&& other);
     rtree(const rtree& other);
+
+private:
+    rtree(node_store&& root); // only used internally by bulk_loader.
+
+public:
     ~rtree();
 
     rtree& operator= (const rtree& other);
