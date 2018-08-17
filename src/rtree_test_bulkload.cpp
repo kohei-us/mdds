@@ -49,9 +49,9 @@ void rtree_test_bl_empty()
     tree.check_integrity(integrity_check_type::whole_tree);
 }
 
-void rtree_test_bl_insert_points()
+void rtree_test_bl_insert_points_move()
 {
-    stack_printer __stack_printer__("::rtree_test_bl_insert_points");
+    stack_printer __stack_printer__("::rtree_test_bl_insert_points_move");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
     using integrity_check_type = rt_type::integrity_check_type;
     using key_type = rt_type::key_type;
@@ -90,16 +90,17 @@ void rtree_test_bl_insert_points_copy()
 
     std::vector<kv> values =
     {
-        { {  0,    0}, "origin"    },
-        { {125,  125}, "middle"    },
-        { { 22,  987}, "somewhere" },
-        { {-34, -200}, "negative"  },
+        { {  0,    0}, "origin"      },
+        { {125,  125}, "middle"      },
+        { { 22,  987}, "somewhere"   },
+        { {-34, -200}, "negative"    },
+        { {  2,    3}, "near origin" },
     };
 
     // Insert less than max node size in order to test the packing
     // implementation that doesn't involve per-level packing.
     tiny_trait_2d_forced_reinsertion t;
-    assert(values.size() < t.max_node_size);
+    assert(values.size() <= t.max_node_size);
 
     for (size_t n_values = 1; n_values <= values.size(); ++n_values)
     {
@@ -132,7 +133,7 @@ void rtree_test_bl_insert_points_copy()
 int main(int argc, char** argv)
 {
     rtree_test_bl_empty();
-    rtree_test_bl_insert_points();
+    rtree_test_bl_insert_points_move();
     rtree_test_bl_insert_points_copy();
 
     return EXIT_SUCCESS;
