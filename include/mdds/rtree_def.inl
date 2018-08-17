@@ -2550,7 +2550,7 @@ rtree<_Key,_Value,_Trait>::find_nonleaf_directory_node_for_insertion(
         assert(dst->is_directory());
 
         if (!dst->count)
-            // This node has no chilren.
+            // This node has no children.
             return dst;
 
         assert(dst->type == node_type::directory_nonleaf);
