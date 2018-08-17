@@ -74,10 +74,66 @@ void rtree_test_bl_insert_points()
     export_tree(tree, "rtree-test-bl-insert-points");
 }
 
+void rtree_test_bl_insert_points_copy()
+{
+    stack_printer __stack_printer__("::rtree_test_bl_insert_points_copy");
+    using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
+    using integrity_check_type = rt_type::integrity_check_type;
+    using point_type = rt_type::point_type;
+    using search_type = rt_type::search_type;
+
+    struct kv
+    {
+        point_type point;
+        std::string value;
+    };
+
+    std::vector<kv> values =
+    {
+        { {  0,    0}, "origin"    },
+        { {125,  125}, "middle"    },
+        { { 22,  987}, "somewhere" },
+        { {-34, -200}, "negative"  },
+    };
+
+    // Insert less than max node size in order to test the packing
+    // implementation that doesn't involve per-level packing.
+    tiny_trait_2d_forced_reinsertion t;
+    assert(values.size() < t.max_node_size);
+
+    for (size_t n_values = 1; n_values <= values.size(); ++n_values)
+    {
+        auto loader = rt_type::bulk_loader();
+
+        // Insert specified number of value(s).
+        for (size_t i = 0; i < n_values; ++i)
+            loader.insert(values[i].point, values[i].value);
+
+        // Populate and pack the tree.
+        auto tree = loader.pack();
+        tree.check_integrity(integrity_check_type::whole_tree);
+        assert(tree.size() == n_values);
+
+        // Make sure the inserted values are all there.
+        for (size_t i = 0; i < n_values; ++i)
+        {
+            auto res = tree.search(values[i].point, search_type::match);
+            assert(std::distance(res.begin(), res.end()) == 1);
+            auto it = res.begin();
+            assert(*it == values[i].value);
+
+            // The values should all be the immediate children of the root
+            // directory node.
+            assert(it.depth() == 1);
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     rtree_test_bl_empty();
     rtree_test_bl_insert_points();
+    rtree_test_bl_insert_points_copy();
 
     return EXIT_SUCCESS;
 }

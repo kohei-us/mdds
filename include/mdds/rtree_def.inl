@@ -1137,7 +1137,6 @@ void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const point_type& position, 
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const point_type& position, const value_type& value)
 {
-    assert(!"TESTME");
     insert_impl(extent_type({position, position}), value);
 }
 
@@ -1151,7 +1150,8 @@ void rtree<_Key,_Value,_Trait>::bulk_loader::insert_impl(const extent_type& exte
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::bulk_loader::insert_impl(const extent_type& extent, const value_type& value)
 {
-
+    node_store ns_value = node_store::create_value_node(extent, value);
+    m_store.emplace_back(std::move(ns_value));
 }
 
 template<typename _Key, typename _Value, typename _Trait>
