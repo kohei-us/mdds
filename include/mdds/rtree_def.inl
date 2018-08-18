@@ -1117,7 +1117,6 @@ rtree<_Key,_Value,_Trait>::bulk_loader::bulk_loader()
 template<typename _Key, typename _Value, typename _Trait>
 void rtree<_Key,_Value,_Trait>::bulk_loader::insert(const extent_type& extent, value_type&& value)
 {
-    assert(!"TESTME");
     insert_impl(extent, std::move(value));
 }
 
