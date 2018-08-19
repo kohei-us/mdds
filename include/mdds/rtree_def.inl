@@ -60,6 +60,30 @@ inline const char* to_string(node_type nt)
     return "???";
 }
 
+inline size_t calc_optimal_segment_size_for_pack(size_t init_size, size_t min_size, size_t max_size, size_t value_count)
+{
+    // Keep increasing the size until the remainder becomes at least the min size.
+    size_t final_size = init_size;
+    for (; final_size < max_size; ++final_size)
+    {
+        size_t mod = value_count % final_size;
+        if (mod >= min_size)
+            return final_size;
+    }
+
+    // If increasing the size doesn't work, then decrease it.
+    final_size = init_size;
+    for (--final_size; min_size < final_size; --final_size)
+    {
+        size_t mod = value_count % final_size;
+        if (mod >= min_size)
+            return final_size;
+    }
+
+    // Nothing has worked.  Use the original value.
+    return init_size;
+}
+
 template<typename _Extent>
 auto calc_linear_intersection(size_t dim, const _Extent& bb1, const _Extent& bb2) -> remove_cvref_t<decltype(bb1.start.d[0])>
 {
@@ -1195,6 +1219,9 @@ void rtree<_Key,_Value,_Trait>::bulk_loader::pack_level(dir_store_type& store, s
 
     for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
     {
+        if (segments[0].size <= trait_type::max_node_size)
+            break;
+
         std::vector<dir_store_segment> next_segments;
 
         for (dir_store_segment& seg : segments)
@@ -1202,7 +1229,10 @@ void rtree<_Key,_Value,_Trait>::bulk_loader::pack_level(dir_store_type& store, s
             assert(seg.size == size_t(std::distance(seg.begin, seg.end)));
 
             if (seg.size <= trait_type::max_node_size)
-                break;
+            {
+                next_segments.push_back(seg);
+                continue;
+            }
 
             // Sort by the current dimension key.
             std::sort(seg.begin, seg.end,
@@ -1217,7 +1247,9 @@ void rtree<_Key,_Value,_Trait>::bulk_loader::pack_level(dir_store_type& store, s
             );
 
             // Size of each segment in this dimension splits.
-            size_t segment_size = std::ceil(seg.size / n_splits_per_dim);
+            size_t segment_size = detail::rtree::calc_optimal_segment_size_for_pack(
+                std::ceil(seg.size / n_splits_per_dim),
+                trait_type::min_node_size, trait_type::max_node_size, seg.size);
 
             size_t n_cur_segment = 0;
             auto begin = seg.begin;

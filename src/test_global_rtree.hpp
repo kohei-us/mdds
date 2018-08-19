@@ -76,6 +76,8 @@ public:
     {
         other.m_value = 0.0;
     }
+
+    double get() const { return m_value; }
 };
 
 class only_copyable

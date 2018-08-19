@@ -46,7 +46,7 @@ void rtree_test_bl_empty()
     rt_type::bulk_loader loader;
     rt_type tree = loader.pack();
     assert(tree.empty());
-    tree.check_integrity(integrity_check_type::whole_tree);
+    tree.check_integrity(integrity_check_type::throw_on_fail);
 }
 
 void rtree_test_bl_insert_points_move()
@@ -70,8 +70,8 @@ void rtree_test_bl_insert_points_move()
 
     auto tree = loader.pack();
     assert(tree.size() == 399);
-    tree.check_integrity(integrity_check_type::whole_tree);
-    export_tree(tree, "rtree-test-bl-insert-points");
+    tree.check_integrity(integrity_check_type::throw_on_fail);
+    export_tree(tree, "rtree-test-bl-insert-points-move");
 }
 
 void rtree_test_bl_insert_points_copy()
@@ -112,7 +112,7 @@ void rtree_test_bl_insert_points_copy()
 
         // Populate and pack the tree.
         auto tree = loader.pack();
-        tree.check_integrity(integrity_check_type::whole_tree);
+        tree.check_integrity(integrity_check_type::throw_on_fail);
         assert(tree.size() == n_values);
 
         // Make sure the inserted values are all there.
@@ -173,18 +173,33 @@ void rtree_test_bl_insert_extents_move()
         { 11666, 14587, 1400, 1146, 3.1 },
     };
 
-    rt_type::bulk_loader loader = rt_type::bulk_loader();
-
-    for (const auto& v : values)
+    for (size_t n_values = 5; n_values <= values.size(); ++n_values)
     {
-        extent_type extent{{v.x, v.y}, {int16_t(v.x+v.w), int16_t(v.y+v.h)}};
-        only_movable vv(v.value);
+        rt_type::bulk_loader loader = rt_type::bulk_loader();
 
-        loader.insert(extent, std::move(vv));
+        for (size_t i = 0; i < n_values; ++i)
+        {
+            const auto& v = values[i];
+            extent_type extent{{v.x, v.y}, {int16_t(v.x+v.w), int16_t(v.y+v.h)}};
+            only_movable vv(v.value);
+
+            loader.insert(extent, std::move(vv));
+        }
+
+        auto tree = loader.pack();
+        assert(tree.size() == n_values);
+        tree.check_integrity(integrity_check_type::throw_on_fail);
+
+        // Make sure the values are all there.
+        for (size_t i = 0; i < n_values; ++i)
+        {
+            const auto& v = values[i];
+            extent_type extent{{v.x, v.y}, {int16_t(v.x+v.w), int16_t(v.y+v.h)}};
+            auto res = tree.search(extent, search_type::match);
+            assert(std::distance(res.begin(), res.end()) == 1);
+            assert(res.begin()->get() == v.value);
+        }
     }
-
-    // TODO : fix this.
-//  auto tree = loader.pack();
 }
 
 int main(int argc, char** argv)
