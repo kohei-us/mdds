@@ -67,7 +67,7 @@ inline size_t calc_optimal_segment_size_for_pack(size_t init_size, size_t min_si
     for (; final_size < max_size; ++final_size)
     {
         size_t mod = value_count % final_size;
-        if (mod >= min_size)
+        if (!mod || mod >= min_size)
             return final_size;
     }
 
@@ -76,7 +76,7 @@ inline size_t calc_optimal_segment_size_for_pack(size_t init_size, size_t min_si
     for (--final_size; min_size < final_size; --final_size)
     {
         size_t mod = value_count % final_size;
-        if (mod >= min_size)
+        if (!mod || mod >= min_size)
             return final_size;
     }
 
