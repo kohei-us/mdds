@@ -40,21 +40,23 @@ void rtree_test_bl_empty()
 {
     stack_printer __stack_printer__("::rtree_test_bl_empty");
     using rt_type = rtree<int16_t, std::string>;
-    using integrity_check_type = rt_type::integrity_check_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     // Load nothing.
     rt_type::bulk_loader loader;
     rt_type tree = loader.pack();
     assert(tree.empty());
-    tree.check_integrity(integrity_check_type::throw_on_fail);
+    tree.check_integrity(check_props);
 }
 
 void rtree_test_bl_insert_points_move()
 {
     stack_printer __stack_printer__("::rtree_test_bl_insert_points_move");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
-    using integrity_check_type = rt_type::integrity_check_type;
     using key_type = rt_type::key_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = true;
 
     rt_type::bulk_loader loader;
     for (key_type x = 0; x < 20; ++x)
@@ -70,7 +72,7 @@ void rtree_test_bl_insert_points_move()
 
     auto tree = loader.pack();
     assert(tree.size() == 399);
-    tree.check_integrity(integrity_check_type::throw_on_fail);
+    tree.check_integrity(check_props);
     export_tree(tree, "rtree-test-bl-insert-points-move");
 }
 
@@ -78,9 +80,10 @@ void rtree_test_bl_insert_points_copy()
 {
     stack_printer __stack_printer__("::rtree_test_bl_insert_points_copy");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
-    using integrity_check_type = rt_type::integrity_check_type;
     using point_type = rt_type::point_type;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = true;
 
     struct kv
     {
@@ -112,7 +115,7 @@ void rtree_test_bl_insert_points_copy()
 
         // Populate and pack the tree.
         auto tree = loader.pack();
-        tree.check_integrity(integrity_check_type::throw_on_fail);
+        tree.check_integrity(check_props);
         assert(tree.size() == n_values);
 
         // Make sure the inserted values are all there.
@@ -134,9 +137,10 @@ void rtree_test_bl_insert_extents_move()
 {
     stack_printer __stack_printer__("::rtree_test_bl_insert_extents_move");
     using rt_type = rtree<int16_t, only_movable, tiny_trait_2d_forced_reinsertion>;
-    using integrity_check_type = rt_type::integrity_check_type;
     using extent_type = rt_type::extent_type;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = true;
 
     struct kv
     {
@@ -188,7 +192,7 @@ void rtree_test_bl_insert_extents_move()
 
         auto tree = loader.pack();
         assert(tree.size() == n_values);
-        tree.check_integrity(integrity_check_type::throw_on_fail);
+        tree.check_integrity(check_props);
 
         // Make sure the values are all there.
         for (size_t i = 0; i < n_values; ++i)

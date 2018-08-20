@@ -224,6 +224,8 @@ void rtree_test_basic_search()
     stack_printer __stack_printer__("::rtree_test_basic_search");
     using rt_type = rtree<int16_t, std::string>;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = true;
 
     rt_type tree;
     const rt_type& ctree = tree;
@@ -244,7 +246,7 @@ void rtree_test_basic_search()
     assert(tree.extent() == expected_bb);
     assert(tree.size() == 3);
 
-    tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
+    tree.check_integrity(check_props);
 
     // Verify the search method works.
 
@@ -290,6 +292,8 @@ void rtree_test_basic_erase()
     stack_printer __stack_printer__("::rtree_test_basic_erase");
     using rt_type = rtree<int16_t, std::string>;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = true;
 
     rt_type tree;
     const rt_type& ctree = tree;
@@ -326,7 +330,7 @@ void rtree_test_basic_erase()
     expected_bb = {{0,0}, {2,2}};
     assert(tree.extent() == expected_bb);
 
-    tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
+    tree.check_integrity(check_props);
 }
 
 void rtree_test_node_split()
@@ -334,6 +338,8 @@ void rtree_test_node_split()
     stack_printer __stack_printer__("::rtree_test_node_split");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = true;
 
     rt_type tree;
     const rt_type& ctree = tree;
@@ -382,7 +388,7 @@ void rtree_test_node_split()
     assert(count_leaf == 2);
     assert(count_nonleaf == 1);
 
-    tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
+    tree.check_integrity(check_props);
 
     // Adding two more entries will cause one of the leaf directory nodes
     // below the root node to split.
@@ -396,7 +402,7 @@ void rtree_test_node_split()
     }
 
     assert(tree.size() == 8);
-    tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
+    tree.check_integrity(check_props);
 
     // Count all the nodes again.
     count_values = 0;
@@ -419,7 +425,7 @@ void rtree_test_node_split()
     tree.erase(it);
 
     assert(tree.size() == 7);
-    tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
+    tree.check_integrity(check_props);
 
     // Count all the nodes again.
     count_values = 0;
@@ -438,6 +444,8 @@ void rtree_test_directory_node_split()
     stack_printer __stack_printer__("::rtree_test_directory_node_split");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = true;
 
     rt_type tree;
     const rt_type& ctree = tree;
@@ -456,7 +464,7 @@ void rtree_test_directory_node_split()
             bounding_box bb(s, e);
             cout << "Inserting value '" << v << "' to {" << bb.to_string() << "} ..." << endl;
             tree.insert({s, e}, std::move(v));
-            tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
+            tree.check_integrity(check_props);
         }
     }
 
@@ -486,6 +494,8 @@ void rtree_test_erase_directories()
     stack_printer __stack_printer__("::rtree_test_erase_directories");
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = true;
 
     rt_type tree;
     const rt_type& ctree = tree;
@@ -509,7 +519,7 @@ void rtree_test_erase_directories()
     }
 
     assert(tree.size() == 25);
-    tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
+    tree.check_integrity(check_props);
     cout << tree.export_tree(rt_type::export_tree_type::formatted_node_properties) << endl;
 
     size_t expected_size = 25;
@@ -531,7 +541,7 @@ void rtree_test_erase_directories()
             tree.erase(it);
 
             assert(tree.size() == --expected_size);
-            tree.check_integrity(rt_type::integrity_check_type::throw_on_fail);
+            tree.check_integrity(check_props);
 
             res = ctree.search({x2, y2}, search_type::overlap);
             n = std::distance(res.begin(), res.end());
@@ -548,6 +558,8 @@ void rtree_test_forced_reinsertion()
     stack_printer __stack_printer__("::rtree_test_forced_reinsertion");
 
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     rt_type tree;
 
@@ -560,12 +572,12 @@ void rtree_test_forced_reinsertion()
     }
 
     assert(tree.size() == 6);
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
 
     tree.clear();
     assert(tree.empty());
     assert(tree.size() == 0);
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
 
     for (int16_t x = 0; x < 5; ++x)
     {
@@ -581,7 +593,7 @@ void rtree_test_forced_reinsertion()
         }
     }
 
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
     assert(tree.size() == 25);
 
     export_tree(tree, "rtree-test-forced-reinsertion");
@@ -592,6 +604,8 @@ void rtree_test_move()
     stack_printer __stack_printer__("::rtree_test_move");
 
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     rt_type tree;
 
@@ -609,23 +623,23 @@ void rtree_test_move()
         }
     }
 
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
     assert(tree.size() == 25);
 
     // moved via constructor.
     rt_type tree_moved(std::move(tree));
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
-    tree_moved.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
+    tree_moved.check_integrity(check_props);
     assert(tree.empty());
     assert(tree.size() == 0);
     assert(tree_moved.size() == 25);
 
     // moved via assignment operator.
     rt_type tree_moved_2;
-    tree_moved_2.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree_moved_2.check_integrity(check_props);
     tree_moved_2 = std::move(tree_moved);
-    tree_moved.check_integrity(rt_type::integrity_check_type::whole_tree);
-    tree_moved_2.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree_moved.check_integrity(check_props);
+    tree_moved_2.check_integrity(check_props);
     assert(tree_moved.empty());
     assert(tree_moved.size() == 0);
     assert(tree_moved_2.size() == 25);
@@ -641,6 +655,8 @@ void rtree_test_move_custom_type()
 
     using rt_type = rtree<double, only_movable, tiny_trait_2d_forced_reinsertion>;
     using point_type = rt_type::point_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     {
         // Make sure you can actually move an object of this type.
@@ -676,14 +692,14 @@ void rtree_test_move_custom_type()
 
     assert(tree.size() == inputs.size());
 
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
 
     export_tree(tree, "rtree-test-move-custom-type");
 
     // Now move the tree.
     rt_type tree_moved = std::move(tree);
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
-    tree_moved.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
+    tree_moved.check_integrity(check_props);
     assert(tree.empty());
     assert(tree_moved.size() == inputs.size());
 }
@@ -694,6 +710,8 @@ void rtree_test_copy()
 
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using point_type = rt_type::point_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     struct input
     {
@@ -722,8 +740,8 @@ void rtree_test_copy()
 
     auto copied(tree);
 
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
-    copied.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
+    copied.check_integrity(check_props);
 
     std::string str_src = tree.export_tree(rt_type::export_tree_type::formatted_node_properties);
     std::string str_dst = tree.export_tree(rt_type::export_tree_type::formatted_node_properties);
@@ -732,7 +750,7 @@ void rtree_test_copy()
 
     // Test the "copy via assignment" scenario too.
     auto copied_via_assign = tree;
-    copied_via_assign.check_integrity(rt_type::integrity_check_type::whole_tree);
+    copied_via_assign.check_integrity(check_props);
     str_dst = copied_via_assign.export_tree(rt_type::export_tree_type::formatted_node_properties);
 
     assert(!str_src.empty() && str_src == str_dst);
@@ -745,6 +763,8 @@ void rtree_test_point_objects()
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using key_type = rt_type::key_type;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     rt_type tree;
     const rt_type& ctree = tree;
@@ -757,7 +777,7 @@ void rtree_test_point_objects()
         }
     }
 
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
 
     for (key_type x = 0; x < 10; ++x)
     {
@@ -790,6 +810,8 @@ void rtree_test_only_copyable()
     using rt_type = rtree<float, only_copyable, tiny_trait_2d_forced_reinsertion>;
     using search_type = rt_type::search_type;
     using extent_type = rt_type::extent_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     rt_type tree;
     const rt_type& ctree = tree;
@@ -798,7 +820,7 @@ void rtree_test_only_copyable()
     v.set(12.5);
     tree.insert({9, 9}, v);
 
-    tree.check_integrity(rt_type::integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
 
     {
         // Immutable search.
@@ -849,15 +871,16 @@ void rtree_test_exact_search_by_extent()
 
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using extent_type = rt_type::extent_type;
-    using integrity_check_type = rt_type::integrity_check_type;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     rt_type tree;
     const rt_type& ctree = tree;
     tree.insert({{0, 0}, {2, 2}}, 1.1);
     tree.insert({{1, 1}, {3, 3}}, 1.2);
     tree.insert({{2, 2}, {4, 4}}, 1.3);
-    tree.check_integrity(integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
 
     {
         // Immutable search
@@ -898,15 +921,16 @@ void rtree_test_exact_search_by_point()
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using point_type = rt_type::point_type;
     using extent_type = rt_type::extent_type;
-    using integrity_check_type = rt_type::integrity_check_type;
     using search_type = rt_type::search_type;
+    rt_type::integrity_check_properties check_props;
+    check_props.throw_on_first_error = false;
 
     rt_type tree;
     const rt_type& ctree = tree;
     tree.insert({{0, 0}, {4, 4}}, 10.0);
     tree.insert({1, 1}, 11.0);
     tree.insert({3, 3}, 33.0);
-    tree.check_integrity(integrity_check_type::whole_tree);
+    tree.check_integrity(check_props);
 
     rt_type::const_search_results res = ctree.search({1, 1}, search_type::overlap);
     size_t n = std::distance(res.begin(), res.end());

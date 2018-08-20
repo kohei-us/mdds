@@ -58,6 +58,17 @@ struct default_rtree_trait
     constexpr static size_t reinsertion_size = 30;
 };
 
+struct integrity_check_properties
+{
+    /**
+     * When true, the integrity check will throw an exception on the first
+     * validation failture.  When false, it will run through the entire tree
+     * and report all encountered validation failures then throw an exception
+     * if there is at least one failure.
+     */
+    bool throw_on_first_error = true;
+};
+
 enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
 
 enum class export_tree_type
@@ -85,8 +96,6 @@ enum class export_tree_type
      */
     extent_as_svg
 };
-
-enum class integrity_check_type { throw_on_fail, whole_tree };
 
 enum class search_type
 {
@@ -180,8 +189,8 @@ public:
 
     using node_type = detail::rtree::node_type;
     using export_tree_type = detail::rtree::export_tree_type;
-    using integrity_check_type = detail::rtree::integrity_check_type;
     using search_type = detail::rtree::search_type;
+    using integrity_check_properties = detail::rtree::integrity_check_properties;
 
     struct node_properties
     {
@@ -650,11 +659,11 @@ public:
     /**
      * Check the integrity of the entire tree structure.
      *
-     * @param mode specify how the check is to be performed.
+     * @param props specify how the check is to be performed.
      *
      * @exception integrity_error if the integrity check fails.
      */
-    void check_integrity(integrity_check_type mode) const;
+    void check_integrity(const integrity_check_properties& props) const;
 
     /**
      * Export the structure of a tree in textural format.

@@ -1849,7 +1849,7 @@ void rtree<_Key,_Value,_Trait>::walk(_Func func) const
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
+void rtree<_Key,_Value,_Trait>::check_integrity(const integrity_check_properties& props) const
 {
     auto func_ptr_to_string = build_ptr_to_string_map();
 
@@ -1868,7 +1868,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
 
     std::vector<const node_store*> ns_stack;
 
-    std::function<bool(const node_store*, int)> func_descend = [&ns_stack,&func_descend,&func_ptr_to_string,mode](const node_store* ns, int level) -> bool
+    std::function<bool(const node_store*, int)> func_descend = [&ns_stack,&func_descend,&func_ptr_to_string,&props](const node_store* ns, int level) -> bool
     {
         bool valid = true;
 
@@ -1884,7 +1884,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
             parent_bb = parent->extent;
         }
 
-        if (mode == integrity_check_type::whole_tree)
+        if (!props.throw_on_first_error)
         {
             std::cout << indent << "node: " << func_ptr_to_string(ns)
                 << "; parent: " << func_ptr_to_string(ns->parent)
@@ -1898,7 +1898,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
             {
                 std::ostringstream os;
                 os << "The parent node pointer does not point to the real parent. (expected: " << parent << "; stored in node: " << ns->parent << ")";
-                if (mode == integrity_check_type::throw_on_fail)
+                if (props.throw_on_first_error)
                     throw integrity_error(os.str());
                 std::cout << indent << "* " << os.str() << std::endl;
                 valid = false;
@@ -1908,7 +1908,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
             {
                 std::ostringstream os;
                 os << "The extent of the child " << ns->extent.to_string() << " is not within the extent of the parent " << parent_bb.to_string() << ".";
-                if (mode == integrity_check_type::throw_on_fail)
+                if (props.throw_on_first_error)
                     throw integrity_error(os.str());
                 std::cout << indent << "* " << os.str() << std::endl;
                 valid = false;
@@ -1922,7 +1922,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
                     {
                         std::ostringstream os;
                         os << "Parent of a leaf directory node must be non-leaf.";
-                        if (mode == integrity_check_type::throw_on_fail)
+                        if (props.throw_on_first_error)
                             throw integrity_error(os.str());
                         std::cout << indent << "* " << os.str() << std::endl;
                         valid = false;
@@ -1935,7 +1935,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
                     {
                         std::ostringstream os;
                         os << "Parent of a non-leaf directory node must also be non-leaf.";
-                        if (mode == integrity_check_type::throw_on_fail)
+                        if (props.throw_on_first_error)
                             throw integrity_error(os.str());
                         std::cout << indent << "* " << os.str() << std::endl;
                         valid = false;
@@ -1948,7 +1948,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
                     {
                         std::ostringstream os;
                         os << "Parent of a value node must be a leaf directory node.";
-                        if (mode == integrity_check_type::throw_on_fail)
+                        if (props.throw_on_first_error)
                             throw integrity_error(os.str());
                         std::cout << indent << "* " << os.str() << std::endl;
                         valid = false;
@@ -1975,7 +1975,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
                     std::ostringstream os;
                     os << "Incorrect count of child nodes detected. (expected: " << dir->children.size() << "; actual: " << ns->count << ")";
 
-                    if (mode == integrity_check_type::throw_on_fail)
+                    if (props.throw_on_first_error)
                         throw integrity_error(os.str());
 
                     std::cout << indent << "* " << os.str() << std::endl;
@@ -1993,7 +1993,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
                     os << "The number of child nodes (" << ns->count << ") is not within the permitted range of "
                        << trait_type::min_node_size << " - " << trait_type::max_node_size;
 
-                    if (mode == integrity_check_type::throw_on_fail)
+                    if (props.throw_on_first_error)
                         throw integrity_error(os.str());
 
                     std::cout << indent << "* " << os.str() << std::endl;
@@ -2009,7 +2009,7 @@ void rtree<_Key,_Value,_Trait>::check_integrity(integrity_check_type mode) const
                     std::ostringstream os;
                     os << "The extent of the node " << ns->extent.to_string() << " does not equal truly tight extent " << bb_expected.to_string();
 
-                    if (mode == integrity_check_type::throw_on_fail)
+                    if (props.throw_on_first_error)
                         throw integrity_error(os.str());
 
                     std::cout << indent << "* " << os.str() << std::endl;
