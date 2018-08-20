@@ -1987,11 +1987,26 @@ void rtree<_Key,_Value,_Trait>::check_integrity(const integrity_check_properties
                     // If the root directory is a leaf, it's allowed to be underfilled.
                     node_underfill_allowed = true;
 
-                if ((!node_underfill_allowed && ns->count < trait_type::min_node_size) || trait_type::max_node_size < ns->count)
+                if (!node_underfill_allowed && ns->count < trait_type::min_node_size)
                 {
                     std::ostringstream os;
-                    os << "The number of child nodes (" << ns->count << ") is not within the permitted range of "
-                       << trait_type::min_node_size << " - " << trait_type::max_node_size;
+                    os << "The number of child nodes (" << ns->count << ") is less than the minimum allowed number of "
+                       << trait_type::min_node_size;
+
+                    if (props.error_on_min_node_size && props.throw_on_first_error)
+                        throw integrity_error(os.str());
+
+                    std::cout << indent << "* " << os.str() << std::endl;
+
+                    if (props.error_on_min_node_size)
+                        valid = false;
+                }
+
+                if (trait_type::max_node_size < ns->count)
+                {
+                    std::ostringstream os;
+                    os << "The number of child nodes (" << ns->count << ") exceeds the maximum allowed number of "
+                       << trait_type::max_node_size;
 
                     if (props.throw_on_first_error)
                         throw integrity_error(os.str());

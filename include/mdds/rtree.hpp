@@ -62,11 +62,17 @@ struct integrity_check_properties
 {
     /**
      * When true, the integrity check will throw an exception on the first
-     * validation failture.  When false, it will run through the entire tree
+     * validation failure.  When false, it will run through the entire tree
      * and report all encountered validation failures then throw an exception
      * if there is at least one failure.
      */
     bool throw_on_first_error = true;
+
+    /**
+     * When true, a node containing children less than the minimum node size
+     * will be treated as an error.
+     */
+    bool error_on_min_node_size = true;
 };
 
 enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
