@@ -203,6 +203,9 @@ void rtree_test_bl_insert_extents_move()
             assert(std::distance(res.begin(), res.end()) == 1);
             assert(res.begin()->get() == v.value);
         }
+
+        if (n_values == values.size())
+            export_tree(tree, "rtree-test-bl-insert-extents-move");
     }
 }
 
