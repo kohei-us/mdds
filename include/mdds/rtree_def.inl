@@ -2161,16 +2161,16 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_obj() const
     if (trait_type::dimensions != 2u)
         throw size_error("Only 2-dimensional trees are supported.");
 
-    double unit_height =
+    float unit_height =
         ((m_root.extent.end.d[0] - m_root.extent.start.d[0]) +
          (m_root.extent.end.d[1] - m_root.extent.start.d[1])) / 5;
 
     // Calculate the width to use for point data.
-    double pt_width = std::min<double>(
+    float pt_width = std::min<float>(
         m_root.extent.end.d[0] - m_root.extent.start.d[0],
         m_root.extent.end.d[1] - m_root.extent.start.d[1]);
-    pt_width /= 400.0;
-    pt_width = std::min<double>(pt_width, 1.0);
+    pt_width /= 400.0f;
+    pt_width = std::min<float>(pt_width, 1.0f);
 
     std::ostringstream os;
     size_t counter = 0;
