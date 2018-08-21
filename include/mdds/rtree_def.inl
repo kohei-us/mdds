@@ -2229,11 +2229,26 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_svg() const
     if (trait_type::dimensions != 2u)
         throw size_error("Only 2-dimensional trees are supported.");
 
-    key_type root_w = m_root.extent.end.d[0] - m_root.extent.start.d[0];
-    key_type root_h = m_root.extent.end.d[1] - m_root.extent.start.d[1];
+    constexpr float min_avg_root_length = 800.0f;
+    constexpr float max_avg_root_length = 1000.0f;
+    float root_w = m_root.extent.end.d[0] - m_root.extent.start.d[0];
+    float root_h = m_root.extent.end.d[1] - m_root.extent.start.d[1];
 
-    const float r = std::min(root_w, root_h) / 100.0f;
-    const float stroke_w = r / 10.0f; // stroke width
+    // Adjust zooming for optimal output size. We don't want it to be too
+    // large or too small.
+    float zoom_ratio = 1.0;
+    float root_avg = (root_w + root_h) / 2.0f;
+    if (root_avg >= max_avg_root_length)
+        zoom_ratio = max_avg_root_length / root_avg;
+    if (root_avg <= min_avg_root_length)
+        zoom_ratio = min_avg_root_length / root_avg;
+
+    root_w *= zoom_ratio;
+    root_h *= zoom_ratio;
+    float root_x = m_root.extent.start.d[0] * zoom_ratio;
+    float root_y = m_root.extent.start.d[1] * zoom_ratio;
+    float r = root_avg / 100.0f * zoom_ratio;
+    float stroke_w = r / 10.0f; // stroke width
 
     const std::string indent = "    ";
 
@@ -2261,10 +2276,16 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_svg() const
     {
         const extent_type& ext = ns->extent;
 
-        key_type w = ext.end.d[0] - ext.start.d[0];
-        key_type h = ext.end.d[1] - ext.start.d[1];
-        key_type x = ext.start.d[0];
-        key_type y = ext.start.d[1];
+        float w = ext.end.d[0] - ext.start.d[0];
+        float h = ext.end.d[1] - ext.start.d[1];
+        float x = ext.start.d[0];
+        float y = ext.start.d[1];
+        w *= zoom_ratio;
+        h *= zoom_ratio;
+        x *= zoom_ratio;
+        y *= zoom_ratio;
+        x -= root_x;
+        y -= root_y;
 
         if (level > 0)
         {
