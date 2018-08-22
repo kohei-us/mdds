@@ -15,6 +15,9 @@ mdds 1.4.0
   * multi_type_vector now has cbegin(), cend(), crbegin(), and crend()
     methods.
 
+  * some unnecessary user-provided special members have been removed to
+    avoid warnings with -Wdeprecated-copy with GCC 9.
+
 * multi_type_matrix
 
   * all of its walk() methods now allow in-line lambdas to be used, by
