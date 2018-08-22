@@ -2292,12 +2292,12 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_svg() const
 
             if (ext.is_point())
             {
-                os << indent << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\"" << attrs << "/>";
+                os << indent << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\"" << attrs << "/>\n";
             }
             else
             {
                 os << indent << "<rect x=\"" << x << "\" y=\"" << y << "\" width=\"" << w << "\" height=\"" << h << "\""
-                   << attrs << "/>";
+                   << attrs << "/>\n";
             }
         }
 
