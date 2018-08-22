@@ -184,11 +184,20 @@ public:
          */
         bool contains(const extent_type& bb) const;
 
+        /**
+         * Determine whether or not the specified extent overlaps with this
+         * extent either partially or fully.
+         *
+         * @param bb extent to query with.
+         *
+         * @return true if the specified extent overlaps with this extent, or
+         *         otherwise false.
+         */
         bool intersects(const extent_type& bb) const;
 
         /**
          * Determine whether or not another bounding box is within this
-         * bounding box and touches at least one boundary.
+         * bounding box and shares a part of its boundaries.
          */
         bool contains_at_boundary(const extent_type& other) const;
     };
@@ -500,6 +509,11 @@ public:
         value_type* operator->();
     };
 
+    /**
+     * Loader optimized for loading a large number of value objects.  A
+     * resultant tree will have a higher chance of being well balanced than if
+     * the value objects were inserted individually into the tree.
+     */
     class bulk_loader
     {
         dir_store_type m_store;
@@ -536,10 +550,40 @@ public:
 
     rtree& operator= (rtree&& other);
 
+    /**
+     * Insert a new value associated with a bounding box.  The new value
+     * object will be moved into the container.
+     *
+     * @param extent bounding box associated with the value.
+     * @param value value being inserted.
+     */
     void insert(const extent_type& extent, value_type&& value);
+
+    /**
+     * Insert a new value associated with a bounding box.  A copy of the new
+     * value object will be placed into the container.
+     *
+     * @param extent bounding box associated with the value.
+     * @param value value being inserted.
+     */
     void insert(const extent_type& extent, const value_type& value);
 
+    /**
+     * Insert a new value associated with a point.  The new value object will
+     * be moved into the container.
+     *
+     * @param position point associated with the value.
+     * @param value value being inserted.
+     */
     void insert(const point_type& position, value_type&& value);
+
+    /**
+     * Insert a new value associated with a point.  A copy of the new value
+     * object will be placed into the container.
+     *
+     * @param position point associated with the value.
+     * @param value value being inserted.
+     */
     void insert(const point_type& position, const value_type& value);
 
     /**
