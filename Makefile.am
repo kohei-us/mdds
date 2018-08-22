@@ -8,7 +8,10 @@ dist_doc_DATA = AUTHORS README.md
 nodist_doc_DATA = VERSION
 nodist_pkgconf_DATA = misc/mdds-@API_VERSION@.pc
 
-DISTCLEANFILES = misc/mdds-@API_VERSION@.pc
+DISTCLEANFILES = \
+	misc/mdds-@API_VERSION@.pc \
+	rtree-test-*.obj \
+	rtree-test-*.svg
 
 EXTRA_DIST = \
 	autogen.sh \
@@ -94,9 +97,9 @@ template_test_SOURCES = src/template_test.cpp
 
 trie_map_test_SOURCES = src/trie_map_test.cpp src/test_global.hpp
 
-rtree_test_SOURCES = src/rtree_test.cpp src/test_global.hpp
+rtree_test_SOURCES = src/rtree_test.cpp src/test_global.hpp src/test_global_rtree.hpp
 
-rtree_test_bulkload_SOURCES = src/rtree_test_bulkload.cpp src/test_global.hpp
+rtree_test_bulkload_SOURCES = src/rtree_test_bulkload.cpp src/test_global.hpp src/test_global_rtree.hpp
 
 test.fst.perf: flat_segment_tree_test
 	./flat_segment_tree_test perf

@@ -23,6 +23,8 @@ headers_HEADERS = \
 	quad_node.hpp \
 	rectangle_set_def.inl \
 	rectangle_set.hpp \
+	rtree.hpp \
+	rtree_def.inl \
 	segment_tree_def.inl \
 	segment_tree.hpp \
 	sorted_string_map_def.inl \
