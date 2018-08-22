@@ -37,7 +37,7 @@
 #include <unordered_map>
 #include <functional>
 
-namespace mdds { namespace draft {
+namespace mdds {
 
 namespace detail { namespace rtree {
 
@@ -788,7 +788,7 @@ private:
     node_store m_root;
 };
 
-}}
+} // namespace mdds
 
 #include "rtree_def.inl"
 

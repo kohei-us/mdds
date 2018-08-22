@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace mdds { namespace draft {
+namespace mdds {
 
 namespace detail { namespace rtree {
 
@@ -2724,7 +2724,7 @@ void rtree<_Key,_Value,_Trait>::shrink_tree_upward(node_store* ns, const extent_
     shrink_tree_upward(ns->parent, original_bb);
 }
 
-}} // namespace mdds::draft
+} // namespace mdds
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

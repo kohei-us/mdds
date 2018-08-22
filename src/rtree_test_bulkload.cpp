@@ -33,7 +33,7 @@
 #include <fstream>
 #include <unordered_map>
 
-using namespace mdds::draft;
+using namespace mdds;
 using namespace std;
 
 void rtree_test_bl_empty()
