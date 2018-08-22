@@ -1,3 +1,12 @@
+mdds 1.4.0
+
+* rtree (new)
+
+  * new data structure designed for optimal storage and query
+    performance on multi-dimensional spatial data.  The structure allows
+    storage of both point and extent-based boundaries as keys associated
+    with values.
+
 * multi_type_vector
 
   * mtv::elemnt_block now has the following methods: data(), cbegin(),
