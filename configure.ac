@@ -28,11 +28,12 @@ AC_SUBST(INCDIR)
 AC_SUBST(MISCDIR)
 AC_SUBST(QUICKCHECKDIR)
 
-CPPFLAGS="$CPPFLAGS -Wall -O2 -g -pedantic-errors -DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST -std=c++11"
+CPPFLAGS="$CPPFLAGS -Wall -O2 -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
+CXXFLAGS="-Wshadow -std=c++11 -DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST"
 
 if test "$debug_stdcxx" = "yes"; then
-  CPPFLAGS="$CPPFLAGS -D_GLIBCXX_DEBUG"
+  CXXFLAGS="$CXXFLAGS -D_GLIBCXX_DEBUG"
 fi
 
 AC_SUBST(CPPFLAGS)
@@ -65,6 +66,15 @@ AS_IF([test "$enable_docs" = yes],
   ]
 )
 AM_CONDITIONAL([BUILD_DOCS], [test "$enable_docs" = yes])
+
+AC_ARG_ENABLE([werror],
+	[AS_HELP_STRING([--enable-werror], [Treat all warnings as errors, useful for development])],
+	[enable_werror="$enableval"],
+	[enable_werror=no]
+)
+AS_IF([test x"$enable_werror" == "xyes"], [
+	CXXFLAGS="$CXXFLAGS -Werror"
+])
 
 AC_CONFIG_FILES([
 Makefile

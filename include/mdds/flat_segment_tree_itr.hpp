@@ -198,6 +198,8 @@ public:
         typename fst_type::key_type start;
         typename fst_type::key_type end;
         typename fst_type::value_type value;
+
+        value_type() : start(), end(), value() {}
     };
 
     const_segment_iterator() : m_start(nullptr), m_end(nullptr) {}

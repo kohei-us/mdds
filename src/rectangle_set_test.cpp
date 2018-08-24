@@ -674,6 +674,7 @@ void rect_test_perf_insertion_fixed_x()
     assert(db.size() == data_count);
 
     const range_type* test = nullptr;
+
     {
         stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
@@ -754,6 +755,9 @@ void rect_test_perf_insertion_fixed_x()
                 test = *itr;
         }
     }
+
+    if (!test)
+        throw std::runtime_error("test variable is not set!");
 
     {
         stack_printer __stack_printer__("::rect_test_perf_insertion 10000 removals");
@@ -798,6 +802,7 @@ void rect_test_perf_insertion_fixed_y()
     assert(db.size() == data_count);
 
     const range_type* test = nullptr;
+
     {
         stack_printer __stack_printer2__("::rect_test_perf_insertion 500 searches with max hits (with build_tree overhead)");
         for (size_t i = 0; i < 500; ++i)
@@ -878,6 +883,9 @@ void rect_test_perf_insertion_fixed_y()
                 test = *itr;
         }
     }
+
+    if (!test)
+        throw std::runtime_error("test variable is not set!");
 
     {
         stack_printer __stack_printer__("::rect_test_perf_insertion 10000 removals");
