@@ -1,3 +1,5 @@
+  * fixed all warnings on shadowed variables.
+
 mdds 1.4.0
 
 * rtree (new)
