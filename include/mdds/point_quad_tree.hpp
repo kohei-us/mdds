@@ -1387,12 +1387,12 @@ void point_quad_tree<_Key,_Value>::set_new_root(
 }
 
 template<typename _Key, typename _Value>
-void point_quad_tree<_Key,_Value>::insert_node(node_ptr& dest, node_ptr& node)
+void point_quad_tree<_Key,_Value>::insert_node(node_ptr& dest, node_ptr& this_node)
 {
     node_ptr cur_node = dest;
     while (true)
     {
-        if (cur_node->x == node->x && cur_node->y == node->y)
+        if (cur_node->x == this_node->x && cur_node->y == this_node->y)
         {
             // When inserting a node instance directly (likely as part of tree
             // re-insertion), we are not supposed to have another node at
@@ -1400,7 +1400,7 @@ void point_quad_tree<_Key,_Value>::insert_node(node_ptr& dest, node_ptr& node)
             throw general_error("node with identical position encountered.");
         }
 
-        node_quadrant_t quad = cur_node->get_quadrant(node->x, node->y);
+        node_quadrant_t quad = cur_node->get_quadrant(this_node->x, this_node->y);
         switch (quad)
         {
             case quad_northeast:
@@ -1408,8 +1408,8 @@ void point_quad_tree<_Key,_Value>::insert_node(node_ptr& dest, node_ptr& node)
                     cur_node = cur_node->northeast;
                 else
                 {
-                    cur_node->northeast = node;
-                    node->parent = cur_node;
+                    cur_node->northeast = this_node;
+                    this_node->parent = cur_node;
                     return;
                 }
                 break;
@@ -1418,8 +1418,8 @@ void point_quad_tree<_Key,_Value>::insert_node(node_ptr& dest, node_ptr& node)
                     cur_node = cur_node->northwest;
                 else
                 {
-                    cur_node->northwest = node;
-                    node->parent = cur_node;
+                    cur_node->northwest = this_node;
+                    this_node->parent = cur_node;
                     return;
                 }
                 break;
@@ -1428,8 +1428,8 @@ void point_quad_tree<_Key,_Value>::insert_node(node_ptr& dest, node_ptr& node)
                     cur_node = cur_node->southeast;
                 else
                 {
-                    cur_node->southeast = node;
-                    node->parent = cur_node;
+                    cur_node->southeast = this_node;
+                    this_node->parent = cur_node;
                     return;
                 }
                 break;
@@ -1438,8 +1438,8 @@ void point_quad_tree<_Key,_Value>::insert_node(node_ptr& dest, node_ptr& node)
                     cur_node = cur_node->southwest;
                 else
                 {
-                    cur_node->southwest = node;
-                    node->parent = cur_node;
+                    cur_node->southwest = this_node;
+                    this_node->parent = cur_node;
                     return;
                 }
                 break;

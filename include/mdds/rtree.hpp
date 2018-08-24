@@ -153,7 +153,7 @@ public:
         point_type end;
 
         extent_type();
-        extent_type(const point_type& start, const point_type& end);
+        extent_type(const point_type& _start, const point_type& _end);
 
         std::string to_string() const;
 
@@ -238,7 +238,7 @@ private:
 
         node_store();
         node_store(node_store&& r);
-        node_store(node_type type, const extent_type& extent, node* node_ptr);
+        node_store(node_type _type, const extent_type& _extent, node* _node_ptr);
         ~node_store();
 
         node_store clone() const;
@@ -300,12 +300,12 @@ private:
         dir_store_segment() : size(0) {}
 
         dir_store_segment(
-            typename dir_store_type::iterator begin,
-            typename dir_store_type::iterator end,
-            size_t size) :
-            begin(std::move(begin)),
-            end(std::move(end)),
-            size(size) {}
+            typename dir_store_type::iterator _begin,
+            typename dir_store_type::iterator _end,
+            size_t _size) :
+            begin(std::move(_begin)),
+            end(std::move(_end)),
+            size(_size) {}
     };
 
     struct distribution
@@ -338,8 +338,8 @@ private:
         value_type value;
 
         value_node() = delete;
-        value_node(value_type&& value);
-        value_node(const value_type& value);
+        value_node(value_type&& _value);
+        value_node(const value_type& _value);
         ~value_node();
     };
 
@@ -395,7 +395,7 @@ public:
             node_store_type* ns;
             size_t depth;
 
-            entry(node_store_type* ns, size_t depth);
+            entry(node_store_type* _ns, size_t _depth);
         };
 
         using store_type = std::vector<entry>;

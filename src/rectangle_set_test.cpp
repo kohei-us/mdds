@@ -760,13 +760,13 @@ void rect_test_perf_insertion_fixed_x()
         throw std::runtime_error("test variable is not set!");
 
     {
-        stack_printer __stack_printer__("::rect_test_perf_insertion 10000 removals");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 10000 removals");
         for (size_t i = 0; i < 10000; ++i)
             db.remove(data_store[i].get());
     }
 
     {
-        stack_printer __stack_printer__("::rect_test_perf_insertion clearing set");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion clearing set");
         db.clear();
     }
 }
@@ -888,13 +888,13 @@ void rect_test_perf_insertion_fixed_y()
         throw std::runtime_error("test variable is not set!");
 
     {
-        stack_printer __stack_printer__("::rect_test_perf_insertion 10000 removals");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion 10000 removals");
         for (size_t i = 0; i < 10000; ++i)
             db.remove(data_store[i].get());
     }
 
     {
-        stack_printer __stack_printer__("::rect_test_perf_insertion clearing set");
+        stack_printer __stack_printer2__("::rect_test_perf_insertion clearing set");
         db.clear();
     }
 }

@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2015 Kohei Yoshida
+ * Copyright (c) 2015-2018 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -588,19 +588,19 @@ void trie_test1()
         auto matches = db.prefix_search(MDDS_ASCII("B"));
         size_t n = std::distance(matches.begin(), matches.end());
         assert(n == 2);
-        auto it = matches.begin();
-        assert(it->first == "Barak");
-        assert(it->second.data == "Obama");
-        ++it;
-        assert(it->first == "Bob");
-        assert(it->second.data == "Marley");
+        auto it2 = matches.begin();
+        assert(it2->first == "Barak");
+        assert(it2->second.data == "Obama");
+        ++it2;
+        assert(it2->first == "Bob");
+        assert(it2->second.data == "Marley");
 
         matches = db.prefix_search(MDDS_ASCII("Hi"));
         n = std::distance(matches.begin(), matches.end());
         assert(n == 1);
-        it = matches.begin();
-        assert(it->first == "Hideki");
-        assert(it->second.data == "Matsui");
+        it2 = matches.begin();
+        assert(it2->first == "Hideki");
+        assert(it2->second.data == "Matsui");
 
         // Invalid prefix searches.
         matches = db.prefix_search(MDDS_ASCII("Bad"));
@@ -619,23 +619,23 @@ void trie_test1()
             auto results = packed.prefix_search(MDDS_ASCII("B"));
             size_t n = std::distance(results.begin(), results.end());
             assert(n == 2);
-            auto it = results.begin();
-            assert(it->first == "Barak");
-            assert(it->second.data == "Obama");
-            ++it;
-            assert(it->first == "Bob");
-            assert(it->second.data == "Marley");
-            ++it;
-            assert(it == results.end());
+            auto it2 = results.begin();
+            assert(it2->first == "Barak");
+            assert(it2->second.data == "Obama");
+            ++it2;
+            assert(it2->first == "Bob");
+            assert(it2->second.data == "Marley");
+            ++it2;
+            assert(it2 == results.end());
         }
 
         {
             auto results = db.prefix_search(MDDS_ASCII("Hi"));
             size_t n = std::distance(results.begin(), results.end());
             assert(n == 1);
-            auto it = results.begin();
-            assert(it->first == "Hideki");
-            assert(it->second.data == "Matsui");
+            auto it2 = results.begin();
+            assert(it2->first == "Hideki");
+            assert(it2->second.data == "Matsui");
         }
 
         // Invalid prefix searches.
@@ -650,12 +650,12 @@ void trie_test1()
         auto results = packed.prefix_search(MDDS_ASCII("B"));
         size_t n = std::distance(results.begin(), results.end());
         assert(n == 2);
-        auto it = results.begin();
-        assert(it->first == "Barak");
-        assert(it->second.data == "Obama");
-        ++it;
-        assert(it->first == "Bob");
-        assert(it->second.data == "Marley");
+        auto it2 = results.begin();
+        assert(it2->first == "Barak");
+        assert(it2->second.data == "Obama");
+        ++it2;
+        assert(it2->first == "Bob");
+        assert(it2->second.data == "Marley");
     }
 
     // Erase an existing key.

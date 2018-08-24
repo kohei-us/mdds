@@ -63,8 +63,8 @@ trie_map<_KeyTrait,_ValueT>::begin() const
 
     while (!node_stack.back().node->has_value)
     {
-        auto it = node_stack.back().child_pos;
-        const_iterator::push_child_node_to_stack(node_stack, buf, it);
+        auto this_it = node_stack.back().child_pos;
+        const_iterator::push_child_node_to_stack(node_stack, buf, this_it);
     }
 
     return const_iterator(
@@ -317,9 +317,9 @@ void packed_trie_map<_KeyTrait,_ValueT>::dump_node(
     std::for_each(node.children.begin(), node.children.end(),
         [&](const trie_node* p)
         {
-            const trie_node& node = *p;
-            ktt::push_back(buffer, node.key);
-            dump_node(buffer, node);
+            const trie_node& this_node = *p;
+            ktt::push_back(buffer, this_node.key);
+            dump_node(buffer, this_node);
             ktt::pop_back(buffer);
         }
     );
@@ -675,10 +675,10 @@ packed_trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type l
     auto end = node_stack.end();
     --end;  // Skip the node with value which doesn't store a key element.
     std::for_each(node_stack.begin(), end,
-        [&](const stack_item& si)
+        [&](const stack_item& this_si)
         {
             using ktt = key_trait_type;
-            ktt::push_back(buf, *si.child_pos);
+            ktt::push_back(buf, *this_si.child_pos);
         }
     );
 

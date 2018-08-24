@@ -142,14 +142,14 @@ void fst_test_tree_build()
         int lower = 0, upper = 100, delta = 10;
         flat_segment_tree<int, int> db(lower, upper, 0);
         {
-            stack_printer __stack_printer__("::fst_test_tree_build insertion");
+            stack_printer __stack_printer2__("::fst_test_tree_build insertion");
             for (int i = lower; i < upper; i+=delta)
                 db.insert_front(i, i+delta, i*2);
         }
         db.dump_leaf_nodes();
 
         {
-            stack_printer __stack_printer__("::fst_test_tree_build tree construction");
+            stack_printer __stack_printer2__("::fst_test_tree_build tree construction");
             db.build_tree();
             db.dump_tree();
         }
@@ -1641,8 +1641,8 @@ void fst_perf_test_position_search()
         stack_printer __stack_printer__("::fst_perf_test_position_search (normal)");
         for (long i = 0; i < upper; ++i)
         {
-            bool val;
-            ret_type ret = db.search(i, val);
+            bool val2;
+            ret_type ret = db.search(i, val2);
             assert(ret.second);
         }
     }
@@ -1652,8 +1652,8 @@ void fst_perf_test_position_search()
         itr = db.begin();
         for (long i = 0; i < upper; ++i)
         {
-            bool val;
-            ret_type ret = db.search(itr, i, val);
+            bool val2;
+            ret_type ret = db.search(itr, i, val2);
             assert(ret.second);
             itr = ret.first;
         }

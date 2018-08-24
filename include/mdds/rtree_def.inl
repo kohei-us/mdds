@@ -459,8 +459,8 @@ template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::extent_type::extent_type() {}
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::extent_type::extent_type(const point_type& start, const point_type& end) :
-    start(start), end(end) {}
+rtree<_Key,_Value,_Trait>::extent_type::extent_type(const point_type& _start, const point_type& _end) :
+    start(_start), end(_end) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 std::string
@@ -558,8 +558,8 @@ rtree<_Key,_Value,_Trait>::node_store::node_store(node_store&& r) :
 }
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::node_store::node_store(node_type type, const extent_type& extent, node* node_ptr) :
-    type(type), extent(extent), parent(nullptr), node_ptr(node_ptr), count(0), valid_pointer(true) {}
+rtree<_Key,_Value,_Trait>::node_store::node_store(node_type _type, const extent_type& _extent, node* _node_ptr) :
+    type(_type), extent(_extent), parent(nullptr), node_ptr(_node_ptr), count(0), valid_pointer(true) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node_store::~node_store()
@@ -807,12 +807,12 @@ template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::node::~node() {}
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::value_node::value_node(value_type&& value) :
-    value(std::move(value)) {}
+rtree<_Key,_Value,_Trait>::value_node::value_node(value_type&& _value) :
+    value(std::move(_value)) {}
 
 template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key,_Value,_Trait>::value_node::value_node(const value_type& value) :
-    value(value) {}
+rtree<_Key,_Value,_Trait>::value_node::value_node(const value_type& _value) :
+    value(_value) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::value_node::~value_node() {}
@@ -980,8 +980,8 @@ void rtree<_Key,_Value,_Trait>::search_results_base<_NS>::add_node_store(
 
 template<typename _Key, typename _Value, typename _Trait>
 template<typename _NS>
-rtree<_Key,_Value,_Trait>::search_results_base<_NS>::entry::entry(node_store_type* ns, size_t depth) :
-    ns(ns), depth(depth) {}
+rtree<_Key,_Value,_Trait>::search_results_base<_NS>::entry::entry(node_store_type* _ns, size_t _depth) :
+    ns(_ns), depth(_depth) {}
 
 template<typename _Key, typename _Value, typename _Trait>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
@@ -2453,9 +2453,8 @@ void rtree<_Key,_Value,_Trait>::perform_forced_reinsertion(
 
     for (size_t i = 0; i < trait_type::reinsertion_size; ++i)
     {
-        size_t pos = buckets[i].src_pos;
-
-        dir->children[pos].swap(nodes_to_reinsert[i]);
+        size_t this_pos = buckets[i].src_pos;
+        dir->children[this_pos].swap(nodes_to_reinsert[i]);
     }
 
     // Erase the swapped out nodes from the directory.
@@ -2686,8 +2685,8 @@ void rtree<_Key,_Value,_Trait>::search_descend(
             if (!dir_cond(ns))
                 return;
 
-            auto* node = ns.get_directory_node();
-            for (auto& child : node->children)
+            auto* dir_node = ns.get_directory_node();
+            for (auto& child : dir_node->children)
                 search_descend(depth+1, dir_cond, value_cond, child, results);
             break;
         }

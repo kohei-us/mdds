@@ -101,7 +101,7 @@ public:
         size_type row;
         size_type column;
         size_pair_type() : row(0), column(0) {}
-        size_pair_type(size_type row, size_type column) : row(row), column(column) {}
+        size_pair_type(size_type _row, size_type _column) : row(_row), column(_column) {}
         size_pair_type(std::initializer_list<size_type> vs)
         {
             if (vs.size() != 2)
