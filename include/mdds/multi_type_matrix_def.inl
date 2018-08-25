@@ -693,7 +693,7 @@ _Func multi_type_matrix<_MtxTrait>::walk(_Func func) const
 
 template<typename _MtxTrait>
 template<typename _Func>
-void multi_type_matrix<_MtxTrait>::walk(
+_Func multi_type_matrix<_MtxTrait>::walk(
     _Func func, const size_pair_type& start, const size_pair_type& end) const
 {
     if (end.row < start.row || end.column < start.column)
@@ -735,8 +735,10 @@ void multi_type_matrix<_MtxTrait>::walk(
             // Move to the head of the next block in the column.
             pos = const_position_type(++pos.first, 0);
         }
-        while(remaining_rows != 0);
+        while (remaining_rows != 0);
     }
+
+    return func;
 }
 
 template<typename _MtxTrait>

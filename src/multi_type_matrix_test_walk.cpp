@@ -54,7 +54,7 @@ struct print_element : std::unary_function<_T, void>
     }
 };
 
-class walk_element_block : std::unary_function<mtx_type::element_block_node_type, void>
+class walk_element_block
 {
     size_t m_node_count = 0;
 
@@ -133,7 +133,8 @@ void mtm_test_walk_subset()
         mtx.set(1, 2, string("A2"));
         mtx.set(2, 2, false);
         walk_element_block func;
-        mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+        func = mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+        assert(func.get_node_count() == 3);
     }
     {
         stack_printer __stack_printer__("::mtm_test_walk_subset test2");
@@ -145,7 +146,8 @@ void mtm_test_walk_subset()
         mtx.set(2, 2, string("A3"));
         mtx.set(3, 2, string("A4"));
         walk_element_block func;
-        mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+        func = mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+        assert(func.get_node_count() == 3);
     }
 }
 

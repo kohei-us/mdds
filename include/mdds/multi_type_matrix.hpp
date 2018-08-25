@@ -721,6 +721,8 @@ public:
      *
      * @param func function object whose operator() gets called on each
      *             element block.
+     *
+     * @return function object passed to this method.
      */
     template<typename _Func>
     _Func walk(_Func func) const;
@@ -738,9 +740,11 @@ public:
      * @param end the column/row position of the lower-right corner of the
      *          sub-matrix.  Both column and row must be greater or equal to
      *          those of the start position.
+     *
+     * @return function object passed to this method.
      */
     template<typename _Func>
-    void walk(_Func func, const size_pair_type& start, const size_pair_type& end) const;
+    _Func walk(_Func func, const size_pair_type& start, const size_pair_type& end) const;
 
     /**
      * Walk through all element blocks in parallel with another matrix
