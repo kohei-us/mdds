@@ -182,7 +182,7 @@ void push_to_buffer<mtx_type::boolean_block_type>(const mtx_type::element_block_
     );
 }
 
-class parallel_walk_element_block : std::binary_function<mtx_type::element_block_node_type, mtx_type::element_block_node_type, void>
+class parallel_walk_element_block
 {
     using strlist_type = std::vector<string>;
 
@@ -216,6 +216,18 @@ public:
         m_ls(other.m_ls), m_rs(other.m_rs) {}
     parallel_walk_element_block(parallel_walk_element_block&& other) :
         m_ls(std::move(other.m_ls)), m_rs(std::move(other.m_rs)) {}
+
+    parallel_walk_element_block& operator= (parallel_walk_element_block other)
+    {
+        swap(other);
+        return *this;
+    }
+
+    void swap(parallel_walk_element_block& other)
+    {
+        m_ls.swap(other.m_ls);
+        m_rs.swap(other.m_rs);
+    }
 
     void operator() (const mtx_type::element_block_node_type& left, const mtx_type::element_block_node_type& right)
     {
@@ -285,7 +297,7 @@ void mtm_test_parallel_walk()
     left.set(5, 0, string("A25"));
 
     {
-        left.walk(func, right);
+        func = left.walk(func, right);
 
         const char* expected[] = {
             "122:'+'",
@@ -307,7 +319,7 @@ void mtm_test_parallel_walk()
     func.clear();
 
     {
-        left.walk(func, right, mtx_type::size_pair_type(2, 0), mtx_type::size_pair_type(8, 0));
+        func = left.walk(func, right, mtx_type::size_pair_type(2, 0), mtx_type::size_pair_type(8, 0));
 
         const char* expected[] = {
             "' ':1.2",
@@ -362,7 +374,7 @@ void mtm_test_parallel_walk_non_equal_size()
     {
         // Only walk the top-left 2x2 range.
         parallel_walk_element_block func;
-        left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
+        func = left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
 
         const char* expected[] = {
             "10:A",
@@ -384,7 +396,7 @@ void mtm_test_parallel_walk_non_equal_size()
     {
         // Only walk the top-left 2x2 range.
         parallel_walk_element_block func;
-        left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
+        func = left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
 
         const char* expected[] = {
             "10:-99",

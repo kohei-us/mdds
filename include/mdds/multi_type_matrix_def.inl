@@ -743,13 +743,13 @@ _Func multi_type_matrix<_MtxTrait>::walk(
 
 template<typename _MtxTrait>
 template<typename _Func>
-void multi_type_matrix<_MtxTrait>::walk(_Func func, const multi_type_matrix& right) const
+_Func multi_type_matrix<_MtxTrait>::walk(_Func func, const multi_type_matrix& right) const
 {
     if (size() != right.size())
         throw size_error("multi_type_matrix: left and right matrices must have the same geometry.");
 
     if (m_store.empty())
-        return;
+        return func;
 
     size_t remaining_size = m_store.size();
 
@@ -774,11 +774,13 @@ void multi_type_matrix<_MtxTrait>::walk(_Func func, const multi_type_matrix& rig
 
         remaining_size -= section_size;
     }
+
+    return func;
 }
 
 template<typename _MtxTrait>
 template<typename _Func>
-void multi_type_matrix<_MtxTrait>::walk(
+_Func multi_type_matrix<_MtxTrait>::walk(
     _Func func, const multi_type_matrix& right,
     const size_pair_type& start, const size_pair_type& end) const
 {
@@ -827,6 +829,8 @@ void multi_type_matrix<_MtxTrait>::walk(
         }
         while (remaining_rows);
     }
+
+    return func;
 }
 
 }
