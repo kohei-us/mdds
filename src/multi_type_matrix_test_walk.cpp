@@ -56,6 +56,8 @@ struct print_element : std::unary_function<_T, void>
 
 class walk_element_block : std::unary_function<mtx_type::element_block_node_type, void>
 {
+    size_t m_node_count = 0;
+
 public:
     void operator() (const mtx_type::element_block_node_type& node)
     {
@@ -94,7 +96,11 @@ public:
             default:
                 ;
         }
+
+        ++m_node_count;
     }
+
+    size_t get_node_count() const { return m_node_count; }
 };
 
 void mtm_test_walk()
@@ -111,7 +117,8 @@ void mtm_test_walk()
     mtx.set(10, 0, false);
     mtx.set(11, 0, true);
     walk_element_block func;
-    mtx.walk(func);
+    func = mtx.walk(func);
+    assert(func.get_node_count() == 5);
 }
 
 void mtm_test_walk_subset()

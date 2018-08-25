@@ -684,10 +684,11 @@ void multi_type_matrix<_MtxTrait>::swap(multi_type_matrix& r)
 
 template<typename _MtxTrait>
 template<typename _Func>
-void multi_type_matrix<_MtxTrait>::walk(_Func func) const
+_Func multi_type_matrix<_MtxTrait>::walk(_Func func) const
 {
-    walk_func<_Func> wf(std::move(func));
+    walk_func<_Func> wf(func);
     std::for_each(m_store.begin(), m_store.end(), wf);
+    return func;
 }
 
 template<typename _MtxTrait>

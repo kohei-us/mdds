@@ -162,8 +162,8 @@ private:
     template<typename _Func>
     struct walk_func
     {
-        _Func m_func;
-        walk_func(_Func func) : m_func(std::move(func)) {}
+        _Func& m_func;
+        walk_func(_Func& func) : m_func(func) {}
 
         void operator() (const typename store_type::const_iterator::value_type& mtv_node)
         {
@@ -723,7 +723,7 @@ public:
      *             element block.
      */
     template<typename _Func>
-    void walk(_Func func) const;
+    _Func walk(_Func func) const;
 
     /**
      * Walk through the element blocks in a sub-matrix range defined by start
