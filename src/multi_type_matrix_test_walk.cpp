@@ -186,6 +186,7 @@ class parallel_walk_element_block
 {
     using strlist_type = std::vector<string>;
 
+    std::string m_name;
     std::shared_ptr<strlist_type> m_ls;
     std::shared_ptr<strlist_type> m_rs;
 
@@ -211,10 +212,15 @@ class parallel_walk_element_block
         }
     }
 public:
-    parallel_walk_element_block() : m_ls(std::make_shared<strlist_type>()), m_rs(std::make_shared<strlist_type>()) {}
+    parallel_walk_element_block(std::string name) :
+        m_name(std::move(name)),
+        m_ls(std::make_shared<strlist_type>()),
+        m_rs(std::make_shared<strlist_type>()) {}
     parallel_walk_element_block(const parallel_walk_element_block& other) :
+        m_name(other.m_name),
         m_ls(other.m_ls), m_rs(other.m_rs) {}
     parallel_walk_element_block(parallel_walk_element_block&& other) :
+        m_name(std::move(other.m_name)),
         m_ls(std::move(other.m_ls)), m_rs(std::move(other.m_rs)) {}
 
     parallel_walk_element_block& operator= (parallel_walk_element_block other)
@@ -259,6 +265,10 @@ public:
         m_ls->clear();
         m_rs->clear();
     }
+
+    const std::string& get_name() const { return m_name; }
+
+    void set_name(std::string name) { m_name = std::move(name); }
 };
 
 bool check_concat_buffer(std::vector<string> concat, const char* expected[], size_t expected_size)
@@ -285,7 +295,7 @@ void mtm_test_parallel_walk()
 {
     stack_printer __stack_printer__("::mtm_test_parallel_walk");
 
-    parallel_walk_element_block func;
+    parallel_walk_element_block func("test0");
     mtx_type left(10, 1), right(10, 1, string("'+'"));
 
     right.set(2, 0, 1.2);
@@ -298,6 +308,7 @@ void mtm_test_parallel_walk()
 
     {
         func = left.walk(func, right);
+        assert(func.get_name() == "test0");
 
         const char* expected[] = {
             "122:'+'",
@@ -319,7 +330,9 @@ void mtm_test_parallel_walk()
     func.clear();
 
     {
+        func.set_name("test0-2");
         func = left.walk(func, right, mtx_type::size_pair_type(2, 0), mtx_type::size_pair_type(8, 0));
+        assert(func.get_name() == "test0-2");
 
         const char* expected[] = {
             "' ':1.2",
@@ -339,7 +352,9 @@ void mtm_test_parallel_walk()
 
     {
         // Only one row.
-        left.walk(func, right, mtx_type::size_pair_type(4, 0), mtx_type::size_pair_type(4, 0));
+        func.set_name("test0-3");
+        func = left.walk(func, right, mtx_type::size_pair_type(4, 0), mtx_type::size_pair_type(4, 0));
+        assert(func.get_name() == "test0-3");
 
         const char* expected[] = {
             "A12:'+'",
@@ -373,8 +388,9 @@ void mtm_test_parallel_walk_non_equal_size()
 
     {
         // Only walk the top-left 2x2 range.
-        parallel_walk_element_block func;
+        parallel_walk_element_block func("test1");
         func = left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
+        assert(func.get_name() == "test1");
 
         const char* expected[] = {
             "10:A",
@@ -395,8 +411,9 @@ void mtm_test_parallel_walk_non_equal_size()
 
     {
         // Only walk the top-left 2x2 range.
-        parallel_walk_element_block func;
+        parallel_walk_element_block func("test2");
         func = left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
+        assert(func.get_name() == "test2");
 
         const char* expected[] = {
             "10:-99",
