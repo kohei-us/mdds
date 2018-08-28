@@ -153,9 +153,13 @@ API Incompatibility Notes
 
 ### multi_type_matrix
 
-* The walk() methods previously took the function object by reference, but the
-  newer versions now take the function object by value.  With this change, it
-  is now possible to pass inline lambda function.
+* The walk() methods previously took the function object by reference,
+  but the newer versions now take the function object by value.  With
+  this change, it is now possible to pass inline lambda function.
+  However, if you were dependent on the old behavior, *this change may
+  adversely affect the outcome of your code especially when your
+  function object stores data members that are expected to be altered by
+  the walk() methods*.
 
 1.2
 ---
