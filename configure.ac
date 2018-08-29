@@ -30,7 +30,7 @@ AC_SUBST(QUICKCHECKDIR)
 
 CPPFLAGS="$CPPFLAGS -Wall -O2 -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
-CXXFLAGS="-Wshadow -std=c++11 -DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST"
+CXXFLAGS="$CXXFLAGS -Wshadow -std=c++11 -DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST"
 
 if test "$debug_stdcxx" = "yes"; then
   CXXFLAGS="$CXXFLAGS -D_GLIBCXX_DEBUG"
