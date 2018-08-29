@@ -103,6 +103,33 @@ public:
     size_t get_node_count() const { return m_node_count; }
 };
 
+class walk_element_block_move_only
+{
+    size_t m_node_count = 0;
+
+public:
+    walk_element_block_move_only() {}
+
+    walk_element_block_move_only(walk_element_block_move_only&& other) : m_node_count(other.m_node_count)
+    {
+        other.m_node_count = 0;
+    }
+
+    walk_element_block_move_only& operator= (walk_element_block_move_only&& other)
+    {
+        m_node_count = other.m_node_count;
+        other.m_node_count = 0;
+        return *this;
+    }
+
+    void operator() (const mtx_type::element_block_node_type& /*node*/)
+    {
+        ++m_node_count;
+    }
+
+    size_t get_node_count() const { return m_node_count; }
+};
+
 void mtm_test_walk()
 {
     stack_printer __stack_printer__("::mtm_test_walk");
@@ -119,6 +146,10 @@ void mtm_test_walk()
     walk_element_block func;
     func = mtx.walk(func);
     assert(func.get_node_count() == 5);
+
+    walk_element_block_move_only func_mo;
+    func_mo = mtx.walk(std::move(func_mo));
+    assert(func_mo.get_node_count() == 5);
 }
 
 void mtm_test_walk_subset()
