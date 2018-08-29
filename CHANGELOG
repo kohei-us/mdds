@@ -1,4 +1,21 @@
+mdds 1.4.1
+
+* all
+
   * fixed all warnings on shadowed variables.
+
+  * fixed CXXFLAGS incorrectly bein overwritten.
+
+* multi_type_vector
+
+  * some unnecessary user-provided special members have been removed to
+    avoid warnings with -Wdeprecated-copy with GCC 9.
+
+* multi_type_matrix
+
+  * all of its walk() methods now return either a copied or moved
+    instance of the function object passed in as an input argument.
+    Previously these methods had no return values.
 
 mdds 1.4.0
 
@@ -16,9 +33,6 @@ mdds 1.4.0
 
   * multi_type_vector now has cbegin(), cend(), crbegin(), and crend()
     methods.
-
-  * some unnecessary user-provided special members have been removed to
-    avoid warnings with -Wdeprecated-copy with GCC 9.
 
 * multi_type_matrix
 
