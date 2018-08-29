@@ -1,10 +1,12 @@
+* all
+
+  * fixed CXXFLAGS incorrectly bein overwritten.
+
 mdds 1.4.1
 
 * all
 
   * fixed all warnings on shadowed variables.
-
-  * fixed CXXFLAGS incorrectly bein overwritten.
 
 * multi_type_vector
 
