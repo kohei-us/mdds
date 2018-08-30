@@ -1878,7 +1878,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             // Shrink the existing block and insert slots for new blocks before it.
             blk_dest->m_size -= len;
             dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, block_len, block());
-            blk_dest = &dest.m_blocks[dest_block_index+block_len];
         }
         else
         {
@@ -1886,10 +1885,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             dest.delete_element_block(*blk_dest);
             blk_dest->m_size = 0;
             if (block_len > 1)
-            {
                 dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, block_len-1, block());
-                blk_dest = &dest.m_blocks[dest_block_index+block_len-1];
-            }
         }
     }
     else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
