@@ -1027,25 +1027,35 @@ void trie_test_key_as_input()
 
 int main(int argc, char** argv)
 {
-    trie_packed_test1();
-    trie_packed_test2();
-    trie_packed_test3();
-    trie_packed_test4();
-    trie_packed_test_value_life_cycle();
-    trie_packed_test_custom_string();
-    trie_packed_test_iterator_empty();
-    trie_packed_test_iterator();
-    trie_packed_test_prefix_search1();
-    trie_packed_test_key_as_input();
+    try
+    {
+        trie_packed_test1();
+        trie_packed_test2();
+        trie_packed_test3();
+        trie_packed_test4();
+        trie_packed_test_value_life_cycle();
+        trie_packed_test_custom_string();
+        trie_packed_test_iterator_empty();
+        trie_packed_test_iterator();
+        trie_packed_test_prefix_search1();
+        trie_packed_test_key_as_input();
 
-    trie_test1();
+        trie_test1();
 
-    trie_test_iterator_empty();
-    trie_test_iterator();
-    trie_test_iterator_with_erase();
-    trie_test_find_iterator();
-    trie_test_prefix_search();
-    trie_test_key_as_input();
+        trie_test_iterator_empty();
+        trie_test_iterator();
+        trie_test_iterator_with_erase();
+        trie_test_find_iterator();
+        trie_test_prefix_search();
+        trie_test_key_as_input();
+    }
+    catch (const std::exception& e)
+    {
+        cout << "Test failed: " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+
+    cout << "Test finished successfully!" << endl;
 
     return EXIT_SUCCESS;
 }
