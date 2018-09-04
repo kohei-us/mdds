@@ -2163,7 +2163,7 @@ std::string rtree<_Key,_Value,_Trait>::export_tree_extent_as_obj() const
 
     float unit_height =
         ((m_root.extent.end.d[0] - m_root.extent.start.d[0]) +
-         (m_root.extent.end.d[1] - m_root.extent.start.d[1])) / 5;
+         (m_root.extent.end.d[1] - m_root.extent.start.d[1])) / 5.0f;
 
     // Calculate the width to use for point data.
     float pt_width = std::min<float>(
