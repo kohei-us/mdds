@@ -1304,6 +1304,7 @@ void rtree<_Key,_Value,_Trait>::bulk_loader::pack_level(dir_store_type& store, s
             ns.type = node_type::directory_nonleaf;
 
         directory_node* dir = ns.get_directory_node();
+        assert(dir); // this better not be null since we know it's a directory node.
 
         for (auto it = seg.begin; it != seg.end; ++it)
             dir->children.push_back(std::move(*it));
