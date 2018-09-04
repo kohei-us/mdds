@@ -973,23 +973,33 @@ void rtree_test_exact_search_by_point()
 
 int main(int argc, char** argv)
 {
-    rtree_test_intersection();
-    rtree_test_square_distance();
-    rtree_test_center_point();
-    rtree_test_area_enlargement();
-    rtree_test_basic_search();
-    rtree_test_basic_erase();
-    rtree_test_node_split();
-    rtree_test_directory_node_split();
-    rtree_test_erase_directories();
-    rtree_test_forced_reinsertion();
-    rtree_test_move();
-    rtree_test_move_custom_type();
-    rtree_test_copy();
-    rtree_test_point_objects();
-    rtree_test_only_copyable();
-    rtree_test_exact_search_by_extent();
-    rtree_test_exact_search_by_point();
+    try
+    {
+        rtree_test_intersection();
+        rtree_test_square_distance();
+        rtree_test_center_point();
+        rtree_test_area_enlargement();
+        rtree_test_basic_search();
+        rtree_test_basic_erase();
+        rtree_test_node_split();
+        rtree_test_directory_node_split();
+        rtree_test_erase_directories();
+        rtree_test_forced_reinsertion();
+        rtree_test_move();
+        rtree_test_move_custom_type();
+        rtree_test_copy();
+        rtree_test_point_objects();
+        rtree_test_only_copyable();
+        rtree_test_exact_search_by_extent();
+        rtree_test_exact_search_by_point();
+    }
+    catch (const std::exception& e)
+    {
+        cout << "Test failed: " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+
+    cout << "Test finished successfully!" << endl;
 
     return EXIT_SUCCESS;
 }
