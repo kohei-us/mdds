@@ -310,12 +310,21 @@ void rtree_test_bl_insert_extents_copy()
 
 int main(int argc, char** argv)
 {
-    rtree_test_bl_empty();
-    rtree_test_bl_insert_points_move();
-    rtree_test_bl_insert_points_copy();
-    rtree_test_bl_insert_extents_move();
-    rtree_test_bl_insert_extents_copy();
+    try
+    {
+        rtree_test_bl_empty();
+        rtree_test_bl_insert_points_move();
+        rtree_test_bl_insert_points_copy();
+        rtree_test_bl_insert_extents_move();
+        rtree_test_bl_insert_extents_copy();
+    }
+    catch (const std::exception& e)
+    {
+        cout << "Test failed: " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
 
+    cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
 
