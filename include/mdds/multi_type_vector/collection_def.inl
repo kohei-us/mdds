@@ -32,7 +32,8 @@ namespace mdds { namespace mtv {
 namespace detail {
 
 template<typename _MtvT>
-side_iterator<_MtvT>::side_iterator() {}
+side_iterator<_MtvT>::side_iterator() :
+    m_elem_pos(0), m_elem_pos_end(0), m_index_offset(0), m_identity(0) {}
 
 template<typename _MtvT>
 side_iterator<_MtvT>::side_iterator(
