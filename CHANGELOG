@@ -1,6 +1,8 @@
 * all
 
-  * fixed CXXFLAGS incorrectly bein overwritten.
+  * fixed CXXFLAGS incorrectly being overwritten.
+
+  * addressed a number of Coverity issues.
 
 mdds 1.4.1
 
