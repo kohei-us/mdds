@@ -30,7 +30,7 @@ AC_SUBST(QUICKCHECKDIR)
 
 CPPFLAGS="$CPPFLAGS -Wall -O2 -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
-CXXFLAGS="$CXXFLAGS -Wshadow -std=c++11 -DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST"
+CXXFLAGS="$CXXFLAGS -Wshadow -std=c++11"
 
 if test "$debug_stdcxx" = "yes"; then
   CXXFLAGS="$CXXFLAGS -D_GLIBCXX_DEBUG"
@@ -75,6 +75,9 @@ AC_ARG_ENABLE([werror],
 AS_IF([test x"$enable_werror" == "xyes"], [
 	CXXFLAGS="$CXXFLAGS -Werror"
 ])
+
+CXXFLAGS_UNITTESTS="-DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST"
+AC_SUBST(CXXFLAGS_UNITTESTS)
 
 AC_CONFIG_FILES([
 Makefile

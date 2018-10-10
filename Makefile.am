@@ -1,8 +1,8 @@
-SUBDIRS = include
+SUBDIRS = include example
 
 pkgconfdir = $(datarootdir)/pkgconfig
 
-AM_CPPFLAGS = -I$(top_srcdir)/include
+AM_CPPFLAGS = -I$(top_srcdir)/include $(CXXFLAGS_UNITTESTS)
 
 dist_doc_DATA = AUTHORS README.md
 nodist_doc_DATA = VERSION
