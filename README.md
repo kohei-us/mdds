@@ -81,6 +81,14 @@ Packed trie map is nearly identical to the trie map counterpart except that
 this one is immutable.  It packs all its content in a contiguous array for
 optimum storage and lookup efficiency.
 
+### R-tree
+
+[R-tree](https://en.wikipedia.org/wiki/R-tree) is a tree-based data structure
+designed to store multi-dimensional geometric data with bounding boxes and
+provide optimal performance on region- or point-based queries.  The one
+implemented in this library is a variant of R-tree known as
+[R*-tree](https://en.wikipedia.org/wiki/R*_tree).
+
 
 API Documentation
 =================
