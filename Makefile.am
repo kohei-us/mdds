@@ -5,7 +5,6 @@ pkgconfdir = $(datarootdir)/pkgconfig
 AM_CPPFLAGS = -I$(top_srcdir)/include $(CXXFLAGS_UNITTESTS)
 
 dist_doc_DATA = AUTHORS README.md
-nodist_doc_DATA = VERSION
 nodist_pkgconf_DATA = misc/mdds-@API_VERSION@.pc
 
 DISTCLEANFILES = \

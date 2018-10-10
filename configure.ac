@@ -100,6 +100,5 @@ sorted_string_map_test_mem.mem:src/test.mem.in
 trie_map_test_mem.mem:src/test.mem.in
 rtree_test_mem.mem:src/test.mem.in
 rtree_test_bulkload_mem.mem:src/test.mem.in
-VERSION
 ])
 AC_OUTPUT
