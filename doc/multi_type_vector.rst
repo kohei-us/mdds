@@ -372,7 +372,7 @@ that take a position hint as the first argument.
 API Reference
 -------------
 
-.. doxygenstruct:: mdds::detail::mtv_event_func
+.. doxygenstruct:: mdds::detail::mtv::event_func
    :members:
 
 .. doxygenclass:: mdds::multi_type_vector
