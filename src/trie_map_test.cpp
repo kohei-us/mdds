@@ -421,7 +421,8 @@ void trie_packed_test_iterator()
     assert(it->second == 1);
 
     ++it;
-    assert(*it++ == kv("ab", 2));
+    bool check_true = (*it++ == kv("ab", 2));
+    assert(check_true);
     assert(it == ite);
 
     db.insert(MDDS_ASCII("aba"), 3);
@@ -435,12 +436,18 @@ void trie_packed_test_iterator()
     ite = packed.end();
 
     assert(*it == kv("a", 1));
-    assert(*(++it) == kv("ab", 2));
-    assert(*(++it) == kv("aba", 3));
-    assert(*(++it) == kv("abb", 4));
-    assert(*(++it) == kv("abc", 5));
-    assert(*(++it) == kv("bc",  6));
-    assert(*(++it) == kv("bcd", 7));
+    check_true = (*(++it) == kv("ab", 2));
+    assert(check_true);
+    check_true = (*(++it) == kv("aba", 3));
+    assert(check_true);
+    check_true = (*(++it) == kv("abb", 4));
+    assert(check_true);
+    check_true = (*(++it) == kv("abc", 5));
+    assert(check_true);
+    check_true = (*(++it) == kv("bc",  6));
+    assert(check_true);
+    check_true = (*(++it) == kv("bcd", 7));
+    assert(check_true);
     assert(it->first == "bcd");
     assert(it->second == 7);
     ++it;
@@ -459,11 +466,14 @@ void trie_packed_test_iterator()
     assert(*it == kv("aba", 3));
     --it;
     assert(*it == kv("ab", 2));
-    assert(*(--it) == kv("a", 1));
+    check_true = (*(--it) == kv("a", 1));
+    assert(check_true);
     assert(it == packed.begin());
 
-    assert(*(++it) == kv("ab",  2));
-    assert(*(++it) == kv("aba", 3));
+    check_true = (*(++it) == kv("ab",  2));
+    assert(check_true);
+    check_true = (*(++it) == kv("aba", 3));
+    assert(check_true);
     --it;
     assert(*it == kv("ab", 2));
     --it;
@@ -474,8 +484,10 @@ void trie_packed_test_iterator()
     assert(*it == kv("aba", 3));
 
     // Post-decrement operator.
-    assert(*it-- == kv("aba", 3));
-    assert(*it == kv("ab", 2));
+    check_true = (*it-- == kv("aba", 3));
+    assert(check_true);
+    check_true = (*it == kv("ab", 2));
+    assert(check_true);
 }
 
 void trie_packed_test_prefix_search1()
@@ -739,12 +751,18 @@ void trie_test_iterator()
 
     it = db.begin();
     assert(*it == kv("a", 1));
-    assert(*(++it) == kv("ab", 2));
-    assert(*(++it) == kv("aba", 3));
-    assert(*(++it) == kv("abb", 4));
-    assert(*(++it) == kv("abc", 5));
-    assert(*(++it) == kv("bc",  6));
-    assert(*(++it) == kv("bcd", 7));
+    ++it;
+    assert(*it == kv("ab", 2));
+    ++it;
+    assert(*it == kv("aba", 3));
+    ++it;
+    assert(*it == kv("abb", 4));
+    ++it;
+    assert(*it == kv("abc", 5));
+    ++it;
+    assert(*it == kv("bc",  6));
+    ++it;
+    assert(*it == kv("bcd", 7));
     assert(it->first == "bcd");
     assert(it->second == 7);
     ++it;
@@ -763,11 +781,13 @@ void trie_test_iterator()
     assert(*it == kv("aba", 3));
     --it;
     assert(*it == kv("ab", 2));
-    assert(*(--it) == kv("a", 1));
+    --it;
+    assert(*it == kv("a", 1));
     assert(it == db.begin());
-
-    assert(*(++it) == kv("ab",  2));
-    assert(*(++it) == kv("aba", 3));
+    ++it;
+    assert(*it == kv("ab",  2));
+    ++it;
+    assert(*it == kv("aba", 3));
     --it;
     assert(*it == kv("ab", 2));
     --it;
@@ -784,20 +804,25 @@ void trie_test_iterator_with_erase()
     typedef trie_map<trie::std_string_trait, int> trie_map_type;
     using kv = trie_map_type::key_value_type;
     trie_map_type db;
+    bool check_true = false;
 
     db.insert(MDDS_ASCII("Python"), 1);
     db.insert(MDDS_ASCII("C++"),    2);
 
     auto it = db.begin(), ite = db.end();
-    assert(*it++ == kv("C++",    2));
-    assert(*it++ == kv("Python", 1));
+    check_true = (*it++ == kv("C++",    2));
+    assert(check_true);
+    check_true = (*it++ == kv("Python", 1));
+    assert(check_true);
     assert(it == ite);
 
     db.erase(MDDS_ASCII("C++"));
     it = db.begin();
-    assert(*it++ == kv("Python", 1));
+    check_true = (*it++ == kv("Python", 1));
+    assert(check_true);
     assert(it == ite);
-    assert(*(--it) == kv("Python", 1));
+    check_true = (*(--it) == kv("Python", 1));
+    assert(check_true);
     assert(it == db.begin());
 
     db.clear();
@@ -809,12 +834,16 @@ void trie_test_iterator_with_erase()
     db.erase(MDDS_ASCII("AB"));
 
     it = db.begin();
-    assert(*it++ == kv("A",  1));
-    assert(*it++ == kv("ABC", 3));
+    check_true = (*it++ == kv("A",  1));
+    assert(check_true);
+    check_true = (*it++ == kv("ABC", 3));
+    assert(check_true);
     assert(it == ite);
 
-    assert(*(--it) == kv("ABC", 3));
-    assert(*(--it) == kv("A", 1));
+    check_true = (*(--it) == kv("ABC", 3));
+    assert(check_true);
+    check_true = (*(--it) == kv("A", 1));
+    assert(check_true);
     assert(it == db.begin());
 
     db.clear();
@@ -824,12 +853,16 @@ void trie_test_iterator_with_erase()
     db.erase(MDDS_ASCII("ABC"));
 
     it = db.begin();
-    assert(*it++ == kv("A",  1));
-    assert(*it++ == kv("AB", 2));
+    check_true = (*it++ == kv("A",  1));
+    assert(check_true);
+    check_true = (*it++ == kv("AB", 2));
+    assert(check_true);
     assert(it == ite);
 
-    assert(*(--it) == kv("AB", 2));
-    assert(*(--it) == kv("A",  1));
+    check_true = (*(--it) == kv("AB", 2));
+    assert(check_true);
+    check_true = (*(--it) == kv("A",  1));
+    assert(check_true);
     assert(it == db.begin());
 
     it = ite;
@@ -993,7 +1026,8 @@ void trie_test_prefix_search()
     it = results.begin();
     assert(it->first == "dust");
     assert(it->second == 10);
-    assert(++it == results.end());
+    bool check_true = (++it == results.end());
+    assert(check_true);
     --it;
     assert(it->first == "dust");
     assert(it->second == 10);
