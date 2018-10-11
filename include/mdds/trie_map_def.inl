@@ -517,6 +517,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::compact(const trie_node& root)
 {
     packed_type init(size_t(1), uintptr_t(0));
     m_packed.swap(init);
+    assert(m_packed.size() == 1);
 
     size_t root_offset = compact_node(root);
     m_packed[0] = root_offset;
@@ -528,6 +529,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::compact(
 {
     packed_type init(size_t(1), uintptr_t(0));
     m_packed.swap(init);
+    assert(m_packed.size() == 1);
 
     size_t root_offset = compact_node(root);
     m_packed[0] = root_offset;
@@ -622,7 +624,9 @@ template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::node_stack_type
 packed_trie_map<_KeyTrait,_ValueT>::get_root_stack() const
 {
+    assert(!m_packed.empty());
     size_t root_offset = m_packed[0];
+    assert(root_offset < m_packed.size());
     const uintptr_t* p = m_packed.data() + root_offset;
     const uintptr_t* node_pos = p;
     ++p;
@@ -658,6 +662,7 @@ packed_trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type l
 
     const key_unit_type* key_end = input + len;
     size_t root_offset = m_packed[0];
+    assert(root_offset < m_packed.size());
     const uintptr_t* root = m_packed.data() + root_offset;
 
     node_stack_type node_stack;
@@ -709,6 +714,7 @@ packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const key_unit_type* prefix, s
     const key_unit_type* prefix_end = prefix + len;
 
     size_t root_offset = m_packed[0];
+    assert(root_offset < m_packed.size());
     const uintptr_t* root = m_packed.data() + root_offset;
 
     const uintptr_t* node = find_prefix_node(root, prefix, prefix_end);
