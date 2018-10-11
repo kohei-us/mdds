@@ -39,33 +39,27 @@ int main()
 
     cout << "Cities that start with 'Cha' and their populations:" << endl;
     auto results = nc_cities.prefix_search(MDDS_ASCII("Cha"));
-    for_each(results.begin(), results.end(),
-        [](const trie_map_type::key_value_type& kv)
-        {
-            cout << "  " << kv.first << ": " << kv.second << endl;
-        }
-    );
+    for (const trie_map_type::key_value_type& kv : results)
+    {
+        cout << "  " << kv.first << ": " << kv.second << endl;
+    }
 
     cout << "Cities that start with 'W' and their populations:" << endl;
     results = nc_cities.prefix_search(MDDS_ASCII("W"));
-    for_each(results.begin(), results.end(),
-        [](const trie_map_type::key_value_type& kv)
-        {
-            cout << "  " << kv.first << ": " << kv.second << endl;
-        }
-    );
+    for (const trie_map_type::key_value_type& kv : results)
+    {
+        cout << "  " << kv.first << ": " << kv.second << endl;
+    }
 
     // Create a compressed version of the container.  It works nearly identically.
     auto packed = nc_cities.pack();
 
     cout << "Cities that start with 'C' and their populations:" << endl;
     auto packed_results = packed.prefix_search(MDDS_ASCII("C"));
-    for_each(packed_results.begin(), packed_results.end(),
-        [](const trie_map_type::key_value_type& kv)
-        {
-            cout << "  " << kv.first << ": " << kv.second << endl;
-        }
-    );
+    for (const trie_map_type::key_value_type& kv : packed_results)
+    {
+        cout << "  " << kv.first << ": " << kv.second << endl;
+    }
 
     // Individual search.
     auto it = packed.find(MDDS_ASCII("Wilmington"));
