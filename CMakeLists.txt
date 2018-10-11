@@ -1,21 +1,24 @@
 cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0048 NEW)
 
+option(BOOST_INCLUDEDIR "path to boost header include directory.")
+
 project(mdds VERSION 1.3.99 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
+
+find_package(Boost)
+find_package(Threads)
 
 enable_testing()
 set(CMAKE_CTEST_COMMAND ctest -V)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /MP")
 endif(MSVC)
-
-option(BOOST_INCLUDE_DIR "path to boost header include directory.")
 
 add_definitions(-DMDDS_UNIT_TEST)
 add_definitions(-DMDDS_DEBUG_NODE_BASE)
-include_directories(${PROJECT_SOURCE_DIR}/include ${BOOST_INCLUDE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDE_DIR})
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
