@@ -56,3 +56,19 @@ test binaries to ensure integrity of the code.
 
 Make sure you have the boost headers installed on your system, as mdds has
 hard dependency on boost.
+
+# Build documentation
+
+We use both `doxygen` and `sphinx` to author our documentation as well as
+`breathe` and `cloud_sptheme` sphinx extensions.  Make sure to install all of
+these packages if you wish to build documentation manually.
+
+Once you have all required packages installed, run:
+
+```bash
+./autogen.sh --enable-docs
+make html-local
+```
+
+to build it, and the documentation will be available in the `doc/_build`
+directory.
