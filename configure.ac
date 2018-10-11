@@ -11,12 +11,6 @@ AC_SUBST(API_VERSION)
 PACKAGE_TARNAME=AC_PACKAGE_TARNAME
 AC_SUBST(PACKAGE_TARNAME)
 
-AC_ARG_ENABLE(debug-stdcxx,
-[
-  --enable-debug-stdcxx   Enable libstdc++ debug mode during make check.
-]
-,debug_stdcxx=yes)
-
 OBJDIR=obj
 SRCDIR=src
 INCDIR=include
@@ -32,9 +26,25 @@ CPPFLAGS="$CPPFLAGS -Wall -O2 -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
 CXXFLAGS="$CXXFLAGS -Wshadow -std=c++11"
 
-if test "$debug_stdcxx" = "yes"; then
+AC_ARG_ENABLE(debug-stdcxx,
+[
+  --enable-debug-stdcxx   Enable libstdc++ debug mode during make check.
+]
+,debug_stdcxx=yes)
+
+AS_IF([test x"$debug_stdcxx" == "xyes"], [
   CXXFLAGS="$CXXFLAGS -D_GLIBCXX_DEBUG"
-fi
+])
+
+AC_ARG_ENABLE(release-tests,
+[
+  --enable-release-tests   Enable release builds for unit tests.
+]
+,release_tests=yes)
+
+AS_IF([test x"$release_tests" == "xyes"], [
+  CXXFLAGS="$CXXFLAGS -DNDEBUG"
+])
 
 AC_SUBST(CPPFLAGS)
 AC_SUBST(CPPFLAGS_NODEBUG)
