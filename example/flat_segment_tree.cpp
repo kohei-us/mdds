@@ -1,11 +1,10 @@
 
 #include <mdds/flat_segment_tree.hpp>
-#include <string>
 #include <iostream>
 
 using namespace std;
 
-typedef ::mdds::flat_segment_tree<long, int> fst_type;
+using fst_type = mdds::flat_segment_tree<long, int>;
 
 int main()
 {
