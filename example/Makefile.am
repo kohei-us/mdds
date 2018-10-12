@@ -3,6 +3,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
 
 EXTRA_PROGRAMS = \
 	flat-segment-tree \
+	flat-segment-tree-itrs \
 	multi-type-matrix \
 	multi-type-vector \
 	multi-type-vector-element-block1 \
@@ -15,6 +16,7 @@ EXTRA_PROGRAMS = \
 	trie-map
 
 flat_segment_tree_SOURCES = flat_segment_tree.cpp
+flat_segment_tree_itrs_SOURCES = flat_segment_tree_itrs.cpp
 multi_type_matrix_SOURCES = multi_type_matrix.cpp
 multi_type_vector_SOURCES = multi_type_vector.cpp
 multi_type_vector_element_block1_SOURCES = multi_type_vector_element_block1.cpp
@@ -28,6 +30,7 @@ trie_map_SOURCES = trie_map.cpp
 
 TESTS = \
 	flat-segment-tree \
+	flat-segment-tree-itrs \
 	multi-type-matrix \
 	multi-type-vector \
 	multi-type-vector-element-block1 \

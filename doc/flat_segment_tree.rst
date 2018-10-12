@@ -61,6 +61,10 @@ with one initial segment ranging from 0 to 500 with a value of 0.
 .. figure:: _static/images/fst_example1_initial.png
    :align: center
 
+Internally, this initial range is represented by two leaf nodes, with the
+first one storing the start key and the value for the segment both of which
+happen to be 0 in this example, and the second one storing the end key of 500.
+
 The following lines insert two new segments into this structure::
 
     db.insert_front(10, 20, 10);
@@ -80,13 +84,19 @@ the insertion point from the first node associated with the minimum key value,
 whereas :cpp:func:`~mdds::flat_segment_tree::insert_back` starts its search
 from the last node associated with the maximum key value.
 
+At this point, the tree contains six leaf nodes in total to represent all
+stored segments.  Note that one leaf node represents both the end of a segment
+and the start of the adjacent segment that comes after it, unless it's either
+the first or the last node.
+
 The next line inserts another segment ranging from 60 to 65 having a value of
 5::
 
     db.insert_back(60, 65, 5);
 
 As this new segment overlaps with the existing segment of 50 to 70, it will
-cut into a middle part of that segment to make room for itself.
+cut into a middle part of that segment to make room for itself.  At this point,
+the tree contains eight leaf nodes representing seven segments in total.
 
 .. figure:: _static/images/fst_example1_insert2.png
    :align: center
@@ -138,6 +148,82 @@ Query via :cpp:func:`~mdds::flat_segment_tree::search_tree` generally performs
 better since it traverses through the search tree to find the target segment.
 But it does require the search tree to be built ahead of time by calling
 :cpp:func:`~mdds::flat_segment_tree::build_tree`.
+
+
+Iterate through stored segments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:cpp:class:`~mdds::flat_segment_tree` supports two types of iterators to allow
+you to iterate through the segments stored in your tree.  The first way is to
+iterate through the individual leaf nodes one at a time by using
+:cpp:func:`~mdds::flat_segment_tree::begin` and :cpp:func:`~mdds::flat_segment_tree::end`::
+
+    for (auto it = db.begin(); it != db.end(); ++it)
+    {
+        cout << "key: " << it->first << "; value: " << it->second << endl;
+    }
+
+Each iterator value contains a pair of two value ``first`` and ``second``, with
+the first value being the key of the segment that the node initiates, and the
+second one being the value stored in that segment.  When executing this code
+with the tree from the example code above, you'll get the following output:
+
+.. code-block:: none
+
+    key: 0; value: 0
+    key: 10; value: 10
+    key: 20; value: 0
+    key: 50; value: 15
+    key: 60; value: 5
+    key: 65; value: 15
+    key: 70; value: 0
+    key: 500; value: 0
+
+Each node stores the start key and the value of the segment it initiates except
+for the last node, which stores the end key of the previous segment.  Note that
+the value stored in the last node is not associated with any of the segments
+stored in the tree; in fact it is the default value for empty segments.
+
+One thing to keep in mind is that :cpp:class:`~mdds::flat_segment_tree` does
+not support mutable iterators that let you modify the stored keys or values.
+
+You can also use range-based for loop to iterate through the leaf nodes in a
+similar fashion::
+
+    for (const auto& node : db)
+    {
+        cout << "key: " << node.first << "; value: " << node.second << endl;
+    }
+
+The output from this code is identical to that from the previous one.
+
+Now, one major inconvenience of navigating through the individual leaf nodes
+one node at a time is that you need to keep track of the start and end points
+of each segment if you need to operate on the segments rather than the nodes
+that comprise the segments.  The good news is that :cpp:class:`~mdds::flat_segment_tree`
+does provide a way to iterate through the segments directly as the following
+code demonstrates::
+
+    for (auto it = db.begin_segment(); it != db.end_segment(); ++it)
+    {
+        cout << "start: " << it->start << "; end: " << it->end << "; value: " << it->value << endl;
+    }
+
+This code uses :cpp:func:`~mdds::flat_segment_tree::begin_segment` and
+:cpp:func:`~mdds::flat_segment_tree::end_segment` to iterate through one
+segment at a time with each iterator value containing ``start``, ``end`` and
+``value`` members that correspond with the start key, end key and the value of
+the segment, respectively.  Running this code produces the following output:
+
+.. code-block:: none
+
+    start: 0; end: 10; value: 0
+    start: 10; end: 20; value: 10
+    start: 20; end: 50; value: 0
+    start: 50; end: 60; value: 15
+    start: 60; end: 65; value: 5
+    start: 65; end: 70; value: 15
+    start: 70; end: 500; value: 0
+
 
 API Reference
 -------------
