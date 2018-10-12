@@ -102,7 +102,9 @@ as two parameters.  This macro comes in handy when you need to define a
 literal and immediately pass it to a function that expects a pointer to a
 string and its length.
 
-You'll get the following output when compiling the above code and executing it::
+You'll get the following output when compiling the above code and executing it:
+
+.. code-block:: none
 
     Cities that start with 'Cha' and their populations:
       Chapel Hill: 59635
