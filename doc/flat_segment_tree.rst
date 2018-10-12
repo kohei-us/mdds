@@ -186,6 +186,11 @@ stored in the tree; in fact it is the default value for empty segments.
 One thing to keep in mind is that :cpp:class:`~mdds::flat_segment_tree` does
 not support mutable iterators that let you modify the stored keys or values.
 
+.. note::
+
+   :cpp:class:`~mdds::flat_segment_tree` does not support mutable iterators;
+   you can only traverse the values in a read-only fashion.
+
 You can also use range-based for loop to iterate through the leaf nodes in a
 similar fashion::
 

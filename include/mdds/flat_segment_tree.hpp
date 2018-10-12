@@ -219,30 +219,94 @@ public:
 
     using const_segment_iterator = mdds::__fst::const_segment_iterator<flat_segment_tree>;
 
+    /**
+     * Return an iterator that points to the first leaf node that correspondes
+     * with the start position of the first segment.
+     *
+     * @return immutable iterator that points to the first leaf node that
+     *         corresponds with the start position of the first segment.
+     */
     const_iterator begin() const
     {
         return const_iterator(this, false);
     }
 
+    /**
+     * Return an iterator that points to the position past the last leaf node
+     * that corresponds with the end position of the last segment.
+     *
+     * @return immutable iterator that points to the position past last leaf
+     *         node that corresponds with the end position of the last
+     *         segment.
+     */
     const_iterator end() const
     {
         return const_iterator(this, true);
     }
 
+    /**
+     * Return an iterator that points to the last leaf node that correspondes
+     * with the end position of the last segment.  This iterator moves in the
+     * reverse direction of a normal iterator.
+     *
+     * @return immutable reverse iterator that points to the last leaf node
+     *         that corresponds with the end position of the last segment.
+     */
     const_reverse_iterator rbegin() const
     {
         return const_reverse_iterator(this, false);
     }
 
+    /**
+     * Return an iterator that points to the position past the first leaf node
+     * that corresponds with the start position of the first segment. This
+     * iterator moves in the reverse direction of a normal iterator.
+     *
+     * @return immutable reverse iterator that points to the position past
+     *         first leaf node that corresponds with the start position of the
+     *         first segment.
+     */
     const_reverse_iterator rend() const
     {
         return const_reverse_iterator(this, true);
     }
 
+    /**
+     * Return an immutable iterator that points to the first segment stored in
+     * the tree.  It iterates through the segments one segment at a time.
+     * Each iterator value consists of <code>start</code>, <code>end</code>,
+     * and <code>value</code> members that correspond with the start and end
+     * positions of a segment and the value of that segment, respectively.
+     *
+     * @return immutable iterator that points to the first segment stored in
+     *         the tree.
+     */
     const_segment_iterator begin_segment() const;
 
+    /**
+     * Return an immutable iterator that points to the position past the last
+     * segment stored in the tree.  It iterates through the segments one
+     * segment at a time.  Each iterator value consists of <code>start</code>,
+     * <code>end</code>, and <code>value</code> members that correspond with
+     * the start and end positions of a segment and the value of that segment,
+     * respectively.
+     *
+     * @return immutable iterator that points to the position past the last
+     *         segment stored in the tree.
+     */
     const_segment_iterator end_segment() const;
 
+    /**
+     * Constructor that takes minimum and maximum keys and the value to be
+     * used for the initial segment.
+     *
+     * @param min_val minimum allowed key value for the entire series of
+     *                segments.
+     * @param max_val maximum allowed key value for the entires series of
+     *                segments.
+     * @param init_val value to be used for the initial segment. This value
+     *                 will also be used for empty segments.
+     */
     flat_segment_tree(key_type min_val, key_type max_val, value_type init_val);
 
     /** 
@@ -258,8 +322,18 @@ public:
     flat_segment_tree<key_type, value_type>&
     operator=(const flat_segment_tree<key_type, value_type>& other);
 
+    /**
+     * Swap the content of the tree with another instance.
+     *
+     * @param other instance of flat_segment_tree to swap content with.
+     */
     void swap(flat_segment_tree<key_type, value_type>& other);
 
+    /**
+     * Remove all stored segments except for the initial segment. The minimum
+     * and maximum keys and the default value will be retained after the call
+     * returns.  This call will also remove the tree.
+     */
     void clear();
 
     /** 
