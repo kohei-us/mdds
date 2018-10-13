@@ -115,12 +115,12 @@ template<typename _Key, typename _Value>
 void
 flat_segment_tree<_Key, _Value>::swap(flat_segment_tree<_Key, _Value>& other)
 {
-    using std::swap;
-    swap(m_root_node, other.m_root_node);
-    swap(m_left_leaf, other.m_left_leaf);
-    swap(m_right_leaf, other.m_right_leaf);
-    swap(m_init_val, other.m_init_val);
-    swap(m_valid_tree, other.m_valid_tree);
+    m_nonleaf_node_pool.swap(other.m_nonleaf_node_pool);
+    std::swap(m_root_node, other.m_root_node);
+    std::swap(m_left_leaf, other.m_left_leaf);
+    std::swap(m_right_leaf, other.m_right_leaf);
+    std::swap(m_init_val, other.m_init_val);
+    std::swap(m_valid_tree, other.m_valid_tree);
 }
 
 template<typename _Key, typename _Value>

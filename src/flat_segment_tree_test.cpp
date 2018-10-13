@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2008-2012 Kohei Yoshida
+ * Copyright (c) 2008-2018 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,6 +34,7 @@
 #include <limits>
 #include <iterator>
 #include <algorithm>
+#include <memory>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -1813,6 +1814,29 @@ void fst_test_swap()
     assert(val == 2);
 }
 
+void fst_test_swap_tree_memory()
+{
+    stack_printer __stack_printer__("::fst_test_swap_tree_memory");
+    typedef flat_segment_tree<long, int> db_type;
+    auto db1 = mdds::make_unique<db_type>(0, 100, 0);
+    db1->insert_back(10, 40, 999);
+    db1->build_tree();
+    int value = -1;
+    db1->search_tree(20, value);
+    assert(value == 999);
+
+    db_type db2(-10, 10, -99);
+    db2.swap(*db1);
+
+    db1.reset();
+
+    // Make sure that the tree is valid, and you can still search through the tree.
+    assert(db2.is_tree_valid());
+    value = -1;
+    db2.search_tree(20, value);
+    assert(value == 999);
+}
+
 void fst_test_clear()
 {
     stack_printer __stack_printer__("::fst_test_clear");
@@ -2127,6 +2151,7 @@ int main (int argc, char **argv)
             fst_test_position_search();
             fst_test_min_max_default();
             fst_test_swap();
+            fst_test_swap_tree_memory();
             fst_test_clear();
             fst_test_assignment();
             fst_test_non_numeric_value();
