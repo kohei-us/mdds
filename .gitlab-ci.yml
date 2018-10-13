@@ -6,6 +6,7 @@ build:
     - apt update
     - apt -y install make autoconf automake libtool pkg-config git python3-dev
     - apt -y install libboost-all-dev || apt-get -y install libboost-all-dev
+    - apt -y install valgrind
     - ldconfig
   script: 
-    - ./autogen.sh && make -j $(nproc) check
+    - ./autogen.sh --enable-memory tests && make -j $(nproc) check
