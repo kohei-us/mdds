@@ -1,7 +1,10 @@
 * flat_segment_tree
 
   * fixed invalid memory access issue related to the swap() method which
-    previously did not swap the non-leaf node pool store.
+    previously did not swap the non-leaf node pool store.  The invalid
+    memory access may occur after the contents of two instances get
+    swapped, one instance get destroyed then the caller calls
+    search_tree() on the other instance still alive.
 
 mdds 1.4.2
 
