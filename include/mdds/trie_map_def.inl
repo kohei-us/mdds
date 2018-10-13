@@ -380,8 +380,6 @@ void packed_trie_map<_KeyTrait,_ValueT>::traverse_range(
     const typename packed_trie_map<_KeyTrait,_ValueT>::entry* end,
     size_type pos)
 {
-    using entry = typename packed_trie_map<_KeyTrait,_ValueT>::entry;
-
     const entry* p = start;
     const entry* range_start = start;
     const entry* range_end = nullptr;
