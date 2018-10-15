@@ -1,5 +1,5 @@
 
-AM_CPPFLAGS = -I$(top_srcdir)/include
+AM_CPPFLAGS = -I$(top_srcdir)/include -DNDEBUG
 
 EXTRA_PROGRAMS = \
 	flat-segment-tree \
