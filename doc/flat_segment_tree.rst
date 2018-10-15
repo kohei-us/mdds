@@ -162,10 +162,10 @@ iterate through the individual leaf nodes one at a time by using
         cout << "key: " << it->first << "; value: " << it->second << endl;
     }
 
-Each iterator value contains a pair of two value ``first`` and ``second``, with
-the first value being the key of the segment that the node initiates, and the
-second one being the value stored in that segment.  When executing this code
-with the tree from the example code above, you'll get the following output:
+Each iterator value contains a pair of two values named ``first`` and ``second``,
+with the first one being the key of the segment that the node initiates, and the
+second one being the value associated with that segment.  When executing this
+code with the tree from the example code above, you'll get the following output:
 
 .. code-block:: none
 
@@ -178,10 +178,15 @@ with the tree from the example code above, you'll get the following output:
     key: 70; value: 0
     key: 500; value: 0
 
-Each node stores the start key and the value of the segment it initiates except
-for the last node, which stores the end key of the previous segment.  Note that
-the value stored in the last node is not associated with any of the segments
-stored in the tree; in fact it is the default value for empty segments.
+Each node stores the start key and the value of the segment it initiates, and
+the key stored in each node is also the end key of the segment that the
+previous node initiates except for the first node.
+
+except
+for the last node, which stores the end key of the segment the previous note
+initiates.  Note that the value stored in the last node is not associated with
+any of the segments stored in the tree; in fact it is the default value for
+empty segments.
 
 One thing to keep in mind is that :cpp:class:`~mdds::flat_segment_tree` does
 not support mutable iterators that let you modify the stored keys or values.
