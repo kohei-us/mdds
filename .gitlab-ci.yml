@@ -9,4 +9,4 @@ build:
     - apt -y install valgrind
     - ldconfig
   script: 
-    - ./autogen.sh --enable-memory tests && make -j $(nproc) check
+    - ./autogen.sh --enable-memory-tests && make -j $(nproc) check
