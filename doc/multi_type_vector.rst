@@ -377,3 +377,7 @@ API Reference
 
 .. doxygenclass:: mdds::multi_type_vector
    :members:
+
+.. doxygenclass:: mdds::mtv::collection
+   :members:
+
