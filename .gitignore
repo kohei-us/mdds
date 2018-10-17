@@ -38,6 +38,8 @@ rtree_test_bulkload
 doc/_build
 doc/_doxygen
 example/flat-segment-tree
+example/flat-segment-tree-itrs
+example/mtv-collection
 example/multi-type-matrix
 example/multi-type-vector
 example/multi-type-vector-element-block1
@@ -48,3 +50,4 @@ example/point-quad-tree
 example/rectangle-set
 example/segment-tree
 example/trie-map
+rtree-test-*.svg

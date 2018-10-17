@@ -13,11 +13,11 @@ void example1()
 
     std::vector<mtv_type> columns(5);
 
+    // Populate the header row.
     std::vector<std::string> headers = { "ID", "Make", "Model", "Year", "Color" };
 
-    // Populate the header row.
     for (size_t i = 0, n = headers.size(); i < n; ++i)
-        columns[i].push_back<std::string>(headers[i]);
+        columns[i].push_back(headers[i]);
 
     // Fill column 1.
     std::vector<int> c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
@@ -51,7 +51,7 @@ void example1()
     for (const std::string& v : c3_values)
         col3.push_back(v);
 
-    // Fill column 4.
+    // Fill column 4.  Replace -1 with "unknown".
     std::vector<int> c4_values =
     {
         1998, 1986, 2009, -1, -1, 2008, 2009, 2008, 2010, 2001,
@@ -62,6 +62,7 @@ void example1()
     for (int v : c4_values)
     {
         if (v < 0)
+            // Insert a string value "unknown".
             col4.push_back<std::string>("unknown");
         else
             col4.push_back(v);

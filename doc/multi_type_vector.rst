@@ -115,8 +115,7 @@ You'll see the following console output when you compile and execute this code:
 .. figure:: _static/images/mtv_block_structure.png
    :align: right
 
-   Figure depicting the ownership structure between the primary array, blocks,
-   and element blocks.
+   Ownership structure between the primary array, blocks, and element blocks.
 
 Each container instance consists of an array of blocks each of which stores
 ``type``, ``position``, ``size`` and ``data`` members.  In this example code,
@@ -301,6 +300,169 @@ Compiling and execute this code produces the following output:
    D
    E
 
+Traverse multiple multi_type_vector instances "sideways"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this section we will demonstrate a way to traverse multiple instances of
+:cpp:class:`~mdds::multi_type_vector` "sideways" using the
+:cpp:class:`mdds::mtv::collection` class.  The best way to explain this feature is
+to use a spreadsheet data as an example.  Let's say we are implementing a data
+store to store a 2-dimensional tabular data where each cell in the data set is
+associated with row and column indices.  Each cell may store a value of string
+type, integer type, numeric type, etc.  In this example we'll be using data
+that looks like the following:
+
+.. figure:: _static/images/mtv_collection_sheet.png
+   :align: center
+
+It consists of five columns, with each column storing 21 rows of data.  The
+first row is a header row, followed by 20 rows of values.  We will use one
+:cpp:class:`~mdds::multi_type_vector` instance for each column, create five
+instances for five columns, and store them in a vector.
+
+The declaration of the data store will look like this::
+
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+    using collection_type = mdds::mtv::collection<mtv_type>;
+
+    std::vector<mtv_type> columns(5);
+
+The first two lines specify the concrete type used for each individual column
+and the collection type for the columns.  The third line instantiates the
+vector for the column storage, and we are setting its size to five to
+accommodate for five columns.  We will make use of the colletion_type later in
+this example.
+
+Next, we need to fill the columns with cell values.  First, we are setting the
+header row::
+
+    // Populate the header row.
+    std::vector<std::string> headers = { "ID", "Make", "Model", "Year", "Color" };
+
+    for (size_t i = 0, n = headers.size(); i < n; ++i)
+        columns[i].push_back(headers[i]);
+
+We are then filling each column individually from column 1 through column 5::
+
+    // Fill column 1.
+    std::vector<int> c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+    mtv_type& col1 = columns[0];
+    for (int v : c1_values)
+        col1.push_back(v);
+
+    // Fill column 2.
+    std::vector<std::string> c2_values =
+    {
+        "Nissan", "Mercedes-Benz", "Nissan", "Suzuki", "Saab",
+        "Subaru", "GMC", "Mercedes-Benz", "Toyota", "Nissan",
+        "Mazda", "Dodge", "Ford", "Bentley", "GMC",
+        "Audi", "GMC", "Mercury", "Pontiac", "BMW",
+    };
+
+    mtv_type& col2 = columns[1];
+    for (const std::string& v : c2_values)
+        col2.push_back(v);
+
+    // Fill column 3.
+    std::vector<std::string> c3_values =
+    {
+        "Frontier", "W201", "Frontier", "Equator", "9-5",
+        "Tribeca", "Yukon XL 2500", "E-Class", "Camry Hybrid", "Frontier",
+        "MX-5", "Ram Van 1500", "Edge", "Azure", "Sonoma Club Coupe",
+        "S4", "3500 Club Coupe", "Villager", "Sunbird", "3 Series",
+    };
+
+    mtv_type& col3 = columns[2];
+    for (const std::string& v : c3_values)
+        col3.push_back(v);
+
+    // Fill column 4.  Replace -1 with "unknown".
+    std::vector<int> c4_values =
+    {
+        1998, 1986, 2009, -1, -1, 2008, 2009, 2008, 2010, 2001,
+        2008, 2000, -1, 2009, 1998, 2013, 1994, 2000, 1990, 1993,
+    };
+
+    mtv_type& col4 = columns[3];
+    for (int v : c4_values)
+    {
+        if (v < 0)
+            // Insert a string value "unknown".
+            col4.push_back<std::string>("unknown");
+        else
+            col4.push_back(v);
+    }
+
+    // Fill column 5
+    std::vector<std::string> c5_values
+    {
+        "Turquoise", "Fuscia", "Teal", "Fuscia", "Green",
+        "Khaki", "Pink", "Goldenrod", "Turquoise", "Yellow",
+        "Orange", "Goldenrod", "Fuscia", "Goldenrod", "Mauv",
+        "Crimson", "Turquoise", "Teal", "Indigo", "LKhaki",
+    };
+
+    mtv_type& col5 = columns[4];
+    for (const std::string& v : c5_values)
+        col5.push_back(v);
+
+TODO::
+
+    // Wrap the columns with the 'collection'...
+    collection_type collection(columns.begin(), columns.end());
+
+TODO::
+
+    for (const auto& v : collection)
+    {
+        if (v.index > 0)
+            // Insert a column separator.
+            std::cout << " | ";
+
+        switch (v.type)
+        {
+            // In this example, we use two element types only.
+            case mdds::mtv::element_type_int:
+                std::cout << v.get<mdds::mtv::int_element_block>();
+                break;
+            case mdds::mtv::element_type_string:
+                std::cout << v.get<mdds::mtv::string_element_block>();
+                break;
+            default:
+                std::cout << "???"; // The default case should not hit in this example.
+        }
+
+        if (v.index == 4)
+            std::cout << std::endl;
+    }
+
+TODO:
+
+.. code-block:: none
+
+    ID | Make | Model | Year | Color
+    1 | Nissan | Frontier | 1998 | Turquoise
+    2 | Mercedes-Benz | W201 | 1986 | Fuscia
+    3 | Nissan | Frontier | 2009 | Teal
+    4 | Suzuki | Equator | unknown | Fuscia
+    5 | Saab | 9-5 | unknown | Green
+    6 | Subaru | Tribeca | 2008 | Khaki
+    7 | GMC | Yukon XL 2500 | 2009 | Pink
+    8 | Mercedes-Benz | E-Class | 2008 | Goldenrod
+    9 | Toyota | Camry Hybrid | 2010 | Turquoise
+    10 | Nissan | Frontier | 2001 | Yellow
+    11 | Mazda | MX-5 | 2008 | Orange
+    12 | Dodge | Ram Van 1500 | 2000 | Goldenrod
+    13 | Ford | Edge | unknown | Fuscia
+    14 | Bentley | Azure | 2009 | Goldenrod
+    15 | GMC | Sonoma Club Coupe | 1998 | Mauv
+    16 | Audi | S4 | 2013 | Crimson
+    17 | GMC | 3500 Club Coupe | 1994 | Turquoise
+    18 | Mercury | Villager | 2000 | Teal
+    19 | Pontiac | Sunbird | 1990 | Indigo
+    20 | BMW | 3 Series | 1993 | LKhaki
+
+
 Performance Considerations
 --------------------------
 
@@ -381,3 +543,29 @@ API Reference
 .. doxygenclass:: mdds::mtv::collection
    :members:
 
+Element Blocks
+^^^^^^^^^^^^^^
+
+.. doxygenstruct:: mdds::mtv::base_element_block
+   :members:
+
+.. doxygenclass:: mdds::mtv::element_block
+   :members:
+
+.. doxygenstruct:: mdds::mtv::default_element_block
+   :members:
+
+.. doxygenclass:: mdds::mtv::copyable_element_block
+   :members:
+
+.. doxygenclass:: mdds::mtv::noncopyable_element_block
+   :members:
+
+.. doxygenstruct:: mdds::mtv::managed_element_block
+   :members:
+
+.. doxygenstruct:: mdds::mtv::noncopyable_managed_element_block
+   :members:
+
+.. doxygenstruct:: mdds::mtv::element_block_func
+   :members:
