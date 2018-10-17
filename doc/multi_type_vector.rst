@@ -330,81 +330,84 @@ The declaration of the data store will look like this::
 The first two lines specify the concrete type used for each individual column
 and the collection type for the columns.  The third line instantiates the
 vector for the column storage, and we are setting its size to five to
-accommodate for five columns.  We will make use of the colletion_type later in
+accommodate for five columns.  We will make use of the collection_type later in
 this example.
 
 Next, we need to fill the columns with cell values.  First, we are setting the
 header row::
 
     // Populate the header row.
-    std::vector<std::string> headers = { "ID", "Make", "Model", "Year", "Color" };
+    auto headers = { "ID", "Make", "Model", "Year", "Color" };
+    size_t i = 0;
+    std::for_each(headers.begin(), headers.end(), [&](const char* v) { columns[i++].push_back<std::string>(v); });
 
-    for (size_t i = 0, n = headers.size(); i < n; ++i)
-        columns[i].push_back(headers[i]);
-
-We are then filling each column individually from column 1 through column 5::
+We are then filling each column individually from column 1 through column 5.
+First up is column 1::
 
     // Fill column 1.
-    std::vector<int> c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
-    mtv_type& col1 = columns[0];
-    for (int v : c1_values)
-        col1.push_back(v);
+    auto c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+    std::for_each(c1_values.begin(), c1_values.end(), [&columns](int v) { columns[0].push_back(v); });
+
+Hopefully this code is straight-forward.  It initializes an array of values to
+push to the column store, and push them one at a time via
+:cpp:func:`~mdds::multi_type_vector::push_back`.  Next up is column 2::
 
     // Fill column 2.
-    std::vector<std::string> c2_values =
+    auto c2_values =
     {
-        "Nissan", "Mercedes-Benz", "Nissan", "Suzuki", "Saab",
-        "Subaru", "GMC", "Mercedes-Benz", "Toyota", "Nissan",
-        "Mazda", "Dodge", "Ford", "Bentley", "GMC",
-        "Audi", "GMC", "Mercury", "Pontiac", "BMW",
+        "Nissan", "Mercedes-Benz", "Nissan", "Suzuki", "Saab", "Subaru", "GMC", "Mercedes-Benz", "Toyota", "Nissan",
+        "Mazda", "Dodge", "Ford", "Bentley", "GMC", "Audi", "GMC", "Mercury", "Pontiac", "BMW",
     };
 
-    mtv_type& col2 = columns[1];
-    for (const std::string& v : c2_values)
-        col2.push_back(v);
+    std::for_each(c2_values.begin(), c2_values.end(), [&columns](const char* v) { columns[1].push_back<std::string>(v); });
+
+This is similar to the code for column 1, except that because we are using an
+array of string literals which implicitly becomes an initializer list of type
+``const char*``, we need to explicitly specify the type for the
+:cpp:func:`~mdds::multi_type_vector::push_back` call to be ``std::string``.
+
+The code for column 3 is very similar to this::
 
     // Fill column 3.
-    std::vector<std::string> c3_values =
+    auto c3_values =
     {
-        "Frontier", "W201", "Frontier", "Equator", "9-5",
-        "Tribeca", "Yukon XL 2500", "E-Class", "Camry Hybrid", "Frontier",
-        "MX-5", "Ram Van 1500", "Edge", "Azure", "Sonoma Club Coupe",
-        "S4", "3500 Club Coupe", "Villager", "Sunbird", "3 Series",
+        "Frontier", "W201", "Frontier", "Equator", "9-5", "Tribeca", "Yukon XL 2500", "E-Class", "Camry Hybrid", "Frontier",
+        "MX-5", "Ram Van 1500", "Edge", "Azure", "Sonoma Club Coupe", "S4", "3500 Club Coupe", "Villager", "Sunbird", "3 Series",
     };
 
-    mtv_type& col3 = columns[2];
-    for (const std::string& v : c3_values)
-        col3.push_back(v);
+    std::for_each(c3_values.begin(), c3_values.end(), [&columns](const char* v) { columns[2].push_back<std::string>(v); });
+
+Populating column 4 needs slight pre-processing.  We are inserting a string
+value of "unknown" in lieu of an integer value of -1.  Therefore the following
+code will do::
 
     // Fill column 4.  Replace -1 with "unknown".
-    std::vector<int> c4_values =
+    auto c4_values =
     {
         1998, 1986, 2009, -1, -1, 2008, 2009, 2008, 2010, 2001,
         2008, 2000, -1, 2009, 1998, 2013, 1994, 2000, 1990, 1993,
     };
 
-    mtv_type& col4 = columns[3];
     for (int v : c4_values)
     {
         if (v < 0)
             // Insert a string value "unknown".
-            col4.push_back<std::string>("unknown");
+            columns[3].push_back<std::string>("unknown");
         else
-            col4.push_back(v);
+            columns[3].push_back(v);
     }
 
+Finally, the last column to fill.  This one uses the same logic as with
+columns 2 and 3::
+
     // Fill column 5
-    std::vector<std::string> c5_values
+    auto c5_values =
     {
-        "Turquoise", "Fuscia", "Teal", "Fuscia", "Green",
-        "Khaki", "Pink", "Goldenrod", "Turquoise", "Yellow",
-        "Orange", "Goldenrod", "Fuscia", "Goldenrod", "Mauv",
-        "Crimson", "Turquoise", "Teal", "Indigo", "LKhaki",
+        "Turquoise", "Fuscia", "Teal", "Fuscia", "Green", "Khaki", "Pink", "Goldenrod", "Turquoise", "Yellow",
+        "Orange", "Goldenrod", "Fuscia", "Goldenrod", "Mauv", "Crimson", "Turquoise", "Teal", "Indigo", "LKhaki",
     };
 
-    mtv_type& col5 = columns[4];
-    for (const std::string& v : c5_values)
-        col5.push_back(v);
+    std::for_each(c5_values.begin(), c5_values.end(), [&columns](const char* v) { columns[4].push_back<std::string>(v); });
 
 TODO::
 
