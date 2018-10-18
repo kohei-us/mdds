@@ -482,6 +482,10 @@ In the current example we are only making use of the ``type`` and ``index``
 members, but the ``position`` member will be available if you need to
 conditionally perform something based on the row position.
 
+The node also provides a convenient ``get()`` method to fetch the value of the
+cell.  This method is a template method, and you need to explicitly specify
+the element block type in order to access the value.
+
 When executing this code, you will see the following outout:
 
 .. code-block:: none
