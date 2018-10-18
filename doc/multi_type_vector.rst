@@ -305,20 +305,25 @@ Traverse multiple multi_type_vector instances "sideways"
 
 In this section we will demonstrate a way to traverse multiple instances of
 :cpp:class:`~mdds::multi_type_vector` "sideways" using the
-:cpp:class:`mdds::mtv::collection` class.  The best way to explain this feature is
-to use a spreadsheet data as an example.  Let's say we are implementing a data
-store to store a 2-dimensional tabular data where each cell in the data set is
-associated with row and column indices.  Each cell may store a value of string
-type, integer type, numeric type, etc.  In this example we'll be using data
-that looks like the following:
+:cpp:class:`mdds::mtv::collection` class.  What this class does is to wrap
+multiple instances of :cpp:class:`~mdds::multi_type_vector` and generate
+iterators that let you iterate the individual element values collectively in
+the direction orthogonal to the direction of the individual vector instances.
+
+The best way to explain this feature is to use a spreadsheet analogy.  Let's
+say we are implementing a data store to store a 2-dimensional tabular data
+where each cell in the data set is associated with row and column indices.
+Each cell may store a value of string type, integer type, numeric type, etc.
+And let's say that the data looks like the following spreadsheet data:
 
 .. figure:: _static/images/mtv_collection_sheet.png
    :align: center
 
 It consists of five columns, with each column storing 21 rows of data.  The
-first row is a header row, followed by 20 rows of values.  We will use one
-:cpp:class:`~mdds::multi_type_vector` instance for each column, create five
-instances for five columns, and store them in a vector.
+first row is a header row, followed by 20 rows of values.  In this example, We
+will be using one :cpp:class:`~mdds::multi_type_vector` instance for each
+column thus creating five instances in total, and store them in a
+``std::vector`` container.
 
 The declaration of the data store will look like this::
 
@@ -327,13 +332,14 @@ The declaration of the data store will look like this::
 
     std::vector<mtv_type> columns(5);
 
-The first two lines specify the concrete type used for each individual column
-and the collection type for the columns.  The third line instantiates the
-vector for the column storage, and we are setting its size to five to
-accommodate for five columns.  We will make use of the collection_type later in
-this example.
+The first two lines specify the concrete :cpp:class:`~mdds::multi_type_vector`
+type used for each individual column and the collection type that wraps the
+columns.  The third line instantiates the ``std::vector`` instance to store
+the columns, and we are setting its size to five to accommodate for five
+columns.  We will make use of the collection_type later in this example after
+the columns have been populated.
 
-Next, we need to fill the columns with cell values.  First, we are setting the
+Now, we need to populate the columns with values.  First, we are setting the
 header row::
 
     // Populate the header row.
@@ -348,8 +354,8 @@ First up is column 1::
     auto c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     std::for_each(c1_values.begin(), c1_values.end(), [&columns](int v) { columns[0].push_back(v); });
 
-Hopefully this code is straight-forward.  It initializes an array of values to
-push to the column store, and push them one at a time via
+Hopefully this code is straight-forward.  It initializes an array of values
+and push them to the column one at a time via
 :cpp:func:`~mdds::multi_type_vector::push_back`.  Next up is column 2::
 
     // Fill column 2.
@@ -397,8 +403,8 @@ code will do::
             columns[3].push_back(v);
     }
 
-Finally, the last column to fill.  Filling the last column uses the same logic
-as with columns 2 and 3::
+Finally, the last column to fill, which uses the same logic as for columns 2
+and 3::
 
     // Fill column 5
     auto c5_values =
@@ -417,20 +423,20 @@ use the collection type we've declared earlier to wrap the columns::
     collection_type rows(columns.begin(), columns.end());
 
 We are naming this variable ``rows`` since what we are doing with this wrapper
-is to traverse the content of the tabular data in row-wise direction.  For this
-reason, calling it ``rows`` is quite fitting.
+is to traverse the content of the tabular data in row-wise direction.  For
+this reason, calling it ``rows`` is quite fitting.
 
-You must meet the following prerequisites when passing values to the
-constructor of the :cpp:class:`~mdds::mtv::collection` class:
+The :cpp:class:`~mdds::mtv::collection` class offers some flexibility as to
+how the instances that you are trying to traverse orthogonally are stored.
+That being said, you must meet the following prerequisites when passing the
+collection of vector instances to the constructor of the
+:cpp:class:`~mdds::mtv::collection` class:
 
-1. All instances that comprise the collection must be of type
-   :cpp:class:`~mdds::multi_type_vector`.  You cannot use a collection of
-   ``std::vector``, for instance.
-2. All :cpp:class:`~mdds::multi_type_vector` instances that comprise the
+1. All :cpp:class:`~mdds::multi_type_vector` instances that comprise the
    collection must be of the same logical length i.e. their
    :cpp:func:`~mdds::multi_type_vector::size` methods must all return the same
    value.
-3. The instances in the collection must be stored in the source container
+2. The instances in the collection must be stored in the source container
    either as
 
    * concrete instances (as in this example),
@@ -438,8 +444,16 @@ constructor of the :cpp:class:`~mdds::mtv::collection` class:
    * as heap instances wrapped within smart pointer class such as
      ``std::shared_ptr`` or ``std::unique_ptr``.
 
-Finally, here is the code that does the traversing.
-::
+Although we are storing the vector instances in a ``std::vector`` container in
+this example, you have the flexibility to pick a different type of container
+to store the individual vector instances as long as it provides STL-compatible
+standard iterator functionality.
+
+Additionally, when using the :cpp:class:`~mdds::mtv::collection` class, you
+must ensure that the content of the vector instances that it references will
+not change for the duration of its use.
+
+Finally, here is the code that does the traversing::
 
     // Traverse the tabular data in row-wise direction.
     for (const auto& cell : rows)
@@ -479,8 +493,7 @@ following members:
   row index in this example.
 
 In the current example we are only making use of the ``type`` and ``index``
-members, but the ``position`` member will be available if you need to
-conditionally perform something based on the row position.
+members, but the ``position`` member will be there if you need it.
 
 The node also provides a convenient ``get()`` method to fetch the value of the
 cell.  This method is a template method, and you need to explicitly specify
