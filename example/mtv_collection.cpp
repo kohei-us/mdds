@@ -66,28 +66,30 @@ void example1()
     std::for_each(c5_values.begin(), c5_values.end(), [&columns](const char* v) { columns[4].push_back<std::string>(v); });
 
     // Wrap the columns with the 'collection'...
-    collection_type collection(columns.begin(), columns.end());
+    collection_type rows(columns.begin(), columns.end());
 
-    for (const auto& v : collection)
+    // Traverse the tabular data in row-wise direction.
+    for (const auto& cell : rows)
     {
-        if (v.index > 0)
-            // Insert a column separator.
+        if (cell.index > 0)
+            // Insert a column separator before each cell except for the ones in the first column.
             std::cout << " | ";
 
-        switch (v.type)
+        switch (cell.type)
         {
             // In this example, we use two element types only.
             case mdds::mtv::element_type_int:
-                std::cout << v.get<mdds::mtv::int_element_block>();
+                std::cout << cell.get<mdds::mtv::int_element_block>();
                 break;
             case mdds::mtv::element_type_string:
-                std::cout << v.get<mdds::mtv::string_element_block>();
+                std::cout << cell.get<mdds::mtv::string_element_block>();
                 break;
             default:
                 std::cout << "???"; // The default case should not hit in this example.
         }
 
-        if (v.index == 4)
+        if (cell.index == 4)
+            // We are in the last column. Insert a line break.
             std::cout << std::endl;
     }
 }

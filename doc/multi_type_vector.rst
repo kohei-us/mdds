@@ -397,8 +397,8 @@ code will do::
             columns[3].push_back(v);
     }
 
-Finally, the last column to fill.  This one uses the same logic as with
-columns 2 and 3::
+Finally, the last column to fill.  Filling the last column uses the same logic
+as with columns 2 and 3::
 
     // Fill column 5
     auto c5_values =
@@ -409,37 +409,80 @@ columns 2 and 3::
 
     std::for_each(c5_values.begin(), c5_values.end(), [&columns](const char* v) { columns[4].push_back<std::string>(v); });
 
-TODO::
+At this point, the content we've put into the ``columns`` variable roughly
+reflects the tabular data shown at the beginning of this section.  Now we can
+use the collection type we've declared earlier to wrap the columns::
 
     // Wrap the columns with the 'collection'...
-    collection_type collection(columns.begin(), columns.end());
+    collection_type rows(columns.begin(), columns.end());
 
-TODO::
+We are naming this variable ``rows`` since what we are doing with this wrapper
+is to traverse the content of the tabular data in row-wise direction.  For this
+reason, calling it ``rows`` is quite fitting.
 
-    for (const auto& v : collection)
+You must meet the following prerequisites when passing values to the
+constructor of the :cpp:class:`~mdds::mtv::collection` class:
+
+1. All instances that comprise the collection must be of type
+   :cpp:class:`~mdds::multi_type_vector`.  You cannot use a collection of
+   ``std::vector``, for instance.
+2. All :cpp:class:`~mdds::multi_type_vector` instances that comprise the
+   collection must be of the same logical length i.e. their
+   :cpp:func:`~mdds::multi_type_vector::size` methods must all return the same
+   value.
+3. The instances in the collection must be stored in the source container
+   either as
+
+   * concrete instances (as in this example),
+   * as pointers, or
+   * as heap instances wrapped within smart pointer class such as
+     ``std::shared_ptr`` or ``std::unique_ptr``.
+
+Finally, here is the code that does the traversing.
+::
+
+    // Traverse the tabular data in row-wise direction.
+    for (const auto& cell : rows)
     {
-        if (v.index > 0)
-            // Insert a column separator.
+        if (cell.index > 0)
+            // Insert a column separator before each cell except for the ones in the first column.
             std::cout << " | ";
 
-        switch (v.type)
+        switch (cell.type)
         {
             // In this example, we use two element types only.
             case mdds::mtv::element_type_int:
-                std::cout << v.get<mdds::mtv::int_element_block>();
+                std::cout << cell.get<mdds::mtv::int_element_block>();
                 break;
             case mdds::mtv::element_type_string:
-                std::cout << v.get<mdds::mtv::string_element_block>();
+                std::cout << cell.get<mdds::mtv::string_element_block>();
                 break;
             default:
                 std::cout << "???"; // The default case should not hit in this example.
         }
 
-        if (v.index == 4)
+        if (cell.index == 4)
+            // We are in the last column. Insert a line break.
             std::cout << std::endl;
     }
 
-TODO:
+It's a simple for-loop, and in each iteration you get a single cell node that
+contains metadata about that cell including its value.  The node contains the
+following members:
+
+* ``type`` - an integer value representing the type of the value.
+* ``index`` -  a 0-based index of the :cpp:class:`~mdds::multi_type_vector`
+  instance within the collection.  You can think of this as column index in
+  this example.
+* ``position`` - a 0-based logical element position within each
+  :cpp:class:`~mdds::multi_type_vector` instance.  You can think of this as
+  row index in this example.
+
+In the current example we are only making use of the ``type`` and ``index``
+members, but the ``position`` member will be available if you need to
+conditionally perform something based on the row position.
+
+When executing this code, you will see the following outout:
 
 .. code-block:: none
 
@@ -465,6 +508,8 @@ TODO:
     19 | Pontiac | Sunbird | 1990 | Indigo
     20 | BMW | 3 Series | 1993 | LKhaki
 
+which clearly shows that the code has traversed the content of the tabular
+data horizontally across columns as intended.
 
 Performance Considerations
 --------------------------
