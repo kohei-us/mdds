@@ -135,8 +135,9 @@ public:
 
 /**
  * Special-purpose collection of multiple multi_type_vector instances to
- * allow them to be traversed "sideways". All involved multi_type_vector
- * instances must be of the same type and length.
+ * allow them to be traversed "sideways" i.e. orthogonal to the direction of
+ * the vector instances. All involved multi_type_vector instances must be of
+ * the same type and length.
  */
 template<typename _MtvT>
 class collection
@@ -168,31 +169,82 @@ public:
 
     collection();
 
+    /**
+     * Constructor that takes the start and end iterators of the
+     * multi_type_vector instances to reference in the collection.
+     *
+     * @param begin iterator that references the first multi_type_vector
+     *              instance to place in the collection.
+     * @param end iterator that references the position past the last
+     *            multi_type_vector instance to place in the collection.
+     */
     template<typename _T>
     collection(const _T& begin, const _T& end);
 
+    /**
+     * Return an iterator that references the first element in the
+     * collection.
+     *
+     * @return iterator that references the first element in the collection.
+     */
     const_iterator begin() const;
 
+    /**
+     * Return an iterator that references the position past the last element
+     * in the collection.
+     *
+     * @return iterator that references the position past the last element in
+     *         the collection.
+     */
     const_iterator end() const;
 
+    /**
+     * Return the length of the vector instances stored in the collection.
+     * This will be equivalent of the length of each multi_type_vector
+     * instance, since all stored instances have the same length.
+     *
+     * @return length of the stored multi_type_vector instances.
+     */
     size_type size() const;
 
+    /**
+     * Swap the entire collection with another collection instance.
+     *
+     * @param other another collection instance to swap contents with.
+     */
     void swap(collection& other);
 
     /**
-     * Set the sub-range of the collection to iterate.
+     * Set the sub-range of the collection to iterate through.
      *
-     * @param start start position.
-     * @param size length of the collection range.
+     * <p>For instance, if the collection consists of 100 multi_type_vector
+     * instances, and you want to iterate through only 50 of them starting
+     * from the second instance, you set the start index to 1 (as it's
+     * 0-based), and the size to 50.</p>
+     *
+     * @param start 0-based index of the first multi_type_vector instance to
+     *              iterate through.
+     * @param size length of the collection range i.e. the number of vector
+     *             instances to iterate through starting from the specified
+     *             first vector instance.
      */
     void set_collection_range(size_type start, size_type size);
 
     /**
-     * Set the sub element range to iterate.
+     * Set the sub element range to iterate through.  This limits the element
+     * range in each multi_type_vector instance to iterate through.  The
+     * direction of the element range is orthogonal to the direction of the
+     * collection range.
      *
+     * <p>For instance, if the collection consists of multiple
+     * multi_type_vector instances all of which have a length of 50, and you
+     * only wish to iterate from the 3rd element through the 10th element in
+     * each vector instance, then you set the start index to 2 and the
+     * size to 8.</p>
      *
-     * @param start start element position.
-     * @param size length of the element range.
+     * @param start 0-based index of the starting element position.
+     * @param size length of the element range to iterate through starting
+     *             from the specified start element position.
      */
     void set_element_range(size_type start, size_type size);
 
