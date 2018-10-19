@@ -24,6 +24,7 @@ Contents:
    multi_type_matrix.rst
    sorted_string_map.rst
    trie_map.rst
+   rtree.rst
 
 
 Indices and tables
