@@ -1,3 +1,13 @@
+* documentation
+
+  * added details on how to use two type of iterators with
+    flat_segment_tree.
+
+  * added new section to describe how to use mtv::collection to iterate
+    through multiple multi_type_vector instances as a single collection
+    in the direction orthogonal to the direction of the individual
+    vectors.
+
 * flat_segment_tree
 
   * fixed invalid memory access issue related to the swap() method which
