@@ -50,4 +50,5 @@ example/point-quad-tree
 example/rectangle-set
 example/segment-tree
 example/trie-map
+example/rtree-simple
 rtree-test-*.svg

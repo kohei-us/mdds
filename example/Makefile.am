@@ -14,7 +14,8 @@ EXTRA_PROGRAMS = \
 	point-quad-tree \
 	rectangle-set \
 	segment-tree \
-	trie-map
+	trie-map \
+	rtree-simple
 
 flat_segment_tree_SOURCES = flat_segment_tree.cpp
 flat_segment_tree_itrs_SOURCES = flat_segment_tree_itrs.cpp
@@ -29,6 +30,7 @@ point_quad_tree_SOURCES = point_quad_tree.cpp
 rectangle_set_SOURCES = rectangle_set.cpp
 segment_tree_SOURCES = segment_tree.cpp
 trie_map_SOURCES = trie_map.cpp
+rtree_simple_SOURCES = rtree_simple.cpp
 
 TESTS = \
 	flat-segment-tree \
@@ -43,7 +45,8 @@ TESTS = \
 	point-quad-tree \
 	rectangle-set \
 	segment-tree \
-	trie-map
+	trie-map \
+	rtree-simple
 
 distclean-local:
 	rm -rf $(TESTS)

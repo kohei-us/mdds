@@ -224,6 +224,7 @@
 			<F N="../example/multi_type_vector.cpp"/>
 			<F N="../example/point_quad_tree.cpp"/>
 			<F N="../example/rectangle_set.cpp"/>
+			<F N="../example/rtree_simple.cpp"/>
 			<F N="../example/segment_tree.cpp"/>
 		</Folder>
 		<Folder Name="../include">
