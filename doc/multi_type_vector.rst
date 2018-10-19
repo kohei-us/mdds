@@ -528,6 +528,66 @@ When executing this code, you will see the following outout:
 which clearly shows that the code has traversed the content of the tabular
 data horizontally across columns as intended.
 
+Now, one feature that may come in handy is the ability to limit the iteration
+range within the collection.  You can do that by calling either
+:cpp:func:`~mdds::mtv::collection::set_collection_range` to limit the column
+range or :cpp:func:`~mdds::mtv::collection::set_element_range` to limit the
+row range, or perhaps both.
+
+Let's see how this works in the current example.  Here, we are going to limit
+the iteration range to only columns 2 and 3, and rows 2 through 11.  The following
+code will set this limit::
+
+    rows.set_collection_range(1, 2); // only columns 2 and 3.
+    rows.set_element_range(1, 10);   // only rows 2 through 11.
+
+Then iterate through the collection once again::
+
+    for (const auto& cell : rows)
+    {
+        if (cell.index > 1)
+            // Insert a column separator before each cell except for the ones in the first column.
+            std::cout << " | ";
+
+        switch (cell.type)
+        {
+            // In this example, we use two element types only.
+            case mdds::mtv::element_type_int:
+                std::cout << cell.get<mdds::mtv::int_element_block>();
+                break;
+            case mdds::mtv::element_type_string:
+                std::cout << cell.get<mdds::mtv::string_element_block>();
+                break;
+            default:
+                std::cout << "???"; // The default case should not hit in this example.
+        }
+
+        if (cell.index == 2)
+            // We are in the last column. Insert a line break.
+            std::cout << std::endl;
+    }
+
+This code is nearly identical to the previous one except for the index values
+used to control when to insert column separators and line breaks at the top
+and bottom of each iteration.  When executing this code, you'll see the
+following output:
+
+.. code-block:: none
+
+    Nissan | Frontier
+    Mercedes-Benz | W201
+    Nissan | Frontier
+    Suzuki | Equator
+    Saab | 9-5
+    Subaru | Tribeca
+    GMC | Yukon XL 2500
+    Mercedes-Benz | E-Class
+    Toyota | Camry Hybrid
+    Nissan | Frontier
+
+which clearly shows that your iteration range did indeed shrink as expected.
+
+
 Performance Considerations
 --------------------------
 

@@ -92,6 +92,35 @@ void example1()
             // We are in the last column. Insert a line break.
             std::cout << std::endl;
     }
+
+    rows.set_collection_range(1, 2); // only columns 2 and 3.
+    rows.set_element_range(1, 10);   // only rows 2 through 11.
+
+    std::cout << "--" << std::endl;
+
+    for (const auto& cell : rows)
+    {
+        if (cell.index > 1)
+            // Insert a column separator before each cell except for the ones in the first column.
+            std::cout << " | ";
+
+        switch (cell.type)
+        {
+            // In this example, we use two element types only.
+            case mdds::mtv::element_type_int:
+                std::cout << cell.get<mdds::mtv::int_element_block>();
+                break;
+            case mdds::mtv::element_type_string:
+                std::cout << cell.get<mdds::mtv::string_element_block>();
+                break;
+            default:
+                std::cout << "???"; // The default case should not hit in this example.
+        }
+
+        if (cell.index == 2)
+            // We are in the last column. Insert a line break.
+            std::cout << std::endl;
+    }
 }
 
 int main()
