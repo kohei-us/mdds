@@ -136,9 +136,63 @@ specifies the type of search to be performed.  In the above call we passed
 picks up all values whose bounding rectangles overlap with the search region
 either partially or fully.
 
-Sometimes, however, you may need to find a value whose bounding rectangle match
-exactly the search region.  You can achieve that by setting the search type to
-``match``.
+Sometimes, however, you may need to find a value whose bounding rectangle
+matches exactly the search region you specify in your query.  You can achieve
+that by setting the search type to ``match``.
+
+Here is an example::
+
+    // Search for all objects whose bounding rectangles are exactly (4, 4) - (7, 7).
+    auto results = tree.search({{4.0, 4.0}, {7.0, 7.0}}, rt_type::search_type::match);
+    std::cout << "number of results: " << std::distance(results.begin(), results.end()) << std::endl;
+
+The search region is identical to that of the previous example, but the search
+type is set to ``match`` instead.  Then the next line will count the number of
+results and print it out.  The output you will see is as follows:
+
+.. code-block:: none
+
+    number of results: 0
+
+indicating that the results are empty.  That is expected since none of the
+objects stored in the tree have an exact bounding rectangle of (4, 4) - (7,
+7).  When you change the search region to (0, 0) - (15, 20), however, you'll
+get one object back.  Here is the actual code::
+
+    // Search for all objects whose bounding rectangles are exactly (0, 0) - (15, 20).
+    auto results = tree.search({{0.0, 0.0}, {15.0, 20.0}}, rt_type::search_type::match);
+    std::cout << "number of results: " << std::distance(results.begin(), results.end()) << std::endl;
+
+which is identical to the previous one except for the search resion.  This is
+its output:
+
+.. code-block:: none
+
+    number of results: 1
+
+indicating that it has found exactly one object whose bounding rectangle
+exactly matches the search region.
+
+It's worth mentioning that :cpp:class:`~mdds::rtree` supports storage of
+multiple objects with identical bounding rectangle.  As such, searching with
+the search type of ``match`` can return more than one result.
+
+As you may have noticed in these example codes, the
+:cpp:class:`~mdds::rtree::search_results` object does provide
+:cpp:func:`~mdds::rtree::search_results::begin` and
+:cpp:func:`~mdds::rtree::search_results::end` methods that return standard
+iterators which you can plug into various iterator algorithms from the STL.
+Dereferencing the iterator will return a reference to the stored value i.e.
+this line::
+
+    std::cout << "value: " << *results.begin() << std::endl;
+
+which immediately comes after the previous search will output:
+
+.. code-block:: none
+
+    value: first rectangle data
+
 
 
 API Reference

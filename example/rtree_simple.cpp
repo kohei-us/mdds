@@ -26,11 +26,27 @@ int main()
 
     tree.insert({5.0, 6.0}, "first point data");
 
-    // Search for all objects that overlap with a (4, 4) - (7, 7) rectangle.
-    auto results = tree.search({{4.0, 4.0}, {7.0, 7.0}}, rt_type::search_type::overlap);
+    {
+        // Search for all objects that overlap with a (4, 4) - (7, 7) rectangle.
+        auto results = tree.search({{4.0, 4.0}, {7.0, 7.0}}, rt_type::search_type::overlap);
 
-    for (const std::string& v : results)
-        std::cout << "value: " << v << std::endl;
+        for (const std::string& v : results)
+            std::cout << "value: " << v << std::endl;
+    }
+
+    {
+        // Search for all objects whose bounding rectangles are exactly (4, 4) - (7, 7).
+        auto results = tree.search({{4.0, 4.0}, {7.0, 7.0}}, rt_type::search_type::match);
+        std::cout << "number of results: " << std::distance(results.begin(), results.end()) << std::endl;
+    }
+
+    {
+        // Search for all objects whose bounding rectangles are exactly (0, 0) - (15, 20).
+        auto results = tree.search({{0.0, 0.0}, {15.0, 20.0}}, rt_type::search_type::match);
+        std::cout << "number of results: " << std::distance(results.begin(), results.end()) << std::endl;
+
+        std::cout << "value: " << *results.begin() << std::endl;
+    }
 
     return EXIT_SUCCESS;
 }
