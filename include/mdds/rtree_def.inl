@@ -1541,11 +1541,6 @@ rtree<_Key,_Value,_Trait>::search(const point_type& pt, search_type st) const
             throw std::runtime_error("Unhandled search type.");
     }
 
-    search_condition_type cond = [&pt](const node_store& ns) -> bool
-    {
-        return ns.extent.contains(pt);
-    };
-
     const_search_results ret;
     search_descend(0, dir_cond, value_cond, m_root, ret);
     return ret;
@@ -1586,11 +1581,6 @@ rtree<_Key,_Value,_Trait>::search(const point_type& pt, search_type st)
         default:
             throw std::runtime_error("Unhandled search type.");
     }
-
-    search_condition_type cond = [&pt](const node_store& ns) -> bool
-    {
-        return ns.extent.contains(pt);
-    };
 
     search_results ret;
     search_descend(0, dir_cond, value_cond, m_root, ret);
