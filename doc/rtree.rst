@@ -193,6 +193,31 @@ which immediately comes after the previous search will output:
 
     value: first rectangle data
 
+In addition to accessing the value that the iterator references, you can also
+query from the same iterator object the bounding rectangle associated with the
+value as well as its depth in the tree by calling its
+:cpp:func:`~mdds::rtree::iterator_base::extent` and
+:cpp:func:`~mdds::rtree::iterator_base::depth` methods, respectively, as in
+the following code::
+
+    auto it = results.begin();
+    std::cout << "value: " << *it << std::endl;
+    std::cout << "extent: " << it.extent().to_string() << std::endl;
+    std::cout << "depth: " << it.depth() << std::endl;
+
+Running this code will produce the following output:
+
+.. code-block:: none
+
+    value: first rectangle data
+    depth: 1
+    extent: (0, 0) - (15, 20)
+
+A depth value represents the distance of the node where the value is stored
+from the root node of the tree, and is technically 0-based.  However, you will
+never see a depth of 0 in the search results since the root node of a R-tree
+is always a directory node, and a directory node only stores other child nodes
+and never a value (hence never appears in the search results).
 
 
 API Reference

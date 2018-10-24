@@ -46,6 +46,13 @@ int main()
         std::cout << "number of results: " << std::distance(results.begin(), results.end()) << std::endl;
 
         std::cout << "value: " << *results.begin() << std::endl;
+
+        std::cout << "--" << std::endl;
+
+        auto it = results.begin();
+        std::cout << "value: " << *it << std::endl;
+        std::cout << "extent: " << it.extent().to_string() << std::endl;
+        std::cout << "depth: " << it.depth() << std::endl;
     }
 
     return EXIT_SUCCESS;
