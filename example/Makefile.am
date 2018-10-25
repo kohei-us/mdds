@@ -15,7 +15,8 @@ EXTRA_PROGRAMS = \
 	rectangle-set \
 	segment-tree \
 	trie-map \
-	rtree-simple
+	rtree-simple \
+	rtree-erase
 
 flat_segment_tree_SOURCES = flat_segment_tree.cpp
 flat_segment_tree_itrs_SOURCES = flat_segment_tree_itrs.cpp
@@ -31,6 +32,7 @@ rectangle_set_SOURCES = rectangle_set.cpp
 segment_tree_SOURCES = segment_tree.cpp
 trie_map_SOURCES = trie_map.cpp
 rtree_simple_SOURCES = rtree_simple.cpp
+rtree_erase_SOURCES = rtree_erase.cpp
 
 TESTS = \
 	flat-segment-tree \
@@ -46,7 +48,8 @@ TESTS = \
 	rectangle-set \
 	segment-tree \
 	trie-map \
-	rtree-simple
+	rtree-simple \
+	rtree-erase
 
 distclean-local:
 	rm -rf $(TESTS)
