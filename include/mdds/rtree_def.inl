@@ -1699,6 +1699,7 @@ void rtree<_Key,_Value,_Trait>::erase_impl(const node_store* ns, size_t depth)
     assert(dir_ns->type == node_type::directory_leaf);
     bool erased = dir_ns->erase_child(ns);
     assert(erased);
+    (void)erased; // to avoid getting a warning on "variable set but not used".
 
     if (dir_ns->is_root())
     {
