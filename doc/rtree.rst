@@ -299,6 +299,8 @@ Compiling and running this code will generate the following output:
     D
     E
 
+which clearly shows that the 'C' has been successfully erased.
+
 
 API Reference
 -------------
