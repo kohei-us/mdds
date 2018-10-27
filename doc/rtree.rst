@@ -20,11 +20,8 @@ although certain functionalities, especially those related to visualization,
 are only supported for 2-dimensional cases.
 
 
-Code Example
-------------
-
 Quick start
-^^^^^^^^^^^
+-----------
 
 Let's go through a very simple example to demonstrate how to use
 :cpp:class:`~mdds::rtree`.  First, you need to specify a concrete type by
@@ -221,7 +218,7 @@ and never a value (hence never appears in the search results).
 
 
 Removing a value from tree
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 Removing an existing value from the tree first requires you to perform the
 search to obtian search results, then from the search results get the iterator
@@ -300,6 +297,113 @@ Compiling and running this code will generate the following output:
     E
 
 which clearly shows that the 'C' has been successfully erased.
+
+
+Visualize R-tree structure
+--------------------------
+
+In this section we will illustrate a way to visualize an R-tree structure via
+:cpp:func:`~mdds::rtree::export_tree` method, which can be useful when you
+need to visually inspect the tree structure to see how well balanced it is (or
+not).
+
+We will be using the following set of 2-dimensional rectangles as the bounding
+rectangles for input values.
+
+.. figure:: _static/images/rtree_bounds_src.png
+   :align: center
+
+For input values, we'll simply use linearly increasing series of integer
+values, but the values themselves are not the focus of this section.  We will
+also intentionally make the capacity of directory nodes smaller so that the
+tree will split more frequently during insertion.
+
+Now, let's take a look at the code::
+
+    #include <mdds/rtree.hpp>
+
+    #include <iostream>
+    #include <fstream>
+
+    // Make the node capacity intentionally small.
+    struct tiny_trait_2d
+    {
+        constexpr static size_t dimensions = 2;
+        constexpr static size_t min_node_size = 2;
+        constexpr static size_t max_node_size = 5;
+        constexpr static size_t max_tree_depth = 100;
+
+        constexpr static bool enable_forced_reinsertion = true;
+        constexpr static size_t reinsertion_size = 2;
+    };
+
+    using rt_type = mdds::rtree<int, int, tiny_trait_2d>;
+
+    int main()
+    {
+        rt_type tree;
+
+        // 2D rectangle with the top-left position (x, y), width and height.
+        struct rect
+        {
+            int x;
+            int y;
+            int w;
+            int h;
+        };
+
+        std::vector<rect> rects =
+        {
+            {  3731,  2433, 1356,  937 },
+            {  6003,  3172, 1066,  743 },
+            {  4119,  6403,  825, 1949 },
+            { 10305,  2315,  776,  548 },
+            { 13930,  5468, 1742,  626 },
+            {  8614,  4107, 2709, 1793 },
+            { 14606,  1887, 5368, 1326 },
+            { 17990,  5196, 1163, 1911 },
+            {  6728,  7881, 3676, 1210 },
+            { 14704,  9789, 5271, 1092 },
+            {  4071, 10723, 4739,  898 },
+            { 11755,  9010, 1357, 2806 },
+            { 13978,  4068,  776,  509 },
+            { 17507,  3717,  777,  471 },
+            { 20358,  6092,  824, 1093 },
+            {  6390,  4535, 1066, 1715 },
+            { 13978,  7182, 2516, 1365 },
+            { 17942, 11580, 2854,  665 },
+            {  9919, 10450,  873, 1716 },
+            {  5568, 13215, 7446,  509 },
+            {  7357, 15277, 3145, 3234 },
+            {  3539, 12592,  631,  509 },
+            {  4747, 14498,  825,  626 },
+            {  4554, 16913,  969, 1443 },
+            { 12771, 14693, 2323,  548 },
+            { 18714,  8193, 2372,  586 },
+            { 22292,  2743,  487, 1638 },
+            { 20987, 17535, 1163, 1249 },
+            { 19536, 18859,  632,  431 },
+            { 19778, 15394, 1356,  626 },
+            { 22969, 15394,  631, 2066 },
+        };
+
+        // Insert the rectangle objects into the tree.
+        int value = 0;
+        for (const auto& rect : rects)
+            tree.insert({{rect.x, rect.y}, {rect.x + rect.w, rect.y + rect.h}}, value++);
+
+        // Export the tree structure as a SVG for visualization.
+        std::string tree_svg = tree.export_tree(rt_type::export_tree_type::extent_as_svg);
+        std::ofstream fout("bounds.svg");
+        fout << tree_svg;
+
+        return EXIT_SUCCESS;
+    }
+
+TODO: continue.
+
+.. figure:: _static/images/rtree_bounds_tree.png
+   :align: center
 
 
 API Reference
