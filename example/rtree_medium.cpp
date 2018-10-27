@@ -20,8 +20,6 @@ using rt_type = mdds::rtree<int, int, tiny_trait_2d>;
 
 int main()
 {
-    rt_type tree;
-
     // 2D rectangle with the top-left position (x, y), width and height.
     struct rect
     {
@@ -65,6 +63,8 @@ int main()
         { 19778, 15394, 1356,  626 },
         { 22969, 15394,  631, 2066 },
     };
+
+    rt_type tree;
 
     // Insert the rectangle objects into the tree.
     int value = 0;

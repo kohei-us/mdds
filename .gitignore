@@ -51,4 +51,7 @@ example/rectangle-set
 example/segment-tree
 example/trie-map
 example/rtree-simple
+example/rtree-erase
+example/rtree-medium
+example/bounds.svg
 rtree-test-*.svg

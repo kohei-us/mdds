@@ -43,11 +43,33 @@ namespace detail { namespace rtree {
 
 struct default_rtree_trait
 {
+    /**
+     * Number of dimensions in bounding rectangles.
+     */
     constexpr static size_t dimensions = 2;
+
+    /**
+     * Minimum number of child nodes that must be present in each directory
+     * node, except for the root node but only when it's a leaf directory
+     * node.
+     */
     constexpr static size_t min_node_size = 40;
+
+    /**
+     * Maximum number of child nodes that each directory node is allowed to
+     * have.
+     */
     constexpr static size_t max_node_size = 100;
+
+    /**
+     * Maximum depth a tree is allowed to have.
+     */
     constexpr static size_t max_tree_depth = 100;
 
+    /**
+     * A flag to determine whether or not to perform forced reinsertion when a
+     * directory node overflows before attempting to split the node.
+     */
     constexpr static bool enable_forced_reinsertion = true;
 
     /**
