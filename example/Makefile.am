@@ -17,7 +17,8 @@ EXTRA_PROGRAMS = \
 	trie-map \
 	rtree-simple \
 	rtree-erase \
-	rtree-medium
+	rtree-medium \
+	rtree-medium-bulkload
 
 flat_segment_tree_SOURCES = flat_segment_tree.cpp
 flat_segment_tree_itrs_SOURCES = flat_segment_tree_itrs.cpp
@@ -35,6 +36,7 @@ trie_map_SOURCES = trie_map.cpp
 rtree_simple_SOURCES = rtree_simple.cpp
 rtree_erase_SOURCES = rtree_erase.cpp
 rtree_medium_SOURCES = rtree_medium.cpp
+rtree_medium_bulkload_SOURCES = rtree_medium_bulkload.cpp
 
 TESTS = \
 	flat-segment-tree \
@@ -52,7 +54,8 @@ TESTS = \
 	trie-map \
 	rtree-simple \
 	rtree-erase \
-	rtree-medium
+	rtree-medium \
+	rtree-medium-bulkload
 
 distclean-local:
 	rm -rf $(TESTS) *.svg

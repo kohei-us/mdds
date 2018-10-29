@@ -433,10 +433,10 @@ Also be aware that these constants must all be constant expressions with
 declarations, and even those that are currently not used within
 ``static_assert`` may be used in ``static_assert`` in the future.
 
-In our current example, the only thing we need to highlight is that we are
-setting the directory node size to 2 to 5 instead of the default size of 40 to
-100, which will definitely cause more node splits and make the tree
-artificially deeper.
+As far as our current example goes, the only part of the custom trait we need
+to highlight is that we are setting the directory node size to 2-to-5 instead
+of the default size of 40-to-100, to trigger more node splits and make the
+tree artificially deeper.
 
 Let's move on to the next part of the code::
 
