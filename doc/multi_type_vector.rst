@@ -3,11 +3,8 @@
 Multi Type Vector
 =================
 
-Code Example
-------------
-
-Simple use case
-^^^^^^^^^^^^^^^
+Quick start
+-----------
 
 The following code demonstrates a simple use case of storing values of double
 and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds::multi_type_vector`.
@@ -125,8 +122,9 @@ their ``data`` members, which should point to valid memory addresses of their
 respective element blocks, are dereferenced to gain access to them in order to
 print out their contents to stdout inside the ``print_block`` function.
 
+
 Use custom event handlers
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 It is also possible to define custom event handlers that get called when
 certain events take place.  To define custom event handlers, you need to
@@ -209,8 +207,9 @@ blocks which are owned by non-empty blocks, and empty blocks don't own element
 block instances, creations or deletions of empty blocks don't trigger these
 event handlers.
 
+
 Get raw pointer to element block array
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------
 
 Sometimes you need to expose a pointer to an element block array especially
 when you need to pass such an array pointer to C API that requires one.  You
@@ -300,8 +299,9 @@ Compiling and execute this code produces the following output:
    D
    E
 
+
 Traverse multiple multi_type_vector instances "sideways"
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------------------------
 
 In this section we will demonstrate a way to traverse multiple instances of
 :cpp:class:`~mdds::multi_type_vector` "sideways" using the

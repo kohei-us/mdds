@@ -3,11 +3,8 @@
 Flat Segment Tree
 =================
 
-Code Example
-------------
-
-Simple use case
-^^^^^^^^^^^^^^^
+Quick start
+-----------
 
 The following code demonstrates a simple use case of storing non-overlapping
 ranged values and performing queries using :cpp:class:`~mdds::flat_segment_tree`::
@@ -151,7 +148,8 @@ But it does require the search tree to be built ahead of time by calling
 
 
 Iterate through stored segments
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
+
 :cpp:class:`~mdds::flat_segment_tree` supports two types of iterators to allow
 you to iterate through the segments stored in your tree.  The first way is to
 iterate through the individual leaf nodes one at a time by using
