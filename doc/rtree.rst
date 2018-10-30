@@ -207,8 +207,8 @@ Running this code will produce the following output:
 .. code-block:: none
 
     value: first rectangle data
-    depth: 1
     extent: (0, 0) - (15, 20)
+    depth: 1
 
 A depth value represents the distance of the node where the value is stored
 from the root node of the tree, and is technically 0-based.  However, you will
@@ -512,8 +512,9 @@ you'll see something similar to this:
 .. figure:: _static/images/rtree_bounds_tree.png
    :align: center
 
-which depicts not only the bounding rectangles of the inserted values, but
-also the bounding rectangles of the directory nodes as well.
+which depicts not only the bounding rectangles of the inserted values
+(the red rectangles), but also the bounding rectangles of the directory
+nodes as well (the light green rectangles).
 
 
 Bulk-loading data
@@ -660,41 +661,43 @@ Next, we insert the same set of rectangles via
     }
 
 Inserting via :cpp:class:`~mdds::rtree::bulk_loader` shouldn't be too
-different than inserting via rtree's own insert methods.  The only difference
-is that you instantiate a :cpp:class:`~mdds::rtree::bulk_loader` instance to
-insert all your data to it, then call its
-:cpp:func:`~mdds::rtree::bulk_loader::pack` method to construct the final
-:cpp:class:`~mdds::rtree` instance.
+different than inserting via rtree's own insert methods.  The only
+difference is that you instantiate a
+:cpp:class:`~mdds::rtree::bulk_loader` instance to insert all your data
+to it, then call its :cpp:func:`~mdds::rtree::bulk_loader::pack` method
+at the end to construct the final :cpp:class:`~mdds::rtree` instance.
 
 When the insertion is done and the tree instance created, we are once again
-exporting its structure as an SVG for visualization.
+exporting its structure to an SVG file for visualization.
 
 There are primarily two advantages to using
-:cpp:class:`~mdds::rtree::bulk_loader` to load data.  First, unlike the normal
-insertion, bulk-loading does not trigger re-insertion nor node splits on the
-fly.  Second, a tree created from bulk loader is typically well balanced than
-if you insert the same data through normal insertion.  That is because the
-bulk loader sorts the data with respect to their bounding rectangles ahead of
-time and partition them evenly.  The tree is then built from the bottom-up.
+:cpp:class:`~mdds::rtree::bulk_loader` to load data.  First, unlike the
+normal insertion, bulk-loading does not trigger re-insertion nor node
+splits on the fly.  Second, a tree created from bulk loader is typically
+well balanced than if you insert the same data through normal insertion.
+That is because the bulk loader sorts the data with respect to their
+bounding rectangles ahead of time and partition them evenly.  The tree
+is then built from the bottom-up.  You can visually see the effect of
+this when comparing the two trees built in our current example.
 
-You can visually see the effect of this when comparing the two trees built in
-our current example.
-
-This one below is from the tree built via normal insertion:
+The first one is from the tree built via normal insertion:
 
 .. figure:: _static/images/rtree_bounds2_tree.png
    :align: center
 
-The top part of the picture looks very "busy", and in general the rectangles
-look bigger and show higher degree of overlaps.
+The top part of the picture looks very "busy" indicated by a darker
+green area representative of more directory nodes overlaping with each
+other.  In general, the rectangles look bigger and show higher degree of
+overlaps.
 
-The one below is from the tree built via bulk-loading:
+This one, on the other hand, is from the tree built with the same data
+set but through bulk-loading:
 
 .. figure:: _static/images/rtree_bounds2_tree_bulkload.png
    :align: center
 
 The rectangles generally look smaller and show much less overlaps than the
-previous picture.
+previous picture, which is considered a better R-tree structure.
 
 
 API Reference
