@@ -8,6 +8,8 @@
     in the direction orthogonal to the direction of the individual
     vectors.
 
+  * added new page for R-tree.
+
 * flat_segment_tree
 
   * fixed invalid memory access issue related to the swap() method which
