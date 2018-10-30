@@ -53,5 +53,6 @@ example/trie-map
 example/rtree-simple
 example/rtree-erase
 example/rtree-medium
-example/bounds.svg
+example/rtree-medium-bulkload
+example/*.svg
 rtree-test-*.svg
