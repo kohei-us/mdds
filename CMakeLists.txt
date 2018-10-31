@@ -3,7 +3,7 @@ cmake_policy(SET CMP0048 NEW)
 
 option(BOOST_INCLUDEDIR "path to boost header include directory.")
 
-project(mdds VERSION 1.3.99 LANGUAGES CXX)
+project(mdds VERSION 1.4.3 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(Boost)
@@ -43,8 +43,7 @@ add_test(segment-tree-test segment-tree-test func)
 add_test(rectangle-set-test rectangle-set-test func)
 add_test(point-quad-tree-test point-quad-tree-test func)
 add_test(sorted-string-map-test sorted-string-map-test func)
-#TODO: this currently crashes.  Look into this.
-#add_test(trie-map-test trie-map-test func)
+add_test(trie-map-test trie-map-test func)
 add_test(multi-type-matrix-test multi-type-matrix-test func)
 add_test(multi-type-matrix-test-walk multi-type-matrix-test-walk func)
 add_test(multi-type-vector-test-collection multi-type-vector-test-collection func)
