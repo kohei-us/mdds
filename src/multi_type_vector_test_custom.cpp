@@ -153,7 +153,7 @@ void mtv_test_types()
 
     // Basic types
     ct = mtv_type::get_element_type(double(12.3));
-    assert(ct == mtv::element_type_numeric);
+    assert(ct == mtv::element_type_double);
     ct = mtv_type::get_element_type(string());
     assert(ct == mtv::element_type_string);
     ct = mtv_type::get_element_type(static_cast<unsigned long>(12));

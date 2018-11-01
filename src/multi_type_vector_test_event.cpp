@@ -73,7 +73,7 @@ struct event_block_counter
 
         switch (mtv::get_block_type(*block))
         {
-            case mtv::element_type_numeric:
+            case mtv::element_type_double:
                 ++block_count_numeric;
             break;
             case mtv::element_type_string:
@@ -117,7 +117,7 @@ struct event_block_counter
 
         switch (mtv::get_block_type(*block))
         {
-            case mtv::element_type_numeric:
+            case mtv::element_type_double:
                 --block_count_numeric;
             break;
             case mtv::element_type_string:

@@ -49,7 +49,7 @@ enum element_t
     element_empty   = mdds::mtv::element_type_empty,
     element_boolean = mdds::mtv::element_type_boolean,
     element_string  = mdds::mtv::element_type_string,
-    element_numeric = mdds::mtv::element_type_numeric,
+    element_numeric = mdds::mtv::element_type_double,
     element_integer = mdds::mtv::element_type_int
 };
 
@@ -94,7 +94,7 @@ public:
     typedef typename store_type::element_block_type element_block_type;
 
     typedef typename mtv::boolean_element_block boolean_block_type;
-    typedef typename mtv::numeric_element_block numeric_block_type;
+    typedef typename mtv::double_element_block numeric_block_type;
 
     struct size_pair_type
     {
@@ -148,7 +148,7 @@ public:
                 return mdds::mtm::element_string;
             case integer_block_type::block_type:
                 return mdds::mtm::element_integer;
-            case mdds::mtv::element_type_numeric:
+            case mdds::mtv::element_type_double:
             case mdds::mtv::element_type_boolean:
             case mdds::mtv::element_type_empty:
                 // These types share the same numeric values.

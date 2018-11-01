@@ -216,8 +216,8 @@ double multi_type_matrix<_MtxTrait>::get_numeric(const const_position_type& pos)
 {
     switch (pos.first->type)
     {
-        case mtv::element_type_numeric:
-            return mtv::numeric_element_block::at(*pos.first->data, pos.second);
+        case mtv::element_type_double:
+            return mtv::double_element_block::at(*pos.first->data, pos.second);
         case integer_block_type::block_type:
             return integer_block_type::at(*pos.first->data, pos.second);
         case mtv::element_type_boolean:
@@ -651,7 +651,7 @@ bool multi_type_matrix<_MtxTrait>::numeric() const
         mtv::element_t mtv_type = i->type;
         switch (mtv_type)
         {
-            case mtv::element_type_numeric:
+            case mtv::element_type_double:
             case mtv::element_type_boolean:
             case integer_block_type::block_type:
                 // These are numeric types.

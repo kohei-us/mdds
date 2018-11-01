@@ -94,9 +94,9 @@ void mtv_test_unique_pointer_size1()
     assert((*it).index == 0);
 
     ++it;
-    assert((*it).type == mtv::element_type_numeric);
+    assert((*it).type == mtv::element_type_double);
     assert((*it).index == 1);
-    assert(it->get<mtv::numeric_element_block>() == 1.1);
+    assert(it->get<mtv::double_element_block>() == 1.1);
 
     assert(++it == ite);
 }
@@ -114,10 +114,10 @@ void mtv_test_shared_pointer_size2()
 
     cols_type::const_iterator it = collection.begin();
 
-    assert(it->type == mtv::element_type_numeric);
+    assert(it->type == mtv::element_type_double);
     assert(it->index == 0);
     assert(it->position == 0);
-    assert(it->get<mtv::numeric_element_block>() == 2.3);
+    assert(it->get<mtv::double_element_block>() == 2.3);
 
     ++it;
     assert(it->type == mtv::element_type_string);
@@ -126,10 +126,10 @@ void mtv_test_shared_pointer_size2()
     assert(it->get<mtv::string_element_block>() == "test");
 
     ++it;
-    assert(it->type == mtv::element_type_numeric);
+    assert(it->type == mtv::element_type_double);
     assert(it->index == 0);
     assert(it->position == 1);
-    assert(it->get<mtv::numeric_element_block>() == 2.3);
+    assert(it->get<mtv::double_element_block>() == 2.3);
 
     ++it;
     assert(it->type == mtv::element_type_string);

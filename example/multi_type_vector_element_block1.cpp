@@ -4,7 +4,7 @@
 #include <iostream>
 
 using namespace std;
-using mdds::mtv::numeric_element_block;
+using mdds::mtv::double_element_block;
 using mdds::mtv::string_element_block;
 
 typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
@@ -34,7 +34,7 @@ int main()
 
     // Get a pointer to the raw array of the numeric element block using the
     // 'at' method and taking the address of the returned reference.
-    const double* p = &numeric_element_block::at(*it->data, 0);
+    const double* p = &double_element_block::at(*it->data, 0);
 
     // Print the elements from this raw array pointer.
     for (const double* p_end = p + it->size; p != p_end; ++p)

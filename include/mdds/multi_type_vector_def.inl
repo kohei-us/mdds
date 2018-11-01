@@ -89,7 +89,7 @@ T advance_position(const T& pos, int steps)
 
 }}
 
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_numeric, 0.0, mtv::numeric_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_double, 0.0, mtv::double_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, mtv::element_type_string, std::string(), mtv::string_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(short, mtv::element_type_short, 0, mtv::short_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned short, mtv::element_type_ushort, 0, mtv::ushort_element_block)

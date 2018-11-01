@@ -48,10 +48,10 @@ public:
         if (!blk.data)
             return;
 
-        if (mdds::mtv::get_block_type(*blk.data) != mdds::mtv::element_type_numeric)
+        if (mdds::mtv::get_block_type(*blk.data) != mdds::mtv::element_type_double)
             return;
 
-        using mdds::mtv::numeric_element_block;
+        using mdds::mtv::double_element_block;
         numeric_element_block::const_iterator it = numeric_element_block::begin(*blk.data);
         numeric_element_block::const_iterator it_end = numeric_element_block::end(*blk.data);
         for (; it != it_end; ++it)
@@ -71,7 +71,7 @@ public:
         if (!blk.data)
             return;
 
-        if (mdds::mtv::get_block_type(*blk.data) != mdds::mtv::element_type_numeric)
+        if (mdds::mtv::get_block_type(*blk.data) != mdds::mtv::element_type_double)
             return;
 
         m_count += blk.size;

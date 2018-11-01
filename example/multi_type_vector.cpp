@@ -51,10 +51,10 @@ int main()
         {
             switch (v.type)
             {
-                case mdds::mtv::element_type_numeric:
+                case mdds::mtv::element_type_double:
                 {
                     cout << "numeric block of size " << v.size << endl;
-                    print_block<mdds::mtv::numeric_element_block>(v);
+                    print_block<mdds::mtv::double_element_block>(v);
                 }
                 break;
                 case mdds::mtv::element_type_string:

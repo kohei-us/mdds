@@ -54,7 +54,7 @@ typedef int element_t;
 
 const element_t element_type_empty = -1;
 
-const element_t element_type_numeric = 0;
+const element_t element_type_double  = 0;
 const element_t element_type_string  = 1;
 const element_t element_type_short   = 2;
 const element_t element_type_ushort  = 3;
@@ -650,7 +650,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
     }
 };
 
-typedef default_element_block<mtv::element_type_numeric, double>        numeric_element_block;
+typedef default_element_block<mtv::element_type_double, double>         double_element_block;
 typedef default_element_block<mtv::element_type_string, std::string>    string_element_block;
 typedef default_element_block<mtv::element_type_short, short>           short_element_block;
 typedef default_element_block<mtv::element_type_ushort, unsigned short> ushort_element_block;

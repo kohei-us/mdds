@@ -1007,8 +1007,8 @@ struct sum_all_values
 
     void operator() (const mtx_type::element_block_node_type& blk)
     {
-        mtv::numeric_element_block::const_iterator it = mtv::numeric_element_block::cbegin(*blk.data);
-        mtv::numeric_element_block::const_iterator it_end = mtv::numeric_element_block::cend(*blk.data);
+        mtv::double_element_block::const_iterator it = mtv::double_element_block::cbegin(*blk.data);
+        mtv::double_element_block::const_iterator it_end = mtv::double_element_block::cend(*blk.data);
         for (; it != it_end; ++it)
             result += *it;
     }
