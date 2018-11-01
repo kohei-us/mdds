@@ -50,14 +50,14 @@ struct default_rtree_trait
 
     /**
      * Minimum number of child nodes that must be present in each directory
-     * node, except for the root node but only when it's a leaf directory
-     * node.
+     * node.  Exception is the root node, which is allowed to have less than
+     * the minimum number of nodes, but only when it's a leaf directory node.
      */
     constexpr static size_t min_node_size = 40;
 
     /**
      * Maximum number of child nodes that each directory node is allowed to
-     * have.
+     * have.  There are no exceptions to this rule.
      */
     constexpr static size_t max_node_size = 100;
 
@@ -68,7 +68,7 @@ struct default_rtree_trait
 
     /**
      * A flag to determine whether or not to perform forced reinsertion when a
-     * directory node overflows before attempting to split the node.
+     * directory node overflows, before attempting to split the node.
      */
     constexpr static bool enable_forced_reinsertion = true;
 
