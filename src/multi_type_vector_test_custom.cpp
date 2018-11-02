@@ -157,7 +157,7 @@ void mtv_test_types()
     ct = mtv_type::get_element_type(string());
     assert(ct == mtv::element_type_string);
     ct = mtv_type::get_element_type(static_cast<unsigned long>(12));
-    assert(ct == mtv::element_type_ulong);
+    assert(ct == mtv::element_type_uint64);
     ct = mtv_type::get_element_type(true);
     assert(ct == mtv::element_type_boolean);
     ct = mtv_type::get_element_type(false);
