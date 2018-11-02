@@ -395,12 +395,12 @@ void mtv_test_block_counter()
         db4.insert(0, vals.begin(), vals.end());
         assert(db4.event_handler().block_count == 1);
 
-        mtv_type db5(3, long(10));
+        mtv_type db5(3, int64_t(10));
         assert(db5.event_handler().block_count == 1);
         db5.insert(0, vals.begin(), vals.end());
         assert(db5.event_handler().block_count == 2);
 
-        mtv_type db6(2, int(30));
+        mtv_type db6(2, int32_t(30));
         assert(db6.event_handler().block_count == 1);
         db6.insert(1, vals.begin(), vals.end()); // Insert to split the block.
         assert(db6.event_handler().block_count == 3);
@@ -443,7 +443,7 @@ void mtv_test_block_counter()
 
         db.set(1, 1.1);
         assert(db.event_handler().block_count == 3);
-        db.set(2, long(10));
+        db.set(2, int64_t(10));
         db.set(1, true);
         assert(db.event_handler().block_count == 2);
         assert(db.event_handler().block_count_boolean == 1);
@@ -454,7 +454,7 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count_boolean == 1);
         assert(db.event_handler().block_count_int64 == 1);
         assert(db.event_handler().block_count_numeric == 1);
-        db.set(1, long(20));
+        db.set(1, int64_t(20));
         assert(db.event_handler().block_count == 2);
 
         db.release();
@@ -464,7 +464,7 @@ void mtv_test_block_counter()
     {
         mtv_type db;
         db.push_back(1.1);
-        db.push_back(long(10));
+        db.push_back(int64_t(10));
         db.push_back(string("foo"));
         assert(db.event_handler().block_count == 3);
         assert(db.event_handler().block_count_int64 == 1);
@@ -520,8 +520,8 @@ void mtv_test_block_counter()
     {
         vector<double> vals = { 1.1, 1.2 };
         mtv_type db(4);
-        db.set(0, int(5));
-        db.set(1, int(10));
+        db.set(0, int32_t(5));
+        db.set(1, int32_t(10));
         assert(db.event_handler().block_count == 1);
         assert(db.event_handler().block_count_int32 == 1);
         db.set(2, vals.begin(), vals.end()); // set to empty block.
@@ -533,8 +533,8 @@ void mtv_test_block_counter()
     {
         vector<double> vals = { 1.1, 1.2 };
         mtv_type db(4);
-        db.set(0, int(5));
-        db.set(1, int(10));
+        db.set(0, int32_t(5));
+        db.set(1, int32_t(10));
         db.set(2, string("foo"));
         db.set(3, string("bar"));
         assert(db.event_handler().block_count == 2);
@@ -568,7 +568,7 @@ void mtv_test_block_counter()
     {
         vector<double> vals = { 1.1, 1.2 };
         mtv_type db(4, string("foo"));
-        db.push_back(long(100));
+        db.push_back(int64_t(100));
         assert(db.event_handler().block_count == 2);
         db.set(2, vals.begin(), vals.end()); // replace the lower part of a block.
         assert(db.event_handler().block_count == 3);
@@ -590,7 +590,7 @@ void mtv_test_block_counter()
     {
         mtv_type db(1, 0.1);
         db.push_back(int16_t(1));
-        db.push_back(int(20));
+        db.push_back(int32_t(20));
         assert(db.event_handler().block_count == 3);
         assert(db.event_handler().block_count_int16 == 1);
         assert(db.event_handler().block_count_int32 == 1);
@@ -605,7 +605,7 @@ void mtv_test_block_counter()
     {
         mtv_type db(1, string("foo"));
         db.push_back(int16_t(1));
-        db.push_back(int(20));
+        db.push_back(int32_t(20));
         assert(db.event_handler().block_count == 3);
         assert(db.event_handler().block_count_int16 == 1);
         assert(db.event_handler().block_count_int32 == 1);
@@ -620,7 +620,7 @@ void mtv_test_block_counter()
     {
         mtv_type db(6);
         db.set(2, 1.1);
-        db.set(3, int(22));
+        db.set(3, int32_t(22));
         assert(db.event_handler().block_count == 2);
         assert(db.event_handler().block_count_int32 == 1);
         assert(db.event_handler().block_count_numeric == 1);
@@ -631,7 +631,7 @@ void mtv_test_block_counter()
     {
         mtv_type db(6, int8_t('a'));
         db.set(2, 1.1);
-        db.set(3, int(22));
+        db.set(3, int32_t(22));
         assert(db.event_handler().block_count == 4);
         assert(db.event_handler().block_count_int32 == 1);
         assert(db.event_handler().block_count_numeric == 1);
@@ -657,7 +657,7 @@ void mtv_test_block_counter()
     {
         mtv_type src(6), dst(6);
         src.set(0, int8_t('z'));
-        src.set(1, int(10));
+        src.set(1, int32_t(10));
         src.set(2, int16_t(5));
         dst.set(3, 1.1);
         assert(src.event_handler().block_count == 3);
@@ -825,7 +825,7 @@ void mtv_test_block_counter()
         src.set(2, 1.3);
 
         dst.set(0, string("2.1"));
-        dst.set(1, int(100));
+        dst.set(1, int32_t(100));
         dst.set(2, string("2.3"));
 
         assert(src.event_handler().block_count == 1);
@@ -852,7 +852,7 @@ void mtv_test_block_counter()
 
         dst.set(0, string("2.1"));
         dst.set(1, string("2.2"));
-        dst.set(2, int(100));
+        dst.set(2, int32_t(100));
         dst.set(3, string("2.3"));
         dst.set(4, string("2.4"));
 
@@ -879,9 +879,9 @@ void mtv_test_block_counter()
         src.set(2, 1.3);
 
         dst.set(0, 2.1);
-        dst.set(1, int(5));
-        dst.set(2, int(6));
-        dst.set(3, int(7));
+        dst.set(1, int32_t(5));
+        dst.set(2, int32_t(6));
+        dst.set(3, int32_t(7));
 
         assert(src.event_handler().block_count == 1);
         assert(src.event_handler().block_count_numeric == 1);
@@ -903,9 +903,9 @@ void mtv_test_block_counter()
         src.set(2, 1.3);
 
         dst.set(0, 2.1);
-        dst.set(1, int(5));
-        dst.set(2, int(6));
-        dst.set(3, int(7));
+        dst.set(1, int32_t(5));
+        dst.set(2, int32_t(6));
+        dst.set(3, int32_t(7));
         dst.set(4, 2.2);
 
         assert(src.event_handler().block_count == 1);
@@ -927,9 +927,9 @@ void mtv_test_block_counter()
         src.set(1, 1.2);
         src.set(2, 1.3);
 
-        dst.set(0, int(5));
-        dst.set(1, int(6));
-        dst.set(2, int(7));
+        dst.set(0, int32_t(5));
+        dst.set(1, int32_t(6));
+        dst.set(2, int32_t(7));
         dst.set(3, 2.1);
 
         assert(src.event_handler().block_count == 1);
@@ -951,10 +951,10 @@ void mtv_test_block_counter()
         src.set(1, 1.2);
         src.set(2, 1.3);
 
-        dst.set(0, int(5));
-        dst.set(1, int(6));
-        dst.set(2, int(7));
-        dst.set(3, int(8));
+        dst.set(0, int32_t(5));
+        dst.set(1, int32_t(6));
+        dst.set(2, int32_t(7));
+        dst.set(3, int32_t(8));
 
         assert(src.event_handler().block_count == 1);
         assert(dst.event_handler().block_count == 1);
@@ -973,10 +973,10 @@ void mtv_test_block_counter()
         src.set(2, 1.3);
 
         dst.set(0, 2.1);
-        dst.set(1, int(5));
-        dst.set(2, int(6));
-        dst.set(3, int(7));
-        dst.set(4, int(8));
+        dst.set(1, int32_t(5));
+        dst.set(2, int32_t(6));
+        dst.set(3, int32_t(7));
+        dst.set(4, int32_t(8));
 
         assert(src.event_handler().block_count == 1);
         assert(src.event_handler().block_count_numeric == 1);
@@ -998,11 +998,11 @@ void mtv_test_block_counter()
         src.set(1, 1.2);
         src.set(2, 1.3);
 
-        dst.set(0, int(4));
-        dst.set(1, int(5));
-        dst.set(2, int(6));
-        dst.set(3, int(7));
-        dst.set(4, int(8));
+        dst.set(0, int32_t(4));
+        dst.set(1, int32_t(5));
+        dst.set(2, int32_t(6));
+        dst.set(3, int32_t(7));
+        dst.set(4, int32_t(8));
 
         assert(src.event_handler().block_count == 1);
         assert(dst.event_handler().block_count == 1);
@@ -1021,10 +1021,10 @@ void mtv_test_block_counter()
         src.set(1, 1.2);
         src.set(2, 1.3);
 
-        dst.set(0, int(4));
-        dst.set(1, int(5));
-        dst.set(2, int(6));
-        dst.set(3, int(7));
+        dst.set(0, int32_t(4));
+        dst.set(1, int32_t(5));
+        dst.set(2, int32_t(6));
+        dst.set(3, int32_t(7));
 
         assert(src.event_handler().block_count == 1);
         assert(src.event_handler().block_count_numeric == 1);
@@ -1045,10 +1045,10 @@ void mtv_test_block_counter()
         src.set(1, 1.2);
         src.set(2, 1.3);
 
-        dst.set(0, int(4));
-        dst.set(1, int(5));
-        dst.set(2, int(6));
-        dst.set(3, int(7));
+        dst.set(0, int32_t(4));
+        dst.set(1, int32_t(5));
+        dst.set(2, int32_t(6));
+        dst.set(3, int32_t(7));
         dst.set(4, 2.1);
 
         assert(src.event_handler().block_count == 1);

@@ -185,7 +185,7 @@ void mtv_test_construction()
     }
 
     {
-        vector<int> vals(10, 1);
+        vector<int32_t> vals(10, 1);
         try
         {
             mtv_type db(20, vals.begin(), vals.end());
@@ -600,7 +600,7 @@ void mtv_test_basic()
         col_db.set(1, 1.0);
         string str = "foo";
         col_db.set(2, str);
-        unsigned long index = 5;
+        uint64_t index = 5;
         test_cell_insertion(col_db, 2, index);
     }
 
@@ -614,7 +614,7 @@ void mtv_test_basic()
         assert(res);
         res = test_cell_insertion(col_db, 1, 2.0);
         assert(res);
-        unsigned long index = 2;
+        uint64_t index = 2;
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
         string test;
@@ -653,7 +653,7 @@ void mtv_test_basic()
         col_db.set(1, str);
         str = "beta";
         col_db.set(2, str);
-        unsigned long index = 1;
+        uint64_t index = 1;
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
         string test;
@@ -674,7 +674,7 @@ void mtv_test_basic()
         assert(res);
 
         // Now, insert a cell of the 4th type to the middle spot.
-        unsigned long index = 2;
+        uint64_t index = 2;
         res = test_cell_insertion(col_db, 1, index);
         assert(res);
     }
@@ -682,14 +682,14 @@ void mtv_test_basic()
     {
         // set_cell() to merge 3 blocks.
         mtv_type db(6);
-        db.set(0, static_cast<unsigned long>(12));
+        db.set(0, static_cast<uint64_t>(12));
         db.set(1, 1.0);
         db.set(2, 2.0);
         db.set(3, string("foo"));
         db.set(4, 3.0);
         db.set(5, 4.0);
         assert(db.block_size() == 4);
-        assert(db.get<unsigned long>(0) == 12);
+        assert(db.get<uint64_t>(0) == 12);
         assert(db.get<double>(1) == 1.0);
         assert(db.get<double>(2) == 2.0);
         assert(db.get<string>(3) == "foo");
@@ -698,7 +698,7 @@ void mtv_test_basic()
 
         db.set(3, 5.0); // merge blocks.
         assert(db.block_size() == 2);
-        assert(db.get<unsigned long>(0) == 12);
+        assert(db.get<uint64_t>(0) == 12);
         assert(db.get<double>(1) == 1.0);
         assert(db.get<double>(2) == 2.0);
         assert(db.get<double>(3) == 5.0);
@@ -721,10 +721,10 @@ void mtv_test_basic()
     {
         // Test various integer types.
         mtv_type db(7);
-        db.set(0, static_cast<long>(-10));
-        db.set(1, static_cast<unsigned long>(10));
-        db.set(2, static_cast<int>(-10));
-        db.set(3, static_cast<unsigned int>(10));
+        db.set(0, static_cast<int64_t>(-10));
+        db.set(1, static_cast<uint64_t>(10));
+        db.set(2, static_cast<int32_t>(-10));
+        db.set(3, static_cast<uint32_t>(10));
         db.set(4, static_cast<int16_t>(-10));
         db.set(5, static_cast<uint16_t>(10));
         db.set(6, true);
@@ -929,7 +929,7 @@ void mtv_test_empty_cells()
         string str = "foo";
         db.set(2, str);
         db.set(3, str);
-        unsigned long index = 1;
+        uint64_t index = 1;
         db.set(4, index);
         index = 100;
         db.set(5, index);
@@ -944,7 +944,7 @@ void mtv_test_empty_cells()
         double val;
         db.get(0, val);
         assert(val == 1.0);
-        unsigned long index_test;
+        uint64_t index_test;
         db.get(5, index_test);
         assert(index_test == 100);
     }
@@ -957,7 +957,7 @@ void mtv_test_empty_cells()
         string str = "foo";
         db.set(2, str);
         db.set(3, str);
-        unsigned long index = 1;
+        uint64_t index = 1;
         db.set(4, index);
         index = 50;
         db.set(5, index);
@@ -969,7 +969,7 @@ void mtv_test_empty_cells()
         assert(db.is_empty(3));
         assert(db.is_empty(4));
         assert(!db.is_empty(5));
-        unsigned long test;
+        uint64_t test;
         db.get(5, test);
         assert(test == 50);
     }
@@ -982,7 +982,7 @@ void mtv_test_empty_cells()
         string str = "foo";
         db.set(2, str);
         db.set(3, str);
-        unsigned long index = 1;
+        uint64_t index = 1;
         db.set(4, index);
         db.set(5, index);
 
@@ -1084,27 +1084,27 @@ void mtv_test_empty_cells()
         // on index in the 2nd block.
         mtv_type db(5);
         db.set(0, 1.0);
-        db.set(1, static_cast<unsigned long>(1));
-        db.set(2, static_cast<unsigned long>(2));
-        db.set(3, static_cast<unsigned long>(3));
-        db.set(4, static_cast<unsigned long>(4));
+        db.set(1, static_cast<uint64_t>(1));
+        db.set(2, static_cast<uint64_t>(2));
+        db.set(3, static_cast<uint64_t>(3));
+        db.set(4, static_cast<uint64_t>(4));
         db.set_empty(2, 4);
         assert(!db.is_empty(1));
         assert(db.is_empty(2));
         assert(db.is_empty(3));
         assert(db.is_empty(4));
 
-        db.set(2, static_cast<unsigned long>(5));
-        db.set(3, static_cast<unsigned long>(6));
-        db.set(4, static_cast<unsigned long>(7));
+        db.set(2, static_cast<uint64_t>(5));
+        db.set(3, static_cast<uint64_t>(6));
+        db.set(4, static_cast<uint64_t>(7));
         db.set_empty(1, 2);
         assert(db.is_empty(1));
         assert(db.is_empty(2));
         assert(!db.is_empty(3));
         assert(!db.is_empty(4));
 
-        db.set(3, static_cast<unsigned long>(8));
-        db.set(4, static_cast<unsigned long>(9));
+        db.set(3, static_cast<uint64_t>(8));
+        db.set(4, static_cast<uint64_t>(9));
         db.set_empty(2, 3);
     }
 
@@ -1200,7 +1200,7 @@ void mtv_test_empty_cells()
         db.set(0, 1.2);
         db.set(2, true);
         db.set(4, true);
-        db.set(5, static_cast<int>(22));
+        db.set(5, static_cast<int32_t>(22));
         db.set(6, string("foo"));
         assert(db.block_size() == 7);
         db.set_empty(2, 4); // Merge with the previous block.
@@ -1210,7 +1210,7 @@ void mtv_test_empty_cells()
         assert(db.is_empty(2));
         assert(db.is_empty(3));
         assert(db.is_empty(4));
-        assert(db.get<int>(5) == 22);
+        assert(db.get<int32_t>(5) == 22);
         assert(db.get<string>(6) == "foo");
     }
 
@@ -1485,7 +1485,7 @@ void mtv_test_erase()
             db.set(i, static_cast<double>(i+1));
 
         for (long i = 4; i < 8; ++i)
-            db.set(i, static_cast<unsigned long>(i+1));
+            db.set(i, static_cast<uint64_t>(i+1));
 
         assert(db.block_size() == 2);
         assert(db.size() == 8);
@@ -1500,7 +1500,7 @@ void mtv_test_erase()
         db.get(2, test);
         assert(test == 3.0);
 
-        unsigned long test2;
+        uint64_t test2;
         db.get(3, test2);
         assert(test2 == 8);
 
@@ -1518,7 +1518,7 @@ void mtv_test_erase()
             db.set(i, static_cast<double>(i+1));
 
         for (long i = 3; i < 6; ++i)
-            db.set(i, static_cast<unsigned long>(i+1));
+            db.set(i, static_cast<uint64_t>(i+1));
 
         for (long i = 6; i < 9; ++i)
         {
@@ -1559,7 +1559,7 @@ void mtv_test_erase()
         mtv_type db(4);
         db.set(0, 1.1);
         db.set(1, string("foo"));
-        db.set(2, static_cast<unsigned long>(2));
+        db.set(2, static_cast<uint64_t>(2));
         db.set(3, string("baa"));
         assert(db.block_size() == 4);
         assert(db.size() == 4);
@@ -1571,10 +1571,10 @@ void mtv_test_erase()
         // Try again, but this time merge two empty blocks.
         db.resize(4);
         db.set_empty(1, 3);
-        db.set(2, static_cast<unsigned long>(10));
+        db.set(2, static_cast<uint64_t>(10));
         assert(db.get<double>(0) == 1.1);
         assert(db.is_empty(1));
-        assert(db.get<unsigned long>(2) == 10);
+        assert(db.get<uint64_t>(2) == 10);
         assert(db.is_empty(3));
 
         db.erase(2, 2);
@@ -1783,13 +1783,13 @@ void mtv_test_set_cells()
 
         {
             // Replace the upper part of a single block.
-            unsigned long vals[] = { 1, 2, 3 };
-            unsigned long* p = &vals[0];
-            unsigned long* p_end = p + 3;
+            uint64_t vals[] = { 1, 2, 3 };
+            uint64_t* p = &vals[0];
+            uint64_t* p_end = p + 3;
             db.set(0, p, p_end);
             assert(db.block_size() == 2);
             assert(db.size() == 5);
-            unsigned long test;
+            uint64_t test;
             db.get(0, test);
             assert(test == 1);
             db.get(2, test);
@@ -1801,13 +1801,13 @@ void mtv_test_set_cells()
 
         {
             // Merge with the previos block and erase the whole block.
-            unsigned long vals[] = { 4, 5 };
-            unsigned long* p = &vals[0];
-            unsigned long* p_end = p + 2;
+            uint64_t vals[] = { 4, 5 };
+            uint64_t* p = &vals[0];
+            uint64_t* p_end = p + 2;
             db.set(3, p, p_end);
             assert(db.block_size() == 1);
             assert(db.size() == 5);
-            unsigned long test;
+            uint64_t test;
             db.get(2, test);
             assert(test == 3);
             db.get(3, test);
@@ -1817,7 +1817,7 @@ void mtv_test_set_cells()
         {
             // Merge with the previous block while keeping the lower part of
             // the block.
-            unsigned long prev_value;
+            uint64_t prev_value;
             db.get(2, prev_value);
 
             double val = 2.3;
@@ -1837,7 +1837,7 @@ void mtv_test_set_cells()
                 assert(test == 4.5);
             }
 
-            unsigned long test;
+            uint64_t test;
             db.get(2, test);
             assert(test == prev_value);
         }
@@ -1852,9 +1852,9 @@ void mtv_test_set_cells()
         assert(db.size() == 5);
 
         {
-            unsigned long vals[] = { 10, 11 };
-            unsigned long* p = &vals[0];
-            unsigned long* p_end = p + 2;
+            uint64_t vals[] = { 10, 11 };
+            uint64_t* p = &vals[0];
+            uint64_t* p_end = p + 2;
             db.set(3, p, p_end);
 
             assert(db.block_size() == 2);
@@ -1863,7 +1863,7 @@ void mtv_test_set_cells()
             double test;
             db.get(2, test);
             assert(test == 3.0);
-            unsigned long test2;
+            uint64_t test2;
             db.get(3, test2);
             assert(test2 == 10);
             db.get(4, test2);
@@ -1890,7 +1890,7 @@ void mtv_test_set_cells()
     {
         mtv_type db(6);
         double vals_d[] = { 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
-        unsigned long vals_i[] = { 12, 13, 14, 15 };
+        uint64_t vals_i[] = { 12, 13, 14, 15 };
         string vals_s[] = { "a", "b" };
 
         {
@@ -1907,11 +1907,11 @@ void mtv_test_set_cells()
         }
 
         {
-            unsigned long* p = &vals_i[0];
-            unsigned long* p_end = p + 4;
+            uint64_t* p = &vals_i[0];
+            uint64_t* p_end = p + 4;
             db.set(0, p, p_end);
             assert(db.block_size() == 2);
-            unsigned long test;
+            uint64_t test;
             db.get(0, test);
             assert(test == 12);
             db.get(3, test);
@@ -1931,7 +1931,7 @@ void mtv_test_set_cells()
             double test_d;
             db.get(4, test_d);
             assert(test_d == 1.4);
-            unsigned long test_i;
+            uint64_t test_i;
             db.get(1, test_i);
             assert(test_i == 13);
         }
@@ -1948,12 +1948,12 @@ void mtv_test_set_cells()
         }
 
         {
-            unsigned long val_i = 23;
-            unsigned long* p = &val_i;
-            unsigned long* p_end = p + 1;
+            uint64_t val_i = 23;
+            uint64_t* p = &val_i;
+            uint64_t* p_end = p + 1;
             db.set(1, p, p_end);
             assert(db.block_size() == 3);
-            unsigned long test;
+            uint64_t test;
             db.get(1, test);
             assert(test == 23);
             double test_d;
@@ -2098,18 +2098,18 @@ void mtv_test_set_cells()
         db.set(1, string("B"));
         db.set(2, 1.1);
         db.set(3, 1.2);
-        db.set(4, static_cast<unsigned long>(12));
+        db.set(4, static_cast<uint64_t>(12));
         assert(db.block_size() == 3);
 
-        unsigned long vals[] = { 21, 22, 23 };
-        unsigned long* p = &vals[0];
+        uint64_t vals[] = { 21, 22, 23 };
+        uint64_t* p = &vals[0];
         db.set(1, p, p+3);
         assert(db.block_size() == 2);
         assert(db.get<string>(0) == string("A"));
-        assert(db.get<unsigned long>(1) == 21);
-        assert(db.get<unsigned long>(2) == 22);
-        assert(db.get<unsigned long>(3) == 23);
-        assert(db.get<unsigned long>(4) == 12);
+        assert(db.get<uint64_t>(1) == 21);
+        assert(db.get<uint64_t>(2) == 22);
+        assert(db.get<uint64_t>(3) == 23);
+        assert(db.get<uint64_t>(4) == 12);
     }
 
     {
@@ -2119,30 +2119,30 @@ void mtv_test_set_cells()
         db.set(2, 1.2);
         assert(db.block_size() == 2);
 
-        unsigned long vals[] = { 11, 12 };
-        unsigned long* p = &vals[0];
+        uint64_t vals[] = { 11, 12 };
+        uint64_t* p = &vals[0];
         db.set(0, p, p+2);
         assert(db.block_size() == 2);
-        assert(db.get<unsigned long>(0) == 11);
-        assert(db.get<unsigned long>(1) == 12);
+        assert(db.get<uint64_t>(0) == 11);
+        assert(db.get<uint64_t>(1) == 12);
         assert(db.get<double>(2) == 1.2);
     }
 
     {
         mtv_type db(4);
-        db.set(0, static_cast<unsigned long>(35));
+        db.set(0, static_cast<uint64_t>(35));
         db.set(1, string("A"));
         db.set(2, 1.1);
         db.set(3, 1.2);
         assert(db.block_size() == 3);
 
-        unsigned long vals[] = { 11, 12 };
-        unsigned long* p = &vals[0];
+        uint64_t vals[] = { 11, 12 };
+        uint64_t* p = &vals[0];
         db.set(1, p, p+2);
         assert(db.block_size() == 2);
-        assert(db.get<unsigned long>(0) == 35);
-        assert(db.get<unsigned long>(1) == 11);
-        assert(db.get<unsigned long>(2) == 12);
+        assert(db.get<uint64_t>(0) == 35);
+        assert(db.get<uint64_t>(1) == 11);
+        assert(db.get<uint64_t>(2) == 12);
         assert(db.get<double>(3) == 1.2);
     }
 
@@ -2307,7 +2307,7 @@ void mtv_test_insert_cells()
 
     {
         mtv_type db(2);
-        db.set(0, static_cast<unsigned long>(23));
+        db.set(0, static_cast<uint64_t>(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
@@ -2316,7 +2316,7 @@ void mtv_test_insert_cells()
         db.insert(1, p, p+3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
-        assert(db.get<unsigned long>(0) == 23);
+        assert(db.get<uint64_t>(0) == 23);
         assert(db.get<double>(1) == 2.1);
         assert(db.get<double>(2) == 2.2);
         assert(db.get<double>(3) == 2.3);
@@ -2340,7 +2340,7 @@ void mtv_test_insert_cells()
     {
         mtv_type db(2);
         db.set(0, 1.1);
-        db.set(1, static_cast<unsigned long>(23));
+        db.set(1, static_cast<uint64_t>(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
@@ -2353,13 +2353,13 @@ void mtv_test_insert_cells()
         assert(db.get<double>(1) == 2.1);
         assert(db.get<double>(2) == 2.2);
         assert(db.get<double>(3) == 2.3);
-        assert(db.get<unsigned long>(4) == 23);
+        assert(db.get<uint64_t>(4) == 23);
     }
 
     {
         mtv_type db(2);
         db.set(0, true);
-        db.set(1, static_cast<unsigned long>(23));
+        db.set(1, static_cast<uint64_t>(23));
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
@@ -2372,13 +2372,13 @@ void mtv_test_insert_cells()
         assert(db.get<double>(1) == 2.1);
         assert(db.get<double>(2) == 2.2);
         assert(db.get<double>(3) == 2.3);
-        assert(db.get<unsigned long>(4) == 23);
+        assert(db.get<uint64_t>(4) == 23);
     }
 
     {
         mtv_type db(2);
-        db.set(0, static_cast<unsigned long>(12));
-        db.set(1, static_cast<unsigned long>(23));
+        db.set(0, static_cast<uint64_t>(12));
+        db.set(1, static_cast<uint64_t>(23));
         assert(db.block_size() == 1);
         assert(db.size() == 2);
 
@@ -2387,11 +2387,11 @@ void mtv_test_insert_cells()
         db.insert(1, p, p+3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
-        assert(db.get<unsigned long>(0) == 12);
+        assert(db.get<uint64_t>(0) == 12);
         assert(db.get<double>(1) == 2.1);
         assert(db.get<double>(2) == 2.2);
         assert(db.get<double>(3) == 2.3);
-        assert(db.get<unsigned long>(4) == 23);
+        assert(db.get<uint64_t>(4) == 23);
     }
 
     {
@@ -2410,22 +2410,22 @@ void mtv_test_insert_cells()
 
     {
         mtv_type db(2);
-        db.set(0, static_cast<unsigned long>(11));
-        db.set(1, static_cast<unsigned long>(12));
+        db.set(0, static_cast<uint64_t>(11));
+        db.set(1, static_cast<uint64_t>(12));
         double vals[] = { 1.2 };
         const double* p = &vals[0];
         db.insert(1, p, p+1);
         assert(db.block_size() == 3);
 
         // Append value to the top block.
-        unsigned long vals2[] = { 22 };
-        const unsigned long* p2 = &vals2[0];
+        uint64_t vals2[] = { 22 };
+        const uint64_t* p2 = &vals2[0];
         db.insert(1, p2, p2+1);
         assert(db.block_size() == 3);
-        assert(db.get<unsigned long>(0) == 11);
-        assert(db.get<unsigned long>(1) == 22);
+        assert(db.get<uint64_t>(0) == 11);
+        assert(db.get<uint64_t>(1) == 22);
         assert(db.get<double>(2) == 1.2);
-        assert(db.get<unsigned long>(3) == 12);
+        assert(db.get<uint64_t>(3) == 12);
     }
 }
 
@@ -3267,7 +3267,7 @@ void mtv_test_set_return_iterator()
     assert(it == db.end());
 
     db = mtv_type(10, true);
-    db.set(4, static_cast<int>(34));
+    db.set(4, static_cast<int32_t>(34));
     doubles.resize(5, 2.3);
     db.set(5, doubles.begin(), doubles.end());
     it = db.set(4, false); // Same type as that of the preceding block.
@@ -3277,14 +3277,14 @@ void mtv_test_set_return_iterator()
     std::advance(it, 2);
     assert(it == db.end());
 
-    db.set(4, static_cast<int>(35)); // Reset to previous state.
+    db.set(4, static_cast<int32_t>(35)); // Reset to previous state.
     it = db.set(4, 4.5); // Same type as that of the following block.
     assert(it->size == 6);
     assert(it->type == mtv::element_type_double);
     ++it;
     assert(it == db.end());
 
-    db.set(4, static_cast<int>(36)); // Reset again.
+    db.set(4, static_cast<int32_t>(36)); // Reset again.
     it = db.set(4, static_cast<int16_t>(28)); // Different type from either of the blocks.
     assert(it->size == 1);
     assert(it->type == mtv::element_type_int16);
@@ -3297,7 +3297,7 @@ void mtv_test_set_return_iterator()
     db = mtv_type(10);
     doubles.resize(3, 1.1);
     db.set(7, doubles.begin(), doubles.end()); // 7 thru 9 to be numeric.
-    db.set(6, static_cast<int>(23));
+    db.set(6, static_cast<int32_t>(23));
     it = db.set(6, string("foo")); // Type different from that of the following block.
     check = db.begin();
     ++check;
@@ -3312,7 +3312,7 @@ void mtv_test_set_return_iterator()
     ++it;
     assert(it == db.end());
 
-    db.set(6, static_cast<int>(24)); // Reset.
+    db.set(6, static_cast<int32_t>(24)); // Reset.
     it = db.set(6, 4.5); // This time the same type as that of the following block.
     check = db.begin();
     ++check;
@@ -3511,7 +3511,7 @@ void mtv_test_set2_return_iterator()
     assert(it == db.end());
 
     // Overwrite multiple blocks with values whose type matches that of the top block.
-    int int_val = 255;
+    int32_t int_val = 255;
     db = mtv_type(10, int_val);
     bools.resize(6, true);
     db.set(4, bools.begin(), bools.end()); // set 4 thru 9 to bool.
@@ -3548,7 +3548,7 @@ void mtv_test_set2_return_iterator()
     db = mtv_type(10, false);
     doubles.resize(4, 4.5);
     db.set(3, doubles.begin(), doubles.end()); // 3 thru 6
-    db.set(0, int(1));
+    db.set(0, int32_t(1));
     strings.resize(4, string("test"));
     it = db.set(4, strings.begin(), strings.end()); // Overwrite the lower part of the top block.
     check = db.begin();
@@ -3623,7 +3623,7 @@ void mtv_test_insert_cells_return_iterator()
     vector<double> doubles;
     vector<bool> bools;
     vector<string> strings;
-    vector<int> ints;
+    vector<int32_t> ints;
 
     // Insert values into empty block.  They are to be appended to the previous block.
     mtv_type db(10); // start with empty set.
@@ -3711,7 +3711,7 @@ void mtv_test_insert_cells_return_iterator()
     db = mtv_type(3);
     db.set(0, 1.1);
     db.set(1, string("middle"));
-    db.set(2, int(50));
+    db.set(2, int32_t(50));
     bools.resize(4, true);
     it = db.insert(1, bools.begin(), bools.end());
     check = db.begin();
@@ -4029,8 +4029,8 @@ void mtv_test_set_with_position()
     assert(db.get<string>(1) == "foo");
     assert(db.get<double>(2) == 34.5);
 
-    db.set(pos_hint, 0, int(444)); // position hint does not precede the insertion position.
-    assert(db.get<int>(0) == 444); // it should still work.
+    db.set(pos_hint, 0, int32_t(444)); // position hint does not precede the insertion position.
+    assert(db.get<int32_t>(0) == 444); // it should still work.
 }
 
 void mtv_test_set_cells_with_position()
@@ -4038,7 +4038,7 @@ void mtv_test_set_cells_with_position()
     stack_printer __stack_printer__("::mtv_test_set_cells_with_position");
     mtv_type db(9);
 
-    vector<int> ints;
+    vector<int32_t> ints;
     ints.push_back(1);
     ints.push_back(2);
     ints.push_back(3);
@@ -4058,9 +4058,9 @@ void mtv_test_set_cells_with_position()
     pos_hint = db.set(pos_hint, 3, doubles.begin(), doubles.end());
     pos_hint = db.set(pos_hint, 6, strings.begin(), strings.end());
 
-    assert(db.get<int>(0) == 1);
-    assert(db.get<int>(1) == 2);
-    assert(db.get<int>(2) == 3);
+    assert(db.get<int32_t>(0) == 1);
+    assert(db.get<int32_t>(1) == 2);
+    assert(db.get<int32_t>(2) == 3);
 
     assert(db.get<double>(3) == 1.1);
     assert(db.get<double>(4) == 1.2);
@@ -4077,7 +4077,7 @@ void mtv_test_insert_cells_with_position()
 
     mtv_type db(1, true); // We need to have at least one element to be able to insert.
 
-    vector<int> ints;
+    vector<int32_t> ints;
     ints.push_back(11);
     ints.push_back(22);
 
@@ -4093,21 +4093,21 @@ void mtv_test_insert_cells_with_position()
     strings.push_back(string("David"));
 
     mtv_type::iterator pos_hint = db.insert(0, ints.begin(), ints.end());
-    assert(db.get<int>(0) == 11);
-    assert(db.get<int>(1) == 22);
+    assert(db.get<int32_t>(0) == 11);
+    assert(db.get<int32_t>(1) == 22);
     assert(db.get<bool>(2) == true);
 
     pos_hint = db.insert(pos_hint, 2, doubles.begin(), doubles.end());
-    assert(db.get<int>(0) == 11);
-    assert(db.get<int>(1) == 22);
+    assert(db.get<int32_t>(0) == 11);
+    assert(db.get<int32_t>(1) == 22);
     assert(db.get<double>(2) == 2.1);
     assert(db.get<double>(3) == 3.2);
     assert(db.get<double>(4) == 4.3);
     assert(db.get<bool>(5) == true);
 
     pos_hint = db.insert(pos_hint, 4, strings.begin(), strings.end());
-    assert(db.get<int>(0) == 11);
-    assert(db.get<int>(1) == 22);
+    assert(db.get<int32_t>(0) == 11);
+    assert(db.get<int32_t>(1) == 22);
     assert(db.get<double>(2) == 2.1);
     assert(db.get<double>(3) == 3.2);
     assert(db.get<string>(4) == "Andy");
@@ -4374,7 +4374,7 @@ void mtv_test_swap_range()
     assert(it->type == mtv::element_type_double);
     assert(it->size == 3);
 
-    int int_val = 2;
+    int32_t int_val = 2;
     int16_t short_val = 5;
     db1 = mtv_type(5, int_val);
     db2 = mtv_type(5, short_val);
@@ -4383,11 +4383,11 @@ void mtv_test_swap_range()
     db2.set(3, string("abc"));
     db2.set(4, string("def"));
     db1.swap(1, 2, db2, 3); // Swap 1-2 of source with 3-4 of destination.
-    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<int32_t>(0) == int_val);
     assert(db1.get<string>(1) == "abc");
     assert(db1.get<string>(2) == "def");
-    assert(db1.get<int>(3) == int_val);
-    assert(db1.get<int>(4) == int_val);
+    assert(db1.get<int32_t>(3) == int_val);
+    assert(db1.get<int32_t>(4) == int_val);
     assert(db1.block_size() == 3);
 
     assert(db2.get<int16_t>(0) == short_val);
@@ -4405,9 +4405,9 @@ void mtv_test_swap_range()
     db1.set(3, 1.1);
     db1.set(4, 1.2);
     db1.swap(3, 4, db2, 0);
-    assert(db1.get<int>(0) == int_val);
-    assert(db1.get<int>(1) == int_val);
-    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<int32_t>(0) == int_val);
+    assert(db1.get<int32_t>(1) == int_val);
+    assert(db1.get<int32_t>(2) == int_val);
     assert(db1.get<string>(3) == "A");
     assert(db1.get<string>(4) == "B");
     assert(db1.block_size() == 2);
@@ -4429,11 +4429,11 @@ void mtv_test_swap_range()
     db2.set(4, short_val);
 
     db1.swap(2, 3, db2, 3);
-    assert(db1.get<int>(0) == int_val);
-    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<int32_t>(0) == int_val);
+    assert(db1.get<int32_t>(1) == int_val);
     assert(db1.get<int16_t>(2) == short_val);
     assert(db1.get<int16_t>(3) == short_val);
-    assert(db1.get<int>(4) == int_val);
+    assert(db1.get<int32_t>(4) == int_val);
     assert(db1.block_size() == 3);
 
     assert(db2.get<string>(0) == "default");
@@ -4453,11 +4453,11 @@ void mtv_test_swap_range()
     db2.set(4, short_val);
 
     db1.swap(2, 3, db2, 3);
-    assert(db1.get<int>(0) == int_val);
-    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<int32_t>(0) == int_val);
+    assert(db1.get<int32_t>(1) == int_val);
     assert(db1.get<int16_t>(2) == short_val);
     assert(db1.get<int16_t>(3) == short_val);
-    assert(db1.get<int>(4) == int_val);
+    assert(db1.get<int32_t>(4) == int_val);
     assert(db1.block_size() == 3);
 
     assert(db2.get<string>(0) == "default");
@@ -4474,9 +4474,9 @@ void mtv_test_swap_range()
     db1.set(4, string("F"));
     db2 = mtv_type(5, short_val);
     db1.swap(3, 4, db2, 0);
-    assert(db1.get<int>(0) == int_val);
-    assert(db1.get<int>(1) == int_val);
-    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<int32_t>(0) == int_val);
+    assert(db1.get<int32_t>(1) == int_val);
+    assert(db1.get<int32_t>(2) == int_val);
     assert(db1.get<int16_t>(3) == short_val);
     assert(db1.get<int16_t>(4) == short_val);
     assert(db1.block_size() == 2);
@@ -4494,9 +4494,9 @@ void mtv_test_swap_range()
     db2 = mtv_type(5, short_val);
     db2.set(0, string("F"));
     db1.swap(3, 4, db2, 1);
-    assert(db1.get<int>(0) == int_val);
-    assert(db1.get<int>(1) == int_val);
-    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<int32_t>(0) == int_val);
+    assert(db1.get<int32_t>(1) == int_val);
+    assert(db1.get<int32_t>(2) == int_val);
     assert(db1.get<int16_t>(3) == short_val);
     assert(db1.get<int16_t>(4) == short_val);
     assert(db1.block_size() == 2);
@@ -4514,9 +4514,9 @@ void mtv_test_swap_range()
     db2 = mtv_type(5, short_val);
     db2.set(0, string("top"));
     db1.swap(3, 4, db2, 2);
-    assert(db1.get<int>(0) == int_val);
-    assert(db1.get<int>(1) == int_val);
-    assert(db1.get<int>(2) == int_val);
+    assert(db1.get<int32_t>(0) == int_val);
+    assert(db1.get<int32_t>(1) == int_val);
+    assert(db1.get<int32_t>(2) == int_val);
     assert(db1.get<int16_t>(3) == short_val);
     assert(db1.get<int16_t>(4) == short_val);
     assert(db1.block_size() == 2);
@@ -4537,9 +4537,9 @@ void mtv_test_swap_range()
 
     assert(db1.get<int16_t>(0) == short_val);
     assert(db1.get<int16_t>(1) == short_val);
-    assert(db1.get<int>(2) == int_val);
-    assert(db1.get<int>(3) == int_val);
-    assert(db1.get<int>(4) == int_val);
+    assert(db1.get<int32_t>(2) == int_val);
+    assert(db1.get<int32_t>(3) == int_val);
+    assert(db1.get<int32_t>(4) == int_val);
     assert(db1.block_size() == 2);
 
     assert(db2.get<int16_t>(0) == short_val);
@@ -4560,9 +4560,9 @@ void mtv_test_swap_range()
 
     assert(db1.get<int16_t>(0) == short_val);
     assert(db1.get<int16_t>(1) == short_val);
-    assert(db1.get<int>(2) == int_val);
-    assert(db1.get<int>(3) == int_val);
-    assert(db1.get<int>(4) == int_val);
+    assert(db1.get<int32_t>(2) == int_val);
+    assert(db1.get<int32_t>(3) == int_val);
+    assert(db1.get<int32_t>(4) == int_val);
     assert(db1.block_size() == 2);
 
     assert(db2.get<int16_t>(0) == short_val);
@@ -4580,12 +4580,12 @@ void mtv_test_swap_range()
 
     assert(db1.get<int16_t>(0) == short_val);
     assert(db1.get<int16_t>(1) == short_val);
-    assert(db1.get<int>(2) == int_val);
-    assert(db1.get<int>(3) == int_val);
-    assert(db1.get<int>(4) == int_val);
+    assert(db1.get<int32_t>(2) == int_val);
+    assert(db1.get<int32_t>(3) == int_val);
+    assert(db1.get<int32_t>(4) == int_val);
 
-    assert(db2.get<int>(0) == int_val);
-    assert(db2.get<int>(1) == int_val);
+    assert(db2.get<int32_t>(0) == int_val);
+    assert(db2.get<int32_t>(1) == int_val);
     assert(db2.get<int16_t>(2) == short_val);
     assert(db2.get<int16_t>(3) == short_val);
     assert(db2.get<int16_t>(4) == short_val);
@@ -4601,12 +4601,12 @@ void mtv_test_swap_range()
     assert(db1.get<string>(0) == "A");
     assert(db1.get<string>(1) == "B");
     assert(db1.get<string>(2) == "C");
-    assert(db1.get<int>(3) == int_val);
-    assert(db1.get<int>(4) == int_val);
+    assert(db1.get<int32_t>(3) == int_val);
+    assert(db1.get<int32_t>(4) == int_val);
     assert(db1.block_size() == 2);
 
-    assert(db2.get<int>(0) == int_val);
-    assert(db2.get<int>(1) == int_val);
+    assert(db2.get<int32_t>(0) == int_val);
+    assert(db2.get<int32_t>(1) == int_val);
     assert(db2.get<int16_t>(2) == short_val);
     assert(db2.get<int16_t>(3) == short_val);
     assert(db2.get<int16_t>(4) == short_val);
@@ -4617,17 +4617,17 @@ void mtv_test_swap_range()
     db2 = mtv_type(1, int_val);
     db1.swap(1, 1, db2, 0);
     assert(db1.get<bool>(0) == true);
-    assert(db1.get<int>(1) == int_val);
+    assert(db1.get<int32_t>(1) == int_val);
     assert(db2.get<bool>(0) == true);
 
     // Do the same, but merge with the next block in the source.
     db1 = mtv_type(3, true);
-    db1.set<int>(2, int_val+1);
+    db1.set<int32_t>(2, int_val+1);
     db2 = mtv_type(1, int_val);
     db1.swap(1, 1, db2, 0);
     assert(db1.get<bool>(0) == true);
-    assert(db1.get<int>(1) == int_val);
-    assert(db1.get<int>(2) == int_val+1);
+    assert(db1.get<int32_t>(1) == int_val);
+    assert(db1.get<int32_t>(2) == int_val+1);
     assert(db2.get<bool>(0) == true);
 
     // Replace the middle of existing source block.
@@ -4689,10 +4689,10 @@ void mtv_test_swap_range()
     assert(db1.get<string>(3) == "def");
     assert(db1.block_size() == 2);
     assert(db2.get<double>(0) == 1.1);
-    assert(db2.get<int>(1) == int_val);
-    assert(db2.get<int>(2) == int_val);
-    assert(db2.get<int>(3) == int_val);
-    assert(db2.get<int>(4) == int_val);
+    assert(db2.get<int32_t>(1) == int_val);
+    assert(db2.get<int32_t>(2) == int_val);
+    assert(db2.get<int32_t>(3) == int_val);
+    assert(db2.get<int32_t>(4) == int_val);
     assert(db2.block_size() == 2);
 
     // Another scenario.
@@ -4721,24 +4721,24 @@ void mtv_test_swap_range()
 
     // Another scenario.
     db1 = mtv_type(5);
-    db1.set<int>(0, 1);
-    db1.set<int>(1, 2);
-    db1.set<int>(2, 3);
-    db1.set<int>(3, 4);
-    db1.set<int>(4, 5);
+    db1.set<int32_t>(0, 1);
+    db1.set<int32_t>(1, 2);
+    db1.set<int32_t>(2, 3);
+    db1.set<int32_t>(3, 4);
+    db1.set<int32_t>(4, 5);
     db2 = mtv_type(3);
     db2.set(0, 2.3);
     db2.set<int8_t>(1, 'B');
-    db2.set<long>(2, 123);
+    db2.set<int64_t>(2, 123);
     db1.swap(0, 2, db2, 0);
     assert(db1.get<double>(0) == 2.3);
     assert(db1.get<int8_t>(1) == 'B');
-    assert(db1.get<long>(2) == 123);
-    assert(db1.get<int>(3) == 4);
-    assert(db1.get<int>(4) == 5);
-    assert(db2.get<int>(0) == 1);
-    assert(db2.get<int>(1) == 2);
-    assert(db2.get<int>(2) == 3);
+    assert(db1.get<int64_t>(2) == 123);
+    assert(db1.get<int32_t>(3) == 4);
+    assert(db1.get<int32_t>(4) == 5);
+    assert(db2.get<int32_t>(0) == 1);
+    assert(db2.get<int32_t>(1) == 2);
+    assert(db2.get<int32_t>(2) == 3);
     assert(db2.block_size() == 1);
 
     // Another one.
@@ -4755,28 +4755,28 @@ void mtv_test_swap_range()
 
     // The source range is in the middle of a block.
     db1 = mtv_type(8);
-    for (int i = 0; i < 8; ++i)
-        db1.set<int>(i, i+2);
+    for (int32_t i = 0; i < 8; ++i)
+        db1.set<int32_t>(i, i+2);
     db2 = mtv_type(4);
-    db2.set<int>(0, 12);
+    db2.set<int32_t>(0, 12);
     db2.set<int16_t>(1, 13);
-    db2.set<long>(2, 14);
+    db2.set<int64_t>(2, 14);
     db2.set<double>(3, 15.0);
     db1.swap(3, 5, db2, 1);
 
-    assert(db1.get<int>(0) == 2);
-    assert(db1.get<int>(1) == 3);
-    assert(db1.get<int>(2) == 4);
+    assert(db1.get<int32_t>(0) == 2);
+    assert(db1.get<int32_t>(1) == 3);
+    assert(db1.get<int32_t>(2) == 4);
     assert(db1.get<int16_t>(3) == 13);
-    assert(db1.get<long>(4) == 14);
+    assert(db1.get<int64_t>(4) == 14);
     assert(db1.get<double>(5) == 15.0);
-    assert(db1.get<int>(6) == 8);
-    assert(db1.get<int>(7) == 9);
+    assert(db1.get<int32_t>(6) == 8);
+    assert(db1.get<int32_t>(7) == 9);
 
-    assert(db2.get<int>(0) == 12);
-    assert(db2.get<int>(1) == 5);
-    assert(db2.get<int>(2) == 6);
-    assert(db2.get<int>(3) == 7);
+    assert(db2.get<int32_t>(0) == 12);
+    assert(db2.get<int32_t>(1) == 5);
+    assert(db2.get<int32_t>(2) == 6);
+    assert(db2.get<int32_t>(3) == 7);
     assert(db2.block_size() == 1);
 
     // Try swapping in a multi-to-single block direction.
@@ -4808,48 +4808,48 @@ void mtv_test_swap_range()
     db2.set(1, short_val);
     db1.swap(0, 1, db2, 0);
 
-    assert(db1.get<int>(0) == int_val);
+    assert(db1.get<int32_t>(0) == int_val);
     assert(db1.get<int16_t>(1) == short_val);
     assert(db2.get<double>(0) == 2.1);
     assert(db2.get<string>(1) == "test");
 
     // More complex case.
     db1 = mtv_type(10);
-    db1.set<int>(0, 2);
-    db1.set<int>(1, 3);
-    db1.set<int>(2, 4);
+    db1.set<int32_t>(0, 2);
+    db1.set<int32_t>(1, 3);
+    db1.set<int32_t>(2, 4);
     db1.set<string>(3, "A");
     db1.set<string>(4, "B");
     db1.set<string>(5, "C");
     // Leave some empty range.
     db2 = mtv_type(10);
-    for (int i = 0; i < 10; ++i)
-        db2.set<int>(i, 10+i);
+    for (int32_t i = 0; i < 10; ++i)
+        db2.set<int32_t>(i, 10+i);
     db2.set<int8_t>(5, 'Z');
     db1.swap(1, 7, db2, 2);
 
-    assert(db1.get<int>(0) == 2);
-    assert(db1.get<int>(1) == 12);
-    assert(db1.get<int>(2) == 13);
-    assert(db1.get<int>(3) == 14);
+    assert(db1.get<int32_t>(0) == 2);
+    assert(db1.get<int32_t>(1) == 12);
+    assert(db1.get<int32_t>(2) == 13);
+    assert(db1.get<int32_t>(3) == 14);
     assert(db1.get<int8_t>(4) == 'Z');
-    assert(db1.get<int>(5) == 16);
-    assert(db1.get<int>(6) == 17);
-    assert(db1.get<int>(7) == 18);
+    assert(db1.get<int32_t>(5) == 16);
+    assert(db1.get<int32_t>(6) == 17);
+    assert(db1.get<int32_t>(7) == 18);
     assert(db1.is_empty(8));
     assert(db1.is_empty(9));
     assert(db1.block_size() == 4);
 
-    assert(db2.get<int>(0) == 10);
-    assert(db2.get<int>(1) == 11);
-    assert(db2.get<int>(2) == 3);
-    assert(db2.get<int>(3) == 4);
+    assert(db2.get<int32_t>(0) == 10);
+    assert(db2.get<int32_t>(1) == 11);
+    assert(db2.get<int32_t>(2) == 3);
+    assert(db2.get<int32_t>(3) == 4);
     assert(db2.get<string>(4) == "A");
     assert(db2.get<string>(5) == "B");
     assert(db2.get<string>(6) == "C");
     assert(db2.is_empty(7));
     assert(db2.is_empty(8));
-    assert(db2.get<int>(9) == 19);
+    assert(db2.get<int32_t>(9) == 19);
     assert(db2.block_size() == 4);
 }
 
@@ -4868,7 +4868,7 @@ void mtv_test_value_type()
     db.set(0, 1.1);
     db.set(1, string("A"));
     db.set(2, string("B"));
-    db.set(3, int(12));
+    db.set(3, int32_t(12));
     db.set(4, int16_t(8));
     for_each(db.begin(), db.end(), block_node_printer());
 }
