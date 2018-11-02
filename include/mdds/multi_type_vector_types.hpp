@@ -51,23 +51,23 @@ using std::endl;
 
 namespace mdds { namespace mtv {
 
-typedef int element_t;
+using element_t = int;
 
-const element_t element_type_empty = -1;
+constexpr element_t element_type_empty = -1;
 
-const element_t element_type_double  = 0;
-const element_t element_type_string  = 1;
-const element_t element_type_int16   = 2;
-const element_t element_type_uint16  = 3;
-const element_t element_type_int32   = 4;
-const element_t element_type_uint32  = 5;
-const element_t element_type_int64   = 6;
-const element_t element_type_uint64  = 7;
-const element_t element_type_boolean = 8;
-const element_t element_type_int8    = 9;
-const element_t element_type_uint8   = 10;
+constexpr element_t element_type_double  = 0;
+constexpr element_t element_type_string  = 1;
+constexpr element_t element_type_int16   = 2;
+constexpr element_t element_type_uint16  = 3;
+constexpr element_t element_type_int32   = 4;
+constexpr element_t element_type_uint32  = 5;
+constexpr element_t element_type_int64   = 6;
+constexpr element_t element_type_uint64  = 7;
+constexpr element_t element_type_boolean = 8;
+constexpr element_t element_type_int8    = 9;
+constexpr element_t element_type_uint8   = 10;
 
-const element_t element_type_user_start = 50;
+constexpr element_t element_type_user_start = 50;
 
 /**
  * Generic exception used for errors specific to element block operations.
