@@ -3,7 +3,8 @@ cmake_policy(SET CMP0048 NEW)
 
 option(BOOST_INCLUDEDIR "path to boost header include directory.")
 
-project(mdds VERSION 1.4.3 LANGUAGES CXX)
+project(mdds VERSION 1.4.99 LANGUAGES CXX)
+set(API_VERSION 1.5)
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(Boost)
@@ -71,4 +72,9 @@ add_dependencies(check
     segment-tree-test
     sorted-string-map-test
     trie-map-test
+)
+
+install(DIRECTORY
+    ${PROJECT_SOURCE_DIR}/include/mdds
+    DESTINATION include/mdds-${API_VERSION}/
 )
