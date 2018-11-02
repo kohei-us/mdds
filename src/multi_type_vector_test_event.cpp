@@ -42,8 +42,8 @@ struct event_block_counter
     size_t block_count;  // number of element (data) blocks
     size_t block_count_numeric;
     size_t block_count_string;
-    size_t block_count_short;
-    size_t block_count_ushort;
+    size_t block_count_int16;
+    size_t block_count_uint16;
     size_t block_count_int;
     size_t block_count_uint;
     size_t block_count_long;
@@ -56,8 +56,8 @@ struct event_block_counter
         block_count(0),
         block_count_numeric(0),
         block_count_string(0),
-        block_count_short(0),
-        block_count_ushort(0),
+        block_count_int16(0),
+        block_count_uint16(0),
         block_count_int(0),
         block_count_uint(0),
         block_count_long(0),
@@ -79,11 +79,11 @@ struct event_block_counter
             case mtv::element_type_string:
                 ++block_count_string;
             break;
-            case mtv::element_type_short:
-                ++block_count_short;
+            case mtv::element_type_int16:
+                ++block_count_int16;
             break;
-            case mtv::element_type_ushort:
-                ++block_count_ushort;
+            case mtv::element_type_uint16:
+                ++block_count_uint16;
             break;
             case mtv::element_type_int:
                 ++block_count_int;
@@ -123,11 +123,11 @@ struct event_block_counter
             case mtv::element_type_string:
                 --block_count_string;
             break;
-            case mtv::element_type_short:
-                --block_count_short;
+            case mtv::element_type_int16:
+                --block_count_int16;
             break;
-            case mtv::element_type_ushort:
-                --block_count_ushort;
+            case mtv::element_type_uint16:
+                --block_count_uint16;
             break;
             case mtv::element_type_int:
                 --block_count_int;
@@ -589,10 +589,10 @@ void mtv_test_block_counter()
 
     {
         mtv_type db(1, 0.1);
-        db.push_back(short(1));
+        db.push_back(int16_t(1));
         db.push_back(int(20));
         assert(db.event_handler().block_count == 3);
-        assert(db.event_handler().block_count_short == 1);
+        assert(db.event_handler().block_count_int16 == 1);
         assert(db.event_handler().block_count_int == 1);
         assert(db.event_handler().block_count_numeric == 1);
 
@@ -604,10 +604,10 @@ void mtv_test_block_counter()
 
     {
         mtv_type db(1, string("foo"));
-        db.push_back(short(1));
+        db.push_back(int16_t(1));
         db.push_back(int(20));
         assert(db.event_handler().block_count == 3);
-        assert(db.event_handler().block_count_short == 1);
+        assert(db.event_handler().block_count_int16 == 1);
         assert(db.event_handler().block_count_int == 1);
         assert(db.event_handler().block_count_string == 1);
 
@@ -658,12 +658,12 @@ void mtv_test_block_counter()
         mtv_type src(6), dst(6);
         src.set(0, int8_t('z'));
         src.set(1, int(10));
-        src.set(2, short(5));
+        src.set(2, int16_t(5));
         dst.set(3, 1.1);
         assert(src.event_handler().block_count == 3);
         assert(src.event_handler().block_count_int8 == 1);
         assert(src.event_handler().block_count_int == 1);
-        assert(src.event_handler().block_count_short == 1);
+        assert(src.event_handler().block_count_int16 == 1);
         assert(dst.event_handler().block_count == 1);
         assert(dst.event_handler().block_count_numeric == 1);
 
@@ -673,7 +673,7 @@ void mtv_test_block_counter()
         assert(dst.event_handler().block_count_numeric == 1);
         assert(dst.event_handler().block_count_int8 == 1);
         assert(dst.event_handler().block_count_int == 1);
-        assert(dst.event_handler().block_count_short == 1);
+        assert(dst.event_handler().block_count_int16 == 1);
     }
 
     {

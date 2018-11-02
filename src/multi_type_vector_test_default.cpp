@@ -55,13 +55,13 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
 
 enum test_mtv_type {
-    _bool, _short, _ushort, _int, _uint, _long, _ulong, _double, _string, _int8, _uint8
+    _bool, _int16, _uint16, _int, _uint, _long, _ulong, _double, _string, _int8, _uint8
 };
 
 #define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
 TEST_TYPE(bool,_bool)
-TEST_TYPE(short,_short)
-TEST_TYPE(unsigned short,_ushort)
+TEST_TYPE(int16_t,_int16)
+TEST_TYPE(uint16_t,_uint16)
 TEST_TYPE(int,_int)
 TEST_TYPE(unsigned int,_uint)
 TEST_TYPE(long,_long)
@@ -82,14 +82,14 @@ void mtv_test_types()
         cout << "bool is good" << endl;
     }
     {
-        short val = 0;
-        assert(test_type(val) == _short);
-        cout << "short is good" << endl;
+        int16_t val = 0;
+        assert(test_type(val) == _int16);
+        cout << "int16 is good" << endl;
     }
     {
-        unsigned short val = 0;
-        assert(test_type(val) == _ushort);
-        cout << "unsigned short is good" << endl;
+        uint16_t val = 0;
+        assert(test_type(val) == _uint16);
+        cout << "uint16 is good" << endl;
     }
     {
         int val = 0;
@@ -124,12 +124,12 @@ void mtv_test_types()
     {
         int8_t val = 0;
         assert(test_type(val) == _int8);
-        cout << "char is good" << endl;
+        cout << "int8 is good" << endl;
     }
     {
         uint8_t val = 0;
         assert(test_type(val) == _uint8);
-        cout << "unsigned char is good" << endl;
+        cout << "uint8 is good" << endl;
     }
 }
 
@@ -725,16 +725,16 @@ void mtv_test_basic()
         db.set(1, static_cast<unsigned long>(10));
         db.set(2, static_cast<int>(-10));
         db.set(3, static_cast<unsigned int>(10));
-        db.set(4, static_cast<short>(-10));
-        db.set(5, static_cast<unsigned short>(10));
+        db.set(4, static_cast<int16_t>(-10));
+        db.set(5, static_cast<uint16_t>(10));
         db.set(6, true);
         assert(db.block_size() == 7);
         assert(db.get_type(0) == mtv::element_type_long);
         assert(db.get_type(1) == mtv::element_type_ulong);
         assert(db.get_type(2) == mtv::element_type_int);
         assert(db.get_type(3) == mtv::element_type_uint);
-        assert(db.get_type(4) == mtv::element_type_short);
-        assert(db.get_type(5) == mtv::element_type_ushort);
+        assert(db.get_type(4) == mtv::element_type_int16);
+        assert(db.get_type(5) == mtv::element_type_uint16);
         assert(db.get_type(6) == mtv::element_type_boolean);
     }
 
@@ -1153,7 +1153,7 @@ void mtv_test_empty_cells()
         mtv_type db(10);
         assert(db.block_size() == 1);
 
-        unsigned short val = 12;
+        int16_t val = 12;
         db.set(3, val);
         assert(db.block_size() == 3);
         assert(db.is_empty(2));
@@ -3285,9 +3285,9 @@ void mtv_test_set_return_iterator()
     assert(it == db.end());
 
     db.set(4, static_cast<int>(36)); // Reset again.
-    it = db.set(4, static_cast<short>(28)); // Different type from either of the blocks.
+    it = db.set(4, static_cast<int16_t>(28)); // Different type from either of the blocks.
     assert(it->size == 1);
-    assert(it->type == mtv::element_type_short);
+    assert(it->type == mtv::element_type_int16);
     assert(it->position == 4);
     assert(it->__private_data.block_index == 1);
     std::advance(it, 2);
@@ -3323,13 +3323,13 @@ void mtv_test_set_return_iterator()
     assert(it == db.end());
 
     // Now, the preceding block is not empty while the following block is.
-    db = mtv_type(10, static_cast<unsigned short>(10));
+    db = mtv_type(10, static_cast<uint16_t>(10));
     db.set_empty(4, 6);
     db.set(3, 1.2);
-    it = db.set(3, static_cast<unsigned short>(11)); // Same as the previous block.
+    it = db.set(3, static_cast<uint16_t>(11)); // Same as the previous block.
     assert(it == db.begin());
     assert(it->size == 4);
-    assert(it->type == mtv::element_type_ushort);
+    assert(it->type == mtv::element_type_uint16);
     std::advance(it, 3);
     assert(it == db.end());
 
@@ -3778,7 +3778,7 @@ void mtv_test_set_empty_return_iterator()
     assert(it == db.end());
 
     // Empty the upper part of a block.
-    vector<short> shorts(8, 23);
+    vector<int16_t> shorts(8, 23);
     db.set(2, shorts.begin(), shorts.end());
     it = db.set_empty(2, 6);
     check = db.begin();
@@ -3787,7 +3787,7 @@ void mtv_test_set_empty_return_iterator()
     assert(it->type == mtv::element_type_empty);
     assert(it->size == 5);
     ++it;
-    assert(it->type == mtv::element_type_short);
+    assert(it->type == mtv::element_type_int16);
     assert(it->size == 3);
     ++it;
     assert(it == db.end());
@@ -3832,7 +3832,7 @@ void mtv_test_set_empty_return_iterator()
     assert(check->type == mtv::element_type_boolean);
     assert(check->size == 3);
     ++check;
-    assert(check->type == mtv::element_type_short);
+    assert(check->type == mtv::element_type_int16);
     assert(check->size == 1);
     ++check;
     assert(it == check);
@@ -4375,7 +4375,7 @@ void mtv_test_swap_range()
     assert(it->size == 3);
 
     int int_val = 2;
-    short short_val = 5;
+    int16_t short_val = 5;
     db1 = mtv_type(5, int_val);
     db2 = mtv_type(5, short_val);
     db1.set(1, 2.3);
@@ -4390,9 +4390,9 @@ void mtv_test_swap_range()
     assert(db1.get<int>(4) == int_val);
     assert(db1.block_size() == 3);
 
-    assert(db2.get<short>(0) == short_val);
-    assert(db2.get<short>(1) == short_val);
-    assert(db2.get<short>(2) == short_val);
+    assert(db2.get<int16_t>(0) == short_val);
+    assert(db2.get<int16_t>(1) == short_val);
+    assert(db2.get<int16_t>(2) == short_val);
     assert(db2.get<double>(3) == 2.3);
     assert(db2.get<double>(4) == 2.4);
     assert(db2.block_size() == 2);
@@ -4431,8 +4431,8 @@ void mtv_test_swap_range()
     db1.swap(2, 3, db2, 3);
     assert(db1.get<int>(0) == int_val);
     assert(db1.get<int>(1) == int_val);
-    assert(db1.get<short>(2) == short_val);
-    assert(db1.get<short>(3) == short_val);
+    assert(db1.get<int16_t>(2) == short_val);
+    assert(db1.get<int16_t>(3) == short_val);
     assert(db1.get<int>(4) == int_val);
     assert(db1.block_size() == 3);
 
@@ -4455,8 +4455,8 @@ void mtv_test_swap_range()
     db1.swap(2, 3, db2, 3);
     assert(db1.get<int>(0) == int_val);
     assert(db1.get<int>(1) == int_val);
-    assert(db1.get<short>(2) == short_val);
-    assert(db1.get<short>(3) == short_val);
+    assert(db1.get<int16_t>(2) == short_val);
+    assert(db1.get<int16_t>(3) == short_val);
     assert(db1.get<int>(4) == int_val);
     assert(db1.block_size() == 3);
 
@@ -4477,14 +4477,14 @@ void mtv_test_swap_range()
     assert(db1.get<int>(0) == int_val);
     assert(db1.get<int>(1) == int_val);
     assert(db1.get<int>(2) == int_val);
-    assert(db1.get<short>(3) == short_val);
-    assert(db1.get<short>(4) == short_val);
+    assert(db1.get<int16_t>(3) == short_val);
+    assert(db1.get<int16_t>(4) == short_val);
     assert(db1.block_size() == 2);
     assert(db2.get<string>(0) == "E");
     assert(db2.get<string>(1) == "F");
-    assert(db2.get<short>(2) == short_val);
-    assert(db2.get<short>(3) == short_val);
-    assert(db2.get<short>(4) == short_val);
+    assert(db2.get<int16_t>(2) == short_val);
+    assert(db2.get<int16_t>(3) == short_val);
+    assert(db2.get<int16_t>(4) == short_val);
     assert(db2.block_size() == 2);
 
     // Do the same as before, but merge with the previous block.
@@ -4497,14 +4497,14 @@ void mtv_test_swap_range()
     assert(db1.get<int>(0) == int_val);
     assert(db1.get<int>(1) == int_val);
     assert(db1.get<int>(2) == int_val);
-    assert(db1.get<short>(3) == short_val);
-    assert(db1.get<short>(4) == short_val);
+    assert(db1.get<int16_t>(3) == short_val);
+    assert(db1.get<int16_t>(4) == short_val);
     assert(db1.block_size() == 2);
     assert(db2.get<string>(0) == "F");
     assert(db2.get<string>(1) == "G");
     assert(db2.get<string>(2) == "H");
-    assert(db2.get<short>(3) == short_val);
-    assert(db2.get<short>(4) == short_val);
+    assert(db2.get<int16_t>(3) == short_val);
+    assert(db2.get<int16_t>(4) == short_val);
     assert(db2.block_size() == 2);
 
     // Set the new element to the middle of a destination block.
@@ -4517,15 +4517,15 @@ void mtv_test_swap_range()
     assert(db1.get<int>(0) == int_val);
     assert(db1.get<int>(1) == int_val);
     assert(db1.get<int>(2) == int_val);
-    assert(db1.get<short>(3) == short_val);
-    assert(db1.get<short>(4) == short_val);
+    assert(db1.get<int16_t>(3) == short_val);
+    assert(db1.get<int16_t>(4) == short_val);
     assert(db1.block_size() == 2);
 
     assert(db2.get<string>(0) == "top");
-    assert(db2.get<short>(1) == short_val);
+    assert(db2.get<int16_t>(1) == short_val);
     assert(db2.get<string>(2) == "I");
     assert(db2.get<string>(3) == "J");
-    assert(db2.get<short>(4) == short_val);
+    assert(db2.get<int16_t>(4) == short_val);
     assert(db2.block_size() == 4);
 
     // Set the new element to the lower part of a destination block.
@@ -4535,16 +4535,16 @@ void mtv_test_swap_range()
     db2 = mtv_type(5, short_val);
     db1.swap(0, 1, db2, 3);
 
-    assert(db1.get<short>(0) == short_val);
-    assert(db1.get<short>(1) == short_val);
+    assert(db1.get<int16_t>(0) == short_val);
+    assert(db1.get<int16_t>(1) == short_val);
     assert(db1.get<int>(2) == int_val);
     assert(db1.get<int>(3) == int_val);
     assert(db1.get<int>(4) == int_val);
     assert(db1.block_size() == 2);
 
-    assert(db2.get<short>(0) == short_val);
-    assert(db2.get<short>(1) == short_val);
-    assert(db2.get<short>(2) == short_val);
+    assert(db2.get<int16_t>(0) == short_val);
+    assert(db2.get<int16_t>(1) == short_val);
+    assert(db2.get<int16_t>(2) == short_val);
     assert(db2.get<string>(3) == "A1");
     assert(db2.get<string>(4) == "A2");
     assert(db2.block_size() == 2);
@@ -4558,16 +4558,16 @@ void mtv_test_swap_range()
     db2.set(5, string("A3"));
     db1.swap(0, 1, db2, 3);
 
-    assert(db1.get<short>(0) == short_val);
-    assert(db1.get<short>(1) == short_val);
+    assert(db1.get<int16_t>(0) == short_val);
+    assert(db1.get<int16_t>(1) == short_val);
     assert(db1.get<int>(2) == int_val);
     assert(db1.get<int>(3) == int_val);
     assert(db1.get<int>(4) == int_val);
     assert(db1.block_size() == 2);
 
-    assert(db2.get<short>(0) == short_val);
-    assert(db2.get<short>(1) == short_val);
-    assert(db2.get<short>(2) == short_val);
+    assert(db2.get<int16_t>(0) == short_val);
+    assert(db2.get<int16_t>(1) == short_val);
+    assert(db2.get<int16_t>(2) == short_val);
     assert(db2.get<string>(3) == "A1");
     assert(db2.get<string>(4) == "A2");
     assert(db2.get<string>(5) == "A3");
@@ -4578,17 +4578,17 @@ void mtv_test_swap_range()
     db2 = mtv_type(5, short_val);
     db1.swap(0, 1, db2, 0);
 
-    assert(db1.get<short>(0) == short_val);
-    assert(db1.get<short>(1) == short_val);
+    assert(db1.get<int16_t>(0) == short_val);
+    assert(db1.get<int16_t>(1) == short_val);
     assert(db1.get<int>(2) == int_val);
     assert(db1.get<int>(3) == int_val);
     assert(db1.get<int>(4) == int_val);
 
     assert(db2.get<int>(0) == int_val);
     assert(db2.get<int>(1) == int_val);
-    assert(db2.get<short>(2) == short_val);
-    assert(db2.get<short>(3) == short_val);
-    assert(db2.get<short>(4) == short_val);
+    assert(db2.get<int16_t>(2) == short_val);
+    assert(db2.get<int16_t>(3) == short_val);
+    assert(db2.get<int16_t>(4) == short_val);
 
     // Do the same, and merge with the previous block in the source.
     db1 = mtv_type(5, int_val);
@@ -4607,9 +4607,9 @@ void mtv_test_swap_range()
 
     assert(db2.get<int>(0) == int_val);
     assert(db2.get<int>(1) == int_val);
-    assert(db2.get<short>(2) == short_val);
-    assert(db2.get<short>(3) == short_val);
-    assert(db2.get<short>(4) == short_val);
+    assert(db2.get<int16_t>(2) == short_val);
+    assert(db2.get<int16_t>(3) == short_val);
+    assert(db2.get<int16_t>(4) == short_val);
     assert(db2.block_size() == 2);
 
     // Replace the bottom part of existing source block.
@@ -4703,8 +4703,8 @@ void mtv_test_swap_range()
     db1.swap(0, 1, db2, 0);
     assert(db1.get<string>(0) == "A");
     assert(db1.get<int8_t>(1) == 'A');
-    assert(db2.get<short>(0) == short_val);
-    assert(db2.get<short>(1) == short_val);
+    assert(db2.get<int16_t>(0) == short_val);
+    assert(db2.get<int16_t>(1) == short_val);
 
     // Another scenario.
     db1 = mtv_type(2, 3.14);
@@ -4759,7 +4759,7 @@ void mtv_test_swap_range()
         db1.set<int>(i, i+2);
     db2 = mtv_type(4);
     db2.set<int>(0, 12);
-    db2.set<short>(1, 13);
+    db2.set<int16_t>(1, 13);
     db2.set<long>(2, 14);
     db2.set<double>(3, 15.0);
     db1.swap(3, 5, db2, 1);
@@ -4767,7 +4767,7 @@ void mtv_test_swap_range()
     assert(db1.get<int>(0) == 2);
     assert(db1.get<int>(1) == 3);
     assert(db1.get<int>(2) == 4);
-    assert(db1.get<short>(3) == 13);
+    assert(db1.get<int16_t>(3) == 13);
     assert(db1.get<long>(4) == 14);
     assert(db1.get<double>(5) == 15.0);
     assert(db1.get<int>(6) == 8);
@@ -4785,19 +4785,19 @@ void mtv_test_swap_range()
     db1.set(1, string("123"));
     db2 = mtv_type(10, short_val);
     db1.swap(0, 1, db2, 4);
-    assert(db1.get<short>(0) == short_val);
-    assert(db1.get<short>(1) == short_val);
+    assert(db1.get<int16_t>(0) == short_val);
+    assert(db1.get<int16_t>(1) == short_val);
 
-    assert(db2.get<short>(0) == short_val);
-    assert(db2.get<short>(1) == short_val);
-    assert(db2.get<short>(2) == short_val);
-    assert(db2.get<short>(3) == short_val);
+    assert(db2.get<int16_t>(0) == short_val);
+    assert(db2.get<int16_t>(1) == short_val);
+    assert(db2.get<int16_t>(2) == short_val);
+    assert(db2.get<int16_t>(3) == short_val);
     assert(db2.get<double>(4) == 1.2);
     assert(db2.get<string>(5) == "123");
-    assert(db2.get<short>(6) == short_val);
-    assert(db2.get<short>(7) == short_val);
-    assert(db2.get<short>(8) == short_val);
-    assert(db2.get<short>(9) == short_val);
+    assert(db2.get<int16_t>(6) == short_val);
+    assert(db2.get<int16_t>(7) == short_val);
+    assert(db2.get<int16_t>(8) == short_val);
+    assert(db2.get<int16_t>(9) == short_val);
 
     // Multi-to-multi block swapping. Very simple case.
     db1 = mtv_type(2);
@@ -4809,7 +4809,7 @@ void mtv_test_swap_range()
     db1.swap(0, 1, db2, 0);
 
     assert(db1.get<int>(0) == int_val);
-    assert(db1.get<short>(1) == short_val);
+    assert(db1.get<int16_t>(1) == short_val);
     assert(db2.get<double>(0) == 2.1);
     assert(db2.get<string>(1) == "test");
 
@@ -4869,7 +4869,7 @@ void mtv_test_value_type()
     db.set(1, string("A"));
     db.set(2, string("B"));
     db.set(3, int(12));
-    db.set(4, short(8));
+    db.set(4, int16_t(8));
     for_each(db.begin(), db.end(), block_node_printer());
 }
 
@@ -4878,8 +4878,8 @@ void mtv_test_block_identifier()
     stack_printer __stack_printer__("::mtv_test_block_identifier");
     assert(mtv::double_element_block::block_type == mtv::element_type_double);
     assert(mtv::string_element_block::block_type == mtv::element_type_string);
-    assert(mtv::short_element_block::block_type == mtv::element_type_short);
-    assert(mtv::ushort_element_block::block_type == mtv::element_type_ushort);
+    assert(mtv::int16_element_block::block_type == mtv::element_type_int16);
+    assert(mtv::uint16_element_block::block_type == mtv::element_type_uint16);
     assert(mtv::int_element_block::block_type == mtv::element_type_int);
     assert(mtv::uint_element_block::block_type == mtv::element_type_uint);
     assert(mtv::long_element_block::block_type == mtv::element_type_long);
