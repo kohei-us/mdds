@@ -50,7 +50,7 @@ enum element_t
     element_boolean = mdds::mtv::element_type_boolean,
     element_string  = mdds::mtv::element_type_string,
     element_numeric = mdds::mtv::element_type_double,
-    element_integer = mdds::mtv::element_type_int
+    element_integer = mdds::mtv::element_type_int32
 };
 
 /**
@@ -58,7 +58,7 @@ enum element_t
  */
 struct std_string_trait
 {
-    typedef mdds::mtv::int_element_block integer_element_block;
+    typedef mdds::mtv::int32_element_block integer_element_block;
     typedef mdds::mtv::string_element_block string_element_block;
 
     typedef mdds::mtv::element_block_func element_block_func;

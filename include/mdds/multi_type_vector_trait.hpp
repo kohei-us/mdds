@@ -92,10 +92,10 @@ base_element_block* element_block_func_base::create_new_block(element_t type, si
             return int16_element_block::create_block(init_size);
         case element_type_uint16:
             return uint16_element_block::create_block(init_size);
-        case element_type_int:
-            return int_element_block::create_block(init_size);
-        case element_type_uint:
-            return uint_element_block::create_block(init_size);
+        case element_type_int32:
+            return int32_element_block::create_block(init_size);
+        case element_type_uint32:
+            return uint32_element_block::create_block(init_size);
         case element_type_long:
             return long_element_block::create_block(init_size);
         case element_type_ulong:
@@ -123,10 +123,10 @@ base_element_block* element_block_func_base::clone_block(const base_element_bloc
             return int16_element_block::clone_block(block);
         case element_type_uint16:
             return uint16_element_block::clone_block(block);
-        case element_type_int:
-            return int_element_block::clone_block(block);
-        case element_type_uint:
-            return uint_element_block::clone_block(block);
+        case element_type_int32:
+            return int32_element_block::clone_block(block);
+        case element_type_uint32:
+            return uint32_element_block::clone_block(block);
         case element_type_long:
             return long_element_block::clone_block(block);
         case element_type_ulong:
@@ -161,11 +161,11 @@ void element_block_func_base::delete_block(const base_element_block* p)
         case element_type_uint16:
             uint16_element_block::delete_block(p);
         break;
-        case element_type_int:
-            int_element_block::delete_block(p);
+        case element_type_int32:
+            int32_element_block::delete_block(p);
         break;
-        case element_type_uint:
-            uint_element_block::delete_block(p);
+        case element_type_uint32:
+            uint32_element_block::delete_block(p);
         break;
         case element_type_long:
             long_element_block::delete_block(p);
@@ -211,11 +211,11 @@ void element_block_func_base::resize_block(base_element_block& block, size_t new
         case element_type_uint16:
             uint16_element_block::resize_block(block, new_size);
         break;
-        case element_type_int:
-            int_element_block::resize_block(block, new_size);
+        case element_type_int32:
+            int32_element_block::resize_block(block, new_size);
         break;
-        case element_type_uint:
-            uint_element_block::resize_block(block, new_size);
+        case element_type_uint32:
+            uint32_element_block::resize_block(block, new_size);
         break;
         case element_type_long:
             long_element_block::resize_block(block, new_size);
@@ -253,11 +253,11 @@ void element_block_func_base::print_block(const base_element_block& block)
         case element_type_uint16:
             uint16_element_block::print_block(block);
         break;
-        case element_type_int:
-            int_element_block::print_block(block);
+        case element_type_int32:
+            int32_element_block::print_block(block);
         break;
-        case element_type_uint:
-            uint_element_block::print_block(block);
+        case element_type_uint32:
+            uint32_element_block::print_block(block);
         break;
         case element_type_long:
             long_element_block::print_block(block);
@@ -295,11 +295,11 @@ void element_block_func_base::erase(base_element_block& block, size_t pos)
         case element_type_uint16:
             uint16_element_block::erase_block(block, pos);
         break;
-        case element_type_int:
-            int_element_block::erase_block(block, pos);
+        case element_type_int32:
+            int32_element_block::erase_block(block, pos);
         break;
-        case element_type_uint:
-            uint_element_block::erase_block(block, pos);
+        case element_type_uint32:
+            uint32_element_block::erase_block(block, pos);
         break;
         case element_type_long:
             long_element_block::erase_block(block, pos);
@@ -337,11 +337,11 @@ void element_block_func_base::erase(base_element_block& block, size_t pos, size_
         case element_type_uint16:
             uint16_element_block::erase_block(block, pos, size);
         break;
-        case element_type_int:
-            int_element_block::erase_block(block, pos, size);
+        case element_type_int32:
+            int32_element_block::erase_block(block, pos, size);
         break;
-        case element_type_uint:
-            uint_element_block::erase_block(block, pos, size);
+        case element_type_uint32:
+            uint32_element_block::erase_block(block, pos, size);
         break;
         case element_type_long:
             long_element_block::erase_block(block, pos, size);
@@ -379,11 +379,11 @@ void element_block_func_base::append_values_from_block(base_element_block& dest,
         case element_type_uint16:
             uint16_element_block::append_values_from_block(dest, src);
         break;
-        case element_type_int:
-            int_element_block::append_values_from_block(dest, src);
+        case element_type_int32:
+            int32_element_block::append_values_from_block(dest, src);
         break;
-        case element_type_uint:
-            uint_element_block::append_values_from_block(dest, src);
+        case element_type_uint32:
+            uint32_element_block::append_values_from_block(dest, src);
         break;
         case element_type_long:
             long_element_block::append_values_from_block(dest, src);
@@ -422,11 +422,11 @@ void element_block_func_base::append_values_from_block(
         case element_type_uint16:
             uint16_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
-        case element_type_int:
-            int_element_block::append_values_from_block(dest, src, begin_pos, len);
+        case element_type_int32:
+            int32_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
-        case element_type_uint:
-            uint_element_block::append_values_from_block(dest, src, begin_pos, len);
+        case element_type_uint32:
+            uint32_element_block::append_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_long:
             long_element_block::append_values_from_block(dest, src, begin_pos, len);
@@ -465,11 +465,11 @@ void element_block_func_base::assign_values_from_block(
         case element_type_uint16:
             uint16_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
-        case element_type_int:
-            int_element_block::assign_values_from_block(dest, src, begin_pos, len);
+        case element_type_int32:
+            int32_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
-        case element_type_uint:
-            uint_element_block::assign_values_from_block(dest, src, begin_pos, len);
+        case element_type_uint32:
+            uint32_element_block::assign_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_long:
             long_element_block::assign_values_from_block(dest, src, begin_pos, len);
@@ -508,11 +508,11 @@ void element_block_func_base::prepend_values_from_block(
         case element_type_uint16:
             uint16_element_block::prepend_values_from_block(dest, src, begin_pos, len);
         break;
-        case element_type_int:
-            int_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        case element_type_int32:
+            int32_element_block::prepend_values_from_block(dest, src, begin_pos, len);
         break;
-        case element_type_uint:
-            uint_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+        case element_type_uint32:
+            uint32_element_block::prepend_values_from_block(dest, src, begin_pos, len);
         break;
         case element_type_long:
             long_element_block::prepend_values_from_block(dest, src, begin_pos, len);
@@ -553,11 +553,11 @@ void element_block_func_base::swap_values(
         case element_type_uint16:
             uint16_element_block::swap_values(blk1, blk2, pos1, pos2, len);
         break;
-        case element_type_int:
-            int_element_block::swap_values(blk1, blk2, pos1, pos2, len);
+        case element_type_int32:
+            int32_element_block::swap_values(blk1, blk2, pos1, pos2, len);
         break;
-        case element_type_uint:
-            uint_element_block::swap_values(blk1, blk2, pos1, pos2, len);
+        case element_type_uint32:
+            uint32_element_block::swap_values(blk1, blk2, pos1, pos2, len);
         break;
         case element_type_long:
             long_element_block::swap_values(blk1, blk2, pos1, pos2, len);
@@ -595,10 +595,10 @@ bool element_block_func_base::equal_block(const base_element_block& left, const 
             return int16_element_block::get(left) == int16_element_block::get(right);
         case element_type_uint16:
             return uint16_element_block::get(left) == uint16_element_block::get(right);
-        case element_type_int:
-            return int_element_block::get(left) == int_element_block::get(right);
-        case element_type_uint:
-            return uint_element_block::get(left) == uint_element_block::get(right);
+        case element_type_int32:
+            return int32_element_block::get(left) == int32_element_block::get(right);
+        case element_type_uint32:
+            return uint32_element_block::get(left) == uint32_element_block::get(right);
         case element_type_long:
             return long_element_block::get(left) == long_element_block::get(right);
         case element_type_ulong:
@@ -636,11 +636,11 @@ void element_block_func_base::shrink_to_fit(base_element_block& block)
         case element_type_uint16:
             uint16_element_block::shrink_to_fit(block);
         break;
-        case element_type_int:
-            int_element_block::shrink_to_fit(block);
+        case element_type_int32:
+            int32_element_block::shrink_to_fit(block);
         break;
-        case element_type_uint:
-            uint_element_block::shrink_to_fit(block);
+        case element_type_uint32:
+            uint32_element_block::shrink_to_fit(block);
         break;
         case element_type_long:
             long_element_block::shrink_to_fit(block);
@@ -674,10 +674,10 @@ size_t element_block_func_base::size(const base_element_block& block)
             return int16_element_block::size(block);
         case element_type_uint16:
             return uint16_element_block::size(block);
-        case element_type_int:
-            return int_element_block::size(block);
-        case element_type_uint:
-            return uint_element_block::size(block);
+        case element_type_int32:
+            return int32_element_block::size(block);
+        case element_type_uint32:
+            return uint32_element_block::size(block);
         case element_type_long:
             return long_element_block::size(block);
         case element_type_ulong:

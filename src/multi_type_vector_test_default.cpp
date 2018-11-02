@@ -55,15 +55,15 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
 
 enum test_mtv_type {
-    _bool, _int16, _uint16, _int, _uint, _long, _ulong, _double, _string, _int8, _uint8
+    _bool, _int16, _uint16, _int32, _uint32, _long, _ulong, _double, _string, _int8, _uint8
 };
 
 #define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
 TEST_TYPE(bool,_bool)
 TEST_TYPE(int16_t,_int16)
 TEST_TYPE(uint16_t,_uint16)
-TEST_TYPE(int,_int)
-TEST_TYPE(unsigned int,_uint)
+TEST_TYPE(int32_t,_int32)
+TEST_TYPE(uint32_t,_uint32)
 TEST_TYPE(long,_long)
 TEST_TYPE(unsigned long,_ulong)
 TEST_TYPE(double,_double)
@@ -92,14 +92,14 @@ void mtv_test_types()
         cout << "uint16 is good" << endl;
     }
     {
-        int val = 0;
-        assert(test_type(val) == _int);
-        cout << "int is good" << endl;
+        int32_t val = 0;
+        assert(test_type(val) == _int32);
+        cout << "int32 is good" << endl;
     }
     {
-        unsigned int val = 0;
-        assert(test_type(val) == _uint);
-        cout << "unsigned int is good" << endl;
+        uint32_t val = 0;
+        assert(test_type(val) == _uint32);
+        cout << "uint32 is good" << endl;
     }
     {
         long val = 0;
@@ -731,8 +731,8 @@ void mtv_test_basic()
         assert(db.block_size() == 7);
         assert(db.get_type(0) == mtv::element_type_long);
         assert(db.get_type(1) == mtv::element_type_ulong);
-        assert(db.get_type(2) == mtv::element_type_int);
-        assert(db.get_type(3) == mtv::element_type_uint);
+        assert(db.get_type(2) == mtv::element_type_int32);
+        assert(db.get_type(3) == mtv::element_type_uint32);
         assert(db.get_type(4) == mtv::element_type_int16);
         assert(db.get_type(5) == mtv::element_type_uint16);
         assert(db.get_type(6) == mtv::element_type_boolean);
@@ -3521,7 +3521,7 @@ void mtv_test_set2_return_iterator()
     doubles.resize(4, 4.5);
     it = db.set(5, doubles.begin(), doubles.end()); // 5 thrugh 8.
     check = db.begin();
-    assert(check->type == mtv::element_type_int);
+    assert(check->type == mtv::element_type_int32);
     ++check;
     assert(check->type == mtv::element_type_boolean);
     ++check;
@@ -3552,7 +3552,7 @@ void mtv_test_set2_return_iterator()
     strings.resize(4, string("test"));
     it = db.set(4, strings.begin(), strings.end()); // Overwrite the lower part of the top block.
     check = db.begin();
-    assert(check->type == mtv::element_type_int);
+    assert(check->type == mtv::element_type_int32);
     ++check;
     assert(check->type == mtv::element_type_boolean);
     ++check;
@@ -3724,7 +3724,7 @@ void mtv_test_insert_cells_return_iterator()
     assert(it->type == mtv::element_type_string);
     assert(it->size == 1);
     ++it;
-    assert(it->type == mtv::element_type_int);
+    assert(it->type == mtv::element_type_int32);
     assert(it->size == 1);
     ++it;
     assert(it == db.end());
@@ -3742,7 +3742,7 @@ void mtv_test_insert_cells_return_iterator()
     assert(check->size == 1);
     ++check;
     assert(it == check);
-    assert(it->type == mtv::element_type_int);
+    assert(it->type == mtv::element_type_int32);
     assert(it->size == 3);
     ++it;
     assert(it->type == mtv::element_type_double);
@@ -4880,8 +4880,8 @@ void mtv_test_block_identifier()
     assert(mtv::string_element_block::block_type == mtv::element_type_string);
     assert(mtv::int16_element_block::block_type == mtv::element_type_int16);
     assert(mtv::uint16_element_block::block_type == mtv::element_type_uint16);
-    assert(mtv::int_element_block::block_type == mtv::element_type_int);
-    assert(mtv::uint_element_block::block_type == mtv::element_type_uint);
+    assert(mtv::int32_element_block::block_type == mtv::element_type_int32);
+    assert(mtv::uint32_element_block::block_type == mtv::element_type_uint32);
     assert(mtv::long_element_block::block_type == mtv::element_type_long);
     assert(mtv::ulong_element_block::block_type == mtv::element_type_ulong);
     assert(mtv::boolean_element_block::block_type == mtv::element_type_boolean);

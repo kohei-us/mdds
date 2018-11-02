@@ -78,8 +78,8 @@ void example1()
         switch (cell.type)
         {
             // In this example, we use two element types only.
-            case mdds::mtv::element_type_int:
-                std::cout << cell.get<mdds::mtv::int_element_block>();
+            case mdds::mtv::element_type_int32:
+                std::cout << cell.get<mdds::mtv::int32_element_block>();
                 break;
             case mdds::mtv::element_type_string:
                 std::cout << cell.get<mdds::mtv::string_element_block>();
@@ -107,8 +107,8 @@ void example1()
         switch (cell.type)
         {
             // In this example, we use two element types only.
-            case mdds::mtv::element_type_int:
-                std::cout << cell.get<mdds::mtv::int_element_block>();
+            case mdds::mtv::element_type_int32:
+                std::cout << cell.get<mdds::mtv::int32_element_block>();
                 break;
             case mdds::mtv::element_type_string:
                 std::cout << cell.get<mdds::mtv::string_element_block>();

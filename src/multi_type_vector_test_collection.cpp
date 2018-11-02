@@ -232,38 +232,38 @@ void mtv_test_sub_element_ranges()
     collection.set_element_range(1, 2);
 
     cols_type::const_iterator it = collection.begin();
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 1);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 1);
     assert(it->index == 0);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 4);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 4);
     assert(it->index == 1);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 7);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 7);
     assert(it->index == 2);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 2);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 2);
     assert(it->index == 0);
     assert(it->position == 2);
 
     ++it;
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 5);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 5);
     assert(it->index == 1);
     assert(it->position == 2);
 
     ++it;
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 8);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 8);
     assert(it->index == 2);
     assert(it->position == 2);
 
@@ -272,14 +272,14 @@ void mtv_test_sub_element_ranges()
     // Limit the collection range.
     collection.set_collection_range(1, 1);
     it = collection.begin();
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 4);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 4);
     assert(it->index == 1);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 5);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 5);
     assert(it->index == 1);
     assert(it->position == 2);
 
@@ -289,14 +289,14 @@ void mtv_test_sub_element_ranges()
     cols_type swapped;
     collection.swap(swapped);
     it = swapped.begin();
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 4);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 4);
     assert(it->index == 1);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int);
-    assert(it->get<mtv::int_element_block>() == 5);
+    assert(it->type == mtv::element_type_int32);
+    assert(it->get<mtv::int32_element_block>() == 5);
     assert(it->index == 1);
     assert(it->position == 2);
 
