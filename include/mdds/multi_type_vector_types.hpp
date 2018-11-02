@@ -25,14 +25,15 @@
  *
  ************************************************************************/
 
-#ifndef MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
-#define MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
+#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
+#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_TYPES_HPP
 
 #include "global.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <memory>
+#include <cstdint>
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
 #include <deque>
@@ -63,8 +64,8 @@ const element_t element_type_uint    = 5;
 const element_t element_type_long    = 6;
 const element_t element_type_ulong   = 7;
 const element_t element_type_boolean = 8;
-const element_t element_type_char    = 9;
-const element_t element_type_uchar   = 10;
+const element_t element_type_int8    = 9;
+const element_t element_type_uint8   = 10;
 
 const element_t element_type_user_start = 50;
 
@@ -659,8 +660,8 @@ typedef default_element_block<mtv::element_type_uint, unsigned int>     uint_ele
 typedef default_element_block<mtv::element_type_long, long>             long_element_block;
 typedef default_element_block<mtv::element_type_ulong, unsigned long>   ulong_element_block;
 typedef default_element_block<mtv::element_type_boolean, bool>          boolean_element_block;
-typedef default_element_block<mtv::element_type_char, char>             char_element_block;
-typedef default_element_block<mtv::element_type_uchar, unsigned char>   uchar_element_block;
+typedef default_element_block<mtv::element_type_int8, int8_t>           int8_element_block;
+typedef default_element_block<mtv::element_type_uint8, uint8_t>         uint8_element_block;
 
 }}
 

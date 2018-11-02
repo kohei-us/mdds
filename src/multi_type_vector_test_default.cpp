@@ -55,7 +55,7 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
 
 enum test_mtv_type {
-    _bool, _short, _ushort, _int, _uint, _long, _ulong, _double, _string, _char, _uchar
+    _bool, _short, _ushort, _int, _uint, _long, _ulong, _double, _string, _int8, _uint8
 };
 
 #define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
@@ -68,8 +68,8 @@ TEST_TYPE(long,_long)
 TEST_TYPE(unsigned long,_ulong)
 TEST_TYPE(double,_double)
 TEST_TYPE(string,_string)
-TEST_TYPE(char,_char)
-TEST_TYPE(unsigned char,_uchar)
+TEST_TYPE(int8_t, _int8)
+TEST_TYPE(uint8_t, _uint8)
 
 void mtv_test_types()
 {
@@ -122,13 +122,13 @@ void mtv_test_types()
         cout << "string is good" << endl;
     }
     {
-        char val = 0;
-        assert(test_type(val) == _char);
+        int8_t val = 0;
+        assert(test_type(val) == _int8);
         cout << "char is good" << endl;
     }
     {
-        unsigned char val = 0;
-        assert(test_type(val) == _uchar);
+        uint8_t val = 0;
+        assert(test_type(val) == _uint8);
         cout << "unsigned char is good" << endl;
     }
 }
@@ -769,24 +769,24 @@ void mtv_test_basic()
 
     {
         mtv_type db(10, false);
-        db.set<char>(0, 'a');
-        db.set<char>(1, 'b');
-        db.set<char>(2, 'c');
+        db.set<int8_t>(0, 'a');
+        db.set<int8_t>(1, 'b');
+        db.set<int8_t>(2, 'c');
 
-        db.set<unsigned char>(3, 'd');
-        db.set<unsigned char>(4, 'e');
-        db.set<unsigned char>(5, 'f');
+        db.set<uint8_t>(3, 'd');
+        db.set<uint8_t>(4, 'e');
+        db.set<uint8_t>(5, 'f');
 
         assert(db.block_size() == 3);
-        db.set<char>(0, 'r'); // overwrite.
-        db.set<unsigned char>(5, 'z'); // overwrite
+        db.set<int8_t>(0, 'r'); // overwrite.
+        db.set<uint8_t>(5, 'z'); // overwrite
 
         assert(db.block_size() == 3);
         mtv_type::const_iterator it = db.begin();
         assert(it != db.end());
-        assert(it->type == mtv::element_type_char);
+        assert(it->type == mtv::element_type_int8);
         {
-            const char* p = &mtv::char_element_block::at(*it->data, 0);
+            const int8_t* p = &mtv::int8_element_block::at(*it->data, 0);
             assert(*p == 'r');
             ++p;
             assert(*p == 'b');
@@ -796,9 +796,9 @@ void mtv_test_basic()
 
         ++it;
         assert(it != db.end());
-        assert(it->type == mtv::element_type_uchar);
+        assert(it->type == mtv::element_type_uint8);
         {
-            const unsigned char* p = mtv::uchar_element_block::data(*it->data);
+            const uint8_t* p = mtv::uint8_element_block::data(*it->data);
             assert(*p == 'd');
             ++p;
             assert(*p == 'e');
@@ -4632,24 +4632,24 @@ void mtv_test_swap_range()
 
     // Replace the middle of existing source block.
     db1 = mtv_type(5);
-    db1.set<char>(0, 'a');
-    db1.set<char>(1, 'b');
-    db1.set<char>(2, 'c');
-    db1.set<char>(3, 'd');
-    db1.set<char>(4, 'e');
+    db1.set<int8_t>(0, 'a');
+    db1.set<int8_t>(1, 'b');
+    db1.set<int8_t>(2, 'c');
+    db1.set<int8_t>(3, 'd');
+    db1.set<int8_t>(4, 'e');
     db2 = mtv_type(2);
     db2.set(0, 1.1);
     db2.set(1, -1.1);
     db1.swap(2, 3, db2, 0);
-    assert(db1.get<char>(0) == 'a');
-    assert(db1.get<char>(1) == 'b');
+    assert(db1.get<int8_t>(0) == 'a');
+    assert(db1.get<int8_t>(1) == 'b');
     assert(db1.get<double>(2) == 1.1);
     assert(db1.get<double>(3) == -1.1);
-    assert(db1.get<char>(4) == 'e');
+    assert(db1.get<int8_t>(4) == 'e');
     assert(db1.block_size() == 3);
 
-    assert(db2.get<char>(0) == 'c');
-    assert(db2.get<char>(1) == 'd');
+    assert(db2.get<int8_t>(0) == 'c');
+    assert(db2.get<int8_t>(1) == 'd');
     assert(db2.block_size() == 1);
 
     // Swap single empty block with multiple destination blocks.
@@ -4699,10 +4699,10 @@ void mtv_test_swap_range()
     db1 = mtv_type(2, short_val);
     db2 = mtv_type(2);
     db2.set(0, string("A"));
-    db2.set<char>(1, 'A');
+    db2.set<int8_t>(1, 'A');
     db1.swap(0, 1, db2, 0);
     assert(db1.get<string>(0) == "A");
-    assert(db1.get<char>(1) == 'A');
+    assert(db1.get<int8_t>(1) == 'A');
     assert(db2.get<short>(0) == short_val);
     assert(db2.get<short>(1) == short_val);
 
@@ -4710,14 +4710,14 @@ void mtv_test_swap_range()
     db1 = mtv_type(2, 3.14);
     db2 = mtv_type(3);
     db2.set(0, string("abc"));
-    db2.set<unsigned char>(1, 'z');
-    db2.set<unsigned char>(2, 'y');
+    db2.set<uint8_t>(1, 'z');
+    db2.set<uint8_t>(2, 'y');
     db1.swap(0, 1, db2, 0);
     assert(db1.get<string>(0) == "abc");
-    assert(db1.get<unsigned char>(1) == 'z');
+    assert(db1.get<uint8_t>(1) == 'z');
     assert(db2.get<double>(0) == 3.14);
     assert(db2.get<double>(1) == 3.14);
-    assert(db2.get<unsigned char>(2) == 'y');
+    assert(db2.get<uint8_t>(2) == 'y');
 
     // Another scenario.
     db1 = mtv_type(5);
@@ -4728,11 +4728,11 @@ void mtv_test_swap_range()
     db1.set<int>(4, 5);
     db2 = mtv_type(3);
     db2.set(0, 2.3);
-    db2.set<char>(1, 'B');
+    db2.set<int8_t>(1, 'B');
     db2.set<long>(2, 123);
     db1.swap(0, 2, db2, 0);
     assert(db1.get<double>(0) == 2.3);
-    assert(db1.get<char>(1) == 'B');
+    assert(db1.get<int8_t>(1) == 'B');
     assert(db1.get<long>(2) == 123);
     assert(db1.get<int>(3) == 4);
     assert(db1.get<int>(4) == 5);
@@ -4825,14 +4825,14 @@ void mtv_test_swap_range()
     db2 = mtv_type(10);
     for (int i = 0; i < 10; ++i)
         db2.set<int>(i, 10+i);
-    db2.set<char>(5, 'Z');
+    db2.set<int8_t>(5, 'Z');
     db1.swap(1, 7, db2, 2);
 
     assert(db1.get<int>(0) == 2);
     assert(db1.get<int>(1) == 12);
     assert(db1.get<int>(2) == 13);
     assert(db1.get<int>(3) == 14);
-    assert(db1.get<char>(4) == 'Z');
+    assert(db1.get<int8_t>(4) == 'Z');
     assert(db1.get<int>(5) == 16);
     assert(db1.get<int>(6) == 17);
     assert(db1.get<int>(7) == 18);
@@ -4885,8 +4885,8 @@ void mtv_test_block_identifier()
     assert(mtv::long_element_block::block_type == mtv::element_type_long);
     assert(mtv::ulong_element_block::block_type == mtv::element_type_ulong);
     assert(mtv::boolean_element_block::block_type == mtv::element_type_boolean);
-    assert(mtv::char_element_block::block_type == mtv::element_type_char);
-    assert(mtv::uchar_element_block::block_type == mtv::element_type_uchar);
+    assert(mtv::int8_element_block::block_type == mtv::element_type_int8);
+    assert(mtv::uint8_element_block::block_type == mtv::element_type_uint8);
 }
 
 void mtv_test_transfer()

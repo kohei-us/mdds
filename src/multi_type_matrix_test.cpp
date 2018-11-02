@@ -192,7 +192,7 @@ void mtm_test_construction()
         {
             // Trying to initialize a matrix with array of unsupported data
             // type should end with an exception thrown.
-            vector<char> vals_ptr(4, 22);
+            vector<int8_t> vals_ptr(4, 22);
             mtx_type mtx3(2, 2, vals_ptr.begin(), vals_ptr.end());
             assert(!"Construction of this matrix should have failed!");
         }
@@ -697,7 +697,7 @@ void mtm_test_copy_from_array()
     assert(mx.get<bool>(3, 0) == false);
 
     // Try to copy from an array of invalid type.
-    vector<char> src_invalid;
+    vector<int8_t> src_invalid;
     src_invalid.push_back('a');
     src_invalid.push_back('b');
 

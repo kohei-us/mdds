@@ -49,8 +49,8 @@ struct event_block_counter
     size_t block_count_long;
     size_t block_count_ulong;
     size_t block_count_boolean;
-    size_t block_count_char;
-    size_t block_count_uchar;
+    size_t block_count_int8;
+    size_t block_count_uint8;
 
     event_block_counter() :
         block_count(0),
@@ -63,8 +63,8 @@ struct event_block_counter
         block_count_long(0),
         block_count_ulong(0),
         block_count_boolean(0),
-        block_count_char(0),
-        block_count_uchar(0)
+        block_count_int8(0),
+        block_count_uint8(0)
     {}
 
     void element_block_acquired(const mtv::base_element_block* block)
@@ -100,11 +100,11 @@ struct event_block_counter
             case mtv::element_type_boolean:
                 ++block_count_boolean;
             break;
-            case mtv::element_type_char:
-                ++block_count_char;
+            case mtv::element_type_int8:
+                ++block_count_int8;
             break;
-            case mtv::element_type_uchar:
-                ++block_count_uchar;
+            case mtv::element_type_uint8:
+                ++block_count_uint8;
             break;
             default:
                 ;
@@ -144,11 +144,11 @@ struct event_block_counter
             case mtv::element_type_boolean:
                 --block_count_boolean;
             break;
-            case mtv::element_type_char:
-                --block_count_char;
+            case mtv::element_type_int8:
+                --block_count_int8;
             break;
-            case mtv::element_type_uchar:
-                --block_count_uchar;
+            case mtv::element_type_uint8:
+                --block_count_uint8;
             break;
             default:
                 ;
@@ -629,20 +629,20 @@ void mtv_test_block_counter()
     }
 
     {
-        mtv_type db(6, char('a'));
+        mtv_type db(6, int8_t('a'));
         db.set(2, 1.1);
         db.set(3, int(22));
         assert(db.event_handler().block_count == 4);
         assert(db.event_handler().block_count_int == 1);
         assert(db.event_handler().block_count_numeric == 1);
-        assert(db.event_handler().block_count_char == 2);
+        assert(db.event_handler().block_count_int8 == 2);
         db.erase(2, 3);
         assert(db.event_handler().block_count == 1);
-        assert(db.event_handler().block_count_char == 1);
+        assert(db.event_handler().block_count_int8 == 1);
     }
 
     {
-        mtv_type src(6, char('a')), dst(6);
+        mtv_type src(6, int8_t('a')), dst(6);
         assert(src.event_handler().block_count == 1);
         assert(dst.event_handler().block_count == 0);
         src.transfer(0, 2, dst, 0);
@@ -656,12 +656,12 @@ void mtv_test_block_counter()
 
     {
         mtv_type src(6), dst(6);
-        src.set(0, char('z'));
+        src.set(0, int8_t('z'));
         src.set(1, int(10));
         src.set(2, short(5));
         dst.set(3, 1.1);
         assert(src.event_handler().block_count == 3);
-        assert(src.event_handler().block_count_char == 1);
+        assert(src.event_handler().block_count_int8 == 1);
         assert(src.event_handler().block_count_int == 1);
         assert(src.event_handler().block_count_short == 1);
         assert(dst.event_handler().block_count == 1);
@@ -671,7 +671,7 @@ void mtv_test_block_counter()
         assert(src.event_handler().block_count == 0);
         assert(dst.event_handler().block_count == 4);
         assert(dst.event_handler().block_count_numeric == 1);
-        assert(dst.event_handler().block_count_char == 1);
+        assert(dst.event_handler().block_count_int8 == 1);
         assert(dst.event_handler().block_count_int == 1);
         assert(dst.event_handler().block_count_short == 1);
     }

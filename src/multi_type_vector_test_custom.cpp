@@ -1294,8 +1294,8 @@ void mtv_test_transfer()
     db2 = mtv_type(10);
     db1.set(0, new muser_cell(2.1));
     db1.set(1, new muser_cell(2.2));
-    db1.set(2, char('a'));
-    db1.set(3, char('b'));
+    db1.set(2, int8_t('a'));
+    db1.set(3, int8_t('b'));
     db2.set(0, true);
     db2.set(1, false);
 
@@ -1306,7 +1306,7 @@ void mtv_test_transfer()
     ++it;
     assert(it != db1.end());
     assert(it->size == 1);
-    assert(it->type == mtv::element_type_char);
+    assert(it->type == mtv::element_type_int8);
     ++it;
     assert(it != db1.end());
     assert(it->size == 6);
@@ -1314,7 +1314,7 @@ void mtv_test_transfer()
     ++it;
     assert(it == db1.end());
     assert(db1.block_size() == 3);
-    assert(db1.get<char>(3) == 'b');
+    assert(db1.get<int8_t>(3) == 'b');
 
     assert(db2.block_size() == 4);
     assert(db2.get<bool>(0) == true);
@@ -1326,7 +1326,7 @@ void mtv_test_transfer()
     assert(db2.is_empty(6));
     assert(db2.get<muser_cell*>(7)->value == 2.1);
     assert(db2.get<muser_cell*>(8)->value == 2.2);
-    assert(db2.get<char>(9) == 'a');
+    assert(db2.get<int8_t>(9) == 'a');
 
     // Multi-block transfer to the middle part of destination block.
     db1 = mtv_type(10);
