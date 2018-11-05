@@ -84,6 +84,8 @@ base_element_block* element_block_func_base::create_new_block(element_t type, si
 {
     switch (type)
     {
+        case element_type_float:
+            return float_element_block::create_block(init_size);
         case element_type_double:
             return double_element_block::create_block(init_size);
         case element_type_string:
@@ -115,6 +117,8 @@ base_element_block* element_block_func_base::clone_block(const base_element_bloc
 {
     switch (get_block_type(block))
     {
+        case element_type_float:
+            return float_element_block::clone_block(block);
         case element_type_double:
             return double_element_block::clone_block(block);
         case element_type_string:
@@ -149,39 +153,42 @@ void element_block_func_base::delete_block(const base_element_block* p)
 
     switch (get_block_type(*p))
     {
+        case element_type_float:
+            float_element_block::delete_block(p);
+            break;
         case element_type_double:
             double_element_block::delete_block(p);
-        break;
+            break;
         case element_type_string:
             string_element_block::delete_block(p);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::delete_block(p);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::delete_block(p);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::delete_block(p);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::delete_block(p);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::delete_block(p);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::delete_block(p);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::delete_block(p);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::delete_block(p);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::delete_block(p);
-        break;
+            break;
         default:
         {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -199,39 +206,42 @@ void element_block_func_base::resize_block(base_element_block& block, size_t new
 {
     switch (get_block_type(block))
     {
+        case element_type_float:
+            float_element_block::resize_block(block, new_size);
+            break;
         case element_type_double:
             double_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_string:
             string_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::resize_block(block, new_size);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::resize_block(block, new_size);
-        break;
+            break;
         default:
             throw general_error("resize_block: failed to resize a block of unknown type.");
     }
@@ -241,39 +251,42 @@ void element_block_func_base::print_block(const base_element_block& block)
 {
     switch (get_block_type(block))
     {
+        case element_type_float:
+            float_element_block::print_block(block);
+            break;
         case element_type_double:
             double_element_block::print_block(block);
-        break;
+            break;
         case element_type_string:
             string_element_block::print_block(block);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::print_block(block);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::print_block(block);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::print_block(block);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::print_block(block);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::print_block(block);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::print_block(block);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::print_block(block);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::print_block(block);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::print_block(block);
-        break;
+            break;
         default:
             throw general_error("print_block: failed to print a block of unknown type.");
     }
@@ -283,39 +296,42 @@ void element_block_func_base::erase(base_element_block& block, size_t pos)
 {
     switch (get_block_type(block))
     {
+        case element_type_float:
+            float_element_block::erase_block(block, pos);
+            break;
         case element_type_double:
             double_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_string:
             string_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::erase_block(block, pos);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::erase_block(block, pos);
-        break;
+            break;
         default:
             throw general_error("erase: failed to erase an element from a block of unknown type.");
     }
@@ -325,39 +341,42 @@ void element_block_func_base::erase(base_element_block& block, size_t pos, size_
 {
     switch (get_block_type(block))
     {
+        case element_type_float:
+            float_element_block::erase_block(block, pos, size);
+            break;
         case element_type_double:
             double_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_string:
             string_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::erase_block(block, pos, size);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::erase_block(block, pos, size);
-        break;
+            break;
         default:
             throw general_error("erase: failed to erase elements from a block of unknown type.");
     }
@@ -367,39 +386,42 @@ void element_block_func_base::append_values_from_block(base_element_block& dest,
 {
     switch (get_block_type(dest))
     {
+        case element_type_float:
+            float_element_block::append_values_from_block(dest, src);
+            break;
         case element_type_double:
             double_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_string:
             string_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::append_values_from_block(dest, src);
-        break;
+            break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");
     }
@@ -410,39 +432,42 @@ void element_block_func_base::append_values_from_block(
 {
     switch (get_block_type(dest))
     {
+        case element_type_float:
+            float_element_block::append_values_from_block(dest, src, begin_pos, len);
+            break;
         case element_type_double:
             double_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_string:
             string_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::append_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");
     }
@@ -453,39 +478,42 @@ void element_block_func_base::assign_values_from_block(
 {
     switch (get_block_type(dest))
     {
+        case element_type_float:
+            float_element_block::assign_values_from_block(dest, src, begin_pos, len);
+            break;
         case element_type_double:
             double_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_string:
             string_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::assign_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         default:
             throw general_error("assign_values_from_block: failed to assign values to a block of unknown type.");
     }
@@ -496,39 +524,42 @@ void element_block_func_base::prepend_values_from_block(
 {
     switch (get_block_type(dest))
     {
+        case element_type_float:
+            float_element_block::prepend_values_from_block(dest, src, begin_pos, len);
+            break;
         case element_type_double:
             double_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_string:
             string_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::prepend_values_from_block(dest, src, begin_pos, len);
-        break;
+            break;
         default:
             throw general_error("prepend_values_from_block: failed to prepend values to a block of unknown type.");
     }
@@ -539,41 +570,45 @@ void element_block_func_base::swap_values(
 {
     element_t blk1_type = get_block_type(blk1);
     assert(blk1_type == get_block_type(blk2));
+
     switch (blk1_type)
     {
+        case element_type_float:
+            float_element_block::swap_values(blk1, blk2, pos1, pos2, len);
+            break;
         case element_type_double:
             double_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_string:
             string_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::swap_values(blk1, blk2, pos1, pos2, len);
-        break;
+            break;
         default:
             throw general_error("swap_values: block of unknown type.");
     }
@@ -587,6 +622,8 @@ bool element_block_func_base::equal_block(const base_element_block& left, const 
 
     switch (block_type)
     {
+        case element_type_float:
+            return float_element_block::get(left) == float_element_block::get(right);
         case element_type_double:
             return double_element_block::get(left) == double_element_block::get(right);
         case element_type_string:
@@ -624,39 +661,42 @@ void element_block_func_base::shrink_to_fit(base_element_block& block)
 {
     switch (get_block_type(block))
     {
+        case element_type_float:
+            float_element_block::shrink_to_fit(block);
+            break;
         case element_type_double:
             double_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_string:
             string_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_int16:
             int16_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_uint16:
             uint16_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_int32:
             int32_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_uint32:
             uint32_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_int64:
             int64_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_uint64:
             uint64_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_boolean:
             boolean_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_int8:
             int8_element_block::shrink_to_fit(block);
-        break;
+            break;
         case element_type_uint8:
             uint8_element_block::shrink_to_fit(block);
-        break;
+            break;
         default:
             throw general_error("shrink_to_fit: failed to print a block of unknown type.");
     }
@@ -666,6 +706,8 @@ size_t element_block_func_base::size(const base_element_block& block)
 {
     switch (get_block_type(block))
     {
+        case element_type_float:
+            return float_element_block::size(block);
         case element_type_double:
             return double_element_block::size(block);
         case element_type_string:

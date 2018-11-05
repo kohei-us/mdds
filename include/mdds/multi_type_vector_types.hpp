@@ -55,17 +55,18 @@ using element_t = int;
 
 constexpr element_t element_type_empty = -1;
 
-constexpr element_t element_type_double  = 0;
-constexpr element_t element_type_string  = 1;
-constexpr element_t element_type_int16   = 2;
-constexpr element_t element_type_uint16  = 3;
-constexpr element_t element_type_int32   = 4;
-constexpr element_t element_type_uint32  = 5;
-constexpr element_t element_type_int64   = 6;
-constexpr element_t element_type_uint64  = 7;
-constexpr element_t element_type_boolean = 8;
-constexpr element_t element_type_int8    = 9;
-constexpr element_t element_type_uint8   = 10;
+constexpr element_t element_type_boolean = 0;
+constexpr element_t element_type_int8    = 1;
+constexpr element_t element_type_uint8   = 2;
+constexpr element_t element_type_int16   = 3;
+constexpr element_t element_type_uint16  = 4;
+constexpr element_t element_type_int32   = 5;
+constexpr element_t element_type_uint32  = 6;
+constexpr element_t element_type_int64   = 7;
+constexpr element_t element_type_uint64  = 8;
+constexpr element_t element_type_float   = 9;
+constexpr element_t element_type_double  = 10;
+constexpr element_t element_type_string  = 11;
 
 constexpr element_t element_type_user_start = 50;
 
@@ -651,17 +652,18 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
     }
 };
 
-typedef default_element_block<mtv::element_type_double, double>         double_element_block;
-typedef default_element_block<mtv::element_type_string, std::string>    string_element_block;
-typedef default_element_block<mtv::element_type_int16, int16_t>         int16_element_block;
-typedef default_element_block<mtv::element_type_uint16, uint16_t>       uint16_element_block;
-typedef default_element_block<mtv::element_type_int32, int32_t>         int32_element_block;
-typedef default_element_block<mtv::element_type_uint32, uint32_t>       uint32_element_block;
-typedef default_element_block<mtv::element_type_int64, int64_t>         int64_element_block;
-typedef default_element_block<mtv::element_type_uint64, uint64_t>       uint64_element_block;
-typedef default_element_block<mtv::element_type_boolean, bool>          boolean_element_block;
-typedef default_element_block<mtv::element_type_int8, int8_t>           int8_element_block;
-typedef default_element_block<mtv::element_type_uint8, uint8_t>         uint8_element_block;
+using boolean_element_block = default_element_block<mtv::element_type_boolean, bool>;
+using int8_element_block    = default_element_block<mtv::element_type_int8,    int8_t>;
+using uint8_element_block   = default_element_block<mtv::element_type_uint8,   uint8_t>;
+using int16_element_block   = default_element_block<mtv::element_type_int16,   int16_t>;
+using uint16_element_block  = default_element_block<mtv::element_type_uint16,  uint16_t>;
+using int32_element_block   = default_element_block<mtv::element_type_int32,   int32_t>;
+using uint32_element_block  = default_element_block<mtv::element_type_uint32,  uint32_t>;
+using int64_element_block   = default_element_block<mtv::element_type_int64,   int64_t>;
+using uint64_element_block  = default_element_block<mtv::element_type_uint64,  uint64_t>;
+using float_element_block   = default_element_block<mtv::element_type_float,   float>;
+using double_element_block  = default_element_block<mtv::element_type_double,  double>;
+using string_element_block  = default_element_block<mtv::element_type_string,  std::string>;
 
 }}
 

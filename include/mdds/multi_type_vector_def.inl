@@ -89,17 +89,18 @@ T advance_position(const T& pos, int steps)
 
 }}
 
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_double, 0.0, mtv::double_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, mtv::element_type_string, std::string(), mtv::string_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int8_t, mtv::element_type_int8, 0, mtv::int8_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint8_t, mtv::element_type_uint8, 0, mtv::uint8_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int16_t, mtv::element_type_int16, 0, mtv::int16_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint16_t, mtv::element_type_uint16, 0, mtv::uint16_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int, mtv::element_type_int32, 0, mtv::int32_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned int, mtv::element_type_uint32, 0, mtv::uint32_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(long, mtv::element_type_int64, 0, mtv::int64_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(unsigned long, mtv::element_type_uint64, 0, mtv::uint64_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int8_t, mtv::element_type_int8, 0, mtv::int8_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint8_t, mtv::element_type_uint8, 0, mtv::uint8_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(float, mtv::element_type_float, 0.0, mtv::float_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mtv::element_type_double, 0.0, mtv::double_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, mtv::element_type_string, std::string(), mtv::string_element_block)
 
 template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::block::block() : m_size(0), mp_data(nullptr) {}

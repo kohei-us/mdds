@@ -55,21 +55,22 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
 
 enum test_mtv_type {
-    _bool, _int16, _uint16, _int32, _uint32, _int64, _uint64, _double, _string, _int8, _uint8
+    _bool, _int8, _uint8, _int16, _uint16, _int32, _uint32, _int64, _uint64, _float, _double, _string,
 };
 
 #define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
 TEST_TYPE(bool,_bool)
+TEST_TYPE(int8_t, _int8)
+TEST_TYPE(uint8_t, _uint8)
 TEST_TYPE(int16_t,_int16)
 TEST_TYPE(uint16_t,_uint16)
 TEST_TYPE(int32_t,_int32)
 TEST_TYPE(uint32_t,_uint32)
 TEST_TYPE(int64_t,_int64)
 TEST_TYPE(uint64_t,_uint64)
+TEST_TYPE(float,_float)
 TEST_TYPE(double,_double)
 TEST_TYPE(string,_string)
-TEST_TYPE(int8_t, _int8)
-TEST_TYPE(uint8_t, _uint8)
 
 void mtv_test_types()
 {
@@ -110,6 +111,11 @@ void mtv_test_types()
         uint64_t val = 0;
         assert(test_type(val) == _uint64);
         cout << "uint64 is good" << endl;
+    }
+    {
+        float val = 0;
+        assert(test_type(val) == _float);
+        cout << "float is good" << endl;
     }
     {
         double val = 0;
@@ -806,6 +812,35 @@ void mtv_test_basic()
             assert(*p == 'z');
         }
     }
+}
+
+/**
+ * Ensure that float and double types are treated as different types.
+ */
+void mtv_test_basic_numeric()
+{
+    stack_printer __stack_printer__("::mtv_test_basic_numeric");
+
+    mtv_type db;
+
+    db.push_back<double>(0.0);
+    db.push_back<double>(1.0);
+    db.push_back<double>(2.0);
+
+    assert(db.size() == 3);
+    assert(db.block_size() == 1);
+
+    db.set<float>(1, 4.0f);
+    assert(db.size() == 3);
+    assert(db.block_size() == 3);
+
+    db.set<float>(0, 3.5f);
+    assert(db.size() == 3);
+    assert(db.block_size() == 2);
+
+    db.set<float>(2, 4.5f);
+    assert(db.size() == 3);
+    assert(db.block_size() == 1);
 }
 
 void mtv_test_empty_cells()
@@ -5230,6 +5265,7 @@ int main (int argc, char **argv)
         mtv_test_types();
         mtv_test_construction();
         mtv_test_basic();
+        mtv_test_basic_numeric();
         mtv_test_empty_cells();
         mtv_test_swap();
         mtv_test_equality();
