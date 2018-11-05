@@ -49,7 +49,7 @@ void run_no_position_hint()
 {
     stack_printer __stack_printer__("::run_no_position_hint");
 
-    typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
     size_t size = 50000;
 
@@ -68,7 +68,7 @@ void run_with_position_hint()
 {
     stack_printer __stack_printer__("::run_with_position_hint");
 
-    typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
     size_t size = 50000;
 

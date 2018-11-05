@@ -11,81 +11,79 @@ and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds
 
 ::
 
-   #include <mdds/multi_type_vector.hpp>
-   #include <mdds/multi_type_vector_trait.hpp>
-   #include <iostream>
-   #include <vector>
-   #include <string>
+    #include <mdds/multi_type_vector.hpp>
+    #include <mdds/multi_type_vector_trait.hpp>
+    #include <iostream>
+    #include <vector>
+    #include <string>
 
-   using std::cout;
-   using std::endl;
+    using std::cout;
+    using std::endl;
 
-   typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
-   template<typename _Blk>
-   void print_block(const mtv_type::value_type& v)
-   {
-       // Each element block has static begin() and end() methods that return
-       // begin and end iterators, respectively, from the passed element block
-       // instance.
-       auto it = _Blk::begin(*v.data);
-       auto it_end = _Blk::end(*v.data);
+    template<typename _Blk>
+    void print_block(const mtv_type::value_type& v)
+    {
+        // Each element block has static begin() and end() methods that return
+        // begin and end iterators, respectively, from the passed element block
+        // instance.
+        auto it = _Blk::begin(*v.data);
+        auto it_end = _Blk::end(*v.data);
 
-       std::for_each(it, it_end,
-           [](const typename _Blk::value_type& elem)
-           {
-               cout << " * " << elem << endl;
-           }
-       );
-   }
+        std::for_each(it, it_end,
+            [](const typename _Blk::value_type& elem)
+            {
+                cout << " * " << elem << endl;
+            }
+        );
+    }
 
-   int main()
-   {
-       mtv_type con(20); // Initialized with 20 empty elements.
+    int main()
+    {
+        mtv_type con(20); // Initialized with 20 empty elements.
 
-       // Set values individually.
-       con.set(0, 1.1);
-       con.set(1, 1.2);
-       con.set(2, 1.3);
+        // Set values individually.
+        con.set(0, 1.1);
+        con.set(1, 1.2);
+        con.set(2, 1.3);
 
-       // Set a sequence of values in one step.
-       std::vector<double> vals = { 10.1, 10.2, 10.3, 10.4, 10.5 };
-       con.set(3, vals.begin(), vals.end());
+        // Set a sequence of values in one step.
+        std::vector<double> vals = { 10.1, 10.2, 10.3, 10.4, 10.5 };
+        con.set(3, vals.begin(), vals.end());
 
-       // Set string values.
-       con.set(10, std::string("Andy"));
-       con.set(11, std::string("Bruce"));
-       con.set(12, std::string("Charlie"));
+        // Set string values.
+        con.set(10, std::string("Andy"));
+        con.set(11, std::string("Bruce"));
+        con.set(12, std::string("Charlie"));
 
-       // Iterate through all blocks and print all elements.
-       std::for_each(con.begin(), con.end(),
-           [](const mtv_type::value_type& v)
-           {
-               switch (v.type)
-               {
-                   case mdds::mtv::element_type_numeric:
-                   {
-                       cout << "numeric block of size " << v.size << endl;
-                       print_block<mdds::mtv::numeric_element_block>(v);
-                   }
-                   break;
-                   case mdds::mtv::element_type_string:
-                   {
-                       cout << "string block of size " << v.size << endl;
-                       print_block<mdds::mtv::string_element_block>(v);
-                   }
-                   break;
-                   case mdds::mtv::element_type_empty:
-                       cout << "empty block of size " << v.size << endl;
-                       cout << " - no data - " << endl;
-                   default:
-                       ;
-               }
-           }
-       );
+        // Iterate through all blocks and print all elements.
+        for (const mtv_type::value_type& v : con)
+        {
+            switch (v.type)
+            {
+                case mdds::mtv::element_type_double:
+                {
+                    cout << "numeric block of size " << v.size << endl;
+                    print_block<mdds::mtv::double_element_block>(v);
+                    break;
+                }
+                case mdds::mtv::element_type_string:
+                {
+                    cout << "string block of size " << v.size << endl;
+                    print_block<mdds::mtv::string_element_block>(v);
+                    break;
+                }
+                case mdds::mtv::element_type_empty:
+                    cout << "empty block of size " << v.size << endl;
+                    cout << " - no data - " << endl;
+                default:
+                    ;
+            }
+        }
 
-       return EXIT_SUCCESS;
-   }
+        return EXIT_SUCCESS;
+    }
 
 You'll see the following console output when you compile and execute this code:
 
@@ -140,48 +138,48 @@ event handler method gets triggered.
 
 The following code example demonstrates how this all works::
 
-   #include <mdds/multi_type_vector.hpp>
-   #include <mdds/multi_type_vector_trait.hpp>
-   #include <iostream>
+    #include <mdds/multi_type_vector.hpp>
+    #include <mdds/multi_type_vector_trait.hpp>
+    #include <iostream>
 
-   using namespace std;
+    using namespace std;
 
-   class event_hdl
-   {
-   public:
-       void element_block_acquired(mdds::mtv::base_element_block* block)
-       {
-           cout << "  * element block acquired" << endl;
-       }
+    class event_hdl
+    {
+    public:
+        void element_block_acquired(mdds::mtv::base_element_block* block)
+        {
+            cout << "  * element block acquired" << endl;
+        }
 
-       void element_block_released(mdds::mtv::base_element_block* block)
-       {
-           cout << "  * element block released" << endl;
-       }
-   };
+        void element_block_released(mdds::mtv::base_element_block* block)
+        {
+            cout << "  * element block released" << endl;
+        }
+    };
 
-   typedef mdds::multi_type_vector<mdds::mtv::element_block_func, event_hdl> mtv_type;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, event_hdl>;
 
-   int main()
-   {
-       mtv_type db;  // starts with an empty container.
+    int main()
+    {
+        mtv_type db;  // starts with an empty container.
 
-       cout << "inserting string 'foo'..." << endl;
-       db.push_back(string("foo"));  // creates a new string element block.
+        cout << "inserting string 'foo'..." << endl;
+        db.push_back(string("foo"));  // creates a new string element block.
 
-       cout << "inserting string 'bah'..." << endl;
-       db.push_back(string("bah"));  // appends to an existing string block.
+        cout << "inserting string 'bah'..." << endl;
+        db.push_back(string("bah"));  // appends to an existing string block.
 
-       cout << "inserting int 100..." << endl;
-       db.push_back(int(100)); // creates a new int element block.
+        cout << "inserting int 100..." << endl;
+        db.push_back(int(100)); // creates a new int element block.
 
-       cout << "emptying the container..." << endl;
-       db.clear(); // releases both the string and int element blocks.
+        cout << "emptying the container..." << endl;
+        db.clear(); // releases both the string and int element blocks.
 
-       cout << "exiting program..." << endl;
+        cout << "exiting program..." << endl;
 
-       return EXIT_SUCCESS;
-   }
+        return EXIT_SUCCESS;
+    }
 
 You'll see the following console output when you compile and execute this code:
 
@@ -211,14 +209,15 @@ event handlers.
 Get raw pointer to element block array
 --------------------------------------
 
-Sometimes you need to expose a pointer to an element block array especially
-when you need to pass such an array pointer to C API that requires one.  You
-can do this by calling the ``at`` method of the element_block template class
-and taking the memory address of the reference returned by the method.  This
-works since the element block internally just wraps :cpp:class:`std::vector`
-(or :cpp:class:`std::deque` in case the ``MDDS_MULTI_TYPE_VECTOR_USE_DEQUE``
-preprocessing macro is defined), and its ``at`` method simply exposes vector's
-own ``at`` method which returns a reference to an element within it.
+Sometimes you need to expose a pointer to an element block array
+especially when you need to pass such an array pointer to C API that
+requires one.  You can do this by calling the ``data`` method of the
+element_block template class .  This works since the element block
+internally just wraps :cpp:class:`std::vector` (or
+:cpp:class:`std::deque` in case the ``MDDS_MULTI_TYPE_VECTOR_USE_DEQUE``
+preprocessing macro is defined), and its ``data`` method simply exposes
+vector's own ``data`` method which returns the memory location of its
+internal array storage.
 
 The following code demonstrates this by exposing raw array pointers to the
 internal arrays of numeric and string element blocks, and printing their
@@ -226,60 +225,60 @@ element values directly from these array pointers.
 
 ::
 
-   #include <mdds/multi_type_vector.hpp>
-   #include <mdds/multi_type_vector_trait.hpp>
-   #include <iostream>
+    #include <mdds/multi_type_vector.hpp>
+    #include <mdds/multi_type_vector_trait.hpp>
+    #include <iostream>
 
-   using namespace std;
-   using mdds::mtv::numeric_element_block;
-   using mdds::mtv::string_element_block;
+    using namespace std;
+    using mdds::mtv::double_element_block;
+    using mdds::mtv::string_element_block;
 
-   typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
-   int main()
-   {
-       mtv_type db;  // starts with an empty container.
+    int main()
+    {
+        mtv_type db;  // starts with an empty container.
 
-       db.push_back(1.1);
-       db.push_back(1.2);
-       db.push_back(1.3);
-       db.push_back(1.4);
-       db.push_back(1.5);
+        db.push_back(1.1);
+        db.push_back(1.2);
+        db.push_back(1.3);
+        db.push_back(1.4);
+        db.push_back(1.5);
 
-       db.push_back(string("A"));
-       db.push_back(string("B"));
-       db.push_back(string("C"));
-       db.push_back(string("D"));
-       db.push_back(string("E"));
+        db.push_back(string("A"));
+        db.push_back(string("B"));
+        db.push_back(string("C"));
+        db.push_back(string("D"));
+        db.push_back(string("E"));
 
-       // At this point, you have 2 blocks in the container.
-       cout << "block size: " << db.block_size() << endl;
-       cout << "--" << endl;
+        // At this point, you have 2 blocks in the container.
+        cout << "block size: " << db.block_size() << endl;
+        cout << "--" << endl;
 
-       // Get an iterator that points to the first block in the primary array.
-       mtv_type::const_iterator it = db.begin();
+        // Get an iterator that points to the first block in the primary array.
+        mtv_type::const_iterator it = db.begin();
 
-       // Get a pointer to the raw array of the numeric element block using the
-       // 'at' method and taking the address of the returned reference.
-       const double* p = &numeric_element_block::at(*it->data, 0);
+        // Get a pointer to the raw array of the numeric element block using the
+        // 'data' method.
+        const double* p = double_element_block::data(*it->data);
 
-       // Print the elements from this raw array pointer.
-       for (const double* p_end = p + it->size; p != p_end; ++p)
-           cout << *p << endl;
+        // Print the elements from this raw array pointer.
+        for (const double* p_end = p + it->size; p != p_end; ++p)
+            cout << *p << endl;
 
-       cout << "--" << endl;
+        cout << "--" << endl;
 
-       ++it; // move to the next block, which is a string block.
+        ++it; // move to the next block, which is a string block.
 
-       // Get a pointer to the raw array of the string element block.
-       const string* pz = &string_element_block::at(*it->data, 0);
+        // Get a pointer to the raw array of the string element block.
+        const string* pz = string_element_block::data(*it->data);
 
-       // Print out the string elements.
-       for (const string* pz_end = pz + it->size; pz != pz_end; ++pz)
-           cout << *pz << endl;
+        // Print out the string elements.
+        for (const string* pz_end = pz + it->size; pz != pz_end; ++pz)
+            cout << *pz << endl;
 
-       return EXIT_SUCCESS;
-   }
+        return EXIT_SUCCESS;
+    }
 
 Compiling and execute this code produces the following output:
 
@@ -388,13 +387,13 @@ value of "unknown" in lieu of an integer value of -1.  Therefore the following
 code will do::
 
     // Fill column 4.  Replace -1 with "unknown".
-    auto c4_values =
+    std::initializer_list<int32_t> c4_values =
     {
         1998, 1986, 2009, -1, -1, 2008, 2009, 2008, 2010, 2001,
         2008, 2000, -1, 2009, 1998, 2013, 1994, 2000, 1990, 1993,
     };
 
-    for (int v : c4_values)
+    for (int32_t v : c4_values)
     {
         if (v < 0)
             // Insert a string value "unknown".
@@ -465,8 +464,8 @@ Finally, here is the code that does the traversing::
         switch (cell.type)
         {
             // In this example, we use two element types only.
-            case mdds::mtv::element_type_int:
-                std::cout << cell.get<mdds::mtv::int_element_block>();
+            case mdds::mtv::element_type_int32:
+                std::cout << cell.get<mdds::mtv::int32_element_block>();
                 break;
             case mdds::mtv::element_type_string:
                 std::cout << cell.get<mdds::mtv::string_element_block>();
@@ -552,8 +551,8 @@ Then iterate through the collection once again::
         switch (cell.type)
         {
             // In this example, we use two element types only.
-            case mdds::mtv::element_type_int:
-                std::cout << cell.get<mdds::mtv::int_element_block>();
+            case mdds::mtv::element_type_int32:
+                std::cout << cell.get<mdds::mtv::int32_element_block>();
                 break;
             case mdds::mtv::element_type_string:
                 std::cout << cell.get<mdds::mtv::string_element_block>();
@@ -596,19 +595,19 @@ Use of position hint to avoid expensive block position lookup
 
 Consider the following example code::
 
-   typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
-   size_t size = 50000;
+    size_t size = 50000;
 
-   // Initialize the container with one empty block of size 50000.
-   mtv_type db(size);
+    // Initialize the container with one empty block of size 50000.
+    mtv_type db(size);
 
-   // Set non-empty value at every other logical position from top down.
-   for (size_t i = 0; i < size; ++i)
-   {
-       if (i % 2)
-           db.set<double>(i, 1.0);
-   }
+    // Set non-empty value at every other logical position from top down.
+    for (size_t i = 0; i < size; ++i)
+    {
+        if (i % 2)
+            db.set<double>(i, 1.0);
+    }
 
 which, when executed, takes quite sometime to complete.  This particular example
 exposes one weakness that multi_type_vector has; because it needs to first
@@ -621,22 +620,22 @@ value at the last block position.
 Fortunately, there is a simple solution to this which the following code
 demonstrates::
 
-   typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
-   size_t size = 50000;
+    size_t size = 50000;
 
-   // Initialize the container with one empty block of size 50000.
-   mtv_type db(size);
-   mtv_type::iterator pos = db.begin();
+    // Initialize the container with one empty block of size 50000.
+    mtv_type db(size);
+    mtv_type::iterator pos = db.begin();
 
-   // Set non-empty value at every other logical position from top down.
-   for (size_t i = 0; i < size; ++i)
-   {
-       if (i % 2)
-           // Pass the position hint as the first argument, and receive a new
-           // one returned from the method for the next call.
-           pos = db.set<double>(pos, i, 1.0);
-   }
+    // Set non-empty value at every other logical position from top down.
+    for (size_t i = 0; i < size; ++i)
+    {
+        if (i % 2)
+            // Pass the position hint as the first argument, and receive a new
+            // one returned from the method for the next call.
+            pos = db.set<double>(pos, i, 1.0);
+    }
 
 Compiling and executing this code should take only a fraction of a second.
 

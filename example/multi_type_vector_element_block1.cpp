@@ -7,7 +7,7 @@ using namespace std;
 using mdds::mtv::double_element_block;
 using mdds::mtv::string_element_block;
 
-typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
 int main()
 {
@@ -33,8 +33,8 @@ int main()
     mtv_type::const_iterator it = db.begin();
 
     // Get a pointer to the raw array of the numeric element block using the
-    // 'at' method and taking the address of the returned reference.
-    const double* p = &double_element_block::at(*it->data, 0);
+    // 'data' method.
+    const double* p = double_element_block::data(*it->data);
 
     // Print the elements from this raw array pointer.
     for (const double* p_end = p + it->size; p != p_end; ++p)
@@ -45,7 +45,7 @@ int main()
     ++it; // move to the next block, which is a string block.
 
     // Get a pointer to the raw array of the string element block.
-    const string* pz = &string_element_block::at(*it->data, 0);
+    const string* pz = string_element_block::data(*it->data);
 
     // Print out the string elements.
     for (const string* pz_end = pz + it->size; pz != pz_end; ++pz)

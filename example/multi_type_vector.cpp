@@ -8,7 +8,7 @@
 using std::cout;
 using std::endl;
 
-typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
 template<typename _Blk>
 void print_block(const mtv_type::value_type& v)
@@ -46,31 +46,29 @@ int main()
     con.set(12, std::string("Charlie"));
 
     // Iterate through all blocks and print all elements.
-    std::for_each(con.begin(), con.end(),
-        [](const mtv_type::value_type& v)
+    for (const mtv_type::value_type& v : con)
+    {
+        switch (v.type)
         {
-            switch (v.type)
+            case mdds::mtv::element_type_double:
             {
-                case mdds::mtv::element_type_double:
-                {
-                    cout << "numeric block of size " << v.size << endl;
-                    print_block<mdds::mtv::double_element_block>(v);
-                }
+                cout << "numeric block of size " << v.size << endl;
+                print_block<mdds::mtv::double_element_block>(v);
                 break;
-                case mdds::mtv::element_type_string:
-                {
-                    cout << "string block of size " << v.size << endl;
-                    print_block<mdds::mtv::string_element_block>(v);
-                }
-                break;
-                case mdds::mtv::element_type_empty:
-                    cout << "empty block of size " << v.size << endl;
-                    cout << " - no data - " << endl;
-                default:
-                    ;
             }
+            case mdds::mtv::element_type_string:
+            {
+                cout << "string block of size " << v.size << endl;
+                print_block<mdds::mtv::string_element_block>(v);
+                break;
+            }
+            case mdds::mtv::element_type_empty:
+                cout << "empty block of size " << v.size << endl;
+                cout << " - no data - " << endl;
+            default:
+                ;
         }
-    );
+    }
 
     return EXIT_SUCCESS;
 }

@@ -19,7 +19,7 @@ public:
     }
 };
 
-typedef mdds::multi_type_vector<mdds::mtv::element_block_func, event_hdl> mtv_type;
+using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, event_hdl>;
 
 int main()
 {

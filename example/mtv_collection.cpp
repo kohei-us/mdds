@@ -41,13 +41,13 @@ void example1()
     std::for_each(c3_values.begin(), c3_values.end(), [&columns](const char* v) { columns[2].push_back<std::string>(v); });
 
     // Fill column 4.  Replace -1 with "unknown".
-    auto c4_values =
+    std::initializer_list<int32_t> c4_values =
     {
         1998, 1986, 2009, -1, -1, 2008, 2009, 2008, 2010, 2001,
         2008, 2000, -1, 2009, 1998, 2013, 1994, 2000, 1990, 1993,
     };
 
-    for (int v : c4_values)
+    for (int32_t v : c4_values)
     {
         if (v < 0)
             // Insert a string value "unknown".
