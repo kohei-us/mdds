@@ -4287,6 +4287,8 @@ void mtv_test_next_position()
     db.set(4, string("A"));
     db.set(5, string("B"));
     db.set(6, string("C"));
+    db.set(7, true);
+    db.set(8, false);
 
     mtv_type::position_type pos = db.position(0);
     assert(mtv_type::logical_position(pos) == 0);
@@ -4323,11 +4325,13 @@ void mtv_test_next_position()
 
     pos = mtv_type::next_position(pos);
     assert(mtv_type::logical_position(pos) == 7);
-    assert(pos.first->type == mtv::element_type_empty);
+    assert(pos.first->type == mtv::element_type_boolean);
+    assert(mtv_type::get<mtv::boolean_element_block>(pos) == true);
 
     pos = mtv_type::next_position(pos);
     assert(mtv_type::logical_position(pos) == 8);
-    assert(pos.first->type == mtv::element_type_empty);
+    assert(pos.first->type == mtv::element_type_boolean);
+    assert(mtv_type::get<mtv::boolean_element_block>(pos) == false);
 
     pos = mtv_type::next_position(pos);
     assert(mtv_type::logical_position(pos) == 9);

@@ -1,3 +1,9 @@
+* multi_type_vector
+
+  * fixed the static get(const const_position_type& pos) method for the
+    boolean_element_block, by adding specialization for it to work around the
+    issue with std::vector<bool> not having the at() method.
+
 mdds 1.4.3
 
 * documentation

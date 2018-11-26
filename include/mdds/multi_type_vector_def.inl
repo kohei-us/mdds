@@ -87,7 +87,25 @@ T advance_position(const T& pos, int steps)
     return ret;
 }
 
-}}
+template<typename _Blk>
+typename _Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
+{
+    return _Blk::at(data, offset);
+}
+
+#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
+
+template<>
+bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::mtv::base_element_block& data, size_t offset)
+{
+    auto it = mdds::mtv::boolean_element_block::cbegin(data);
+    std::advance(it, offset);
+    return *it;
+}
+
+#endif
+
+}} // namespace detail::mtv
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int8_t, mtv::element_type_int8, 0, mtv::int8_element_block)
@@ -219,7 +237,7 @@ template<typename _Blk>
 typename _Blk::value_type
 multi_type_vector<_CellBlockFunc, _EventFunc>::get(const const_position_type& pos)
 {
-    return _Blk::at(*pos.first->data, pos.second);
+    return detail::mtv::get_block_element_at<_Blk>(*pos.first->data, pos.second);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
