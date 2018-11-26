@@ -31,6 +31,7 @@
 
 #define MDDS_RTREE_DEBUG 1
 #include <mdds/rtree.hpp>
+#include <fstream>
 
 struct tiny_trait_1d
 {
