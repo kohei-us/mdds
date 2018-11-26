@@ -76,8 +76,7 @@ side_iterator<_MtvT>::side_iterator(
 }
 
 template<typename _MtvT>
-typename side_iterator<_MtvT>::side_iterator&
-side_iterator<_MtvT>::operator++()
+side_iterator<_MtvT>& side_iterator<_MtvT>::operator++()
 {
     ++m_cur_node.index;
     size_type pos = m_cur_node.index - m_index_offset;
@@ -106,8 +105,7 @@ side_iterator<_MtvT>::operator++()
 }
 
 template<typename _MtvT>
-typename side_iterator<_MtvT>::side_iterator
-side_iterator<_MtvT>::operator++(int)
+side_iterator<_MtvT> side_iterator<_MtvT>::operator++(int)
 {
     side_iterator tmp(*this);
     operator++();
