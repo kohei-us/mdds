@@ -88,7 +88,7 @@ T advance_position(const T& pos, int steps)
 }
 
 template<typename _Blk>
-typename _Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
+inline typename _Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
 {
     return _Blk::at(data, offset);
 }
@@ -96,7 +96,7 @@ typename _Blk::value_type get_block_element_at(const mdds::mtv::base_element_blo
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
 
 template<>
-bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::mtv::base_element_block& data, size_t offset)
+inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::mtv::base_element_block& data, size_t offset)
 {
     auto it = mdds::mtv::boolean_element_block::cbegin(data);
     std::advance(it, offset);
