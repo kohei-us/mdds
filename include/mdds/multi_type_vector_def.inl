@@ -246,14 +246,14 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::begin() const
 {
-    return const_iterator(m_blocks.begin(), m_blocks.end(), 0, 0);
+    return cbegin();
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::end() const
 {
-    return const_iterator(m_blocks.end(), m_blocks.end(), 0, 0);
+    return cend();
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -267,7 +267,14 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::cend() const
 {
-    return const_iterator(m_blocks.cend(), m_blocks.cend(), 0, 0);
+    size_type start_pos = 0, block_index = 0;
+    if (!m_blocks.empty())
+    {
+        // Get the index and the start row position of the imaginary block after the last block.
+        block_index = m_blocks.size();
+        start_pos = m_cur_size;
+    }
+    return const_iterator(m_blocks.end(), m_blocks.end(), start_pos, block_index);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -1564,6 +1571,13 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_position_type
 multi_type_vector<_CellBlockFunc, _EventFunc>::position(size_type pos) const
 {
+    if (pos == m_cur_size)
+    {
+        // This is a valid end position.  Create a valid position object that
+        // represents a valid end position.
+        return const_position_type(cend(), 0);
+    }
+
     size_type start_row = 0;
     size_type block_index = 0;
     if (!get_block_position(pos, start_row, block_index))
@@ -1579,6 +1593,13 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_position_type
 multi_type_vector<_CellBlockFunc, _EventFunc>::position(const const_iterator& pos_hint, size_type pos) const
 {
+    if (pos == m_cur_size)
+    {
+        // This is a valid end position.  Create a valid position object that
+        // represents a valid end position.
+        return const_position_type(cend(), 0);
+    }
+
     size_type start_pos = 0;
     size_type block_index = 0;
     get_block_position(pos_hint, pos, start_pos, block_index);
