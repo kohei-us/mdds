@@ -4,6 +4,9 @@
     boolean_element_block, by adding specialization for it to work around the
     issue with std::vector<bool> not having the at() method.
 
+  * fixed an issue with the const position() method not returning a valid end
+    position the same way the non-const variant does.
+
 mdds 1.4.3
 
 * documentation
