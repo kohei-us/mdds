@@ -55,22 +55,22 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
 
 enum test_mtv_type {
-    _bool, _int8, _uint8, _int16, _uint16, _int32, _uint32, _int64, _uint64, _float, _double, _string,
+    _mtv_bool, _mtv_int8, _mtv_uint8, _mtv_int16, _mtv_uint16, _mtv_int32, _mtv_uint32, _mtv_int64, _mtv_uint64, _mtv_float, _mtv_double, _mtv_string,
 };
 
 #define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
-TEST_TYPE(bool,_bool)
-TEST_TYPE(int8_t, _int8)
-TEST_TYPE(uint8_t, _uint8)
-TEST_TYPE(int16_t,_int16)
-TEST_TYPE(uint16_t,_uint16)
-TEST_TYPE(int32_t,_int32)
-TEST_TYPE(uint32_t,_uint32)
-TEST_TYPE(int64_t,_int64)
-TEST_TYPE(uint64_t,_uint64)
-TEST_TYPE(float,_float)
-TEST_TYPE(double,_double)
-TEST_TYPE(string,_string)
+TEST_TYPE(bool,     _mtv_bool)
+TEST_TYPE(int8_t,   _mtv_int8)
+TEST_TYPE(uint8_t,  _mtv_uint8)
+TEST_TYPE(int16_t,  _mtv_int16)
+TEST_TYPE(uint16_t, _mtv_uint16)
+TEST_TYPE(int32_t,  _mtv_int32)
+TEST_TYPE(uint32_t, _mtv_uint32)
+TEST_TYPE(int64_t,  _mtv_int64)
+TEST_TYPE(uint64_t, _mtv_uint64)
+TEST_TYPE(float,    _mtv_float)
+TEST_TYPE(double,   _mtv_double)
+TEST_TYPE(string,   _mtv_string)
 
 void mtv_test_types()
 {
@@ -79,62 +79,62 @@ void mtv_test_types()
     stack_printer __stack_printer__("::mtv_test_types");
     {
         bool val = false;
-        assert(test_type(val) == _bool);
+        assert(test_type(val) == _mtv_bool);
         cout << "bool is good" << endl;
     }
     {
         int16_t val = 0;
-        assert(test_type(val) == _int16);
+        assert(test_type(val) == _mtv_int16);
         cout << "int16 is good" << endl;
     }
     {
         uint16_t val = 0;
-        assert(test_type(val) == _uint16);
+        assert(test_type(val) == _mtv_uint16);
         cout << "uint16 is good" << endl;
     }
     {
         int32_t val = 0;
-        assert(test_type(val) == _int32);
+        assert(test_type(val) == _mtv_int32);
         cout << "int32 is good" << endl;
     }
     {
         uint32_t val = 0;
-        assert(test_type(val) == _uint32);
+        assert(test_type(val) == _mtv_uint32);
         cout << "uint32 is good" << endl;
     }
     {
         int64_t val = 0;
-        assert(test_type(val) == _int64);
+        assert(test_type(val) == _mtv_int64);
         cout << "int64 is good" << endl;
     }
     {
         uint64_t val = 0;
-        assert(test_type(val) == _uint64);
+        assert(test_type(val) == _mtv_uint64);
         cout << "uint64 is good" << endl;
     }
     {
         float val = 0;
-        assert(test_type(val) == _float);
+        assert(test_type(val) == _mtv_float);
         cout << "float is good" << endl;
     }
     {
         double val = 0;
-        assert(test_type(val) == _double);
+        assert(test_type(val) == _mtv_double);
         cout << "double is good" << endl;
     }
     {
         string val;
-        assert(test_type(val) == _string);
+        assert(test_type(val) == _mtv_string);
         cout << "string is good" << endl;
     }
     {
         int8_t val = 0;
-        assert(test_type(val) == _int8);
+        assert(test_type(val) == _mtv_int8);
         cout << "int8 is good" << endl;
     }
     {
         uint8_t val = 0;
-        assert(test_type(val) == _uint8);
+        assert(test_type(val) == _mtv_uint8);
         cout << "uint8 is good" << endl;
     }
 }

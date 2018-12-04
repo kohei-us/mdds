@@ -156,7 +156,7 @@ void mtv_test_types()
     assert(ct == mtv::element_type_double);
     ct = mtv_type::get_element_type(string());
     assert(ct == mtv::element_type_string);
-    ct = mtv_type::get_element_type(static_cast<unsigned long>(12));
+    ct = mtv_type::get_element_type(static_cast<uint64_t>(12));
     assert(ct == mtv::element_type_uint64);
     ct = mtv_type::get_element_type(true);
     assert(ct == mtv::element_type_boolean);
@@ -418,7 +418,7 @@ void mtv_test_managed_block()
         db.set_empty(0, 1);
 
         db.set(0, new muser_cell(6.0));
-        db.set(1, static_cast<unsigned long>(12));
+        db.set(1, static_cast<uint64_t>(12));
         db.set_empty(0, 2);
     }
 
@@ -685,7 +685,7 @@ void mtv_test_managed_block()
         mtv_type db(4);
         db.set(0, 1.1);
         db.set(1, new muser_cell(1.0));
-        db.set(2, static_cast<unsigned long>(2));
+        db.set(2, static_cast<uint64_t>(2));
         db.set(3, new muser_cell(3.0));
         assert(db.block_size() == 4);
         assert(db.size() == 4);
@@ -706,15 +706,15 @@ void mtv_test_managed_block()
         db.set(2, 1.2);
         db.set(3, new muser_cell(3.0));
         db.set(4, new muser_cell(4.0));
-        unsigned long vals[] = { 5, 6, 7 };
-        const unsigned long* p = &vals[0];
+        uint64_t vals[] = { 5, 6, 7 };
+        const uint64_t* p = &vals[0];
         db.set(1, p, p+3);
     }
 
     {
         // set_cells() across multiple blocks, part 2.
         mtv_type db(6);
-        db.set(0, static_cast<unsigned long>(12));
+        db.set(0, static_cast<uint64_t>(12));
         db.set(1, new muser_cell(1.0));
         db.set(2, new muser_cell(2.0));
         db.set(3, 1.2);
@@ -733,14 +733,14 @@ void mtv_test_managed_block()
     {
         // set_cell() to merge 3 blocks.
         mtv_type db(6);
-        db.set(0, static_cast<unsigned long>(12));
+        db.set(0, static_cast<uint64_t>(12));
         db.set(1, new muser_cell(1.0));
         db.set(2, new muser_cell(2.0));
         db.set(3, 1.2);
         db.set(4, new muser_cell(3.0));
         db.set(5, new muser_cell(4.0));
         assert(db.block_size() == 4);
-        assert(db.get<unsigned long>(0) == 12);
+        assert(db.get<uint64_t>(0) == 12);
         assert(db.get<muser_cell*>(1)->value == 1.0);
         assert(db.get<muser_cell*>(2)->value == 2.0);
         assert(db.get<double>(3) == 1.2);
@@ -749,7 +749,7 @@ void mtv_test_managed_block()
 
         db.set(3, new muser_cell(5.0)); // merge blocks.
         assert(db.block_size() == 2);
-        assert(db.get<unsigned long>(0) == 12);
+        assert(db.get<uint64_t>(0) == 12);
         assert(db.get<muser_cell*>(1)->value == 1.0);
         assert(db.get<muser_cell*>(2)->value == 2.0);
         assert(db.get<muser_cell*>(3)->value == 5.0);
@@ -760,7 +760,7 @@ void mtv_test_managed_block()
     {
         // set_cell() to merge 2 blocks.
         mtv_type db(3);
-        db.set(0, static_cast<unsigned long>(23));
+        db.set(0, static_cast<uint64_t>(23));
         db.set(1, new muser_cell(2.1));
         db.set(2, new muser_cell(3.1));
 
