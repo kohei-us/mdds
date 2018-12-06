@@ -61,7 +61,7 @@ hard dependency on boost.
 
 ## Using CMake
 
-You could in theory use CMake to run tests and perform installtion, but it is
+You could in theory use CMake to run tests and perform installation, but it is
 not well tested on non-Windows platforms.
 
 # Build documentation

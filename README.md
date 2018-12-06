@@ -96,8 +96,8 @@ API Documentation
 * [Doxygen code documentation](http://kohei.us/files/mdds/doxygen/)
 
 
-Build Documentation
-===================
+Installation
+============
 Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for build and
 installation instructions.
 
