@@ -42,7 +42,7 @@ is ready for use.
 
 # Linux & Mac OS X
 
-## Using autotools to build the test binaries
+## Using Autotools
 
 You need to use GNU Autotools to build the test binaries on Linux or Mac OS X.
 The process follows a standard autotools workflow, which basically includes:
