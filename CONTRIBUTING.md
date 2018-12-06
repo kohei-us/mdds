@@ -1,52 +1,54 @@
 
 # Windows
 
-## Building boost
-
-Note that, since mdds only makes use of the header-only part of boost, the
-following build process is technically not required.  But if you want to build
-it anyway, follow these steps.
-
-First, open your MINGW64 shell.  You can simply use the MINGW64 shell that
-comes shipped with the Windows version of Git.  Once you are in it, change
-directory to the root of the boost library directory, and run the following
-command:
-
-```bash
-bootstrap.bat
-mkdir -p stage/x64
-./b2 --stagedir=./stage/x64 address-model=64 --build-type=complete -j 16
-```
-
-where you may change the part `-j 16` which controls how many concurrent
-processes to use for the build.
-
-## Using CMake to build the test binaries
+## Using CMake
 
 Since mdds is a header-only library, you technically don't need to build
 anything in order to use mdds in your project.  That said, the following
-describes steps to build test binaries using CMake.
+describes steps to build and run tests.
+
+This documentation assumes that you are in MINGW environment (or Git Bash
+environment which is equivalent).  If you are not using MINGW, please adjust
+the commands as needed.
+
+First, you need to have the [boost library](https://www.boost.org/) available
+in your environment.  You won't necessarily need to build boost since mdds
+depends only on the header part of boost.
 
 While at the root of the source directory, run the following commands:
 
 ```bash
-cmake -H. -Bbuild -DBOOST_BUILD_DIR=/path/to/boost/include/dir
-cmake --build build
+mkdir build
+cd build
+cmake .. -DBOOST_INCLUDEDIR=/path/to/boost/include/dir -DCMAKE_INSTALL_PREFIX=/path/to/install
 ```
 
-This will create a `build` directory along with a whole bunch of build-related
-files.  You do need to specify the boost header directory to use since mdds
-has hard dependency on boost.  The final executables are found in `build/Debug`.
+to kick off the build configuration.  When it finishes without errors, run:
 
-# Linux
+```bash
+cmake --build . --target check
+```
+
+to build and execute the test programs.  To install mdds to the path you
+specified via the `CMAKE_INSTALL_PREFIX` configure swtich, run:
+
+```bash
+cmake --build . --target install
+```
+
+to see all the header files being installed to the destination path.  Now mdds
+is ready for use.
+
+
+# Linux & Mac OS X
 
 ## Using autotools to build the test binaries
 
-You need to use GNU Autotools to build the test binaries on Linux.  The
-process follows a standard autotools workflow, which basically includes:
+You need to use GNU Autotools to build the test binaries on Linux or Mac OS X.
+The process follows a standard autotools workflow, which basically includes:
 
 ```bash
-./autogen.sh
+./autogen.sh --prefix=/path/to/install
 make check
 make install
 ```
@@ -56,6 +58,11 @@ test binaries to ensure integrity of the code.
 
 Make sure you have the boost headers installed on your system, as mdds has
 hard dependency on boost.
+
+## Using CMake
+
+You could in theory use CMake to run tests and perform installtion, but it is
+not well tested on non-Windows platforms.
 
 # Build documentation
 
