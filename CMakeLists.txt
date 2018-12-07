@@ -76,5 +76,8 @@ add_dependencies(check
 
 install(DIRECTORY
     ${PROJECT_SOURCE_DIR}/include/mdds
-    DESTINATION include/mdds-${API_VERSION}/
+    DESTINATION include/mdds-${API_VERSION}
+    FILES_MATCHING
+        PATTERN "*.hpp"
+        PATTERN "*.inl"
 )
