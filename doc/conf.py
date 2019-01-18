@@ -15,6 +15,12 @@
 
 import sys
 import os
+import subprocess
+
+rtd_build = os.environ.get('READTHEDOCS', None) == 'True'
+
+if rtd_build:
+    subprocess.call("doxygen", shell=True)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
