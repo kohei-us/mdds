@@ -53,6 +53,14 @@
  */
 #define MDDS_N_ELEMENTS(name) sizeof(name)/sizeof(name[0])
 
+#ifdef __GNUC__
+    #define MDDS_DEPRECATED __attribute__ ((deprecated))
+#elif defined(_MSC_VER)
+    #define MDDS_DEPRECATED __declspec(deprecated)
+#else
+    #define MDDS_DEPRECATED
+#endif
+
 namespace mdds {
 
 class general_error : public ::std::exception

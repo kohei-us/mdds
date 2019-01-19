@@ -34,7 +34,7 @@
 namespace mdds {
 
 template<typename _Key, typename _Value>
-class rectangle_set
+class MDDS_DEPRECATED rectangle_set
 {
 public:
     typedef _Key    key_type;
