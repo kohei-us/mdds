@@ -67,8 +67,9 @@ not well tested on non-Windows platforms.
 # Build documentation
 
 We use both `doxygen` and `sphinx` to author our documentation as well as
-`breathe` and `cloud_sptheme` sphinx extensions.  Make sure to install all of
-these packages if you wish to build documentation manually.
+the `breathe` extension to bridge between the two.  We also use the
+`sphinx-rtd-theme` as the theme for our documentation.  Make sure to install
+all of these packages if you wish to build documentation manually.
 
 Once you have all required packages installed, run:
 
