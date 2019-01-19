@@ -10,7 +10,7 @@ This library implements the following data structure:
 
 * segment_tree
 * flat_segment_tree
-* rectangle_set
+* rectangle_set (deprecated)
 * point_quad_tree
 * multi_type_vector
 * multi_type_matrix
@@ -35,7 +35,7 @@ efficient when you need to store values associated with 1 dimensional
 segments that never overlap with each other.  Like segment tree, 
 stored segments' end points are non-inclusive.  
 
-### Rectangle Set
+### Rectangle Set (deprecated)
 
 Rectangle set stores 2-dimensional rectangles and provides an 
 efficient way to query all rectangles that contain a given point in 
@@ -45,6 +45,9 @@ bottom-right points, and the bottom-right point is non-inclusive.  For
 instance, if a rectangle ranges from (x=2, y=2) to (x=10, y=20), then 
 a 2-dimension point A (x,y) is said to be inside that rectangle only 
 when 2 <= x < 10 and 2 <= y < 20.
+
+*Note that this data structure has been deprecated, and will be removed in
+future releases.*
 
 ### Point Quad Tree
 
@@ -90,10 +93,12 @@ implemented in this library is a variant of R-tree known as
 [R*-tree](https://en.wikipedia.org/wiki/R*_tree).
 
 
-API Documentation
-=================
-* [Official API documentation](http://kohei.us/files/mdds/doc/)
-* [Doxygen code documentation](http://kohei.us/files/mdds/doxygen/)
+Documentation
+=============
+* [Official API documentation](https://mdds.readthedocs.io/en/latest/) for
+  general users of the library.
+* [Doxygen code documentation](http://kohei.us/files/mdds/doxygen/) for
+  maintainers and potential contributors to the library.
 
 
 Installation
