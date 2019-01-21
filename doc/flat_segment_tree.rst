@@ -8,8 +8,8 @@ Overview
 
 Flat segment tree is a derivative of `segment tree
 <https://en.wikipedia.org/wiki/Segment_tree>`_, and is designed to store
-non-overlapping 1-dimensional range values such that the values of the
-neighboring ranges are guaranteed to be different.  An insertion of a range
+non-overlapping 1-dimensional range values such that *the values of the
+neighboring ranges are guaranteed to be different.*  An insertion of a range
 value into this structure will always overwrite one or more existing ranges
 that overlap with the new range.  If an insertion of a new range would cause
 any adjacent ranges to have the equal value, those ranges will be merged into
