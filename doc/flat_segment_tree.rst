@@ -18,10 +18,11 @@ one range.
 An instance of this structure is initialized with fixed lower and upper
 bounaries, which will not change throughout the life time of the instance.
 
-The flat segment tree structure consists of two parts: the bottom leaf-node
-part which also forms a doubly-linked list, and the top tree part which forms
-a balanced-binary tree.  The range values are stored in the leaf-nodes, while
-the non-leaf nodes are used only for faster queries.
+The flat segment tree structure consists of two parts: the leaf-node part
+which also forms a doubly-linked list, and the non-leaf-node part which forms
+a balanced-binary tree and is used only when performing tree-based queries.
+The range values are stored in the leaf-nodes, while the non-leaf nodes are
+used only for queries.
 
 
 Quick start
