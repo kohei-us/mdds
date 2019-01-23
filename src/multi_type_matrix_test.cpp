@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-#include "test_global.hpp"
+#include "test_global.hpp" // This must be the first header to be included.
 
 #include <mdds/multi_type_matrix.hpp>
 #include <mdds/multi_type_vector_custom_func1.hpp>

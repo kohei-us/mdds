@@ -27,12 +27,12 @@
  ************************************************************************/
 
 #define MDDS_TRIE_MAP_DEBUG 1
+#include "test_global.hpp" // This must be the first header to be included.
 //#define MDDS_TREI_MAP_DEBUG_DUMP_TRIE 1
 //#define MDDS_TREI_MAP_DEBUG_DUMP_PACKED 1
 
 #include "mdds/trie_map.hpp"
 #include "mdds/global.hpp"
-#include "test_global.hpp"
 
 #include <iterator>
 

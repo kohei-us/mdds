@@ -25,8 +25,8 @@
  *
  ************************************************************************/
 
+#include "test_global.hpp" // This must be the first header to be included.
 #include "mdds/point_quad_tree.hpp"
-#include "test_global.hpp"
 
 #include <algorithm>
 #include <memory>

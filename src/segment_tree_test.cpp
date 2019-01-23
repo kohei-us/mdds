@@ -25,11 +25,9 @@
  *
  ************************************************************************/
 
+#include "test_global.hpp" // This must be the first header to be included.
 #include "mdds/segment_tree.hpp"
 
-#include "test_global.hpp"
-
-#include <cassert>
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>

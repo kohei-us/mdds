@@ -25,7 +25,7 @@
  *
  ************************************************************************/
 
-#include "test_global.hpp"
+#include "test_global.hpp" // This must be the first header to be included.
 
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector.hpp>

@@ -28,6 +28,16 @@
 #ifndef INCLUDED_TEST_GLOBAL_HPP
 #define INCLUDED_TEST_GLOBAL_HPP
 
+#ifdef NDEBUG
+// release build
+#undef NDEBUG
+#include <cassert>
+#define NDEBUG
+#else
+// debug build
+#include <cassert>
+#endif
+
 #include <stdio.h>
 #include <string>
 #ifdef _WIN32
