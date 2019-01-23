@@ -157,3 +157,6 @@ These are the projects that are known to use mdds.
 * [libetonyek](https://wiki.documentfoundation.org/DLP/Libraries/libetonyek)
 * [ixion](https://gitlab.com/ixion/ixion)
 * [orcus](https://gitlab.com/orcus/orcus)
+
+If you use mdds and would like your project to be included in the above list,
+please let us know.
