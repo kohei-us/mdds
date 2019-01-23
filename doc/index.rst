@@ -25,6 +25,7 @@ Contents:
    sorted_string_map.rst
    trie_map.rst
    rtree.rst
+   api.rst
 
 
 Indices and tables
