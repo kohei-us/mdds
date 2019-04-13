@@ -43,6 +43,26 @@ class IntrusivePtr(object):
     def __getitem__(self, name):
         return self.get().dereference()[name]
 
+
+class MapIterator(six.Iterator):
+
+    def __init__(self, iterable):
+        self.iterable = iterable
+        self.have_saved = False
+        self.saved_val = None
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.have_saved:
+            self.have_saved = False
+            return "", self.saved_val
+        (key, self.saved_val) = six.next(self.iterable)
+        self.have_saved = True
+        return "", key
+
+
 class FlatSegmentTreePrinter(object):
     
     def __init__(self, val):
@@ -55,7 +75,7 @@ class FlatSegmentTreePrinter(object):
         return '%s [%d..%d]' % (self.typename, key('m_left_leaf'), key('m_right_leaf'))
 
     def children(self):
-        return self.iterator(self.val['m_left_leaf'], self.val['m_right_leaf'])
+        return MapIterator(self.iterator(self.val['m_left_leaf'], self.val['m_right_leaf']))
 
     def display_hint(self):
         return 'map'
@@ -65,22 +85,17 @@ class FlatSegmentTreePrinter(object):
         def __init__(self, begin, end):
             self.node = IntrusivePtr(begin)
             self.end = IntrusivePtr(end)
-            self.val = None
-            self.have_val = False
 
         def __iter__(self):
             return self
 
         def __next__(self):
-            if self.have_val:
-                self.have_val = False
-                return 'value', self.val
             if self.node == self.end:
                 raise StopIteration
             start = self.node['value_leaf']['key']
-            self.val, self.have_val = self.node['value_leaf']['value'], True
+            val = self.node['value_leaf']['value']
             self.node = IntrusivePtr(self.node['next'])
-            return 'range', '%d..%d' % (start, self.node['value_leaf']['key'])
+            return ('%d..%d' % (start, self.node['value_leaf']['key']), val)
 
 
 class FstIteratorPrinter(object):
@@ -124,7 +139,7 @@ class SortedStringMapPrinter(object):
         return '%s with %d values' % (self.typename, size)
 
     def children(self):
-        return self.iterator(self.val['m_entries'], self.val['m_entry_size'])
+        return MapIterator(self.iterator(self.val['m_entries'], self.val['m_entry_size']))
 
     def display_hint(self):
         return 'map'
@@ -134,24 +149,17 @@ class SortedStringMapPrinter(object):
         def __init__(self, entry, count):
             self.val = entry
             self.count = count
-            self.saved = None
-            self.have_saved = False
 
         def __iter__(self):
             return self
 
         def __next__(self):
-            if self.have_saved:
-                self.have_saved = False
-                return "value", self.saved
             if self.count <= 0:
                 raise StopIteration
-            self.saved, self.have_saved = self.val.dereference()['value'], True
             val = self.val.dereference()
-            key = gdb.Value.lazy_string(val['key'], 'ascii', val['keylen'])
             self.val += 1
             self.count -= 1
-            return "key", key
+            return (gdb.Value.lazy_string(val['key'], 'ascii', val['keylen']), val['value'])
 
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
