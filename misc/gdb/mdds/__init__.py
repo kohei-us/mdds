@@ -111,12 +111,55 @@ class FstSegmentIteratorPrinter(object):
                 node['end'], node['value'])
 
 
+class SortedStringMapPrinter(object):
+
+    def __init__(self, val):
+        self.typename = 'mdds::sorted_string_map'
+        self.val = val
+
+    def to_string(self):
+        size = self.val['m_entry_size']
+        if size == 0:
+            return 'empty %s' % self.typename
+        return '%s with %d values' % (self.typename, size)
+
+    def children(self):
+        return self.iterator(self.val['m_entries'], self.val['m_entry_size'])
+
+    def display_hint(self):
+        return 'map'
+
+    class iterator(six.Iterator):
+
+        def __init__(self, entry, count):
+            self.val = entry
+            self.count = count
+            self.saved = None
+            self.have_saved = False
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            if self.have_saved:
+                self.have_saved = False
+                return "value", self.saved
+            if self.count <= 0:
+                raise StopIteration
+            self.saved, self.have_saved = self.val.dereference()['value'], True
+            val = self.val.dereference()
+            key = gdb.Value.lazy_string(val['key'], 'ascii', val['keylen'])
+            self.val += 1
+            self.count -= 1
+            return "key", key
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
     pp.add_printer('flat_segment_tree', '^mdds::flat_segment_tree<.*>$', FlatSegmentTreePrinter)
     pp.add_printer('flat_segment_tree::iterator', '^mdds::flat_segment_tree<.*>::const_(reverse_)?iterator$', FstIteratorPrinter)
     pp.add_printer('flat_segment_tree::segment_iterator', '^mdds::__fst::const_segment_iterator<.*>$', FstSegmentIteratorPrinter)
+    pp.add_printer('sorted_string_map', '^mdds::sorted_string_map<.*>$', SortedStringMapPrinter)
 
     return pp
 

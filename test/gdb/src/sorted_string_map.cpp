@@ -1,4 +1,4 @@
-/* Test suite for gdb pretty printers.
+/* Test code for mdds::sorted_string_map.
 
    This file is part of mdds.
 
@@ -15,18 +15,28 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-// forward decls. of tests
-void test_flat_segment_tree();
-void test_sorted_string_map();
+#include <mdds/global.hpp>
+#include <mdds/sorted_string_map.hpp>
 
-void stop()
-{
-}
+void stop();
 
-int main()
+using mdds::sorted_string_map;
+
+void test_sorted_string_map()
 {
-    test_flat_segment_tree();
-    test_sorted_string_map();
+    sorted_string_map<int> empty_ssmap(nullptr, 0, 0);
+
+    sorted_string_map<int>::entry entries[] =
+    {
+        { MDDS_ASCII("aaaa"), 1 },
+        { MDDS_ASCII("bbb"), 2 },
+        { MDDS_ASCII("cc"), 3 },
+        { MDDS_ASCII("d"), 4 },
+    };
+    size_t entry_count = sizeof(entries) / sizeof(entries[0]);
+    sorted_string_map<int> ssmap_int(entries, entry_count, 0);
+
+    stop();
 }
 
 // vim: set shiftwidth=4 softtabstop=4 expandtab:
