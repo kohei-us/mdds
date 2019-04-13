@@ -33,4 +33,12 @@ pp_test "default_fst" {mdds::flat_segment_tree \[0..100\] = \{\[0..100\] = 42\}}
 pp_test "fst_int" {mdds::flat_segment_tree \[0..100\] = \{\[0..20\] = 1, \[20..40\] = 42, \[40..60\] = 0, \[60..100\] = 42\}}
 pp_test "fst_string" {mdds::flat_segment_tree \[10..50\] = \{\[10..20\] = "42", \[20..30\] = "My hovercraft is full of eels", \[30..50\] = "42"\}}
 
+pp_test "fst_iter_singular" {singular mdds::flat_segment_tree::iterator}
+pp_test "fst_iter1" {mdds::flat_segment_tree::iterator \[0\] = 1}
+pp_test "fst_iter2" {mdds::flat_segment_tree::iterator \[20\] = 42}
+
+pp_test "fst_seg_iter_singular" {singular mdds::flat_segment_tree::segment_iterator}
+pp_test "fst_seg_iter1" {mdds::flat_segment_tree::segment_iterator \[0..20\] = 1}
+pp_test "fst_seg_iter2" {mdds::flat_segment_tree::segment_iterator \[20..40\] = 42}
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

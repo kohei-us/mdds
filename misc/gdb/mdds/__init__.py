@@ -83,10 +83,40 @@ class FlatSegmentTreePrinter(object):
             return 'range', '%d..%d' % (start, self.node['value_leaf']['key'])
 
 
+class FstIteratorPrinter(object):
+
+    def __init__(self, val):
+        self.typename = 'mdds::flat_segment_tree::iterator'
+        self.val = val
+
+    def to_string(self):
+        pos = self.val['m_pos']
+        if not pos:
+            return 'singular %s' % self.typename
+        node = pos.dereference()['value_leaf']
+        return '%s [%s] = %s' % (self.typename, node['key'], node['value'])
+
+
+class FstSegmentIteratorPrinter(object):
+
+    def __init__(self, val):
+        self.typename = 'mdds::flat_segment_tree::segment_iterator'
+        self.val = val
+
+    def to_string(self):
+        if not self.val['m_start']:
+            return 'singular %s' % self.typename
+        node = self.val['m_node']
+        return '%s [%s..%s] = %s' % (self.typename, node['start'],
+                node['end'], node['value'])
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
     pp.add_printer('flat_segment_tree', '^mdds::flat_segment_tree<.*>$', FlatSegmentTreePrinter)
+    pp.add_printer('flat_segment_tree::iterator', '^mdds::flat_segment_tree<.*>::const_(reverse_)?iterator$', FstIteratorPrinter)
+    pp.add_printer('flat_segment_tree::segment_iterator', '^mdds::__fst::const_segment_iterator<.*>$', FstSegmentIteratorPrinter)
 
     return pp
 

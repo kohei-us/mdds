@@ -36,6 +36,16 @@ void test_flat_segment_tree()
     flat_segment_tree<int, string> fst_string(10, 50, "42");
     fst_string.insert_back(20, 30, "My hovercraft is full of eels");
 
+    flat_segment_tree<int, int>::const_iterator fst_iter_singular;
+    auto fst_iter1 = fst_int.begin();
+    auto fst_iter2 = fst_iter1;
+    ++fst_iter2;
+
+    flat_segment_tree<int, int>::const_segment_iterator fst_seg_iter_singular;
+    auto fst_seg_iter1 = fst_int.begin_segment();
+    auto fst_seg_iter2 = fst_seg_iter1;
+    ++fst_seg_iter2;
+
     stop();
 }
 
