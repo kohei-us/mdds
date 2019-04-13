@@ -39,6 +39,7 @@ EXTRA_DIST = \
 	example/rectangle_set.cpp \
 	example/segment_tree.cpp \
 	example/trie_map.cpp \
+	misc/gdb/mdds/__init__.py \
 	misc/matrix_perf.cpp \
 	misc/mdds.pc.in \
 	misc/sorted_string_map_perf.cpp \

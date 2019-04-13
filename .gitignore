@@ -3,8 +3,10 @@
 *.trs
 *.o
 *.obj
+*.py[co]
 .deps/
 .dirstamp
+__pycache__
 Makefile
 Makefile.in
 aclocal.m4
