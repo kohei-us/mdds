@@ -50,6 +50,9 @@ AC_SUBST(CPPFLAGS)
 AC_SUBST(CPPFLAGS_NODEBUG)
 
 AC_PROG_CXX
+AC_PATH_PROG([GDB], [gdb])
+AC_PATH_PROG([EXPECT], [expect])
+AC_PATH_PROG([RUNTEST_BIN], [runtest])
 
 AC_ARG_ENABLE([memory-tests],
   [AS_HELP_STRING([--enable-memory-tests], [Run memory tests.])],
@@ -95,6 +98,8 @@ include/Makefile
 include/mdds/Makefile
 include/mdds/multi_type_vector/Makefile
 example/Makefile
+test/gdb/Makefile
+test/gdb/src/Makefile
 flat_segment_tree_test_mem.mem:src/test.mem.in
 misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
 multi_type_matrix_test_mem.mem:src/test.mem.in

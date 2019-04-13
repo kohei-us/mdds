@@ -177,3 +177,6 @@ html-local:
 	(cd doc && $(DOXYGEN) doxygen.conf)
 	$(SPHINX) -b html ./doc/ ./doc/_build
 endif
+
+check-gdb:
+	make -C test/gdb check

@@ -1,0 +1,67 @@
+# Procedures specific for pretty printers' tests.
+#
+# This file is part of mdds.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# override flags--we do not want changed -data-directory
+set INTERNAL_GDBFLAGS "-nw -nx"
+
+proc pp_gdb_init {binfile dir} {
+    gdb_exit
+    gdb_start
+    gdb_reinitialize_dir $dir
+    gdb_load $binfile
+
+    gdb_test_no_output "set python print-stack full"
+    gdb_test_no_output "set print pretty off"
+}
+
+proc pp_load_printers {modules {regfunc "register_pretty_printers"}} {
+    set commands [list]
+    foreach module $modules {
+        lappend commands "python import $module" "python $module.${regfunc}(gdb)"
+    }
+
+    foreach command $commands {
+        if { [gdb_test_no_output "$command"] } {
+            return 0
+        }
+    }
+
+    return 1
+}
+
+proc pp_finish {} {
+    set ok [gdb_breakpoint stop]
+    if { $ok } {
+        gdb_continue_to_breakpoint stop
+        set ok [expr [gdb_test finish {.*}] ? 0 : 1]
+    }
+    return $ok
+}
+
+proc pp_run_test {func} {
+    set ok [runto test_$func]
+    if { $ok } {
+        set ok [pp_finish]
+    }
+    return $ok
+}
+
+proc pp_test {var result} {
+    return [gdb_test "print $var" "= $result"]
+}
+
+# vim: set shiftwidth=4 tabstop=4 expandtab:

@@ -1,0 +1,9 @@
+CXXFLAGS += -O0 -ggdb2
+
+check_PROGRAMS = test
+
+test_CPPFLAGS = -I$(top_srcdir)/include
+
+test_SOURCES = \
+	flat_segment_tree.cpp \
+	test.cpp
