@@ -27,6 +27,8 @@ import gdb.printing
 
 import intervaltree
 
+import itertools
+
 import six
 
 def from_shared_ptr(val):
@@ -238,34 +240,11 @@ class SegmentTreeSearchResultPrinter(object):
     def children(self):
         if self.val.type.code != gdb.TYPE_CODE_PTR or not self.val:
             return []
-        it = self.res_chains_iterator(self.val.dereference())
-        return map(lambda t: (str(t[0]), t[1]), enumerate(it))
-
-    class res_chains_iterator(six.Iterator):
-
-        def __init__(self, val):
-            self.res_chains_iter = gdb.default_visualizer(val).children()
-            self.data_chain_iter = self._next_data_chain()
-
-        def __iter__(self):
-            return self
-
-        def __next__(self):
-            def next():
-                return six.next(self.data_chain_iter)[1]
-            try:
-                return next()
-            except StopIteration:
-                pass
-            self.data_chain_iter = self._next_data_chain()
-            return next()
-
-        def _next_data_chain(self):
-            try:
-                (_, ptr) = six.next(self.res_chains_iter)
-            except StopIteration:
-                return iter([])
+        def ptr_children(ptr):
             return gdb.default_visualizer(ptr.dereference()).children()
+        data_chains = map(ptr_children, map(lambda t: t[1], ptr_children(self.val)))
+        values = map(lambda t: t[1], itertools.chain.from_iterable(data_chains))
+        return map(lambda t: (str(t[0]), t[1]), enumerate(values))
 
     def display_hint(self):
         if self.val.type.code == gdb.TYPE_CODE_PTR:
