@@ -33,4 +33,8 @@ pp_test "empty_st" {empty mdds::segment_tree}
 pp_test "st_int" {mdds::segment_tree = \{\[-10..0\] = \[0\], \[0..5\] = \[0, 1\], \[5..10\] = \[0, 1, 2\], \[10..20\] = \[0, 2\], \[40..50\] = \[3\]\}}
 pp_test "st_string" {mdds::segment_tree = \{\[20..30\] = \["My hovercraft is full of eels"\]\}}
 
+pp_test "search_none" {empty mdds::segment_tree::search_result}
+pp_test "search_one" {mdds::segment_tree::search_result = \{3\}}
+pp_test "search_more" {mdds::segment_tree::search_result = \{0, 1, 2\}}
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

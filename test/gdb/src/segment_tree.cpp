@@ -38,6 +38,11 @@ void test_segment_tree()
     segment_tree<int, string> st_string;
     st_string.insert(20, 30, "My hovercraft is full of eels");
 
+    st_int.build_tree();
+    auto search_none = st_int.search(25);
+    auto search_one = st_int.search(42);
+    auto search_more = st_int.search(8);
+
     stop();
 }
 

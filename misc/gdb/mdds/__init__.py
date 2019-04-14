@@ -29,6 +29,17 @@ import intervaltree
 
 import six
 
+def from_shared_ptr(val):
+    try:
+        delegate = gdb.default_visualizer(val)
+        return delegate.pointer
+    except:
+        ptr = val['_M_ptr']
+        if ptr:
+            return ptr
+    return val
+
+
 class IntrusivePtr(object):
 
     def __init__(self, val):
@@ -213,6 +224,51 @@ class SegmentTreePrinter(object):
     def display_hint(self):
         return 'map'
 
+class SegmentTreeSearchResultPrinter(object):
+
+    def __init__(self, val):
+        self.typename = 'mdds::segment_tree::search_result'
+        self.val = from_shared_ptr(val['mp_res_chains'])
+
+    def to_string(self):
+        if self.val.type.code == gdb.TYPE_CODE_PTR and not self.val:
+            return 'empty %s' % self.typename
+        return self.typename
+
+    def children(self):
+        if self.val.type.code != gdb.TYPE_CODE_PTR or not self.val:
+            return []
+        return self.res_chains_iterator(self.val.dereference())
+
+    class res_chains_iterator(six.Iterator):
+
+        def __init__(self, val):
+            self.res_chains_iter = gdb.default_visualizer(val).children()
+            self.data_chain_iter = self._next_data_chain()
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            try:
+                return six.next(self.data_chain_iter)
+            except StopIteration:
+                pass
+            self.data_chain_iter = self._next_data_chain()
+            return six.next(self.data_chain_iter)
+
+        def _next_data_chain(self):
+            try:
+                (_, ptr) = six.next(self.res_chains_iter)
+            except StopIteration:
+                return iter([])
+            return gdb.default_visualizer(ptr.dereference()).children()
+
+    def display_hint(self):
+        if self.val.type.code == gdb.TYPE_CODE_PTR:
+            return 'array'
+        return ''
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
@@ -220,6 +276,7 @@ def build_pretty_printers():
     pp.add_printer('flat_segment_tree::iterator', '^mdds::flat_segment_tree<.*>::const_(reverse_)?iterator$', FstIteratorPrinter)
     pp.add_printer('flat_segment_tree::segment_iterator', '^mdds::__fst::const_segment_iterator<.*>$', FstSegmentIteratorPrinter)
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
+    pp.add_printer('segment_tree::search_result', '^mdds::segment_tree<.*>::search_result$', SegmentTreeSearchResultPrinter)
     pp.add_printer('sorted_string_map', '^mdds::sorted_string_map<.*>$', SortedStringMapPrinter)
 
     return pp
