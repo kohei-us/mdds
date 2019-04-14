@@ -238,7 +238,8 @@ class SegmentTreeSearchResultPrinter(object):
     def children(self):
         if self.val.type.code != gdb.TYPE_CODE_PTR or not self.val:
             return []
-        return self.res_chains_iterator(self.val.dereference())
+        it = self.res_chains_iterator(self.val.dereference())
+        return map(lambda t: (str(t[0]), t[1]), enumerate(it))
 
     class res_chains_iterator(six.Iterator):
 
@@ -250,12 +251,14 @@ class SegmentTreeSearchResultPrinter(object):
             return self
 
         def __next__(self):
+            def next():
+                return six.next(self.data_chain_iter)[1]
             try:
-                return six.next(self.data_chain_iter)
+                return next()
             except StopIteration:
                 pass
             self.data_chain_iter = self._next_data_chain()
-            return six.next(self.data_chain_iter)
+            return next()
 
         def _next_data_chain(self):
             try:
