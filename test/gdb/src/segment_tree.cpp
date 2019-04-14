@@ -1,4 +1,4 @@
-/* Test suite for gdb pretty printers.
+/* Test code for mdds::segment_tree.
 
    This file is part of mdds.
 
@@ -15,20 +15,30 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-// forward decls. of tests
-void test_flat_segment_tree();
-void test_segment_tree();
-void test_sorted_string_map();
+#include <string>
 
-void stop()
-{
-}
+#include <mdds/segment_tree.hpp>
 
-int main()
+void stop();
+
+using std::string;
+
+using mdds::segment_tree;
+
+void test_segment_tree()
 {
-    test_flat_segment_tree();
-    test_segment_tree();
-    test_sorted_string_map();
+    segment_tree<int, int> empty_st;
+
+    segment_tree<int, int> st_int;
+    st_int.insert(0, 10, 1);
+    st_int.insert(5, 20, 2);
+    st_int.insert(40, 50, 3);
+    st_int.insert(-10, 20, 0);
+
+    segment_tree<int, string> st_string;
+    st_string.insert(20, 30, "My hovercraft is full of eels");
+
+    stop();
 }
 
 // vim: set shiftwidth=4 softtabstop=4 expandtab:

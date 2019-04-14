@@ -6,5 +6,6 @@ test_CPPFLAGS = -I$(top_srcdir)/include
 
 test_SOURCES = \
 	flat_segment_tree.cpp \
+	segment_tree.cpp \
 	sorted_string_map.cpp \
 	test.cpp
