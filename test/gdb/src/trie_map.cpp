@@ -1,4 +1,4 @@
-/* Test suite for gdb pretty printers.
+/* Test code for mdds::trie_map.
 
    This file is part of mdds.
 
@@ -15,22 +15,32 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-// forward decls. of tests
-void test_flat_segment_tree();
-void test_segment_tree();
-void test_sorted_string_map();
-void test_trie_map();
+#include <mdds/global.hpp>
+#include <mdds/trie_map.hpp>
 
-void stop()
-{
-}
+void stop();
 
-int main()
+namespace trie = mdds::trie;
+
+using mdds::trie_map;
+
+void test_trie_map()
 {
-    test_flat_segment_tree();
-    test_segment_tree();
-    test_sorted_string_map();
-    test_trie_map();
+    trie_map<trie::std_string_trait, int> empty_tm;
+
+    trie_map<trie::std_string_trait, int> tm_int;
+    tm_int.insert("a", 13);
+    tm_int.insert("aa", 10);
+    tm_int.insert("ab", 3);
+    tm_int.insert("b", 7);
+
+    trie_map<trie::std_string_trait, std::string> tm_str;
+    tm_str.insert("a", "13");
+    tm_str.insert("aa", "10");
+    tm_str.insert("ab", "3");
+    tm_str.insert("b", "7");
+
+    stop();
 }
 
 // vim: set shiftwidth=4 softtabstop=4 expandtab:

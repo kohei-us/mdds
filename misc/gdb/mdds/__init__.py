@@ -78,6 +78,21 @@ class MapIterator(six.Iterator):
         return "", key
 
 
+class KeyValueIterator(six.Iterator):
+    """The inverse of MapIterator."""
+
+    def __init__(self, iterable):
+        self.iterable = iterable
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        (_, key) = six.next(self.iterable)
+        (_, val) = six.next(self.iterable)
+        return key, val
+
+
 class FlatSegmentTreePrinter(object):
     
     def __init__(self, val):
@@ -251,6 +266,42 @@ class SegmentTreeSearchResultPrinter(object):
             return 'array'
         return ''
 
+
+class TrieMapPrinter(object):
+    def __init__(self, val):
+        self.typename = 'mdds::trie_map'
+        self.val = val
+
+    def to_string(self):
+        try:
+            root_vis = gdb.default_visualizer(self.val['m_root']['children'])
+            six.next(root_vis.children())
+        except StopIteration:
+            return 'empty %s' % self.typename
+        return self.typename
+
+    def children(self):
+        return MapIterator(self.iterator(self.val['m_root'], ""))
+
+    class iterator(six.Iterator):
+        def __init__(self, node, prefix):
+            nodes = gdb.default_visualizer(node['children']).children()
+            children = (self.__class__(v, prefix + chr(k)) for k, v in KeyValueIterator(nodes))
+            self.children = itertools.chain.from_iterable(children)
+            if node['has_value']:
+                this = iter([('"%s"' % prefix, node['value'])])
+                self.children = itertools.chain(this, self.children)
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            return six.next(self.children)
+
+    def display_hint(self):
+        return 'map'
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
@@ -260,6 +311,7 @@ def build_pretty_printers():
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
     pp.add_printer('segment_tree::search_result', '^mdds::segment_tree<.*>::search_result$', SegmentTreeSearchResultPrinter)
     pp.add_printer('sorted_string_map', '^mdds::sorted_string_map<.*>$', SortedStringMapPrinter)
+    pp.add_printer('trie_map', '^mdds::trie_map<.*>$', TrieMapPrinter)
 
     return pp
 
