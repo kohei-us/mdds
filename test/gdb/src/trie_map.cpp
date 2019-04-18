@@ -22,6 +22,7 @@ void stop();
 
 namespace trie = mdds::trie;
 
+using mdds::packed_trie_map;
 using mdds::trie_map;
 
 void test_trie_map()
@@ -39,6 +40,24 @@ void test_trie_map()
     tm_str.insert("aa", "10");
     tm_str.insert("ab", "3");
     tm_str.insert("b", "7");
+
+    packed_trie_map<trie::std_string_trait, int>::entry entries_int[] =
+    {
+        { MDDS_ASCII("a"),  13 },
+        { MDDS_ASCII("aa"), 10 },
+        { MDDS_ASCII("ab"), 3 },
+        { MDDS_ASCII("b"),  7 },
+    };
+    packed_trie_map<trie::std_string_trait, int> empty_ptm(entries_int, 0);
+    packed_trie_map<trie::std_string_trait, int> ptm_int(entries_int, MDDS_N_ELEMENTS(entries_int));
+    packed_trie_map<trie::std_string_trait, std::string>::entry entries_str[] =
+    {
+        { MDDS_ASCII("a"),  "13" },
+        { MDDS_ASCII("aa"), "10" },
+        { MDDS_ASCII("ab"), "3" },
+        { MDDS_ASCII("b"),  "7" },
+    };
+    packed_trie_map<trie::std_string_trait, std::string> ptm_str(entries_str, MDDS_N_ELEMENTS(entries_str));
 
     stop();
 }

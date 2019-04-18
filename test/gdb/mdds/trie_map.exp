@@ -33,4 +33,8 @@ pp_test "empty_tm" {empty mdds::trie_map}
 pp_test "tm_int" {mdds::trie_map = \{\["a"\] = 13, \["aa"\] = 10, \["ab"\] = 3, \["b"\] = 7\}}
 pp_test "tm_str" {mdds::trie_map = \{\["a"\] = "13", \["aa"\] = "10", \["ab"\] = "3", \["b"\] = "7"\}}
 
+pp_test "empty_ptm" {empty mdds::packed_trie_map}
+pp_test "ptm_int" {mdds::packed_trie_map = \{\["a"\] = 13, \["aa"\] = 10, \["ab"\] = 3, \["b"\] = 7\}}
+pp_test "ptm_str" {mdds::packed_trie_map = \{\["a"\] = "13", \["aa"\] = "10", \["ab"\] = "3", \["b"\] = "7"\}}
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

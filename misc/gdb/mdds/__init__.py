@@ -302,12 +302,58 @@ class TrieMapPrinter(object):
         return 'map'
 
 
+class PackedTrieMapPrinter(object):
+    def __init__(self, val):
+        self.typename = 'mdds::packed_trie_map'
+        self.val = val
+
+    def to_string(self):
+        if self.val['m_entry_size'] == 0:
+            return 'empty %s' % self.typename
+        return self.typename
+
+    def children(self):
+        packed = [v for _, v in gdb.default_visualizer(self.val['m_packed']).children()]
+        root_offset = packed[0]
+        ptr_type = self.val['m_value_store'].type.template_argument(0).pointer()
+        return MapIterator(self.iterator(packed, ptr_type, "", root_offset))
+
+    class iterator(six.Iterator):
+        def __init__(self, packed, ptr_type, key, off):
+            ptr = packed[off]
+            index_size = packed[off + 1]
+            children = self.__children(packed, ptr_type, key, off, off + 2, off + 2 + index_size)
+            self.children = itertools.chain.from_iterable(children)
+            if ptr != 0:
+                val_ptr = ptr.reinterpret_cast(ptr_type)
+                this = iter([('"%s"' % key, val_ptr.dereference())])
+                self.children = itertools.chain(this, self.children)
+
+        def __children(self, packed, ptr_type, key, node_pos, start, end):
+            off = start
+            while off < end:
+                c = packed[off]
+                offset = packed[off + 1]
+                off += 2
+                yield self.__class__(packed, ptr_type, key + chr(c), node_pos - offset)
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            return six.next(self.children)
+
+    def display_hint(self):
+        return 'map'
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
     pp.add_printer('flat_segment_tree', '^mdds::flat_segment_tree<.*>$', FlatSegmentTreePrinter)
     pp.add_printer('flat_segment_tree::iterator', '^mdds::flat_segment_tree<.*>::const_(reverse_)?iterator$', FstIteratorPrinter)
     pp.add_printer('flat_segment_tree::segment_iterator', '^mdds::__fst::const_segment_iterator<.*>$', FstSegmentIteratorPrinter)
+    pp.add_printer('packed_trie_map', '^mdds::packed_trie_map<.*>$', PackedTrieMapPrinter)
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
     pp.add_printer('segment_tree::search_result', '^mdds::segment_tree<.*>::search_result$', SegmentTreeSearchResultPrinter)
     pp.add_printer('sorted_string_map', '^mdds::sorted_string_map<.*>$', SortedStringMapPrinter)
