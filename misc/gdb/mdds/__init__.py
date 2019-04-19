@@ -43,6 +43,7 @@ def from_shared_ptr(val):
 
 
 class IntrusivePtr(object):
+    """boost::intrusive_ptr wrapper."""
 
     def __init__(self, val):
         self.val = val
@@ -60,6 +61,13 @@ class IntrusivePtr(object):
 
 
 class MapIterator(six.Iterator):
+    """Adapter of iterator over (key, value) pairs to gdb 'map' iterator protocol.
+
+    The gdb iterator protocol for pretty printer with display type
+    'map'--for some reason unknown to me--expects the key and the value
+    separately, each with its own 'key'. To avoid complicating all map
+    iterators, this simple adapter is provided.
+    """
 
     def __init__(self, iterable):
         self.iterable = iterable
@@ -94,6 +102,7 @@ class KeyValueIterator(six.Iterator):
 
 
 class FlatSegmentTreePrinter(object):
+    """Pretty printer for flat_segment_tree."""
     
     def __init__(self, val):
         self.typename = 'mdds::flat_segment_tree'
@@ -129,6 +138,7 @@ class FlatSegmentTreePrinter(object):
 
 
 class FstIteratorPrinter(object):
+    """Pretty printer for flat_segment_tree iterator."""
 
     def __init__(self, val):
         self.typename = 'mdds::flat_segment_tree::iterator'
@@ -143,6 +153,7 @@ class FstIteratorPrinter(object):
 
 
 class FstSegmentIteratorPrinter(object):
+    """Pretty printer for flat_segment_tree segment_iterator."""
 
     def __init__(self, val):
         self.typename = 'mdds::flat_segment_tree::segment_iterator'
@@ -157,6 +168,7 @@ class FstSegmentIteratorPrinter(object):
 
 
 class SortedStringMapPrinter(object):
+    """Pretty printer for sorted_string_map."""
 
     def __init__(self, val):
         self.typename = 'mdds::sorted_string_map'
@@ -193,6 +205,7 @@ class SortedStringMapPrinter(object):
 
 
 class SegmentTreePrinter(object):
+    """Pretty printer for segment_tree."""
 
     def __init__(self, val):
         self.typename = 'mdds::segment_tree'
@@ -242,6 +255,7 @@ class SegmentTreePrinter(object):
         return 'map'
 
 class SegmentTreeSearchResultPrinter(object):
+    """Pretty printer for segment_tree search_result."""
 
     def __init__(self, val):
         self.typename = 'mdds::segment_tree::search_result'
@@ -268,6 +282,8 @@ class SegmentTreeSearchResultPrinter(object):
 
 
 class TrieNodeIterator(six.Iterator):
+    """Iterator over trie_map nodes."""
+
     def __init__(self, node, prefix):
         nodes = gdb.default_visualizer(node['children']).children()
         children = (self.__class__(v, prefix + chr(k)) for k, v in KeyValueIterator(nodes))
@@ -284,6 +300,8 @@ class TrieNodeIterator(six.Iterator):
 
 
 class TrieMapPrinter(object):
+    """Pretty printer for trie_map."""
+
     def __init__(self, val):
         self.typename = 'mdds::trie_map'
         self.val = val
@@ -304,6 +322,8 @@ class TrieMapPrinter(object):
 
 
 class TrieMapSearchResultsPrinter(object):
+    """Pretty printer for trie_map search_results."""
+
     def __init__(self, val):
         self.typename = 'mdds::trie_map::search_results'
         self.val = val
@@ -325,6 +345,8 @@ class TrieMapSearchResultsPrinter(object):
 
 
 class PackedTrieMapPrinter(object):
+    """Pretty printer for packed_trie_map."""
+
     def __init__(self, val):
         self.typename = 'mdds::packed_trie_map'
         self.val = val
