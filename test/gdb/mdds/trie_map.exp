@@ -37,6 +37,12 @@ pp_test "tm_search_empty" {empty mdds::trie_map::search_results}
 pp_test "tm_search_one" {mdds::trie_map::search_results = \{\["b"\] = 7\}}
 pp_test "tm_search_more" {mdds::trie_map::search_results = \{\["a"\] = 13, \["aa"\] = 10, \["ab"\] = 3\}}
 
+pp_test "tm_iter_begin" {mdds::trie_map::iterator = \{first = "a", second = 13\}}
+pp_test "tm_iter_end" {non-dereferenceable mdds::trie_map::iterator}
+pp_test "tm_search_iter_begin" {mdds::trie_map::iterator = \{first = "b", second = 7\}}
+pp_test "tm_search_iter_end" {non-dereferenceable mdds::trie_map::iterator}
+pp_test "tm_search_iter_empty" {singular mdds::trie_map::iterator}
+
 pp_test "empty_ptm" {empty mdds::packed_trie_map}
 pp_test "ptm_int" {mdds::packed_trie_map = \{\["a"\] = 13, \["aa"\] = 10, \["ab"\] = 3, \["b"\] = 7\}}
 pp_test "ptm_str" {mdds::packed_trie_map = \{\["a"\] = "13", \["aa"\] = "10", \["ab"\] = "3", \["b"\] = "7"\}}

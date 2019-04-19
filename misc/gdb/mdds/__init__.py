@@ -346,6 +346,23 @@ class TrieMapSearchResultsPrinter(object):
         return 'map'
 
 
+class TrieMapIteratorPrinter(object):
+    """Pretty printer for trie_map iterator."""
+
+    def __init__(self, val):
+        self.typename = 'mdds::trie_map::iterator'
+        self.val = val
+
+    def to_string(self):
+        typ = self.val['m_type']
+        if typ == 0: # normal
+            return '%s = %s' % (self.typename, self.val['m_current_value'])
+        elif typ == 1: # end
+            return 'non-dereferenceable %s' % self.typename
+        elif typ == 2: # empty
+            return 'singular %s' % self.typename
+
+
 class PackedTrieMapPrinter(object):
     """Pretty printer for packed_trie_map."""
 
@@ -414,6 +431,9 @@ def build_pretty_printers():
     pp.add_printer('sorted_string_map', '^mdds::sorted_string_map<.*>$', SortedStringMapPrinter)
 
     pp.add_printer('trie_map', '^mdds::trie_map<.*>$', TrieMapPrinter)
+    pp.add_printer('trie_map::iterator',
+            '^mdds::trie::detail::iterator_base<mdds::trie_map<.*>$',
+            TrieMapIteratorPrinter)
     pp.add_printer('trie_map::search_results',
             '^mdds::trie::detail::search_results<mdds::trie_map<.*>$',
             TrieMapSearchResultsPrinter)
