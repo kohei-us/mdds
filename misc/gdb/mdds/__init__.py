@@ -267,6 +267,22 @@ class SegmentTreeSearchResultPrinter(object):
         return ''
 
 
+class TrieNodeIterator(six.Iterator):
+    def __init__(self, node, prefix):
+        nodes = gdb.default_visualizer(node['children']).children()
+        children = (self.__class__(v, prefix + chr(k)) for k, v in KeyValueIterator(nodes))
+        self.children = itertools.chain.from_iterable(children)
+        if node['has_value']:
+            this = iter([('"%s"' % prefix, node['value'])])
+            self.children = itertools.chain(this, self.children)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return six.next(self.children)
+
+
 class TrieMapPrinter(object):
     def __init__(self, val):
         self.typename = 'mdds::trie_map'
@@ -281,22 +297,28 @@ class TrieMapPrinter(object):
         return self.typename
 
     def children(self):
-        return MapIterator(self.iterator(self.val['m_root'], ""))
+        return MapIterator(TrieNodeIterator(self.val['m_root'], ""))
 
-    class iterator(six.Iterator):
-        def __init__(self, node, prefix):
-            nodes = gdb.default_visualizer(node['children']).children()
-            children = (self.__class__(v, prefix + chr(k)) for k, v in KeyValueIterator(nodes))
-            self.children = itertools.chain.from_iterable(children)
-            if node['has_value']:
-                this = iter([('"%s"' % prefix, node['value'])])
-                self.children = itertools.chain(this, self.children)
+    def display_hint(self):
+        return 'map'
 
-        def __iter__(self):
-            return self
 
-        def __next__(self):
-            return six.next(self.children)
+class TrieMapSearchResultsPrinter(object):
+    def __init__(self, val):
+        self.typename = 'mdds::trie_map::search_results'
+        self.val = val
+
+    def to_string(self):
+        if self.val['m_node'] == 0:
+            return 'empty %s' % self.typename
+        return self.typename
+
+    def children(self):
+        node = self.val['m_node']
+        if node == 0:
+            return []
+        prefix = str(self.val['m_buffer']).strip('"')
+        return MapIterator(TrieNodeIterator(node.dereference(), prefix))
 
     def display_hint(self):
         return 'map'
@@ -358,6 +380,9 @@ def build_pretty_printers():
     pp.add_printer('segment_tree::search_result', '^mdds::segment_tree<.*>::search_result$', SegmentTreeSearchResultPrinter)
     pp.add_printer('sorted_string_map', '^mdds::sorted_string_map<.*>$', SortedStringMapPrinter)
     pp.add_printer('trie_map', '^mdds::trie_map<.*>$', TrieMapPrinter)
+    pp.add_printer('trie_map::search_results',
+            '^mdds::trie::detail::search_results<mdds::trie_map<.*>$',
+            TrieMapSearchResultsPrinter)
 
     return pp
 

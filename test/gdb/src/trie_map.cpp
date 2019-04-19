@@ -41,6 +41,10 @@ void test_trie_map()
     tm_str.insert("ab", "3");
     tm_str.insert("b", "7");
 
+    auto tm_search_empty = tm_int.prefix_search("foo");
+    auto tm_search_one = tm_int.prefix_search("b");
+    auto tm_search_more = tm_int.prefix_search("a");
+
     packed_trie_map<trie::std_string_trait, int>::entry entries_int[] =
     {
         { MDDS_ASCII("a"),  13 },
