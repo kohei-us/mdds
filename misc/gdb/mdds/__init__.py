@@ -373,11 +373,17 @@ def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
     pp.add_printer('flat_segment_tree', '^mdds::flat_segment_tree<.*>$', FlatSegmentTreePrinter)
-    pp.add_printer('flat_segment_tree::iterator', '^mdds::flat_segment_tree<.*>::const_(reverse_)?iterator$', FstIteratorPrinter)
-    pp.add_printer('flat_segment_tree::segment_iterator', '^mdds::__fst::const_segment_iterator<.*>$', FstSegmentIteratorPrinter)
+    pp.add_printer('flat_segment_tree::iterator',
+            '^mdds::flat_segment_tree<.*>::const_(reverse_)?iterator$',
+            FstIteratorPrinter)
+    pp.add_printer('flat_segment_tree::segment_iterator',
+            '^mdds::__fst::const_segment_iterator<.*>$',
+            FstSegmentIteratorPrinter)
     pp.add_printer('packed_trie_map', '^mdds::packed_trie_map<.*>$', PackedTrieMapPrinter)
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
-    pp.add_printer('segment_tree::search_result', '^mdds::segment_tree<.*>::search_result$', SegmentTreeSearchResultPrinter)
+    pp.add_printer('segment_tree::search_result',
+            '^mdds::segment_tree<.*>::search_result$',
+            SegmentTreeSearchResultPrinter)
     pp.add_printer('sorted_string_map', '^mdds::sorted_string_map<.*>$', SortedStringMapPrinter)
     pp.add_printer('trie_map', '^mdds::trie_map<.*>$', TrieMapPrinter)
     pp.add_printer('trie_map::search_results',
