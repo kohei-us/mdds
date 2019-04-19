@@ -379,12 +379,16 @@ def build_pretty_printers():
     pp.add_printer('flat_segment_tree::segment_iterator',
             '^mdds::__fst::const_segment_iterator<.*>$',
             FstSegmentIteratorPrinter)
+
     pp.add_printer('packed_trie_map', '^mdds::packed_trie_map<.*>$', PackedTrieMapPrinter)
+
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
     pp.add_printer('segment_tree::search_result',
             '^mdds::segment_tree<.*>::search_result$',
             SegmentTreeSearchResultPrinter)
+
     pp.add_printer('sorted_string_map', '^mdds::sorted_string_map<.*>$', SortedStringMapPrinter)
+
     pp.add_printer('trie_map', '^mdds::trie_map<.*>$', TrieMapPrinter)
     pp.add_printer('trie_map::search_results',
             '^mdds::trie::detail::search_results<mdds::trie_map<.*>$',
