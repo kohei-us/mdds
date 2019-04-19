@@ -31,6 +31,7 @@ import itertools
 
 import six
 
+
 def from_shared_ptr(val):
     try:
         delegate = gdb.default_visualizer(val)
@@ -254,6 +255,7 @@ class SegmentTreePrinter(object):
     def display_hint(self):
         return 'map'
 
+
 class SegmentTreeSearchResultPrinter(object):
     """Pretty printer for segment_tree search_result."""
 
@@ -417,6 +419,7 @@ def build_pretty_printers():
             TrieMapSearchResultsPrinter)
 
     return pp
+
 
 def register_pretty_printers(obj):
     gdb.printing.register_pretty_printer(obj, build_pretty_printers())
