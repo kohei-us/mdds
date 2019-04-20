@@ -73,6 +73,12 @@ void test_trie_map()
     auto ptm_search_one = ptm_int.prefix_search("b");
     auto ptm_search_more = ptm_int.prefix_search("a");
 
+    auto ptm_iter_begin = ptm_int.begin();
+    auto ptm_iter_end = ptm_int.end();
+    auto ptm_search_iter_begin = ptm_search_one.begin();
+    auto ptm_search_iter_end = ptm_search_one.end();
+    auto ptm_search_iter_empty = ptm_search_empty.begin();
+
     stop();
 }
 

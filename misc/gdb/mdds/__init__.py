@@ -350,7 +350,8 @@ class TrieMapIteratorPrinter(object):
     """Pretty printer for trie_map iterator."""
 
     def __init__(self, val):
-        self.typename = 'mdds::trie_map::iterator'
+        trie_type = val.type.template_argument(0).name.partition('<')[0]
+        self.typename = '%s::iterator' % trie_type
         self.val = val
 
     def to_string(self):
@@ -462,6 +463,9 @@ def build_pretty_printers():
             FstSegmentIteratorPrinter)
 
     pp.add_printer('packed_trie_map', '^mdds::packed_trie_map<.*>$', PackedTrieMapPrinter)
+    pp.add_printer('packed_trie_map::iterator',
+            '^mdds::trie::detail::packed_iterator_base<mdds::packed_trie_map<.*>$',
+            TrieMapIteratorPrinter)
     pp.add_printer('packed_trie_map::search_results',
             '^mdds::trie::detail::packed_search_results<mdds::packed_trie_map<.*>$',
             PackedTrieMapSearchResultsPrinter)

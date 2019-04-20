@@ -51,4 +51,10 @@ pp_test "ptm_search_empty" {empty mdds::packed_trie_map::search_results}
 pp_test "ptm_search_one" {mdds::packed_trie_map::search_results = \{\["b"\] = 7\}}
 pp_test "ptm_search_more" {mdds::packed_trie_map::search_results = \{\["a"\] = 13, \["aa"\] = 10, \["ab"\] = 3\}}
 
+pp_test "ptm_iter_begin" {mdds::packed_trie_map::iterator = \{first = "a", second = 13\}}
+pp_test "ptm_iter_end" {non-dereferenceable mdds::packed_trie_map::iterator}
+pp_test "ptm_search_iter_begin" {mdds::packed_trie_map::iterator = \{first = "b", second = 7\}}
+pp_test "ptm_search_iter_end" {non-dereferenceable mdds::packed_trie_map::iterator}
+pp_test "ptm_search_iter_empty" {singular mdds::packed_trie_map::iterator}
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:
