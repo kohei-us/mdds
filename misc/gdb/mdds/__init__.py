@@ -379,26 +379,30 @@ class PackedTrieMapPrinter(object):
         packed = [v for _, v in gdb.default_visualizer(self.val['m_packed']).children()]
         root_offset = packed[0]
         ptr_type = self.val['m_value_store'].type.template_argument(0).pointer()
-        return MapIterator(self.iterator(packed, ptr_type, "", root_offset))
+        return MapIterator(self.iterator(packed, ptr_type, root_offset))
 
     class iterator(six.Iterator):
-        def __init__(self, packed, ptr_type, key, off):
-            ptr = packed[off]
-            index_size = packed[off + 1]
-            children = self.__children(packed, ptr_type, key, off, off + 2, off + 2 + index_size)
+        """Iterator over a packed_trie_map node."""
+
+        def __init__(self, packed, ptr_type, node_pos, key=None):
+            if key is None:
+                key = ""
+            index_size = packed[node_pos + 1]
+            children = self.__iter_node_children(packed, ptr_type, key, node_pos, index_size)
             self.children = itertools.chain.from_iterable(children)
-            if ptr != 0:
-                val_ptr = ptr.reinterpret_cast(ptr_type)
+            if packed[node_pos] != 0:
+                val_ptr = packed[node_pos].cast(ptr_type)
                 this = iter([('"%s"' % key, val_ptr.dereference())])
                 self.children = itertools.chain(this, self.children)
 
-        def __children(self, packed, ptr_type, key, node_pos, start, end):
-            off = start
-            while off < end:
+        def __iter_node_children(self, packed, ptr_type, key, node_pos, index_size):
+            off = node_pos + 2
+            node_end = off + index_size
+            while off < node_end:
                 c = packed[off]
-                offset = packed[off + 1]
+                child_offset = packed[off + 1]
                 off += 2
-                yield self.__class__(packed, ptr_type, key + chr(c), node_pos - offset)
+                yield self.__class__(packed, ptr_type, node_pos - child_offset, key + chr(c))
 
         def __iter__(self):
             return self
