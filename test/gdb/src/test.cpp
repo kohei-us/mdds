@@ -17,6 +17,7 @@
 
 // forward decls. of tests
 void test_flat_segment_tree();
+void test_multi_type_vector();
 void test_segment_tree();
 void test_sorted_string_map();
 void test_trie_map();
@@ -28,6 +29,7 @@ void stop()
 int main()
 {
     test_flat_segment_tree();
+    test_multi_type_vector();
     test_segment_tree();
     test_sorted_string_map();
     test_trie_map();

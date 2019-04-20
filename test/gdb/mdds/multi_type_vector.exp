@@ -1,0 +1,37 @@
+# Test for GDB pretty printers for mdds::multi_type_vector.
+#
+# This file is part of mdds.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+load_lib pretty-printers.exp
+
+pp_gdb_init $BINFILE $srcdir/$subdir
+
+if {![pp_load_printers [list mdds]]} {
+    perror "could not load pretty printers"
+    return
+}
+
+if {![pp_run_test multi_type_vector]} {
+    perror "the executable is not a proper pretty printer test"
+    return
+}
+
+pp_test "empty_mtv" {empty mdds::multi_type_vector}
+pp_test "mtv_int" {mdds::multi_type_vector with 4 elements = \{1, 2, 3, 4\}}
+pp_test "mtv_string" {mdds::multi_type_vector with 2 elements = \{"ab", "c"\}}
+pp_test "mtv_int_string" {mdds::multi_type_vector with 8 elements = \{1, 2, 3, 4, "ab", "c", 7, 8\}}
+
+# vim: set shiftwidth=4 softtabstop=4 expandtab:

@@ -102,6 +102,18 @@ class KeyValueIterator(six.Iterator):
         return key, val
 
 
+def array_iterator(iterable):
+    """Convert an iterator to gdb 'array' iterator."""
+    for n, v in enumerate(iterable):
+        yield str(n), v
+
+
+def inverse_array_iterator(iterable):
+    """Pick the values from a gdb 'array' iterator."""
+    for _, v in iterable:
+        yield v
+
+
 class FlatSegmentTreePrinter(object):
     """Pretty printer for flat_segment_tree."""
     
@@ -138,7 +150,7 @@ class FlatSegmentTreePrinter(object):
             return ('%d..%d' % (start, self.node['value_leaf']['key']), val)
 
 
-class FstIteratorPrinter(object):
+class FlatSegmentTreeIteratorPrinter(object):
     """Pretty printer for flat_segment_tree iterator."""
 
     def __init__(self, val):
@@ -153,7 +165,7 @@ class FstIteratorPrinter(object):
         return '%s [%s] = %s' % (self.typename, node['key'], node['value'])
 
 
-class FstSegmentIteratorPrinter(object):
+class FlatSegmentTreeSegmentIteratorPrinter(object):
     """Pretty printer for flat_segment_tree segment_iterator."""
 
     def __init__(self, val):
@@ -451,16 +463,108 @@ class PackedTrieMapSearchResultsPrinter(object):
         return 'map'
 
 
+mtv_type_map = {}
+
+
+class MultiTypeVectorPrinter(object):
+    """Pretty printer for multi_type_vector."""
+
+    def __init__(self, val, type_map):
+        self.typename = 'mdds::multi_type_vector'
+        self.val = val
+        self.type_map = type_map
+
+    @classmethod
+    def with_type_map(cls, type_map):
+        def build(val):
+            return cls(val, type_map)
+        return build
+
+    def to_string(self):
+        size = self.val['m_cur_size']
+        if size == 0:
+            return 'empty %s' % self.typename
+        return '%s with %d elements' % (self.typename, size)
+
+    def children(self):
+        blocks_vis = gdb.default_visualizer(self.val['m_blocks'])
+        blocks = (self.block_iterator(block, self.type_map) for (_, block) in blocks_vis.children())
+        return array_iterator(itertools.chain.from_iterable(blocks))
+
+    class block_iterator(six.Iterator):
+        def __init__(self, block, type_map):
+            type_id = int(block['mp_data']['type'])
+            elt_type = type_map[type_id]() if type_id in type_map else None
+            if type_id == -1:
+                elts = []
+            elif elt_type is None:
+                elts = ['***ERROR: block of unknown type id %d***' % type_id]
+            else:
+                data = block['mp_data'].cast(elt_type.pointer())
+                array = data.dereference()['m_array']
+                elts = inverse_array_iterator(gdb.default_visualizer(array).children())
+            self.elts = iter(elts)
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            return six.next(self.elts)
+
+    def display_hint(self):
+        return 'array'
+
+    class make_type(object):
+        """Helper for creating element_block types."""
+
+        def __init__(self, block_name, type_id, names):
+            self.block_name = block_name
+            self.type_id = type_id
+            if isinstance(names, tuple):
+                self.names = names
+            else:
+                self.names = [names]
+
+        def __call__(self):
+            for name in self.names:
+                try:
+                    return self.__lookup_type(name)
+                except:
+                    try:
+                        return self.__lookup_type(gdb.lookup_type(name).strip_typedefs())
+                    except:
+                        pass
+            return None
+
+        def __lookup_type(self, name):
+            return gdb.lookup_type('%s<%d, %s>' % (self.block_name, self.type_id, name))
+
+    @staticmethod
+    def make_default_type_map():
+        types = (
+            'bool',
+            'int8_t', 'uint8_t', 'int16_t', 'uint16_t', 'int32_t', 'uint32_t', 'int64_t', 'uint64_t',
+            'float', 'double',
+            ('std::string', 'std::__cxx11::string',)
+        )
+        make_type = MultiTypeVectorPrinter.make_type
+        return {i: make_type('mdds::mtv::default_element_block', i, t) for i, t in enumerate(types)}
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
     pp.add_printer('flat_segment_tree', '^mdds::flat_segment_tree<.*>$', FlatSegmentTreePrinter)
     pp.add_printer('flat_segment_tree::iterator',
             '^mdds::flat_segment_tree<.*>::const_(reverse_)?iterator$',
-            FstIteratorPrinter)
+            FlatSegmentTreeIteratorPrinter)
     pp.add_printer('flat_segment_tree::segment_iterator',
             '^mdds::__fst::const_segment_iterator<.*>$',
-            FstSegmentIteratorPrinter)
+            FlatSegmentTreeSegmentIteratorPrinter)
+
+    pp.add_printer('multi_type_vector',
+            '^mdds::multi_type_vector<.*>$',
+            MultiTypeVectorPrinter.with_type_map(mtv_type_map))
 
     pp.add_printer('packed_trie_map', '^mdds::packed_trie_map<.*>$', PackedTrieMapPrinter)
     pp.add_printer('packed_trie_map::iterator',
@@ -490,5 +594,19 @@ def build_pretty_printers():
 
 def register_pretty_printers(obj):
     gdb.printing.register_pretty_printer(obj, build_pretty_printers())
+
+
+def register_mtv_types(type_map):
+    """Register given type IDs for use with multi_type_vector.
+
+    This is necessary to do for any non-default type ID, otherwise
+    MultiTypeVectorPrinter won't be able to print values of the
+    corresponding type.
+    """
+
+    mtv_type_map.update(type_map)
+
+
+register_mtv_types(MultiTypeVectorPrinter.make_default_type_map())
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab:
