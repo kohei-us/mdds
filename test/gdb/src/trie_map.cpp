@@ -69,6 +69,10 @@ void test_trie_map()
     };
     packed_trie_map<trie::std_string_trait, std::string> ptm_str(entries_str, MDDS_N_ELEMENTS(entries_str));
 
+    auto ptm_search_empty = ptm_int.prefix_search("foo");
+    auto ptm_search_one = ptm_int.prefix_search("b");
+    auto ptm_search_more = ptm_int.prefix_search("a");
+
     stop();
 }
 

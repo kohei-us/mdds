@@ -47,4 +47,8 @@ pp_test "empty_ptm" {empty mdds::packed_trie_map}
 pp_test "ptm_int" {mdds::packed_trie_map = \{\["a"\] = 13, \["aa"\] = 10, \["ab"\] = 3, \["b"\] = 7\}}
 pp_test "ptm_str" {mdds::packed_trie_map = \{\["a"\] = "13", \["aa"\] = "10", \["ab"\] = "3", \["b"\] = "7"\}}
 
+pp_test "ptm_search_empty" {empty mdds::packed_trie_map::search_results}
+pp_test "ptm_search_one" {mdds::packed_trie_map::search_results = \{\["b"\] = 7\}}
+pp_test "ptm_search_more" {mdds::packed_trie_map::search_results = \{\["a"\] = 13, \["aa"\] = 10, \["ab"\] = 3\}}
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

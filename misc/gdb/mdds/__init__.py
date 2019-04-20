@@ -363,6 +363,36 @@ class TrieMapIteratorPrinter(object):
             return 'singular %s' % self.typename
 
 
+class PackedTrieMapIterator(six.Iterator):
+    """Iterator over a packed_trie_map node."""
+
+    def __init__(self, packed, ptr_type, node_pos, key=None):
+        if key is None:
+            key = ""
+        index_size = packed[node_pos + 1]
+        children = self.__iter_node_children(packed, ptr_type, key, node_pos, index_size)
+        self.children = itertools.chain.from_iterable(children)
+        if packed[node_pos] != 0:
+            val_ptr = packed[node_pos].cast(ptr_type)
+            this = iter([('"%s"' % key, val_ptr.dereference())])
+            self.children = itertools.chain(this, self.children)
+
+    def __iter_node_children(self, packed, ptr_type, key, node_pos, index_size):
+        off = node_pos + 2
+        node_end = off + index_size
+        while off < node_end:
+            c = packed[off]
+            child_offset = packed[off + 1]
+            off += 2
+            yield self.__class__(packed, ptr_type, node_pos - child_offset, key + chr(c))
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return six.next(self.children)
+
+
 class PackedTrieMapPrinter(object):
     """Pretty printer for packed_trie_map."""
 
@@ -379,36 +409,42 @@ class PackedTrieMapPrinter(object):
         packed = [v for _, v in gdb.default_visualizer(self.val['m_packed']).children()]
         root_offset = packed[0]
         ptr_type = self.val['m_value_store'].type.template_argument(0).pointer()
-        return MapIterator(self.iterator(packed, ptr_type, root_offset))
+        return MapIterator(PackedTrieMapIterator(packed, ptr_type, root_offset))
 
-    class iterator(six.Iterator):
-        """Iterator over a packed_trie_map node."""
+    def display_hint(self):
+        return 'map'
 
-        def __init__(self, packed, ptr_type, node_pos, key=None):
-            if key is None:
-                key = ""
-            index_size = packed[node_pos + 1]
-            children = self.__iter_node_children(packed, ptr_type, key, node_pos, index_size)
-            self.children = itertools.chain.from_iterable(children)
-            if packed[node_pos] != 0:
-                val_ptr = packed[node_pos].cast(ptr_type)
-                this = iter([('"%s"' % key, val_ptr.dereference())])
-                self.children = itertools.chain(this, self.children)
 
-        def __iter_node_children(self, packed, ptr_type, key, node_pos, index_size):
-            off = node_pos + 2
-            node_end = off + index_size
-            while off < node_end:
-                c = packed[off]
-                child_offset = packed[off + 1]
-                off += 2
-                yield self.__class__(packed, ptr_type, node_pos - child_offset, key + chr(c))
+class PackedTrieMapSearchResultsPrinter(object):
+    """Pretty printer for packed_trie_map search_results."""
 
-        def __iter__(self):
-            return self
+    def __init__(self, val):
+        self.typename = 'mdds::packed_trie_map::search_results'
+        self.val = val
 
-        def __next__(self):
-            return six.next(self.children)
+    def to_string(self):
+        if self.val['m_node'] == 0:
+            return 'empty %s' % self.typename
+        return self.typename
+
+    class ptr_as_array(object):
+        """Adapter allowing to treat a gdb.Value pointer as an array."""
+
+        def __init__(self, ptr):
+            self.ptr = ptr
+
+        def __getitem__(self, n):
+            p = self.ptr
+            p += n
+            return p.dereference()
+
+    def children(self):
+        if self.val['m_node'] == 0:
+            return []
+        array = self.ptr_as_array(self.val['m_node'])
+        ptr_type = self.val.type.template_argument(0).template_argument(1).pointer()
+        prefix = str(self.val['m_buffer']).strip('"')
+        return MapIterator(PackedTrieMapIterator(array, ptr_type, 0, prefix))
 
     def display_hint(self):
         return 'map'
@@ -426,6 +462,9 @@ def build_pretty_printers():
             FstSegmentIteratorPrinter)
 
     pp.add_printer('packed_trie_map', '^mdds::packed_trie_map<.*>$', PackedTrieMapPrinter)
+    pp.add_printer('packed_trie_map::search_results',
+            '^mdds::trie::detail::packed_search_results<mdds::packed_trie_map<.*>$',
+            PackedTrieMapSearchResultsPrinter)
 
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
     pp.add_printer('segment_tree::search_result',
