@@ -453,6 +453,29 @@ class PackedTrieMapSearchResultsPrinter(object):
 mtv_type_map = {}
 
 
+class MultiTypeVectorBlockIterator(six.Iterator):
+    """Iterator for multi_type_vector blocks."""
+
+    def __init__(self, block, type_map):
+        type_id = int(block['type'])
+        elt_type = type_map[type_id]() if type_id in type_map else None
+        if type_id == -1:
+            elts = []
+        elif elt_type is None:
+            elts = ['***ERROR: block of unknown type id %d***' % type_id]
+        else:
+            data = block.cast(elt_type.pointer())
+            array = data.dereference()['m_array']
+            elts = inverse_array_iterator(gdb.default_visualizer(array).children())
+        self.elts = iter(elts)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return six.next(self.elts)
+
+
 class MultiTypeVectorPrinter(object):
     """Pretty printer for multi_type_vector."""
 
@@ -475,28 +498,8 @@ class MultiTypeVectorPrinter(object):
 
     def children(self):
         blocks_vis = gdb.default_visualizer(self.val['m_blocks'])
-        blocks = (self.block_iterator(block, self.type_map) for (_, block) in blocks_vis.children())
+        blocks = (MultiTypeVectorBlockIterator(block['mp_data'], self.type_map) for (_, block) in blocks_vis.children())
         return array_iterator(itertools.chain.from_iterable(blocks))
-
-    class block_iterator(six.Iterator):
-        def __init__(self, block, type_map):
-            type_id = int(block['mp_data']['type'])
-            elt_type = type_map[type_id]() if type_id in type_map else None
-            if type_id == -1:
-                elts = []
-            elif elt_type is None:
-                elts = ['***ERROR: block of unknown type id %d***' % type_id]
-            else:
-                data = block['mp_data'].cast(elt_type.pointer())
-                array = data.dereference()['m_array']
-                elts = inverse_array_iterator(gdb.default_visualizer(array).children())
-            self.elts = iter(elts)
-
-        def __iter__(self):
-            return self
-
-        def __next__(self):
-            return six.next(self.elts)
 
     def display_hint(self):
         return 'array'
@@ -538,6 +541,35 @@ class MultiTypeVectorPrinter(object):
         return {i: make_type('mdds::mtv::default_element_block', i, t) for i, t in enumerate(types)}
 
 
+class MultiTypeVectorIteratorPrinter(object):
+    """Pretty printer for multi_type_vector iterator."""
+
+    def __init__(self, val, type_map):
+        self.typename = 'mdds::multi_type_vector::iterator'
+        self.val = val
+        self.type_map = type_map
+
+    @classmethod
+    def with_type_map(cls, type_map):
+        def build(val):
+            return cls(val, type_map)
+        return build
+
+    def to_string(self):
+        if self.val['m_cur_node']['data'] == 0:
+            return 'non-dereferenceable %s' % self.typename
+        return self.typename
+
+    def children(self):
+        data = self.val['m_cur_node']['data']
+        if data == 0:
+            return []
+        return array_iterator(MultiTypeVectorBlockIterator(data, self.type_map))
+
+    def display_hint(self):
+        return 'array'
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
@@ -552,6 +584,9 @@ def build_pretty_printers():
     pp.add_printer('multi_type_vector',
             '^mdds::multi_type_vector<.*>$',
             MultiTypeVectorPrinter.with_type_map(mtv_type_map))
+    pp.add_printer('multi_type_vector::iterator',
+            '^mdds::detail::mtv::(const_)?iterator_base<mdds::multi_type_vector<.*>$',
+            MultiTypeVectorIteratorPrinter.with_type_map(mtv_type_map))
 
     pp.add_printer('packed_trie_map', '^mdds::packed_trie_map<.*>$', PackedTrieMapPrinter)
     pp.add_printer('packed_trie_map::iterator',
