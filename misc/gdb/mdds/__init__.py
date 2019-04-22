@@ -274,7 +274,7 @@ class SegmentTreeSearchResultPrinter(object):
             return gdb.default_visualizer(ptr.dereference()).children()
         data_chains = map(ptr_children, map(lambda t: t[1], ptr_children(self.val)))
         values = map(lambda t: t[1], itertools.chain.from_iterable(data_chains))
-        return map(lambda t: (str(t[0]), t[1]), enumerate(values))
+        return array_iterator(values)
 
     def display_hint(self):
         if self.val.type.code == gdb.TYPE_CODE_PTR:
