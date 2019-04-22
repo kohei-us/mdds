@@ -61,34 +61,21 @@ class IntrusivePtr(object):
         return self.get().dereference()[name]
 
 
-class MapIterator(six.Iterator):
-    """Adapter of iterator over (key, value) pairs to gdb 'map' iterator protocol.
+def map_iterator(iterable):
+    """Convert an iterator over (key, value) pairs to gdb 'map' iterator.
 
     The gdb iterator protocol for pretty printer with display type
     'map'--for some reason unknown to me--expects the key and the value
     separately, each with its own 'key'. To avoid complicating all map
     iterators, this simple adapter is provided.
     """
-
-    def __init__(self, iterable):
-        self.iterable = iterable
-        self.have_saved = False
-        self.saved_val = None
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.have_saved:
-            self.have_saved = False
-            return "", self.saved_val
-        (key, self.saved_val) = six.next(self.iterable)
-        self.have_saved = True
-        return "", key
+    for (k, v) in iterable:
+        yield "", k
+        yield "", v
 
 
 class KeyValueIterator(six.Iterator):
-    """The inverse of MapIterator."""
+    """The inverse of map_iterator."""
 
     def __init__(self, iterable):
         self.iterable = iterable
@@ -127,7 +114,7 @@ class FlatSegmentTreePrinter(object):
         return '%s [%d..%d]' % (self.typename, key('m_left_leaf'), key('m_right_leaf'))
 
     def children(self):
-        return MapIterator(self.iterator(self.val['m_left_leaf'], self.val['m_right_leaf']))
+        return map_iterator(self.iterator(self.val['m_left_leaf'], self.val['m_right_leaf']))
 
     def display_hint(self):
         return 'map'
@@ -194,7 +181,7 @@ class SortedStringMapPrinter(object):
         return '%s with %d values' % (self.typename, size)
 
     def children(self):
-        return MapIterator(self.iterator(self.val['m_entries'], self.val['m_entry_size']))
+        return map_iterator(self.iterator(self.val['m_entries'], self.val['m_entry_size']))
 
     def display_hint(self):
         return 'map'
@@ -233,7 +220,7 @@ class SegmentTreePrinter(object):
         return self.typename
 
     def children(self):
-        return MapIterator(self.iterator(self._segment_data()))
+        return map_iterator(self.iterator(self._segment_data()))
 
     def _segment_data(self):
         sd_visualizer = gdb.default_visualizer(self.val['m_segment_data'])
@@ -329,7 +316,7 @@ class TrieMapPrinter(object):
         return self.typename
 
     def children(self):
-        return MapIterator(TrieNodeIterator(self.val['m_root'], ""))
+        return map_iterator(TrieNodeIterator(self.val['m_root'], ""))
 
     def display_hint(self):
         return 'map'
@@ -352,7 +339,7 @@ class TrieMapSearchResultsPrinter(object):
         if node == 0:
             return []
         prefix = str(self.val['m_buffer']).strip('"')
-        return MapIterator(TrieNodeIterator(node.dereference(), prefix))
+        return map_iterator(TrieNodeIterator(node.dereference(), prefix))
 
     def display_hint(self):
         return 'map'
@@ -422,7 +409,7 @@ class PackedTrieMapPrinter(object):
         packed = [v for _, v in gdb.default_visualizer(self.val['m_packed']).children()]
         root_offset = packed[0]
         ptr_type = self.val['m_value_store'].type.template_argument(0).pointer()
-        return MapIterator(PackedTrieMapIterator(packed, ptr_type, root_offset))
+        return map_iterator(PackedTrieMapIterator(packed, ptr_type, root_offset))
 
     def display_hint(self):
         return 'map'
@@ -457,7 +444,7 @@ class PackedTrieMapSearchResultsPrinter(object):
         array = self.ptr_as_array(self.val['m_node'])
         ptr_type = self.val.type.template_argument(0).template_argument(1).pointer()
         prefix = str(self.val['m_buffer']).strip('"')
-        return MapIterator(PackedTrieMapIterator(array, ptr_type, 0, prefix))
+        return map_iterator(PackedTrieMapIterator(array, ptr_type, 0, prefix))
 
     def display_hint(self):
         return 'map'
