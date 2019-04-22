@@ -74,7 +74,7 @@ def map_iterator(iterable):
         yield "", v
 
 
-class KeyValueIterator(six.Iterator):
+class inverse_map_iterator(six.Iterator):
     """The inverse of map_iterator."""
 
     def __init__(self, iterable):
@@ -287,7 +287,7 @@ class TrieNodeIterator(six.Iterator):
 
     def __init__(self, node, prefix):
         nodes = gdb.default_visualizer(node['children']).children()
-        children = (self.__class__(v, prefix + chr(k)) for k, v in KeyValueIterator(nodes))
+        children = (self.__class__(v, prefix + chr(k)) for k, v in inverse_map_iterator(nodes))
         self.children = itertools.chain.from_iterable(children)
         if node['has_value']:
             this = iter([('"%s"' % prefix, node['value'])])
