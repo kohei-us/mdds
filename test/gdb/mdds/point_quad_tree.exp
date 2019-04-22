@@ -1,0 +1,36 @@
+# Test for GDB pretty printers for mdds::point_quad_tree.
+#
+# This file is part of mdds.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+load_lib pretty-printers.exp
+
+pp_gdb_init $BINFILE $srcdir/$subdir
+
+if {![pp_load_printers [list mdds]]} {
+    perror "could not load pretty printers"
+    return
+}
+
+if {![pp_run_test point_quad_tree]} {
+    perror "the executable is not a proper pretty printer test"
+    return
+}
+
+pp_test "empty_pqt" {empty mdds::point_quad_tree}
+pp_test "pqt_int" {mdds::point_quad_tree = \{\[10, 20\] = 1, \[15, 8\] = 2, \[25, 12\] = 3, \[15, 12\] = 4\}}
+pp_test "pqt_string" {mdds::point_quad_tree = \{\[25, 32\] = "a", \[52, 10\] = "c", \[80, 5\] = "d", \[10, 10\] = "f", \[40, 50\] = "e", \[5, 45\] = "b"\}}
+
+# vim: set shiftwidth=4 softtabstop=4 expandtab:

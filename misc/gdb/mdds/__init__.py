@@ -570,6 +570,33 @@ class MultiTypeVectorIteratorPrinter(object):
         return 'array'
 
 
+class PointQuadTreePrinter(object):
+    """Pretty printer for point_quad_tree."""
+
+    def __init__(self, val):
+        self.typename = 'mdds::point_quad_tree'
+        self.val = val
+
+    def to_string(self):
+        if IntrusivePtr(self.val['m_root']).get() == 0:
+            return 'empty %s' % self.typename
+        return self.typename
+
+    def children(self):
+        def iter_level(root):
+            if root.get() == 0:
+                return iter([])
+            r = root.get().dereference()
+            dirs = [r['northeast'], r['northwest'], r['southeast'], r['southwest']]
+            lower = map(iter_level, map(IntrusivePtr, dirs))
+            this = ('%s, %s' % (r['x'], r['y']), r['data'])
+            return itertools.chain([this], itertools.chain.from_iterable(lower))
+        return map_iterator(iter_level(IntrusivePtr(self.val['m_root'])))
+
+    def display_hint(self):
+        return 'map'
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
@@ -595,6 +622,8 @@ def build_pretty_printers():
     pp.add_printer('packed_trie_map::search_results',
             '^mdds::trie::detail::packed_search_results<mdds::packed_trie_map<.*>$',
             PackedTrieMapSearchResultsPrinter)
+
+    pp.add_printer('point_quad_tree', '^mdds::point_quad_tree<.*>$', PointQuadTreePrinter)
 
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
     pp.add_printer('segment_tree::search_result',
