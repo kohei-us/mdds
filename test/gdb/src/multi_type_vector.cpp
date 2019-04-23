@@ -46,6 +46,8 @@ void test_multi_type_vector()
     mtv_int_string.push_back<int>(7);
     mtv_int_string.push_back<int>(8);
 
+    mtv_type mtv_default(2);
+
     auto mtv_iter_begin = mtv_int_string.begin();
     auto mtv_iter_next = ++mtv_int_string.begin();
     auto mtv_iter_end = mtv_int_string.end();
@@ -55,6 +57,8 @@ void test_multi_type_vector()
 
     auto mtv_iter_rbegin = mtv_int_string.rbegin();
     auto mtv_iter_rend = mtv_int_string.rend();
+
+    auto mtv_iter_default = mtv_default.begin();
 
     stop();
 }

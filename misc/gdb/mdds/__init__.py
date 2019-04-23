@@ -456,11 +456,14 @@ mtv_type_map = {}
 class MultiTypeVectorBlockIterator(six.Iterator):
     """Iterator for multi_type_vector blocks."""
 
-    def __init__(self, block, type_map):
-        type_id = int(block['type'])
+    def __init__(self, block, size, type_map):
+        if block == 0:
+            type_id = -1
+        else:
+            type_id = int(block['type'])
         elt_type = type_map[type_id]() if type_id in type_map else None
         if type_id == -1:
-            elts = []
+            elts = itertools.repeat('empty', size)
         elif elt_type is None:
             elts = ['***ERROR: block of unknown type id %d***' % type_id]
         else:
@@ -498,7 +501,7 @@ class MultiTypeVectorPrinter(object):
 
     def children(self):
         blocks_vis = gdb.default_visualizer(self.val['m_blocks'])
-        blocks = (MultiTypeVectorBlockIterator(block['mp_data'], self.type_map) for (_, block) in blocks_vis.children())
+        blocks = (MultiTypeVectorBlockIterator(block['mp_data'], block['m_size'], self.type_map) for (_, block) in blocks_vis.children())
         return array_iterator(itertools.chain.from_iterable(blocks))
 
     def display_hint(self):
@@ -556,15 +559,16 @@ class MultiTypeVectorIteratorPrinter(object):
         return build
 
     def to_string(self):
-        if self.val['m_cur_node']['data'] == 0:
+        if self.val['m_cur_node']['data'] == 0 and self.val['m_cur_node']['size'] == 0:
             return 'non-dereferenceable %s' % self.typename
         return self.typename
 
     def children(self):
         data = self.val['m_cur_node']['data']
-        if data == 0:
+        size = self.val['m_cur_node']['size']
+        if data == 0 and size == 0:
             return []
-        return array_iterator(MultiTypeVectorBlockIterator(data, self.type_map))
+        return array_iterator(MultiTypeVectorBlockIterator(data, size, self.type_map))
 
     def display_hint(self):
         return 'array'

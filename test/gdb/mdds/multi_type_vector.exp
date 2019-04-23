@@ -33,6 +33,7 @@ pp_test "empty_mtv" {empty mdds::multi_type_vector}
 pp_test "mtv_int" {mdds::multi_type_vector with 4 elements = \{1, 2, 3, 4\}}
 pp_test "mtv_string" {mdds::multi_type_vector with 2 elements = \{"ab", "c"\}}
 pp_test "mtv_int_string" {mdds::multi_type_vector with 8 elements = \{1, 2, 3, 4, "ab", "c", 7, 8\}}
+pp_test "mtv_default" {mdds::multi_type_vector with 2 elements = \{empty, empty\}}
 
 pp_test "mtv_iter_begin" {mdds::multi_type_vector::iterator = \{1, 2, 3, 4\}}
 pp_test "mtv_iter_next" {mdds::multi_type_vector::iterator = \{"ab", "c"\}}
@@ -41,5 +42,6 @@ pp_test "mtv_iter_cbegin" {mdds::multi_type_vector::iterator = \{1, 2, 3, 4\}}
 pp_test "mtv_iter_cend" {non-dereferenceable mdds::multi_type_vector::iterator}
 pp_test "mtv_iter_rbegin" {mdds::multi_type_vector::iterator = \{7, 8\}}
 pp_test "mtv_iter_rend" {non-dereferenceable mdds::multi_type_vector::iterator}
+pp_test "mtv_iter_default" {mdds::multi_type_vector::iterator = \{empty, empty\}}
 
 # vim: set shiftwidth=4 softtabstop=4 expandtab:
