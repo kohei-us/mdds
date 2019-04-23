@@ -33,4 +33,8 @@ pp_test "empty_pqt" {empty mdds::point_quad_tree}
 pp_test "pqt_int" {mdds::point_quad_tree = \{\[10, 20\] = 1, \[15, 8\] = 2, \[25, 12\] = 3, \[15, 12\] = 4\}}
 pp_test "pqt_string" {mdds::point_quad_tree = \{\[25, 32\] = "a", \[52, 10\] = "c", \[80, 5\] = "d", \[10, 10\] = "f", \[40, 50\] = "e", \[5, 45\] = "b"\}}
 
+pp_test "pqt_search_empty" {empty mdds::point_quad_tree::search_results}
+pp_test "pqt_search_one" {mdds::point_quad_tree::search_results = \{\[10, 20\] = 1\}}
+pp_test "pqt_search_more" {mdds::point_quad_tree::search_results = \{\[10, 20\] = 1, \[15, 12\] = 4\}}
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

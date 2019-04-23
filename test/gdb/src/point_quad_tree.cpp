@@ -39,6 +39,10 @@ void test_point_quad_tree()
     pqt_string.insert(40, 50, "e");
     pqt_string.insert(10, 10, "f");
 
+    auto pqt_search_empty = pqt_int.search_region(0, 2, 3, 4);
+    auto pqt_search_one = pqt_int.search_region(0, 15, 10, 25);
+    auto pqt_search_more = pqt_int.search_region(0, 10, 15, 25);
+
     stop();
 }
 
