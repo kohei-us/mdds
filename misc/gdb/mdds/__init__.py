@@ -626,6 +626,26 @@ class PointQuadTreeSearchResultsPrinter(object):
         return 'array'
 
 
+class MultiTypeMatrixPrinter(object):
+    """Pretty printer for multi_type_matrix."""
+
+    def __init__(self, val):
+        self.typename = 'mdds::multi_type_matrix'
+        self.val = val
+
+    def to_string(self):
+        cols, rows = self.val['m_size']['column'], self.val['m_size']['row']
+        if cols == 0 or rows == 0:
+            return 'empty %s' % self.typename
+        return '%s (%d columns, %d rows)' % (self.typename, cols, rows)
+
+    def children(self):
+        return gdb.default_visualizer(self.val['m_store']).children()
+
+    def display_hint(self):
+        return 'array'
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
@@ -636,6 +656,8 @@ def build_pretty_printers():
     pp.add_printer('flat_segment_tree::segment_iterator',
             '^mdds::__fst::const_segment_iterator<.*>$',
             FlatSegmentTreeSegmentIteratorPrinter)
+
+    pp.add_printer('multi_type_matrix', '^mdds::multi_type_matrix<.*>$', MultiTypeMatrixPrinter)
 
     pp.add_printer('multi_type_vector',
             '^mdds::multi_type_vector<.*>$',

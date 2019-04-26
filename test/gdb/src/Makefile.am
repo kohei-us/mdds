@@ -6,6 +6,7 @@ test_CPPFLAGS = -I$(top_srcdir)/include
 
 test_SOURCES = \
 	flat_segment_tree.cpp \
+	multi_type_matrix.cpp \
 	multi_type_vector.cpp \
 	point_quad_tree.cpp \
 	segment_tree.cpp \

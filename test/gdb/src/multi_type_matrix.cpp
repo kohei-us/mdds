@@ -1,4 +1,4 @@
-/* Test suite for gdb pretty printers.
+/* Test code for mdds::multi_type_matrix.
 
    This file is part of mdds.
 
@@ -15,28 +15,27 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-// forward decls. of tests
-void test_flat_segment_tree();
-void test_multi_type_matrix();
-void test_multi_type_vector();
-void test_point_quad_tree();
-void test_segment_tree();
-void test_sorted_string_map();
-void test_trie_map();
+#include <mdds/multi_type_matrix.hpp>
 
-void stop()
-{
-}
+void stop();
 
-int main()
+using mdds::multi_type_matrix;
+
+void test_multi_type_matrix()
 {
-    test_flat_segment_tree();
-    test_multi_type_matrix();
-    test_multi_type_vector();
-    test_point_quad_tree();
-    test_segment_tree();
-    test_sorted_string_map();
-    test_trie_map();
+    typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> mtm_type;
+
+    mtm_type empty_mtm;
+
+    mtm_type mtm(4, 2);
+    mtm.set(1, 0, 1);
+    mtm.set(2, 0, 2);
+    mtm.set(3, 0, std::string("a"));
+    mtm.set(0, 1, std::string("b"));
+    mtm.set(1, 1, true);
+    mtm.set(3, 1, 0.5);
+
+    stop();
 }
 
 // vim: set shiftwidth=4 softtabstop=4 expandtab:
