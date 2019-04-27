@@ -1,4 +1,4 @@
-/* Test suite for gdb pretty printers.
+/* Test code for mdds::rtree.
 
    This file is part of mdds.
 
@@ -15,30 +15,26 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-// forward decls. of tests
-void test_flat_segment_tree();
-void test_multi_type_matrix();
-void test_multi_type_vector();
-void test_point_quad_tree();
-void test_rtree();
-void test_segment_tree();
-void test_sorted_string_map();
-void test_trie_map();
+#include <string>
 
-void stop()
-{
-}
+#include <mdds/rtree.hpp>
 
-int main()
+void stop();
+
+using mdds::rtree;
+
+void test_rtree()
 {
-    test_flat_segment_tree();
-    test_multi_type_matrix();
-    test_multi_type_vector();
-    test_point_quad_tree();
-    test_rtree();
-    test_segment_tree();
-    test_sorted_string_map();
-    test_trie_map();
+    using tree_type = rtree<int, std::string>;
+
+    tree_type empty_tree;
+
+    tree_type tree;
+    tree.insert({{0, 1}, {2, 4}}, "a");
+    tree.insert({{-3, 3}, {5, 8}}, "bc");
+    tree.insert({{-2, 1}, {3, 6}}, "d");
+
+    stop();
 }
 
 // vim: set shiftwidth=4 softtabstop=4 expandtab:

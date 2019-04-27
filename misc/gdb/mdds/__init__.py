@@ -646,6 +646,44 @@ class MultiTypeMatrixPrinter(object):
         return 'array'
 
 
+class RTreePrinter(object):
+    """Pretty printer for rtree."""
+
+    def __init__(self, val):
+        self.typename = 'mdds::rtree'
+        self.val = val
+
+    def to_string(self):
+        if self.val['m_root']['count'] == 0:
+            return 'empty %s' % self.typename
+        return self.typename
+
+    def children(self):
+        def iter_node_store(store, dir_type, val_type):
+            if store['type'] in (1, 2): # directory
+                if store['count'] == 0:
+                    return
+                node = store['node_ptr'].cast(dir_type.pointer()).dereference()
+                for s in inverse_array_iterator(gdb.default_visualizer(node['children']).children()):
+                    for val in iter_node_store(s, dir_type, val_type):
+                        yield val
+            elif store['type'] == 3: # value
+                val = store['node_ptr'].cast(val_type.pointer()).dereference()['value']
+                def fmt_point(point):
+                    return store['extent'][point]['d']
+                key = '%s - %s' % (fmt_point('start'), fmt_point('end'))
+                yield key, val
+            else: # unspecified or unknown type
+                return
+
+        dir_type = gdb.lookup_type('%s::directory_node' % self.val.type.strip_typedefs())
+        val_type = gdb.lookup_type('%s::value_node' % self.val.type.strip_typedefs())
+        return map_iterator(iter_node_store(self.val['m_root'], dir_type, val_type))
+
+    def display_hint(self):
+        return 'map'
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
@@ -678,6 +716,8 @@ def build_pretty_printers():
     pp.add_printer('point_quad_tree::search_results',
             '^mdds::point_quad_tree<.*>::search_results$',
             PointQuadTreeSearchResultsPrinter)
+
+    pp.add_printer('rtree', '^mdds::rtree<.*>$', RTreePrinter)
 
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
     pp.add_printer('segment_tree::search_result',
