@@ -668,11 +668,7 @@ class RTreePrinter(object):
                     for val in iter_node_store(s, dir_type, val_type):
                         yield val
             elif store['type'] == 3: # value
-                val = store['node_ptr'].cast(val_type.pointer()).dereference()['value']
-                def fmt_point(point):
-                    return store['extent'][point]['d']
-                key = '%s - %s' % (fmt_point('start'), fmt_point('end'))
-                yield key, val
+                yield self.value(store, val_type)
             else: # unspecified or unknown type
                 return
 
@@ -682,6 +678,41 @@ class RTreePrinter(object):
 
     def display_hint(self):
         return 'map'
+
+    @staticmethod
+    def value(store, value_type):
+        val = store['node_ptr'].cast(value_type.pointer()).dereference()['value']
+        def fmt_point(point):
+            return store['extent'][point]['d']
+        key = '%s - %s' % (fmt_point('start'), fmt_point('end'))
+        return key, val
+
+
+class RTreeSearchResultsPrinter(object):
+    """Pretty printer for rtree search_results."""
+
+    def __init__(self, val):
+        self.typename = 'mdds::rtree::search_results'
+        self.val = val
+
+    def to_string(self):
+        try:
+            six.next(gdb.default_visualizer(self.val['m_store']).children())
+        except:
+            return 'empty %s' % self.typename
+        return self.typename
+
+    def children(self):
+        def iter_values(store):
+            base_type = str(self.val.type.strip_typedefs()).rstrip('::search_results')
+            val_type = gdb.lookup_type(base_type + '::value_node')
+            for v in inverse_array_iterator(gdb.default_visualizer(store).children()):
+                store = v['ns'].dereference()
+                yield '[%s] = %s' % RTreePrinter.value(store, val_type)
+        return array_iterator(iter_values(self.val['m_store']))
+
+    def display_hint(self):
+        return 'array'
 
 
 def build_pretty_printers():
@@ -718,6 +749,9 @@ def build_pretty_printers():
             PointQuadTreeSearchResultsPrinter)
 
     pp.add_printer('rtree', '^mdds::rtree<.*>$', RTreePrinter)
+    pp.add_printer('rtree::search_results',
+            '^mdds::rtree<.*>::(const_)?search_results$',
+            RTreeSearchResultsPrinter)
 
     pp.add_printer('segment_tree', '^mdds::segment_tree<.*>$', SegmentTreePrinter)
     pp.add_printer('segment_tree::search_result',

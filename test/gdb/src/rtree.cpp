@@ -34,6 +34,10 @@ void test_rtree()
     tree.insert({{-3, 3}, {5, 8}}, "bc");
     tree.insert({{-2, 1}, {3, 6}}, "d");
 
+    auto search_empty = tree.search({{0, 0}, {0, 0}}, tree_type::search_type::match);
+    auto search_one = tree.search({{0, 1}, {2, 4}}, tree_type::search_type::match);
+    auto search_more = tree.search({{0, 0}, {1, 5}}, tree_type::search_type::overlap);
+
     stop();
 }
 
