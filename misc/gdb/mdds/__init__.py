@@ -708,11 +708,11 @@ class RTreeSearchResultsPrinter(object):
             val_type = gdb.lookup_type(base_type + '::value_node')
             for v in inverse_array_iterator(gdb.default_visualizer(store).children()):
                 store = v['ns'].dereference()
-                yield '[%s] = %s' % RTreePrinter.value(store, val_type)
-        return array_iterator(iter_values(self.val['m_store']))
+                yield RTreePrinter.value(store, val_type)
+        return map_iterator(iter_values(self.val['m_store']))
 
     def display_hint(self):
-        return 'array'
+        return 'map'
 
 
 def build_pretty_printers():
