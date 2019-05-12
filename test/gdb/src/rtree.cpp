@@ -38,6 +38,9 @@ void test_rtree()
     auto search_one = tree.search({{0, 1}, {2, 4}}, tree_type::search_type::match);
     auto search_more = tree.search({{0, 0}, {1, 5}}, tree_type::search_type::overlap);
 
+    auto iter_begin = search_one.begin();
+    auto iter_end = search_one.end();
+
     stop();
 }
 

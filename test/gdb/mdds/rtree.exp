@@ -36,4 +36,7 @@ pp_test "search_empty" {empty mdds::rtree::search_results}
 pp_test "search_one" {mdds::rtree::search_results = \{\[\{0, 1\} - \{2, 4\}\] = "a"\}}
 pp_test "search_more" {mdds::rtree::search_results = \{\[\{0, 1\} - \{2, 4\}\] = "a", \[\{-3, 3\} - \{5, 8\}\] = "bc", \[\{-2, 1\} - \{3, 6\}\] = "d"\}}
 
+pp_test "iter_begin" {mdds::rtree::iterator = \{\[\{0, 1\} - \{2, 4\}\] = "a"\}}
+# pp_test "iter_end" {non-dereferenceable mdds::rtree::iterator}
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

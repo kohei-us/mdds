@@ -715,6 +715,42 @@ class RTreeSearchResultsPrinter(object):
         return 'map'
 
 
+class RTreeIteratorPrinter(object):
+    """Pretty printer for rtree iterator."""
+
+    def __init__(self, val):
+        self.typename = 'mdds::rtree::iterator'
+        self.val = val
+
+    def to_string(self):
+        # NOTE: This is just wishful thinking. In reality there's no way to recognize a
+        # non-dereferenceable iterator unless the standard library is used in debug mode.
+        if self.__from_vector_iterator(self.val['m_pos']) is None:
+            return 'non-dereferenceable %s' % self.typename
+        return self.typename
+
+    def children(self):
+        base_type = str(self.val.type.strip_typedefs()).rstrip('::iterator')
+        val_type = gdb.lookup_type(base_type + '::value_node')
+        content = self.__from_vector_iterator(self.val['m_pos'])
+        if content is None:
+            return []
+        store = content['ns'].dereference()
+        return map_iterator([RTreePrinter.value(store, val_type)])
+
+    def display_hint(self):
+        return 'map'
+
+    def __from_vector_iterator(self, iter):
+        # HACK: this relies on details of standard library impl.
+        fields = list(iter.type.fields())
+        if len(fields) == 1:
+            val = iter[fields[0].name]
+            if val:
+                return val.dereference()
+        return None
+
+
 def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter('mdds')
 
@@ -749,6 +785,7 @@ def build_pretty_printers():
             PointQuadTreeSearchResultsPrinter)
 
     pp.add_printer('rtree', '^mdds::rtree<.*>$', RTreePrinter)
+    pp.add_printer('rtree::iterator', '^mdds::rtree<.*>::(const_)?iterator$', RTreeIteratorPrinter)
     pp.add_printer('rtree::search_results',
             '^mdds::rtree<.*>::(const_)?search_results$',
             RTreeSearchResultsPrinter)
