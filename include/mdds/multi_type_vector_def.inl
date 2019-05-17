@@ -861,7 +861,26 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(
 
     if (pos < start_row)
     {
-        // Position hint is past the insertion position. Reset.
+        // Position hint is past the insertion position.
+        // Walk back if that seems efficient.
+        if (pos > start_row / 2)
+        {
+            for (size_type i = block_index; i > 0;)
+            {
+                --i;
+                const block& blk = m_blocks[i];
+                start_row -= blk.m_size;
+                if (pos >= start_row)
+                {
+                    // Row is in this block.
+                    block_index = i;
+                    return;
+                }
+                // Specified row is not in this block.
+            }
+            assert(start_row == 0);
+        }
+        // Otherwise reset.
         start_row = 0;
         block_index = 0;
     }
