@@ -1,4 +1,4 @@
-AC_INIT(mdds, 1.4.99, kohei.yoshida@gmail.com)
+AC_INIT(mdds, 1.5.0, kohei.yoshida@gmail.com)
 AM_INIT_AUTOMAKE([foreign dist-bzip2 subdir-objects])
 AM_MAINTAINER_MODE
 
@@ -98,6 +98,7 @@ include/Makefile
 include/mdds/Makefile
 include/mdds/multi_type_vector/Makefile
 example/Makefile
+test/Makefile
 test/gdb/Makefile
 test/gdb/src/Makefile
 flat_segment_tree_test_mem.mem:src/test.mem.in
