@@ -2,6 +2,35 @@
 API Incompatibility Notes
 =========================
 
+1.5
+---
+
+multi_type_vector
+^^^^^^^^^^^^^^^^^
+
+* The standard integer blocks previously used non-standard integer types,
+  namely:
+
+  * short
+  * unsigned short
+  * int
+  * unsigned int
+  * long
+  * unsigned long
+  * char
+  * unsigned char
+
+  Starting with this version, the integer blocks now use:
+
+  * (u)int8_t
+  * (u)int16_t
+  * (u)int32_t
+  * (u)int64_t
+
+* The numeric_element_block type has been renamed to `double_element_block`,
+  to make room for a new element block for float type named
+  `float_element_block`.
+
 1.4
 ---
 
