@@ -51,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'mdds'
-copyright = '2018, Kohei Yoshida'
+copyright = '2019, Kohei Yoshida'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
