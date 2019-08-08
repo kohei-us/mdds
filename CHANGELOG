@@ -1,3 +1,5 @@
+mdds 1.5.0
+
 * multi_type_vector
 
   * fixed the static get(const const_position_type& pos) method for the
@@ -6,6 +8,24 @@
 
   * fixed an issue with the const position() method not returning a valid end
     position the same way the non-const variant does.
+
+  * added steps to traverse blocks backward from the postiion specified in the
+    position hint.  This may result in improved performance in some
+    situations.
+
+  * the standard integer blocks now use fixed size integer types i.e.
+
+    * (u)int8_t
+
+    * (u)int16_t
+
+    * (u)int32_t
+
+    * (u)int64_t
+
+  * The numeric_element_block has been renamed to double_element_block.
+
+  * Added new block type to store float element values.
 
 mdds 1.4.3
 
