@@ -157,7 +157,7 @@ the following code::
 
 The signature of the :cpp:func:`~mdds::flat_segment_tree::search_tree` method
 is identical to that of the :cpp:func:`~mdds::flat_segment_tree::search` method
-except for the name.  This code generate the following output:
+except for the name.  This code generates the following output:
 
 .. code-block:: none
 
