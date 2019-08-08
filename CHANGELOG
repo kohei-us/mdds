@@ -25,7 +25,7 @@ mdds 1.5.0
 
   * The numeric_element_block has been renamed to double_element_block.
 
-  * Added new block type to store float element values.
+  * added new block type to store float element values.
 
 mdds 1.4.3
 
