@@ -36,6 +36,10 @@ mdds 1.5.0
 
   * added new block type to store float element values.
 
+* general
+
+  * added gdb pretty printers that prints the contents of the data structures.
+
 mdds 1.4.3
 
 * documentation
