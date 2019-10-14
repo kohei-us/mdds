@@ -257,7 +257,6 @@ void mtv_test_basic()
         assert(res);
     }
 
-#if 0 // TODO : enable this!
     {
         // Insert first value into the bottom row.
         mtv_type col_db(3);
@@ -279,6 +278,7 @@ void mtv_test_basic()
         assert(res);
     }
 
+#if 0 // TODO : enable this!
     {
         // This time insert from bottom up one by one.
         mtv_type col_db(3);

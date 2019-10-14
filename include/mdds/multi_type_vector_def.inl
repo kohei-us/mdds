@@ -990,12 +990,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
 
             if (pos_in_block == blk->m_size - 1)
             {
-                assert(!"TESTME");
                 // Insert into the last cell in block.
                 blk->m_size -= 1;
                 assert(blk->m_size > 0);
 
-                m_blocks.emplace_back(1);
+                m_blocks.emplace_back(blk->m_size, 1);
                 blk = &m_blocks.back(); // old pointer is invalid.
 
                 create_new_block_with_new_cell(blk->mp_data, cell);
@@ -1038,9 +1037,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             }
             else
             {
-                assert(!"TESTME");
+                // Shrink this topmost block by one and set the new value above it.
                 assert(blk->m_size > 1);
                 blk->m_size -= 1;
+                blk->m_position = 1;
                 m_blocks.emplace(m_blocks.begin(), 1);
                 create_new_block_with_new_cell(m_blocks.front().mp_data, cell);
             }
@@ -1112,7 +1112,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     block* blk_next = get_next_block_of_type(block_index, blk_cat_prev);
                     if (blk_next)
                     {
-                        assert(!"TESTME");
                         assert(blk_next->mp_data); // Empty block must not be followed by another empty block.
 
                         // We need to merge the previous and next blocks, then
@@ -1153,7 +1152,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                         }
                         else
                         {
-                            assert(!"TESTME");
                             // Be sure to resize the next block to zero to prevent the
                             // transferred cells to be deleted. 
                             blk_prev.m_size += 1 + blk_next->m_size;
