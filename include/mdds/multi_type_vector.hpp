@@ -129,6 +129,7 @@ private:
         element_block_type* mp_data;
 
         block();
+        block(size_type _position, size_type _size);
         block(size_type _size);
         block(size_type _size, element_block_type* _data);
         block(const block& other);

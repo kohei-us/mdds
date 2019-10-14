@@ -257,6 +257,7 @@ void mtv_test_basic()
         assert(res);
     }
 
+#if 0 // TODO : enable this!
     {
         // Insert first value into the bottom row.
         mtv_type col_db(3);
@@ -812,6 +813,7 @@ void mtv_test_basic()
             assert(*p == 'z');
         }
     }
+#endif
 }
 
 /**
@@ -5279,11 +5281,11 @@ int main (int argc, char **argv)
 {
     try
     {
-
-#if 0 // TODO : enable this!
         mtv_test_types();
         mtv_test_construction();
         mtv_test_basic();
+
+#if 0 // TODO : enable this!
         mtv_test_basic_numeric();
         mtv_test_empty_cells();
         mtv_test_swap();

@@ -634,12 +634,14 @@ int main (int argc, char **argv)
 
         if (opt.test_func)
         {
+#if 0 // TODO : enable this!
             mtm_test_walk();
             mtm_test_walk_subset();
             mtm_test_parallel_walk();
             mtm_test_parallel_walk_non_equal_size();
             mtm_test_walk_with_lambda();
             mtm_test_parallel_walk_with_lambda();
+#endif
         }
 
         if (opt.test_perf)
