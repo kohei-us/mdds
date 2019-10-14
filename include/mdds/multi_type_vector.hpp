@@ -124,6 +124,7 @@ private:
 
     struct block
     {
+        size_type m_position;
         size_type m_size;
         element_block_type* mp_data;
 
