@@ -1,311 +1,319 @@
 <!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
 <Project
-	Version="10.0"
-	VendorName="SlickEdit"
-	WorkingDir="."
-	BuildSystem="vsbuild"
-	VCSProject="Git:">
-	<Config
-		Name="Debug"
-		Type="gnuc"
-		DebugCallbackName="gdb"
-		Version="1"
-		OutputFile="%bdtest"
-		CompilerConfigName="Latest Version"
-		Defines="">
-		<Menu>
-			<Target
-				Name="Compile"
-				MenuCaption="&amp;Compile"
-				Dialog="_gnuc_options_form Compile"
-				CaptureOutputWith="Redirection"
-				Deletable="0"
-				OutputExts="*.o"
-				SaveOption="SaveCurrent"
-				RunFromDir="%rw"
-				ClearProcessBuffer="1">
-				<Exec
-					CmdLine='g++ -c %xup %defd -g -Wall %~other -o "%bd%n%oe" %i "%f"'
-					OtherOptions="-DDEBUG_NODE_BASE -DUNIT_TEST"/>
-			</Target>
-			<Target
-				Name="Link"
-				MenuCaption="&amp;Link"
-				ShowOnMenu="Never"
-				Dialog="_gnuc_options_form Link"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveCurrent"
-				RunFromDir="%rw">
-				<Exec CmdLine='g++ %xup -g -Wall -o "%o" %objs'/>
-			</Target>
-			<Target
-				Name="Build"
-				MenuCaption="&amp;Build"
-				Dialog="_gnuc_options_form Compile"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveWorkspaceFiles"
-				RunFromDir="%rw"
-				ClearProcessBuffer="1">
-				<Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t build'/>
-			</Target>
-			<Target
-				Name="Rebuild"
-				MenuCaption="&amp;Rebuild"
-				Dialog="_gnuc_options_form Compile"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveWorkspaceFiles"
-				RunFromDir="%rw">
-				<Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t rebuild'/>
-			</Target>
-			<Target
-				Name="Debug"
-				MenuCaption="&amp;Debug"
-				Dialog="_gnuc_options_form Run/Debug"
-				BuildFirst="1"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveNone"
-				RunFromDir="%rw">
-				<Exec CmdLine='vsdebugio -prog "%o"'/>
-			</Target>
-			<Target
-				Name="Execute"
-				MenuCaption="E&amp;xecute"
-				Dialog="_gnuc_options_form Run/Debug"
-				CaptureOutputWith="Redirection"
-				Deletable="0"
-				SaveOption="SaveWorkspaceFiles"
-				RunFromDir="%rw">
-				<Exec CmdLine='"%o"'/>
-			</Target>
-			<Target
-				Name="dash"
-				MenuCaption="-"
-				Deletable="0">
-				<Exec/>
-			</Target>
-			<Target
-				Name="GNU C Options"
-				MenuCaption="GNU C &amp;Options..."
-				ShowOnMenu="HideIfNoCmdLine"
-				Deletable="0"
-				SaveOption="SaveNone">
-				<Exec
-					CmdLine="gnucoptions"
-					Type="Slick-C"/>
-			</Target>
-		</Menu>
-		<Includes>
-			<Include Dir="./inc"/>
-		</Includes>
-		<Libs PreObjects="0"/>
-	</Config>
-	<Config
-		Name="Release"
-		Type="gnuc"
-		DebugCallbackName="gdb"
-		Version="1"
-		OutputFile="%bdtest"
-		CompilerConfigName="Latest Version"
-		Defines="">
-		<Menu>
-			<Target
-				Name="Compile"
-				MenuCaption="&amp;Compile"
-				Dialog="_gnuc_options_form Compile"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				OutputExts="*.o"
-				SaveOption="SaveCurrent"
-				RunFromDir="%rw"
-				ClearProcessBuffer="1">
-				<Exec CmdLine='g++ -c %xup %defd -Wall -o "%bd%n%oe" %i "%f"'/>
-			</Target>
-			<Target
-				Name="Link"
-				MenuCaption="&amp;Link"
-				ShowOnMenu="Never"
-				Dialog="_gnuc_options_form Link"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveCurrent"
-				RunFromDir="%rw">
-				<Exec CmdLine='g++ %xup -Wall -o "%o" %objs'/>
-			</Target>
-			<Target
-				Name="Build"
-				MenuCaption="&amp;Build"
-				Dialog="_gnuc_options_form Compile"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveWorkspaceFiles"
-				RunFromDir="%rw"
-				ClearProcessBuffer="1">
-				<Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t build'/>
-			</Target>
-			<Target
-				Name="Rebuild"
-				MenuCaption="&amp;Rebuild"
-				Dialog="_gnuc_options_form Compile"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveWorkspaceFiles"
-				RunFromDir="%rw">
-				<Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t rebuild'/>
-			</Target>
-			<Target
-				Name="Debug"
-				MenuCaption="&amp;Debug"
-				Dialog="_gnuc_options_form Run/Debug"
-				BuildFirst="1"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveNone"
-				RunFromDir="%rw">
-				<Exec CmdLine='vsdebugio -prog "%o"'/>
-			</Target>
-			<Target
-				Name="Execute"
-				MenuCaption="E&amp;xecute"
-				Dialog="_gnuc_options_form Run/Debug"
-				BuildFirst="1"
-				CaptureOutputWith="ProcessBuffer"
-				Deletable="0"
-				SaveOption="SaveWorkspaceFiles"
-				RunFromDir="%rw">
-				<Exec CmdLine='"%o"'/>
-			</Target>
-			<Target
-				Name="dash"
-				MenuCaption="-"
-				Deletable="0">
-				<Exec/>
-			</Target>
-			<Target
-				Name="GNU C Options"
-				MenuCaption="GNU C &amp;Options..."
-				ShowOnMenu="HideIfNoCmdLine"
-				Deletable="0"
-				SaveOption="SaveNone">
-				<Exec
-					CmdLine="gnucoptions"
-					Type="Slick-C"/>
-			</Target>
-		</Menu>
-		<Includes>
-			<Include Dir="./inc"/>
-		</Includes>
-		<Libs PreObjects="0"/>
-	</Config>
-	<CustomFolders>
-		<Folder
-			Name="Source Files"
-			Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl"></Folder>
-		<Folder
-			Name="Header Files"
-			Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.inc;*.sh;*.cpy;*.if"/>
-		<Folder
-			Name="Resource Files"
-			Filters="*.ico;*.cur;*.dlg"/>
-		<Folder
-			Name="Bitmaps"
-			Filters="*.bmp"/>
-		<Folder
-			Name="Other Files"
-			Filters=""/>
-	</CustomFolders>
-	<Files AutoFolders="DirectoryView">
-		<Folder Name="../example">
-			<F N="../example/flat_segment_tree.cpp"/>
-			<F N="../example/flat_segment_tree_itrs.cpp"/>
-			<F N="../example/mixed_type_matrix.cpp"/>
-			<F N="../example/mtv_collection.cpp"/>
-			<F N="../example/multi_type_matrix.cpp"/>
-			<F N="../example/multi_type_vector.cpp"/>
-			<F N="../example/multi_type_vector_element_block1.cpp"/>
-			<F N="../example/multi_type_vector_event1.cpp"/>
-			<F N="../example/multi_type_vector_pos_hint.cpp"/>
-			<F N="../example/packed_trie_map.cpp"/>
-			<F N="../example/point_quad_tree.cpp"/>
-			<F N="../example/rectangle_set.cpp"/>
-			<F N="../example/rtree_erase.cpp"/>
-			<F N="../example/rtree_medium.cpp"/>
-			<F N="../example/rtree_medium_bulkload.cpp"/>
-			<F N="../example/rtree_simple.cpp"/>
-			<F N="../example/segment_tree.cpp"/>
-			<F N="../example/trie_map.cpp"/>
-		</Folder>
-		<Folder Name="../include">
-			<Folder Name="mdds">
-				<Folder Name="multi_type_vector">
-					<F N="../include/mdds/multi_type_vector/collection.hpp"/>
-					<F N="../include/mdds/multi_type_vector/collection_def.inl"/>
-				</Folder>
-				<F N="../include/mdds/flat_segment_tree.hpp"/>
-				<F N="../include/mdds/flat_segment_tree_def.inl"/>
-				<F N="../include/mdds/flat_segment_tree_itr.hpp"/>
-				<F N="../include/mdds/global.hpp"/>
-				<F N="../include/mdds/multi_type_matrix.hpp"/>
-				<F N="../include/mdds/multi_type_matrix_def.inl"/>
-				<F N="../include/mdds/multi_type_vector.hpp"/>
-				<F N="../include/mdds/multi_type_vector_custom_func1.hpp"/>
-				<F N="../include/mdds/multi_type_vector_custom_func2.hpp"/>
-				<F N="../include/mdds/multi_type_vector_custom_func3.hpp"/>
-				<F N="../include/mdds/multi_type_vector_def.inl"/>
-				<F N="../include/mdds/multi_type_vector_itr.hpp"/>
-				<F N="../include/mdds/multi_type_vector_macro.hpp"/>
-				<F N="../include/mdds/multi_type_vector_trait.hpp"/>
-				<F N="../include/mdds/multi_type_vector_types.hpp"/>
-				<F N="../include/mdds/node.hpp"/>
-				<F N="../include/mdds/point_quad_tree.hpp"/>
-				<F N="../include/mdds/quad_node.hpp"/>
-				<F N="../include/mdds/rectangle_set.hpp"/>
-				<F N="../include/mdds/rectangle_set_def.inl"/>
-				<F N="../include/mdds/rtree.hpp"/>
-				<F N="../include/mdds/rtree_def.inl"/>
-				<F N="../include/mdds/segment_tree.hpp"/>
-				<F N="../include/mdds/segment_tree_def.inl"/>
-				<F N="../include/mdds/sorted_string_map.hpp"/>
-				<F N="../include/mdds/sorted_string_map_def.inl"/>
-				<F N="../include/mdds/trie_map.hpp"/>
-				<F N="../include/mdds/trie_map_def.inl"/>
-				<F N="../include/mdds/trie_map_itr.hpp"/>
-			</Folder>
-		</Folder>
-		<Folder Name="../misc">
-			<F N="../misc/matrix_perf.cpp"/>
-			<F N="../misc/sorted_string_map_perf.cpp"/>
-		</Folder>
-		<Folder Name="../quickcheck">
-			<F N="../quickcheck/flat_segment_tree.cpp"/>
-		</Folder>
-		<Folder Name="../src">
-			<F N="../src/array_creation_perf_test.cpp"/>
-			<F N="../src/flat_segment_tree_test.cpp"/>
-			<F N="../src/mixed_type_matrix_test.cpp"/>
-			<F N="../src/multi_type_matrix_test.cpp"/>
-			<F N="../src/multi_type_matrix_test_walk.cpp"/>
-			<F N="../src/multi_type_vector_test_collection.cpp"/>
-			<F N="../src/multi_type_vector_test_custom.cpp"/>
-			<F N="../src/multi_type_vector_test_default.cpp"/>
-			<F N="../src/multi_type_vector_test_event.cpp"/>
-			<F N="../src/multi_type_vector_test_perf.cpp"/>
-			<F N="../src/nodecontainer.cpp"/>
-			<F N="../src/point_quad_tree_test.cpp"/>
-			<F N="../src/rangetree.cpp"/>
-			<F N="../src/rectangle_set_test.cpp"/>
-			<F N="../src/rtree_test.cpp"/>
-			<F N="../src/rtree_test_bulkload.cpp"/>
-			<F N="../src/segment_tree_test.cpp"/>
-			<F N="../src/sorted_string_map_test.cpp"/>
-			<F N="../src/stlperf_test.cpp"/>
-			<F N="../src/template_test.cpp"/>
-			<F N="../src/test_global.hpp"/>
-			<F N="../src/test_global_rtree.hpp"/>
-			<F N="../src/trie_map_test.cpp"/>
-		</Folder>
-	</Files>
+    Version="10.0"
+    VendorName="SlickEdit"
+    WorkingDir="."
+    BuildSystem="vsbuild"
+    VCSProject="Git:">
+    <Config
+        Name="Debug"
+        Type="gnuc"
+        DebugCallbackName="gdb"
+        Version="1"
+        OutputFile="%bdtest"
+        CompilerConfigName="Latest Version"
+        Defines="">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="Redirection"
+                Deletable="0"
+                OutputExts="*.o"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw"
+                ClearProcessBuffer="1">
+                <Exec
+                    CmdLine='g++ -c %xup %defd -g -Wall %~other -o "%bd%n%oe" %i "%f"'
+                    OtherOptions="-DDEBUG_NODE_BASE -DUNIT_TEST"/>
+            </Target>
+            <Target
+                Name="Link"
+                MenuCaption="&amp;Link"
+                ShowOnMenu="Never"
+                Dialog="_gnuc_options_form Link"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='g++ %xup -g -Wall -o "%o" %objs'/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw"
+                ClearProcessBuffer="1">
+                <Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t build'/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t rebuild'/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='vsdebugio -prog "%o"'/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                Dialog="_gnuc_options_form Run/Debug"
+                CaptureOutputWith="Redirection"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%o"'/>
+            </Target>
+            <Target
+                Name="dash"
+                MenuCaption="-"
+                Deletable="0">
+                <Exec/>
+            </Target>
+            <Target
+                Name="GNU C Options"
+                MenuCaption="GNU C &amp;Options..."
+                ShowOnMenu="HideIfNoCmdLine"
+                Deletable="0"
+                SaveOption="SaveNone">
+                <Exec
+                    CmdLine="gnucoptions"
+                    Type="Slick-C"/>
+            </Target>
+        </Menu>
+        <Includes>
+            <Include Dir="./inc"/>
+        </Includes>
+        <Libs PreObjects="0"/>
+    </Config>
+    <Config
+        Name="Release"
+        Type="gnuc"
+        DebugCallbackName="gdb"
+        Version="1"
+        OutputFile="%bdtest"
+        CompilerConfigName="Latest Version"
+        Defines="">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                OutputExts="*.o"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw"
+                ClearProcessBuffer="1">
+                <Exec CmdLine='g++ -c %xup %defd -Wall -o "%bd%n%oe" %i "%f"'/>
+            </Target>
+            <Target
+                Name="Link"
+                MenuCaption="&amp;Link"
+                ShowOnMenu="Never"
+                Dialog="_gnuc_options_form Link"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='g++ %xup -Wall -o "%o" %objs'/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw"
+                ClearProcessBuffer="1">
+                <Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t build'/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t rebuild'/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='vsdebugio -prog "%o"'/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%o"'/>
+            </Target>
+            <Target
+                Name="dash"
+                MenuCaption="-"
+                Deletable="0">
+                <Exec/>
+            </Target>
+            <Target
+                Name="GNU C Options"
+                MenuCaption="GNU C &amp;Options..."
+                ShowOnMenu="HideIfNoCmdLine"
+                Deletable="0"
+                SaveOption="SaveNone">
+                <Exec
+                    CmdLine="gnucoptions"
+                    Type="Slick-C"/>
+            </Target>
+        </Menu>
+        <Includes>
+            <Include Dir="./inc"/>
+        </Includes>
+        <Libs PreObjects="0"/>
+    </Config>
+    <CustomFolders>
+        <Folder
+            Name="Source Files"
+            Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl"></Folder>
+        <Folder
+            Name="Header Files"
+            Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.inc;*.sh;*.cpy;*.if"/>
+        <Folder
+            Name="Resource Files"
+            Filters="*.ico;*.cur;*.dlg"/>
+        <Folder
+            Name="Bitmaps"
+            Filters="*.bmp"/>
+        <Folder
+            Name="Other Files"
+            Filters=""/>
+    </CustomFolders>
+    <Files AutoFolders="DirectoryView">
+        <Folder Name="../example">
+            <F N="../example/flat_segment_tree.cpp"/>
+            <F N="../example/flat_segment_tree_itrs.cpp"/>
+            <F N="../example/mtv_collection.cpp"/>
+            <F N="../example/multi_type_matrix.cpp"/>
+            <F N="../example/multi_type_vector.cpp"/>
+            <F N="../example/multi_type_vector_element_block1.cpp"/>
+            <F N="../example/multi_type_vector_event1.cpp"/>
+            <F N="../example/multi_type_vector_pos_hint.cpp"/>
+            <F N="../example/packed_trie_map.cpp"/>
+            <F N="../example/point_quad_tree.cpp"/>
+            <F N="../example/rectangle_set.cpp"/>
+            <F N="../example/rtree_erase.cpp"/>
+            <F N="../example/rtree_medium.cpp"/>
+            <F N="../example/rtree_medium_bulkload.cpp"/>
+            <F N="../example/rtree_simple.cpp"/>
+            <F N="../example/segment_tree.cpp"/>
+            <F N="../example/trie_map.cpp"/>
+        </Folder>
+        <Folder Name="../include">
+            <Folder Name="mdds">
+                <Folder Name="multi_type_vector">
+                    <F N="../include/mdds/multi_type_vector/collection.hpp"/>
+                    <F N="../include/mdds/multi_type_vector/collection_def.inl"/>
+                </Folder>
+                <F N="../include/mdds/flat_segment_tree.hpp"/>
+                <F N="../include/mdds/flat_segment_tree_def.inl"/>
+                <F N="../include/mdds/flat_segment_tree_itr.hpp"/>
+                <F N="../include/mdds/global.hpp"/>
+                <F N="../include/mdds/multi_type_matrix.hpp"/>
+                <F N="../include/mdds/multi_type_matrix_def.inl"/>
+                <F N="../include/mdds/multi_type_vector.hpp"/>
+                <F N="../include/mdds/multi_type_vector_custom_func1.hpp"/>
+                <F N="../include/mdds/multi_type_vector_custom_func2.hpp"/>
+                <F N="../include/mdds/multi_type_vector_custom_func3.hpp"/>
+                <F N="../include/mdds/multi_type_vector_def.inl"/>
+                <F N="../include/mdds/multi_type_vector_itr.hpp"/>
+                <F N="../include/mdds/multi_type_vector_macro.hpp"/>
+                <F N="../include/mdds/multi_type_vector_trait.hpp"/>
+                <F N="../include/mdds/multi_type_vector_types.hpp"/>
+                <F N="../include/mdds/node.hpp"/>
+                <F N="../include/mdds/point_quad_tree.hpp"/>
+                <F N="../include/mdds/quad_node.hpp"/>
+                <F N="../include/mdds/rectangle_set.hpp"/>
+                <F N="../include/mdds/rectangle_set_def.inl"/>
+                <F N="../include/mdds/rtree.hpp"/>
+                <F N="../include/mdds/rtree_def.inl"/>
+                <F N="../include/mdds/segment_tree.hpp"/>
+                <F N="../include/mdds/segment_tree_def.inl"/>
+                <F N="../include/mdds/sorted_string_map.hpp"/>
+                <F N="../include/mdds/sorted_string_map_def.inl"/>
+                <F N="../include/mdds/trie_map.hpp"/>
+                <F N="../include/mdds/trie_map_def.inl"/>
+                <F N="../include/mdds/trie_map_itr.hpp"/>
+            </Folder>
+        </Folder>
+        <Folder Name="../misc">
+            <F N="../misc/matrix_perf.cpp"/>
+            <F N="../misc/sorted_string_map_perf.cpp"/>
+        </Folder>
+        <Folder Name="../src">
+            <F N="../src/array_creation_perf_test.cpp"/>
+            <F N="../src/flat_segment_tree_test.cpp"/>
+            <F N="../src/multi_type_matrix_test.cpp"/>
+            <F N="../src/multi_type_matrix_test_walk.cpp"/>
+            <F N="../src/multi_type_vector_test_collection.cpp"/>
+            <F N="../src/multi_type_vector_test_custom.cpp"/>
+            <F N="../src/multi_type_vector_test_default.cpp"/>
+            <F N="../src/multi_type_vector_test_event.cpp"/>
+            <F N="../src/multi_type_vector_test_perf.cpp"/>
+            <F N="../src/point_quad_tree_test.cpp"/>
+            <F N="../src/rectangle_set_test.cpp"/>
+            <F N="../src/rtree_test.cpp"/>
+            <F N="../src/rtree_test_bulkload.cpp"/>
+            <F N="../src/segment_tree_test.cpp"/>
+            <F N="../src/sorted_string_map_test.cpp"/>
+            <F N="../src/stlperf_test.cpp"/>
+            <F N="../src/template_test.cpp"/>
+            <F N="../src/test_global.hpp"/>
+            <F N="../src/test_global_rtree.hpp"/>
+            <F N="../src/trie_map_test.cpp"/>
+        </Folder>
+        <Folder Name="../test">
+            <Folder Name="gdb">
+                <Folder Name="src">
+                    <F N="../test/gdb/src/flat_segment_tree.cpp"/>
+                    <F N="../test/gdb/src/multi_type_matrix.cpp"/>
+                    <F N="../test/gdb/src/multi_type_vector.cpp"/>
+                    <F N="../test/gdb/src/point_quad_tree.cpp"/>
+                    <F N="../test/gdb/src/rtree.cpp"/>
+                    <F N="../test/gdb/src/segment_tree.cpp"/>
+                    <F N="../test/gdb/src/sorted_string_map.cpp"/>
+                    <F N="../test/gdb/src/test.cpp"/>
+                    <F N="../test/gdb/src/trie_map.cpp"/>
+                </Folder>
+            </Folder>
+        </Folder>
+    </Files>
 </Project>
