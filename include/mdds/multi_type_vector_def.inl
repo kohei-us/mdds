@@ -4523,7 +4523,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::dump_blocks(std::ostream& os
         element_category_type cat = mtv::element_type_empty;
         if (blk->mp_data)
             cat = mtv::get_block_type(*blk->mp_data);
-        os << "  block " << i << ": size=" << blk->m_size << " type=" << cat << endl;
+        os << "  block " << i << ": position=" << blk->m_position << " size=" << blk->m_size << " type=" << cat << endl;
     }
 }
 
@@ -4547,17 +4547,32 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::check_block_integrity() cons
         return false;
     }
 
+    if (blk_prev->m_position != 0)
+    {
+        cerr << "position of the first block should be zero!" << endl;
+        return false;
+    }
+
     element_category_type cat_prev = mtv::element_type_empty;
     if (blk_prev->mp_data)
         cat_prev = mtv::get_block_type(*blk_prev->mp_data);
 
+    size_type cur_position = blk_prev->m_size;
     size_type total_size = blk_prev->m_size;
+
     for (size_type i = 1, n = m_blocks.size(); i < n; ++i)
     {
         const block* blk = &m_blocks[i];
         if (blk->m_size == 0)
         {
             cerr << "block should never be zero sized!" << endl;
+            return false;
+        }
+
+        if (blk->m_position != cur_position)
+        {
+            cerr << "position of the current block is wrong!" << endl;
+            dump_blocks(cerr);
             return false;
         }
 
@@ -4584,6 +4599,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::check_block_integrity() cons
         cat_prev = cat;
 
         total_size += blk->m_size;
+        cur_position += blk->m_size;
     }
 
     if (total_size != m_cur_size)
