@@ -278,7 +278,6 @@ void mtv_test_basic()
         assert(res);
     }
 
-#if 0 // TODO : enable this!
     {
         // This time insert from bottom up one by one.
         mtv_type col_db(3);
@@ -290,6 +289,7 @@ void mtv_test_basic()
         assert(res);
     }
 
+#if 0 // TODO : enable this!
     {
         mtv_type col_db(4);
         long order[] = { 3, 1, 2, 0 };

@@ -1020,13 +1020,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                 block* blk_next = get_next_block_of_type(block_index, cat);
                 if (blk_next)
                 {
-                    assert(!"TESTME");
                     // Remove this one-cell empty block from the top, and
                     // prepend the cell to the next block.
                     delete_element_block(m_blocks.front());
                     m_blocks.erase(m_blocks.begin());
                     blk = &m_blocks.front(); // old pointer is invalid.
                     blk->m_size += 1;
+                    blk->m_position -= 1;
                     mdds_mtv_prepend_value(*blk->mp_data, cell);
                 }
                 else
@@ -1055,11 +1055,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             block* blk_next = get_next_block_of_type(block_index, cat);
             if (blk_next)
             {
-                assert(!"TESTME");
                 assert(blk->m_size > 1);
                 // Shrink this empty block by one, and prepend the cell to the next block.
                 blk->m_size -= 1;
                 blk_next->m_size += 1;
+                blk_next->m_position -= 1;
                 mdds_mtv_prepend_value(*blk_next->mp_data, cell);
             }
             else
