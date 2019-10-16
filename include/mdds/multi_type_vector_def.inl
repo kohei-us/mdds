@@ -105,6 +105,14 @@ inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::m
 
 #endif
 
+template<typename _Blk, typename _SizeT>
+_SizeT calc_next_block_position(const std::vector<_Blk>& blocks, _SizeT block_index)
+{
+    assert(block_index < blocks.size());
+    const _Blk& blk = blocks[block_index];
+    return blk.m_position + blk.m_size;
+}
+
 }} // namespace detail::mtv
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
@@ -1077,7 +1085,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             return get_iterator(block_index+1, start_row+blk->m_size);
         }
 
-        assert(!"TESTME");
         // Inserting into the middle of an empty block.
         return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
     }
@@ -3229,6 +3236,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_new_block_to_middle(
         blk.m_size = offset;
     }
     
+    // Re-calculate the block positions.
+    m_blocks[block_index+1].m_position = detail::mtv::calc_next_block_position(m_blocks, block_index);
+    m_blocks[block_index+2].m_position = detail::mtv::calc_next_block_position(m_blocks, block_index+1);
+
     return m_blocks[block_index+1];
 }
 

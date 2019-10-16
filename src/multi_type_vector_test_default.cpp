@@ -289,7 +289,6 @@ void mtv_test_basic()
         assert(res);
     }
 
-#if 0 // TODO : enable this!
     {
         mtv_type col_db(4);
         long order[] = { 3, 1, 2, 0 };
@@ -301,6 +300,7 @@ void mtv_test_basic()
         }
     }
 
+#if 0 // TODO : enable this!
     {
         mtv_type col_db(4);
         long order[] = { 0, 3, 1, 2 };
