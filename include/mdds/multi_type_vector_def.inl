@@ -622,7 +622,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(
         block* blk_next = get_next_block_of_type(block_index, cat);
         if (!blk_next)
         {
-            assert(!"TESTME");
             // Pop the last cell of the current block, and insert a new block
             // with the new cell.
             set_cell_to_bottom_of_data_block(0, value);
@@ -631,14 +630,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(
             return itr;
         }
 
-        assert(!"TESTME");
         // Pop the last cell off the current block, and prepend the
-        // new cell to the next block.
+        // new value to the next block.
         element_block_func::overwrite_values(*blk->mp_data, blk->m_size-1, 1);
         element_block_func::erase(*blk->mp_data, blk->m_size-1);
         blk->m_size -= 1;
         mdds_mtv_prepend_value(*blk_next->mp_data, value);
         blk_next->m_size += 1;
+        blk_next->m_position -= 1;
 
         return get_iterator(block_index+1, start_row+blk->m_size);
     }
@@ -1040,7 +1039,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                 }
                 else
                 {
-                    assert(!"TESTME");
                     create_new_block_with_new_cell(blk->mp_data, cell);
                 }
             }
@@ -1370,7 +1368,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         // Previous block is empty.
         if (!blk_next->mp_data)
         {
-            assert(!"TESTME");
             // Next block is empty too.
             create_new_block_with_new_cell(blk->mp_data, cell);
             return get_iterator(block_index, start_row);
@@ -1398,12 +1395,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
 
     if (!blk_next->mp_data)
     {
-        // Next block is empty.
+        // Next block is empty, and the previous block is not.
         assert(blk_prev->mp_data);
         element_category_type blk_cat_prev = mdds::mtv::get_block_type(*blk_prev->mp_data);
         if (blk_cat_prev == cat)
         {
-            assert(!"TESTME");
             // Append to the previous block.
             size_type offset = blk_prev->m_size;
             blk_prev->m_size += 1;
