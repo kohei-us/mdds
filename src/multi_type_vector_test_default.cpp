@@ -652,7 +652,6 @@ void mtv_test_basic()
         assert(res);
     }
 
-#if 0 // TODO : enable this!
     {
         mtv_type col_db(3);
         col_db.set(0, 1.0);
@@ -686,6 +685,7 @@ void mtv_test_basic()
         assert(res);
     }
 
+#if 0 // TODO : enable this!
     {
         // set_cell() to merge 3 blocks.
         mtv_type db(6);

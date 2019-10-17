@@ -1467,7 +1467,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         return get_iterator(block_index, start_row);
     }
 
-    assert(!"TESTME");
     // Just overwrite the current block.
     create_new_block_with_new_cell(blk->mp_data, cell);
     return get_iterator(block_index, start_row);
