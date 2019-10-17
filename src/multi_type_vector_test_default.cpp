@@ -685,7 +685,6 @@ void mtv_test_basic()
         assert(res);
     }
 
-#if 0 // TODO : enable this!
     {
         // set_cell() to merge 3 blocks.
         mtv_type db(6);
@@ -759,6 +758,7 @@ void mtv_test_basic()
         assert(db.get<double>(7) == 2.1);
     }
 
+#if 0 // TODO : enable this!
     {
         mtv_type db(8, true);
         vector<double> vals(3, 1.2);
