@@ -543,7 +543,6 @@ void mtv_test_basic()
         assert(res);
     }
 
-#if 0 // TODO : enable this!
     {
         mtv_type col_db(4);
         col_db.set(0, 1.0);
@@ -559,6 +558,7 @@ void mtv_test_basic()
         assert(test == 4.0);
     }
 
+#if 0 // TODO : enable this!
     {
         mtv_type col_db(4);
         col_db.set(0, 1.0);

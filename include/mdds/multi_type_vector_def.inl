@@ -664,7 +664,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(
         return get_iterator(block_index+1, start_row+len);
     }
 
-    assert(!"TESTME");
     // Pop the last element from the current block, and prepend the cell
     // into the next block.
     element_block_func::overwrite_values(*blk->mp_data, blk->m_size-1, 1);
@@ -672,6 +671,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(
     blk->m_size -= 1;
     mdds_mtv_prepend_value(*blk_next->mp_data, value);
     blk_next->m_size += 1;
+    blk_next->m_position -= 1;
 
     return get_iterator(block_index+1, start_row+blk->m_size);
 }
