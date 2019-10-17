@@ -354,7 +354,6 @@ void mtv_test_basic()
         assert(res);
     }
 
-#if 0 // TODO : enable this!
     {
         mtv_type col_db(2);
         res = test_cell_insertion(col_db, 0, 5.0);
@@ -364,6 +363,7 @@ void mtv_test_basic()
         assert(res);
     }
 
+#if 0 // TODO : enable this!
     {
         mtv_type col_db(3);
         res = test_cell_insertion(col_db, 0, 5.0);

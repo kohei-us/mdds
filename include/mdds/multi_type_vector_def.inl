@@ -1207,8 +1207,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             {
                 if (block_index == m_blocks.size()-1)
                 {
-                    assert(!"TESTME");
-                    // There is no more block below.
+                    // There is no more block below.  Simply turn this empty block into a non-empty one.
                     create_new_block_with_new_cell(blk->mp_data, cell);
                 }
                 else
