@@ -1217,31 +1217,31 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     block* blk_next = get_next_block_of_type(block_index, cat);
                     if (blk_next)
                     {
-                        assert(!"TESTME");
                         // Remove this empty block, and prepend the cell to the next block.
                         blk_next->m_size += 1;
+                        blk_next->m_position -= 1;
                         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
                         delete_element_block(m_blocks[block_index]);
                         m_blocks.erase(m_blocks.begin()+block_index);
                     }
                     else
                     {
-                        assert(!"TESTME");
+                        // Simply turn this empty block into a non-empty one.
                         create_new_block_with_new_cell(blk->mp_data, cell);
                     }
                 }
             }
             else
             {
-                assert(!"TESTME");
                 // Replace the current empty block of size > 1 with a
                 // non-empty block of size 1, and insert a new empty block
                 // below whose size is one shorter than the current empty
                 // block.
                 size_type new_block_size = blk->m_size - 1;
+                size_type new_block_position = blk->m_position + 1;
                 blk->m_size = 1;
                 create_new_block_with_new_cell(blk->mp_data, cell);
-                m_blocks.emplace(m_blocks.begin()+block_index+1, new_block_size);
+                m_blocks.emplace(m_blocks.begin()+block_index+1, new_block_position, new_block_size);
             }
 
             return get_iterator(block_index, start_row);
