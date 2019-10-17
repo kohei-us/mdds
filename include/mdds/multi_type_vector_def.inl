@@ -1182,7 +1182,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                     }
                     else
                     {
-                        assert(!"TESTME");
                         // Ignore the next block. Just extend the previous block.
                         delete_element_block(m_blocks[block_index]);
                         m_blocks.erase(m_blocks.begin() + block_index);
