@@ -610,7 +610,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(
     {
         if (m_blocks.size() == 1)
         {
-            assert(!"TESTME");
             // This is the only block.  Pop the last value from the
             // previous block, and insert a new block for the cell being
             // inserted.
@@ -1311,7 +1310,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         // This is the topmost block of size 1.
         if (block_index == m_blocks.size()-1)
         {
-            assert(!"TESTME");
             // This is the only block.
             create_new_block_with_new_cell(blk->mp_data, cell);
             return begin();
@@ -1321,15 +1319,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         block* blk_next = get_next_block_of_type(block_index, cat);
         if (!blk_next)
         {
-            assert(!"TESTME");
             // Next block is empty or of different type.
             create_new_block_with_new_cell(blk->mp_data, cell);
             return begin();
         }
 
-        assert(!"TESTME");
         // Delete the current block, and prepend the cell to the next block.
         blk_next->m_size += 1;
+        blk_next->m_position -= 1;
         mdds_mtv_prepend_value(*blk_next->mp_data, cell);
         delete_element_block(*blk);
         m_blocks.erase(m_blocks.begin()+block_index);
@@ -1344,13 +1341,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
         block* blk_prev = &m_blocks[block_index-1];
         if (!blk_prev->mp_data || mdds::mtv::get_block_type(*blk_prev->mp_data) != cat)
         {
-            assert(!"TESTME");
             // Previous block is empty. Replace the current block with a new one.
             create_new_block_with_new_cell(blk->mp_data, cell);
         }
         else
         {
-            assert(!"TESTME");
             // Append the cell to the previos block, and remove the
             // current block.
             mdds_mtv_append_value(*blk_prev->mp_data, cell);
@@ -1519,7 +1514,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_bottom_of_data_b
         element_block_func::erase(*blk.mp_data, blk.m_size-1);
     }
     blk.m_size -= 1;
-    m_blocks.emplace(m_blocks.begin()+block_index+1, 1);
+    size_type next_position = detail::mtv::calc_next_block_position(blk);
+    m_blocks.emplace(m_blocks.begin()+block_index+1, next_position, 1);
     create_new_block_with_new_cell(m_blocks[block_index+1].mp_data, cell);
 }
 
