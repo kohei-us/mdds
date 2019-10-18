@@ -5282,9 +5282,9 @@ int main (int argc, char **argv)
         mtv_test_types();
         mtv_test_construction();
         mtv_test_basic();
+        mtv_test_basic_numeric();
 
 #if 0 // TODO : enable this!
-        mtv_test_basic_numeric();
         mtv_test_empty_cells();
         mtv_test_swap();
         mtv_test_equality();

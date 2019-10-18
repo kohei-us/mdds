@@ -785,7 +785,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::push_back_impl(const _T& value)
         size_type block_index = m_blocks.size();
         size_type start_pos = m_cur_size;
 
-        m_blocks.emplace_back(1);
+        m_blocks.emplace_back(start_pos, 1);
         create_new_block_with_new_cell(m_blocks.back().mp_data, value);
         ++m_cur_size;
 
