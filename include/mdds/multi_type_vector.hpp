@@ -1095,6 +1095,9 @@ private:
     template<typename _T>
     iterator release_impl(size_type pos, size_type start_pos, size_type block_index, _T& value);
 
+    template<typename _T>
+    iterator push_back_impl(const _T& value);
+
     /**
      * Find the correct block position for given logical row ID.
      *

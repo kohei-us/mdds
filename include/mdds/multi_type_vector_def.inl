@@ -496,7 +496,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
     {
-        cerr << "block integrity check failed in set (" << pos << ")" << endl;
+        cerr << "block integrity check failed in set (pos=" << pos << ")" << endl;
         cerr << "previous block state:" << endl;
         cerr << os_prev_block.str();
         abort();
@@ -720,7 +720,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& it_b
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
     {
-        cerr << "block integrity check failed in set (" << pos << ")" << endl;
+        cerr << "block integrity check failed in set (pos=" << pos << ")" << endl;
         cerr << "previous block state:" << endl;
         cerr << os_prev_block.str();
         abort();
@@ -749,6 +749,31 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::push_back(const _T& value)
+{
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = push_back_impl(value);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in push_back" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::push_back_impl(const _T& value)
 {
     element_category_type cat = mdds_mtv_get_element_type(value);
 
@@ -826,7 +851,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert(size_type pos, const _T& i
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
     {
-        cerr << "block integrity check failed in insert (" << pos << ")" << endl;
+        cerr << "block integrity check failed in insert (pos=" << pos << ")" << endl;
         cerr << "previous block state:" << endl;
         cerr << os_prev_block.str();
         abort();
@@ -854,7 +879,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert(const iterator& pos_hint, 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
     {
-        cerr << "block integrity check failed in insert (" << pos << ")" << endl;
+        cerr << "block integrity check failed in insert (pos=" << pos << ")" << endl;
         cerr << "previous block state:" << endl;
         cerr << os_prev_block.str();
         abort();
