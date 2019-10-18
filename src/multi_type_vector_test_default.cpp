@@ -76,7 +76,7 @@ void mtv_test_types()
 {
     // Test function overloading of standard types.
 
-    stack_printer __stack_printer__("::mtv_test_types");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         bool val = false;
         assert(test_type(val) == _mtv_bool);
@@ -141,7 +141,7 @@ void mtv_test_types()
 
 void mtv_test_construction()
 {
-    stack_printer __stack_printer__("::mtv_test_construction");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         // Create with initial value and size.
         mtv_type db(10, 1.0);
@@ -206,7 +206,7 @@ void mtv_test_construction()
 
 void mtv_test_basic()
 {
-    stack_printer __stack_printer__("::mtv_test_basic");
+    stack_printer __stack_printer__(__FUNCTION__);
     bool res;
 
     {
@@ -819,7 +819,7 @@ void mtv_test_basic()
  */
 void mtv_test_basic_numeric()
 {
-    stack_printer __stack_printer__("::mtv_test_basic_numeric");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     mtv_type db;
 
@@ -845,7 +845,7 @@ void mtv_test_basic_numeric()
 
 void mtv_test_empty_cells()
 {
-    stack_printer __stack_printer__("::mtv_test_empty");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         mtv_type db(3);
         assert(db.is_empty(0));
@@ -1264,7 +1264,7 @@ void mtv_test_empty_cells()
 
 void mtv_test_swap()
 {
-    stack_printer __stack_printer__("::mtv_test_swap");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db1(3), db2(5);
     db1.set(0, 1.0);
     db1.set(1, 2.0);
@@ -1281,7 +1281,7 @@ void mtv_test_swap()
 
 void mtv_test_equality()
 {
-    stack_printer __stack_printer__("::mtv_test_equality");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         // Two columns of equal size.
         mtv_type db1(3), db2(3);
@@ -1345,7 +1345,7 @@ void mtv_test_equality()
 
 void mtv_test_clone()
 {
-    stack_printer __stack_printer__("::mtv_test_clone");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db1(3);
     db1.set(0, 3.4);
     db1.set(1, string("foo"));
@@ -1394,7 +1394,7 @@ void mtv_test_clone()
 
 void mtv_test_resize()
 {
-    stack_printer __stack_printer__("::mtv_test_resize");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(0);
     assert(db.size() == 0);
     assert(db.empty());
@@ -1453,7 +1453,7 @@ void mtv_test_resize()
 
 void mtv_test_erase()
 {
-    stack_printer __stack_printer__("::mtv_test_erase");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         // Single empty block.
         mtv_type db(5);
@@ -1648,7 +1648,7 @@ void mtv_test_erase()
 
 void mtv_test_insert_empty()
 {
-    stack_printer __stack_printer__("::mtv_test_insert_empty");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         mtv_type db(5);
         db.insert_empty(0, 5);
@@ -1742,7 +1742,7 @@ void mtv_test_insert_empty()
 
 void mtv_test_set_cells()
 {
-    stack_printer __stack_printer__("::mtv_test_set_cells");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         mtv_type db(5);
 
@@ -2288,7 +2288,7 @@ void mtv_test_set_cells()
 
 void mtv_test_insert_cells()
 {
-    stack_printer __stack_printer__("::mtv_test_insert_cells");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         // Insert into non-empty block of the same type.
         mtv_type db(1);
@@ -2468,7 +2468,7 @@ void mtv_test_insert_cells()
 
 void mtv_test_iterators()
 {
-    stack_printer __stack_printer__("::mtv_test_iterators");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         mtv_type db(5);
         mtv_type::const_iterator it;
@@ -2583,7 +2583,7 @@ void mtv_test_iterators()
 
 void mtv_test_data_iterators()
 {
-    stack_printer __stack_printer__("::mtv_test_data_iterators");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     mtv_type db(10);
     db.set(0, 1.1);
@@ -2695,7 +2695,7 @@ void check_block_iterator(const mtv_type::iterator& it, mtv::element_t expected)
 
 void mtv_test_non_const_data_iterators()
 {
-    stack_printer __stack_printer__("::mtv_test_non_const_data_iterators");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     mtv_type db(1);
     db.set(0, 1.2);
@@ -2740,7 +2740,7 @@ void mtv_test_non_const_data_iterators()
 
 void mtv_test_iterator_private_data()
 {
-    stack_printer __stack_printer__("::mtv_test_iterator_private_data");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     // What the end position iterator stores in the private data area is
     // intentionally undefined.
@@ -2798,7 +2798,7 @@ void mtv_test_iterator_private_data()
 
 void mtv_test_set_return_iterator()
 {
-    stack_printer __stack_printer__("::mtv_test_set_return_iterator");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     // single element only
     mtv_type db(1);
@@ -3386,7 +3386,7 @@ void mtv_test_set_return_iterator()
  */
 void mtv_test_set2_return_iterator()
 {
-    stack_printer __stack_printer__("::mtv_test_set2_return_iterator");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type::iterator it, check;
     vector<double> doubles(3, 1.1);
     deque<bool> bools;
@@ -3655,7 +3655,7 @@ void mtv_test_set2_return_iterator()
 
 void mtv_test_insert_cells_return_iterator()
 {
-    stack_printer __stack_printer__("::mtv_test_insert_cells_return_iterator");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type::iterator it, check;
     vector<double> doubles;
     vector<bool> bools;
@@ -3790,7 +3790,7 @@ void mtv_test_insert_cells_return_iterator()
 
 void mtv_test_set_empty_return_iterator()
 {
-    stack_printer __stack_printer__("::mtv_test_set_empty_return_iterator");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type::iterator it, check;
 
     // Block is already empty. Calling the method does not do anything.
@@ -3976,7 +3976,7 @@ void mtv_test_set_empty_return_iterator()
 
 void mtv_test_insert_empty_return_iterator()
 {
-    stack_printer __stack_printer__("::mtv_test_insert_empty_return_iterator");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     // Insert into an already empty spot.
     mtv_type db(2);
@@ -4044,7 +4044,7 @@ void mtv_test_insert_empty_return_iterator()
 
 void mtv_test_set_with_position()
 {
-    stack_printer __stack_printer__("::mtv_test_set_with_position");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(3);
     db.set(db.begin(), 0, 23.4);
     assert(db.get<double>(0) == 23.4);
@@ -4072,7 +4072,7 @@ void mtv_test_set_with_position()
 
 void mtv_test_set_cells_with_position()
 {
-    stack_printer __stack_printer__("::mtv_test_set_cells_with_position");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(9);
 
     vector<int32_t> ints;
@@ -4110,7 +4110,7 @@ void mtv_test_set_cells_with_position()
 
 void mtv_test_insert_cells_with_position()
 {
-    stack_printer __stack_printer__("::mtv_test_insert_cells_with_position");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     mtv_type db(1, true); // We need to have at least one element to be able to insert.
 
@@ -4157,7 +4157,7 @@ void mtv_test_insert_cells_with_position()
 
 void mtv_test_set_empty_with_position()
 {
-    stack_printer __stack_printer__("::mtv_test_set_empty_with_position");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(20, true);
     mtv_type::iterator pos_hint = db.set_empty(db.begin(), 2, 3);
     pos_hint = db.set_empty(pos_hint, 5, 7);
@@ -4180,7 +4180,7 @@ void mtv_test_set_empty_with_position()
 
 void mtv_test_insert_empty_with_position()
 {
-    stack_printer __stack_printer__("::mtv_test_insert_empty_with_position");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(2, true);
     mtv_type::iterator pos_hint = db.begin();
     pos_hint = db.insert_empty(pos_hint, 1, 3); // the size becomes 5.
@@ -4201,7 +4201,7 @@ void mtv_test_insert_empty_with_position()
 
 void mtv_test_position()
 {
-    stack_printer __stack_printer__("::mtv_test_position");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(10, false);
     mtv_type::iterator check;
     mtv_type::const_iterator const_check;
@@ -4282,7 +4282,7 @@ void mtv_test_position()
 
 void mtv_test_next_position()
 {
-    stack_printer __stack_printer__("::mtv_test_next_position");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(10);
     db.set(2, 1.1);
     db.set(3, 1.2);
@@ -4345,7 +4345,7 @@ void mtv_test_next_position()
 
 void mtv_test_advance_position()
 {
-    stack_printer __stack_printer__("::mtv_test_advance_position");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(10);
     db.set(2, 1.1);
     db.set(3, 1.2);
@@ -4374,7 +4374,7 @@ void mtv_test_advance_position()
 
 void mtv_test_swap_range()
 {
-    stack_printer __stack_printer__("::mtv_test_swap_range");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db1(10), db2(10);
     db1.set(2, 1.1);
     db1.set(3, 1.2);
@@ -4904,7 +4904,7 @@ struct block_node_printer : unary_function<mtv_type::value_type, void>
 
 void mtv_test_value_type()
 {
-    stack_printer __stack_printer__("::mtv_test_value_type");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(5);
     db.set(0, 1.1);
     db.set(1, string("A"));
@@ -4916,7 +4916,7 @@ void mtv_test_value_type()
 
 void mtv_test_block_identifier()
 {
-    stack_printer __stack_printer__("::mtv_test_block_identifier");
+    stack_printer __stack_printer__(__FUNCTION__);
     assert(mtv::double_element_block::block_type == mtv::element_type_double);
     assert(mtv::string_element_block::block_type == mtv::element_type_string);
     assert(mtv::int16_element_block::block_type == mtv::element_type_int16);
@@ -4932,7 +4932,7 @@ void mtv_test_block_identifier()
 
 void mtv_test_transfer()
 {
-    stack_printer __stack_printer__("::mtv_test_transfer");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db1(5), db2(5);
     db1.set(0, 1.0);
     db1.set(1, 2.0);
@@ -5091,7 +5091,7 @@ void mtv_test_transfer()
 
 void mtv_test_push_back()
 {
-    stack_printer __stack_printer__("::mtv_test_push_back");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     mtv_type db;
     assert(db.size() == 0);
@@ -5189,7 +5189,7 @@ void mtv_test_push_back()
 
 void mtv_test_capacity()
 {
-    stack_printer __stack_printer__("::mtv_test_capacity");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(10, 1.1);
     assert(db.block_size() == 1);
     mtv_type::const_iterator it = db.begin();
@@ -5265,7 +5265,7 @@ struct mtv_test_position_type_end_position
 
     mtv_test_position_type_end_position()
     {
-        stack_printer __stack_printer__("::mtv_test_position_type_end_position");
+        stack_printer __stack_printer__(__FUNCTION__);
         mtv_type db(10);
         const mtv_type& cdb = db;
         cout << "* position_type" << endl;
