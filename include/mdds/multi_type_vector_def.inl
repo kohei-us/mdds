@@ -1851,7 +1851,24 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty(size_type start_pos, si
     if (!get_block_position(start_pos, start_pos_in_block1, block_index1))
         detail::mtv::throw_block_position_not_found("multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
 
-    return set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1, true);
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = set_empty_impl(start_pos, end_pos, start_pos_in_block1, block_index1, true);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in set_empty(start_pos=" << start_pos << "; end_pos=" << end_pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -4381,6 +4398,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
 
         if (blk_next)
         {
+            assert(!"TESTME");
             // Both preceding and next blocks are empty.
             assert(!blk_next->mp_data);
 
@@ -4399,6 +4417,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
             return get_iterator(block_index-1, start_pos_in_block-offset);
         }
 
+        assert(!"TESTME");
         // Only the preceding block is empty. Merge the current block with the previous.
         size_type offset = blk_prev->m_size;
         blk_prev->m_size += blk->m_size;
@@ -4410,6 +4429,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
     }
     else if (blk_next)
     {
+        assert(!"TESTME");
         assert(!blk_next->mp_data);
 
         // Only the next block is empty. Merge the next block with the current.
@@ -4456,6 +4476,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_single_block(
         block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
         if (blk_prev)
         {
+            assert(!"TESTME");
             // Extend the previous empty block.
             size_type offset = blk_prev->m_size;
             blk_prev->m_size += empty_block_size;
@@ -4463,13 +4484,15 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_single_block(
         }
 
         // Insert a new empty block before the current one.
-        m_blocks.emplace(m_blocks.begin()+block_index, empty_block_size);
+        size_type block_position = blk->m_position;
+        blk->m_position += empty_block_size;
+        m_blocks.emplace(m_blocks.begin()+block_index, block_position, empty_block_size);
         return get_iterator(block_index, start_row_in_block);
     }
 
     if (end_row == end_row_in_block)
     {
-        // end row coincides with the end of a block.
+        // end row equals the end of a block.
         assert(start_row > start_row_in_block);
 
         // Set the lower part of the block empty.
@@ -4482,11 +4505,16 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_single_block(
         // Check if the following block (if exists) is also empty.
         block* blk_next = get_next_block_of_type(block_index, mtv::element_type_empty);
         if (blk_next)
+        {
+            assert(!"TESTME");
             // Extend the next empty block to cover the new empty segment.
             blk_next->m_size += empty_block_size;
+        }
         else
+        {
             // Insert a new empty block after the current one.
-            m_blocks.emplace(m_blocks.begin()+block_index+1, empty_block_size);
+            m_blocks.emplace(m_blocks.begin()+block_index+1, start_row, empty_block_size);
+        }
 
         return get_iterator(block_index+1, start_row);
     }
@@ -4520,6 +4548,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                 block* blk_prev = nullptr;
                 if (block_index1 > 0)
                 {
+                    assert(!"TESTME");
                     blk_prev = &m_blocks[block_index1-1];
                     if (blk_prev->mp_data)
                         // Not empty.  Ignore it.
@@ -4528,6 +4557,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
 
                 if (blk_prev)
                 {
+                    assert(!"TESTME");
                     // Previous block is empty.  Move the start row to the
                     // first row of the previous block, and make the previous
                     // block 'block 1'.
@@ -4536,6 +4566,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                 }
                 else
                 {
+                    assert(!"TESTME");
                     // Make block 1 empty.
                     if (!overwrite)
                         element_block_func::resize_block(*blk->mp_data, 0);
@@ -4545,6 +4576,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
             }
             else
             {
+                assert(!"TESTME");
                 // Empty the lower part.
                 size_type new_size = start_row - start_row_in_block1;
                 if (overwrite)
@@ -4556,6 +4588,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
         }
         else
         {
+            assert(!"TESTME");
             // First block is already empty.  Adjust the start row of the new
             // empty range.
             start_row = start_row_in_block1;
@@ -4579,14 +4612,20 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                 block* blk_next = nullptr;
                 if (block_index2+1 < m_blocks.size())
                 {
+                    assert(!"TESTME");
                     blk_next = &m_blocks[block_index2+1];
                     if (blk_next->mp_data)
                         // Not empty.  Ignore it.
                         blk_next = nullptr;
                 }
+                else
+                {
+                    assert(!"TESTME");
+                }
 
                 if (blk_next)
                 {
+                    assert(!"TESTME");
                     // The following block is also empty.
                     end_row += blk_next->m_size;
                     ++end_block_to_erase;
@@ -4594,6 +4633,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
             }
             else
             {
+                assert(!"TESTME");
                 // Empty the upper part.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
                 if (overwrite)
@@ -4605,6 +4645,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
         }
         else
         {
+            assert(!"TESTME");
             // Last block is empty.  Delete this block and adjust the end row
             // of the new empty range.
             ++end_block_to_erase;
@@ -4625,6 +4666,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
             delete_element_block(blk);
         }
 
+        assert(!"TESTME");
         typename blocks_type::iterator it = m_blocks.begin() + block_index1 + 1;
         typename blocks_type::iterator it_end = m_blocks.begin() + end_block_to_erase;
         m_blocks.erase(it, it_end);
@@ -4634,11 +4676,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
     size_type empty_block_size = end_row - start_row + 1;
     if (blk->mp_data)
     {
+        assert(!"TESTME");
         // Insert a new empty block after the first block.
         m_blocks.emplace(m_blocks.begin()+block_index1+1, empty_block_size);
         return get_iterator(block_index1+1, start_row);
     }
 
+    assert(!"TESTME");
     // Current block is already empty. Just extend its size.
     blk->m_size = empty_block_size;
     return get_iterator(block_index1, start_row);
@@ -4682,6 +4726,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::check_block_integrity() cons
     if (blk_prev->m_position != 0)
     {
         cerr << "position of the first block should be zero!" << endl;
+        dump_blocks(cerr);
         return false;
     }
 

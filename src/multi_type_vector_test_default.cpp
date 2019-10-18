@@ -943,6 +943,7 @@ void mtv_test_empty_cells()
         assert(test == 4.0);
     }
 
+#if 0 // TODO : Enable this!
     {
         // Empty multiple blocks.
         mtv_type db(2);
@@ -1258,6 +1259,7 @@ void mtv_test_empty_cells()
         cout << "block size: " << db.block_size() << endl;
         assert(db.block_size() == 1);
     }
+#endif
 }
 
 void mtv_test_swap()
@@ -5283,9 +5285,9 @@ int main (int argc, char **argv)
         mtv_test_construction();
         mtv_test_basic();
         mtv_test_basic_numeric();
+        mtv_test_empty_cells();
 
 #if 0 // TODO : enable this!
-        mtv_test_empty_cells();
         mtv_test_swap();
         mtv_test_equality();
         mtv_test_clone();
