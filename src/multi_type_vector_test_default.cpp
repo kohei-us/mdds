@@ -773,7 +773,6 @@ void mtv_test_basic()
         assert(db.get<bool>(7) == true);
     }
 
-#if 0 // TODO : enable this!
     {
         mtv_type db(10, false);
         db.set<int8_t>(0, 'a');
@@ -813,7 +812,6 @@ void mtv_test_basic()
             assert(*p == 'z');
         }
     }
-#endif
 }
 
 /**
