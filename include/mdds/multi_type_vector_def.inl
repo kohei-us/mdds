@@ -710,7 +710,24 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& it_b
     if (!get_block_position(pos, start_row1, block_index1))
         detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
-    return set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in set (" << pos << ")" << endl;
+        cerr << "previous block state:" << endl;
+        cerr << os_prev_block.str();
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -3511,6 +3528,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
 
     if (blk->mp_data && mdds::mtv::get_block_type(*blk->mp_data) == cat)
     {
+        assert(!"TESTME");
         // simple overwrite.
         size_type offset = start_row - start_row_in_block;
         element_block_func::overwrite_values(*blk->mp_data, offset, data_length);
@@ -3532,6 +3550,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             size_type offset = block_index > 0 ? m_blocks[block_index-1].m_size : 0;
             if (append_to_prev_block(block_index, cat, end_row-start_row+1, it_begin, it_end))
             {
+                assert(!"TESTME");
                 delete_element_block(*blk);
                 m_blocks.erase(m_blocks.begin()+block_index);
 
@@ -3541,6 +3560,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
                 return get_iterator(block_index, start_row_in_block-offset);
             }
 
+            assert(!"TESTME");
             // Replace the whole block.
             if (blk->mp_data)
             {
@@ -3585,8 +3605,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         length = end_row - start_row + 1;
         size_type offset = block_index > 0 ? m_blocks[block_index-1].m_size : 0;
         if (append_to_prev_block(block_index, cat, length, it_begin, it_end))
+        {
+            assert(!"TESTME");
             return get_iterator(block_index-1, start_row_in_block-offset);
+        }
 
+        assert(!"TESTME");
         // Insert a new block before the current block, and populate it with
         // the new data.
         m_blocks.emplace(m_blocks.begin()+block_index, length);
@@ -3618,12 +3642,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             block* blk_next = get_next_block_of_type(block_index, cat);
             if (blk_next)
             {
+                assert(!"TESTME");
                 // Prepend it to the next block.
                 mdds_mtv_prepend_values(*blk_next->mp_data, *it_begin, it_begin, it_end);
                 blk_next->m_size += end_row - start_row + 1;
                 return get_iterator(block_index+1, start_row);
             }
 
+            assert(!"TESTME");
             // Next block has a different data type. Do the normal insertion.
             m_blocks.emplace(m_blocks.begin()+block_index+1, new_size);
             blk = &m_blocks[block_index+1];
@@ -3633,6 +3659,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             return get_iterator(block_index+1, start_row);
         }
 
+        assert(!"TESTME");
         // Last block.
         assert(block_index == m_blocks.size() - 1);
 
@@ -3723,6 +3750,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             block* blk0 = &m_blocks[block_index1-1];
             if (blk0->mp_data && cat == mdds::mtv::get_block_type(*blk0->mp_data))
             {
+                assert(!"TESTME");
                 // Transfer the whole data from block 0 to data block.
                 data_blk.mp_data = blk0->mp_data;
                 blk0->mp_data = nullptr;
@@ -3732,10 +3760,15 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
                 --it_erase_begin;
                 blk0_copied = true;
             }
+            else
+            {
+                assert(!"TESTME");
+            }
         }
     }
     else
     {
+        assert(!"TESTME");
         // Shrink block 1.
         if (blk1->mp_data)
         {
@@ -3766,6 +3799,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             block* blk3 = &m_blocks[block_index2+1];
             if (blk3->mp_data && mdds::mtv::get_block_type(*blk3->mp_data) == cat)
             {
+                assert(!"TESTME");
                 // Merge the whole block 3 with the new data. Remove block 3
                 // afterward.  Resize block 3 to zero to prevent invalid free.
                 element_block_func::append_values_from_block(*data_blk.mp_data, *blk3->mp_data);
@@ -3773,6 +3807,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
                 data_blk.m_size += blk3->m_size;
                 ++it_erase_end;
             }
+            else
+            {
+                assert(!"TESTME");
+            }
+        }
+        else
+        {
+            assert(!"TESTME");
         }
     }
     else
@@ -3783,6 +3825,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             element_category_type blk_cat2 = mdds::mtv::get_block_type(*blk2->mp_data);
             if (blk_cat2 == cat)
             {
+                assert(!"TESTME");
                 // Merge the lower part of block 2 with the new data, and
                 // erase block 2.  Resize block 2 to avoid invalid free on the
                 // copied portion of the block.
@@ -3800,6 +3843,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
 
         if (erase_upper)
         {
+            assert(!"TESTME");
             // Erase the upper part of block 2.
             size_type size_to_erase = end_row - start_row_in_block2 + 1;
             if (blk2->mp_data)
@@ -3858,6 +3902,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
 
         if (end_row == end_row_in_block2)
         {
+            assert(!"TESTME");
             // Data overlaps the entire block 2. Erase it.
             ++it_erase_end;
         }
@@ -3866,6 +3911,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             element_category_type blk_cat2 = mdds::mtv::get_block_type(*blk2->mp_data);
             if (blk_cat2 == cat)
             {
+                assert(!"TESTME");
                 // Copy the lower part of block 2 to the new block, and
                 // remove it.  Resize block 2 to zero to prevent the
                 // transferred / overwritten cells from being deleted on block
@@ -3880,6 +3926,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             }
             else
             {
+                assert(!"TESTME");
                 // Erase the upper part of block 2.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
                 element_block_func::erase(*blk2->mp_data, 0, size_to_erase);
@@ -3888,6 +3935,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
         }
         else
         {
+            assert(!"TESTME");
             // Last block is empty.
             size_type size_to_erase = end_row - start_row_in_block2 + 1;
             blk2->m_size -= size_to_erase;
@@ -3899,6 +3947,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
         return get_iterator(block_index1, start_row_in_block1);
     }
 
+    assert(!"TESTME");
     // The first block type is different.
     assert(blk_cat1 != cat);
 

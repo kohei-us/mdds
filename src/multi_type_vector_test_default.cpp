@@ -758,7 +758,6 @@ void mtv_test_basic()
         assert(db.get<double>(7) == 2.1);
     }
 
-#if 0 // TODO : enable this!
     {
         mtv_type db(8, true);
         vector<double> vals(3, 1.2);
@@ -774,6 +773,7 @@ void mtv_test_basic()
         assert(db.get<bool>(7) == true);
     }
 
+#if 0 // TODO : enable this!
     {
         mtv_type db(10, false);
         db.set<int8_t>(0, 'a');
