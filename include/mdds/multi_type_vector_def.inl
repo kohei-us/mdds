@@ -4566,7 +4566,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                 }
                 else
                 {
-                    assert(!"TESTME");
                     // Make block 1 empty.
                     if (!overwrite)
                         element_block_func::resize_block(*blk->mp_data, 0);
@@ -4618,10 +4617,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
                         // Not empty.  Ignore it.
                         blk_next = nullptr;
                 }
-                else
-                {
-                    assert(!"TESTME");
-                }
 
                 if (blk_next)
                 {
@@ -4666,7 +4661,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
             delete_element_block(blk);
         }
 
-        assert(!"TESTME");
         typename blocks_type::iterator it = m_blocks.begin() + block_index1 + 1;
         typename blocks_type::iterator it_end = m_blocks.begin() + end_block_to_erase;
         m_blocks.erase(it, it_end);
@@ -4682,9 +4676,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
         return get_iterator(block_index1+1, start_row);
     }
 
-    assert(!"TESTME");
     // Current block is already empty. Just extend its size.
     blk->m_size = empty_block_size;
+    blk->m_position = start_row;
     return get_iterator(block_index1, start_row);
 }
 

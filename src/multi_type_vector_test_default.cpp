@@ -943,7 +943,6 @@ void mtv_test_empty_cells()
         assert(test == 4.0);
     }
 
-#if 0 // TODO : Enable this!
     {
         // Empty multiple blocks.
         mtv_type db(2);
@@ -957,6 +956,7 @@ void mtv_test_empty_cells()
         assert(db.is_empty(1));
     }
 
+#if 0 // TODO : Enable this!
     {
         // Empty multiple blocks, part 2 - from middle block to middle block.
         mtv_type db(6);

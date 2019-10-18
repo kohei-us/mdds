@@ -1171,6 +1171,16 @@ private:
         size_type start_pos_in_block2, size_type block_index2,
         multi_type_vector& dest, size_type dest_pos);
 
+    /**
+     * @param start_pos logical start position.
+     * @param end_pos logical end position.
+     * @param start_pos_in_block1 logical position of the first element of the
+     *                            first block.
+     * @param block_index1 index of the first block
+     * @param overwrite when true, and when the stored values are pointers to
+     *                  heap objects, objects pointed to by the overwritten
+     *                  pointers should be freed from memory.
+     */
     iterator set_empty_impl(
         size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
         bool overwrite);
@@ -1204,6 +1214,19 @@ private:
         size_type start_pos, size_type end_pos, size_type block_index, size_type start_pos_in_block,
         bool overwrite);
 
+    /**
+     * @param start_pos logical start position.
+     * @param end_pos logical end position.
+     * @param block_index1 index of the first block.
+     * @param start_pos_in_block1 logical position of the first element of the
+     *                            first block.
+     * @param block_index2 index of the last block.
+     * @param start_pos_in_block2 logical position of the first element of the
+     *                            last block.
+     * @param overwrite when true, and when the stored values are pointers to
+     *                  heap objects, objects pointed to by the overwritten
+     *                  pointers should be freed from memory.
+     */
     iterator set_empty_in_multi_blocks(
         size_type start_pos, size_type end_pos,
         size_type block_index1, size_type start_pos_in_block1,
