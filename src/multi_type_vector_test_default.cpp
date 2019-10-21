@@ -1174,7 +1174,6 @@ void mtv_test_empty_cells()
         assert(!db.is_empty(14));
     }
 
-#if 0 // TODO : Enable this!
     {
         mtv_type db(3, true);
         assert(db.block_size() == 1);
@@ -1259,7 +1258,6 @@ void mtv_test_empty_cells()
         cout << "block size: " << db.block_size() << endl;
         assert(db.block_size() == 1);
     }
-#endif
 }
 
 void mtv_test_swap()
