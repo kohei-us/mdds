@@ -5288,9 +5288,9 @@ int main (int argc, char **argv)
         mtv_test_equality();
         mtv_test_clone();
         mtv_test_resize();
+        mtv_test_erase();
 
 #if 0 // TODO : enable this!
-        mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();
         mtv_test_insert_cells();

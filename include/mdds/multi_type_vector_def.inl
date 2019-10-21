@@ -2818,6 +2818,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
     {
         size_type size_to_erase = end_row - start_row_in_block2 + 1;
         blk->m_size -= size_to_erase;
+        blk->m_position = start_row;
         if (blk->mp_data)
         {
             // Erase the upper part.
@@ -2878,8 +2879,11 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
     {
         // Previous block has data.
         if (!blk_next->mp_data)
+        {
+            assert(!"TESTME");
             // Next block is empty.  Nothing to do.
             return;
+        }
 
         element_category_type cat1 = mdds::mtv::get_block_type(*blk_prev->mp_data);
         element_category_type cat2 = mdds::mtv::get_block_type(*blk_next->mp_data);
@@ -2893,13 +2897,20 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
             delete_element_block(*blk_next);
             m_blocks.erase(m_blocks.begin()+block_pos);
         }
+        else
+        {
+            assert(!"TESTME");
+        }
     }
     else
     {
         // Previous block is empty.
         if (blk_next->mp_data)
+        {
             // Next block is not empty.  Nothing to do.
+            assert(!"TESTME");
             return;
+        }
 
         // Both blocks are empty.  Simply increase the size of the
         // previous block.
