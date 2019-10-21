@@ -1643,7 +1643,6 @@ void mtv_test_erase()
         assert(db.get<double>(1) == 6.0);
     }
 
-#if 0 // Enable this!
     {
         mtv_type db(6);
         db.set(0, 1.0);
@@ -1651,7 +1650,6 @@ void mtv_test_erase()
         db.set<int16_t>(5, 3);
         db.erase(1, 3);
     }
-#endif
 }
 
 void mtv_test_insert_empty()
