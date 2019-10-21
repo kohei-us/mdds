@@ -515,6 +515,17 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_type block_index, size_type delta)
+{
+    if (block_index >= m_blocks.size())
+        return;
+
+    auto it = m_blocks.begin() + block_index;
+    for (; it != m_blocks.end(); ++it)
+        it->m_position += delta;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_block(block& blk)
 {
     if (!blk.mp_data)

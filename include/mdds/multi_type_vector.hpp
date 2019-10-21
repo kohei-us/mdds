@@ -1072,6 +1072,8 @@ public:
 
 private:
 
+    void adjust_block_positions(size_type start_block_index, size_type delta);
+
     /**
      * Delete only the element block owned by an outer block.
      *
