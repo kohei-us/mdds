@@ -145,8 +145,8 @@ template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(size_type _size) : m_position(0), m_size(_size), mp_data(nullptr) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
-multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(size_type _size, element_block_type* _data) :
-    m_position(0), m_size(_size), mp_data(_data) {}
+multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(size_type _position, size_type _size, element_block_type* _data) :
+    m_position(_position), m_size(_size), mp_data(_data) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(const block& other) :
@@ -404,7 +404,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_
 
     element_block_type* data = mdds_mtv_create_new_block(init_size, value);
     m_hdl_event.element_block_acquired(data);
-    m_blocks.emplace_back(init_size, data);
+    m_blocks.emplace_back(0, init_size, data);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -421,7 +421,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_
 
     element_block_type* data = mdds_mtv_create_new_block(*it_begin, it_begin, it_end);
     m_hdl_event.element_block_acquired(data);
-    m_blocks.emplace_back(m_cur_size, data);
+    m_blocks.emplace_back(0, m_cur_size, data);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -435,10 +435,18 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(const multi_typ
     for (; it != it_end; ++it)
     {
         it->clone_to(tmp);
-        m_blocks.emplace_back(tmp.m_size, tmp.mp_data);
+        m_blocks.emplace_back(tmp.m_position, tmp.m_size, tmp.mp_data);
         if (tmp.mp_data)
             m_hdl_event.element_block_acquired(tmp.mp_data);
     }
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (!check_block_integrity())
+    {
+        cerr << "block integrity check failed in copy construction" << endl;
+        abort();
+    }
+#endif
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>

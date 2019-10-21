@@ -5286,10 +5286,10 @@ int main (int argc, char **argv)
         mtv_test_empty_cells();
         mtv_test_swap();
         mtv_test_equality();
-
-#if 0 // TODO : enable this!
         mtv_test_clone();
         mtv_test_resize();
+
+#if 0 // TODO : enable this!
         mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();
