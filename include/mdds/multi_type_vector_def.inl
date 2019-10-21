@@ -2800,11 +2800,13 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
     // First, inspect the first block.
     if (start_row_in_block1 == start_row)
     {
+        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         // Erase the whole block.
         --it_erase_begin;
     }
     else
     {
+        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         // Erase the lower part of the first block.
         block* blk = &m_blocks[block_pos1];
         size_type new_size = start_row - start_row_in_block1;
@@ -2822,11 +2824,13 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
     size_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
     if (last_row_in_block == end_row)
     {
+        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         // Delete the whole block.
         ++it_erase_end;
     }
     else
     {
+        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         size_type size_to_erase = end_row - start_row_in_block2 + 1;
         blk->m_size -= size_to_erase;
         blk->m_position = start_row;
@@ -2841,8 +2845,12 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
     // Get the index of the block that sits before the blocks being erased.
     block_pos1 = std::distance(m_blocks.begin(), it_erase_begin);
     if (block_pos1 > 0)
+    {
+        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         --block_pos1;
+    }
 
+    if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
     // Now, erase all blocks in between.
     delete_element_blocks(it_erase_begin, it_erase_end);
     m_blocks.erase(it_erase_begin, it_erase_end);
@@ -2871,17 +2879,30 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
     m_cur_size -= size_to_erase;
 
     if (blk->m_size)
+    {
         // Block still contains data.  Bail out.
+        if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
         return;
+    }
 
     // Delete the current block since it's become empty.
     delete_element_block(*blk);
     m_blocks.erase(m_blocks.begin()+block_pos);
     // No need to update blk_index which is not used again.
 
-    if (block_pos == 0 || block_pos >= m_blocks.size())
-        // Deleted block was either the first or the last block.
+    if (block_pos == 0)
+    {
+        // Deleted block was the first block.
+        if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
         return;
+    }
+
+    if (block_pos >= m_blocks.size())
+    {
+        // Deleted block was the last block.
+        if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
+        return;
+    }
 
     // Check the previous and next blocks to see if they should be merged.
     block* blk_prev = &m_blocks[block_pos-1];
@@ -2907,10 +2928,13 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
             element_block_func::resize_block(*blk_next->mp_data, 0);
             delete_element_block(*blk_next);
             m_blocks.erase(m_blocks.begin()+block_pos);
+
+            if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
         }
         else
         {
             assert(!"TESTME");
+            if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
         }
     }
     else
@@ -2920,6 +2944,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         {
             // Next block is not empty.  Nothing to do.
             assert(!"TESTME");
+            if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
             return;
         }
 
@@ -2928,6 +2953,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         blk_prev->m_size += blk_next->m_size;
         delete_element_block(*blk_next);
         m_blocks.erase(m_blocks.begin()+block_pos);
+        if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
     }
 }
 
