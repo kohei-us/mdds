@@ -2881,7 +2881,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
     if (blk->m_size)
     {
         // Block still contains data.  Bail out.
-        if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
+        adjust_block_positions(block_pos+1, -size_to_erase);
         return;
     }
 
@@ -2893,14 +2893,14 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
     if (block_pos == 0)
     {
         // Deleted block was the first block.
-        if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
+        adjust_block_positions(block_pos, -size_to_erase);
         return;
     }
 
     if (block_pos >= m_blocks.size())
     {
         // Deleted block was the last block.
-        if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
+        if (block_pos < m_blocks.size()) { assert(!"TESTME"); }
         return;
     }
 
@@ -2929,7 +2929,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
             delete_element_block(*blk_next);
             m_blocks.erase(m_blocks.begin()+block_pos);
 
-            if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
+            if (block_pos < m_blocks.size()) { assert(!"TESTME"); }
         }
         else
             adjust_block_positions(block_pos, -size_to_erase);
@@ -2941,7 +2941,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         {
             // Next block is not empty.  Nothing to do.
             assert(!"TESTME");
-            if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
+            if (block_pos < m_blocks.size()) { assert(!"TESTME"); }
             return;
         }
 
@@ -2950,7 +2950,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         blk_prev->m_size += blk_next->m_size;
         delete_element_block(*blk_next);
         m_blocks.erase(m_blocks.begin()+block_pos);
-        if (block_pos+1 < m_blocks.size()) { assert(!"TESTME"); }
+        if (block_pos < m_blocks.size()) { assert(!"TESTME"); }
     }
 }
 

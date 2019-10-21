@@ -1463,6 +1463,17 @@ void mtv_test_erase()
     }
 
     {
+        // Single empty block followed by a non-empty block.
+        mtv_type db(5);
+        db.push_back<int32_t>(-234);
+
+        db.erase(0, 2); // erase rows 0-2.
+        assert(db.size() == 3);
+        db.erase(0, 1);
+        assert(db.size() == 1);
+    }
+
+    {
         // Single non-empty block.
         mtv_type db(5);
         for (long i = 0; i < 5; ++i)
