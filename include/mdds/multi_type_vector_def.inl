@@ -3291,8 +3291,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_new_block_to_middle(
             blk.m_size = lower_block_size;
             blk_lower.m_size = offset;
 
-            // And now let's swap the blocks...
+            // And now let's swap the blocks, while preserving the position of the original block.
+            size_type position = blk.m_position;
             blk.swap(blk_lower);
+            blk.m_position = position;
         }
     }
     else
@@ -4575,7 +4577,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
             }
             else
             {
-                assert(!"TESTME");
                 // Empty the lower part.
                 size_type new_size = start_row - start_row_in_block1;
                 if (overwrite)
@@ -4587,7 +4588,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
         }
         else
         {
-            assert(!"TESTME");
             // First block is already empty.  Adjust the start row of the new
             // empty range.
             start_row = start_row_in_block1;
@@ -4628,7 +4628,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
             }
             else
             {
-                assert(!"TESTME");
                 // Empty the upper part.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
                 if (overwrite)
@@ -4636,11 +4635,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
 
                 element_block_func::erase(*blk->mp_data, 0, size_to_erase);
                 blk->m_size -= size_to_erase;
+                blk->m_position = start_row_in_block2 + size_to_erase;
             }
         }
         else
         {
-            assert(!"TESTME");
             // Last block is empty.  Delete this block and adjust the end row
             // of the new empty range.
             ++end_block_to_erase;
@@ -4670,9 +4669,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
     size_type empty_block_size = end_row - start_row + 1;
     if (blk->mp_data)
     {
-        assert(!"TESTME");
         // Insert a new empty block after the first block.
-        m_blocks.emplace(m_blocks.begin()+block_index1+1, empty_block_size);
+        m_blocks.emplace(m_blocks.begin()+block_index1+1, start_row, empty_block_size);
         return get_iterator(block_index1+1, start_row);
     }
 
