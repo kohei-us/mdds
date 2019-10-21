@@ -521,6 +521,12 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_
         return;
 
     auto it = m_blocks.begin() + block_index;
+    adjust_block_positions(it, delta);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(typename blocks_type::iterator it, size_type delta)
+{
     for (; it != m_blocks.end(); ++it)
         it->m_position += delta;
 }
@@ -2800,13 +2806,11 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
     // First, inspect the first block.
     if (start_row_in_block1 == start_row)
     {
-        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         // Erase the whole block.
         --it_erase_begin;
     }
     else
     {
-        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         // Erase the lower part of the first block.
         block* blk = &m_blocks[block_pos1];
         size_type new_size = start_row - start_row_in_block1;
@@ -2819,18 +2823,18 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
         blk->m_size = new_size;
     }
 
+    size_type adjust_block_offset = 0;
+
     // Then inspect the last block.
     block* blk = &m_blocks[block_pos2];
     size_type last_row_in_block = start_row_in_block2 + blk->m_size - 1;
     if (last_row_in_block == end_row)
     {
-        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         // Delete the whole block.
         ++it_erase_end;
     }
     else
     {
-        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         size_type size_to_erase = end_row - start_row_in_block2 + 1;
         blk->m_size -= size_to_erase;
         blk->m_position = start_row;
@@ -2840,24 +2844,27 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
             element_block_func::overwrite_values(*blk->mp_data, 0, size_to_erase);
             element_block_func::erase(*blk->mp_data, 0, size_to_erase);
         }
+
+        adjust_block_offset = 1; // Exclude this block from later block position adjustment.
     }
 
     // Get the index of the block that sits before the blocks being erased.
     block_pos1 = std::distance(m_blocks.begin(), it_erase_begin);
     if (block_pos1 > 0)
-    {
-        if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
         --block_pos1;
-    }
 
-    if (block_pos2+1 < m_blocks.size()) { assert(!"TESTME"); }
     // Now, erase all blocks in between.
     delete_element_blocks(it_erase_begin, it_erase_end);
-    m_blocks.erase(it_erase_begin, it_erase_end);
-    m_cur_size -= end_row - start_row + 1;
+    auto it_adjust_block = m_blocks.erase(it_erase_begin, it_erase_end);
+    size_type delta = end_row - start_row + 1;
+    m_cur_size -= delta;
 
-    if (!m_blocks.empty())
-        merge_with_next_block(block_pos1);
+    if (m_blocks.empty())
+        return;
+
+    it_adjust_block += adjust_block_offset;
+    adjust_block_positions(it_adjust_block, -delta);
+    merge_with_next_block(block_pos1);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
