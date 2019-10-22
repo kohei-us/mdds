@@ -3080,7 +3080,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     // Check if the previous block is the bigger one
     if (size_blk_prev > size_blk_next)
     {
-        assert(!"TESTME");
         // Upper (previous) block is larger than the lower (next) block. Copy
         // the lower values to the next block.
         element_block_func::assign_values_from_block(*blk_next->mp_data, *blk->mp_data, size_blk_prev, size_blk_next);
@@ -3107,7 +3106,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     m_cur_size += length;
     m_blocks[block_index+1].m_position = detail::mtv::calc_next_block_position(m_blocks, block_index);
     m_blocks[block_index+2].m_position = detail::mtv::calc_next_block_position(m_blocks, block_index+1);
-    if (block_index+3 < m_blocks.size()) { assert(!"TESTME"); }
+    adjust_block_positions(block_index+3, length);
 
     return get_iterator(block_index+1, pos);
 }

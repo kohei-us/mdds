@@ -1888,6 +1888,18 @@ void mtv_test_insert_empty()
         assert(db.get<double>(4) == 12.0);
         assert(db.get<float>(5) == 13.0);
     }
+
+    {
+        mtv_type db;
+        for (int32_t i = 0; i < 9; ++i)
+            db.push_back(i);
+
+        db.push_back<int16_t>(123);
+        db.insert_empty(7, 3);
+
+        assert(db.block_size() == 4);
+        assert(db.size() == 13);
+    }
 }
 
 void mtv_test_set_cells()
