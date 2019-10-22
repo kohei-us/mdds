@@ -2940,8 +2940,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         if (blk_next->mp_data)
         {
             // Next block is not empty.  Nothing to do.
-            assert(!"TESTME");
-            if (block_pos < m_blocks.size()) { assert(!"TESTME"); }
+            adjust_block_positions(block_pos, -size_to_erase);
             return;
         }
 
@@ -2950,7 +2949,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         blk_prev->m_size += blk_next->m_size;
         delete_element_block(*blk_next);
         m_blocks.erase(m_blocks.begin()+block_pos);
-        if (block_pos < m_blocks.size()) { assert(!"TESTME"); }
+        adjust_block_positions(block_pos, -size_to_erase);
     }
 }
 

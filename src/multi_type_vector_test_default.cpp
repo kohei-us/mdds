@@ -1738,6 +1738,46 @@ void mtv_test_erase()
         assert(db.block_size() == 3);
         assert(db.size() == 9);
     }
+
+    {
+        mtv_type db;
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back_empty();
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<int16_t>(3);
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<double>(1.23);
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<int32_t>(9);
+
+        db.erase(3, 5);
+        assert(db.block_size() == 3);
+        assert(db.size() == 9);
+    }
+
+    {
+        mtv_type db;
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back_empty();
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<int16_t>(3);
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back_empty();
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<int32_t>(9);
+
+        db.erase(3, 5);
+        assert(db.block_size() == 2);
+        assert(db.size() == 9);
+    }
 }
 
 void mtv_test_insert_empty()
