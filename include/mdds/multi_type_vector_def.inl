@@ -2903,11 +2903,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
     }
 
     if (block_pos >= m_blocks.size())
-    {
         // Deleted block was the last block.
-        if (block_pos < m_blocks.size()) { assert(!"TESTME"); }
         return;
-    }
 
     // Check the previous and next blocks to see if they should be merged.
     block* blk_prev = &m_blocks[block_pos-1];
