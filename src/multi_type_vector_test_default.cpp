@@ -1698,6 +1698,24 @@ void mtv_test_erase()
         assert(db.block_size() == 2);
         assert(db.size() == 7);
     }
+
+    {
+        mtv_type db;
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<double>(1.0);
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<int16_t>(3);
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<double>(9);
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<int32_t>(9);
+
+        db.erase(3, 5);
+    }
 }
 
 void mtv_test_insert_empty()

@@ -2930,11 +2930,9 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
             element_block_func::resize_block(*blk_next->mp_data, 0);
             delete_element_block(*blk_next);
             m_blocks.erase(m_blocks.begin()+block_pos);
-
-            if (block_pos < m_blocks.size()) { assert(!"TESTME"); }
         }
-        else
-            adjust_block_positions(block_pos, -size_to_erase);
+
+        adjust_block_positions(block_pos, -size_to_erase);
     }
     else
     {
