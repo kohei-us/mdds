@@ -3040,13 +3040,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
         block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
         if (blk_prev)
         {
-            assert(!"TESTME");
             assert(!blk_prev->mp_data);
             // Previous block is empty.  Expand the size of the previous
             // block and bail out.
             size_type offset = blk_prev->m_size;
             blk_prev->m_size += length;
             m_cur_size += length;
+            adjust_block_positions(block_index, length);
             return get_iterator(block_index-1, pos-offset);
         }
 

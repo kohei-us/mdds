@@ -1872,6 +1872,22 @@ void mtv_test_insert_empty()
         db.get(2, test);
         assert(test == 2.3);
     }
+
+    {
+        mtv_type db(2);
+        db.push_back<double>(12.0);
+        db.push_back<float>(13.0);
+        db.insert_empty(2, 2);
+
+        assert(db.block_size() == 3);
+        assert(db.size() == 6);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.is_empty(2));
+        assert(db.is_empty(3));
+        assert(db.get<double>(4) == 12.0);
+        assert(db.get<float>(5) == 13.0);
+    }
 }
 
 void mtv_test_set_cells()
