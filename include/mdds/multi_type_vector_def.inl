@@ -2914,8 +2914,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         // Previous block has data.
         if (!blk_next->mp_data)
         {
-            assert(!"TESTME");
             // Next block is empty.  Nothing to do.
+            adjust_block_positions(block_pos, -size_to_erase);
             return;
         }
 
@@ -3561,7 +3561,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::append_empty(size_type len)
     {
         // No existing block. Create a new one.
         assert(m_cur_size == 0);
-        m_blocks.emplace_back(len);
+        m_blocks.emplace_back(0, len);
         m_cur_size = len;
         return true;
     }
@@ -3577,7 +3577,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::append_empty(size_type len)
     else
     {
         // Append a new empty block.
-        m_blocks.emplace_back(len);
+        m_blocks.emplace_back(m_cur_size, len);
         new_block_added = true;
     }
 
