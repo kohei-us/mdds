@@ -3026,6 +3026,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     block* blk = &m_blocks[block_index];
     if (!blk->mp_data)
     {
+        assert(!"TESTME");
         // Insertion point is already empty.  Just expand its size and be done
         // with it.
         blk->m_size += length;
@@ -3039,6 +3040,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
         block* blk_prev = get_previous_block_of_type(block_index, mtv::element_type_empty);
         if (blk_prev)
         {
+            assert(!"TESTME");
             assert(!blk_prev->mp_data);
             // Previous block is empty.  Expand the size of the previous
             // block and bail out.
@@ -3048,6 +3050,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
             return get_iterator(block_index-1, pos-offset);
         }
 
+        assert(!"TESTME");
         // Insert a new empty block.
         m_blocks.emplace(m_blocks.begin()+block_index, length);
         m_cur_size += length;
@@ -3077,6 +3080,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     // Check if the previous block is the biger one
     if (size_blk_prev > size_blk_next)
     {
+        assert(!"TESTME");
         // Upper (previous) block is larger than the lower (next) block. Copy
         // the lower values to the next block.
         element_block_func::assign_values_from_block(*blk_next->mp_data, *blk->mp_data, size_blk_prev, size_blk_next);
@@ -3085,6 +3089,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     } 
     else 
     {
+        assert(!"TESTME");
         // Lower (next) block is larger than the upper (previous) block. Copy
         // the upper values to the "next" block.
         element_block_func::assign_values_from_block(*blk_next->mp_data, *blk->mp_data, 0, size_blk_prev);
