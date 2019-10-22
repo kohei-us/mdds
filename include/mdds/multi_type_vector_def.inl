@@ -3026,11 +3026,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     block* blk = &m_blocks[block_index];
     if (!blk->mp_data)
     {
-        assert(!"TESTME");
         // Insertion point is already empty.  Just expand its size and be done
         // with it.
         blk->m_size += length;
         m_cur_size += length;
+        adjust_block_positions(block_index+1, length);
         return get_iterator(block_index, start_pos);
     }
 
@@ -3050,10 +3050,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
             return get_iterator(block_index-1, pos-offset);
         }
 
-        assert(!"TESTME");
         // Insert a new empty block.
         m_blocks.emplace(m_blocks.begin()+block_index, length);
         m_cur_size += length;
+        adjust_block_positions(block_index+1, length);
         return get_iterator(block_index, pos);
     }
 
@@ -3077,7 +3077,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
         element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->mp_data), 0);
     m_hdl_event.element_block_acquired(blk_next->mp_data);
 
-    // Check if the previous block is the biger one
+    // Check if the previous block is the bigger one
     if (size_blk_prev > size_blk_next)
     {
         assert(!"TESTME");
@@ -3089,7 +3089,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     } 
     else 
     {
-        assert(!"TESTME");
         // Lower (next) block is larger than the upper (previous) block. Copy
         // the upper values to the "next" block.
         element_block_func::assign_values_from_block(*blk_next->mp_data, *blk->mp_data, 0, size_blk_prev);
@@ -3106,6 +3105,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     }
 
     m_cur_size += length;
+    m_blocks[block_index+1].m_position = detail::mtv::calc_next_block_position(m_blocks, block_index);
+    m_blocks[block_index+2].m_position = detail::mtv::calc_next_block_position(m_blocks, block_index+1);
+    if (block_index+3 < m_blocks.size()) { assert(!"TESTME"); }
 
     return get_iterator(block_index+1, pos);
 }

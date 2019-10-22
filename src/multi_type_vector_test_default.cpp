@@ -1783,7 +1783,6 @@ void mtv_test_erase()
 void mtv_test_insert_empty()
 {
     stack_printer __stack_printer__(__FUNCTION__);
-#if 0 // Enable this!
     {
         mtv_type db(5);
         db.insert_empty(0, 5);
@@ -1873,7 +1872,6 @@ void mtv_test_insert_empty()
         db.get(2, test);
         assert(test == 2.3);
     }
-#endif
 }
 
 void mtv_test_set_cells()
