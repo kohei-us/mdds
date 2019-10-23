@@ -1979,7 +1979,6 @@ void mtv_test_set_cells()
             assert(test == 9.2);
         }
 
-
         {
             // Replace the upper part of a single block.
             uint64_t vals[] = { 1, 2, 3 };
@@ -2086,6 +2085,7 @@ void mtv_test_set_cells()
         }
     }
 
+#if 0 // Enable this!
     {
         mtv_type db(6);
         double vals_d[] = { 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
@@ -2446,6 +2446,7 @@ void mtv_test_set_cells()
         assert(db.get<string>(7) == "c");
         assert(db.get<string>(8) == "d");
     }
+#endif
 }
 
 void mtv_test_insert_cells()
@@ -5454,9 +5455,9 @@ int main (int argc, char **argv)
         mtv_test_resize();
         mtv_test_erase();
         mtv_test_insert_empty();
+        mtv_test_set_cells();
 
 #if 0 // TODO : enable this!
-        mtv_test_set_cells();
         mtv_test_insert_cells();
         mtv_test_iterators();
         mtv_test_data_iterators();

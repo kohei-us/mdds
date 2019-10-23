@@ -3630,7 +3630,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
 
     if (blk->mp_data && mdds::mtv::get_block_type(*blk->mp_data) == cat)
     {
-        assert(!"TESTME");
         // simple overwrite.
         size_type offset = start_row - start_row_in_block;
         element_block_func::overwrite_values(*blk->mp_data, offset, data_length);
@@ -3652,7 +3651,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             size_type offset = block_index > 0 ? m_blocks[block_index-1].m_size : 0;
             if (append_to_prev_block(block_index, cat, end_row-start_row+1, it_begin, it_end))
             {
-                assert(!"TESTME");
                 delete_element_block(*blk);
                 m_blocks.erase(m_blocks.begin()+block_index);
 
@@ -3662,7 +3660,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
                 return get_iterator(block_index, start_row_in_block-offset);
             }
 
-            assert(!"TESTME");
             // Replace the whole block.
             if (blk->mp_data)
             {
@@ -3682,6 +3679,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         // Shrink the current block first.
         size_type length = end_row_in_block - end_row;
         blk->m_size = length;
+
         if (blk->mp_data)
         {
             // Erase the upper part of the data from the current data array.
@@ -3708,14 +3706,16 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         size_type offset = block_index > 0 ? m_blocks[block_index-1].m_size : 0;
         if (append_to_prev_block(block_index, cat, length, it_begin, it_end))
         {
-            assert(!"TESTME");
+            // The new values have been successfully appended to the previous block.
+            blk->m_position += length;
             return get_iterator(block_index-1, start_row_in_block-offset);
         }
 
-        assert(!"TESTME");
         // Insert a new block before the current block, and populate it with
         // the new data.
-        m_blocks.emplace(m_blocks.begin()+block_index, length);
+        size_type position = blk->m_position;
+        blk->m_position += length;
+        m_blocks.emplace(m_blocks.begin()+block_index, position, length);
         blk = &m_blocks[block_index];
         blk->mp_data = element_block_func::create_new_block(cat, 0);
         m_hdl_event.element_block_acquired(blk->mp_data);
@@ -3727,7 +3727,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
     assert(start_row > start_row_in_block);
     if (end_row == end_row_in_block)
     {
-        // Shrink the current block and insert a new block for the new data series.
+        // Shrink the end of the current block and insert a new block for the new data series after the current block.
         size_type new_size = start_row - start_row_in_block;
         blk->m_size = new_size;
         if (blk->mp_data)
@@ -3744,10 +3744,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             block* blk_next = get_next_block_of_type(block_index, cat);
             if (blk_next)
             {
-                assert(!"TESTME");
                 // Prepend it to the next block.
                 mdds_mtv_prepend_values(*blk_next->mp_data, *it_begin, it_begin, it_end);
-                blk_next->m_size += end_row - start_row + 1;
+                blk_next->m_size += new_size;
+                blk_next->m_position -= new_size;
                 return get_iterator(block_index+1, start_row);
             }
 
@@ -3761,11 +3761,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
             return get_iterator(block_index+1, start_row);
         }
 
-        assert(!"TESTME");
         // Last block.
         assert(block_index == m_blocks.size() - 1);
 
-        m_blocks.emplace_back(new_size);
+        m_blocks.emplace_back(m_cur_size-new_size, new_size);
         blk = &m_blocks.back();
         blk->mp_data = element_block_func::create_new_block(cat, 0);
         m_hdl_event.element_block_acquired(blk->mp_data);
