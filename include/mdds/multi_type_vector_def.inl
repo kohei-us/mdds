@@ -3740,7 +3740,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
 
         if (block_index < m_blocks.size() - 1)
         {
-            // Check the next block.
+            // There is a block (or more) after the current block. Check the next block.
             block* blk_next = get_next_block_of_type(block_index, cat);
             if (blk_next)
             {
@@ -3751,9 +3751,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
                 return get_iterator(block_index+1, start_row);
             }
 
-            assert(!"TESTME");
             // Next block has a different data type. Do the normal insertion.
-            m_blocks.emplace(m_blocks.begin()+block_index+1, new_size);
+            size_type position = detail::mtv::calc_next_block_position(*blk);
+            m_blocks.emplace(m_blocks.begin()+block_index+1, position, new_size);
             blk = &m_blocks[block_index+1];
             blk->mp_data = element_block_func::create_new_block(cat, 0);
             m_hdl_event.element_block_acquired(blk->mp_data);
@@ -3832,12 +3832,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
 
     size_type start_row_itr = start_row_in_block1;
 
-    // Initially set to erase blocks between block 1 and block 2.
+    // Initially set to erase blocks between block 1 and block 2 non-inclusive at either end.
     typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_index1 + 1;
     typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
 
     // Create the new data block first.
-    block data_blk(length);
+    block data_blk(start_row, length);
 
     bool blk0_copied = false;
     if (offset == 0)
@@ -3869,8 +3869,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
     }
     else
     {
-        assert(!"TESTME");
-        // Shrink block 1.
+        // Shrink block 1 by the end.
         if (blk1->mp_data)
         {
             size_type n = blk1->m_size - offset;
@@ -3897,6 +3896,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
 
         if (block_index2+1 < m_blocks.size())
         {
+            // There is at least one block after block 2.
             block* blk3 = &m_blocks[block_index2+1];
             if (blk3->mp_data && mdds::mtv::get_block_type(*blk3->mp_data) == cat)
             {
@@ -3912,10 +3912,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             {
                 assert(!"TESTME");
             }
-        }
-        else
-        {
-            assert(!"TESTME");
         }
     }
     else
@@ -3989,7 +3985,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
         size_type offset = start_row - start_row_in_block1;
         size_type end_row_in_block2 = start_row_in_block2 + blk2->m_size - 1;
 
-        // Initially set to erase blocks between block 1 and block 2.
+        // Initially set to erase blocks between block 1 and block 2 non-inclusive at either end.
         typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_index1 + 1;
         typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
 
@@ -4003,7 +3999,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
 
         if (end_row == end_row_in_block2)
         {
-            assert(!"TESTME");
             // Data overlaps the entire block 2. Erase it.
             ++it_erase_end;
         }
@@ -4012,11 +4007,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             element_category_type blk_cat2 = mdds::mtv::get_block_type(*blk2->mp_data);
             if (blk_cat2 == cat)
             {
-                assert(!"TESTME");
-                // Copy the lower part of block 2 to the new block, and
-                // remove it.  Resize block 2 to zero to prevent the
-                // transferred / overwritten cells from being deleted on block
-                // deletion.
+                // Copy the lower (non-overwritten) part of block 2 to block 
+                // 1, and remove the whole block 2. Resize block 2 to zero 
+                // first to prevent the transferred / overwritten cells from
+                // being deleted on block deletion. 
                 size_type data_length = end_row_in_block2 - end_row;
                 size_type begin_pos = end_row - start_row_in_block2 + 1;
                 element_block_func::append_values_from_block(*blk1->mp_data, *blk2->mp_data, begin_pos, data_length);
@@ -4027,11 +4021,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             }
             else
             {
-                assert(!"TESTME");
                 // Erase the upper part of block 2.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
                 element_block_func::erase(*blk2->mp_data, 0, size_to_erase);
                 blk2->m_size -= size_to_erase;
+                blk2->m_position += size_to_erase;
             }
         }
         else
@@ -4048,7 +4042,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
         return get_iterator(block_index1, start_row_in_block1);
     }
 
-    assert(!"TESTME");
     // The first block type is different.
     assert(blk_cat1 != cat);
 

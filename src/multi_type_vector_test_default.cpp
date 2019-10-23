@@ -2085,7 +2085,6 @@ void mtv_test_set_cells()
         }
     }
 
-#if 0 // Enable this!
     {
         mtv_type db(6);
         double vals_d[] = { 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
@@ -2273,6 +2272,7 @@ void mtv_test_set_cells()
         assert(db.get<double>(3) == 2.3);
     }
 
+#if 0 // Enable this!
     {
         mtv_type db(4);
         db.set(0, string("A"));
