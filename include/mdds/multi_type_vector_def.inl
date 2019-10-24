@@ -3904,10 +3904,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
                 data_blk.m_size += blk3->m_size;
                 ++it_erase_end;
             }
-            else
-            {
-                assert(!"TESTME");
-            }
         }
     }
     else
