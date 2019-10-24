@@ -2272,7 +2272,6 @@ void mtv_test_set_cells()
         assert(db.get<double>(3) == 2.3);
     }
 
-#if 0 // Enable this!
     {
         mtv_type db(4);
         db.set(0, string("A"));
@@ -2446,7 +2445,6 @@ void mtv_test_set_cells()
         assert(db.get<string>(7) == "c");
         assert(db.get<string>(8) == "d");
     }
-#endif
 }
 
 void mtv_test_insert_cells()

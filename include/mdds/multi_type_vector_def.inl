@@ -3851,13 +3851,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             block* blk0 = &m_blocks[block_index1-1];
             if (blk0->mp_data && cat == mdds::mtv::get_block_type(*blk0->mp_data))
             {
-                assert(!"TESTME");
                 // Transfer the whole data from block 0 to data block.
                 data_blk.mp_data = blk0->mp_data;
                 blk0->mp_data = nullptr;
 
                 start_row_itr -= blk0->m_size;
                 data_blk.m_size += blk0->m_size;
+                data_blk.m_position = blk0->m_position;
+
                 --it_erase_begin;
                 blk0_copied = true;
             }
@@ -3900,7 +3901,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             block* blk3 = &m_blocks[block_index2+1];
             if (blk3->mp_data && mdds::mtv::get_block_type(*blk3->mp_data) == cat)
             {
-                assert(!"TESTME");
                 // Merge the whole block 3 with the new data. Remove block 3
                 // afterward.  Resize block 3 to zero to prevent invalid free.
                 element_block_func::append_values_from_block(*data_blk.mp_data, *blk3->mp_data);
@@ -3922,7 +3922,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             element_category_type blk_cat2 = mdds::mtv::get_block_type(*blk2->mp_data);
             if (blk_cat2 == cat)
             {
-                assert(!"TESTME");
                 // Merge the lower part of block 2 with the new data, and
                 // erase block 2.  Resize block 2 to avoid invalid free on the
                 // copied portion of the block.
@@ -3940,7 +3939,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
 
         if (erase_upper)
         {
-            assert(!"TESTME");
             // Erase the upper part of block 2.
             size_type size_to_erase = end_row - start_row_in_block2 + 1;
             if (blk2->mp_data)
@@ -3949,6 +3947,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
                 element_block_func::erase(*blk2->mp_data, 0, size_to_erase);
             }
             blk2->m_size -= size_to_erase;
+            blk2->m_position += size_to_erase;
         }
     }
 
