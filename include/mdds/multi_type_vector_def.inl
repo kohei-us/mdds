@@ -3862,10 +3862,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
                 --it_erase_begin;
                 blk0_copied = true;
             }
-            else
-            {
-                assert(!"TESTME");
-            }
         }
     }
     else
