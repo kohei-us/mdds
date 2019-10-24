@@ -4029,10 +4029,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
         }
         else
         {
-            assert(!"TESTME");
             // Last block is empty.
             size_type size_to_erase = end_row - start_row_in_block2 + 1;
             blk2->m_size -= size_to_erase;
+            blk2->m_position += size_to_erase;
         }
 
         delete_element_blocks(it_erase_begin, it_erase_end);

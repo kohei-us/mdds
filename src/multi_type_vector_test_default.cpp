@@ -2445,6 +2445,34 @@ void mtv_test_set_cells()
         assert(db.get<string>(7) == "c");
         assert(db.get<string>(8) == "d");
     }
+
+    {
+        mtv_type db;
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<int16_t>(i);
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back<double>(i);
+
+        for (int i = 0; i < 3; ++i)
+            db.push_back_empty();
+
+        std::vector<int16_t> data(5, 11);
+        db.set(2, data.begin(), data.end());
+
+        assert(db.block_size() == 2);
+        assert(db.size() == 9);
+        assert(db.get<int16_t>(0) == 0);
+        assert(db.get<int16_t>(1) == 1);
+        assert(db.get<int16_t>(2) == 11);
+        assert(db.get<int16_t>(3) == 11);
+        assert(db.get<int16_t>(4) == 11);
+        assert(db.get<int16_t>(5) == 11);
+        assert(db.get<int16_t>(6) == 11);
+        assert(db.is_empty(7));
+        assert(db.is_empty(8));
+    }
 }
 
 void mtv_test_insert_cells()
