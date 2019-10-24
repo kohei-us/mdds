@@ -2528,6 +2528,7 @@ void mtv_test_set_cells()
 void mtv_test_insert_cells()
 {
     stack_printer __stack_printer__(__FUNCTION__);
+#if 0 // TESTME
     {
         // Insert into non-empty block of the same type.
         mtv_type db(1);
@@ -2703,6 +2704,7 @@ void mtv_test_insert_cells()
         assert(db.get<double>(2) == 1.2);
         assert(db.get<uint64_t>(3) == 12);
     }
+#endif
 }
 
 void mtv_test_iterators()
@@ -5532,9 +5534,9 @@ int main (int argc, char **argv)
         mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();
+        mtv_test_insert_cells();
 
 #if 0 // TODO : enable this!
-        mtv_test_insert_cells();
         mtv_test_iterators();
         mtv_test_data_iterators();
         mtv_test_non_const_data_iterators();
