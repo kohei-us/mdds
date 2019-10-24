@@ -2528,7 +2528,6 @@ void mtv_test_set_cells()
 void mtv_test_insert_cells()
 {
     stack_printer __stack_printer__(__FUNCTION__);
-#if 0 // TESTME
     {
         // Insert into non-empty block of the same type.
         mtv_type db(1);
@@ -2600,6 +2599,7 @@ void mtv_test_insert_cells()
         assert(db.is_empty(4));
     }
 
+#if 0 // TESTME
     {
         mtv_type db(2);
         double vals[] = { 2.1, 2.2, 2.3 };

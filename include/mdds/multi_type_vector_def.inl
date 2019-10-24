@@ -876,7 +876,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert(size_type pos, const _T& i
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
     {
-        cerr << "block integrity check failed in insert (pos=" << pos << ")" << endl;
+        element_category_type cat = mdds_mtv_get_element_type(*it_begin);
+        cerr << "block integrity check failed in insert (pos=" << pos << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << endl;
         cerr << "previous block state:" << endl;
         cerr << os_prev_block.str();
         abort();
@@ -3172,25 +3173,25 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
             block* blk0 = get_previous_block_of_type(block_index, cat);
             if (blk0)
             {
-                assert(!"TESTME");
                 // Append to the previous block.
                 mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
                 size_type offset = blk0->m_size;
                 blk0->m_size += length;
                 m_cur_size += length;
+                adjust_block_positions(block_index, length);
 
                 return get_iterator(block_index-1, start_row-offset);
             }
 
-            assert(!"TESTME");
             // Just insert a new block before the current block.
-            m_blocks.emplace(m_blocks.begin()+block_index, length);
+            size_type position = m_blocks[block_index].m_position;
+            m_blocks.emplace(m_blocks.begin()+block_index, position, length);
             blk = &m_blocks[block_index];
             blk->mp_data = element_block_func::create_new_block(cat, 0);
             m_hdl_event.element_block_acquired(blk->mp_data);
             mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
-            blk->m_size = length;
             m_cur_size += length;
+            adjust_block_positions(block_index+1, length);
 
             return get_iterator(block_index, start_row);
         }
@@ -3206,12 +3207,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
     element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
     if (cat == blk_cat)
     {
-        assert(!"TESTME");
         // Simply insert the new data series into existing block.
         assert(it_begin != it_end);
         mdds_mtv_insert_values(*blk->mp_data, row-start_row, *it_begin, it_begin, it_end);
         blk->m_size += length;
         m_cur_size += length;
+        if (block_index+1 < m_blocks.size()) { assert(!"TESTME"); }
         return get_iterator(block_index, start_row);
     }
 
