@@ -2599,7 +2599,6 @@ void mtv_test_insert_cells()
         assert(db.is_empty(4));
     }
 
-#if 0 // TESTME
     {
         mtv_type db(2);
         double vals[] = { 2.1, 2.2, 2.3 };
@@ -2704,7 +2703,6 @@ void mtv_test_insert_cells()
         assert(db.get<double>(2) == 1.2);
         assert(db.get<uint64_t>(3) == 12);
     }
-#endif
 }
 
 void mtv_test_iterators()

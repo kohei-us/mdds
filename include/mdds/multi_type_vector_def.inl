@@ -3196,7 +3196,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
             return get_iterator(block_index, start_row);
         }
 
-        assert(!"TESTME");
         insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
         m_cur_size += length;
 
@@ -3223,29 +3222,29 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
         block* blk0 = get_previous_block_of_type(block_index, cat);
         if (blk0)
         {
-            assert(!"TESTME");
             // Append to the previous block.
             size_type offset = blk0->m_size;
             mdds_mtv_append_values(*blk0->mp_data, *it_begin, it_begin, it_end);
             blk0->m_size += length;
             m_cur_size += length;
+            adjust_block_positions(block_index, length);
+
             return get_iterator(block_index-1, start_row-offset);
         }
 
-        assert(!"TESTME");
         // Just insert a new block before the current block.
-        m_blocks.emplace(m_blocks.begin()+block_index, length);
+        m_blocks.emplace(m_blocks.begin()+block_index, blk->m_position, length);
         blk = &m_blocks[block_index];
         blk->mp_data = element_block_func::create_new_block(cat, 0);
         m_hdl_event.element_block_acquired(blk->mp_data);
         mdds_mtv_assign_values(*blk->mp_data, *it_begin, it_begin, it_end);
         blk->m_size = length;
         m_cur_size += length;
+        adjust_block_positions(block_index+1, length);
 
         return get_iterator(block_index, start_row);
     }
 
-    assert(!"TESTME");
     insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
     m_cur_size += length;
 
@@ -3261,7 +3260,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
     size_type length = std::distance(it_begin, it_end);
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
 
-    // Insert two new blocks.
+    // Insert two new blocks after the specified block position.
     size_type n1 = row - start_row;
     size_type n2 = m_blocks[block_index].m_size - n1;
     m_blocks.insert(m_blocks.begin()+block_index+1, 2u, block());
@@ -3269,7 +3268,9 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
     blk->m_size = n1;
 
     m_blocks[block_index+1].m_size = length;
+    m_blocks[block_index+1].m_position = detail::mtv::calc_next_block_position(*blk);
     m_blocks[block_index+2].m_size = n2;
+    m_blocks[block_index+2].m_position = detail::mtv::calc_next_block_position(m_blocks[block_index+1]);
 
     // block for data series.
     block* blk2 = &m_blocks[block_index+1];
@@ -3279,7 +3280,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
 
     if (blk->mp_data)
     {
-        assert(!"TESTME");
         element_category_type blk_cat = mdds::mtv::get_block_type(*blk->mp_data);
 
         // block to hold data from the lower part of the existing block.
@@ -3292,10 +3292,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
         element_block_func::assign_values_from_block(*blk3->mp_data, *blk->mp_data, offset, n2);
         element_block_func::resize_block(*blk->mp_data, blk->m_size);
     }
-    else
-    {
-        assert(!"TESTME");
-    }
+
+    if (block_index+3 < m_blocks.size()) { assert(!"TESTME"); }
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
