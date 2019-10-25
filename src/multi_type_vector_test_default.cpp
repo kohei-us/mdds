@@ -2703,6 +2703,17 @@ void mtv_test_insert_cells()
         assert(db.get<double>(2) == 1.2);
         assert(db.get<uint64_t>(3) == 12);
     }
+
+    {
+        mtv_type db(5);
+        db.push_back<double>(1.1);
+        db.push_back<double>(1.2);
+
+        double vals[] = { 2.1, 2.2, 2.3 };
+        const double* p = vals;
+        db.insert(2, p, p + 3);
+        assert(db.block_size() == 4);
+    }
 }
 
 void mtv_test_iterators()

@@ -3293,7 +3293,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
         element_block_func::resize_block(*blk->mp_data, blk->m_size);
     }
 
-    if (block_index+3 < m_blocks.size()) { assert(!"TESTME"); }
+    adjust_block_positions(block_index+3, length);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
