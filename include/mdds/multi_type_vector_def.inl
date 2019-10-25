@@ -3211,7 +3211,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
         mdds_mtv_insert_values(*blk->mp_data, row-start_row, *it_begin, it_begin, it_end);
         blk->m_size += length;
         m_cur_size += length;
-        if (block_index+1 < m_blocks.size()) { assert(!"TESTME"); }
+        adjust_block_positions(block_index+1, length);
+
         return get_iterator(block_index, start_row);
     }
 

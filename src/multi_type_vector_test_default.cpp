@@ -2713,6 +2713,39 @@ void mtv_test_insert_cells()
         const double* p = vals;
         db.insert(2, p, p + 3);
         assert(db.block_size() == 4);
+        assert(db.size() == 10);
+        assert(db.is_empty(0));
+        assert(db.is_empty(1));
+        assert(db.get<double>(2) == 2.1);
+        assert(db.get<double>(3) == 2.2);
+        assert(db.get<double>(4) == 2.3);
+        assert(db.is_empty(5));
+        assert(db.is_empty(6));
+        assert(db.is_empty(7));
+        assert(db.get<double>(8) == 1.1);
+        assert(db.get<double>(9) == 1.2);
+    }
+
+    {
+        mtv_type db(5, int16_t(222));
+        db.push_back<int32_t>(12);
+        db.push_back<int32_t>(34);
+
+        int16_t vals[] = { 5, 6, 7 };
+        const int16_t* p = vals;
+        db.insert(1, p, p + 3);
+        assert(db.block_size() == 2);
+        assert(db.size() == 10);
+        assert(db.get<int16_t>(0) == 222);
+        assert(db.get<int16_t>(1) == 5);
+        assert(db.get<int16_t>(2) == 6);
+        assert(db.get<int16_t>(3) == 7);
+        assert(db.get<int16_t>(4) == 222);
+        assert(db.get<int16_t>(5) == 222);
+        assert(db.get<int16_t>(6) == 222);
+        assert(db.get<int16_t>(7) == 222);
+        assert(db.get<int32_t>(8) == 12);
+        assert(db.get<int32_t>(9) == 34);
     }
 }
 
