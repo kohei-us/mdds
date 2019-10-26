@@ -5577,8 +5577,6 @@ int main (int argc, char **argv)
         mtv_test_insert_empty();
         mtv_test_set_cells();
         mtv_test_insert_cells();
-
-#if 0 // TODO : enable this!
         mtv_test_iterators();
         mtv_test_data_iterators();
         mtv_test_non_const_data_iterators();
@@ -5587,6 +5585,8 @@ int main (int argc, char **argv)
         mtv_test_set2_return_iterator();
         mtv_test_insert_cells_return_iterator();
         mtv_test_set_empty_return_iterator();
+
+#if 0 // TODO : enable this!
         mtv_test_insert_empty_return_iterator();
         mtv_test_set_with_position();
         mtv_test_set_cells_with_position();
