@@ -5585,9 +5585,9 @@ int main (int argc, char **argv)
         mtv_test_set2_return_iterator();
         mtv_test_insert_cells_return_iterator();
         mtv_test_set_empty_return_iterator();
+        mtv_test_insert_empty_return_iterator();
 
 #if 0 // TODO : enable this!
-        mtv_test_insert_empty_return_iterator();
         mtv_test_set_with_position();
         mtv_test_set_cells_with_position();
         mtv_test_insert_cells_with_position();

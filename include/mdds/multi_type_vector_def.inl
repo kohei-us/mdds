@@ -2975,7 +2975,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(size_type pos, size_
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
     {
-        cerr << "block integrity check failed in insert_empty (pos=" << pos << ",length=" << length << ")" << endl;
+        cerr << "block integrity check failed in insert_empty (pos=" << pos << "; length=" << length << ")" << endl;
         cerr << "previous block state:" << endl;
         cerr << os_prev_block.str();
         abort();
@@ -3051,7 +3051,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
         }
 
         // Insert a new empty block.
-        m_blocks.emplace(m_blocks.begin()+block_index, length);
+        m_blocks.emplace(m_blocks.begin()+block_index, blk->m_position, length);
         m_cur_size += length;
         adjust_block_positions(block_index+1, length);
         return get_iterator(block_index, pos);
