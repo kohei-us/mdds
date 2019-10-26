@@ -4675,6 +4675,7 @@ void mtv_test_swap_range()
     assert(db2.get<double>(3) == 1.2);
     assert(db2.get<double>(4) == 1.3);
 
+#if 0 // TESTME
     // Source is empty but destination is not.
     db1 = mtv_type(3);
     db2 = mtv_type(3, 12.3);
@@ -5175,6 +5176,7 @@ void mtv_test_swap_range()
     assert(db2.is_empty(8));
     assert(db2.get<int32_t>(9) == 19);
     assert(db2.block_size() == 4);
+#endif
 }
 
 struct block_node_printer : unary_function<mtv_type::value_type, void>
@@ -5594,9 +5596,9 @@ int main (int argc, char **argv)
         mtv_test_position();
         mtv_test_next_position();
         mtv_test_advance_position();
+        mtv_test_swap_range();
 
 #if 0 // TODO : enable this!
-        mtv_test_swap_range();
         mtv_test_value_type();
         mtv_test_block_identifier();
         mtv_test_transfer();

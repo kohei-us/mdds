@@ -4333,7 +4333,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(size_type start_pos, si
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity() || !other.check_block_integrity())
     {
-        cerr << "block integrity check failed in swap" << endl;
+        cerr << "block integrity check failed in swap (start_pos=" << start_pos << "; end_pos=" << end_pos << "; other_pos=" << other_pos << ")" << endl;
         cerr << "previous block state (source):" << endl;
         cerr << os_prev_block.str();
         cerr << "previous block state (destination):" << endl;
