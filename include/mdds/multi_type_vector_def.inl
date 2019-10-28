@@ -1973,7 +1973,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
     size_type dest_pos_in_block = dest_pos - it_dest_blk->position;
     if (dest_pos_in_block == 0)
     {
-        // Copy to the top part of destination block.
+        // Copy to the top part of the destination block.
 
         assert(!blk_dest->mp_data); // should be already emptied.
 
@@ -1985,10 +1985,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
             blk_dest->m_size -= len;
             dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index, len);
             blk_dest = &dest.m_blocks[dest_block_index]; // The old pointer is invalid.
-        }
-        else
-        {
-            assert(!"TESTME");
         }
     }
     else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
@@ -2034,7 +2030,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
         size_type start_pos_offset = merge_with_adjacent_blocks(block_index1);
         if (start_pos_offset)
         {
-            assert(!"TESTME");
             // Merged with the previous block. Adjust the return block position.
             --block_index1;
             start_pos_in_block1 -= start_pos_offset;
@@ -2488,7 +2483,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
 
     if (cat_dst == mtv::element_type_empty)
     {
-        assert(!"TESTME");
         // Source is not empty but destination is. Use transfer.
         transfer_single_block(start_pos, end_pos, start_pos_in_block, block_index, other, other_pos);
         // No update of local index vars needed.
@@ -2501,7 +2495,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
         // Source range is at the top of a block.
         if (src_tail_len == 0)
         {
-            assert(!"TESTME");
             // the whole block needs to be replaced.
             std::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->mp_data);
             m_hdl_event.element_block_released(blk_src->mp_data);
@@ -3522,11 +3515,16 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
 
                 if (blk_next)
                 {
+                    assert(!"TESTME");
                     // Apend elements from the next block too.
                     element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
                     blk_prev->m_size += blk_next->m_size;
                     ++it_end;
                     delete_element_block(*blk_next);
+                }
+                else
+                {
+                    assert(!"TESTME");
                 }
 
                 m_blocks.erase(it, it_end);
@@ -3536,6 +3534,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
             // Check the next block to see if we need to merge.
             if (blk_next)
             {
+                assert(!"TESTME");
                 // We need to merge with the next block.  Remove the current
                 // block and use the next block to store the new elements as
                 // well as the existing ones.
@@ -3572,12 +3571,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
 
         if (blk_prev)
         {
+            assert(!"TESTME");
             // Append the new elements to the previous block.
             element_block_func::append_values_from_block(*blk_prev->mp_data, src_data, src_offset, len);
             blk_prev->m_size += len;
         }
         else
         {
+            assert(!"TESTME");
             // Insert a new block to house the new elements.
             m_blocks.emplace(m_blocks.begin()+dst_index, len);
             blk = &m_blocks[dst_index];
@@ -3612,12 +3613,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
 
         if (blk_next)
         {
+            assert(!"TESTME");
             // Merge with the next block.
             element_block_func::prepend_values_from_block(*blk_next->mp_data, src_data, src_offset, len);
             blk_next->m_size += len;
         }
         else
         {
+            assert(!"TESTME");
             // Insert a new block to store the new elements.
             m_blocks.emplace(m_blocks.begin()+dst_index+1, len);
             blk = &m_blocks[dst_index+1];
@@ -3629,6 +3632,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
     }
     else
     {
+        assert(!"TESTME");
         // The new elements will replace the middle of the block.
         assert(dst_end_pos < blk->m_size);
         blk = &set_new_block_to_middle(dst_index, dst_offset, len, false);
