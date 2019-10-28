@@ -4675,7 +4675,6 @@ void mtv_test_swap_range()
     assert(db2.get<double>(3) == 1.2);
     assert(db2.get<double>(4) == 1.3);
 
-#if 0 // TESTME
     // Source is empty but destination is not.
     db1 = mtv_type(3);
     db2 = mtv_type(3, 12.3);
@@ -4689,6 +4688,7 @@ void mtv_test_swap_range()
     assert(db2.is_empty(2));
     assert(db2.block_size() == 2);
 
+#if 0 // TESTME
     // Go to the opposite direction.
     db1.swap(1, 2, db2, 1);
     assert(db1.block_size() == 1);

@@ -1960,7 +1960,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
     iterator it_dest_blk = dest.set_empty(dest_pos, last_dest_pos);
 
     if (!blk->mp_data)
+    {
+        assert(!"TESTME");
         return get_iterator(block_index1, start_pos_in_block1);
+    }
 
     element_category_type cat = get_block_type(*blk->mp_data);
 
@@ -1976,11 +1979,16 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
 
         if (len < blk_dest->m_size)
         {
+            assert(!"TESTME");
             // Shrink the existing block and insert a new block before it.
             assert(len < blk_dest->m_size);
             blk_dest->m_size -= len;
             dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index, len);
             blk_dest = &dest.m_blocks[dest_block_index]; // The old pointer is invalid.
+        }
+        else
+        {
+            assert(!"TESTME");
         }
     }
     else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
@@ -1988,13 +1996,15 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
         // Copy to the bottom part of destination block.
 
         // Insert a new block below current, and shrink the current block.
-        dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index+1, len);
         dest.m_blocks[dest_block_index].m_size -= len;
+        size_type position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index);
+        dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index+1, position, len);
         blk_dest = &dest.m_blocks[dest_block_index+1];
         ++dest_block_index; // Must point to the new copied block.
     }
     else
     {
+        assert(!"TESTME");
         // Copy to the middle of destination block.
 
         // Insert two new blocks below current.
@@ -2024,9 +2034,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
         size_type start_pos_offset = merge_with_adjacent_blocks(block_index1);
         if (start_pos_offset)
         {
+            assert(!"TESTME");
             // Merged with the previous block. Adjust the return block position.
             --block_index1;
             start_pos_in_block1 -= start_pos_offset;
+        }
+        else
+        {
+            assert(!"TESTME");
         }
         return get_iterator(block_index1, start_pos_in_block1);
     }
@@ -2465,7 +2480,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
 
     if (cat_src == mtv::element_type_empty)
     {
-        assert(!"TESTME");
         // Source is empty but destination is not. This is equivalent of transfer.
         other.transfer_single_block(other_pos, other_end_pos, start_pos_in_other_block, other_block_index, *this, start_pos);
         // No update of local index vars needed.
