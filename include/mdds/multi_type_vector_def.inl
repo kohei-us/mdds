@@ -3515,16 +3515,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
 
                 if (blk_next)
                 {
-                    assert(!"TESTME");
                     // Apend elements from the next block too.
                     element_block_func::append_values_from_block(*blk_prev->mp_data, *blk_next->mp_data);
                     blk_prev->m_size += blk_next->m_size;
                     ++it_end;
                     delete_element_block(*blk_next);
-                }
-                else
-                {
-                    assert(!"TESTME");
                 }
 
                 m_blocks.erase(it, it_end);
@@ -3534,11 +3529,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
             // Check the next block to see if we need to merge.
             if (blk_next)
             {
-                assert(!"TESTME");
                 // We need to merge with the next block.  Remove the current
                 // block and use the next block to store the new elements as
                 // well as the existing ones.
                 element_block_func::prepend_values_from_block(*blk_next->mp_data, src_data, src_offset, len);
+                blk_next->m_position -= len;
                 blk_next->m_size += len;
                 m_blocks.erase(m_blocks.begin()+dst_index);
             }
@@ -3567,6 +3562,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
             element_block_func::erase(*blk->mp_data, 0, len);
         }
 
+        size_type position = blk->m_position;
+        blk->m_position += len;
         blk->m_size -= len;
 
         if (blk_prev)
@@ -3578,9 +3575,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
         }
         else
         {
-            assert(!"TESTME");
             // Insert a new block to house the new elements.
-            m_blocks.emplace(m_blocks.begin()+dst_index, len);
+            m_blocks.emplace(m_blocks.begin()+dst_index, position, len);
             blk = &m_blocks[dst_index];
             blk->mp_data = element_block_func::create_new_block(cat_src, 0);
             m_hdl_event.element_block_acquired(blk->mp_data);

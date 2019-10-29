@@ -4721,7 +4721,6 @@ void mtv_test_swap_range()
     assert(db2.get<double>(4) == 2.4);
     assert(db2.block_size() == 2);
 
-#if 0 // TESTME
     // Merge with the next block in the destination.
     db1 = mtv_type(5, int_val);
     db2 = mtv_type(5, 12.3);
@@ -4812,6 +4811,7 @@ void mtv_test_swap_range()
     assert(db2.get<int16_t>(4) == short_val);
     assert(db2.block_size() == 2);
 
+#if 0 // TESTME
     // Do the same as before, but merge with the previous block.
     db1 = mtv_type(5, int_val);
     db1.set(3, string("G"));
