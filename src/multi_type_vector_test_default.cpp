@@ -4944,7 +4944,6 @@ void mtv_test_swap_range()
     assert(db1.get<int32_t>(1) == int_val);
     assert(db2.get<bool>(0) == true);
 
-#if 0 // TESTME
     // Do the same, but merge with the next block in the source.
     db1 = mtv_type(3, true);
     db1.set<int32_t>(2, int_val+1);
@@ -4999,6 +4998,7 @@ void mtv_test_swap_range()
     assert(db2.is_empty(4));
     assert(db2.block_size() == 2);
 
+#if 0 // TESTME
     // Swap non-empty single block with multiple destination blocks.
     db1 = mtv_type(4, int_val);
     db2 = mtv_type(5);

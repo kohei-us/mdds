@@ -2085,9 +2085,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         // Copy to the top part of destination block.
         if (len < blk_dest->m_size)
         {
-            assert(!"TESTME");
-            // Shrink the existing block and insert slots for new blocks before it.
+            // Shrink the existing block and insert slots for the new blocks before it.
             blk_dest->m_size -= len;
+            blk_dest->m_position += len;
             dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, block_len, block());
         }
         else
@@ -2137,11 +2137,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     {
         // Transfer the lower part of the first block.
         block* blk = &m_blocks[block_index1];
+
         assert(dest.m_blocks[dest_block_index1].m_size == 0);
         dest.m_blocks[dest_block_index1].m_size = blk->m_size - offset;
+        if (dest_block_index1 > 0)
+            dest.m_blocks[dest_block_index1].m_position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index1-1);
+
         if (blk->mp_data)
         {
-            assert(!"TESTME");
             element_category_type cat = mtv::get_block_type(*blk->mp_data);
             blk_dest = &dest.m_blocks[dest_block_index1];
             blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
@@ -2152,10 +2155,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             // the source block to remove the transferred elements.
             element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk->mp_data, offset, blk->m_size-offset);
             element_block_func::resize_block(*blk->mp_data, offset);
-        }
-        else
-        {
-            assert(!"TESTME");
         }
 
         blk->m_size = offset;
@@ -2186,6 +2185,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
 
     if (block_len > 2)
     {
+        assert(!"TESTME");
         // Transfer all blocks in between.
         for (size_type i = 0; i < block_len - 2; ++i)
         {
@@ -2238,16 +2238,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         {
             // Just move the whole block over.
             dest.m_blocks[dest_block_pos] = blk;
+            dest.m_blocks[dest_block_pos].m_position =
+                dest_block_pos > 0 ? detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_pos-1) : 0;
+
             if (blk.mp_data)
             {
-                assert(!"TESTME");
                 dest.m_hdl_event.element_block_acquired(blk.mp_data);
                 m_hdl_event.element_block_released(blk.mp_data);
                 blk.mp_data = nullptr;
-            }
-            else
-            {
-                assert(!"TESTME");
             }
             m_blocks[block_index2].m_size = 0;
         }
@@ -2313,7 +2311,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     }
     else
     {
-        assert(!"TESTME");
         // Block before is not empty (or doesn't exist).  Keep the first slot,
         // and erase the rest.
         m_blocks[del_index1].m_size = len; // Insert an empty
@@ -2347,10 +2344,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         --ret_block_index;
         ret_start_pos -= start_pos_offset;
     }
-    else
-    {
-        assert(!"TESTME");
-    }
+
+    m_blocks[ret_block_index].m_position =
+        ret_block_index > 0 ? detail::mtv::calc_next_block_position(m_blocks, ret_block_index-1) : 0;
 
     return get_iterator(ret_block_index, ret_start_pos);
 }
@@ -2552,11 +2548,11 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
         block* blk_next = get_next_block_of_type(block_index, cat_dst);
         if (blk_next)
         {
-            assert(!"TESTME");
             // Merge with the next block.
             element_block_func::prepend_values_from_block(*blk_next->mp_data, *dst_data, 0, len);
             element_block_func::resize_block(*dst_data, 0); // prevent double-delete.
             blk_next->m_size += len;
+            blk_next->m_position -= len;
         }
         else
         {
@@ -2569,7 +2565,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
         return;
     }
 
-    assert(!"TESTME");
     // Source range is in the middle of a block.
     assert(src_offset && src_tail_len);
     block& blk = set_new_block_to_middle(block_index, src_offset, len, false);
@@ -4402,6 +4397,10 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(size_type start_pos, si
         dest_start_pos1, dest_block_index1, dest_start_pos2, dest_block_index2);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_block, os_block_other;
+    dump_blocks(os_block);
+    other.dump_blocks(os_block_other);
+
     if (!check_block_integrity() || !other.check_block_integrity())
     {
         cerr << "block integrity check failed in swap (start_pos=" << start_pos << "; end_pos=" << end_pos << "; other_pos=" << other_pos << ")" << endl;
@@ -4409,6 +4408,10 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(size_type start_pos, si
         cerr << os_prev_block.str();
         cerr << "previous block state (destination):" << endl;
         cerr << os_prev_block_other.str();
+        cerr << "altered block state (source):" << endl;
+        cerr << os_block.str();
+        cerr << "altered block state (destination):" << endl;
+        cerr << os_block_other.str();
         abort();
     }
 #endif
