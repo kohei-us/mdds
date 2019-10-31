@@ -2689,16 +2689,16 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_multi_to_multi_blocks(
     prepare_blocks_to_transfer(src_bucket, block_index1, src_offset1, block_index2, src_offset2);
     other.prepare_blocks_to_transfer(dst_bucket, dblock_index1, dst_offset1, dblock_index2, dst_offset2);
 
-    m_blocks.insert(
-        m_blocks.begin()+src_bucket.insert_index, dst_bucket.blocks.begin(), dst_bucket.blocks.end());
+    size_type position = src_bucket.insert_index > 0 ? detail::mtv::calc_next_block_position(m_blocks, src_bucket.insert_index-1) : 0;
+    insert_blocks_at(position, src_bucket.insert_index, dst_bucket.blocks);
 
     // Merge the boundary blocks in the source.
     merge_with_next_block(src_bucket.insert_index + dst_bucket.blocks.size()-1);
     if (src_bucket.insert_index > 0)
         merge_with_next_block(src_bucket.insert_index - 1);
 
-    other.m_blocks.insert(
-        other.m_blocks.begin()+dst_bucket.insert_index, src_bucket.blocks.begin(), src_bucket.blocks.end());
+    position = dst_bucket.insert_index > 0 ? detail::mtv::calc_next_block_position(other.m_blocks, dst_bucket.insert_index-1) : 0;
+    other.insert_blocks_at(position, dst_bucket.insert_index, src_bucket.blocks);
 
     // Merge the boundary blocks in the destination.
     other.merge_with_next_block(dst_bucket.insert_index + src_bucket.blocks.size()-1);

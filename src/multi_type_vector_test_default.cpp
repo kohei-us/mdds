@@ -5137,8 +5137,8 @@ void mtv_test_swap_range()
     assert(db2.get<double>(0) == 2.1);
     assert(db2.get<string>(1) == "test");
 
-#if 0 // TESTME
     // More complex case.
+    // TODO: Test this case for block events.
     db1 = mtv_type(10);
     db1.set<int32_t>(0, 2);
     db1.set<int32_t>(1, 3);
@@ -5176,7 +5176,6 @@ void mtv_test_swap_range()
     assert(db2.is_empty(8));
     assert(db2.get<int32_t>(9) == 19);
     assert(db2.block_size() == 4);
-#endif
 }
 
 struct block_node_printer : unary_function<mtv_type::value_type, void>
