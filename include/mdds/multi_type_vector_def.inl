@@ -2640,28 +2640,32 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
         return;
     }
 
+    size_type position = 0;
+
     if (src_tail_len == 0)
     {
-        assert(!"TESTME");
         // Source range is at the bottom of a block.
 
         // Shrink the current block.
         element_block_func::resize_block(*blk_src->mp_data, src_offset);
         blk_src->m_size = src_offset;
+        position = detail::mtv::calc_next_block_position(*blk_src);
     }
     else
     {
-        assert(!"TESTME");
         // Source range is in the middle of a block.
         assert(src_offset && src_tail_len);
 
-        // This creates an empty block at block_index+1.
+        // This will create two new slots at block_index+1, the first of which
+        // we will immediately remove.  The new blocks from the other
+        // container will be inserted at the removed slot.
         set_new_block_to_middle(block_index, src_offset, len, false);
         delete_element_block(m_blocks[block_index+1]);
         m_blocks.erase(m_blocks.begin()+block_index+1);
+        position = detail::mtv::calc_next_block_position(m_blocks, block_index);
     }
 
-    insert_blocks_at(0, block_index+1, new_blocks);
+    insert_blocks_at(position, block_index+1, new_blocks);
     merge_with_next_block(block_index+new_blocks.size()); // last block inserted.
     merge_with_next_block(block_index); // block before the first block inserted.
 }
