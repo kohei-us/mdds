@@ -2615,7 +2615,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
 
         if (src_tail_len == 0)
         {
-            assert(!"TESTME");
             // the whole block needs to be replaced.  Delete the block, but
             // don't delete the managed elements the block contains since they
             // have been transferred over to the destination block.
@@ -2705,13 +2704,19 @@ template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_blocks_at(
     size_type insert_pos, blocks_type& new_blocks)
 {
+    size_type position = m_blocks[insert_pos].m_position;
+
     std::for_each(new_blocks.begin(), new_blocks.end(),
         [&](block& r)
         {
+            r.m_position = position;
+            position += r.m_size;
+
             if (r.mp_data)
                 m_hdl_event.element_block_acquired(r.mp_data);
         }
     );
+
     m_blocks.insert(m_blocks.begin()+insert_pos, new_blocks.begin(), new_blocks.end());
 }
 
@@ -2747,7 +2752,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
         block_first.m_size = blk_size;
         if (blk->mp_data)
         {
-            assert(!"TESTME");
             block_first.mp_data = element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
             element_block_func::assign_values_from_block(*block_first.mp_data, *blk->mp_data, offset1, blk_size);
 
@@ -2765,7 +2769,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
     block* blk = &m_blocks[block_index2];
     if (offset2 == blk->m_size-1)
     {
-        assert(!"TESTME");
         // The whole last block needs to be swapped.
         ++it_end;
     }
@@ -3683,6 +3686,9 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
 
     m_blocks.emplace(m_blocks.begin()+bucket.insert_index, len);
     block* blk = &m_blocks[bucket.insert_index];
+    if (bucket.insert_index > 0)
+        blk->m_position = detail::mtv::calc_next_block_position(m_blocks, bucket.insert_index-1);
+
     blk->mp_data = element_block_func::create_new_block(mtv::get_block_type(src_data), 0);
     m_hdl_event.element_block_acquired(blk->mp_data);
     element_block_func::assign_values_from_block(*blk->mp_data, src_data, src_offset, len);
@@ -4403,14 +4409,14 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(size_type start_pos, si
 
     if (!check_block_integrity() || !other.check_block_integrity())
     {
-        cerr << "block integrity check failed in swap (start_pos=" << start_pos << "; end_pos=" << end_pos << "; other_pos=" << other_pos << ")" << endl;
-        cerr << "previous block state (source):" << endl;
+        cerr << endl << "block integrity check failed in swap (start_pos=" << start_pos << "; end_pos=" << end_pos << "; other_pos=" << other_pos << ")" << endl;
+        cerr << endl << "previous block state (source):" << endl;
         cerr << os_prev_block.str();
-        cerr << "previous block state (destination):" << endl;
+        cerr << endl << "previous block state (destination):" << endl;
         cerr << os_prev_block_other.str();
-        cerr << "altered block state (source):" << endl;
+        cerr << endl << "altered block state (source):" << endl;
         cerr << os_block.str();
-        cerr << "altered block state (destination):" << endl;
+        cerr << endl << "altered block state (destination):" << endl;
         cerr << os_block_other.str();
         abort();
     }

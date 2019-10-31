@@ -4998,7 +4998,6 @@ void mtv_test_swap_range()
     assert(db2.is_empty(4));
     assert(db2.block_size() == 2);
 
-#if 0 // TESTME
     // Swap non-empty single block with multiple destination blocks.
     db1 = mtv_type(4, int_val);
     db2 = mtv_type(5);
@@ -5020,6 +5019,7 @@ void mtv_test_swap_range()
     assert(db2.get<int32_t>(4) == int_val);
     assert(db2.block_size() == 2);
 
+#if 0 // TESTME
     // Another scenario.
     db1 = mtv_type(2, short_val);
     db2 = mtv_type(2);
