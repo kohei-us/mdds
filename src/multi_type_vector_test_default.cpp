@@ -5596,10 +5596,10 @@ int main (int argc, char **argv)
         mtv_test_next_position();
         mtv_test_advance_position();
         mtv_test_swap_range();
-
-#if 0 // TODO : enable this!
         mtv_test_value_type();
         mtv_test_block_identifier();
+
+#if 0 // TODO : enable this!
         mtv_test_transfer();
         mtv_test_push_back();
         mtv_test_capacity();
