@@ -80,3 +80,22 @@ make html-local
 
 to build it, and the documentation will be available in the `doc/_build`
 directory.
+
+# Build LCOV report
+
+We support generating a test coverage report using [GCOV](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html)
+and [LCOV](https://github.com/linux-test-project/lcov).  To generate a report,
+run:
+
+```bash
+./autogen.sh --enable-gcov
+make check
+```
+
+to build code coverage data.  Then generate a summary report by running:
+
+```bash
+./bin/gen-test-coverage.sh out src/*.cpp
+```
+
+which should launch the report in your default web browser.
