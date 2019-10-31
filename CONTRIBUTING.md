@@ -98,4 +98,5 @@ to build code coverage data.  Then generate a summary report by running:
 ./bin/gen-test-coverage.sh out src/*.cpp
 ```
 
-which should launch the report in your default web browser.
+which should launch the report in your default web browser.  Note that this works
+only when you use gcc to build the test source files.
