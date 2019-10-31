@@ -5019,7 +5019,6 @@ void mtv_test_swap_range()
     assert(db2.get<int32_t>(4) == int_val);
     assert(db2.block_size() == 2);
 
-#if 0 // TESTME
     // Another scenario.
     db1 = mtv_type(2, short_val);
     db2 = mtv_type(2);
@@ -5044,6 +5043,7 @@ void mtv_test_swap_range()
     assert(db2.get<double>(1) == 3.14);
     assert(db2.get<uint8_t>(2) == 'y');
 
+#if 0 // TESTME
     // Another scenario.
     db1 = mtv_type(5);
     db1.set<int32_t>(0, 1);

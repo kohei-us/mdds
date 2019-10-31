@@ -2739,7 +2739,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
 
     if (offset1 == 0)
     {
-        assert(!"TESTME");
         // The whole first block needs to be swapped.
         --it_begin;
         --bucket.insert_index;
@@ -2758,10 +2757,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
             // Shrink the existing block.
             element_block_func::resize_block(*blk->mp_data, offset1);
         }
-        else
-        {
-            assert(!"TESTME");
-        }
 
         blk->m_size = offset1;
     }
@@ -2779,18 +2774,14 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::prepare_blocks_to_transfer(
         block_last.m_size = blk_size;
         if (blk->mp_data)
         {
-            assert(!"TESTME");
             block_last.mp_data = element_block_func::create_new_block(mtv::get_block_type(*blk->mp_data), 0);
             element_block_func::assign_values_from_block(*block_last.mp_data, *blk->mp_data, 0, blk_size);
 
             // Shrink the existing block.
             element_block_func::erase(*blk->mp_data, 0, blk_size);
         }
-        else
-        {
-            assert(!"TESTME");
-        }
 
+        blk->m_position += blk_size;
         blk->m_size -= blk_size;
     }
 
