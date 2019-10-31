@@ -22,7 +22,7 @@ AC_SUBST(INCDIR)
 AC_SUBST(MISCDIR)
 AC_SUBST(QUICKCHECKDIR)
 
-CPPFLAGS="$CPPFLAGS -Wall -O2 -g -pedantic-errors"
+CPPFLAGS="$CPPFLAGS -Wall -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
 CXXFLAGS="$CXXFLAGS -Wshadow -std=c++11"
 
@@ -44,6 +44,18 @@ AC_ARG_ENABLE(release-tests,
 
 AS_IF([test x"$release_tests" == "xyes"], [
   CXXFLAGS="$CXXFLAGS -DNDEBUG"
+])
+
+AC_ARG_ENABLE(test-coverage,
+[
+  --enable-test-coverage   Enable generation of test coverage information.
+]
+,test_coverage=yes)
+
+AS_IF([test x"$test_coverage" == "xyes"], [
+  CXXFLAGS="$CXXFLAGS --coverage -O0"
+], [
+  CXXFLAGS="$CXXFLAGS -O2"
 ])
 
 AC_SUBST(CPPFLAGS)

@@ -58,3 +58,5 @@ example/rtree-medium
 example/rtree-medium-bulkload
 example/*.svg
 rtree-test-*.svg
+src/*.gcda
+src/*.gcno
