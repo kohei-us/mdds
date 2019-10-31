@@ -5103,7 +5103,6 @@ void mtv_test_swap_range()
     assert(db2.get<int32_t>(3) == 7);
     assert(db2.block_size() == 1);
 
-#if 0 // TESTME
     // Try swapping in a multi-to-single block direction.
     db1 = mtv_type(2);
     db1.set(0, 1.2);
@@ -5138,6 +5137,7 @@ void mtv_test_swap_range()
     assert(db2.get<double>(0) == 2.1);
     assert(db2.get<string>(1) == "test");
 
+#if 0 // TESTME
     // More complex case.
     db1 = mtv_type(10);
     db1.set<int32_t>(0, 2);
