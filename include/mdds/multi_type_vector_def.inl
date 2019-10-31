@@ -2613,6 +2613,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
     {
         // Source range is at the top of a block.
 
+        size_type src_position = blk_src->m_position;
+
         if (src_tail_len == 0)
         {
             // the whole block needs to be replaced.  Delete the block, but
@@ -2624,13 +2626,13 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
         }
         else
         {
-            assert(!"TESTME");
             // Shrink the current block by erasing the top part.
             element_block_func::erase(*blk_src->mp_data, 0, len);
             blk_src->m_size -= len;
+            blk_src->m_position += len;
         }
 
-        insert_blocks_at(block_index, new_blocks);
+        insert_blocks_at(src_position, block_index, new_blocks);
         merge_with_next_block(block_index+new_blocks.size()-1); // last block inserted.
         if (block_index > 0)
             merge_with_next_block(block_index-1); // block before the first block inserted.
@@ -2659,7 +2661,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
         m_blocks.erase(m_blocks.begin()+block_index+1);
     }
 
-    insert_blocks_at(block_index+1, new_blocks);
+    insert_blocks_at(0, block_index+1, new_blocks);
     merge_with_next_block(block_index+new_blocks.size()); // last block inserted.
     merge_with_next_block(block_index); // block before the first block inserted.
 }
@@ -2702,10 +2704,8 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_multi_to_multi_blocks(
 
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_blocks_at(
-    size_type insert_pos, blocks_type& new_blocks)
+    size_type position, size_type insert_pos, blocks_type& new_blocks)
 {
-    size_type position = m_blocks[insert_pos].m_position;
-
     std::for_each(new_blocks.begin(), new_blocks.end(),
         [&](block& r)
         {
