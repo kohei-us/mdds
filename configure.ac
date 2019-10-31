@@ -43,19 +43,25 @@ AC_ARG_ENABLE(release-tests,
 ,release_tests=yes)
 
 AS_IF([test x"$release_tests" == "xyes"], [
-  CXXFLAGS="$CXXFLAGS -DNDEBUG"
+  CXXFLAGS="$CXXFLAGS -DNDEBUG -O2"
 ])
 
-AC_ARG_ENABLE(test-coverage,
-[
-  --enable-test-coverage   Enable generation of test coverage information.
-]
-,test_coverage=yes)
+AC_ARG_ENABLE(gcov,
+    AS_HELP_STRING([--enable-gcov], [Enable generation of gcov information.]),
+    [enable_gcov="$enableval"],[enable_gcov=no]
+)
 
-AS_IF([test x"$test_coverage" == "xyes"], [
+AS_IF([test x"$enable_gcov" == "xyes"], [
   CXXFLAGS="$CXXFLAGS --coverage -O0"
-], [
-  CXXFLAGS="$CXXFLAGS -O2"
+])
+
+AC_ARG_ENABLE(sanitizer-coverage,
+    AS_HELP_STRING([--enable-sanitizer-coverage], [Enable generation of sanitizer coverage information.]),
+    [enable_sanitizer_coverage="$enableval"],[enable_sanitizer_coverage=no]
+)
+
+AS_IF([test x"$enable_sanitizer_coverage" == "xyes"], [
+  CXXFLAGS="$CXXFLAGS -fprofile-instr-generate -fcoverage-mapping -O0"
 ])
 
 AC_SUBST(CPPFLAGS)
@@ -130,3 +136,11 @@ rtree_test_mem.mem:src/test.mem.in
 rtree_test_bulkload_mem.mem:src/test.mem.in
 ])
 AC_OUTPUT
+
+AC_MSG_NOTICE([
+==============================================================================
+Build configuration:
+        gcov                  $enable_gcov
+        sanitizer-coverage    $enable_sanitizer_coverage
+==============================================================================
+])
