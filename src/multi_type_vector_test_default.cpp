@@ -5238,6 +5238,7 @@ void mtv_test_transfer()
     assert(it->__private_data.block_index == 1);
     assert(it->position == 1);
 
+#if 0 // TODO
     // Reset and start over.
     db1.clear();
     db1.resize(5);
@@ -5371,6 +5372,7 @@ void mtv_test_transfer()
     assert(it->type == mtv::element_type_empty);
     ++it;
     assert(it == db1.end());
+#endif
 }
 
 void mtv_test_push_back()
@@ -5598,9 +5600,9 @@ int main (int argc, char **argv)
         mtv_test_swap_range();
         mtv_test_value_type();
         mtv_test_block_identifier();
+        mtv_test_transfer();
 
 #if 0 // TODO : enable this!
-        mtv_test_transfer();
         mtv_test_push_back();
         mtv_test_capacity();
         mtv_test_position_type_end_position();

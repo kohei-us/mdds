@@ -1784,22 +1784,29 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer(
         detail::mtv::throw_block_position_not_found("multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    std::ostringstream os_prev_block;
-    os_prev_block << "source:" << endl;
+    std::ostringstream os_prev_block, os_prev_block_dest;
     dump_blocks(os_prev_block);
-    os_prev_block << "destination:" << endl;
-    dest.dump_blocks(os_prev_block);
+    dest.dump_blocks(os_prev_block_dest);
 #endif
 
     iterator ret = transfer_impl(start_pos, end_pos, start_pos_in_block1, block_index1, dest, dest_pos);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_block, os_block_dest;
+    dump_blocks(os_block);
+    dest.dump_blocks(os_block_dest);
+
     if (!check_block_integrity() || !dest.check_block_integrity())
     {
-        cerr << "block integrity check failed in transfer (start_pos=" << start_pos
-            << ",end_pos=" << end_pos << ",dest_pos=" << dest_pos << ")" << endl;
-        cerr << "previous block state:" << endl;
+        cerr << endl << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest_pos=" << dest_pos << ")" << endl;
+        cerr << endl << "previous block state (source):" << endl;
         cerr << os_prev_block.str();
+        cerr << endl << "previous block state (destination):" << endl;
+        cerr << os_prev_block_dest.str();
+        cerr << endl << "altered block state (source):" << endl;
+        cerr << os_block.str();
+        cerr << endl << "altered block state (destination):" << endl;
+        cerr << os_block_dest.str();
         abort();
     }
 #endif
@@ -2113,9 +2120,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     }
     else
     {
-        assert(!"TESTME");
-        // Copy to the middle of destination block. Insert slots for new
-        // blocks (plus one for the bottom empty block) below current.
+        // Copy to the middle of the destination block. Insert slots for the
+        // new blocks (plus one extra for the bottom empty block) below the
+        // current block.
         size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
         dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len+1, block());
         blk_dest = &dest.m_blocks[dest_block_index];
@@ -2215,6 +2222,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         if (size_to_trans < blk.m_size)
         {
             // Transfer the upper part of this block.
+            assert(dest_block_pos > 0);
+            dest.m_blocks[dest_block_pos].m_position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_pos-1);
             dest.m_blocks[dest_block_pos].m_size = size_to_trans;
             blk_dest = &dest.m_blocks[dest_block_pos];
             if (blk.mp_data)
@@ -2227,10 +2236,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
                 element_block_func::assign_values_from_block(*blk_dest->mp_data, *blk.mp_data, 0, size_to_trans);
                 element_block_func::erase(*blk.mp_data, 0, size_to_trans);
             }
-            else
-            {
-                assert(!"TESTME");
-            }
+
+            blk.m_position += size_to_trans;
             blk.m_size -= size_to_trans;
             --del_index2; // Retain this block.
         }
@@ -2271,18 +2278,18 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             assert(!"TESTME");
             assert(blk2.mp_data);
 
-            // Block 1 is empty. Extend this block.
+            // Block 1 is empty. Extend this block downward.
             blk1.m_size += len;
             return get_iterator(block_index1, start_pos_in_block1);
         }
 
         if (!blk2.mp_data)
         {
-            assert(!"TESTME");
             assert(blk1.mp_data);
 
-            // Block 2 is empty. Extend this block.
+            // Block 2 is empty. Extend this block upward.
             blk2.m_size += len;
+            blk2.m_position -= len;
             return get_iterator(block_index2, start_pos);
         }
 
