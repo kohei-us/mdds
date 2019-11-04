@@ -2127,8 +2127,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len+1, block());
         blk_dest = &dest.m_blocks[dest_block_index];
         assert(dest.m_blocks.size() > dest_block_index+block_len+1);
-        dest.m_blocks[dest_block_index+block_len+1].m_size = blk2_size;
         blk_dest->m_size = dest_pos_in_block;
+
+        // Re-calculate the size and position of the lower part of the destination block.
+        block& blk_dest_lower = dest.m_blocks[dest_block_index+block_len+1];
+        blk_dest_lower.m_position = detail::mtv::calc_next_block_position(*blk_dest) + len;
+        blk_dest_lower.m_size = blk2_size;
 
         ++dest_block_index1;
     }
@@ -2228,7 +2232,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             blk_dest = &dest.m_blocks[dest_block_pos];
             if (blk.mp_data)
             {
-                assert(!"TESTME");
                 element_category_type cat = mtv::get_block_type(*blk.mp_data);
                 blk_dest->mp_data = element_block_func::create_new_block(cat, 0);
                 dest.m_hdl_event.element_block_acquired(blk_dest->mp_data);
@@ -2275,7 +2278,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
 
         if (!blk1.mp_data)
         {
-            assert(!"TESTME");
             assert(blk2.mp_data);
 
             // Block 1 is empty. Extend this block downward.
