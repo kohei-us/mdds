@@ -5266,7 +5266,6 @@ void mtv_test_transfer()
     assert(it->position == 0);
     assert(it->__private_data.block_index == 0);
 
-#if 0 // TODO
     // Reset and start over.
     db1.clear();
     db1.resize(4);
@@ -5294,6 +5293,7 @@ void mtv_test_transfer()
     assert(it->position == 1);
     assert(it->__private_data.block_index == 1);
 
+#if 0 // TODO
     // Reset and start over.
     db1.clear();
     db1.resize(4);

@@ -2295,11 +2295,11 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             return get_iterator(block_index2, start_pos);
         }
 
-        assert(!"TESTME");
         // Neither block1 nor block2 are empty. Just insert a new empty block
         // between them. After the insertion, the old block2 position becomes
         // the position of the inserted block.
-        m_blocks.emplace(m_blocks.begin()+block_index2, len);
+        size_type position = detail::mtv::calc_next_block_position(blk1);
+        m_blocks.emplace(m_blocks.begin()+block_index2, position, len);
         // No need to adjust local index vars
         return get_iterator(block_index2, start_pos);
     }
