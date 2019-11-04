@@ -2306,7 +2306,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
 
     if (del_index1 > 0 && !m_blocks[del_index1-1].mp_data)
     {
-        assert(!"TESTME");
         // The block before the first block to be deleted is empty.  Simply
         // extend that block to cover the deleted block segment.
         block& blk_prev = m_blocks[del_index1-1];
@@ -2328,7 +2327,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
 
     if (del_index2 >= del_index1)
     {
-        assert(!"TESTME");
         typename blocks_type::iterator it_blk = m_blocks.begin();
         typename blocks_type::iterator it_blk_end = m_blocks.begin();
         std::advance(it_blk, del_index1);
