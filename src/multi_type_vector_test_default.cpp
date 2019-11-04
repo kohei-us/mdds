@@ -5302,7 +5302,6 @@ void mtv_test_transfer()
     db1.set(2, 12.8);
     it = db1.transfer(1, 2, db2, 1);
 
-#if 0 // TODO
     // Reset and start over.
     db1.clear();
     db1.resize(20);
@@ -5372,7 +5371,6 @@ void mtv_test_transfer()
     assert(it->type == mtv::element_type_empty);
     ++it;
     assert(it == db1.end());
-#endif
 }
 
 void mtv_test_push_back()
