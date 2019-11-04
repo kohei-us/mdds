@@ -1967,10 +1967,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
     iterator it_dest_blk = dest.set_empty(dest_pos, last_dest_pos);
 
     if (!blk->mp_data)
-    {
-        assert(!"TESTME");
         return get_iterator(block_index1, start_pos_in_block1);
-    }
 
     element_category_type cat = get_block_type(*blk->mp_data);
 

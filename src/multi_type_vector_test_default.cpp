@@ -5371,6 +5371,31 @@ void mtv_test_transfer()
     assert(it->type == mtv::element_type_empty);
     ++it;
     assert(it == db1.end());
+
+    // Reset and start over.
+    db1.clear();
+    db1.resize(8);
+    db2 = mtv_type(8, true);
+
+    db1.transfer(0, 4, db2, 1);
+
+    assert(db1.is_empty(0));
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db1.is_empty(3));
+    assert(db1.is_empty(4));
+    assert(db1.is_empty(5));
+    assert(db1.is_empty(6));
+    assert(db1.is_empty(7));
+
+    assert(db2.get<bool>(0) == true);
+    assert(db2.is_empty(1));
+    assert(db2.is_empty(2));
+    assert(db2.is_empty(3));
+    assert(db2.is_empty(4));
+    assert(db2.is_empty(5));
+    assert(db2.get<bool>(6) == true);
+    assert(db2.get<bool>(7) == true);
 }
 
 void mtv_test_push_back()
