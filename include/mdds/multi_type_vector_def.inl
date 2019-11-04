@@ -1983,11 +1983,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
 
         if (len < blk_dest->m_size)
         {
-            assert(!"TESTME");
             // Shrink the existing block and insert a new block before it.
             assert(len < blk_dest->m_size);
+            size_type position = blk_dest->m_position;
+            blk_dest->m_position += len;
             blk_dest->m_size -= len;
-            dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index, len);
+            dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index, position, len);
             blk_dest = &dest.m_blocks[dest_block_index]; // The old pointer is invalid.
         }
     }
