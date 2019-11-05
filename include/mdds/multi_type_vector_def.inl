@@ -4561,7 +4561,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
     }
     else if (blk_next)
     {
-        assert(!"TESTME");
         assert(!blk_next->mp_data);
 
         // Only the next block is empty. Merge the next block with the current.

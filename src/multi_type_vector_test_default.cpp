@@ -5418,6 +5418,16 @@ void mtv_test_transfer()
     assert(db2.is_empty(5));
     assert(db2.is_empty(6));
     assert(db2.is_empty(7));
+
+    // Start over.
+    db1 = mtv_type(5);
+    db2 = mtv_type(5);
+    db1.set<double>(3, 1.1);
+    db1.set<double>(4, 1.2);
+    db2.set<int32_t>(0, 1);
+    db2.set<int32_t>(1, 1);
+
+    db1.transfer(3, 4, db2, 0);
 }
 
 void mtv_test_push_back()
