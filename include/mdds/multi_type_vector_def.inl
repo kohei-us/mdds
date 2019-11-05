@@ -2107,7 +2107,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     }
     else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
     {
-        assert(!"TESTME");
         // Copy to the bottom part of destination block. Insert slots for new
         // blocks below current, and shrink the current block.
         dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len, block());
