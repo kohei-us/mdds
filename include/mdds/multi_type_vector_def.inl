@@ -2135,7 +2135,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     }
 
     size_type del_index1 = block_index1, del_index2 = block_index2;
-    size_type ret_start_pos = start_pos_in_block1;
 
     // Now that the new slots have been created, start transferring the blocks.
 
@@ -2167,9 +2166,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
 
         blk->m_size = offset;
         ++del_index1; // Retain this block.
-
-        // Move the return block position to the next block.
-        ret_start_pos += blk->m_size;
     }
     else
     {
@@ -2305,9 +2301,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         // extend that block to cover the deleted block segment.
         block& blk_prev = m_blocks[del_index1-1];
 
-        // This previous empty block will be returned.  Adjust the return block position.
-        ret_start_pos -= blk_prev.m_size;
-
         // Extend the previous block.
         blk_prev.m_size += len;
     }
@@ -2353,14 +2346,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         assert(!"TESTME");
         // Merged with the previous block. Adjust the return block position.
         --ret_block_index;
-        ret_start_pos -= start_pos_offset;
     }
 #endif
 
     m_blocks[ret_block_index].m_position =
         ret_block_index > 0 ? detail::mtv::calc_next_block_position(m_blocks, ret_block_index-1) : 0;
 
-    return get_iterator(ret_block_index, ret_start_pos);
+    return get_iterator(ret_block_index, m_blocks[ret_block_index].m_position);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
