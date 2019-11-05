@@ -2187,8 +2187,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
 
     if (block_len > 2)
     {
-        assert(!"TESTME");
         // Transfer all blocks in between.
+        size_type position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index1);
         for (size_type i = 0; i < block_len - 2; ++i)
         {
             size_type src_block_pos = block_index1 + 1 + i;
@@ -2196,13 +2196,16 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             assert(dest.m_blocks[dest_block_pos].m_size == 0);
             block& blk = m_blocks[src_block_pos];
             dest.m_blocks[dest_block_pos] = blk; // copied.
+            dest.m_blocks[dest_block_pos].m_position = position;
+            position += blk.m_size;
+            blk.m_size = 0;
+
             if (blk.mp_data)
             {
                 dest.m_hdl_event.element_block_acquired(blk.mp_data);
                 m_hdl_event.element_block_released(blk.mp_data);
                 blk.mp_data = nullptr;
             }
-            m_blocks[src_block_pos].m_size = 0;
         }
     }
 
