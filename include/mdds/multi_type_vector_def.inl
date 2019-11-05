@@ -2335,22 +2335,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         m_blocks.erase(it_blk, it_blk_end);
     }
 
-#if 1 // TODO: commit this once the logic outlined below is verified.
     // The block pointed to by ret_block_index is guaranteed to be empty by
     // this point.
     assert(!m_blocks[ret_block_index].mp_data);
     // Merging with the previous block never happens.
     size_type start_pos_offset = merge_with_adjacent_blocks(ret_block_index);
     assert(!start_pos_offset);
-#else
-    size_type start_pos_offset = merge_with_adjacent_blocks(ret_block_index);
-    if (start_pos_offset)
-    {
-        assert(!"TESTME");
-        // Merged with the previous block. Adjust the return block position.
-        --ret_block_index;
-    }
-#endif
 
     m_blocks[ret_block_index].m_position =
         ret_block_index > 0 ? detail::mtv::calc_next_block_position(m_blocks, ret_block_index-1) : 0;
