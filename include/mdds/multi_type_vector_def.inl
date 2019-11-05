@@ -2178,17 +2178,16 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         // Just move the whole block over.
         block& blk = m_blocks[block_index1];
         dest.m_blocks[dest_block_index1] = blk; // copied.
+        dest.m_blocks[dest_block_index1].m_position =
+            dest_block_index1 > 0 ? detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index1-1) : 0;
+
         if (blk.mp_data)
         {
-            assert(!"TESTME");
             dest.m_hdl_event.element_block_acquired(blk.mp_data);
             m_hdl_event.element_block_released(blk.mp_data);
             blk.mp_data = nullptr;
         }
-        else
-        {
-            assert(!"TESTME");
-        }
+
         blk.m_size = 0;
     }
 
