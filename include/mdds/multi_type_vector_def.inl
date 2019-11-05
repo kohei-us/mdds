@@ -2135,7 +2135,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     }
 
     size_type del_index1 = block_index1, del_index2 = block_index2;
-    size_type ret_block_index = block_index1, ret_start_pos = start_pos_in_block1;
+    size_type ret_start_pos = start_pos_in_block1;
 
     // Now that the new slots have been created, start transferring the blocks.
 
@@ -2169,7 +2169,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         ++del_index1; // Retain this block.
 
         // Move the return block position to the next block.
-        ++ret_block_index;
         ret_start_pos += blk->m_size;
     }
     else
@@ -2307,7 +2306,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         block& blk_prev = m_blocks[del_index1-1];
 
         // This previous empty block will be returned.  Adjust the return block position.
-        --ret_block_index;
         ret_start_pos -= blk_prev.m_size;
 
         // Extend the previous block.
@@ -2320,6 +2318,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         m_blocks[del_index1].m_size = len; // Insert an empty
         ++del_index1;
     }
+
+    size_type ret_block_index = del_index1 - 1;
 
     if (del_index2 >= del_index1)
     {
