@@ -2085,6 +2085,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     // Create slots for new blocks in the destination.
 
     size_type dest_block_index1 = dest_block_index;
+
     if (dest_pos_in_block == 0)
     {
         // Copy to the top part of destination block.
@@ -2097,7 +2098,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         }
         else
         {
-            assert(!"TESTME");
             // Destination block is exactly of the length of the elements being transferred.
             dest.delete_element_block(*blk_dest);
             blk_dest->m_size = 0;
