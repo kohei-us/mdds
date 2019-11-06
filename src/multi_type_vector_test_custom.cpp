@@ -1697,9 +1697,9 @@ int main (int argc, char **argv)
 {
     try
     {
-#if 0 // TODO : enable this!
         mtv_test_types();
         mtv_test_block_identifier();
+#if 0 // TODO : enable this!
         mtv_test_basic();
         mtv_test_equality();
         mtv_test_managed_block();
