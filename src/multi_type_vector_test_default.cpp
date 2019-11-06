@@ -5532,6 +5532,25 @@ void mtv_test_transfer()
     assert(db2.get<int16_t>(7) == 5);
     assert(db2.get<int32_t>(8) == 5);
     assert(db2.get<double>(9) == 5.0);
+
+    // Start over.
+    db1 = mtv_type(5, true);
+    db2 = mtv_type(6);
+
+    db1.transfer(0, 2, db2, 1);
+
+    assert(db1.is_empty(0));
+    assert(db1.is_empty(1));
+    assert(db1.is_empty(2));
+    assert(db1.get<bool>(3) == true);
+    assert(db1.get<bool>(4) == true);
+
+    assert(db2.is_empty(0));
+    assert(db2.get<bool>(1) == true);
+    assert(db2.get<bool>(2) == true);
+    assert(db2.get<bool>(3) == true);
+    assert(db2.is_empty(4));
+    assert(db2.is_empty(5));
 }
 
 void mtv_test_push_back()

@@ -2005,7 +2005,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
     }
     else
     {
-        assert(!"TESTME");
         // Copy to the middle of destination block.
 
         // Insert two new blocks below current.
@@ -2014,6 +2013,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
         dest.m_blocks[dest_block_index].m_size = dest_pos_in_block;
         dest.m_blocks[dest_block_index+1].m_size = len;
         dest.m_blocks[dest_block_index+2].m_size = blk2_size;
+
+        dest.m_blocks[dest_block_index+1].m_position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index);
+        dest.m_blocks[dest_block_index+2].m_position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index+1);
 
         blk_dest = &dest.m_blocks[dest_block_index+1];
 
