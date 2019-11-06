@@ -5802,12 +5802,9 @@ int main (int argc, char **argv)
         mtv_test_value_type();
         mtv_test_block_identifier();
         mtv_test_transfer();
-
-#if 0 // TODO : enable this!
         mtv_test_push_back();
         mtv_test_capacity();
         mtv_test_position_type_end_position();
-#endif
     }
     catch (const std::exception& e)
     {
