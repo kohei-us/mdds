@@ -2041,10 +2041,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
             --block_index1;
             start_pos_in_block1 -= start_pos_offset;
         }
-        else
-        {
-            assert(!"TESTME");
-        }
+
         return get_iterator(block_index1, start_pos_in_block1);
     }
 
