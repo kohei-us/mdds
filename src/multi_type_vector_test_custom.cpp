@@ -1699,9 +1699,9 @@ int main (int argc, char **argv)
     {
         mtv_test_types();
         mtv_test_block_identifier();
-#if 0 // TODO : enable this!
         mtv_test_basic();
         mtv_test_equality();
+#if 0 // TODO : enable this!
         mtv_test_managed_block();
         mtv_test_custom_block_func1();
         mtv_test_transfer();
