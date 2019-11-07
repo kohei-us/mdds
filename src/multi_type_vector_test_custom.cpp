@@ -667,7 +667,7 @@ void mtv_test_managed_block()
         assert(db.get<double>(2) == 4.0);
         assert(db.get<muser_cell*>(3)->value == 3.0);
     }
-
+#if 0
     {
         // insert_empty() to split the block into two.
         mtv_type db(3);
@@ -994,6 +994,7 @@ void mtv_test_managed_block()
 
         db.set(4, 2.2); // Overwrite muser_cell and don't leak.
     }
+#endif
 }
 
 void mtv_test_custom_block_func1()
@@ -1701,8 +1702,8 @@ int main (int argc, char **argv)
         mtv_test_block_identifier();
         mtv_test_basic();
         mtv_test_equality();
-#if 0 // TODO : enable this!
         mtv_test_managed_block();
+#if 0 // TODO : enable this!
         mtv_test_custom_block_func1();
         mtv_test_transfer();
         mtv_test_swap();
