@@ -1701,7 +1701,6 @@ int main (int argc, char **argv)
         mtv_test_basic();
         mtv_test_equality();
         mtv_test_managed_block();
-#if 0 // TODO : enable this!
         mtv_test_custom_block_func1();
         mtv_test_transfer();
         mtv_test_swap();
@@ -1709,7 +1708,6 @@ int main (int argc, char **argv)
         mtv_test_custom_block_func3();
         mtv_test_release();
         mtv_test_construction_with_array();
-#endif
     }
     catch (const std::exception& e)
     {
