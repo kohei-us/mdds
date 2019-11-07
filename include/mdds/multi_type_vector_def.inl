@@ -2903,8 +2903,10 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
         adjust_block_offset = 1; // Exclude this block from later block position adjustment.
     }
 
-    // Get the index of the first block to be erased.
+    // Get the index of the block that sits before the blocks being erased.
     block_pos1 = std::distance(m_blocks.begin(), it_erase_begin);
+    if (block_pos1 > 0)
+        --block_pos1;
 
     // Now, erase all blocks in between.
     delete_element_blocks(it_erase_begin, it_erase_end);
@@ -2917,7 +2919,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
 
     it_adjust_block += adjust_block_offset;
     adjust_block_positions(it_adjust_block, -delta);
-    merge_with_adjacent_blocks(block_pos1);
+    merge_with_next_block(block_pos1);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
