@@ -2339,6 +2339,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     assert(!m_blocks[ret_block_index].mp_data);
     // Merging with the previous block never happens.
     size_type start_pos_offset = merge_with_adjacent_blocks(ret_block_index);
+    (void)start_pos_offset; // avoid unused variable compiler warning.
     assert(!start_pos_offset);
 
     m_blocks[ret_block_index].m_position =
