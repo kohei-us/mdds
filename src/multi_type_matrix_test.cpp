@@ -1095,7 +1095,6 @@ int main (int argc, char **argv)
 
         if (opt.test_func)
         {
-#if 0 // TODO : enable this!
             mtm_test_construction();
             mtm_test_data_insertion();
             mtm_test_data_insertion_multiple();
@@ -1112,7 +1111,6 @@ int main (int argc, char **argv)
             mtm_test_custom_string();
             mtm_test_position();
             mtm_test_set_data_via_position();
-#endif
         }
 
         if (opt.test_perf)

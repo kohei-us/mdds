@@ -123,9 +123,8 @@ void mtv_perf_test_insert_via_position_object()
 
 int main (int argc, char **argv)
 {
-#if 0 // TODO : enable this!
     mtv_perf_test_block_position_lookup();
     mtv_perf_test_insert_via_position_object();
-#endif
+
     return EXIT_SUCCESS;
 }

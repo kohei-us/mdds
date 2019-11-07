@@ -1123,10 +1123,8 @@ int main (int argc, char **argv)
 {
     try
     {
-#if 0 // TODO : enable this!
         mtv_test_block_counter();
         mtv_test_block_init();
-#endif
     }
     catch (const std::exception& e)
     {
