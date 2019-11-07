@@ -667,7 +667,6 @@ void mtv_test_managed_block()
         assert(db.get<double>(2) == 4.0);
         assert(db.get<muser_cell*>(3)->value == 3.0);
     }
-#if 0
     {
         // insert_empty() to split the block into two.
         mtv_type db(3);
@@ -680,6 +679,7 @@ void mtv_test_managed_block()
         assert(db.get<muser_cell*>(4)->value == 2.0);
     }
 
+#if 0
     {
         // erase() to merge two blocks.
         mtv_type db(4);

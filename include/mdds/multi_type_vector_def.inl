@@ -3156,8 +3156,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
         // Set the size of the current block to its new size ( what is after the new block )
         blk->m_size = size_blk_next;
 
-        // And now let's swap the blocks...
+        // And now let's swap the blocks, but save the block position.
+        size_type position = blk->m_position;
         blk->swap(*blk_next);
+        blk->m_position = position;
     }
 
     m_cur_size += length;
