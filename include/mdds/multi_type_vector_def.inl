@@ -142,9 +142,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(size_type _position,
     m_position(_position), m_size(_size), mp_data(nullptr) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
-multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(size_type _size) : m_position(0), m_size(_size), mp_data(nullptr) {}
-
-template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(size_type _position, size_type _size, element_block_type* _data) :
     m_position(_position), m_size(_size), mp_data(_data) {}
 
@@ -391,7 +388,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_
         return;
 
     // Initialize with an empty block that spans from 0 to max.
-    m_blocks.emplace_back(init_size);
+    m_blocks.emplace_back(0, init_size);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -1054,7 +1051,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                 blk->m_size -= 1;
                 assert(blk->m_size > 0);
 
-                m_blocks.emplace(m_blocks.begin(), 1);
+                m_blocks.emplace(m_blocks.begin(), 0, 1);
                 blk = &m_blocks[0]; // old pointer is invalid.
                 create_new_block_with_new_cell(blk->mp_data, cell);
 
@@ -1113,7 +1110,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
                 assert(blk->m_size > 1);
                 blk->m_size -= 1;
                 blk->m_position = 1;
-                m_blocks.emplace(m_blocks.begin(), 1);
+                m_blocks.emplace(m_blocks.begin(), 0, 1);
                 create_new_block_with_new_cell(m_blocks.front().mp_data, cell);
             }
 
@@ -3680,7 +3677,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::exchange_elements(
     blocks_to_transfer bucket;
     prepare_blocks_to_transfer(bucket, dst_index1, dst_offset1, dst_index2, dst_offset2);
 
-    m_blocks.emplace(m_blocks.begin()+bucket.insert_index, len);
+    m_blocks.emplace(m_blocks.begin()+bucket.insert_index, 0, len);
     block* blk = &m_blocks[bucket.insert_index];
     if (bucket.insert_index > 0)
         blk->m_position = detail::mtv::calc_next_block_position(m_blocks, bucket.insert_index-1);
