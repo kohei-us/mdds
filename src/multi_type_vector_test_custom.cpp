@@ -679,7 +679,6 @@ void mtv_test_managed_block()
         assert(db.get<muser_cell*>(4)->value == 2.0);
     }
 
-#if 0
     {
         // erase() to merge two blocks.
         mtv_type db(4);
@@ -994,7 +993,6 @@ void mtv_test_managed_block()
 
         db.set(4, 2.2); // Overwrite muser_cell and don't leak.
     }
-#endif
 }
 
 void mtv_test_custom_block_func1()
