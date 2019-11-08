@@ -262,21 +262,14 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::begin()
 {
-    return iterator(m_blocks.begin(), m_blocks.end(), 0, 0);
+    return iterator(m_blocks.begin(), m_blocks.end(), 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::end()
 {
-    size_type start_pos = 0, block_index = 0;
-    if (!m_blocks.empty())
-    {
-        // Get the index and the start row position of the imaginary block after the last block.
-        block_index = m_blocks.size();
-        start_pos = m_cur_size;
-    }
-    return iterator(m_blocks.end(), m_blocks.end(), start_pos, block_index);
+    return iterator(m_blocks.end(), m_blocks.end(), m_blocks.size());
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -297,63 +290,56 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::cbegin() const
 {
-    return const_iterator(m_blocks.cbegin(), m_blocks.cend(), 0, 0);
+    return const_iterator(m_blocks.cbegin(), m_blocks.cend(), 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::cend() const
 {
-    size_type start_pos = 0, block_index = 0;
-    if (!m_blocks.empty())
-    {
-        // Get the index and the start row position of the imaginary block after the last block.
-        block_index = m_blocks.size();
-        start_pos = m_cur_size;
-    }
-    return const_iterator(m_blocks.end(), m_blocks.end(), start_pos, block_index);
+    return const_iterator(m_blocks.end(), m_blocks.end(), m_blocks.size());
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::reverse_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::rbegin()
 {
-    return reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0, 0);
+    return reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::reverse_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::rend()
 {
-    return reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0, 0);
+    return reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::rbegin() const
 {
-    return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0, 0);
+    return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::rend() const
 {
-    return const_reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0, 0);
+    return const_reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::crbegin() const
 {
-    return const_reverse_iterator(m_blocks.crbegin(), m_blocks.crend(), 0, 0);
+    return const_reverse_iterator(m_blocks.crbegin(), m_blocks.crend(), 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::crend() const
 {
-    return const_reverse_iterator(m_blocks.crend(), m_blocks.crend(), 0, 0);
+    return const_reverse_iterator(m_blocks.crend(), m_blocks.crend(), 0);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -584,7 +570,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(
         size_type i = pos - start_row;
         element_block_func::overwrite_values(*blk->mp_data, i, 1);
         mdds_mtv_set_value(*blk->mp_data, i, value);
-        return iterator(block_pos, m_blocks.end(), start_row, block_index);
+        return iterator(block_pos, m_blocks.end(), block_index);
     }
 
     assert(blk_cat != cat);
@@ -848,7 +834,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::push_back_empty()
     typename blocks_type::iterator block_pos = m_blocks.end();
     --block_pos;
 
-    return iterator(block_pos, m_blocks.end(), start_pos, block_index);
+    return iterator(block_pos, m_blocks.end(), block_index);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -1735,7 +1721,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::position(size_type pos) const
 
     typename blocks_type::const_iterator block_pos = m_blocks.begin();
     std::advance(block_pos, block_index);
-    const_iterator it = const_iterator(block_pos, m_blocks.end(), start_row, block_index);
+    const_iterator it = const_iterator(block_pos, m_blocks.end(), block_index);
     return const_position_type(it, pos - start_row);
 }
 

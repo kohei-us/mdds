@@ -51,8 +51,8 @@ struct iterator_value_node
     size_type size;
     element_block_type* data;
 
-    iterator_value_node(size_type start_pos, size_type block_index) :
-        type(mdds::mtv::element_type_empty), position(start_pos), size(0), data(nullptr), __private_data(block_index) {}
+    iterator_value_node(size_type block_index) :
+        type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr), __private_data(block_index) {}
 
     void swap(iterator_value_node& other)
     {
@@ -109,16 +109,12 @@ struct private_data_forward_update
 
     static void inc(node_type& nd)
     {
-        // Called before incrementing the iterator position.
         ++nd.__private_data.block_index;
-        nd.position += nd.size;
     }
 
     static void dec(node_type& nd)
     {
-        // Called after decrementing the iterator position.
         --nd.__private_data.block_index;
-        nd.position -= nd.size;
     }
 };
 
@@ -138,12 +134,11 @@ protected:
     typedef typename parent_type::size_type size_type;
     typedef iterator_value_node<size_type, typename parent_type::element_block_type> node;
 
-    iterator_common_base() : m_cur_node(0, 0) {}
+    iterator_common_base() : m_cur_node(0) {}
 
     iterator_common_base(
-        const base_iterator_type& pos, const base_iterator_type& end,
-        size_type start_pos, size_type block_index) :
-        m_cur_node(start_pos, block_index),
+        const base_iterator_type& pos, const base_iterator_type& end, size_type block_index) :
+        m_cur_node(block_index),
         m_pos(pos),
         m_end(end)
     {
@@ -171,6 +166,7 @@ protected:
         else
             m_cur_node.type = mdds::mtv::element_type_empty;
 
+        m_cur_node.position = blk.m_position;
         m_cur_node.size = blk.m_size;
         m_cur_node.data = blk.mp_data;
     }
@@ -265,9 +261,8 @@ public:
 public:
     iterator_base() {}
     iterator_base(
-        const base_iterator_type& pos, const base_iterator_type& end,
-        size_type start_pos, size_type block_index) :
-        common_base(pos, end, start_pos, block_index) {}
+        const base_iterator_type& pos, const base_iterator_type& end, size_type block_index) :
+        common_base(pos, end, block_index) {}
 
     value_type& operator*()
     {
@@ -335,17 +330,16 @@ public:
 public:
     const_iterator_base() : common_base() {}
     const_iterator_base(
-        const base_iterator_type& pos, const base_iterator_type& end,
-        size_type start_pos, size_type block_index) :
-        common_base(pos, end, start_pos, block_index) {}
+        const base_iterator_type& pos, const base_iterator_type& end, size_type block_index) :
+        common_base(pos, end, block_index) {}
 
     /**
      * Take the non-const iterator counterpart to create a const iterator.
      */
     const_iterator_base(const iterator_base& other) :
         common_base(
-            other.get_pos(), other.get_end(),
-            other.get_node().position,
+            other.get_pos(),
+            other.get_end(),
             other.get_node().__private_data.block_index) {}
 
     const value_type& operator*() const

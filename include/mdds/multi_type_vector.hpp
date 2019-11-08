@@ -1371,16 +1371,14 @@ private:
     {
         typename blocks_type::iterator block_pos = m_blocks.begin();
         std::advance(block_pos, block_index);
-        size_type start_row = m_blocks[block_index].m_position;
-        return iterator(block_pos, m_blocks.end(), start_row, block_index);
+        return iterator(block_pos, m_blocks.end(), block_index);
     }
 
     inline const_iterator get_const_iterator(size_type block_index) const
     {
         typename blocks_type::const_iterator block_pos = m_blocks.begin();
         std::advance(block_pos, block_index);
-        size_type start_row = m_blocks[block_index].m_position;
-        return const_iterator(block_pos, m_blocks.end(), start_row, block_index);
+        return const_iterator(block_pos, m_blocks.end(), block_index);
     }
 
 private:
