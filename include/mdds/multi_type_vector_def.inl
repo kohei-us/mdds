@@ -1763,7 +1763,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::position(const const_iterator& po
     size_type block_index = 0;
     get_block_position(pos_hint, pos, start_pos, block_index);
 
-    const_iterator it = get_const_iterator(block_index, start_pos);
+    const_iterator it = get_const_iterator(block_index);
     return const_position_type(it, pos - start_pos);
 }
 
