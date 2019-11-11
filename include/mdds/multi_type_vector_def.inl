@@ -119,6 +119,12 @@ inline auto calc_next_block_position(const _Blk& blk) -> decltype(blk.m_position
     return blk.m_position + blk.m_size;
 }
 
+template<typename _Blk>
+bool compare_blocks(const _Blk& left, const _Blk& right)
+{
+    return left.m_position < right.m_position;
+}
+
 }} // namespace detail::mtv
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mtv::element_type_boolean, false, mtv::boolean_element_block)
@@ -443,10 +449,13 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& value)
 {
-    size_type start_row = 0;
-    size_type block_index = 0;
-    if (!get_block_position(pos, start_row, block_index))
+    size_type block_index = get_block_position_binary(pos);
+    if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
+
+    size_type start_row = m_blocks[block_index].m_position;
+    assert(start_row <= pos);
+    assert(pos < start_row + m_blocks[block_index].m_size);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -961,6 +970,24 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(
 
     if (!get_block_position(pos, start_row, block_index))
         detail::mtv::throw_block_position_not_found("multi_type_vector::get_block_position", __LINE__, pos, block_size(), size());
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(size_type row) const
+{
+    assert(row < m_cur_size); // caller is responsible for ensuring that the specified position is in-bound.
+    auto it0 = m_blocks.begin();
+
+    block b(row, 0);
+    auto it = std::lower_bound(it0, m_blocks.end(), b, detail::mtv::compare_blocks<block>);
+    if (it != m_blocks.end() && it->m_position == row)
+        return std::distance(it0, it);
+
+    assert(it != it0);
+    --it;
+    assert(row < it->m_position + it->m_size);
+    return std::distance(it0, it);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>

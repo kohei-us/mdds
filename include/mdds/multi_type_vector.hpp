@@ -1127,6 +1127,8 @@ private:
      */
     void get_block_position(const const_iterator& pos_hint, size_type pos, size_type& start_pos, size_type& block_index) const;
 
+    size_type get_block_position_binary(size_type row) const;
+
     template<typename _T>
     void create_new_block_with_new_cell(element_block_type*& data, const _T& cell);
 
