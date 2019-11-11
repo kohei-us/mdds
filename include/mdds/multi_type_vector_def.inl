@@ -976,7 +976,9 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
 multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(size_type row) const
 {
-    assert(row < m_cur_size); // caller is responsible for ensuring that the specified position is in-bound.
+    if (row >= m_cur_size)
+        return m_blocks.size();
+
     auto it0 = m_blocks.begin();
 
     block b(row, 0);
