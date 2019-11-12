@@ -1092,7 +1092,7 @@ private:
     void delete_element_blocks(typename blocks_type::iterator it, typename blocks_type::iterator it_end);
 
     template<typename _T>
-    iterator set_impl(size_type pos, size_type start_row, size_type block_index, const _T& value);
+    iterator set_impl(size_type pos, size_type block_index, const _T& value);
 
     template<typename _T>
     iterator release_impl(size_type pos, size_type start_pos, size_type block_index, _T& value);

@@ -453,14 +453,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& valu
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
-    size_type start_row = m_blocks[block_index].m_position;
-
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
     dump_blocks(os_prev_block);
 #endif
 
-    iterator ret = set_impl(pos, start_row, block_index, value);
+    iterator ret = set_impl(pos, block_index, value);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
@@ -489,7 +487,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
     dump_blocks(os_prev_block);
 #endif
 
-    iterator ret = set_impl(pos, start_row, block_index, value);
+    iterator ret = set_impl(pos, block_index, value);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
@@ -548,9 +546,9 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_blocks(
 template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
-multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(
-    size_type pos, size_type start_row, size_type block_index, const _T& value)
+multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(size_type pos, size_type block_index, const _T& value)
 {
+    size_type start_row = m_blocks[block_index].m_position;
     element_category_type cat = mdds_mtv_get_element_type(value);
 
     typename blocks_type::iterator block_pos = m_blocks.begin();
