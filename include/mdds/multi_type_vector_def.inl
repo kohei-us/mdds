@@ -968,18 +968,22 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(
         block_index = 0;
     }
 
-    if (!get_block_position(pos, start_row, block_index))
+    block_index = get_block_position_binary(pos, block_index);
+    if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::get_block_position", __LINE__, pos, block_size(), size());
+
+    start_row = m_blocks[block_index].m_position;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
-multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(size_type row) const
+multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(size_type row, size_type start_block_index) const
 {
-    if (row >= m_cur_size)
+    if (row >= m_cur_size || start_block_index >= m_blocks.size())
         return m_blocks.size();
 
     auto it0 = m_blocks.begin();
+    std::advance(it0, start_block_index);
 
     block b(row, 0);
     auto it = std::lower_bound(it0, m_blocks.end(), b, detail::mtv::compare_blocks<block>);
@@ -987,14 +991,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(size_ty
     {
         assert(it->m_position <= row);
         assert(row < it->m_position + it->m_size);
-        return std::distance(it0, it);
+        return std::distance(it0, it) + start_block_index;
     }
 
     assert(it != it0);
     --it;
     assert(it->m_position <= row);
     assert(row < it->m_position + it->m_size);
-    return std::distance(it0, it);
+    return std::distance(it0, it) + start_block_index;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
