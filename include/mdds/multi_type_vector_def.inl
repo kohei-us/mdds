@@ -478,9 +478,9 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, size_type pos, const _T& value)
 {
-    size_type start_row = 0;
-    size_type block_index = 0;
-    get_block_position(pos_hint, pos, start_row, block_index);
+    size_type block_index = get_block_position_binary(pos_hint, pos);
+    if (block_index == m_blocks.size())
+        detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -752,8 +752,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
     if (!set_cells_precheck(pos, it_begin, it_end, end_pos))
         return end();
 
-    size_type block_index1 = 0, start_row1 = 0;
-    get_block_position(pos_hint, pos, start_row1, block_index1);
+    size_type block_index1 = get_block_position_binary(pos_hint, pos);
+    size_type start_row1 = m_blocks[block_index1].m_position;
 
     return set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
 }
@@ -999,6 +999,46 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(size_ty
     assert(it->m_position <= row);
     assert(row < it->m_position + it->m_size);
     return std::distance(it0, it) + start_block_index;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(const const_iterator& pos_hint, size_type row) const
+{
+    size_type block_index = 0;
+    if (pos_hint.get_end() == m_blocks.end())
+    {
+        // Iterator is valid. Get the block position from it unless it's the
+        // end position.
+        if (pos_hint.get_pos() != pos_hint.get_end())
+            block_index = pos_hint->__private_data.block_index;
+    }
+
+    size_type start_row = m_blocks[block_index].m_position;
+    if (row < start_row)
+    {
+        // Position hint is past the insertion position.
+        // Walk back if that seems efficient.
+        if (row > start_row / 2)
+        {
+            for (size_type i = block_index; i > 0;)
+            {
+                --i;
+                start_row = m_blocks[i].m_position;
+                if (row >= start_row)
+                {
+                    // Row is in this block.
+                    return i;
+                }
+                // Specified row is not in this block.
+            }
+            assert(start_row == 0);
+        }
+        // Otherwise reset.
+        block_index = 0;
+    }
+
+    return get_block_position_binary(row, block_index);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
