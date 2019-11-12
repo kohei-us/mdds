@@ -721,14 +721,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& it_b
     if (block_index1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
-    size_type start_row1 = m_blocks[block_index1].m_position;
-
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
     dump_blocks(os_prev_block);
 #endif
 
-    auto ret = set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
+    auto ret = set_cells_impl(pos, end_pos, block_index1, it_begin, it_end);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
@@ -753,9 +751,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
         return end();
 
     size_type block_index1 = get_block_position_binary(pos_hint, pos);
-    size_type start_row1 = m_blocks[block_index1].m_position;
-
-    return set_cells_impl(pos, end_pos, start_row1, block_index1, it_begin, it_end);
+    return set_cells_impl(pos, end_pos, block_index1, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -3252,8 +3248,9 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_impl(
-    size_type row, size_type end_row, size_type start_row1, size_type block_index1, const _T& it_begin, const _T& it_end)
+    size_type row, size_type end_row, size_type block_index1, const _T& it_begin, const _T& it_end)
 {
+    size_type start_row1 = m_blocks[block_index1].m_position;
     size_type start_row2 = start_row1;
     size_type block_index2 = block_index1;
     if (!get_block_position(end_row, start_row2, block_index2))
