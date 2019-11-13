@@ -1101,34 +1101,19 @@ private:
     iterator push_back_impl(const _T& value);
 
     /**
-     * Find the correct block position for given logical row ID.
+     * Find the correct block position for a given logical row ID.
      *
-     * @param row logical ID of the row that belongs to the block being looked
-     *            up for.
+     * @param start_block_index index of the first block to start the search
+     *                          from.
      *
-     * @param start_pos logical ID of the first row of the block being looked
-     *                  up for. The caller needs to assign its initial value
-     *                  before calling this method in case the search needs to
-     *                  start with a block that's not the first block.  Assign
-     *                  0 if the search starts from the first block.
-     *
-     * @param block_index index of the block being looked up for. The caller
-     *                    needs to assign its initial index which will be the
-     *                    index of the block from which the search starts.
-     *                    Assign 0 if the search starts from the first block.
-     *
-     * @return true if block position is found, false otherwise.
+     * @return index of the block that contains the specified logical row ID.
      */
-    bool get_block_position(size_type row, size_type& start_pos, size_type& block_index) const;
+    size_type get_block_position_binary(size_type row, size_type start_block_index=0) const;
 
     /**
      * Same as above, but try to infer block position from the iterator first
      * before trying full search.
      */
-    void get_block_position(const const_iterator& pos_hint, size_type pos, size_type& start_pos, size_type& block_index) const;
-
-    size_type get_block_position_binary(size_type row, size_type start_block_index=0) const;
-
     size_type get_block_position_binary(const const_iterator& pos_hint, size_type row) const;
 
     template<typename _T>
