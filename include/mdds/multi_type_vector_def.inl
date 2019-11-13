@@ -911,15 +911,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(size_type row,
 
     block b(row, 0);
     auto it = std::lower_bound(it0, m_blocks.end(), b, detail::mtv::compare_blocks<block>);
-    if (it != m_blocks.end() && it->m_position == row)
+
+    if (it == m_blocks.end() || it->m_position != row)
     {
-        assert(it->m_position <= row);
-        assert(row < it->m_position + it->m_size);
-        return std::distance(it0, it) + start_block_index;
+        // Binary search has overshot by one block.  Move back one.
+        assert(it != it0);
+        --it;
     }
 
-    assert(it != it0);
-    --it;
     assert(it->m_position <= row);
     assert(row < it->m_position + it->m_size);
     return std::distance(it0, it) + start_block_index;
