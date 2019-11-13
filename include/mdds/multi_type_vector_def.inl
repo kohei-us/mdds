@@ -449,7 +449,7 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& value)
 {
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
@@ -478,7 +478,7 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, size_type pos, const _T& value)
 {
-    size_type block_index = get_block_position_binary(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
@@ -717,7 +717,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& it_b
     if (!set_cells_precheck(pos, it_begin, it_end, end_pos))
         return end();
 
-    size_type block_index1 = get_block_position_binary(pos);
+    size_type block_index1 = get_block_position(pos);
     if (block_index1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
 
@@ -750,7 +750,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
     if (!set_cells_precheck(pos, it_begin, it_end, end_pos))
         return end();
 
-    size_type block_index1 = get_block_position_binary(pos_hint, pos);
+    size_type block_index1 = get_block_position(pos_hint, pos);
     return set_cells_impl(pos, end_pos, block_index1, it_begin, it_end);
 }
 
@@ -845,7 +845,7 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::insert(size_type pos, const _T& it_begin, const _T& it_end)
 {
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::insert", __LINE__, pos, block_size(), size());
 
@@ -875,7 +875,7 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::insert(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
 {
-    size_type block_index = get_block_position_binary(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::insert", __LINE__, pos, block_size(), size());
 
@@ -901,7 +901,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert(const iterator& pos_hint, 
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
-multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(size_type row, size_type start_block_index) const
+multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(size_type row, size_type start_block_index) const
 {
     if (row >= m_cur_size || start_block_index >= m_blocks.size())
         return m_blocks.size();
@@ -927,7 +927,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(size_ty
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
-multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(const const_iterator& pos_hint, size_type row) const
+multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(const const_iterator& pos_hint, size_type row) const
 {
     size_type block_index = 0;
     if (pos_hint.get_end() == m_blocks.end())
@@ -962,7 +962,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position_binary(const c
         block_index = 0;
     }
 
-    return get_block_position_binary(row, block_index);
+    return get_block_position(row, block_index);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -1555,7 +1555,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::get(size_type pos, _T& value) const
 {
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::get", __LINE__, pos, block_size(), size());
 
@@ -1590,7 +1590,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 _T multi_type_vector<_CellBlockFunc, _EventFunc>::release(size_type pos)
 {
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::release", __LINE__, pos, block_size(), size());
 
@@ -1604,7 +1604,7 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::release(size_type pos, _T& value)
 {
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
@@ -1617,7 +1617,7 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::release(const iterator& pos_hint, size_type pos, _T& value)
 {
-    size_type block_index = get_block_position_binary(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
@@ -1648,7 +1648,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::release_range(size_type start_pos, size_type end_pos)
 {
-    size_type block_index1 = get_block_position_binary(start_pos);
+    size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
@@ -1661,7 +1661,7 @@ typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::release_range(
     const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
-    size_type block_index1 = get_block_position_binary(pos_hint, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
@@ -1680,7 +1680,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::position(size_type pos)
         return position_type(end(), 0);
     }
 
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -1702,7 +1702,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::position(const iterator& pos_hint
         return position_type(end(), 0);
     }
 
-    size_type block_index = get_block_position_binary(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -1723,7 +1723,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::position(size_type pos) const
         return const_position_type(cend(), 0);
     }
 
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -1747,7 +1747,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::position(const const_iterator& po
         return const_position_type(cend(), 0);
     }
 
-    size_type block_index = get_block_position_binary(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -1765,7 +1765,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer(
     if (&dest == this)
         throw invalid_arg_error("You cannot transfer between the same container.");
 
-    size_type block_index1 = get_block_position_binary(start_pos);
+    size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
@@ -1807,7 +1807,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer(
     const iterator& pos_hint, size_type start_pos, size_type end_pos,
     multi_type_vector& dest, size_type dest_pos)
 {
-    size_type block_index1 = get_block_position_binary(pos_hint, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
@@ -1839,7 +1839,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer(
 template<typename _CellBlockFunc, typename _EventFunc>
 mtv::element_t multi_type_vector<_CellBlockFunc, _EventFunc>::get_type(size_type pos) const
 {
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::get_type", __LINE__, pos, block_size(), size());
 
@@ -1853,7 +1853,7 @@ mtv::element_t multi_type_vector<_CellBlockFunc, _EventFunc>::get_type(size_type
 template<typename _CellBlockFunc, typename _EventFunc>
 bool multi_type_vector<_CellBlockFunc, _EventFunc>::is_empty(size_type pos) const
 {
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::is_empty", __LINE__, pos, block_size(), size());
 
@@ -1864,7 +1864,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty(size_type start_pos, size_type end_pos)
 {
-    size_type block_index1 = get_block_position_binary(start_pos);
+    size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
@@ -1893,7 +1893,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
-    size_type block_index1 = get_block_position_binary(pos_hint, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
@@ -1915,7 +1915,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_impl(
         throw std::out_of_range(os.str());
     }
 
-    size_type block_index2 = get_block_position_binary(end_pos, block_index1);
+    size_type block_index2 = get_block_position(end_pos, block_index1);
     if (block_index2 == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::transfer_impl", __LINE__, end_pos, block_size(), size());
 
@@ -2345,7 +2345,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_impl(
     if (start_pos > end_pos)
         throw std::out_of_range("Start row is larger than the end row.");
 
-    size_type block_index2 = get_block_position_binary(end_pos, block_index1);
+    size_type block_index2 = get_block_position(end_pos, block_index1);
     if (block_index2 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set_empty_impl", __LINE__, end_pos, block_size(), size());
@@ -2828,12 +2828,12 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
 
     // Keep the logic similar to set_empty().
 
-    size_type block_pos1 = get_block_position_binary(start_row);
+    size_type block_pos1 = get_block_position(start_row);
     if (block_pos1 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::erase_impl", __LINE__, start_row, block_size(), size());
 
-    size_type block_pos2 = get_block_position_binary(end_row, block_pos1);
+    size_type block_pos2 = get_block_position(end_row, block_pos1);
     if (block_pos2 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::erase_impl", __LINE__, start_row, block_size(), size());
@@ -3013,7 +3013,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(size_type pos, size_
         // Nothing to insert.
         return end();
 
-    size_type block_index = get_block_position_binary(pos);
+    size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
@@ -3047,7 +3047,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(const iterator& pos_
         // Nothing to insert.
         return end();
 
-    size_type block_index = get_block_position_binary(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
@@ -3192,7 +3192,7 @@ typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_impl(
     size_type row, size_type end_row, size_type block_index1, const _T& it_begin, const _T& it_end)
 {
-    size_type block_index2 = get_block_position_binary(end_row, block_index1);
+    size_type block_index2 = get_block_position(end_row, block_index1);
     if (block_index2 == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set_cells_impl", __LINE__, end_row, block_size(), size());
@@ -4322,7 +4322,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::resize(size_type new_size)
 
     // Find out in which block the new end row will be.
     size_type new_end_row = new_size - 1;
-    size_type block_index = get_block_position_binary(new_end_row);
+    size_type block_index = get_block_position(new_end_row);
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::resize", __LINE__, new_end_row, block_size(), size());
@@ -4368,25 +4368,25 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(size_type start_pos, si
     if (end_pos >= m_cur_size || other_end_pos >= other.m_cur_size)
         throw std::out_of_range("multi_type_vector::swap: end position is out of bound!");
 
-    size_type block_index1 = get_block_position_binary(start_pos);
+    size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_blocks.size())
         throw std::out_of_range("multi_type_vector::swap: start block position in source not found!");
 
     size_type start_pos1 = m_blocks[block_index1].m_position;
 
-    size_type block_index2 = get_block_position_binary(end_pos, block_index1);
+    size_type block_index2 = get_block_position(end_pos, block_index1);
     if (block_index2 == m_blocks.size())
         throw std::out_of_range("multi_type_vector::swap: end block position in source not found!");
 
     size_type start_pos2 = m_blocks[block_index2].m_position;
 
-    size_type dest_block_index1 = other.get_block_position_binary(other_pos);
+    size_type dest_block_index1 = other.get_block_position(other_pos);
     if (dest_block_index1 == other.m_blocks.size())
         throw std::out_of_range("multi_type_vector::swap: start block position in destination not found!");
 
     size_type dest_start_pos1 = other.m_blocks[dest_block_index1].m_position;
 
-    size_type dest_block_index2 = other.get_block_position_binary(other_end_pos, dest_block_index1);
+    size_type dest_block_index2 = other.get_block_position(other_end_pos, dest_block_index1);
     if (dest_block_index2 == other.m_blocks.size())
         throw std::out_of_range("multi_type_vector::swap: end block position in destination not found!");
 
