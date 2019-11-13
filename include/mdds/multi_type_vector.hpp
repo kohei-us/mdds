@@ -1095,7 +1095,7 @@ private:
     iterator set_impl(size_type pos, size_type block_index, const _T& value);
 
     template<typename _T>
-    iterator release_impl(size_type pos, size_type start_pos, size_type block_index, _T& value);
+    iterator release_impl(size_type pos, size_type block_index, _T& value);
 
     template<typename _T>
     iterator push_back_impl(const _T& value);
@@ -1158,7 +1158,7 @@ private:
         size_type block_index, const _T& cell);
 
     iterator transfer_impl(
-        size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+        size_type start_pos, size_type end_pos, size_type block_index1,
         multi_type_vector& dest, size_type dest_pos);
 
     /**
@@ -1188,8 +1188,7 @@ private:
      *                  pointers should be freed from memory.
      */
     iterator set_empty_impl(
-        size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
-        bool overwrite);
+        size_type start_pos, size_type end_pos, size_type block_index1, bool overwrite);
 
     void swap_impl(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
@@ -1260,7 +1259,7 @@ private:
         size_type row, size_type end_row, size_type block_index1, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
-    iterator insert_cells_impl(size_type row, size_type start_row, size_type block_index, const _T& it_begin, const _T& it_end);
+    iterator insert_cells_impl(size_type row, size_type block_index, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cells_to_single_block(
