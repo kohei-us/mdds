@@ -1177,22 +1177,19 @@ private:
 
     void swap_impl(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-        size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
-        size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2);
+        size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2);
 
     void swap_single_block(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-        size_type start_pos_in_block, size_type block_index, size_type start_pos_in_other_block, size_type other_block_index);
+        size_type block_index, size_type other_block_index);
 
     void swap_single_to_multi_blocks(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-        size_type start_pos_in_block, size_type block_index, size_type dst_start_pos_in_block1, size_type dst_block_index1,
-        size_type dst_start_pos_in_block2, size_type dst_block_index2);
+        size_type block_index, size_type dst_block_index1, size_type dst_block_index2);
 
     void swap_multi_to_multi_blocks(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-        size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
-        size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2);
+        size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2);
 
     void insert_blocks_at(size_type position, size_type insert_pos, blocks_type& new_blocks);
 

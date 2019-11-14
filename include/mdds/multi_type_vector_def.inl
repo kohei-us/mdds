@@ -2378,8 +2378,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_impl(
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_impl(
     multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-    size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
-    size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2)
+    size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2)
 {
     if (block_index1 == block_index2)
     {
@@ -2388,16 +2387,14 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_impl(
         {
             // Destination range is also in a single block.
             swap_single_block(
-                other, start_pos, end_pos, other_pos, start_pos_in_block1, block_index1,
-                start_pos_in_dblock1, dblock_index1);
+                other, start_pos, end_pos, other_pos, block_index1, dblock_index1);
         }
         else
         {
             // Source is single-, and destination is multi-blocks.
             swap_single_to_multi_blocks(
-                other, start_pos, end_pos, other_pos,
-                start_pos_in_block1, block_index1,
-                start_pos_in_dblock1, dblock_index1, start_pos_in_dblock2, dblock_index2);
+                other, start_pos, end_pos, other_pos, block_index1,
+                dblock_index1, dblock_index2);
         }
     }
     else if (dblock_index1 == dblock_index2)
@@ -2405,27 +2402,27 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_impl(
         // Destination range is over a single block. Switch source and destination.
         size_type len = end_pos - start_pos + 1;
         other.swap_single_to_multi_blocks(
-            *this, other_pos, other_pos+len-1, start_pos,
-            start_pos_in_dblock1, dblock_index1,
-            start_pos_in_block1, block_index1, start_pos_in_block2, block_index2);
+            *this, other_pos, other_pos+len-1, start_pos, dblock_index1,
+            block_index1, block_index2);
     }
     else
     {
         // Both source and destinations are multi-block.
         swap_multi_to_multi_blocks(
-            other, start_pos, end_pos, other_pos, start_pos_in_block1, block_index1,
-            start_pos_in_block2, block_index2, start_pos_in_dblock1, dblock_index1,
-            start_pos_in_dblock2, dblock_index2);
+            other, start_pos, end_pos, other_pos,
+            block_index1, block_index2, dblock_index1, dblock_index2);
     }
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
     multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-    size_type start_pos_in_block, size_type block_index, size_type start_pos_in_other_block, size_type other_block_index)
+    size_type block_index, size_type other_block_index)
 {
     block* blk_src = &m_blocks[block_index];
     block* blk_dst = &other.m_blocks[other_block_index];
+    size_type start_pos_in_block = blk_src->m_position;
+    size_type start_pos_in_other_block = blk_dst->m_position;
     element_category_type cat_src = mtv::element_type_empty;
     element_category_type cat_dst = mtv::element_type_empty;
 
@@ -2561,10 +2558,13 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
     multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-    size_type start_pos_in_block, size_type block_index, size_type dst_start_pos_in_block1, size_type dst_block_index1,
-    size_type dst_start_pos_in_block2, size_type dst_block_index2)
+    size_type block_index, size_type dst_block_index1, size_type dst_block_index2)
 {
     block* blk_src = &m_blocks[block_index];
+    size_type start_pos_in_block = blk_src->m_position;
+    size_type dst_start_pos_in_block1 = other.m_blocks[dst_block_index1].m_position;
+    size_type dst_start_pos_in_block2 = other.m_blocks[dst_block_index2].m_position;
+
     element_category_type cat_src = mtv::element_type_empty;
     if (blk_src->mp_data)
         cat_src = mtv::get_block_type(*blk_src->mp_data);
@@ -2659,11 +2659,15 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_multi_to_multi_blocks(
     multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-    size_type start_pos_in_block1, size_type block_index1, size_type start_pos_in_block2, size_type block_index2,
-    size_type start_pos_in_dblock1, size_type dblock_index1, size_type start_pos_in_dblock2, size_type dblock_index2)
+    size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2)
 {
     assert(block_index1 < block_index2);
     assert(dblock_index1 < dblock_index2);
+
+    size_type start_pos_in_block1 = m_blocks[block_index1].m_position;
+    size_type start_pos_in_block2 = m_blocks[block_index2].m_position;
+    size_type start_pos_in_dblock1 = other.m_blocks[dblock_index1].m_position;
+    size_type start_pos_in_dblock2 = other.m_blocks[dblock_index2].m_position;
 
     size_type len = end_pos - start_pos + 1;
     size_type src_offset1 = start_pos - start_pos_in_block1;
@@ -4370,25 +4374,17 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(size_type start_pos, si
     if (block_index1 == m_blocks.size())
         throw std::out_of_range("multi_type_vector::swap: start block position in source not found!");
 
-    size_type start_pos1 = m_blocks[block_index1].m_position;
-
     size_type block_index2 = get_block_position(end_pos, block_index1);
     if (block_index2 == m_blocks.size())
         throw std::out_of_range("multi_type_vector::swap: end block position in source not found!");
-
-    size_type start_pos2 = m_blocks[block_index2].m_position;
 
     size_type dest_block_index1 = other.get_block_position(other_pos);
     if (dest_block_index1 == other.m_blocks.size())
         throw std::out_of_range("multi_type_vector::swap: start block position in destination not found!");
 
-    size_type dest_start_pos1 = other.m_blocks[dest_block_index1].m_position;
-
     size_type dest_block_index2 = other.get_block_position(other_end_pos, dest_block_index1);
     if (dest_block_index2 == other.m_blocks.size())
         throw std::out_of_range("multi_type_vector::swap: end block position in destination not found!");
-
-    size_type dest_start_pos2 = other.m_blocks[dest_block_index2].m_position;
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block, os_prev_block_other;
@@ -4397,8 +4393,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(size_type start_pos, si
 #endif
 
     swap_impl(
-        other, start_pos, end_pos, other_pos, start_pos1, block_index1, start_pos2, block_index2,
-        dest_start_pos1, dest_block_index1, dest_start_pos2, dest_block_index2);
+        other, start_pos, end_pos, other_pos, block_index1, block_index2, dest_block_index1, dest_block_index2);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_block, os_block_other;
