@@ -1558,8 +1558,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::get(size_type pos, _T& value
     if (block_index == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::get", __LINE__, pos, block_size(), size());
 
-    size_type start_row = m_blocks[block_index].m_position;
-
     const block* blk = &m_blocks[block_index];
     assert(blk);
 
@@ -1570,6 +1568,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::get(size_type pos, _T& value
         return;
     }
 
+    size_type start_row = blk->m_position;
     assert(pos >= start_row);
     assert(blk->mp_data); // data for non-empty blocks should never be nullptr.
     size_type idx = pos - start_row;
