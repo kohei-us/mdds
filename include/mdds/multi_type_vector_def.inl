@@ -585,7 +585,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(size_type pos, size_type
         // Insertion point is at the start of the block.
         if (blk->m_size == 1)
         {
-            return set_cell_to_block_of_size_one(start_row, block_index, value);
+            return set_cell_to_block_of_size_one(block_index, value);
         }
 
         assert(blk->m_size > 1);
@@ -1337,8 +1337,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
 template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
-multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(
-    size_type start_row, size_type block_index, const _T& cell)
+multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_block_of_size_one(size_type block_index, const _T& cell)
 {
     block* blk = &m_blocks[block_index];
     assert(blk->m_size == 1);
