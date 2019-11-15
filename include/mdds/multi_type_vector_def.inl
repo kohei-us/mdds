@@ -3025,8 +3025,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(size_type pos, size_
     dump_blocks(os_prev_block);
 #endif
 
-    size_type start_pos = m_blocks[block_index].m_position;
-    iterator ret = insert_empty_impl(pos, start_pos, block_index, length);
+    iterator ret = insert_empty_impl(pos, block_index, length);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
@@ -3059,8 +3058,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(const iterator& pos_
     dump_blocks(os_prev_block);
 #endif
 
-    size_type start_pos = m_blocks[block_index].m_position;
-    iterator ret = insert_empty_impl(pos, start_pos, block_index, length);
+    iterator ret = insert_empty_impl(pos, block_index, length);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
@@ -3078,7 +3076,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(const iterator& pos_
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
-    size_type pos, size_type start_pos, size_type block_index, size_type length)
+    size_type pos, size_type block_index, size_type length)
 {
     assert(pos < m_cur_size);
 
@@ -3092,6 +3090,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
         adjust_block_positions(block_index+1, length);
         return get_iterator(block_index);
     }
+
+    size_type start_pos = blk->m_position;
 
     if (start_pos == pos)
     {

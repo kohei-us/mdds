@@ -1225,12 +1225,10 @@ private:
 
     /**
      * @param row logical position at which to insert an empty segment.
-     * @param start_pos logical position of the first element of the block at
-     *                  which to insert an empty segment.
      * @param block_index index of the block.
      * @param length length of the emtpy segment to insert.
      */
-    iterator insert_empty_impl(size_type row, size_type start_pos, size_type block_index, size_type length);
+    iterator insert_empty_impl(size_type pos, size_type block_index, size_type length);
 
     template<typename _T>
     bool set_cells_precheck(
