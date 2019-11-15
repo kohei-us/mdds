@@ -609,7 +609,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(size_type pos, size_type
     if (pos < (start_row + blk->m_size - 1))
     {
         // Insertion point is somewhere in the middle of the block.
-        return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, value);
+        return set_cell_to_middle_of_block(block_index, pos_in_block, value);
     }
 
     // Insertion point is at the end of the block.
@@ -986,7 +986,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_middle_of_block(
-    size_type start_row, size_type block_index, size_type pos_in_block, const _T& cell)
+    size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block& blk_new = set_new_block_to_middle(block_index, pos_in_block, 1, true);
     create_new_block_with_new_cell(blk_new.mp_data, cell);
@@ -1058,7 +1058,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
             }
 
             // Insert into the middle of the block.
-            return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
+            return set_cell_to_middle_of_block(block_index, pos_in_block, cell);
         }
 
         // This topmost empty block is followed by a non-empty block.
@@ -1131,7 +1131,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
         }
 
         // Inserting into the middle of an empty block.
-        return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
+        return set_cell_to_middle_of_block(block_index, pos_in_block, cell);
     }
 
     // This empty block is right below a non-empty block.
@@ -1331,7 +1331,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
     }
 
     // New cell is somewhere in the middle of an empty block.
-    return set_cell_to_middle_of_block(start_row, block_index, pos_in_block, cell);
+    return set_cell_to_middle_of_block(block_index, pos_in_block, cell);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
