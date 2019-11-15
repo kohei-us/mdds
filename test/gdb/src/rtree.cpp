@@ -40,6 +40,8 @@ void test_rtree()
 
     auto iter_begin = search_one.begin();
     auto iter_end = search_one.end();
+    (void)iter_begin;
+    (void)iter_end;
 
     stop();
 }
