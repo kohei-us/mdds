@@ -51,14 +51,22 @@ void test_multi_type_vector()
     auto mtv_iter_begin = mtv_int_string.begin();
     auto mtv_iter_next = ++mtv_int_string.begin();
     auto mtv_iter_end = mtv_int_string.end();
+    (void)mtv_iter_begin;
+    (void)mtv_iter_next;
+    (void)mtv_iter_end;
 
     auto mtv_iter_cbegin = mtv_int_string.cbegin();
     auto mtv_iter_cend = mtv_int_string.cend();
+    (void)mtv_iter_cbegin;
+    (void)mtv_iter_cend;
 
     auto mtv_iter_rbegin = mtv_int_string.rbegin();
     auto mtv_iter_rend = mtv_int_string.rend();
+    (void)mtv_iter_rbegin;
+    (void)mtv_iter_rend;
 
     auto mtv_iter_default = mtv_default.begin();
+    (void)mtv_iter_default;
 
     stop();
 }
