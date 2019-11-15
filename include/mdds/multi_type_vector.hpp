@@ -1150,7 +1150,7 @@ private:
      * All elements to transfer to the other container is in the same block.
      */
     iterator transfer_single_block(
-        size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+        size_type start_pos, size_type end_pos, size_type block_index1,
         multi_type_vector& dest, size_type dest_pos);
 
     /**
@@ -1158,8 +1158,7 @@ private:
      * blocks.
      */
     iterator transfer_multi_blocks(
-        size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
-        size_type start_pos_in_block2, size_type block_index2,
+        size_type start_pos, size_type end_pos, size_type block_index1, size_type block_index2,
         multi_type_vector& dest, size_type dest_pos);
 
     /**
@@ -1195,33 +1194,26 @@ private:
 
     void prepare_blocks_to_transfer(blocks_to_transfer& bucket, size_type block_index1, size_type offset1, size_type block_index2, size_type offset2);
 
-    iterator set_whole_block_empty(size_type block_index, size_type start_pos_in_block, bool overwrite);
+    iterator set_whole_block_empty(size_type block_index, bool overwrite);
 
     iterator set_empty_in_single_block(
-        size_type start_pos, size_type end_pos, size_type block_index, size_type start_pos_in_block,
-        bool overwrite);
+        size_type start_row, size_type end_row, size_type block_index, bool overwrite);
 
     /**
      * @param start_pos logical start position.
      * @param end_pos logical end position.
      * @param block_index1 index of the first block.
-     * @param start_pos_in_block1 logical position of the first element of the
-     *                            first block.
      * @param block_index2 index of the last block.
-     * @param start_pos_in_block2 logical position of the first element of the
-     *                            last block.
      * @param overwrite when true, and when the stored values are pointers to
      *                  heap objects, objects pointed to by the overwritten
      *                  pointers should be freed from memory.
      */
     iterator set_empty_in_multi_blocks(
-        size_type start_pos, size_type end_pos,
-        size_type block_index1, size_type start_pos_in_block1,
-        size_type block_index2, size_type start_pos_in_block2, bool overwrite);
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
+        bool overwrite);
 
     void erase_impl(size_type start_pos, size_type end_pos);
-    void erase_in_single_block(
-        size_type start_pos, size_type end_pos, size_type block_pos, size_type start_pos_in_block);
+    void erase_in_single_block(size_type start_pos, size_type end_pos, size_type block_pos);
 
     /**
      * @param row logical position at which to insert an empty segment.
@@ -1243,28 +1235,22 @@ private:
 
     template<typename _T>
     iterator set_cells_to_single_block(
-        size_type start_pos, size_type end_pos, size_type block_index,
-        size_type start_pos_in_block, const _T& it_begin, const _T& it_end);
+        size_type start_row, size_type end_row, size_type block_index,
+        const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cells_to_multi_blocks(
-        size_type start_pos, size_type end_pos,
-        size_type block_index1, size_type start_pos_in_block1,
-        size_type block_index2, size_type start_pos_in_block2,
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
         const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cells_to_multi_blocks_block1_non_equal(
-        size_type start_pos, size_type end_pos,
-        size_type block_index1, size_type start_pos_in_block1,
-        size_type block_index2, size_type start_pos_in_block2,
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
         const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cells_to_multi_blocks_block1_non_empty(
-        size_type start_pos, size_type end_pos,
-        size_type block_index1, size_type start_pos_in_block1,
-        size_type block_index2, size_type start_pos_in_block2,
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
         const _T& it_begin, const _T& it_end);
 
     /**
@@ -1293,8 +1279,7 @@ private:
 
     template<typename _T>
     void insert_cells_to_middle(
-        size_type row, size_type block_index, size_type start_pos,
-        const _T& it_begin, const _T& it_end);
+        size_type row, size_type block_index, const _T& it_begin, const _T& it_end);
 
     /**
      * Set a new block in the middle of an existing block. This call inserts

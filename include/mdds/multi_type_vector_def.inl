@@ -705,7 +705,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::release_impl(size_type pos, size_
     mdds_mtv_get_value(*blk.mp_data, idx, value);
 
     // Set the element slot empty without overwriting it.
-    return set_empty_in_single_block(pos, pos, block_index, start_pos, false);
+    return set_empty_in_single_block(pos, pos, block_index, false);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -1916,8 +1916,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_impl(
     if (block_index2 == m_blocks.size())
         detail::mtv::throw_block_position_not_found("multi_type_vector::transfer_impl", __LINE__, end_pos, block_size(), size());
 
-    size_type start_pos_in_block1 = m_blocks[block_index1].m_position;
-    size_type start_pos_in_block2 = m_blocks[block_index2].m_position;
     size_type len = end_pos - start_pos + 1;
     size_type last_dest_pos = dest_pos + len - 1;
 
@@ -1928,17 +1926,17 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_impl(
     if (block_index1 == block_index2)
     {
         // All elements are in the same block.
-        return transfer_single_block(start_pos, end_pos, start_pos_in_block1, block_index1, dest, dest_pos);
+        return transfer_single_block(start_pos, end_pos, block_index1, dest, dest_pos);
     }
 
     return transfer_multi_blocks(
-        start_pos, end_pos, start_pos_in_block1, block_index1, start_pos_in_block2, block_index2, dest, dest_pos);
+        start_pos, end_pos, block_index1, block_index2, dest, dest_pos);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
-    size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
+    size_type start_pos, size_type end_pos, size_type block_index1,
     multi_type_vector& dest, size_type dest_pos)
 {
     size_type len = end_pos - start_pos + 1;
@@ -1946,6 +1944,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
 
     // All elements are in the same block.
     block* blk = &m_blocks[block_index1];
+    size_type start_pos_in_block1 = blk->m_position;
 
     // Empty the region in the destination container where the elements
     // are to be transferred to. This ensures that the destination region
@@ -2040,17 +2039,18 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
     dest.merge_with_adjacent_blocks(dest_block_index);
 
     // Set the source range empty without overwriting the elements.
-    return set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, false);
+    return set_empty_in_single_block(start_pos, end_pos, block_index1, false);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
-    size_type start_pos, size_type end_pos, size_type start_pos_in_block1, size_type block_index1,
-    size_type start_pos_in_block2, size_type block_index2,
+    size_type start_pos, size_type end_pos, size_type block_index1, size_type block_index2,
     multi_type_vector& dest, size_type dest_pos)
 {
     assert(block_index1 < block_index2);
+    size_type start_pos_in_block1 = m_blocks[block_index1].m_position;
+    size_type start_pos_in_block2 = m_blocks[block_index2].m_position;
 
     size_type len = end_pos - start_pos + 1;
     size_type last_dest_pos = dest_pos + len - 1;
@@ -2347,9 +2347,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_impl(
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set_empty_impl", __LINE__, end_pos, block_size(), size());
 
-    size_type start_pos_in_block1 = m_blocks[block_index1].m_position;
-    size_type start_pos_in_block2 = m_blocks[block_index2].m_position;
-
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
     dump_blocks(os_prev_block);
@@ -2357,10 +2354,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_impl(
 
     iterator ret_it;
     if (block_index1 == block_index2)
-        ret_it = set_empty_in_single_block(start_pos, end_pos, block_index1, start_pos_in_block1, overwrite);
+        ret_it = set_empty_in_single_block(start_pos, end_pos, block_index1, overwrite);
     else
         ret_it = set_empty_in_multi_blocks(
-            start_pos, end_pos, block_index1, start_pos_in_block1, block_index2, start_pos_in_block2, overwrite);
+            start_pos, end_pos, block_index1, block_index2, overwrite);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     if (!check_block_integrity())
@@ -2454,7 +2451,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
     if (cat_src == mtv::element_type_empty)
     {
         // Source is empty but destination is not. This is equivalent of transfer.
-        other.transfer_single_block(other_pos, other_end_pos, start_pos_in_other_block, other_block_index, *this, start_pos);
+        other.transfer_single_block(other_pos, other_end_pos, other_block_index, *this, start_pos);
         // No update of local index vars needed.
         return;
     }
@@ -2462,7 +2459,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_block(
     if (cat_dst == mtv::element_type_empty)
     {
         // Source is not empty but destination is. Use transfer.
-        transfer_single_block(start_pos, end_pos, start_pos_in_block, block_index, other, other_pos);
+        transfer_single_block(start_pos, end_pos, block_index, other, other_pos);
         // No update of local index vars needed.
         return;
     }
@@ -2574,8 +2571,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap_single_to_multi_blocks(
     {
         // The source block is empty. Use transfer.
         other.transfer_multi_blocks(
-            other_pos, other_pos+len-1,
-            dst_start_pos_in_block1, dst_block_index1, dst_start_pos_in_block2, dst_block_index2, *this, start_pos);
+            other_pos, other_pos+len-1, dst_block_index1, dst_block_index2, *this, start_pos);
         return;
     }
 
@@ -2844,7 +2840,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
 
     if (block_pos1 == block_pos2)
     {
-        erase_in_single_block(start_row, end_row, block_pos1, start_row_in_block1);
+        erase_in_single_block(start_row, end_row, block_pos1);
         return;
     }
 
@@ -2920,7 +2916,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
 
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
-    size_type start_pos, size_type end_pos, size_type block_pos, size_type start_pos_in_block)
+    size_type start_pos, size_type end_pos, size_type block_pos)
 {
     // Range falls within the same block.
     block* blk = &m_blocks[block_pos];
@@ -2928,7 +2924,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
     if (blk->mp_data)
     {
         // Erase data in the data block.
-        size_type offset = start_pos - start_pos_in_block;
+        size_type offset = start_pos - blk->m_position;
         element_block_func::overwrite_values(*blk->mp_data, offset, size_to_erase);
         element_block_func::erase(*blk->mp_data, offset, size_to_erase);
     }
@@ -3198,17 +3194,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_impl(
         detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set_cells_impl", __LINE__, end_row, block_size(), size());
 
-    size_type start_row1 = m_blocks[block_index1].m_position;
-    size_type start_row2 = m_blocks[block_index2].m_position;
-
     if (block_index1 == block_index2)
     {
         // The whole data array will fit in a single block.
-        return set_cells_to_single_block(row, end_row, block_index1, start_row1, it_begin, it_end);
+        return set_cells_to_single_block(row, end_row, block_index1, it_begin, it_end);
     }
 
     return set_cells_to_multi_blocks(
-        row, end_row, block_index1, start_row1, block_index2, start_row2, it_begin, it_end);
+        row, end_row, block_index1, block_index2, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -3257,7 +3250,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
             return get_iterator(block_index);
         }
 
-        insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
+        insert_cells_to_middle(row, block_index, it_begin, it_end);
         m_cur_size += length;
 
         return get_iterator(block_index+1);
@@ -3306,7 +3299,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
         return get_iterator(block_index);
     }
 
-    insert_cells_to_middle(row, block_index, start_row, it_begin, it_end);
+    insert_cells_to_middle(row, block_index, it_begin, it_end);
     m_cur_size += length;
 
     return get_iterator(block_index+1);
@@ -3315,9 +3308,9 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
 template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
-    size_type row, size_type block_index, size_type start_row,
-    const _T& it_begin, const _T& it_end)
+    size_type row, size_type block_index, const _T& it_begin, const _T& it_end)
 {
+    size_type start_row = m_blocks[block_index].m_position;
     size_type length = std::distance(it_begin, it_end);
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
 
@@ -3699,13 +3692,14 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
     size_type start_row, size_type end_row, size_type block_index,
-    size_type start_row_in_block, const _T& it_begin, const _T& it_end)
+    const _T& it_begin, const _T& it_end)
 {
     assert(it_begin != it_end);
     assert(!m_blocks.empty());
 
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
     block* blk = &m_blocks[block_index];
+    size_type start_row_in_block = blk->m_position;
     size_type data_length = std::distance(it_begin, it_end);
 
     if (blk->mp_data && mdds::mtv::get_block_type(*blk->mp_data) == cat)
@@ -3867,9 +3861,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks(
-    size_type start_row, size_type end_row,
-    size_type block_index1, size_type start_row_in_block1,
-    size_type block_index2, size_type start_row_in_block2,
+    size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
     const _T& it_begin, const _T& it_end)
 {
     assert(block_index1 < block_index2);
@@ -3880,30 +3872,28 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks(
     if (blk1->mp_data)
     {
         return set_cells_to_multi_blocks_block1_non_empty(
-            start_row, end_row, block_index1, start_row_in_block1,
-            block_index2, start_row_in_block2, it_begin, it_end);
+            start_row, end_row, block_index1, block_index2, it_begin, it_end);
     }
 
     // Block 1 is empty.
     assert(!blk1->mp_data);
 
     return set_cells_to_multi_blocks_block1_non_equal(
-        start_row, end_row, block_index1, start_row_in_block1,
-        block_index2, start_row_in_block2, it_begin, it_end);
+        start_row, end_row, block_index1, block_index2, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_non_equal(
-    size_type start_row, size_type end_row,
-    size_type block_index1, size_type start_row_in_block1,
-    size_type block_index2, size_type start_row_in_block2,
+    size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
     const _T& it_begin, const _T& it_end)
 {
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
     block* blk1 = &m_blocks[block_index1];
     block* blk2 = &m_blocks[block_index2];
+    size_type start_row_in_block1 = blk1->m_position;
+    size_type start_row_in_block2 = blk2->m_position;
     size_type length = std::distance(it_begin, it_end);
     size_type offset = start_row - start_row_in_block1;
     size_type end_row_in_block2 = start_row_in_block2 + blk2->m_size - 1;
@@ -4037,11 +4027,12 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_non_empty(
-    size_type start_row, size_type end_row,
-    size_type block_index1, size_type start_row_in_block1,
-    size_type block_index2, size_type start_row_in_block2,
+    size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
     const _T& it_begin, const _T& it_end)
 {
+    size_type start_row_in_block1 = m_blocks[block_index1].m_position;
+    size_type start_row_in_block2 = m_blocks[block_index2].m_position;
+
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
     block* blk1 = &m_blocks[block_index1];
     assert(blk1->mp_data);
@@ -4115,8 +4106,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
     assert(blk_cat1 != cat);
 
     return set_cells_to_multi_blocks_block1_non_equal(
-        start_row, end_row, block_index1, start_row_in_block1,
-        block_index2, start_row_in_block2, it_begin, it_end);
+        start_row, end_row, block_index1, block_index2, it_begin, it_end);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -4504,8 +4494,7 @@ mtv::element_t multi_type_vector<_CellBlockFunc, _EventFunc>::get_element_type(c
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
-multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
-    size_type block_index, size_type start_pos_in_block, bool overwrite)
+multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(size_type block_index, bool overwrite)
 {
     block* blk = &m_blocks[block_index];
     if (!overwrite)
@@ -4568,7 +4557,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_single_block(
-    size_type start_row, size_type end_row, size_type block_index, size_type start_row_in_block, bool overwrite)
+    size_type start_row, size_type end_row, size_type block_index, bool overwrite)
 {
     // Range is within a single block.
     block* blk = &m_blocks[block_index];
@@ -4576,6 +4565,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_single_block(
         // This block is already empty.  Do nothing.
         return get_iterator(block_index);
 
+    size_type start_row_in_block = blk->m_position;
     assert(start_row_in_block + blk->m_size >= 1);
     size_type end_row_in_block = start_row_in_block + blk->m_size - 1;
     size_type empty_block_size = end_row - start_row + 1;
@@ -4585,7 +4575,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_single_block(
         // start row coincides with the start of a block.
 
         if (end_row == end_row_in_block)
-            return set_whole_block_empty(block_index, start_row_in_block, overwrite);
+            return set_whole_block_empty(block_index, overwrite);
 
         // Set the upper part of the block empty.
         if (overwrite)
@@ -4650,10 +4640,11 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty_in_multi_blocks(
     size_type start_row, size_type end_row,
-    size_type block_index1, size_type start_row_in_block1,
-    size_type block_index2, size_type start_row_in_block2, bool overwrite)
+    size_type block_index1, size_type block_index2, bool overwrite)
 {
     assert(block_index1 < block_index2);
+    size_type start_row_in_block1 = m_blocks[block_index1].m_position;
+    size_type start_row_in_block2 = m_blocks[block_index2].m_position;
 
     {
         // Empty the lower part of the first block.
