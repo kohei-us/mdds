@@ -71,8 +71,6 @@ struct iterator_value_node
         private_data() : block_index(0) {}
         private_data(size_type _block_index) :
             block_index(_block_index) {}
-        private_data(const private_data& other) :
-            block_index(other.block_index) {}
 
         void swap(private_data& other)
         {
