@@ -505,18 +505,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_type block_index, size_type delta)
 {
-    if (block_index >= m_blocks.size())
+    size_type n = m_blocks.size();
+
+    if (block_index >= n)
         return;
 
-    auto it = m_blocks.begin() + block_index;
-    adjust_block_positions(it, delta);
-}
-
-template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(typename blocks_type::iterator it, size_type delta)
-{
-    for (; it != m_blocks.end(); ++it)
-        it->m_position += delta;
+    for (; block_index < n; ++block_index)
+        m_blocks[block_index].m_position += delta;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -2909,8 +2904,9 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
     if (m_blocks.empty())
         return;
 
-    it_adjust_block += adjust_block_offset;
-    adjust_block_positions(it_adjust_block, -delta);
+    size_t adjust_pos = std::distance(m_blocks.begin(), it_adjust_block);
+    adjust_pos += adjust_block_offset;
+    adjust_block_positions(adjust_pos, -delta);
     merge_with_next_block(block_pos1);
 }
 
