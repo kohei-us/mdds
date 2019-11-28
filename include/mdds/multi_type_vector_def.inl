@@ -503,15 +503,37 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_type block_index, size_type delta)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_type start_block_index, size_type delta)
 {
     size_type n = m_blocks.size();
 
-    if (block_index >= n)
+    if (start_block_index >= n)
         return;
 
-    for (; block_index < n; ++block_index)
-        m_blocks[block_index].m_position += delta;
+#ifdef MDDS_LOOP_UNROLLING
+    // Ensure that the section length is divisible by 8.
+    size_type len = n - start_block_index;
+    size_type rem = len % 8;
+    len -= rem;
+    for (size_t i = 0; i < len; i += 8)
+    {
+        assert(!"TESTME");
+        m_blocks[start_block_index+i].m_position += delta;
+        m_blocks[start_block_index+i+1].m_position += delta;
+        m_blocks[start_block_index+i+2].m_position += delta;
+        m_blocks[start_block_index+i+3].m_position += delta;
+        m_blocks[start_block_index+i+4].m_position += delta;
+        m_blocks[start_block_index+i+5].m_position += delta;
+        m_blocks[start_block_index+i+6].m_position += delta;
+        m_blocks[start_block_index+i+7].m_position += delta;
+    }
+
+    for (size_t i = 0; i < rem; ++i)
+        m_blocks[start_block_index+len+i].m_position += delta;
+#else
+    for (; start_block_index < n; ++start_block_index)
+        m_blocks[start_block_index].m_position += delta;
+#endif
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
