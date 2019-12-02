@@ -517,7 +517,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_
     len -= rem;
     for (size_t i = 0; i < len; i += 8)
     {
-        assert(!"TESTME");
         m_blocks[start_block_index+i].m_position += delta;
         m_blocks[start_block_index+i+1].m_position += delta;
         m_blocks[start_block_index+i+2].m_position += delta;
