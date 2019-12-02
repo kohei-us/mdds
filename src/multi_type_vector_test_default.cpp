@@ -27,7 +27,6 @@
 
 #include "test_global.hpp" // This must be the first header to be included.
 
-#define MDDS_LOOP_UNROLLING 1
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector_trait.hpp>
