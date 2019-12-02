@@ -55,6 +55,16 @@ AS_IF([test x"$enable_gcov" == "xyes"], [
   CXXFLAGS="$CXXFLAGS --coverage -O0"
 ])
 
+AC_ARG_ENABLE(openmp,
+    AS_HELP_STRING([--disable-openmp], [Disable use of OpenMP.]),
+    [enable_openmp="$enableval"],[enable_openmp=yes]
+)
+
+AS_IF([test x"$enable_openmp" == "xyes"], [
+  CXXFLAGS="$CXXFLAGS -fopenmp"
+  LDFLAGS="$LDFLAGS -fopenmp"
+])
+
 AC_ARG_ENABLE(sanitizer-coverage,
     AS_HELP_STRING([--enable-sanitizer-coverage], [Enable generation of sanitizer coverage information.]),
     [enable_sanitizer_coverage="$enableval"],[enable_sanitizer_coverage=no]
@@ -141,6 +151,7 @@ AC_MSG_NOTICE([
 ==============================================================================
 Build configuration:
         gcov                  $enable_gcov
+        openmp                $enable_openmp
         sanitizer-coverage    $enable_sanitizer_coverage
 ==============================================================================
 ])

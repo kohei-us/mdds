@@ -515,6 +515,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_
     size_type len = n - start_block_index;
     size_type rem = len % 8;
     len -= rem;
+    #pragma omp parallel for
     for (size_t i = 0; i < len; i += 8)
     {
         m_blocks[start_block_index+i].m_position += delta;
@@ -530,8 +531,9 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_
     for (size_t i = 0; i < rem; ++i)
         m_blocks[start_block_index+len+i].m_position += delta;
 #else
-    for (; start_block_index < n; ++start_block_index)
-        m_blocks[start_block_index].m_position += delta;
+    #pragma omp parallel for
+    for (size_t i = start_block_index; i < n; ++i)
+        m_blocks[i].m_position += delta;
 #endif
 }
 
