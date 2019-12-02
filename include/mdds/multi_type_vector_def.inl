@@ -515,21 +515,22 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_
     size_type len = n - start_block_index;
     size_type rem = len % 8;
     len -= rem;
+    len += start_block_index;
     #pragma omp parallel for
-    for (size_t i = 0; i < len; i += 8)
+    for (size_t i = start_block_index; i < len; i += 8)
     {
-        m_blocks[start_block_index+i].m_position += delta;
-        m_blocks[start_block_index+i+1].m_position += delta;
-        m_blocks[start_block_index+i+2].m_position += delta;
-        m_blocks[start_block_index+i+3].m_position += delta;
-        m_blocks[start_block_index+i+4].m_position += delta;
-        m_blocks[start_block_index+i+5].m_position += delta;
-        m_blocks[start_block_index+i+6].m_position += delta;
-        m_blocks[start_block_index+i+7].m_position += delta;
+        m_blocks[i].m_position += delta;
+        m_blocks[i+1].m_position += delta;
+        m_blocks[i+2].m_position += delta;
+        m_blocks[i+3].m_position += delta;
+        m_blocks[i+4].m_position += delta;
+        m_blocks[i+5].m_position += delta;
+        m_blocks[i+6].m_position += delta;
+        m_blocks[i+7].m_position += delta;
     }
 
     for (size_t i = 0; i < rem; ++i)
-        m_blocks[start_block_index+len+i].m_position += delta;
+        m_blocks[len+i].m_position += delta;
 #else
     #pragma omp parallel for
     for (size_t i = start_block_index; i < n; ++i)
