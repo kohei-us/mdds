@@ -503,21 +503,21 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_type start_block_index, size_type delta)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(int64_t start_block_index, size_type delta)
 {
-    size_type n = m_blocks.size();
+    int64_t n = m_blocks.size();
 
     if (start_block_index >= n)
         return;
 
 #ifdef MDDS_LOOP_UNROLLING
     // Ensure that the section length is divisible by 8.
-    long len = n - start_block_index;
-    long rem = len % 8;
+    int64_t len = n - start_block_index;
+    int64_t rem = len % 8;
     len -= rem;
     len += start_block_index;
     #pragma omp parallel for
-    for (long i = start_block_index; i < len; i += 8)
+    for (int64_t i = start_block_index; i < len; i += 8)
     {
         m_blocks[i].m_position += delta;
         m_blocks[i+1].m_position += delta;
@@ -530,11 +530,11 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(size_
     }
 
     rem += len;
-    for (long i = len; i < rem; ++i)
+    for (int64_t i = len; i < rem; ++i)
         m_blocks[i].m_position += delta;
 #else
     #pragma omp parallel for
-    for (long i = start_block_index; i < n; ++i)
+    for (int64_t i = start_block_index; i < n; ++i)
         m_blocks[i].m_position += delta;
 #endif
 }
