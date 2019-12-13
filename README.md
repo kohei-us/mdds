@@ -6,7 +6,7 @@ algorithm.
 Overview of data structures included in mdds
 --------------------------------------------
 
-This library implements the following data structure:
+This library implements the following data structures:
 
 * segment_tree
 * flat_segment_tree
@@ -17,6 +17,7 @@ This library implements the following data structure:
 * sorted_string_map
 * trie_map
 * packed_trie_map
+* rtree
 
 ### Segment Tree
 
