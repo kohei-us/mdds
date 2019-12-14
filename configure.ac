@@ -51,6 +51,15 @@ AC_ARG_ENABLE(gcov,
     [enable_gcov="$enableval"],[enable_gcov=no]
 )
 
+AC_ARG_ENABLE(loop-unrolling,
+    AS_HELP_STRING([--disable-loop-unrolling], [Disable use of loop unrolling.]),
+    [enable_loop_unrolling="$enableval"],[enable_loop_unrolling=yes]
+)
+
+AS_IF([test x"$enable_loop_unrolling" == "xno"], [
+  CXXFLAGS="$CXXFLAGS -DMDDS_LOOP_UNROLLING=0"
+])
+
 AS_IF([test x"$enable_gcov" == "xyes"], [
   CXXFLAGS="$CXXFLAGS --coverage -O0"
 ])
@@ -153,5 +162,8 @@ Build configuration:
         gcov                  $enable_gcov
         openmp                $enable_openmp
         sanitizer-coverage    $enable_sanitizer_coverage
+        loop-unrolling        $enable_loop_unrolling
+
+        CXXFLAGS              $CXXFLAGS
 ==============================================================================
 ])

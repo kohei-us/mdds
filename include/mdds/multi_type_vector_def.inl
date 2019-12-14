@@ -510,7 +510,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(int64
     if (start_block_index >= n)
         return;
 
-#ifdef MDDS_LOOP_UNROLLING
+#if MDDS_LOOP_UNROLLING
     // Ensure that the section length is divisible by 8.
     int64_t len = n - start_block_index;
     int64_t rem = len % 8;

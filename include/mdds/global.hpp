@@ -61,6 +61,10 @@
     #define MDDS_DEPRECATED
 #endif
 
+#ifndef MDDS_LOOP_UNROLLING
+#define MDDS_LOOP_UNROLLING 1
+#endif
+
 namespace mdds {
 
 class general_error : public ::std::exception
