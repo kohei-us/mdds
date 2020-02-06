@@ -5138,7 +5138,6 @@ void mtv_test_swap_range()
     assert(db2.get<string>(1) == "test");
 
     // More complex case.
-    // TODO: Test this case for block events.
     db1 = mtv_type(10);
     db1.set<int32_t>(0, 2);
     db1.set<int32_t>(1, 3);

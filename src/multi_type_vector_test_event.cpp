@@ -1096,6 +1096,42 @@ void mtv_test_block_counter()
         assert(src.event_handler().block_count == 0);
         assert(dst.event_handler().block_count == 1);
     }
+
+    {
+        mtv_type db1(10);
+        db1.set<int32_t>(0, 2);
+        db1.set<int32_t>(1, 3);
+        db1.set<int32_t>(2, 4);
+        db1.set<string>(3, "A");
+        db1.set<string>(4, "B");
+        db1.set<string>(5, "C");
+
+        // Leave some empty range.
+        mtv_type db2(10);
+        for (int32_t i = 0; i < 10; ++i)
+            db2.set<int32_t>(i, 10+i);
+        db2.set<int8_t>(5, 'Z');
+
+        assert(db1.event_handler().block_count == 2);
+        assert(db1.event_handler().block_count_int32 == 1);
+        assert(db1.event_handler().block_count_string == 1);
+
+        assert(db2.event_handler().block_count == 3);
+        assert(db2.event_handler().block_count_int32 == 2);
+        assert(db2.event_handler().block_count_int8 == 1);
+
+        db1.swap(1, 7, db2, 2);
+
+        assert(db1.event_handler().block_count == 3);
+        assert(db1.event_handler().block_count_int32 == 2);
+        assert(db1.event_handler().block_count_string == 0);
+        assert(db1.event_handler().block_count_int8 == 1);
+
+        assert(db2.event_handler().block_count == 3);
+        assert(db2.event_handler().block_count_int32 == 2);
+        assert(db2.event_handler().block_count_int8 == 0);
+        assert(db2.event_handler().block_count_string == 1);
+    }
 }
 
 void mtv_test_block_init()
