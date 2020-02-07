@@ -1,3 +1,13 @@
+mdds 1.6.0
+
+* multi_type_vector
+
+  * switched to using binary search on block position lookup, which
+    significantly improves element access performance in general, at the
+    expense of slight performance degradation on block shifting.
+
+* added support for lcov, to visualize test coverage.
+
 mdds 1.5.0
 
 * documentation
