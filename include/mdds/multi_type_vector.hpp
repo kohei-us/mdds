@@ -1126,8 +1126,7 @@ private:
     void append_cell_to_block(size_type block_index, const _T& cell);
 
     template<typename _T>
-    iterator set_cell_to_empty_block(
-        size_type start_row, size_type block_index, size_type pos_in_block, const _T& cell);
+    iterator set_cell_to_empty_block(size_type block_index, size_type pos_in_block, const _T& cell);
 
     template<typename _T>
     iterator set_cell_to_block_of_size_one(

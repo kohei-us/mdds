@@ -583,7 +583,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(size_type pos, size_type
     if (!blk->mp_data)
     {
         // This is an empty block.
-        return set_cell_to_empty_block(start_row, block_index, pos_in_block, value);
+        return set_cell_to_empty_block(block_index, pos_in_block, value);
     }
 
     assert(blk->mp_data);
@@ -1027,7 +1027,7 @@ template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_empty_block(
-    size_type start_row, size_type block_index, size_type pos_in_block, const _T& cell)
+    size_type block_index, size_type pos_in_block, const _T& cell)
 {
     block* blk = &m_blocks[block_index];
     assert(!blk->mp_data); // In this call, the current block is an empty block.
