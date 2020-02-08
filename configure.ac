@@ -70,7 +70,7 @@ AC_ARG_ENABLE(openmp,
 )
 
 AS_IF([test x"$enable_openmp" == "xyes"], [
-  CXXFLAGS="$CXXFLAGS -fopenmp"
+  CXXFLAGS="$CXXFLAGS -fopenmp -DMDDS_USE_OPENMP=1"
   LDFLAGS="$LDFLAGS -fopenmp"
 ])
 
