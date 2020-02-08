@@ -503,7 +503,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, siz
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(int64_t start_block_index, size_type delta)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::adjust_block_positions(int64_t start_block_index, int64_t delta)
 {
     int64_t n = m_blocks.size();
 
@@ -2927,7 +2927,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_impl(size_type start_r
     // Now, erase all blocks in between.
     delete_element_blocks(it_erase_begin, it_erase_end);
     auto it_adjust_block = m_blocks.erase(it_erase_begin, it_erase_end);
-    size_type delta = end_row - start_row + 1;
+    int64_t delta = end_row - start_row + 1;
     m_cur_size -= delta;
 
     if (m_blocks.empty())
@@ -2945,7 +2945,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
 {
     // Range falls within the same block.
     block* blk = &m_blocks[block_pos];
-    size_type size_to_erase = end_pos - start_pos + 1;
+    int64_t size_to_erase = end_pos - start_pos + 1;
     if (blk->mp_data)
     {
         // Erase data in the data block.
