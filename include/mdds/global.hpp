@@ -65,6 +65,10 @@
 #define MDDS_LOOP_UNROLLING 1
 #endif
 
+#ifndef MDDS_USE_OPENMP
+#define MDDS_USE_OPENMP 0
+#endif
+
 namespace mdds {
 
 class general_error : public ::std::exception
