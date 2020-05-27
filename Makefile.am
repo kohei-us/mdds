@@ -173,9 +173,17 @@ uninstall-local:
 	rm -f $(DESTDIR)$(docdir)/COPYING $(DESTDIR)$(docdir)/NEWS
 
 if BUILD_DOCS
-html-local:
-	(cd doc && $(DOXYGEN) doxygen.conf)
-	$(SPHINX) -b html ./doc/ ./doc/_build
+
+doc-doxygen:
+	@echo "Building documentation by doxygen..."
+	@cd doc && $(DOXYGEN) doxygen.conf
+
+doc-sphinx:
+	@echo "Building documentation by sphinx..."
+	@$(SPHINX) -b html ./doc/ ./doc/_build
+
+doc: doc-doxygen doc-sphinx
+
 endif
 
 check-gdb:
