@@ -5,10 +5,11 @@
 
 using namespace std;
 
-typedef mdds::packed_trie_map<mdds::trie::std_string_trait, int> trie_map_type;
 
 int main()
 {
+    using trie_map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, int>;
+
     // Entries must be known prior to creating the instance, and they must be
     // sorted by the key in ascending order.
     trie_map_type::entry entries[] = {
@@ -41,33 +42,33 @@ int main()
     trie_map_type nc_cities(entries, MDDS_N_ELEMENTS(entries));
 
     cout << "Cities that start with 'Cha' and their populations:" << endl;
-    auto results = nc_cities.prefix_search(MDDS_ASCII("Cha"));
-    for (const trie_map_type::key_value_type& kv : results)
+    auto results = nc_cities.prefix_search("Cha");
+    for (const auto& kv : results)
     {
         cout << "  " << kv.first << ": " << kv.second << endl;
     }
 
     cout << "Cities that start with 'W' and their populations:" << endl;
-    results = nc_cities.prefix_search(MDDS_ASCII("W"));
-    for (const trie_map_type::key_value_type& kv : results)
+    results = nc_cities.prefix_search("W");
+    for (const auto& kv : results)
     {
         cout << "  " << kv.first << ": " << kv.second << endl;
     }
 
     cout << "Cities that start with 'C' and their populations:" << endl;
-    results = nc_cities.prefix_search(MDDS_ASCII("C"));
-    for (const trie_map_type::key_value_type& kv : results)
+    results = nc_cities.prefix_search("C");
+    for (const auto& kv : results)
     {
         cout << "  " << kv.first << ": " << kv.second << endl;
     }
 
     // Individual search.
-    auto it = nc_cities.find(MDDS_ASCII("Wilmington"));
+    auto it = nc_cities.find("Wilmington");
     cout << "Population of Wilmington: " << it->second << endl;
 
     // You get an end position iterator when the container doesn't have the
     // specified key.
-    it = nc_cities.find(MDDS_ASCII("Asheboro"));
+    it = nc_cities.find("Asheboro");
 
     cout << "Population of Asheboro: ";
 

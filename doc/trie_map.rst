@@ -7,119 +7,184 @@ Trie Maps
 Example
 -------
 
-The following code example illustrates how to populate a :cpp:class:`~mdds::trie_map`
-instance and perform prefix searches.  The later part of the example also
-shows how you can create a packed version of the content for faster lookups
-and reduced memory footprint.
+Trie Map
+^^^^^^^^
 
-::
+Populating Trie Map
+```````````````````
 
-    #include <mdds/global.hpp>  // for MDDS_ASCII
-    #include <mdds/trie_map.hpp>
-    #include <iostream>
+This section illustrates how to use :cpp:class:`~mdds::trie_map` to build a
+database of city populations and perform prefix searches.  In this example,
+we will use the 2013 populations of cities in North Carolina, and use the city
+names as keys.
 
-    using namespace std;
+Let's define the type first::
 
-    typedef mdds::trie_map<mdds::trie::std_string_trait, int> trie_map_type;
+    using trie_map_type = mdds::trie_map<mdds::trie::std_string_trait, int>;
 
-    int main()
+The first template argument specifies the trait of the key.  In this example,
+we are using a pre-defined trait for std::string, which is defined in
+:cpp:class:`~mdds::trie::std_string_trait`.  The second template argument
+specifies the value type, which in this example is simply an ``int``.
+
+Once the type is defined, the next step is instantiation::
+
+    trie_map_type nc_cities;
+
+It's pretty simple as you don't need to pass any arguments to the constructor.
+Now, let's populate this data structure with some population data::
+
+    // Insert key-value pairs.
+    nc_cities.insert("Charlotte",     792862);
+    nc_cities.insert("Raleigh",       431746);
+    nc_cities.insert("Greensboro",    279639);
+    nc_cities.insert("Durham",        245475);
+    nc_cities.insert("Winston-Salem", 236441);
+    nc_cities.insert("Fayetteville",  204408);
+    nc_cities.insert("Cary",          151088);
+    nc_cities.insert("Wilmington",    112067);
+    nc_cities.insert("High Point",    107741);
+    nc_cities.insert("Greenville",    89130);
+    nc_cities.insert("Asheville",     87236);
+    nc_cities.insert("Concord",       83506);
+    nc_cities.insert("Gastonia",      73209);
+    nc_cities.insert("Jacksonville",  69079);
+    nc_cities.insert("Chapel Hill",   59635);
+    nc_cities.insert("Rocky Mount",   56954);
+    nc_cities.insert("Burlington",    51510);
+    nc_cities.insert("Huntersville",  50458);
+    nc_cities.insert("Wilson",        49628);
+    nc_cities.insert("Kannapolis",    44359);
+    nc_cities.insert("Apex",          42214);
+    nc_cities.insert("Hickory",       40361);
+    nc_cities.insert("Goldsboro",     36306);
+
+It's pretty straight-forward.  Each :cpp:func:`~mdds::trie_map::insert` call
+expects a pair of string key and an integer value.  You can insert your data
+in any order regardless of key's sort order.
+
+Now that the data is in, let's perform prefix search to query all cities whose
+name begins with "Cha"::
+
+    cout << "Cities that start with 'Cha' and their populations:" << endl;
+    auto results = nc_cities.prefix_search("Cha");
+    for (const auto& kv : results)
     {
-        // Cities in North Carolina and their populations in 2013.
-        trie_map_type nc_cities;
-
-        // Insert key-value pairs.
-        nc_cities.insert(MDDS_ASCII("Charlotte"),     792862);
-        nc_cities.insert(MDDS_ASCII("Raleigh"),       431746);
-        nc_cities.insert(MDDS_ASCII("Greensboro"),    279639);
-        nc_cities.insert(MDDS_ASCII("Durham"),        245475);
-        nc_cities.insert(MDDS_ASCII("Winston-Salem"), 236441);
-        nc_cities.insert(MDDS_ASCII("Fayetteville"),  204408);
-        nc_cities.insert(MDDS_ASCII("Cary"),          151088);
-        nc_cities.insert(MDDS_ASCII("Wilmington"),    112067);
-        nc_cities.insert(MDDS_ASCII("High Point"),    107741);
-        nc_cities.insert(MDDS_ASCII("Greenville"),    89130);
-        nc_cities.insert(MDDS_ASCII("Asheville"),     87236);
-        nc_cities.insert(MDDS_ASCII("Concord"),       83506);
-        nc_cities.insert(MDDS_ASCII("Gastonia"),      73209);
-        nc_cities.insert(MDDS_ASCII("Jacksonville"),  69079);
-        nc_cities.insert(MDDS_ASCII("Chapel Hill"),   59635);
-        nc_cities.insert(MDDS_ASCII("Rocky Mount"),   56954);
-        nc_cities.insert(MDDS_ASCII("Burlington"),    51510);
-        nc_cities.insert(MDDS_ASCII("Huntersville"),  50458);
-        nc_cities.insert(MDDS_ASCII("Wilson"),        49628);
-        nc_cities.insert(MDDS_ASCII("Kannapolis"),    44359);
-        nc_cities.insert(MDDS_ASCII("Apex"),          42214);
-        nc_cities.insert(MDDS_ASCII("Hickory"),       40361);
-        nc_cities.insert(MDDS_ASCII("Goldsboro"),     36306);
-
-        cout << "Cities that start with 'Cha' and their populations:" << endl;
-        auto results = nc_cities.prefix_search(MDDS_ASCII("Cha"));
-        for (const trie_map_type::key_value_type& kv : results)
-        {
-            cout << "  " << kv.first << ": " << kv.second << endl;
-        }
-
-        cout << "Cities that start with 'W' and their populations:" << endl;
-        results = nc_cities.prefix_search(MDDS_ASCII("W"));
-        for (const trie_map_type::key_value_type& kv : results)
-        {
-            cout << "  " << kv.first << ": " << kv.second << endl;
-        }
-
-        // Create a compressed version of the container.  It works nearly identically.
-        auto packed = nc_cities.pack();
-
-        cout << "Cities that start with 'C' and their populations:" << endl;
-        auto packed_results = packed.prefix_search(MDDS_ASCII("C"));
-        for (const trie_map_type::key_value_type& kv : packed_results)
-        {
-            cout << "  " << kv.first << ": " << kv.second << endl;
-        }
-
-        // Individual search.
-        auto it = packed.find(MDDS_ASCII("Wilmington"));
-        cout << "Population of Wilmington: " << it->second << endl;
-
-        // You get an end position iterator when the container doesn't have the
-        // specified key.
-        it = packed.find(MDDS_ASCII("Asheboro"));
-
-        cout << "Population of Asheboro: ";
-
-        if (it == packed.end())
-            cout << "not found";
-        else
-            cout << it->second;
-
-        cout << endl;
-
-        return EXIT_SUCCESS;
+        cout << "  " << kv.first << ": " << kv.second << endl;
     }
 
-One thing to note in the above example is the use of :c:macro:`MDDS_ASCII` macro,
-which expands a literal string definition into a literal string and its length
-as two parameters.  This macro comes in handy when you need to define a
-literal and immediately pass it to a function that expects a pointer to a
-string and its length.
-
-You'll get the following output when compiling the above code and executing it:
+You can perform prefix search via :cpp:func:`~mdds::trie_map::prefix_search`
+method, which returns a results object that can be iterated over using a range-based
+for loop.  Running this code will produce the following output:
 
 .. code-block:: none
 
     Cities that start with 'Cha' and their populations:
       Chapel Hill: 59635
       Charlotte: 792862
+
+Let's perform another prefix search, this time with a prefix of "W"::
+
+    cout << "Cities that start with 'W' and their populations:" << endl;
+    results = nc_cities.prefix_search("W");
+    for (const auto& kv : results)
+    {
+        cout << "  " << kv.first << ": " << kv.second << endl;
+    }
+
+You'll see the following output when running this code:
+
+.. code-block:: none
+
     Cities that start with 'W' and their populations:
       Wilmington: 112067
       Wilson: 49628
       Winston-Salem: 236441
+
+Note that the results are sorted in key's ascending order.
+
+.. note::
+
+   Results from the prefix search are sorted in key's ascending order.
+
+
+Create Packed Trie Map from Trie Map
+````````````````````````````````````
+
+There is also another variant of trie called :cpp:class:`~mdds::packed_trie_map`
+which is designed to store all its data in contiguous memory region.  Unlike
+:cpp:class:`~mdds::trie_map` which is mutable, :cpp:class:`~mdds::packed_trie_map`
+is immutable; once populated, you can only perform queries and it is no longer
+possible to add new entries into the container.
+
+One way to create an instance of :cpp:class:`~mdds::packed_trie_map` is from
+:cpp:class:`~mdds::trie_map` by calling its :cpp:func:`~mdds::trie_map::pack`
+method::
+
+    auto packed = nc_cities.pack();
+
+The query methods of :cpp:class:`~mdds::packed_trie_map` are identical to those
+of :cpp:class:`~mdds::trie_map`.  For instance, performing prefix search to find
+all entries whose key begins with "C" can be done as follows::
+
+    cout << "Cities that start with 'C' and their populations:" << endl;
+    auto packed_results = packed.prefix_search("C");
+    for (const auto& kv : packed_results)
+    {
+        cout << "  " << kv.first << ": " << kv.second << endl;
+    }
+
+Running this code will generate the following output:
+
+.. code-block:: none
+
     Cities that start with 'C' and their populations:
       Cary: 151088
       Chapel Hill: 59635
       Charlotte: 792862
       Concord: 83506
+
+You can also perform an exact-match query via :cpp:func:`~mdds::packed_trie_map::find`
+method which returns an iterator associated with the key-value pair entry::
+
+    // Individual search.
+    auto it = packed.find("Wilmington");
+    cout << "Population of Wilmington: " << it->second << endl;
+
+You'll see the following output with this code:
+
+.. code-block:: none
+
     Population of Wilmington: 112067
+
+What if you performed an exact-match query with a key that doesn't exist in the
+container?  You will basically get the end iterator position as its return value.
+Thus, running this code::
+
+    // You get an end position iterator when the container doesn't have the
+    // specified key.
+    it = packed.find("Asheboro");
+
+    cout << "Population of Asheboro: ";
+
+    if (it == packed.end())
+        cout << "not found";
+    else
+        cout << it->second;
+
+    cout << endl;
+
+will generate the following output:
+
+.. code-block:: none
+
     Population of Asheboro: not found
+
+The complete source code for this example is available `here <https://gitlab.com/mdds/mdds/-/blob/master/example/trie_map.cpp>`_.
+
+
+Using Packed Trie Map directly
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Here is a version that uses :cpp:class:`~mdds::packed_trie_map`::
 
@@ -220,20 +285,20 @@ API Reference
 -------------
 
 Trie Map
-````````
+^^^^^^^^
 
 .. doxygenclass:: mdds::trie_map
    :members:
 
 
 Packed Trie Map
-```````````````
+^^^^^^^^^^^^^^^
 
 .. doxygenclass:: mdds::packed_trie_map
    :members:
 
 String Trait
-````````````
+^^^^^^^^^^^^
 
 .. doxygenstruct:: mdds::trie::std_string_trait
    :members:

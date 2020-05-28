@@ -273,7 +273,8 @@ public:
      *
      * @param prefix prefix to match.
      *
-     * @return results object containing all matching key-value pairs.
+     * @return results object that contains all matching key-value pairs. The
+     *         results are sorted by the key in ascending order.
      */
     search_results prefix_search(const key_type& prefix) const;
 
