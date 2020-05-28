@@ -544,13 +544,13 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
     trie_node root(0);
     node_pool_type node_pool;
     traverse_range(root, node_pool, p, p_end, 0);
-#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_TRIE)
+#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TRIE_MAP_DEBUG_DUMP_TRIE)
     dump_trie(root);
 #endif
 
     // Compact the trie into a packed array.
     compact(root);
-#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TREI_MAP_DEBUG_DUMP_PACKED)
+#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TRIE_MAP_DEBUG_DUMP_PACKED)
     dump_packed_trie(m_packed);
 #endif
 }
