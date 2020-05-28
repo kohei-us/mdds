@@ -12,7 +12,8 @@ int main()
 
     // Entries must be known prior to creating the instance, and they must be
     // sorted by the key in ascending order.
-    trie_map_type::entry entries[] = {
+    trie_map_type::entry entries[] =
+    {
         { MDDS_ASCII("Apex"),           42214 },
         { MDDS_ASCII("Asheville"),      87236 },
         { MDDS_ASCII("Burlington"),     51510 },
