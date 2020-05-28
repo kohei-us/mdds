@@ -231,6 +231,11 @@ are using the :c:macro:`MDDS_ASCII` macro to expand a string literal to its
 pointer value and size.  Note that you need to ensure that the entries are sorted
 by the key in ascending order.
 
+.. warning::
+
+   When instantiating :cpp:class:`~mdds::packed_trie_map` directly with a static
+   set of entries, the entries must be sorted by the key in ascending order.
+
 You can then pass this list of entries to construct the instance::
 
     trie_map_type nc_cities(entries, MDDS_N_ELEMENTS(entries));
