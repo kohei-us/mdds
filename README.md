@@ -83,7 +83,9 @@ where keys are stored in a trie structure to optimize for prefix searches.
 
 Packed trie map is nearly identical to the trie map counterpart except that
 this one is immutable.  It packs all its content in a contiguous array for
-optimum storage and lookup efficiency.
+optimum storage and lookup efficiency.  This implementation is based on the
+paper titled [Tightly Packed Tries: How to Fit Large Models into Memory, and Make them Load Fast, Too](https://www.aclweb.org/anthology/W09-1505/)
+by Ulrich Germann, Eric Joanis, and Samuel Larkin.
 
 ### R-tree
 
