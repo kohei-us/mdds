@@ -602,6 +602,17 @@ void trie_packed_test_copying()
     assert(it != db_copied.end());
     assert(it->first == "charlie");
     assert(it->second == 6);
+
+    it = db_copied.begin();
+    const map_type::entry* p_entries = entries;
+    const map_type::entry* p_entries_end = p_entries + db_copied.size();
+
+    for (; p_entries != p_entries_end; ++p_entries, ++it)
+    {
+        std::string key_expected(p_entries->key, p_entries->keylen);
+        assert(key_expected == it->first);
+        assert(p_entries->value == it->second);
+    }
 }
 
 void trie_test1()
