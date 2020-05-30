@@ -447,6 +447,10 @@ public:
      */
     packed_trie_map(const trie_map<key_trait_type, value_type>& other);
 
+    packed_trie_map(const packed_trie_map& other);
+
+    packed_trie_map& operator= (const packed_trie_map& other);
+
     const_iterator begin() const;
 
     const_iterator end() const;
@@ -505,6 +509,11 @@ public:
      */
     size_type size() const;
 
+    /**
+     * Dump the structure of the trie content for debugging.
+     */
+    void dump_structure() const;
+
 private:
     node_stack_type get_root_stack() const;
 
@@ -526,6 +535,9 @@ private:
     void find_prefix_node_with_stack(
         node_stack_type& node_stack,
         const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
+
+    template<typename _Handler>
+    void traverse_tree(_Handler hdl) const;
 
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump_node(key_buffer_type& buffer, const trie_node& node) const;

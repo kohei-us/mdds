@@ -61,6 +61,24 @@ bool verify_entries(
     return true;
 }
 
+template<typename T>
+bool check_equal(const T& left, const T& right)
+{
+    if (left.first != right.first)
+    {
+        cout << "left: " << left.first << "; right: " << right.first << endl;
+        return false;
+    }
+
+    if (left.second != right.second)
+    {
+        cout << "left: " << left.second << "; right: " << right.second << endl;
+        return false;
+    }
+
+    return true;
+}
+
 void trie_packed_test1()
 {
     stack_printer __stack_printer__("::trie_packed_test1");
@@ -405,6 +423,7 @@ void trie_packed_test_iterator()
 
     db.insert(MDDS_ASCII("a"), 1);
     packed_type packed = db.pack();
+    assert(db.size() == packed.size());
     packed_type::const_iterator it = packed.begin();
     packed_type::const_iterator ite = packed.end();
     assert(it != ite);
@@ -413,6 +432,7 @@ void trie_packed_test_iterator()
 
     db.insert(MDDS_ASCII("ab"), 2);
     packed = db.pack(); // this invalidates the end position.
+    assert(db.size() == packed.size());
 
     it = packed.begin();
     ite = packed.end();
@@ -421,7 +441,7 @@ void trie_packed_test_iterator()
     assert(it->second == 1);
 
     ++it;
-    bool check_true = (*it++ == kv("ab", 2));
+    bool check_true = check_equal(*it++, kv("ab", 2));
     assert(check_true);
     assert(it == ite);
 
@@ -432,22 +452,18 @@ void trie_packed_test_iterator()
     db.insert(MDDS_ASCII("bcd"), 7);
 
     packed = db.pack();
+    assert(db.size() == packed.size());
+
     it = packed.begin();
     ite = packed.end();
 
     assert(*it == kv("a", 1));
-    check_true = (*(++it) == kv("ab", 2));
-    assert(check_true);
-    check_true = (*(++it) == kv("aba", 3));
-    assert(check_true);
-    check_true = (*(++it) == kv("abb", 4));
-    assert(check_true);
-    check_true = (*(++it) == kv("abc", 5));
-    assert(check_true);
-    check_true = (*(++it) == kv("bc",  6));
-    assert(check_true);
-    check_true = (*(++it) == kv("bcd", 7));
-    assert(check_true);
+    assert(check_equal(*(++it), kv("ab", 2)));
+    assert(check_equal(*(++it), kv("aba", 3)));
+    assert(check_equal(*(++it), kv("abb", 4)));
+    assert(check_equal(*(++it), kv("abc", 5)));
+    assert(check_equal(*(++it), kv("bc",  6)));
+    assert(check_equal(*(++it), kv("bcd", 7)));
     assert(it->first == "bcd");
     assert(it->second == 7);
     ++it;
@@ -455,39 +471,34 @@ void trie_packed_test_iterator()
 
     --it;
     assert(it != ite);
-    assert(*it == kv("bcd", 7));
+    assert(check_equal(*it, kv("bcd", 7)));
     --it;
-    assert(*it == kv("bc", 6));
+    assert(check_equal(*it, kv("bc", 6)));
     --it;
-    assert(*it == kv("abc", 5));
+    assert(check_equal(*it, kv("abc", 5)));
     --it;
-    assert(*it == kv("abb", 4));
+    assert(check_equal(*it, kv("abb", 4)));
     --it;
-    assert(*it == kv("aba", 3));
+    assert(check_equal(*it, kv("aba", 3)));
     --it;
-    assert(*it == kv("ab", 2));
-    check_true = (*(--it) == kv("a", 1));
-    assert(check_true);
+    assert(check_equal(*it, kv("ab", 2)));
+    assert(check_equal(*(--it), kv("a", 1)));
     assert(it == packed.begin());
 
-    check_true = (*(++it) == kv("ab",  2));
-    assert(check_true);
-    check_true = (*(++it) == kv("aba", 3));
-    assert(check_true);
+    assert(check_equal(*(++it), kv("ab",  2)));
+    assert(check_equal(*(++it), kv("aba", 3)));
     --it;
-    assert(*it == kv("ab", 2));
+    assert(check_equal(*it, kv("ab", 2)));
     --it;
-    assert(*it == kv("a",  1));
+    assert(check_equal(*it, kv("a",  1)));
     ++it;
-    assert(*it == kv("ab", 2));
+    assert(check_equal(*it, kv("ab", 2)));
     ++it;
-    assert(*it == kv("aba", 3));
+    assert(check_equal(*it, kv("aba", 3)));
 
     // Post-decrement operator.
-    check_true = (*it-- == kv("aba", 3));
-    assert(check_true);
-    check_true = (*it == kv("ab", 2));
-    assert(check_true);
+    assert(check_equal(*it--, kv("aba", 3)));
+    assert(check_equal(*it, kv("ab", 2)));
 }
 
 void trie_packed_test_prefix_search1()
@@ -559,6 +570,38 @@ void trie_packed_test_key_as_input()
     assert(rit->second == 1);
     ++rit;
     assert(rit == results.end());
+}
+
+void trie_packed_test_copying()
+{
+    stack_printer __stack_printer__("::trie_packed_test_copying");
+    using map_type = packed_trie_map<trie::std_string_trait, int>;
+
+    map_type::entry entries[] =
+    {
+        { MDDS_ASCII("aaron"),     0 },
+        { MDDS_ASCII("al"),        1 },
+        { MDDS_ASCII("aldi"),      2 },
+        { MDDS_ASCII("andy"),      3 },
+        { MDDS_ASCII("bison"),     4 },
+        { MDDS_ASCII("bruce"),     5 },
+        { MDDS_ASCII("charlie"),   6 },
+        { MDDS_ASCII("charlotte"), 7 },
+        { MDDS_ASCII("david"),     8 },
+        { MDDS_ASCII("dove"),      9 },
+        { MDDS_ASCII("e"),        10 },
+        { MDDS_ASCII("eva"),      11 },
+    };
+
+    auto db = mdds::make_unique<map_type>(entries, MDDS_N_ELEMENTS(entries));
+    auto db_copied(*db);
+    assert(db->size() == db_copied.size());
+    db.reset();
+
+    auto it = db_copied.find("charlie");
+    assert(it != db_copied.end());
+    assert(it->first == "charlie");
+    assert(it->second == 6);
 }
 
 void trie_test1()
@@ -1073,6 +1116,7 @@ int main(int argc, char** argv)
         trie_packed_test_iterator();
         trie_packed_test_prefix_search1();
         trie_packed_test_key_as_input();
+        trie_packed_test_copying();
 
         trie_test1();
 

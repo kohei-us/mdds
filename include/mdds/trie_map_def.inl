@@ -34,6 +34,9 @@
 
 #ifdef MDDS_TRIE_MAP_DEBUG
 #include <iostream>
+#include <iomanip>
+using std::cout;
+using std::endl;
 #endif
 
 namespace mdds {
@@ -341,30 +344,28 @@ void packed_trie_map<_KeyTrait,_ValueT>::dump_packed_trie(const std::vector<uint
 
     size_t n = packed.size();
     size_t i = 0;
-    cout << i << ": root node offset: " << packed[i] << endl;
+    cout << std::setw(4) << i << ": root node offset: " << packed[i] << endl;
     ++i;
 
     while (i < n)
     {
+        size_t this_offset = i;
         const value_type* value = reinterpret_cast<const value_type*>(packed[i]);
-        cout << i << ": node value pointer: " << value;
-        if (value)
-            cout << ", value: " << *value;
-        cout << endl;
+        cout << std::setw(4) << i << ": node value pointer: " << value << endl;
         ++i;
 
         size_t index_size = packed[i];
-        cout << i << ": index size: " << index_size << endl;
+        cout << std::setw(4) << i << ": index size: " << index_size << endl;
         ++i;
         index_size /= 2;
 
         for (size_t j = 0; j < index_size; ++j)
         {
             key_unit_type key = packed[i];
-            cout << i << ": key: " << key << endl;
+            cout << std::setw(4) << i << ": key: " << key << endl;
             ++i;
             size_t offset = packed[i];
-            cout << i << ": offset: " << offset << endl;
+            cout << std::setw(4) << i << ": offset: " << offset << " (abs: " << (this_offset-offset) << ")" << endl;
             ++i;
         }
     }
@@ -561,6 +562,54 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
 {
     compact(other.m_root);
 }
+template<typename _KeyTrait, typename _ValueT>
+packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other) :
+    m_entry_size(other.m_entry_size),
+    m_packed(other.m_packed)
+{
+    struct _handler
+    {
+        packed_type& m_packed;
+        value_store_type& m_value_store;
+
+        void node(const uintptr_t* node_pos, key_unit_type c, size_t depth, size_t index_size)
+        {
+            uintptr_t value_ptr = *node_pos;
+
+            if (value_ptr)
+            {
+                auto p = reinterpret_cast<const value_type*>(value_ptr);
+                m_value_store.push_back(*p); // copy the value object.
+                const uintptr_t* head = m_packed.data();
+                size_t offset = std::distance(head, node_pos);
+                m_packed[offset] = uintptr_t(&m_value_store.back());
+            }
+        }
+
+        void move_up(const uintptr_t*, const uintptr_t*, const uintptr_t*) {}
+
+        void next_child() {}
+
+        void end() {}
+
+        _handler(packed_type& packed, value_store_type& value_store) : m_packed(packed), m_value_store(value_store) {}
+
+    } handler(m_packed, m_value_store);
+
+    traverse_tree(handler);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map&
+packed_trie_map<_KeyTrait,_ValueT>::operator= (const packed_trie_map& other)
+{
+    packed_trie_map tmp(other);
+    m_entry_size = tmp.m_entry_size;
+    m_value_store.swap(tmp.m_value_store);
+    m_packed.swap(tmp.m_packed);
+
+    return *this;
+}
 
 template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
@@ -728,6 +777,66 @@ packed_trie_map<_KeyTrait,_ValueT>::size() const
 }
 
 template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::dump_structure() const
+{
+#ifdef MDDS_TRIE_MAP_DEBUG
+    dump_packed_trie(m_packed);
+
+    cout << "--" << endl;
+    cout << "entry size: " << m_entry_size << endl;
+    cout << "memory size: " << m_packed.size() << endl;
+
+    const uintptr_t* head = m_packed.data();
+
+    struct _handler
+    {
+        const uintptr_t* m_head;
+
+        _handler(const uintptr_t* head) : m_head(head) {}
+
+        void node(const uintptr_t* node_pos, key_unit_type c, size_t depth, size_t index_size)
+        {
+            uintptr_t value_ptr = *node_pos;
+            size_t offset = std::distance(m_head, node_pos);
+
+            cout << "  --" << endl;
+            cout << "  offset: " << offset << endl;
+            cout << "  key: " << c << endl;
+            cout << "  depth: " << depth << endl;
+            cout << "  child count: " << (index_size / 2) << endl;
+            cout << "  value address: " << value_ptr;
+
+            if (value_ptr)
+            {
+                auto p = reinterpret_cast<const value_type*>(value_ptr);
+                cout << "; value: " << *p;
+            }
+
+            cout << endl;
+        }
+
+        void move_up(const uintptr_t* node_pos, const uintptr_t* child_pos, const uintptr_t* child_end)
+        {
+            size_t offset = std::distance(m_head, node_pos);
+            size_t child_size = std::distance(child_pos, child_end) / 2;
+            cout << "  --" << endl;
+            cout << "  move up: (offset: " << offset << "; child count: " << child_size << ")" << endl;
+        }
+
+        void next_child()
+        {
+            cout << "  next child" << endl;
+        }
+
+        void end() {}
+
+    } handler(head);
+
+    traverse_tree(handler);
+#endif
+}
+
+template<typename _KeyTrait, typename _ValueT>
 const uintptr_t* packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node(
     const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const
 {
@@ -863,6 +972,84 @@ void packed_trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
     }
 
     node_stack.emplace_back(nullptr, nullptr, nullptr);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+template<typename _Handler>
+void packed_trie_map<_KeyTrait,_ValueT>::traverse_tree(_Handler hdl) const
+{
+    if (m_packed.empty())
+        return;
+
+    node_stack_type node_stack = get_root_stack();
+    stack_item* si = &node_stack.back();
+    if (si->child_pos == si->child_end)
+        // empty container
+        return;
+
+    const uintptr_t* node_pos = si->node_pos;
+    const uintptr_t* child_pos = si->child_pos;
+    const uintptr_t* child_end = si->child_end;
+    const uintptr_t* p = child_pos;
+
+    for (bool in_tree = true; in_tree; )
+    {
+        // Descend until the leaf node is reached by following the left-most child nodes.
+        while (true)
+        {
+            auto key = *p;
+            size_t depth = node_stack.size();
+            ++p;
+            size_t offset = *p;
+
+            // jump down to the child node.
+            node_pos -= offset;
+            p = node_pos;
+            ++p;
+            size_t index_size = *p; // size of the buffer that stores child nodes' keys and offsets.
+
+            hdl.node(node_pos, key, depth, index_size);
+
+            ++p;
+            child_pos = p;
+            child_end = child_pos + index_size;
+
+            // Push this child node onto the stack.
+            node_stack.emplace_back(node_pos, child_pos, child_end);
+
+            if (!index_size)
+                // no child nodes i.e. leaf node.  Bail out of the loop.
+                break;
+        }
+
+        // Ascend up the tree until a node with an unvisited child node is
+        // found, then move sideways.
+        while (true)
+        {
+            // move up.
+            node_stack.pop_back();
+            si = &node_stack.back();
+            hdl.move_up(si->node_pos, si->child_pos, si->child_end);
+            std::advance(si->child_pos, 2); // move to the next child node slot.
+            if (si->child_pos != si->child_end)
+            {
+                // This is an unvisited child node. Bail out of the loop.
+                hdl.next_child();
+                node_pos = si->node_pos;
+                p = si->child_pos;
+                break;
+            }
+
+            if (node_stack.size() == 1)
+            {
+                // End of the tree has reached.
+                in_tree = false;
+                break;
+            }
+        }
+    }
+
+    hdl.end();
 }
 
 }
