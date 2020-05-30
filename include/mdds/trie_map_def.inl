@@ -564,13 +564,12 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
 }
 template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other) :
-    m_entry_size(other.m_entry_size),
+    m_entry_size(0),
     m_packed(other.m_packed)
 {
     struct _handler
     {
-        packed_type& m_packed;
-        value_store_type& m_value_store;
+        packed_trie_map& m_parent;
 
         void node(const uintptr_t* node_pos, key_unit_type c, size_t depth, size_t index_size)
         {
@@ -579,10 +578,11 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other
             if (value_ptr)
             {
                 auto p = reinterpret_cast<const value_type*>(value_ptr);
-                m_value_store.push_back(*p); // copy the value object.
-                const uintptr_t* head = m_packed.data();
+                m_parent.m_value_store.push_back(*p); // copy the value object.
+                const uintptr_t* head = m_parent.m_packed.data();
                 size_t offset = std::distance(head, node_pos);
-                m_packed[offset] = uintptr_t(&m_value_store.back());
+                m_parent.m_packed[offset] = uintptr_t(&m_parent.m_value_store.back());
+                ++m_parent.m_entry_size;
             }
         }
 
@@ -592,9 +592,9 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other
 
         void end() {}
 
-        _handler(packed_type& packed, value_store_type& value_store) : m_packed(packed), m_value_store(value_store) {}
+        _handler(packed_trie_map& parent) : m_parent(parent) {}
 
-    } handler(m_packed, m_value_store);
+    } handler(*this);
 
     traverse_tree(handler);
 }
