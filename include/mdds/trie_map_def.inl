@@ -485,7 +485,6 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(
     {
         m_value_store.push_back(node.value);  // copy the value object.
         m_packed.push_back(uintptr_t(&m_value_store.back()));
-        ++m_entry_size;
     }
     else
         m_packed.push_back(uintptr_t(0));
@@ -536,7 +535,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::compact(
 
 template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
-    const entry* entries, size_type entry_size) : m_entry_size(entry_size)
+    const entry* entries, size_type entry_size)
 {
     const entry* p = entries;
     const entry* p_end = p + entry_size;
@@ -558,13 +557,12 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
 
 template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
-    const trie_map<key_trait_type, value_type>& other) : m_entry_size(0)
+    const trie_map<key_trait_type, value_type>& other)
 {
     compact(other.m_root);
 }
 template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other) :
-    m_entry_size(0),
     m_packed(other.m_packed)
 {
     struct _handler
@@ -582,7 +580,6 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other
                 const uintptr_t* head = m_parent.m_packed.data();
                 size_t offset = std::distance(head, node_pos);
                 m_parent.m_packed[offset] = uintptr_t(&m_parent.m_value_store.back());
-                ++m_parent.m_entry_size;
             }
         }
 
@@ -604,7 +601,6 @@ typename packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map&
 packed_trie_map<_KeyTrait,_ValueT>::operator= (const packed_trie_map& other)
 {
     packed_trie_map tmp(other);
-    m_entry_size = tmp.m_entry_size;
     m_value_store.swap(tmp.m_value_store);
     m_packed.swap(tmp.m_packed);
 
@@ -773,7 +769,7 @@ template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::size_type
 packed_trie_map<_KeyTrait,_ValueT>::size() const
 {
-    return m_entry_size;
+    return m_value_store.size();
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -783,7 +779,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::dump_structure() const
     dump_packed_trie(m_packed);
 
     cout << "--" << endl;
-    cout << "entry size: " << m_entry_size << endl;
+    cout << "entry size: " << m_value_store.size() << endl;
     cout << "memory size: " << m_packed.size() << endl;
 
     const uintptr_t* head = m_packed.data();

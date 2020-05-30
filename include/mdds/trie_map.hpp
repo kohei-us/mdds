@@ -546,8 +546,6 @@ private:
 #endif
 
 private:
-    size_type m_entry_size;
-
     value_store_type m_value_store;
     packed_type m_packed;
 };
