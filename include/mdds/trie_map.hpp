@@ -509,6 +509,8 @@ public:
      */
     size_type size() const noexcept;
 
+    void swap(packed_trie_map& other);
+
     /**
      * Dump the structure of the trie content for debugging.
      */

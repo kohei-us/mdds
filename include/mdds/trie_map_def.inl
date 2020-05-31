@@ -601,9 +601,7 @@ typename packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map&
 packed_trie_map<_KeyTrait,_ValueT>::operator= (const packed_trie_map& other)
 {
     packed_trie_map tmp(other);
-    m_value_store.swap(tmp.m_value_store);
-    m_packed.swap(tmp.m_packed);
-
+    tmp.swap(*this);
     return *this;
 }
 
@@ -770,6 +768,13 @@ typename packed_trie_map<_KeyTrait,_ValueT>::size_type
 packed_trie_map<_KeyTrait,_ValueT>::size() const noexcept
 {
     return m_value_store.size();
+}
+
+template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::swap(packed_trie_map& other)
+{
+    m_value_store.swap(other.m_value_store);
+    m_packed.swap(other.m_packed);
 }
 
 template<typename _KeyTrait, typename _ValueT>
