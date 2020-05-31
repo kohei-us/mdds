@@ -507,7 +507,7 @@ public:
      *
      * @return the number of entries in the map.
      */
-    size_type size() const;
+    size_type size() const noexcept;
 
     /**
      * Dump the structure of the trie content for debugging.

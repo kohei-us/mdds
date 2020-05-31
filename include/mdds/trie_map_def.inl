@@ -767,7 +767,7 @@ packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const key_unit_type* prefix, s
 
 template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::size_type
-packed_trie_map<_KeyTrait,_ValueT>::size() const
+packed_trie_map<_KeyTrait,_ValueT>::size() const noexcept
 {
     return m_value_store.size();
 }
