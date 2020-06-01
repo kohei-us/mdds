@@ -613,6 +613,29 @@ void trie_packed_test_copying()
         assert(key_expected == it->first);
         assert(p_entries->value == it->second);
     }
+
+    auto db_moved(std::move(db_copied));
+    assert(db_copied.empty());
+    assert(!db_moved.empty());
+    assert(db_moved.size() == MDDS_N_ELEMENTS(entries));
+
+    it = db_copied.find("bison");
+    assert(it == db_copied.end());
+    it = db_moved.find("bison");
+    assert(it != db_moved.end());
+    assert(it->first == "bison");
+    assert(it->second == 4);
+
+    it = db_moved.begin();
+    p_entries = entries;
+    p_entries_end = p_entries + db_moved.size();
+
+    for (; p_entries != p_entries_end; ++p_entries, ++it)
+    {
+        std::string key_expected(p_entries->key, p_entries->keylen);
+        assert(key_expected == it->first);
+        assert(p_entries->value == it->second);
+    }
 }
 
 void trie_test1()

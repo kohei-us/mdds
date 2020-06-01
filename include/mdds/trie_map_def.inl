@@ -561,6 +561,7 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
 {
     compact(other.m_root);
 }
+
 template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other) :
     m_packed(other.m_packed)
@@ -594,6 +595,15 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other
     } handler(*this);
 
     traverse_tree(handler);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(packed_trie_map&& other) :
+    m_value_store(std::move(other.m_value_store)), m_packed(std::move(other.m_packed))
+{
+    // Even the empty structure needs to have the root offset and the empty root record.
+    other.m_packed.resize(3, 0u); // root offset (0), root value (1), and root child count (2).
+    other.m_packed[0] = 1;
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -768,6 +778,12 @@ typename packed_trie_map<_KeyTrait,_ValueT>::size_type
 packed_trie_map<_KeyTrait,_ValueT>::size() const noexcept
 {
     return m_value_store.size();
+}
+
+template<typename _KeyTrait, typename _ValueT>
+bool packed_trie_map<_KeyTrait,_ValueT>::empty() const noexcept
+{
+    return m_value_store.empty();
 }
 
 template<typename _KeyTrait, typename _ValueT>

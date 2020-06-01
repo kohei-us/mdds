@@ -449,6 +449,8 @@ public:
 
     packed_trie_map(const packed_trie_map& other);
 
+    packed_trie_map(packed_trie_map&& other);
+
     packed_trie_map& operator= (const packed_trie_map& other);
 
     const_iterator begin() const;
@@ -508,6 +510,8 @@ public:
      * @return the number of entries in the map.
      */
     size_type size() const noexcept;
+
+    bool empty() const noexcept;
 
     void swap(packed_trie_map& other);
 
