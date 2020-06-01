@@ -451,7 +451,7 @@ public:
 
     packed_trie_map(packed_trie_map&& other);
 
-    packed_trie_map& operator= (const packed_trie_map& other);
+    packed_trie_map& operator= (packed_trie_map other);
 
     const_iterator begin() const;
 

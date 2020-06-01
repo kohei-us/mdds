@@ -593,6 +593,23 @@ void trie_packed_test_copying()
         { MDDS_ASCII("eva"),      11 },
     };
 
+    auto verify_content = [&entries](const map_type& db)
+    {
+        auto it = db.begin();
+        const map_type::entry* p_entries = entries;
+        const map_type::entry* p_entries_end = p_entries + db.size();
+        size_t n = std::distance(p_entries, p_entries_end);
+        assert(db.size() == n);
+        assert(!db.empty());
+
+        for (; p_entries != p_entries_end; ++p_entries, ++it)
+        {
+            std::string key_expected(p_entries->key, p_entries->keylen);
+            assert(key_expected == it->first);
+            assert(p_entries->value == it->second);
+        }
+    };
+
     auto db = mdds::make_unique<map_type>(entries, MDDS_N_ELEMENTS(entries));
     auto db_copied(*db);
     assert(db->size() == db_copied.size());
@@ -603,16 +620,7 @@ void trie_packed_test_copying()
     assert(it->first == "charlie");
     assert(it->second == 6);
 
-    it = db_copied.begin();
-    const map_type::entry* p_entries = entries;
-    const map_type::entry* p_entries_end = p_entries + db_copied.size();
-
-    for (; p_entries != p_entries_end; ++p_entries, ++it)
-    {
-        std::string key_expected(p_entries->key, p_entries->keylen);
-        assert(key_expected == it->first);
-        assert(p_entries->value == it->second);
-    }
+    verify_content(db_copied);
 
     auto db_moved(std::move(db_copied));
     assert(db_copied.empty());
@@ -626,16 +634,17 @@ void trie_packed_test_copying()
     assert(it->first == "bison");
     assert(it->second == 4);
 
-    it = db_moved.begin();
-    p_entries = entries;
-    p_entries_end = p_entries + db_moved.size();
+    verify_content(db_moved);
 
-    for (; p_entries != p_entries_end; ++p_entries, ++it)
-    {
-        std::string key_expected(p_entries->key, p_entries->keylen);
-        assert(key_expected == it->first);
-        assert(p_entries->value == it->second);
-    }
+    auto db_copy_assigned = db_moved;
+
+    verify_content(db_moved);
+    verify_content(db_copy_assigned);
+
+    auto db_move_assigned = std::move(db_moved);
+
+    verify_content(db_move_assigned);
+    assert(db_moved.empty());
 }
 
 void trie_test1()

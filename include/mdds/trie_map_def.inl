@@ -608,9 +608,9 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(packed_trie_map&& other) :
 
 template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map&
-packed_trie_map<_KeyTrait,_ValueT>::operator= (const packed_trie_map& other)
+packed_trie_map<_KeyTrait,_ValueT>::operator= (packed_trie_map other)
 {
-    packed_trie_map tmp(other);
+    packed_trie_map tmp(std::move(other));
     tmp.swap(*this);
     return *this;
 }
