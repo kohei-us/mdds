@@ -48,7 +48,7 @@ namespace trie {
 struct std_string_trait
 {
     /** type used to store a key value. */
-    typedef std::string key_type;
+    using key_type = std::string;
 
     /**
      * type used to build an intermediate key value, from which a final key
@@ -56,14 +56,14 @@ struct std_string_trait
      * content is contiguous in memory.  Its elements must be of
      * key_unit_type.
      */
-    typedef std::string key_buffer_type;
+    using key_buffer_type = std::string;
 
     /**
      * type that represents a single character inside a key or a key buffer
      * object.  A key object is expected to store a series of elements of this
      * type.
      */
-    typedef char key_unit_type;
+    using key_unit_type = char;
 
     /**
      * Function called to create and initialize a buffer object from a given
