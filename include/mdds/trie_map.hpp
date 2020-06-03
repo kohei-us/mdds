@@ -42,13 +42,13 @@ namespace mdds {
 namespace trie {
 
 /**
- * String trait that uses std::string as the key type.  This trait can be
- * used with mdds::trie_map or mdds::packed_trie_map.
+ * Template for a key type implemented using a typical STL container type.
  */
-struct std_string_trait
+template<typename ContainerT>
+struct basic_container_trait
 {
     /** type used to store a key value. */
-    using key_type = std::string;
+    using key_type = ContainerT;
 
     /**
      * type used to build an intermediate key value, from which a final key
@@ -56,14 +56,14 @@ struct std_string_trait
      * content is contiguous in memory.  Its elements must be of
      * key_unit_type.
      */
-    using key_buffer_type = std::string;
+    using key_buffer_type = key_type;
 
     /**
      * type that represents a single character inside a key or a key buffer
      * object.  A key object is expected to store a series of elements of this
      * type.
      */
-    using key_unit_type = char;
+    using key_unit_type = typename key_type::value_type;
 
     /**
      * Function called to create and initialize a buffer object from a given
@@ -138,6 +138,8 @@ struct std_string_trait
         return buf;
     }
 };
+
+using std_string_trait = basic_container_trait<std::string>;
 
 }
 
