@@ -586,6 +586,13 @@ void packed_trie_map<_KeyTrait,_ValueT>::compact(
 }
 
 template<typename _KeyTrait, typename _ValueT>
+packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map() : m_packed(3, 0u)
+{
+    // root offset (0), root value (1), and root child count (2).
+    m_packed[0] = 1;
+}
+
+template<typename _KeyTrait, typename _ValueT>
 packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
     const entry* entries, size_type entry_size)
 {

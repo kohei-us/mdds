@@ -437,10 +437,7 @@ private:
 
 public:
 
-    /**
-     * Not implemented.
-     */
-    packed_trie_map() = delete;
+    packed_trie_map();
 
     /**
      * Constructor that initializes the content from a static list of

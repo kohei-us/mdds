@@ -636,12 +636,16 @@ void trie_packed_test_copying()
 
     verify_content(db_moved);
 
-    auto db_copy_assigned = db_moved;
+    map_type db_copy_assigned;
+    assert(db_copy_assigned.empty());
+    db_copy_assigned = db_moved;
 
     verify_content(db_moved);
     verify_content(db_copy_assigned);
 
-    auto db_move_assigned = std::move(db_moved);
+    map_type db_move_assigned;
+    assert(db_move_assigned.empty());
+    db_move_assigned = std::move(db_moved);
 
     verify_content(db_move_assigned);
     assert(db_moved.empty());
