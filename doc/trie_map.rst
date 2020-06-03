@@ -264,8 +264,10 @@ Packed Trie Map
 .. doxygenclass:: mdds::packed_trie_map
    :members:
 
-String Trait
-^^^^^^^^^^^^
+Traits
+^^^^^^
 
-.. doxygenstruct:: mdds::trie::std_string_trait
+.. doxygenstruct:: mdds::trie::std_container_trait
    :members:
+
+.. doxygentypedef:: mdds::trie::std_string_trait
