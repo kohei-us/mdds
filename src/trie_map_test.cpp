@@ -1163,6 +1163,7 @@ void trie_test_copying()
     assert(db.size() == 2);
 
     {
+        // copy constructor
         auto db_copied(db);
         assert(db_copied.size() == 2);
 
@@ -1178,7 +1179,9 @@ void trie_test_copying()
     }
 
     {
-        auto db_copied = db;
+        // copy assignment
+        trie_map_type db_copied;
+        db_copied = db;
         assert(db_copied.size() == 2);
 
         auto it = db_copied.find("twenty");
@@ -1188,6 +1191,43 @@ void trie_test_copying()
 
         it = db_copied.find("twelve");
         assert(it != db_copied.end());
+        assert(it->first == "twelve");
+        assert(it->second == 12);
+    }
+
+    {
+        // move constructor
+        auto db_copied(db);
+        auto db_moved(std::move(db_copied));
+        assert(db_moved.size() == 2);
+        assert(db_copied.empty());
+
+        auto it = db_moved.find("twenty");
+        assert(it != db_moved.end());
+        assert(it->first == "twenty");
+        assert(it->second == 20);
+
+        it = db_moved.find("twelve");
+        assert(it != db_moved.end());
+        assert(it->first == "twelve");
+        assert(it->second == 12);
+    }
+
+    {
+        // move assignment
+        auto db_copied(db);
+        trie_map_type db_moved;
+        db_moved = std::move(db_copied);
+        assert(db_moved.size() == 2);
+        assert(db_copied.empty());
+
+        auto it = db_moved.find("twenty");
+        assert(it != db_moved.end());
+        assert(it->first == "twenty");
+        assert(it->second == 20);
+
+        it = db_moved.find("twelve");
+        assert(it != db_moved.end());
         assert(it->first == "twelve");
         assert(it->second == 12);
     }

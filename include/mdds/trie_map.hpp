@@ -182,6 +182,9 @@ private:
 
         trie_node();
         trie_node(const trie_node& other);
+        trie_node(trie_node&& other);
+
+        void swap(trie_node& other);
     };
 
     struct stack_item
@@ -215,11 +218,13 @@ public:
 
     trie_map(const trie_map& other);
 
+    trie_map(trie_map&& other);
+
     const_iterator begin() const;
 
     const_iterator end() const;
 
-    trie_map& operator= (const trie_map& other);
+    trie_map& operator= (trie_map other);
 
     void swap(trie_map& other);
 

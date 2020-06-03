@@ -47,8 +47,22 @@ trie_map<_KeyTrait,_ValueT>::trie_map::trie_node::trie_node() :
 
 template<typename _KeyTrait, typename _ValueT>
 trie_map<_KeyTrait,_ValueT>::trie_map::trie_node::trie_node(const trie_node& other) :
-    children(other.children), value(other.value), has_value(other.has_value)
+    children(other.children),
+    value(other.value),
+    has_value(other.has_value) {}
+
+template<typename _KeyTrait, typename _ValueT>
+trie_map<_KeyTrait,_ValueT>::trie_map::trie_node::trie_node(trie_node&& other) :
+    children(std::move(other.children)),
+    value(std::move(other.value)),
+    has_value(std::move(other.has_value)) {}
+
+template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::trie_map::trie_node::swap(trie_node& other)
 {
+    children.swap(other.children);
+    std::swap(value, other.value);
+    std::swap(has_value, other.has_value);
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -57,6 +71,10 @@ trie_map<_KeyTrait,_ValueT>::trie_map() {}
 template<typename _KeyTrait, typename _ValueT>
 trie_map<_KeyTrait,_ValueT>::trie_map(const trie_map& other) :
     m_root(other.m_root) {}
+
+template<typename _KeyTrait, typename _ValueT>
+trie_map<_KeyTrait,_ValueT>::trie_map(trie_map&& other) :
+    m_root(std::move(other.m_root)) {}
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::const_iterator
@@ -99,9 +117,9 @@ trie_map<_KeyTrait,_ValueT>::end() const
 }
 
 template<typename _KeyTrait, typename _ValueT>
-trie_map<_KeyTrait,_ValueT>& trie_map<_KeyTrait,_ValueT>::operator= (const trie_map& other)
+trie_map<_KeyTrait,_ValueT>& trie_map<_KeyTrait,_ValueT>::operator= (trie_map other)
 {
-    trie_map tmp(other);
+    trie_map tmp(std::move(other));
     tmp.swap(*this);
     return *this;
 }
@@ -109,7 +127,7 @@ trie_map<_KeyTrait,_ValueT>& trie_map<_KeyTrait,_ValueT>::operator= (const trie_
 template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::swap(trie_map& other)
 {
-    std::swap(m_root, other.m_root);
+    m_root.swap(other.m_root);
 }
 
 template<typename _KeyTrait, typename _ValueT>
