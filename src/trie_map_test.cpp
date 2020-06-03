@@ -1145,6 +1145,54 @@ void trie_test_key_as_input()
     assert(rit == results.end());
 }
 
+void trie_test_copying()
+{
+    stack_printer __stack_printer__("::trie_test_copying");
+
+    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    trie_map_type db;
+    assert(db.empty());
+
+    {
+        auto db_copied(db);
+        assert(db_copied.empty());
+    }
+
+    db.insert("twenty", 20);
+    db.insert("twelve", 12);
+    assert(db.size() == 2);
+
+    {
+        auto db_copied(db);
+        assert(db_copied.size() == 2);
+
+        auto it = db_copied.find("twenty");
+        assert(it != db_copied.end());
+        assert(it->first == "twenty");
+        assert(it->second == 20);
+
+        it = db_copied.find("twelve");
+        assert(it != db_copied.end());
+        assert(it->first == "twelve");
+        assert(it->second == 12);
+    }
+
+    {
+        auto db_copied = db;
+        assert(db_copied.size() == 2);
+
+        auto it = db_copied.find("twenty");
+        assert(it != db_copied.end());
+        assert(it->first == "twenty");
+        assert(it->second == 20);
+
+        it = db_copied.find("twelve");
+        assert(it != db_copied.end());
+        assert(it->first == "twelve");
+        assert(it->second == 12);
+    }
+}
+
 int main(int argc, char** argv)
 {
     try
@@ -1169,6 +1217,7 @@ int main(int argc, char** argv)
         trie_test_find_iterator();
         trie_test_prefix_search();
         trie_test_key_as_input();
+        trie_test_copying();
     }
     catch (const std::exception& e)
     {

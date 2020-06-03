@@ -42,7 +42,21 @@ using std::endl;
 namespace mdds {
 
 template<typename _KeyTrait, typename _ValueT>
+trie_map<_KeyTrait,_ValueT>::trie_map::trie_node::trie_node() :
+    value(value_type()), has_value(false) {}
+
+template<typename _KeyTrait, typename _ValueT>
+trie_map<_KeyTrait,_ValueT>::trie_map::trie_node::trie_node(const trie_node& other) :
+    children(other.children), value(other.value), has_value(other.has_value)
+{
+}
+
+template<typename _KeyTrait, typename _ValueT>
 trie_map<_KeyTrait,_ValueT>::trie_map() {}
+
+template<typename _KeyTrait, typename _ValueT>
+trie_map<_KeyTrait,_ValueT>::trie_map(const trie_map& other) :
+    m_root(other.m_root) {}
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::const_iterator
@@ -82,6 +96,20 @@ trie_map<_KeyTrait,_ValueT>::end() const
     node_stack.emplace_back(&m_root, m_root.children.end());
     return const_iterator(
         std::move(node_stack), key_buffer_type(), trie::detail::iterator_type::end);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+trie_map<_KeyTrait,_ValueT>& trie_map<_KeyTrait,_ValueT>::operator= (const trie_map& other)
+{
+    trie_map tmp(other);
+    tmp.swap(*this);
+    return *this;
+}
+
+template<typename _KeyTrait, typename _ValueT>
+void trie_map<_KeyTrait,_ValueT>::swap(trie_map& other)
+{
+    std::swap(m_root, other.m_root);
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -285,6 +313,12 @@ trie_map<_KeyTrait,_ValueT>::size() const
     size_type n = 0;
     count_values(n, m_root);
     return n;
+}
+
+template<typename _KeyTrait, typename _ValueT>
+bool trie_map<_KeyTrait,_ValueT>::empty() const noexcept
+{
+    return m_root.children.empty() && !m_root.has_value;
 }
 
 template<typename _KeyTrait, typename _ValueT>

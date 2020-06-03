@@ -35,6 +35,7 @@
 #include <string>
 #include <deque>
 #include <map>
+#include <memory>
 
 namespace mdds {
 
@@ -179,7 +180,8 @@ private:
         value_type value;
         bool has_value;
 
-        trie_node() : value(value_type()), has_value(false) {}
+        trie_node();
+        trie_node(const trie_node& other);
     };
 
     struct stack_item
@@ -211,9 +213,15 @@ public:
      */
     trie_map();
 
+    trie_map(const trie_map& other);
+
     const_iterator begin() const;
 
     const_iterator end() const;
+
+    trie_map& operator= (const trie_map& other);
+
+    void swap(trie_map& other);
 
     /**
      * Insert a new key-value pair.
@@ -298,6 +306,8 @@ public:
      * @return the number of entries in the map.
      */
     size_type size() const;
+
+    bool empty() const noexcept;
 
     /**
      * Empty the container.
