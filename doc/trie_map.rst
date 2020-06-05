@@ -7,11 +7,8 @@ Trie Maps
 Example
 -------
 
-Trie Map
-^^^^^^^^
-
 Populating Trie Map
-```````````````````
+^^^^^^^^^^^^^^^^^^^
 
 This section illustrates how to use :cpp:class:`~mdds::trie_map` to build a
 database of city populations and perform prefix searches.  In this example,
@@ -108,8 +105,8 @@ Note that the results are sorted in key's ascending order.
    Results from the prefix search are sorted in key's ascending order.
 
 
-Create Packed Trie Map from Trie Map
-````````````````````````````````````
+Creating Packed Trie Map from Trie Map
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 There is also another variant of trie called :cpp:class:`~mdds::packed_trie_map`
 which is designed to store all its data in contiguous memory region.  Unlike
