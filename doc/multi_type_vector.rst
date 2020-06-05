@@ -133,7 +133,7 @@ define either a class or a struct that has the following methods:
 
 as its public methods, then pass it as the second template argument when
 instantiating your :cpp:class:`~mdds::multi_type_vector` type.  Refer to
-:cpp:member:`mdds::multi_type_vector::event_func` for the details on when each
+:cpp:type:`mdds::multi_type_vector::event_func` for the details on when each
 event handler method gets triggered.
 
 The following code example demonstrates how this all works::
@@ -641,9 +641,9 @@ Compiling and executing this code should take only a fraction of a second.
 
 The only difference between the second example and the first one is that the
 second one uses an interator as a position hint to keep track of the position
-of the last modified block.  Each :cpp:member:`~mdds::multi_type_vector::set`
+of the last modified block.  Each :cpp:func:`~mdds::multi_type_vector::set`
 method call returns an iterator which can then be passed to the next
-:cpp:member:`~mdds::multi_type_vector::set` call as the position hint.
+:cpp:func:`~mdds::multi_type_vector::set` call as the position hint.
 Because an iterator object internally stores the location of the block the
 value was inserted to, this lets the method to start the block position lookup
 process from the last modified block, which in this example is always one
@@ -693,3 +693,28 @@ Element Blocks
 
 .. doxygenstruct:: mdds::mtv::element_block_func
    :members:
+
+Element Types
+^^^^^^^^^^^^^
+
+.. doxygentypedef:: mdds::mtv::element_t
+
+.. doxygenvariable:: mdds::mtv::element_type_empty
+.. doxygenvariable:: mdds::mtv::element_type_boolean
+.. doxygenvariable:: mdds::mtv::element_type_int8
+.. doxygenvariable:: mdds::mtv::element_type_uint8
+.. doxygenvariable:: mdds::mtv::element_type_int16
+.. doxygenvariable:: mdds::mtv::element_type_uint16
+.. doxygenvariable:: mdds::mtv::element_type_int32
+.. doxygenvariable:: mdds::mtv::element_type_uint32
+.. doxygenvariable:: mdds::mtv::element_type_int64
+.. doxygenvariable:: mdds::mtv::element_type_uint64
+.. doxygenvariable:: mdds::mtv::element_type_float
+.. doxygenvariable:: mdds::mtv::element_type_double
+.. doxygenvariable:: mdds::mtv::element_type_string
+.. doxygenvariable:: mdds::mtv::element_type_user_start
+
+Exceptions
+^^^^^^^^^^
+
+.. doxygenclass:: mdds::mtv::element_block_error
