@@ -71,6 +71,9 @@ struct std_string_trait
  * The string and integer types can be specified in the matrix trait
  * template parameter. To use std::string as the string type and int as the
  * integer type, use mdds::mtm::std_string_trait.
+ *
+ * Internally it uses mdds::multi_type_vector as its value store.  The
+ * element values are linearly stored in column-major order.
  */
 template<typename _MtxTrait>
 class multi_type_matrix
@@ -224,7 +227,9 @@ public:
 
     /**
      * Construct a matrix of specified size and initialize its elements with
-     * specified values.
+     * specified values.  The values are assigned to 2-dimensional matrix
+     * layout in column-major order.  The size of the value array must equal
+     * <code>rows</code> x <code>cols</code>.
      *
      * @param rows size of rows.
      * @param cols size of columns.
@@ -468,11 +473,15 @@ public:
     void set_empty(size_type row, size_type col);
 
     /**
-     * Set specified range of elements empty.
+     * Set a range of elements empty.  The range starts from the position
+     * specified by the <code>row</code> and <code>col</code>, and extends
+     * downward first then to the right.
      *
      * @param row row position of the first element.
      * @param col column position of the first element.
-     * @param length length of the range to set empty.
+     * @param length length of the range to set empty.  When the length is
+     *               greater than 1, the range extends downward first then to
+     *               the right.
      */
     void set_empty(size_type row, size_type col, size_type length);
 
@@ -670,8 +679,8 @@ public:
      * Resize the matrix to specified size.  This method supports resizing to
      * zero-sized matrix; however, either specifying the row or column size to
      * zero will resize the matrix to 0 x 0.  When resizing the matrix larger,
-     * empty elements will be inserted in the region where no existing
-     * elements exist.
+     * empty elements will be inserted in the region where no elements
+     * existed prior to the call.
      *
      * @param rows new row size
      * @param cols new column size
