@@ -658,11 +658,30 @@ void trie_packed_test_write_to()
 
     using map_type = packed_trie_map<trie::std_string_trait, int>;
 
-    map_type empty_db;
-    empty_db.dump_structure();
+    {
+        map_type empty_db;
+        empty_db.dump_structure();
 
-    std::ofstream of("test.bin");
-    empty_db.write_to(of);
+        std::ofstream of("test1.bin", ios::out | ios::binary);
+        empty_db.write_to(of);
+    }
+
+    {
+        map_type::entry entries[] =
+        {
+            { MDDS_ASCII("bruce"),     5 },
+            { MDDS_ASCII("charlie"),   6 },
+            { MDDS_ASCII("charlotte"), 7 },
+            { MDDS_ASCII("david"),     8 },
+            { MDDS_ASCII("dove"),      9 },
+        };
+
+        map_type db(entries, MDDS_N_ELEMENTS(entries));
+        db.dump_structure();
+
+        std::ofstream of("test2.bin", ios::out | ios::binary);
+        db.write_to(of);
+    }
 }
 
 void trie_test1()
