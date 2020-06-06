@@ -529,6 +529,8 @@ public:
 
     void swap(packed_trie_map& other);
 
+    void write_to(std::ostream& os) const;
+
     /**
      * Dump the structure of the trie content for debugging.
      */
@@ -559,10 +561,13 @@ private:
     template<typename _Handler>
     void traverse_tree(_Handler hdl) const;
 
+    template<typename _Handler>
+    void traverse_buffer(_Handler hdl) const;
+
 #ifdef MDDS_TRIE_MAP_DEBUG
     void dump_node(key_buffer_type& buffer, const trie_node& node) const;
     void dump_trie(const trie_node& root) const;
-    void dump_packed_trie(const std::vector<uintptr_t>& packed) const;
+    void dump_packed_trie() const;
 #endif
 
 private:

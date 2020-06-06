@@ -388,39 +388,46 @@ void packed_trie_map<_KeyTrait,_ValueT>::dump_trie(const trie_node& root) const
 }
 
 template<typename _KeyTrait, typename _ValueT>
-void packed_trie_map<_KeyTrait,_ValueT>::dump_packed_trie(const std::vector<uintptr_t>& packed) const
+void packed_trie_map<_KeyTrait,_ValueT>::dump_packed_trie() const
 {
-    using namespace std;
+    cout << "packed size: " << m_packed.size() << endl;
 
-    cout << "packed size: " << packed.size() << endl;
-
-    size_t n = packed.size();
-    size_t i = 0;
-    cout << std::setw(4) << i << ": root node offset: " << packed[i] << endl;
-    ++i;
-
-    while (i < n)
+    struct _handler
     {
-        size_t this_offset = i;
-        const value_type* value = reinterpret_cast<const value_type*>(packed[i]);
-        cout << std::setw(4) << i << ": node value pointer: " << value << endl;
-        ++i;
+        size_t this_node_offset = 0;
 
-        size_t index_size = packed[i];
-        cout << std::setw(4) << i << ": index size: " << index_size << endl;
-        ++i;
-        index_size /= 2;
-
-        for (size_t j = 0; j < index_size; ++j)
+        void root_offset(size_t i, const uintptr_t& v) const
         {
-            key_unit_type key = packed[i];
-            cout << std::setw(4) << i << ": key: " << key << endl;
-            ++i;
-            size_t offset = packed[i];
-            cout << std::setw(4) << i << ": offset: " << offset << " (abs: " << (this_offset-offset) << ")" << endl;
-            ++i;
+            cout << std::setw(4) << i << ": root node offset: " << v << endl;
         }
-    }
+
+        void node_value(size_t i, const uintptr_t& v)
+        {
+            this_node_offset = i;
+            const value_type* value = reinterpret_cast<const value_type*>(v);
+            cout << std::setw(4) << i << ": node value pointer: " << value << endl;
+        }
+
+        void node_index_size(size_t i, const uintptr_t& v) const
+        {
+            cout << std::setw(4) << i << ": index size: " << size_t(v) << endl;
+        }
+
+        void node_child_key(size_t i, const uintptr_t& v) const
+        {
+            key_unit_type key = v;
+            cout << std::setw(4) << i << ": key: " << key << endl;
+        }
+
+        void node_child_offset(size_t i, const uintptr_t& v) const
+        {
+            size_t offset = v;
+            cout << std::setw(4) << i << ": offset: " << offset << " (abs: " << (this_node_offset-offset) << ")" << endl;
+        }
+
+    } handler;
+
+    traverse_buffer(handler);
 }
 
 #endif
@@ -610,7 +617,7 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
     // Compact the trie into a packed array.
     compact(root);
 #if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TRIE_MAP_DEBUG_DUMP_PACKED)
-    dump_packed_trie(m_packed);
+    dump_packed_trie();
 #endif
 }
 
@@ -853,10 +860,34 @@ void packed_trie_map<_KeyTrait,_ValueT>::swap(packed_trie_map& other)
 }
 
 template<typename _KeyTrait, typename _ValueT>
+void packed_trie_map<_KeyTrait,_ValueT>::write_to(std::ostream& os) const
+{
+    struct _handler
+    {
+        std::ostream& m_os;
+
+        void root_offset(size_t i, const uintptr_t& v) const {}
+
+        void node_value(size_t i, const uintptr_t& v) const {}
+
+        void node_index_size(size_t i, const uintptr_t& v) const {}
+
+        void node_child_key(size_t i, const uintptr_t& v) const {}
+
+        void node_child_offset(size_t i, const uintptr_t& v) const {}
+
+        _handler(std::ostream& os) : m_os(os) {}
+
+    } handler(os);
+
+    traverse_buffer(handler);
+}
+
+template<typename _KeyTrait, typename _ValueT>
 void packed_trie_map<_KeyTrait,_ValueT>::dump_structure() const
 {
 #ifdef MDDS_TRIE_MAP_DEBUG
-    dump_packed_trie(m_packed);
+    dump_packed_trie();
 
     cout << "--" << endl;
     cout << "entry size: " << m_value_store.size() << endl;
@@ -1126,6 +1157,35 @@ void packed_trie_map<_KeyTrait,_ValueT>::traverse_tree(_Handler hdl) const
     }
 
     hdl.end();
+}
+
+template<typename _KeyTrait, typename _ValueT>
+template<typename _Handler>
+void packed_trie_map<_KeyTrait,_ValueT>::traverse_buffer(_Handler hdl) const
+{
+    size_t n = m_packed.size();
+    size_t i = 0;
+    hdl.root_offset(i, m_packed[i]);
+    ++i;
+
+    while (i < n)
+    {
+        hdl.node_value(i, m_packed[i]);
+        ++i;
+
+        hdl.node_index_size(i, m_packed[i]);
+        size_t index_size = m_packed[i];
+        ++i;
+        index_size /= 2;
+
+        for (size_t j = 0; j < index_size; ++j)
+        {
+            hdl.node_child_key(i, m_packed[i]);
+            ++i;
+            hdl.node_child_offset(i, m_packed[i]);
+            ++i;
+        }
+    }
 }
 
 }

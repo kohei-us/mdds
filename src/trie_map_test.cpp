@@ -35,6 +35,7 @@
 #include "mdds/global.hpp"
 
 #include <iterator>
+#include <fstream>
 
 using namespace std;
 using namespace mdds;
@@ -651,6 +652,19 @@ void trie_packed_test_copying()
     assert(db_moved.empty());
 }
 
+void trie_packed_test_write_to()
+{
+    stack_printer __stack_printer__("::trie_packed_test_write_to");
+
+    using map_type = packed_trie_map<trie::std_string_trait, int>;
+
+    map_type empty_db;
+    empty_db.dump_structure();
+
+    std::ofstream of("test.bin");
+    empty_db.write_to(of);
+}
+
 void trie_test1()
 {
     stack_printer __stack_printer__("::trie_test1");
@@ -1252,6 +1266,7 @@ int main(int argc, char** argv)
         trie_packed_test_prefix_search1();
         trie_packed_test_key_as_input();
         trie_packed_test_copying();
+        trie_packed_test_write_to();
 
         trie_test1();
 
