@@ -147,7 +147,7 @@ struct basic_value_serializer
 {
     static constexpr bool variable_size = false;
 
-    static void write(std::ostream& os, T v)
+    static void write(std::ostream& os, const T& v)
     {
         size_t s = sizeof(T);
         const char* p = reinterpret_cast<const char*>(&v);
