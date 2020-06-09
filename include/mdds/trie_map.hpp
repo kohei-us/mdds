@@ -141,6 +141,20 @@ struct std_container_trait
 
 using std_string_trait = std_container_trait<std::string>;
 
+/** Serializer for primitive data types. */
+template<typename T>
+struct basic_value_serializer
+{
+    static constexpr bool variable_size = false;
+
+    static void write(std::ostream& os, T v)
+    {
+        size_t s = sizeof(T);
+        const char* p = reinterpret_cast<const char*>(&v);
+        os.write(p, s);
+    }
+};
+
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -529,6 +543,7 @@ public:
 
     void swap(packed_trie_map& other);
 
+    template<typename _Func>
     void write_to(std::ostream& os) const;
 
     /**

@@ -868,15 +868,44 @@ void packed_trie_map<_KeyTrait,_ValueT>::swap(packed_trie_map& other)
 }
 
 template<typename _KeyTrait, typename _ValueT>
+template<typename _Func>
 void packed_trie_map<_KeyTrait,_ValueT>::write_to(std::ostream& os) const
 {
-    char c = sizeof(uintptr_t);
-    os.write(&c, 1); // write the element size in the first byte.
+    uint16_t flags = 0x0000; // write 2-byte flags
+    flags |= (0x0001 & _Func::variable_size);
+    os.write(reinterpret_cast<const char*>(&flags), 2);
+
+    // Write the number of values (4-bytes).
+    uint32_t value_count = m_value_store.size();
+    os.write(reinterpret_cast<const char*>(&value_count), 4);
+
+    using value_addrs_type = std::map<const void*, size_t>;
+    value_addrs_type value_addrs;
+
+    if (_Func::variable_size)
+    {
+        assert(!"Implement this!");
+    }
+    else
+    {
+        // Write the size of constant-size values.
+        uint16_t size = sizeof(value_type);
+        os.write(reinterpret_cast<const char*>(&size), 2);
+
+        // Dump the stored values first.
+        size_t pos = 0;
+        for (const value_type& v : m_value_store)
+        {
+            _Func::write(os, v);
+            value_addrs.insert({&v, pos++});
+        }
+    }
 
     struct _handler
     {
         size_t const m_elem_size = sizeof(uintptr_t);
         std::ostream& m_os;
+        const value_addrs_type& m_value_addrs;
         const packed_trie_map& m_parent;
 
         inline void write(uintptr_t v) const
@@ -896,7 +925,13 @@ void packed_trie_map<_KeyTrait,_ValueT>::write_to(std::ostream& os) const
         {
             const value_type* p = reinterpret_cast<const value_type*>(v);
             if (p)
-                write(0); // TODO : decide how to write node values.
+            {
+                auto it = m_value_addrs.find(p);
+                assert(it != m_value_addrs.cend());
+                uintptr_t index = it->second;
+
+                write(index);
+            }
             else
                 write(0);
         }
@@ -922,10 +957,10 @@ void packed_trie_map<_KeyTrait,_ValueT>::write_to(std::ostream& os) const
             write(v);
         }
 
-        _handler(std::ostream& os, const packed_trie_map& parent) :
-            m_os(os), m_parent(parent) {}
+        _handler(std::ostream& os, const value_addrs_type& value_addrs, const packed_trie_map& parent) :
+            m_os(os), m_value_addrs(value_addrs), m_parent(parent) {}
 
-    } handler(os, *this);
+    } handler(os, value_addrs, *this);
 
     traverse_buffer(handler);
 }

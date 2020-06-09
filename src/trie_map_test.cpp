@@ -663,7 +663,7 @@ void trie_packed_test_write_to()
         empty_db.dump_structure();
 
         std::ofstream of("test1.bin", ios::out | ios::binary);
-        empty_db.write_to(of);
+        empty_db.write_to<trie::basic_value_serializer<int>>(of);
     }
 
     {
@@ -680,7 +680,7 @@ void trie_packed_test_write_to()
         db.dump_structure();
 
         std::ofstream of("test2.bin", ios::out | ios::binary);
-        db.write_to(of);
+        db.write_to<trie::basic_value_serializer<int>>(of);
     }
 }
 
