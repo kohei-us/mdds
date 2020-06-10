@@ -869,7 +869,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::swap(packed_trie_map& other)
 
 template<typename _KeyTrait, typename _ValueT>
 template<typename _Func>
-void packed_trie_map<_KeyTrait,_ValueT>::write_to(std::ostream& os) const
+void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
 {
     uint16_t flags = 0x0000; // write 2-byte flags
     flags |= (0x0001 & _Func::variable_size);

@@ -652,9 +652,9 @@ void trie_packed_test_copying()
     assert(db_moved.empty());
 }
 
-void trie_packed_test_write_to()
+void trie_packed_test_save_and_load_state()
 {
-    stack_printer __stack_printer__("::trie_packed_test_write_to");
+    stack_printer __stack_printer__("::trie_packed_test_save_and_load_state");
 
     using map_type = packed_trie_map<trie::std_string_trait, int>;
 
@@ -663,7 +663,7 @@ void trie_packed_test_write_to()
         empty_db.dump_structure();
 
         std::ofstream of("test1.bin", ios::out | ios::binary);
-        empty_db.write_to<trie::basic_value_serializer<int>>(of);
+        empty_db.save_state<trie::basic_value_serializer<int>>(of);
     }
 
     {
@@ -680,7 +680,7 @@ void trie_packed_test_write_to()
         db.dump_structure();
 
         std::ofstream of("test2.bin", ios::out | ios::binary);
-        db.write_to<trie::basic_value_serializer<int>>(of);
+        db.save_state<trie::basic_value_serializer<int>>(of);
     }
 }
 
@@ -1285,7 +1285,7 @@ int main(int argc, char** argv)
         trie_packed_test_prefix_search1();
         trie_packed_test_key_as_input();
         trie_packed_test_copying();
-        trie_packed_test_write_to();
+        trie_packed_test_save_and_load_state();
 
         trie_test1();
 

@@ -544,7 +544,7 @@ public:
     void swap(packed_trie_map& other);
 
     template<typename _Func>
-    void write_to(std::ostream& os) const;
+    void save_state(std::ostream& os) const;
 
     /**
      * Dump the structure of the trie content for debugging.
