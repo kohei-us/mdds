@@ -734,8 +734,47 @@ packed_trie_map<_KeyTrait,_ValueT>::operator= (packed_trie_map other)
 }
 
 template<typename _KeyTrait, typename _ValueT>
+bool packed_trie_map<_KeyTrait,_ValueT>::operator== (const packed_trie_map& other) const
+{
+    if (m_value_store.size() != other.m_value_store.size())
+        return false;
+
+    // Since the two containers are of the same size, the iterator ranges should
+    // be the same as well.
+    auto left = cbegin(), right = other.cbegin();
+    for (; left != cend(); ++left, ++right)
+    {
+        assert(right != other.cend());
+        if (*left != *right)
+            return false;
+    }
+
+    return true;
+}
+
+template<typename _KeyTrait, typename _ValueT>
+bool packed_trie_map<_KeyTrait,_ValueT>::operator!= (const packed_trie_map& other) const
+{
+    return !operator== (other);
+}
+
+template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
 packed_trie_map<_KeyTrait,_ValueT>::begin() const
+{
+    return cbegin();
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
+packed_trie_map<_KeyTrait,_ValueT>::end() const
+{
+    return cend();
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
+packed_trie_map<_KeyTrait,_ValueT>::cbegin() const
 {
     using ktt = key_trait_type;
 
@@ -782,7 +821,7 @@ packed_trie_map<_KeyTrait,_ValueT>::begin() const
 
 template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
-packed_trie_map<_KeyTrait,_ValueT>::end() const
+packed_trie_map<_KeyTrait,_ValueT>::cend() const
 {
     node_stack_type node_stack = get_root_stack();
     node_stack.back().child_pos = node_stack.back().child_end;

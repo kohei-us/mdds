@@ -478,9 +478,17 @@ public:
 
     packed_trie_map& operator= (packed_trie_map other);
 
+    bool operator== (const packed_trie_map& other) const;
+
+    bool operator!= (const packed_trie_map& other) const;
+
     const_iterator begin() const;
 
     const_iterator end() const;
+
+    const_iterator cbegin() const;
+
+    const_iterator cend() const;
 
     /**
      * Find a value associated with a specified key.

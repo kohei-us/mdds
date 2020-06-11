@@ -670,6 +670,7 @@ void trie_packed_test_save_and_load_state()
             std::ifstream infile("test1.bin", ios::binary);
             map_type restored;
             restored.load_state<trie::basic_value_serializer<int>>(infile);
+            assert(restored == empty_db);
         }
     }
 
@@ -694,6 +695,7 @@ void trie_packed_test_save_and_load_state()
             std::ifstream infile("test2.bin", ios::binary);
             map_type restored;
             restored.load_state<trie::basic_value_serializer<int>>(infile);
+            assert(restored == db);
         }
     }
 }
