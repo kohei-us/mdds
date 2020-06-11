@@ -147,12 +147,9 @@ struct basic_value_serializer
 {
     static constexpr bool variable_size = false;
 
-    static void write(std::ostream& os, const T& v)
-    {
-        size_t s = sizeof(T);
-        const char* p = reinterpret_cast<const char*>(&v);
-        os.write(p, s);
-    }
+    static void write(std::ostream& os, const T& v);
+
+    static void read(std::istream& is, T& v);
 };
 
 }
@@ -545,6 +542,9 @@ public:
 
     template<typename _Func>
     void save_state(std::ostream& os) const;
+
+    template<typename _Func>
+    void load_state(std::istream& is);
 
     /**
      * Dump the structure of the trie content for debugging.

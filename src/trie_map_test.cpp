@@ -660,10 +660,17 @@ void trie_packed_test_save_and_load_state()
 
     {
         map_type empty_db;
-        empty_db.dump_structure();
 
-        std::ofstream of("test1.bin", ios::out | ios::binary);
-        empty_db.save_state<trie::basic_value_serializer<int>>(of);
+        {
+            std::ofstream outfile("test1.bin", ios::binary);
+            empty_db.save_state<trie::basic_value_serializer<int>>(outfile);
+        }
+
+        {
+            std::ifstream infile("test1.bin", ios::binary);
+            map_type restored;
+            restored.load_state<trie::basic_value_serializer<int>>(infile);
+        }
     }
 
     {
@@ -677,10 +684,17 @@ void trie_packed_test_save_and_load_state()
         };
 
         map_type db(entries, MDDS_N_ELEMENTS(entries));
-        db.dump_structure();
 
-        std::ofstream of("test2.bin", ios::out | ios::binary);
-        db.save_state<trie::basic_value_serializer<int>>(of);
+        {
+            std::ofstream of("test2.bin", ios::binary);
+            db.save_state<trie::basic_value_serializer<int>>(of);
+        }
+
+        {
+            std::ifstream infile("test2.bin", ios::binary);
+            map_type restored;
+            restored.load_state<trie::basic_value_serializer<int>>(infile);
+        }
     }
 }
 

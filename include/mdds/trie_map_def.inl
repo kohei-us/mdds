@@ -41,6 +41,42 @@ using std::endl;
 
 namespace mdds {
 
+namespace detail { namespace trie {
+
+union bin_value
+{
+    char buffer[8];
+    uint8_t ui8;
+    uint16_t ui16;
+    uint32_t ui32;
+    uint64_t ui64;
+};
+
+}}
+
+namespace trie {
+
+template<typename T>
+void basic_value_serializer<T>::write(std::ostream& os, const T& v)
+{
+    size_t s = sizeof(T);
+    const char* p = reinterpret_cast<const char*>(&v);
+    os.write(p, s);
+}
+
+template<typename T>
+void basic_value_serializer<T>::read(std::istream& is, T& v)
+{
+    size_t s = sizeof(T);
+    mdds::detail::trie::bin_value bv;
+    is.read(bv.buffer, s);
+
+    const T* p = reinterpret_cast<const T*>(bv.buffer);
+    v = *p;
+}
+
+}
+
 template<typename _KeyTrait, typename _ValueT>
 trie_map<_KeyTrait,_ValueT>::trie_map::trie_node::trie_node() :
     value(value_type()), has_value(false) {}
@@ -871,13 +907,15 @@ template<typename _KeyTrait, typename _ValueT>
 template<typename _Func>
 void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
 {
-    uint16_t flags = 0x0000; // write 2-byte flags
-    flags |= (0x0001 & _Func::variable_size);
-    os.write(reinterpret_cast<const char*>(&flags), 2);
+    detail::trie::bin_value bv;
+
+    bv.ui16 = 0x0000; // write 2-byte flags
+    bv.ui16 |= (0x0001 & _Func::variable_size);
+    os.write(bv.buffer, 2);
 
     // Write the number of values (4-bytes).
-    uint32_t value_count = m_value_store.size();
-    os.write(reinterpret_cast<const char*>(&value_count), 4);
+    bv.ui32 = m_value_store.size();
+    os.write(bv.buffer, 4);
 
     using value_addrs_type = std::map<const void*, size_t>;
     value_addrs_type value_addrs;
@@ -889,8 +927,8 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
     else
     {
         // Write the size of constant-size values.
-        uint16_t size = sizeof(value_type);
-        os.write(reinterpret_cast<const char*>(&size), 2);
+        bv.ui16 = sizeof(value_type);
+        os.write(bv.buffer, 2);
 
         // Dump the stored values first.
         size_t pos = 0;
@@ -900,6 +938,18 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
             value_addrs.insert({&v, pos++});
         }
     }
+
+    // Write 0xFF to signify the end of the value section.
+    bv.ui8 = 0xFF;
+    os.write(bv.buffer, 1);
+
+    // Write the size of uintptr_t.  It must be either 4 or 8.
+    bv.ui8 = sizeof(uintptr_t);
+    os.write(bv.buffer, 1);
+
+    // Write the size of the packed blob.
+    bv.ui64 = m_packed.size();
+    os.write(bv.buffer, 8);
 
     struct _handler
     {
@@ -926,6 +976,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
             const value_type* p = reinterpret_cast<const value_type*>(v);
             if (p)
             {
+                // Replace the pointer of the value with its index into the value store.
                 auto it = m_value_addrs.find(p);
                 assert(it != m_value_addrs.cend());
                 uintptr_t index = it->second;
@@ -933,7 +984,14 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
                 write(index);
             }
             else
-                write(0);
+            {
+                // Use the numeric value with all bits set, to encode 0.
+                // Because the index of the value is 0-based, we can't just
+                // leave it as zero.
+                uintptr_t max_bits = 0;
+                max_bits = ~max_bits;
+                write(max_bits);
+            }
         }
 
         /**
@@ -961,6 +1019,119 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
             m_os(os), m_value_addrs(value_addrs), m_parent(parent) {}
 
     } handler(os, value_addrs, *this);
+
+    traverse_buffer(handler);
+
+    // Write 0xFF to signify the end of the packed blob.
+    bv.ui8 = 0xFF;
+    os.write(bv.buffer, 1);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+template<typename _Func>
+void packed_trie_map<_KeyTrait,_ValueT>::load_state(std::istream& is)
+{
+    detail::trie::bin_value bv;
+    is.read(bv.buffer, 2);
+
+    uint16_t flags = bv.ui16;
+    bool variable_size = (flags & 0x0001) != 0;
+
+    is.read(bv.buffer, 4);
+    uint32_t value_count = bv.ui32;
+
+    if (variable_size)
+    {
+        assert(!"Implement this!");
+    }
+    else
+    {
+        is.read(bv.buffer, 2);
+        size_t size = bv.ui16;
+
+        if (size != sizeof(value_type))
+        {
+            std::ostringstream os;
+            os << "wrong size of fixed value type (expected: " << sizeof(value_type) << "; actual: " << ")";
+            throw std::invalid_argument(os.str());
+        }
+
+        value_store_type value_store;
+
+        for (uint32_t i = 0; i < value_count; ++i)
+        {
+            value_type v;
+            _Func::read(is, v);
+
+            value_store.push_back(std::move(v));
+        }
+
+        m_value_store.swap(value_store);
+    }
+
+    // There should be a check byte of 0xFF.
+    is.read(bv.buffer, 1);
+    if (bv.ui8 != 0xFF)
+        throw std::invalid_argument("failed to find the check byte at the end of the value section.");
+
+    // Size of uintptr_t
+    is.read(bv.buffer, 1);
+    size_t ptr_size = bv.ui8;
+
+    if (ptr_size != sizeof(uintptr_t))
+        throw std::invalid_argument("size of uintptr_t is different.");
+
+    // Size of the packed blob.
+    is.read(bv.buffer, 8);
+
+    size_t n = bv.ui64;
+    packed_type packed;
+    packed.reserve(n);
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        is.read(bv.buffer, sizeof(uintptr_t));
+        const uintptr_t* p = reinterpret_cast<const uintptr_t*>(bv.buffer);
+        packed.push_back(*p);
+    }
+
+    // the last byte must be 0xFF.
+    is.read(bv.buffer, 1);
+    if (bv.ui8 != 0xFF)
+        throw std::invalid_argument("failed to find the check byte at the end of the packed blob section.");
+
+    m_packed.swap(packed);
+
+    struct _handler
+    {
+        uintptr_t m_max_value;
+        packed_trie_map& m_parent;
+
+        void root_offset(size_t /*i*/, const uintptr_t& /*v*/) const {}
+
+        void node_value(size_t i, const uintptr_t& v) const
+        {
+            if (v == m_max_value)
+                m_parent.m_packed[i] = 0;
+            else
+            {
+                // Replace the value index with its memory address.
+                const value_type& val = m_parent.m_value_store[v];
+                const uintptr_t addr = reinterpret_cast<const uintptr_t>(&val);
+                m_parent.m_packed[i] = addr;
+            }
+        }
+
+        void node_index_size(size_t /*i*/, const uintptr_t& /*v*/) const {}
+        void node_child_key(size_t /*i*/, const uintptr_t& /*v*/) const {}
+        void node_child_offset(size_t /*i*/, const uintptr_t& /*v*/) const {}
+
+        _handler(packed_trie_map& parent) : m_max_value(0), m_parent(parent)
+        {
+            m_max_value = ~m_max_value;
+        }
+
+    } handler(*this);
 
     traverse_buffer(handler);
 }
