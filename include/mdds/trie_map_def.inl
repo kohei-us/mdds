@@ -60,7 +60,7 @@ namespace trie {
 template<typename T>
 void basic_value_serializer<T>::write(std::ostream& os, const T& v)
 {
-    size_t s = sizeof(T);
+    constexpr size_t s = sizeof(T);
     const char* p = reinterpret_cast<const char*>(&v);
     os.write(p, s);
 }
@@ -68,11 +68,11 @@ void basic_value_serializer<T>::write(std::ostream& os, const T& v)
 template<typename T>
 void basic_value_serializer<T>::read(std::istream& is, T& v)
 {
-    size_t s = sizeof(T);
-    mdds::detail::trie::bin_value bv;
-    is.read(bv.buffer, s);
+    constexpr size_t s = sizeof(T);
+    char buffer[s];
+    is.read(buffer, s);
 
-    const T* p = reinterpret_cast<const T*>(bv.buffer);
+    const T* p = reinterpret_cast<const T*>(buffer);
     v = *p;
 }
 
