@@ -31,6 +31,7 @@
 #include <cassert>
 #include <algorithm>
 #include <memory>
+#include <sstream>
 
 #ifdef MDDS_TRIE_MAP_DEBUG
 #include <iostream>
