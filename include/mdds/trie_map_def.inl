@@ -69,11 +69,18 @@ template<typename T>
 void basic_value_serializer<T>::read(std::istream& is, T& v)
 {
     constexpr size_t s = sizeof(T);
-    char buffer[s];
-    is.read(buffer, s);
 
-    const T* p = reinterpret_cast<const T*>(buffer);
-    v = *p;
+    union
+    {
+        char buffer[s];
+        T v;
+
+    } buf;
+
+    is.read(buf.buffer, s);
+    assert(is.gcount() == s);
+
+    v = buf.v;
 }
 
 }
