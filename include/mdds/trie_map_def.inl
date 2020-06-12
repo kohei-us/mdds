@@ -865,7 +865,7 @@ template<typename _KeyTrait, typename _ValueT>
 typename packed_trie_map<_KeyTrait,_ValueT>::const_iterator
 packed_trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) const
 {
-    if (m_packed.empty())
+    if (m_value_store.empty())
         return end();
 
     const key_unit_type* key_end = input + len;
@@ -916,7 +916,7 @@ packed_trie_map<_KeyTrait,_ValueT>::prefix_search(const key_unit_type* prefix, s
 {
     using ktt = key_trait_type;
 
-    if (m_packed.empty())
+    if (m_value_store.empty())
         return search_results(nullptr, key_buffer_type());
 
     const key_unit_type* prefix_end = prefix + len;
@@ -1385,9 +1385,6 @@ template<typename _KeyTrait, typename _ValueT>
 template<typename _Handler>
 void packed_trie_map<_KeyTrait,_ValueT>::traverse_tree(_Handler hdl) const
 {
-    if (m_packed.empty())
-        return;
-
     node_stack_type node_stack = get_root_stack();
     stack_item* si = &node_stack.back();
     if (si->child_pos == si->child_end)
