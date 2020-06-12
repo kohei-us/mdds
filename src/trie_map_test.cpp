@@ -613,6 +613,7 @@ void trie_packed_test_copying()
 
     auto db = mdds::make_unique<map_type>(entries, MDDS_N_ELEMENTS(entries));
     auto db_copied(*db);
+    assert(*db == db_copied);
     assert(db->size() == db_copied.size());
     db.reset();
 
@@ -640,6 +641,7 @@ void trie_packed_test_copying()
     map_type db_copy_assigned;
     assert(db_copy_assigned.empty());
     db_copy_assigned = db_moved;
+    assert(db_copy_assigned == db_moved);
 
     verify_content(db_moved);
     verify_content(db_copy_assigned);
@@ -647,6 +649,7 @@ void trie_packed_test_copying()
     map_type db_move_assigned;
     assert(db_move_assigned.empty());
     db_move_assigned = std::move(db_moved);
+    assert(db_move_assigned != db_moved);
 
     verify_content(db_move_assigned);
     assert(db_moved.empty());
@@ -694,6 +697,7 @@ void trie_packed_test_save_and_load_state()
         {
             std::ifstream infile("test2.bin", ios::binary);
             map_type restored;
+            assert(restored != db);
             restored.load_state<trie::basic_value_serializer<int>>(infile);
             assert(restored == db);
         }
