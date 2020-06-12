@@ -655,6 +655,76 @@ void trie_packed_test_copying()
     assert(db_moved.empty());
 }
 
+void trie_packed_test_non_equal()
+{
+    stack_printer __stack_printer__("::trie_packed_test_non_equal");
+
+    using map_type = packed_trie_map<trie::std_string_trait, int>;
+
+    map_type::entry entries1[] =
+    {
+        { MDDS_ASCII("aaron"),     0 },
+        { MDDS_ASCII("al"),        1 },
+        { MDDS_ASCII("aldi"),      2 },
+        { MDDS_ASCII("andy"),      3 },
+        { MDDS_ASCII("bison"),     4 },
+        { MDDS_ASCII("bruce"),     5 },
+        { MDDS_ASCII("charlie"),   6 },
+        { MDDS_ASCII("charlotte"), 7 },
+        { MDDS_ASCII("david"),     8 },
+        { MDDS_ASCII("dove"),      9 },
+        { MDDS_ASCII("e"),        10 },
+        { MDDS_ASCII("eva"),      11 },
+    };
+
+    map_type::entry entries2[] =
+    {
+        { MDDS_ASCII("aaron"),     0 },
+        { MDDS_ASCII("al"),        1 },
+        { MDDS_ASCII("aldi"),      2 },
+        { MDDS_ASCII("andy"),      3 },
+        { MDDS_ASCII("bison"),     4 },
+        { MDDS_ASCII("bruce"),     2 }, // different value
+        { MDDS_ASCII("charlie"),   6 },
+        { MDDS_ASCII("charlotte"), 7 },
+        { MDDS_ASCII("david"),     8 },
+        { MDDS_ASCII("dove"),      9 },
+        { MDDS_ASCII("e"),        10 },
+        { MDDS_ASCII("eva"),      11 },
+    };
+
+    // fewer entries
+    map_type::entry entries3[] =
+    {
+        { MDDS_ASCII("aaron"),     0 },
+        { MDDS_ASCII("al"),        1 },
+        { MDDS_ASCII("aldi"),      2 },
+        { MDDS_ASCII("andy"),      3 },
+        { MDDS_ASCII("bison"),     4 },
+        { MDDS_ASCII("bruce"),     5 },
+        { MDDS_ASCII("charlie"),   6 },
+        { MDDS_ASCII("charlotte"), 7 },
+        { MDDS_ASCII("david"),     8 },
+        { MDDS_ASCII("dove"),      9 },
+        { MDDS_ASCII("e"),        10 },
+    };
+
+    map_type db1(entries1, MDDS_N_ELEMENTS(entries1));
+    map_type db2(entries2, MDDS_N_ELEMENTS(entries2));
+    map_type db3(entries3, MDDS_N_ELEMENTS(entries3));
+    assert(db1 != db2);
+    assert(db1 != db3);
+    assert(db2 != db3);
+
+    map_type db4(entries1, MDDS_N_ELEMENTS(entries1));
+    map_type db5(entries2, MDDS_N_ELEMENTS(entries2));
+    map_type db6(entries3, MDDS_N_ELEMENTS(entries3));
+
+    assert(db1 == db4);
+    assert(db2 == db5);
+    assert(db3 == db6);
+}
+
 void trie_packed_test_save_and_load_state()
 {
     stack_printer __stack_printer__("::trie_packed_test_save_and_load_state");
@@ -1305,6 +1375,7 @@ int main(int argc, char** argv)
         trie_packed_test_prefix_search1();
         trie_packed_test_key_as_input();
         trie_packed_test_copying();
+        trie_packed_test_non_equal();
         trie_packed_test_save_and_load_state();
 
         trie_test1();
