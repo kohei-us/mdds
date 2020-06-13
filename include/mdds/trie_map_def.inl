@@ -66,9 +66,10 @@ void basic_value_serializer<T>::write(std::ostream& os, const T& v)
 }
 
 template<typename T>
-void basic_value_serializer<T>::read(std::istream& is, T& v)
+void basic_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 {
     constexpr size_t s = sizeof(T);
+    assert(s == n);
 
     union
     {
@@ -90,9 +91,18 @@ void variable_value_serializer<std::string>::write(std::ostream& os, const std::
 }
 
 template<>
-void variable_value_serializer<std::string>::read(std::istream& is, std::string& v)
+void variable_value_serializer<std::string>::read(std::istream& is, size_t n, std::string& v)
 {
-    assert(!"implement me!");
+    v.resize(n);
+    char* p = const_cast<char*>(v.data());
+
+    while (n)
+    {
+        is.read(p, n);
+        auto size_read = is.gcount();
+        n -= size_read;
+        p += size_read;
+    }
 }
 
 }
@@ -1115,15 +1125,28 @@ void packed_trie_map<_KeyTrait,_ValueT>::load_state(std::istream& is)
     uint16_t flags = bv.ui16;
     bool variable_size = (flags & 0x0001) != 0;
 
+    // read the number of values
     is.read(bv.buffer, 4);
     uint32_t value_count = bv.ui32;
 
+    value_store_type value_store;
+
     if (variable_size)
     {
-        assert(!"Implement this!");
+        for (uint32_t i = 0; i < value_count; ++i)
+        {
+            is.read(bv.buffer, 4);
+            size_t size = bv.ui32;
+
+            value_type v;
+            _Func::read(is, size, v);
+
+            value_store.push_back(std::move(v));
+        }
     }
     else
     {
+        // read the size of the value.
         is.read(bv.buffer, 4);
         size_t size = bv.ui32;
 
@@ -1134,18 +1157,17 @@ void packed_trie_map<_KeyTrait,_ValueT>::load_state(std::istream& is)
             throw std::invalid_argument(os.str());
         }
 
-        value_store_type value_store;
 
         for (uint32_t i = 0; i < value_count; ++i)
         {
             value_type v;
-            _Func::read(is, v);
+            _Func::read(is, size, v);
 
             value_store.push_back(std::move(v));
         }
-
-        m_value_store.swap(value_store);
     }
+
+    m_value_store.swap(value_store);
 
     // There should be a check byte of 0xFF.
     is.read(bv.buffer, 1);

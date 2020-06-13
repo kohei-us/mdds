@@ -149,7 +149,7 @@ struct basic_value_serializer
 
     static void write(std::ostream& os, const T& v);
 
-    static void read(std::istream& is, T& v);
+    static void read(std::istream& is, size_t n, T& v);
 };
 
 template<typename T>
@@ -159,7 +159,7 @@ struct variable_value_serializer
 
     static void write(std::ostream& os, const T& v);
 
-    static void read(std::istream& is, T& v);
+    static void read(std::istream& is, size_t n, T& v);
 };
 
 }

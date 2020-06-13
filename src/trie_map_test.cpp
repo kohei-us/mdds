@@ -738,12 +738,14 @@ void trie_packed_test_save_and_load_state()
             empty_db.save_state<trie::basic_value_serializer<int>>(outfile);
         }
 
+        packed_int_map_type restored;
+
         {
             std::ifstream infile("test1.bin", ios::binary);
-            packed_int_map_type restored;
             restored.load_state<trie::basic_value_serializer<int>>(infile);
-            assert(restored == empty_db);
         }
+
+        assert(restored == empty_db);
     }
 
     {
@@ -763,13 +765,15 @@ void trie_packed_test_save_and_load_state()
             db.save_state<trie::basic_value_serializer<int>>(of);
         }
 
+        packed_int_map_type restored;
+        assert(restored != db);
+
         {
             std::ifstream infile("test2.bin", ios::binary);
-            packed_int_map_type restored;
-            assert(restored != db);
             restored.load_state<trie::basic_value_serializer<int>>(infile);
-            assert(restored == db);
         }
+
+        assert(restored == db);
     }
 
     using packed_str_map_type = packed_trie_map<trie::std_string_trait, std::string>;
@@ -822,6 +826,15 @@ void trie_packed_test_save_and_load_state()
             std::ofstream outfile("test3.bin", ios::binary);
             db.save_state<trie::variable_value_serializer<std::string>>(outfile);
         }
+
+        packed_str_map_type restored;
+
+        {
+            std::ifstream infile("test3.bin", ios::binary);
+            restored.load_state<trie::variable_value_serializer<std::string>>(infile);
+        }
+
+        assert(db == restored);
     }
 }
 
