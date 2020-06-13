@@ -91,13 +91,13 @@ void fixed_value_serializer<T>::read(std::istream& is, size_t n, T& v)
     v = buf.v;
 }
 
-template<>
+template<> inline
 void variable_value_serializer<std::string>::write(std::ostream& os, const std::string& v)
 {
     os.write(v.data(), v.size());
 }
 
-template<>
+template<> inline
 void variable_value_serializer<std::string>::read(std::istream& is, size_t n, std::string& v)
 {
     v.resize(n);
