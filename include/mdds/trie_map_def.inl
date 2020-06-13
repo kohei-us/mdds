@@ -58,7 +58,7 @@ union bin_value
 namespace trie {
 
 template<typename T>
-void basic_value_serializer<T>::write(std::ostream& os, const T& v)
+void fixed_value_serializer<T>::write(std::ostream& os, const T& v)
 {
     constexpr size_t s = sizeof(T);
     const char* p = reinterpret_cast<const char*>(&v);
@@ -66,7 +66,7 @@ void basic_value_serializer<T>::write(std::ostream& os, const T& v)
 }
 
 template<typename T>
-void basic_value_serializer<T>::read(std::istream& is, size_t n, T& v)
+void fixed_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 {
     constexpr size_t s = sizeof(T);
     assert(s == n);

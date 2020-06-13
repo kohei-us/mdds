@@ -735,14 +735,14 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::ofstream outfile("test1.bin", ios::binary);
-            empty_db.save_state<trie::basic_value_serializer<int>>(outfile);
+            empty_db.save_state<trie::fixed_value_serializer<int>>(outfile);
         }
 
         packed_int_map_type restored;
 
         {
             std::ifstream infile("test1.bin", ios::binary);
-            restored.load_state<trie::basic_value_serializer<int>>(infile);
+            restored.load_state<trie::fixed_value_serializer<int>>(infile);
         }
 
         assert(restored == empty_db);
@@ -762,7 +762,7 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::ofstream of("test2.bin", ios::binary);
-            db.save_state<trie::basic_value_serializer<int>>(of);
+            db.save_state<trie::fixed_value_serializer<int>>(of);
         }
 
         packed_int_map_type restored;
@@ -770,7 +770,7 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::ifstream infile("test2.bin", ios::binary);
-            restored.load_state<trie::basic_value_serializer<int>>(infile);
+            restored.load_state<trie::fixed_value_serializer<int>>(infile);
         }
 
         assert(restored == db);

@@ -141,9 +141,9 @@ struct std_container_trait
 
 using std_string_trait = std_container_trait<std::string>;
 
-/** Serializer for primitive data types. */
+/** Serializer for fixed-size data types. */
 template<typename T>
-struct basic_value_serializer
+struct fixed_value_serializer
 {
     static constexpr bool variable_size = false;
 
@@ -152,6 +152,7 @@ struct basic_value_serializer
     static void read(std::istream& is, size_t n, T& v);
 };
 
+/** Serializer for variable-size data types. */
 template<typename T>
 struct variable_value_serializer
 {
