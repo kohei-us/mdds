@@ -83,6 +83,18 @@ void basic_value_serializer<T>::read(std::istream& is, T& v)
     v = buf.v;
 }
 
+template<>
+void variable_value_serializer<std::string>::write(std::ostream& os, const std::string& v)
+{
+    os.write(v.data(), v.size());
+}
+
+template<>
+void variable_value_serializer<std::string>::read(std::istream& is, std::string& v)
+{
+    assert(!"implement me!");
+}
+
 }
 
 template<typename _KeyTrait, typename _ValueT>
@@ -967,17 +979,36 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
     using value_addrs_type = std::map<const void*, size_t>;
     value_addrs_type value_addrs;
 
+    // Dump the stored values first.
     if (_Func::variable_size)
     {
-        assert(!"Implement this!");
+        size_t pos = 0;
+        for (const value_type& v : m_value_store)
+        {
+            auto sp_size = os.tellp(); // position to come back to to write the size.
+            bv.ui32 = 0;
+            os.write(bv.buffer, 4); // write 0 as a placeholder.
+
+            auto sp_start = os.tellp();
+            _Func::write(os, v);
+            auto sp_end = os.tellp();
+
+            bv.ui32 = sp_end - sp_start; // bytes written
+
+            // go back and write the actual bytes written.
+            os.seekp(sp_size);
+            os.write(bv.buffer, 4);
+            os.seekp(sp_end);
+
+            value_addrs.insert({&v, pos++});
+        }
     }
     else
     {
         // Write the size of constant-size values.
-        bv.ui16 = sizeof(value_type);
-        os.write(bv.buffer, 2);
+        bv.ui32 = sizeof(value_type);
+        os.write(bv.buffer, 4);
 
-        // Dump the stored values first.
         size_t pos = 0;
         for (const value_type& v : m_value_store)
         {
@@ -1093,8 +1124,8 @@ void packed_trie_map<_KeyTrait,_ValueT>::load_state(std::istream& is)
     }
     else
     {
-        is.read(bv.buffer, 2);
-        size_t size = bv.ui16;
+        is.read(bv.buffer, 4);
+        size_t size = bv.ui32;
 
         if (size != sizeof(value_type))
         {

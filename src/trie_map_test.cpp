@@ -36,11 +36,12 @@
 
 #include <iterator>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 using namespace mdds;
 
-typedef packed_trie_map<trie::std_string_trait, int> packed_int_map_type;
+using packed_int_map_type = packed_trie_map<trie::std_string_trait, int>;
 
 bool verify_entries(
     const packed_int_map_type& db, const packed_int_map_type::entry* entries,
@@ -729,10 +730,8 @@ void trie_packed_test_save_and_load_state()
 {
     stack_printer __stack_printer__("::trie_packed_test_save_and_load_state");
 
-    using map_type = packed_trie_map<trie::std_string_trait, int>;
-
     {
-        map_type empty_db;
+        packed_int_map_type empty_db;
 
         {
             std::ofstream outfile("test1.bin", ios::binary);
@@ -741,14 +740,14 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::ifstream infile("test1.bin", ios::binary);
-            map_type restored;
+            packed_int_map_type restored;
             restored.load_state<trie::basic_value_serializer<int>>(infile);
             assert(restored == empty_db);
         }
     }
 
     {
-        map_type::entry entries[] =
+        packed_int_map_type::entry entries[] =
         {
             { MDDS_ASCII("bruce"),     5 },
             { MDDS_ASCII("charlie"),   6 },
@@ -757,7 +756,7 @@ void trie_packed_test_save_and_load_state()
             { MDDS_ASCII("dove"),      9 },
         };
 
-        map_type db(entries, MDDS_N_ELEMENTS(entries));
+        packed_int_map_type db(entries, MDDS_N_ELEMENTS(entries));
 
         {
             std::ofstream of("test2.bin", ios::binary);
@@ -766,10 +765,62 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::ifstream infile("test2.bin", ios::binary);
-            map_type restored;
+            packed_int_map_type restored;
             assert(restored != db);
             restored.load_state<trie::basic_value_serializer<int>>(infile);
             assert(restored == db);
+        }
+    }
+
+    using packed_str_map_type = packed_trie_map<trie::std_string_trait, std::string>;
+
+    {
+        std::vector<packed_str_map_type::entry> entries =
+        {
+            { MDDS_ASCII("Abby"),       "ABBY"       },
+            { MDDS_ASCII("Ashley"),     "ASHLEY"     },
+            { MDDS_ASCII("Candelaria"), "CANDELARIA" },
+            { MDDS_ASCII("Carita"),     "CARITA"     },
+            { MDDS_ASCII("Christal"),   "CHRISTAL"   },
+            { MDDS_ASCII("Cory"),       "CORY"       },
+            { MDDS_ASCII("Estrella"),   "ESTRELLA"   },
+            { MDDS_ASCII("Etha"),       "ETHA"       },
+            { MDDS_ASCII("Harley"),     "HARLEY"     },
+            { MDDS_ASCII("Irish"),      "IRISH"      },
+            { MDDS_ASCII("Kiara"),      "KIARA"      },
+            { MDDS_ASCII("Korey"),      "KOREY"      },
+            { MDDS_ASCII("Laurene"),    "LAURENE"    },
+            { MDDS_ASCII("Michiko"),    "MICHIKO"    },
+            { MDDS_ASCII("Miriam"),     "MIRIAM"     },
+            { MDDS_ASCII("Mitzi"),      "MITZI"      },
+            { MDDS_ASCII("Seth"),       "SETH"       },
+            { MDDS_ASCII("Sindy"),      "SINDY"      },
+            { MDDS_ASCII("Tawanna"),    "TAWANNA"    },
+            { MDDS_ASCII("Tyra"),       "TYRA"       },
+        };
+
+        packed_str_map_type db(entries.data(), entries.size());
+
+        // Run some search.
+        auto results = db.prefix_search("Mi");
+        auto it = results.begin();
+        assert(it != results.end());
+        assert(it->first == "Michiko");
+        assert(it->second == "MICHIKO");
+        ++it;
+        assert(it != results.end());
+        assert(it->first == "Miriam");
+        assert(it->second == "MIRIAM");
+        ++it;
+        assert(it != results.end());
+        assert(it->first == "Mitzi");
+        assert(it->second == "MITZI");
+        ++it;
+        assert(it == results.end());
+
+        {
+            std::ofstream outfile("test3.bin", ios::binary);
+            db.save_state<trie::variable_value_serializer<std::string>>(outfile);
         }
     }
 }

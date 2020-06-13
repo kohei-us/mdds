@@ -152,6 +152,16 @@ struct basic_value_serializer
     static void read(std::istream& is, T& v);
 };
 
+template<typename T>
+struct variable_value_serializer
+{
+    static constexpr bool variable_size = true;
+
+    static void write(std::ostream& os, const T& v);
+
+    static void read(std::istream& is, T& v);
+};
+
 }
 
 template<typename _KeyTrait, typename _ValueT>
