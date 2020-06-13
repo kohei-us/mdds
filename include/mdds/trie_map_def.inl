@@ -78,8 +78,15 @@ void basic_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 
     } buf;
 
-    is.read(buf.buffer, s);
-    assert(is.gcount() == s);
+    char* p = buf.buffer;
+
+    while (n)
+    {
+        is.read(p, s);
+        auto size_read = is.gcount();
+        n -= size_read;
+        p += size_read;
+    }
 
     v = buf.v;
 }
