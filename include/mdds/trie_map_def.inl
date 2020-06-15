@@ -112,7 +112,7 @@ void variable_value_serializer<std::string>::read(std::istream& is, size_t n, st
     }
 }
 
-}
+} // namespace trie
 
 template<typename _KeyTrait, typename _ValueT>
 trie_map<_KeyTrait,_ValueT>::trie_map::trie_node::trie_node() :

@@ -737,7 +737,7 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::ostringstream state;
-            empty_db.save_state<trie::fixed_value_serializer<int>>(state);
+            empty_db.save_state(state);
             saved_state = state.str();
         }
 
@@ -745,7 +745,7 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::istringstream state(saved_state);
-            restored.load_state<trie::fixed_value_serializer<int>>(state);
+            restored.load_state(state);
         }
 
         assert(restored == empty_db);
@@ -767,7 +767,7 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::ostringstream state;
-            db.save_state<trie::fixed_value_serializer<int>>(state);
+            db.save_state(state);
             saved_state = state.str();
         }
 
@@ -776,7 +776,7 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::istringstream state(saved_state);
-            restored.load_state<trie::fixed_value_serializer<int>>(state);
+            restored.load_state(state);
         }
 
         assert(restored == db);
@@ -832,7 +832,7 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::ostringstream state;
-            db.save_state<trie::variable_value_serializer<std::string>>(state);
+            db.save_state(state);
             saved_state = state.str();
         }
 
@@ -840,7 +840,7 @@ void trie_packed_test_save_and_load_state()
 
         {
             std::istringstream state(saved_state);
-            restored.load_state<trie::variable_value_serializer<std::string>>(state);
+            restored.load_state(state);
         }
 
         assert(db == restored);

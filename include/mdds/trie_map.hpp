@@ -163,7 +163,13 @@ struct variable_value_serializer
     static void read(std::istream& is, size_t n, T& v);
 };
 
-}
+template<typename T>
+struct value_serializer : fixed_value_serializer<T> {};
+
+template<>
+struct value_serializer<std::string> : variable_value_serializer<std::string> {};
+
+} // namespace trie
 
 template<typename _KeyTrait, typename _ValueT>
 class packed_trie_map;
@@ -559,10 +565,10 @@ public:
 
     void swap(packed_trie_map& other);
 
-    template<typename _Func>
+    template<typename _Func = trie::value_serializer<value_type>>
     void save_state(std::ostream& os) const;
 
-    template<typename _Func>
+    template<typename _Func = trie::value_serializer<value_type>>
     void load_state(std::istream& is);
 
     /**
