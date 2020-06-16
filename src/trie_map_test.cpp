@@ -727,9 +727,150 @@ void trie_packed_test_non_equal()
     assert(db3 == db6);
 }
 
-void trie_packed_test_save_and_load_state()
+namespace trie_packed_test_save_and_load_state {
+
+struct _custom_value
 {
-    stack_printer __stack_printer__("::trie_packed_test_save_and_load_state");
+    enum class v_type { unknown, fp32, int64 };
+
+    v_type type;
+
+    union { float fp32; int64_t int64; } value;
+
+    _custom_value() : type(v_type::unknown) {}
+
+    _custom_value(float v) : type(v_type::fp32) { value.fp32 = v; }
+
+    _custom_value(int v) : type(v_type::int64) { value.int64 = v; }
+
+    _custom_value(const _custom_value& other) : type(other.type)
+    {
+        switch (type)
+        {
+            case v_type::fp32:
+                value.fp32 = other.value.fp32;
+                break;
+            case v_type::int64:
+                value.int64 = other.value.int64;
+                break;
+            default:
+                ;
+        }
+    }
+
+    bool operator== (const _custom_value& other) const
+    {
+        if (type != other.type)
+            return false;
+
+        switch (type)
+        {
+            case v_type::fp32:
+                return value.fp32 == other.value.fp32;
+            case v_type::int64:
+                return value.int64 == other.value.int64;
+            default:
+                ;
+        }
+
+        return true;
+    }
+
+    bool operator!= (const _custom_value& other) const
+    {
+        return !operator== (other);
+    }
+};
+
+struct _custom_serializer
+{
+    union bin_value
+    {
+        char buffer[8];
+        float fp32;
+        int64_t int64;
+    };
+
+    static constexpr bool variable_size = true;
+
+    static void write(std::ostream& os, const _custom_value& v)
+    {
+        bin_value bv;
+
+        switch (v.type)
+        {
+            case _custom_value::v_type::unknown:
+            {
+                char c = 0;
+                os.write(&c, 1);
+                break;
+            }
+            case _custom_value::v_type::fp32:
+            {
+                char c = 1;
+                os.write(&c, 1);
+                bv.fp32 = v.value.fp32;
+                os.write(bv.buffer, 4);
+                break;
+            }
+            case _custom_value::v_type::int64:
+            {
+                char c = 2;
+                os.write(&c, 1);
+                bv.int64 = v.value.int64;
+                os.write(bv.buffer, 8);
+                break;
+            }
+        }
+    }
+
+    static void read(std::istream& is, size_t n, _custom_value& v)
+    {
+        assert(n > 0);
+        char c;
+        is.read(&c, 1);
+
+        switch (c)
+        {
+            case 0:
+                v.type = _custom_value::v_type::unknown;
+                break;
+            case 1:
+                v.type = _custom_value::v_type::fp32;
+                break;
+            case 2:
+                v.type = _custom_value::v_type::int64;
+                break;
+            default:
+                assert(!"invalid value type");
+        }
+
+        n -= 1;
+        bin_value bv;
+
+        switch (v.type)
+        {
+            case _custom_value::v_type::fp32:
+                assert(n == 4);
+                is.read(bv.buffer, 4);
+                v.value.fp32 = bv.fp32;
+                break;
+            case _custom_value::v_type::int64:
+                assert(n == 8);
+                is.read(bv.buffer, 8);
+                v.value.int64 = bv.int64;
+                break;
+            case _custom_value::v_type::unknown:
+                break;
+            default:
+                assert(!"invalid value type");
+        }
+    }
+};
+
+void run()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::run");
 
     {
         packed_int_map_type empty_db;
@@ -946,6 +1087,44 @@ void trie_packed_test_save_and_load_state()
 
         assert(db == restored);
     }
+
+    {
+        using map_type = packed_trie_map<trie::std_string_trait, _custom_value>;
+
+        std::vector<map_type::entry> entries =
+        {
+            { MDDS_ASCII("Alan"),      1.2f },
+            { MDDS_ASCII("Cory"),      -125 },
+            { MDDS_ASCII("Eleni"),     966 },
+            { MDDS_ASCII("Evia"),      -0.987f },
+            { MDDS_ASCII("Nathaniel"), 0 },
+            { MDDS_ASCII("Rebbecca"),  1.234f },
+            { MDDS_ASCII("Rodrick"),   34253536 },
+            { MDDS_ASCII("Stuart"),    12 },
+            { MDDS_ASCII("Verline"),   56 },
+        };
+
+        map_type db(entries.data(), entries.size());
+        assert(db.size() == entries.size());
+
+        std::string saved_state;
+        {
+            std::ostringstream state;
+            db.save_state<_custom_serializer>(state);
+            saved_state = state.str();
+        }
+
+        map_type restored;
+
+        {
+            std::istringstream state(saved_state);
+            restored.load_state<_custom_serializer>(state);
+        }
+
+        assert(db == restored);
+    }
+}
+
 }
 
 void trie_test1()
@@ -1550,7 +1729,7 @@ int main(int argc, char** argv)
         trie_packed_test_key_as_input();
         trie_packed_test_copying();
         trie_packed_test_non_equal();
-        trie_packed_test_save_and_load_state();
+        trie_packed_test_save_and_load_state::run();
 
         trie_test1();
 
