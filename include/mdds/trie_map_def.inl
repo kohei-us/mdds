@@ -99,7 +99,7 @@ struct write_fixed_size_values_to_ostream
         value_addrs_type value_addrs;
 
         // Write the size of constant-size values.
-        bv.ui32 = sizeof(_V);
+        bv.ui32 = _Func::value_size;
         os.write(bv.buffer, 4);
 
         size_t pos = 0;

@@ -147,6 +147,8 @@ struct numeric_value_serializer
 {
     static constexpr bool variable_size = false;
 
+    static constexpr size_t value_size = sizeof(T);
+
     static void write(std::ostream& os, const T& v);
 
     static void read(std::istream& is, size_t n, T& v);
