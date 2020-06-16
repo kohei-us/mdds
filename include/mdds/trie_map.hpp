@@ -141,9 +141,9 @@ struct std_container_trait
 
 using std_string_trait = std_container_trait<std::string>;
 
-/** Serializer for fixed-size data types. */
+/** Serializer for int data types. */
 template<typename T>
-struct fixed_value_serializer
+struct int_value_serializer
 {
     static constexpr bool variable_size = false;
 
@@ -164,7 +164,22 @@ struct variable_value_serializer
 };
 
 template<typename T>
-struct value_serializer : fixed_value_serializer<T> {};
+struct std_int_vector_value_serializer
+{
+    using element_serializer = int_value_serializer<typename T::value_type>;
+
+    static constexpr bool variable_size = true;
+
+    static void write(std::ostream& os, const T& v);
+
+    static void read(std::istream& is, size_t n, T& v);
+};
+
+template<typename T>
+struct value_serializer : int_value_serializer<T> {};
+
+template<typename T>
+struct value_serializer<std::vector<T>> : std_int_vector_value_serializer<std::vector<T>> {};
 
 template<>
 struct value_serializer<std::string> : variable_value_serializer<std::string> {};

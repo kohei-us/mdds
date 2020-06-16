@@ -58,16 +58,20 @@ union bin_value
 namespace trie {
 
 template<typename T>
-void fixed_value_serializer<T>::write(std::ostream& os, const T& v)
+void int_value_serializer<T>::write(std::ostream& os, const T& v)
 {
+    static_assert(std::is_integral<T>::value, "not an integral type.");
+
     constexpr size_t s = sizeof(T);
     const char* p = reinterpret_cast<const char*>(&v);
     os.write(p, s);
 }
 
 template<typename T>
-void fixed_value_serializer<T>::read(std::istream& is, size_t n, T& v)
+void int_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 {
+    static_assert(std::is_integral<T>::value, "not an integral type.");
+
     constexpr size_t s = sizeof(T);
     assert(s == n);
 
@@ -89,6 +93,34 @@ void fixed_value_serializer<T>::read(std::istream& is, size_t n, T& v)
     }
 
     v = buf.v;
+}
+
+template<typename T>
+void std_int_vector_value_serializer<T>::write(std::ostream& os, const T& v)
+{
+    static_assert(std::is_integral<typename T::value_type>::value, "value type of this vector is not an integral type.");
+
+    for (const auto& elem : v)
+        element_serializer::write(os, elem);
+}
+
+template<typename T>
+void std_int_vector_value_serializer<T>::read(std::istream& is, size_t n, T& v)
+{
+    using elem_type = typename T::value_type;
+    static_assert(std::is_integral<elem_type>::value, "value type of this vector is not an integral type.");
+
+    constexpr size_t elem_size = sizeof(elem_type);
+    assert(n % elem_size == 0);
+
+    size_t elem_count = n / elem_size;
+
+    for (size_t i = 0; i < elem_count; ++i)
+    {
+        elem_type elem;
+        element_serializer::read(is, elem_size, elem);
+        v.push_back(elem);
+    }
 }
 
 template<> inline
