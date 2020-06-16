@@ -1196,13 +1196,10 @@ void packed_trie_map<_KeyTrait,_ValueT>::load_state(std::istream& is)
             throw std::invalid_argument(os.str());
         }
 
-
         for (uint32_t i = 0; i < value_count; ++i)
         {
-            value_type v;
-            _Func::read(is, size, v);
-
-            value_store.push_back(std::move(v));
+            value_store.emplace_back();
+            _Func::read(is, size, value_store.back());
         }
     }
 
