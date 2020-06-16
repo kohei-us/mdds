@@ -143,7 +143,7 @@ using std_string_trait = std_container_trait<std::string>;
 
 /** Serializer for int data types. */
 template<typename T>
-struct int_value_serializer
+struct numeric_value_serializer
 {
     static constexpr bool variable_size = false;
 
@@ -164,9 +164,9 @@ struct variable_value_serializer
 };
 
 template<typename T>
-struct std_int_vector_value_serializer
+struct std_numeric_vector_value_serializer
 {
-    using element_serializer = int_value_serializer<typename T::value_type>;
+    using element_serializer = numeric_value_serializer<typename T::value_type>;
 
     static constexpr bool variable_size = true;
 
@@ -176,10 +176,10 @@ struct std_int_vector_value_serializer
 };
 
 template<typename T>
-struct value_serializer : int_value_serializer<T> {};
+struct value_serializer : numeric_value_serializer<T> {};
 
 template<typename T>
-struct value_serializer<std::vector<T>> : std_int_vector_value_serializer<std::vector<T>> {};
+struct value_serializer<std::vector<T>> : std_numeric_vector_value_serializer<std::vector<T>> {};
 
 template<>
 struct value_serializer<std::string> : variable_value_serializer<std::string> {};

@@ -58,9 +58,9 @@ union bin_value
 namespace trie {
 
 template<typename T>
-void int_value_serializer<T>::write(std::ostream& os, const T& v)
+void numeric_value_serializer<T>::write(std::ostream& os, const T& v)
 {
-    static_assert(std::is_integral<T>::value, "not an integral type.");
+    static_assert(std::is_arithmetic<T>::value, "not a numeric type.");
 
     constexpr size_t s = sizeof(T);
     const char* p = reinterpret_cast<const char*>(&v);
@@ -68,9 +68,9 @@ void int_value_serializer<T>::write(std::ostream& os, const T& v)
 }
 
 template<typename T>
-void int_value_serializer<T>::read(std::istream& is, size_t n, T& v)
+void numeric_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 {
-    static_assert(std::is_integral<T>::value, "not an integral type.");
+    static_assert(std::is_arithmetic<T>::value, "not a numeric type.");
 
     constexpr size_t s = sizeof(T);
     assert(s == n);
@@ -96,19 +96,19 @@ void int_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 }
 
 template<typename T>
-void std_int_vector_value_serializer<T>::write(std::ostream& os, const T& v)
+void std_numeric_vector_value_serializer<T>::write(std::ostream& os, const T& v)
 {
-    static_assert(std::is_integral<typename T::value_type>::value, "value type of this vector is not an integral type.");
+    static_assert(std::is_arithmetic<typename T::value_type>::value, "value type of this vector is not a numeric type.");
 
     for (const auto& elem : v)
         element_serializer::write(os, elem);
 }
 
 template<typename T>
-void std_int_vector_value_serializer<T>::read(std::istream& is, size_t n, T& v)
+void std_numeric_vector_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 {
     using elem_type = typename T::value_type;
-    static_assert(std::is_integral<elem_type>::value, "value type of this vector is not an integral type.");
+    static_assert(std::is_arithmetic<typename T::value_type>::value, "value type of this vector is not a numeric type.");
 
     constexpr size_t elem_size = sizeof(elem_type);
     assert(n % elem_size == 0);
