@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <memory>
 #include <sstream>
+#include <type_traits>
 
 #ifdef MDDS_TRIE_MAP_DEBUG
 #include <iostream>
@@ -52,6 +53,74 @@ union bin_value
     uint32_t ui32;
     uint64_t ui64;
 };
+
+using value_addrs_type = std::map<const void*, size_t>;
+
+template<typename _Func, typename _V>
+struct write_variable_size_values_to_ostream
+{
+    value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store)
+    {
+        bin_value bv;
+
+        value_addrs_type value_addrs;
+
+        size_t pos = 0;
+        for (const _V& v : value_store)
+        {
+            auto sp_size = os.tellp(); // position to come back to to write the size.
+            bv.ui32 = 0;
+            os.write(bv.buffer, 4); // write 0 as a placeholder.
+
+            auto sp_start = os.tellp();
+            _Func::write(os, v);
+            auto sp_end = os.tellp();
+
+            bv.ui32 = sp_end - sp_start; // bytes written
+
+            // go back and write the actual bytes written.
+            os.seekp(sp_size);
+            os.write(bv.buffer, 4);
+            os.seekp(sp_end);
+
+            value_addrs.insert({&v, pos++});
+        }
+
+        return value_addrs;
+    }
+};
+
+template<typename _Func, typename _V>
+struct write_fixed_size_values_to_ostream
+{
+    value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store)
+    {
+        bin_value bv;
+        value_addrs_type value_addrs;
+
+        // Write the size of constant-size values.
+        bv.ui32 = sizeof(_V);
+        os.write(bv.buffer, 4);
+
+        size_t pos = 0;
+        for (const _V& v : value_store)
+        {
+            _Func::write(os, v);
+            value_addrs.insert({&v, pos++});
+        }
+
+        return value_addrs;
+    }
+};
+
+template<typename _Func, typename _V, typename _SizeTrait>
+struct write_values_to_ostream;
+
+template<typename _Func, typename _V>
+struct write_values_to_ostream<_Func, _V, std::true_type> : write_variable_size_values_to_ostream<_Func, _V> {};
+
+template<typename _Func, typename _V>
+struct write_values_to_ostream<_Func, _V, std::false_type> : write_fixed_size_values_to_ostream<_Func, _V> {};
 
 }}
 
@@ -1029,42 +1098,10 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
     value_addrs_type value_addrs;
 
     // Dump the stored values first.
-    if (_Func::variable_size)
-    {
-        size_t pos = 0;
-        for (const value_type& v : m_value_store)
-        {
-            auto sp_size = os.tellp(); // position to come back to to write the size.
-            bv.ui32 = 0;
-            os.write(bv.buffer, 4); // write 0 as a placeholder.
+    using value_size_type = std::integral_constant<bool, _Func::variable_size>;
 
-            auto sp_start = os.tellp();
-            _Func::write(os, v);
-            auto sp_end = os.tellp();
-
-            bv.ui32 = sp_end - sp_start; // bytes written
-
-            // go back and write the actual bytes written.
-            os.seekp(sp_size);
-            os.write(bv.buffer, 4);
-            os.seekp(sp_end);
-
-            value_addrs.insert({&v, pos++});
-        }
-    }
-    else
-    {
-        // Write the size of constant-size values.
-        bv.ui32 = sizeof(value_type);
-        os.write(bv.buffer, 4);
-
-        size_t pos = 0;
-        for (const value_type& v : m_value_store)
-        {
-            _Func::write(os, v);
-            value_addrs.insert({&v, pos++});
-        }
-    }
+    detail::trie::write_values_to_ostream<_Func, value_type, value_size_type> func;
+    value_addrs = func(os, m_value_store);
 
     // Write 0xFF to signify the end of the value section.
     bv.ui8 = 0xFF;
