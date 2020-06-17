@@ -249,7 +249,7 @@ void std_numeric_vector_value_serializer<T>::read(std::istream& is, size_t n, T&
     using elem_type = typename T::value_type;
     static_assert(std::is_arithmetic<typename T::value_type>::value, "value type of this vector is not a numeric type.");
 
-    constexpr size_t elem_size = sizeof(elem_type);
+    constexpr size_t elem_size = element_serializer::value_size;
     assert(n % elem_size == 0);
 
     size_t elem_count = n / elem_size;
