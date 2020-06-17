@@ -868,261 +868,281 @@ struct _custom_variable_serializer
     }
 };
 
+void test1()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test1");
+    packed_int_map_type empty_db;
+
+    std::string saved_state;
+
+    {
+        std::ostringstream state;
+        empty_db.save_state(state);
+        saved_state = state.str();
+    }
+
+    packed_int_map_type restored;
+
+    {
+        std::istringstream state(saved_state);
+        restored.load_state(state);
+    }
+
+    assert(restored == empty_db);
+}
+
+void test2()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test2");
+    packed_int_map_type::entry entries[] =
+    {
+        { MDDS_ASCII("bruce"),     5 },
+        { MDDS_ASCII("charlie"),   6 },
+        { MDDS_ASCII("charlotte"), 7 },
+        { MDDS_ASCII("david"),     8 },
+        { MDDS_ASCII("dove"),      9 },
+    };
+
+    packed_int_map_type db(entries, MDDS_N_ELEMENTS(entries));
+
+    std::string saved_state;
+
+    {
+        std::ostringstream state;
+        db.save_state(state);
+        saved_state = state.str();
+    }
+
+    packed_int_map_type restored;
+    assert(restored != db);
+
+    {
+        std::istringstream state(saved_state);
+        restored.load_state(state);
+    }
+
+    assert(restored == db);
+}
+
+void test3()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test3");
+    std::vector<packed_str_map_type::entry> entries =
+    {
+        { MDDS_ASCII("Abby"),       "ABBY"       },
+        { MDDS_ASCII("Ashley"),     "ASHLEY"     },
+        { MDDS_ASCII("Candelaria"), "CANDELARIA" },
+        { MDDS_ASCII("Carita"),     "CARITA"     },
+        { MDDS_ASCII("Christal"),   "CHRISTAL"   },
+        { MDDS_ASCII("Cory"),       "CORY"       },
+        { MDDS_ASCII("Estrella"),   "ESTRELLA"   },
+        { MDDS_ASCII("Etha"),       "ETHA"       },
+        { MDDS_ASCII("Harley"),     "HARLEY"     },
+        { MDDS_ASCII("Irish"),      "IRISH"      },
+        { MDDS_ASCII("Kiara"),      "KIARA"      },
+        { MDDS_ASCII("Korey"),      "KOREY"      },
+        { MDDS_ASCII("Laurene"),    "LAURENE"    },
+        { MDDS_ASCII("Michiko"),    "MICHIKO"    },
+        { MDDS_ASCII("Miriam"),     "MIRIAM"     },
+        { MDDS_ASCII("Mitzi"),      "MITZI"      },
+        { MDDS_ASCII("Seth"),       "SETH"       },
+        { MDDS_ASCII("Sindy"),      "SINDY"      },
+        { MDDS_ASCII("Tawanna"),    "TAWANNA"    },
+        { MDDS_ASCII("Tyra"),       "TYRA"       },
+    };
+
+    packed_str_map_type db(entries.data(), entries.size());
+
+    // Run some search.
+    auto results = db.prefix_search("Mi");
+    auto it = results.begin();
+    assert(it != results.end());
+    assert(it->first == "Michiko");
+    assert(it->second == "MICHIKO");
+    ++it;
+    assert(it != results.end());
+    assert(it->first == "Miriam");
+    assert(it->second == "MIRIAM");
+    ++it;
+    assert(it != results.end());
+    assert(it->first == "Mitzi");
+    assert(it->second == "MITZI");
+    ++it;
+    assert(it == results.end());
+
+    std::string saved_state;
+
+    {
+        std::ostringstream state;
+        db.save_state(state);
+        saved_state = state.str();
+    }
+
+    packed_str_map_type restored;
+
+    {
+        std::istringstream state(saved_state);
+        restored.load_state(state);
+    }
+
+    assert(db == restored);
+}
+
+void test4()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test4");
+    using map_type = packed_trie_map<trie::std_string_trait, std::vector<int64_t>>;
+
+    std::vector<map_type::entry> entries =
+    {
+        { MDDS_ASCII("Abby"),     { 65, 98, 98, 121 }                      },
+        { MDDS_ASCII("Ashley"),   { 65, 115, 104, 108, 101, 121 }          },
+        { MDDS_ASCII("Christal"), { 67, 104, 114, 105, 115, 116, 97, 108 } },
+        { MDDS_ASCII("Cory"),     { 67, 111, 114, 121 }                    },
+        { MDDS_ASCII("Harley"),   { 72, 97, 114, 108, 101, 121 }           },
+        { MDDS_ASCII("Kiara"),    { 75, 105, 97, 114, 97 }                 },
+        { MDDS_ASCII("Mitzi"),    { 77, 105, 116, 122, 105 }               },
+    };
+
+    map_type db(entries.data(), entries.size());
+    assert(db.size() == entries.size());
+
+    std::string saved_state;
+    {
+        std::ostringstream state;
+        db.save_state(state);
+        saved_state = state.str();
+    }
+
+    map_type restored;
+
+    {
+        std::istringstream state(saved_state);
+        restored.load_state(state);
+    }
+
+    assert(db == restored);
+}
+
+void test5()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test5");
+    using map_type = packed_trie_map<trie::std_string_trait, float>;
+
+    std::vector<map_type::entry> entries =
+    {
+        { MDDS_ASCII("Abby"),     1.0f },
+        { MDDS_ASCII("Ashley"),   1.1f },
+        { MDDS_ASCII("Christal"), 1.2f },
+        { MDDS_ASCII("Cory"),     1.3f },
+        { MDDS_ASCII("Harley"),   1.4f },
+        { MDDS_ASCII("Kiara"),    1.5f },
+        { MDDS_ASCII("Mitzi"),    1.6f },
+    };
+
+    map_type db(entries.data(), entries.size());
+    assert(db.size() == entries.size());
+
+    std::string saved_state;
+    {
+        std::ostringstream state;
+        db.save_state(state);
+        saved_state = state.str();
+    }
+
+    map_type restored;
+
+    {
+        std::istringstream state(saved_state);
+        restored.load_state(state);
+    }
+
+    assert(db == restored);
+}
+
+void test6()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test6");
+    using map_type = packed_trie_map<trie::std_string_trait, std::vector<double>>;
+
+    std::vector<map_type::entry> entries =
+    {
+        { MDDS_ASCII("Abby"),     { 65.0, 98.1, 98.2, 121.3 }              },
+        { MDDS_ASCII("Ashley"),   { 65.0, 11.5, 1.04, 1.08, .101, .12586 } },
+        { MDDS_ASCII("Christal"), { 67.0, -10.4, -114.236 }                },
+        { MDDS_ASCII("Cory"),     { 67.0, 122.111 }                        },
+        { MDDS_ASCII("Harley"),   { 72.0, 97.12, -1.114 }                  },
+        { MDDS_ASCII("Kiara"),    { 75.0, 1.05, 9.7, 1.14, -97.5 }         },
+        { MDDS_ASCII("Mitzi"),    { 77.0, 10.5, 11.6, 1.22, 10.5 }         },
+    };
+
+    map_type db(entries.data(), entries.size());
+    assert(db.size() == entries.size());
+
+    std::string saved_state;
+    {
+        std::ostringstream state;
+        db.save_state(state);
+        saved_state = state.str();
+    }
+
+    map_type restored;
+
+    {
+        std::istringstream state(saved_state);
+        restored.load_state(state);
+    }
+
+    assert(db == restored);
+}
+
+void test7()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test7");
+    using map_type = packed_trie_map<trie::std_string_trait, _custom_variable_value>;
+
+    std::vector<map_type::entry> entries =
+    {
+        { MDDS_ASCII("Alan"),      1.2f },
+        { MDDS_ASCII("Cory"),      -125 },
+        { MDDS_ASCII("Eleni"),     966 },
+        { MDDS_ASCII("Evia"),      -0.987f },
+        { MDDS_ASCII("Nathaniel"), 0 },
+        { MDDS_ASCII("Rebbecca"),  1.234f },
+        { MDDS_ASCII("Rodrick"),   34253536 },
+        { MDDS_ASCII("Stuart"),    12 },
+        { MDDS_ASCII("Verline"),   56 },
+    };
+
+    map_type db(entries.data(), entries.size());
+    assert(db.size() == entries.size());
+
+    std::string saved_state;
+    {
+        std::ostringstream state;
+        db.save_state<_custom_variable_serializer>(state);
+        saved_state = state.str();
+    }
+
+    map_type restored;
+
+    {
+        std::istringstream state(saved_state);
+        restored.load_state<_custom_variable_serializer>(state);
+    }
+
+    assert(db == restored);
+}
+
 void run()
 {
-    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::run");
-
-    {
-        packed_int_map_type empty_db;
-
-        std::string saved_state;
-
-        {
-            std::ostringstream state;
-            empty_db.save_state(state);
-            saved_state = state.str();
-        }
-
-        packed_int_map_type restored;
-
-        {
-            std::istringstream state(saved_state);
-            restored.load_state(state);
-        }
-
-        assert(restored == empty_db);
-    }
-
-    {
-        packed_int_map_type::entry entries[] =
-        {
-            { MDDS_ASCII("bruce"),     5 },
-            { MDDS_ASCII("charlie"),   6 },
-            { MDDS_ASCII("charlotte"), 7 },
-            { MDDS_ASCII("david"),     8 },
-            { MDDS_ASCII("dove"),      9 },
-        };
-
-        packed_int_map_type db(entries, MDDS_N_ELEMENTS(entries));
-
-        std::string saved_state;
-
-        {
-            std::ostringstream state;
-            db.save_state(state);
-            saved_state = state.str();
-        }
-
-        packed_int_map_type restored;
-        assert(restored != db);
-
-        {
-            std::istringstream state(saved_state);
-            restored.load_state(state);
-        }
-
-        assert(restored == db);
-    }
-
-    {
-        std::vector<packed_str_map_type::entry> entries =
-        {
-            { MDDS_ASCII("Abby"),       "ABBY"       },
-            { MDDS_ASCII("Ashley"),     "ASHLEY"     },
-            { MDDS_ASCII("Candelaria"), "CANDELARIA" },
-            { MDDS_ASCII("Carita"),     "CARITA"     },
-            { MDDS_ASCII("Christal"),   "CHRISTAL"   },
-            { MDDS_ASCII("Cory"),       "CORY"       },
-            { MDDS_ASCII("Estrella"),   "ESTRELLA"   },
-            { MDDS_ASCII("Etha"),       "ETHA"       },
-            { MDDS_ASCII("Harley"),     "HARLEY"     },
-            { MDDS_ASCII("Irish"),      "IRISH"      },
-            { MDDS_ASCII("Kiara"),      "KIARA"      },
-            { MDDS_ASCII("Korey"),      "KOREY"      },
-            { MDDS_ASCII("Laurene"),    "LAURENE"    },
-            { MDDS_ASCII("Michiko"),    "MICHIKO"    },
-            { MDDS_ASCII("Miriam"),     "MIRIAM"     },
-            { MDDS_ASCII("Mitzi"),      "MITZI"      },
-            { MDDS_ASCII("Seth"),       "SETH"       },
-            { MDDS_ASCII("Sindy"),      "SINDY"      },
-            { MDDS_ASCII("Tawanna"),    "TAWANNA"    },
-            { MDDS_ASCII("Tyra"),       "TYRA"       },
-        };
-
-        packed_str_map_type db(entries.data(), entries.size());
-
-        // Run some search.
-        auto results = db.prefix_search("Mi");
-        auto it = results.begin();
-        assert(it != results.end());
-        assert(it->first == "Michiko");
-        assert(it->second == "MICHIKO");
-        ++it;
-        assert(it != results.end());
-        assert(it->first == "Miriam");
-        assert(it->second == "MIRIAM");
-        ++it;
-        assert(it != results.end());
-        assert(it->first == "Mitzi");
-        assert(it->second == "MITZI");
-        ++it;
-        assert(it == results.end());
-
-        std::string saved_state;
-
-        {
-            std::ostringstream state;
-            db.save_state(state);
-            saved_state = state.str();
-        }
-
-        packed_str_map_type restored;
-
-        {
-            std::istringstream state(saved_state);
-            restored.load_state(state);
-        }
-
-        assert(db == restored);
-    }
-
-    {
-        using map_type = packed_trie_map<trie::std_string_trait, std::vector<int64_t>>;
-
-        std::vector<map_type::entry> entries =
-        {
-            { MDDS_ASCII("Abby"),     { 65, 98, 98, 121 }                      },
-            { MDDS_ASCII("Ashley"),   { 65, 115, 104, 108, 101, 121 }          },
-            { MDDS_ASCII("Christal"), { 67, 104, 114, 105, 115, 116, 97, 108 } },
-            { MDDS_ASCII("Cory"),     { 67, 111, 114, 121 }                    },
-            { MDDS_ASCII("Harley"),   { 72, 97, 114, 108, 101, 121 }           },
-            { MDDS_ASCII("Kiara"),    { 75, 105, 97, 114, 97 }                 },
-            { MDDS_ASCII("Mitzi"),    { 77, 105, 116, 122, 105 }               },
-        };
-
-        map_type db(entries.data(), entries.size());
-        assert(db.size() == entries.size());
-
-        std::string saved_state;
-        {
-            std::ostringstream state;
-            db.save_state(state);
-            saved_state = state.str();
-        }
-
-        map_type restored;
-
-        {
-            std::istringstream state(saved_state);
-            restored.load_state(state);
-        }
-
-        assert(db == restored);
-    }
-
-    {
-        using map_type = packed_trie_map<trie::std_string_trait, float>;
-
-        std::vector<map_type::entry> entries =
-        {
-            { MDDS_ASCII("Abby"),     1.0f },
-            { MDDS_ASCII("Ashley"),   1.1f },
-            { MDDS_ASCII("Christal"), 1.2f },
-            { MDDS_ASCII("Cory"),     1.3f },
-            { MDDS_ASCII("Harley"),   1.4f },
-            { MDDS_ASCII("Kiara"),    1.5f },
-            { MDDS_ASCII("Mitzi"),    1.6f },
-        };
-
-        map_type db(entries.data(), entries.size());
-        assert(db.size() == entries.size());
-
-        std::string saved_state;
-        {
-            std::ostringstream state;
-            db.save_state(state);
-            saved_state = state.str();
-        }
-
-        map_type restored;
-
-        {
-            std::istringstream state(saved_state);
-            restored.load_state(state);
-        }
-
-        assert(db == restored);
-    }
-
-    {
-        using map_type = packed_trie_map<trie::std_string_trait, std::vector<double>>;
-
-        std::vector<map_type::entry> entries =
-        {
-            { MDDS_ASCII("Abby"),     { 65.0, 98.1, 98.2, 121.3 }              },
-            { MDDS_ASCII("Ashley"),   { 65.0, 11.5, 1.04, 1.08, .101, .12586 } },
-            { MDDS_ASCII("Christal"), { 67.0, -10.4, -114.236 }                },
-            { MDDS_ASCII("Cory"),     { 67.0, 122.111 }                        },
-            { MDDS_ASCII("Harley"),   { 72.0, 97.12, -1.114 }                  },
-            { MDDS_ASCII("Kiara"),    { 75.0, 1.05, 9.7, 1.14, -97.5 }         },
-            { MDDS_ASCII("Mitzi"),    { 77.0, 10.5, 11.6, 1.22, 10.5 }         },
-        };
-
-        map_type db(entries.data(), entries.size());
-        assert(db.size() == entries.size());
-
-        std::string saved_state;
-        {
-            std::ostringstream state;
-            db.save_state(state);
-            saved_state = state.str();
-        }
-
-        map_type restored;
-
-        {
-            std::istringstream state(saved_state);
-            restored.load_state(state);
-        }
-
-        assert(db == restored);
-    }
-
-    {
-        using map_type = packed_trie_map<trie::std_string_trait, _custom_variable_value>;
-
-        std::vector<map_type::entry> entries =
-        {
-            { MDDS_ASCII("Alan"),      1.2f },
-            { MDDS_ASCII("Cory"),      -125 },
-            { MDDS_ASCII("Eleni"),     966 },
-            { MDDS_ASCII("Evia"),      -0.987f },
-            { MDDS_ASCII("Nathaniel"), 0 },
-            { MDDS_ASCII("Rebbecca"),  1.234f },
-            { MDDS_ASCII("Rodrick"),   34253536 },
-            { MDDS_ASCII("Stuart"),    12 },
-            { MDDS_ASCII("Verline"),   56 },
-        };
-
-        map_type db(entries.data(), entries.size());
-        assert(db.size() == entries.size());
-
-        std::string saved_state;
-        {
-            std::ostringstream state;
-            db.save_state<_custom_variable_serializer>(state);
-            saved_state = state.str();
-        }
-
-        map_type restored;
-
-        {
-            std::istringstream state(saved_state);
-            restored.load_state<_custom_variable_serializer>(state);
-        }
-
-        assert(db == restored);
-    }
+    test1();
+    test2();
+    test3();
+    test4();
+    test5();
+    test6();
+    test7();
 }
 
 }
