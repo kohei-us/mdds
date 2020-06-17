@@ -1168,7 +1168,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
     value_addrs_type value_addrs;
 
     // Dump the stored values first.
-    using value_size_type = std::integral_constant<bool, _Func::variable_size>;
+    using value_size_type = bool_constant<_Func::variable_size>;
 
     detail::trie::write_values_to_ostream<_Func, value_type, value_size_type> func;
     value_addrs = func(os, m_value_store);
@@ -1286,7 +1286,7 @@ void packed_trie_map<_KeyTrait,_ValueT>::load_state(std::istream& is)
     is.read(bv.buffer, 4);
     uint32_t value_count = bv.ui32;
 
-    using value_size_type = std::integral_constant<bool, _Func::variable_size>;
+    using value_size_type = bool_constant<_Func::variable_size>;
     detail::trie::read_values_from_istream<_Func, value_type, value_size_type> func;
     m_value_store = func(is, value_count);
 

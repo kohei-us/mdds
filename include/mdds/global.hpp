@@ -115,6 +115,9 @@ std::unique_ptr<T> make_unique(Args&& ...args)
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+template<bool B>
+using bool_constant = std::integral_constant<bool, B>;
+
 }
 
 #endif
