@@ -729,7 +729,7 @@ void trie_packed_test_non_equal()
 
 namespace trie_packed_test_save_and_load_state {
 
-struct _custom_value
+struct _custom_variable_value
 {
     enum class v_type { unknown, fp32, int64 };
 
@@ -737,13 +737,13 @@ struct _custom_value
 
     union { float fp32; int64_t int64; } value;
 
-    _custom_value() : type(v_type::unknown) {}
+    _custom_variable_value() : type(v_type::unknown) {}
 
-    _custom_value(float v) : type(v_type::fp32) { value.fp32 = v; }
+    _custom_variable_value(float v) : type(v_type::fp32) { value.fp32 = v; }
 
-    _custom_value(int v) : type(v_type::int64) { value.int64 = v; }
+    _custom_variable_value(int v) : type(v_type::int64) { value.int64 = v; }
 
-    _custom_value(const _custom_value& other) : type(other.type)
+    _custom_variable_value(const _custom_variable_value& other) : type(other.type)
     {
         switch (type)
         {
@@ -758,7 +758,7 @@ struct _custom_value
         }
     }
 
-    bool operator== (const _custom_value& other) const
+    bool operator== (const _custom_variable_value& other) const
     {
         if (type != other.type)
             return false;
@@ -776,13 +776,13 @@ struct _custom_value
         return true;
     }
 
-    bool operator!= (const _custom_value& other) const
+    bool operator!= (const _custom_variable_value& other) const
     {
         return !operator== (other);
     }
 };
 
-struct _custom_serializer
+struct _custom_variable_serializer
 {
     union bin_value
     {
@@ -793,19 +793,19 @@ struct _custom_serializer
 
     static constexpr bool variable_size = true;
 
-    static void write(std::ostream& os, const _custom_value& v)
+    static void write(std::ostream& os, const _custom_variable_value& v)
     {
         bin_value bv;
 
         switch (v.type)
         {
-            case _custom_value::v_type::unknown:
+            case _custom_variable_value::v_type::unknown:
             {
                 char c = 0;
                 os.write(&c, 1);
                 break;
             }
-            case _custom_value::v_type::fp32:
+            case _custom_variable_value::v_type::fp32:
             {
                 char c = 1;
                 os.write(&c, 1);
@@ -813,7 +813,7 @@ struct _custom_serializer
                 os.write(bv.buffer, 4);
                 break;
             }
-            case _custom_value::v_type::int64:
+            case _custom_variable_value::v_type::int64:
             {
                 char c = 2;
                 os.write(&c, 1);
@@ -824,7 +824,7 @@ struct _custom_serializer
         }
     }
 
-    static void read(std::istream& is, size_t n, _custom_value& v)
+    static void read(std::istream& is, size_t n, _custom_variable_value& v)
     {
         assert(n > 0);
         char c;
@@ -833,13 +833,13 @@ struct _custom_serializer
         switch (c)
         {
             case 0:
-                v.type = _custom_value::v_type::unknown;
+                v.type = _custom_variable_value::v_type::unknown;
                 break;
             case 1:
-                v.type = _custom_value::v_type::fp32;
+                v.type = _custom_variable_value::v_type::fp32;
                 break;
             case 2:
-                v.type = _custom_value::v_type::int64;
+                v.type = _custom_variable_value::v_type::int64;
                 break;
             default:
                 assert(!"invalid value type");
@@ -850,17 +850,17 @@ struct _custom_serializer
 
         switch (v.type)
         {
-            case _custom_value::v_type::fp32:
+            case _custom_variable_value::v_type::fp32:
                 assert(n == 4);
                 is.read(bv.buffer, 4);
                 v.value.fp32 = bv.fp32;
                 break;
-            case _custom_value::v_type::int64:
+            case _custom_variable_value::v_type::int64:
                 assert(n == 8);
                 is.read(bv.buffer, 8);
                 v.value.int64 = bv.int64;
                 break;
-            case _custom_value::v_type::unknown:
+            case _custom_variable_value::v_type::unknown:
                 break;
             default:
                 assert(!"invalid value type");
@@ -1089,7 +1089,7 @@ void run()
     }
 
     {
-        using map_type = packed_trie_map<trie::std_string_trait, _custom_value>;
+        using map_type = packed_trie_map<trie::std_string_trait, _custom_variable_value>;
 
         std::vector<map_type::entry> entries =
         {
@@ -1110,7 +1110,7 @@ void run()
         std::string saved_state;
         {
             std::ostringstream state;
-            db.save_state<_custom_serializer>(state);
+            db.save_state<_custom_variable_serializer>(state);
             saved_state = state.str();
         }
 
@@ -1118,7 +1118,7 @@ void run()
 
         {
             std::istringstream state(saved_state);
-            restored.load_state<_custom_serializer>(state);
+            restored.load_state<_custom_variable_serializer>(state);
         }
 
         assert(db == restored);
