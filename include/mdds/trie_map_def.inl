@@ -45,6 +45,11 @@ namespace mdds {
 
 namespace detail { namespace trie {
 
+inline const char* value_type_size_name(bool variable_size)
+{
+    return variable_size ? "varaible size" : "fixed size";
+}
+
 union bin_value
 {
     char buffer[8];
@@ -59,7 +64,7 @@ using value_addrs_type = std::map<const void*, size_t>;
 template<typename _Func, typename _V>
 struct write_variable_size_values_to_ostream
 {
-    value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store)
+    value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store) const
     {
         bin_value bv;
 
@@ -93,7 +98,7 @@ struct write_variable_size_values_to_ostream
 template<typename _Func, typename _V>
 struct write_fixed_size_values_to_ostream
 {
-    value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store)
+    value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store) const
     {
         bin_value bv;
         value_addrs_type value_addrs;
@@ -121,6 +126,71 @@ struct write_values_to_ostream<_Func, _V, std::true_type> : write_variable_size_
 
 template<typename _Func, typename _V>
 struct write_values_to_ostream<_Func, _V, std::false_type> : write_fixed_size_values_to_ostream<_Func, _V> {};
+
+template<typename _Func, typename _V>
+struct read_fixed_size_values_from_istream
+{
+    using value_store_type = std::deque<_V>;
+
+    value_store_type operator()(std::istream& is, uint32_t value_count) const
+    {
+        value_store_type value_store;
+        bin_value bv;
+
+        // read the size of the value.
+        is.read(bv.buffer, 4);
+        size_t size = bv.ui32;
+
+        if (size != _Func::value_size)
+        {
+            std::ostringstream os;
+            os << "wrong size of fixed value type (expected: " << _Func::value_size << "; actual: " << size << ")";
+            throw std::invalid_argument(os.str());
+        }
+
+        for (uint32_t i = 0; i < value_count; ++i)
+        {
+            value_store.emplace_back();
+            _Func::read(is, size, value_store.back());
+        }
+
+        return value_store;
+    }
+};
+
+template<typename _Func, typename _V>
+struct read_variable_size_values_from_istream
+{
+    using value_store_type = std::deque<_V>;
+
+    value_store_type operator()(std::istream& is, uint32_t value_count) const
+    {
+        value_store_type value_store;
+        bin_value bv;
+
+        for (uint32_t i = 0; i < value_count; ++i)
+        {
+            is.read(bv.buffer, 4);
+            size_t size = bv.ui32;
+
+            _V v;
+            _Func::read(is, size, v);
+
+            value_store.push_back(std::move(v));
+        }
+
+        return value_store;
+    }
+};
+
+template<typename _Func, typename _V, typename _SizeTrait>
+struct read_values_from_istream;
+
+template<typename _Func, typename _V>
+struct read_values_from_istream<_Func, _V, std::true_type> : read_variable_size_values_from_istream<_Func, _V> {};
+
+template<typename _Func, typename _V>
+struct read_values_from_istream<_Func, _V, std::false_type> : read_fixed_size_values_from_istream<_Func, _V> {};
 
 }}
 
@@ -1201,46 +1271,24 @@ void packed_trie_map<_KeyTrait,_ValueT>::load_state(std::istream& is)
     uint16_t flags = bv.ui16;
     bool variable_size = (flags & 0x0001) != 0;
 
+    if (variable_size != _Func::variable_size)
+    {
+        std::ostringstream os;
+        os << "This stream is meant for a value type of "
+            << detail::trie::value_type_size_name(variable_size)
+            << ", but the actual value type is of "
+            << detail::trie::value_type_size_name(_Func::variable_size)
+            << ".";
+        throw std::invalid_argument(os.str());
+    }
+
     // read the number of values
     is.read(bv.buffer, 4);
     uint32_t value_count = bv.ui32;
 
-    value_store_type value_store;
-
-    if (variable_size)
-    {
-        for (uint32_t i = 0; i < value_count; ++i)
-        {
-            is.read(bv.buffer, 4);
-            size_t size = bv.ui32;
-
-            value_type v;
-            _Func::read(is, size, v);
-
-            value_store.push_back(std::move(v));
-        }
-    }
-    else
-    {
-        // read the size of the value.
-        is.read(bv.buffer, 4);
-        size_t size = bv.ui32;
-
-        if (size != sizeof(value_type))
-        {
-            std::ostringstream os;
-            os << "wrong size of fixed value type (expected: " << sizeof(value_type) << "; actual: " << ")";
-            throw std::invalid_argument(os.str());
-        }
-
-        for (uint32_t i = 0; i < value_count; ++i)
-        {
-            value_store.emplace_back();
-            _Func::read(is, size, value_store.back());
-        }
-    }
-
-    m_value_store.swap(value_store);
+    using value_size_type = std::integral_constant<bool, _Func::variable_size>;
+    detail::trie::read_values_from_istream<_Func, value_type, value_size_type> func;
+    m_value_store = func(is, value_count);
 
     // There should be a check byte of 0xFF.
     is.read(bv.buffer, 1);
