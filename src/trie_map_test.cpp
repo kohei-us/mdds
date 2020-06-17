@@ -868,6 +868,77 @@ struct _custom_variable_serializer
     }
 };
 
+/**
+ * mock value struct containing one value string that only stores "zero",
+ * "one", "two" or "three".  We use a custom serializer to store the value
+ * using only 1 byte each.
+ */
+struct _custom_fixed_value
+{
+    std::string value_string; // only stores "zero", "one", "two" or "three".
+
+    _custom_fixed_value() {}
+
+    _custom_fixed_value(const char* p) : value_string(p, std::strlen(p)) {}
+
+    bool operator== (const _custom_fixed_value& other) const
+    {
+        return value_string == other.value_string;
+    }
+
+    bool operator!= (const _custom_fixed_value& other) const
+    {
+        return !operator==(other);
+    }
+};
+
+struct _custom_fixed_serializer
+{
+    static constexpr bool variable_size = false;
+    static constexpr size_t value_size = 1;
+
+    static void write(std::ostream& os, const _custom_fixed_value& v)
+    {
+        char bv = -1;
+
+        if (v.value_string == "zero")
+            bv = 0;
+        else if (v.value_string == "one")
+            bv = 1;
+        else if (v.value_string == "two")
+            bv = 2;
+        else if (v.value_string == "three")
+            bv = 3;
+
+        os.write(&bv, 1);
+    }
+
+    static void read(std::istream& is, size_t n, _custom_fixed_value& v)
+    {
+        assert(n == 1);
+        char bv = -1;
+        is.read(&bv, 1);
+
+        switch (bv)
+        {
+            case 0:
+                v.value_string = "zero";
+                break;
+            case 1:
+                v.value_string = "one";
+                break;
+            case 2:
+                v.value_string = "two";
+                break;
+            case 3:
+                v.value_string = "three";
+                break;
+            default:
+                v.value_string = "???";
+        }
+    }
+};
+
 void test1()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test1");
@@ -1134,6 +1205,50 @@ void test7()
     assert(db == restored);
 }
 
+void test8()
+{
+    stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test8");
+    using map_type = packed_trie_map<trie::std_string_trait, _custom_fixed_value>;
+
+    std::vector<map_type::entry> entries =
+    {
+        { MDDS_ASCII("Bernardine"), "zero"  },
+        { MDDS_ASCII("Donny"),      "two"   },
+        { MDDS_ASCII("Julia"),      "one"   },
+        { MDDS_ASCII("Lindsy"),     "three" },
+        { MDDS_ASCII("Martine"),    "three" },
+        { MDDS_ASCII("Shana"),      "two"   },
+        { MDDS_ASCII("Sonia"),      "zero"  },
+        { MDDS_ASCII("Tracie"),     "one"   },
+        { MDDS_ASCII("Vanita"),     "two"   },
+        { MDDS_ASCII("Yung"),       "zero"  },
+    };
+
+    map_type db(entries.data(), entries.size());
+    assert(db.size() == entries.size());
+
+    std::string saved_state;
+    {
+        std::ostringstream state;
+        db.save_state<_custom_fixed_serializer>(state);
+        saved_state = state.str();
+    }
+
+    map_type restored;
+
+    {
+        std::istringstream state(saved_state);
+        restored.load_state<_custom_fixed_serializer>(state);
+    }
+
+    assert(db == restored);
+
+    // Run some query to make sure it is still functional.
+    auto it = restored.find("Tracie");
+    assert(it->first == "Tracie");
+    assert(it->second.value_string == "one");
+}
+
 void run()
 {
     test1();
@@ -1143,6 +1258,7 @@ void run()
     test5();
     test6();
     test7();
+    test8();
 }
 
 }
