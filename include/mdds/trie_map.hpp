@@ -582,14 +582,27 @@ public:
 
     void swap(packed_trie_map& other);
 
+    /**
+     * Save the state of the instance of this class to an external buffer.
+     *
+     * @param os output stream to write the state to.
+     */
     template<typename _Func = trie::value_serializer<value_type>>
     void save_state(std::ostream& os) const;
 
+    /**
+     * Restore the state of the instance of this class from an external
+     * buffer.
+     *
+     * @param is input stream to load the state from.
+     */
     template<typename _Func = trie::value_serializer<value_type>>
     void load_state(std::istream& is);
 
     /**
-     * Dump the structure of the trie content for debugging.
+     * Dump the structure of the trie content for debugging.  You must define
+     * <code>MDDS_TRIE_MAP_DEBUG</code> in order for this method to generate
+     * output.
      */
     void dump_structure() const;
 

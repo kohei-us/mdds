@@ -4,8 +4,8 @@
 Trie Maps
 =========
 
-Example
--------
+Examples
+--------
 
 Populating Trie Map
 ^^^^^^^^^^^^^^^^^^^
@@ -177,7 +177,8 @@ will generate the following output:
 
     Population of Asheboro: not found
 
-The complete source code for this example is available `here <https://gitlab.com/mdds/mdds/-/blob/master/example/trie_map.cpp>`__.
+The complete source code for the examples in these two sections is available
+`here <https://gitlab.com/mdds/mdds/-/blob/master/example/trie_map.cpp>`__.
 
 
 Using Packed Trie Map directly
@@ -242,7 +243,19 @@ from its static definition.  Once it's instantiated, the rest of the example
 for performing searches will be the same as in the previous section, which we
 will not repeat here.
 
-The complete source code for this example is available `here <https://gitlab.com/mdds/mdds/-/blob/master/example/packed_trie_map.cpp>`__.
+The complete source code for the example in this section is available
+`here <https://gitlab.com/mdds/mdds/-/blob/master/example/packed_trie_map.cpp>`__.
+
+
+Saving and loading Packed Trie Map instances
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are times when you need to save the state of a :cpp:class:`~mdds::packed_trie_map`
+instance to a file, or an in-memory buffer, and load it back later.  Doing that
+is now possible by using the :cpp:func:`~mdds::packed_trie_map::save_state` and
+:cpp:func:`~mdds::packed_trie_map::load_state` member methods of the class.
+
+TBD
 
 
 API Reference
