@@ -4,6 +4,8 @@
 *.o
 *.obj
 *.py[co]
+*.gcda
+*.gcno
 .deps/
 .dirstamp
 __pycache__
@@ -48,6 +50,7 @@ example/multi-type-vector-element-block1
 example/multi-type-vector-event1
 example/multi-type-vector-pos-hint
 example/packed-trie-map
+example/packed-trie-state-int
 example/point-quad-tree
 example/rectangle-set
 example/segment-tree
@@ -58,5 +61,3 @@ example/rtree-medium
 example/rtree-medium-bulkload
 example/*.svg
 rtree-test-*.svg
-src/*.gcda
-src/*.gcno
