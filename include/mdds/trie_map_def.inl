@@ -110,7 +110,22 @@ struct write_fixed_size_values_to_ostream
         size_t pos = 0;
         for (const _V& v : value_store)
         {
+            auto sp_start = os.tellp();
             _Func::write(os, v);
+            auto sp_end = os.tellp();
+
+            size_t bytes_written = sp_end - sp_start;
+            if (bytes_written != _Func::value_size)
+            {
+                std::ostringstream msg;
+                msg << "bytes written ("
+                    << bytes_written
+                    << ") does not equal the value size ("
+                    << _Func::value_size
+                    << ")";
+                throw size_error(msg.str());
+            }
+
             value_addrs.insert({&v, pos++});
         }
 
