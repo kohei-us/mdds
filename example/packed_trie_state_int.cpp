@@ -33,7 +33,7 @@
 
 using namespace std;
 
-void example_int()
+int main()
 {
     using map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, int>;
 
@@ -165,11 +165,6 @@ void example_int()
         for (const auto& city : results)
             cout << "  * " << city.first << ": " << city.second << endl;
     }
-}
-
-int main(int argc, char** argv)
-{
-    example_int();
 
     return EXIT_SUCCESS;
 }
