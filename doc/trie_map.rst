@@ -253,17 +253,20 @@ Saving and loading Packed Trie Map instances
 There are times when you need to save the state of a :cpp:class:`~mdds::packed_trie_map`
 instance to a file, or an in-memory buffer, and load it back later.  Doing that
 is now possible by using the :cpp:func:`~mdds::packed_trie_map::save_state` and
-:cpp:func:`~mdds::packed_trie_map::load_state` member methods of the class.
+:cpp:func:`~mdds::packed_trie_map::load_state` member methods of the
+:cpp:class:`~mdds::packed_trie_map` class.
 
-TBD
-
-::
+First, let's define the type of use::
 
     using map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, int>;
 
-TBD
+As with the previous examples, we will use ``std::string`` as the key type and
+``int`` as the value type.  In this example, we are going to use `the world's
+largest cities and their 2018 populations
+<https://en.wikipedia.org/wiki/List_of_largest_cities>`__ as the data to store
+in the container.
 
-::
+The following code defines the entries::
 
     std::vector<map_type::entry> entries =
     {
@@ -350,29 +353,32 @@ TBD
         { MDDS_ASCII("Yangon"),           5157000  },
     };
 
-TBD
-
-::
+It's a bit long as it contains entries for 81 cities.  We are then going to
+create an instance of the :cpp:class:`~mdds::packed_trie_map` class directly::
 
     map_type cities(entries.data(), entries.size());
+
+Let's print the size of the container to make sure the container has been
+successfully populated::
+
     cout << "Number of cities: " << cities.size() << endl;
 
-TBD
+You will see the following output:
 
 .. code-block:: none
 
     Number of cities: 81
 
-TBD
-
-::
+if the container has been successfully populated.  Now, let's run a prefix
+search on names beginning with an 'S'::
 
     cout << "Cities that begin with 'S':" << endl;
     auto results = cities.prefix_search("S");
     for (const auto& city : results)
         cout << "  * " << city.first << ": " << city.second << endl;
 
-TBD
+to make sure you get the following ten cities and their populations as the
+output:
 
 .. code-block:: none
 
@@ -388,54 +394,63 @@ TBD
       * Surat: 6564000
       * Suzhou: 6339000
 
-TBD
-
-::
+So far so good.  Next, we will use the :cpp:func:`~mdds::packed_trie_map::save_state`
+method to dump the internal state of this container to a file named **cities.bin**::
 
     std::ofstream outfile("cities.bin", ios::binary);
     cities.save_state(outfile);
 
-TBD
+This will create a file named **cities.bin** which contains a binary blob
+representing the content of this container in the current working directory.
+Run the ``ls -l cities.bin`` command to make sure the file has been created:
+
+.. code-block:: none
+
+    -rw-r--r-- 1 kohei kohei 17713 Jun 20 12:49 cities.bin
+
+Now that the state of the container has been fully serialized to a file, let's
+work on restoring its content in another, brand-new instance of
+:cpp:class:`~mdds::packed_trie_map`.
 
 ::
+
+    map_type cities_loaded;
 
     std::ifstream infile("cities.bin", ios::binary);
     cities_loaded.load_state(infile);
 
-TBD
-
-::
+Here, we used the :cpp:func:`~mdds::packed_trie_map::load_state` method to
+restore the state from the file we have previously created.  Let's make sure
+that this new instance has content equivalent to that of the original::
 
     cout << "Equal to the original? " << std::boolalpha << (cities == cities_loaded) << endl;
 
-TBD
+If you see the following output:
 
 .. code-block:: none
 
     Equal to the original? true
 
-TBD
-
-::
+then this new instance has equivalent contant as the original one.  Let's also
+make sure that it contains the same number of entries as the original::
 
     cout << "Number of cities: " << cities_loaded.size() << endl;
 
-TBD
+Hopefully you will see the following output:
 
 .. code-block:: none
 
     Number of cities: 81
 
-TBD
-
-::
+Lastly, let's run on this new instance the same prefix search we did on the
+original instance, to make sure we still get the same results::
 
     cout << "Cities that begin with 'S':" << endl;
     auto results = cities_loaded.prefix_search("S");
     for (const auto& city : results)
         cout << "  * " << city.first << ": " << city.second << endl;
 
-TBD
+You should see the following output:
 
 .. code-block:: none
 
@@ -451,7 +466,10 @@ TBD
       * Surat: 6564000
       * Suzhou: 6339000
 
-TBD
+which is the same output we saw in the first prefix search.
+
+The complete source code for this example is found
+`here <https://gitlab.com/mdds/mdds/-/blob/master/example/packed_trie_state_int.cpp>`__.
 
 
 API Reference
