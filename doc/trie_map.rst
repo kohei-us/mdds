@@ -21,7 +21,7 @@ Let's define the type first::
 
 The first template argument specifies the trait of the key.  In this example,
 we are using a pre-defined trait for std::string, which is defined in
-:cpp:class:`~mdds::trie::std_string_trait`.  The second template argument
+:cpp:type:`~mdds::trie::std_string_trait`.  The second template argument
 specifies the value type, which in this example is simply an ``int``.
 
 Once the type is defined, the next step is instantiation::
