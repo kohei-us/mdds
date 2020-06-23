@@ -582,7 +582,7 @@ TBD
     {
         union bin_buffer
         {
-            char buffer[4];
+            char buffer[2];
             uint16_t i16;
             affiliated_party_t party;
         };
