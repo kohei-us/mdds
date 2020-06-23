@@ -11,6 +11,7 @@ EXTRA_PROGRAMS = \
 	multi-type-vector-event1 \
 	multi-type-vector-pos-hint \
 	packed-trie-map \
+	packed-trie-state-custom \
 	packed-trie-state-int \
 	point-quad-tree \
 	rectangle-set \
@@ -30,6 +31,7 @@ multi_type_vector_element_block1_SOURCES = multi_type_vector_element_block1.cpp
 multi_type_vector_event1_SOURCES = multi_type_vector_event1.cpp
 multi_type_vector_pos_hint_SOURCES = multi_type_vector_pos_hint.cpp
 packed_trie_map_SOURCES = packed_trie_map.cpp
+packed_trie_state_custom_SOURCES = packed_trie_state_custom.cpp
 packed_trie_state_int_SOURCES = packed_trie_state_int.cpp
 point_quad_tree_SOURCES = point_quad_tree.cpp
 rectangle_set_SOURCES = rectangle_set.cpp
@@ -50,6 +52,7 @@ TESTS = \
 	multi-type-vector-event1 \
 	multi-type-vector-pos-hint \
 	packed-trie-map \
+	packed-trie-state-custom \
 	packed-trie-state-int \
 	point-quad-tree \
 	rectangle-set \
