@@ -44,6 +44,12 @@ enum affiliated_party_t : uint8_t
     republican_national_union,
 };
 
+struct us_president
+{
+    uint16_t year;
+    affiliated_party_t party;
+};
+
 std::ostream& operator<< (std::ostream& os, affiliated_party_t v)
 {
     static const char* names[] = {
@@ -60,12 +66,6 @@ std::ostream& operator<< (std::ostream& os, affiliated_party_t v)
     os << names[v];
     return os;
 }
-
-struct us_president
-{
-    uint16_t year;
-    affiliated_party_t party;
-};
 
 bool operator== (const us_president& left, const us_president& right)
 {
@@ -88,22 +88,27 @@ struct us_president_serializer
     {
         bin_buffer buf;
 
+        // Write the year value first.
         buf.i16 = v.year;
         os.write(buf.buffer, 2);
 
+        // Write the affiliated party value.
         buf.party = v.party;
         os.write(buf.buffer, 1);
     }
 
     static void read(std::istream& is, size_t n, us_president& v)
     {
+        // For a fixed-size value type, this should equal the defined value size.
         assert(n == 3);
 
         bin_buffer buf;
 
+        // Read the year value.
         is.read(buf.buffer, 2);
         v.year = buf.i16;
 
+        // Read the affiliated party value.
         is.read(buf.buffer, 1);
         v.party = buf.party;
     }
