@@ -885,7 +885,9 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
         return ret < 0;
     };
 
-    assert(std::is_sorted(p, p_end, func_compare));
+    if (!std::is_sorted(p, p_end, func_compare))
+        throw integrity_error("the list of entries is not sorted.");
+
 #endif
 
     // Populate the normal tree first.
