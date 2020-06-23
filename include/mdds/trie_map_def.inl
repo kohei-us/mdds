@@ -873,6 +873,21 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(
     const entry* p = entries;
     const entry* p_end = p + entry_size;
 
+#if defined(MDDS_TRIE_MAP_DEBUG)
+    // Make sure the entries really are sorted.
+    auto func_compare = [](const entry& left, const entry& right) -> bool
+    {
+        size_type n_key = std::min(left.keylen, right.keylen);
+        int ret = std::memcmp(left.key, right.key, n_key);
+        if (ret == 0)
+            return left.keylen < right.keylen;
+
+        return ret < 0;
+    };
+
+    assert(std::is_sorted(p, p_end, func_compare));
+#endif
+
     // Populate the normal tree first.
     trie_node root(0);
     node_pool_type node_pool;
