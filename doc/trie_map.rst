@@ -475,9 +475,27 @@ The complete source code for this example is found
 Saving Packed Trie Map with custom value type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+In the previos example, you didn't have to explicitly specify the serializer type
+to the :cpp:func:`~mdds::packed_trie_map::save_state` and
+:cpp:func:`~mdds::packed_trie_map::load_state` methods, even though these two
+methods require the serializer type as their template arguments.  That's because
+the library provides default serializer types for
 
-::
+* numeric value types i.e. integers, float and double,
+* ``std::string``, and
+* the standard sequence types, such as ``std::vector``, whose elements are of
+  numeric value types,
+
+and the previous example used ``int`` as the value type.
+
+In this section, we are going to illustrate how you can write your own custom
+serializer to allow serialization of your own custom value type.  In this example,
+we are going to use `the list of presidents of the United States
+<https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States>`__,
+with the names of the presidents as the keys, and their years of inauguration
+and political affiliations as the values.
+
+We will use the following structure to store the values::
 
     enum affiliated_party_t : uint8_t
     {
@@ -497,15 +515,15 @@ TBD
         affiliated_party_t party;
     };
 
-TBD
+Each entry stores the year as a 16-bit integer and the affiliated party as an enum
+value of 8-bit width.
 
-::
+Next, let's define the container type::
 
     using map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, us_president>;
 
-TBD
-
-::
+As with the previous example, the first step is to define the entries that are
+sorted by the keys, which in this case are the president's names::
 
     std::vector<map_type::entry> entries =
     {
@@ -525,8 +543,8 @@ TBD
         { MDDS_ASCII("George W. Bush"),         { 2001, republican                } },
         { MDDS_ASCII("George Washington"),      { 1789, unaffiliated              } },
         { MDDS_ASCII("Gerald Ford"),            { 1974, republican                } },
-        { MDDS_ASCII("Grover Cleveland"),       { 1885, democratic                } },
-        { MDDS_ASCII("Grover Cleveland"),       { 1893, democratic                } },
+        { MDDS_ASCII("Grover Cleveland 1"),     { 1885, democratic                } },
+        { MDDS_ASCII("Grover Cleveland 2"),     { 1893, democratic                } },
         { MDDS_ASCII("Harry S. Truman"),        { 1945, democratic                } },
         { MDDS_ASCII("Herbert Hoover"),         { 1929, republican                } },
         { MDDS_ASCII("James A. Garfield"),      { 1881, republican                } },
@@ -556,27 +574,26 @@ TBD
         { MDDS_ASCII("Zachary Taylor"),         { 1849, whig                      } },
     };
 
-TBD
+Note that we need to add numeric suffixes to the entries for Grover Cleveland,
+who became president twice in two separate periods, in order to make the keys
+for his entries unique.
 
-::
+Now, proceed to create an instance of :cpp:class:`~mdds::packed_trie_map`::
 
     map_type us_presidents(entries.data(), entries.size());
 
-TBD
-
-::
+and inspect its size to make sure it is instantiated properly::
 
     cout << "Number of entries: " << us_presidents.size() << endl;
 
-TBD
+You should see the following output:
 
 .. code-block:: none
 
-    Number of entries: 44
+    Number of entries: 45
 
-TBD
-
-::
+Before we proceed to save the state of this instance, let's define the custom
+serializer type first::
 
     struct us_president_serializer
     {
@@ -620,44 +637,57 @@ TBD
         }
     };
 
-TBD
+A custom value type can be either variable-size or fixed-size.  For a variable-size
+value type, each value segment is preceded by the byte length of that segment,
+while for a fixed-size value type, the size of the value is written only once
+up-front, followed by one or more value segments of equal byte length.
 
-::
+Since the value type in this example is fixed-size, we set the value of the
+``variable_size`` constant to false, and define the size of the value to 3 (bytes)
+as the ``value_size`` constant.  Note that you need to define the ``value_size``
+constant *only* for fixed-size value types.  You can leave it out for variable-size
+value types.
+
+TODO : write about the write and read methods.
+
+Now that we have defined the custom serializer type, let's proceed to save the
+state to a file::
 
     std::ofstream outfile("us-presidents.bin", ios::binary);
     us_presidents.save_state<us_president_serializer>(outfile);
 
-TBD
+This time around, we are specifying the serializer type explicitly.  Otherwise
+it is no different than what we did in the previous example.
 
-::
+Let's create another instance and restore the state back from the file::
 
     map_type us_presidents_loaded;
 
     std::ifstream infile("us-presidents.bin", ios::binary);
     us_presidents_loaded.load_state<us_president_serializer>(infile);
 
-TBD
+Once again, aside from explicitly specifying the serializer type as the template
+argument, it is identical to the way we did in the previous example.
 
-::
+Let's compare the new instance with the old one to see if the two are equal::
 
     cout << "Equal to the original? " << std::boolalpha << (us_presidents == us_presidents_loaded) << endl;
 
-TBD
+The output says:
 
 .. code-block:: none
 
     Equal to the original? true
 
-TBD
-
-::
+They are.  While we are at it, let's run a simple prefix search to find out
+all the US presidents whose first name is 'John'::
 
     cout << "Presidents whose first name is 'John':" << endl;
     auto results = us_presidents_loaded.prefix_search("John");
     for (const auto& entry : results)
         cout << "  * " << entry.first << " (" << entry.second.year << "; " << entry.second.party << ")" << endl;
 
-TBD
+Here is the output:
 
 .. code-block:: none
 
@@ -666,6 +696,9 @@ TBD
       * John F. Kennedy (1961; Democratic)
       * John Quincy Adams (1825; Democratic Republican)
       * John Tyler (1841; Whig)
+
+You can find the complete source code for this example `here
+<https://gitlab.com/mdds/mdds/-/blob/master/example/packed_trie_state_custom.cpp>`__.
 
 
 API Reference
