@@ -741,6 +741,7 @@ Packed Trie Map
 .. doxygenclass:: mdds::packed_trie_map
    :members:
 
+
 Traits
 ^^^^^^
 
@@ -748,3 +749,19 @@ Traits
    :members:
 
 .. doxygentypedef:: mdds::trie::std_string_trait
+
+
+Value Serializers
+^^^^^^^^^^^^^^^^^
+
+.. doxygenstruct:: mdds::trie::value_serializer
+   :members:
+
+.. doxygenstruct:: mdds::trie::numeric_value_serializer
+   :members:
+
+.. doxygenstruct:: mdds::trie::variable_value_serializer
+   :members:
+
+.. doxygenstruct:: mdds::trie::std_numeric_sequence_value_serializer
+   :members:

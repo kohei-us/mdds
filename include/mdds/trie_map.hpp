@@ -141,7 +141,7 @@ struct std_container_trait
 
 using std_string_trait = std_container_trait<std::string>;
 
-/** Serializer for int data types. */
+/** Serializer for numeric data types. */
 template<typename T>
 struct numeric_value_serializer
 {
@@ -165,6 +165,10 @@ struct variable_value_serializer
     static void read(std::istream& is, size_t n, T& v);
 };
 
+/**
+ * Serializer for standard sequence container whose value type is of
+ * numeric value type.
+ */
 template<typename T>
 struct std_numeric_sequence_value_serializer
 {
