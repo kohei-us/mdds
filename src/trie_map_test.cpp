@@ -37,6 +37,7 @@
 #include <iterator>
 #include <fstream>
 #include <vector>
+#include <list>
 
 using namespace std;
 using namespace mdds;
@@ -1131,12 +1132,13 @@ void test5()
     assert(db == restored);
 }
 
+template<typename SeqT>
 void test6()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test6");
-    using map_type = packed_trie_map<trie::std_string_trait, std::vector<double>>;
+    using map_type = packed_trie_map<trie::std_string_trait, SeqT>;
 
-    std::vector<map_type::entry> entries =
+    std::vector<typename map_type::entry> entries =
     {
         { MDDS_ASCII("Abby"),     { 65.0, 98.1, 98.2, 121.3 }              },
         { MDDS_ASCII("Ashley"),   { 65.0, 11.5, 1.04, 1.08, .101, .12586 } },
@@ -1256,7 +1258,9 @@ void run()
     test3();
     test4();
     test5();
-    test6();
+    test6<std::vector<double>>();
+    test6<std::deque<double>>();
+    test6<std::list<double>>();
     test7();
     test8();
 }

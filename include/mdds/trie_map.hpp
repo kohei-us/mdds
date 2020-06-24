@@ -187,11 +187,11 @@ struct numeric_sequence_value_serializer
  * types, and template specializations exist for std::string, as
  * well as std::vector whose elements are of numeric types.
  */
-template<typename T>
+template<typename T, typename U = void>
 struct value_serializer : numeric_value_serializer<T> {};
 
 template<typename T>
-struct value_serializer<std::vector<T>> : numeric_sequence_value_serializer<std::vector<T>> {};
+struct value_serializer<T, typename std::enable_if<has_value_type<T>::value>::type> : numeric_sequence_value_serializer<T> {};
 
 template<>
 struct value_serializer<std::string> : variable_value_serializer<std::string> {};
