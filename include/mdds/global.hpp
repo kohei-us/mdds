@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2008-2015 Kohei Yoshida
+ * Copyright (c) 2008-2020 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -117,6 +117,19 @@ std::unique_ptr<T> make_unique(Args&& ...args)
 
 template<bool B>
 using bool_constant = std::integral_constant<bool, B>;
+
+template <typename T>
+class has_value_type
+{
+    using y_type = char;
+    using n_type = long;
+
+    template <typename U> static y_type test(typename U::value_type);
+    template <typename U> static n_type test(...);
+
+public:
+    static constexpr bool value = sizeof(test<T>(0)) == sizeof(y_type);
+};
 
 }
 
