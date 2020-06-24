@@ -181,6 +181,12 @@ struct std_numeric_sequence_value_serializer
     static void read(std::istream& is, size_t n, T& v);
 };
 
+/**
+ * Default value serializer for mdds::packed_trie_map's load_state and
+ * save_state methods.  The primary template is used for numeric value
+ * types, and template specializations exist for std::string, as
+ * well as std::vector whose elements are of numeric types.
+ */
 template<typename T>
 struct value_serializer : numeric_value_serializer<T> {};
 
