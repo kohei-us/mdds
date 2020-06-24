@@ -185,7 +185,8 @@ struct numeric_sequence_value_serializer
  * Default value serializer for mdds::packed_trie_map's load_state and
  * save_state methods.  The primary template is used for numeric value
  * types, and template specializations exist for std::string, as
- * well as std::vector whose elements are of numeric types.
+ * well as sequence containers, such as std::vector, whose elements are of
+ * numeric types.
  */
 template<typename T, typename U = void>
 struct value_serializer : numeric_value_serializer<T> {};
