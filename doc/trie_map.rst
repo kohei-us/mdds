@@ -638,17 +638,36 @@ serializer type first::
     };
 
 A custom value type can be either variable-size or fixed-size.  For a variable-size
-value type, each value segment is preceded by the byte length of that segment,
-while for a fixed-size value type, the size of the value is written only once
-up-front, followed by one or more value segments of equal byte length.
+value type, each value segment is preceded by the byte length of that segment.
+For a fixed-size value type, the byte length of all of the value segments
+is written only once up-front, followed by one or more value segments of equal
+byte length.
 
 Since the value type in this example is fixed-size, we set the value of the
-``variable_size`` constant to false, and define the size of the value to 3 (bytes)
-as the ``value_size`` constant.  Note that you need to define the ``value_size``
-constant *only* for fixed-size value types.  You can leave it out for variable-size
-value types.
+``variable_size`` static constant to false, and define the size of the value to 3 (bytes)
+as the ``value_size`` static constant.  Keep in mind that you need to define
+the ``value_size`` constant *only* for fixed-size value types; if your value
+type is variable-size, you can leave it out.
 
-TODO : write about the write and read methods.
+Additionally, you need to define two static methods - one for writing to the
+output stream, and one for reading from the input stream.  The write method
+must have the following signature::
+
+    static void write(std::ostream& os, const T& v);
+
+where the ``T`` is the value type.  In the body of this method you write to the
+output stream the bytes that represent the value.  The length of the bytes you
+write must match the size specified by the ``value_size`` constant.
+
+The read method must have the following signature::
+
+    static void read(std::istream& is, size_t n, T& v);
+
+where the ``T`` is the value type, and the ``n`` specifies the length of the
+bytes you need to read for the value.  For a fixed-size value type, the value
+of ``n`` should equal the ``value_size`` constant.  Your job is to read the
+bytes off of the input stream for the length specified by the ``n``, and
+populate the value instance passed to the method as the third argument.
 
 Now that we have defined the custom serializer type, let's proceed to save the
 state to a file::
@@ -656,10 +675,12 @@ state to a file::
     std::ofstream outfile("us-presidents.bin", ios::binary);
     us_presidents.save_state<us_president_serializer>(outfile);
 
-This time around, we are specifying the serializer type explicitly.  Otherwise
+This time around, we are specifying the serializer type explicitly as the template
+argument to the :cpp:func:`~mdds::packed_trie_map::save_state` method.  Otherwise
 it is no different than what we did in the previous example.
 
-Let's create another instance and restore the state back from the file::
+Let's create another instance of :cpp:class:`~mdds::packed_trie_map` and restore
+the state back from the file we just created::
 
     map_type us_presidents_loaded;
 
@@ -667,7 +688,8 @@ Let's create another instance and restore the state back from the file::
     us_presidents_loaded.load_state<us_president_serializer>(infile);
 
 Once again, aside from explicitly specifying the serializer type as the template
-argument, it is identical to the way we did in the previous example.
+argument to the :cpp:func:`~mdds::packed_trie_map::load_state` method, it is
+identical to the way we did in the previous example.
 
 Let's compare the new instance with the old one to see if the two are equal::
 
@@ -696,6 +718,8 @@ Here is the output:
       * John F. Kennedy (1961; Democratic)
       * John Quincy Adams (1825; Democratic Republican)
       * John Tyler (1841; Whig)
+
+This looks like the correct results!
 
 You can find the complete source code for this example `here
 <https://gitlab.com/mdds/mdds/-/blob/master/example/packed_trie_state_custom.cpp>`__.
