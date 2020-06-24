@@ -182,21 +182,21 @@ int main()
         us_presidents.save_state<us_president_serializer>(outfile);
     }
 
-    {
-        map_type us_presidents_loaded;
+    map_type us_presidents_loaded;
 
+    {
         std::ifstream infile("us-presidents.bin", ios::binary);
         us_presidents_loaded.load_state<us_president_serializer>(infile);
-
-        cout << "Equal to the original? " << std::boolalpha << (us_presidents == us_presidents_loaded) << endl;
-
-        cout << endl;
-
-        cout << "Presidents whose first name is 'John':" << endl;
-        auto results = us_presidents_loaded.prefix_search("John");
-        for (const auto& entry : results)
-            cout << "  * " << entry.first << " (" << entry.second.year << "; " << entry.second.party << ")" << endl;
     }
+
+    cout << "Equal to the original? " << std::boolalpha << (us_presidents == us_presidents_loaded) << endl;
+
+    cout << endl;
+
+    cout << "Presidents whose first name is 'John':" << endl;
+    auto results = us_presidents_loaded.prefix_search("John");
+    for (const auto& entry : results)
+        cout << "  * " << entry.first << " (" << entry.second.year << "; " << entry.second.party << ")" << endl;
 
     return EXIT_SUCCESS;
 }

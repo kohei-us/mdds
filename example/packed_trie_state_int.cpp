@@ -146,25 +146,25 @@ int main()
         cities.save_state(outfile);
     }
 
-    {
-        map_type cities_loaded;
+    map_type cities_loaded;
 
+    {
         std::ifstream infile("cities.bin", ios::binary);
         cities_loaded.load_state(infile);
-
-        cout << "Equal to the original? " << std::boolalpha << (cities == cities_loaded) << endl;
-
-        cout << endl;
-
-        cout << "Number of cities: " << cities_loaded.size() << endl;
-
-        cout << endl;
-
-        cout << "Cities that begin with 'S':" << endl;
-        auto results = cities_loaded.prefix_search("S");
-        for (const auto& city : results)
-            cout << "  * " << city.first << ": " << city.second << endl;
     }
+
+    cout << "Equal to the original? " << std::boolalpha << (cities == cities_loaded) << endl;
+
+    cout << endl;
+
+    cout << "Number of cities: " << cities_loaded.size() << endl;
+
+    cout << endl;
+
+    cout << "Cities that begin with 'S':" << endl;
+    auto results = cities_loaded.prefix_search("S");
+    for (const auto& city : results)
+        cout << "  * " << city.first << ": " << city.second << endl;
 
     return EXIT_SUCCESS;
 }
