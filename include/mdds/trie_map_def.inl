@@ -250,7 +250,7 @@ void numeric_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 }
 
 template<typename T>
-void std_numeric_vector_value_serializer<T>::write(std::ostream& os, const T& v)
+void std_numeric_sequence_value_serializer<T>::write(std::ostream& os, const T& v)
 {
     static_assert(std::is_arithmetic<typename T::value_type>::value, "value type of this vector is not a numeric type.");
 
@@ -259,7 +259,7 @@ void std_numeric_vector_value_serializer<T>::write(std::ostream& os, const T& v)
 }
 
 template<typename T>
-void std_numeric_vector_value_serializer<T>::read(std::istream& is, size_t n, T& v)
+void std_numeric_sequence_value_serializer<T>::read(std::istream& is, size_t n, T& v)
 {
     using elem_type = typename T::value_type;
     static_assert(std::is_arithmetic<typename T::value_type>::value, "value type of this vector is not a numeric type.");
