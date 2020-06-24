@@ -170,7 +170,7 @@ struct variable_value_serializer
  * numeric value type.
  */
 template<typename T>
-struct std_numeric_sequence_value_serializer
+struct numeric_sequence_value_serializer
 {
     using element_serializer = numeric_value_serializer<typename T::value_type>;
 
@@ -191,7 +191,7 @@ template<typename T>
 struct value_serializer : numeric_value_serializer<T> {};
 
 template<typename T>
-struct value_serializer<std::vector<T>> : std_numeric_sequence_value_serializer<std::vector<T>> {};
+struct value_serializer<std::vector<T>> : numeric_sequence_value_serializer<std::vector<T>> {};
 
 template<>
 struct value_serializer<std::string> : variable_value_serializer<std::string> {};

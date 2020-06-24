@@ -763,5 +763,5 @@ Value Serializers
 .. doxygenstruct:: mdds::trie::variable_value_serializer
    :members:
 
-.. doxygenstruct:: mdds::trie::std_numeric_sequence_value_serializer
+.. doxygenstruct:: mdds::trie::numeric_sequence_value_serializer
    :members:
