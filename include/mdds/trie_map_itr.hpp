@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2016 Kohei Yoshida
+ * Copyright (c) 2016-2020 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -68,25 +68,25 @@ class search_results;
 template<typename _TrieType>
 class iterator_base
 {
-    typedef _TrieType trie_type;
+    using trie_type = _TrieType;
     friend trie_type;
     friend search_results<trie_type>;
 
-    typedef typename trie_type::node_stack_type node_stack_type;
+    using node_stack_type = typename trie_type::node_stack_type;
 
-    typedef typename trie_type::trie_node trie_node;
-    typedef typename trie_type::key_trait_type key_trait_type;
-    typedef typename key_trait_type::key_type key_type;
-    typedef typename key_trait_type::key_buffer_type key_buffer_type;
-    typedef typename key_trait_type::key_unit_type   key_unit_type;
+    using trie_node = typename trie_type::trie_node;
+    using key_trait_type = typename trie_type::key_trait_type;
+    using key_type = typename key_trait_type::key_type;
+    using key_buffer_type = typename key_trait_type::key_buffer_type;
+    using key_unit_type = typename key_trait_type::key_unit_type;
 
 public:
     // iterator traits
-    typedef typename trie_type::key_value_type value_type;
-    typedef value_type*     pointer;
-    typedef value_type&     reference;
-    typedef std::ptrdiff_t  difference_type;
-    typedef std::bidirectional_iterator_tag iterator_category;
+    using value_type = typename trie_type::key_value_type;
+    using pointer = value_type*;
+    using reference = value_type&;
+    using difference_type = std::ptrdiff_t;
+    using iterator_category = std::bidirectional_iterator_tag;
 
 private:
     node_stack_type m_node_stack;
@@ -323,15 +323,15 @@ public:
 template<typename _TrieType>
 class search_results
 {
-    typedef _TrieType trie_type;
+    using trie_type = _TrieType;
     friend trie_type;
-    typedef typename trie_type::node_stack_type node_stack_type;
+    using node_stack_type = typename trie_type::node_stack_type;
 
-    typedef typename trie_type::trie_node trie_node;
-    typedef typename trie_type::key_trait_type key_trait_type;
-    typedef typename key_trait_type::key_type key_type;
-    typedef typename key_trait_type::key_buffer_type key_buffer_type;
-    typedef typename key_trait_type::key_unit_type   key_unit_type;
+    using trie_node = typename trie_type::trie_node;
+    using key_trait_type = typename trie_type::key_trait_type;
+    using key_type = typename key_trait_type::key_type;
+    using key_buffer_type = typename key_trait_type::key_buffer_type;
+    using key_unit_type = typename key_trait_type::key_unit_type;
 
     const trie_node* m_node;
     key_buffer_type m_buffer;
@@ -341,7 +341,7 @@ class search_results
         m_node(node), m_buffer(buf) {}
 
 public:
-    typedef iterator_base<trie_type> const_iterator;
+    using const_iterator = iterator_base<trie_type>;
 
     const_iterator begin() const
     {
@@ -386,25 +386,25 @@ class packed_search_results;
 template<typename _TrieType>
 class packed_iterator_base
 {
-    typedef _TrieType trie_type;
+    using trie_type = _TrieType;
     friend trie_type;
     friend packed_search_results<trie_type>;
 
-    typedef typename trie_type::stack_item stack_item;
-    typedef typename trie_type::node_stack_type node_stack_type;
+    using stack_item = typename trie_type::stack_item;
+    using node_stack_type = typename trie_type::node_stack_type;
 
-    typedef typename trie_type::key_trait_type key_trait_type;
-    typedef typename key_trait_type::key_type key_type;
-    typedef typename key_trait_type::key_buffer_type key_buffer_type;
-    typedef typename key_trait_type::key_unit_type   key_unit_type;
+    using key_trait_type = typename trie_type::key_trait_type;
+    using key_type = typename key_trait_type::key_type;
+    using key_buffer_type = typename key_trait_type::key_buffer_type;
+    using key_unit_type = typename key_trait_type::key_unit_type;
 
 public:
     // iterator traits
-    typedef typename trie_type::key_value_type value_type;
-    typedef value_type*     pointer;
-    typedef value_type&     reference;
-    typedef std::ptrdiff_t  difference_type;
-    typedef std::bidirectional_iterator_tag iterator_category;
+    using value_type = typename trie_type::key_value_type;
+    using pointer = value_type*;
+    using reference = value_type&;
+    using difference_type = std::ptrdiff_t;
+    using iterator_category = std::bidirectional_iterator_tag;
 
 private:
     node_stack_type m_node_stack;
@@ -687,14 +687,14 @@ public:
 template<typename _TrieType>
 class packed_search_results
 {
-    typedef _TrieType trie_type;
+    using trie_type = _TrieType;
     friend trie_type;
-    typedef typename trie_type::node_stack_type node_stack_type;
+    using node_stack_type = typename trie_type::node_stack_type;
 
-    typedef typename trie_type::key_trait_type key_trait_type;
-    typedef typename key_trait_type::key_type key_type;
-    typedef typename key_trait_type::key_buffer_type key_buffer_type;
-    typedef typename key_trait_type::key_unit_type   key_unit_type;
+    using key_trait_type = typename trie_type::key_trait_type;
+    using key_type = typename key_trait_type::key_type;
+    using key_buffer_type = typename key_trait_type::key_buffer_type;
+    using key_unit_type = typename key_trait_type::key_unit_type;
 
     const uintptr_t* m_node;
     key_buffer_type m_buffer;
@@ -724,7 +724,7 @@ class packed_search_results
     }
 
 public:
-    typedef packed_iterator_base<trie_type> const_iterator;
+    using const_iterator = packed_iterator_base<trie_type>;
 
     packed_search_results() : m_node(nullptr) {}
 
