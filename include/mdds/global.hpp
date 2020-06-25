@@ -32,6 +32,7 @@
 #include <string>
 #include <memory>
 #include <utility>
+#include <type_traits>
 
 /**
  * \def MDDS_ASCII(literal)
@@ -129,6 +130,21 @@ class has_value_type
 
 public:
     static constexpr bool value = sizeof(test<T>(0)) == sizeof(y_type);
+};
+
+template<typename _T, typename _IsConst>
+struct const_or_not;
+
+template<typename _T>
+struct const_or_not<_T, std::true_type>
+{
+    using type = typename std::add_const<_T>::type;
+};
+
+template<typename _T>
+struct const_or_not<_T, std::false_type>
+{
+    using type = _T;
 };
 
 }
