@@ -61,9 +61,48 @@ void test_basic()
     assert(rp3 == rp);
 }
 
+void test_used_in_iterator()
+{
+    stack_printer __stack_printer__("::test_used_in_iterator");
+
+    using rp_type = mdds::detail::ref_pair<int, int>;
+
+    struct fake_iterator
+    {
+        int m_v1 = 222;
+        int m_v2 = 456;
+
+        fake_iterator() {}
+
+        rp_type operator* ()
+        {
+            return rp_type(m_v1, m_v2);
+        }
+
+        rp_type operator->()
+        {
+            return rp_type(m_v1, m_v2);
+        }
+    };
+
+    fake_iterator it;
+
+    assert((*it).first == 222);
+    assert((*it).second == 456);
+    assert(it->first == 222);
+    assert(it->second == 456);
+
+    // Make sure the member values can be modified.
+    it->second = 897;
+    assert(it->second == 897);
+    (*it).first = -23;
+    assert(it->first = -23);
+}
+
 int main(int argc, char** argv)
 {
     test_basic();
+    test_used_in_iterator();
 
     return EXIT_SUCCESS;
 }

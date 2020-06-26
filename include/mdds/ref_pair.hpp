@@ -66,6 +66,11 @@ struct ref_pair
     {
         return !operator==(other);
     }
+
+    ref_pair* operator->()
+    {
+        return this;
+    }
 };
 
 }}
