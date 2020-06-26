@@ -78,7 +78,6 @@ class iterator_base
     using key_trait_type = typename trie_type::key_trait_type;
     using key_type = typename key_trait_type::key_type;
     using key_buffer_type = typename key_trait_type::key_buffer_type;
-    using key_unit_type = typename key_trait_type::key_unit_type;
 
 public:
     // iterator traits
