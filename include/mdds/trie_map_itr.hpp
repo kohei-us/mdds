@@ -65,16 +65,52 @@ enum empty_iterator_type { empty_iterator };
 template<typename _TrieType>
 class search_results;
 
-template<typename _TrieType>
+template<typename _TrieType, bool _IsConst = true>
 class iterator_base
 {
     using trie_type = _TrieType;
+
+    template<typename _C>
+    struct get_node_stack_type;
+
+    template<>
+    struct get_node_stack_type<std::true_type>
+    {
+        using type = typename trie_type::const_node_stack_type;
+    };
+
+    template<>
+    struct get_node_stack_type<std::false_type>
+    {
+        using type = typename trie_type::node_stack_type;
+    };
+
+    template<typename _C>
+    struct get_trie_node_type;
+
+    template<>
+    struct get_trie_node_type<std::true_type>
+    {
+        using type = typename std::add_const<typename trie_type::trie_node>::type;
+    };
+
+    template<>
+    struct get_trie_node_type<std::false_type>
+    {
+        using type = typename trie_type::trie_node;
+    };
+
+    using _is_const = bool_constant<_IsConst>;
+
     friend trie_type;
     friend search_results<trie_type>;
 
-    using node_stack_type = typename trie_type::const_node_stack_type;
+    using node_stack_type = typename get_node_stack_type<_is_const>::type;
+    using trie_node_type = typename get_trie_node_type<_is_const>::type;
+    using trie_node_child_pos_type =
+        typename get_iterator_type<
+            typename std::remove_const<trie_node_type>::type::children_type, _is_const>::type;
 
-    using trie_node = typename trie_type::trie_node;
     using key_trait_type = typename trie_type::key_trait_type;
     using key_type = typename key_trait_type::key_type;
     using key_buffer_type = typename key_trait_type::key_buffer_type;
@@ -93,13 +129,13 @@ private:
     value_type m_current_value;
     iterator_type m_type;
 
-    static const trie_node* push_child_node_to_stack(
+    static trie_node_type* push_child_node_to_stack(
         node_stack_type& node_stack, key_buffer_type& buf,
-        const typename trie_node::children_type::const_iterator& child_pos)
+        trie_node_child_pos_type& child_pos)
     {
         using ktt = key_trait_type;
 
-        const trie_node* node = &child_pos->second;
+        trie_node_type* node = &child_pos->second;
         ktt::push_back(buf, child_pos->first);
         node_stack.emplace_back(node, node->children.begin());
 
@@ -110,12 +146,12 @@ private:
      * From the current node, move to its previous child node and descend all
      * the way to the leaf node.
      */
-    static const trie_node* descend_to_previus_leaf_node(
+    static trie_node_type* descend_to_previus_leaf_node(
         node_stack_type& node_stack, key_buffer_type& buf)
     {
         using ktt = key_trait_type;
 
-        const trie_node* cur_node = nullptr;
+        trie_node_type* cur_node = nullptr;
 
         do
         {
@@ -176,7 +212,7 @@ public:
     {
         using ktt = key_trait_type;
 
-        const trie_node* cur_node = m_node_stack.back().node;
+        trie_node_type* cur_node = m_node_stack.back().node;
 
         do
         {
@@ -240,7 +276,7 @@ public:
     iterator_base& operator--()
     {
         using ktt = key_trait_type;
-        const trie_node* cur_node = m_node_stack.back().node;
+        trie_node_type* cur_node = m_node_stack.back().node;
 
         if (m_type == iterator_type::end && cur_node->has_value)
         {
