@@ -245,27 +245,39 @@ private:
         void swap(trie_node& other);
     };
 
-    struct stack_item
+    template<bool _IsConst>
+    struct stack_item_base
     {
-        typedef typename trie_node::children_type::const_iterator child_pos_type;
-        const trie_node* node;
+        using _is_const = bool_constant<_IsConst>;
+
+        using child_pos_type =
+            typename get_iterator_type<
+                typename trie_node::children_type, _is_const>::type;
+
+        using trie_node_type = typename const_or_not<trie_node, _is_const>::type;
+
+        trie_node_type* node;
         child_pos_type child_pos;
 
-        stack_item(const trie_node* _node, const child_pos_type& _child_pos) :
+        stack_item_base(trie_node_type* _node, const child_pos_type& _child_pos) :
             node(_node), child_pos(_child_pos) {}
 
-        bool operator== (const stack_item& r) const
+        bool operator== (const stack_item_base& r) const
         {
             return node == r.node && child_pos == r.child_pos;
         }
 
-        bool operator!= (const stack_item& r) const
+        bool operator!= (const stack_item_base& r) const
         {
             return !operator== (r);
         }
     };
 
-    typedef std::vector<stack_item> node_stack_type;
+    using const_stack_item = stack_item_base<true>;
+    using stack_item = stack_item_base<false>;
+
+    using const_node_stack_type = std::vector<const_stack_item>;
+    using node_stack_type = std::vector<stack_item>;
 
 public:
 
@@ -394,7 +406,7 @@ private:
         const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     void find_prefix_node_with_stack(
-        node_stack_type& node_stack,
+        const_node_stack_type& node_stack,
         const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     void count_values(size_type& n, const trie_node& node) const;

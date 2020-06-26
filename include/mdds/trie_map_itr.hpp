@@ -72,7 +72,7 @@ class iterator_base
     friend trie_type;
     friend search_results<trie_type>;
 
-    using node_stack_type = typename trie_type::node_stack_type;
+    using node_stack_type = typename trie_type::const_node_stack_type;
 
     using trie_node = typename trie_type::trie_node;
     using key_trait_type = typename trie_type::key_trait_type;
@@ -325,7 +325,7 @@ class search_results
 {
     using trie_type = _TrieType;
     friend trie_type;
-    using node_stack_type = typename trie_type::node_stack_type;
+    using node_stack_type = typename trie_type::const_node_stack_type;
 
     using trie_node = typename trie_type::trie_node;
     using key_trait_type = typename trie_type::key_trait_type;

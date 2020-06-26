@@ -345,7 +345,7 @@ trie_map<_KeyTrait,_ValueT>::begin() const
 
     // Push the root node.
     key_buffer_type buf;
-    node_stack_type node_stack;
+    const_node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.begin());
 
     // Push root's first child node.
@@ -369,7 +369,7 @@ template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::const_iterator
 trie_map<_KeyTrait,_ValueT>::end() const
 {
-    node_stack_type node_stack;
+    const_node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.end());
     return const_iterator(
         std::move(node_stack), key_buffer_type(), trie::detail::iterator_type::end);
@@ -414,7 +414,7 @@ bool trie_map<_KeyTrait,_ValueT>::erase(const key_unit_type* key, size_type len)
 {
     const key_unit_type* key_end = key + len;
 
-    node_stack_type node_stack;
+    const_node_stack_type node_stack;
     find_prefix_node_with_stack(node_stack, m_root, key, key_end);
 
     if (node_stack.empty() || !node_stack.back().node->has_value)
@@ -485,7 +485,7 @@ trie_map<_KeyTrait,_ValueT>::find_prefix_node(
 
 template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
-    node_stack_type& node_stack,
+    const_node_stack_type& node_stack,
     const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const
 {
     if (prefix == prefix_end)
@@ -536,7 +536,7 @@ typename trie_map<_KeyTrait,_ValueT>::const_iterator
 trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) const
 {
     const key_unit_type* input_end = input + len;
-    node_stack_type node_stack;
+    const_node_stack_type node_stack;
     find_prefix_node_with_stack(node_stack, m_root, input, input_end);
     if (node_stack.empty() || !node_stack.back().node->has_value)
         // Specified key doesn't exist.
@@ -547,7 +547,7 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
     auto end = node_stack.end();
     --end;  // Skip the node with value which doesn't store a key element.
     std::for_each(node_stack.begin(), end,
-        [&](const stack_item& si)
+        [&](const const_stack_item& si)
         {
             using ktt = key_trait_type;
             ktt::push_back(buf, si.child_pos->first);
