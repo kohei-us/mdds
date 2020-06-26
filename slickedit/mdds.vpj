@@ -264,6 +264,7 @@
                 <F N="../include/mdds/quad_node.hpp"/>
                 <F N="../include/mdds/rectangle_set.hpp"/>
                 <F N="../include/mdds/rectangle_set_def.inl"/>
+                <F N="../include/mdds/ref_pair.hpp"/>
                 <F N="../include/mdds/rtree.hpp"/>
                 <F N="../include/mdds/rtree_def.inl"/>
                 <F N="../include/mdds/segment_tree.hpp"/>
@@ -291,6 +292,7 @@
             <F N="../src/multi_type_vector_test_perf.cpp"/>
             <F N="../src/point_quad_tree_test.cpp"/>
             <F N="../src/rectangle_set_test.cpp"/>
+            <F N="../src/ref_pair_test.cpp"/>
             <F N="../src/rtree_test.cpp"/>
             <F N="../src/rtree_test_bulkload.cpp"/>
             <F N="../src/segment_tree_test.cpp"/>

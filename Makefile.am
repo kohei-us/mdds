@@ -65,7 +65,8 @@ check_PROGRAMS = \
 	template_test \
 	trie_map_test \
 	rtree_test \
-	rtree_test_bulkload
+	rtree_test_bulkload \
+	ref_pair_test
 
 flat_segment_tree_test_SOURCES = src/flat_segment_tree_test.cpp src/test_global.hpp
 
@@ -100,6 +101,8 @@ trie_map_test_SOURCES = src/trie_map_test.cpp src/test_global.hpp
 rtree_test_SOURCES = src/rtree_test.cpp src/test_global.hpp src/test_global_rtree.hpp
 
 rtree_test_bulkload_SOURCES = src/rtree_test_bulkload.cpp src/test_global.hpp src/test_global_rtree.hpp
+
+ref_pair_test_SOURCES = src/ref_pair_test.cpp
 
 test.fst.perf: flat_segment_tree_test
 	./flat_segment_tree_test perf
@@ -141,7 +144,8 @@ TESTS = \
 	sorted_string_map_test \
 	trie_map_test \
 	rtree_test \
-	rtree_test_bulkload
+	rtree_test_bulkload \
+	ref_pair_test
 
 # NOTE: AFAIK automake does not support running the same test executable
 # in different ways. I workaround this limitation by creating dummy
