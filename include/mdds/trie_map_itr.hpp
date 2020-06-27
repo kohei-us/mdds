@@ -114,6 +114,7 @@ class iterator_base
     using key_trait_type = typename trie_type::key_trait_type;
     using key_type = typename key_trait_type::key_type;
     using key_buffer_type = typename key_trait_type::key_buffer_type;
+    using trie_value_type = typename const_or_not<typename trie_type::value_type, _is_const>::type;
 
 public:
     // iterator traits
@@ -127,6 +128,8 @@ private:
     node_stack_type m_node_stack;
     key_buffer_type m_buffer;
     value_type m_current_value;
+    key_type m_current_key;
+    trie_value_type* m_current_value_ptr;
     iterator_type m_type;
 
     static trie_node_type* push_child_node_to_stack(
@@ -178,7 +181,8 @@ public:
     iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type) :
         m_node_stack(std::move(node_stack)),
         m_buffer(std::move(buf)),
-        m_current_value(key_trait_type::to_key(m_buffer), m_node_stack.back().node->value),
+        m_current_key(key_trait_type::to_key(m_buffer)),
+        m_current_value_ptr(&m_node_stack.back().node->value),
         m_type(type)
     {}
 
@@ -198,13 +202,17 @@ public:
         return !operator==(other);
     }
 
-    const value_type& operator*()
+    value_type operator*()
     {
+        m_current_value.first = m_current_key;
+        m_current_value.second = *m_current_value_ptr;
         return m_current_value;
     }
 
-    const value_type* operator->()
+    value_type* operator->()
     {
+        m_current_value.first = m_current_key;
+        m_current_value.second = *m_current_value_ptr;
         return &m_current_value;
     }
 
@@ -262,7 +270,8 @@ public:
         }
         while (!cur_node->has_value);
 
-        m_current_value = value_type(ktt::to_key(m_buffer), cur_node->value);
+        m_current_key = ktt::to_key(m_buffer);
+        m_current_value_ptr = &cur_node->value;
         return *this;
     }
 
@@ -343,7 +352,8 @@ public:
         }
 
         assert(cur_node->has_value);
-        m_current_value = value_type(ktt::to_key(m_buffer), cur_node->value);
+        m_current_key = ktt::to_key(m_buffer);
+        m_current_value_ptr = &cur_node->value;
         return *this;
     }
 
