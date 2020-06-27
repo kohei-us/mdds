@@ -65,7 +65,7 @@ enum empty_iterator_type { empty_iterator };
 template<typename _TrieType>
 class search_results;
 
-template<typename _TrieType, bool _IsConst = true>
+template<typename _TrieType, bool _IsConst>
 class iterator_base
 {
     using trie_type = _TrieType;
@@ -376,7 +376,7 @@ class search_results
         m_node(node), m_buffer(buf) {}
 
 public:
-    using const_iterator = iterator_base<trie_type>;
+    using const_iterator = typename trie_type::const_iterator;
 
     const_iterator begin() const
     {

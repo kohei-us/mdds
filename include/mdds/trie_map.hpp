@@ -212,7 +212,7 @@ template<typename _KeyTrait, typename _ValueT>
 class trie_map
 {
     friend class packed_trie_map<_KeyTrait, _ValueT>;
-    friend class trie::detail::iterator_base<trie_map>;
+    friend class trie::detail::iterator_base<trie_map, true>;
     friend class trie::detail::search_results<trie_map>;
 
 public:
@@ -225,7 +225,7 @@ public:
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
 
-    typedef trie::detail::iterator_base<trie_map> const_iterator;
+    typedef trie::detail::iterator_base<trie_map, true> const_iterator;
     typedef trie::detail::search_results<trie_map> search_results;
 
 private:
