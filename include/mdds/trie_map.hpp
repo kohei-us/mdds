@@ -213,6 +213,7 @@ class trie_map
 {
     friend class packed_trie_map<_KeyTrait, _ValueT>;
     friend class trie::detail::iterator_base<trie_map, true>;
+    friend class trie::detail::const_iterator<trie_map>;
     friend class trie::detail::search_results<trie_map>;
     friend trie::detail::get_node_stack_type<trie_map, std::true_type>;
     friend trie::detail::get_node_stack_type<trie_map, std::false_type>;
@@ -227,7 +228,7 @@ public:
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
 
-    typedef trie::detail::iterator_base<trie_map, true> const_iterator;
+    using const_iterator = trie::detail::const_iterator<trie_map>;
     typedef trie::detail::search_results<trie_map> search_results;
 
 private:

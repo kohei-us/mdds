@@ -84,6 +84,7 @@ class search_results;
 template<typename _TrieType, bool _IsConst>
 class iterator_base
 {
+protected:
     using trie_type = _TrieType;
 
     using _is_const = bool_constant<_IsConst>;
@@ -110,7 +111,7 @@ public:
     using difference_type = std::ptrdiff_t;
     using iterator_category = std::bidirectional_iterator_tag;
 
-private:
+protected:
     node_stack_type m_node_stack;
     key_buffer_type m_buffer;
     key_type m_current_key;
@@ -344,6 +345,28 @@ public:
         operator--();
         return tmp;
     }
+};
+
+template<typename _TrieType>
+class const_iterator : public iterator_base<_TrieType, true>
+{
+    using trie_type = _TrieType;
+
+    friend trie_type;
+    friend search_results<trie_type>;
+
+    using base_type = iterator_base<trie_type, true>;
+    using node_stack_type = typename base_type::node_stack_type;
+    using key_buffer_type = typename base_type::key_buffer_type;
+
+    const_iterator(empty_iterator_type t) : base_type(t) {}
+
+public:
+    const_iterator() : base_type() {}
+
+    const_iterator(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type) :
+        base_type(std::move(node_stack), std::move(buf), type)
+    {}
 };
 
 template<typename _TrieType>
