@@ -147,6 +147,9 @@ struct const_or_not<_T, std::false_type>
     using type = _T;
 };
 
+template<typename _T, bool _Const>
+using const_t = typename const_or_not<_T, bool_constant<_Const>>::type;
+
 template<typename _T, typename _IsConst>
 struct get_iterator_type;
 

@@ -486,8 +486,8 @@ trie_map<_KeyTrait,_ValueT>::find_prefix_node(
 template<typename _KeyTrait, typename _ValueT>
 template<bool _IsConst>
 void trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
-    std::vector<stack_item_base<_IsConst>>& node_stack,
-    typename const_or_not<trie_node, bool_constant<_IsConst>>::type& node,
+    std::vector<stack_item<_IsConst>>& node_stack,
+    const_t<trie_node, _IsConst>& node,
     const key_unit_type* prefix,
     const key_unit_type* prefix_end) const
 {
@@ -550,7 +550,7 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
     auto end = node_stack.end();
     --end;  // Skip the node with value which doesn't store a key element.
     std::for_each(node_stack.begin(), end,
-        [&](const const_stack_item& si)
+        [&](const stack_item<true>& si)
         {
             using ktt = key_trait_type;
             ktt::push_back(buf, si.child_pos->first);

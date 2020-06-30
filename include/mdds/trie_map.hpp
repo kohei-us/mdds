@@ -250,7 +250,7 @@ private:
     };
 
     template<bool _IsConst>
-    struct stack_item_base
+    struct stack_item
     {
         using _is_const = bool_constant<_IsConst>;
 
@@ -263,25 +263,22 @@ private:
         trie_node_type* node;
         child_pos_type child_pos;
 
-        stack_item_base(trie_node_type* _node, const child_pos_type& _child_pos) :
+        stack_item(trie_node_type* _node, const child_pos_type& _child_pos) :
             node(_node), child_pos(_child_pos) {}
 
-        bool operator== (const stack_item_base& r) const
+        bool operator== (const stack_item& r) const
         {
             return node == r.node && child_pos == r.child_pos;
         }
 
-        bool operator!= (const stack_item_base& r) const
+        bool operator!= (const stack_item& r) const
         {
             return !operator== (r);
         }
     };
 
-    using const_stack_item = stack_item_base<true>;
-    using stack_item = stack_item_base<false>;
-
-    using const_node_stack_type = std::vector<const_stack_item>;
-    using node_stack_type = std::vector<stack_item>;
+    using const_node_stack_type = std::vector<stack_item<true>>;
+    using node_stack_type = std::vector<stack_item<false>>;
 
 public:
 
@@ -411,8 +408,8 @@ private:
 
     template<bool _IsConst>
     void find_prefix_node_with_stack(
-        std::vector<stack_item_base<_IsConst>>& node_stack,
-        typename const_or_not<trie_node, bool_constant<_IsConst>>::type& node,
+        std::vector<stack_item<_IsConst>>& node_stack,
+        const_t<trie_node, _IsConst>& node,
         const key_unit_type* prefix,
         const key_unit_type* prefix_end) const;
 
