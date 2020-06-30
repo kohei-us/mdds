@@ -1407,6 +1407,8 @@ void trie_test_iterator_empty()
     trie_map_type::const_iterator ite = dbc.end();
 
     assert(it == ite);
+    assert(db.begin() == dbc.begin()); // non-const vs const iterators
+    assert(dbc.end() == db.end()); // const vs non-const iterators
 }
 
 void trie_test_iterator()
@@ -1505,6 +1507,9 @@ void trie_test_iterator()
     assert(*it == kv("ab", 2));
     ++it;
     assert(*it == kv("aba", 3));
+
+    assert(db.begin() != dbc.end()); // non-const vs const iterators
+    assert(dbc.begin() != db.end()); // const vs non-const iterators
 }
 
 void trie_test_iterator_with_erase()

@@ -402,13 +402,39 @@ public:
 
     const_iterator(const iterator<_TrieType>& it) : base_type()
     {
-        m_node_stack = it.m_node_stack;
         m_buffer = it.m_buffer;
         m_current_key = it.m_current_key;
         m_current_value_ptr = it.m_current_value_ptr;
         m_type = it.m_type;
+
+        for (const auto& e : it.m_node_stack)
+            m_node_stack.emplace_back(e.node, e.child_pos);
     }
 };
+
+template<typename _TrieType>
+bool operator==(const iterator<_TrieType>& left, const const_iterator<_TrieType>& right)
+{
+    return const_iterator<_TrieType>(left) == right;
+}
+
+template<typename _TrieType>
+bool operator!=(const iterator<_TrieType>& left, const const_iterator<_TrieType>& right)
+{
+    return const_iterator<_TrieType>(left) != right;
+}
+
+template<typename _TrieType>
+bool operator==(const const_iterator<_TrieType>& left, const iterator<_TrieType>& right)
+{
+    return left == const_iterator<_TrieType>(right);
+}
+
+template<typename _TrieType>
+bool operator!=(const const_iterator<_TrieType>& left, const iterator<_TrieType>& right)
+{
+    return left != const_iterator<_TrieType>(right);
+}
 
 template<typename _TrieType>
 class search_results
