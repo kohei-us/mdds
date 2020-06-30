@@ -213,7 +213,9 @@ class trie_map
 {
     friend class packed_trie_map<_KeyTrait, _ValueT>;
     friend class trie::detail::iterator_base<trie_map, true>;
+    friend class trie::detail::iterator_base<trie_map, false>;
     friend class trie::detail::const_iterator<trie_map>;
+    friend class trie::detail::iterator<trie_map>;
     friend class trie::detail::search_results<trie_map>;
     friend trie::detail::get_node_stack_type<trie_map, std::true_type>;
     friend trie::detail::get_node_stack_type<trie_map, std::false_type>;

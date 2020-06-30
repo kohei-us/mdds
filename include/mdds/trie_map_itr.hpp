@@ -348,6 +348,32 @@ public:
 };
 
 template<typename _TrieType>
+class const_iterator;
+
+template<typename _TrieType>
+class iterator : public iterator_base<_TrieType, false>
+{
+    using trie_type = _TrieType;
+
+    friend trie_type;
+    friend search_results<trie_type>;
+    friend const_iterator<trie_type>;
+
+    using base_type = iterator_base<trie_type, false>;
+    using node_stack_type = typename base_type::node_stack_type;
+    using key_buffer_type = typename base_type::key_buffer_type;
+
+    iterator(empty_iterator_type t) : base_type(t) {}
+
+public:
+    iterator() : base_type() {}
+
+    iterator(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type) :
+        base_type(std::move(node_stack), std::move(buf), type)
+    {}
+};
+
+template<typename _TrieType>
 class const_iterator : public iterator_base<_TrieType, true>
 {
     using trie_type = _TrieType;
@@ -359,6 +385,12 @@ class const_iterator : public iterator_base<_TrieType, true>
     using node_stack_type = typename base_type::node_stack_type;
     using key_buffer_type = typename base_type::key_buffer_type;
 
+    using base_type::m_node_stack;
+    using base_type::m_buffer;
+    using base_type::m_current_key;
+    using base_type::m_current_value_ptr;
+    using base_type::m_type;
+
     const_iterator(empty_iterator_type t) : base_type(t) {}
 
 public:
@@ -367,6 +399,15 @@ public:
     const_iterator(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type) :
         base_type(std::move(node_stack), std::move(buf), type)
     {}
+
+    const_iterator(const iterator<_TrieType>& it) : base_type()
+    {
+        m_node_stack = it.m_node_stack;
+        m_buffer = it.m_buffer;
+        m_current_key = it.m_current_key;
+        m_current_value_ptr = it.m_current_value_ptr;
+        m_type = it.m_type;
+    }
 };
 
 template<typename _TrieType>
