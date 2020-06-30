@@ -78,21 +78,6 @@ struct get_node_stack_type<_TrieType, std::false_type>
     using type = typename _TrieType::node_stack_type;
 };
 
-template<typename _TrieType, typename _C>
-struct get_trie_node_type;
-
-template<typename _TrieType>
-struct get_trie_node_type<_TrieType, std::true_type>
-{
-    using type = typename std::add_const<typename _TrieType::trie_node>::type;
-};
-
-template<typename _TrieType>
-struct get_trie_node_type<_TrieType, std::false_type>
-{
-    using type = typename _TrieType::trie_node;
-};
-
 template<typename _TrieType>
 class search_results;
 
@@ -107,7 +92,7 @@ class iterator_base
     friend search_results<trie_type>;
 
     using node_stack_type = typename get_node_stack_type<trie_type, _is_const>::type;
-    using trie_node_type = typename get_trie_node_type<trie_type, _is_const>::type;
+    using trie_node_type = const_t<typename trie_type::trie_node, _IsConst>;
     using trie_node_child_pos_type =
         typename get_iterator_type<
             typename std::remove_const<trie_node_type>::type::children_type, _is_const>::type;
