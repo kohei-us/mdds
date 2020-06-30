@@ -484,9 +484,12 @@ trie_map<_KeyTrait,_ValueT>::find_prefix_node(
 }
 
 template<typename _KeyTrait, typename _ValueT>
+template<bool _IsConst>
 void trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
-    const_node_stack_type& node_stack,
-    const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const
+    std::vector<stack_item_base<_IsConst>>& node_stack,
+    typename const_or_not<trie_node, bool_constant<_IsConst>>::type& node,
+    const key_unit_type* prefix,
+    const key_unit_type* prefix_end) const
 {
     if (prefix == prefix_end)
     {
