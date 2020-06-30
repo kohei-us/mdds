@@ -119,7 +119,7 @@ class iterator_base
 
 public:
     // iterator traits
-    using value_type = mdds::detail::ref_pair<key_type, trie_value_type>;
+    using value_type = mdds::detail::ref_pair<typename std::add_const<key_type>::type, trie_value_type>;
     using pointer = value_type*;
     using reference = value_type&;
     using difference_type = std::ptrdiff_t;
