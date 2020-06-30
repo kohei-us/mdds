@@ -295,11 +295,11 @@ public:
 
     const_iterator begin() const;
 
-    iterator __begin_mod();
+    iterator begin();
 
     const_iterator end() const;
 
-    iterator __end_mod();
+    iterator end();
 
     trie_map& operator= (trie_map other);
 
@@ -356,7 +356,7 @@ public:
      */
     const_iterator find(const key_unit_type* input, size_type len) const;
 
-    iterator __find_mod(const key_unit_type* input, size_type len);
+    iterator find(const key_unit_type* input, size_type len);
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.

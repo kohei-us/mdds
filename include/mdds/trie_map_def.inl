@@ -367,11 +367,11 @@ trie_map<_KeyTrait,_ValueT>::begin() const
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::iterator
-trie_map<_KeyTrait,_ValueT>::__begin_mod()
+trie_map<_KeyTrait,_ValueT>::begin()
 {
     if (m_root.children.empty())
         // empty container
-        return __end_mod();
+        return end();
 
     // Push the root node.
     key_buffer_type buf;
@@ -407,7 +407,7 @@ trie_map<_KeyTrait,_ValueT>::end() const
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::iterator
-trie_map<_KeyTrait,_ValueT>::__end_mod()
+trie_map<_KeyTrait,_ValueT>::end()
 {
     node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.end());
@@ -603,14 +603,14 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::iterator
-trie_map<_KeyTrait,_ValueT>::__find_mod(const key_unit_type* input, size_type len)
+trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len)
 {
     const key_unit_type* input_end = input + len;
     node_stack_type node_stack;
     find_prefix_node_with_stack(node_stack, m_root, input, input_end);
     if (node_stack.empty() || !node_stack.back().node->has_value)
         // Specified key doesn't exist.
-        return __end_mod();
+        return end();
 
     // Build the key value from the stack.
     key_buffer_type buf;
