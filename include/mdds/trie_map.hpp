@@ -231,6 +231,7 @@ public:
     typedef std::pair<key_type, value_type> key_value_type;
 
     using const_iterator = trie::detail::const_iterator<trie_map>;
+    using iterator = trie::detail::iterator<trie_map>;
     typedef trie::detail::search_results<trie_map> search_results;
 
 private:
@@ -294,7 +295,11 @@ public:
 
     const_iterator begin() const;
 
+    iterator __begin_mod();
+
     const_iterator end() const;
+
+    iterator __end_mod();
 
     trie_map& operator= (trie_map other);
 
@@ -350,6 +355,8 @@ public:
      *         the end position in case the key is not found.
      */
     const_iterator find(const key_unit_type* input, size_type len) const;
+
+    iterator __find_mod(const key_unit_type* input, size_type len);
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.

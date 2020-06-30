@@ -366,12 +366,52 @@ trie_map<_KeyTrait,_ValueT>::begin() const
 }
 
 template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::iterator
+trie_map<_KeyTrait,_ValueT>::__begin_mod()
+{
+    if (m_root.children.empty())
+        // empty container
+        return __end_mod();
+
+    // Push the root node.
+    key_buffer_type buf;
+    node_stack_type node_stack;
+    node_stack.emplace_back(&m_root, m_root.children.begin());
+
+    // Push root's first child node.
+    auto it = node_stack.back().child_pos;
+    iterator::push_child_node_to_stack(node_stack, buf, it);
+
+    // In theory there should always be at least one value node along the
+    // left-most branch.
+
+    while (!node_stack.back().node->has_value)
+    {
+        auto this_it = node_stack.back().child_pos;
+        iterator::push_child_node_to_stack(node_stack, buf, this_it);
+    }
+
+    return iterator(
+        std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
+}
+
+template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::const_iterator
 trie_map<_KeyTrait,_ValueT>::end() const
 {
     const_node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.end());
     return const_iterator(
+        std::move(node_stack), key_buffer_type(), trie::detail::iterator_type::end);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::iterator
+trie_map<_KeyTrait,_ValueT>::__end_mod()
+{
+    node_stack_type node_stack;
+    node_stack.emplace_back(&m_root, m_root.children.end());
+    return iterator(
         std::move(node_stack), key_buffer_type(), trie::detail::iterator_type::end);
 }
 
@@ -558,6 +598,33 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
     );
 
     return const_iterator(
+        std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::iterator
+trie_map<_KeyTrait,_ValueT>::__find_mod(const key_unit_type* input, size_type len)
+{
+    const key_unit_type* input_end = input + len;
+    node_stack_type node_stack;
+    find_prefix_node_with_stack(node_stack, m_root, input, input_end);
+    if (node_stack.empty() || !node_stack.back().node->has_value)
+        // Specified key doesn't exist.
+        return __end_mod();
+
+    // Build the key value from the stack.
+    key_buffer_type buf;
+    auto end = node_stack.end();
+    --end;  // Skip the node with value which doesn't store a key element.
+    std::for_each(node_stack.begin(), end,
+        [&](const stack_item<false>& si)
+        {
+            using ktt = key_trait_type;
+            ktt::push_back(buf, si.child_pos->first);
+        }
+    );
+
+    return iterator(
         std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
 }
 
