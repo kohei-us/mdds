@@ -339,8 +339,8 @@ public:
      *
      * @param key key to match.
      *
-     * @return iterator that references a value associated with the key, or
-     *         the end position in case the key is not found.
+     * @return immutable iterator that references a value associated with the
+     *         key, or the end position in case the key is not found.
      */
     const_iterator find(const key_type& key) const;
 
@@ -351,13 +351,31 @@ public:
      *              match.
      * @param len length of the matching key value.
      *
-     * @return iterator that references a value associated with the key, or
-     *         the end position in case the key is not found.
+     * @return immutable iterator that references a value associated with the
+     *         key, or the end position in case the key is not found.
      */
     const_iterator find(const key_unit_type* input, size_type len) const;
 
+    /**
+     * Find a value associated with a specified key.
+     *
+     * @param key key to match.
+     *
+     * @return mutable iterator that references a value associated with the
+     *         key, or the end position in case the key is not found.
+     */
     iterator find(const key_type& key);
 
+    /**
+     * Find a value associated with a specified key.
+     *
+     * @param input pointer to an array whose value represents the key to
+     *              match.
+     * @param len length of the matching key value.
+     *
+     * @return mutable iterator that references a value associated with the
+     *         key, or the end position in case the key is not found.
+     */
     iterator find(const key_unit_type* input, size_type len);
 
     /**
