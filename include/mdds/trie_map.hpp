@@ -441,6 +441,10 @@ private:
         const key_unit_type* prefix,
         const key_unit_type* prefix_end) const;
 
+    template<bool _IsConst>
+    key_buffer_type build_key_buffer_from_node_stack(
+        const std::vector<stack_item<_IsConst>>& node_stack) const;
+
     void count_values(size_type& n, const trie_node& node) const;
 
 private:

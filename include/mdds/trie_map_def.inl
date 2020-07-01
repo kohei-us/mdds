@@ -549,6 +549,27 @@ void trie_map<_KeyTrait,_ValueT>::find_prefix_node_with_stack(
 }
 
 template<typename _KeyTrait, typename _ValueT>
+template<bool _IsConst>
+typename trie_map<_KeyTrait,_ValueT>::key_buffer_type
+trie_map<_KeyTrait,_ValueT>::build_key_buffer_from_node_stack(
+    const std::vector<stack_item<_IsConst>>& node_stack) const
+{
+    // Build the key value from the stack.
+    key_buffer_type buf;
+    auto end = node_stack.end();
+    --end;  // Skip the node with value which doesn't store a key element.
+    std::for_each(node_stack.begin(), end,
+        [&](const stack_item<_IsConst>& si)
+        {
+            using ktt = key_trait_type;
+            ktt::push_back(buf, si.child_pos->first);
+        }
+    );
+
+    return buf;
+}
+
+template<typename _KeyTrait, typename _ValueT>
 void trie_map<_KeyTrait,_ValueT>::count_values(size_type& n, const trie_node& node) const
 {
     if (node.has_value)
@@ -585,17 +606,7 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
         // Specified key doesn't exist.
         return end();
 
-    // Build the key value from the stack.
-    key_buffer_type buf;
-    auto end = node_stack.end();
-    --end;  // Skip the node with value which doesn't store a key element.
-    std::for_each(node_stack.begin(), end,
-        [&](const stack_item<true>& si)
-        {
-            using ktt = key_trait_type;
-            ktt::push_back(buf, si.child_pos->first);
-        }
-    );
+    key_buffer_type buf = build_key_buffer_from_node_stack(node_stack);
 
     return const_iterator(
         std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
@@ -624,17 +635,7 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len)
         // Specified key doesn't exist.
         return end();
 
-    // Build the key value from the stack.
-    key_buffer_type buf;
-    auto end = node_stack.end();
-    --end;  // Skip the node with value which doesn't store a key element.
-    std::for_each(node_stack.begin(), end,
-        [&](const stack_item<false>& si)
-        {
-            using ktt = key_trait_type;
-            ktt::push_back(buf, si.child_pos->first);
-        }
-    );
+    key_buffer_type buf = build_key_buffer_from_node_stack(node_stack);
 
     return iterator(
         std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
