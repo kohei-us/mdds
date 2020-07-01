@@ -1871,6 +1871,33 @@ void trie_test_copying()
     }
 }
 
+void trie_test_value_update_from_iterator()
+{
+    stack_printer __stack_printer__("::trie_test_value_update_from_iterator");
+
+    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    trie_map_type db;
+    db.insert("one", 1);
+    db.insert("two", 2);
+    db.insert("three", 3);
+
+    trie_map_type::iterator it = db.begin();
+    assert(it->first == "one");
+    assert(it->second == 1);
+    it->second = 10; // update the value.
+    it = db.begin();
+    assert(it->first == "one");
+    assert(it->second == 10);
+
+    it = db.find("three");
+    assert(it->first == "three");
+    assert(it->second == 3);
+    it->second = 345; // update the value again.
+    it = db.find("three");
+    assert(it->first == "three");
+    assert(it->second == 345);
+}
+
 int main(int argc, char** argv)
 {
     try
@@ -1898,6 +1925,7 @@ int main(int argc, char** argv)
         trie_test_prefix_search();
         trie_test_key_as_input();
         trie_test_copying();
+        trie_test_value_update_from_iterator();
     }
     catch (const std::exception& e)
     {

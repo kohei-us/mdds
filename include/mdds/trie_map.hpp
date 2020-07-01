@@ -356,6 +356,8 @@ public:
      */
     const_iterator find(const key_unit_type* input, size_type len) const;
 
+    iterator find(const key_type& key);
+
     iterator find(const key_unit_type* input, size_type len);
 
     /**

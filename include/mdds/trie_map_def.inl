@@ -603,6 +603,18 @@ trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len) con
 
 template<typename _KeyTrait, typename _ValueT>
 typename trie_map<_KeyTrait,_ValueT>::iterator
+trie_map<_KeyTrait,_ValueT>::find(const key_type& key)
+{
+    using ktt = key_trait_type;
+    key_buffer_type buf = ktt::to_key_buffer(key);
+    const key_unit_type* p = ktt::buffer_data(buf);
+    size_t n = ktt::buffer_size(buf);
+
+    return find(p, n);
+}
+
+template<typename _KeyTrait, typename _ValueT>
+typename trie_map<_KeyTrait,_ValueT>::iterator
 trie_map<_KeyTrait,_ValueT>::find(const key_unit_type* input, size_type len)
 {
     const key_unit_type* input_end = input + len;
