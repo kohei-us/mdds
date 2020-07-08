@@ -1395,6 +1395,45 @@ void trie_test1()
     assert(db.size() == 0);
 }
 
+void trie_test2()
+{
+    stack_printer __stack_printer__("::trie_test2");
+    using key_trait = trie::std_container_trait<std::vector<uint16_t>>;
+    using map_type = trie_map<key_trait, int>;
+    using key_type = map_type::key_type;
+
+    auto print_key = [](const std::vector<uint16_t>& key, const char* msg)
+    {
+        cout << msg << ": ";
+        std::copy(key.begin(), key.end(), std::ostream_iterator<uint16_t>(std::cout, " "));
+        cout << endl;
+    };
+
+    map_type db;
+    key_type key = { 2393, 99, 32589, 107, 0, 65535 };
+    print_key(key, "original");
+    int value = 1;
+    db.insert(key, value);
+    assert(db.size() == 1);
+    {
+        auto it = db.begin();
+        assert(it != db.end());
+        assert(it->first == key);
+
+        print_key(it->first, "from trie_map");
+    }
+
+    auto packed = db.pack();
+    assert(packed.size() == 1);
+
+    {
+        auto it = packed.begin();
+        assert(it != packed.end());
+        print_key(it->first, "from packed_trie_map");
+        assert(it->first == key);
+    }
+}
+
 void trie_test_iterator_empty()
 {
     stack_printer __stack_printer__("::trie_test_iterator_empty");
@@ -1917,6 +1956,7 @@ int main(int argc, char** argv)
         trie_packed_test_save_and_load_state::run();
 
         trie_test1();
+        trie_test2();
 
         trie_test_iterator_empty();
         trie_test_iterator();

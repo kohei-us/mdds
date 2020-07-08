@@ -881,7 +881,7 @@ packed_trie_map<_KeyTrait,_ValueT>::compact_node(
     std::for_each(node.children.begin(), node.children.end(),
         [&](const typename node_type::children_type::value_type& v)
         {
-            char key = v.first;
+            key_unit_type key = v.first;
             const node_type& child_node = v.second;
             size_type child_offset = compact_node(child_node);
             child_offsets.emplace_back(child_offset, key);
