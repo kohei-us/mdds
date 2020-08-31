@@ -63,6 +63,11 @@ TESTS = \
 	rtree-medium \
 	rtree-medium-bulkload
 
+TEST_ARTIFACTS = \
+	*.svg \
+	us-presidents.bin \
+	cities.bin
+
 distclean-local:
-	rm -rf $(TESTS) *.svg
+	rm -f $(TESTS) $(TEST_ARTIFACTS)
 
