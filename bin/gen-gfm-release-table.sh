@@ -11,7 +11,7 @@ echo "## Release Notes"
 echo ""
 echo "* add item"
 echo ""
-echo "## Source packages for autotools"
+echo "## Source packages for distribution"
 echo ""
 
 echo "| URL | sha256sum | size |"
