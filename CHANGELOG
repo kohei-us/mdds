@@ -1,3 +1,20 @@
+mdds 1.7.0
+
+* trie_map
+
+  * added copy and move constructors.
+
+  * added a variant of find() method that returns a mutable iterator object.
+    The user can now update the value associated with the key directly via the
+    iterator object.
+
+* packed_trie_map
+
+  * added copy and move constructors.
+
+  * added load_state() and save_state() methods to allow loading state from
+    and saving state to binary files.
+
 mdds 1.6.0
 
 * multi_type_vector
