@@ -1,4 +1,4 @@
-AC_INIT(mdds, 1.6.0, kohei.yoshida@gmail.com)
+AC_INIT(mdds, 1.7.0, kohei.yoshida@gmail.com)
 AM_INIT_AUTOMAKE([foreign dist-bzip2 subdir-objects])
 AM_MAINTAINER_MODE
 
