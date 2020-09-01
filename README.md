@@ -98,11 +98,8 @@ implemented in this library is a variant of R-tree known as
 
 Documentation
 =============
-* [Official API documentation](https://mdds.readthedocs.io/en/latest/) for
-  general users of the library.
-* [Doxygen code documentation](http://kohei.us/files/mdds/doxygen/) for
-  maintainers and potential contributors to the library.
-
+[Official API documentation](https://mdds.readthedocs.io/en/latest/) for general
+users of the library.
 
 Packages
 ========
