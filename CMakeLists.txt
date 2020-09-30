@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0048 NEW)
 
-project(mdds VERSION 1.7.0 LANGUAGES CXX)
-set(API_VERSION 1.5)
-set(CMAKE_CXX_STANDARD 11)
+project(mdds VERSION 1.9.99 LANGUAGES CXX)
+set(API_VERSION 2.0)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(Boost)
 find_package(Threads)

@@ -1,12 +1,13 @@
-AC_INIT(mdds, 1.7.0, kohei.yoshida@gmail.com)
+AC_INIT(mdds, 1.9.99, kohei.yoshida@gmail.com)
 AM_INIT_AUTOMAKE([foreign dist-bzip2 dist-xz subdir-objects])
 AM_MAINTAINER_MODE
 
 VERSION=AC_PACKAGE_VERSION
-API_VERSION=1.5
+API_VERSION=2.0
 
 AC_SUBST(VERSION)
 AC_SUBST(API_VERSION)
+AC_CONFIG_MACRO_DIRS([m4])
 
 PACKAGE_TARNAME=AC_PACKAGE_TARNAME
 AC_SUBST(PACKAGE_TARNAME)
@@ -22,9 +23,10 @@ AC_SUBST(INCDIR)
 AC_SUBST(MISCDIR)
 AC_SUBST(QUICKCHECKDIR)
 
+AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
+
 CPPFLAGS="$CPPFLAGS -Wall -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
-CXXFLAGS="$CXXFLAGS -Wshadow -std=c++11"
 
 AC_ARG_ENABLE(debug-stdcxx,
 [
