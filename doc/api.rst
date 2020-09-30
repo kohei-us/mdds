@@ -2,6 +2,13 @@
 API Incompatibility Notes
 =========================
 
+2.0 (not yet released)
+----------------------
+
+* baseline C++ version has been set to C++17.
+
+* deprecated ``rectangle_set`` data structure has been removed.
+
 1.5
 ---
 
