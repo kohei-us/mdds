@@ -18,7 +18,6 @@ Contents:
    global.rst
    flat_segment_tree.rst
    segment_tree.rst
-   rectangle_set.rst
    point_quad_tree.rst
    multi_type_vector.rst
    multi_type_matrix.rst

@@ -32,7 +32,6 @@ multi_type_vector_test_custom
 multi_type_vector_test_default
 multi_type_vector_test_perf
 point_quad_tree_test
-rectangle_set_test
 segment_tree_test
 sorted_string_map_test
 stlperf_test
@@ -54,7 +53,6 @@ example/multi-type-vector-pos-hint
 example/packed-trie-map
 example/packed-trie-state-int
 example/point-quad-tree
-example/rectangle-set
 example/segment-tree
 example/trie-map
 example/rtree-simple

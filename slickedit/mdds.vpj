@@ -230,7 +230,6 @@
             <F N="../example/packed_trie_map.cpp"/>
             <F N="../example/packed_trie_state_int.cpp"/>
             <F N="../example/point_quad_tree.cpp"/>
-            <F N="../example/rectangle_set.cpp"/>
             <F N="../example/rtree_erase.cpp"/>
             <F N="../example/rtree_medium.cpp"/>
             <F N="../example/rtree_medium_bulkload.cpp"/>
@@ -262,8 +261,6 @@
                 <F N="../include/mdds/node.hpp"/>
                 <F N="../include/mdds/point_quad_tree.hpp"/>
                 <F N="../include/mdds/quad_node.hpp"/>
-                <F N="../include/mdds/rectangle_set.hpp"/>
-                <F N="../include/mdds/rectangle_set_def.inl"/>
                 <F N="../include/mdds/ref_pair.hpp"/>
                 <F N="../include/mdds/rtree.hpp"/>
                 <F N="../include/mdds/rtree_def.inl"/>
@@ -291,7 +288,6 @@
             <F N="../src/multi_type_vector_test_event.cpp"/>
             <F N="../src/multi_type_vector_test_perf.cpp"/>
             <F N="../src/point_quad_tree_test.cpp"/>
-            <F N="../src/rectangle_set_test.cpp"/>
             <F N="../src/ref_pair_test.cpp"/>
             <F N="../src/rtree_test.cpp"/>
             <F N="../src/rtree_test_bulkload.cpp"/>

@@ -44,12 +44,8 @@
 namespace mdds {
 
 template<typename _Key, typename _Value>
-class rectangle_set;
-
-template<typename _Key, typename _Value>
 class segment_tree
 {
-    friend class rectangle_set<_Key, _Value>;
 public:
     typedef _Key        key_type;
     typedef _Value      value_type;

@@ -30,7 +30,6 @@ set(_TESTS
     multi-type-vector-test-default
     multi-type-vector-test-event
     point-quad-tree-test
-    rectangle-set-test
     rtree-test
     rtree-test-bulkload
     segment-tree-test

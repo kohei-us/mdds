@@ -23,7 +23,6 @@ EXTRA_DIST = \
 	doc/multi_type_matrix.rst \
 	doc/multi_type_vector.rst \
 	doc/point_quad_tree.rst \
-	doc/rectangle_set.rst \
 	doc/segment_tree.rst \
 	doc/sorted_string_map.rst \
 	doc/trie_map.rst \
@@ -36,7 +35,6 @@ EXTRA_DIST = \
 	example/multi_type_vector_pos_hint.cpp \
 	example/packed_trie_map.cpp \
 	example/point_quad_tree.cpp \
-	example/rectangle_set.cpp \
 	example/segment_tree.cpp \
 	example/trie_map.cpp \
 	misc/gdb/mdds/__init__.py \
@@ -58,7 +56,6 @@ check_PROGRAMS = \
 	multi_type_vector_test_perf \
 	multi_type_vector_test_collection \
 	point_quad_tree_test \
-	rectangle_set_test \
 	segment_tree_test \
 	sorted_string_map_test \
 	stlperf_test \
@@ -86,8 +83,6 @@ multi_type_vector_test_collection_SOURCES = src/multi_type_vector_test_collectio
 
 point_quad_tree_test_SOURCES = src/point_quad_tree_test.cpp src/test_global.hpp
 
-rectangle_set_test_SOURCES = src/rectangle_set_test.cpp src/test_global.hpp
-
 segment_tree_test_SOURCES = src/segment_tree_test.cpp src/test_global.hpp
 
 stlperf_test_SOURCES = src/stlperf_test.cpp
@@ -106,9 +101,6 @@ ref_pair_test_SOURCES = src/ref_pair_test.cpp
 
 test.fst.perf: flat_segment_tree_test
 	./flat_segment_tree_test perf
-
-test.recset.perf: rectangle_set_test
-	./rectangle_set_test perf
 
 test.st.perf: segment_tree_test
 	./segment_tree_test perf
@@ -139,7 +131,6 @@ TESTS = \
 	multi_type_vector_test_default \
 	multi_type_vector_test_collection \
 	point_quad_tree_test \
-	rectangle_set_test \
 	segment_tree_test \
 	sorted_string_map_test \
 	trie_map_test \
@@ -160,7 +151,6 @@ TESTS += \
 	multi_type_vector_test_default_mem.mem \
 	multi_type_vector_test_collection_mem.mem \
 	point_quad_tree_test_mem.mem \
-	rectangle_set_test_mem.mem \
 	segment_tree_test_mem.mem \
 	sorted_string_map_test_mem.mem \
 	trie_map_test_mem.mem \
