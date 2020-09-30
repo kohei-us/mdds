@@ -1818,7 +1818,7 @@ void fst_test_swap_tree_memory()
 {
     stack_printer __stack_printer__("::fst_test_swap_tree_memory");
     typedef flat_segment_tree<long, int> db_type;
-    auto db1 = mdds::make_unique<db_type>(0, 100, 0);
+    auto db1 = std::make_unique<db_type>(0, 100, 0);
     db1->insert_back(10, 40, 999);
     db1->build_tree();
     int value = -1;

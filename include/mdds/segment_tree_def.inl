@@ -186,7 +186,7 @@ void segment_tree<_Key, _Value>::build_tree()
         value_type pdata = itr->first;
         auto r = tagged_node_map.insert(
             typename data_node_map_type::value_type(
-                pdata, make_unique<node_list_type>()));
+                pdata, std::make_unique<node_list_type>()));
 
         node_list_type* plist = r.first->second.get();
         plist->reserve(10);

@@ -101,7 +101,7 @@ bool rectangle_set<_Key,_Value>::insert(key_type x1, key_type y1, key_type x2, k
         // tree instance for this interval.
         auto r = m_inner_map.insert(
             typename inner_segment_map_type::value_type(
-                outer_interval, make_unique<inner_type>()));
+                outer_interval, std::make_unique<inner_type>()));
         if (!r.second)
             throw general_error("inner segment tree insertion failed.");
 
@@ -228,7 +228,7 @@ void rectangle_set<_Key,_Value>::build_inner_map(const inner_segment_map_type& r
     {
         m_inner_map.insert(
             typename inner_segment_map_type::value_type(
-                it->first, make_unique<inner_type>(*it->second)));
+                it->first, std::make_unique<inner_type>(*it->second)));
     }
 }
 

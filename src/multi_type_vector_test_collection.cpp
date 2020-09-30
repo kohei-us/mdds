@@ -84,7 +84,7 @@ void mtv_test_unique_pointer_size1()
 
     vector<unique_ptr<mtv_type>> vectors;
     for (size_t i = 0; i < 2; ++i)
-        vectors.push_back(mdds::make_unique<mtv_type>(1));
+        vectors.push_back(std::make_unique<mtv_type>(1));
 
     vectors[1]->set(0, 1.1);
 

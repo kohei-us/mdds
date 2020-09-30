@@ -614,7 +614,7 @@ void trie_packed_test_copying()
         }
     };
 
-    auto db = mdds::make_unique<map_type>(entries, MDDS_N_ELEMENTS(entries));
+    auto db = std::make_unique<map_type>(entries, MDDS_N_ELEMENTS(entries));
     auto db_copied(*db);
     assert(*db == db_copied);
     assert(db->size() == db_copied.size());

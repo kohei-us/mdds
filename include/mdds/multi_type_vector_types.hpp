@@ -581,7 +581,7 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
         if (init_size > 1)
             throw general_error("You can't create a managed block with initial value.");
 
-        std::unique_ptr<self_type> blk = make_unique<self_type>(init_size);
+        std::unique_ptr<self_type> blk = std::make_unique<self_type>(init_size);
         if (init_size == 1)
             set_value(*blk, 0, val);
 
@@ -630,7 +630,7 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
         if (init_size > 1)
             throw general_error("You can't create a managed block with initial value.");
 
-        std::unique_ptr<self_type> blk = make_unique<self_type>(init_size);
+        std::unique_ptr<self_type> blk = std::make_unique<self_type>(init_size);
         if (init_size == 1)
             set_value(*blk, 0, val);
 
