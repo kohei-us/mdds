@@ -1102,36 +1102,8 @@ rtree<_Key,_Value,_Trait>::const_iterator::const_iterator(store_iterator_type po
     base_type(std::move(pos)) {}
 
 template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_iterator::value_type&
-rtree<_Key,_Value,_Trait>::const_iterator::operator*() const
-{
-    return static_cast<const value_node*>(m_pos->ns->node_ptr)->value;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::const_iterator::value_type*
-rtree<_Key,_Value,_Trait>::const_iterator::operator->() const
-{
-    return &operator*();
-}
-
-template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::iterator::iterator(store_iterator_type pos) :
     base_type(std::move(pos)) {}
-
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::iterator::value_type&
-rtree<_Key,_Value,_Trait>::iterator::operator*()
-{
-    return static_cast<value_node*>(m_pos->ns->node_ptr)->value;
-}
-
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key,_Value,_Trait>::iterator::value_type*
-rtree<_Key,_Value,_Trait>::iterator::operator->()
-{
-    return &operator*();
-}
 
 template<typename _Key, typename _Value, typename _Trait>
 rtree<_Key,_Value,_Trait>::bulk_loader::bulk_loader()

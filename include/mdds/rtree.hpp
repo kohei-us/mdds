@@ -503,8 +503,15 @@ public:
     public:
         using typename base_type::value_type;
 
-        value_type& operator*() const;
-        value_type* operator->() const;
+        value_type& operator*() const
+        {
+            return static_cast<const value_node*>(m_pos->ns->node_ptr)->value;
+        }
+
+        value_type* operator->() const
+        {
+            return &operator*();
+        }
     };
 
     class iterator : public iterator_base<
@@ -527,8 +534,15 @@ public:
     public:
         using typename base_type::value_type;
 
-        value_type& operator*();
-        value_type* operator->();
+        value_type& operator*()
+        {
+            return static_cast<value_node*>(m_pos->ns->node_ptr)->value;
+        }
+
+        value_type* operator->()
+        {
+            return &operator*();
+        }
     };
 
     /**
