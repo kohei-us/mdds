@@ -58,7 +58,7 @@ struct test_data
 
     test_data(const string& s) : name(s) {}
 
-    struct ptr_printer : public unary_function<test_data*, void>
+    struct ptr_printer
     {
         void operator() (const test_data* data) const
         {
@@ -69,7 +69,7 @@ struct test_data
     /**
      * Use this to sort instances of test_data by name, in ascending order.
      */
-    struct sort_by_name : public binary_function<test_data*, test_data*, bool>
+    struct sort_by_name
     {
         bool operator() (const test_data* left, const test_data* right) const
         {
@@ -77,7 +77,7 @@ struct test_data
         }
     };
 
-    struct name_printer : public unary_function<test_data*, void>
+    struct name_printer
     {
         void operator() (const test_data* p) const
         {

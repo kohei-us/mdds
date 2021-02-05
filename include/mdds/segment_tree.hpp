@@ -73,7 +73,7 @@ public:
         }
     };
 
-    struct segment_map_printer : public ::std::unary_function< ::std::pair<value_type, ::std::pair<key_type, key_type> >, void>
+    struct segment_map_printer
     {
         void operator() (const ::std::pair<value_type, ::std::pair<key_type, key_type> >& r) const
         {
@@ -230,7 +230,7 @@ public:
     };
 
 #ifdef MDDS_UNIT_TEST
-    struct node_printer : public ::std::unary_function<const __st::node_base*, void>
+    struct node_printer
     {
         void operator() (const __st::node_base* p) const
         {
@@ -478,7 +478,7 @@ public:
         }
     };
 
-    class search_result_vector_inserter : public ::std::unary_function<data_chain_type*, void>
+    class search_result_vector_inserter
     {
     public:
         search_result_vector_inserter(search_result_type& result) : m_result(result) {}
@@ -495,7 +495,7 @@ public:
         search_result_type& m_result;
     };
 
-    class search_result_inserter : public ::std::unary_function<data_chain_type*, void>
+    class search_result_inserter
     {
     public:
         search_result_inserter(search_result_base& result) : m_result(result) {}

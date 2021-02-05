@@ -46,7 +46,7 @@ inline std::ostream& operator<< (std::ostream& os, const mtx_type::element_block
 }
 
 template<typename _T>
-struct print_element : std::unary_function<_T, void>
+struct print_element
 {
     void operator() (const _T& v) const
     {

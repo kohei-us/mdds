@@ -34,7 +34,7 @@ using namespace std;
 
 typedef ::mdds::segment_tree<long, string> db_type;
 
-struct string_printer : public unary_function<string*, void>
+struct string_printer
 {
     void operator() (const string& s) const
     {

@@ -1030,7 +1030,7 @@ void fst_test_shift_right_all_nodes()
 }
 
 template<typename key_type, typename value_type>
-struct leaf_node_functor : public unary_function<void, pair<key_type, value_type> >
+struct leaf_node_functor
 {
     void operator() (const pair<key_type, value_type>&) const
     {

@@ -38,7 +38,7 @@ typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> multi_mx_type;
 
 namespace {
 
-class sum_all_values : public std::unary_function<multi_mx_type::element_block_node_type, void>
+class sum_all_values
 {
     double m_sum;
 public:
@@ -61,7 +61,7 @@ public:
     double get() const { return m_sum; }
 };
 
-class count_all_values : public std::unary_function<multi_mx_type::element_block_node_type, void>
+class count_all_values
 {
     long m_count;
 public:

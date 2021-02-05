@@ -503,7 +503,7 @@ private:
             return !operator==(r);
         }
 
-        struct sorter : public ::std::binary_function<node_data, node_data, bool>
+        struct sorter
         {
             bool operator() (const node_data& left, const node_data& right) const
             {
@@ -528,7 +528,7 @@ private:
     void dump_tree_svg(const ::std::string& fpath) const;
 
 private:
-    class array_inserter : public ::std::unary_function<const node*, void>
+    class array_inserter
     {
     public:
         array_inserter(data_array_type& result) : m_result(result) {}
@@ -541,7 +541,7 @@ private:
         data_array_type& m_result;
     };
 
-    class search_result_inserter : public ::std::unary_function<const node*, void>
+    class search_result_inserter
     {
     public:
         search_result_inserter(search_results& result) : m_result(result) {}
@@ -554,7 +554,7 @@ private:
         search_results& m_result;
     };
 
-    class data_inserter : public ::std::unary_function<node_data, void>
+    class data_inserter
     {
     public:
         data_inserter(point_quad_tree& db) : m_db(db) {}

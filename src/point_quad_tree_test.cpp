@@ -38,7 +38,7 @@ using namespace std;
 using namespace mdds;
 using ::boost::uint16_t;
 
-struct data_printer : public unary_function<string*, void>
+struct data_printer
 {
     void operator() (const string* p)
     {
@@ -47,7 +47,7 @@ struct data_printer : public unary_function<string*, void>
 };
 
 template<typename _DbType>
-struct search_result_printer : public unary_function<pair<typename _DbType::point, typename _DbType::value_type>, void>
+struct search_result_printer
 {
     void operator() (const pair<const typename _DbType::point, const typename _DbType::value_type>& r) const
     {

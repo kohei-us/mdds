@@ -5177,7 +5177,7 @@ void mtv_test_swap_range()
     assert(db2.block_size() == 4);
 }
 
-struct block_node_printer : unary_function<mtv_type::value_type, void>
+struct block_node_printer
 {
     void operator() (const mtv_type::value_type& node) const
     {
