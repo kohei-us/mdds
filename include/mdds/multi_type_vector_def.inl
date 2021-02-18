@@ -152,22 +152,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(size_type _position,
     m_position(_position), m_size(_size), mp_data(_data) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
-multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(const block& other) :
-    m_position(other.m_position), m_size(other.m_size), mp_data(other.mp_data) {}
-
-template<typename _CellBlockFunc, typename _EventFunc>
-multi_type_vector<_CellBlockFunc, _EventFunc>::block::block(block&& other) :
-    m_position(other.m_position), m_size(other.m_size), mp_data(other.mp_data)
-{
-    other.m_position = 0;
-    other.m_size = 0;
-    other.mp_data = nullptr;
-}
-
-template<typename _CellBlockFunc, typename _EventFunc>
-multi_type_vector<_CellBlockFunc, _EventFunc>::block::~block() {}
-
-template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::block::swap(block& other)
 {
     std::swap(m_position, other.m_position);
@@ -184,14 +168,6 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::block::clone_to(block& other
         other.mp_data = element_block_func::clone_block(*mp_data);
     else
         other.mp_data = nullptr;
-}
-
-template<typename _CellBlockFunc, typename _EventFunc>
-typename multi_type_vector<_CellBlockFunc, _EventFunc>::block&
-multi_type_vector<_CellBlockFunc, _EventFunc>::block::operator=(block other)
-{
-    swap(other);
-    return *this;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>

@@ -131,13 +131,13 @@ private:
         block();
         block(size_type _position, size_type _size);
         block(size_type _position, size_type _size, element_block_type* _data);
-        block(const block& other);
-        block(block&& other);
-        ~block();
+        block(const block& other) = default;
+        block(block&& other) = default;
+        ~block() = default;
         void swap(block& other);
         void clone_to(block& other) const;
 
-        block& operator=(block);
+        block& operator=(const block&) = default;
     };
 
     struct element_block_deleter
