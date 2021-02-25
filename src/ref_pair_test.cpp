@@ -96,7 +96,7 @@ void test_used_in_iterator()
     it->second = 897;
     assert(it->second == 897);
     (*it).first = -23;
-    assert(it->first = -23);
+    assert(it->first == -23);
 }
 
 int main(int argc, char** argv)
