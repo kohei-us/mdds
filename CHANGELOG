@@ -5,7 +5,7 @@ mdds 1.7.0
   * added copy and move constructors.
 
   * added a variant of find() method that returns a mutable iterator object.
-    The user can now update the value associated with the key directly via the
+    The user can now update the value associated with a key directly via the
     iterator object.
 
 * packed_trie_map
