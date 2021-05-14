@@ -10,7 +10,6 @@ This library implements the following data structures:
 
 * segment_tree
 * flat_segment_tree
-* rectangle_set (deprecated)
 * point_quad_tree
 * multi_type_vector
 * multi_type_matrix
@@ -35,20 +34,6 @@ store a collection of non-overlapping segments.  This structure is
 efficient when you need to store values associated with 1 dimensional 
 segments that never overlap with each other.  Like segment tree, 
 stored segments' end points are non-inclusive.  
-
-### Rectangle Set (deprecated)
-
-Rectangle set stores 2-dimensional rectangles and provides an 
-efficient way to query all rectangles that contain a given point in 
-2-dimensional space.  It internally uses nested segment tree.  Each 
-rectangle is defined by two 2-dimensional points: the top-left and 
-bottom-right points, and the bottom-right point is non-inclusive.  For 
-instance, if a rectangle ranges from (x=2, y=2) to (x=10, y=20), then 
-a 2-dimension point A (x,y) is said to be inside that rectangle only 
-when 2 <= x < 10 and 2 <= y < 20.
-
-*Note that this data structure has been deprecated, and will be removed in
-future releases.*
 
 ### Point Quad Tree
 
