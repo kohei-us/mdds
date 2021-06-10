@@ -819,18 +819,12 @@ template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::push_back_empty()
 {
-    size_type last_block_size = 0;
-    if (!m_blocks.empty())
-        last_block_size = m_blocks.back().m_size;
-
     size_type block_index = m_blocks.size();
-    size_type start_pos = m_cur_size;
 
     if (!append_empty(1))
     {
         // Last empty block has been extended.
         --block_index;
-        start_pos -= last_block_size;
     }
 
     // Get the iterator of the last block.
@@ -3899,8 +3893,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
     size_type offset = start_row - start_row_in_block1;
     size_type end_row_in_block2 = start_row_in_block2 + blk2->m_size - 1;
 
-    size_type start_row_itr = start_row_in_block1;
-
     // Initially set to erase blocks between block 1 and block 2 non-inclusive at either end.
     typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_index1 + 1;
     typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_index2;
@@ -3924,7 +3916,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
                 data_blk.mp_data = blk0->mp_data;
                 blk0->mp_data = nullptr;
 
-                start_row_itr -= blk0->m_size;
                 data_blk.m_size += blk0->m_size;
                 data_blk.m_position = blk0->m_position;
 
@@ -3943,7 +3934,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_multi_blocks_block1_
             element_block_func::resize_block(*blk1->mp_data, offset);
         }
         blk1->m_size = offset;
-        start_row_itr += offset;
     }
 
     if (blk0_copied)
