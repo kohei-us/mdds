@@ -836,17 +836,20 @@ bool rtree<_Key,_Value,_Trait>::directory_node::erase(const node_store* ns)
     if (it == children.end())
         return false;
 
+    // NB: std::deque::erase invalidates all elements when the erased element
+    // is somwhere in the middle. But if the erased element is either the
+    // first or the last element, only the erased element becomes invalidated.
+
+    std::size_t pos = std::distance(children.begin(), it);
+    bool all_valid = pos == 0 || pos == children.size() - 1;
+
     it = children.erase(it);
 
-    // All nodes that occur after the erased node have their memory addresses
-    // shifted.
-
-    std::for_each(it, children.end(),
-        [](node_store& this_ns)
-        {
-            this_ns.valid_pointer = false;
-        }
-    );
+    if (!all_valid)
+    {
+        for (node_store& ns : children)
+            ns.valid_pointer = false;
+    }
 
     return true;
 }
