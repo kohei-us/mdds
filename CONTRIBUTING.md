@@ -110,12 +110,21 @@ implementation of C++ standard library.  You can use `libc++` with or without
 
 ## Ubuntu LTS 20.04
 
-To use `clang++` with `libc++`, first install the appropriate system packages
-that provide the necessary files, then export the following variables:
+To use `clang++` with `libc++`, first install the following system packages
+to install the necessary files:
+
+* libc++-10-dev
+* libc++-dev
+* libc++1-10
+* libc++abi-10-dev
+* libc++abi-dev
+* libc++abi1-10
+
+Then export the following variables:
 
 ```bash
 export CC=clang
-export CXX="clang++ -stdlib=libc++ -I/usr/lib/llvm-11/include/c++/v1"
+export CXX="clang++ -stdlib=libc++ -I/usr/lib/llvm-10/include/c++/v1"
 ```
 
 Once that's done, simply proceed to run `./autogen.sh` as you normally do, then
