@@ -104,7 +104,7 @@ only when you use gcc to build the test source files.
 # Run tests using clang++ and libc++ on Linux
 
 It's a good idea to test against `libc++` since it sometimes uncovers hidden
-bugs that don't surface when using the GPU C++ Library or Microsoft's
+bugs that don't surface when using the GNU C++ Library or Microsoft's
 implementation of C++ standard library.  You can use `libc++` with or without
 `clang++`, but it's perhaps easier to use `libc++` with `clang++`.
 
