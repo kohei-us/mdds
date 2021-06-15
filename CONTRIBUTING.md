@@ -100,3 +100,23 @@ to build code coverage data.  Then generate a summary report by running:
 
 which should launch the report in your default web browser.  Note that this works
 only when you use gcc to build the test source files.
+
+# Run tests using clang++ and libc++ on Linux
+
+It's a good idea to test against `libc++` since it sometimes uncovers hidden
+bugs that don't surface when using the GPU C++ Library or Microsoft's
+implementation of C++ standard library.  You can use `libc++` with or without
+`clang++`, but it's perhaps easier to use `libc++` with `clang++`.
+
+To use `clang++` with `libc++`, first install the appropriate system packages
+that provide the necessary files, then export the following variables:
+
+```bash
+export CC=clang
+export CXX="clang++ -stdlib=libc++ -I/usr/lib/llvm-11/include/c++/v1"
+```
+
+Once that's done, simply proceed to run `./autogen.sh` as you normally do, then
+running `make check` should build and run the tests using `clang++` and `libc++`.
+
+For more detailed instructions, consult [this page](https://libcxx.llvm.org/UsingLibcxx.html).
