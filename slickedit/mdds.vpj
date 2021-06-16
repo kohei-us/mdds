@@ -217,6 +217,8 @@
             Name="Other Files"
             Filters=""/>
     </CustomFolders>
+    <List Name="RTE">
+    </List>
     <Files AutoFolders="DirectoryView">
         <Folder Name="../example">
             <F N="../example/flat_segment_tree.cpp"/>
@@ -278,6 +280,28 @@
             <F N="../misc/sorted_string_map_perf.cpp"/>
         </Folder>
         <Folder Name="../src">
+            <Folder Name="include">
+                <F N="../src/include/test_global.hpp"/>
+            </Folder>
+            <Folder Name="rtree">
+                <F N="../src/rtree/test_basic.cpp"/>
+                <F N="../src/rtree/test_bulkload_main.cpp"/>
+                <F N="../src/rtree/test_center_point.cpp"/>
+                <F N="../src/rtree/test_copy.cpp"/>
+                <F N="../src/rtree/test_directory_node_split.cpp"/>
+                <F N="../src/rtree/test_erase_directories.cpp"/>
+                <F N="../src/rtree/test_exact_search_by_extent.cpp"/>
+                <F N="../src/rtree/test_exact_search_by_point.cpp"/>
+                <F N="../src/rtree/test_forced_reinsertion.cpp"/>
+                <F N="../src/rtree/test_geometry.cpp"/>
+                <F N="../src/rtree/test_global_rtree.hpp"/>
+                <F N="../src/rtree/test_intersection.cpp"/>
+                <F N="../src/rtree/test_main.cpp"/>
+                <F N="../src/rtree/test_move.cpp"/>
+                <F N="../src/rtree/test_node_split.cpp"/>
+                <F N="../src/rtree/test_point_objects.cpp"/>
+                <F N="../src/rtree/test_square_distance.cpp"/>
+            </Folder>
             <F N="../src/array_creation_perf_test.cpp"/>
             <F N="../src/flat_segment_tree_test.cpp"/>
             <F N="../src/multi_type_matrix_test.cpp"/>
@@ -289,14 +313,11 @@
             <F N="../src/multi_type_vector_test_perf.cpp"/>
             <F N="../src/point_quad_tree_test.cpp"/>
             <F N="../src/ref_pair_test.cpp"/>
-            <F N="../src/rtree_test.cpp"/>
             <F N="../src/rtree_test_bulkload.cpp"/>
             <F N="../src/segment_tree_test.cpp"/>
             <F N="../src/sorted_string_map_test.cpp"/>
             <F N="../src/stlperf_test.cpp"/>
             <F N="../src/template_test.cpp"/>
-            <F N="../src/test_global.hpp"/>
-            <F N="../src/test_global_rtree.hpp"/>
             <F N="../src/trie_map_test.cpp"/>
         </Folder>
         <Folder Name="../test">

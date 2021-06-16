@@ -59,7 +59,7 @@ struct cmd_options
     cmd_options() : test_func(false), test_perf(false) {}
 };
 
-bool parse_cmd_options(int argc, char** argv, cmd_options& opt)
+inline bool parse_cmd_options(int argc, char** argv, cmd_options& opt)
 {
     using namespace std;
 
@@ -86,7 +86,7 @@ bool parse_cmd_options(int argc, char** argv, cmd_options& opt)
     return true;
 }
 
-double get_current_time()
+inline double get_current_time()
 {
     uint64_t usec_since_epoch =
         std::chrono::duration_cast<std::chrono::microseconds>(

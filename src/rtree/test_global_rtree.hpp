@@ -109,6 +109,24 @@ void export_tree(const T& tree, const std::string& basename)
     }
 }
 
+void rtree_test_intersection();
+void rtree_test_square_distance();
+void rtree_test_center_point();
+void rtree_test_area_enlargement();
+void rtree_test_basic_search();
+void rtree_test_basic_erase();
+void rtree_test_node_split();
+void rtree_test_directory_node_split();
+void rtree_test_erase_directories();
+void rtree_test_forced_reinsertion();
+void rtree_test_move();
+void rtree_test_move_custom_type();
+void rtree_test_copy();
+void rtree_test_point_objects();
+void rtree_test_only_copyable();
+void rtree_test_exact_search_by_extent();
+void rtree_test_exact_search_by_point();
+
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

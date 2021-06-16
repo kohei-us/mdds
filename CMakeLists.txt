@@ -17,7 +17,11 @@ endif(MSVC)
 
 add_definitions(-DMDDS_UNIT_TEST)
 add_definitions(-DMDDS_DEBUG_NODE_BASE)
-include_directories(${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDE_DIR})
+include_directories(
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src/include
+    ${Boost_INCLUDE_DIR}
+)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
@@ -30,8 +34,6 @@ set(_TESTS
     multi-type-vector-test-default
     multi-type-vector-test-event
     point-quad-tree-test
-    rtree-test
-    rtree-test-bulkload
     segment-tree-test
     sorted-string-map-test
     trie-map-test
@@ -48,8 +50,32 @@ add_executable(multi-type-vector-test-perf EXCLUDE_FROM_ALL
     ${PROJECT_SOURCE_DIR}/src/multi_type_vector_test_perf.cpp
 )
 
+add_executable(rtree-test EXCLUDE_FROM_ALL
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_basic.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_copy.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_directory_node_split.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_erase_directories.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_exact_search_by_extent.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_exact_search_by_point.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_forced_reinsertion.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_geometry.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_intersection.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_move.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_node_split.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_point_objects.cpp
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_square_distance.cpp
+)
+
+add_executable(rtree-test-bulkload EXCLUDE_FROM_ALL
+    ${PROJECT_SOURCE_DIR}/src/rtree/test_bulkload_main.cpp
+)
+
 add_dependencies(check
     ${_TESTS}
+    rtree-test
+    rtree-test-bulkload
 )
 
 install(DIRECTORY

@@ -2,7 +2,10 @@ SUBDIRS = include example test
 
 pkgconfdir = $(datarootdir)/pkgconfig
 
-AM_CPPFLAGS = -I$(top_srcdir)/include $(CXXFLAGS_UNITTESTS)
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/src/include \
+	$(CXXFLAGS_UNITTESTS)
 
 dist_doc_DATA = AUTHORS README.md
 nodist_pkgconf_DATA = misc/mdds-@API_VERSION@.pc
@@ -65,37 +68,56 @@ check_PROGRAMS = \
 	rtree_test_bulkload \
 	ref_pair_test
 
-flat_segment_tree_test_SOURCES = src/flat_segment_tree_test.cpp src/test_global.hpp
+flat_segment_tree_test_SOURCES = src/flat_segment_tree_test.cpp src/include/test_global.hpp
 
-multi_type_matrix_test_SOURCES = src/multi_type_matrix_test.cpp src/test_global.hpp
+multi_type_matrix_test_SOURCES = src/multi_type_matrix_test.cpp src/include/test_global.hpp
 
-multi_type_matrix_test_walk_SOURCES = src/multi_type_matrix_test_walk.cpp src/test_global.hpp
+multi_type_matrix_test_walk_SOURCES = src/multi_type_matrix_test_walk.cpp src/include/test_global.hpp
 
-multi_type_vector_test_event_SOURCES = src/multi_type_vector_test_event.cpp src/test_global.hpp
+multi_type_vector_test_event_SOURCES = src/multi_type_vector_test_event.cpp src/include/test_global.hpp
 
-multi_type_vector_test_custom_SOURCES = src/multi_type_vector_test_custom.cpp src/test_global.hpp
+multi_type_vector_test_custom_SOURCES = src/multi_type_vector_test_custom.cpp src/include/test_global.hpp
 
-multi_type_vector_test_default_SOURCES = src/multi_type_vector_test_default.cpp src/test_global.hpp
+multi_type_vector_test_default_SOURCES = src/multi_type_vector_test_default.cpp src/include/test_global.hpp
 
-multi_type_vector_test_perf_SOURCES = src/multi_type_vector_test_perf.cpp src/test_global.hpp
+multi_type_vector_test_perf_SOURCES = src/multi_type_vector_test_perf.cpp src/include/test_global.hpp
 
-multi_type_vector_test_collection_SOURCES = src/multi_type_vector_test_collection.cpp src/test_global.hpp
+multi_type_vector_test_collection_SOURCES = src/multi_type_vector_test_collection.cpp src/include/test_global.hpp
 
-point_quad_tree_test_SOURCES = src/point_quad_tree_test.cpp src/test_global.hpp
+point_quad_tree_test_SOURCES = src/point_quad_tree_test.cpp src/include/test_global.hpp
 
-segment_tree_test_SOURCES = src/segment_tree_test.cpp src/test_global.hpp
+segment_tree_test_SOURCES = src/segment_tree_test.cpp src/include/test_global.hpp
 
 stlperf_test_SOURCES = src/stlperf_test.cpp
 
-sorted_string_map_test_SOURCES = src/sorted_string_map_test.cpp src/test_global.hpp
+sorted_string_map_test_SOURCES = src/sorted_string_map_test.cpp src/include/test_global.hpp
 
 template_test_SOURCES = src/template_test.cpp
 
-trie_map_test_SOURCES = src/trie_map_test.cpp src/test_global.hpp
+trie_map_test_SOURCES = src/trie_map_test.cpp src/include/test_global.hpp
 
-rtree_test_SOURCES = src/rtree_test.cpp src/test_global.hpp src/test_global_rtree.hpp
+rtree_test_SOURCES = \
+	src/rtree/test_main.cpp \
+	src/rtree/test_basic.cpp \
+	src/rtree/test_copy.cpp \
+	src/rtree/test_erase_directories.cpp \
+	src/rtree/test_node_split.cpp \
+	src/rtree/test_directory_node_split.cpp \
+	src/rtree/test_intersection.cpp \
+	src/rtree/test_move.cpp \
+	src/rtree/test_square_distance.cpp \
+	src/rtree/test_geometry.cpp \
+	src/rtree/test_exact_search_by_extent.cpp \
+	src/rtree/test_exact_search_by_point.cpp \
+	src/rtree/test_forced_reinsertion.cpp \
+	src/rtree/test_point_objects.cpp \
+	src/rtree/test_global_rtree.hpp \
+	src/include/test_global.hpp
 
-rtree_test_bulkload_SOURCES = src/rtree_test_bulkload.cpp src/test_global.hpp src/test_global_rtree.hpp
+rtree_test_bulkload_SOURCES = \
+	src/rtree/test_bulkload_main.cpp \
+	src/test_global_rtree.hpp \
+	src/include/test_global.hpp
 
 ref_pair_test_SOURCES = src/ref_pair_test.cpp
 
