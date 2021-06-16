@@ -42,7 +42,10 @@ set(_TESTS
 foreach(_TEST ${_TESTS})
     set(_TEST_FILE ${_TEST}.cpp)
     string(REPLACE "-" "_" _TEST_FILE ${_TEST_FILE})
-    add_executable(${_TEST} EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/${_TEST_FILE})
+    add_executable(${_TEST} EXCLUDE_FROM_ALL
+        ${PROJECT_SOURCE_DIR}/src/test_global.cpp
+        ${PROJECT_SOURCE_DIR}/src/${_TEST_FILE}
+    )
     add_test(${_TEST} ${_TEST} func)  # not all test programs require a 'func' parameter.
 endforeach()
 
@@ -51,6 +54,7 @@ add_executable(multi-type-vector-test-perf EXCLUDE_FROM_ALL
 )
 
 add_executable(rtree-test EXCLUDE_FROM_ALL
+    ${PROJECT_SOURCE_DIR}/src/test_global.cpp
     ${PROJECT_SOURCE_DIR}/src/rtree/test_main.cpp
     ${PROJECT_SOURCE_DIR}/src/rtree/test_basic.cpp
     ${PROJECT_SOURCE_DIR}/src/rtree/test_copy.cpp
@@ -69,6 +73,7 @@ add_executable(rtree-test EXCLUDE_FROM_ALL
 )
 
 add_executable(rtree-test-bulkload EXCLUDE_FROM_ALL
+    ${PROJECT_SOURCE_DIR}/src/test_global.cpp
     ${PROJECT_SOURCE_DIR}/src/rtree/test_bulkload_main.cpp
 )
 

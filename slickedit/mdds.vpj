@@ -318,6 +318,7 @@
             <F N="../src/sorted_string_map_test.cpp"/>
             <F N="../src/stlperf_test.cpp"/>
             <F N="../src/template_test.cpp"/>
+            <F N="../src/test_global.cpp"/>
             <F N="../src/trie_map_test.cpp"/>
         </Folder>
         <Folder Name="../test">

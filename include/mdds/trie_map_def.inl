@@ -33,6 +33,7 @@
 #include <memory>
 #include <sstream>
 #include <type_traits>
+#include <cstring>
 
 #ifdef MDDS_TRIE_MAP_DEBUG
 #include <iostream>

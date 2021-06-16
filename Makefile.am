@@ -68,33 +68,69 @@ check_PROGRAMS = \
 	rtree_test_bulkload \
 	ref_pair_test
 
-flat_segment_tree_test_SOURCES = src/flat_segment_tree_test.cpp src/include/test_global.hpp
+flat_segment_tree_test_SOURCES = \
+	src/flat_segment_tree_test.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-multi_type_matrix_test_SOURCES = src/multi_type_matrix_test.cpp src/include/test_global.hpp
+multi_type_matrix_test_SOURCES = \
+	src/multi_type_matrix_test.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-multi_type_matrix_test_walk_SOURCES = src/multi_type_matrix_test_walk.cpp src/include/test_global.hpp
+multi_type_matrix_test_walk_SOURCES = \
+	src/multi_type_matrix_test_walk.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-multi_type_vector_test_event_SOURCES = src/multi_type_vector_test_event.cpp src/include/test_global.hpp
+multi_type_vector_test_event_SOURCES = \
+	src/multi_type_vector_test_event.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-multi_type_vector_test_custom_SOURCES = src/multi_type_vector_test_custom.cpp src/include/test_global.hpp
+multi_type_vector_test_custom_SOURCES = \
+	src/multi_type_vector_test_custom.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-multi_type_vector_test_default_SOURCES = src/multi_type_vector_test_default.cpp src/include/test_global.hpp
+multi_type_vector_test_default_SOURCES = \
+	src/multi_type_vector_test_default.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-multi_type_vector_test_perf_SOURCES = src/multi_type_vector_test_perf.cpp src/include/test_global.hpp
+multi_type_vector_test_perf_SOURCES = \
+	src/multi_type_vector_test_perf.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-multi_type_vector_test_collection_SOURCES = src/multi_type_vector_test_collection.cpp src/include/test_global.hpp
+multi_type_vector_test_collection_SOURCES = \
+	src/multi_type_vector_test_collection.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-point_quad_tree_test_SOURCES = src/point_quad_tree_test.cpp src/include/test_global.hpp
+point_quad_tree_test_SOURCES = \
+	src/point_quad_tree_test.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-segment_tree_test_SOURCES = src/segment_tree_test.cpp src/include/test_global.hpp
+segment_tree_test_SOURCES = \
+	src/segment_tree_test.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
 stlperf_test_SOURCES = src/stlperf_test.cpp
 
-sorted_string_map_test_SOURCES = src/sorted_string_map_test.cpp src/include/test_global.hpp
+sorted_string_map_test_SOURCES = \
+	src/sorted_string_map_test.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
 template_test_SOURCES = src/template_test.cpp
 
-trie_map_test_SOURCES = src/trie_map_test.cpp src/include/test_global.hpp
+trie_map_test_SOURCES = \
+	src/trie_map_test.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
 rtree_test_SOURCES = \
 	src/rtree/test_main.cpp \
@@ -112,14 +148,16 @@ rtree_test_SOURCES = \
 	src/rtree/test_forced_reinsertion.cpp \
 	src/rtree/test_point_objects.cpp \
 	src/rtree/test_global_rtree.hpp \
-	src/include/test_global.hpp
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
 rtree_test_bulkload_SOURCES = \
 	src/rtree/test_bulkload_main.cpp \
 	src/test_global_rtree.hpp \
-	src/include/test_global.hpp
+	src/include/test_global.hpp \
+	src/test_global.cpp
 
-ref_pair_test_SOURCES = src/ref_pair_test.cpp
+ref_pair_test_SOURCES = src/ref_pair_test.cpp src/test_global.cpp
 
 test.fst.perf: flat_segment_tree_test
 	./flat_segment_tree_test perf
