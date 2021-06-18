@@ -45,47 +45,38 @@
                 MenuCaption="E&amp;xecute"
                 SaveOption="SaveNone"
                 RunFromDir="%rw">
-                <Exec CmdLine='"test.exe"'/>
+                <Exec CmdLine='"test-multi-type-vector.exe"'/>
             </Target>
         </Menu>
     </Config>
-    <CustomFolders>
+    <Files>
         <Folder
             Name="Source Files"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
-            GUID="{36E07EC9-AD26-43E0-A97B-4804FD20B19F}"></Folder>
+            GUID="{2A13E3E7-2624-4414-82D3-13A346A6307E}">
+            <F N="../src/multi_type_vector/collection/test_main.cpp"/>
+            <F N="../src/multi_type_vector/custom/test_main.cpp"/>
+            <F N="../src/multi_type_vector/default/test_main.cpp"/>
+            <F N="../src/multi_type_vector/event/test_main.cpp"/>
+            <F N="../src/multi_type_vector/perf/test_main.cpp"/>
+        </Folder>
         <Folder
             Name="Header Files"
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
-            GUID="{9D4562DF-16B8-45FC-AE5A-6A05D7F2EA6F}"/>
+            GUID="{DC165CCA-0944-4BBC-8A11-C29C5DEC59F1}"/>
         <Folder
             Name="Resource Files"
             Filters="*.ico;*.cur;*.dlg"
-            GUID="{5621AD4E-D494-451F-A030-5BB4F053EC67}"/>
+            GUID="{24B18C5A-634E-4000-A586-15E41BF6549D}"/>
         <Folder
             Name="Bitmaps"
             Filters="*.bmp"
-            GUID="{6307EEDE-5A25-4B1A-93F0-BD5810E1BA99}"/>
+            GUID="{BF36E61B-E0A0-4F18-BDED-993A2A35D813}"/>
         <Folder
             Name="Other Files"
             Filters=""
-            GUID="{3A9559FC-E298-49F5-9A38-E2545FC14761}"/>
-    </CustomFolders>
+            GUID="{5656E53A-73B8-4CAF-80A3-E0F4AA965920}"/>
+    </Files>
     <List Name="RTE">
     </List>
-    <Files AutoFolders="DirectoryView">
-        <Folder Name="../src">
-            <F N="../src/array_creation_perf_test.cpp"/>
-            <F N="../src/flat_segment_tree_test.cpp"/>
-            <F N="../src/multi_type_matrix_test.cpp"/>
-            <F N="../src/multi_type_matrix_test_walk.cpp"/>
-            <F N="../src/point_quad_tree_test.cpp"/>
-            <F N="../src/ref_pair_test.cpp"/>
-            <F N="../src/segment_tree_test.cpp"/>
-            <F N="../src/sorted_string_map_test.cpp"/>
-            <F N="../src/stlperf_test.cpp"/>
-            <F N="../src/template_test.cpp"/>
-            <F N="../src/trie_map_test.cpp"/>
-        </Folder>
-    </Files>
 </Project>

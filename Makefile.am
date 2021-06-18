@@ -84,27 +84,27 @@ multi_type_matrix_test_walk_SOURCES = \
 	src/test_global.cpp
 
 multi_type_vector_test_event_SOURCES = \
-	src/multi_type_vector_test_event.cpp \
+	src/multi_type_vector/event/test_main.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
 multi_type_vector_test_custom_SOURCES = \
-	src/multi_type_vector_test_custom.cpp \
+	src/multi_type_vector/custom/test_main.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
 multi_type_vector_test_default_SOURCES = \
-	src/multi_type_vector_test_default.cpp \
+	src/multi_type_vector/default/test_main.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
 multi_type_vector_test_perf_SOURCES = \
-	src/multi_type_vector_test_perf.cpp \
+	src/multi_type_vector/perf/test_main.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
 multi_type_vector_test_collection_SOURCES = \
-	src/multi_type_vector_test_collection.cpp \
+	src/multi_type_vector/collection/test_main.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
