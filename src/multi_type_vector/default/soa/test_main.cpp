@@ -1,6 +1,7 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2012-2016 Kohei Yoshida
+ * Copyright (c) 2021 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,9 +26,24 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP
+#include "test_global.hpp" // This must be the first header to be included.
+#include "test_main.hpp"
 
-#include "./multi_type_vector/trait.hpp"
+int main (int argc, char **argv)
+{
+    try
+    {
+        // TODO : add test cases.
+    }
+    catch (const std::exception& e)
+    {
+        cout << "Test failed: " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
 
-#endif
+    cout << "Test finished successfully!" << endl;
+    return EXIT_SUCCESS;
+}
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+

@@ -1,6 +1,7 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2012-2016 Kohei Yoshida
+ * Copyright (c) 2021 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,9 +26,28 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_TRAIT_HPP
+#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_SOA_MAIN_HPP
+#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_SOA_MAIN_HPP
 
-#include "./multi_type_vector/trait.hpp"
+#include "../../global.hpp"
+#include "../types.hpp"
+
+namespace mdds { namespace multi_type_vector { namespace soa {
+
+template<typename _ElemBlockFunc>
+class multi_type_vector
+{
+public:
+    using size_type = size_t;
+
+    using element_block_type = mdds::mtv::base_element_block;
+    using element_category_type = mdds::mtv::element_t;
+    using element_block_func = _ElemBlockFunc;
+};
+
+}}}
 
 #endif
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+

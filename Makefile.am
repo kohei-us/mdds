@@ -56,6 +56,7 @@ check_PROGRAMS = \
 	multi_type_vector_test_event \
 	multi_type_vector_test_custom \
 	multi_type_vector_test_default \
+	multi_type_vector_test_default_soa \
 	multi_type_vector_test_perf \
 	multi_type_vector_test_collection \
 	point_quad_tree_test \
@@ -104,6 +105,18 @@ multi_type_vector_test_default_SOURCES = \
 	src/test_global.cpp
 
 multi_type_vector_test_default_CPPFLAGS = \
+	-I$(top_srcdir)/src/multi_type_vector/default/tc \
+	$(AM_CPPFLAGS)
+
+multi_type_vector_test_default_soa_SOURCES = \
+	src/multi_type_vector/default/soa/test_main.hpp \
+	src/multi_type_vector/default/soa/test_main.cpp \
+	src/multi_type_vector/default/tc/construction.inl \
+	src/multi_type_vector/default/tc/basic.inl \
+	src/include/test_global.hpp \
+	src/test_global.cpp
+
+multi_type_vector_test_default_soa_CPPFLAGS = \
 	-I$(top_srcdir)/src/multi_type_vector/default/tc \
 	$(AM_CPPFLAGS)
 
@@ -198,6 +211,7 @@ TESTS = \
 	multi_type_vector_test_event \
 	multi_type_vector_test_custom \
 	multi_type_vector_test_default \
+	multi_type_vector_test_default_soa \
 	multi_type_vector_test_collection \
 	point_quad_tree_test \
 	segment_tree_test \
