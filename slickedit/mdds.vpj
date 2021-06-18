@@ -220,25 +220,6 @@
     <List Name="RTE">
     </List>
     <Files AutoFolders="DirectoryView">
-        <Folder Name="../example">
-            <F N="../example/flat_segment_tree.cpp"/>
-            <F N="../example/flat_segment_tree_itrs.cpp"/>
-            <F N="../example/mtv_collection.cpp"/>
-            <F N="../example/multi_type_matrix.cpp"/>
-            <F N="../example/multi_type_vector.cpp"/>
-            <F N="../example/multi_type_vector_element_block1.cpp"/>
-            <F N="../example/multi_type_vector_event1.cpp"/>
-            <F N="../example/multi_type_vector_pos_hint.cpp"/>
-            <F N="../example/packed_trie_map.cpp"/>
-            <F N="../example/packed_trie_state_int.cpp"/>
-            <F N="../example/point_quad_tree.cpp"/>
-            <F N="../example/rtree_erase.cpp"/>
-            <F N="../example/rtree_medium.cpp"/>
-            <F N="../example/rtree_medium_bulkload.cpp"/>
-            <F N="../example/rtree_simple.cpp"/>
-            <F N="../example/segment_tree.cpp"/>
-            <F N="../example/trie_map.cpp"/>
-        </Folder>
         <Folder Name="../include">
             <Folder Name="mdds">
                 <Folder Name="multi_type_vector">
@@ -273,67 +254,6 @@
                 <F N="../include/mdds/trie_map.hpp"/>
                 <F N="../include/mdds/trie_map_def.inl"/>
                 <F N="../include/mdds/trie_map_itr.hpp"/>
-            </Folder>
-        </Folder>
-        <Folder Name="../misc">
-            <F N="../misc/matrix_perf.cpp"/>
-            <F N="../misc/sorted_string_map_perf.cpp"/>
-        </Folder>
-        <Folder Name="../src">
-            <Folder Name="include">
-                <F N="../src/include/test_global.hpp"/>
-            </Folder>
-            <Folder Name="rtree">
-                <F N="../src/rtree/test_basic.cpp"/>
-                <F N="../src/rtree/test_bulkload_main.cpp"/>
-                <F N="../src/rtree/test_center_point.cpp"/>
-                <F N="../src/rtree/test_copy.cpp"/>
-                <F N="../src/rtree/test_directory_node_split.cpp"/>
-                <F N="../src/rtree/test_erase_directories.cpp"/>
-                <F N="../src/rtree/test_exact_search_by_extent.cpp"/>
-                <F N="../src/rtree/test_exact_search_by_point.cpp"/>
-                <F N="../src/rtree/test_forced_reinsertion.cpp"/>
-                <F N="../src/rtree/test_geometry.cpp"/>
-                <F N="../src/rtree/test_global_rtree.hpp"/>
-                <F N="../src/rtree/test_intersection.cpp"/>
-                <F N="../src/rtree/test_main.cpp"/>
-                <F N="../src/rtree/test_move.cpp"/>
-                <F N="../src/rtree/test_node_split.cpp"/>
-                <F N="../src/rtree/test_point_objects.cpp"/>
-                <F N="../src/rtree/test_square_distance.cpp"/>
-            </Folder>
-            <F N="../src/array_creation_perf_test.cpp"/>
-            <F N="../src/flat_segment_tree_test.cpp"/>
-            <F N="../src/multi_type_matrix_test.cpp"/>
-            <F N="../src/multi_type_matrix_test_walk.cpp"/>
-            <F N="../src/multi_type_vector_test_collection.cpp"/>
-            <F N="../src/multi_type_vector_test_custom.cpp"/>
-            <F N="../src/multi_type_vector_test_default.cpp"/>
-            <F N="../src/multi_type_vector_test_event.cpp"/>
-            <F N="../src/multi_type_vector_test_perf.cpp"/>
-            <F N="../src/point_quad_tree_test.cpp"/>
-            <F N="../src/ref_pair_test.cpp"/>
-            <F N="../src/rtree_test_bulkload.cpp"/>
-            <F N="../src/segment_tree_test.cpp"/>
-            <F N="../src/sorted_string_map_test.cpp"/>
-            <F N="../src/stlperf_test.cpp"/>
-            <F N="../src/template_test.cpp"/>
-            <F N="../src/test_global.cpp"/>
-            <F N="../src/trie_map_test.cpp"/>
-        </Folder>
-        <Folder Name="../test">
-            <Folder Name="gdb">
-                <Folder Name="src">
-                    <F N="../test/gdb/src/flat_segment_tree.cpp"/>
-                    <F N="../test/gdb/src/multi_type_matrix.cpp"/>
-                    <F N="../test/gdb/src/multi_type_vector.cpp"/>
-                    <F N="../test/gdb/src/point_quad_tree.cpp"/>
-                    <F N="../test/gdb/src/rtree.cpp"/>
-                    <F N="../test/gdb/src/segment_tree.cpp"/>
-                    <F N="../test/gdb/src/sorted_string_map.cpp"/>
-                    <F N="../test/gdb/src/test.cpp"/>
-                    <F N="../test/gdb/src/trie_map.cpp"/>
-                </Folder>
             </Folder>
         </Folder>
     </Files>

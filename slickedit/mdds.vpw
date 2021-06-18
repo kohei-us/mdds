@@ -1,6 +1,11 @@
 <!DOCTYPE Workspace SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpw.dtd">
 <Workspace Version="10.0" VendorName="SlickEdit">
-	<Projects>
-		<Project File="mdds.vpj" />
-	</Projects>
+    <Projects>
+        <Project File="example.vpj"/>
+        <Project File="mdds.vpj"/>
+        <Project File="misc.vpj"/>
+        <Project File="test-global.vpj"/>
+        <Project File="test-rtree.vpj"/>
+        <Project File="test.vpj"/>
+    </Projects>
 </Workspace>

@@ -1,0 +1,98 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
+<Project
+    Version="10.0"
+    VendorName="SlickEdit"
+    TemplateName="(Other)"
+    WorkingDir=".">
+    <Config
+        Name="Release"
+        OutputFile=""
+        CompilerConfigName="">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='"example.exe"'/>
+            </Target>
+        </Menu>
+    </Config>
+    <CustomFolders>
+        <Folder
+            Name="Source Files"
+            Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
+            GUID="{B03D2DDC-C8D8-41D6-9525-09BEF6724A5C}"></Folder>
+        <Folder
+            Name="Header Files"
+            Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
+            GUID="{9FD56694-BB2A-4EF2-932E-71F339FAD2C3}"/>
+        <Folder
+            Name="Resource Files"
+            Filters="*.ico;*.cur;*.dlg"
+            GUID="{95F0FF96-7D87-4949-9A49-A960C6860C99}"/>
+        <Folder
+            Name="Bitmaps"
+            Filters="*.bmp"
+            GUID="{A54B79ED-AC4E-4359-B1EC-35283B6AAE1E}"/>
+        <Folder
+            Name="Other Files"
+            Filters=""
+            GUID="{C73A3E99-D590-43B4-8F5B-716C9E39DE6D}"/>
+    </CustomFolders>
+    <List Name="RTE">
+    </List>
+    <Files AutoFolders="DirectoryView">
+        <Folder Name="../example">
+            <F N="../example/flat_segment_tree.cpp"/>
+            <F N="../example/flat_segment_tree_itrs.cpp"/>
+            <F N="../example/mtv_collection.cpp"/>
+            <F N="../example/multi_type_matrix.cpp"/>
+            <F N="../example/multi_type_vector.cpp"/>
+            <F N="../example/multi_type_vector_element_block1.cpp"/>
+            <F N="../example/multi_type_vector_event1.cpp"/>
+            <F N="../example/multi_type_vector_pos_hint.cpp"/>
+            <F N="../example/packed_trie_map.cpp"/>
+            <F N="../example/packed_trie_state_custom.cpp"/>
+            <F N="../example/packed_trie_state_int.cpp"/>
+            <F N="../example/point_quad_tree.cpp"/>
+            <F N="../example/rtree_erase.cpp"/>
+            <F N="../example/rtree_medium.cpp"/>
+            <F N="../example/rtree_medium_bulkload.cpp"/>
+            <F N="../example/rtree_simple.cpp"/>
+            <F N="../example/segment_tree.cpp"/>
+            <F N="../example/trie_map.cpp"/>
+        </Folder>
+    </Files>
+</Project>
