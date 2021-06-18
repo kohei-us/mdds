@@ -94,9 +94,18 @@ multi_type_vector_test_custom_SOURCES = \
 	src/test_global.cpp
 
 multi_type_vector_test_default_SOURCES = \
+	src/multi_type_vector/default/test_construction.cpp \
+	src/multi_type_vector/default/test_basic.cpp \
+	src/multi_type_vector/default/test_main.hpp \
 	src/multi_type_vector/default/test_main.cpp \
+	src/multi_type_vector/default/tc/construction.inl \
+	src/multi_type_vector/default/tc/basic.inl \
 	src/include/test_global.hpp \
 	src/test_global.cpp
+
+multi_type_vector_test_default_CPPFLAGS = \
+	-I$(top_srcdir)/src/multi_type_vector/default/tc \
+	$(AM_CPPFLAGS)
 
 multi_type_vector_test_perf_SOURCES = \
 	src/multi_type_vector/perf/test_main.cpp \

@@ -54,6 +54,7 @@
             Name="Source Files"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
             GUID="{2A13E3E7-2624-4414-82D3-13A346A6307E}">
+            <F N="../src/multi_type_vector/default/test_construction.cpp"/>
             <F N="../src/multi_type_vector/collection/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/test_main.cpp"/>
@@ -63,7 +64,9 @@
         <Folder
             Name="Header Files"
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
-            GUID="{DC165CCA-0944-4BBC-8A11-C29C5DEC59F1}"/>
+            GUID="{DC165CCA-0944-4BBC-8A11-C29C5DEC59F1}">
+            <F N="../src/multi_type_vector/default/test_main.hpp"/>
+        </Folder>
         <Folder
             Name="Resource Files"
             Filters="*.ico;*.cur;*.dlg"
@@ -75,7 +78,9 @@
         <Folder
             Name="Other Files"
             Filters=""
-            GUID="{5656E53A-73B8-4CAF-80A3-E0F4AA965920}"/>
+            GUID="{5656E53A-73B8-4CAF-80A3-E0F4AA965920}">
+            <F N="../src/multi_type_vector/default/tc/construction.inl"/>
+        </Folder>
     </Files>
     <List Name="RTE">
     </List>
