@@ -35,8 +35,6 @@
 #include <vector>
 #include <deque>
 
-#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
-
 using namespace std;
 using namespace mdds;
 
