@@ -26,15 +26,29 @@
  *
  ************************************************************************/
 
-#pragma once
+#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_UTIL_HPP
+#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_UTIL_HPP
 
-#include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector/types.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
+#include <sstream>
 
-using mtv_type = mdds::multi_type_vector::soa::multi_type_vector<mdds::mtv::element_block_func>;
+namespace mdds {
 
-void mtv_test_construction();
+namespace detail { namespace mtv {
+
+inline void throw_block_position_not_found(
+    const char* method_sig, int line, size_t pos, size_t block_size, size_t container_size)
+{
+    std::ostringstream os;
+    os << method_sig << "#" << line << ": block position not found! (logical pos="
+        << pos << ", block size=" << block_size << ", logical size=" << container_size << ")";
+    throw std::out_of_range(os.str());
+}
+
+}} // namespace detail::mtv
+
+}
+
+#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

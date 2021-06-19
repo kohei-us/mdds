@@ -33,7 +33,7 @@ int main (int argc, char **argv)
 {
     try
     {
-        // TODO : add test cases.
+        mtv_test_construction();
     }
     catch (const std::exception& e)
     {

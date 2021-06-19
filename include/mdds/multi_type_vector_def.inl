@@ -25,7 +25,8 @@
  *
  ************************************************************************/
 
-#include "multi_type_vector_macro.hpp"
+#include "./multi_type_vector/macro.hpp"
+#include "./multi_type_vector/util.hpp"
 
 #include <stdexcept>
 #include <memory>
@@ -33,15 +34,6 @@
 namespace mdds {
 
 namespace detail { namespace mtv {
-
-inline void throw_block_position_not_found(
-    const char* method_sig, int line, size_t pos, size_t block_size, size_t container_size)
-{
-    std::ostringstream os;
-    os << method_sig << "#" << line << ": block position not found! (logical pos="
-        << pos << ", block size=" << block_size << ", logical size=" << container_size << ")";
-    throw std::out_of_range(os.str());
-}
 
 template<typename T>
 T advance_position(const T& pos, int steps)

@@ -29,6 +29,21 @@
 void mtv_test_construction()
 {
     stack_printer __stack_printer__(__FUNCTION__);
+
+    {
+        mtv_type db; // default constructor.
+        assert(db.size() == 0);
+        assert(db.empty());
+        assert(db.block_size() == 0);
+    }
+
+    {
+        // Create an empty segment of size 7.
+        mtv_type db(7);
+        assert(db.size() == 7);
+        assert(db.block_size() == 1);
+    }
+
     {
         // Create with initial value and size.
         mtv_type db(10, 1.0);

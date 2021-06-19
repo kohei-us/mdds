@@ -225,11 +225,14 @@
                 <Folder Name="multi_type_vector">
                     <Folder Name="soa">
                         <F N="../include/mdds/multi_type_vector/soa/main.hpp"/>
+                        <F N="../include/mdds/multi_type_vector/soa/main_def.inl"/>
                     </Folder>
                     <F N="../include/mdds/multi_type_vector/collection.hpp"/>
                     <F N="../include/mdds/multi_type_vector/collection_def.inl"/>
+                    <F N="../include/mdds/multi_type_vector/macro.hpp"/>
                     <F N="../include/mdds/multi_type_vector/trait.hpp"/>
                     <F N="../include/mdds/multi_type_vector/types.hpp"/>
+                    <F N="../include/mdds/multi_type_vector/util.hpp"/>
                 </Folder>
                 <F N="../include/mdds/flat_segment_tree.hpp"/>
                 <F N="../include/mdds/flat_segment_tree_def.inl"/>

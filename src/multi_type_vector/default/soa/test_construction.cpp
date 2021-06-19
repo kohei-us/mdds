@@ -26,15 +26,10 @@
  *
  ************************************************************************/
 
-#pragma once
+#include "test_global.hpp" // This must be the first header to be included.
+#include "test_main.hpp"
 
-#include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector/types.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
-
-using mtv_type = mdds::multi_type_vector::soa::multi_type_vector<mdds::mtv::element_block_func>;
-
-void mtv_test_construction();
+#include "construction.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
