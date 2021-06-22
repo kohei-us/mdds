@@ -27,12 +27,17 @@
  ************************************************************************/
 
 template<typename _ValT>
-bool test_cell_insertion(mtv_type& col_db, size_t row, _ValT val)
+bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)
 {
     _ValT test;
     col_db.set(row, val);
     col_db.get(row, test);
-    return val == test;
+
+    if (val == test)
+        return true;
+
+    std::cout << "row " << row << ": value stored = " << val << "; value retrieved = " << test << std::endl;
+    return false;
 }
 
 void mtv_test_basic()
@@ -40,7 +45,6 @@ void mtv_test_basic()
     stack_printer __stack_printer__(__FUNCTION__);
 
     bool res;
-
     {
         // Single column instance with only one row.
         mtv_type col_db(1);
@@ -339,6 +343,7 @@ void mtv_test_basic()
         std::string str = "alpha";
         res = test_cell_insertion(col_db, 1, str);
         assert(res);
+
         res = test_cell_insertion(col_db, 0, 4.0);
         assert(res);
         res = test_cell_insertion(col_db, 1, 3.0);
@@ -375,6 +380,7 @@ void mtv_test_basic()
         assert(res);
     }
 
+#if 0
     {
         mtv_type col_db(4);
         col_db.set(0, 1.0);
@@ -644,6 +650,7 @@ void mtv_test_basic()
             assert(*p == 'z');
         }
     }
+#endif
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

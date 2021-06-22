@@ -55,6 +55,7 @@
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
             GUID="{2A13E3E7-2624-4414-82D3-13A346A6307E}">
             <F N="../src/multi_type_vector/default/test_basic.cpp"/>
+            <F N="../src/multi_type_vector/default/soa/test_basic.cpp"/>
             <F N="../src/multi_type_vector/default/test_construction.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_construction.cpp"/>
             <F N="../src/multi_type_vector/collection/test_main.cpp"/>

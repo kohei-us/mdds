@@ -34,6 +34,7 @@ int main (int argc, char **argv)
     try
     {
         mtv_test_construction();
+        mtv_test_basic();
     }
     catch (const std::exception& e)
     {

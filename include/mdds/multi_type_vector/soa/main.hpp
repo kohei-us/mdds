@@ -80,12 +80,44 @@ public:
      */
     using event_func = _EventFunc;
 
+    class iterator
+    {
+        // dummy iterator, to be implemented later.
+    };
+
 private:
     struct blocks_type
     {
         std::vector<size_type> positions;
         std::vector<size_type> sizes;
         std::vector<element_block_type*> element_blocks;
+
+        void pop_back()
+        {
+            positions.pop_back();
+            sizes.pop_back();
+            element_blocks.pop_back();
+        }
+
+        void push_back(size_type pos, size_type size, element_block_type* data)
+        {
+            positions.push_back(pos);
+            sizes.push_back(size);
+            element_blocks.push_back(data);
+        }
+
+        void erase(size_type index);
+        void erase(size_type index, size_type size);
+        void insert(size_type index, size_type size);
+        void insert(size_type index, size_type pos, size_type size, element_block_type* data);
+
+        /**
+         * Calculate the position of specified block based on the position and
+         * size of the previous block.
+         *
+         * @param index index of the block to calculate the position for.
+         */
+        void calc_block_position(size_type index);
     };
 
     struct element_block_deleter
@@ -138,6 +170,30 @@ public:
                                                                               */
     template<typename _T>
     multi_type_vector(size_type init_size, const _T& it_begin, const _T& it_end);
+
+    /**
+     * Destructor.  It deletes all allocated element blocks.
+     */
+    ~multi_type_vector();
+
+    /**
+     * Set a value of an arbitrary type to a specified position.  The type of
+     * the value is inferred from the value passed to this method.  The new
+     * value will overwrite an existing value at the specified position
+     * position if any.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception
+     * if the specified position is outside the current container range.</p>
+     *
+     * <p>Calling this method will not change the size of the container.</p>
+     *
+     * @param pos position to insert the value to.
+     * @param value value to insert.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.
+     */
+    template<typename _T>
+    iterator set(size_type pos, const _T& value);
 
     /**
      * Return the current container size.
@@ -199,7 +255,26 @@ public:
     template<typename _T>
     _T get(size_type pos) const;
 
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    void dump_blocks(std::ostream& os) const;
+
+    void check_block_integrity() const;
+#endif
+
 private:
+
+    void delete_element_block(size_type block_index);
+
+    void delete_element_blocks(size_type start, size_type end);
+
+    template<typename _T>
+    iterator set_impl(size_type pos, size_type block_index, const _T& value);
+
+    template<typename _T>
+    iterator set_cell_to_empty_block(size_type block_index, size_type pos_in_block, const _T& cell);
+
+    template<typename _T>
+    iterator set_cell_to_non_empty_block_of_size_one(size_type block_index, const _T& cell);
 
     /**
      * Find the correct block position for a given logical row ID.
@@ -210,6 +285,65 @@ private:
      * @return index of the block that contains the specified logical row ID.
      */
     size_type get_block_position(size_type row, size_type start_block_index=0) const;
+
+    template<typename _T>
+    void create_new_block_with_new_cell(size_type block_index, const _T& cell);
+
+    template<typename _T>
+    void append_cell_to_block(size_type block_index, const _T& cell);
+
+    template<typename _T>
+    iterator set_cell_to_middle_of_block(
+        size_type block_index, size_type pos_in_block, const _T& cell);
+
+    /**
+     * Set a new value to the top of specified non-empty block. The block is
+     * expected to be of size greater than one, and the previous block is not of
+     * the same type as the value being inserted.
+     */
+    template<typename _T>
+    void set_cell_to_top_of_data_block(size_type block_index, const _T& cell);
+
+    template<typename _T>
+    void set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell);
+
+    /**
+     * Set a new block in the middle of an existing block. This call inserts
+     * two new blocks below the specificed block position. The first one will
+     * be empty, and the second one will contain the lower elements of the
+     * existing block.
+     *
+     * @param block_index index of block into which to set a new block.
+     * @param offset position in the existing block to set the new block to.
+     * @param new_block_size size of the new block
+     * @param overwrite whether or not to overwrite the elements replaced by
+     *                  the new block.
+     * @return reference to the middle block
+     */
+    size_type set_new_block_to_middle(
+        size_type block_index, size_type offset, size_type new_block_size, bool overwrite);
+
+    /**
+     * Check if the previous block is of specified type, if exists.
+     *
+     * @param block_index index of the current block.
+     * @param cat desired block type.
+     *
+     * @return true if the previous block exists and it's of specified type,
+     *         otherwise false.
+     */
+    bool is_previous_block_of_type(size_type block_index, element_category_type cat) const;
+
+    /**
+     * Check if the next block is of specified type, if exists.
+     *
+     * @param block_index index of the current block.
+     * @param cat desired block type.
+     *
+     * @return true if the next block exists and it's of specified type,
+     *         otherwise false.
+     */
+    bool is_next_block_of_type(size_type block_index, element_category_type cat) const;
 
 private:
     event_func m_hdl_event;
