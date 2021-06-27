@@ -217,6 +217,21 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& valu
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+mtv::element_t multi_type_vector<_CellBlockFunc, _EventFunc>::get_type(size_type pos) const
+{
+    size_type block_index = get_block_position(pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::get_type", __LINE__, pos, block_size(), size());
+
+    element_block_type* blk_data = m_block_store.element_blocks[block_index];
+    if (!blk_data)
+        return mtv::element_type_empty;
+
+    return mtv::get_block_type(*blk_data);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(size_type pos, size_type block_index, const _T& value)
@@ -286,11 +301,8 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(size_type pos, size_type
 
     if (pos < (start_row + blk_size - 1))
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-        // Insertion point is somewhere in the middle of the block.
+        // t|???|-x-|???|b - Insertion point is in the middle of the block.
         return set_cell_to_middle_of_block(block_index, pos_in_block, value);
-#endif
     }
 
     // t|???|--x|???|b - Insertion point is at the end of the block.
@@ -338,38 +350,31 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(size_type pos, size_type
 
     if (block_index == m_block_store.positions.size() - 1)
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-        // This is the last block.
+        // t|???|--x|b - This is the last block.
         set_cell_to_bottom_of_data_block(block_index, value);
-        iterator itr = end();
-        --itr;
-        return itr;
-#endif
+//      iterator itr = end();
+//      --itr;
+//      return itr;
+        return iterator();
     }
 
     bool blk_next = is_next_block_of_type(block_index, cat);
     if (!blk_next)
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-        // Next block is either empty or of different type than that of the cell being inserted.
-        set_cell_to_bottom_of_data_block(block_index, value); // This invalidates m_blocks.
-        return get_iterator(block_index+1);
-#endif
+        // t|???|--x|---|b - Next block is of different type than the new
+        // value's.
+        set_cell_to_bottom_of_data_block(block_index, value);
+//      return get_iterator(block_index+1);
+        return iterator();
     }
 
-    { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-    // Pop the last element from the current block, and prepend the cell
-    // into the next block.
-    element_block_func::overwrite_values(*blk->mp_data, blk->m_size-1, 1);
-    element_block_func::erase(*blk->mp_data, blk->m_size-1);
-    blk->m_size -= 1;
-    mdds_mtv_prepend_value(*blk_next->mp_data, value);
-    blk_next->m_size += 1;
-    blk_next->m_position -= 1;
-#endif
+    // t|???|--x|xxx|b - The next block is of the same type as the new value.
+    element_block_func::overwrite_values(*blk_data, blk_size-1, 1);
+    element_block_func::erase(*blk_data, blk_size-1);
+    m_block_store.sizes[block_index] -= 1;
+    mdds_mtv_prepend_value(*m_block_store.element_blocks[block_index+1], value);
+    m_block_store.sizes[block_index+1] += 1;
+    m_block_store.positions[block_index+1] -= 1;
 
 //  return get_iterator(block_index+1);
     return iterator();
@@ -793,12 +798,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_non_empty_block_of_si
         return iterator();
     }
 
-    // Remove the current block, and check if the cell can be append
-    // to the previous block, or prepended to the following block.
-    // Also check if the blocks above and below need to be combined.
+    // Remove the current block, and check if the cell can be append to the
+    // previous block, or prepended to the following block. Also check if the
+    // blocks above and below need to be combined.
 
-//  block* blk_prev = &m_blocks[block_index-1];
-//  block* blk_next = &m_blocks[block_index+1];
     if (!m_block_store.element_blocks[block_index-1])
     {
         // t|   |x|???|b - Previous block is empty.
@@ -816,24 +819,19 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_non_empty_block_of_si
 
         if (blk_cat_next == cat)
         {
-            { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-            // Delete the current block, and prepend the new cell to the next block.
-            delete_element_block(*blk);
-            m_blocks.erase(m_blocks.begin()+block_index);
-            blk = &m_blocks[block_index];
-            blk->m_size += 1;
-            blk->m_position -= 1;
-            mdds_mtv_prepend_value(*blk->mp_data, cell);
-            return get_iterator(block_index);
-#endif
+            // t|   |x|xxx|b - Next block is of the same type as the new value.
+            delete_element_block(block_index);
+            m_block_store.erase(block_index);
+            m_block_store.sizes[block_index] += 1;
+            m_block_store.positions[block_index] -= 1;
+            mdds_mtv_prepend_value(*m_block_store.element_blocks[block_index], cell);
+//          return get_iterator(block_index);
+            return iterator();
         }
 
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
+        // t|   |x|---|b
         assert(blk_cat_next != cat);
-        create_new_block_with_new_cell(blk->mp_data, cell);
-#endif
+        create_new_block_with_new_cell(block_index, cell);
 //      return get_iterator(block_index);
         return iterator();
     }
@@ -893,9 +891,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_non_empty_block_of_si
             return iterator();
         }
 
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-        // t|---|x|---|b
-        // Just overwrite the current block.
+        // t|---|x|---|b - Just overwrite the current block.
         create_new_block_with_new_cell(block_index, cell);
 //      return get_iterator(block_index);
         return iterator();
@@ -905,38 +901,29 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_non_empty_block_of_si
 
     if (prev_cat == cat)
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-        // Append to the previous block.
-        blk_prev->m_size += 1;
-        mdds_mtv_append_value(*blk_prev->mp_data, cell);
-        delete_element_block(*blk);
-        m_blocks.erase(m_blocks.begin()+block_index);
-#endif
+        // t|xxx|x|---|b - Append to the previous block.
+        m_block_store.sizes[block_index-1] += 1;
+        mdds_mtv_append_value(*m_block_store.element_blocks[block_index-1], cell);
+        delete_element_block(block_index);
+        m_block_store.erase(block_index);
 //      return get_iterator(block_index-1);
         return iterator();
     }
 
     if (next_cat == cat)
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-        // Prepend to the next block.
-        blk_next->m_size += 1;
-        blk_next->m_position -= 1;
-        mdds_mtv_prepend_value(*blk_next->mp_data, cell);
-        delete_element_block(*blk);
-        m_blocks.erase(m_blocks.begin()+block_index);
-#endif
+        // t|---|x|xxx|b - Prepend to the next block.
+        m_block_store.sizes[block_index+1] += 1;
+        m_block_store.positions[block_index+1] -= 1;
+        mdds_mtv_prepend_value(*m_block_store.element_blocks[block_index+1], cell);
+        delete_element_block(block_index);
+        m_block_store.erase(block_index);
 //      return get_iterator(block_index);
         return iterator();
     }
 
-    { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_impl): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-    // Just overwrite the current block.
-    create_new_block_with_new_cell(blk->mp_data, cell);
-#endif
+    // t|---|x|+++|b - Just overwrite the current block.
+    create_new_block_with_new_cell(block_index, cell);
 //  return get_iterator(block_index);
     return iterator();
 }
@@ -1121,37 +1108,31 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_new_block_to_middle(
     element_block_type* blk_data = m_block_store.element_blocks[block_index];
     if (blk_data)
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_new_block_to_middle): WIP"; throw std::runtime_error(os.str()); }
-#if 0
         size_type lower_data_start = offset + new_block_size;
-        block& blk_lower = m_blocks[block_index+2];
-        assert(blk_lower.m_size == lower_block_size);
-        element_category_type cat = mtv::get_block_type(*blk.mp_data);
-        blk_lower.mp_data = element_block_func::create_new_block(cat, 0);
-        m_hdl_event.element_block_acquired(blk_lower.mp_data);
-#endif
+        assert(m_block_store.sizes[block_index+2] == lower_block_size);
+        element_category_type cat = mtv::get_block_type(*blk_data);
+        m_block_store.element_blocks[block_index+2] = element_block_func::create_new_block(cat, 0);
+        m_hdl_event.element_block_acquired(m_block_store.element_blocks[block_index+2]);
 
         // Try to copy the fewer amount of data to the new non-empty block.
         if (offset > lower_block_size)
         {
-            { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_new_block_to_middle): WIP"; throw std::runtime_error(os.str()); }
-#if 0
             // Keep the upper values in the current block and copy the lower
             // values to the new non-empty block.
             element_block_func::assign_values_from_block(
-                *blk_lower.mp_data, *blk.mp_data, lower_data_start, lower_block_size);
+                *m_block_store.element_blocks[block_index+2],
+                *blk_data, lower_data_start, lower_block_size);
 
             if (overwrite)
             {
                 // Overwrite cells that will become empty.
-                element_block_func::overwrite_values(*blk.mp_data, offset, new_block_size);
+                element_block_func::overwrite_values(*blk_data, offset, new_block_size);
             }
 
             // Shrink the current data block.
-            element_block_func::resize_block(*blk.mp_data, offset);
-            blk.m_size = offset;
-            blk_lower.m_size = lower_block_size;
-#endif
+            element_block_func::resize_block(*blk_data, offset);
+            m_block_store.sizes[block_index] = offset;
+            m_block_store.sizes[block_index+2] = lower_block_size;
         }
         else
         {

@@ -380,7 +380,6 @@ void mtv_test_basic()
         assert(res);
     }
 
-#if 0
     {
         mtv_type col_db(4);
         col_db.set(0, 1.0);
@@ -596,6 +595,7 @@ void mtv_test_basic()
         assert(db.get<double>(7) == 2.1);
     }
 
+#if 0
     {
         mtv_type db(8, true);
         std::vector<double> vals(3, 1.2);

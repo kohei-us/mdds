@@ -196,6 +196,15 @@ public:
     iterator set(size_type pos, const _T& value);
 
     /**
+     * Get the type of an element at specified position.
+     *
+     * @param pos position of the element.
+     *
+     * @return element type.
+     */
+    mtv::element_t get_type(size_type pos) const;
+
+    /**
      * Return the current container size.
      *
      * @return current container size.
