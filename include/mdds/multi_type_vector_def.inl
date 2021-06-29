@@ -705,9 +705,12 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& it_begin, const _T& it_end)
 {
-    size_type end_pos = 0;
-    if (!set_cells_precheck(pos, it_begin, it_end, end_pos))
+    auto res = detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
+
+    if (!res.second)
         return end();
+
+    size_type end_pos = res.first;
 
     size_type block_index1 = get_block_position(pos);
     if (block_index1 == m_blocks.size())
@@ -738,9 +741,11 @@ template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
 {
-    size_type end_pos = 0;
-    if (!set_cells_precheck(pos, it_begin, it_end, end_pos))
+    auto res = detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
+    if (!res.second)
         return end();
+
+    size_type end_pos = res.first;
 
     size_type block_index1 = get_block_position(pos_hint, pos);
     return set_cells_impl(pos, end_pos, block_index1, it_begin, it_end);
@@ -3151,23 +3156,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
     adjust_block_positions(block_index+3, length);
 
     return get_iterator(block_index+1);
-}
-
-template<typename _CellBlockFunc, typename _EventFunc>
-template<typename _T>
-bool multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_precheck(
-    size_type pos, const _T& it_begin, const _T& it_end, size_type& end_pos)
-{
-    size_type length = std::distance(it_begin, it_end);
-    if (!length)
-        // empty data array.  nothing to do.
-        return false;
-
-    end_pos = pos + length - 1;
-    if (end_pos >= m_cur_size)
-        throw std::out_of_range("Data array is too long.");
-
-    return true;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>

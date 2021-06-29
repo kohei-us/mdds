@@ -595,7 +595,6 @@ void mtv_test_basic()
         assert(db.get<double>(7) == 2.1);
     }
 
-#if 0
     {
         mtv_type db(8, true);
         std::vector<double> vals(3, 1.2);
@@ -625,6 +624,7 @@ void mtv_test_basic()
         db.set<int8_t>(0, 'r'); // overwrite.
         db.set<uint8_t>(5, 'z'); // overwrite
 
+#if 0
         assert(db.block_size() == 3);
         mtv_type::const_iterator it = db.begin();
         assert(it != db.end());
@@ -649,8 +649,8 @@ void mtv_test_basic()
             ++p;
             assert(*p == 'z');
         }
-    }
 #endif
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

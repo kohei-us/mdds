@@ -1221,10 +1221,6 @@ private:
     iterator insert_empty_impl(size_type pos, size_type block_index, size_type length);
 
     template<typename _T>
-    bool set_cells_precheck(
-        size_type row, const _T& it_begin, const _T& it_end, size_type& end_pos);
-
-    template<typename _T>
     iterator set_cells_impl(
         size_type row, size_type end_row, size_type block_index1, const _T& it_begin, const _T& it_end);
 

@@ -44,6 +44,42 @@ inline void throw_block_position_not_found(
     throw std::out_of_range(os.str());
 }
 
+/**
+ * Given a pair of iterators comprising the input value sequence, and a
+ * desired logical insertion position, calculate the position of the last
+ * input value. Also check if the input value sequence is empty.
+ *
+ * @exception std::out_of_range if the end position is greater than the last
+ *               allowed position of the destination storage.
+ *
+ * @param it_begin iterator pointing to the first element of the input value
+ *                 sequence.
+ * @param it_end iterator point to the position past the last element of the
+ *               input value sequence.
+ * @param pos desired insertion position.
+ * @param total_size total logical size of the destination storage.
+ *
+ * @return position of the last input value (first) and a flag on whether or
+ *         not the input value sequence is empty (second).
+ */
+template<typename _T, typename _SizeT>
+std::pair<_SizeT, bool> calc_input_end_position(
+    const _T& it_begin, const _T& it_end, _SizeT pos, _SizeT total_size)
+{
+    using ret_type = std::pair<_SizeT, bool>;
+
+    _SizeT length = std::distance(it_begin, it_end);
+    if (!length)
+        // empty data array.  nothing to do.
+        return ret_type(0, false);
+
+    _SizeT end_pos = pos + length - 1;
+    if (end_pos >= total_size)
+        throw std::out_of_range("Data array is too long.");
+
+    return ret_type(end_pos, true);
+}
+
 }} // namespace detail::mtv
 
 }

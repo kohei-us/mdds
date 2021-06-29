@@ -196,6 +196,30 @@ public:
     iterator set(size_type pos, const _T& value);
 
     /**
+     * Set multiple values of identical type to a range of elements starting
+     * at specified position.  Any existing values will be overwritten by the
+     * new values.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the range of new values would fall outside the current container
+     * range.</p>
+     *
+     * <p>Calling this method will not change the size of the container.</p>
+     *
+     * @param pos position of the first value of the series of new values
+     *            being inserted.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being set.
+     * @param it_end iterator that points to the end position of the values
+     *               being set.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.  When no value insertion occurs because the value set
+     *         is empty, the end iterator position is returned.
+     */
+    template<typename _T>
+    iterator set(size_type pos, const _T& it_begin, const _T& it_end);
+
+    /**
      * Get the type of an element at specified position.
      *
      * @param pos position of the element.
@@ -277,7 +301,20 @@ private:
     void delete_element_blocks(size_type start, size_type end);
 
     template<typename _T>
+    bool set_cells_precheck(
+        size_type row, const _T& it_begin, const _T& it_end, size_type& end_pos);
+
+    template<typename _T>
     iterator set_impl(size_type pos, size_type block_index, const _T& value);
+
+    template<typename _T>
+    iterator set_cells_impl(
+        size_type row, size_type end_row, size_type block_index1, const _T& it_begin, const _T& it_end);
+
+    template<typename _T>
+    iterator set_cells_to_single_block(
+        size_type start_row, size_type end_row, size_type block_index,
+        const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cell_to_empty_block(size_type block_index, size_type pos_in_block, const _T& cell);
@@ -327,7 +364,7 @@ private:
      * @param new_block_size size of the new block
      * @param overwrite whether or not to overwrite the elements replaced by
      *                  the new block.
-     * @return reference to the middle block
+     * @return index of the inserted middle block.
      */
     size_type set_new_block_to_middle(
         size_type block_index, size_type offset, size_type new_block_size, bool overwrite);
