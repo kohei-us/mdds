@@ -29,8 +29,8 @@
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_HPP
 
 #include "global.hpp"
-#include "multi_type_vector_types.hpp"
-#include "multi_type_vector_itr.hpp"
+#include "./multi_type_vector/types.hpp"
+#include "./multi_type_vector_itr.hpp"
 
 #include <vector>
 #include <algorithm>
