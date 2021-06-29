@@ -643,9 +643,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
         return iterator();
     }
 
-    // t|???|?xx?|???|b
-
-    // new data array will be in the middle of the current block.
+    // t|???|-xx-|???|b - New values will be in the middle of the current block.
     assert(start_row_in_block < start_row && end_row < end_row_in_block);
 
     block_index = set_new_block_to_middle(
