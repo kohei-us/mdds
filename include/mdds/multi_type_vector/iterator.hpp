@@ -29,67 +29,11 @@
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_ITERATOR_HPP
 
 #include "./types.hpp"
+#include "./iterator_node.hpp"
 
 #include <cstddef>
 
 namespace mdds { namespace detail { namespace mtv {
-
-/**
- * Node that represents the content of each iterator.  The private data part
- * is an implementation detail that should never be accessed externally.
- * What the end position stores in its private data is totally &
- * intentionally undefined.
- */
-template<typename _SizeT, typename _ElemBlkT>
-struct iterator_value_node
-{
-    typedef _SizeT size_type;
-    typedef _ElemBlkT element_block_type;
-
-    mdds::mtv::element_t type;
-    size_type position;
-    size_type size;
-    element_block_type* data;
-
-    iterator_value_node(size_type block_index) :
-        type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr), __private_data(block_index) {}
-
-    void swap(iterator_value_node& other)
-    {
-        std::swap(type, other.type);
-        std::swap(position, other.position);
-        std::swap(size, other.size);
-        std::swap(data, other.data);
-
-        __private_data.swap(other.__private_data);
-    }
-
-    struct private_data
-    {
-        size_type block_index;
-
-        private_data() : block_index(0) {}
-        private_data(size_type _block_index) :
-            block_index(_block_index) {}
-
-        void swap(private_data& other)
-        {
-            std::swap(block_index, other.block_index);
-        }
-    };
-    private_data __private_data;
-
-    bool operator== (const iterator_value_node& other) const
-    {
-        return type == other.type && position == other.position && size == other.size && data == other.data &&
-            __private_data.block_index == other.__private_data.block_index;
-    }
-
-    bool operator!= (const iterator_value_node& other) const
-    {
-        return !operator== (other);
-    }
-};
 
 template<typename _NodeT>
 struct private_data_no_update

@@ -230,6 +230,7 @@
                     <F N="../include/mdds/multi_type_vector/collection.hpp"/>
                     <F N="../include/mdds/multi_type_vector/collection_def.inl"/>
                     <F N="../include/mdds/multi_type_vector/iterator.hpp"/>
+                    <F N="../include/mdds/multi_type_vector/iterator_node.hpp"/>
                     <F N="../include/mdds/multi_type_vector/macro.hpp"/>
                     <F N="../include/mdds/multi_type_vector/trait.hpp"/>
                     <F N="../include/mdds/multi_type_vector/types.hpp"/>
