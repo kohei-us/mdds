@@ -104,6 +104,14 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::swap(size_type index1, size_type index2)
+{
+    std::swap(positions[index1], positions[index2]);
+    std::swap(sizes[index1], sizes[index2]);
+    std::swap(element_blocks[index1], element_blocks[index2]);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector() : m_cur_size(0) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -259,6 +267,73 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& it_b
 #endif
 
     return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::push_back(const _T& value)
+{
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = push_back_impl(value);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in push_back" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::push_back_impl(const _T& value)
+{
+    element_category_type cat = mdds_mtv_get_element_type(value);
+    element_block_type* last_data = m_block_store.element_blocks.empty() ? nullptr : m_block_store.element_blocks.back();
+
+    if (!last_data || cat != get_block_type(*last_data))
+    {
+        // Either there is no block, or the last block is empty or of different
+        // type.  Append a new block.
+        size_type block_index = m_block_store.positions.size();
+        size_type start_pos = m_cur_size;
+
+        m_block_store.push_back(start_pos, 1, nullptr);
+        create_new_block_with_new_cell(block_index, value);
+        ++m_cur_size;
+
+        return get_iterator(block_index);
+    }
+
+    assert(last_data);
+    assert(cat == get_block_type(*last_data));
+
+    // Append the new value to the last block.
+    size_type block_index = m_block_store.positions.size() - 1;
+
+    mdds_mtv_append_value(*last_data, value);
+    ++m_block_store.sizes.back();
+    ++m_cur_size;
+
+    return get_iterator(block_index);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -1472,32 +1547,30 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_new_block_to_middle(
         }
         else
         {
-            { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_new_block_to_middle): WIP"; throw std::runtime_error(os.str()); }
-#if 0
             // Keep the lower values in the current block and copy the upper
             // values to the new non-empty block (blk_lower), and swap the two
             // later.
-            element_block_func::assign_values_from_block(*blk_lower.mp_data, *blk.mp_data, 0, offset);
-            blk_lower.m_size = offset;
+            element_block_type* blk_lower_data = m_block_store.element_blocks[block_index+2];
+            element_block_func::assign_values_from_block(*blk_lower_data, *blk_data, 0, offset);
+            m_block_store.sizes[block_index+2] = offset;
 
             if (overwrite)
             {
                 // Overwrite cells that will become empty.
-                element_block_func::overwrite_values(*blk.mp_data, offset, new_block_size);
+                element_block_func::overwrite_values(*blk_data, offset, new_block_size);
             }
 
             // Remove the upper and middle values and push the rest to the top.
-            element_block_func::erase(*blk.mp_data, 0, lower_data_start);
+            element_block_func::erase(*blk_data, 0, lower_data_start);
 
             // Set the size of the current block to its new size ( what is after the new block )
-            blk.m_size = lower_block_size;
-            blk_lower.m_size = offset;
+            m_block_store.sizes[block_index] = lower_block_size;
+            m_block_store.sizes[block_index+2] = offset;
 
             // And now let's swap the blocks, while preserving the position of the original block.
-            size_type position = blk.m_position;
-            blk.swap(blk_lower);
-            blk.m_position = position;
-#endif
+            size_type position = m_block_store.positions[block_index];
+            m_block_store.swap(block_index, block_index+2);
+            m_block_store.positions[block_index] = position;
         }
     }
     else

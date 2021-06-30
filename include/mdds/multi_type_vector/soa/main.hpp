@@ -114,6 +114,8 @@ private:
          * @param index index of the block to calculate the position for.
          */
         void calc_block_position(size_type index);
+
+        void swap(size_type index1, size_type index2);
     };
 
     struct iterator_trait
@@ -230,6 +232,18 @@ public:
     iterator set(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
+     * Append a new value to the end of the container.
+     *
+     * @param value new value to be appended to the end of the container.
+     *
+     * @return iterator position pointing to the block where the value is
+     *         appended, which in this case is always the last block of the
+     *         container.
+     */
+    template<typename _T>
+    iterator push_back(const _T& value);
+
+    /**
      * Get the type of an element at specified position.
      *
      * @param pos position of the element.
@@ -327,6 +341,9 @@ private:
     iterator set_impl(size_type pos, size_type block_index, const _T& value);
 
     template<typename _T>
+    iterator push_back_impl(const _T& value);
+
+    template<typename _T>
     iterator set_cells_impl(
         size_type row, size_type end_row, size_type block_index1, const _T& it_begin, const _T& it_end);
 
@@ -409,6 +426,22 @@ private:
      *         otherwise false.
      */
     bool is_next_block_of_type(size_type block_index, element_category_type cat) const;
+
+    inline iterator get_iterator(size_type block_index)
+    {
+        auto iter_pos = m_block_store.positions.begin();
+        std::advance(iter_pos, block_index);
+        auto iter_size = m_block_store.sizes.begin();
+        std::advance(iter_size, block_index);
+        auto iter_elem = m_block_store.element_blocks.begin();
+        std::advance(iter_elem, block_index);
+
+        return iterator(
+            { iter_pos, iter_size, iter_elem },
+            { m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end() },
+            block_index
+        );
+    }
 
 private:
     event_func m_hdl_event;

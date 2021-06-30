@@ -41,6 +41,7 @@ using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
 void mtv_test_construction();
 void mtv_test_basic();
+void mtv_test_basic_numeric();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

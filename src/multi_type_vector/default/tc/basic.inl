@@ -651,5 +651,34 @@ void mtv_test_basic()
     }
 }
 
+/**
+ * Ensure that float and double types are treated as different types.
+ */
+void mtv_test_basic_numeric()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    mtv_type db;
+
+    db.push_back<double>(0.0);
+    db.push_back<double>(1.0);
+    db.push_back<double>(2.0);
+
+    assert(db.size() == 3);
+    assert(db.block_size() == 1);
+
+    db.set<float>(1, 4.0f);
+    assert(db.size() == 3);
+    assert(db.block_size() == 3);
+
+    db.set<float>(0, 3.5f);
+    assert(db.size() == 3);
+    assert(db.block_size() == 2);
+
+    db.set<float>(2, 4.5f);
+    assert(db.size() == 3);
+    assert(db.block_size() == 1);
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
