@@ -37,16 +37,15 @@ namespace mdds { namespace detail { namespace mtv {
  * What the end position stores in its private data is totally &
  * intentionally undefined.
  */
-template<typename _SizeT, typename _ElemBlkT>
+template<typename _SizeT>
 struct iterator_value_node
 {
-    typedef _SizeT size_type;
-    typedef _ElemBlkT element_block_type;
+    using size_type = _SizeT;
 
     mdds::mtv::element_t type;
     size_type position;
     size_type size;
-    element_block_type* data;
+    mdds::mtv::base_element_block* data;
 
     iterator_value_node(size_type block_index) :
         type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr), __private_data(block_index) {}

@@ -186,7 +186,7 @@ private:
         typedef typename blocks_type::const_reverse_iterator base_iterator;
     };
 
-    typedef detail::mtv::iterator_value_node<size_type, element_block_type> itr_node;
+    typedef detail::mtv::iterator_value_node<size_type> itr_node;
     typedef detail::mtv::private_data_forward_update<itr_node> itr_forward_update;
     typedef detail::mtv::private_data_no_update<itr_node> itr_no_update;
 

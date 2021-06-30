@@ -74,7 +74,7 @@ protected:
     typedef typename _Trait::base_iterator base_iterator_type;
 
     typedef typename parent_type::size_type size_type;
-    typedef iterator_value_node<size_type, typename parent_type::element_block_type> node;
+    typedef iterator_value_node<size_type> node;
 
     iterator_common_base() : m_cur_node(0) {}
 
