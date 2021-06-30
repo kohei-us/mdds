@@ -4315,6 +4315,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::resize(size_type new_size)
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(multi_type_vector& other)
 {
+    std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
     m_blocks.swap(other.m_blocks);
 }

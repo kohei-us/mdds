@@ -115,8 +115,10 @@ multi_type_vector_test_default_soa_SOURCES = \
 	src/multi_type_vector/default/soa/test_main.cpp \
 	src/multi_type_vector/default/soa/test_construction.cpp \
 	src/multi_type_vector/default/soa/test_basic.cpp \
+	src/multi_type_vector/default/soa/test_empty_cells.cpp \
 	src/multi_type_vector/default/tc/construction.inl \
 	src/multi_type_vector/default/tc/basic.inl \
+	src/multi_type_vector/default/tc/empty_cells.inl \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 

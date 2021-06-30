@@ -88,6 +88,9 @@ private:
         std::vector<size_type> sizes;
         std::vector<element_block_type*> element_blocks;
 
+        blocks_type();
+        blocks_type(const blocks_type& other);
+
         void pop_back()
         {
             positions.pop_back();
@@ -116,6 +119,10 @@ private:
         void calc_block_position(size_type index);
 
         void swap(size_type index1, size_type index2);
+
+        void swap(blocks_type& other);
+
+        void reserve(size_type n);
     };
 
     struct iterator_trait
@@ -182,6 +189,13 @@ public:
                                                                               */
     template<typename _T>
     multi_type_vector(size_type init_size, const _T& it_begin, const _T& it_end);
+
+    /**
+     * Copy constructor.
+     *
+     * @param other other column instance to copy values from.
+     */
+    multi_type_vector(const multi_type_vector& other);
 
     /**
      * Destructor.  It deletes all allocated element blocks.
@@ -253,6 +267,34 @@ public:
     mtv::element_t get_type(size_type pos) const;
 
     /**
+     * Check if element at specified position is empty of not.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container
+     * range.</p>
+     *
+     * @param pos position of the element to check.
+     *
+     * @return true if the element is empty, false otherwise.
+     */
+    bool is_empty(size_type pos) const;
+
+    /**
+     * Set specified range of elements to be empty.  Any existing values will
+     * be overwritten.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size.</p>
+     *
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @return iterator position pointing to the block where the elements are
+     *         emptied.
+     */
+    iterator set_empty(size_type start_pos, size_type end_pos);
+
+    /**
      * Return the current container size.
      *
      * @return current container size.
@@ -321,6 +363,16 @@ public:
     const_iterator cbegin() const;
     const_iterator cend() const;
 
+
+    /**
+     * Swap the content with another container.
+     *
+     * @param other another container to swap content with.
+     */
+    void swap(multi_type_vector& other);
+
+    multi_type_vector& operator= (const multi_type_vector& other);
+
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     void dump_blocks(std::ostream& os) const;
 
@@ -339,6 +391,37 @@ private:
 
     template<typename _T>
     iterator set_impl(size_type pos, size_type block_index, const _T& value);
+
+    /**
+     * @param start_pos logical start position.
+     * @param end_pos logical end position.
+     * @param start_pos_in_block1 logical position of the first element of the
+     *                            first block.
+     * @param block_index1 index of the first block
+     * @param overwrite when true, and when the stored values are pointers to
+     *                  heap objects, objects pointed to by the overwritten
+     *                  pointers should be freed from memory.
+     */
+    iterator set_empty_impl(
+        size_type start_pos, size_type end_pos, size_type block_index1, bool overwrite);
+
+    iterator set_empty_in_single_block(
+        size_type start_row, size_type end_row, size_type block_index, bool overwrite);
+
+    /**
+     * @param start_pos logical start position.
+     * @param end_pos logical end position.
+     * @param block_index1 index of the first block.
+     * @param block_index2 index of the last block.
+     * @param overwrite when true, and when the stored values are pointers to
+     *                  heap objects, objects pointed to by the overwritten
+     *                  pointers should be freed from memory.
+     */
+    iterator set_empty_in_multi_blocks(
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
+        bool overwrite);
+
+    iterator set_whole_block_empty(size_type block_index, bool overwrite);
 
     template<typename _T>
     iterator push_back_impl(const _T& value);

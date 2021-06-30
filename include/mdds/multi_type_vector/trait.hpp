@@ -195,9 +195,13 @@ void element_block_func_base::delete_block(const base_element_block* p)
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
             // We sould not throw an exception here as this gets called from a
             // destructor and destructors should not throw exceptions.
-            cerr << __FILE__ << "#" << __LINE__ << " (element_block_func_base:delete_block): "
+            std::ostringstream os;
+            os << __FILE__ << "#" << __LINE__ << " (element_block_func_base:delete_block): "
                  << "failed to delete a block of unknown type (" << get_block_type(*p) << ")"
-                 << endl;
+                 << std::endl;
+            throw general_error(os.str());
+#else
+            throw general_error("delete_block: failed to delete a block of unknown type.");
 #endif
         }
     }

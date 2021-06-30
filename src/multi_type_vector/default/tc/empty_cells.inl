@@ -29,8 +29,10 @@
 void mtv_test_empty_cells()
 {
     stack_printer __stack_printer__(__FUNCTION__);
+
     {
         mtv_type db(3);
+
         assert(db.is_empty(0));
         assert(db.is_empty(2));
 
@@ -306,6 +308,7 @@ void mtv_test_empty_cells()
         db.set(2, static_cast<uint64_t>(2));
         db.set(3, static_cast<uint64_t>(3));
         db.set(4, static_cast<uint64_t>(4));
+
         db.set_empty(2, 4);
         assert(!db.is_empty(1));
         assert(db.is_empty(2));

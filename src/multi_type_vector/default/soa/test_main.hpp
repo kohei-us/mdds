@@ -52,6 +52,7 @@ bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)
 void mtv_test_construction();
 void mtv_test_basic();
 void mtv_test_basic_numeric();
+void mtv_test_empty_cells();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
