@@ -624,7 +624,6 @@ void mtv_test_basic()
         db.set<int8_t>(0, 'r'); // overwrite.
         db.set<uint8_t>(5, 'z'); // overwrite
 
-#if 0
         assert(db.block_size() == 3);
         mtv_type::const_iterator it = db.begin();
         assert(it != db.end());
@@ -649,7 +648,6 @@ void mtv_test_basic()
             ++p;
             assert(*p == 'z');
         }
-#endif
     }
 }
 

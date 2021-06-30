@@ -1260,6 +1260,64 @@ _T multi_type_vector<_CellBlockFunc, _EventFunc>::get(size_type pos) const
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::begin()
+{
+    return iterator(
+        { m_block_store.positions.begin(), m_block_store.sizes.begin(), m_block_store.element_blocks.begin() },
+        { m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end() },
+        0
+    );
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::end()
+{
+    return iterator(
+        { m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end() },
+        { m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end() },
+        m_block_store.positions.size()
+    );
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::begin() const
+{
+    return cbegin();
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::end() const
+{
+    return cend();
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::cbegin() const
+{
+    return const_iterator(
+        { m_block_store.positions.cbegin(), m_block_store.sizes.cbegin(), m_block_store.element_blocks.cbegin() },
+        { m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend() },
+        0
+    );
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::cend() const
+{
+    return const_iterator(
+        { m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend() },
+        { m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend() },
+        m_block_store.positions.size()
+    );
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
 multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(size_type row, size_type start_block_index) const
 {

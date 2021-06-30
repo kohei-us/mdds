@@ -96,6 +96,18 @@ protected:
         {
             return !operator==(other);
         }
+
+        grouped_iterator_type() = default;
+
+        grouped_iterator_type(
+            const typename positions_type::iterator& itr_pos,
+            const typename sizes_type::iterator& itr_size,
+            const typename element_blocks_type::iterator& itr_elem_blocks) :
+            position_iterator(itr_pos),
+            size_iterator(itr_size),
+            element_block_iterator(itr_elem_blocks)
+        {
+        }
     };
 
     node m_cur_node;
@@ -258,6 +270,83 @@ public:
         dec();
         node_update_func::dec(m_cur_node);
         return *this;
+    }
+};
+
+template<typename _Trait, typename _NodeUpdateFunc, typename _NonConstItrBase>
+class const_iterator_base : public iterator_updater<_Trait>
+{
+    using node_update_func = _NodeUpdateFunc;
+    using updater = iterator_updater<_Trait>;
+
+    using grouped_iterator_type = typename updater::grouped_iterator_type;
+    using size_type = typename updater::size_type;
+
+    using updater::inc;
+    using updater::dec;
+    using updater::m_cur_node;
+
+public:
+
+    using updater::get_pos;
+    using updater::get_end;
+
+    using iterator_base = _NonConstItrBase;
+
+    // iterator traits
+    using value_type = typename updater::node;
+    using pointer = value_type*;
+    using reference = value_type&;
+    using difference_type = ptrdiff_t;
+    using iterator_category = std::bidirectional_iterator_tag;
+
+public:
+    const_iterator_base() : updater() {}
+    const_iterator_base(
+        const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index) :
+        updater(pos, end, block_index) {}
+
+    /**
+     * Take the non-const iterator counterpart to create a const iterator.
+     */
+    const_iterator_base(const iterator_base& other) :
+        updater(
+            other.get_pos(),
+            other.get_end(),
+            other.get_node().__private_data.block_index) {}
+
+    const value_type& operator*() const
+    {
+        return m_cur_node;
+    }
+
+    const value_type* operator->() const
+    {
+        return &m_cur_node;
+    }
+
+    const_iterator_base& operator++()
+    {
+        node_update_func::inc(m_cur_node);
+        inc();
+        return *this;
+    }
+
+    const_iterator_base& operator--()
+    {
+        dec();
+        node_update_func::dec(m_cur_node);
+        return *this;
+    }
+
+    bool operator== (const const_iterator_base& other) const
+    {
+        return updater::operator==(other);
+    }
+
+    bool operator!= (const const_iterator_base& other) const
+    {
+        return updater::operator!=(other);
     }
 };
 

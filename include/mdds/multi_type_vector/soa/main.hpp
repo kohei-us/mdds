@@ -137,6 +137,7 @@ private:
 public:
 
     using iterator = detail::iterator_base<iterator_trait, itr_forward_update>;
+    using const_iterator = detail::const_iterator_base<iterator_trait, itr_forward_update, iterator>;
 
     /**
      * Default constructor.  It initializes the container with empty size.
@@ -296,6 +297,15 @@ public:
      */
     template<typename _T>
     _T get(size_type pos) const;
+
+    iterator begin();
+    iterator end();
+
+    const_iterator begin() const;
+    const_iterator end() const;
+
+    const_iterator cbegin() const;
+    const_iterator cend() const;
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     void dump_blocks(std::ostream& os) const;
