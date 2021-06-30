@@ -26,32 +26,10 @@
  *
  ************************************************************************/
 
-#pragma once
+#include "test_global.hpp" // This must be the first header to be included.
+#include "test_main.hpp"
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector/types.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
-
-using mtv_type = mdds::multi_type_vector::soa::multi_type_vector<mdds::mtv::element_block_func>;
-
-template<typename _ValT>
-bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)
-{
-    _ValT test;
-    col_db.set(row, val);
-    col_db.get(row, test);
-
-    if (val == test)
-        return true;
-
-    std::cout << "row " << row << ": value stored = " << val << "; value retrieved = " << test << std::endl;
-    return false;
-}
-
-void mtv_test_construction();
-void mtv_test_basic();
-void mtv_test_basic_numeric();
+#include "empty_cells.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

@@ -26,20 +26,6 @@
  *
  ************************************************************************/
 
-template<typename _ValT>
-bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)
-{
-    _ValT test;
-    col_db.set(row, val);
-    col_db.get(row, test);
-
-    if (val == test)
-        return true;
-
-    std::cout << "row " << row << ": value stored = " << val << "; value retrieved = " << test << std::endl;
-    return false;
-}
-
 void mtv_test_basic()
 {
     stack_printer __stack_printer__(__FUNCTION__);

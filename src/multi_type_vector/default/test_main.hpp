@@ -39,9 +39,24 @@
 
 using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
+template<typename _ValT>
+bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)
+{
+    _ValT test;
+    col_db.set(row, val);
+    col_db.get(row, test);
+
+    if (val == test)
+        return true;
+
+    std::cout << "row " << row << ": value stored = " << val << "; value retrieved = " << test << std::endl;
+    return false;
+}
+
 void mtv_test_construction();
 void mtv_test_basic();
 void mtv_test_basic_numeric();
+void mtv_test_empty_cells();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

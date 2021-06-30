@@ -58,6 +58,7 @@
             <F N="../src/multi_type_vector/default/soa/test_basic.cpp"/>
             <F N="../src/multi_type_vector/default/test_construction.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_construction.cpp"/>
+            <F N="../src/multi_type_vector/default/test_empty_cells.cpp"/>
             <F N="../src/multi_type_vector/collection/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/test_main.cpp"/>
@@ -86,6 +87,7 @@
             GUID="{5656E53A-73B8-4CAF-80A3-E0F4AA965920}">
             <F N="../src/multi_type_vector/default/tc/basic.inl"/>
             <F N="../src/multi_type_vector/default/tc/construction.inl"/>
+            <F N="../src/multi_type_vector/default/tc/empty_cells.inl"/>
         </Folder>
     </Files>
     <List Name="RTE">
