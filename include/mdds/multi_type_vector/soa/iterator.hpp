@@ -217,8 +217,6 @@ class iterator_base : public iterator_updater<_Trait>
     using updater::inc;
     using updater::dec;
     using updater::m_cur_node;
-    using updater::m_pos;
-    using updater::m_end;
 
 public:
 

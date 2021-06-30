@@ -160,8 +160,6 @@ class iterator_base : public iterator_common_base<_Trait>
     using common_base::inc;
     using common_base::dec;
     using common_base::m_cur_node;
-    using common_base::m_pos;
-    using common_base::m_end;
 
 public:
 
