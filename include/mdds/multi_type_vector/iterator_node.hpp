@@ -87,6 +87,31 @@ struct iterator_value_node
     }
 };
 
+template<typename _SizeT>
+struct private_data_no_update
+{
+    using node_type = iterator_value_node<_SizeT>;
+
+    static void inc(node_type&) {}
+    static void dec(node_type&) {}
+};
+
+template<typename _SizeT>
+struct private_data_forward_update
+{
+    using node_type = iterator_value_node<_SizeT>;
+
+    static void inc(node_type& nd)
+    {
+        ++nd.__private_data.block_index;
+    }
+
+    static void dec(node_type& nd)
+    {
+        --nd.__private_data.block_index;
+    }
+};
+
 }}}
 
 #endif

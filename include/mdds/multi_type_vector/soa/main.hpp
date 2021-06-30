@@ -31,10 +31,11 @@
 
 #include "../../global.hpp"
 #include "../types.hpp"
+#include "./iterator.hpp"
 
 namespace mdds { namespace multi_type_vector { namespace soa {
 
-namespace detail { namespace mtv {
+namespace detail {
 
 /**
  * Empty event function handler structure, used when no custom function
@@ -49,9 +50,9 @@ struct event_func
     void element_block_released(const mdds::mtv::base_element_block* /*block*/) {}
 };
 
-}}
+}
 
-template<typename _ElemBlockFunc, typename _EventFunc = detail::mtv::event_func>
+template<typename _ElemBlockFunc, typename _EventFunc = detail::event_func>
 class multi_type_vector
 {
 public:
@@ -79,11 +80,6 @@ public:
      *      of the event handler functions.
      */
     using event_func = _EventFunc;
-
-    class iterator
-    {
-        // dummy iterator, to be implemented later.
-    };
 
 private:
     struct blocks_type
@@ -120,6 +116,16 @@ private:
         void calc_block_position(size_type index);
     };
 
+    struct iterator_trait
+    {
+        using parent = multi_type_vector;
+        using positions_type = std::vector<size_type>;
+        using sizes_type = std::vector<size_type>;
+        using element_blocks_type = std::vector<element_block_type*>;
+    };
+
+    using itr_forward_update = mdds::detail::mtv::private_data_forward_update<size_type>;
+
     struct element_block_deleter
     {
         void operator() (const element_block_type* p)
@@ -129,6 +135,9 @@ private:
     };
 
 public:
+
+    using iterator = detail::iterator_base<iterator_trait, itr_forward_update>;
+
     /**
      * Default constructor.  It initializes the container with empty size.
      */

@@ -187,8 +187,8 @@ private:
     };
 
     typedef detail::mtv::iterator_value_node<size_type> itr_node;
-    typedef detail::mtv::private_data_forward_update<itr_node> itr_forward_update;
-    typedef detail::mtv::private_data_no_update<itr_node> itr_no_update;
+    typedef detail::mtv::private_data_forward_update<size_type> itr_forward_update;
+    typedef detail::mtv::private_data_no_update<size_type> itr_no_update;
 
 public:
 

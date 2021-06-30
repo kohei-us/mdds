@@ -35,31 +35,6 @@
 
 namespace mdds { namespace detail { namespace mtv {
 
-template<typename _NodeT>
-struct private_data_no_update
-{
-    typedef _NodeT node_type;
-
-    static void inc(node_type&) {}
-    static void dec(node_type&) {}
-};
-
-template<typename _NodeT>
-struct private_data_forward_update
-{
-    typedef _NodeT node_type;
-
-    static void inc(node_type& nd)
-    {
-        ++nd.__private_data.block_index;
-    }
-
-    static void dec(node_type& nd)
-    {
-        --nd.__private_data.block_index;
-    }
-};
-
 /**
  * Common base for both const and non-const iterators.  Its protected inc()
  * and dec() methods have non-const return type, and the derived classes
