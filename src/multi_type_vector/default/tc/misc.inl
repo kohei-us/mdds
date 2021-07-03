@@ -26,7 +26,7 @@
  *
  ************************************************************************/
 
-void mtv_test_swap()
+void mtv_test_misc_swap()
 {
     stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db1(3), db2(5);
@@ -43,7 +43,7 @@ void mtv_test_swap()
     assert(db2.size() == 3 && db2.block_size() == 1);
 }
 
-void mtv_test_equality()
+void mtv_test_misc_equality()
 {
     stack_printer __stack_printer__(__FUNCTION__);
     {
@@ -107,7 +107,7 @@ void mtv_test_equality()
     }
 }
 
-void mtv_test_clone()
+void mtv_test_misc_clone()
 {
     stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db1(3);
@@ -156,7 +156,7 @@ void mtv_test_clone()
     assert(db3 == db4);
 }
 
-void mtv_test_resize()
+void mtv_test_misc_resize()
 {
     stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(0);

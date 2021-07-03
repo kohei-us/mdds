@@ -37,10 +37,10 @@ int main (int argc, char **argv)
         mtv_test_basic();
         mtv_test_basic_numeric();
         mtv_test_empty_cells();
-        mtv_test_swap();
-        mtv_test_equality();
-        mtv_test_clone();
-        mtv_test_resize();
+        mtv_test_misc_swap();
+        mtv_test_misc_equality();
+        mtv_test_misc_clone();
+        mtv_test_misc_resize();
     }
     catch (const std::exception& e)
     {

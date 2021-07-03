@@ -57,10 +57,10 @@ void mtv_test_construction();
 void mtv_test_basic();
 void mtv_test_basic_numeric();
 void mtv_test_empty_cells();
-void mtv_test_swap();
-void mtv_test_equality();
-void mtv_test_clone();
-void mtv_test_resize();
+void mtv_test_misc_swap();
+void mtv_test_misc_equality();
+void mtv_test_misc_clone();
+void mtv_test_misc_resize();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
