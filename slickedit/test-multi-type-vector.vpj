@@ -65,6 +65,7 @@
             <F N="../src/multi_type_vector/default/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/event/test_main.cpp"/>
             <F N="../src/multi_type_vector/perf/test_main.cpp"/>
+            <F N="../src/multi_type_vector/default/test_misc.cpp"/>
         </Folder>
         <Folder
             Name="Header Files"
@@ -88,6 +89,7 @@
             <F N="../src/multi_type_vector/default/tc/basic.inl"/>
             <F N="../src/multi_type_vector/default/tc/construction.inl"/>
             <F N="../src/multi_type_vector/default/tc/empty_cells.inl"/>
+            <F N="../src/multi_type_vector/default/tc/misc.inl"/>
         </Folder>
     </Files>
     <List Name="RTE">
