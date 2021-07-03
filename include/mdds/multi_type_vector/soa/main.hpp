@@ -413,6 +413,8 @@ private:
     template<typename _T>
     iterator set_impl(size_type pos, size_type block_index, const _T& value);
 
+    void resize_impl(size_type new_size);
+
     /**
      * @param start_pos logical start position.
      * @param end_pos logical end position.
