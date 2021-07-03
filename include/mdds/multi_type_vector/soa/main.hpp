@@ -123,6 +123,10 @@ private:
         void swap(blocks_type& other);
 
         void reserve(size_type n);
+
+        bool equals(const blocks_type& other) const;
+
+        void clear();
     };
 
     struct iterator_trait
@@ -295,6 +299,12 @@ public:
     iterator set_empty(size_type start_pos, size_type end_pos);
 
     /**
+     * Clear the content of the container.  The size of the container will
+     * become zero after calling this method.
+     */
+    void clear();
+
+    /**
      * Return the current container size.
      *
      * @return current container size.
@@ -363,6 +373,14 @@ public:
     const_iterator cbegin() const;
     const_iterator cend() const;
 
+    /**
+     * Extend or shrink the container.  When extending the container, it
+     * appends a series of empty elements to the end.  When shrinking, the
+     * elements at the end of the container get stripped off.
+     *
+     * @param new_size size of the container after the resize.
+     */
+    void resize(size_type new_size);
 
     /**
      * Swap the content with another container.
@@ -370,6 +388,9 @@ public:
      * @param other another container to swap content with.
      */
     void swap(multi_type_vector& other);
+
+    bool operator== (const multi_type_vector& other) const;
+    bool operator!= (const multi_type_vector& other) const;
 
     multi_type_vector& operator= (const multi_type_vector& other);
 
@@ -509,6 +530,8 @@ private:
      *         otherwise false.
      */
     bool is_next_block_of_type(size_type block_index, element_category_type cat) const;
+
+    bool append_empty(size_type len);
 
     inline iterator get_iterator(size_type block_index)
     {

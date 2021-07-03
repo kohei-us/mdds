@@ -146,6 +146,60 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+bool multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::equals(const blocks_type& other) const
+{
+    if (positions != other.positions)
+        return false;
+
+    if (sizes != other.sizes)
+        return false;
+
+    if (element_blocks.size() != other.element_blocks.size())
+        return false;
+
+    auto it2 = other.element_blocks.cbegin();
+
+    for (const element_block_type* data1 : element_blocks)
+    {
+        const element_block_type* data2 = *it2++;
+
+        if (data1)
+        {
+            if (!data2)
+                // left is non-empty while right is empty.
+                return false;
+        }
+        else
+        {
+            if (data2)
+                // left is empty while right is non-empty.
+                return false;
+        }
+
+        if (!data1)
+        {
+            // Both are empty blocks.
+            assert(!data2);
+            continue;
+        }
+
+        assert(data1 && data2);
+        if (!element_block_func::equal_block(*data1, *data2))
+            return false;
+    }
+
+    return true;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::clear()
+{
+    positions.clear();
+    sizes.clear();
+    element_blocks.clear();
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector() : m_cur_size(0) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -428,6 +482,14 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty(size_type start_pos, si
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
 
     return set_empty_impl(start_pos, end_pos, block_index1, true);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::clear()
+{
+    delete_element_blocks(0, m_block_store.element_blocks.size());
+    m_block_store.clear();
+    m_cur_size = 0;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -2017,6 +2079,91 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::is_next_block_of_type(
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+bool multi_type_vector<_CellBlockFunc, _EventFunc>::append_empty(size_type len)
+{
+    // Append empty cells.
+    if (m_block_store.positions.empty())
+    {
+        // No existing block. Create a new one.
+        assert(m_cur_size == 0);
+        m_block_store.push_back(0, len, nullptr);
+        m_cur_size = len;
+        return true;
+    }
+
+    bool new_block_added = false;
+
+    element_block_type* last_data = m_block_store.element_blocks.back();
+
+    if (!last_data)
+    {
+        // Last block is empty.  Just increase its size.
+        m_block_store.sizes.back() += len;
+    }
+    else
+    {
+        // Append a new empty block.
+        m_block_store.push_back(m_cur_size, len, nullptr);
+        new_block_added = true;
+    }
+
+    m_cur_size += len;
+
+    return new_block_added;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::resize(size_type new_size)
+{
+    if (new_size == m_cur_size)
+        return;
+
+    if (!new_size)
+    {
+        clear();
+        return;
+    }
+
+    if (new_size > m_cur_size)
+    {
+        // Append empty cells.
+        append_empty(new_size - m_cur_size);
+        return;
+    }
+
+    assert(new_size < m_cur_size && new_size > 0);
+
+    // Find out in which block the new end row will be.
+    size_type new_end_row = new_size - 1;
+    size_type block_index = get_block_position(new_end_row);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::resize", __LINE__, new_end_row, block_size(), size());
+
+    element_block_type* data = m_block_store.element_blocks[block_index];
+    size_type start_row_in_block = m_block_store.positions[block_index];
+    size_type end_row_in_block = start_row_in_block + m_block_store.sizes[block_index] - 1;
+
+    if (new_end_row < end_row_in_block)
+    {
+        // Shrink the size of the current block.
+        size_type new_block_size = new_end_row - start_row_in_block + 1;
+        if (data)
+        {
+            element_block_func::overwrite_values(*data, new_end_row+1, end_row_in_block-new_end_row);
+            element_block_func::resize_block(*data, new_block_size);
+        }
+        m_block_store.sizes[block_index] = new_block_size;
+    }
+
+    // Remove all blocks below the current one.
+    delete_element_blocks(block_index+1, m_block_store.element_blocks.size()-1);
+    size_type len = m_block_store.element_blocks.size() - block_index - 1;
+    m_block_store.erase(block_index+1, len);
+    m_cur_size = new_size;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(multi_type_vector& other)
 {
     std::swap(m_hdl_event, other.m_hdl_event);
@@ -2025,9 +2172,28 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(multi_type_vector& othe
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+bool multi_type_vector<_CellBlockFunc, _EventFunc>::operator== (const multi_type_vector& other) const
+{
+    if (this == &other)
+        // Comparing to self is always equal.
+        return true;
+
+    if (m_cur_size != other.m_cur_size)
+        // Row sizes differ.
+        return false;
+
+    return m_block_store.equals(other.m_block_store);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+bool multi_type_vector<_CellBlockFunc, _EventFunc>::operator!= (const multi_type_vector& other) const
+{
+    return !operator== (other);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>& multi_type_vector<_CellBlockFunc, _EventFunc>::operator= (const multi_type_vector& other)
 {
-    stack_printer __stack_printer__("mdds/multi_type_vector/soa/multi_type_vector::=");
     multi_type_vector assigned(other);
     swap(assigned);
     return *this;

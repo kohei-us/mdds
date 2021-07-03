@@ -59,6 +59,7 @@
             <F N="../src/multi_type_vector/default/test_construction.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_construction.cpp"/>
             <F N="../src/multi_type_vector/default/test_empty_cells.cpp"/>
+            <F N="../src/multi_type_vector/default/soa/test_empty_cells.cpp"/>
             <F N="../src/multi_type_vector/collection/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/test_main.cpp"/>
@@ -66,6 +67,7 @@
             <F N="../src/multi_type_vector/event/test_main.cpp"/>
             <F N="../src/multi_type_vector/perf/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/test_misc.cpp"/>
+            <F N="../src/multi_type_vector/default/soa/test_misc.cpp"/>
         </Folder>
         <Folder
             Name="Header Files"
