@@ -57,6 +57,7 @@ void mtv_test_misc_swap();
 void mtv_test_misc_equality();
 void mtv_test_misc_clone();
 void mtv_test_misc_resize();
+void mtv_test_erase();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

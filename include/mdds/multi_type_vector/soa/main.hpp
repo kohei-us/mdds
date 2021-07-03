@@ -262,6 +262,15 @@ public:
     iterator push_back(const _T& value);
 
     /**
+     * Append a new empty element to the end of the container.
+     *
+     * @return iterator position pointing to the block where the new empty
+     *         element is appended, which in this case is always the last
+     *         block of the container.
+     */
+    iterator push_back_empty();
+
+    /**
      * Get the type of an element at specified position.
      *
      * @param pos position of the element.
@@ -297,6 +306,23 @@ public:
      *         emptied.
      */
     iterator set_empty(size_type start_pos, size_type end_pos);
+
+    /**
+     * Erase elements located between specified start and end positions. The
+     * end positions are both inclusive.  Those elements originally located
+     * after the specified end position will get shifted up after the erasure.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container range.</p>
+     *
+     * <p>Calling this method will decrease the size of the container by
+     * the length of the erased range.</p>
+     *
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     */
+    void erase(size_type start_pos, size_type end_pos);
 
     /**
      * Clear the content of the container.  The size of the container will
@@ -401,6 +427,7 @@ public:
 #endif
 
 private:
+    void adjust_block_positions(int64_t start_block_index, int64_t delta);
 
     void delete_element_block(size_type block_index);
 
@@ -443,6 +470,9 @@ private:
     iterator set_empty_in_multi_blocks(
         size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
         bool overwrite);
+
+    void erase_impl(size_type start_pos, size_type end_pos);
+    void erase_in_single_block(size_type start_pos, size_type end_pos, size_type block_index);
 
     iterator set_whole_block_empty(size_type block_index, bool overwrite);
 
@@ -494,6 +524,15 @@ private:
 
     template<typename _T>
     void set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell);
+
+    /**
+     * Merge only with the next block if the two are of the same type.
+     *
+     * @param block_index index of the block that may need merging.
+     *
+     * @return true if merge occurs, false otherwise.
+     */
+    bool merge_with_next_block(size_type block_index);
 
     /**
      * Set a new block in the middle of an existing block. This call inserts
