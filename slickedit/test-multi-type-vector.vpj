@@ -91,6 +91,7 @@
             <F N="../src/multi_type_vector/default/tc/basic.inl"/>
             <F N="../src/multi_type_vector/default/tc/construction.inl"/>
             <F N="../src/multi_type_vector/default/tc/empty_cells.inl"/>
+            <F N="../src/multi_type_vector/default/tc/erase.inl"/>
             <F N="../src/multi_type_vector/default/tc/misc.inl"/>
         </Folder>
     </Files>
