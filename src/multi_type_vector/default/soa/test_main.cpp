@@ -43,6 +43,7 @@ int main (int argc, char **argv)
         mtv_test_misc_resize();
         mtv_test_erase();
         mtv_test_insert_empty();
+        mtv_test_set_cells();
     }
     catch (const std::exception& e)
     {

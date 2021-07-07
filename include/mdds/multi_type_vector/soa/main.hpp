@@ -82,6 +82,16 @@ public:
     using event_func = _EventFunc;
 
 private:
+    struct block_slot_type
+    {
+        size_type position;
+        size_type size;
+        element_block_type* element_block;
+
+        block_slot_type(size_type _position, size_type _size) :
+            position(_position), size(_size), element_block(nullptr) {}
+    };
+
     struct blocks_type
     {
         std::vector<size_type> positions;
@@ -516,6 +526,21 @@ private:
         const _T& it_begin, const _T& it_end);
 
     template<typename _T>
+    iterator set_cells_to_multi_blocks(
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
+        const _T& it_begin, const _T& it_end);
+
+    template<typename _T>
+    iterator set_cells_to_multi_blocks_block1_non_equal(
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
+        const _T& it_begin, const _T& it_end);
+
+    template<typename _T>
+    iterator set_cells_to_multi_blocks_block1_non_empty(
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
+        const _T& it_begin, const _T& it_end);
+
+    template<typename _T>
     iterator set_cell_to_empty_block(size_type block_index, size_type pos_in_block, const _T& cell);
 
     template<typename _T>
@@ -536,6 +561,18 @@ private:
 
     template<typename _T>
     void append_cell_to_block(size_type block_index, const _T& cell);
+
+    /**
+     * Try to append a sequence of values to the previous block if the previous
+     * block exists and is of the same type as the new values.
+     *
+     * @return true if the values have been appended successfully, otherwise
+     *         false.
+     */
+    template<typename _T>
+    bool append_to_prev_block(
+        size_type block_index, element_category_type cat, size_type length,
+        const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cell_to_middle_of_block(
