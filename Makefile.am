@@ -123,6 +123,7 @@ multi_type_vector_test_default_soa_SOURCES = \
 	src/multi_type_vector/default/soa/test_basic.cpp \
 	src/multi_type_vector/default/soa/test_empty_cells.cpp \
 	src/multi_type_vector/default/soa/test_erase.cpp \
+	src/multi_type_vector/default/soa/test_insert.cpp \
 	src/multi_type_vector/default/soa/test_misc.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp

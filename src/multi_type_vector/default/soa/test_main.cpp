@@ -42,6 +42,7 @@ int main (int argc, char **argv)
         mtv_test_misc_clone();
         mtv_test_misc_resize();
         mtv_test_erase();
+        mtv_test_insert_empty();
     }
     catch (const std::exception& e)
     {

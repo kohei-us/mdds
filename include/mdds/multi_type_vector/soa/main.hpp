@@ -325,6 +325,26 @@ public:
     void erase(size_type start_pos, size_type end_pos);
 
     /**
+     * Insert a range of empty elements at specified position.  Those elements
+     * originally located after the insertion position will get shifted down
+     * after the insertion.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the specified position is outside the current container
+     * range.</p>
+     *
+     * <p>Calling this method will increase the size of the container by
+     * the length of the inserted empty elements.</p>
+     *
+     * @param pos position at which to insert a range of empty elements.
+     * @param length number of empty elements to insert.
+     * @return iterator position pointing to the block where the empty range
+     *         is inserted. When no insertion occurs because the length is
+     *         zero, the end iterator position is returned.
+     */
+    iterator insert_empty(size_type pos, size_type length);
+
+    /**
      * Clear the content of the container.  The size of the container will
      * become zero after calling this method.
      */
@@ -473,6 +493,13 @@ private:
 
     void erase_impl(size_type start_pos, size_type end_pos);
     void erase_in_single_block(size_type start_pos, size_type end_pos, size_type block_index);
+
+    /**
+     * @param row logical position at which to insert an empty segment.
+     * @param block_index index of the block.
+     * @param length length of the emtpy segment to insert.
+     */
+    iterator insert_empty_impl(size_type pos, size_type block_index, size_type length);
 
     iterator set_whole_block_empty(size_type block_index, bool overwrite);
 

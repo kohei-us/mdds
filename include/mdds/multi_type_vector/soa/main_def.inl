@@ -545,6 +545,46 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase(size_type start_pos, s
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(size_type pos, size_type length)
+{
+    if (!length)
+        // Nothing to insert.
+        return end();
+
+    size_type block_index = get_block_position(pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = insert_empty_impl(pos, block_index, length);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in insert_empty (pos=" << pos << "; length=" << length << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::clear()
 {
     delete_element_blocks(0, m_block_store.element_blocks.size());
@@ -1165,6 +1205,104 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::erase_in_single_block(
         m_block_store.erase(block_index);
         adjust_block_positions(block_index, -size_to_erase);
     }
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty_impl(
+    size_type pos, size_type block_index, size_type length)
+{
+    assert(pos < m_cur_size);
+
+    element_block_type* blk_data = m_block_store.element_blocks[block_index];
+
+    if (!blk_data)
+    {
+        // Insertion point is already empty.  Just expand its size and be done
+        // with it.
+        m_block_store.sizes[block_index] += length;
+        m_cur_size += length;
+        adjust_block_positions(block_index+1, length);
+        return get_iterator(block_index);
+    }
+
+    size_type start_pos = m_block_store.positions[block_index];
+
+    if (start_pos == pos)
+    {
+        // Insertion point is at the top of an existing non-empty block.
+        bool blk_prev = is_previous_block_of_type(block_index, mtv::element_type_empty);
+        if (blk_prev)
+        {
+            // Previous block is empty.  Expand the size of the previous block.
+            assert(!m_block_store.element_blocks[block_index-1]);
+            m_block_store.sizes[block_index-1] += length;
+            m_cur_size += length;
+            adjust_block_positions(block_index, length);
+            return get_iterator(block_index-1);
+        }
+
+        // Insert a new empty block.
+        m_block_store.insert(block_index, start_pos, length, nullptr);
+        m_cur_size += length;
+        adjust_block_positions(block_index+1, length);
+        return get_iterator(block_index);
+    }
+
+    assert(blk_data);
+    assert(pos > start_pos);
+
+    size_type size_blk_prev = pos - start_pos;
+    size_type size_blk_next = m_block_store.sizes[block_index] - size_blk_prev;
+
+    // Insert two new blocks below the current; one for the empty block being
+    // inserted, and the other for the lower part of the current non-empty
+    // block.
+    m_block_store.insert(block_index+1, 2u);
+
+    m_block_store.sizes[block_index+1] = length;
+    m_block_store.sizes[block_index+2] = size_blk_next;
+
+    m_block_store.element_blocks[block_index+2] =
+        element_block_func::create_new_block(mdds::mtv::get_block_type(*blk_data), 0);
+    element_block_type* next_data = m_block_store.element_blocks[block_index+2];
+    m_hdl_event.element_block_acquired(next_data);
+
+    // Check if the previous block is the bigger one
+    if (size_blk_prev > size_blk_next)
+    {
+        // Upper (previous) block is larger than the lower (next) block. Copy
+        // the lower values to the next block.
+        element_block_func::assign_values_from_block(
+            *next_data, *blk_data, size_blk_prev, size_blk_next);
+        element_block_func::resize_block(*blk_data, size_blk_prev);
+        m_block_store.sizes[block_index] = size_blk_prev;
+    }
+    else
+    {
+        // Lower (next) block is larger than the upper (previous) block. Copy
+        // the upper values to the "next" block.
+        element_block_func::assign_values_from_block(*next_data, *blk_data, 0, size_blk_prev);
+        m_block_store.sizes[block_index+2] = size_blk_prev;
+
+        // Remove the copied values and push the rest to the top.
+        element_block_func::erase(*blk_data, 0, size_blk_prev);
+
+        // Set the size of the current block to its new size ( what is after the new block )
+        m_block_store.sizes[block_index] = size_blk_next;
+
+        // And now let's swap the blocks, but save the block position.
+        size_type position = m_block_store.positions[block_index];
+        m_block_store.swap(block_index, block_index+2);
+        m_block_store.positions[block_index] = position;
+    }
+
+    m_cur_size += length;
+    m_block_store.calc_block_position(block_index+1);
+    m_block_store.calc_block_position(block_index+2);
+    adjust_block_positions(block_index+3, length);
+
+    return get_iterator(block_index+1);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
