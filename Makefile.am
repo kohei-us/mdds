@@ -100,6 +100,7 @@ multi_type_vector_test_default_SOURCES = \
 	src/multi_type_vector/default/test_empty_cells.cpp \
 	src/multi_type_vector/default/test_erase.cpp \
 	src/multi_type_vector/default/test_insert.cpp \
+	src/multi_type_vector/default/test_iterators.cpp \
 	src/multi_type_vector/default/test_misc.cpp \
 	src/multi_type_vector/default/test_set.cpp \
 	src/multi_type_vector/default/test_main.hpp \
@@ -109,6 +110,7 @@ multi_type_vector_test_default_SOURCES = \
 	src/multi_type_vector/default/tc/empty_cells.inl \
 	src/multi_type_vector/default/tc/erase.inl \
 	src/multi_type_vector/default/tc/insert.inl \
+	src/multi_type_vector/default/tc/iterators.inl \
 	src/multi_type_vector/default/tc/misc.inl \
 	src/multi_type_vector/default/tc/set.inl \
 	src/include/test_global.hpp \
