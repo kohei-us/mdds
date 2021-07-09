@@ -441,6 +441,44 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::push_back_empty()
 template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::insert(size_type pos, const _T& it_begin, const _T& it_end)
+{
+    size_type block_index = get_block_position(pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::insert", __LINE__, pos, block_size(), size());
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = insert_cells_impl(pos, block_index, it_begin, it_end);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        element_category_type cat = mdds_mtv_get_element_type(*it_begin);
+        os << "block integrity check failed in insert (pos=" << pos << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::push_back_impl(const _T& value)
 {
     element_category_type cat = mdds_mtv_get_element_type(value);
@@ -755,6 +793,111 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_impl(size_type pos, size_type
 
 //  return get_iterator(block_index+1);
     return iterator();
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_impl(
+    size_type row, size_type block_index, const _T& it_begin, const _T& it_end)
+{
+    size_type start_row = m_block_store.positions[block_index];
+    size_type length = std::distance(it_begin, it_end);
+    if (!length)
+        // empty data array.  nothing to do.
+        return end();
+
+    element_category_type cat = mdds_mtv_get_element_type(*it_begin);
+    element_block_type* blk_data = m_block_store.element_blocks[block_index];
+    if (!blk_data)
+    {
+        if (row == start_row)
+        {
+            // Insert into an empty block.  Check the previos block (if exists)
+            // to see if the data can be appended to it if inserting at the top
+            // of the block.
+            bool blk0 = is_previous_block_of_type(block_index, cat);
+
+            if (blk0)
+            {
+                // Append to the previous block.
+                element_block_type* blk0_data = m_block_store.element_blocks[block_index-1];
+                mdds_mtv_append_values(*blk0_data, *it_begin, it_begin, it_end);
+                m_block_store.sizes[block_index-1] += length;
+                m_cur_size += length;
+                adjust_block_positions(block_index, length);
+
+                return get_iterator(block_index-1);
+            }
+
+            // Just insert a new block before the current block.
+            size_type position = m_block_store.positions[block_index];
+            m_block_store.insert(block_index, position, length, nullptr);
+            m_block_store.element_blocks[block_index] = element_block_func::create_new_block(cat, 0);
+            blk_data = m_block_store.element_blocks[block_index];
+            m_hdl_event.element_block_acquired(blk_data);
+            mdds_mtv_assign_values(*blk_data, *it_begin, it_begin, it_end);
+            m_cur_size += length;
+            adjust_block_positions(block_index+1, length);
+
+            return get_iterator(block_index);
+        }
+
+        insert_cells_to_middle(row, block_index, it_begin, it_end);
+        m_cur_size += length;
+
+        return get_iterator(block_index+1);
+    }
+
+    assert(blk_data);
+    element_category_type blk_cat = mdds::mtv::get_block_type(*blk_data);
+    if (cat == blk_cat)
+    {
+        // Simply insert the new data series into existing block.
+        assert(it_begin != it_end);
+        mdds_mtv_insert_values(*blk_data, row-start_row, *it_begin, it_begin, it_end);
+        m_block_store.sizes[block_index] += length;
+        m_cur_size += length;
+        adjust_block_positions(block_index+1, length);
+
+        return get_iterator(block_index);
+    }
+
+    assert(cat != blk_cat);
+    if (row == start_row)
+    {
+        // Check the previous block to see if we can append the data there.
+        bool blk0 = is_previous_block_of_type(block_index, cat);
+        if (blk0)
+        {
+            // Append to the previous block.
+            element_block_type* blk0_data = m_block_store.element_blocks[block_index-1];
+            mdds_mtv_append_values(*blk0_data, *it_begin, it_begin, it_end);
+            m_block_store.sizes[block_index-1] += length;
+            m_cur_size += length;
+            adjust_block_positions(block_index, length);
+
+            return get_iterator(block_index-1);
+        }
+
+        // Just insert a new block before the current block.
+        m_block_store.insert(
+            block_index, m_block_store.positions[block_index], length, nullptr);
+        m_block_store.element_blocks[block_index] = element_block_func::create_new_block(cat, 0);
+        m_hdl_event.element_block_acquired(blk_data);
+        blk_data = m_block_store.element_blocks[block_index];
+        mdds_mtv_assign_values(*blk_data, *it_begin, it_begin, it_end);
+        m_block_store.sizes[block_index] = length;
+        m_cur_size += length;
+        adjust_block_positions(block_index+1, length);
+
+        return get_iterator(block_index);
+    }
+
+    insert_cells_to_middle(row, block_index, it_begin, it_end);
+    m_cur_size += length;
+
+    return get_iterator(block_index+1);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -2552,6 +2695,51 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::append_to_prev_block(
         *m_block_store.element_blocks[block_index-1], *it_begin, it_begin, it_end);
     m_block_store.sizes[block_index-1] += length;
     return true;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::insert_cells_to_middle(
+    size_type row, size_type block_index, const _T& it_begin, const _T& it_end)
+{
+    size_type start_row = m_block_store.positions[block_index];
+    size_type length = std::distance(it_begin, it_end);
+    element_category_type cat = mdds_mtv_get_element_type(*it_begin);
+    element_block_type* blk_data = m_block_store.element_blocks[block_index];
+
+    // Insert two new blocks after the specified block position.
+    size_type n1 = row - start_row;
+    size_type n2 = m_block_store.sizes[block_index] - n1;
+    m_block_store.insert(block_index+1, 2u);
+
+    m_block_store.sizes[block_index] = n1;
+    m_block_store.sizes[block_index+1] = length;
+    m_block_store.sizes[block_index+2] = n2;
+    m_block_store.calc_block_position(block_index+1);
+    m_block_store.calc_block_position(block_index+2);
+
+    // block for data series.
+    m_block_store.element_blocks[block_index+1] = element_block_func::create_new_block(cat, 0);
+    element_block_type* blk2_data = m_block_store.element_blocks[block_index+1];
+    m_hdl_event.element_block_acquired(blk2_data);
+    mdds_mtv_assign_values(*blk2_data, *it_begin, it_begin, it_end);
+
+    if (blk_data)
+    {
+        element_category_type blk_cat = mdds::mtv::get_block_type(*blk_data);
+
+        // block to hold data from the lower part of the existing block.
+        m_block_store.element_blocks[block_index+2] = element_block_func::create_new_block(blk_cat, 0);
+        element_block_type* blk3_data = m_block_store.element_blocks[block_index+2];
+        m_hdl_event.element_block_acquired(blk3_data);
+
+        // Transfer the lower part of the current block to the new block.
+        size_type offset = row - start_row;
+        element_block_func::assign_values_from_block(*blk3_data, *blk_data, offset, n2);
+        element_block_func::resize_block(*blk_data, m_block_store.sizes[block_index]);
+    }
+
+    adjust_block_positions(block_index+3, length);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>

@@ -281,6 +281,30 @@ public:
     iterator push_back_empty();
 
     /**
+     * Insert multiple values of identical type to a specified position.
+     * Existing values that occur at or below the specified position will get
+     * shifted after the insertion.  No existing values will be overwritten by
+     * the inserted values.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception
+     * if the specified position is outside the current container range.</p>
+     *
+     * <p>Calling this method will increase the size of the container by
+     * the length of the new values inserted.</p>
+     *
+     * @param pos position at which the new values are to be inserted.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being inserted.
+     * @param it_end iterator that points to the end position of the values
+     *               being inserted.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.  When no value insertion occurs because the value set
+     *         is empty, the end iterator position is returned.
+     */
+    template<typename _T>
+    iterator insert(size_type pos, const _T& it_begin, const _T& it_end);
+
+    /**
      * Get the type of an element at specified position.
      *
      * @param pos position of the element.
@@ -470,6 +494,9 @@ private:
     template<typename _T>
     iterator set_impl(size_type pos, size_type block_index, const _T& value);
 
+    template<typename _T>
+    iterator insert_cells_impl(size_type row, size_type block_index, const _T& it_begin, const _T& it_end);
+
     void resize_impl(size_type new_size);
 
     /**
@@ -573,6 +600,10 @@ private:
     bool append_to_prev_block(
         size_type block_index, element_category_type cat, size_type length,
         const _T& it_begin, const _T& it_end);
+
+    template<typename _T>
+    void insert_cells_to_middle(
+        size_type row, size_type block_index, const _T& it_begin, const _T& it_end);
 
     template<typename _T>
     iterator set_cell_to_middle_of_block(
