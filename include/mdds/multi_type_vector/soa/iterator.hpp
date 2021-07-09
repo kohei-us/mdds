@@ -61,15 +61,16 @@ protected:
 
     using node = mdds::detail::mtv::iterator_value_node<size_type>;
 
+    using positions_iterator_type = typename _Trait::positions_iterator_type;
+    using sizes_iterator_type = typename _Trait::sizes_iterator_type;
+    using element_blocks_iterator_type = typename _Trait::element_blocks_iterator_type;
+
     /**
      * This struct groups together the iterators for the three array types for
      * easy synchronized traversal of the arrays.
      */
     struct grouped_iterator_type
     {
-        using positions_iterator_type = typename _Trait::positions_iterator_type;
-        using sizes_iterator_type = typename _Trait::sizes_iterator_type;
-        using element_blocks_iterator_type = typename _Trait::element_blocks_iterator_type;
         positions_iterator_type position_iterator;
         sizes_iterator_type size_iterator;
         element_blocks_iterator_type element_block_iterator;
@@ -124,6 +125,22 @@ protected:
         m_cur_node(block_index),
         m_pos(pos),
         m_end(end)
+    {
+        if (m_pos != m_end)
+            update_node();
+    }
+
+    iterator_updater(
+        const positions_iterator_type& positions_pos,
+        const sizes_iterator_type& sizes_pos,
+        const element_blocks_iterator_type& eb_pos,
+        const positions_iterator_type& positions_end,
+        const sizes_iterator_type& sizes_end,
+        const element_blocks_iterator_type& eb_end,
+        size_type block_index) :
+        m_cur_node(block_index),
+        m_pos(positions_pos, sizes_pos, eb_pos),
+        m_end(positions_end, sizes_end, eb_end)
     {
         if (m_pos != m_end)
             update_node();
@@ -312,8 +329,12 @@ public:
      */
     const_iterator_base(const iterator_base& other) :
         updater(
-            other.get_pos(),
-            other.get_end(),
+            other.get_pos().position_iterator,
+            other.get_pos().size_iterator,
+            other.get_pos().element_block_iterator,
+            other.get_end().position_iterator,
+            other.get_end().size_iterator,
+            other.get_end().element_block_iterator,
             other.get_node().__private_data.block_index) {}
 
     const value_type& operator*() const

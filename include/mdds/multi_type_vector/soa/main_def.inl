@@ -2626,6 +2626,64 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::cend() const
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::reverse_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::rbegin()
+{
+    return reverse_iterator(
+        { m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin() },
+        { m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend() },
+        0
+    );
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::reverse_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::rend()
+{
+    return reverse_iterator(
+        { m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend() },
+        { m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend() },
+        0
+    );
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::rbegin() const
+{
+    return crbegin();
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::rend() const
+{
+    return crend();
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::crbegin() const
+{
+    return const_reverse_iterator(
+        { m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin() },
+        { m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend() },
+        0
+    );
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_reverse_iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::crend() const
+{
+    return const_reverse_iterator(
+        { m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend() },
+        { m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend() },
+        0
+    );
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
 multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(size_type row, size_type start_block_index) const
 {

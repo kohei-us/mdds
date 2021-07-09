@@ -153,6 +153,48 @@ private:
         using private_data_update = mdds::detail::mtv::private_data_forward_update<size_type>;
     };
 
+    struct const_iterator_trait
+    {
+        using parent = multi_type_vector;
+        using positions_type = std::vector<size_type>;
+        using sizes_type = std::vector<size_type>;
+        using element_blocks_type = std::vector<element_block_type*>;
+
+        using positions_iterator_type = typename positions_type::const_iterator;
+        using sizes_iterator_type = typename sizes_type::const_iterator;
+        using element_blocks_iterator_type = typename element_blocks_type::const_iterator;
+
+        using private_data_update = mdds::detail::mtv::private_data_forward_update<size_type>;
+    };
+
+    struct reverse_iterator_trait
+    {
+        using parent = multi_type_vector;
+        using positions_type = std::vector<size_type>;
+        using sizes_type = std::vector<size_type>;
+        using element_blocks_type = std::vector<element_block_type*>;
+
+        using positions_iterator_type = typename positions_type::reverse_iterator;
+        using sizes_iterator_type = typename sizes_type::reverse_iterator;
+        using element_blocks_iterator_type = typename element_blocks_type::reverse_iterator;
+
+        using private_data_update = mdds::detail::mtv::private_data_no_update<size_type>;
+    };
+
+    struct const_reverse_iterator_trait
+    {
+        using parent = multi_type_vector;
+        using positions_type = std::vector<size_type>;
+        using sizes_type = std::vector<size_type>;
+        using element_blocks_type = std::vector<element_block_type*>;
+
+        using positions_iterator_type = typename positions_type::const_reverse_iterator;
+        using sizes_iterator_type = typename sizes_type::const_reverse_iterator;
+        using element_blocks_iterator_type = typename element_blocks_type::const_reverse_iterator;
+
+        using private_data_update = mdds::detail::mtv::private_data_no_update<size_type>;
+    };
+
     struct element_block_deleter
     {
         void operator() (const element_block_type* p)
@@ -164,7 +206,10 @@ private:
 public:
 
     using iterator = detail::iterator_base<iterator_trait>;
-    using const_iterator = detail::const_iterator_base<iterator_trait, iterator>;
+    using const_iterator = detail::const_iterator_base<const_iterator_trait, iterator>;
+
+    using reverse_iterator = detail::iterator_base<reverse_iterator_trait>;
+    using const_reverse_iterator = detail::const_iterator_base<const_reverse_iterator_trait, reverse_iterator>;
 
     /**
      * Default constructor.  It initializes the container with empty size.
@@ -456,6 +501,15 @@ public:
 
     const_iterator cbegin() const;
     const_iterator cend() const;
+
+    reverse_iterator rbegin();
+    reverse_iterator rend();
+
+    const_reverse_iterator rbegin() const;
+    const_reverse_iterator rend() const;
+
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
 
     /**
      * Extend or shrink the container.  When extending the container, it
