@@ -69,6 +69,7 @@ void mtv_test_iterators();
 void mtv_test_iterators_element_block();
 void mtv_test_iterators_mutable_element_block();
 void mtv_test_iterators_private_data();
+void mtv_test_iterators_return_from_set();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
