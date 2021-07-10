@@ -31,6 +31,8 @@
 
 #include "../iterator_node.hpp"
 
+#include <ostream>
+
 namespace mdds { namespace multi_type_vector { namespace soa { namespace detail {
 
 /**
@@ -187,6 +189,15 @@ protected:
         return &m_cur_node;
     }
 
+    void _print_state(std::ostream& os) const
+    {
+        os << "block-index=" << m_cur_node.__private_data.block_index
+            << "; position=" << m_cur_node.position
+            << "; size=" << m_cur_node.size
+            << "; type=" << m_cur_node.type
+            << "; data=0x" << std::hex << m_cur_node.data;
+    }
+
 public:
     bool operator== (const iterator_updater& other) const
     {
@@ -289,6 +300,13 @@ public:
         node_update_func::dec(m_cur_node);
         return *this;
     }
+
+    void _print_state(std::ostream& os) const
+    {
+        os << "(iterator: ";
+        updater::_print_state(os);
+        os << ")";
+    }
 };
 
 template<typename _Trait, typename _NonConstItrBase>
@@ -370,7 +388,28 @@ public:
     {
         return updater::operator!=(other);
     }
+
+    void _print_state(std::ostream& os) const
+    {
+        os << "(const-iterator: ";
+        updater::_print_state(os);
+        os << ")";
+    }
 };
+
+template<typename _Trait>
+std::ostream& operator<< (std::ostream& os, const iterator_base<_Trait>& it)
+{
+    it._print_state(os);
+    return os;
+}
+
+template<typename _Trait, typename _NonConstItrBase>
+std::ostream& operator<< (std::ostream& os, const const_iterator_base<_Trait, _NonConstItrBase>& it)
+{
+    it._print_state(os);
+    return os;
+}
 
 }}}}
 
