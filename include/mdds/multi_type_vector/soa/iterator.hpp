@@ -138,12 +138,12 @@ protected:
         const sizes_iterator_type& sizes_end,
         const element_blocks_iterator_type& eb_end,
         size_type block_index) :
-        m_cur_node(block_index),
-        m_pos(positions_pos, sizes_pos, eb_pos),
-        m_end(positions_end, sizes_end, eb_end)
+        iterator_updater(
+            { positions_pos, sizes_pos, eb_pos },
+            { positions_end, sizes_end, eb_end },
+            block_index
+        )
     {
-        if (m_pos != m_end)
-            update_node();
     }
 
     iterator_updater(const iterator_updater& other) :
