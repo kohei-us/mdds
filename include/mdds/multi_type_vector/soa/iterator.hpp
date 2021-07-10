@@ -67,9 +67,12 @@ protected:
      */
     struct grouped_iterator_type
     {
-        typename positions_type::iterator position_iterator;
-        typename sizes_type::iterator size_iterator;
-        typename element_blocks_type::iterator element_block_iterator;
+        using positions_iterator_type = typename _Trait::positions_iterator_type;
+        using sizes_iterator_type = typename _Trait::sizes_iterator_type;
+        using element_blocks_iterator_type = typename _Trait::element_blocks_iterator_type;
+        positions_iterator_type position_iterator;
+        sizes_iterator_type size_iterator;
+        element_blocks_iterator_type element_block_iterator;
 
         void inc()
         {
@@ -100,9 +103,9 @@ protected:
         grouped_iterator_type() = default;
 
         grouped_iterator_type(
-            const typename positions_type::iterator& itr_pos,
-            const typename sizes_type::iterator& itr_size,
-            const typename element_blocks_type::iterator& itr_elem_blocks) :
+            const positions_iterator_type& itr_pos,
+            const sizes_iterator_type& itr_size,
+            const element_blocks_iterator_type& itr_elem_blocks) :
             position_iterator(itr_pos),
             size_iterator(itr_size),
             element_block_iterator(itr_elem_blocks)
@@ -205,10 +208,10 @@ public:
     const grouped_iterator_type& get_end() const { return m_end; }
 };
 
-template<typename _Trait, typename _NodeUpdateFunc>
+template<typename _Trait>
 class iterator_base : public iterator_updater<_Trait>
 {
-    using node_update_func = _NodeUpdateFunc;
+    using node_update_func = typename _Trait::private_data_update;
     using updater = iterator_updater<_Trait>;
 
     using grouped_iterator_type = typename updater::grouped_iterator_type;
@@ -271,10 +274,10 @@ public:
     }
 };
 
-template<typename _Trait, typename _NodeUpdateFunc, typename _NonConstItrBase>
+template<typename _Trait, typename _NonConstItrBase>
 class const_iterator_base : public iterator_updater<_Trait>
 {
-    using node_update_func = _NodeUpdateFunc;
+    using node_update_func = typename _Trait::private_data_update;
     using updater = iterator_updater<_Trait>;
 
     using grouped_iterator_type = typename updater::grouped_iterator_type;

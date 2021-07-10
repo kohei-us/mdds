@@ -145,9 +145,13 @@ private:
         using positions_type = std::vector<size_type>;
         using sizes_type = std::vector<size_type>;
         using element_blocks_type = std::vector<element_block_type*>;
-    };
 
-    using itr_forward_update = mdds::detail::mtv::private_data_forward_update<size_type>;
+        using positions_iterator_type = typename positions_type::iterator;
+        using sizes_iterator_type = typename sizes_type::iterator;
+        using element_blocks_iterator_type = typename element_blocks_type::iterator;
+
+        using private_data_update = mdds::detail::mtv::private_data_forward_update<size_type>;
+    };
 
     struct element_block_deleter
     {
@@ -159,8 +163,8 @@ private:
 
 public:
 
-    using iterator = detail::iterator_base<iterator_trait, itr_forward_update>;
-    using const_iterator = detail::const_iterator_base<iterator_trait, itr_forward_update, iterator>;
+    using iterator = detail::iterator_base<iterator_trait>;
+    using const_iterator = detail::const_iterator_base<iterator_trait, iterator>;
 
     /**
      * Default constructor.  It initializes the container with empty size.
