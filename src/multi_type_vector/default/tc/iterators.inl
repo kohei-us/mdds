@@ -238,5 +238,65 @@ void mtv_test_iterators_element_block()
     assert(it_blk == it_blk_end);
 }
 
+void mtv_test_iterators_mutable_element_block()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    /**
+     * This function is just to ensure that even the non-const iterator can be
+     * dereferenced via const reference.
+     *
+     * @param it this is passed as a const reference, yet it should still allow
+     *           being dereferenced as long as no data is modified.
+     */
+    auto check_block_iterator = [](const mtv_type::iterator& it, mdds::mtv::element_t expected)
+    {
+        mdds::mtv::element_t actual = it->type;
+        const mtv_type::element_block_type* data = (*it).data;
+        assert(actual == expected);
+        assert(data != nullptr);
+    };
+
+    mtv_type db(1);
+    db.set(0, 1.2);
+    mtv_type::iterator it_blk = db.begin(), it_blk_end = db.end();
+    size_t n = std::distance(it_blk, it_blk_end);
+    assert(n == 1);
+    check_block_iterator(it_blk, mdds::mtv::element_type_double);
+
+    mdds::mtv::double_element_block::iterator it = mdds::mtv::double_element_block::begin(*it_blk->data);
+    mdds::mtv::double_element_block::iterator it_end = mdds::mtv::double_element_block::end(*it_blk->data);
+    n = std::distance(it, it_end);
+    assert(n == 1);
+    assert(*it == 1.2);
+
+    *it = 2.3; // write via iterator.
+    assert(db.get<double>(0) == 2.3);
+
+    db.resize(3);
+    db.set(1, 2.4);
+    db.set(2, 2.5);
+
+    it_blk = db.begin();
+    it_blk_end = db.end();
+    n = std::distance(it_blk, it_blk_end);
+    assert(n == 1);
+    check_block_iterator(it_blk, mdds::mtv::element_type_double);
+
+    it = mdds::mtv::double_element_block::begin(*it_blk->data);
+    it_end = mdds::mtv::double_element_block::end(*it_blk->data);
+    n = std::distance(it, it_end);
+    assert(n == 3);
+    *it = 3.1;
+    ++it;
+    *it = 3.2;
+    ++it;
+    *it = 3.3;
+
+    assert(db.get<double>(0) == 3.1);
+    assert(db.get<double>(1) == 3.2);
+    assert(db.get<double>(2) == 3.3);
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

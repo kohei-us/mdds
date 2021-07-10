@@ -118,66 +118,6 @@ void mtv_test_types()
     }
 }
 
-/**
- * This function is just to ensure that even the non-const iterator can be
- * dereferenced via const reference.
- *
- * @param it this is passed as a const reference, yet it should still allow
- *           being dereferenced as long as no data is modified.
- */
-void check_block_iterator(const mtv_type::iterator& it, mtv::element_t expected)
-{
-    mtv::element_t actual = it->type;
-    const mtv_type::element_block_type* data = (*it).data;
-    assert(actual == expected);
-    assert(data != nullptr);
-}
-
-void mtv_test_non_const_data_iterators()
-{
-    stack_printer __stack_printer__(__FUNCTION__);
-
-    mtv_type db(1);
-    db.set(0, 1.2);
-    mtv_type::iterator it_blk = db.begin(), it_blk_end = db.end();
-    size_t n = std::distance(it_blk, it_blk_end);
-    assert(n == 1);
-    check_block_iterator(it_blk, mtv::element_type_double);
-
-    mtv::double_element_block::iterator it = mtv::double_element_block::begin(*it_blk->data);
-    mtv::double_element_block::iterator it_end = mtv::double_element_block::end(*it_blk->data);
-    n = std::distance(it, it_end);
-    assert(n == 1);
-    assert(*it == 1.2);
-
-    *it = 2.3; // write via iterator.
-    assert(db.get<double>(0) == 2.3);
-
-    db.resize(3);
-    db.set(1, 2.4);
-    db.set(2, 2.5);
-
-    it_blk = db.begin();
-    it_blk_end = db.end();
-    n = std::distance(it_blk, it_blk_end);
-    assert(n == 1);
-    check_block_iterator(it_blk, mtv::element_type_double);
-
-    it = mtv::double_element_block::begin(*it_blk->data);
-    it_end = mtv::double_element_block::end(*it_blk->data);
-    n = std::distance(it, it_end);
-    assert(n == 3);
-    *it = 3.1;
-    ++it;
-    *it = 3.2;
-    ++it;
-    *it = 3.3;
-
-    assert(db.get<double>(0) == 3.1);
-    assert(db.get<double>(1) == 3.2);
-    assert(db.get<double>(2) == 3.3);
-}
-
 void mtv_test_iterator_private_data()
 {
     stack_printer __stack_printer__(__FUNCTION__);
@@ -2963,7 +2903,7 @@ int main (int argc, char **argv)
         mtv_test_insert_cells();
         mtv_test_iterators();
         mtv_test_iterators_element_block();
-        mtv_test_non_const_data_iterators();
+        mtv_test_iterators_mutable_element_block();
         mtv_test_iterator_private_data();
         mtv_test_set_return_iterator();
         mtv_test_set2_return_iterator();
