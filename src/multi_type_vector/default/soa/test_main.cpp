@@ -47,6 +47,7 @@ int main (int argc, char **argv)
         mtv_test_insert_cells();
         mtv_test_iterators();
         mtv_test_iterators_element_block();
+        mtv_test_iterators_mutable_element_block();
     }
     catch (const std::exception& e)
     {
