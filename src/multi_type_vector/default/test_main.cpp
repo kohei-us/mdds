@@ -118,103 +118,6 @@ void mtv_test_types()
     }
 }
 
-void mtv_test_data_iterators()
-{
-    stack_printer __stack_printer__(__FUNCTION__);
-
-    mtv_type db(10);
-    db.set(0, 1.1);
-    db.set(1, 1.2);
-    db.set(2, 1.3);
-    db.set(4, string("A"));
-    db.set(5, string("B"));
-    db.set(6, string("C"));
-    db.set(7, string("D"));
-    mtv_type::const_iterator it_blk = db.begin(), it_blk_end = db.end();
-
-    // First block is a numeric block.
-    assert(it_blk != it_blk_end);
-    assert(it_blk->type == mdds::mtv::element_type_double);
-    assert(it_blk->size == 3);
-    assert(it_blk->data);
-    {
-        mtv::double_element_block::const_iterator it_data = mtv::double_element_block::begin(*it_blk->data);
-        mtv::double_element_block::const_iterator it_data_end = mtv::double_element_block::end(*it_blk->data);
-        assert(it_data != it_data_end);
-        assert(*it_data == 1.1);
-        ++it_data;
-        assert(*it_data == 1.2);
-        ++it_data;
-        assert(*it_data == 1.3);
-        ++it_data;
-        assert(it_data == it_data_end);
-
-        assert(mtv::double_element_block::at(*it_blk->data, 0) == 1.1);
-        assert(mtv::double_element_block::at(*it_blk->data, 1) == 1.2);
-        assert(mtv::double_element_block::at(*it_blk->data, 2) == 1.3);
-
-        // Access the underlying data array directly.
-        const double* array = &mtv::double_element_block::at(*it_blk->data, 0);
-        assert(*array == 1.1);
-        ++array;
-        assert(*array == 1.2);
-        ++array;
-        assert(*array == 1.3);
-    }
-
-    // Next block is empty.
-    ++it_blk;
-    assert(it_blk->type == mdds::mtv::element_type_empty);
-    assert(it_blk->size == 1);
-    assert(it_blk->data == nullptr);
-
-    // Next block is a string block.
-    ++it_blk;
-    assert(it_blk->type == mdds::mtv::element_type_string);
-    assert(it_blk->size == 4);
-    assert(it_blk->data);
-    {
-        mtv::string_element_block::const_reverse_iterator it_data = mtv::string_element_block::rbegin(*it_blk->data);
-        mtv::string_element_block::const_reverse_iterator it_data_end = mtv::string_element_block::rend(*it_blk->data);
-        assert(it_data != it_data_end);
-        assert(*it_data == "D");
-        ++it_data;
-        assert(*it_data == "C");
-        ++it_data;
-        assert(*it_data == "B");
-        ++it_data;
-        assert(*it_data == "A");
-        ++it_data;
-        assert(it_data == it_data_end);
-    }
-
-    {
-        // Test crbegin() and crend() too, which should be identical to the
-        // const variants of rbegin() and rend() from above.
-        mtv::string_element_block::const_reverse_iterator it_data = mtv::string_element_block::crbegin(*it_blk->data);
-        mtv::string_element_block::const_reverse_iterator it_data_end = mtv::string_element_block::crend(*it_blk->data);
-        assert(it_data != it_data_end);
-        assert(*it_data == "D");
-        ++it_data;
-        assert(*it_data == "C");
-        ++it_data;
-        assert(*it_data == "B");
-        ++it_data;
-        assert(*it_data == "A");
-        ++it_data;
-        assert(it_data == it_data_end);
-    }
-
-    // Another empty block follows.
-    ++it_blk;
-    assert(it_blk->type == mdds::mtv::element_type_empty);
-    assert(it_blk->size == 2);
-    assert(it_blk->data == nullptr);
-
-    ++it_blk;
-    assert(it_blk == it_blk_end);
-}
-
 /**
  * This function is just to ensure that even the non-const iterator can be
  * dereferenced via const reference.
@@ -3059,7 +2962,7 @@ int main (int argc, char **argv)
         mtv_test_set_cells();
         mtv_test_insert_cells();
         mtv_test_iterators();
-        mtv_test_data_iterators();
+        mtv_test_iterators_element_block();
         mtv_test_non_const_data_iterators();
         mtv_test_iterator_private_data();
         mtv_test_set_return_iterator();

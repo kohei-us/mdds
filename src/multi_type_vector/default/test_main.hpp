@@ -66,6 +66,7 @@ void mtv_test_insert_empty();
 void mtv_test_set_cells();
 void mtv_test_insert_cells();
 void mtv_test_iterators();
+void mtv_test_iterators_element_block();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
