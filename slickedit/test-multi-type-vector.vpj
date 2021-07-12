@@ -62,6 +62,7 @@
             <F N="../src/multi_type_vector/default/soa/test_empty_cells.cpp"/>
             <F N="../src/multi_type_vector/default/test_erase.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_erase.cpp"/>
+            <F N="../src/multi_type_vector/default/test_hints.cpp"/>
             <F N="../src/multi_type_vector/default/test_insert.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_insert.cpp"/>
             <F N="../src/multi_type_vector/default/test_iterators.cpp"/>
@@ -106,6 +107,7 @@
             <F N="../src/multi_type_vector/default/tc/construction.inl"/>
             <F N="../src/multi_type_vector/default/tc/empty_cells.inl"/>
             <F N="../src/multi_type_vector/default/tc/erase.inl"/>
+            <F N="../src/multi_type_vector/default/tc/hints.inl"/>
             <F N="../src/multi_type_vector/default/tc/insert.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators_insert.inl"/>
