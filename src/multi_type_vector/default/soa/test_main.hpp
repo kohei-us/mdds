@@ -66,8 +66,8 @@ void mtv_test_insert_cells();
 void mtv_test_iterators();
 void mtv_test_iterators_element_block();
 void mtv_test_iterators_mutable_element_block();
-void mtv_test_iterators_return_from_set();
-void mtv_test_iterators_return_from_set_2();
+void mtv_test_iterators_set();
+void mtv_test_iterators_set_2();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

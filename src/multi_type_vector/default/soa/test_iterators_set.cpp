@@ -26,51 +26,10 @@
  *
  ************************************************************************/
 
-#pragma once
+#include "test_global.hpp" // This must be the first header to be included.
+#include "test_main.hpp"
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector_trait.hpp>
-
-#include <cassert>
-#include <sstream>
-#include <vector>
-#include <deque>
-
-using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
-
-template<typename _ValT>
-bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)
-{
-    _ValT test;
-    col_db.set(row, val);
-    col_db.get(row, test);
-
-    if (val == test)
-        return true;
-
-    std::cout << "row " << row << ": value stored = " << val << "; value retrieved = " << test << std::endl;
-    return false;
-}
-
-void mtv_test_construction();
-void mtv_test_basic();
-void mtv_test_basic_numeric();
-void mtv_test_empty_cells();
-void mtv_test_misc_swap();
-void mtv_test_misc_equality();
-void mtv_test_misc_clone();
-void mtv_test_misc_resize();
-void mtv_test_erase();
-void mtv_test_insert_empty();
-void mtv_test_set_cells();
-void mtv_test_insert_cells();
-void mtv_test_iterators();
-void mtv_test_iterators_element_block();
-void mtv_test_iterators_mutable_element_block();
-void mtv_test_iterators_private_data();
-void mtv_test_iterators_set();
-void mtv_test_iterators_set_2();
+#include "iterators_set.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

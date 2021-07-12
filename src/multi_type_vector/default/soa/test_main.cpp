@@ -48,8 +48,8 @@ int main (int argc, char **argv)
         mtv_test_iterators();
         mtv_test_iterators_element_block();
         mtv_test_iterators_mutable_element_block();
-        mtv_test_iterators_return_from_set();
-        mtv_test_iterators_return_from_set_2();
+        mtv_test_iterators_set();
+        mtv_test_iterators_set_2();
     }
     catch (const std::exception& e)
     {

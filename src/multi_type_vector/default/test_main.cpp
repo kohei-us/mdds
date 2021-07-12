@@ -1990,8 +1990,8 @@ int main (int argc, char **argv)
         mtv_test_iterators_element_block();
         mtv_test_iterators_mutable_element_block();
         mtv_test_iterators_private_data();
-        mtv_test_iterators_return_from_set();
-        mtv_test_iterators_return_from_set_2();
+        mtv_test_iterators_set();
+        mtv_test_iterators_set_2();
         mtv_test_insert_cells_return_iterator();
         mtv_test_set_empty_return_iterator();
         mtv_test_insert_empty_return_iterator();
