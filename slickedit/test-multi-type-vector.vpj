@@ -104,6 +104,7 @@
             <F N="../src/multi_type_vector/default/tc/erase.inl"/>
             <F N="../src/multi_type_vector/default/tc/insert.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators.inl"/>
+            <F N="../src/multi_type_vector/default/tc/iterators_insert.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators_set.inl"/>
             <F N="../src/multi_type_vector/default/tc/misc.inl"/>
             <F N="../src/multi_type_vector/default/tc/set.inl"/>
