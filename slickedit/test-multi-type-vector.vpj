@@ -66,6 +66,7 @@
             <F N="../src/multi_type_vector/default/soa/test_insert.cpp"/>
             <F N="../src/multi_type_vector/default/test_iterators.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_iterators.cpp"/>
+            <F N="../src/multi_type_vector/default/soa/test_iterators_insert.cpp"/>
             <F N="../src/multi_type_vector/default/test_iterators_set.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_iterators_set.cpp"/>
             <F N="../src/multi_type_vector/collection/test_main.cpp"/>

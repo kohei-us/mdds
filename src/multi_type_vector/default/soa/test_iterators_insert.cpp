@@ -29,38 +29,7 @@
 #include "test_global.hpp" // This must be the first header to be included.
 #include "test_main.hpp"
 
-int main (int argc, char **argv)
-{
-    try
-    {
-        mtv_test_construction();
-        mtv_test_basic();
-        mtv_test_basic_numeric();
-        mtv_test_empty_cells();
-        mtv_test_misc_swap();
-        mtv_test_misc_equality();
-        mtv_test_misc_clone();
-        mtv_test_misc_resize();
-        mtv_test_erase();
-        mtv_test_insert_empty();
-        mtv_test_set_cells();
-        mtv_test_insert_cells();
-        mtv_test_iterators();
-        mtv_test_iterators_element_block();
-        mtv_test_iterators_mutable_element_block();
-        mtv_test_iterators_set();
-        mtv_test_iterators_set_2();
-        mtv_test_iterators_insert();
-    }
-    catch (const std::exception& e)
-    {
-        cout << "Test failed: " << e.what() << endl;
-        return EXIT_FAILURE;
-    }
-
-    cout << "Test finished successfully!" << endl;
-    return EXIT_SUCCESS;
-}
+#include "iterators_insert.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
