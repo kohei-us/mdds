@@ -941,5 +941,277 @@ void mtv_test_iterators_return_from_set()
     assert(it == db.end());
 }
 
+/**
+ * Test the variant of set() method that takes iterators.
+ */
+void mtv_test_iterators_return_from_set_2()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+    mtv_type::iterator it, check;
+    std::vector<double> doubles(3, 1.1);
+    std::deque<bool> bools;
+    std::vector<std::string> strings;
+
+    // simple overwrite.
+    mtv_type db(10, 2.3);
+    db.set(0, true);
+    db.set(1, std::string("foo"));
+    it = db.set(2, doubles.begin(), doubles.end());
+    check = db.begin();
+    std::advance(check, 2);
+    assert(it == check);
+    ++it;
+    assert(it == db.end());
+
+    // Insert and merge with previous block.
+    db = mtv_type(10, true);
+    db.set(5, 1.1);
+    db.set(6, 1.2);
+    db.set(7, 1.3);
+    db.set(8, std::string("foo"));
+    bools.resize(3, false);
+    it = db.set(5, bools.begin(), bools.end());
+    assert(it == db.begin());
+    assert(it->size == 8);
+    assert(it->type == mdds::mtv::element_type_boolean);
+    std::advance(it, 3);
+    assert(it == db.end());
+
+    // Insert and merge with previous and next blocks.
+    db = mtv_type(10, true);
+    db.set(0, std::string("foo"));
+    db.set(5, 1.1);
+    db.set(6, 1.2);
+    db.set(7, 1.3);
+    it = db.set(5, bools.begin(), bools.end());
+    assert(db.block_size() == 2);
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 9);
+    assert(it->type == mdds::mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    // Insert and merge with next block only.
+    db = mtv_type(10); // start empty.
+    db.set(4, true);
+    db.set(5, true);
+    db.set(6, true);
+    db.set(7, 1.1);
+    db.set(8, 1.2);
+    db.set(9, 1.3);
+    doubles.resize(3, 2.2);
+    it = db.set(4, doubles.begin(), doubles.end());
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 6);
+    assert(it->type == mdds::mtv::element_type_double);
+    ++it;
+    assert(it == db.end());
+
+    // Replace the upper part of a block and merge with previous block.
+    db = mtv_type(10, false);
+    db.set(3, 1.2);
+    db.set(4, 1.3);
+    db.set(5, 1.4);
+    db.set(6, 1.5);
+    db.set(7, 1.6);
+    bools.resize(3, true);
+    it = db.set(3, bools.begin(), bools.end());
+    assert(it == db.begin());
+    assert(it->size == 6);
+    assert(it->type == mdds::mtv::element_type_boolean);
+    std::advance(it, 3);
+    assert(it == db.end());
+
+    // Replace the upper part of a block but don't merge with previous block.
+    db = mtv_type(10, false);
+    db.set(3, std::string("A"));
+    db.set(4, std::string("B"));
+    db.set(5, std::string("C"));
+    db.set(6, std::string("D"));
+    db.set(7, std::string("E"));
+    doubles.resize(3, 1.1);
+    it = db.set(3, doubles.begin(), doubles.end());
+    check = db.begin();
+    ++check;
+    assert(it == check);
+    assert(it->size == 3);
+    assert(it->type == mdds::mtv::element_type_double);
+    ++it;
+    assert(it->size == 2);
+    assert(it->type == mdds::mtv::element_type_string);
+    ++it;
+    assert(it->size == 2);
+    assert(it->type == mdds::mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    // Overwrite the lower part of a block and merge it with the next block.
+    db = mtv_type(10, false);
+    db.set(0, 2.2);
+    db.set(4, 1.1);
+    db.set(5, 1.2);
+    db.set(6, 1.3);
+    assert(db.block_size() == 4);
+    bools.resize(2, true);
+    it = db.set(5, bools.begin(), bools.end()); // 5 to 6
+    check = db.begin();
+    std::advance(check, 3);
+    assert(it == check);
+    assert(it->size == 5);
+    assert(it->type == mdds::mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    // Overwrite the lower part of a block but don't merge it with the next block.
+    db = mtv_type(10, std::string("boo"));
+    db.set(0, 1.1);
+    db.set(5, true);
+    db.set(6, true);
+    db.set(7, true);
+    doubles.resize(2, 2.2);
+    it = db.set(6, doubles.begin(), doubles.end());
+    check = db.begin();
+    std::advance(check, 3);
+    assert(it == check);
+    assert(it->size == 2);
+    assert(it->type == mdds::mtv::element_type_double);
+    std::advance(it, 2);
+    assert(it == db.end());
+
+    // Overwrite the lower part of the last block.
+    db = mtv_type(10, std::string("boo"));
+    db.set(0, 1.1);
+    doubles.resize(3, 2.2);
+    it = db.set(7, doubles.begin(), doubles.end());
+    check = db.begin();
+    std::advance(check, 2);
+    assert(it == check);
+    ++it;
+    assert(it->size == 3);
+    assert(it->type == mdds::mtv::element_type_double);
+    assert(it == db.end());
+
+    // Overwrite the middle part of a block.
+    db = mtv_type(10);
+    bools.resize(5, true);
+    it = db.set(3, bools.begin(), bools.end());
+    check = db.begin();
+    ++check;
+    assert(check == it);
+    assert(it->size == 5);
+    assert(it->type == mdds::mtv::element_type_boolean);
+    std::advance(it, 2);
+    assert(it == db.end());
+
+    // Overwrite multiple blocks with values whose type matches that of the top block.
+    int32_t int_val = 255;
+    db = mtv_type(10, int_val);
+    bools.resize(6, true);
+    db.set(4, bools.begin(), bools.end()); // set 4 thru 9 to bool.
+    db.set(5, 1.1);
+    db.set(7, std::string("foo"));
+    assert(db.block_size() == 6);
+    doubles.resize(4, 4.5);
+    it = db.set(5, doubles.begin(), doubles.end()); // 5 thrugh 8.
+    check = db.begin();
+    assert(check->type == mdds::mtv::element_type_int32);
+    ++check;
+    assert(check->type == mdds::mtv::element_type_boolean);
+    ++check;
+    assert(it == check);
+    assert(it->type == mdds::mtv::element_type_double);
+    assert(it->size == 4);
+    std::advance(it, 2);
+    assert(it == db.end());
+
+    // The same scenario, except that the values also match that of the bottom block.
+    db = mtv_type(10, 1.1);
+    db.set(5, true);
+    assert(db.block_size() == 3);
+    doubles.resize(3, 2.3);
+    it = db.set(4, doubles.begin(), doubles.end());
+    assert(db.block_size() == 1);
+    assert(it == db.begin());
+    assert(it->type == mdds::mtv::element_type_double);
+    assert(it->size == 10);
+    ++it;
+    assert(it == db.end());
+
+    // This time, the top block is of different type.
+    db = mtv_type(10, false);
+    doubles.resize(4, 4.5);
+    db.set(3, doubles.begin(), doubles.end()); // 3 thru 6
+    db.set(0, int32_t(1));
+    strings.resize(4, std::string("test"));
+    it = db.set(4, strings.begin(), strings.end()); // Overwrite the lower part of the top block.
+    check = db.begin();
+    assert(check->type == mdds::mtv::element_type_int32);
+    ++check;
+    assert(check->type == mdds::mtv::element_type_boolean);
+    ++check;
+    assert(check->type == mdds::mtv::element_type_double);
+    ++check;
+    assert(it == check);
+    assert(it->type == mdds::mtv::element_type_string);
+    assert(it->size == 4);
+    ++it;
+    assert(it->type == mdds::mtv::element_type_boolean);
+    ++it;
+    assert(it == db.end());
+
+    db = mtv_type(10, false);
+    db.set(0, 1.1);
+    db.set(4, 1.2);
+    db.set(5, 1.3);
+    db.set(6, std::string("a"));
+    db.set(7, std::string("b"));
+    doubles.resize(3, 0.8);
+    it = db.set(6, doubles.begin(), doubles.end()); // Merge with the upper block.
+    check = db.begin();
+    assert(check->type == mdds::mtv::element_type_double);
+    ++check;
+    assert(check->type == mdds::mtv::element_type_boolean);
+    ++check;
+    assert(it == check);
+    assert(it->type == mdds::mtv::element_type_double);
+    assert(it->size == 5);
+    ++it;
+    assert(it->type == mdds::mtv::element_type_boolean);
+    assert(it->size == 1);
+    ++it;
+    assert(it == db.end());
+
+    // Make sure this also works in scenarios where the values merge with lower block.
+    db = mtv_type(20, false);
+    doubles.resize(4, 3.4);
+    db.set(5, doubles.begin(), doubles.end()); // 5 thru 8
+    strings.resize(5, "expanded");
+    db.set(11, strings.begin(), strings.end()); // 11 thru 15
+    strings.clear();
+    strings.resize(6, "overwriting");
+    it = db.set(7, strings.begin(), strings.end()); // 7 thru 12
+
+    // At this point, 7 thru 15 should be strings.
+    assert(it->type == mdds::mtv::element_type_string);
+    assert(it->size == 9);
+    check = db.begin();
+    assert(check->type == mdds::mtv::element_type_boolean);
+    assert(check->size == 5); // 0 thru 4
+    ++check;
+    assert(check->type == mdds::mtv::element_type_double);
+    assert(check->size == 2); // 5 thru 6
+    ++check;
+    assert(it == check);
+    ++it;
+    assert(it->type == mdds::mtv::element_type_boolean);
+    assert(it->size == 4); // 16 thru 19
+    ++it;
+    assert(it == db.end());
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
