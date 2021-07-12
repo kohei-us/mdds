@@ -349,6 +349,43 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& valu
 template<typename _CellBlockFunc, typename _EventFunc>
 template<typename _T>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, size_type pos, const _T& value)
+{
+    size_type block_index = get_block_position(pos_hint, pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::set", __LINE__, pos, block_size(), size());
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = set_impl(pos, block_index, value);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in set (pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& it_begin, const _T& it_end)
 {
     auto res = mdds::detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
@@ -379,8 +416,47 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set(size_type pos, const _T& it_b
     {
         std::ostringstream os;
         os << e.what() << std::endl;
-        os << "block integrity check failed in set (pos=" << pos << ")" << endl;
-        os << "previous block state:" << endl;
+        os << "block integrity check failed in set (pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::set(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
+{
+    auto res = mdds::detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
+    if (!res.second)
+        return end();
+
+    size_type end_pos = res.first;
+    size_type block_index1 = get_block_position(pos_hint, pos);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = set_cells_impl(pos, end_pos, block_index1, it_begin, it_end);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in set (pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
         os << os_prev_block.str();
         std::cerr << os.str() << std::endl;
         abort();
@@ -444,6 +520,45 @@ typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::insert(size_type pos, const _T& it_begin, const _T& it_end)
 {
     size_type block_index = get_block_position(pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::insert", __LINE__, pos, block_size(), size());
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = insert_cells_impl(pos, block_index, it_begin, it_end);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        element_category_type cat = mdds_mtv_get_element_type(*it_begin);
+        os << "block integrity check failed in insert (pos=" << pos << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::insert(
+    const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end)
+{
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::insert", __LINE__, pos, block_size(), size());
@@ -550,6 +665,18 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty(size_type start_pos, si
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos)
+{
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
+    if (block_index1 == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
+
+    return set_empty_impl(start_pos, end_pos, block_index1, true);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::erase(size_type start_pos, size_type end_pos)
 {
     if (start_pos > end_pos)
@@ -590,6 +717,46 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(size_type pos, size_
         return end();
 
     size_type block_index = get_block_position(pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    iterator ret = insert_empty_impl(pos, block_index, length);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in insert_empty (pos=" << pos << "; length=" << length << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::insert_empty(const iterator& pos_hint, size_type pos, size_type length)
+{
+    if (!length)
+        // Nothing to insert.
+        return end();
+
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
@@ -2665,6 +2832,49 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(size_type row,
     assert(*it <= row);
     assert(row < *it + m_block_store.sizes[pos]);
     return pos;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::get_block_position(const const_iterator& pos_hint, size_type row) const
+{
+    size_type block_index = 0;
+
+    if (pos_hint.get_end().position_iterator == m_block_store.positions.end() &&
+        pos_hint.get_end().size_iterator == m_block_store.sizes.end() &&
+        pos_hint.get_end().element_block_iterator == m_block_store.element_blocks.end())
+    {
+        // Iterator is valid. Get the block position from it unless it's the
+        // end position.
+        if (pos_hint.get_pos() != pos_hint.get_end())
+            block_index = pos_hint->__private_data.block_index;
+    }
+
+    size_type start_row = m_block_store.positions[block_index];
+
+    if (row < start_row)
+    {
+        // Position hint is past the insertion position.
+        // Walk back if that seems efficient.
+        if (row > start_row / 2)
+        {
+            for (size_type i = block_index; i > 0;)
+            {
+                --i;
+                start_row = m_block_store.positions[i];
+                if (row >= start_row)
+                {
+                    // Row is in this block.
+                    return i;
+                }
+                // Specified row is not in this block.
+            }
+            assert(start_row == 0);
+        }
+        // Otherwise reset.
+        block_index = 0;
+    }
+    return get_block_position(row, block_index);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>

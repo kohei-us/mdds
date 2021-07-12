@@ -63,6 +63,7 @@
             <F N="../src/multi_type_vector/default/test_erase.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_erase.cpp"/>
             <F N="../src/multi_type_vector/default/test_hints.cpp"/>
+            <F N="../src/multi_type_vector/default/soa/test_hints.cpp"/>
             <F N="../src/multi_type_vector/default/test_insert.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_insert.cpp"/>
             <F N="../src/multi_type_vector/default/test_iterators.cpp"/>

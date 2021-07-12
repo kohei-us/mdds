@@ -285,6 +285,41 @@ public:
     iterator set(size_type pos, const _T& value);
 
     /**
+     * Set a value of an arbitrary type to a specified position.  The type of
+     * the value is inferred from the value passed to this method.  The new
+     * value will overwrite an existing value at the specified position
+     * position if any.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the
+     * right block to insert the value into.  The other variant that doesn't
+     * take an iterator always starts the block lookup from the first block,
+     * which does not scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the insertion
+     * position to yield any performance benefit.</p>
+     *
+     * <p>The caller is responsible for ensuring that the passed iterator is
+     * valid.  The behavior of this method when passing an invalid iterator is
+     * undefined.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception
+     * if the specified position is outside the current container range.</p>
+     *
+     * <p>Calling this method will not change the size of the container.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right block
+     *                 to insert the value into.
+     * @param pos position to insert the value to.
+     * @param value value to insert.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.
+     */
+    template<typename _T>
+    iterator set(const iterator& pos_hint, size_type pos, const _T& value);
+
+    /**
      * Set multiple values of identical type to a range of elements starting
      * at specified position.  Any existing values will be overwritten by the
      * new values.
@@ -307,6 +342,46 @@ public:
      */
     template<typename _T>
     iterator set(size_type pos, const _T& it_begin, const _T& it_end);
+
+    /**
+     * Set multiple values of identical type to a range of elements starting
+     * at specified position.  Any existing values will be overwritten by the
+     * new values.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the first
+     * insertion block.  The other variant that doesn't take an iterator
+     * always starts the block lookup from the first block, which does not
+     * scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the insertion
+     * position to yield any performance benefit.</p>
+     *
+     * <p>The caller is responsible for ensuring that the passed iterator is
+     * valid.  The behavior of this method when passing an invalid iterator is
+     * undefined.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the range of new values would fall outside the current container
+     * range.</p>
+     *
+     * <p>Calling this method will not change the size of the container.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right block
+     *                 to insert the value into.
+     * @param pos position of the first value of the series of new values
+     *            being inserted.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being set.
+     * @param it_end iterator that points to the end position of the values
+     *               being set.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.  When no value insertion occurs because the value set
+     *         is empty, the end iterator position is returned.
+     */
+    template<typename _T>
+    iterator set(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
      * Append a new value to the end of the container.
@@ -354,6 +429,46 @@ public:
     iterator insert(size_type pos, const _T& it_begin, const _T& it_end);
 
     /**
+     * Insert multiple values of identical type to a specified position.
+     * Existing values that occur at or below the specified position will get
+     * shifted after the insertion.  No existing values will be overwritten by
+     * the inserted values.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the first
+     * insertion block.  The other variant that doesn't take an iterator
+     * always starts the block lookup from the first block, which does not
+     * scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the insertion
+     * position to yield any performance benefit.</p>
+     *
+     * <p>The caller is responsible for ensuring that the passed iterator is
+     * valid.  The behavior of this method when passing an invalid iterator is
+     * undefined.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception
+     * if the specified position is outside the current container range.</p>
+     *
+     * <p>Calling this method will increase the size of the container by
+     * the length of the new values inserted.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right block
+     *                 to insert the value into.
+     * @param pos position at which the new values are to be inserted.
+     * @param it_begin iterator that points to the begin position of the
+     *                 values being inserted.
+     * @param it_end iterator that points to the end position of the values
+     *               being inserted.
+     * @return iterator position pointing to the block where the value is
+     *         inserted.  When no value insertion occurs because the value set
+     *         is empty, the end iterator position is returned.
+     */
+    template<typename _T>
+    iterator insert(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
+
+    /**
      * Get the type of an element at specified position.
      *
      * @param pos position of the element.
@@ -391,6 +506,37 @@ public:
     iterator set_empty(size_type start_pos, size_type end_pos);
 
     /**
+     * Set specified range of elements to be empty.  Any existing values will
+     * be overwritten.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the first block
+     * to empty.  The other variant that doesn't take an iterator always
+     * starts the block lookup from the first block, which does not
+     * scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the start
+     * position to yield any performance benefit.</p>
+     *
+     * <p>The caller is responsible for ensuring that the passed iterator is
+     * valid.  The behavior of this method when passing an invalid iterator is
+     * undefined.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right
+     *                 blocks to empty.
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @return iterator position pointing to the block where the elements are
+     *         emptied.
+     */
+    iterator set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos);
+
+    /**
      * Erase elements located between specified start and end positions. The
      * end positions are both inclusive.  Those elements originally located
      * after the specified end position will get shifted up after the erasure.
@@ -426,6 +572,42 @@ public:
      *         zero, the end iterator position is returned.
      */
     iterator insert_empty(size_type pos, size_type length);
+
+    /**
+     * Insert a range of empty elements at specified position.  Those elements
+     * originally located after the insertion position will get shifted down
+     * after the insertion.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the block in
+     * which to insert the new empty segment.  The other variant that doesn't
+     * take an iterator always starts the block lookup from the first block,
+     * which does not scale well as the block size grows.</p>
+     *
+     * <p>This position hint iterator must <b>precede</b> the start
+     * position to yield any performance benefit.</p>
+     *
+     * <p>The caller is responsible for ensuring that the passed iterator is
+     * valid.  The behavior of this method when passing an invalid iterator is
+     * undefined.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the specified position is outside the current container
+     * range.</p>
+     *
+     * <p>Calling this method will increase the size of the container by
+     * the length of the inserted empty elements.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right block
+     *                 in which to insert the empty segment.
+     * @param pos position at which to insert a range of empty elements.
+     * @param length number of empty elements to insert.
+     * @return iterator position pointing to the block where the empty range
+     *         is inserted. When no insertion occurs because the length is
+     *         zero, the end iterator position is returned.
+     */
+    iterator insert_empty(const iterator& pos_hint, size_type pos, size_type length);
 
     /**
      * Clear the content of the container.  The size of the container will
@@ -640,6 +822,12 @@ private:
      * @return index of the block that contains the specified logical row ID.
      */
     size_type get_block_position(size_type row, size_type start_block_index=0) const;
+
+    /**
+     * Same as above, but try to infer block position from the iterator first
+     * before trying full search.
+     */
+    size_type get_block_position(const const_iterator& pos_hint, size_type row) const;
 
     template<typename _T>
     void create_new_block_with_new_cell(size_type block_index, const _T& cell);

@@ -75,7 +75,7 @@ std::pair<_SizeT, bool> calc_input_end_position(
 
     _SizeT end_pos = pos + length - 1;
     if (end_pos >= total_size)
-        throw std::out_of_range("Data array is too long.");
+        throw std::out_of_range("Input data sequence is too long.");
 
     return ret_type(end_pos, true);
 }
