@@ -51,6 +51,7 @@ int main (int argc, char **argv)
         mtv_test_iterators_set();
         mtv_test_iterators_set_2();
         mtv_test_iterators_insert();
+        mtv_test_iterators_insert_empty();
         mtv_test_iterators_set_empty();
     }
     catch (const std::exception& e)
