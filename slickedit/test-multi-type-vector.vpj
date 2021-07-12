@@ -66,9 +66,11 @@
             <F N="../src/multi_type_vector/default/soa/test_insert.cpp"/>
             <F N="../src/multi_type_vector/default/test_iterators.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_iterators.cpp"/>
+            <F N="../src/multi_type_vector/default/test_iterators_insert.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_iterators_insert.cpp"/>
             <F N="../src/multi_type_vector/default/test_iterators_set.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_iterators_set.cpp"/>
+            <F N="../src/multi_type_vector/default/test_iterators_set_empty.cpp"/>
             <F N="../src/multi_type_vector/collection/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/test_main.cpp"/>
@@ -107,6 +109,7 @@
             <F N="../src/multi_type_vector/default/tc/iterators.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators_insert.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators_set.inl"/>
+            <F N="../src/multi_type_vector/default/tc/iterators_set_empty.inl"/>
             <F N="../src/multi_type_vector/default/tc/misc.inl"/>
             <F N="../src/multi_type_vector/default/tc/set.inl"/>
         </Folder>
