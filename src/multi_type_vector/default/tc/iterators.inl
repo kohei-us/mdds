@@ -356,6 +356,9 @@ void mtv_test_iterators_private_data()
     assert(it == db.begin());
 }
 
+/**
+ * Test the variant of set() method that takes iterators.
+ */
 void mtv_test_iterators_return_from_set()
 {
     stack_printer __stack_printer__(__FUNCTION__);
@@ -942,7 +945,7 @@ void mtv_test_iterators_return_from_set()
 }
 
 /**
- * Test the variant of set() method that takes iterators.
+ * Test the variant of set() method that takes iterators (part 2).
  */
 void mtv_test_iterators_return_from_set_2()
 {

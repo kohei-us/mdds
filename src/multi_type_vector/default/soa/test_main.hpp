@@ -33,6 +33,8 @@
 #include <mdds/multi_type_vector/types.hpp>
 #include <mdds/multi_type_vector/trait.hpp>
 
+#include <deque>
+
 using mtv_type = mdds::multi_type_vector::soa::multi_type_vector<mdds::mtv::element_block_func>;
 
 template<typename _ValT>
@@ -65,6 +67,7 @@ void mtv_test_iterators();
 void mtv_test_iterators_element_block();
 void mtv_test_iterators_mutable_element_block();
 void mtv_test_iterators_return_from_set();
+void mtv_test_iterators_return_from_set_2();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

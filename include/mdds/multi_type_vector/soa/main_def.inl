@@ -1693,7 +1693,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_cells_to_single_block(
     m_hdl_event.element_block_acquired(blk_data);
     mdds_mtv_assign_values(*blk_data, *it_begin, it_begin, it_end);
 
-    return get_iterator(block_index+1);
+    return get_iterator(block_index);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
