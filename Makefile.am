@@ -106,6 +106,7 @@ multi_type_vector_test_default_SOURCES = \
 	src/multi_type_vector/default/test_iterators_set.cpp \
 	src/multi_type_vector/default/test_iterators_set_empty.cpp \
 	src/multi_type_vector/default/test_misc.cpp \
+	src/multi_type_vector/default/test_position.cpp \
 	src/multi_type_vector/default/test_set.cpp \
 	src/multi_type_vector/default/test_main.hpp \
 	src/multi_type_vector/default/test_main.cpp \
@@ -120,6 +121,7 @@ multi_type_vector_test_default_SOURCES = \
 	src/multi_type_vector/default/tc/iterators_set.inl \
 	src/multi_type_vector/default/tc/iterators_set_empty.inl \
 	src/multi_type_vector/default/tc/misc.inl \
+	src/multi_type_vector/default/tc/position.inl \
 	src/multi_type_vector/default/tc/set.inl \
 	src/include/test_global.hpp \
 	src/test_global.cpp
