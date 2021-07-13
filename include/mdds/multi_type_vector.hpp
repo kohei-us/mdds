@@ -1034,12 +1034,12 @@ public:
     void swap(multi_type_vector& other);
 
     /**
-     * Swap a part of the content with another container.
+     * Swap a part of the content with another instance.
      *
      * @param start_pos starting position
      * @param end_pos ending position, inclusive.
-     * @param other another container to swap the content with.
-     * @param other_pos insertion position in the other container.
+     * @param other another instance to swap the content with.
+     * @param other_pos insertion position in the other instance.
      */
     void swap(size_type start_pos, size_type end_pos, multi_type_vector& other, size_type other_pos);
 

@@ -84,12 +84,13 @@ public:
 private:
     struct block_slot_type
     {
-        size_type position;
-        size_type size;
-        element_block_type* element_block;
+        size_type position = 0;
+        size_type size = 0;
+        element_block_type* element_block = nullptr;
 
+        block_slot_type() {}
         block_slot_type(size_type _position, size_type _size) :
-            position(_position), size(_size), element_block(nullptr) {}
+            position(_position), size(_size) {}
     };
 
     struct blocks_type
@@ -115,10 +116,18 @@ private:
             element_blocks.push_back(data);
         }
 
+        void push_back(const block_slot_type& slot)
+        {
+            positions.push_back(slot.position);
+            sizes.push_back(slot.size);
+            element_blocks.push_back(slot.element_block);
+        }
+
         void erase(size_type index);
         void erase(size_type index, size_type size);
         void insert(size_type index, size_type size);
         void insert(size_type index, size_type pos, size_type size, element_block_type* data);
+        void insert(size_type index, const blocks_type& new_blocks);
 
         /**
          * Calculate the position of specified block based on the position and
@@ -137,6 +146,14 @@ private:
         bool equals(const blocks_type& other) const;
 
         void clear();
+
+        void check_integrity() const;
+    };
+
+    struct blocks_to_transfer
+    {
+        blocks_type blocks;
+        size_type insert_index = 0;
     };
 
     struct iterator_trait
@@ -847,6 +864,16 @@ public:
      */
     void swap(multi_type_vector& other);
 
+    /**
+     * Swap a part of the content with another instance.
+     *
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @param other another instance to swap the content with.
+     * @param other_pos insertion position in the other instance.
+     */
+    void swap(size_type start_pos, size_type end_pos, multi_type_vector& other, size_type other_pos);
+
     bool operator== (const multi_type_vector& other) const;
     bool operator!= (const multi_type_vector& other) const;
 
@@ -872,10 +899,34 @@ private:
     template<typename _T>
     iterator set_impl(size_type pos, size_type block_index, const _T& value);
 
+    void swap_impl(
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
+        size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2);
+
+    void swap_single_block(
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
+        size_type block_index, size_type other_block_index);
+
+    void swap_single_to_multi_blocks(
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
+        size_type block_index, size_type dst_block_index1, size_type dst_block_index2);
+
+    void swap_multi_to_multi_blocks(
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
+        size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2);
+
     template<typename _T>
     iterator insert_cells_impl(size_type row, size_type block_index, const _T& it_begin, const _T& it_end);
 
     void resize_impl(size_type new_size);
+
+    /**
+     * Elements to transfer to the other container span across multiple
+     * blocks.
+     */
+    iterator transfer_multi_blocks(
+        size_type start_pos, size_type end_pos, size_type block_index1, size_type block_index2,
+        multi_type_vector& dest, size_type dest_pos);
 
     /**
      * @param start_pos logical start position.
@@ -915,6 +966,11 @@ private:
      * @param length length of the emtpy segment to insert.
      */
     iterator insert_empty_impl(size_type pos, size_type block_index, size_type length);
+
+    void insert_blocks_at(size_type position, size_type insert_pos, blocks_type& new_blocks);
+
+    void prepare_blocks_to_transfer(
+        blocks_to_transfer& bucket, size_type block_index1, size_type offset1, size_type block_index2, size_type offset2);
 
     iterator set_whole_block_empty(size_type block_index, bool overwrite);
 
@@ -1005,6 +1061,23 @@ private:
     void set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell);
 
     /**
+     * All elements to transfer to the other instance is in the same block.
+     */
+    iterator transfer_single_block(
+        size_type start_pos, size_type end_pos, size_type block_index1,
+        multi_type_vector& dest, size_type dest_pos);
+
+    /**
+     * Merge with previous or next block as needed.
+     *
+     * @param block_index index of the block that may need merging.
+     *
+     * @return size of previous block if the block is merged with the previous
+     *         block, or 0 if it didn't merge with the previous block.
+     */
+    size_type merge_with_adjacent_blocks(size_type block_index);
+
+    /**
      * Merge only with the next block if the two are of the same type.
      *
      * @param block_index index of the block that may need merging.
@@ -1050,6 +1123,35 @@ private:
      *         otherwise false.
      */
     bool is_next_block_of_type(size_type block_index, element_category_type cat) const;
+
+    /**
+     * Send elements from a source block to place them in a destination block.
+     * In return, the method returns the elements in the destination block
+     * that have been replaced by the elements sent by the caller.  The caller
+     * needs to manage the life cycle of the returned block.
+     *
+     * Note that the destination block is expected to be non-empty. This also
+     * implies that the returned block is never null and always contains
+     * elements.
+     *
+     * @param src_data source data block from which the elements are sent.
+     * @param src_offset position of the first element in the source block.
+     * @param dst_index destination block index.
+     * @param dst_offset position in the destination block where the sent
+     *                   elements are to be placed.
+     * @param len length of elements.
+     *
+     * @return heap allocated block that contains the overwritten elements
+     *         originally in the destination block. The caller needs to manage
+     *         its life cycle.
+     */
+    element_block_type* exchange_elements(
+        const element_block_type& src_data, size_type src_offset, size_type dst_index, size_type dst_offset, size_type len);
+
+    void exchange_elements(
+        const element_block_type& src_blk, size_type src_offset,
+        size_type dst_index1, size_type dst_offset1, size_type dst_index2, size_type dst_offset2,
+        size_type len, blocks_type& new_blocks);
 
     bool append_empty(size_type len);
 

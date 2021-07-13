@@ -79,6 +79,7 @@ void mtv_test_hints_insert_empty();
 void mtv_test_position();
 void mtv_test_position_next();
 void mtv_test_position_advance();
+void mtv_test_swap_range();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

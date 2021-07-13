@@ -87,6 +87,7 @@
             <F N="../src/multi_type_vector/default/test_set.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_set.cpp"/>
             <F N="../src/multi_type_vector/default/test_swap_range.cpp"/>
+            <F N="../src/multi_type_vector/default/soa/test_swap_range.cpp"/>
         </Folder>
         <Folder
             Name="Header Files"
