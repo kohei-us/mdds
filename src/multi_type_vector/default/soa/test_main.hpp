@@ -76,6 +76,9 @@ void mtv_test_hints_set_cells();
 void mtv_test_hints_insert_cells();
 void mtv_test_hints_set_empty();
 void mtv_test_hints_insert_empty();
+void mtv_test_position();
+void mtv_test_position_next();
+void mtv_test_position_advance();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

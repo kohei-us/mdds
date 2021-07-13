@@ -80,6 +80,68 @@ std::pair<_SizeT, bool> calc_input_end_position(
     return ret_type(end_pos, true);
 }
 
+template<typename T>
+T advance_position(const T& pos, int steps)
+{
+    T ret = pos;
+
+    if (steps > 0)
+    {
+        while (steps > 0)
+        {
+            if (ret.second + steps < ret.first->size)
+            {
+                // element is still in the same block.
+                ret.second += steps;
+                break;
+            }
+            else
+            {
+                steps -= static_cast<int>(ret.first->size - ret.second);
+                ++ret.first;
+                ret.second = 0;
+            }
+        }
+    }
+    else
+    {
+        while (steps < 0)
+        {
+            if (static_cast<int>(ret.second) >= -steps)
+            {
+                ret.second += steps;
+                break;
+            }
+            else
+            {
+                steps += static_cast<int>(ret.second + 1);
+                --ret.first;
+                ret.second = ret.first->size - 1;
+            }
+        }
+    }
+
+    return ret;
+}
+
+template<typename _Blk>
+inline typename _Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
+{
+    return _Blk::at(data, offset);
+}
+
+#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
+
+template<>
+inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::mtv::base_element_block& data, size_t offset)
+{
+    auto it = mdds::mtv::boolean_element_block::cbegin(data);
+    std::advance(it, offset);
+    return *it;
+}
+
+#endif
+
 }} // namespace detail::mtv
 
 }

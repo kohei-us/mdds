@@ -200,6 +200,73 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::next_position(const position_type& pos)
+{
+    position_type ret = pos;
+    if (pos.second + 1 < pos.first->size)
+    {
+        // Next element is still in the same block.
+        ++ret.second;
+    }
+    else
+    {
+        ++ret.first;
+        ret.second = 0;
+    }
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::advance_position(const position_type& pos, int steps)
+{
+    return mdds::detail::mtv::advance_position<position_type>(pos, steps);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::next_position(const const_position_type& pos)
+{
+    const_position_type ret = pos;
+    if (pos.second + 1 < pos.first->size)
+    {
+        // Next element is still in the same block.
+        ++ret.second;
+    }
+    else
+    {
+        ++ret.first;
+        ret.second = 0;
+    }
+
+    return ret;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::advance_position(const const_position_type& pos, int steps)
+{
+    return mdds::detail::mtv::advance_position<const_position_type>(pos, steps);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::logical_position(const const_position_type& pos)
+{
+    return pos.first->position + pos.second;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _Blk>
+typename _Blk::value_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::get(const const_position_type& pos)
+{
+    return mdds::detail::mtv::get_block_element_at<_Blk>(*pos.first->data, pos.second);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector() : m_cur_size(0) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -307,6 +374,92 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::delete_element_blocks(size_t
 {
     for (size_type i = start; i < end; ++i)
         delete_element_block(i);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::position(size_type pos)
+{
+    if (pos == m_cur_size)
+    {
+        // This is a valid end position.  Create a valid position object that
+        // represents a valid end position.
+        return position_type(end(), 0);
+    }
+
+    size_type block_index = get_block_position(pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::position", __LINE__, pos, block_size(), size());
+
+    size_type start_pos = m_block_store.positions[block_index];
+
+    iterator it = get_iterator(block_index);
+    return position_type(it, pos - start_pos);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::position(const iterator& pos_hint, size_type pos)
+{
+    if (pos == m_cur_size)
+    {
+        // This is a valid end position.  Create a valid position object that
+        // represents a valid end position.
+        return position_type(end(), 0);
+    }
+
+    size_type block_index = get_block_position(pos_hint, pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::position", __LINE__, pos, block_size(), size());
+
+    iterator it = get_iterator(block_index);
+    size_type start_pos = m_block_store.positions[block_index];
+    return position_type(it, pos - start_pos);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::position(size_type pos) const
+{
+    if (pos == m_cur_size)
+    {
+        // This is a valid end position.  Create a valid position object that
+        // represents a valid end position.
+        return const_position_type(cend(), 0);
+    }
+
+    size_type block_index = get_block_position(pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::position", __LINE__, pos, block_size(), size());
+
+    size_type start_pos = m_block_store.positions[block_index];
+
+    const_iterator it = get_const_iterator(block_index);
+    return const_position_type(it, pos - start_pos);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::const_position_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::position(const const_iterator& pos_hint, size_type pos) const
+{
+    if (pos == m_cur_size)
+    {
+        // This is a valid end position.  Create a valid position object that
+        // represents a valid end position.
+        return const_position_type(cend(), 0);
+    }
+
+    size_type block_index = get_block_position(pos_hint, pos);
+    if (block_index == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::position", __LINE__, pos, block_size(), size());
+
+    const_iterator it = get_const_iterator(block_index);
+    size_type start_pos = m_block_store.positions[block_index];
+    return const_position_type(it, pos - start_pos);
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>

@@ -211,6 +211,72 @@ public:
     using reverse_iterator = detail::iterator_base<reverse_iterator_trait>;
     using const_reverse_iterator = detail::const_iterator_base<const_reverse_iterator_trait, reverse_iterator>;
 
+    using position_type = std::pair<iterator, size_type>;
+    using const_position_type = std::pair<const_iterator, size_type>;
+
+    /**
+     * Move the position object to the next logical position.  Caller must
+     * ensure the the position object is valid.
+     *
+     * @param pos position object.
+     *
+     * @return position object that points to the next logical position.
+     */
+    static position_type next_position(const position_type& pos);
+
+    /**
+     * Increment or decrement the position object by specified steps. Caller
+     * must ensure the the position object is valid.
+     *
+     * @param pos position object.
+     * @param steps steps to advance the position object.
+     *
+     * @return position object that points to the new logical position.
+     */
+    static position_type advance_position(const position_type& pos, int steps);
+
+    /**
+     * Move the position object to the next logical position.  Caller must
+     * ensure the the position object is valid.
+     *
+     * @param pos position object.
+     *
+     * @return position object that points to the next logical position.
+     */
+    static const_position_type next_position(const const_position_type& pos);
+
+    /**
+     * Increment or decrement the position object by specified steps. Caller
+     * must ensure the the position object is valid.
+     *
+     * @param pos position object.
+     * @param steps steps to advance the position object.
+     *
+     * @return position object that points to the new logical position.
+     */
+    static const_position_type advance_position(const const_position_type& pos, int steps);
+
+    /**
+     * Extract the logical position from a position object.
+     *
+     * @param pos position object.
+     *
+     * @return logical position of the element that the position object
+     *         references.
+     */
+    static size_type logical_position(const const_position_type& pos);
+
+    /**
+     * Get element value from a position object. The caller must specify the
+     * type of block in which the element is expected to be stored.
+     *
+     * @param pos position object.
+     *
+     * @return element value.
+     */
+    template<typename _Blk>
+    static typename _Blk::value_type get(const const_position_type& pos);
+
     /**
      * Default constructor.  It initializes the container with empty size.
      */
@@ -264,6 +330,78 @@ public:
      * Destructor.  It deletes all allocated element blocks.
      */
     ~multi_type_vector();
+
+    /**
+     * Given the logical position of an element, get the iterator of the block
+     * where the element is located, and its offset from the first element of
+     * that block.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range, except
+     * when the specified position is the position immediately after the last
+     * valid position, it will return a valid position object representing
+     * the end position.</p>
+     *
+     * @param pos logical position of the element.
+     * @return position object that stores an iterator referencing the element
+     *         block where the element resides, and its offset within that
+     *         block.
+     */
+    position_type position(size_type pos);
+
+    /**
+     * Given the logical position of an element, get the iterator of the block
+     * where the element is located, and its offset from the first element of
+     * that block.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range, except
+     * when the specified position is the position immediately after the last
+     * valid position, it will return a valid position object representing
+     * the end position.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the element
+     *                 position.
+     * @param pos logical position of the element.
+     * @return position object that stores an iterator referencing the element
+     *         block where the element resides, and its offset within that
+     *         block.
+     */
+    position_type position(const iterator& pos_hint, size_type pos);
+
+    /**
+     * Given the logical position of an element, get an iterator referencing
+     * the element block where the element is located, and its offset from the
+     * first element of that block.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos position of the element.
+     * @return position object that stores an iterator referencing the element
+     *         block where the element resides, and its offset within that
+     *         block.
+     */
+    const_position_type position(size_type pos) const;
+
+    /**
+     * Given the logical position of an element, get an iterator referencing
+     * the element block where the element is located, and its offset from the
+     * first element of that block.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the element
+     *                 position.
+     * @param pos logical position of the element.
+     * @return position object that stores an iterator referencing the element
+     *         block where the element resides, and its offset within the
+     *         block.
+     */
+    const_position_type position(const const_iterator& pos_hint, size_type pos) const;
 
     /**
      * Set a value of an arbitrary type to a specified position.  The type of
@@ -927,6 +1065,22 @@ private:
         return iterator(
             { iter_pos, iter_size, iter_elem },
             { m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end() },
+            block_index
+        );
+    }
+
+    inline const_iterator get_const_iterator(size_type block_index) const
+    {
+        auto iter_pos = m_block_store.positions.cbegin();
+        std::advance(iter_pos, block_index);
+        auto iter_size = m_block_store.sizes.cbegin();
+        std::advance(iter_size, block_index);
+        auto iter_elem = m_block_store.element_blocks.cbegin();
+        std::advance(iter_elem, block_index);
+
+        return const_iterator(
+            { iter_pos, iter_size, iter_elem },
+            { m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend() },
             block_index
         );
     }
