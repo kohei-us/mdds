@@ -232,6 +232,23 @@ public:
     using const_position_type = std::pair<const_iterator, size_type>;
 
     /**
+     * value_type is the type of a block stored in the primary array.  It
+     * consists of the following data members:
+     *
+     * <ul>
+     * <li><code>type</code> which indicates the block type,</li>
+     * <li><code>position</code> which stores the logical position of the
+     * first element of the block,</li>
+     * <li><code>size</code> which stores the logical size of the block,
+     * and</li>
+     * <li><code>data</code> which stores the pointer to a secondary array
+     * (a.k.a. element block) which stores the actual element values, or
+     * <code>nullptr</code> in case the block represents an empty segment.</li>
+     * </ul>
+     */
+    using value_type = mdds::detail::mtv::iterator_value_node<size_type>;
+
+    /**
      * Move the position object to the next logical position.  Caller must
      * ensure the the position object is valid.
      *
