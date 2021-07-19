@@ -118,22 +118,6 @@ void mtv_test_types()
     }
 }
 
-void mtv_test_block_identifier()
-{
-    stack_printer __stack_printer__(__FUNCTION__);
-    assert(mtv::double_element_block::block_type == mtv::element_type_double);
-    assert(mtv::string_element_block::block_type == mtv::element_type_string);
-    assert(mtv::int16_element_block::block_type == mtv::element_type_int16);
-    assert(mtv::uint16_element_block::block_type == mtv::element_type_uint16);
-    assert(mtv::int32_element_block::block_type == mtv::element_type_int32);
-    assert(mtv::uint32_element_block::block_type == mtv::element_type_uint32);
-    assert(mtv::int64_element_block::block_type == mtv::element_type_int64);
-    assert(mtv::uint64_element_block::block_type == mtv::element_type_uint64);
-    assert(mtv::boolean_element_block::block_type == mtv::element_type_boolean);
-    assert(mtv::int8_element_block::block_type == mtv::element_type_int8);
-    assert(mtv::uint8_element_block::block_type == mtv::element_type_uint8);
-}
-
 void mtv_test_transfer()
 {
     stack_printer __stack_printer__(__FUNCTION__);
@@ -722,6 +706,7 @@ int main (int argc, char **argv)
         mtv_test_misc_clone();
         mtv_test_misc_resize();
         mtv_test_misc_value_type();
+        mtv_test_misc_block_identifier();
         mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();
@@ -744,7 +729,6 @@ int main (int argc, char **argv)
         mtv_test_position_next();
         mtv_test_position_advance();
         mtv_test_swap_range();
-        mtv_test_block_identifier();
         mtv_test_transfer();
         mtv_test_push_back();
         mtv_test_capacity();

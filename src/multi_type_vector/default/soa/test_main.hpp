@@ -60,6 +60,7 @@ void mtv_test_misc_equality();
 void mtv_test_misc_clone();
 void mtv_test_misc_resize();
 void mtv_test_misc_value_type();
+void mtv_test_misc_block_identifier();
 void mtv_test_erase();
 void mtv_test_insert_empty();
 void mtv_test_set_cells();

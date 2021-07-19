@@ -234,5 +234,21 @@ void mtv_test_misc_value_type()
     );
 }
 
+void mtv_test_misc_block_identifier()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+    assert(mdds::mtv::double_element_block::block_type == mdds::mtv::element_type_double);
+    assert(mdds::mtv::string_element_block::block_type == mdds::mtv::element_type_string);
+    assert(mdds::mtv::int16_element_block::block_type == mdds::mtv::element_type_int16);
+    assert(mdds::mtv::uint16_element_block::block_type == mdds::mtv::element_type_uint16);
+    assert(mdds::mtv::int32_element_block::block_type == mdds::mtv::element_type_int32);
+    assert(mdds::mtv::uint32_element_block::block_type == mdds::mtv::element_type_uint32);
+    assert(mdds::mtv::int64_element_block::block_type == mdds::mtv::element_type_int64);
+    assert(mdds::mtv::uint64_element_block::block_type == mdds::mtv::element_type_uint64);
+    assert(mdds::mtv::boolean_element_block::block_type == mdds::mtv::element_type_boolean);
+    assert(mdds::mtv::int8_element_block::block_type == mdds::mtv::element_type_int8);
+    assert(mdds::mtv::uint8_element_block::block_type == mdds::mtv::element_type_uint8);
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
