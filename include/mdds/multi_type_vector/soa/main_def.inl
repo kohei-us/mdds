@@ -3546,7 +3546,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::check_block_integrity() cons
                 << std::endl;
 
             dump_blocks(os);
-            mdds::integrity_error(os.str());
+            throw mdds::integrity_error(os.str());
         }
 
         element_category_type cat = mtv::element_type_empty;
