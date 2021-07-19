@@ -215,5 +215,24 @@ void mtv_test_misc_resize()
     assert(db.empty());
 }
 
+void mtv_test_misc_value_type()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    mtv_type db(5);
+    db.set(0, 1.1);
+    db.set(1, std::string("A"));
+    db.set(2, std::string("B"));
+    db.set(3, int32_t(12));
+    db.set(4, int16_t(8));
+
+    std::for_each(db.begin(), db.end(),
+        [](const mtv_type::value_type& node)
+        {
+            cout << "type: " << node.type << "  size: " << node.size << "  data: " << node.data << endl;
+        }
+    );
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

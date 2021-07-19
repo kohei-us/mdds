@@ -118,26 +118,6 @@ void mtv_test_types()
     }
 }
 
-struct block_node_printer
-{
-    void operator() (const mtv_type::value_type& node) const
-    {
-        cout << "type: " << node.type << "  size: " << node.size << "  data: " << node.data << endl;
-    }
-};
-
-void mtv_test_value_type()
-{
-    stack_printer __stack_printer__(__FUNCTION__);
-    mtv_type db(5);
-    db.set(0, 1.1);
-    db.set(1, string("A"));
-    db.set(2, string("B"));
-    db.set(3, int32_t(12));
-    db.set(4, int16_t(8));
-    for_each(db.begin(), db.end(), block_node_printer());
-}
-
 void mtv_test_block_identifier()
 {
     stack_printer __stack_printer__(__FUNCTION__);
@@ -741,6 +721,7 @@ int main (int argc, char **argv)
         mtv_test_misc_equality();
         mtv_test_misc_clone();
         mtv_test_misc_resize();
+        mtv_test_misc_value_type();
         mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();
@@ -763,7 +744,6 @@ int main (int argc, char **argv)
         mtv_test_position_next();
         mtv_test_position_advance();
         mtv_test_swap_range();
-        mtv_test_value_type();
         mtv_test_block_identifier();
         mtv_test_transfer();
         mtv_test_push_back();
