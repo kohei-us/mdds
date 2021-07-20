@@ -88,6 +88,7 @@
             <F N="../src/multi_type_vector/default/soa/test_set.cpp"/>
             <F N="../src/multi_type_vector/default/test_swap_range.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_swap_range.cpp"/>
+            <F N="../src/multi_type_vector/default/test_transfer.cpp"/>
         </Folder>
         <Folder
             Name="Header Files"
@@ -122,6 +123,7 @@
             <F N="../src/multi_type_vector/default/tc/position.inl"/>
             <F N="../src/multi_type_vector/default/tc/set.inl"/>
             <F N="../src/multi_type_vector/default/tc/swap_range.inl"/>
+            <F N="../src/multi_type_vector/default/tc/transfer.inl"/>
         </Folder>
     </Files>
     <List Name="RTE">
