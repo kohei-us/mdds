@@ -82,6 +82,7 @@ void mtv_test_position();
 void mtv_test_position_next();
 void mtv_test_position_advance();
 void mtv_test_swap_range();
+void mtv_test_transfer();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

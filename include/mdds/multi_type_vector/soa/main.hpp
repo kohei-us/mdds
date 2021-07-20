@@ -137,6 +137,8 @@ private:
          */
         void calc_block_position(size_type index);
 
+        size_type calc_next_block_position(size_type index);
+
         void swap(size_type index1, size_type index2);
 
         void swap(blocks_type& other);
@@ -436,6 +438,32 @@ public:
      *         block.
      */
     const_position_type position(const const_iterator& pos_hint, size_type pos) const;
+
+    /**
+     * Move elements from one container to another. After the move, the
+     * segment where the elements were in the source container becomes empty.
+     * When transferring managed elements, this call transfers ownership of
+     * the moved elements to the destination container.  The moved elements
+     * will overwrite any existing elements in the destination range of the
+     * receiving container. Transfer of elements within the same container is
+     * not allowed.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is greater than or equal to
+     * the source container size, or the destination container is not
+     * large enough to accommodate the transferred elements.</p>
+     *
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @param dest destination container to which the elements are to be
+     *             moved.
+     * @param dest_pos position in the destination container to which the
+     *                 elements are to be moved.
+     *
+     * @return iterator referencing the block where the moved elements were
+     *         prior to the transfer.
+     */
+    iterator transfer(size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
 
     /**
      * Set a value of an arbitrary type to a specified position.  The type of
@@ -1076,6 +1104,10 @@ private:
 
     template<typename _T>
     void set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell);
+
+    iterator transfer_impl(
+        size_type start_pos, size_type end_pos, size_type block_index1,
+        multi_type_vector& dest, size_type dest_pos);
 
     /**
      * All elements to transfer to the other instance is in the same block.

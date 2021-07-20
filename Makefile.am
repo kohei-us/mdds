@@ -151,6 +151,7 @@ multi_type_vector_test_default_soa_SOURCES = \
 	src/multi_type_vector/default/soa/test_position.cpp \
 	src/multi_type_vector/default/soa/test_set.cpp \
 	src/multi_type_vector/default/soa/test_swap_range.cpp \
+	src/multi_type_vector/default/soa/test_transfer.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 

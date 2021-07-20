@@ -131,6 +131,13 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::calc_block_posi
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::size_type
+multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::calc_next_block_position(size_type index)
+{
+    return positions[index] + sizes[index];
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::swap(size_type index1, size_type index2)
 {
     std::swap(positions[index1], positions[index2]);
@@ -479,6 +486,58 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::position(const const_iterator& po
     const_iterator it = get_const_iterator(block_index);
     size_type start_pos = m_block_store.positions[block_index];
     return const_position_type(it, pos - start_pos);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::transfer(
+    size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
+{
+    if (&dest == this)
+        throw invalid_arg_error("You cannot transfer between the same container.");
+
+    size_type block_index1 = get_block_position(start_pos);
+    if (block_index1 == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block, os_prev_block_dest;
+    dump_blocks(os_prev_block);
+    dest.dump_blocks(os_prev_block_dest);
+#endif
+
+    iterator ret = transfer_impl(start_pos, end_pos, block_index1, dest, dest_pos);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_block, os_block_dest;
+    dump_blocks(os_block);
+    dest.dump_blocks(os_block_dest);
+
+    try
+    {
+        check_block_integrity();
+        dest.check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << std::endl << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest_pos=" << dest_pos << ")" << std::endl;
+        os << std::endl << "previous block state (source):" << std::endl;
+        os << os_prev_block.str();
+        os << std::endl << "previous block state (destination):" << std::endl;
+        os << os_prev_block_dest.str();
+        os << std::endl << "altered block state (source):" << std::endl;
+        os << os_block.str();
+        os << std::endl << "altered block state (destination):" << std::endl;
+        os << os_block_dest.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -2225,14 +2284,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(size_type b
     // Merge with adjacent block(s) if necessary.
     if (blk_prev)
     {
-        element_block_type* blk_prev_data = m_block_store.element_blocks[block_index-1];
-        assert(!blk_prev_data);
+        assert(!m_block_store.element_blocks[block_index-1]);
 
         if (blk_next)
         {
             // Both preceding and next blocks are empty.
-            element_block_type* blk_next_data = m_block_store.element_blocks[block_index+1];
-            assert(!blk_next_data);
+            assert(!m_block_store.element_blocks[block_index+1]);
 
             m_block_store.sizes[block_index-1] +=
                 m_block_store.sizes[block_index] + m_block_store.sizes[block_index+1];
@@ -2251,17 +2308,12 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::set_whole_block_empty(size_type b
     }
     else if (blk_next)
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:set_whole_block_empty): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-        assert(!blk_next->mp_data);
+        assert(!m_block_store.element_blocks[block_index+1]);
 
         // Only the next block is empty. Merge the next block with the current.
-        blk->m_size += blk_next->m_size;
-        typename blocks_type::iterator it = m_blocks.begin();
-        std::advance(it, block_index+1);
-        m_blocks.erase(it);
+        m_block_store.sizes[block_index] += m_block_store.sizes[block_index+1];
+        m_block_store.erase(block_index+1);
 
-#endif
         return get_iterator(block_index);
     }
 
@@ -3632,6 +3684,42 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::set_cell_to_bottom_of_data_b
 
 template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_impl(
+    size_type start_pos, size_type end_pos, size_type block_index1,
+    multi_type_vector& dest, size_type dest_pos)
+{
+    if (start_pos > end_pos)
+    {
+        std::ostringstream os;
+        os << "multi_type_vector::transfer_impl: start position is larger than the end position. (start=";
+        os << start_pos << ", end=" << end_pos << ")";
+        throw std::out_of_range(os.str());
+    }
+
+    size_type block_index2 = get_block_position(end_pos, block_index1);
+    if (block_index2 == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::transfer_impl", __LINE__, end_pos, block_size(), size());
+
+    size_type len = end_pos - start_pos + 1;
+    size_type last_dest_pos = dest_pos + len - 1;
+
+    // Make sure the destination container is large enough.
+    if (last_dest_pos >= dest.size())
+        throw std::out_of_range("Destination vector is too small for the elements being transferred.");
+
+    if (block_index1 == block_index2)
+    {
+        // All elements are in the same block.
+        return transfer_single_block(start_pos, end_pos, block_index1, dest, dest_pos);
+    }
+
+    return transfer_multi_blocks(
+        start_pos, end_pos, block_index1, block_index2, dest, dest_pos);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
     size_type start_pos, size_type end_pos, size_type block_index1,
     multi_type_vector& dest, size_type dest_pos)
@@ -3684,24 +3772,19 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_single_block(
     }
     else
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:transfer_single_block): WIP"; throw std::runtime_error(os.str()); }
-#if 0
-        // Copy to the middle of destination block.
+        // Copy to the middle of the destination block.
 
         // Insert two new blocks below current.
-        size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
-        dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, 2u, block());
-        dest.m_blocks[dest_block_index].m_size = dest_pos_in_block;
-        dest.m_blocks[dest_block_index+1].m_size = len;
-        dest.m_blocks[dest_block_index+2].m_size = blk2_size;
+        size_type blk2_size = dest.m_block_store.sizes[dest_block_index] - dest_pos_in_block - len;
+        dest.m_block_store.insert(dest_block_index+1, 2);
+        dest.m_block_store.sizes[dest_block_index] = dest_pos_in_block;
+        dest.m_block_store.sizes[dest_block_index+1] = len;
+        dest.m_block_store.sizes[dest_block_index+2] = blk2_size;
 
-        dest.m_blocks[dest_block_index+1].m_position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index);
-        dest.m_blocks[dest_block_index+2].m_position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index+1);
-
-        blk_dest = &dest.m_blocks[dest_block_index+1];
+        dest.m_block_store.calc_block_position(dest_block_index+1);
+        dest.m_block_store.calc_block_position(dest_block_index+2);
 
         ++dest_block_index; // Must point to the new copied block.
-#endif
     }
 
     assert(dest.m_block_store.sizes[dest_block_index] == len);
@@ -3819,19 +3902,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::merge_with_adjacent_blocks(size_t
 
     if (has_next && !next_data)
     {
-        { std::ostringstream os; os << __FILE__ << "#" << __LINE__ << " (multi_type_vector:merge_with_adjacent_blocks): WIP"; throw std::runtime_error(os.str()); }
-#if 0
         // Next block is empty too. Merge all three.
-        blk_prev->m_size += blk->m_size + blk_next->m_size;
-        // No need to call delete_element_block() since we know both blocks are empty.
+        m_block_store.sizes[block_index-1] +=
+            m_block_store.sizes[block_index] + m_block_store.sizes[block_index+1];
 
-        typename blocks_type::iterator it = m_blocks.begin();
-        std::advance(it, block_index);
-        typename blocks_type::iterator it_end = it;
-        std::advance(it_end, 2);
-        m_blocks.erase(it, it_end);
+        m_block_store.erase(block_index, 2);
+
         return size_prev;
-#endif
     }
 
     // Next block is not empty, or does not exist. Merge the current block with the previous one.
@@ -4351,49 +4428,38 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         }
         else
         {
-            { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
             // Destination block is exactly of the length of the elements being transferred.
-            dest.delete_element_block(*blk_dest);
-            blk_dest->m_size = 0;
+            dest.delete_element_block(dest_block_index);
+            dest.m_block_store.sizes[dest_block_index] = 0;
             if (block_len > 1)
-                dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, block_len-1, block());
-#endif
+                dest.m_block_store.insert(dest_block_index, block_len-1);
         }
     }
     else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
     {
-        { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
         // Copy to the bottom part of destination block. Insert slots for new
         // blocks below current, and shrink the current block.
-        dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len, block());
-        blk_dest = &dest.m_blocks[dest_block_index];
-        blk_dest->m_size -= len;
+        dest.m_block_store.insert(dest_block_index+1, block_len);
+        dest.m_block_store.sizes[dest_block_index] -= len;
 
         ++dest_block_index1;
-#endif
     }
     else
     {
-        { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
         // Copy to the middle of the destination block. Insert slots for the
         // new blocks (plus one extra for the bottom empty block) below the
         // current block.
-        size_type blk2_size = blk_dest->m_size - dest_pos_in_block - len;
-        dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len+1, block());
-        blk_dest = &dest.m_blocks[dest_block_index];
-        assert(dest.m_blocks.size() > dest_block_index+block_len+1);
-        blk_dest->m_size = dest_pos_in_block;
+        size_type blk2_size = dest.m_block_store.sizes[dest_block_index] - dest_pos_in_block - len;
+        dest.m_block_store.insert(dest_block_index+1, block_len+1);
+        assert(dest.m_block_store.positions.size() > dest_block_index+block_len+1);
+        dest.m_block_store.sizes[dest_block_index] = dest_pos_in_block;
 
         // Re-calculate the size and position of the lower part of the destination block.
-        block& blk_dest_lower = dest.m_blocks[dest_block_index+block_len+1];
-        blk_dest_lower.m_position = detail::mtv::calc_next_block_position(*blk_dest) + len;
-        blk_dest_lower.m_size = blk2_size;
+        dest.m_block_store.positions[dest_block_index+block_len+1] =
+            dest.m_block_store.calc_next_block_position(dest_block_index) + len;
+        dest.m_block_store.sizes[dest_block_index+block_len+1] = blk2_size;
 
         ++dest_block_index1;
-#endif
     }
 
     size_type del_index1 = block_index1, del_index2 = block_index2;
@@ -4432,50 +4498,46 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     }
     else
     {
-        { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
         // Just move the whole block over.
-        block& blk = m_blocks[block_index1];
-        dest.m_blocks[dest_block_index1] = blk; // copied.
-        dest.m_blocks[dest_block_index1].m_position =
-            dest_block_index1 > 0 ? detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index1-1) : 0;
+        element_block_type* data = m_block_store.element_blocks[block_index1];
+        dest.m_block_store.element_blocks[dest_block_index1] = data;
+        dest.m_block_store.sizes[dest_block_index1] = m_block_store.sizes[block_index1];
+        dest.m_block_store.calc_block_position(dest_block_index1);
 
-        if (blk.mp_data)
+        if (data)
         {
-            dest.m_hdl_event.element_block_acquired(blk.mp_data);
-            m_hdl_event.element_block_released(blk.mp_data);
-            blk.mp_data = nullptr;
+            dest.m_hdl_event.element_block_acquired(data);
+            m_hdl_event.element_block_released(data);
+            m_block_store.element_blocks[block_index1] = nullptr;
         }
 
-        blk.m_size = 0;
-#endif
+        m_block_store.sizes[block_index1] = 0;
     }
 
     if (block_len > 2)
     {
-        { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
-        // Transfer all blocks in between.
-        size_type position = detail::mtv::calc_next_block_position(dest.m_blocks, dest_block_index1);
+        size_type position = dest.m_block_store.calc_next_block_position(dest_block_index1);
+
         for (size_type i = 0; i < block_len - 2; ++i)
         {
             size_type src_block_pos = block_index1 + 1 + i;
             size_type dest_block_pos = dest_block_index1 + 1 + i;
-            assert(dest.m_blocks[dest_block_pos].m_size == 0);
-            block& blk = m_blocks[src_block_pos];
-            dest.m_blocks[dest_block_pos] = blk; // copied.
-            dest.m_blocks[dest_block_pos].m_position = position;
-            position += blk.m_size;
-            blk.m_size = 0;
+            assert(dest.m_block_store.sizes[dest_block_pos] == 0);
 
-            if (blk.mp_data)
+            element_block_type* data = m_block_store.element_blocks[src_block_pos];
+            dest.m_block_store.element_blocks[dest_block_pos] = data;
+            dest.m_block_store.sizes[dest_block_pos] = m_block_store.sizes[src_block_pos];
+            dest.m_block_store.positions[dest_block_pos] = position;
+            position += m_block_store.sizes[src_block_pos];
+            m_block_store.sizes[src_block_pos] = 0;
+
+            if (data)
             {
-                dest.m_hdl_event.element_block_acquired(blk.mp_data);
-                m_hdl_event.element_block_released(blk.mp_data);
-                blk.mp_data = nullptr;
+                dest.m_hdl_event.element_block_acquired(data);
+                m_hdl_event.element_block_released(data);
+                m_block_store.element_blocks[src_block_pos] = nullptr;
             }
         }
-#endif
     }
 
     // Transfer the last block.
@@ -4485,13 +4547,10 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
         size_type dest_block_pos = dest_block_index1 + block_len - 1;
         assert(dest.m_block_store.sizes[dest_block_pos] == 0);
 
-//      block& blk = m_blocks[block_index2];
         element_block_type* blk_data2 = m_block_store.element_blocks[block_index2];
 
         if (size_to_trans < m_block_store.sizes[block_index2])
         {
-            { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
             // Transfer the upper part of this block.
             assert(dest_block_pos > 0);
             dest.m_block_store.calc_block_position(dest_block_pos);
@@ -4513,7 +4572,6 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
             m_block_store.positions[block_index2] += size_to_trans;
             m_block_store.sizes[block_index2] -= size_to_trans;
             --del_index2; // Retain this block.
-#endif
         }
         else
         {
@@ -4542,54 +4600,46 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
     // Delete all transferred blocks, and replace it with one empty block.
     if (del_index2 < del_index1)
     {
-        { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
         // No blocks will be deleted.  See if we can just extend one of the
         // neighboring empty blocks.
 
-        block& blk1 = m_blocks[block_index1];
-        block& blk2 = m_blocks[block_index2];
+        element_block_type* blk1_data = m_block_store.element_blocks[block_index1];
+        element_block_type* blk2_data = m_block_store.element_blocks[block_index2];
 
-        if (!blk1.mp_data)
+        if (!blk1_data)
         {
-            assert(blk2.mp_data);
+            assert(blk2_data);
 
             // Block 1 is empty. Extend this block downward.
-            blk1.m_size += len;
+            m_block_store.sizes[block_index1] += len;
             return get_iterator(block_index1);
         }
 
-        if (!blk2.mp_data)
+        if (!blk2_data)
         {
-            assert(blk1.mp_data);
+            assert(blk1_data);
 
             // Block 2 is empty. Extend this block upward.
-            blk2.m_size += len;
-            blk2.m_position -= len;
+            m_block_store.sizes[block_index2] += len;
+            m_block_store.positions[block_index2] -= len;
             return get_iterator(block_index2);
         }
 
         // Neither block1 nor block2 are empty. Just insert a new empty block
         // between them. After the insertion, the old block2 position becomes
         // the position of the inserted block.
-        size_type position = detail::mtv::calc_next_block_position(blk1);
-        m_blocks.emplace(m_blocks.begin()+block_index2, position, len);
+        m_block_store.insert(block_index2, 0, len, nullptr);
+        m_block_store.calc_block_position(block_index2);
+
         // No need to adjust local index vars
         return get_iterator(block_index2);
-#endif
     }
 
     if (del_index1 > 0 && !m_block_store.element_blocks[del_index1-1])
     {
-        { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
-        // The block before the first block to be deleted is empty.  Simply
+        // The block before the first block to be deleted is empty. Simply
         // extend that block to cover the deleted block segment.
-        block& blk_prev = m_blocks[del_index1-1];
-
-        // Extend the previous block.
-        blk_prev.m_size += len;
-#endif
+        m_block_store.sizes[del_index1-1] += len;
     }
     else
     {
@@ -4603,23 +4653,16 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::transfer_multi_blocks(
 
     if (del_index2 >= del_index1)
     {
-        { std::cout << __FILE__ << "#" << __LINE__ << " multi_type_vector::transfer_multi_blocks: WIP" << std::endl; abort(); }
-#if 0
-        typename blocks_type::iterator it_blk = m_blocks.begin();
-        typename blocks_type::iterator it_blk_end = m_blocks.begin();
-        std::advance(it_blk, del_index1);
-        std::advance(it_blk_end, del_index2+1);
+        size_type n_del_blocks = del_index2 - del_index1 + 1;
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-        typename blocks_type::iterator it_test = it_blk;
-        for (; it_test != it_blk_end; ++it_test)
+        for (size_type i = del_index1; i <= del_index2; ++i)
         {
             // All slots to be erased should have zero size
-            assert(it_test->m_size == 0);
+            assert(m_block_store.sizes[i] == 0);
         }
 #endif
-        m_blocks.erase(it_blk, it_blk_end);
-#endif
+        m_block_store.erase(del_index1, n_del_blocks);
     }
 
     // The block pointed to by ret_block_index is guaranteed to be empty by
