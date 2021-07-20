@@ -56,12 +56,12 @@ void erase(_VecT& arr, _SizeT index, _SizeT size)
 } // namespace detail
 
 template<typename _CellBlockFunc, typename _EventFunc>
-multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::blocks_type()
+multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::blocks_type()
 {
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::blocks_type(const blocks_type& other) :
+multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::blocks_type(const blocks_type& other) :
     positions(other.positions),
     sizes(other.sizes),
     element_blocks(other.element_blocks)
@@ -74,7 +74,7 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::b
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::erase(size_type index)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::erase(size_type index)
 {
     positions.erase(positions.begin() + index);
     sizes.erase(sizes.begin() + index);
@@ -82,7 +82,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::erase(
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::erase(
     size_type index, size_type size)
 {
     detail::erase(positions, index, size);
@@ -91,7 +91,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::insert(
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::insert(
     size_type index, size_type size)
 {
     positions.insert(positions.begin() + index, size, 0);
@@ -100,7 +100,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::insert(
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::insert(
     size_type index, size_type pos, size_type size, element_block_type* data)
 {
     positions.insert(positions.begin() + index, pos);
@@ -109,7 +109,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::insert(
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::insert(
     size_type index, const blocks_type& new_blocks)
 {
     positions.insert(positions.begin()+index, new_blocks.positions.begin(), new_blocks.positions.end());
@@ -118,7 +118,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::calc_block_position(size_type index)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::calc_block_position(size_type index)
 {
     if (index == 0)
     {
@@ -131,7 +131,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::swap(size_type index1, size_type index2)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::swap(size_type index1, size_type index2)
 {
     std::swap(positions[index1], positions[index2]);
     std::swap(sizes[index1], sizes[index2]);
@@ -139,7 +139,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::swap(blocks_type& other)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::swap(blocks_type& other)
 {
     positions.swap(other.positions);
     sizes.swap(other.sizes);
@@ -147,7 +147,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::reserve(size_type n)
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::reserve(size_type n)
 {
     positions.reserve(n);
     sizes.reserve(n);
@@ -155,7 +155,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-bool multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::equals(const blocks_type& other) const
+bool multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::equals(const blocks_type& other) const
 {
     if (positions != other.positions)
         return false;
@@ -201,7 +201,7 @@ bool multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::clear()
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::clear()
 {
     positions.clear();
     sizes.clear();
@@ -209,7 +209,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_ty
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
-void multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector::blocks_type::check_integrity() const
+void multi_type_vector<_CellBlockFunc, _EventFunc>::blocks_type::check_integrity() const
 {
     if (positions.size() != sizes.size())
         throw mdds::integrity_error("position and size arrays are of different sizes!");
