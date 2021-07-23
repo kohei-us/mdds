@@ -55,7 +55,7 @@ check_PROGRAMS = \
 	multi_type_matrix_test_walk \
 	multi_type_vector_test_event \
 	multi_type_vector_test_custom \
-	multi_type_vector_test_default \
+	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
 	multi_type_vector_test_perf \
 	multi_type_vector_test_collection \
@@ -94,24 +94,24 @@ multi_type_vector_test_custom_SOURCES = \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
-multi_type_vector_test_default_SOURCES = \
-	src/multi_type_vector/default/test_construction.cpp \
-	src/multi_type_vector/default/test_basic.cpp \
-	src/multi_type_vector/default/test_empty_cells.cpp \
-	src/multi_type_vector/default/test_erase.cpp \
-	src/multi_type_vector/default/test_hints.cpp \
-	src/multi_type_vector/default/test_insert.cpp \
-	src/multi_type_vector/default/test_iterators.cpp \
-	src/multi_type_vector/default/test_iterators_insert.cpp \
-	src/multi_type_vector/default/test_iterators_set.cpp \
-	src/multi_type_vector/default/test_iterators_set_empty.cpp \
-	src/multi_type_vector/default/test_misc.cpp \
-	src/multi_type_vector/default/test_position.cpp \
-	src/multi_type_vector/default/test_set.cpp \
-	src/multi_type_vector/default/test_swap_range.cpp \
-	src/multi_type_vector/default/test_transfer.cpp \
-	src/multi_type_vector/default/test_main.hpp \
-	src/multi_type_vector/default/test_main.cpp \
+multi_type_vector_test_default_aos_SOURCES = \
+	src/multi_type_vector/default/aos/test_construction.cpp \
+	src/multi_type_vector/default/aos/test_basic.cpp \
+	src/multi_type_vector/default/aos/test_empty_cells.cpp \
+	src/multi_type_vector/default/aos/test_erase.cpp \
+	src/multi_type_vector/default/aos/test_hints.cpp \
+	src/multi_type_vector/default/aos/test_insert.cpp \
+	src/multi_type_vector/default/aos/test_iterators.cpp \
+	src/multi_type_vector/default/aos/test_iterators_insert.cpp \
+	src/multi_type_vector/default/aos/test_iterators_set.cpp \
+	src/multi_type_vector/default/aos/test_iterators_set_empty.cpp \
+	src/multi_type_vector/default/aos/test_misc.cpp \
+	src/multi_type_vector/default/aos/test_position.cpp \
+	src/multi_type_vector/default/aos/test_set.cpp \
+	src/multi_type_vector/default/aos/test_swap_range.cpp \
+	src/multi_type_vector/default/aos/test_transfer.cpp \
+	src/multi_type_vector/default/aos/test_main.hpp \
+	src/multi_type_vector/default/aos/test_main.cpp \
 	src/multi_type_vector/default/tc/construction.inl \
 	src/multi_type_vector/default/tc/basic.inl \
 	src/multi_type_vector/default/tc/empty_cells.inl \
@@ -130,7 +130,7 @@ multi_type_vector_test_default_SOURCES = \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
-multi_type_vector_test_default_CPPFLAGS = \
+multi_type_vector_test_default_aos_CPPFLAGS = \
 	-I$(top_srcdir)/src/multi_type_vector/default/tc \
 	$(AM_CPPFLAGS)
 
@@ -249,7 +249,7 @@ TESTS = \
 	multi_type_matrix_test_walk \
 	multi_type_vector_test_event \
 	multi_type_vector_test_custom \
-	multi_type_vector_test_default \
+	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
 	multi_type_vector_test_collection \
 	point_quad_tree_test \
@@ -270,7 +270,7 @@ TESTS += \
 	multi_type_matrix_test_walk_mem.mem \
 	multi_type_vector_test_event_mem.mem \
 	multi_type_vector_test_custom_mem.mem \
-	multi_type_vector_test_default_mem.mem \
+	multi_type_vector_test_default_aos_mem.mem \
 	multi_type_vector_test_collection_mem.mem \
 	point_quad_tree_test_mem.mem \
 	segment_tree_test_mem.mem \
