@@ -118,75 +118,6 @@ void mtv_test_types()
     }
 }
 
-struct mtv_test_position_type_end_position
-{
-    template<typename T>
-    void run(T& db)
-    {
-        auto pos1 = db.position(9); // last valid position.
-        pos1 = mtv_type::next_position(pos1);
-        auto pos2 = db.position(10); // end position - one position past the last valid position
-        assert(pos1 == pos2);
-
-        // Move back from the end position by one. It should point to the last
-        // valid position.
-        pos2 = mtv_type::advance_position(pos2, -1);
-        pos1 = db.position(9);
-        assert(pos1 == pos2);
-
-        // Try the variant of position() method that takes position hint as its first argument.
-        pos1 = db.position(db.begin(), 10);
-        pos1 = mtv_type::advance_position(pos1, -10);
-        pos2 = db.position(0);
-        assert(pos1 == pos2);
-
-        // A position more than one past the last valid position is considered out-of-range.
-
-        try
-        {
-            pos1 = db.position(11);
-            assert(!"No exceptions thrown, but one was expected to be thrown.");
-        }
-        catch (const std::out_of_range&)
-        {
-            // good.
-            cout << "Out of range exception was thrown as expected." << endl;
-        }
-        catch (...)
-        {
-            assert(!"An unexpected exception was thrown.");
-        }
-
-        // Try again with the variant that takes a position hint.
-
-        try
-        {
-            pos1 = db.position(db.begin(), 11);
-            assert(!"No exceptions thrown, but one was expected to be thrown.");
-        }
-        catch (const std::out_of_range&)
-        {
-            // good.
-            cout << "Out of range exception was thrown as expected." << endl;
-        }
-        catch (...)
-        {
-            assert(!"An unexpected exception was thrown.");
-        }
-    }
-
-    mtv_test_position_type_end_position()
-    {
-        stack_printer __stack_printer__(__FUNCTION__);
-        mtv_type db(10);
-        const mtv_type& cdb = db;
-        cout << "* position_type" << endl;
-        run(db);
-        cout << "* const_position_type" << endl;
-        run(cdb);
-    }
-};
-
 /**
  * Ensure that we test block adjustment case with adjusted block size
  * greater than 8.
@@ -230,6 +161,7 @@ int main (int argc, char **argv)
         mtv_test_misc_block_identifier();
         mtv_test_misc_push_back();
         mtv_test_misc_capacity();
+        mtv_test_misc_position_type_end_position();
         mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();
@@ -253,7 +185,6 @@ int main (int argc, char **argv)
         mtv_test_position_advance();
         mtv_test_swap_range();
         mtv_test_transfer();
-        mtv_test_position_type_end_position();
         mtv_test_block_pos_adjustments();
     }
     catch (const std::exception& e)
