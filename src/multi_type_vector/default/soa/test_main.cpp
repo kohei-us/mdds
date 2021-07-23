@@ -37,6 +37,7 @@ int main (int argc, char **argv)
         mtv_test_basic();
         mtv_test_basic_numeric();
         mtv_test_empty_cells();
+        mtv_test_misc_types();
         mtv_test_misc_swap();
         mtv_test_misc_equality();
         mtv_test_misc_clone();

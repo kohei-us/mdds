@@ -57,6 +57,7 @@ void mtv_test_construction();
 void mtv_test_basic();
 void mtv_test_basic_numeric();
 void mtv_test_empty_cells();
+void mtv_test_misc_types();
 void mtv_test_misc_swap();
 void mtv_test_misc_equality();
 void mtv_test_misc_clone();

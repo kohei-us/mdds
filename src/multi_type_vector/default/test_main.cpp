@@ -28,107 +28,15 @@
 #include "test_global.hpp" // This must be the first header to be included.
 #include "test_main.hpp"
 
-using namespace std;
-using namespace mdds;
-
-namespace {
-
-enum test_mtv_type {
-    _mtv_bool, _mtv_int8, _mtv_uint8, _mtv_int16, _mtv_uint16, _mtv_int32, _mtv_uint32, _mtv_int64, _mtv_uint64, _mtv_float, _mtv_double, _mtv_string,
-};
-
-#define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
-TEST_TYPE(bool,     _mtv_bool)
-TEST_TYPE(int8_t,   _mtv_int8)
-TEST_TYPE(uint8_t,  _mtv_uint8)
-TEST_TYPE(int16_t,  _mtv_int16)
-TEST_TYPE(uint16_t, _mtv_uint16)
-TEST_TYPE(int32_t,  _mtv_int32)
-TEST_TYPE(uint32_t, _mtv_uint32)
-TEST_TYPE(int64_t,  _mtv_int64)
-TEST_TYPE(uint64_t, _mtv_uint64)
-TEST_TYPE(float,    _mtv_float)
-TEST_TYPE(double,   _mtv_double)
-TEST_TYPE(string,   _mtv_string)
-
-void mtv_test_types()
-{
-    // Test function overloading of standard types.
-
-    stack_printer __stack_printer__(__FUNCTION__);
-    {
-        bool val = false;
-        assert(test_type(val) == _mtv_bool);
-        cout << "bool is good" << endl;
-    }
-    {
-        int16_t val = 0;
-        assert(test_type(val) == _mtv_int16);
-        cout << "int16 is good" << endl;
-    }
-    {
-        uint16_t val = 0;
-        assert(test_type(val) == _mtv_uint16);
-        cout << "uint16 is good" << endl;
-    }
-    {
-        int32_t val = 0;
-        assert(test_type(val) == _mtv_int32);
-        cout << "int32 is good" << endl;
-    }
-    {
-        uint32_t val = 0;
-        assert(test_type(val) == _mtv_uint32);
-        cout << "uint32 is good" << endl;
-    }
-    {
-        int64_t val = 0;
-        assert(test_type(val) == _mtv_int64);
-        cout << "int64 is good" << endl;
-    }
-    {
-        uint64_t val = 0;
-        assert(test_type(val) == _mtv_uint64);
-        cout << "uint64 is good" << endl;
-    }
-    {
-        float val = 0;
-        assert(test_type(val) == _mtv_float);
-        cout << "float is good" << endl;
-    }
-    {
-        double val = 0;
-        assert(test_type(val) == _mtv_double);
-        cout << "double is good" << endl;
-    }
-    {
-        string val;
-        assert(test_type(val) == _mtv_string);
-        cout << "string is good" << endl;
-    }
-    {
-        int8_t val = 0;
-        assert(test_type(val) == _mtv_int8);
-        cout << "int8 is good" << endl;
-    }
-    {
-        uint8_t val = 0;
-        assert(test_type(val) == _mtv_uint8);
-        cout << "uint8 is good" << endl;
-    }
-}
-
-}
-
 int main (int argc, char **argv)
 {
     try
     {
-        mtv_test_types();
         mtv_test_construction();
         mtv_test_basic();
         mtv_test_basic_numeric();
         mtv_test_empty_cells();
+        mtv_test_misc_types();
         mtv_test_misc_swap();
         mtv_test_misc_equality();
         mtv_test_misc_clone();

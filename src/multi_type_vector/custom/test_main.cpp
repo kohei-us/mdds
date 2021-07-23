@@ -143,7 +143,7 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
     return val == test;
 }
 
-void mtv_test_types()
+void mtv_test_misc_types()
 {
     stack_printer __stack_printer__("::mtv_test_types");
 
@@ -1694,7 +1694,7 @@ int main (int argc, char **argv)
 {
     try
     {
-        mtv_test_types();
+        mtv_test_misc_types();
         mtv_test_block_identifier();
         mtv_test_basic();
         mtv_test_equality();
