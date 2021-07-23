@@ -433,5 +433,29 @@ void mtv_test_misc_position_type_end_position()
     run(cdb);
 }
 
+/**
+ * Ensure that we test block adjustment case with adjusted block size
+ * greater than 8.
+ */
+void mtv_test_misc_block_pos_adjustments()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    mtv_type db(1);
+
+    for (int i = 0; i < 20; ++i)
+    {
+        std::vector<double> vs(2, 1.1);
+        db.insert(0, vs.begin(), vs.end());
+
+        std::vector<int16_t> is(2, 34);
+        db.insert(0, is.begin(), is.end());
+    }
+
+    assert(db.size() == 81);
+    assert(db.block_size() == 41);
+    assert(db.check_block_integrity());
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

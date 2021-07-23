@@ -118,30 +118,6 @@ void mtv_test_types()
     }
 }
 
-/**
- * Ensure that we test block adjustment case with adjusted block size
- * greater than 8.
- */
-void mtv_test_block_pos_adjustments()
-{
-    stack_printer __stack_printer__(__FUNCTION__);
-
-    mtv_type db(1);
-
-    for (int i = 0; i < 20; ++i)
-    {
-        std::vector<double> vs(2, 1.1);
-        db.insert(0, vs.begin(), vs.end());
-
-        std::vector<int16_t> is(2, 34);
-        db.insert(0, is.begin(), is.end());
-    }
-
-    assert(db.size() == 81);
-    assert(db.block_size() == 41);
-    assert(db.check_block_integrity());
-}
-
 }
 
 int main (int argc, char **argv)
@@ -162,6 +138,7 @@ int main (int argc, char **argv)
         mtv_test_misc_push_back();
         mtv_test_misc_capacity();
         mtv_test_misc_position_type_end_position();
+        mtv_test_misc_block_pos_adjustments();
         mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();
@@ -185,7 +162,6 @@ int main (int argc, char **argv)
         mtv_test_position_advance();
         mtv_test_swap_range();
         mtv_test_transfer();
-        mtv_test_block_pos_adjustments();
     }
     catch (const std::exception& e)
     {
