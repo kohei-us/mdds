@@ -62,6 +62,7 @@ void mtv_test_misc_resize();
 void mtv_test_misc_value_type();
 void mtv_test_misc_block_identifier();
 void mtv_test_misc_push_back();
+void mtv_test_misc_capacity();
 void mtv_test_erase();
 void mtv_test_insert_empty();
 void mtv_test_set_cells();

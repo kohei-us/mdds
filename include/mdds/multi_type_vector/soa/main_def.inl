@@ -4752,6 +4752,16 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::swap(size_type start_pos, si
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::shrink_to_fit()
+{
+    for (auto* data : m_block_store.element_blocks)
+    {
+        if (data)
+            element_block_func::shrink_to_fit(*data);
+    }
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 bool multi_type_vector<_CellBlockFunc, _EventFunc>::operator== (const multi_type_vector& other) const
 {
     if (this == &other)

@@ -118,25 +118,6 @@ void mtv_test_types()
     }
 }
 
-void mtv_test_capacity()
-{
-    stack_printer __stack_printer__(__FUNCTION__);
-    mtv_type db(10, 1.1);
-    assert(db.block_size() == 1);
-    mtv_type::const_iterator it = db.begin();
-    assert(it->type == mtv::element_type_double);
-    size_t cap = mtv::double_element_block::capacity(*it->data);
-    assert(cap == 10);
-
-    db.set_empty(3, 3);
-    assert(db.block_size() == 3);
-    db.shrink_to_fit();
-    it = db.begin();
-    assert(it->type == mtv::element_type_double);
-    cap = mtv::double_element_block::capacity(*it->data);
-    assert(cap == 3);
-}
-
 struct mtv_test_position_type_end_position
 {
     template<typename T>
@@ -248,6 +229,7 @@ int main (int argc, char **argv)
         mtv_test_misc_value_type();
         mtv_test_misc_block_identifier();
         mtv_test_misc_push_back();
+        mtv_test_misc_capacity();
         mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();
@@ -271,7 +253,6 @@ int main (int argc, char **argv)
         mtv_test_position_advance();
         mtv_test_swap_range();
         mtv_test_transfer();
-        mtv_test_capacity();
         mtv_test_position_type_end_position();
         mtv_test_block_pos_adjustments();
     }

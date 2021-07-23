@@ -919,6 +919,11 @@ public:
      */
     void swap(size_type start_pos, size_type end_pos, multi_type_vector& other, size_type other_pos);
 
+    /**
+     * Trim excess capacity from all non-empty blocks.
+     */
+    void shrink_to_fit();
+
     bool operator== (const multi_type_vector& other) const;
     bool operator!= (const multi_type_vector& other) const;
 

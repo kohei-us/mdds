@@ -348,5 +348,24 @@ void mtv_test_misc_push_back()
     assert(it->type == mdds::mtv::element_type_double);
 }
 
+void mtv_test_misc_capacity()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+    mtv_type db(10, 1.1);
+    assert(db.block_size() == 1);
+    mtv_type::const_iterator it = db.begin();
+    assert(it->type == mdds::mtv::element_type_double);
+    size_t cap = mdds::mtv::double_element_block::capacity(*it->data);
+    assert(cap == 10);
+
+    db.set_empty(3, 3);
+    assert(db.block_size() == 3);
+    db.shrink_to_fit();
+    it = db.begin();
+    assert(it->type == mdds::mtv::element_type_double);
+    cap = mdds::mtv::double_element_block::capacity(*it->data);
+    assert(cap == 3);
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
