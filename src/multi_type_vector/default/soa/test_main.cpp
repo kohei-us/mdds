@@ -45,6 +45,8 @@ int main (int argc, char **argv)
         mtv_test_misc_block_identifier();
         mtv_test_misc_push_back();
         mtv_test_misc_capacity();
+        mtv_test_misc_position_type_end_position();
+        mtv_test_misc_block_pos_adjustments();
         mtv_test_erase();
         mtv_test_insert_empty();
         mtv_test_set_cells();

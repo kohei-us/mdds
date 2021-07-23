@@ -454,7 +454,6 @@ void mtv_test_misc_block_pos_adjustments()
 
     assert(db.size() == 81);
     assert(db.block_size() == 41);
-    assert(db.check_block_integrity());
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
