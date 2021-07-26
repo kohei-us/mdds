@@ -271,6 +271,7 @@ TESTS += \
 	multi_type_vector_test_event_mem.mem \
 	multi_type_vector_test_custom_mem.mem \
 	multi_type_vector_test_default_aos_mem.mem \
+	multi_type_vector_test_default_soa_mem.mem \
 	multi_type_vector_test_collection_mem.mem \
 	point_quad_tree_test_mem.mem \
 	segment_tree_test_mem.mem \
