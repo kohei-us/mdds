@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2015 Kohei Yoshida
+ * Copyright (c) 2012-2021 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,15 +26,8 @@
  ************************************************************************/
 
 #include "test_global.hpp" // This must be the first header to be included.
+#include "test_main.hpp"
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector_trait.hpp>
-#include <mdds/multi_type_vector_custom_func1.hpp>
-#include <mdds/multi_type_vector_custom_func2.hpp>
-#include <mdds/multi_type_vector_custom_func3.hpp>
-
-#include <cassert>
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -127,8 +120,6 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(date, element_type_date_block, date(), date_bl
 
 }
 
-namespace {
-
 typedef multi_type_vector<mtv::custom_block_func2<user_cell_block, muser_cell_block> > mtv_type;
 typedef multi_type_vector<mtv::custom_block_func1<fruit_block> > mtv_fruit_type;
 typedef multi_type_vector<
@@ -145,7 +136,7 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
 
 void mtv_test_misc_types()
 {
-    stack_printer __stack_printer__("::mtv_test_types");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     mdds::mtv::element_t ct;
 
@@ -173,7 +164,7 @@ void mtv_test_misc_types()
 
 void mtv_test_block_identifier()
 {
-    stack_printer __stack_printer__("::mtv_test_block_identifier");
+    stack_printer __stack_printer__(__FUNCTION__);
     assert(user_cell_block::block_type == element_type_user_block);
     assert(muser_cell_block::block_type == element_type_muser_block);
     assert(fruit_block::block_type == element_type_fruit_block);
@@ -182,7 +173,7 @@ void mtv_test_block_identifier()
 
 void mtv_test_basic()
 {
-    stack_printer __stack_printer__("::mtv_test_basic");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     // mdds::multi_type_vector does not manage the life cycle of individual cells;
     // the client code needs to manage them when storing pointers.
@@ -343,7 +334,7 @@ void mtv_test_basic()
 
 void mtv_test_equality()
 {
-    stack_printer __stack_printer__("::mtv_test_clone");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     user_cell_pool pool;
 
@@ -372,7 +363,7 @@ void mtv_test_equality()
  */
 void mtv_test_managed_block()
 {
-    stack_printer __stack_printer__("::mtv_test_managed_block");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         mtv_type db(1);
         db.set(0, new muser_cell(1.0));
@@ -995,7 +986,7 @@ void mtv_test_managed_block()
 
 void mtv_test_custom_block_func1()
 {
-    stack_printer __stack_printer__("::mtv_test_custom_block_func1");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_fruit_type db(10);
     db.set(0, apple);
     db.set(1, orange);
@@ -1015,7 +1006,7 @@ void mtv_test_custom_block_func1()
 
 void mtv_test_transfer()
 {
-    stack_printer __stack_printer__("::mtv_test_transfer");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db1(3), db2(4); // db2 is larger than db1.
     db1.set(0, new muser_cell(1.1));
     db1.set(1, new muser_cell(1.2));
@@ -1414,7 +1405,7 @@ void mtv_test_transfer()
 
 void mtv_test_swap()
 {
-    stack_printer __stack_printer__("::mtv_test_swap");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv3_type db1(5), db2(2);
     db1.set(0, new muser_cell(1.1));
     db1.set(1, new muser_cell(1.2));
@@ -1547,7 +1538,7 @@ void mtv_test_swap()
 
 void mtv_test_swap_2()
 {
-    stack_printer __stack_printer__("::mtv_test_swap_2");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv3_type db1(3), db2(3);
 
     db1.set(0, new muser_cell(1.1));
@@ -1576,7 +1567,7 @@ void mtv_test_swap_2()
 
 void mtv_test_custom_block_func3()
 {
-    stack_printer __stack_printer__("::mtv_test_custom_block_func3");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv3_type db(10);
 
     // Insert custom elements.
@@ -1605,7 +1596,7 @@ void mtv_test_custom_block_func3()
 
 void mtv_test_release()
 {
-    stack_printer __stack_printer__("::mtv_test_release");
+    stack_printer __stack_printer__(__FUNCTION__);
     mtv_type db(3);
     muser_cell c1(1.2), c2(1.3); // allocated on the stack.
     db.set(0, &c1);
@@ -1667,7 +1658,7 @@ void mtv_test_release()
 
 void mtv_test_construction_with_array()
 {
-    stack_printer __stack_printer__("::mtv_test_construction_with_array");
+    stack_printer __stack_printer__(__FUNCTION__);
     {
         std::vector<muser_cell*> vals;
         vals.push_back(new muser_cell(2.1));
@@ -1688,9 +1679,7 @@ void mtv_test_construction_with_array()
     }
 }
 
-}
-
-int main (int argc, char **argv)
+int main (int argc, char** argv)
 {
     try
     {

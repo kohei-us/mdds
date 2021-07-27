@@ -90,7 +90,8 @@ multi_type_vector_test_event_SOURCES = \
 	src/test_global.cpp
 
 multi_type_vector_test_custom_SOURCES = \
-	src/multi_type_vector/custom/test_main.cpp \
+	src/multi_type_vector/custom/aos/test_main.hpp \
+	src/multi_type_vector/custom/aos/test_main.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
