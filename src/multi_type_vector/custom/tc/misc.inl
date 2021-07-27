@@ -26,33 +26,33 @@
  *
  ************************************************************************/
 
-#pragma once
+void mtv_test_misc_types()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
 
-#include "common_types.hpp"
+    mdds::mtv::element_t ct;
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector_trait.hpp>
-#include <mdds/multi_type_vector_custom_func1.hpp>
-#include <mdds/multi_type_vector_custom_func2.hpp>
-#include <mdds/multi_type_vector_custom_func3.hpp>
+    // Basic types
+    ct = mtv_type::get_element_type(double(12.3));
+    assert(ct == mdds::mtv::element_type_double);
+    ct = mtv_type::get_element_type(std::string());
+    assert(ct == mdds::mtv::element_type_string);
+    ct = mtv_type::get_element_type(static_cast<uint64_t>(12));
+    assert(ct == mdds::mtv::element_type_uint64);
+    ct = mtv_type::get_element_type(true);
+    assert(ct == mdds::mtv::element_type_boolean);
+    ct = mtv_type::get_element_type(false);
+    assert(ct == mdds::mtv::element_type_boolean);
 
-using mtv_type = mdds::multi_type_vector<mdds::mtv::custom_block_func2<user_cell_block, muser_cell_block>>;
-using mtv_fruit_type = mdds::multi_type_vector<mdds::mtv::custom_block_func1<fruit_block>>;
-using mtv3_type = mdds::multi_type_vector<mdds::mtv::custom_block_func3<muser_cell_block, fruit_block, date_block>>;
-
-void mtv_test_misc_types();
-void mtv_test_block_identifier();
-void mtv_test_basic();
-void mtv_test_equality();
-void mtv_test_managed_block();
-void mtv_test_custom_block_func1();
-void mtv_test_transfer();
-void mtv_test_swap();
-void mtv_test_swap_2();
-void mtv_test_custom_block_func3();
-void mtv_test_release();
-void mtv_test_construction_with_array();
+    // Custom cell type
+    user_cell* p = nullptr;
+    ct = mtv_type::get_element_type(p);
+    assert(ct == element_type_user_block && ct >= mdds::mtv::element_type_user_start);
+    ct = mtv_type::get_element_type(static_cast<muser_cell*>(nullptr));
+    assert(ct == element_type_muser_block && ct >= mdds::mtv::element_type_user_start);
+    ct = mtv_fruit_type::get_element_type(unknown_fruit);
+    assert(ct == element_type_fruit_block && ct >= mdds::mtv::element_type_user_start);
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

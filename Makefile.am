@@ -54,7 +54,7 @@ check_PROGRAMS = \
 	multi_type_matrix_test \
 	multi_type_matrix_test_walk \
 	multi_type_vector_test_event \
-	multi_type_vector_test_custom \
+	multi_type_vector_test_custom_aos \
 	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
 	multi_type_vector_test_perf \
@@ -89,11 +89,18 @@ multi_type_vector_test_event_SOURCES = \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
-multi_type_vector_test_custom_SOURCES = \
+multi_type_vector_test_custom_aos_SOURCES = \
 	src/multi_type_vector/custom/aos/test_main.hpp \
 	src/multi_type_vector/custom/aos/test_main.cpp \
+	src/multi_type_vector/custom/aos/test_misc.cpp \
+	src/multi_type_vector/custom/tc/misc.inl \
 	src/include/test_global.hpp \
 	src/test_global.cpp
+
+multi_type_vector_test_custom_aos_CPPFLAGS = \
+	-I$(top_srcdir)/src/multi_type_vector/custom \
+	-I$(top_srcdir)/src/multi_type_vector/custom/tc \
+	$(AM_CPPFLAGS)
 
 multi_type_vector_test_default_aos_SOURCES = \
 	src/multi_type_vector/default/aos/test_construction.cpp \
@@ -249,7 +256,7 @@ TESTS = \
 	multi_type_matrix_test \
 	multi_type_matrix_test_walk \
 	multi_type_vector_test_event \
-	multi_type_vector_test_custom \
+	multi_type_vector_test_custom_aos \
 	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
 	multi_type_vector_test_collection \
@@ -270,7 +277,7 @@ TESTS += \
 	multi_type_matrix_test_mem.mem \
 	multi_type_matrix_test_walk_mem.mem \
 	multi_type_vector_test_event_mem.mem \
-	multi_type_vector_test_custom_mem.mem \
+	multi_type_vector_test_custom_aos_mem.mem \
 	multi_type_vector_test_default_aos_mem.mem \
 	multi_type_vector_test_default_soa_mem.mem \
 	multi_type_vector_test_collection_mem.mem \

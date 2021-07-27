@@ -53,7 +53,7 @@ missing
 multi_type_matrix_test
 multi_type_matrix_test_walk
 multi_type_vector_test_collection
-multi_type_vector_test_custom
+multi_type_vector_test_custom_aos
 multi_type_vector_test_default_aos
 multi_type_vector_test_default_soa
 multi_type_vector_test_event

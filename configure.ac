@@ -145,7 +145,7 @@ misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
 multi_type_matrix_test_mem.mem:src/test.mem.in
 multi_type_matrix_test_walk_mem.mem:src/test.mem.in
 multi_type_vector_test_event_mem.mem:src/test.mem.in
-multi_type_vector_test_custom_mem.mem:src/test.mem.in
+multi_type_vector_test_custom_aos_mem.mem:src/test.mem.in
 multi_type_vector_test_default_aos_mem.mem:src/test.mem.in
 multi_type_vector_test_default_soa_mem.mem:src/test.mem.in
 multi_type_vector_test_collection_mem.mem:src/test.mem.in
