@@ -54,5 +54,14 @@ void mtv_test_misc_types()
     assert(ct == element_type_fruit_block && ct >= mdds::mtv::element_type_user_start);
 }
 
+void mtv_test_misc_block_identifier()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+    assert(user_cell_block::block_type == element_type_user_block);
+    assert(muser_cell_block::block_type == element_type_muser_block);
+    assert(fruit_block::block_type == element_type_fruit_block);
+    assert(date_block::block_type == element_type_date_block);
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

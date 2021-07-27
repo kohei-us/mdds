@@ -42,7 +42,7 @@ using mtv_fruit_type = mdds::multi_type_vector<mdds::mtv::custom_block_func1<fru
 using mtv3_type = mdds::multi_type_vector<mdds::mtv::custom_block_func3<muser_cell_block, fruit_block, date_block>>;
 
 void mtv_test_misc_types();
-void mtv_test_block_identifier();
+void mtv_test_misc_block_identifier();
 void mtv_test_basic();
 void mtv_test_equality();
 void mtv_test_managed_block();

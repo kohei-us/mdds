@@ -78,15 +78,6 @@ bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
     return val == test;
 }
 
-void mtv_test_block_identifier()
-{
-    stack_printer __stack_printer__(__FUNCTION__);
-    assert(user_cell_block::block_type == element_type_user_block);
-    assert(muser_cell_block::block_type == element_type_muser_block);
-    assert(fruit_block::block_type == element_type_fruit_block);
-    assert(date_block::block_type == element_type_date_block);
-}
-
 void mtv_test_basic()
 {
     stack_printer __stack_printer__(__FUNCTION__);
@@ -1600,7 +1591,7 @@ int main (int argc, char** argv)
     try
     {
         mtv_test_misc_types();
-        mtv_test_block_identifier();
+        mtv_test_misc_block_identifier();
         mtv_test_basic();
         mtv_test_equality();
         mtv_test_managed_block();

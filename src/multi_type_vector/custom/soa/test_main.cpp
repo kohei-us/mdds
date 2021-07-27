@@ -34,6 +34,7 @@ int main (int argc, char** argv)
     try
     {
         mtv_test_misc_types();
+        mtv_test_misc_block_identifier();
     }
     catch (const std::exception& e)
     {

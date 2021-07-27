@@ -44,6 +44,7 @@ using mtv_fruit_type = mtv_template_type<mdds::mtv::custom_block_func1<fruit_blo
 using mtv3_type = mtv_template_type<mdds::mtv::custom_block_func3<muser_cell_block, fruit_block, date_block>>;
 
 void mtv_test_misc_types();
+void mtv_test_misc_block_identifier();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
