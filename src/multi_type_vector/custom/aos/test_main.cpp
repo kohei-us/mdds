@@ -1621,3 +1621,5 @@ int main (int argc, char** argv)
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -4789,6 +4789,13 @@ multi_type_vector<_CellBlockFunc, _EventFunc>& multi_type_vector<_CellBlockFunc,
     return *this;
 }
 
+template<typename _CellBlockFunc, typename _EventFunc>
+template<typename _T>
+mtv::element_t multi_type_vector<_CellBlockFunc, _EventFunc>::get_element_type(const _T& elem)
+{
+    return mdds_mtv_get_element_type(elem);
+}
+
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 
 template<typename _CellBlockFunc, typename _EventFunc>

@@ -76,11 +76,13 @@
             <F N="../src/multi_type_vector/default/soa/test_iterators_set_empty.cpp"/>
             <F N="../src/multi_type_vector/collection/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_main.cpp"/>
+            <F N="../src/multi_type_vector/custom/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/event/test_main.cpp"/>
             <F N="../src/multi_type_vector/perf/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_misc.cpp"/>
+            <F N="../src/multi_type_vector/custom/soa/test_misc.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_misc.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_misc.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_position.cpp"/>
@@ -96,7 +98,9 @@
             Name="Header Files"
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
             GUID="{DC165CCA-0944-4BBC-8A11-C29C5DEC59F1}">
+            <F N="../src/multi_type_vector/custom/common_types.hpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_main.hpp"/>
+            <F N="../src/multi_type_vector/custom/soa/test_main.hpp"/>
             <F N="../src/multi_type_vector/default/aos/test_main.hpp"/>
             <F N="../src/multi_type_vector/default/soa/test_main.hpp"/>
         </Folder>
