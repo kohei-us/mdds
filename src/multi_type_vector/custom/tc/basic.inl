@@ -187,5 +187,31 @@ void mtv_test_basic()
     }
 }
 
+void mtv_test_basic_equality()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    user_cell_pool pool;
+
+    mtv_type db1(3);
+    mtv_type db2 = db1;
+    assert(db2 == db1);
+    user_cell* p0 = pool.construct(1.1);
+    db1.set(0, p0);
+    assert(db1 != db2);
+    db2.set(0, p0);
+    assert(db1 == db2);
+    db1.set(2, std::string("foo"));
+    db2.set(2, std::string("foo"));
+    assert(db1 == db2);
+
+    // same value but different memory addresses.
+    user_cell* p1 = pool.construct(1.2);
+    user_cell* p2 = pool.construct(1.2);
+    db1.set(1, p1);
+    db2.set(1, p2);
+    assert(db1 != db2); // equality is by the pointer value.
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
