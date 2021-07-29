@@ -44,13 +44,13 @@ using mtv3_type = mdds::multi_type_vector<mdds::mtv::custom_block_func3<muser_ce
 void mtv_test_misc_types();
 void mtv_test_misc_block_identifier();
 void mtv_test_misc_custom_block_func1();
+void mtv_test_misc_custom_block_func3();
 void mtv_test_basic();
 void mtv_test_basic_equality();
 void mtv_test_managed_block();
 void mtv_test_transfer();
 void mtv_test_swap();
 void mtv_test_swap_2();
-void mtv_test_custom_block_func3();
 void mtv_test_release();
 void mtv_test_construction_with_array();
 

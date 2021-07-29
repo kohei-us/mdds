@@ -36,6 +36,7 @@ int main (int argc, char** argv)
         mtv_test_misc_types();
         mtv_test_misc_block_identifier();
         mtv_test_misc_custom_block_func1();
+        mtv_test_misc_custom_block_func3();
         mtv_test_basic();
         mtv_test_basic_equality();
         mtv_test_managed_block();

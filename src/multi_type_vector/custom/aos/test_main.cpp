@@ -596,35 +596,6 @@ void mtv_test_swap_2()
     assert(db2.get<std::string>(1) == "foo");
 }
 
-void mtv_test_custom_block_func3()
-{
-    stack_printer __stack_printer__(__FUNCTION__);
-    mtv3_type db(10);
-
-    // Insert custom elements.
-    db.set(0, new muser_cell(12.3));
-    db.set(1, apple);
-    db.set(2, date(1989,12,13));
-    db.set(3, date(2011,8,7));
-    assert(db.get_type(0) == element_type_muser_block);
-    assert(db.get_type(1) == element_type_fruit_block);
-    assert(db.get_type(2) == element_type_date_block);
-    assert(db.get_type(3) == element_type_date_block);
-    assert(db.get<muser_cell*>(0)->value == 12.3);
-    assert(db.get<my_fruit_type>(1) == apple);
-    assert(db.get<date>(2).year == 1989);
-    assert(db.get<date>(2).month == 12);
-    assert(db.get<date>(2).day == 13);
-    assert(db.get<date>(3).year == 2011);
-    assert(db.get<date>(3).month == 8);
-    assert(db.get<date>(3).day == 7);
-    assert(db.block_size() == 4);
-
-    // We should still support the primitive types.
-    db.set(8, 34.56);
-    assert(db.get<double>(8) == 34.56);
-}
-
 void mtv_test_release()
 {
     stack_printer __stack_printer__(__FUNCTION__);
@@ -717,13 +688,13 @@ int main (int argc, char** argv)
         mtv_test_misc_types();
         mtv_test_misc_block_identifier();
         mtv_test_misc_custom_block_func1();
+        mtv_test_misc_custom_block_func3();
         mtv_test_basic();
         mtv_test_basic_equality();
         mtv_test_managed_block();
         mtv_test_transfer();
         mtv_test_swap();
         mtv_test_swap_2();
-        mtv_test_custom_block_func3();
         mtv_test_release();
         mtv_test_construction_with_array();
     }
