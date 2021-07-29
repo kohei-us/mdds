@@ -298,6 +298,7 @@ TESTS += \
 	multi_type_matrix_test_walk_mem.mem \
 	multi_type_vector_test_event_mem.mem \
 	multi_type_vector_test_custom_aos_mem.mem \
+	multi_type_vector_test_custom_soa_mem.mem \
 	multi_type_vector_test_default_aos_mem.mem \
 	multi_type_vector_test_default_soa_mem.mem \
 	multi_type_vector_test_collection_mem.mem \
