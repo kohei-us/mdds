@@ -63,5 +63,25 @@ void mtv_test_misc_block_identifier()
     assert(date_block::block_type == element_type_date_block);
 }
 
+void mtv_test_misc_custom_block_func1()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+    mtv_fruit_type db(10);
+    db.set(0, apple);
+    db.set(1, orange);
+    db.set(2, mango);
+    db.set(3, peach);
+    assert(db.block_size() == 2);
+    assert(db.get_type(0) == element_type_fruit_block);
+    assert(db.get<my_fruit_type>(0) == apple);
+    assert(db.get<my_fruit_type>(1) == orange);
+    assert(db.get<my_fruit_type>(2) == mango);
+    assert(db.get<my_fruit_type>(3) == peach);
+    db.set<int>(1, 234);
+    assert(db.block_size() == 4);
+    db.set(1, apple);
+    assert(db.block_size() == 2);
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
