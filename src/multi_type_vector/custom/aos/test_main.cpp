@@ -35,15 +35,6 @@
 using namespace std;
 using namespace mdds;
 
-template<typename _ColT, typename _ValT>
-bool test_cell_insertion(_ColT& col_db, size_t row, _ValT val)
-{
-    _ValT test;
-    col_db.set(row, val);
-    col_db.get(row, test);
-    return val == test;
-}
-
 void mtv_test_custom_block_func1()
 {
     stack_printer __stack_printer__(__FUNCTION__);
