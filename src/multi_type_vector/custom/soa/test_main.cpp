@@ -35,6 +35,7 @@ int main (int argc, char** argv)
     {
         mtv_test_misc_types();
         mtv_test_misc_block_identifier();
+        mtv_test_basic();
     }
     catch (const std::exception& e)
     {

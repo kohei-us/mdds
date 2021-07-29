@@ -54,6 +54,8 @@
             Name="Source Files"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
             GUID="{2A13E3E7-2624-4414-82D3-13A346A6307E}">
+            <F N="../src/multi_type_vector/custom/aos/test_basic.cpp"/>
+            <F N="../src/multi_type_vector/custom/soa/test_basic.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_basic.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_basic.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_construction.cpp"/>
@@ -116,6 +118,7 @@
             Name="Other Files"
             Filters=""
             GUID="{5656E53A-73B8-4CAF-80A3-E0F4AA965920}">
+            <F N="../src/multi_type_vector/custom/tc/basic.inl"/>
             <F N="../src/multi_type_vector/default/tc/basic.inl"/>
             <F N="../src/multi_type_vector/default/tc/construction.inl"/>
             <F N="../src/multi_type_vector/default/tc/empty_cells.inl"/>

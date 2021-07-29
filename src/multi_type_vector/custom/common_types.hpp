@@ -82,5 +82,35 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(muser_cell, element_type_muser_block, null
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(my_fruit_type, element_type_fruit_block, unknown_fruit, fruit_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(date, element_type_date_block, date(), date_block)
 
+template<typename T>
+class cell_pool
+{
+    std::vector<std::unique_ptr<T>> m_pool;
+public:
+    cell_pool() = default;
+    cell_pool(const cell_pool&) = delete;
+    cell_pool& operator=(const cell_pool&) = delete;
+
+    T* construct()
+    {
+        m_pool.emplace_back(new T);
+        return m_pool.back().get();
+    }
+
+    void clear() { m_pool.clear(); }
+};
+
+class user_cell_pool : public cell_pool<user_cell>
+{
+public:
+
+    user_cell* construct(double val)
+    {
+        user_cell* p = cell_pool<user_cell>::construct();
+        p->value = val;
+        return p;
+    }
+};
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
