@@ -83,6 +83,8 @@
             <F N="../src/multi_type_vector/default/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/event/test_main.cpp"/>
             <F N="../src/multi_type_vector/perf/test_main.cpp"/>
+            <F N="../src/multi_type_vector/custom/aos/test_managed_block.cpp"/>
+            <F N="../src/multi_type_vector/custom/soa/test_managed_block.cpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_misc.cpp"/>
             <F N="../src/multi_type_vector/custom/soa/test_misc.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_misc.cpp"/>
@@ -129,6 +131,7 @@
             <F N="../src/multi_type_vector/default/tc/iterators_insert.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators_set.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators_set_empty.inl"/>
+            <F N="../src/multi_type_vector/custom/tc/managed_block.inl"/>
             <F N="../src/multi_type_vector/custom/tc/misc.inl"/>
             <F N="../src/multi_type_vector/default/tc/misc.inl"/>
             <F N="../src/multi_type_vector/default/tc/position.inl"/>
