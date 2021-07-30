@@ -40,6 +40,7 @@ int main (int argc, char** argv)
         mtv_test_basic();
         mtv_test_basic_equality();
         mtv_test_managed_block();
+        mtv_test_transfer();
     }
     catch (const std::exception& e)
     {

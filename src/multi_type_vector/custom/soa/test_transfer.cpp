@@ -26,31 +26,10 @@
  *
  ************************************************************************/
 
-#pragma once
+#include "test_global.hpp" // This must be the first header to be included.
+#include "test_main.hpp"
 
-#include "common_types.hpp"
-
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector_custom_func1.hpp>
-#include <mdds/multi_type_vector_custom_func2.hpp>
-#include <mdds/multi_type_vector_custom_func3.hpp>
-
-template<typename T>
-using mtv_template_type = mdds::multi_type_vector::soa::multi_type_vector<T>;
-
-using mtv_type = mtv_template_type<mdds::mtv::custom_block_func2<user_cell_block, muser_cell_block>>;
-using mtv_fruit_type = mtv_template_type<mdds::mtv::custom_block_func1<fruit_block>>;
-using mtv3_type = mtv_template_type<mdds::mtv::custom_block_func3<muser_cell_block, fruit_block, date_block>>;
-
-void mtv_test_misc_types();
-void mtv_test_misc_block_identifier();
-void mtv_test_misc_custom_block_func1();
-void mtv_test_misc_custom_block_func3();
-void mtv_test_basic();
-void mtv_test_basic_equality();
-void mtv_test_managed_block();
-void mtv_test_transfer();
+#include "transfer.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

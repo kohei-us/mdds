@@ -466,6 +466,35 @@ public:
     iterator transfer(size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
 
     /**
+     * Move elements from one container to another. After the move, the
+     * segment where the elements were in the source container becomes empty.
+     * When transferring managed elements, this call transfers ownership of
+     * the moved elements to the new container.  The moved elements will
+     * overwrite any existing elements in the destination range of the
+     * receiving container. Transfer of elements within the same container is
+     * not allowed.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is greater than or equal to
+     * the source container size, or the destination container is not large
+     * enough to accommodate the transferred elements.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the blocks
+     *                 where the elements to be transferred reside.
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @param dest destination container to which the elements are to be
+     *             moved.
+     * @param dest_pos position in the destination container to which the
+     *                 elements are to be moved.
+     *
+     * @return iterator referencing the block where the moved elements were
+     *         prior to the transfer.
+     */
+    iterator transfer(const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
+
+    /**
      * Set a value of an arbitrary type to a specified position.  The type of
      * the value is inferred from the value passed to this method.  The new
      * value will overwrite an existing value at the specified position
@@ -875,6 +904,61 @@ public:
     template<typename _T>
     _T get(size_type pos) const;
 
+    /**
+     * Return the value of an element at specified position and set that
+     * position empty.  If the element resides in a managed element block,
+     * this call will release that element from that block.  If the element is
+     * on a non-managed element block, this call is equivalent to
+     * set_empty(pos, pos).
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos position of the element to release.
+     *
+     * @return element value.
+     */
+    template<typename _T>
+    _T release(size_type pos);
+
+    /**
+     * Retrieve the value of an element at specified position and set that
+     * position empty.  If the element resides in a managed element block,
+     * this call will release that element from that block.  If the element is
+     * on a non-managed element block, this call is equivalent to
+     * set_empty(pos, pos).
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos position of the element to release.
+     * @param value element value.
+     *
+     * @return iterator referencing the block where the position of the
+     *         released element is.
+     */
+    template<typename _T>
+    iterator release(size_type pos, _T& value);
+
+    /**
+     * Retrieve the value of an element at specified position and set that
+     * position empty.  If the element resides in a managed element block,
+     * this call will release that element from that block.  If the element is
+     * on a non-managed element block, this call is equivalent to
+     * set_empty(pos, pos).
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * the specified position is outside the current container range.</p>
+     *
+     * @param pos position of the element to release.
+     * @param value element value.
+     *
+     * @return iterator referencing the block where the position of the
+     *         released element is.
+     */
+    template<typename _T>
+    iterator release(const iterator& pos_hint, size_type pos, _T& value);
+
     iterator begin();
     iterator end();
 
@@ -958,6 +1042,9 @@ private:
 
     template<typename _T>
     iterator set_impl(size_type pos, size_type block_index, const _T& value);
+
+    template<typename _T>
+    iterator release_impl(size_type pos, size_type block_index, _T& value);
 
     void swap_impl(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
