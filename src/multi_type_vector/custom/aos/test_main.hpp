@@ -46,13 +46,13 @@ void mtv_test_misc_block_identifier();
 void mtv_test_misc_custom_block_func1();
 void mtv_test_misc_custom_block_func3();
 void mtv_test_misc_release();
+void mtv_test_misc_construction_with_array();
 void mtv_test_basic();
 void mtv_test_basic_equality();
 void mtv_test_managed_block();
 void mtv_test_transfer();
 void mtv_test_swap();
 void mtv_test_swap_2();
-void mtv_test_construction_with_array();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

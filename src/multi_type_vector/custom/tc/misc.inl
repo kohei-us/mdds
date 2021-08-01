@@ -174,5 +174,28 @@ void mtv_test_misc_release()
     delete p2;
 }
 
+void mtv_test_misc_construction_with_array()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+    {
+        std::vector<muser_cell*> vals;
+        vals.push_back(new muser_cell(2.1));
+        vals.push_back(new muser_cell(2.2));
+        vals.push_back(new muser_cell(2.3));
+        mtv_type db(vals.size(), vals.begin(), vals.end());
+
+        db.set(1, 10.2); // overwrite.
+        assert(db.size() == 3);
+        assert(db.block_size() == 3);
+        assert(db.get<muser_cell*>(0)->value == 2.1);
+        assert(db.get<double>(1) == 10.2);
+        assert(db.get<muser_cell*>(2)->value == 2.3);
+
+        // Now those heap objects are owned by the container.  Clearing the
+        // array shouldn't leak.
+        vals.clear();
+    }
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
