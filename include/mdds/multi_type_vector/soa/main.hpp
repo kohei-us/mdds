@@ -959,6 +959,59 @@ public:
     template<typename _T>
     iterator release(const iterator& pos_hint, size_type pos, _T& value);
 
+    /**
+     * Release all its elements, and empties its content.  Calling this method
+     * relinquishes the ownership of all elements stored in managed element
+     * blocks if any.
+     *
+     * <p>This call is equivalent of clear() if the container consists of no
+     * managed element blocks.</p>
+     */
+    void release();
+
+    /**
+     * Make all elements within specified range empty, and relinquish the
+     * ownership of the elements in that range.  All elements in the managed
+     * element blocks within the range will be released and the container will
+     * no longer manage their life cycles after the call.
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size.</p>
+     *
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @return iterator position pointing to the block where the elements are
+     *         released.
+     */
+    iterator release_range(size_type start_pos, size_type end_pos);
+
+    /**
+     * Make all elements within specified range empty, and relinquish the
+     * ownership of the elements in that range.  All elements in the managed
+     * element blocks within the range will be released and the container will
+     * no longer manage their life cycles after the call.
+     *
+     * <p>This variant takes an iterator as an additional parameter, which is
+     * used as a block position hint to speed up the lookup of the first block
+     * to empty.  The other variant that doesn't take an iterator always
+     * starts the block lookup from the first block, which does not
+     * scale well as the block size grows.</p>
+     *
+     * <p>The method will throw an <code>std::out_of_range</code> exception if
+     * either the starting or the ending position is outside the current
+     * container size.</p>
+     *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the right
+     *                 blocks in which elements are to be released.
+     * @param start_pos starting position
+     * @param end_pos ending position, inclusive.
+     * @return iterator position pointing to the block where the elements are
+     *         released.
+     */
+    iterator release_range(const iterator& pos_hint, size_type start_pos, size_type end_pos);
+
     iterator begin();
     iterator end();
 

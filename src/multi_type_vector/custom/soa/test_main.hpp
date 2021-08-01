@@ -47,6 +47,7 @@ void mtv_test_misc_types();
 void mtv_test_misc_block_identifier();
 void mtv_test_misc_custom_block_func1();
 void mtv_test_misc_custom_block_func3();
+void mtv_test_misc_release();
 void mtv_test_basic();
 void mtv_test_basic_equality();
 void mtv_test_managed_block();

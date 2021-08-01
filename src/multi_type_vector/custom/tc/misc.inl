@@ -112,5 +112,67 @@ void mtv_test_misc_custom_block_func3()
     assert(db.get<double>(8) == 34.56);
 }
 
+void mtv_test_misc_release()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+    mtv_type db(3);
+    muser_cell c1(1.2), c2(1.3); // allocated on the stack.
+    db.set(0, &c1);
+    db.set(2, &c2);
+    db.release(); // Prevent invalid free when db goes out of scope.
+
+    // Variant with no argument should make the container empty after the call.
+    assert(db.empty());
+
+    db.push_back(new muser_cell(10.0));
+    db.push_back(&c1);
+    db.push_back(&c2);
+    db.push_back(new muser_cell(10.1));
+
+    assert(db.size() == 4);
+    assert(db.block_size() == 1);
+
+    // Release those allocated on the stack to avoid double deletion.
+    mtv_type::iterator it = db.release_range(1, 2);
+
+    // Check the integrity of the returned iterator.
+    assert(it->type == mdds::mtv::element_type_empty);
+    assert(it->size == 2);
+    mtv_type::iterator check = it;
+    --check;
+    assert(check == db.begin());
+    check = it;
+    ++check;
+    ++check;
+    assert(check == db.end());
+
+    db.push_back(new muser_cell(10.2));
+    assert(db.size() == 5);
+
+    muser_cell* p1 = db.get<muser_cell*>(3);
+    muser_cell* p2 = db.get<muser_cell*>(4);
+    assert(p1->value == 10.1);
+    assert(p2->value == 10.2);
+
+    // Pass iterator as a position hint.
+    it = db.release_range(it, 3, 4);
+    assert(db.block_size() == 2);
+
+    // Check the returned iterator.
+    check = it;
+    --check;
+    assert(check == db.begin());
+    assert(check->type == element_type_muser_block);
+    assert(check->size == 1);
+    assert(it->type == mdds::mtv::element_type_empty);
+    assert(it->size == 4);
+    ++it;
+    assert(it == db.end());
+
+    // It should be safe to delete these instances now that they've been released.
+    delete p1;
+    delete p2;
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

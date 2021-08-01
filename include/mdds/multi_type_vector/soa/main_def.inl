@@ -3469,6 +3469,48 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::release(const iterator& pos_hint,
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+void multi_type_vector<_CellBlockFunc, _EventFunc>::release()
+{
+    for (auto* data : m_block_store.element_blocks)
+    {
+        if (!data)
+            continue;
+
+        element_block_func::resize_block(*data, 0);
+        m_hdl_event.element_block_released(data);
+        element_block_func::delete_block(data);
+    }
+
+    m_block_store.clear();
+    m_cur_size = 0;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::release_range(size_type start_pos, size_type end_pos)
+{
+    size_type block_index1 = get_block_position(start_pos);
+    if (block_index1 == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
+
+    return set_empty_impl(start_pos, end_pos, block_index1, false);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
+multi_type_vector<_CellBlockFunc, _EventFunc>::release_range(
+    const iterator& pos_hint, size_type start_pos, size_type end_pos)
+{
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
+    if (block_index1 == m_block_store.positions.size())
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
+
+    return set_empty_impl(start_pos, end_pos, block_index1, false);
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 typename multi_type_vector<_CellBlockFunc, _EventFunc>::iterator
 multi_type_vector<_CellBlockFunc, _EventFunc>::begin()
 {
