@@ -93,6 +93,7 @@
             <F N="../src/multi_type_vector/default/soa/test_position.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_set.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_set.cpp"/>
+            <F N="../src/multi_type_vector/custom/aos/test_swap.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_swap_range.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_swap_range.cpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_transfer.cpp"/>
@@ -138,6 +139,7 @@
             <F N="../src/multi_type_vector/default/tc/misc.inl"/>
             <F N="../src/multi_type_vector/default/tc/position.inl"/>
             <F N="../src/multi_type_vector/default/tc/set.inl"/>
+            <F N="../src/multi_type_vector/custom/tc/swap.inl"/>
             <F N="../src/multi_type_vector/default/tc/swap_range.inl"/>
             <F N="../src/multi_type_vector/custom/tc/transfer.inl"/>
             <F N="../src/multi_type_vector/default/tc/transfer.inl"/>

@@ -41,6 +41,8 @@ int main (int argc, char** argv)
         mtv_test_basic_equality();
         mtv_test_managed_block();
         mtv_test_transfer();
+        mtv_test_swap();
+        mtv_test_swap_2();
     }
     catch (const std::exception& e)
     {

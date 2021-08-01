@@ -96,10 +96,12 @@ multi_type_vector_test_custom_aos_SOURCES = \
 	src/multi_type_vector/custom/soa/test_basic.cpp \
 	src/multi_type_vector/custom/aos/test_managed_block.cpp \
 	src/multi_type_vector/custom/aos/test_misc.cpp \
+	src/multi_type_vector/custom/aos/test_swap.cpp \
 	src/multi_type_vector/custom/aos/test_transfer.cpp \
 	src/multi_type_vector/custom/tc/basic.inl \
 	src/multi_type_vector/custom/tc/managed_block.inl \
 	src/multi_type_vector/custom/tc/misc.inl \
+	src/multi_type_vector/custom/tc/swap.inl \
 	src/multi_type_vector/custom/tc/transfer.inl \
 	src/include/test_global.hpp \
 	src/test_global.cpp
@@ -115,6 +117,7 @@ multi_type_vector_test_custom_soa_SOURCES = \
 	src/multi_type_vector/custom/soa/test_basic.cpp \
 	src/multi_type_vector/custom/soa/test_managed_block.cpp \
 	src/multi_type_vector/custom/soa/test_misc.cpp \
+	src/multi_type_vector/custom/soa/test_swap.cpp \
 	src/multi_type_vector/custom/soa/test_transfer.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
