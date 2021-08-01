@@ -3437,8 +3437,31 @@ _T multi_type_vector<_CellBlockFunc, _EventFunc>::release(size_type pos)
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
 
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
     _T value;
     release_impl(pos, block_index, value);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in release(pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
     return value;
 }
 
@@ -3452,7 +3475,31 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::release(size_type pos, _T& value)
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
 
-    return release_impl(pos, block_index, value);
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = release_impl(pos, block_index, value);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in release(pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
@@ -3465,12 +3512,41 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::release(const iterator& pos_hint,
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
 
-    return release_impl(pos, block_index, value);
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = release_impl(pos, block_index, value);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in release(pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
 void multi_type_vector<_CellBlockFunc, _EventFunc>::release()
 {
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
     for (auto* data : m_block_store.element_blocks)
     {
         if (!data)
@@ -3483,6 +3559,23 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::release()
 
     m_block_store.clear();
     m_cur_size = 0;
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in release()" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
