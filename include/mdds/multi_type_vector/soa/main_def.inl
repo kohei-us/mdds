@@ -293,7 +293,29 @@ multi_type_vector<_CellBlockFunc, _EventFunc>::get(const const_position_type& po
 }
 
 template<typename _CellBlockFunc, typename _EventFunc>
+typename multi_type_vector<_CellBlockFunc, _EventFunc>::event_func&
+multi_type_vector<_CellBlockFunc, _EventFunc>::event_handler()
+{
+    return m_hdl_event;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+const typename multi_type_vector<_CellBlockFunc, _EventFunc>::event_func&
+multi_type_vector<_CellBlockFunc, _EventFunc>::event_handler() const
+{
+    return m_hdl_event;
+}
+
+template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector() : m_cur_size(0) {}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(const event_func& hdl) :
+    m_hdl_event(hdl), m_cur_size(0) {}
+
+template<typename _CellBlockFunc, typename _EventFunc>
+multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(event_func&& hdl) :
+    m_hdl_event(std::move(hdl)), m_cur_size(0) {}
 
 template<typename _CellBlockFunc, typename _EventFunc>
 multi_type_vector<_CellBlockFunc, _EventFunc>::multi_type_vector(size_type init_size) :
@@ -4628,7 +4650,7 @@ void multi_type_vector<_CellBlockFunc, _EventFunc>::resize_impl(size_type new_si
     }
 
     // Remove all blocks below the current one.
-    delete_element_blocks(block_index+1, m_block_store.element_blocks.size()-1);
+    delete_element_blocks(block_index+1, m_block_store.element_blocks.size());
     size_type len = m_block_store.element_blocks.size() - block_index - 1;
     m_block_store.erase(block_index+1, len);
     m_cur_size = new_size;

@@ -313,10 +313,30 @@ public:
     template<typename _Blk>
     static typename _Blk::value_type get(const const_position_type& pos);
 
+    event_func& event_handler();
+    const event_func& event_handler() const;
+
     /**
      * Default constructor.  It initializes the container with empty size.
      */
     multi_type_vector();
+
+
+    /**
+     * Constructor that takes an lvalue reference to an event handler object.
+     * The event handler instance will be copy-constructed.
+     *
+     * @param hdl lvalue reference to an event handler object.
+     */
+    multi_type_vector(const event_func& hdl);
+
+    /**
+     * Constructor that takes an rvalue reference to an event handler object.
+     * The event handler instance will be move-constructed.
+     *
+     * @param hdl rvalue reference to an event handler object.
+     */
+    multi_type_vector(event_func&& hdl);
 
     /**
      * Constructor that takes initial size of the container.  When the size
