@@ -60,7 +60,8 @@ check_PROGRAMS = \
 	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
 	multi_type_vector_test_perf \
-	multi_type_vector_test_collection \
+	multi_type_vector_test_collection_aos \
+	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
 	segment_tree_test \
 	sorted_string_map_test \
@@ -221,10 +222,23 @@ multi_type_vector_test_perf_SOURCES = \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
-multi_type_vector_test_collection_SOURCES = \
-	src/multi_type_vector/collection/test_main.cpp \
+multi_type_vector_test_collection_aos_SOURCES = \
+	src/multi_type_vector/collection/aos/test_main.cpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
+
+multi_type_vector_test_collection_aos_CPPFLAGS = \
+	-I$(top_srcdir)/src/multi_type_vector/collection/tc \
+	$(AM_CPPFLAGS)
+
+multi_type_vector_test_collection_soa_SOURCES = \
+	src/multi_type_vector/collection/soa/test_main.cpp \
+	src/include/test_global.hpp \
+	src/test_global.cpp
+
+multi_type_vector_test_collection_soa_CPPFLAGS = \
+	-I$(top_srcdir)/src/multi_type_vector/collection/tc \
+	$(AM_CPPFLAGS)
 
 point_quad_tree_test_SOURCES = \
 	src/point_quad_tree_test.cpp \
@@ -310,7 +324,8 @@ TESTS = \
 	multi_type_vector_test_custom_soa \
 	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
-	multi_type_vector_test_collection \
+	multi_type_vector_test_collection_aos \
+	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
 	segment_tree_test \
 	sorted_string_map_test \
@@ -333,7 +348,8 @@ TESTS += \
 	multi_type_vector_test_custom_soa_mem.mem \
 	multi_type_vector_test_default_aos_mem.mem \
 	multi_type_vector_test_default_soa_mem.mem \
-	multi_type_vector_test_collection_mem.mem \
+	multi_type_vector_test_collection_aos_mem.mem \
+	multi_type_vector_test_collection_soa_mem.mem \
 	point_quad_tree_test_mem.mem \
 	segment_tree_test_mem.mem \
 	sorted_string_map_test_mem.mem \

@@ -28,7 +28,7 @@
 #ifndef INCLUDED_MDDS_COLLECTION_HPP
 #define INCLUDED_MDDS_COLLECTION_HPP
 
-#include "mdds/multi_type_vector_types.hpp"
+#include "mdds/multi_type_vector/types.hpp"
 
 #include <type_traits>
 #include <vector>

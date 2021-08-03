@@ -150,7 +150,8 @@ multi_type_vector_test_custom_aos_mem.mem:src/test.mem.in
 multi_type_vector_test_custom_soa_mem.mem:src/test.mem.in
 multi_type_vector_test_default_aos_mem.mem:src/test.mem.in
 multi_type_vector_test_default_soa_mem.mem:src/test.mem.in
-multi_type_vector_test_collection_mem.mem:src/test.mem.in
+multi_type_vector_test_collection_aos_mem.mem:src/test.mem.in
+multi_type_vector_test_collection_soa_mem.mem:src/test.mem.in
 point_quad_tree_test_mem.mem:src/test.mem.in
 rectangle_set_test_mem.mem:src/test.mem.in
 segment_tree_test_mem.mem:src/test.mem.in

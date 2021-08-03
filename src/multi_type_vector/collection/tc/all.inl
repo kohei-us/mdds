@@ -1,6 +1,7 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2016 Kohei Yoshida
+ * Copyright (c) 2021 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -24,21 +25,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  ************************************************************************/
-
-#include "test_global.hpp" // This must be the first header to be included.
-
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector_trait.hpp>
-#include <mdds/multi_type_vector/collection.hpp>
-
-#include <iostream>
-#include <vector>
-#include <deque>
-#include <memory>
-
-using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
-using cols_type = mdds::mtv::collection<mtv_type>;
 
 void mtv_test_empty()
 {
@@ -398,28 +384,5 @@ void mtv_test_boolean_block()
     assert(++it == collection.end());
 }
 
-int main (int argc, char **argv)
-{
-    try
-    {
-        mtv_test_empty();
-        mtv_test_pointer_size1();
-        mtv_test_unique_pointer_size1();
-        mtv_test_shared_pointer_size2();
-        mtv_test_non_pointer_size1();
-        mtv_test_invalid_collection();
-        mtv_test_sub_element_ranges();
-        mtv_test_sub_element_ranges_invalid();
-        mtv_test_sub_collection_ranges_invalid();
-        mtv_test_boolean_block();
-    }
-    catch (const std::exception& e)
-    {
-        cout << "Test failed: " << e.what() << endl;
-        return EXIT_FAILURE;
-    }
-
-    cout << "Test finished successfully!" << endl;
-    return EXIT_SUCCESS;
-}
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
