@@ -42,14 +42,14 @@ using cols_type = mdds::mtv::collection<mtv_type>;
 
 void mtv_test_empty()
 {
-    stack_printer __stack_printer__("::mtv_test_empty");
+    stack_printer __stack_printer__(__FUNCTION__);
     cols_type empty;
     assert(empty.begin() == empty.end());
 }
 
 void mtv_test_pointer_size1()
 {
-    stack_printer __stack_printer__("::mtv_test_pointer_size1");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     // Two vectors of size 1, both of which are totally empty.
 
@@ -75,7 +75,7 @@ void mtv_test_pointer_size1()
 
 void mtv_test_unique_pointer_size1()
 {
-    stack_printer __stack_printer__("::mtv_test_unique_pointer_size1");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     // Two vector of size 1, with empty and numeric values.
 
@@ -100,7 +100,7 @@ void mtv_test_unique_pointer_size1()
 
 void mtv_test_shared_pointer_size2()
 {
-    stack_printer __stack_printer__("::mtv_test_unique_pointer_size1");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     std::vector<std::shared_ptr<mtv_type>> vectors;
     vectors.push_back(std::make_shared<mtv_type>(2, 2.3));
@@ -139,7 +139,7 @@ void mtv_test_shared_pointer_size2()
 
 void mtv_test_non_pointer_size1()
 {
-    stack_printer __stack_printer__("::mtv_test_non_pointer_size1");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     // Test 1 by 1 grid.
 
@@ -161,7 +161,7 @@ void mtv_test_non_pointer_size1()
 
 void mtv_test_invalid_collection()
 {
-    stack_printer __stack_printer__("::mtv_test_invalid_collection");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     std::vector<mtv_type> vectors;
     vectors.reserve(2);
@@ -194,7 +194,7 @@ void mtv_test_invalid_collection()
 
 void mtv_test_sub_element_ranges()
 {
-    stack_printer __stack_printer__("::mtv_test_sub_element_ranges");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     std::deque<mtv_type> vectors;
     vectors.emplace_back(0);
@@ -302,7 +302,7 @@ void mtv_test_sub_element_ranges()
 
 void mtv_test_sub_element_ranges_invalid()
 {
-    stack_printer __stack_printer__("::mtv_test_sub_element_ranges_invalid");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     std::deque<mtv_type> vectors;
     vectors.emplace_back(5);
@@ -337,7 +337,7 @@ void mtv_test_sub_element_ranges_invalid()
 
 void mtv_test_sub_collection_ranges_invalid()
 {
-    stack_printer __stack_printer__("::mtv_test_sub_collection_ranges_invalid");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     std::deque<mtv_type> vectors;
     vectors.emplace_back(1);
@@ -374,7 +374,7 @@ void mtv_test_sub_collection_ranges_invalid()
 
 void mtv_test_boolean_block()
 {
-    stack_printer __stack_printer__("::mtv_test_boolean_block");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     std::vector<mtv_type> vectors;
     vectors.reserve(2);

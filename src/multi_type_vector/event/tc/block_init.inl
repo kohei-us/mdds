@@ -41,7 +41,7 @@ struct event_block_init
 
 void mtv_test_block_init()
 {
-    stack_printer __stack_printer__("::mtv_test_block_init");
+    stack_printer __stack_printer__(__FUNCTION__);
 
     using mtv_type = mtv_template_type<mdds::mtv::element_block_func, event_block_init>;
 
