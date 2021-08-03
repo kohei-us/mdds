@@ -33,7 +33,7 @@
 
 #include <ostream>
 
-namespace mdds { namespace multi_type_vector { namespace soa { namespace detail {
+namespace mdds { namespace mtv { namespace soa { namespace detail {
 
 /**
  * Common base for both const and non-const iterators to handle traversal of

@@ -59,7 +59,9 @@
             <F N="../src/multi_type_vector/default/aos/test_basic.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_basic.cpp"/>
             <F N="../src/multi_type_vector/event/aos/test_block_counter.cpp"/>
+            <F N="../src/multi_type_vector/event/soa/test_block_counter.cpp"/>
             <F N="../src/multi_type_vector/event/aos/test_block_init.cpp"/>
+            <F N="../src/multi_type_vector/event/soa/test_block_init.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_construction.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_construction.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_empty_cells.cpp"/>
@@ -78,12 +80,14 @@
             <F N="../src/multi_type_vector/default/soa/test_iterators_set.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_iterators_set_empty.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_iterators_set_empty.cpp"/>
-            <F N="../src/multi_type_vector/collection/test_main.cpp"/>
+            <F N="../src/multi_type_vector/collection/aos/test_main.cpp"/>
+            <F N="../src/multi_type_vector/collection/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/event/aos/test_main.cpp"/>
+            <F N="../src/multi_type_vector/event/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/perf/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_managed_block.cpp"/>
             <F N="../src/multi_type_vector/custom/soa/test_managed_block.cpp"/>
@@ -114,6 +118,7 @@
             <F N="../src/multi_type_vector/default/aos/test_main.hpp"/>
             <F N="../src/multi_type_vector/default/soa/test_main.hpp"/>
             <F N="../src/multi_type_vector/event/aos/test_main.hpp"/>
+            <F N="../src/multi_type_vector/event/soa/test_main.hpp"/>
         </Folder>
         <Folder
             Name="Resource Files"
@@ -127,6 +132,7 @@
             Name="Other Files"
             Filters=""
             GUID="{5656E53A-73B8-4CAF-80A3-E0F4AA965920}">
+            <F N="../src/multi_type_vector/collection/tc/all.inl"/>
             <F N="../src/multi_type_vector/custom/tc/basic.inl"/>
             <F N="../src/multi_type_vector/default/tc/basic.inl"/>
             <F N="../src/multi_type_vector/event/tc/block_counter.inl"/>

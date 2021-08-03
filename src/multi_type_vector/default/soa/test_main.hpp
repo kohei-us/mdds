@@ -35,7 +35,7 @@
 
 #include <deque>
 
-using mtv_type = mdds::multi_type_vector::soa::multi_type_vector<mdds::mtv::element_block_func>;
+using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
 
 template<typename _ValT>
 bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)

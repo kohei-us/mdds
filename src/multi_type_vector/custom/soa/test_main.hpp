@@ -37,7 +37,7 @@
 #include <mdds/multi_type_vector_custom_func3.hpp>
 
 template<typename T>
-using mtv_template_type = mdds::multi_type_vector::soa::multi_type_vector<T>;
+using mtv_template_type = mdds::mtv::soa::multi_type_vector<T>;
 
 using mtv_type = mtv_template_type<mdds::mtv::custom_block_func2<user_cell_block, muser_cell_block>>;
 using mtv_fruit_type = mtv_template_type<mdds::mtv::custom_block_func1<fruit_block>>;

@@ -33,7 +33,7 @@
 #include "../types.hpp"
 #include "./iterator.hpp"
 
-namespace mdds { namespace multi_type_vector { namespace soa {
+namespace mdds { namespace mtv { namespace soa {
 
 namespace detail {
 
@@ -41,7 +41,7 @@ namespace detail {
  * Empty event function handler structure, used when no custom function
  * handler is specified.
  *
- * @see mdds::multi_type_vector::soa::multi_type_vector
+ * @see mdds::mtv::soa::multi_type_vector
  */
 struct event_func
 {

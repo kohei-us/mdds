@@ -29,7 +29,7 @@
 #include "../macro.hpp"
 #include "../util.hpp"
 
-namespace mdds { namespace multi_type_vector { namespace soa {
+namespace mdds { namespace mtv { namespace soa {
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mdds::mtv::element_type_boolean, false, mdds::mtv::boolean_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int8_t, mdds::mtv::element_type_int8, 0, mdds::mtv::int8_element_block)

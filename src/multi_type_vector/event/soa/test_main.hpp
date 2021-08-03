@@ -36,7 +36,7 @@
 #include <vector>
 
 template<typename BlkFunc, typename EventFunc>
-using mtv_template_type = mdds::multi_type_vector::soa::multi_type_vector<BlkFunc, EventFunc>;
+using mtv_template_type = mdds::mtv::soa::multi_type_vector<BlkFunc, EventFunc>;
 
 void mtv_test_block_counter();
 void mtv_test_block_init();
