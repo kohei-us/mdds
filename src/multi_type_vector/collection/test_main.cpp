@@ -37,11 +37,8 @@
 #include <deque>
 #include <memory>
 
-using namespace std;
-using namespace mdds;
-
-typedef multi_type_vector<mtv::element_block_func> mtv_type;
-typedef mtv::collection<mtv_type> cols_type;
+using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+using cols_type = mdds::mtv::collection<mtv_type>;
 
 void mtv_test_empty()
 {
@@ -56,7 +53,7 @@ void mtv_test_pointer_size1()
 
     // Two vectors of size 1, both of which are totally empty.
 
-    vector<mtv_type*> vectors;
+    std::vector<mtv_type*> vectors;
     for (size_t i = 0; i < 2; ++i)
         vectors.push_back(new mtv_type(1));
 
@@ -64,11 +61,11 @@ void mtv_test_pointer_size1()
     cols_type::const_iterator it, ite;
     it = collection.begin();
     ite = collection.end();
-    assert(it->type == mtv::element_type_empty);
+    assert(it->type == mdds::mtv::element_type_empty);
     assert((it++)->index == 0);
     assert(it != ite);
 
-    assert(it->type == mtv::element_type_empty);
+    assert(it->type == mdds::mtv::element_type_empty);
     assert(it->index == 1);
 
     assert(++it == ite);
@@ -82,7 +79,7 @@ void mtv_test_unique_pointer_size1()
 
     // Two vector of size 1, with empty and numeric values.
 
-    vector<unique_ptr<mtv_type>> vectors;
+    std::vector<std::unique_ptr<mtv_type>> vectors;
     for (size_t i = 0; i < 2; ++i)
         vectors.push_back(std::make_unique<mtv_type>(1));
 
@@ -90,13 +87,13 @@ void mtv_test_unique_pointer_size1()
 
     cols_type collection(vectors.begin(), vectors.end());
     cols_type::const_iterator it = collection.begin(), ite = collection.end();
-    assert((*it).type == mtv::element_type_empty);
+    assert((*it).type == mdds::mtv::element_type_empty);
     assert((*it).index == 0);
 
     ++it;
-    assert((*it).type == mtv::element_type_double);
+    assert((*it).type == mdds::mtv::element_type_double);
     assert((*it).index == 1);
-    assert(it->get<mtv::double_element_block>() == 1.1);
+    assert(it->get<mdds::mtv::double_element_block>() == 1.1);
 
     assert(++it == ite);
 }
@@ -105,37 +102,37 @@ void mtv_test_shared_pointer_size2()
 {
     stack_printer __stack_printer__("::mtv_test_unique_pointer_size1");
 
-    vector<shared_ptr<mtv_type>> vectors;
-    vectors.push_back(make_shared<mtv_type>(2, 2.3));
-    vectors.push_back(make_shared<mtv_type>(2, std::string("test")));
+    std::vector<std::shared_ptr<mtv_type>> vectors;
+    vectors.push_back(std::make_shared<mtv_type>(2, 2.3));
+    vectors.push_back(std::make_shared<mtv_type>(2, std::string("test")));
 
     cols_type collection(vectors.begin(), vectors.end());
     assert(collection.size() == 2);
 
     cols_type::const_iterator it = collection.begin();
 
-    assert(it->type == mtv::element_type_double);
+    assert(it->type == mdds::mtv::element_type_double);
     assert(it->index == 0);
     assert(it->position == 0);
-    assert(it->get<mtv::double_element_block>() == 2.3);
+    assert(it->get<mdds::mtv::double_element_block>() == 2.3);
 
     ++it;
-    assert(it->type == mtv::element_type_string);
+    assert(it->type == mdds::mtv::element_type_string);
     assert(it->index == 1);
     assert(it->position == 0);
-    assert(it->get<mtv::string_element_block>() == "test");
+    assert(it->get<mdds::mtv::string_element_block>() == "test");
 
     ++it;
-    assert(it->type == mtv::element_type_double);
+    assert(it->type == mdds::mtv::element_type_double);
     assert(it->index == 0);
     assert(it->position == 1);
-    assert(it->get<mtv::double_element_block>() == 2.3);
+    assert(it->get<mdds::mtv::double_element_block>() == 2.3);
 
     ++it;
-    assert(it->type == mtv::element_type_string);
+    assert(it->type == mdds::mtv::element_type_string);
     assert(it->index == 1);
     assert(it->position == 1);
-    assert(it->get<mtv::string_element_block>() == "test");
+    assert(it->get<mdds::mtv::string_element_block>() == "test");
 
     assert(++it == collection.end());
 }
@@ -146,7 +143,7 @@ void mtv_test_non_pointer_size1()
 
     // Test 1 by 1 grid.
 
-    vector<mtv_type> vectors;
+    std::vector<mtv_type> vectors;
     vectors.reserve(1);
     vectors.emplace_back(1, int8_t('c'));
 
@@ -154,10 +151,10 @@ void mtv_test_non_pointer_size1()
     assert(collection.size() == 1);
 
     auto it = collection.begin();
-    assert(it->type == mtv::element_type_int8);
+    assert(it->type == mdds::mtv::element_type_int8);
     assert(it->index == 0);
     assert(it->position == 0);
-    assert(it->get<mtv::int8_element_block>() == 'c');
+    assert(it->get<mdds::mtv::int8_element_block>() == 'c');
 
     assert(++it == collection.end());
 }
@@ -166,7 +163,7 @@ void mtv_test_invalid_collection()
 {
     stack_printer __stack_printer__("::mtv_test_invalid_collection");
 
-    vector<mtv_type> vectors;
+    std::vector<mtv_type> vectors;
     vectors.reserve(2);
     vectors.emplace_back(1, int8_t('c'));
     vectors.emplace_back(2);
@@ -199,7 +196,7 @@ void mtv_test_sub_element_ranges()
 {
     stack_printer __stack_printer__("::mtv_test_sub_element_ranges");
 
-    deque<mtv_type> vectors;
+    std::deque<mtv_type> vectors;
     vectors.emplace_back(0);
     vectors.emplace_back(0);
     vectors.emplace_back(0);
@@ -232,38 +229,38 @@ void mtv_test_sub_element_ranges()
     collection.set_element_range(1, 2);
 
     cols_type::const_iterator it = collection.begin();
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 1);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 1);
     assert(it->index == 0);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 4);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 4);
     assert(it->index == 1);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 7);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 7);
     assert(it->index == 2);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 2);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 2);
     assert(it->index == 0);
     assert(it->position == 2);
 
     ++it;
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 5);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 5);
     assert(it->index == 1);
     assert(it->position == 2);
 
     ++it;
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 8);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 8);
     assert(it->index == 2);
     assert(it->position == 2);
 
@@ -272,14 +269,14 @@ void mtv_test_sub_element_ranges()
     // Limit the collection range.
     collection.set_collection_range(1, 1);
     it = collection.begin();
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 4);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 4);
     assert(it->index == 1);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 5);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 5);
     assert(it->index == 1);
     assert(it->position == 2);
 
@@ -289,14 +286,14 @@ void mtv_test_sub_element_ranges()
     cols_type swapped;
     collection.swap(swapped);
     it = swapped.begin();
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 4);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 4);
     assert(it->index == 1);
     assert(it->position == 1);
 
     ++it;
-    assert(it->type == mtv::element_type_int32);
-    assert(it->get<mtv::int32_element_block>() == 5);
+    assert(it->type == mdds::mtv::element_type_int32);
+    assert(it->get<mdds::mtv::int32_element_block>() == 5);
     assert(it->index == 1);
     assert(it->position == 2);
 
@@ -307,7 +304,7 @@ void mtv_test_sub_element_ranges_invalid()
 {
     stack_printer __stack_printer__("::mtv_test_sub_element_ranges_invalid");
 
-    deque<mtv_type> vectors;
+    std::deque<mtv_type> vectors;
     vectors.emplace_back(5);
     vectors.emplace_back(5);
     vectors.emplace_back(5);
@@ -319,7 +316,7 @@ void mtv_test_sub_element_ranges_invalid()
         collection.set_element_range(0, 0);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&) {}
 
     try
     {
@@ -327,7 +324,7 @@ void mtv_test_sub_element_ranges_invalid()
         collection.set_element_range(5, 1);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&) {}
 
     try
     {
@@ -335,14 +332,14 @@ void mtv_test_sub_element_ranges_invalid()
         collection.set_element_range(0, 6);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&) {}
 }
 
 void mtv_test_sub_collection_ranges_invalid()
 {
     stack_printer __stack_printer__("::mtv_test_sub_collection_ranges_invalid");
 
-    deque<mtv_type> vectors;
+    std::deque<mtv_type> vectors;
     vectors.emplace_back(1);
     vectors.emplace_back(1);
     vectors.emplace_back(1);
@@ -356,7 +353,7 @@ void mtv_test_sub_collection_ranges_invalid()
         collection.set_collection_range(0, 0);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&) {}
 
     try
     {
@@ -364,7 +361,7 @@ void mtv_test_sub_collection_ranges_invalid()
         collection.set_collection_range(5, 1);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&) {}
 
     try
     {
@@ -372,14 +369,14 @@ void mtv_test_sub_collection_ranges_invalid()
         collection.set_collection_range(0, 6);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&) {}
 }
 
 void mtv_test_boolean_block()
 {
     stack_printer __stack_printer__("::mtv_test_boolean_block");
 
-    vector<mtv_type> vectors;
+    std::vector<mtv_type> vectors;
     vectors.reserve(2);
     vectors.emplace_back(1, true);
     vectors.emplace_back(1, false);
@@ -387,16 +384,16 @@ void mtv_test_boolean_block()
     cols_type collection(vectors.begin(), vectors.end());
 
     auto it = collection.begin();
-    assert(it->type == mtv::element_type_boolean);
+    assert(it->type == mdds::mtv::element_type_boolean);
     assert(it->index == 0);
     assert(it->position == 0);
-    assert(it->get<mtv::boolean_element_block>() == true);
+    assert(it->get<mdds::mtv::boolean_element_block>() == true);
 
     ++it;
-    assert(it->type == mtv::element_type_boolean);
+    assert(it->type == mdds::mtv::element_type_boolean);
     assert(it->index == 1);
     assert(it->position == 0);
-    assert(it->get<mtv::boolean_element_block>() == false);
+    assert(it->get<mdds::mtv::boolean_element_block>() == false);
 
     assert(++it == collection.end());
 }
