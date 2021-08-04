@@ -19,37 +19,10 @@ add_definitions(-DMDDS_UNIT_TEST)
 add_definitions(-DMDDS_DEBUG_NODE_BASE)
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src/include
     ${Boost_INCLUDE_DIR}
 )
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
-
-# TODO : move the test executable definitions to their respective subdirectories.
-
-set(_TESTS
-    flat-segment-tree-test
-    multi-type-matrix-test
-    multi-type-matrix-test-walk
-    point-quad-tree-test
-    segment-tree-test
-    sorted-string-map-test
-    trie-map-test
-)
-
-foreach(_TEST ${_TESTS})
-    set(_TEST_FILE ${_TEST}.cpp)
-    string(REPLACE "-" "_" _TEST_FILE ${_TEST_FILE})
-    add_executable(${_TEST} EXCLUDE_FROM_ALL
-        ${PROJECT_SOURCE_DIR}/src/test_global.cpp
-        ${PROJECT_SOURCE_DIR}/src/${_TEST_FILE}
-    )
-    add_test(${_TEST} ${_TEST} func)  # not all test programs require a 'func' parameter.
-endforeach()
-
-add_dependencies(check
-    ${_TESTS}
-)
 
 install(DIRECTORY
     ${PROJECT_SOURCE_DIR}/include/mdds
