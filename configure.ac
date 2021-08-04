@@ -136,6 +136,8 @@ Makefile
 include/Makefile
 include/mdds/Makefile
 include/mdds/multi_type_vector/Makefile
+include/mdds/multi_type_vector/aos/Makefile
+include/mdds/multi_type_vector/soa/Makefile
 example/Makefile
 test/Makefile
 test/gdb/Makefile
