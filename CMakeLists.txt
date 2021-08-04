@@ -47,42 +47,8 @@ foreach(_TEST ${_TESTS})
     add_test(${_TEST} ${_TEST} func)  # not all test programs require a 'func' parameter.
 endforeach()
 
-add_executable(rtree-test EXCLUDE_FROM_ALL
-    ${PROJECT_SOURCE_DIR}/src/test_global.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_basic.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_copy.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_directory_node_split.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_erase_directories.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_exact_search_by_extent.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_exact_search_by_point.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_forced_reinsertion.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_geometry.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_intersection.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_move.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_node_split.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_point_objects.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_square_distance.cpp
-)
-
-add_executable(rtree-test-bulkload EXCLUDE_FROM_ALL
-    ${PROJECT_SOURCE_DIR}/src/test_global.cpp
-    ${PROJECT_SOURCE_DIR}/src/rtree/test_bulkload_main.cpp
-)
-
-set(_CUSTOM_TESTS
-    rtree-test
-    rtree-test-bulkload
-)
-
-foreach(_TEST ${_CUSTOM_TESTS})
-    add_test(${_TEST} ${_TEST})
-endforeach()
-
 add_dependencies(check
     ${_TESTS}
-    ${_CUSTOM_TESTS}
 )
 
 install(DIRECTORY
