@@ -1,0 +1,93 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
+<Project
+    Version="10.0"
+    VendorName="SlickEdit"
+    TemplateName="(Other)"
+    WorkingDir=".">
+    <Config
+        Name="Release"
+        OutputFile=""
+        CompilerConfigName="">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='"cmake.exe"'/>
+            </Target>
+        </Menu>
+    </Config>
+    <Files>
+        <Folder
+            Name="Source Files"
+            Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
+            GUID="{CE0C2DDF-41A6-4F3A-9F93-55171F6B8A1C}"/>
+        <Folder
+            Name="Header Files"
+            Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
+            GUID="{3DEAE157-B53E-4653-B3F7-2FB7AE791940}"/>
+        <Folder
+            Name="Resource Files"
+            Filters="*.ico;*.cur;*.dlg"
+            GUID="{F09D8E4C-58EE-43BC-B7CD-DDBA73F7BE81}"/>
+        <Folder
+            Name="Bitmaps"
+            Filters="*.bmp"
+            GUID="{CED966F5-9A60-4087-A9F2-42056C4DDBCE}"/>
+        <Folder
+            Name="Other Files"
+            Filters=""
+            GUID="{876D3814-5CA5-4819-A3E6-452BFC3920F7}">
+            <F N="../CMakeLists.txt"/>
+            <F N="../src/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/collection/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/collection/aos/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/collection/soa/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/custom/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/custom/aos/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/custom/soa/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/default/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/default/aos/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/default/soa/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/event/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/event/aos/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/event/soa/CMakeLists.txt"/>
+            <F N="../src/multi_type_vector/perf/CMakeLists.txt"/>
+        </Folder>
+    </Files>
+    <List Name="RTE">
+    </List>
+</Project>

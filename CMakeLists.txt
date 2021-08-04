@@ -25,6 +25,8 @@ include_directories(
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
+# TODO : move the test executable definitions to their respective subdirectories.
+
 set(_TESTS
     flat-segment-tree-test
     multi-type-matrix-test
@@ -44,44 +46,6 @@ foreach(_TEST ${_TESTS})
     )
     add_test(${_TEST} ${_TEST} func)  # not all test programs require a 'func' parameter.
 endforeach()
-
-add_executable(multi-type-vector-test-perf EXCLUDE_FROM_ALL
-    ${PROJECT_SOURCE_DIR}/src/multi_type_vector/perf/test_main.cpp
-)
-
-add_executable(multi-type-vector-test-collection EXCLUDE_FROM_ALL
-    ${PROJECT_SOURCE_DIR}/src/test_global.cpp
-    ${PROJECT_SOURCE_DIR}/src/multi_type_vector/collection/test_main.cpp
-)
-
-add_test(multi-type-vector-test-collection multi-type-vector-test-collection)
-
-add_executable(multi-type-vector-test-custom EXCLUDE_FROM_ALL
-    ${PROJECT_SOURCE_DIR}/src/test_global.cpp
-    ${PROJECT_SOURCE_DIR}/src/multi_type_vector/custom/test_main.cpp
-)
-
-add_test(multi-type-vector-test-custom multi-type-vector-test-custom)
-
-add_executable(multi-type-vector-test-default EXCLUDE_FROM_ALL
-    ${PROJECT_SOURCE_DIR}/src/test_global.cpp
-    ${PROJECT_SOURCE_DIR}/src/multi_type_vector/default/test_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/multi_type_vector/default/test_construction.cpp
-    ${PROJECT_SOURCE_DIR}/src/multi_type_vector/default/test_basic.cpp
-)
-
-add_test(multi-type-vector-test-default multi-type-vector-test-default)
-
-target_include_directories(multi-type-vector-test-default PUBLIC
-    ${PROJECT_SOURCE_DIR}/src/multi_type_vector/default/tc
-)
-
-add_executable(multi-type-vector-test-event EXCLUDE_FROM_ALL
-    ${PROJECT_SOURCE_DIR}/src/test_global.cpp
-    ${PROJECT_SOURCE_DIR}/src/multi_type_vector/event/test_main.cpp
-)
-
-add_test(multi-type-vector-test-event multi-type-vector-test-event)
 
 add_executable(rtree-test EXCLUDE_FROM_ALL
     ${PROJECT_SOURCE_DIR}/src/test_global.cpp
@@ -108,10 +72,6 @@ add_executable(rtree-test-bulkload EXCLUDE_FROM_ALL
 )
 
 set(_CUSTOM_TESTS
-    multi-type-vector-test-collection
-    multi-type-vector-test-custom
-    multi-type-vector-test-default
-    multi-type-vector-test-event
     rtree-test
     rtree-test-bulkload
 )
@@ -132,3 +92,5 @@ install(DIRECTORY
         PATTERN "*.hpp"
         PATTERN "*.inl"
 )
+
+add_subdirectory(src)
