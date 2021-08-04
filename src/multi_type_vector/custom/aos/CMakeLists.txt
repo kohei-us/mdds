@@ -1,19 +1,21 @@
+set(TEST_NAME multi-type-vector-test-custom-aos)
+set(TARGET_NAME ${TEST_NAME})
 
-add_executable(multi-type-vector-test-custom-aos EXCLUDE_FROM_ALL
+add_executable(${TARGET_NAME} EXCLUDE_FROM_ALL
     test_basic.cpp
     test_main.cpp
     test_managed_block.cpp
     test_misc.cpp
     test_swap.cpp
     test_transfer.cpp
-    ../../../test_global.cpp
 )
 
-target_include_directories(multi-type-vector-test-custom-aos PUBLIC
+target_link_libraries(${TARGET_NAME} PUBLIC test-global)
+target_include_directories(${TARGET_NAME} PUBLIC
     ..
     ../tc
     ../../../include
 )
 
-add_test(multi-type-vector-test-custom-aos multi-type-vector-test-custom-aos)
-add_dependencies(check multi-type-vector-test-custom-aos)
+add_test(${TEST_NAME} ${TARGET_NAME})
+add_dependencies(check ${TARGET_NAME})

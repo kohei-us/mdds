@@ -1,5 +1,8 @@
+set(TEST_NAME multi-type-vector-test-perf)
+set(TARGET_NAME ${TEST_NAME})
 
-add_executable(multi-type-vector-test-perf EXCLUDE_FROM_ALL
+add_executable(${TARGET_NAME} EXCLUDE_FROM_ALL
     test_main.cpp
-    ../../test_global.cpp
 )
+
+target_link_libraries(${TARGET_NAME} PUBLIC test-global)

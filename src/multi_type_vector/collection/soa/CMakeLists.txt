@@ -1,13 +1,15 @@
+set(TEST_NAME multi-type-vector-test-collection-soa)
+set(TARGET_NAME ${TEST_NAME})
 
-add_executable(multi-type-vector-test-collection-soa EXCLUDE_FROM_ALL
+add_executable(${TARGET_NAME} EXCLUDE_FROM_ALL
     test_main.cpp
-    ../../../test_global.cpp
 )
 
-target_include_directories(multi-type-vector-test-collection-soa PUBLIC
+target_link_libraries(${TARGET_NAME} PUBLIC test-global)
+target_include_directories(${TARGET_NAME} PUBLIC
     ../tc
     ../../../include
 )
 
-add_test(multi-type-vector-test-collection-soa multi-type-vector-test-collection-soa)
-add_dependencies(check multi-type-vector-test-collection-soa)
+add_test(${TEST_NAME} ${TARGET_NAME})
+add_dependencies(check ${TARGET_NAME})
