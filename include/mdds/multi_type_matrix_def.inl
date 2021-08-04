@@ -581,7 +581,7 @@ void multi_type_matrix<_MtxTrait>::copy(
             "multi_type_matrix: specified destination size is larger than the current matrix.");
 
     // Ensure that the passed array is supported by this matrix.
-    to_mtm_type(mdds_mtv_get_element_type(*it_begin));
+    to_mtm_type(store_type::get_element_type(*it_begin));
 
     auto it = it_begin;
     position_type pos_dest = position(0, 0);

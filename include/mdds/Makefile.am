@@ -12,7 +12,6 @@ headers_HEADERS = \
 	multi_type_vector_custom_func1.hpp \
 	multi_type_vector_custom_func2.hpp \
 	multi_type_vector_custom_func3.hpp \
-	multi_type_vector_def.inl \
 	multi_type_vector.hpp \
 	multi_type_vector_itr.hpp \
 	multi_type_vector_macro.hpp \
