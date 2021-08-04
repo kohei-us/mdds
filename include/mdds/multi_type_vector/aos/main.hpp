@@ -31,7 +31,7 @@
 
 #include "../../global.hpp"
 #include "../types.hpp"
-#include "../iterator.hpp"
+#include "./iterator.hpp"
 
 namespace mdds { namespace mtv { namespace aos {
 
@@ -178,11 +178,11 @@ private:
 
 public:
 
-    typedef mdds::detail::mtv::iterator_base<iterator_trait, itr_forward_update> iterator;
-    typedef mdds::detail::mtv::iterator_base<reverse_iterator_trait, itr_no_update> reverse_iterator;
+    typedef detail::iterator_base<iterator_trait, itr_forward_update> iterator;
+    typedef detail::iterator_base<reverse_iterator_trait, itr_no_update> reverse_iterator;
 
-    typedef mdds::detail::mtv::const_iterator_base<const_iterator_trait, itr_forward_update, iterator> const_iterator;
-    typedef mdds::detail::mtv::const_iterator_base<const_reverse_iterator_trait, itr_no_update, reverse_iterator> const_reverse_iterator;
+    typedef detail::const_iterator_base<const_iterator_trait, itr_forward_update, iterator> const_iterator;
+    typedef detail::const_iterator_base<const_reverse_iterator_trait, itr_no_update, reverse_iterator> const_reverse_iterator;
 
     /**
      * value_type is the type of a block stored in the primary array.  It

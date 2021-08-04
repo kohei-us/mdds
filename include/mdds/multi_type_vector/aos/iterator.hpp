@@ -25,15 +25,14 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_ITERATOR_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_ITERATOR_HPP
+#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_AOS_ITERATOR_HPP
+#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_AOS_ITERATOR_HPP
 
-#include "./types.hpp"
-#include "./iterator_node.hpp"
+#include "../iterator_node.hpp"
 
 #include <cstddef>
 
-namespace mdds { namespace detail { namespace mtv {
+namespace mdds { namespace mtv { namespace aos { namespace detail {
 
 /**
  * Common base for both const and non-const iterators.  Its protected inc()
@@ -49,7 +48,7 @@ protected:
     typedef typename _Trait::base_iterator base_iterator_type;
 
     typedef typename parent_type::size_type size_type;
-    typedef iterator_value_node<size_type> node;
+    typedef mdds::detail::mtv::iterator_value_node<size_type> node;
 
     iterator_common_base() : m_cur_node(0) {}
 
@@ -292,6 +291,6 @@ public:
     }
 };
 
-}}}
+}}}}
 
 #endif

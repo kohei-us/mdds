@@ -8,7 +8,6 @@ headers_HEADERS = \
     custom_func1.hpp \
     custom_func2.hpp \
     custom_func3.hpp \
-    iterator.hpp \
     iterator_node.hpp \
     macro.hpp \
     trait.hpp \

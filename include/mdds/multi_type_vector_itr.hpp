@@ -29,7 +29,7 @@
 #ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_ITR_HPP
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_ITR_HPP
 
-#include "./multi_type_vector/iterator.hpp"
+#include "./multi_type_vector/aos/iterator.hpp"
 
 #endif
 
