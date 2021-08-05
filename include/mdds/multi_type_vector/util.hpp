@@ -35,6 +35,19 @@ namespace mdds {
 
 namespace detail { namespace mtv {
 
+/**
+ * Empty event function handler structure, used when no custom function
+ * handler is specified.
+ *
+ * @see mdds::mtv::aos::multi_type_vector
+ */
+struct event_func
+{
+    void element_block_acquired(const mdds::mtv::base_element_block* /*block*/) {}
+
+    void element_block_released(const mdds::mtv::base_element_block* /*block*/) {}
+};
+
 inline void throw_block_position_not_found(
     const char* method_sig, int line, size_t pos, size_t block_size, size_t container_size)
 {

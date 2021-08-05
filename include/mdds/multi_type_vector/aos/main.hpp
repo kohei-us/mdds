@@ -31,26 +31,10 @@
 
 #include "../../global.hpp"
 #include "../types.hpp"
+#include "../util.hpp"
 #include "./iterator.hpp"
 
 namespace mdds { namespace mtv { namespace aos {
-
-namespace detail {
-
-/**
- * Empty event function handler structure, used when no custom function
- * handler is specified.
- *
- * @see mdds::mtv::aos::multi_type_vector
- */
-struct event_func
-{
-    void element_block_acquired(const mdds::mtv::base_element_block* /*block*/) {}
-
-    void element_block_released(const mdds::mtv::base_element_block* /*block*/) {}
-};
-
-}
 
 /**
  * Multi-type vector consists of a series of one or more blocks, and each
@@ -77,7 +61,7 @@ struct event_func
  *
  * @see mdds::multi_type_vector::value_type
  */
-template<typename _ElemBlockFunc, typename _EventFunc = detail::event_func>
+template<typename _ElemBlockFunc, typename _EventFunc = mdds::detail::mtv::event_func>
 class multi_type_vector
 {
 public:

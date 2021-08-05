@@ -32,7 +32,7 @@
 
 namespace mdds {
 
-template<typename ElemBlockFunc, typename EventFunc = mtv::aos::detail::event_func>
+template<typename ElemBlockFunc, typename EventFunc = mdds::detail::mtv::event_func>
 using multi_type_vector = mtv::aos::multi_type_vector<ElemBlockFunc, EventFunc>;
 
 }
