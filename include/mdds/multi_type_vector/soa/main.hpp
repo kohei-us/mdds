@@ -36,7 +36,7 @@
 
 namespace mdds { namespace mtv { namespace soa {
 
-template<typename _ElemBlockFunc, typename _EventFunc = mdds::detail::mtv::event_func>
+template<typename ElemBlockFunc, typename _EventFunc = mdds::detail::mtv::event_func>
 class multi_type_vector
 {
 public:
@@ -44,7 +44,7 @@ public:
 
     using element_block_type = mdds::mtv::base_element_block;
     using element_category_type = mdds::mtv::element_t;
-    using element_block_func = _ElemBlockFunc;
+    using element_block_func = ElemBlockFunc;
 
     /**
      * Optional event handler function structure, whose functions get called
@@ -60,8 +60,8 @@ public:
      * the block gets deleted or gets transferred to another container.</li>
      * </ul>
      *
-     * @see mdds::detail::mtv_event_func for the precise function signatures
-     *      of the event handler functions.
+     * @see mdds::detail::mtv::event_func for the precise function signatures of
+     *      the event handler functions.
      */
     using event_func = _EventFunc;
 
@@ -340,8 +340,8 @@ public:
      * @param init_size initial container size.
      * @param value initial element value.
      */
-    template<typename _T>
-    multi_type_vector(size_type init_size, const _T& value);
+    template<typename T>
+    multi_type_vector(size_type init_size, const T& value);
 
     /**
      * Constructor that takes initial size of the container and begin and end
@@ -356,8 +356,8 @@ public:
      *               the container is being initialized to.  The end position
      *               is <i>not</i> inclusive.
                                                                               */
-    template<typename _T>
-    multi_type_vector(size_type init_size, const _T& it_begin, const _T& it_end);
+    template<typename T>
+    multi_type_vector(size_type init_size, const T& it_begin, const T& it_end);
 
     /**
      * Copy constructor.
@@ -514,8 +514,8 @@ public:
      * @return iterator position pointing to the block where the value is
      *         inserted.
      */
-    template<typename _T>
-    iterator set(size_type pos, const _T& value);
+    template<typename T>
+    iterator set(size_type pos, const T& value);
 
     /**
      * Set a value of an arbitrary type to a specified position.  The type of
@@ -549,8 +549,8 @@ public:
      * @return iterator position pointing to the block where the value is
      *         inserted.
      */
-    template<typename _T>
-    iterator set(const iterator& pos_hint, size_type pos, const _T& value);
+    template<typename T>
+    iterator set(const iterator& pos_hint, size_type pos, const T& value);
 
     /**
      * Set multiple values of identical type to a range of elements starting
@@ -573,8 +573,8 @@ public:
      *         inserted.  When no value insertion occurs because the value set
      *         is empty, the end iterator position is returned.
      */
-    template<typename _T>
-    iterator set(size_type pos, const _T& it_begin, const _T& it_end);
+    template<typename T>
+    iterator set(size_type pos, const T& it_begin, const T& it_end);
 
     /**
      * Set multiple values of identical type to a range of elements starting
@@ -613,8 +613,8 @@ public:
      *         inserted.  When no value insertion occurs because the value set
      *         is empty, the end iterator position is returned.
      */
-    template<typename _T>
-    iterator set(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
+    template<typename T>
+    iterator set(const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end);
 
     /**
      * Append a new value to the end of the container.
@@ -625,8 +625,8 @@ public:
      *         appended, which in this case is always the last block of the
      *         container.
      */
-    template<typename _T>
-    iterator push_back(const _T& value);
+    template<typename T>
+    iterator push_back(const T& value);
 
     /**
      * Append a new empty element to the end of the container.
@@ -658,8 +658,8 @@ public:
      *         inserted.  When no value insertion occurs because the value set
      *         is empty, the end iterator position is returned.
      */
-    template<typename _T>
-    iterator insert(size_type pos, const _T& it_begin, const _T& it_end);
+    template<typename T>
+    iterator insert(size_type pos, const T& it_begin, const T& it_end);
 
     /**
      * Insert multiple values of identical type to a specified position.
@@ -698,8 +698,8 @@ public:
      *         inserted.  When no value insertion occurs because the value set
      *         is empty, the end iterator position is returned.
      */
-    template<typename _T>
-    iterator insert(const iterator& pos_hint, size_type pos, const _T& it_begin, const _T& it_end);
+    template<typename T>
+    iterator insert(const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end);
 
     /**
      * Get the type of an element at specified position.
@@ -891,8 +891,8 @@ public:
      * @param pos position of the element value to retrieve.
      * @param value (out) variable to store the retrieved value.
      */
-    template<typename _T>
-    void get(size_type pos, _T& value) const;
+    template<typename T>
+    void get(size_type pos, T& value) const;
 
     /**
      * Get the value of an element at specified position.  The caller must
@@ -905,8 +905,8 @@ public:
      * @param pos position of the element value to retrieve.
      * @return element value.
      */
-    template<typename _T>
-    _T get(size_type pos) const;
+    template<typename T>
+    T get(size_type pos) const;
 
     /**
      * Return the value of an element at specified position and set that
@@ -922,8 +922,8 @@ public:
      *
      * @return element value.
      */
-    template<typename _T>
-    _T release(size_type pos);
+    template<typename T>
+    T release(size_type pos);
 
     /**
      * Retrieve the value of an element at specified position and set that
@@ -941,8 +941,8 @@ public:
      * @return iterator referencing the block where the position of the
      *         released element is.
      */
-    template<typename _T>
-    iterator release(size_type pos, _T& value);
+    template<typename T>
+    iterator release(size_type pos, T& value);
 
     /**
      * Retrieve the value of an element at specified position and set that
@@ -960,8 +960,8 @@ public:
      * @return iterator referencing the block where the position of the
      *         released element is.
      */
-    template<typename _T>
-    iterator release(const iterator& pos_hint, size_type pos, _T& value);
+    template<typename T>
+    iterator release(const iterator& pos_hint, size_type pos, T& value);
 
     /**
      * Release all its elements, and empties its content.  Calling this method
@@ -1077,8 +1077,8 @@ public:
      *
      * @return numerical identifier representing the element.
      */
-    template<typename _T>
-    static mtv::element_t get_element_type(const _T& elem);
+    template<typename T>
+    static mtv::element_t get_element_type(const T& elem);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     void dump_blocks(std::ostream& os) const;
@@ -1093,15 +1093,15 @@ private:
 
     void delete_element_blocks(size_type start, size_type end);
 
-    template<typename _T>
+    template<typename T>
     bool set_cells_precheck(
-        size_type row, const _T& it_begin, const _T& it_end, size_type& end_pos);
+        size_type row, const T& it_begin, const T& it_end, size_type& end_pos);
 
-    template<typename _T>
-    iterator set_impl(size_type pos, size_type block_index, const _T& value);
+    template<typename T>
+    iterator set_impl(size_type pos, size_type block_index, const T& value);
 
-    template<typename _T>
-    iterator release_impl(size_type pos, size_type block_index, _T& value);
+    template<typename T>
+    iterator release_impl(size_type pos, size_type block_index, T& value);
 
     void swap_impl(
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
@@ -1119,8 +1119,8 @@ private:
         multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
         size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2);
 
-    template<typename _T>
-    iterator insert_cells_impl(size_type row, size_type block_index, const _T& it_begin, const _T& it_end);
+    template<typename T>
+    iterator insert_cells_impl(size_type row, size_type block_index, const T& it_begin, const T& it_end);
 
     void resize_impl(size_type new_size);
 
@@ -1178,38 +1178,38 @@ private:
 
     iterator set_whole_block_empty(size_type block_index, bool overwrite);
 
-    template<typename _T>
-    iterator push_back_impl(const _T& value);
+    template<typename T>
+    iterator push_back_impl(const T& value);
 
-    template<typename _T>
+    template<typename T>
     iterator set_cells_impl(
-        size_type row, size_type end_row, size_type block_index1, const _T& it_begin, const _T& it_end);
+        size_type row, size_type end_row, size_type block_index1, const T& it_begin, const T& it_end);
 
-    template<typename _T>
+    template<typename T>
     iterator set_cells_to_single_block(
         size_type start_row, size_type end_row, size_type block_index,
-        const _T& it_begin, const _T& it_end);
+        const T& it_begin, const T& it_end);
 
-    template<typename _T>
+    template<typename T>
     iterator set_cells_to_multi_blocks(
         size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-        const _T& it_begin, const _T& it_end);
+        const T& it_begin, const T& it_end);
 
-    template<typename _T>
+    template<typename T>
     iterator set_cells_to_multi_blocks_block1_non_equal(
         size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-        const _T& it_begin, const _T& it_end);
+        const T& it_begin, const T& it_end);
 
-    template<typename _T>
+    template<typename T>
     iterator set_cells_to_multi_blocks_block1_non_empty(
         size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-        const _T& it_begin, const _T& it_end);
+        const T& it_begin, const T& it_end);
 
-    template<typename _T>
-    iterator set_cell_to_empty_block(size_type block_index, size_type pos_in_block, const _T& cell);
+    template<typename T>
+    iterator set_cell_to_empty_block(size_type block_index, size_type pos_in_block, const T& cell);
 
-    template<typename _T>
-    iterator set_cell_to_non_empty_block_of_size_one(size_type block_index, const _T& cell);
+    template<typename T>
+    iterator set_cell_to_non_empty_block_of_size_one(size_type block_index, const T& cell);
 
     /**
      * Find the correct block position for a given logical row ID.
@@ -1227,11 +1227,11 @@ private:
      */
     size_type get_block_position(const const_iterator& pos_hint, size_type row) const;
 
-    template<typename _T>
-    void create_new_block_with_new_cell(size_type block_index, const _T& cell);
+    template<typename T>
+    void create_new_block_with_new_cell(size_type block_index, const T& cell);
 
-    template<typename _T>
-    void append_cell_to_block(size_type block_index, const _T& cell);
+    template<typename T>
+    void append_cell_to_block(size_type block_index, const T& cell);
 
     /**
      * Try to append a sequence of values to the previous block if the previous
@@ -1240,29 +1240,29 @@ private:
      * @return true if the values have been appended successfully, otherwise
      *         false.
      */
-    template<typename _T>
+    template<typename T>
     bool append_to_prev_block(
         size_type block_index, element_category_type cat, size_type length,
-        const _T& it_begin, const _T& it_end);
+        const T& it_begin, const T& it_end);
 
-    template<typename _T>
+    template<typename T>
     void insert_cells_to_middle(
-        size_type row, size_type block_index, const _T& it_begin, const _T& it_end);
+        size_type row, size_type block_index, const T& it_begin, const T& it_end);
 
-    template<typename _T>
+    template<typename T>
     iterator set_cell_to_middle_of_block(
-        size_type block_index, size_type pos_in_block, const _T& cell);
+        size_type block_index, size_type pos_in_block, const T& cell);
 
     /**
      * Set a new value to the top of specified non-empty block. The block is
      * expected to be of size greater than one, and the previous block is not of
      * the same type as the value being inserted.
      */
-    template<typename _T>
-    void set_cell_to_top_of_data_block(size_type block_index, const _T& cell);
+    template<typename T>
+    void set_cell_to_top_of_data_block(size_type block_index, const T& cell);
 
-    template<typename _T>
-    void set_cell_to_bottom_of_data_block(size_type block_index, const _T& cell);
+    template<typename T>
+    void set_cell_to_bottom_of_data_block(size_type block_index, const T& cell);
 
     iterator transfer_impl(
         size_type start_pos, size_type end_pos, size_type block_index1,
