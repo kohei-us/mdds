@@ -28,8 +28,8 @@
 #include "test_global.hpp" // This must be the first header to be included.
 
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector_trait.hpp>
+#include <mdds/multi_type_vector/aos/main.hpp>
+#include <mdds/multi_type_vector/trait.hpp>
 #include <mdds/multi_type_vector/collection.hpp>
 
 #include <iostream>
@@ -37,7 +37,7 @@
 #include <deque>
 #include <memory>
 
-using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+using mtv_type = mdds::mtv::aos::multi_type_vector<mdds::mtv::element_block_func>;
 using cols_type = mdds::mtv::collection<mtv_type>;
 
 #include "all.inl"

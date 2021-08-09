@@ -29,14 +29,14 @@
 #pragma once
 
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector_trait.hpp>
+#include <mdds/multi_type_vector/aos/main.hpp>
+#include <mdds/multi_type_vector/trait.hpp>
 
 #include <iostream>
 #include <vector>
 
 template<typename BlkFunc, typename EventFunc>
-using mtv_template_type = mdds::multi_type_vector<BlkFunc, EventFunc>;
+using mtv_template_type = mdds::mtv::aos::multi_type_vector<BlkFunc, EventFunc>;
 
 void mtv_test_block_counter();
 void mtv_test_block_init();
