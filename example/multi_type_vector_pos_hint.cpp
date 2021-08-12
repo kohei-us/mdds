@@ -27,7 +27,7 @@
  ************************************************************************/
 
 #include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector_trait.hpp>
+#include <mdds/multi_type_vector/trait.hpp>
 
 #include <stdio.h>
 #include <string>

@@ -12,7 +12,7 @@ and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds
 ::
 
     #include <mdds/multi_type_vector.hpp>
-    #include <mdds/multi_type_vector_trait.hpp>
+    #include <mdds/multi_type_vector/trait.hpp>
     #include <iostream>
     #include <vector>
     #include <string>
@@ -139,7 +139,7 @@ event handler method gets triggered.
 The following code example demonstrates how this all works::
 
     #include <mdds/multi_type_vector.hpp>
-    #include <mdds/multi_type_vector_trait.hpp>
+    #include <mdds/multi_type_vector/trait.hpp>
     #include <iostream>
 
     using namespace std;
@@ -226,7 +226,7 @@ element values directly from these array pointers.
 ::
 
     #include <mdds/multi_type_vector.hpp>
-    #include <mdds/multi_type_vector_trait.hpp>
+    #include <mdds/multi_type_vector/trait.hpp>
     #include <iostream>
 
     using namespace std;
