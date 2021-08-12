@@ -7,7 +7,7 @@ Quick start
 -----------
 
 The following code demonstrates a simple use case of storing values of double
-and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds::multi_type_vector`.
+and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds::mtv::soa::multi_type_vector`.
 
 ::
 
@@ -20,7 +20,7 @@ and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds
     using std::cout;
     using std::endl;
 
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
 
     template<typename _Blk>
     void print_block(const mtv_type::value_type& v)
@@ -132,8 +132,8 @@ define either a class or a struct that has the following methods:
 * **void element_block_released(mdds::mtv::base_element_block* block)**
 
 as its public methods, then pass it as the second template argument when
-instantiating your :cpp:class:`~mdds::multi_type_vector` type.  Refer to
-:cpp:type:`mdds::multi_type_vector::event_func` for the details on when each
+instantiating your :cpp:class:`~mdds::mtv::soa::multi_type_vector` type.  Refer to
+:cpp:type:`mdds::mtv::soa::multi_type_vector::event_func` for the details on when each
 event handler method gets triggered.
 
 The following code example demonstrates how this all works::
@@ -158,7 +158,7 @@ The following code example demonstrates how this all works::
         }
     };
 
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, event_hdl>;
+    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func, event_hdl>;
 
     int main()
     {
@@ -233,7 +233,7 @@ element values directly from these array pointers.
     using mdds::mtv::double_element_block;
     using mdds::mtv::string_element_block;
 
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
 
     int main()
     {
@@ -303,9 +303,9 @@ Traverse multiple multi_type_vector instances "sideways"
 --------------------------------------------------------
 
 In this section we will demonstrate a way to traverse multiple instances of
-:cpp:class:`~mdds::multi_type_vector` "sideways" using the
+:cpp:class:`~mdds::mtv::soa::multi_type_vector` "sideways" using the
 :cpp:class:`mdds::mtv::collection` class.  What this class does is to wrap
-multiple instances of :cpp:class:`~mdds::multi_type_vector` and generate
+multiple instances of :cpp:class:`~mdds::mtv::soa::multi_type_vector` and generate
 iterators that let you iterate the individual element values collectively in
 the direction orthogonal to the direction of the individual vector instances.
 
@@ -320,18 +320,18 @@ And let's say that the data looks like the following spreadsheet data:
 
 It consists of five columns, with each column storing 21 rows of data.  The
 first row is a header row, followed by 20 rows of values.  In this example, We
-will be using one :cpp:class:`~mdds::multi_type_vector` instance for each
+will be using one :cpp:class:`~mdds::mtv::soa::multi_type_vector` instance for each
 column thus creating five instances in total, and store them in a
 ``std::vector`` container.
 
 The declaration of the data store will look like this::
 
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
     using collection_type = mdds::mtv::collection<mtv_type>;
 
     std::vector<mtv_type> columns(5);
 
-The first two lines specify the concrete :cpp:class:`~mdds::multi_type_vector`
+The first two lines specify the concrete :cpp:class:`~mdds::mtv::soa::multi_type_vector`
 type used for each individual column and the collection type that wraps the
 columns.  The third line instantiates the ``std::vector`` instance to store
 the columns, and we are setting its size to five to accommodate for five
@@ -355,7 +355,7 @@ First up is column 1::
 
 Hopefully this code is straight-forward.  It initializes an array of values
 and push them to the column one at a time via
-:cpp:func:`~mdds::multi_type_vector::push_back`.  Next up is column 2::
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::push_back`.  Next up is column 2::
 
     // Fill column 2.
     auto c2_values =
@@ -369,7 +369,7 @@ and push them to the column one at a time via
 This is similar to the code for column 1, except that because we are using an
 array of string literals which implicitly becomes an initializer list of type
 ``const char*``, we need to explicitly specify the type for the
-:cpp:func:`~mdds::multi_type_vector::push_back` call to be ``std::string``.
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::push_back` call to be ``std::string``.
 
 The code for column 3 is very similar to this::
 
@@ -431,9 +431,9 @@ That being said, you must meet the following prerequisites when passing the
 collection of vector instances to the constructor of the
 :cpp:class:`~mdds::mtv::collection` class:
 
-1. All :cpp:class:`~mdds::multi_type_vector` instances that comprise the
+1. All :cpp:class:`~mdds::mtv::soa::multi_type_vector` instances that comprise the
    collection must be of the same logical length i.e. their
-   :cpp:func:`~mdds::multi_type_vector::size` methods must all return the same
+   :cpp:func:`~mdds::mtv::soa::multi_type_vector::size` methods must all return the same
    value.
 2. The instances in the collection must be stored in the source container
    either as
@@ -484,11 +484,11 @@ contains metadata about that cell including its value.  The node contains the
 following members:
 
 * ``type`` - an integer value representing the type of the value.
-* ``index`` -  a 0-based index of the :cpp:class:`~mdds::multi_type_vector`
+* ``index`` -  a 0-based index of the :cpp:class:`~mdds::mtv::soa::multi_type_vector`
   instance within the collection.  You can think of this as column index in
   this example.
 * ``position`` - a 0-based logical element position within each
-  :cpp:class:`~mdds::multi_type_vector` instance.  You can think of this as
+  :cpp:class:`~mdds::mtv::soa::multi_type_vector` instance.  You can think of this as
   row index in this example.
 
 In the current example we are only making use of the ``type`` and ``index``
@@ -595,7 +595,7 @@ Use of position hint to avoid expensive block position lookup
 
 Consider the following example code::
 
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
 
     size_t size = 50000;
 
@@ -620,7 +620,7 @@ value at the last block position.
 Fortunately, there is a simple solution to this which the following code
 demonstrates::
 
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
 
     size_t size = 50000;
 
@@ -641,9 +641,9 @@ Compiling and executing this code should take only a fraction of a second.
 
 The only difference between the second example and the first one is that the
 second one uses an interator as a position hint to keep track of the position
-of the last modified block.  Each :cpp:func:`~mdds::multi_type_vector::set`
+of the last modified block.  Each :cpp:func:`~mdds::mtv::soa::multi_type_vector::set`
 method call returns an iterator which can then be passed to the next
-:cpp:func:`~mdds::multi_type_vector::set` call as the position hint.
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::set` call as the position hint.
 Because an iterator object internally stores the location of the block the
 value was inserted to, this lets the method to start the block position lookup
 process from the last modified block, which in this example is always one
@@ -651,7 +651,7 @@ block behind the one the new value needs to go.  Using the big-O notation, the
 use of the position hint essentially turns the complexity of O(n^2) in the
 first example into O(1) in the second one.
 
-This strategy should work with any methods in :cpp:class:`~mdds::multi_type_vector`
+This strategy should work with any methods in :cpp:class:`~mdds::mtv::soa::multi_type_vector`
 that take a position hint as the first argument.
 
 
@@ -661,7 +661,7 @@ API Reference
 .. doxygenstruct:: mdds::detail::mtv::event_func
    :members:
 
-.. doxygenclass:: mdds::multi_type_vector
+.. doxygenclass:: mdds::mtv::soa::multi_type_vector
    :members:
 
 .. doxygenclass:: mdds::mtv::collection

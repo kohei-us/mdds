@@ -80,14 +80,14 @@ public:
     element_block_error(const std::string& msg) : mdds::general_error(msg) {}
 };
 
-struct base_element_block;
+class base_element_block;
 element_t get_block_type(const base_element_block&);
 
 /**
  * Non-template common base type necessary for blocks of all types to be
  * stored in a single container.
  */
-struct base_element_block
+class base_element_block
 {
     friend element_t get_block_type(const base_element_block&);
 protected:
