@@ -118,7 +118,7 @@ multi_type_vector_test_event_soa_CPPFLAGS = \
 multi_type_vector_test_custom_aos_SOURCES = \
 	src/multi_type_vector/custom/aos/test_main.hpp \
 	src/multi_type_vector/custom/aos/test_main.cpp \
-	src/multi_type_vector/custom/soa/test_basic.cpp \
+	src/multi_type_vector/custom/aos/test_basic.cpp \
 	src/multi_type_vector/custom/aos/test_managed_block.cpp \
 	src/multi_type_vector/custom/aos/test_misc.cpp \
 	src/multi_type_vector/custom/aos/test_swap.cpp \
@@ -128,6 +128,7 @@ multi_type_vector_test_custom_aos_SOURCES = \
 	src/multi_type_vector/custom/tc/misc.inl \
 	src/multi_type_vector/custom/tc/swap.inl \
 	src/multi_type_vector/custom/tc/transfer.inl \
+	src/multi_type_vector/custom/common_types.hpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
@@ -144,6 +145,7 @@ multi_type_vector_test_custom_soa_SOURCES = \
 	src/multi_type_vector/custom/soa/test_misc.cpp \
 	src/multi_type_vector/custom/soa/test_swap.cpp \
 	src/multi_type_vector/custom/soa/test_transfer.cpp \
+	src/multi_type_vector/custom/common_types.hpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
@@ -224,6 +226,7 @@ multi_type_vector_test_perf_SOURCES = \
 
 multi_type_vector_test_collection_aos_SOURCES = \
 	src/multi_type_vector/collection/aos/test_main.cpp \
+	src/multi_type_vector/collection/tc/all.inl \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
@@ -233,6 +236,7 @@ multi_type_vector_test_collection_aos_CPPFLAGS = \
 
 multi_type_vector_test_collection_soa_SOURCES = \
 	src/multi_type_vector/collection/soa/test_main.cpp \
+	src/multi_type_vector/collection/tc/all.inl \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
@@ -285,7 +289,7 @@ rtree_test_SOURCES = \
 
 rtree_test_bulkload_SOURCES = \
 	src/rtree/test_bulkload_main.cpp \
-	src/test_global_rtree.hpp \
+	src/rtree/test_global_rtree.hpp \
 	src/include/test_global.hpp \
 	src/test_global.cpp
 
