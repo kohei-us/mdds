@@ -552,8 +552,6 @@ public:
      *
      * @param entries pointer to the array of key-value entries.
      * @param entry_size size of the key-value entry array.
-     * @param null_value null value to return when the find method fails to
-     *                   find a matching entry.
      */
     packed_trie_map(const entry* entries, size_type entry_size);
 

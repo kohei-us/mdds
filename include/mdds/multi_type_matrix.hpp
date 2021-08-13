@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2012-2018 Kohei Yoshida
+ * Copyright (c) 2012-2021 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -551,7 +551,7 @@ public:
      *
      * @param row row index of the element.
      * @param col column index of the element.
-     * @param val new value to set.
+     * @param str new value to set.
      */
     void set(size_type row, size_type col, const string_type& str);
 
@@ -559,7 +559,7 @@ public:
      * Set a string value to an element at specified position.
      *
      * @param pos position of the element to update.
-     * @param val new value to set.
+     * @param str new value to set.
      *
      * @return position of the element block where the new value has been set.
      */

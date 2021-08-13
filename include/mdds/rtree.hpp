@@ -736,8 +736,8 @@ public:
     /**
      * Walk down the entire tree depth first.
      *
-     * @func function or function object that gets called at each node in the
-     *       tree.
+     * @param func function or function object that gets called at each node in
+     *       the tree.
      */
     template<typename _Func>
     void walk(_Func func) const;

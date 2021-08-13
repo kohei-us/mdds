@@ -981,6 +981,9 @@ public:
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
+     * @param pos_hint iterator used as a block position hint, to specify
+     *                 which block to start when searching for the block where
+     *                 the element resides.
      * @param pos position of the element to release.
      * @param value element value.
      *
@@ -1162,8 +1165,6 @@ private:
     /**
      * @param start_pos logical start position.
      * @param end_pos logical end position.
-     * @param start_pos_in_block1 logical position of the first element of the
-     *                            first block.
      * @param block_index1 index of the first block
      * @param overwrite when true, and when the stored values are pointers to
      *                  heap objects, objects pointed to by the overwritten
@@ -1176,8 +1177,8 @@ private:
         size_type start_row, size_type end_row, size_type block_index, bool overwrite);
 
     /**
-     * @param start_pos logical start position.
-     * @param end_pos logical end position.
+     * @param start_row logical start position.
+     * @param end_row logical end position.
      * @param block_index1 index of the first block.
      * @param block_index2 index of the last block.
      * @param overwrite when true, and when the stored values are pointers to
@@ -1192,7 +1193,7 @@ private:
     void erase_in_single_block(size_type start_pos, size_type end_pos, size_type block_index);
 
     /**
-     * @param row logical position at which to insert an empty segment.
+     * @param pos logical position at which to insert an empty segment.
      * @param block_index index of the block.
      * @param length length of the emtpy segment to insert.
      */
@@ -1241,6 +1242,7 @@ private:
     /**
      * Find the correct block position for a given logical row ID.
      *
+     * @param row logical position of an element.
      * @param start_block_index index of the first block to start the search
      *                          from.
      *
