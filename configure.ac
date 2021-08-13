@@ -25,7 +25,7 @@ AC_SUBST(QUICKCHECKDIR)
 
 AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
 
-CPPFLAGS="$CPPFLAGS -Wall -g -pedantic-errors"
+CPPFLAGS="$CPPFLAGS -Wall -Wshadow -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
 
 AC_ARG_ENABLE(debug-stdcxx,

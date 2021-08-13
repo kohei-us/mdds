@@ -1394,7 +1394,7 @@ void multi_type_vector<ElemBlockFunc, EventFunc>::swap_single_block(
         }
 
         // Get the new elements from the other container.
-        std::unique_ptr<element_block_type, element_block_deleter> dst_data(
+        std::unique_ptr<element_block_type, element_block_deleter> new_dst_data(
             other.exchange_elements(*src_data, src_offset, other_block_index, dst_offset, len));
 
         // Shrink the current block by erasing the top part.
@@ -1407,8 +1407,8 @@ void multi_type_vector<ElemBlockFunc, EventFunc>::swap_single_block(
         {
             // Append the new elements to the previous block.
             element_block_type* prev_data = m_block_store.element_blocks[block_index-1];
-            element_block_func::append_values_from_block(*prev_data, *dst_data);
-            element_block_func::resize_block(*dst_data, 0); // prevent double-delete.
+            element_block_func::append_values_from_block(*prev_data, *new_dst_data);
+            element_block_func::resize_block(*new_dst_data, 0); // prevent double-delete.
             m_block_store.sizes[block_index-1] += len;
         }
         else
@@ -1416,7 +1416,7 @@ void multi_type_vector<ElemBlockFunc, EventFunc>::swap_single_block(
             // Insert a new block to store the new elements.
             size_type position = m_block_store.positions[block_index] - len;
             m_block_store.insert(block_index, position, len, nullptr);
-            m_block_store.element_blocks[block_index] = dst_data.release();
+            m_block_store.element_blocks[block_index] = new_dst_data.release();
             m_hdl_event.element_block_acquired(m_block_store.element_blocks[block_index]);
         }
         return;
@@ -4676,8 +4676,7 @@ multi_type_vector<ElemBlockFunc, EventFunc>::transfer_multi_blocks(
 
     size_type dest_block_index = it_dest_blk->__private_data.block_index;
     size_type dest_pos_in_block = dest_pos - it_dest_blk->position;
-    element_block_type* blk_dst_data = dest.m_block_store.element_blocks[dest_block_index];
-    assert(!blk_dst_data); // should be already emptied.
+    assert(!dest.m_block_store.element_blocks[dest_block_index]); // should be already emptied.
 
     size_type block_len = block_index2 - block_index1 + 1;
 
