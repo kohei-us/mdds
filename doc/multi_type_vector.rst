@@ -110,15 +110,24 @@ You'll see the following console output when you compile and execute this code:
 .. figure:: _static/images/mtv_block_structure.png
    :align: center
 
-   Ownership structure between the primary array, blocks, and element blocks.
+   Logical structure between the primary array, blocks, and element blocks.
 
-Each container instance consists of an array of blocks each of which stores
-``type``, ``position``, ``size`` and ``data`` members.  In this example code,
-the ``type`` member is referenced to determine its block type and its logical
-size is determine from the ``size`` member.  For the numeric and string blocks,
-their ``data`` members, which should point to valid memory addresses of their
-respective element blocks, are dereferenced to gain access to them in order to
-print out their contents to stdout inside the ``print_block`` function.
+Each multi_type_vector instance maintains a logical storage structure of one
+primary array containing one or more blocks each of which consists of ``type``,
+``position``, ``size`` and ``data`` members:
+
+* ``type`` - numeric value representing the block type.
+* ``position`` - numeridc value representing the logical position of the first
+  element of the block.
+* ``size`` - number of elements present in the block a.k.a its logical size.
+* ``data`` - pointer to the secondary storage (element block) storing the element
+  values.
+
+In this example code, the ``type`` member is referenced to determine its block
+type and its logical size is determined from the ``size`` member.  For the
+numeric and string blocks, their ``data`` members, which should point to the
+memory addresses of their respective element blocks, are dereferenced in order
+to print out their element values to stdout inside the ``print_block`` function.
 
 
 Use custom event handlers
@@ -670,7 +679,7 @@ API Reference
 Element Blocks
 ^^^^^^^^^^^^^^
 
-.. doxygenstruct:: mdds::mtv::base_element_block
+.. doxygenclass:: mdds::mtv::base_element_block
    :members:
 
 .. doxygenclass:: mdds::mtv::element_block

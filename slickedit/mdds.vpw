@@ -2,6 +2,7 @@
 <Workspace Version="10.0" VendorName="SlickEdit">
     <Projects>
         <Project File="cmake.vpj"/>
+        <Project File="doc.vpj"/>
         <Project File="example.vpj"/>
         <Project File="mdds.vpj"/>
         <Project File="misc.vpj"/>

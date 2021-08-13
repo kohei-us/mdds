@@ -1,0 +1,88 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
+<Project
+    Version="10.0"
+    VendorName="SlickEdit"
+    TemplateName="(Other)"
+    WorkingDir=".">
+    <Config
+        Name="Release"
+        OutputFile=""
+        CompilerConfigName="">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='"doc.exe"'/>
+            </Target>
+        </Menu>
+    </Config>
+    <Files>
+        <Folder
+            Name="Source Files"
+            Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
+            GUID="{FE7C251B-94B4-48C7-A083-4030FF51B0D7}"/>
+        <Folder
+            Name="Header Files"
+            Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
+            GUID="{F5EE9A4B-7A5C-4971-A978-66CF2952AFE8}"/>
+        <Folder
+            Name="Resource Files"
+            Filters="*.ico;*.cur;*.dlg"
+            GUID="{EA0B5EDC-0031-4EFE-B769-A6B0E2F02D10}"/>
+        <Folder
+            Name="Bitmaps"
+            Filters="*.bmp"
+            GUID="{63675454-51C8-440E-86A9-5701E45045DF}"/>
+        <Folder
+            Name="Other Files"
+            Filters=""
+            GUID="{6A6831CB-8AC0-4EC0-95AA-996F9154AB7C}">
+            <F N="../doc/api.rst"/>
+            <F N="../doc/flat_segment_tree.rst"/>
+            <F N="../doc/global.rst"/>
+            <F N="../doc/index.rst"/>
+            <F N="../doc/multi_type_matrix.rst"/>
+            <F N="../doc/multi_type_vector.rst"/>
+            <F N="../doc/point_quad_tree.rst"/>
+            <F N="../doc/rtree.rst"/>
+            <F N="../doc/segment_tree.rst"/>
+            <F N="../doc/sorted_string_map.rst"/>
+            <F N="../doc/trie_map.rst"/>
+        </Folder>
+    </Files>
+    <List Name="RTE">
+    </List>
+</Project>
