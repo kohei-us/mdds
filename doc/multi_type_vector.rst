@@ -108,7 +108,7 @@ You'll see the following console output when you compile and execute this code:
     - no data -
 
 .. figure:: _static/images/mtv_block_structure.png
-   :align: right
+   :align: center
 
    Ownership structure between the primary array, blocks, and element blocks.
 
