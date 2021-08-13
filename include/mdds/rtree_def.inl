@@ -847,8 +847,8 @@ bool rtree<_Key,_Value,_Trait>::directory_node::erase(const node_store* ns)
 
     if (!all_valid)
     {
-        for (node_store& ns : children)
-            ns.valid_pointer = false;
+        for (node_store& this_ns : children)
+            this_ns.valid_pointer = false;
     }
 
     return true;
