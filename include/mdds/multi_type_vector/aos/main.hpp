@@ -59,7 +59,9 @@ namespace mdds { namespace mtv { namespace aos {
  * <code>nullptr</code> in case the block represents an empty segment.</li>
  * </ul>
  *
- * @see mdds::multi_type_vector::value_type
+ * This variant implements an array-of-structures (AoS) storage.
+ *
+ * @see mdds::mtv::aos::multi_type_vector::value_type
  */
 template<typename ElemBlockFunc, typename EventFunc = mdds::detail::mtv::event_func>
 class multi_type_vector

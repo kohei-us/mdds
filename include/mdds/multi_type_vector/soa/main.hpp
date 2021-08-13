@@ -36,6 +36,33 @@
 
 namespace mdds { namespace mtv { namespace soa {
 
+/**
+ * Multi-type vector consists of a series of one or more blocks, and each
+ * block may either be empty, or stores a series of non-empty elements of
+ * identical type.  These blocks collectively represent a single logical
+ * one-dimensional array that may store elements of different types.  It is
+ * guaranteed that the block types of neighboring blocks are always
+ * different.
+ *
+ * Structurally, the primary array stores block instances whose types
+ * are of <code>value_type</code>, which in turn consists of the following
+ * data members:
+ *
+ * <ul>
+ * <li><code>type</code> which indicates the block type,</li>
+ * <li><code>position</code> which stores the logical position of the
+ * first element of the block,</li>
+ * <li><code>size</code> which stores the logical size of the block,
+ * and</li>
+ * <li><code>data</code> which stores the pointer to a secondary array
+ * (a.k.a. element block) which stores the actual element values, or
+ * <code>nullptr</code> in case the block represents an empty segment.</li>
+ * </ul>
+ *
+ * This variant implements a structure-of-arrays (SoA) storage.
+ *
+ * @see mdds::mtv::soa::multi_type_vector::value_type
+ */
 template<typename ElemBlockFunc, typename _EventFunc = mdds::detail::mtv::event_func>
 class multi_type_vector
 {

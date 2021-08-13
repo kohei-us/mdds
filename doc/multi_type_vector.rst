@@ -599,6 +599,25 @@ which clearly shows that your iteration range did indeed shrink as expected.
 Performance Considerations
 --------------------------
 
+Select SoA or AoS storage types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you instantiate a multi_type_vector instance via
+:cpp:type:`mdds::multi_type_vector`, which is an alias type for
+:cpp:class:`mdds::mtv::soa::multi_type_vector`, you will be using the
+structure-of-arrays (SoA) variant of its implementation which is new in 2.0.
+Prior to 2.0, multi_type_vector used the array-of-structures (AoS) layout which
+is still available post 2.0 via :cpp:class:`mdds::mtv::aos::multi_type_vector`
+in case you need it.
+
+Note, however, that the SoA variant generally yields better overall performance
+since it can make more efficient use of CPU caches.  It is therefore highly
+recommended that you stick with the SoA variant unless you have a specific
+reason not to.
+
+Also note that both variants are API compatibile with each other.
+
+
 Use of position hint to avoid expensive block position lookup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -667,14 +686,20 @@ that take a position hint as the first argument.
 API Reference
 -------------
 
-.. doxygenstruct:: mdds::detail::mtv::event_func
-   :members:
+Core
+^^^^
+
+.. doxygentypedef:: mdds::multi_type_vector
 
 .. doxygenclass:: mdds::mtv::soa::multi_type_vector
    :members:
 
-.. doxygenclass:: mdds::mtv::collection
+.. doxygenclass:: mdds::mtv::aos::multi_type_vector
    :members:
+
+.. doxygenstruct:: mdds::detail::mtv::event_func
+   :members:
+
 
 Element Blocks
 ^^^^^^^^^^^^^^
@@ -703,6 +728,7 @@ Element Blocks
 .. doxygenstruct:: mdds::mtv::element_block_func
    :members:
 
+
 Element Types
 ^^^^^^^^^^^^^
 
@@ -723,7 +749,15 @@ Element Types
 .. doxygenvariable:: mdds::mtv::element_type_string
 .. doxygenvariable:: mdds::mtv::element_type_user_start
 
+
 Exceptions
 ^^^^^^^^^^
 
 .. doxygenclass:: mdds::mtv::element_block_error
+
+
+Collection
+^^^^^^^^^^
+
+.. doxygenclass:: mdds::mtv::collection
+   :members:
