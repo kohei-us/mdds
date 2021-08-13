@@ -618,8 +618,8 @@ reason not to.
 Also note that both variants are API compatibile with each other.
 
 
-Use of position hint to avoid expensive block position lookup
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Use of position hint to avoid the cost of block position lookup
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Consider the following example code::
 
@@ -637,13 +637,14 @@ Consider the following example code::
             db.set<double>(i, 1.0);
     }
 
-which, when executed, takes quite sometime to complete.  This particular example
-exposes one weakness that multi_type_vector has; because it needs to first
-look up the position of the block to operate with, and that lookup *always*
-starts from the first block, the time it takes to find the correct block
-increases as the number of blocks goes up.  This example demonstrates the
-worst case scenario of such lookup complexity since it always inserts the next
-value at the last block position.
+which, when executed, may take quite sometime to complete especially when you
+are using an older version of mdds.  This particular example exposes one
+weakness that multi_type_vector has; because it needs to first look up the
+position of the block to operate with, and that lookup *always* starts from the
+first block, the time it takes to find the correct block increases as the number
+of blocks goes up.  This example demonstrates the worst case scenario of such
+lookup complexity since it always inserts the next value at the last block
+position.
 
 Fortunately, there is a simple solution to this which the following code
 demonstrates::
@@ -668,19 +669,25 @@ demonstrates::
 Compiling and executing this code should take only a fraction of a second.
 
 The only difference between the second example and the first one is that the
-second one uses an interator as a position hint to keep track of the position
-of the last modified block.  Each :cpp:func:`~mdds::mtv::soa::multi_type_vector::set`
-method call returns an iterator which can then be passed to the next
+second one uses an interator as a position hint to keep track of the position of
+the last modified block.  Each
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::set` method call returns an
+iterator which can then be passed to the next
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::set` call as the position hint.
-Because an iterator object internally stores the location of the block the
-value was inserted to, this lets the method to start the block position lookup
-process from the last modified block, which in this example is always one
-block behind the one the new value needs to go.  Using the big-O notation, the
-use of the position hint essentially turns the complexity of O(n^2) in the
-first example into O(1) in the second one.
+Because an iterator object internally stores the location of the block the value
+was inserted to, this lets the method to start the block position lookup process
+from the last modified block, which in this example is always one block behind
+the one the new value needs to go.  Using the big-O notation, the use of the
+position hint essentially turns the complexity of O(n^2) in the first example
+into O(1) in the second one if you are using an older version of mdds where the
+block position lookup had a linear complexity.
 
 This strategy should work with any methods in :cpp:class:`~mdds::mtv::soa::multi_type_vector`
 that take a position hint as the first argument.
+
+Note that, if you are using a more recent version of mdds (1.6.0 or newer), the
+cost of block position lookup is significantly lessoned thanks to the switch to
+binary search in performing the lookup.
 
 
 API Reference
