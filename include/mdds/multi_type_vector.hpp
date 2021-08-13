@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2011-2018 Kohei Yoshida
+ * Copyright (c) 2011-2021 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,12 +28,12 @@
 #ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_HPP
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_HPP
 
-#include "./multi_type_vector/aos/main.hpp"
+#include "./multi_type_vector/soa/main.hpp"
 
 namespace mdds {
 
 template<typename ElemBlockFunc, typename EventFunc = mdds::detail::mtv::event_func>
-using multi_type_vector = mtv::aos::multi_type_vector<ElemBlockFunc, EventFunc>;
+using multi_type_vector = mtv::soa::multi_type_vector<ElemBlockFunc, EventFunc>;
 
 }
 
