@@ -35,8 +35,8 @@
 #include <iostream>
 #include <vector>
 
-template<typename BlkFunc, typename EventFunc>
-using mtv_template_type = mdds::mtv::aos::multi_type_vector<BlkFunc, EventFunc>;
+template<typename BlkFunc, typename Trait>
+using mtv_template_type = mdds::mtv::aos::multi_type_vector<BlkFunc, Trait>;
 
 void mtv_test_block_counter();
 void mtv_test_block_init();

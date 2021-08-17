@@ -46,7 +46,12 @@ public:
     }
 };
 
-using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, event_hdl>;
+struct trait
+{
+    using event_func = event_hdl;
+};
+
+using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, trait>;
 
 int main()
 {

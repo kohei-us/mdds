@@ -36,6 +36,11 @@
 
 namespace mdds { namespace mtv { namespace aos {
 
+struct default_trait
+{
+    using event_func = mdds::detail::mtv::event_func;
+};
+
 /**
  * Multi-type vector consists of a series of one or more blocks, and each
  * block may either be empty, or stores a series of non-empty elements of
@@ -63,7 +68,7 @@ namespace mdds { namespace mtv { namespace aos {
  *
  * @see mdds::mtv::aos::multi_type_vector::value_type
  */
-template<typename ElemBlockFunc, typename EventFunc = mdds::detail::mtv::event_func>
+template<typename ElemBlockFunc, typename Trait = default_trait>
 class multi_type_vector
 {
 public:
@@ -90,7 +95,7 @@ public:
      * @see mdds::detail::mtv_event_func for the precise function signatures
      *      of the event handler functions.
      */
-    typedef EventFunc event_func;
+    using event_func = typename Trait::event_func;
 
 private:
 
