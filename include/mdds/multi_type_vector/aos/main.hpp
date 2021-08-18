@@ -33,12 +33,15 @@
 #include "../types.hpp"
 #include "../util.hpp"
 #include "./iterator.hpp"
+#include "./block_util.hpp"
 
 namespace mdds { namespace mtv { namespace aos {
 
 struct default_trait
 {
     using event_func = mdds::detail::mtv::event_func;
+
+    constexpr static int loop_unrolling = 8;
 };
 
 /**
@@ -1051,8 +1054,6 @@ public:
 
 private:
 
-    void adjust_block_positions(int64_t start_block_index, int64_t delta);
-
     /**
      * Delete only the element block owned by an outer block.
      *
@@ -1323,6 +1324,8 @@ private:
     }
 
 private:
+    using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Trait::loop_unrolling>;
+
     event_func m_hdl_event;
     blocks_type m_blocks;
     size_type m_cur_size;

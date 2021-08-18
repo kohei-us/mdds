@@ -145,16 +145,18 @@ struct event_block_counter
     }
 };
 
+struct eb_counter_trait
+{
+    using event_func = event_block_counter;
+
+    constexpr static int loop_unrolling = 8;
+};
+
 void mtv_test_block_counter()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    struct _trait
-    {
-        using event_func = event_block_counter;
-    };
-
-    using mtv_type = mtv_template_type<mdds::mtv::element_block_func, _trait>;
+    using mtv_type = mtv_template_type<mdds::mtv::element_block_func, eb_counter_trait>;
 
     {
         // Initializing with an empty block should not create any element block.

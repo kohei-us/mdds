@@ -159,6 +159,12 @@ struct get_iterator_type<_T, std::false_type>
     using type = typename _T::iterator;
 };
 
+template<int T>
+constexpr bool invalid_static_int()
+{
+    return false;
+}
+
 }
 
 #endif

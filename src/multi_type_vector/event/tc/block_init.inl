@@ -39,16 +39,18 @@ struct event_block_init
     void element_block_released(const mdds::mtv::base_element_block* /*block*/) {}
 };
 
+struct eb_init_trait
+{
+    using event_func = event_block_init;
+
+    constexpr static int loop_unrolling = 8;
+};
+
 void mtv_test_block_init()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    struct _trait
-    {
-        using event_func = event_block_init;
-    };
-
-    using mtv_type = mtv_template_type<mdds::mtv::element_block_func, _trait>;
+    using mtv_type = mtv_template_type<mdds::mtv::element_block_func, eb_init_trait>;
 
     {
         mtv_type db(event_block_init("some name")); // pass an rvalue

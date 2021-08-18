@@ -224,6 +224,7 @@
             <Folder Name="mdds">
                 <Folder Name="multi_type_vector">
                     <Folder Name="aos">
+                        <F N="../include/mdds/multi_type_vector/aos/block_util.hpp"/>
                         <F N="../include/mdds/multi_type_vector/aos/iterator.hpp"/>
                         <F N="../include/mdds/multi_type_vector/aos/main.hpp"/>
                         <F N="../include/mdds/multi_type_vector/aos/main_def.inl"/>
