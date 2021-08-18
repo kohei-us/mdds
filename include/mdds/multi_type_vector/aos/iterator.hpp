@@ -77,14 +77,14 @@ protected:
 #endif
         // blocks_type::value_type is a pointer to multi_type_vector::block.
         const typename blocks_type::value_type& blk = *m_pos;
-        if (blk.mp_data)
-            m_cur_node.type = mdds::mtv::get_block_type(*blk.mp_data);
+        if (blk.data)
+            m_cur_node.type = mdds::mtv::get_block_type(*blk.data);
         else
             m_cur_node.type = mdds::mtv::element_type_empty;
 
-        m_cur_node.position = blk.m_position;
-        m_cur_node.size = blk.m_size;
-        m_cur_node.data = blk.mp_data;
+        m_cur_node.position = blk.position;
+        m_cur_node.size = blk.size;
+        m_cur_node.data = blk.data;
     }
 
     node* inc()

@@ -101,9 +101,9 @@ private:
 
     struct block
     {
-        size_type m_position;
-        size_type m_size;
-        element_block_type* mp_data;
+        size_type position;
+        size_type size;
+        element_block_type* data;
 
         block();
         block(size_type _position, size_type _size);
