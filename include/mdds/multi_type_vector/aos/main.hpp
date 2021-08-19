@@ -1097,6 +1097,8 @@ private:
      */
     size_type get_block_position(const const_iterator& pos_hint, size_type row) const;
 
+    void resize_impl(size_type new_size);
+
     template<typename T>
     void create_new_block_with_new_cell(element_block_type*& data, const T& cell);
 
