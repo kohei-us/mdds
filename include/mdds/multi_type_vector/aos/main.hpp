@@ -1049,7 +1049,7 @@ public:
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     void dump_blocks(std::ostream& os) const;
 
-    bool check_block_integrity() const;
+    void check_block_integrity() const;
 #endif
 
 private:
@@ -1324,7 +1324,8 @@ private:
     }
 
 private:
-    using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Trait::loop_unrolling>;
+    using adjust_block_positions_func =
+        detail::adjust_block_positions<blocks_type, Trait::loop_unrolling>;
 
     event_func m_hdl_event;
     blocks_type m_blocks;

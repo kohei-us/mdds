@@ -337,9 +337,16 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const multi_type_vect
     }
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in copy construction" << endl;
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in copy construction" << std::endl;
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -368,11 +375,18 @@ multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& value)
     iterator ret = set_impl(pos, block_index, value);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in set (" << pos << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in set (pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -397,11 +411,18 @@ multi_type_vector<ElemBlockFunc, Trait>::set(const iterator& pos_hint, size_type
     iterator ret = set_impl(pos, block_index, value);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in set (pos=" << pos << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in set (pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -622,11 +643,18 @@ multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& it_begin, c
     auto ret = set_cells_impl(pos, end_pos, block_index1, it_begin, it_end);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in set (pos=" << pos << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in set (pos=" << pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -662,11 +690,18 @@ multi_type_vector<ElemBlockFunc, Trait>::push_back(const T& value)
     auto ret = push_back_impl(value);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in push_back" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in push_back" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -746,12 +781,19 @@ multi_type_vector<ElemBlockFunc, Trait>::insert(size_type pos, const T& it_begin
     iterator ret = insert_cells_impl(pos, block_index, it_begin, it_end);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
         element_category_type cat = mdds_mtv_get_element_type(*it_begin);
-        cerr << "block integrity check failed in insert (pos=" << pos << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        os << "block integrity check failed in insert (pos=" << pos << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -776,11 +818,19 @@ multi_type_vector<ElemBlockFunc, Trait>::insert(const iterator& pos_hint, size_t
     iterator ret = insert_cells_impl(pos, block_index, it_begin, it_end);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in insert (pos=" << pos << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        element_category_type cat = mdds_mtv_get_element_type(*it_begin);
+        os << "block integrity check failed in insert (pos=" << pos << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -1669,17 +1719,25 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer(
     dump_blocks(os_block);
     dest.dump_blocks(os_block_dest);
 
-    if (!check_block_integrity() || !dest.check_block_integrity())
+    try
     {
-        cerr << endl << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest_pos=" << dest_pos << ")" << endl;
-        cerr << endl << "previous block state (source):" << endl;
-        cerr << os_prev_block.str();
-        cerr << endl << "previous block state (destination):" << endl;
-        cerr << os_prev_block_dest.str();
-        cerr << endl << "altered block state (source):" << endl;
-        cerr << os_block.str();
-        cerr << endl << "altered block state (destination):" << endl;
-        cerr << os_block_dest.str();
+        check_block_integrity();
+        dest.check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << std::endl << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest_pos=" << dest_pos << ")" << std::endl;
+        os << std::endl << "previous block state (source):" << std::endl;
+        os << os_prev_block.str();
+        os << std::endl << "previous block state (destination):" << std::endl;
+        os << os_prev_block_dest.str();
+        os << std::endl << "altered block state (source):" << std::endl;
+        os << os_block.str();
+        os << std::endl << "altered block state (destination):" << std::endl;
+        os << os_block_dest.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -1699,22 +1757,37 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer(
             "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    std::ostringstream os_prev_block;
-    os_prev_block << "source:" << endl;
+    std::ostringstream os_prev_block, os_prev_block_dest;
     dump_blocks(os_prev_block);
-    os_prev_block << "destination:" << endl;
-    dest.dump_blocks(os_prev_block);
+    dest.dump_blocks(os_prev_block_dest);
 #endif
 
     iterator ret = transfer_impl(start_pos, end_pos, block_index1, dest, dest_pos);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity() || !dest.check_block_integrity())
+    std::ostringstream os_block, os_block_dest;
+    dump_blocks(os_block);
+    dest.dump_blocks(os_block_dest);
+
+    try
     {
-        cerr << "block integrity check failed in transfer (start_pos=" << start_pos
-            << ",end_pos=" << end_pos << ",dest_pos=" << dest_pos << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+        dest.check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << std::endl << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest_pos=" << dest_pos << ")" << std::endl;
+        os << std::endl << "previous block state (source):" << std::endl;
+        os << os_prev_block.str();
+        os << std::endl << "previous block state (destination):" << std::endl;
+        os << os_prev_block_dest.str();
+        os << std::endl << "altered block state (source):" << std::endl;
+        os << os_block.str();
+        os << std::endl << "altered block state (destination):" << std::endl;
+        os << os_block_dest.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -1755,24 +1828,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty(size_type start_pos, size_typ
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
 
-#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    std::ostringstream os_prev_block;
-    dump_blocks(os_prev_block);
-#endif
-
-    auto ret = set_empty_impl(start_pos, end_pos, block_index1, true);
-
-#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
-    {
-        cerr << "block integrity check failed in set_empty(start_pos=" << start_pos << "; end_pos=" << end_pos << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
-        abort();
-    }
-#endif
-
-    return ret;
+    return set_empty_impl(start_pos, end_pos, block_index1, true);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -2249,11 +2305,18 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_impl(
             start_pos, end_pos, block_index1, block_index2, overwrite);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in set_empty (" << start_pos << "-" << end_pos << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in set_empty(start_pos=" << start_pos << "; end_pos=" << end_pos << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -2697,11 +2760,19 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase(size_type start_pos, size_ty
     erase_impl(start_pos, end_pos);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in erase (" << start_pos << "-" << end_pos << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in erase (" << start_pos << "-" << end_pos << ")" << std::endl;
+        os << "block integrity check failed in push_back" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -2913,11 +2984,18 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty(size_type pos, size_type l
     iterator ret = insert_empty_impl(pos, block_index, length);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in insert_empty (pos=" << pos << "; length=" << length << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in insert_empty (pos=" << pos << "; length=" << length << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -2946,11 +3024,18 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty(const iterator& pos_hint, 
     iterator ret = insert_empty_impl(pos, block_index, length);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    if (!check_block_integrity())
+    try
     {
-        cerr << "block integrity check failed in insert_empty (pos=" << pos << ",length=" << length << ")" << endl;
-        cerr << "previous block state:" << endl;
-        cerr << os_prev_block.str();
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in insert_empty (pos=" << pos << "; length=" << length << ")" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -4259,17 +4344,25 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap(size_type start_pos, size_typ
     dump_blocks(os_block);
     other.dump_blocks(os_block_other);
 
-    if (!check_block_integrity() || !other.check_block_integrity())
+    try
     {
-        cerr << endl << "block integrity check failed in swap (start_pos=" << start_pos << "; end_pos=" << end_pos << "; other_pos=" << other_pos << ")" << endl;
-        cerr << endl << "previous block state (source):" << endl;
-        cerr << os_prev_block.str();
-        cerr << endl << "previous block state (destination):" << endl;
-        cerr << os_prev_block_other.str();
-        cerr << endl << "altered block state (source):" << endl;
-        cerr << os_block.str();
-        cerr << endl << "altered block state (destination):" << endl;
-        cerr << os_block_other.str();
+        check_block_integrity();
+        other.check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << std::endl << "block integrity check failed in swap (start_pos=" << start_pos << "; end_pos=" << end_pos << "; other_pos=" << other_pos << ")" << std::endl;
+        os << std::endl << "previous block state (source):" << std::endl;
+        os << os_prev_block.str();
+        os << std::endl << "previous block state (destination):" << std::endl;
+        os << os_prev_block_other.str();
+        os << std::endl << "altered block state (source):" << std::endl;
+        os << os_block.str();
+        os << std::endl << "altered block state (destination):" << std::endl;
+        os << os_block_other.str();
+        std::cerr << os.str() << std::endl;
         abort();
     }
 #endif
@@ -4671,30 +4764,26 @@ void multi_type_vector<ElemBlockFunc, Trait>::dump_blocks(std::ostream& os) cons
 }
 
 template<typename ElemBlockFunc, typename Trait>
-bool multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
+void multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
 {
     if (m_blocks.empty())
         // Nothing to check.
-        return true;
+        return;
 
     if (m_blocks.size() == 1 && m_blocks[0].size == 0)
-    {
-        cerr << "block should never be zero sized!" << endl;
-        return false;
-    }
+        throw mdds::integrity_error("block should never be zero sized!");
 
     const block* blk_prev = m_blocks.data();
     if (blk_prev->size == 0)
-    {
-        cerr << "block should never be zero sized!" << endl;
-        return false;
-    }
+        throw mdds::integrity_error("block should never be zero sized!");
 
     if (blk_prev->position != 0)
     {
-        cerr << "position of the first block should be zero!" << endl;
-        dump_blocks(cerr);
-        return false;
+        std::ostringstream os;
+        os << "position of the first block should be zero!" << std::endl;
+
+        dump_blocks(os);
+        mdds::integrity_error(os.str());
     }
 
     element_category_type cat_prev = mtv::element_type_empty;
@@ -4708,16 +4797,17 @@ bool multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
     {
         const block* blk = &m_blocks[i];
         if (blk->size == 0)
-        {
-            cerr << "block should never be zero sized!" << endl;
-            return false;
-        }
+            throw mdds::integrity_error("block should never be zero sized!");
 
         if (blk->position != cur_position)
         {
-            cerr << "position of the current block is wrong! (expected=" << cur_position << "; actual=" << blk->position << ")" << endl;
-            dump_blocks(cerr);
-            return false;
+            std::ostringstream os;
+            os << "position of the current block is wrong! (expected="
+                << cur_position << "; actual=" << blk->position << ")"
+                << std::endl;
+
+            dump_blocks(os);
+            throw mdds::integrity_error(os.str());
         }
 
         element_category_type cat = mtv::element_type_empty;
@@ -4726,17 +4816,16 @@ bool multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
             cat = mtv::get_block_type(*blk->data);
 
             if (element_block_func::size(*blk->data) != blk->size)
-            {
-                cerr << "block size cache and the actual element block size differ!" << endl;
-                return false;
-            }
+                throw mdds::integrity_error(
+                    "block size cache and the actual element block size differ!");
         }
 
         if (cat_prev == cat)
         {
-            cerr << "Two adjacent blocks should never be of the same type." << endl;
-            dump_blocks(cerr);
-            return false;
+            std::ostringstream os;
+            os << "Two adjacent blocks should never be of the same type." << std::endl;
+            dump_blocks(os);
+            mdds::integrity_error(os.str());
         }
 
         blk_prev = blk;
@@ -4748,13 +4837,12 @@ bool multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
 
     if (total_size != m_cur_size)
     {
-        cerr << "Current size does not equal the total sizes of all blocks." << endl;
-        cerr << "current size=" << m_cur_size << " total block size=" << total_size << endl;
-        dump_blocks(cerr);
-        return false;
+        std::ostringstream os;
+        os << "Current size does not equal the total sizes of all blocks." << std::endl;
+        os << "current size=" << m_cur_size << " total block size=" << total_size << std::endl;
+        dump_blocks(os);
+        mdds::integrity_error(os.str());
     }
-
-    return true;
 }
 #endif
 
