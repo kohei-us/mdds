@@ -1,6 +1,7 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2010-2018 Kohei Yoshida
+ * Copyright (c) 2021 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,70 +26,17 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_TEST_GLOBAL_HPP
-#define INCLUDED_TEST_GLOBAL_HPP
+#pragma once
 
-#ifdef NDEBUG
-// release build
-#undef NDEBUG
-#include <cassert>
-#define NDEBUG
-#else
-// debug build
-#include <cassert>
-#endif
+#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
+#include <mdds/multi_type_vector/aos/main.hpp>
+#include <mdds/multi_type_vector/trait.hpp>
 
-#include <stdio.h>
-#include <string>
-#ifdef _WIN32
-#include <windows.h>
-#undef max
-#undef min
-#endif
+template<typename Trait>
+using mtv_alias_type = mdds::mtv::aos::multi_type_vector<mdds::mtv::element_block_func, Trait>;
 
-#include <cstdint>
-#include <iostream>
+void mtv_test_loop_unrolling_0();
+void mtv_test_loop_unrolling_8();
 
-struct cmd_options
-{
-    bool test_func;
-    bool test_perf;
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
-    cmd_options();
-};
-
-bool parse_cmd_options(int argc, char** argv, cmd_options& opt);
-
-double get_current_time();
-
-class stack_watch
-{
-public:
-    stack_watch();
-
-    void reset();
-    double get_duration() const;
-
-private:
-    double m_start_time;
-};
-
-class stack_printer
-{
-public:
-    explicit stack_printer(const char* msg);
-
-    ~stack_printer();
-
-    void print_time(int line) const;
-
-private:
-    std::string m_msg;
-    double m_start_time;
-};
-
-using std::cout;
-using std::cerr;
-using std::endl;
-
-#endif

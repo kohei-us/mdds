@@ -1,6 +1,7 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2010-2018 Kohei Yoshida
+ * Copyright (c) 2021 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -25,70 +26,51 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_TEST_GLOBAL_HPP
-#define INCLUDED_TEST_GLOBAL_HPP
+namespace {
 
-#ifdef NDEBUG
-// release build
-#undef NDEBUG
-#include <cassert>
-#define NDEBUG
-#else
-// debug build
-#include <cassert>
-#endif
-
-#include <stdio.h>
-#include <string>
-#ifdef _WIN32
-#include <windows.h>
-#undef max
-#undef min
-#endif
-
-#include <cstdint>
-#include <iostream>
-
-struct cmd_options
+template<int F>
+struct trait_lu
 {
-    bool test_func;
-    bool test_perf;
+    using event_func = mdds::detail::mtv::event_func;
 
-    cmd_options();
+    constexpr static int loop_unrolling = F;
 };
 
-bool parse_cmd_options(int argc, char** argv, cmd_options& opt);
+}
 
-double get_current_time();
-
-class stack_watch
+template<int F>
+void mtv_test_loop_unrolling()
 {
-public:
-    stack_watch();
+    cout << "loop unrolling factor = " << F << endl;
+    using mtv_type = mtv_alias_type<trait_lu<F>>;
 
-    void reset();
-    double get_duration() const;
+    mtv_type db(5, std::string("test"));
 
-private:
-    double m_start_time;
-};
+    // keep inserting blocks of alternating types at position 0 to force block
+    // position adjustments.
 
-class stack_printer
+    for (int i = 0; i < 50; ++i)
+    {
+        db.insert_empty(0, 2);
+
+        std::vector<int8_t> values(2, 89);
+        db.insert(0, values.begin(), values.end());
+    }
+}
+
+void mtv_test_loop_unrolling_0()
 {
-public:
-    explicit stack_printer(const char* msg);
+    stack_printer __stack_printer__(__FUNCTION__);
 
-    ~stack_printer();
+    mtv_test_loop_unrolling<0>();
+}
 
-    void print_time(int line) const;
+void mtv_test_loop_unrolling_8()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
 
-private:
-    std::string m_msg;
-    double m_start_time;
-};
+    mtv_test_loop_unrolling<8>();
+}
 
-using std::cout;
-using std::cerr;
-using std::endl;
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
-#endif

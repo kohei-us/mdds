@@ -139,6 +139,10 @@ include/mdds/multi_type_vector/Makefile
 include/mdds/multi_type_vector/aos/Makefile
 include/mdds/multi_type_vector/soa/Makefile
 example/Makefile
+src/Makefile
+src/multi_type_vector/Makefile
+src/multi_type_vector/custom-trait/Makefile
+src/multi_type_vector/custom-trait/aos/Makefile
 test/Makefile
 test/gdb/Makefile
 test/gdb/src/Makefile

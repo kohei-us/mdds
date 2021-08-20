@@ -1,4 +1,4 @@
-SUBDIRS = include example test
+SUBDIRS = include example src test
 
 pkgconfdir = $(datarootdir)/pkgconfig
 

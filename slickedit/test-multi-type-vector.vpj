@@ -80,8 +80,10 @@
             <F N="../src/multi_type_vector/default/soa/test_iterators_set.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_iterators_set_empty.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_iterators_set_empty.cpp"/>
+            <F N="../src/multi_type_vector/custom-trait/aos/test_loop_unrolling.cpp"/>
             <F N="../src/multi_type_vector/collection/aos/test_main.cpp"/>
             <F N="../src/multi_type_vector/collection/soa/test_main.cpp"/>
+            <F N="../src/multi_type_vector/custom-trait/aos/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_main.cpp"/>
@@ -113,6 +115,7 @@
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
             GUID="{DC165CCA-0944-4BBC-8A11-C29C5DEC59F1}">
             <F N="../src/multi_type_vector/custom/common_types.hpp"/>
+            <F N="../src/multi_type_vector/custom-trait/aos/test_main.hpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_main.hpp"/>
             <F N="../src/multi_type_vector/custom/soa/test_main.hpp"/>
             <F N="../src/multi_type_vector/default/aos/test_main.hpp"/>
@@ -146,6 +149,7 @@
             <F N="../src/multi_type_vector/default/tc/iterators_insert.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators_set.inl"/>
             <F N="../src/multi_type_vector/default/tc/iterators_set_empty.inl"/>
+            <F N="../src/multi_type_vector/custom-trait/tc/loop_unrolling.inl"/>
             <F N="../src/multi_type_vector/custom/tc/managed_block.inl"/>
             <F N="../src/multi_type_vector/custom/tc/misc.inl"/>
             <F N="../src/multi_type_vector/default/tc/misc.inl"/>
