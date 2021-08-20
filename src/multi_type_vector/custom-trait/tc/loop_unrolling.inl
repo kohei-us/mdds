@@ -31,7 +31,7 @@ namespace {
 template<int F>
 struct trait_lu
 {
-    using event_func = mdds::detail::mtv::event_func;
+    using event_func = mdds::mtv::empty_event_func;
 
     constexpr static int loop_unrolling = F;
 };

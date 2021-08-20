@@ -38,7 +38,7 @@ namespace mdds { namespace mtv { namespace soa {
 
 struct default_trait
 {
-    using event_func = mdds::detail::mtv::event_func;
+    using event_func = mdds::mtv::empty_event_func;
 };
 
 /**
@@ -92,7 +92,7 @@ public:
      * the block gets deleted or gets transferred to another container.</li>
      * </ul>
      *
-     * @see mdds::detail::mtv::event_func for the precise function signatures of
+     * @see mdds::mtv::empty_event_func for the precise function signatures of
      *      the event handler functions.
      */
     using event_func = typename Trait::event_func;

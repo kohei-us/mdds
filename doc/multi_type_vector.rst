@@ -696,15 +696,27 @@ API Reference
 Core
 ^^^^
 
+mdds::multi_type_vector
+~~~~~~~~~~~~~~~~~~~~~~~
+
 .. doxygentypedef:: mdds::multi_type_vector
+
+mdds::mtv::soa::multi_type_vector
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. doxygenclass:: mdds::mtv::soa::multi_type_vector
    :members:
 
+mdds::mtv::aos::multi_type_vector
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. doxygenclass:: mdds::mtv::aos::multi_type_vector
    :members:
 
-.. doxygenstruct:: mdds::detail::mtv::event_func
+mdds::mtv::empty_event_func
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. doxygenstruct:: mdds::mtv::empty_event_func
    :members:
 
 
