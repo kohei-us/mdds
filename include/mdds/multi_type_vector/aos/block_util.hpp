@@ -72,7 +72,7 @@ struct adjust_block_positions<Blks, 4>
 
         // Ensure that the section length is divisible by 4.
         int64_t len = n - start_block_index;
-        int64_t rem = len % 4;
+        int64_t rem = len & 3; // % 4
         len -= rem;
         len += start_block_index;
 #if MDDS_USE_OPENMP
@@ -104,7 +104,7 @@ struct adjust_block_positions<Blks, 8>
 
         // Ensure that the section length is divisible by 8.
         int64_t len = n - start_block_index;
-        int64_t rem = len % 8;
+        int64_t rem = len & 7; // % 8
         len -= rem;
         len += start_block_index;
 #if MDDS_USE_OPENMP
@@ -140,7 +140,7 @@ struct adjust_block_positions<Blks, 16>
 
         // Ensure that the section length is divisible by 16.
         int64_t len = n - start_block_index;
-        int64_t rem = len % 16;
+        int64_t rem = len & 15; // % 16
         len -= rem;
         len += start_block_index;
 #if MDDS_USE_OPENMP
@@ -184,7 +184,7 @@ struct adjust_block_positions<Blks, 32>
 
         // Ensure that the section length is divisible by 32.
         int64_t len = n - start_block_index;
-        int64_t rem = len % 32;
+        int64_t rem = len & 31; // % 32
         len -= rem;
         len += start_block_index;
 #if MDDS_USE_OPENMP
