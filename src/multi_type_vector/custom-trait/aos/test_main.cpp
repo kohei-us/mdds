@@ -34,7 +34,10 @@ int main (int argc, char **argv)
     try
     {
         mtv_test_loop_unrolling_0();
+        mtv_test_loop_unrolling_4();
         mtv_test_loop_unrolling_8();
+        mtv_test_loop_unrolling_16();
+        mtv_test_loop_unrolling_32();
     }
     catch (const std::exception& e)
     {

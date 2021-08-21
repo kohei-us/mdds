@@ -65,11 +65,32 @@ void mtv_test_loop_unrolling_0()
     mtv_test_loop_unrolling<0>();
 }
 
+void mtv_test_loop_unrolling_4()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    mtv_test_loop_unrolling<4>();
+}
+
 void mtv_test_loop_unrolling_8()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
     mtv_test_loop_unrolling<8>();
+}
+
+void mtv_test_loop_unrolling_16()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    mtv_test_loop_unrolling<16>();
+}
+
+void mtv_test_loop_unrolling_32()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    mtv_test_loop_unrolling<32>();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

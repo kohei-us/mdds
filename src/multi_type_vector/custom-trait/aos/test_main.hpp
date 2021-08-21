@@ -36,7 +36,10 @@ template<typename Trait>
 using mtv_alias_type = mdds::mtv::aos::multi_type_vector<mdds::mtv::element_block_func, Trait>;
 
 void mtv_test_loop_unrolling_0();
+void mtv_test_loop_unrolling_4();
 void mtv_test_loop_unrolling_8();
+void mtv_test_loop_unrolling_16();
+void mtv_test_loop_unrolling_32();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

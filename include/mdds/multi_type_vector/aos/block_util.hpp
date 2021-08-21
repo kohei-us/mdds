@@ -61,6 +61,38 @@ struct adjust_block_positions<Blks, 0>
 };
 
 template<typename Blks>
+struct adjust_block_positions<Blks, 4>
+{
+    void operator()(Blks& blocks, int64_t start_block_index, int64_t delta) const
+    {
+        int64_t n = blocks.size();
+
+        if (start_block_index >= n)
+            return;
+
+        // Ensure that the section length is divisible by 8.
+        int64_t len = n - start_block_index;
+        int64_t rem = len % 4;
+        len -= rem;
+        len += start_block_index;
+#if MDDS_USE_OPENMP
+        #pragma omp parallel for
+#endif
+        for (int64_t i = start_block_index; i < len; i += 4)
+        {
+            blocks[i].position += delta;
+            blocks[i+1].position += delta;
+            blocks[i+2].position += delta;
+            blocks[i+3].position += delta;
+        }
+
+        rem += len;
+        for (int64_t i = len; i < rem; ++i)
+            blocks[i].position += delta;
+    }
+};
+
+template<typename Blks>
 struct adjust_block_positions<Blks, 8>
 {
     void operator()(Blks& blocks, int64_t start_block_index, int64_t delta) const
@@ -88,6 +120,110 @@ struct adjust_block_positions<Blks, 8>
             blocks[i+5].position += delta;
             blocks[i+6].position += delta;
             blocks[i+7].position += delta;
+        }
+
+        rem += len;
+        for (int64_t i = len; i < rem; ++i)
+            blocks[i].position += delta;
+    }
+};
+
+template<typename Blks>
+struct adjust_block_positions<Blks, 16>
+{
+    void operator()(Blks& blocks, int64_t start_block_index, int64_t delta) const
+    {
+        int64_t n = blocks.size();
+
+        if (start_block_index >= n)
+            return;
+
+        // Ensure that the section length is divisible by 8.
+        int64_t len = n - start_block_index;
+        int64_t rem = len % 16;
+        len -= rem;
+        len += start_block_index;
+#if MDDS_USE_OPENMP
+        #pragma omp parallel for
+#endif
+        for (int64_t i = start_block_index; i < len; i += 16)
+        {
+            blocks[i].position += delta;
+            blocks[i+1].position += delta;
+            blocks[i+2].position += delta;
+            blocks[i+3].position += delta;
+            blocks[i+4].position += delta;
+            blocks[i+5].position += delta;
+            blocks[i+6].position += delta;
+            blocks[i+7].position += delta;
+            blocks[i+8].position += delta;
+            blocks[i+9].position += delta;
+            blocks[i+10].position += delta;
+            blocks[i+11].position += delta;
+            blocks[i+12].position += delta;
+            blocks[i+13].position += delta;
+            blocks[i+14].position += delta;
+            blocks[i+15].position += delta;
+        }
+
+        rem += len;
+        for (int64_t i = len; i < rem; ++i)
+            blocks[i].position += delta;
+    }
+};
+
+template<typename Blks>
+struct adjust_block_positions<Blks, 32>
+{
+    void operator()(Blks& blocks, int64_t start_block_index, int64_t delta) const
+    {
+        int64_t n = blocks.size();
+
+        if (start_block_index >= n)
+            return;
+
+        // Ensure that the section length is divisible by 8.
+        int64_t len = n - start_block_index;
+        int64_t rem = len % 32;
+        len -= rem;
+        len += start_block_index;
+#if MDDS_USE_OPENMP
+        #pragma omp parallel for
+#endif
+        for (int64_t i = start_block_index; i < len; i += 32)
+        {
+            blocks[i].position += delta;
+            blocks[i+1].position += delta;
+            blocks[i+2].position += delta;
+            blocks[i+3].position += delta;
+            blocks[i+4].position += delta;
+            blocks[i+5].position += delta;
+            blocks[i+6].position += delta;
+            blocks[i+7].position += delta;
+            blocks[i+8].position += delta;
+            blocks[i+9].position += delta;
+            blocks[i+10].position += delta;
+            blocks[i+11].position += delta;
+            blocks[i+12].position += delta;
+            blocks[i+13].position += delta;
+            blocks[i+14].position += delta;
+            blocks[i+15].position += delta;
+            blocks[i+16].position += delta;
+            blocks[i+17].position += delta;
+            blocks[i+18].position += delta;
+            blocks[i+19].position += delta;
+            blocks[i+20].position += delta;
+            blocks[i+21].position += delta;
+            blocks[i+22].position += delta;
+            blocks[i+23].position += delta;
+            blocks[i+24].position += delta;
+            blocks[i+25].position += delta;
+            blocks[i+26].position += delta;
+            blocks[i+27].position += delta;
+            blocks[i+28].position += delta;
+            blocks[i+29].position += delta;
+            blocks[i+30].position += delta;
+            blocks[i+31].position += delta;
         }
 
         rem += len;
