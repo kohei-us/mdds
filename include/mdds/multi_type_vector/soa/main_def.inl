@@ -393,18 +393,6 @@ multi_type_vector<ElemBlockFunc, Trait>::~multi_type_vector()
 }
 
 template<typename ElemBlockFunc, typename Trait>
-void multi_type_vector<ElemBlockFunc, Trait>::adjust_block_positions(int64_t start_block_index, int64_t delta)
-{
-    int64_t n = m_block_store.positions.size();
-
-    if (start_block_index >= n)
-        return;
-
-    for (int64_t i = start_block_index; i < n; ++i)
-        m_block_store.positions[i] += delta;
-}
-
-template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::delete_element_block(size_type block_index)
 {
     element_block_type* data = m_block_store.element_blocks[block_index];
@@ -1640,7 +1628,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
                 mdds_mtv_append_values(*blk0_data, *it_begin, it_begin, it_end);
                 m_block_store.sizes[block_index-1] += length;
                 m_cur_size += length;
-                adjust_block_positions(block_index, length);
+                adjust_block_positions_func{}(m_block_store, block_index, length);
 
                 return get_iterator(block_index-1);
             }
@@ -1653,7 +1641,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
             m_hdl_event.element_block_acquired(blk_data);
             mdds_mtv_assign_values(*blk_data, *it_begin, it_begin, it_end);
             m_cur_size += length;
-            adjust_block_positions(block_index+1, length);
+            adjust_block_positions_func{}(m_block_store, block_index+1, length);
 
             return get_iterator(block_index);
         }
@@ -1673,7 +1661,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
         mdds_mtv_insert_values(*blk_data, row-start_row, *it_begin, it_begin, it_end);
         m_block_store.sizes[block_index] += length;
         m_cur_size += length;
-        adjust_block_positions(block_index+1, length);
+        adjust_block_positions_func{}(m_block_store, block_index+1, length);
 
         return get_iterator(block_index);
     }
@@ -1690,7 +1678,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
             mdds_mtv_append_values(*blk0_data, *it_begin, it_begin, it_end);
             m_block_store.sizes[block_index-1] += length;
             m_cur_size += length;
-            adjust_block_positions(block_index, length);
+            adjust_block_positions_func{}(m_block_store, block_index, length);
 
             return get_iterator(block_index-1);
         }
@@ -1704,7 +1692,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
         mdds_mtv_assign_values(*blk_data, *it_begin, it_begin, it_end);
         m_block_store.sizes[block_index] = length;
         m_cur_size += length;
-        adjust_block_positions(block_index+1, length);
+        adjust_block_positions_func{}(m_block_store, block_index+1, length);
 
         return get_iterator(block_index);
     }
@@ -2070,7 +2058,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_impl(size_type start_row, si
     // Adjust the positions of the blocks following the erased.
     size_type adjust_pos = index_erase_begin;
     adjust_pos += adjust_block_offset;
-    adjust_block_positions(adjust_pos, -delta);
+    adjust_block_positions_func{}(m_block_store, adjust_pos, -delta);
     merge_with_next_block(block_pos1);
 }
 
@@ -2096,7 +2084,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
     if (m_block_store.sizes[block_index])
     {
         // Block still contains data.  Bail out.
-        adjust_block_positions(block_index+1, -size_to_erase);
+        adjust_block_positions_func{}(m_block_store, block_index+1, -size_to_erase);
         return;
     }
 
@@ -2107,7 +2095,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
     if (block_index == 0)
     {
         // Deleted block was the first block.
-        adjust_block_positions(block_index, -size_to_erase);
+        adjust_block_positions_func{}(m_block_store, block_index, -size_to_erase);
         return;
     }
 
@@ -2125,7 +2113,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
         if (!next_data)
         {
             // Next block is empty.  Nothing to do.
-            adjust_block_positions(block_index, -size_to_erase);
+            adjust_block_positions_func{}(m_block_store, block_index, -size_to_erase);
             return;
         }
 
@@ -2143,7 +2131,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
             m_block_store.erase(block_index);
         }
 
-        adjust_block_positions(block_index, -size_to_erase);
+        adjust_block_positions_func{}(m_block_store, block_index, -size_to_erase);
     }
     else
     {
@@ -2151,7 +2139,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
         if (next_data)
         {
             // Next block is not empty.  Nothing to do.
-            adjust_block_positions(block_index, -size_to_erase);
+            adjust_block_positions_func{}(m_block_store, block_index, -size_to_erase);
             return;
         }
 
@@ -2160,7 +2148,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
         m_block_store.sizes[block_index-1] += m_block_store.sizes[block_index];
         delete_element_block(block_index);
         m_block_store.erase(block_index);
-        adjust_block_positions(block_index, -size_to_erase);
+        adjust_block_positions_func{}(m_block_store, block_index, -size_to_erase);
     }
 }
 
@@ -2179,7 +2167,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
         // with it.
         m_block_store.sizes[block_index] += length;
         m_cur_size += length;
-        adjust_block_positions(block_index+1, length);
+        adjust_block_positions_func{}(m_block_store, block_index+1, length);
         return get_iterator(block_index);
     }
 
@@ -2195,14 +2183,14 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
             assert(!m_block_store.element_blocks[block_index-1]);
             m_block_store.sizes[block_index-1] += length;
             m_cur_size += length;
-            adjust_block_positions(block_index, length);
+            adjust_block_positions_func{}(m_block_store, block_index, length);
             return get_iterator(block_index-1);
         }
 
         // Insert a new empty block.
         m_block_store.insert(block_index, start_pos, length, nullptr);
         m_cur_size += length;
-        adjust_block_positions(block_index+1, length);
+        adjust_block_positions_func{}(m_block_store, block_index+1, length);
         return get_iterator(block_index);
     }
 
@@ -2257,7 +2245,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
     m_cur_size += length;
     m_block_store.calc_block_position(block_index+1);
     m_block_store.calc_block_position(block_index+2);
-    adjust_block_positions(block_index+3, length);
+    adjust_block_positions_func{}(m_block_store, block_index+3, length);
 
     return get_iterator(block_index+1);
 }
@@ -3898,7 +3886,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::insert_cells_to_middle(
         element_block_func::resize_block(*blk_data, m_block_store.sizes[block_index]);
     }
 
-    adjust_block_positions(block_index+3, length);
+    adjust_block_positions_func{}(m_block_store, block_index+3, length);
 }
 
 template<typename ElemBlockFunc, typename Trait>

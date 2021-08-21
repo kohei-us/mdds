@@ -230,6 +230,7 @@
                         <F N="../include/mdds/multi_type_vector/aos/main_def.inl"/>
                     </Folder>
                     <Folder Name="soa">
+                        <F N="../include/mdds/multi_type_vector/soa/block_util.hpp"/>
                         <F N="../include/mdds/multi_type_vector/soa/iterator.hpp"/>
                         <F N="../include/mdds/multi_type_vector/soa/main.hpp"/>
                         <F N="../include/mdds/multi_type_vector/soa/main_def.inl"/>

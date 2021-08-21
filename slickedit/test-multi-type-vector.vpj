@@ -81,9 +81,11 @@
             <F N="../src/multi_type_vector/default/aos/test_iterators_set_empty.cpp"/>
             <F N="../src/multi_type_vector/default/soa/test_iterators_set_empty.cpp"/>
             <F N="../src/multi_type_vector/custom-trait/aos/test_loop_unrolling.cpp"/>
+            <F N="../src/multi_type_vector/custom-trait/soa/test_loop_unrolling.cpp"/>
             <F N="../src/multi_type_vector/collection/aos/test_main.cpp"/>
             <F N="../src/multi_type_vector/collection/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom-trait/aos/test_main.cpp"/>
+            <F N="../src/multi_type_vector/custom-trait/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_main.cpp"/>
             <F N="../src/multi_type_vector/custom/soa/test_main.cpp"/>
             <F N="../src/multi_type_vector/default/aos/test_main.cpp"/>
@@ -116,6 +118,7 @@
             GUID="{DC165CCA-0944-4BBC-8A11-C29C5DEC59F1}">
             <F N="../src/multi_type_vector/custom/common_types.hpp"/>
             <F N="../src/multi_type_vector/custom-trait/aos/test_main.hpp"/>
+            <F N="../src/multi_type_vector/custom-trait/soa/test_main.hpp"/>
             <F N="../src/multi_type_vector/custom/aos/test_main.hpp"/>
             <F N="../src/multi_type_vector/custom/soa/test_main.hpp"/>
             <F N="../src/multi_type_vector/default/aos/test_main.hpp"/>

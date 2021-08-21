@@ -1,1 +1,1 @@
-SUBDIRS = aos
+SUBDIRS = aos soa

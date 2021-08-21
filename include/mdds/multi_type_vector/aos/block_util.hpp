@@ -70,7 +70,7 @@ struct adjust_block_positions<Blks, 4>
         if (start_block_index >= n)
             return;
 
-        // Ensure that the section length is divisible by 8.
+        // Ensure that the section length is divisible by 4.
         int64_t len = n - start_block_index;
         int64_t rem = len % 4;
         len -= rem;
@@ -138,7 +138,7 @@ struct adjust_block_positions<Blks, 16>
         if (start_block_index >= n)
             return;
 
-        // Ensure that the section length is divisible by 8.
+        // Ensure that the section length is divisible by 16.
         int64_t len = n - start_block_index;
         int64_t rem = len % 16;
         len -= rem;
@@ -182,7 +182,7 @@ struct adjust_block_positions<Blks, 32>
         if (start_block_index >= n)
             return;
 
-        // Ensure that the section length is divisible by 8.
+        // Ensure that the section length is divisible by 32.
         int64_t len = n - start_block_index;
         int64_t rem = len % 32;
         len -= rem;

@@ -32,6 +32,7 @@
 #include "../../global.hpp"
 #include "../types.hpp"
 #include "../util.hpp"
+#include "./block_util.hpp"
 #include "./iterator.hpp"
 
 namespace mdds { namespace mtv { namespace soa {
@@ -39,6 +40,8 @@ namespace mdds { namespace mtv { namespace soa {
 struct default_trait
 {
     using event_func = mdds::mtv::empty_event_func;
+
+    constexpr static int loop_unrolling = 0;
 };
 
 /**
@@ -1122,8 +1125,6 @@ public:
 #endif
 
 private:
-    void adjust_block_positions(int64_t start_block_index, int64_t delta);
-
     void delete_element_block(size_type block_index);
 
     void delete_element_blocks(size_type start, size_type end);
@@ -1430,6 +1431,9 @@ private:
     }
 
 private:
+    using adjust_block_positions_func =
+        detail::adjust_block_positions<blocks_type, Trait::loop_unrolling>;
+
     event_func m_hdl_event;
     blocks_type m_block_store;
     size_type m_cur_size;

@@ -143,6 +143,7 @@ src/Makefile
 src/multi_type_vector/Makefile
 src/multi_type_vector/custom-trait/Makefile
 src/multi_type_vector/custom-trait/aos/Makefile
+src/multi_type_vector/custom-trait/soa/Makefile
 test/Makefile
 test/gdb/Makefile
 test/gdb/src/Makefile
