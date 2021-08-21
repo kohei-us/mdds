@@ -49,6 +49,8 @@ public:
 struct trait
 {
     using event_func = event_hdl;
+
+    constexpr static int loop_unrolling = 0;
 };
 
 using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, trait>;
