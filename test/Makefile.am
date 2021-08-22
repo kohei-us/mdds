@@ -1,2 +1,1 @@
-
-SUBDIRS = gdb
+SUBDIRS = gdb multi_type_vector

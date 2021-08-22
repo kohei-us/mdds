@@ -1,10 +1,10 @@
-SUBDIRS = include example src test
+SUBDIRS = include example test
 
 pkgconfdir = $(datarootdir)/pkgconfig
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/src/include \
+	-I$(top_srcdir)/test/include \
 	$(CXXFLAGS_UNITTESTS)
 
 dist_doc_DATA = AUTHORS README.md
@@ -45,9 +45,9 @@ EXTRA_DIST = \
 	misc/mdds.pc.in \
 	misc/sorted_string_map_perf.cpp \
 	quickcheck/flat_segment_tree.cpp \
-	src/mem-wrapper.sh \
-	src/test-wrapper.sh \
-	src/test.mem.in
+	test/mem-wrapper.sh \
+	test/test-wrapper.sh \
+	test/test.mem.in
 
 check_PROGRAMS = \
 	flat_segment_tree_test \
@@ -73,227 +73,227 @@ check_PROGRAMS = \
 	ref_pair_test
 
 flat_segment_tree_test_SOURCES = \
-	src/flat_segment_tree_test.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/flat_segment_tree_test.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_matrix_test_SOURCES = \
-	src/multi_type_matrix_test.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_matrix_test.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_matrix_test_walk_SOURCES = \
-	src/multi_type_matrix_test_walk.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_matrix_test_walk.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_event_aos_SOURCES = \
-	src/multi_type_vector/event/aos/test_main.hpp \
-	src/multi_type_vector/event/aos/test_main.cpp \
-	src/multi_type_vector/event/aos/test_block_counter.cpp \
-	src/multi_type_vector/event/aos/test_block_init.cpp \
-	src/multi_type_vector/event/tc/block_counter.inl \
-	src/multi_type_vector/event/tc/block_init.inl \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/event/aos/test_main.hpp \
+	test/multi_type_vector/event/aos/test_main.cpp \
+	test/multi_type_vector/event/aos/test_block_counter.cpp \
+	test/multi_type_vector/event/aos/test_block_init.cpp \
+	test/multi_type_vector/event/tc/block_counter.inl \
+	test/multi_type_vector/event/tc/block_init.inl \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_event_aos_CPPFLAGS = \
-	-I$(top_srcdir)/src/multi_type_vector/event \
-	-I$(top_srcdir)/src/multi_type_vector/event/tc \
+	-I$(top_srcdir)/test/multi_type_vector/event \
+	-I$(top_srcdir)/test/multi_type_vector/event/tc \
 	$(AM_CPPFLAGS)
 
 multi_type_vector_test_event_soa_SOURCES = \
-	src/multi_type_vector/event/soa/test_main.hpp \
-	src/multi_type_vector/event/soa/test_main.cpp \
-	src/multi_type_vector/event/soa/test_block_counter.cpp \
-	src/multi_type_vector/event/soa/test_block_init.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/event/soa/test_main.hpp \
+	test/multi_type_vector/event/soa/test_main.cpp \
+	test/multi_type_vector/event/soa/test_block_counter.cpp \
+	test/multi_type_vector/event/soa/test_block_init.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_event_soa_CPPFLAGS = \
-	-I$(top_srcdir)/src/multi_type_vector/event \
-	-I$(top_srcdir)/src/multi_type_vector/event/tc \
+	-I$(top_srcdir)/test/multi_type_vector/event \
+	-I$(top_srcdir)/test/multi_type_vector/event/tc \
 	$(AM_CPPFLAGS)
 
 multi_type_vector_test_custom_aos_SOURCES = \
-	src/multi_type_vector/custom/aos/test_main.hpp \
-	src/multi_type_vector/custom/aos/test_main.cpp \
-	src/multi_type_vector/custom/aos/test_basic.cpp \
-	src/multi_type_vector/custom/aos/test_managed_block.cpp \
-	src/multi_type_vector/custom/aos/test_misc.cpp \
-	src/multi_type_vector/custom/aos/test_swap.cpp \
-	src/multi_type_vector/custom/aos/test_transfer.cpp \
-	src/multi_type_vector/custom/tc/basic.inl \
-	src/multi_type_vector/custom/tc/managed_block.inl \
-	src/multi_type_vector/custom/tc/misc.inl \
-	src/multi_type_vector/custom/tc/swap.inl \
-	src/multi_type_vector/custom/tc/transfer.inl \
-	src/multi_type_vector/custom/common_types.hpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/custom/aos/test_main.hpp \
+	test/multi_type_vector/custom/aos/test_main.cpp \
+	test/multi_type_vector/custom/aos/test_basic.cpp \
+	test/multi_type_vector/custom/aos/test_managed_block.cpp \
+	test/multi_type_vector/custom/aos/test_misc.cpp \
+	test/multi_type_vector/custom/aos/test_swap.cpp \
+	test/multi_type_vector/custom/aos/test_transfer.cpp \
+	test/multi_type_vector/custom/tc/basic.inl \
+	test/multi_type_vector/custom/tc/managed_block.inl \
+	test/multi_type_vector/custom/tc/misc.inl \
+	test/multi_type_vector/custom/tc/swap.inl \
+	test/multi_type_vector/custom/tc/transfer.inl \
+	test/multi_type_vector/custom/common_types.hpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_custom_aos_CPPFLAGS = \
-	-I$(top_srcdir)/src/multi_type_vector/custom \
-	-I$(top_srcdir)/src/multi_type_vector/custom/tc \
+	-I$(top_srcdir)/test/multi_type_vector/custom \
+	-I$(top_srcdir)/test/multi_type_vector/custom/tc \
 	$(AM_CPPFLAGS)
 
 multi_type_vector_test_custom_soa_SOURCES = \
-	src/multi_type_vector/custom/soa/test_main.hpp \
-	src/multi_type_vector/custom/soa/test_main.cpp \
-	src/multi_type_vector/custom/soa/test_basic.cpp \
-	src/multi_type_vector/custom/soa/test_managed_block.cpp \
-	src/multi_type_vector/custom/soa/test_misc.cpp \
-	src/multi_type_vector/custom/soa/test_swap.cpp \
-	src/multi_type_vector/custom/soa/test_transfer.cpp \
-	src/multi_type_vector/custom/common_types.hpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/custom/soa/test_main.hpp \
+	test/multi_type_vector/custom/soa/test_main.cpp \
+	test/multi_type_vector/custom/soa/test_basic.cpp \
+	test/multi_type_vector/custom/soa/test_managed_block.cpp \
+	test/multi_type_vector/custom/soa/test_misc.cpp \
+	test/multi_type_vector/custom/soa/test_swap.cpp \
+	test/multi_type_vector/custom/soa/test_transfer.cpp \
+	test/multi_type_vector/custom/common_types.hpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_custom_soa_CPPFLAGS = \
-	-I$(top_srcdir)/src/multi_type_vector/custom \
-	-I$(top_srcdir)/src/multi_type_vector/custom/tc \
+	-I$(top_srcdir)/test/multi_type_vector/custom \
+	-I$(top_srcdir)/test/multi_type_vector/custom/tc \
 	$(AM_CPPFLAGS)
 
 multi_type_vector_test_default_aos_SOURCES = \
-	src/multi_type_vector/default/aos/test_construction.cpp \
-	src/multi_type_vector/default/aos/test_basic.cpp \
-	src/multi_type_vector/default/aos/test_empty_cells.cpp \
-	src/multi_type_vector/default/aos/test_erase.cpp \
-	src/multi_type_vector/default/aos/test_hints.cpp \
-	src/multi_type_vector/default/aos/test_insert.cpp \
-	src/multi_type_vector/default/aos/test_iterators.cpp \
-	src/multi_type_vector/default/aos/test_iterators_insert.cpp \
-	src/multi_type_vector/default/aos/test_iterators_set.cpp \
-	src/multi_type_vector/default/aos/test_iterators_set_empty.cpp \
-	src/multi_type_vector/default/aos/test_misc.cpp \
-	src/multi_type_vector/default/aos/test_position.cpp \
-	src/multi_type_vector/default/aos/test_set.cpp \
-	src/multi_type_vector/default/aos/test_swap_range.cpp \
-	src/multi_type_vector/default/aos/test_transfer.cpp \
-	src/multi_type_vector/default/aos/test_main.hpp \
-	src/multi_type_vector/default/aos/test_main.cpp \
-	src/multi_type_vector/default/tc/construction.inl \
-	src/multi_type_vector/default/tc/basic.inl \
-	src/multi_type_vector/default/tc/empty_cells.inl \
-	src/multi_type_vector/default/tc/erase.inl \
-	src/multi_type_vector/default/tc/hints.inl \
-	src/multi_type_vector/default/tc/insert.inl \
-	src/multi_type_vector/default/tc/iterators.inl \
-	src/multi_type_vector/default/tc/iterators_insert.inl \
-	src/multi_type_vector/default/tc/iterators_set.inl \
-	src/multi_type_vector/default/tc/iterators_set_empty.inl \
-	src/multi_type_vector/default/tc/misc.inl \
-	src/multi_type_vector/default/tc/position.inl \
-	src/multi_type_vector/default/tc/set.inl \
-	src/multi_type_vector/default/tc/swap_range.inl \
-	src/multi_type_vector/default/tc/transfer.inl \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/default/aos/test_construction.cpp \
+	test/multi_type_vector/default/aos/test_basic.cpp \
+	test/multi_type_vector/default/aos/test_empty_cells.cpp \
+	test/multi_type_vector/default/aos/test_erase.cpp \
+	test/multi_type_vector/default/aos/test_hints.cpp \
+	test/multi_type_vector/default/aos/test_insert.cpp \
+	test/multi_type_vector/default/aos/test_iterators.cpp \
+	test/multi_type_vector/default/aos/test_iterators_insert.cpp \
+	test/multi_type_vector/default/aos/test_iterators_set.cpp \
+	test/multi_type_vector/default/aos/test_iterators_set_empty.cpp \
+	test/multi_type_vector/default/aos/test_misc.cpp \
+	test/multi_type_vector/default/aos/test_position.cpp \
+	test/multi_type_vector/default/aos/test_set.cpp \
+	test/multi_type_vector/default/aos/test_swap_range.cpp \
+	test/multi_type_vector/default/aos/test_transfer.cpp \
+	test/multi_type_vector/default/aos/test_main.hpp \
+	test/multi_type_vector/default/aos/test_main.cpp \
+	test/multi_type_vector/default/tc/construction.inl \
+	test/multi_type_vector/default/tc/basic.inl \
+	test/multi_type_vector/default/tc/empty_cells.inl \
+	test/multi_type_vector/default/tc/erase.inl \
+	test/multi_type_vector/default/tc/hints.inl \
+	test/multi_type_vector/default/tc/insert.inl \
+	test/multi_type_vector/default/tc/iterators.inl \
+	test/multi_type_vector/default/tc/iterators_insert.inl \
+	test/multi_type_vector/default/tc/iterators_set.inl \
+	test/multi_type_vector/default/tc/iterators_set_empty.inl \
+	test/multi_type_vector/default/tc/misc.inl \
+	test/multi_type_vector/default/tc/position.inl \
+	test/multi_type_vector/default/tc/set.inl \
+	test/multi_type_vector/default/tc/swap_range.inl \
+	test/multi_type_vector/default/tc/transfer.inl \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_default_aos_CPPFLAGS = \
-	-I$(top_srcdir)/src/multi_type_vector/default/tc \
+	-I$(top_srcdir)/test/multi_type_vector/default/tc \
 	$(AM_CPPFLAGS)
 
 multi_type_vector_test_default_soa_SOURCES = \
-	src/multi_type_vector/default/soa/test_main.hpp \
-	src/multi_type_vector/default/soa/test_main.cpp \
-	src/multi_type_vector/default/soa/test_construction.cpp \
-	src/multi_type_vector/default/soa/test_basic.cpp \
-	src/multi_type_vector/default/soa/test_empty_cells.cpp \
-	src/multi_type_vector/default/soa/test_erase.cpp \
-	src/multi_type_vector/default/soa/test_hints.cpp \
-	src/multi_type_vector/default/soa/test_insert.cpp \
-	src/multi_type_vector/default/soa/test_iterators.cpp \
-	src/multi_type_vector/default/soa/test_iterators_insert.cpp \
-	src/multi_type_vector/default/soa/test_iterators_set.cpp \
-	src/multi_type_vector/default/soa/test_iterators_set_empty.cpp \
-	src/multi_type_vector/default/soa/test_misc.cpp \
-	src/multi_type_vector/default/soa/test_position.cpp \
-	src/multi_type_vector/default/soa/test_set.cpp \
-	src/multi_type_vector/default/soa/test_swap_range.cpp \
-	src/multi_type_vector/default/soa/test_transfer.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/default/soa/test_main.hpp \
+	test/multi_type_vector/default/soa/test_main.cpp \
+	test/multi_type_vector/default/soa/test_construction.cpp \
+	test/multi_type_vector/default/soa/test_basic.cpp \
+	test/multi_type_vector/default/soa/test_empty_cells.cpp \
+	test/multi_type_vector/default/soa/test_erase.cpp \
+	test/multi_type_vector/default/soa/test_hints.cpp \
+	test/multi_type_vector/default/soa/test_insert.cpp \
+	test/multi_type_vector/default/soa/test_iterators.cpp \
+	test/multi_type_vector/default/soa/test_iterators_insert.cpp \
+	test/multi_type_vector/default/soa/test_iterators_set.cpp \
+	test/multi_type_vector/default/soa/test_iterators_set_empty.cpp \
+	test/multi_type_vector/default/soa/test_misc.cpp \
+	test/multi_type_vector/default/soa/test_position.cpp \
+	test/multi_type_vector/default/soa/test_set.cpp \
+	test/multi_type_vector/default/soa/test_swap_range.cpp \
+	test/multi_type_vector/default/soa/test_transfer.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_default_soa_CPPFLAGS = \
-	-I$(top_srcdir)/src/multi_type_vector/default/tc \
+	-I$(top_srcdir)/test/multi_type_vector/default/tc \
 	$(AM_CPPFLAGS)
 
 multi_type_vector_test_perf_SOURCES = \
-	src/multi_type_vector/perf/test_main.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/perf/test_main.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_collection_aos_SOURCES = \
-	src/multi_type_vector/collection/aos/test_main.cpp \
-	src/multi_type_vector/collection/tc/all.inl \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/collection/aos/test_main.cpp \
+	test/multi_type_vector/collection/tc/all.inl \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_collection_aos_CPPFLAGS = \
-	-I$(top_srcdir)/src/multi_type_vector/collection/tc \
+	-I$(top_srcdir)/test/multi_type_vector/collection/tc \
 	$(AM_CPPFLAGS)
 
 multi_type_vector_test_collection_soa_SOURCES = \
-	src/multi_type_vector/collection/soa/test_main.cpp \
-	src/multi_type_vector/collection/tc/all.inl \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/multi_type_vector/collection/soa/test_main.cpp \
+	test/multi_type_vector/collection/tc/all.inl \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 multi_type_vector_test_collection_soa_CPPFLAGS = \
-	-I$(top_srcdir)/src/multi_type_vector/collection/tc \
+	-I$(top_srcdir)/test/multi_type_vector/collection/tc \
 	$(AM_CPPFLAGS)
 
 point_quad_tree_test_SOURCES = \
-	src/point_quad_tree_test.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/point_quad_tree_test.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 segment_tree_test_SOURCES = \
-	src/segment_tree_test.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/segment_tree_test.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
-stlperf_test_SOURCES = src/stlperf_test.cpp
+stlperf_test_SOURCES = test/stlperf_test.cpp
 
 sorted_string_map_test_SOURCES = \
-	src/sorted_string_map_test.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/sorted_string_map_test.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
-template_test_SOURCES = src/template_test.cpp
+template_test_SOURCES = test/template_test.cpp
 
 trie_map_test_SOURCES = \
-	src/trie_map_test.cpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/trie_map_test.cpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 rtree_test_SOURCES = \
-	src/rtree/test_main.cpp \
-	src/rtree/test_basic.cpp \
-	src/rtree/test_copy.cpp \
-	src/rtree/test_erase_directories.cpp \
-	src/rtree/test_node_split.cpp \
-	src/rtree/test_directory_node_split.cpp \
-	src/rtree/test_intersection.cpp \
-	src/rtree/test_move.cpp \
-	src/rtree/test_square_distance.cpp \
-	src/rtree/test_geometry.cpp \
-	src/rtree/test_exact_search_by_extent.cpp \
-	src/rtree/test_exact_search_by_point.cpp \
-	src/rtree/test_forced_reinsertion.cpp \
-	src/rtree/test_point_objects.cpp \
-	src/rtree/test_global_rtree.hpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/rtree/test_main.cpp \
+	test/rtree/test_basic.cpp \
+	test/rtree/test_copy.cpp \
+	test/rtree/test_erase_directories.cpp \
+	test/rtree/test_node_split.cpp \
+	test/rtree/test_directory_node_split.cpp \
+	test/rtree/test_intersection.cpp \
+	test/rtree/test_move.cpp \
+	test/rtree/test_square_distance.cpp \
+	test/rtree/test_geometry.cpp \
+	test/rtree/test_exact_search_by_extent.cpp \
+	test/rtree/test_exact_search_by_point.cpp \
+	test/rtree/test_forced_reinsertion.cpp \
+	test/rtree/test_point_objects.cpp \
+	test/rtree/test_global_rtree.hpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
 rtree_test_bulkload_SOURCES = \
-	src/rtree/test_bulkload_main.cpp \
-	src/rtree/test_global_rtree.hpp \
-	src/include/test_global.hpp \
-	src/test_global.cpp
+	test/rtree/test_bulkload_main.cpp \
+	test/rtree/test_global_rtree.hpp \
+	test/include/test_global.hpp \
+	test/test_global.cpp
 
-ref_pair_test_SOURCES = src/ref_pair_test.cpp src/test_global.cpp
+ref_pair_test_SOURCES = test/ref_pair_test.cpp test/test_global.cpp
 
 test.fst.perf: flat_segment_tree_test
 	./flat_segment_tree_test perf
@@ -311,8 +311,8 @@ test.stl: stlperf_test
 	./stlperf_test
 
 TEST_EXTENSIONS = .mem
-LOG_COMPILER = $(top_srcdir)/src/test-wrapper.sh
-MEM_LOG_COMPILER = $(top_srcdir)/src/mem-wrapper.sh
+LOG_COMPILER = $(top_srcdir)/test/test-wrapper.sh
+MEM_LOG_COMPILER = $(top_srcdir)/test/mem-wrapper.sh
 AM_TESTS_ENVIRONMENT = \
 	VALGRIND="$(VALGRIND)"; export VALGRIND; \
 	VALGRINDFLAGS="$(VALGRINDFLAGS)"; export VALGRINDFLAGS; \

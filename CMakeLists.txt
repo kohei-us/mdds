@@ -32,4 +32,4 @@ install(DIRECTORY
         PATTERN "*.inl"
 )
 
-add_subdirectory(src)
+add_subdirectory(test)
