@@ -73,7 +73,7 @@ instantiating your :cpp:class:`~mdds::mtv::soa::multi_type_vector` type.  Refer 
 :cpp:type:`mdds::mtv::soa::multi_type_vector::event_func` for the details on when each
 event handler method gets triggered.
 
-The following code example demonstrates how this all works
+The following code example demonstrates how this all works:
 
 .. literalinclude:: ../example/multi_type_vector_event1.cpp
    :language: C++
