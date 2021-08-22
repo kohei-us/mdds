@@ -9,81 +9,9 @@ Quick start
 The following code demonstrates a simple use case of storing values of double
 and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds::mtv::soa::multi_type_vector`.
 
-::
-
-    #include <mdds/multi_type_vector.hpp>
-    #include <mdds/multi_type_vector/trait.hpp>
-    #include <iostream>
-    #include <vector>
-    #include <string>
-
-    using std::cout;
-    using std::endl;
-
-    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
-
-    template<typename _Blk>
-    void print_block(const mtv_type::value_type& v)
-    {
-        // Each element block has static begin() and end() methods that return
-        // begin and end iterators, respectively, from the passed element block
-        // instance.
-        auto it = _Blk::begin(*v.data);
-        auto it_end = _Blk::end(*v.data);
-
-        std::for_each(it, it_end,
-            [](const typename _Blk::value_type& elem)
-            {
-                cout << " * " << elem << endl;
-            }
-        );
-    }
-
-    int main()
-    {
-        mtv_type con(20); // Initialized with 20 empty elements.
-
-        // Set values individually.
-        con.set(0, 1.1);
-        con.set(1, 1.2);
-        con.set(2, 1.3);
-
-        // Set a sequence of values in one step.
-        std::vector<double> vals = { 10.1, 10.2, 10.3, 10.4, 10.5 };
-        con.set(3, vals.begin(), vals.end());
-
-        // Set string values.
-        con.set(10, std::string("Andy"));
-        con.set(11, std::string("Bruce"));
-        con.set(12, std::string("Charlie"));
-
-        // Iterate through all blocks and print all elements.
-        for (const mtv_type::value_type& v : con)
-        {
-            switch (v.type)
-            {
-                case mdds::mtv::element_type_double:
-                {
-                    cout << "numeric block of size " << v.size << endl;
-                    print_block<mdds::mtv::double_element_block>(v);
-                    break;
-                }
-                case mdds::mtv::element_type_string:
-                {
-                    cout << "string block of size " << v.size << endl;
-                    print_block<mdds::mtv::string_element_block>(v);
-                    break;
-                }
-                case mdds::mtv::element_type_empty:
-                    cout << "empty block of size " << v.size << endl;
-                    cout << " - no data - " << endl;
-                default:
-                    ;
-            }
-        }
-
-        return EXIT_SUCCESS;
-    }
+.. literalinclude:: ../example/multi_type_vector.cpp
+   :language: C++
+   :lines: 29-101
 
 You'll see the following console output when you compile and execute this code:
 
@@ -145,50 +73,11 @@ instantiating your :cpp:class:`~mdds::mtv::soa::multi_type_vector` type.  Refer 
 :cpp:type:`mdds::mtv::soa::multi_type_vector::event_func` for the details on when each
 event handler method gets triggered.
 
-The following code example demonstrates how this all works::
+The following code example demonstrates how this all works
 
-    #include <mdds/multi_type_vector.hpp>
-    #include <mdds/multi_type_vector/trait.hpp>
-    #include <iostream>
-
-    using namespace std;
-
-    class event_hdl
-    {
-    public:
-        void element_block_acquired(mdds::mtv::base_element_block* block)
-        {
-            cout << "  * element block acquired" << endl;
-        }
-
-        void element_block_released(mdds::mtv::base_element_block* block)
-        {
-            cout << "  * element block released" << endl;
-        }
-    };
-
-    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func, event_hdl>;
-
-    int main()
-    {
-        mtv_type db;  // starts with an empty container.
-
-        cout << "inserting string 'foo'..." << endl;
-        db.push_back(string("foo"));  // creates a new string element block.
-
-        cout << "inserting string 'bah'..." << endl;
-        db.push_back(string("bah"));  // appends to an existing string block.
-
-        cout << "inserting int 100..." << endl;
-        db.push_back(int(100)); // creates a new int element block.
-
-        cout << "emptying the container..." << endl;
-        db.clear(); // releases both the string and int element blocks.
-
-        cout << "exiting program..." << endl;
-
-        return EXIT_SUCCESS;
-    }
+.. literalinclude:: ../example/multi_type_vector_event1.cpp
+   :language: C++
+   :lines: 29-78
 
 You'll see the following console output when you compile and execute this code:
 
@@ -232,62 +121,9 @@ The following code demonstrates this by exposing raw array pointers to the
 internal arrays of numeric and string element blocks, and printing their
 element values directly from these array pointers.
 
-::
-
-    #include <mdds/multi_type_vector.hpp>
-    #include <mdds/multi_type_vector/trait.hpp>
-    #include <iostream>
-
-    using namespace std;
-    using mdds::mtv::double_element_block;
-    using mdds::mtv::string_element_block;
-
-    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
-
-    int main()
-    {
-        mtv_type db;  // starts with an empty container.
-
-        db.push_back(1.1);
-        db.push_back(1.2);
-        db.push_back(1.3);
-        db.push_back(1.4);
-        db.push_back(1.5);
-
-        db.push_back(string("A"));
-        db.push_back(string("B"));
-        db.push_back(string("C"));
-        db.push_back(string("D"));
-        db.push_back(string("E"));
-
-        // At this point, you have 2 blocks in the container.
-        cout << "block size: " << db.block_size() << endl;
-        cout << "--" << endl;
-
-        // Get an iterator that points to the first block in the primary array.
-        mtv_type::const_iterator it = db.begin();
-
-        // Get a pointer to the raw array of the numeric element block using the
-        // 'data' method.
-        const double* p = double_element_block::data(*it->data);
-
-        // Print the elements from this raw array pointer.
-        for (const double* p_end = p + it->size; p != p_end; ++p)
-            cout << *p << endl;
-
-        cout << "--" << endl;
-
-        ++it; // move to the next block, which is a string block.
-
-        // Get a pointer to the raw array of the string element block.
-        const string* pz = string_element_block::data(*it->data);
-
-        // Print out the string elements.
-        for (const string* pz_end = pz + it->size; pz != pz_end; ++pz)
-            cout << *pz << endl;
-
-        return EXIT_SUCCESS;
-    }
+.. literalinclude:: ../example/multi_type_vector_element_block1.cpp
+   :language: C++
+   :lines: 29-83
 
 Compiling and execute this code produces the following output:
 
