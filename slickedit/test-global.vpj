@@ -74,11 +74,11 @@
     <List Name="RTE">
     </List>
     <Files AutoFolders="DirectoryView">
-        <Folder Name="../src">
+        <Folder Name="../test">
             <Folder Name="include">
-                <F N="../src/include/test_global.hpp"/>
+                <F N="../test/include/test_global.hpp"/>
             </Folder>
-            <F N="../src/test_global.cpp"/>
+            <F N="../test/test_global.cpp"/>
         </Folder>
     </Files>
 </Project>

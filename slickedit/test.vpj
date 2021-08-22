@@ -74,18 +74,18 @@
     <List Name="RTE">
     </List>
     <Files AutoFolders="DirectoryView">
-        <Folder Name="../src">
-            <F N="../src/array_creation_perf_test.cpp"/>
-            <F N="../src/flat_segment_tree_test.cpp"/>
-            <F N="../src/multi_type_matrix_test.cpp"/>
-            <F N="../src/multi_type_matrix_test_walk.cpp"/>
-            <F N="../src/point_quad_tree_test.cpp"/>
-            <F N="../src/ref_pair_test.cpp"/>
-            <F N="../src/segment_tree_test.cpp"/>
-            <F N="../src/sorted_string_map_test.cpp"/>
-            <F N="../src/stlperf_test.cpp"/>
-            <F N="../src/template_test.cpp"/>
-            <F N="../src/trie_map_test.cpp"/>
+        <Folder Name="../test">
+            <F N="../test/array_creation_perf_test.cpp"/>
+            <F N="../test/flat_segment_tree_test.cpp"/>
+            <F N="../test/multi_type_matrix_test.cpp"/>
+            <F N="../test/multi_type_matrix_test_walk.cpp"/>
+            <F N="../test/point_quad_tree_test.cpp"/>
+            <F N="../test/ref_pair_test.cpp"/>
+            <F N="../test/segment_tree_test.cpp"/>
+            <F N="../test/sorted_string_map_test.cpp"/>
+            <F N="../test/stlperf_test.cpp"/>
+            <F N="../test/template_test.cpp"/>
+            <F N="../test/trie_map_test.cpp"/>
         </Folder>
     </Files>
 </Project>

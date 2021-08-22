@@ -71,21 +71,21 @@
             Filters=""
             GUID="{876D3814-5CA5-4819-A3E6-452BFC3920F7}">
             <F N="../CMakeLists.txt"/>
-            <F N="../src/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/collection/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/collection/aos/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/collection/soa/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/custom/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/custom/aos/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/custom/soa/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/default/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/default/aos/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/default/soa/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/event/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/event/aos/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/event/soa/CMakeLists.txt"/>
-            <F N="../src/multi_type_vector/perf/CMakeLists.txt"/>
+            <F N="../test/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/collection/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/collection/aos/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/collection/soa/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/custom/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/custom/aos/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/custom/soa/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/default/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/default/aos/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/default/soa/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/event/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/event/aos/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/event/soa/CMakeLists.txt"/>
+            <F N="../test/multi_type_vector/perf/CMakeLists.txt"/>
         </Folder>
     </Files>
     <List Name="RTE">

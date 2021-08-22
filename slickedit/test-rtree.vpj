@@ -74,24 +74,24 @@
     <List Name="RTE">
     </List>
     <Files AutoFolders="DirectoryView">
-        <Folder Name="../src">
+        <Folder Name="../test">
             <Folder Name="rtree">
-                <F N="../src/rtree/test_basic.cpp"/>
-                <F N="../src/rtree/test_bulkload_main.cpp"/>
-                <F N="../src/rtree/test_copy.cpp"/>
-                <F N="../src/rtree/test_directory_node_split.cpp"/>
-                <F N="../src/rtree/test_erase_directories.cpp"/>
-                <F N="../src/rtree/test_exact_search_by_extent.cpp"/>
-                <F N="../src/rtree/test_exact_search_by_point.cpp"/>
-                <F N="../src/rtree/test_forced_reinsertion.cpp"/>
-                <F N="../src/rtree/test_geometry.cpp"/>
-                <F N="../src/rtree/test_global_rtree.hpp"/>
-                <F N="../src/rtree/test_intersection.cpp"/>
-                <F N="../src/rtree/test_main.cpp"/>
-                <F N="../src/rtree/test_move.cpp"/>
-                <F N="../src/rtree/test_node_split.cpp"/>
-                <F N="../src/rtree/test_point_objects.cpp"/>
-                <F N="../src/rtree/test_square_distance.cpp"/>
+                <F N="../test/rtree/test_basic.cpp"/>
+                <F N="../test/rtree/test_bulkload_main.cpp"/>
+                <F N="../test/rtree/test_copy.cpp"/>
+                <F N="../test/rtree/test_directory_node_split.cpp"/>
+                <F N="../test/rtree/test_erase_directories.cpp"/>
+                <F N="../test/rtree/test_exact_search_by_extent.cpp"/>
+                <F N="../test/rtree/test_exact_search_by_point.cpp"/>
+                <F N="../test/rtree/test_forced_reinsertion.cpp"/>
+                <F N="../test/rtree/test_geometry.cpp"/>
+                <F N="../test/rtree/test_global_rtree.hpp"/>
+                <F N="../test/rtree/test_intersection.cpp"/>
+                <F N="../test/rtree/test_main.cpp"/>
+                <F N="../test/rtree/test_move.cpp"/>
+                <F N="../test/rtree/test_node_split.cpp"/>
+                <F N="../test/rtree/test_point_objects.cpp"/>
+                <F N="../test/rtree/test_square_distance.cpp"/>
             </Folder>
         </Folder>
     </Files>
