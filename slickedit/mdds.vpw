@@ -10,5 +10,6 @@
         <Project File="test-multi-type-vector.vpj"/>
         <Project File="test-rtree.vpj"/>
         <Project File="test.vpj"/>
+        <Project File="tools.vpj"/>
     </Projects>
 </Workspace>

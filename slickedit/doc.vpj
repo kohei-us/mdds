@@ -49,7 +49,7 @@
             </Target>
         </Menu>
     </Config>
-    <Files>
+    <CustomFolders>
         <Folder
             Name="Source Files"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
@@ -69,7 +69,12 @@
         <Folder
             Name="Other Files"
             Filters=""
-            GUID="{6A6831CB-8AC0-4EC0-95AA-996F9154AB7C}">
+            GUID="{6A6831CB-8AC0-4EC0-95AA-996F9154AB7C}"></Folder>
+    </CustomFolders>
+    <List Name="RTE">
+    </List>
+    <Files AutoFolders="DirectoryView">
+        <Folder Name="../doc">
             <F N="../doc/api.rst"/>
             <F N="../doc/flat_segment_tree.rst"/>
             <F N="../doc/global.rst"/>
@@ -83,6 +88,4 @@
             <F N="../doc/trie_map.rst"/>
         </Folder>
     </Files>
-    <List Name="RTE">
-    </List>
 </Project>

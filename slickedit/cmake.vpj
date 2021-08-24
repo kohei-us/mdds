@@ -49,7 +49,7 @@
             </Target>
         </Menu>
     </Config>
-    <Files>
+    <CustomFolders>
         <Folder
             Name="Source Files"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
@@ -69,25 +69,58 @@
         <Folder
             Name="Other Files"
             Filters=""
-            GUID="{876D3814-5CA5-4819-A3E6-452BFC3920F7}">
-            <F N="../CMakeLists.txt"/>
-            <F N="../test/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/collection/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/collection/aos/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/collection/soa/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/custom/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/custom/aos/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/custom/soa/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/default/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/default/aos/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/default/soa/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/event/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/event/aos/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/event/soa/CMakeLists.txt"/>
-            <F N="../test/multi_type_vector/perf/CMakeLists.txt"/>
-        </Folder>
-    </Files>
+            GUID="{876D3814-5CA5-4819-A3E6-452BFC3920F7}"></Folder>
+    </CustomFolders>
     <List Name="RTE">
     </List>
+    <Files AutoFolders="DirectoryView">
+        <Folder Name="..">
+            <F N="../CMakeLists.txt"/>
+        </Folder>
+        <Folder Name="../test">
+            <Folder Name="multi_type_vector">
+                <Folder Name="collection">
+                    <Folder Name="aos">
+                        <F N="../test/multi_type_vector/collection/aos/CMakeLists.txt"/>
+                    </Folder>
+                    <Folder Name="soa">
+                        <F N="../test/multi_type_vector/collection/soa/CMakeLists.txt"/>
+                    </Folder>
+                    <F N="../test/multi_type_vector/collection/CMakeLists.txt"/>
+                </Folder>
+                <Folder Name="custom">
+                    <Folder Name="aos">
+                        <F N="../test/multi_type_vector/custom/aos/CMakeLists.txt"/>
+                    </Folder>
+                    <Folder Name="soa">
+                        <F N="../test/multi_type_vector/custom/soa/CMakeLists.txt"/>
+                    </Folder>
+                    <F N="../test/multi_type_vector/custom/CMakeLists.txt"/>
+                </Folder>
+                <Folder Name="default">
+                    <Folder Name="aos">
+                        <F N="../test/multi_type_vector/default/aos/CMakeLists.txt"/>
+                    </Folder>
+                    <Folder Name="soa">
+                        <F N="../test/multi_type_vector/default/soa/CMakeLists.txt"/>
+                    </Folder>
+                    <F N="../test/multi_type_vector/default/CMakeLists.txt"/>
+                </Folder>
+                <Folder Name="event">
+                    <Folder Name="aos">
+                        <F N="../test/multi_type_vector/event/aos/CMakeLists.txt"/>
+                    </Folder>
+                    <Folder Name="soa">
+                        <F N="../test/multi_type_vector/event/soa/CMakeLists.txt"/>
+                    </Folder>
+                    <F N="../test/multi_type_vector/event/CMakeLists.txt"/>
+                </Folder>
+                <Folder Name="perf">
+                    <F N="../test/multi_type_vector/perf/CMakeLists.txt"/>
+                </Folder>
+                <F N="../test/multi_type_vector/CMakeLists.txt"/>
+            </Folder>
+            <F N="../test/CMakeLists.txt"/>
+        </Folder>
+    </Files>
 </Project>
