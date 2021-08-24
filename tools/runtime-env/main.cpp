@@ -105,8 +105,6 @@ public:
 
     void run(int block_size, int repeats)
     {
-        using namespace mdds::mtv::aos::detail;
-
         blocks_type blocks;
 
         std::size_t pos = 0;
@@ -125,15 +123,70 @@ public:
     }
 };
 
+class mtv_soa_luf_runner
+{
+    struct blocks_type
+    {
+        std::vector<std::size_t> positions;
+        std::vector<std::size_t> sizes;
+        std::vector<void*> element_blocks;
+    };
+
+    template<int Factor>
+    void measure_duration(blocks_type blocks, int block_size, int repeats)
+    {
+        using namespace mdds::mtv::soa::detail;
+
+        section_timer st;
+        for (int i = 0; i < repeats; ++i)
+            adjust_block_positions<blocks_type, Factor>{}(blocks, 0, 1);
+
+        print_time("soa", Factor, block_size, repeats, st.get_duration());
+    }
+
+public:
+
+    void run(int block_size, int repeats)
+    {
+        blocks_type blocks;
+
+        std::size_t pos = 0;
+        std::size_t size = 2;
+        for (int i = 0; i < block_size; ++i)
+        {
+            blocks.positions.push_back(pos);
+            blocks.sizes.push_back(size);
+            pos += size;
+        }
+
+        measure_duration<0>(blocks, block_size, repeats);
+        measure_duration<4>(blocks, block_size, repeats);
+        measure_duration<8>(blocks, block_size, repeats);
+        measure_duration<16>(blocks, block_size, repeats);
+        measure_duration<32>(blocks, block_size, repeats);
+    }
+};
+
 }
 
 int main(int argc, char** argv)
 {
-    mtv_aos_luf_runner runner;
-    runner.run(25, 500000);
-    runner.run(50, 500000);
-    runner.run(100, 500000);
-    runner.run(200, 500000);
+    int repeats = 1000000;
+    {
+        mtv_aos_luf_runner runner;
+        runner.run(25, repeats);
+        runner.run(50, repeats);
+        runner.run(100, repeats);
+        runner.run(200, repeats);
+    }
+
+    {
+        mtv_soa_luf_runner runner;
+        runner.run(25, repeats);
+        runner.run(50, repeats);
+        runner.run(100, repeats);
+        runner.run(200, repeats);
+    }
 
     return EXIT_SUCCESS;
 }
