@@ -29,6 +29,8 @@
 #ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_SOA_BLOCK_UTIL_HPP
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_SOA_BLOCK_UTIL_HPP
 
+#include "mdds/global.hpp"
+
 namespace mdds { namespace mtv { namespace soa {
 
 namespace detail {
