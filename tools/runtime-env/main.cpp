@@ -71,59 +71,69 @@ void print_time(std::string type, int lu, int block_size, int repeats, double du
     cout << type << "," << lu << "," << block_size << "," << repeats << "," << duration << endl;
 }
 
-}
-
-struct mtv_aos_block
+/**
+ * Class designed to measure run-time performance of AoS multi_type_vector
+ * with various loop-unrolling factors.
+ */
+class mtv_aos_luf_runner
 {
-    std::size_t position;
-    std::size_t size;
-    void* data;
-
-    mtv_aos_block(std::size_t _position, std::size_t _size) :
-        position(_position), size(_size) {}
-};
-
-using mtv_aos_blocks_type = std::vector<mtv_aos_block>;
-
-template<int Factor>
-void mtv_aos_measure_duration(mtv_aos_blocks_type blocks, int block_size, int repeats)
-{
-    using namespace mdds::mtv::aos::detail;
-
-    section_timer st;
-    for (int i = 0; i < repeats; ++i)
-        adjust_block_positions<mtv_aos_blocks_type, Factor>{}(blocks, 0, 1);
-
-    print_time("aos", Factor, block_size, repeats, st.get_duration());
-}
-
-void mtv_aos_loop_unrolling_factor(int block_size, int repeats)
-{
-    using namespace mdds::mtv::aos::detail;
-
-    mtv_aos_blocks_type blocks;
-
-    std::size_t pos = 0;
-    std::size_t size = 2;
-    for (int i = 0; i < block_size; ++i)
+    struct block
     {
-        blocks.emplace_back(pos, size);
-        pos += size;
+        std::size_t position;
+        std::size_t size;
+        void* data;
+
+        block(std::size_t _position, std::size_t _size) :
+            position(_position), size(_size) {}
+    };
+
+    using blocks_type = std::vector<block>;
+
+    template<int Factor>
+    void measure_duration(blocks_type blocks, int block_size, int repeats)
+    {
+        using namespace mdds::mtv::aos::detail;
+
+        section_timer st;
+        for (int i = 0; i < repeats; ++i)
+            adjust_block_positions<blocks_type, Factor>{}(blocks, 0, 1);
+
+        print_time("aos", Factor, block_size, repeats, st.get_duration());
     }
 
-    mtv_aos_measure_duration<0>(blocks, block_size, repeats);
-    mtv_aos_measure_duration<4>(blocks, block_size, repeats);
-    mtv_aos_measure_duration<8>(blocks, block_size, repeats);
-    mtv_aos_measure_duration<16>(blocks, block_size, repeats);
-    mtv_aos_measure_duration<32>(blocks, block_size, repeats);
+public:
+
+    void run(int block_size, int repeats)
+    {
+        using namespace mdds::mtv::aos::detail;
+
+        blocks_type blocks;
+
+        std::size_t pos = 0;
+        std::size_t size = 2;
+        for (int i = 0; i < block_size; ++i)
+        {
+            blocks.emplace_back(pos, size);
+            pos += size;
+        }
+
+        measure_duration<0>(blocks, block_size, repeats);
+        measure_duration<4>(blocks, block_size, repeats);
+        measure_duration<8>(blocks, block_size, repeats);
+        measure_duration<16>(blocks, block_size, repeats);
+        measure_duration<32>(blocks, block_size, repeats);
+    }
+};
+
 }
 
 int main(int argc, char** argv)
 {
-    mtv_aos_loop_unrolling_factor(25, 500000);
-    mtv_aos_loop_unrolling_factor(50, 500000);
-    mtv_aos_loop_unrolling_factor(100, 500000);
-    mtv_aos_loop_unrolling_factor(200, 500000);
+    mtv_aos_luf_runner runner;
+    runner.run(25, 500000);
+    runner.run(50, 500000);
+    runner.run(100, 500000);
+    runner.run(200, 500000);
 
     return EXIT_SUCCESS;
 }
