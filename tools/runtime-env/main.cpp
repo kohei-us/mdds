@@ -66,6 +66,11 @@ private:
     double m_start_time;
 };
 
+void print_header()
+{
+    cout << "storage,factor,block count,repeat count,duration" << endl;
+}
+
 void print_time(std::string type, int lu, int block_size, int repeats, double duration)
 {
     cout << type << "," << lu << "," << block_size << "," << repeats << "," << duration << endl;
@@ -171,21 +176,23 @@ public:
 
 int main(int argc, char** argv)
 {
+    int block_count_init = 5;
+    int block_count_step = 5;
+    int block_count_max = 300;
     int repeats = 1000000;
+
+    print_header();
+
+    for (int block_count = block_count_init; block_count <= block_count_max; block_count += block_count_step)
     {
         mtv_aos_luf_runner runner;
-        runner.run(25, repeats);
-        runner.run(50, repeats);
-        runner.run(100, repeats);
-        runner.run(200, repeats);
+        runner.run(block_count, repeats);
     }
 
+    for (int block_count = block_count_init; block_count <= block_count_max; block_count += block_count_step)
     {
         mtv_soa_luf_runner runner;
-        runner.run(25, repeats);
-        runner.run(50, repeats);
-        runner.run(100, repeats);
-        runner.run(200, repeats);
+        runner.run(block_count, repeats);
     }
 
     return EXIT_SUCCESS;
