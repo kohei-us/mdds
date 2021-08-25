@@ -28,20 +28,22 @@
 
 namespace {
 
-template<int F>
+using mdds::mtv::lu_factor_t;
+
+template<lu_factor_t F>
 struct trait_lu
 {
     using event_func = mdds::mtv::empty_event_func;
 
-    constexpr static int loop_unrolling = F;
+    constexpr static lu_factor_t loop_unrolling = F;
 };
 
 }
 
-template<int F>
+template<lu_factor_t F>
 void mtv_test_loop_unrolling()
 {
-    cout << "loop unrolling factor = " << F << endl;
+    cout << "loop unrolling factor = " << int(F) << endl;
     using mtv_type = mtv_alias_type<trait_lu<F>>;
 
     mtv_type db(5, std::string("test"));
@@ -62,35 +64,35 @@ void mtv_test_loop_unrolling_0()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    mtv_test_loop_unrolling<0>();
+    mtv_test_loop_unrolling<lu_factor_t::none>();
 }
 
 void mtv_test_loop_unrolling_4()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    mtv_test_loop_unrolling<4>();
+    mtv_test_loop_unrolling<lu_factor_t::lu4>();
 }
 
 void mtv_test_loop_unrolling_8()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    mtv_test_loop_unrolling<8>();
+    mtv_test_loop_unrolling<lu_factor_t::lu8>();
 }
 
 void mtv_test_loop_unrolling_16()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    mtv_test_loop_unrolling<16>();
+    mtv_test_loop_unrolling<lu_factor_t::lu16>();
 }
 
 void mtv_test_loop_unrolling_32()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    mtv_test_loop_unrolling<32>();
+    mtv_test_loop_unrolling<lu_factor_t::lu32>();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

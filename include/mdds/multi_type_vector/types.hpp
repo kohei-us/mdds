@@ -71,6 +71,16 @@ constexpr element_t element_type_string  = 11;
 
 constexpr element_t element_type_user_start = 50;
 
+/** Loop-unrolling factor. */
+enum class lu_factor_t : int
+{
+    none = 0,
+    lu4 = 4,
+    lu8 = 8,
+    lu16 = 16,
+    lu32 = 32
+};
+
 /**
  * Generic exception used for errors specific to element block operations.
  */

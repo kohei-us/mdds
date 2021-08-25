@@ -30,12 +30,13 @@
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_SOA_BLOCK_UTIL_HPP
 
 #include "mdds/global.hpp"
+#include "../types.hpp"
 
 namespace mdds { namespace mtv { namespace soa {
 
 namespace detail {
 
-template<typename Blks, int F>
+template<typename Blks, lu_factor_t F>
 struct adjust_block_positions
 {
     void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
@@ -45,7 +46,7 @@ struct adjust_block_positions
 };
 
 template<typename Blks>
-struct adjust_block_positions<Blks, 0>
+struct adjust_block_positions<Blks, lu_factor_t::none>
 {
     void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
     {
@@ -63,7 +64,7 @@ struct adjust_block_positions<Blks, 0>
 };
 
 template<typename Blks>
-struct adjust_block_positions<Blks, 4>
+struct adjust_block_positions<Blks, lu_factor_t::lu4>
 {
     void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
     {
@@ -95,7 +96,7 @@ struct adjust_block_positions<Blks, 4>
 };
 
 template<typename Blks>
-struct adjust_block_positions<Blks, 8>
+struct adjust_block_positions<Blks, lu_factor_t::lu8>
 {
     void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
     {
@@ -131,7 +132,7 @@ struct adjust_block_positions<Blks, 8>
 };
 
 template<typename Blks>
-struct adjust_block_positions<Blks, 16>
+struct adjust_block_positions<Blks, lu_factor_t::lu16>
 {
     void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
     {
@@ -175,7 +176,7 @@ struct adjust_block_positions<Blks, 16>
 };
 
 template<typename Blks>
-struct adjust_block_positions<Blks, 32>
+struct adjust_block_positions<Blks, lu_factor_t::lu32>
 {
     void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
     {

@@ -149,7 +149,7 @@ struct eb_counter_trait
 {
     using event_func = event_block_counter;
 
-    constexpr static int loop_unrolling = 8;
+    constexpr static mdds::mtv::lu_factor_t loop_unrolling = mdds::mtv::lu_factor_t::lu8;
 };
 
 void mtv_test_block_counter()

@@ -41,7 +41,7 @@ struct default_trait
 {
     using event_func = mdds::mtv::empty_event_func;
 
-    constexpr static int loop_unrolling = 8;
+    constexpr static lu_factor_t loop_unrolling = lu_factor_t::lu8;
 };
 
 /**

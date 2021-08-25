@@ -50,7 +50,7 @@ struct trait
 {
     using event_func = event_hdl;
 
-    constexpr static int loop_unrolling = 0;
+    constexpr static mdds::mtv::lu_factor_t loop_unrolling = mdds::mtv::lu_factor_t::none;
 };
 
 using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, trait>;

@@ -36,6 +36,7 @@
 using std::cout;
 using std::cerr;
 using std::endl;
+using mdds::mtv::lu_factor_t;
 
 namespace {
 
@@ -71,9 +72,9 @@ void print_header()
     cout << "storage,factor,block count,repeat count,duration" << endl;
 }
 
-void print_time(std::string type, int lu, int block_size, int repeats, double duration)
+void print_time(std::string type, lu_factor_t lu, int block_size, int repeats, double duration)
 {
-    cout << type << "," << lu << "," << block_size << "," << repeats << "," << duration << endl;
+    cout << type << "," << int(lu) << "," << block_size << "," << repeats << "," << duration << endl;
 }
 
 /**
@@ -94,7 +95,7 @@ class mtv_aos_luf_runner
 
     using blocks_type = std::vector<block>;
 
-    template<int Factor>
+    template<lu_factor_t Factor>
     void measure_duration(blocks_type blocks, int block_size, int repeats)
     {
         using namespace mdds::mtv::aos::detail;
@@ -120,11 +121,11 @@ public:
             pos += size;
         }
 
-        measure_duration<0>(blocks, block_size, repeats);
-        measure_duration<4>(blocks, block_size, repeats);
-        measure_duration<8>(blocks, block_size, repeats);
-        measure_duration<16>(blocks, block_size, repeats);
-        measure_duration<32>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::none>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::lu4>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::lu8>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::lu16>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::lu32>(blocks, block_size, repeats);
     }
 };
 
@@ -137,7 +138,7 @@ class mtv_soa_luf_runner
         std::vector<void*> element_blocks;
     };
 
-    template<int Factor>
+    template<lu_factor_t Factor>
     void measure_duration(blocks_type blocks, int block_size, int repeats)
     {
         using namespace mdds::mtv::soa::detail;
@@ -164,11 +165,11 @@ public:
             pos += size;
         }
 
-        measure_duration<0>(blocks, block_size, repeats);
-        measure_duration<4>(blocks, block_size, repeats);
-        measure_duration<8>(blocks, block_size, repeats);
-        measure_duration<16>(blocks, block_size, repeats);
-        measure_duration<32>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::none>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::lu4>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::lu8>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::lu16>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::lu32>(blocks, block_size, repeats);
     }
 };
 
