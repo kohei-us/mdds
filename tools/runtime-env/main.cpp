@@ -72,9 +72,15 @@ void print_header()
     cout << "storage,factor,block count,repeat count,duration" << endl;
 }
 
-void print_time(std::string type, lu_factor_t lu, int block_size, int repeats, double duration)
+void print_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration)
 {
-    cout << type << "," << int(lu) << "," << block_size << "," << repeats << "," << duration << endl;
+    int lu_value = int(lu) & 0xFF;
+    bool sse2 = (int(lu) & 0x100) != 0;
+    cout << type
+        << "," << lu_value << (sse2 ? "+sse2":"")
+        << "," << block_size
+        << "," << repeats
+        << "," << duration << endl;
 }
 
 /**
@@ -170,6 +176,9 @@ public:
         measure_duration<lu_factor_t::lu8>(blocks, block_size, repeats);
         measure_duration<lu_factor_t::lu16>(blocks, block_size, repeats);
         measure_duration<lu_factor_t::lu32>(blocks, block_size, repeats);
+#if SIZEOF_VOID_P == 8
+        measure_duration<lu_factor_t::sse2_x64>(blocks, block_size, repeats);
+#endif
     }
 };
 
