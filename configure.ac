@@ -26,6 +26,9 @@ AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
 CPPFLAGS="$CPPFLAGS -Wall -Wshadow -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
 
+AC_CHECK_SIZEOF([void *])
+CXXFLAGS="$CXXFLAGS -DSIZEOF_VOID_P=$ac_cv_sizeof_void_p"
+
 AC_ARG_ENABLE(debug-stdcxx,
 [
   --enable-debug-stdcxx   Enable libstdc++ debug mode during make check.

@@ -26,21 +26,54 @@
  *
  ************************************************************************/
 
-#pragma once
+#include "test_global.hpp" // This must be the first header to be included.
+#include "test_main.hpp"
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
+namespace {
 
-template<typename Trait>
-using mtv_alias_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func, Trait>;
+using mdds::mtv::lu_factor_t;
 
-void mtv_test_loop_unrolling_0();
-void mtv_test_loop_unrolling_4();
-void mtv_test_loop_unrolling_8();
-void mtv_test_loop_unrolling_16();
-void mtv_test_loop_unrolling_32();
-void mtv_test_loop_unrolling_sse2_x64(); // SoA only
+struct trait_lu
+{
+    using event_func = mdds::mtv::empty_event_func;
+
+    constexpr static lu_factor_t loop_unrolling = lu_factor_t::sse2_x64;
+};
+
+}
+
+#if SIZEOF_VOID_P == 8
+
+void mtv_test_loop_unrolling_sse2_x64()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    using mtv_type = mtv_alias_type<trait_lu>;
+
+    mtv_type db(5, std::string("test"));
+
+    // keep inserting blocks of alternating types at position 0 to force block
+    // position adjustments.
+
+    for (int i = 0; i < 50; ++i)
+    {
+        db.insert_empty(0, 2);
+
+        std::vector<int8_t> values(2, 89);
+        db.insert(0, values.begin(), values.end());
+    }
+}
+
+#else
+
+void mtv_test_loop_unrolling_sse2_x64()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    cout << "disabled on a non 64-bit system." << endl;
+}
+
+#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

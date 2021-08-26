@@ -123,6 +123,7 @@
                     </Folder>
                     <Folder Name="soa">
                         <F N="../test/multi_type_vector/custom-trait/soa/test_loop_unrolling.cpp"/>
+                        <F N="../test/multi_type_vector/custom-trait/soa/test_loop_unrolling_simd.cpp"/>
                         <F N="../test/multi_type_vector/custom-trait/soa/test_main.cpp"/>
                         <F N="../test/multi_type_vector/custom-trait/soa/test_main.hpp"/>
                     </Folder>
