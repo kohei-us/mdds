@@ -42,7 +42,7 @@ struct trait_lu
 
 }
 
-#if SIZEOF_VOID_P == 8
+#if SIZEOF_VOID_P == 8 && defined(__SSE2__)
 
 void mtv_test_loop_unrolling_sse2_x64()
 {
