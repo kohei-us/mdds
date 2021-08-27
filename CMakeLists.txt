@@ -11,12 +11,17 @@ find_package(Threads)
 enable_testing()
 set(CMAKE_CTEST_COMMAND ctest -V)
 
+add_compile_definitions(
+    MDDS_UNIT_TEST
+    MDDS_DEBUG_NODE_BASE
+    SIZEOF_VOID_P=${CMAKE_SIZEOF_VOID_P}
+)
+
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /wd4244 /MP")
+    add_definitions(/wd4251 /wd4275 /wd4244 /MP)
+    add_compile_definitions(__SSE2__=1)
 endif(MSVC)
 
-add_definitions(-DMDDS_UNIT_TEST)
-add_definitions(-DMDDS_DEBUG_NODE_BASE)
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
     ${Boost_INCLUDE_DIR}
@@ -33,3 +38,4 @@ install(DIRECTORY
 )
 
 add_subdirectory(test)
+add_subdirectory(tools)

@@ -97,6 +97,15 @@
                     </Folder>
                     <F N="../test/multi_type_vector/custom/CMakeLists.txt"/>
                 </Folder>
+                <Folder Name="custom-trait">
+                    <Folder Name="aos">
+                        <F N="../test/multi_type_vector/custom-trait/aos/CMakeLists.txt"/>
+                    </Folder>
+                    <Folder Name="soa">
+                        <F N="../test/multi_type_vector/custom-trait/soa/CMakeLists.txt"/>
+                    </Folder>
+                    <F N="../test/multi_type_vector/custom-trait/CMakeLists.txt"/>
+                </Folder>
                 <Folder Name="default">
                     <Folder Name="aos">
                         <F N="../test/multi_type_vector/default/aos/CMakeLists.txt"/>
@@ -120,7 +129,16 @@
                 </Folder>
                 <F N="../test/multi_type_vector/CMakeLists.txt"/>
             </Folder>
+            <Folder Name="rtree">
+                <F N="../test/rtree/CMakeLists.txt"/>
+            </Folder>
             <F N="../test/CMakeLists.txt"/>
+        </Folder>
+        <Folder Name="../tools">
+            <Folder Name="runtime-env">
+                <F N="../tools/runtime-env/CMakeLists.txt"/>
+            </Folder>
+            <F N="../tools/CMakeLists.txt"/>
         </Folder>
     </Files>
 </Project>
