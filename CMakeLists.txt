@@ -11,6 +11,8 @@ find_package(Threads)
 enable_testing()
 set(CMAKE_CTEST_COMMAND ctest -V)
 
+message(STATUS "size of void pointer: ${CMAKE_SIZEOF_VOID_P}")
+
 add_compile_definitions(
     MDDS_UNIT_TEST
     MDDS_DEBUG_NODE_BASE
@@ -19,7 +21,6 @@ add_compile_definitions(
 
 if(MSVC)
     add_definitions(/wd4251 /wd4275 /wd4244 /MP)
-    add_compile_definitions(__SSE2__=1)
 endif(MSVC)
 
 include_directories(

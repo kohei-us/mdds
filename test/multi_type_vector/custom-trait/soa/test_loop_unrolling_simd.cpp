@@ -70,7 +70,15 @@ void mtv_test_loop_unrolling_sse2_x64()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    cout << "disabled on a non 64-bit system." << endl;
+    cout << "Test disabled for the following reasons:" << endl;
+
+#if SIZEOF_VOID_P != 8
+    cout << "  * not a 64-bit build" << endl;
+#endif
+
+#ifndef __SSE2__
+    cout << "  * __SSE2__ not defined" << endl;
+#endif
 }
 
 #endif

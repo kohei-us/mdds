@@ -70,6 +70,12 @@
 #define MDDS_USE_OPENMP 0
 #endif
 
+#if defined(__AVX__) || defined(__AVX2__)
+    #ifndef __SSE2__
+        #define __SSE2__ 1
+    #endif
+#endif
+
 namespace mdds {
 
 class general_error : public ::std::exception
