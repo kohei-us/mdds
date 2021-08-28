@@ -239,7 +239,7 @@ struct adjust_block_positions<Blks, lu_factor_t::lu32>
     }
 };
 
-#if defined(__SSE2__) || defined(__AVX2__)
+#if defined(__SSE2__)
 
 template<typename Blks>
 struct adjust_block_positions<Blks, lu_factor_t::sse2_x64>
