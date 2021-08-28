@@ -176,8 +176,9 @@ public:
         measure_duration<lu_factor_t::lu8>(blocks, block_size, repeats);
         measure_duration<lu_factor_t::lu16>(blocks, block_size, repeats);
         measure_duration<lu_factor_t::lu32>(blocks, block_size, repeats);
-#if SIZEOF_VOID_P == 8
+#if SIZEOF_VOID_P == 8 && defined(__SSE2__)
         measure_duration<lu_factor_t::sse2_x64>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::sse2_x64_lu4>(blocks, block_size, repeats);
 #endif
     }
 };
