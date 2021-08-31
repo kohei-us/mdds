@@ -43,6 +43,7 @@ void mtv_test_loop_unrolling_32();
 void mtv_test_loop_unrolling_sse2_x64(); // SoA only
 void mtv_test_loop_unrolling_sse2_x64_4(); // SoA only
 void mtv_test_loop_unrolling_sse2_x64_8(); // SoA only
+void mtv_test_loop_unrolling_sse2_x64_16(); // SoA only
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

@@ -383,6 +383,88 @@ struct adjust_block_positions<Blks, lu_factor_t::sse2_x64_lu8>
     }
 };
 
+template<typename Blks>
+struct adjust_block_positions<Blks, lu_factor_t::sse2_x64_lu16>
+{
+    void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
+    {
+        static_assert(
+            sizeof(typename decltype(block_store.positions)::value_type) == 8,
+            "This code works only when the position values are 64-bit wide.");
+
+        int64_t n = block_store.positions.size();
+
+        if (start_block_index >= n)
+            return;
+
+        // Ensure that the section length is divisible by 32.
+        int64_t len = n - start_block_index;
+        int64_t rem = len & 31; // % 32
+        len -= rem;
+        len += start_block_index;
+
+        __m128i right = _mm_set_epi64x(delta, delta);
+
+#if MDDS_USE_OPENMP
+        #pragma omp parallel for
+#endif
+        for (int64_t i = start_block_index; i < len; i += 32)
+        {
+            __m128i* dst0 = (__m128i*)&block_store.positions[i];
+            _mm_storeu_si128(dst0, _mm_add_epi64(_mm_loadu_si128(dst0), right));
+
+            __m128i* dst2 = (__m128i*)&block_store.positions[i+2];
+            _mm_storeu_si128(dst2, _mm_add_epi64(_mm_loadu_si128(dst2), right));
+
+            __m128i* dst4 = (__m128i*)&block_store.positions[i+4];
+            _mm_storeu_si128(dst4, _mm_add_epi64(_mm_loadu_si128(dst4), right));
+
+            __m128i* dst6 = (__m128i*)&block_store.positions[i+6];
+            _mm_storeu_si128(dst6, _mm_add_epi64(_mm_loadu_si128(dst6), right));
+
+            __m128i* dst8 = (__m128i*)&block_store.positions[i+8];
+            _mm_storeu_si128(dst8, _mm_add_epi64(_mm_loadu_si128(dst8), right));
+
+            __m128i* dst10 = (__m128i*)&block_store.positions[i+10];
+            _mm_storeu_si128(dst10, _mm_add_epi64(_mm_loadu_si128(dst10), right));
+
+            __m128i* dst12 = (__m128i*)&block_store.positions[i+12];
+            _mm_storeu_si128(dst12, _mm_add_epi64(_mm_loadu_si128(dst12), right));
+
+            __m128i* dst14 = (__m128i*)&block_store.positions[i+14];
+            _mm_storeu_si128(dst14, _mm_add_epi64(_mm_loadu_si128(dst14), right));
+
+            __m128i* dst16 = (__m128i*)&block_store.positions[i+16];
+            _mm_storeu_si128(dst16, _mm_add_epi64(_mm_loadu_si128(dst16), right));
+
+            __m128i* dst18 = (__m128i*)&block_store.positions[i+18];
+            _mm_storeu_si128(dst18, _mm_add_epi64(_mm_loadu_si128(dst18), right));
+
+            __m128i* dst20 = (__m128i*)&block_store.positions[i+20];
+            _mm_storeu_si128(dst20, _mm_add_epi64(_mm_loadu_si128(dst20), right));
+
+            __m128i* dst22 = (__m128i*)&block_store.positions[i+22];
+            _mm_storeu_si128(dst22, _mm_add_epi64(_mm_loadu_si128(dst22), right));
+
+            __m128i* dst24 = (__m128i*)&block_store.positions[i+24];
+            _mm_storeu_si128(dst24, _mm_add_epi64(_mm_loadu_si128(dst24), right));
+
+            __m128i* dst26 = (__m128i*)&block_store.positions[i+26];
+            _mm_storeu_si128(dst26, _mm_add_epi64(_mm_loadu_si128(dst26), right));
+
+            __m128i* dst28 = (__m128i*)&block_store.positions[i+28];
+            _mm_storeu_si128(dst28, _mm_add_epi64(_mm_loadu_si128(dst28), right));
+
+            __m128i* dst30 = (__m128i*)&block_store.positions[i+30];
+            _mm_storeu_si128(dst30, _mm_add_epi64(_mm_loadu_si128(dst30), right));
+        }
+
+        rem += len;
+        for (int64_t i = len; i < rem; ++i)
+            block_store.positions[i] += delta;
+    }
+};
+
 #endif // __SSE2__
 
 } // namespace detail
