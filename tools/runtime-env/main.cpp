@@ -30,6 +30,7 @@
 #include <mdds/multi_type_vector/aos/block_util.hpp>
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <chrono>
 
@@ -77,7 +78,7 @@ void print_time(const std::string& type, lu_factor_t lu, int block_size, int rep
     int lu_value = int(lu) & 0xFF;
     bool sse2 = (int(lu) & 0x100) != 0;
     cout << type
-        << "," << lu_value << (sse2 ? "+sse2":"")
+        << "," << std::setw(2) << std::setfill('0') << lu_value << (sse2 ? "+sse2":"")
         << "," << block_size
         << "," << repeats
         << "," << duration << endl;
