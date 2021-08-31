@@ -271,9 +271,7 @@ struct adjust_block_positions<Blks, lu_factor_t::sse2_x64>
         for (int64_t i = start_block_index; i < len; i += 2)
         {
             __m128i* dst = (__m128i*)&block_store.positions[i];
-            __m128i left = _mm_loadu_si128(dst);
-            left = _mm_add_epi64(left, right);
-            _mm_storeu_si128(dst, left);
+            _mm_storeu_si128(dst, _mm_add_epi64(_mm_loadu_si128(dst), right));
         }
 
         if (odd)
@@ -309,24 +307,16 @@ struct adjust_block_positions<Blks, lu_factor_t::sse2_x64_lu4>
         for (int64_t i = start_block_index; i < len; i += 8)
         {
             __m128i* dst0 = (__m128i*)&block_store.positions[i];
-            __m128i left0 = _mm_loadu_si128(dst0);
-            left0 = _mm_add_epi64(left0, right);
-            _mm_storeu_si128(dst0, left0);
+            _mm_storeu_si128(dst0, _mm_add_epi64(_mm_loadu_si128(dst0), right));
 
             __m128i* dst2 = (__m128i*)&block_store.positions[i+2];
-            __m128i left2 = _mm_loadu_si128(dst2);
-            left2 = _mm_add_epi64(left2, right);
-            _mm_storeu_si128(dst2, left2);
+            _mm_storeu_si128(dst2, _mm_add_epi64(_mm_loadu_si128(dst2), right));
 
             __m128i* dst4 = (__m128i*)&block_store.positions[i+4];
-            __m128i left4 = _mm_loadu_si128(dst4);
-            left4 = _mm_add_epi64(left4, right);
-            _mm_storeu_si128(dst4, left4);
+            _mm_storeu_si128(dst4, _mm_add_epi64(_mm_loadu_si128(dst4), right));
 
             __m128i* dst6 = (__m128i*)&block_store.positions[i+6];
-            __m128i left6 = _mm_loadu_si128(dst6);
-            left6 = _mm_add_epi64(left6, right);
-            _mm_storeu_si128(dst6, left6);
+            _mm_storeu_si128(dst6, _mm_add_epi64(_mm_loadu_si128(dst6), right));
         }
 
         rem += len;
