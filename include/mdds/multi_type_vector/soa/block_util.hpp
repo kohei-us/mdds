@@ -500,9 +500,111 @@ struct adjust_block_positions<Blks, lu_factor_t::avx2_x64>
         for (int64_t i = start_block_index; i < len; i += 4)
         {
             __m256i* dst = (__m256i*)(&block_store.positions[i]);
-            __m256i left = _mm256_loadu_si256(dst);
-            left = _mm256_add_epi64(left, right);
-            _mm256_storeu_si256(dst, left);
+            _mm256_storeu_si256(dst, _mm256_add_epi64(_mm256_loadu_si256(dst), right));
+        }
+
+        rem += len;
+        for (int64_t i = len; i < rem; ++i)
+            block_store.positions[i] += delta;
+    }
+};
+
+template<typename Blks>
+struct adjust_block_positions<Blks, lu_factor_t::avx2_x64_lu4>
+{
+    void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
+    {
+        static_assert(
+            sizeof(typename decltype(block_store.positions)::value_type) == 8,
+            "This code works only when the position values are 64-bit wide.");
+
+        int64_t n = block_store.positions.size();
+
+        if (start_block_index >= n)
+            return;
+
+        // Ensure that the section length is divisible by 16.
+        int64_t len = n - start_block_index;
+        int64_t rem = len & 15; // % 16
+        len -= rem;
+        len += start_block_index;
+
+        __m256i right = _mm256_set1_epi64x(delta);
+
+#if MDDS_USE_OPENMP
+        #pragma omp parallel for
+#endif
+        for (int64_t i = start_block_index; i < len; i += 16)
+        {
+            __m256i* dst = (__m256i*)(&block_store.positions[i]);
+            _mm256_storeu_si256(dst, _mm256_add_epi64(_mm256_loadu_si256(dst), right));
+
+            __m256i* dst4 = (__m256i*)(&block_store.positions[i+4]);
+            _mm256_storeu_si256(dst4, _mm256_add_epi64(_mm256_loadu_si256(dst4), right));
+
+            __m256i* dst8 = (__m256i*)(&block_store.positions[i+8]);
+            _mm256_storeu_si256(dst8, _mm256_add_epi64(_mm256_loadu_si256(dst8), right));
+
+            __m256i* dst12 = (__m256i*)(&block_store.positions[i+12]);
+            _mm256_storeu_si256(dst12, _mm256_add_epi64(_mm256_loadu_si256(dst12), right));
+        }
+
+        rem += len;
+        for (int64_t i = len; i < rem; ++i)
+            block_store.positions[i] += delta;
+    }
+};
+
+template<typename Blks>
+struct adjust_block_positions<Blks, lu_factor_t::avx2_x64_lu8>
+{
+    void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
+    {
+        static_assert(
+            sizeof(typename decltype(block_store.positions)::value_type) == 8,
+            "This code works only when the position values are 64-bit wide.");
+
+        int64_t n = block_store.positions.size();
+
+        if (start_block_index >= n)
+            return;
+
+        // Ensure that the section length is divisible by 16.
+        int64_t len = n - start_block_index;
+        int64_t rem = len & 31; // % 32
+        len -= rem;
+        len += start_block_index;
+
+        __m256i right = _mm256_set1_epi64x(delta);
+
+#if MDDS_USE_OPENMP
+        #pragma omp parallel for
+#endif
+        for (int64_t i = start_block_index; i < len; i += 32)
+        {
+            __m256i* dst = (__m256i*)(&block_store.positions[i]);
+            _mm256_storeu_si256(dst, _mm256_add_epi64(_mm256_loadu_si256(dst), right));
+
+            __m256i* dst4 = (__m256i*)(&block_store.positions[i+4]);
+            _mm256_storeu_si256(dst4, _mm256_add_epi64(_mm256_loadu_si256(dst4), right));
+
+            __m256i* dst8 = (__m256i*)(&block_store.positions[i+8]);
+            _mm256_storeu_si256(dst8, _mm256_add_epi64(_mm256_loadu_si256(dst8), right));
+
+            __m256i* dst12 = (__m256i*)(&block_store.positions[i+12]);
+            _mm256_storeu_si256(dst12, _mm256_add_epi64(_mm256_loadu_si256(dst12), right));
+
+            __m256i* dst16 = (__m256i*)(&block_store.positions[i+16]);
+            _mm256_storeu_si256(dst16, _mm256_add_epi64(_mm256_loadu_si256(dst16), right));
+
+            __m256i* dst20 = (__m256i*)(&block_store.positions[i+20]);
+            _mm256_storeu_si256(dst20, _mm256_add_epi64(_mm256_loadu_si256(dst20), right));
+
+            __m256i* dst24 = (__m256i*)(&block_store.positions[i+24]);
+            _mm256_storeu_si256(dst24, _mm256_add_epi64(_mm256_loadu_si256(dst24), right));
+
+            __m256i* dst28 = (__m256i*)(&block_store.positions[i+28]);
+            _mm256_storeu_si256(dst28, _mm256_add_epi64(_mm256_loadu_si256(dst28), right));
         }
 
         rem += len;

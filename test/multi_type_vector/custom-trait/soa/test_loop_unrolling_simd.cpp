@@ -146,6 +146,20 @@ void mtv_test_loop_unrolling_avx2_x64()
     run_test<lu_factor_t::avx2_x64>();
 }
 
+void mtv_test_loop_unrolling_avx2_x64_4()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    run_test<lu_factor_t::avx2_x64_lu4>();
+}
+
+void mtv_test_loop_unrolling_avx2_x64_8()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    run_test<lu_factor_t::avx2_x64_lu8>();
+}
+
 #else
 
 void print_disabled_reasons_avx2()
@@ -162,6 +176,20 @@ void print_disabled_reasons_avx2()
 }
 
 void mtv_test_loop_unrolling_avx2_x64()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    print_disabled_reasons_avx2();
+}
+
+void mtv_test_loop_unrolling_avx2_x64_4()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    print_disabled_reasons_avx2();
+}
+
+void mtv_test_loop_unrolling_avx2_x64_8()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 

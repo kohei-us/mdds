@@ -72,7 +72,7 @@ constexpr element_t element_type_string  = 11;
 constexpr element_t element_type_user_start = 50;
 
 /**
- * Loop-unrolling factor.
+ * Loop-unrolling factor with optional SIMD feature.
  *
  * The first byte is used for the loop-unrolling factor, while the second byte
  * is used for SIMD flags.
@@ -89,6 +89,8 @@ enum class lu_factor_t : int
     sse2_x64_lu8 = 1 << 8 | 8,
     sse2_x64_lu16 = 1 << 8 | 16,
     avx2_x64 = 2 << 8,
+    avx2_x64_lu4 = 2 << 8 | 4,
+    avx2_x64_lu8 = 2 << 8 | 8,
 };
 
 /**
