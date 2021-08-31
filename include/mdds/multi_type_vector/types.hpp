@@ -88,6 +88,7 @@ enum class lu_factor_t : int
     sse2_x64_lu4 = 1 << 8 | 4,
     sse2_x64_lu8 = 1 << 8 | 8,
     sse2_x64_lu16 = 1 << 8 | 16,
+    avx2_x64 = 2 << 8,
 };
 
 /**

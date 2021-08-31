@@ -35,6 +35,9 @@
 #if defined(__SSE2__)
 #include <emmintrin.h>
 #endif
+#if defined(__AVX2__)
+#include <immintrin.h>
+#endif
 
 namespace mdds { namespace mtv { namespace soa {
 
@@ -466,6 +469,49 @@ struct adjust_block_positions<Blks, lu_factor_t::sse2_x64_lu16>
 };
 
 #endif // __SSE2__
+
+#if defined(__AVX2__)
+
+template<typename Blks>
+struct adjust_block_positions<Blks, lu_factor_t::avx2_x64>
+{
+    void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
+    {
+        static_assert(
+            sizeof(typename decltype(block_store.positions)::value_type) == 8,
+            "This code works only when the position values are 64-bit wide.");
+
+        int64_t n = block_store.positions.size();
+
+        if (start_block_index >= n)
+            return;
+
+        // Ensure that the section length is divisible by 4.
+        int64_t len = n - start_block_index;
+        int64_t rem = len & 3; // % 4
+        len -= rem;
+        len += start_block_index;
+
+        __m256i right = _mm256_set1_epi64x(delta);
+
+#if MDDS_USE_OPENMP
+        #pragma omp parallel for
+#endif
+        for (int64_t i = start_block_index; i < len; i += 4)
+        {
+            __m256i* dst = (__m256i*)(&block_store.positions[i]);
+            __m256i left = _mm256_loadu_si256(dst);
+            left = _mm256_add_epi64(left, right);
+            _mm256_storeu_si256(dst, left);
+        }
+
+        rem += len;
+        for (int64_t i = len; i < rem; ++i)
+            block_store.positions[i] += delta;
+    }
+};
+
+#endif // __AVX2__
 
 } // namespace detail
 

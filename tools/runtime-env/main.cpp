@@ -77,8 +77,12 @@ void print_time(const std::string& type, lu_factor_t lu, int block_size, int rep
 {
     int lu_value = int(lu) & 0xFF;
     bool sse2 = (int(lu) & 0x100) != 0;
+    bool avx2 = (int(lu) & 0x200) != 0;
+
     cout << type
-        << "," << std::setw(2) << std::setfill('0') << lu_value << (sse2 ? "+sse2":"")
+        << "," << std::setw(2) << std::setfill('0') << lu_value
+        << (sse2 ? "+sse2":"")
+        << (avx2 ? "+avx2":"")
         << "," << block_size
         << "," << repeats
         << "," << duration << endl;
@@ -182,6 +186,7 @@ public:
         measure_duration<lu_factor_t::sse2_x64_lu4>(blocks, block_size, repeats);
         measure_duration<lu_factor_t::sse2_x64_lu8>(blocks, block_size, repeats);
         measure_duration<lu_factor_t::sse2_x64_lu16>(blocks, block_size, repeats);
+        measure_duration<lu_factor_t::avx2_x64>(blocks, block_size, repeats);
 #endif
     }
 };

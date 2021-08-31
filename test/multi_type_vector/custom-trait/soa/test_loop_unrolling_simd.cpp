@@ -94,7 +94,7 @@ void mtv_test_loop_unrolling_sse2_x64_16()
 
 #else
 
-void print_disabled_reasons()
+void print_disabled_reasons_sse2()
 {
     cout << "Test disabled for the following reasons:" << endl;
 
@@ -111,28 +111,61 @@ void mtv_test_loop_unrolling_sse2_x64()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    print_disabled_reasons();
+    print_disabled_reasons_sse2();
 }
 
 void mtv_test_loop_unrolling_sse2_x64_4()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    print_disabled_reasons();
+    print_disabled_reasons_sse2();
 }
 
 void mtv_test_loop_unrolling_sse2_x64_8()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    print_disabled_reasons();
+    print_disabled_reasons_sse2();
 }
 
 void mtv_test_loop_unrolling_sse2_x64_16()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    print_disabled_reasons();
+    print_disabled_reasons_sse2();
+}
+
+#endif
+
+#if SIZEOF_VOID_P == 8 && defined(__AVX2__)
+
+void mtv_test_loop_unrolling_avx2_x64()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    run_test<lu_factor_t::avx2_x64>();
+}
+
+#else
+
+void print_disabled_reasons_avx2()
+{
+    cout << "Test disabled for the following reasons:" << endl;
+
+#if SIZEOF_VOID_P != 8
+    cout << "  * not a 64-bit build" << endl;
+#endif
+
+#ifndef __AVX2__
+    cout << "  * __AVX2__ not defined" << endl;
+#endif
+}
+
+void mtv_test_loop_unrolling_avx2_x64()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    print_disabled_reasons_avx2();
 }
 
 #endif

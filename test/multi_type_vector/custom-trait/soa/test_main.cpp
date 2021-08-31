@@ -42,6 +42,7 @@ int main (int argc, char **argv)
         mtv_test_loop_unrolling_sse2_x64_4();
         mtv_test_loop_unrolling_sse2_x64_8();
         mtv_test_loop_unrolling_sse2_x64_16();
+        mtv_test_loop_unrolling_avx2_x64();
     }
     catch (const std::exception& e)
     {

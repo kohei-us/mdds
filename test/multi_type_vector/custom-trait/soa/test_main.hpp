@@ -40,10 +40,13 @@ void mtv_test_loop_unrolling_4();
 void mtv_test_loop_unrolling_8();
 void mtv_test_loop_unrolling_16();
 void mtv_test_loop_unrolling_32();
+
 void mtv_test_loop_unrolling_sse2_x64(); // SoA only
 void mtv_test_loop_unrolling_sse2_x64_4(); // SoA only
 void mtv_test_loop_unrolling_sse2_x64_8(); // SoA only
 void mtv_test_loop_unrolling_sse2_x64_16(); // SoA only
+
+void mtv_test_loop_unrolling_avx2_x64(); // SoA only
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 
