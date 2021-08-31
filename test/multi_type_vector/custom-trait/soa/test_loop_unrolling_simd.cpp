@@ -78,6 +78,13 @@ void mtv_test_loop_unrolling_sse2_x64_4()
     run_test<lu_factor_t::sse2_x64_lu4>();
 }
 
+void mtv_test_loop_unrolling_sse2_x64_8()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    run_test<lu_factor_t::sse2_x64_lu8>();
+}
+
 #else
 
 void print_disabled_reasons()
@@ -101,6 +108,13 @@ void mtv_test_loop_unrolling_sse2_x64()
 }
 
 void mtv_test_loop_unrolling_sse2_x64_4()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    print_disabled_reasons();
+}
+
+void mtv_test_loop_unrolling_sse2_x64_8()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 

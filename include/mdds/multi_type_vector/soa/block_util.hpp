@@ -325,6 +325,64 @@ struct adjust_block_positions<Blks, lu_factor_t::sse2_x64_lu4>
     }
 };
 
+template<typename Blks>
+struct adjust_block_positions<Blks, lu_factor_t::sse2_x64_lu8>
+{
+    void operator()(Blks& block_store, int64_t start_block_index, int64_t delta) const
+    {
+        static_assert(
+            sizeof(typename decltype(block_store.positions)::value_type) == 8,
+            "This code works only when the position values are 64-bit wide.");
+
+        int64_t n = block_store.positions.size();
+
+        if (start_block_index >= n)
+            return;
+
+        // Ensure that the section length is divisible by 16.
+        int64_t len = n - start_block_index;
+        int64_t rem = len & 15; // % 16
+        len -= rem;
+        len += start_block_index;
+
+        __m128i right = _mm_set_epi64x(delta, delta);
+
+#if MDDS_USE_OPENMP
+        #pragma omp parallel for
+#endif
+        for (int64_t i = start_block_index; i < len; i += 16)
+        {
+            __m128i* dst0 = (__m128i*)&block_store.positions[i];
+            _mm_storeu_si128(dst0, _mm_add_epi64(_mm_loadu_si128(dst0), right));
+
+            __m128i* dst2 = (__m128i*)&block_store.positions[i+2];
+            _mm_storeu_si128(dst2, _mm_add_epi64(_mm_loadu_si128(dst2), right));
+
+            __m128i* dst4 = (__m128i*)&block_store.positions[i+4];
+            _mm_storeu_si128(dst4, _mm_add_epi64(_mm_loadu_si128(dst4), right));
+
+            __m128i* dst6 = (__m128i*)&block_store.positions[i+6];
+            _mm_storeu_si128(dst6, _mm_add_epi64(_mm_loadu_si128(dst6), right));
+
+            __m128i* dst8 = (__m128i*)&block_store.positions[i+8];
+            _mm_storeu_si128(dst8, _mm_add_epi64(_mm_loadu_si128(dst8), right));
+
+            __m128i* dst10 = (__m128i*)&block_store.positions[i+10];
+            _mm_storeu_si128(dst10, _mm_add_epi64(_mm_loadu_si128(dst10), right));
+
+            __m128i* dst12 = (__m128i*)&block_store.positions[i+12];
+            _mm_storeu_si128(dst12, _mm_add_epi64(_mm_loadu_si128(dst12), right));
+
+            __m128i* dst14 = (__m128i*)&block_store.positions[i+14];
+            _mm_storeu_si128(dst14, _mm_add_epi64(_mm_loadu_si128(dst14), right));
+        }
+
+        rem += len;
+        for (int64_t i = len; i < rem; ++i)
+            block_store.positions[i] += delta;
+    }
+};
+
 #endif // __SSE2__
 
 } // namespace detail
