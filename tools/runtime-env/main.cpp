@@ -186,6 +186,8 @@ public:
         measure_duration<lu_factor_t::sse2_x64_lu4>(blocks, block_size, repeats);
         measure_duration<lu_factor_t::sse2_x64_lu8>(blocks, block_size, repeats);
         measure_duration<lu_factor_t::sse2_x64_lu16>(blocks, block_size, repeats);
+#endif
+#if SIZEOF_VOID_P == 8 && defined(__AVX2__)
         measure_duration<lu_factor_t::avx2_x64>(blocks, block_size, repeats);
 #endif
     }
