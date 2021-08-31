@@ -499,7 +499,7 @@ struct adjust_block_positions<Blks, lu_factor_t::avx2_x64>
 #endif
         for (int64_t i = start_block_index; i < len; i += 4)
         {
-            __m256i* dst = (__m256i*)(&block_store.positions[i]);
+            __m256i* dst = (__m256i*)&block_store.positions[i];
             _mm256_storeu_si256(dst, _mm256_add_epi64(_mm256_loadu_si256(dst), right));
         }
 
@@ -536,16 +536,16 @@ struct adjust_block_positions<Blks, lu_factor_t::avx2_x64_lu4>
 #endif
         for (int64_t i = start_block_index; i < len; i += 16)
         {
-            __m256i* dst = (__m256i*)(&block_store.positions[i]);
+            __m256i* dst = (__m256i*)&block_store.positions[i];
             _mm256_storeu_si256(dst, _mm256_add_epi64(_mm256_loadu_si256(dst), right));
 
-            __m256i* dst4 = (__m256i*)(&block_store.positions[i+4]);
+            __m256i* dst4 = (__m256i*)&block_store.positions[i+4];
             _mm256_storeu_si256(dst4, _mm256_add_epi64(_mm256_loadu_si256(dst4), right));
 
-            __m256i* dst8 = (__m256i*)(&block_store.positions[i+8]);
+            __m256i* dst8 = (__m256i*)&block_store.positions[i+8];
             _mm256_storeu_si256(dst8, _mm256_add_epi64(_mm256_loadu_si256(dst8), right));
 
-            __m256i* dst12 = (__m256i*)(&block_store.positions[i+12]);
+            __m256i* dst12 = (__m256i*)&block_store.positions[i+12];
             _mm256_storeu_si256(dst12, _mm256_add_epi64(_mm256_loadu_si256(dst12), right));
         }
 
@@ -582,28 +582,28 @@ struct adjust_block_positions<Blks, lu_factor_t::avx2_x64_lu8>
 #endif
         for (int64_t i = start_block_index; i < len; i += 32)
         {
-            __m256i* dst = (__m256i*)(&block_store.positions[i]);
+            __m256i* dst = (__m256i*)&block_store.positions[i];
             _mm256_storeu_si256(dst, _mm256_add_epi64(_mm256_loadu_si256(dst), right));
 
-            __m256i* dst4 = (__m256i*)(&block_store.positions[i+4]);
+            __m256i* dst4 = (__m256i*)&block_store.positions[i+4];
             _mm256_storeu_si256(dst4, _mm256_add_epi64(_mm256_loadu_si256(dst4), right));
 
-            __m256i* dst8 = (__m256i*)(&block_store.positions[i+8]);
+            __m256i* dst8 = (__m256i*)&block_store.positions[i+8];
             _mm256_storeu_si256(dst8, _mm256_add_epi64(_mm256_loadu_si256(dst8), right));
 
-            __m256i* dst12 = (__m256i*)(&block_store.positions[i+12]);
+            __m256i* dst12 = (__m256i*)&block_store.positions[i+12];
             _mm256_storeu_si256(dst12, _mm256_add_epi64(_mm256_loadu_si256(dst12), right));
 
-            __m256i* dst16 = (__m256i*)(&block_store.positions[i+16]);
+            __m256i* dst16 = (__m256i*)&block_store.positions[i+16];
             _mm256_storeu_si256(dst16, _mm256_add_epi64(_mm256_loadu_si256(dst16), right));
 
-            __m256i* dst20 = (__m256i*)(&block_store.positions[i+20]);
+            __m256i* dst20 = (__m256i*)&block_store.positions[i+20];
             _mm256_storeu_si256(dst20, _mm256_add_epi64(_mm256_loadu_si256(dst20), right));
 
-            __m256i* dst24 = (__m256i*)(&block_store.positions[i+24]);
+            __m256i* dst24 = (__m256i*)&block_store.positions[i+24];
             _mm256_storeu_si256(dst24, _mm256_add_epi64(_mm256_loadu_si256(dst24), right));
 
-            __m256i* dst28 = (__m256i*)(&block_store.positions[i+28]);
+            __m256i* dst28 = (__m256i*)&block_store.positions[i+28];
             _mm256_storeu_si256(dst28, _mm256_add_epi64(_mm256_loadu_si256(dst28), right));
         }
 
