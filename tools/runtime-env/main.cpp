@@ -115,7 +115,7 @@ class mtv_aos_luf_runner
         for (int i = 0; i < repeats; ++i)
             adjust_block_positions<blocks_type, Factor>{}(blocks, 0, 1);
 
-        print_time("aos", Factor, block_size, repeats, st.get_duration());
+        print_time("AoS", Factor, block_size, repeats, st.get_duration());
     }
 
 public:
@@ -158,7 +158,7 @@ class mtv_soa_luf_runner
         for (int i = 0; i < repeats; ++i)
             adjust_block_positions<blocks_type, Factor>{}(blocks, 0, 1);
 
-        print_time("soa", Factor, block_size, repeats, st.get_duration());
+        print_time("SoA", Factor, block_size, repeats, st.get_duration());
     }
 
 public:
