@@ -282,9 +282,11 @@ public:
             label << '(' << k.type << ", " << to_string(k.lu) << ')';
             line.first = label.str();
 
+            char tick = k.type == "SoA" ? 'o' : '+';
+
             // Create and store the bar next.
             std::ostringstream bar;
-            bar << std::string(n_ticks, 'o') << ' ' << std::setprecision(4) << v;
+            bar << std::string(n_ticks, tick) << ' ' << std::setprecision(4) << v;
             line.second = bar.str();
 
             max_label_width = std::max<int>(max_label_width, line.first.size());
