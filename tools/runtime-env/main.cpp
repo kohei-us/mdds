@@ -257,28 +257,37 @@ class data_handler
         for (auto& line : lines)
             line.first = pad_right(std::move(line.first), max_label_width);
 
+        std::ostringstream graph_out;
+
         {
             // Print the top label and axis. Make sure to rewind to erase the
             // progress text.
             std::string line = pad_right(" Category", max_label_width);
             line += " | Average duration (seconds)";
-            cout << "\r" << line << endl;
+            graph_out << line << "\n";
 
             line = std::string(max_label_width, '-') + "-+-" + std::string(n_ticks_max, '-') + '>';
-            cout << line << endl;
+            graph_out << line << "\n";
         }
 
         for (const auto& line : lines)
-            cout << line.first << " | " << line.second << endl;
+            graph_out << line.first << " | " << line.second << "\n";
 
-        cout << endl;
+        graph_out << "\n";
 
         const key_type& top_key = std::get<0>(averages[0]);
         std::ostringstream os;
         os << "Storage of " << top_key.type << " with the LU factor of " << to_string(top_key.lu)
             << " appears to be the best choice in this environment.";
 
-        cout << reflow_text(os.str(), 70) << endl;
+        graph_out << reflow_text(os.str(), 70) << endl;
+
+        std::string graph_out_s = graph_out.str();
+
+        cout << "\r" << graph_out_s;
+
+        std::ofstream of("graph-output.txt");
+        of << graph_out_s << std::flush;
     }
 
     void write_csv() const
