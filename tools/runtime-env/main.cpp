@@ -144,39 +144,6 @@ private:
 
 class data_handler
 {
-public:
-
-    virtual ~data_handler() {}
-
-    virtual void start() = 0;
-    virtual void end() = 0;
-    virtual void record_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration) = 0;
-};
-
-class csv_data_handler : public data_handler
-{
-public:
-    csv_data_handler() {}
-
-    void start() override
-    {
-        cout << "storage,factor,block count,repeat count,duration" << endl;
-    }
-
-    void end() override {}
-
-    void record_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration) override
-    {
-        cout << type << ","
-            << to_string(lu)
-            << "," << block_size
-            << "," << repeats
-            << "," << duration << endl;
-    }
-};
-
-class graph_data_handler : public data_handler
-{
     struct key_type
     {
         std::string type;
@@ -338,20 +305,20 @@ class graph_data_handler : public data_handler
     }
 
 public:
-    graph_data_handler() {}
+    data_handler() {}
 
-    void start() override
+    void start()
     {
         m_insert_count = 0;
     }
 
-    void end() override
+    void end()
     {
         draw_graph();
         write_csv();
     }
 
-    void record_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration) override
+    void record_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration)
     {
         key_type key(type, lu);
 
@@ -501,7 +468,7 @@ int main(int argc, char** argv)
     int block_count_max = 300;
     int repeats = 1000000;
 
-    graph_data_handler dh;
+    data_handler dh;
     dh.start();
 
     for (int block_count = block_count_init; block_count <= block_count_max; block_count += block_count_step)
