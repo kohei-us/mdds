@@ -294,10 +294,11 @@ public:
             line.first = pad_right(std::move(line.first), max_label_width);
 
         {
-            // Print the top label and axis.
+            // Print the top label and axis. Make sure to rewind to erase the
+            // progress text.
             std::string line = pad_right(" Category", max_label_width);
             line += " | Average duration (seconds)";
-            cout << line << endl;
+            cout << "\r" << line << endl;
 
             line = std::string(max_label_width, '-') + "-+-" + std::string(n_ticks_max, '-') + '>';
             cout << line << endl;
@@ -335,7 +336,10 @@ public:
         }
 
         if (!(++m_insert_count & 0x1F))
-            cout << "running..." << endl;
+        {
+            int n_ticks = m_insert_count >> 5;
+            cout << "\rprogress: " << std::string(n_ticks, '#') << std::flush;
+        }
     }
 };
 
