@@ -33,6 +33,10 @@
 #include <iomanip>
 #include <vector>
 #include <chrono>
+#include <map>
+#include <sstream>
+#include <limits>
+#include <iterator>
 
 using std::cout;
 using std::cerr;
@@ -40,6 +44,75 @@ using std::endl;
 using mdds::mtv::lu_factor_t;
 
 namespace {
+
+std::string to_string(lu_factor_t lu)
+{
+    int lu_value = int(lu) & 0xFF;
+    bool sse2 = (int(lu) & 0x100) != 0;
+    bool avx2 = (int(lu) & 0x200) != 0;
+
+    std::ostringstream os;
+    os << (sse2 ? "sse2+":"")
+        << (avx2 ? "avx2+":"")
+        << std::setw(2) << std::setfill('0') << lu_value;
+
+    return os.str();
+}
+
+std::string reflow_text(std::string s, std::size_t width)
+{
+    // Tokenize the text first.
+    std::vector<std::string> tokens;
+
+    const char* p = s.data();
+    const char* p_end = p + s.size();
+    const char* p0 = nullptr;
+
+    for (; p != p_end; ++p)
+    {
+        if (!p0)
+            p0 = p;
+
+        if (*p == ' ' && p0)
+        {
+            std::string token(p0, p - p0);
+            tokens.emplace_back(p0, p - p0);
+            p0 = nullptr;
+        }
+    }
+
+    if (p0)
+        tokens.emplace_back(p0, p - p0);
+
+    std::vector<std::string> lines(1, std::string());
+
+    for (const std::string& token : tokens)
+    {
+        std::string this_line = lines.back(); // copy
+        if (this_line.empty())
+            this_line = token;
+        else
+            this_line += ' ' + token;
+
+        if (this_line.size() > width)
+            lines.push_back(token);
+        else
+            lines.back() = this_line;
+    }
+
+    std::ostringstream os;
+    std::copy(lines.begin(), lines.end(), std::ostream_iterator<std::string>(os, "\n"));
+    return os.str();
+}
+
+std::string pad_right(std::string s, int width)
+{
+    int gap = width - int(s.size());
+    if (gap < 0)
+        return s;
+
+    return s + std::string(gap, ' ');
+}
 
 class section_timer
 {
@@ -68,25 +141,203 @@ private:
     double m_start_time;
 };
 
-void print_header()
+class data_handler
 {
-    cout << "storage,factor,block count,repeat count,duration" << endl;
-}
+public:
 
-void print_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration)
+    virtual ~data_handler() {}
+
+    virtual void start() = 0;
+    virtual void end() = 0;
+    virtual void record_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration) = 0;
+};
+
+class csv_data_handler : public data_handler
 {
-    int lu_value = int(lu) & 0xFF;
-    bool sse2 = (int(lu) & 0x100) != 0;
-    bool avx2 = (int(lu) & 0x200) != 0;
+public:
+    csv_data_handler() {}
 
-    cout << type << ","
-        << (sse2 ? "sse2+":"")
-        << (avx2 ? "avx2+":"")
-        << std::setw(2) << std::setfill('0') << lu_value
-        << "," << block_size
-        << "," << repeats
-        << "," << duration << endl;
-}
+    void start() override
+    {
+        cout << "storage,factor,block count,repeat count,duration" << endl;
+    }
+
+    void end() override {}
+
+    void record_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration) override
+    {
+        cout << type << ","
+            << to_string(lu)
+            << "," << block_size
+            << "," << repeats
+            << "," << duration << endl;
+    }
+};
+
+class graph_data_handler : public data_handler
+{
+    struct key_type
+    {
+        std::string type;
+        lu_factor_t lu;
+
+        key_type(const std::string& type_, lu_factor_t lu_) : type(type_), lu(lu_) {}
+
+        bool operator<(const key_type& other) const
+        {
+            if (type != other.type)
+                return type < other.type;
+
+            return lu < other.lu;
+        }
+
+        std::string to_string() const
+        {
+            std::ostringstream os;
+            os << '(' << type << ", " << ::to_string(lu) << ')';
+            return os.str();
+        }
+    };
+
+    struct duration_type
+    {
+        double duration = 0.0;
+        int count = 0;
+
+        duration_type(double duration_, int count_) : duration(duration_), count(count_) {}
+
+        std::string to_string() const
+        {
+            std::ostringstream os;
+            os << std::setprecision(4) << duration << '/' << count;
+            return os.str();
+        }
+    };
+
+    using records_type = std::map<key_type, duration_type>;
+    records_type m_records;
+    int m_insert_count = 0;
+
+public:
+    graph_data_handler() {}
+
+    void start() override
+    {
+        m_insert_count = 0;
+    }
+
+    void end() override
+    {
+        if (m_records.empty())
+            return;
+
+        // Convert to sequence of average durations.
+        std::vector<std::tuple<key_type, double>> averages;
+        averages.reserve(m_records.size());
+
+        for (const auto& kv : m_records)
+        {
+            const duration_type& v = kv.second;
+            averages.emplace_back(kv.first, v.duration / v.count);
+        }
+
+        // Sort by durations.
+        std::sort(averages.begin(), averages.end(),
+            [](const auto& left, const auto& right) -> bool
+            {
+                return std::get<1>(left) < std::get<1>(right);
+            }
+        );
+
+        const int n_ticks_max = 55;
+
+        double min_v = std::numeric_limits<double>::max();
+        double max_v = std::numeric_limits<double>::min();
+
+        for (const auto& average : averages)
+        {
+            double v = std::get<1>(average);
+            min_v = std::min(min_v, v);
+            max_v = std::max(max_v, v);
+        }
+
+        double tick_width = max_v / n_ticks_max;
+
+        std::vector<std::pair<std::string, std::string>> lines;
+        lines.reserve(averages.size());
+        int max_label_width = 0;
+
+        for (const auto& average : averages)
+        {
+            const key_type& k = std::get<0>(average);
+            double v = std::get<1>(average);
+
+            lines.emplace_back();
+            auto& line = lines.back();
+
+            int n_ticks = v / tick_width;
+
+            // Create and store the label first.
+            std::ostringstream label;
+            label << '(' << k.type << ", " << to_string(k.lu) << ')';
+            line.first = label.str();
+
+            // Create and store the bar next.
+            std::ostringstream bar;
+            bar << std::string(n_ticks, 'o') << ' ' << std::setprecision(4) << v;
+            line.second = bar.str();
+
+            max_label_width = std::max<int>(max_label_width, line.first.size());
+        }
+
+        for (auto& line : lines)
+            line.first = pad_right(std::move(line.first), max_label_width);
+
+        {
+            // Print the top label and axis.
+            std::string line = pad_right(" Category", max_label_width);
+            line += " | Average duration (seconds)";
+            cout << line << endl;
+
+            line = std::string(max_label_width, '-') + "-+-" + std::string(n_ticks_max, '-') + '>';
+            cout << line << endl;
+        }
+
+        for (const auto& line : lines)
+            cout << line.first << " | " << line.second << endl;
+
+        cout << endl;
+
+        const key_type& top_key = std::get<0>(averages[0]);
+        std::ostringstream os;
+        os << "Storage of " << top_key.type << " with the LU factor of " << to_string(top_key.lu)
+            << " appears to be the best choice in this environment.";
+
+        cout << reflow_text(os.str(), 70) << endl;
+    }
+
+    void record_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration) override
+    {
+        key_type key(type, lu);
+
+        auto it = m_records.lower_bound(key);
+        if (it != m_records.end() && !m_records.key_comp()(key, it->first))
+        {
+            // key exists
+            duration_type& v = it->second;
+            v.duration += duration;
+            ++v.count;
+        }
+        else
+        {
+            // key doesn't yet exist.
+            m_records.insert(it, records_type::value_type(key, {duration, 1}));
+        }
+
+        if (!(++m_insert_count & 0x1F))
+            cout << "running..." << endl;
+    }
+};
 
 /**
  * Class designed to measure run-time performance of AoS multi_type_vector
@@ -94,6 +345,8 @@ void print_time(const std::string& type, lu_factor_t lu, int block_size, int rep
  */
 class mtv_aos_luf_runner
 {
+    data_handler& m_handler;
+
     struct block
     {
         std::size_t position;
@@ -115,10 +368,11 @@ class mtv_aos_luf_runner
         for (int i = 0; i < repeats; ++i)
             adjust_block_positions<blocks_type, Factor>{}(blocks, 0, 1);
 
-        print_time("AoS", Factor, block_size, repeats, st.get_duration());
+        m_handler.record_time("AoS", Factor, block_size, repeats, st.get_duration());
     }
 
 public:
+    mtv_aos_luf_runner(data_handler& dh) : m_handler(dh) {}
 
     void run(int block_size, int repeats)
     {
@@ -142,6 +396,8 @@ public:
 
 class mtv_soa_luf_runner
 {
+    data_handler& m_handler;
+
     struct blocks_type
     {
         std::vector<std::size_t> positions;
@@ -158,10 +414,11 @@ class mtv_soa_luf_runner
         for (int i = 0; i < repeats; ++i)
             adjust_block_positions<blocks_type, Factor>{}(blocks, 0, 1);
 
-        print_time("SoA", Factor, block_size, repeats, st.get_duration());
+        m_handler.record_time("SoA", Factor, block_size, repeats, st.get_duration());
     }
 
 public:
+    mtv_soa_luf_runner(data_handler& dh) : m_handler(dh) {}
 
     void run(int block_size, int repeats)
     {
@@ -204,19 +461,22 @@ int main(int argc, char** argv)
     int block_count_max = 300;
     int repeats = 1000000;
 
-    print_header();
+    graph_data_handler dh;
+    dh.start();
 
     for (int block_count = block_count_init; block_count <= block_count_max; block_count += block_count_step)
     {
-        mtv_aos_luf_runner runner;
+        mtv_aos_luf_runner runner(dh);
         runner.run(block_count, repeats);
     }
 
     for (int block_count = block_count_init; block_count <= block_count_max; block_count += block_count_step)
     {
-        mtv_soa_luf_runner runner;
+        mtv_soa_luf_runner runner(dh);
         runner.run(block_count, repeats);
     }
+
+    dh.end();
 
     return EXIT_SUCCESS;
 }

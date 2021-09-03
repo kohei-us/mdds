@@ -41,7 +41,6 @@ def _pad_right(text, width, pad_char=' '):
 def _draw_graph(records):
     min_v = min([x[1] for x in records])
     max_v = max([x[1] for x in records])
-    interval = max_v - min_v
     n_ticks_max = 55
     tick_width = max_v / n_ticks_max
 
