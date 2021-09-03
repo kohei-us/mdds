@@ -35,6 +35,7 @@
 #include <chrono>
 #include <map>
 #include <sstream>
+#include <fstream>
 #include <limits>
 #include <iterator>
 
@@ -215,18 +216,12 @@ class graph_data_handler : public data_handler
     };
 
     using records_type = std::map<key_type, duration_type>;
+    using raw_records_type = std::vector<std::tuple<std::string, lu_factor_t, int, int, double>>;
     records_type m_records;
+    raw_records_type m_raw_records;
     int m_insert_count = 0;
 
-public:
-    graph_data_handler() {}
-
-    void start() override
-    {
-        m_insert_count = 0;
-    }
-
-    void end() override
+    void draw_graph() const
     {
         if (m_records.empty())
             return;
@@ -319,6 +314,43 @@ public:
         cout << reflow_text(os.str(), 70) << endl;
     }
 
+    void write_csv() const
+    {
+        std::ofstream of("raw-data.csv");
+        of << "storage,factor,block count,repeat count,duration\n";
+
+        for (const auto& rec : m_raw_records)
+        {
+            const std::string& type = std::get<0>(rec);
+            lu_factor_t lu = std::get<1>(rec);
+            int block_size = std::get<2>(rec);
+            int repeats = std::get<3>(rec);
+            double duration = std::get<4>(rec);
+
+            of << type << ","
+                << to_string(lu)
+                << "," << block_size
+                << "," << repeats
+                << "," << duration << "\n";
+        }
+
+        of << std::flush;
+    }
+
+public:
+    graph_data_handler() {}
+
+    void start() override
+    {
+        m_insert_count = 0;
+    }
+
+    void end() override
+    {
+        draw_graph();
+        write_csv();
+    }
+
     void record_time(const std::string& type, lu_factor_t lu, int block_size, int repeats, double duration) override
     {
         key_type key(type, lu);
@@ -342,6 +374,8 @@ public:
             int n_ticks = m_insert_count >> 5;
             cout << "\rprogress: " << std::string(n_ticks, '#') << std::flush;
         }
+
+        m_raw_records.emplace_back(type, lu, block_size, repeats, duration);
     }
 };
 
