@@ -555,6 +555,12 @@ mdds::mtv::empty_event_func
 .. doxygenstruct:: mdds::mtv::empty_event_func
    :members:
 
+mdds::mtv::default_trait
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. doxygenstruct:: mdds::mtv::default_trait
+   :members:
+
 
 Element Blocks
 ^^^^^^^^^^^^^^

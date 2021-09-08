@@ -37,13 +37,6 @@
 
 namespace mdds { namespace mtv { namespace aos {
 
-struct default_trait
-{
-    using event_func = mdds::mtv::empty_event_func;
-
-    constexpr static lu_factor_t loop_unrolling = lu_factor_t::lu8;
-};
-
 /**
  * Multi-type vector consists of a series of one or more blocks, and each
  * block may either be empty, or stores a series of non-empty elements of
@@ -71,7 +64,7 @@ struct default_trait
  *
  * @see mdds::mtv::aos::multi_type_vector::value_type
  */
-template<typename ElemBlockFunc, typename Trait = default_trait>
+template<typename ElemBlockFunc, typename Trait = mdds::mtv::default_trait>
 class multi_type_vector
 {
 public:

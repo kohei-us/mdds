@@ -29,6 +29,8 @@
 #ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_UTIL_HPP
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_UTIL_HPP
 
+#include "./types.hpp"
+
 #include <sstream>
 
 namespace mdds {
@@ -41,9 +43,43 @@ namespace mtv {
  */
 struct empty_event_func
 {
-    void element_block_acquired(const mdds::mtv::base_element_block* /*block*/) {}
+    /**
+     * Callback function for element block acquisition events.  This gets called
+     * whenever the container acquires a new element block either as a result of
+     * a new element block creation or a transfer of an existing element block
+     * from another container.
+     *
+     * @param block pointer to the acquired element block instance.
+     */
+    void element_block_acquired(const base_element_block* block) {}
 
-    void element_block_released(const mdds::mtv::base_element_block* /*block*/) {}
+    /**
+     * Callback function for element block release events.  This gets called
+     * whenever the container releases an existing element block either because
+     * the block is about to be deleted or to be transferred to another
+     * container.
+     *
+     * @param block pointer to the element block instance being released.
+     */
+    void element_block_released(const base_element_block* block) {}
+};
+
+/**
+ * Default trait to be used when no custom trait is specified.
+ */
+struct default_trait
+{
+    /**
+     * Class or struct type that contains callback functions for element block
+     * events as its member functions.
+     */
+    using event_func = empty_event_func;
+
+    /**
+     * Static value specifying the loop-unrolling factor to use for the block
+     * position adjustment function.  This must be a const expression.
+     */
+    constexpr static lu_factor_t loop_unrolling = lu_factor_t::lu16;
 };
 
 } // namespace mtv
