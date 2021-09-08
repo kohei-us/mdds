@@ -30,7 +30,8 @@
 #include <mdds/multi_type_vector/trait.hpp>
 #include <iostream>
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 class event_hdl
 {
@@ -60,10 +61,10 @@ int main()
     mtv_type db;  // starts with an empty container.
 
     cout << "inserting string 'foo'..." << endl;
-    db.push_back(string("foo"));  // creates a new string element block.
+    db.push_back(std::string("foo"));  // creates a new string element block.
 
     cout << "inserting string 'bah'..." << endl;
-    db.push_back(string("bah"));  // appends to an existing string block.
+    db.push_back(std::string("bah"));  // appends to an existing string block.
 
     cout << "inserting int 100..." << endl;
     db.push_back(int(100)); // creates a new int element block.

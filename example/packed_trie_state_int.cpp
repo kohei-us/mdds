@@ -31,7 +31,8 @@
 #include <fstream>
 #include <mdds/trie_map.hpp>
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 int main()
 {
@@ -142,14 +143,14 @@ int main()
     cout << endl;
 
     {
-        std::ofstream outfile("cities.bin", ios::binary);
+        std::ofstream outfile("cities.bin", std::ios::binary);
         cities.save_state(outfile);
     }
 
     map_type cities_loaded;
 
     {
-        std::ifstream infile("cities.bin", ios::binary);
+        std::ifstream infile("cities.bin", std::ios::binary);
         cities_loaded.load_state(infile);
     }
 

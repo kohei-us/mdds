@@ -397,7 +397,7 @@ output:
 So far so good.  Next, we will use the :cpp:func:`~mdds::packed_trie_map::save_state`
 method to dump the internal state of this container to a file named **cities.bin**::
 
-    std::ofstream outfile("cities.bin", ios::binary);
+    std::ofstream outfile("cities.bin", std::ios::binary);
     cities.save_state(outfile);
 
 This will create a file named **cities.bin** which contains a binary blob
@@ -416,7 +416,7 @@ work on restoring its content in another, brand-new instance of
 
     map_type cities_loaded;
 
-    std::ifstream infile("cities.bin", ios::binary);
+    std::ifstream infile("cities.bin", std::ios::binary);
     cities_loaded.load_state(infile);
 
 Here, we used the :cpp:func:`~mdds::packed_trie_map::load_state` method to
@@ -672,7 +672,7 @@ populate the value instance passed to the method as the third argument.
 Now that we have defined the custom serializer type, let's proceed to save the
 state to a file::
 
-    std::ofstream outfile("us-presidents.bin", ios::binary);
+    std::ofstream outfile("us-presidents.bin", std::ios::binary);
     us_presidents.save_state<us_president_serializer>(outfile);
 
 This time around, we are specifying the serializer type explicitly as the template
@@ -684,7 +684,7 @@ the state back from the file we just created::
 
     map_type us_presidents_loaded;
 
-    std::ifstream infile("us-presidents.bin", ios::binary);
+    std::ifstream infile("us-presidents.bin", std::ios::binary);
     us_presidents_loaded.load_state<us_president_serializer>(infile);
 
 Once again, aside from explicitly specifying the serializer type as the template

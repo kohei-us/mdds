@@ -30,7 +30,8 @@
 #include <fstream>
 #include <mdds/trie_map.hpp>
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 enum affiliated_party_t : uint8_t
 {
@@ -178,14 +179,14 @@ int main()
     cout << endl;
 
     {
-        std::ofstream outfile("us-presidents.bin", ios::binary);
+        std::ofstream outfile("us-presidents.bin", std::ios::binary);
         us_presidents.save_state<us_president_serializer>(outfile);
     }
 
     map_type us_presidents_loaded;
 
     {
-        std::ifstream infile("us-presidents.bin", ios::binary);
+        std::ifstream infile("us-presidents.bin", std::ios::binary);
         us_presidents_loaded.load_state<us_president_serializer>(infile);
     }
 

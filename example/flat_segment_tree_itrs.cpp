@@ -29,8 +29,8 @@
 #include <mdds/flat_segment_tree.hpp>
 #include <iostream>
 
-using namespace std;
-
+using std::cout;
+using std::endl;
 using fst_type = mdds::flat_segment_tree<long, int>;
 
 void iterate_nodes(const fst_type& db)

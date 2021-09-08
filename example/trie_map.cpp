@@ -29,7 +29,8 @@
 #include <mdds/trie_map.hpp>
 #include <iostream>
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 int main()
 {
