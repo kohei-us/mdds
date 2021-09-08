@@ -50,7 +50,7 @@ public:
     typedef _Key        key_type;
     typedef _Value      value_type;
     typedef size_t      size_type;
-    typedef ::std::vector<value_type> search_result_type;
+    typedef std::vector<value_type> search_results_type;
 
 #ifdef MDDS_UNIT_TEST
     struct segment_data
@@ -248,17 +248,17 @@ private:
      * This base class takes care of collecting data chain pointers during
      * tree descend for search.
      */
-    class search_result_base
+    class search_results_base
     {
     public:
         typedef std::vector<data_chain_type*>       res_chains_type;
         typedef std::shared_ptr<res_chains_type>    res_chains_ptr;
     public:
 
-        search_result_base() :
+        search_results_base() :
             mp_res_chains(static_cast<res_chains_type*>(nullptr)) {}
 
-        search_result_base(const search_result_base& r) :
+        search_results_base(const search_results_base& r) :
             mp_res_chains(r.mp_res_chains) {}
 
         size_t size() const
@@ -293,8 +293,8 @@ private:
     class iterator_base
     {
     protected:
-        typedef typename search_result_base::res_chains_type res_chains_type;
-        typedef typename search_result_base::res_chains_ptr res_chains_ptr;
+        typedef typename search_results_base::res_chains_type res_chains_type;
+        typedef typename search_results_base::res_chains_ptr res_chains_ptr;
 
         iterator_base(const res_chains_ptr& p) :
             mp_res_chains(p), m_end_pos(true) {}
@@ -448,31 +448,31 @@ private:
 
 public:
 
-    class search_result : public search_result_base
+    class search_results : public search_results_base
     {
-        typedef typename search_result_base::res_chains_type res_chains_type;
-        typedef typename search_result_base::res_chains_ptr res_chains_ptr;
+        typedef typename search_results_base::res_chains_type res_chains_type;
+        typedef typename search_results_base::res_chains_ptr res_chains_ptr;
     public:
 
         class iterator : public iterator_base
         {
-            friend class segment_tree<_Key,_Value>::search_result;
+            friend class segment_tree<_Key,_Value>::search_results;
         private:
             iterator(const res_chains_ptr& p) : iterator_base(p) {}
         public:
             iterator() : iterator_base() {}
         };
 
-        typename search_result::iterator begin()
+        typename search_results::iterator begin()
         {
-            typename search_result::iterator itr(search_result_base::get_res_chains());
+            typename search_results::iterator itr(search_results_base::get_res_chains());
             itr.move_to_front();
             return itr;
         }
 
-        typename search_result::iterator end()
+        typename search_results::iterator end()
         {
-            typename search_result::iterator itr(search_result_base::get_res_chains());
+            typename search_results::iterator itr(search_results_base::get_res_chains());
             itr.move_to_end();
             return itr;
         }
@@ -481,7 +481,7 @@ public:
     class search_result_vector_inserter
     {
     public:
-        search_result_vector_inserter(search_result_type& result) : m_result(result) {}
+        search_result_vector_inserter(search_results_type& result) : m_result(result) {}
         void operator() (data_chain_type* node_data)
         {
             if (!node_data)
@@ -492,13 +492,13 @@ public:
                 m_result.push_back(*itr);
         }
     private:
-        search_result_type& m_result;
+        search_results_type& m_result;
     };
 
     class search_result_inserter
     {
     public:
-        search_result_inserter(search_result_base& result) : m_result(result) {}
+        search_result_inserter(search_results_base& result) : m_result(result) {}
         void operator() (data_chain_type* node_data)
         {
             if (!node_data)
@@ -507,7 +507,7 @@ public:
             m_result.push_back_chain(node_data);
         }
     private:
-        search_result_base& m_result;
+        search_results_base& m_result;
     };
 
     segment_tree();
@@ -562,7 +562,7 @@ public:
      * @return true if the search is performed successfully, false if the
      *         search has ended prematurely due to error conditions.
      */
-    bool search(key_type point, search_result_type& result) const;
+    bool search(key_type point, search_results_type& result) const;
 
     /**
      * Search the tree and collect all segments that include a specified
@@ -573,7 +573,7 @@ public:
      * @return object containing the result of the search, which can be
      *         accessed via iterator.
      */
-    search_result search(key_type point) const;
+    search_results search(key_type point) const;
 
     /**
      * Remove a segment that matches by the value.  This will <i>not</i>
@@ -633,7 +633,7 @@ private:
     /**
      * To be called from rectangle_set.
      */
-    void search(key_type point, search_result_base& result) const;
+    void search(key_type point, search_results_base& result) const;
 
     typedef std::vector<__st::node_base*> node_list_type;
     typedef std::map<value_type, std::unique_ptr<node_list_type>> data_node_map_type;

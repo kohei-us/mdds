@@ -318,7 +318,7 @@ bool segment_tree<_Key, _Value>::insert(key_type begin_key, key_type end_key, va
 }
 
 template<typename _Key, typename _Value>
-bool segment_tree<_Key, _Value>::search(key_type point, search_result_type& result) const
+bool segment_tree<_Key, _Value>::search(key_type point, search_results_type& result) const
 {
     if (!m_valid_tree)
         // Tree is invalidated.
@@ -337,10 +337,10 @@ bool segment_tree<_Key, _Value>::search(key_type point, search_result_type& resu
 }
 
 template<typename _Key, typename _Value>
-typename segment_tree<_Key, _Value>::search_result
+typename segment_tree<_Key, _Value>::search_results
 segment_tree<_Key, _Value>::search(key_type point) const
 {
-    search_result result;
+    search_results result;
     if (!m_valid_tree || !m_root_node)
         return result;
 
@@ -353,7 +353,7 @@ segment_tree<_Key, _Value>::search(key_type point) const
 }
 
 template<typename _Key, typename _Value>
-void segment_tree<_Key, _Value>::search(key_type point, search_result_base& result) const
+void segment_tree<_Key, _Value>::search(key_type point, search_results_base& result) const
 {
     if (!m_valid_tree || !m_root_node)
         return;

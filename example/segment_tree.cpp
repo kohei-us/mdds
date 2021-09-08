@@ -59,7 +59,7 @@ int main()
     db.build_tree();
 
     // Run search and get the result.
-    db_type::search_result result = db.search(5);
+    db_type::search_results result = db.search(5);
 
     // Print the result.
     cout << "result size: " << result.size() << endl;

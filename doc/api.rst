@@ -9,6 +9,14 @@ API Incompatibility Notes
 
 * deprecated ``rectangle_set`` data structure has been removed.
 
+segment_tree
+^^^^^^^^^^^^
+
+* Some public types have been renamed:
+
+  * search_result -> search_results
+  * search_result_type -> search_results_type
+
 1.5
 ---
 
