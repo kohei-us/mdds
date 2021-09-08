@@ -584,8 +584,11 @@ Element Blocks
    :members:
 
 
-Element Types
-^^^^^^^^^^^^^
+Types
+^^^^^
+
+mdds::mtv::element_t
+~~~~~~~~~~~~~~~~~~~~
 
 .. doxygentypedef:: mdds::mtv::element_t
 
@@ -603,6 +606,11 @@ Element Types
 .. doxygenvariable:: mdds::mtv::element_type_double
 .. doxygenvariable:: mdds::mtv::element_type_string
 .. doxygenvariable:: mdds::mtv::element_type_user_start
+
+mdds::mtv::lu_factor_t
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. doxygenenum:: mdds::mtv::lu_factor_t
 
 
 Exceptions

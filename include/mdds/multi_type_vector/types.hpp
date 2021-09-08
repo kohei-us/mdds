@@ -74,8 +74,8 @@ constexpr element_t element_type_user_start = 50;
 /**
  * Loop-unrolling factor with optional SIMD feature.
  *
- * The first byte is used for the loop-unrolling factor, while the second byte
- * is used for SIMD flags.
+ * In each enumerator value, the first byte contains the loop-unrolling factor
+ * (either 0, 4, 8, 16 or 32), while the second byte stores SIMD flags.
  */
 enum class lu_factor_t : int
 {
