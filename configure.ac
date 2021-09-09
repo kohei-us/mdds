@@ -68,8 +68,8 @@ AS_IF([test x"$enable_gcov" == "xyes"], [
 ])
 
 AC_ARG_ENABLE(openmp,
-    AS_HELP_STRING([--disable-openmp], [Disable use of OpenMP.]),
-    [enable_openmp="$enableval"],[enable_openmp=yes]
+    AS_HELP_STRING([--enable-openmp], [Enable use of OpenMP.]),
+    [enable_openmp="$enableval"],[enable_openmp=no]
 )
 
 AS_IF([test x"$enable_openmp" == "xyes"], [

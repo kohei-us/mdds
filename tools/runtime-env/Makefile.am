@@ -5,4 +5,7 @@ AM_CPPFLAGS = \
 EXTRA_PROGRAMS = \
     runtime-env
 
+CLEANFILES = \
+    runtime-env
+
 runtime_env_SOURCES = main.cpp
