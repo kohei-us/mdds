@@ -529,6 +529,32 @@ cost of block position lookup is significantly lessoned thanks to the switch to
 binary search in performing the lookup.
 
 
+block shifting performance and loop-unrolling factor
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The introduction of binary search in the block position lookup implementation
+in version 1.6 has significantly improved its lookup performance, but has
+also resulted in slight performance hit when shifting blocks during value
+insertion.  This is because when shifting the logical positions of the blocks
+below the insertion point, their head positions need to be re-calculated to
+account for their new positions.
+
+The good news is that the switch to the structure-of-arrays (SoA) storage
+layout in 2.0 alone may bring subtle but measurable improvement in the
+block position adjustment performance due to the logical block positions now
+being stored in a separate array thereby improving its cache efficiency.  In
+reality, however, this was somewhat dependent on the CPU types since some CPU's
+didn't show any noticeable improvements or even showed worse performance, while
+other CPU types showed consistent improvements with SoA over AoS.
+
+Another factor that may play a role is `loop unrolling <https://en.wikipedia.org/wiki/Loop_unrolling>`_
+factor which can be configured via the :cpp:var:`~mdds::mtv::default_trait::loop_unrolling`
+variable in your custom trait type if you use version 2.0 or newer.  This variable
+is an enum class of type :cpp:type:`mdds::mtv::lu_factor_t` which enumerates
+several pre-defined loop-unrolling factors as well as some SIMD features when
+available.
+
+
 API Reference
 -------------
 
