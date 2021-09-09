@@ -55,7 +55,7 @@ Run it
 ------
 
 To run the tool, simply execute it with no arguments.  It should show you a progress
-bar indicating that it's performing benchmarks.  Once finished, it should an
+bar indicating that it's performing benchmarks.  Once finished, it should display an
 ASCII chart similar to the following:
 
 ```
