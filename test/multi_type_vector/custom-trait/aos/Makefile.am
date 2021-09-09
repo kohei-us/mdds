@@ -7,6 +7,7 @@ AM_CPPFLAGS = \
 check_PROGRAMS = test
 
 test_SOURCES = \
+    test_main.hpp \
     test_main.cpp \
     test_loop_unrolling.cpp \
     $(top_srcdir)/test/test_global.cpp
