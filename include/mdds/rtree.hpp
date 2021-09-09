@@ -46,38 +46,38 @@ struct default_rtree_trait
     /**
      * Number of dimensions in bounding rectangles.
      */
-    constexpr static size_t dimensions = 2;
+    static constexpr size_t dimensions = 2;
 
     /**
      * Minimum number of child nodes that must be present in each directory
      * node.  Exception is the root node, which is allowed to have less than
      * the minimum number of nodes, but only when it's a leaf directory node.
      */
-    constexpr static size_t min_node_size = 40;
+    static constexpr size_t min_node_size = 40;
 
     /**
      * Maximum number of child nodes that each directory node is allowed to
      * have.  There are no exceptions to this rule.
      */
-    constexpr static size_t max_node_size = 100;
+    static constexpr size_t max_node_size = 100;
 
     /**
      * Maximum depth a tree is allowed to have.
      */
-    constexpr static size_t max_tree_depth = 100;
+    static constexpr size_t max_tree_depth = 100;
 
     /**
      * A flag to determine whether or not to perform forced reinsertion when a
      * directory node overflows, before attempting to split the node.
      */
-    constexpr static bool enable_forced_reinsertion = true;
+    static constexpr bool enable_forced_reinsertion = true;
 
     /**
      * Number of nodes to get re-inserted during forced reinsertion.  This
      * should be roughly 30% of max_node_size + 1, and should not be greater
      * than max_node_size - min_node_size + 1.
      */
-    constexpr static size_t reinsertion_size = 30;
+    static constexpr size_t reinsertion_size = 30;
 };
 
 struct integrity_check_properties

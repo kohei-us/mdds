@@ -79,7 +79,7 @@ struct default_trait
      * Static value specifying the loop-unrolling factor to use for the block
      * position adjustment function.  This must be a const expression.
      */
-    constexpr static lu_factor_t loop_unrolling = lu_factor_t::lu16;
+    static constexpr lu_factor_t loop_unrolling = lu_factor_t::lu16;
 };
 
 } // namespace mtv
