@@ -7,7 +7,7 @@ Quick start
 -----------
 
 The following code demonstrates a simple use case of storing values of double
-and :cpp:class:`std::string` types in a single container using :cpp:class:`~mdds::mtv::soa::multi_type_vector`.
+and :cpp:class:`std::string` types in a single container using :cpp:type:`~mdds::multi_type_vector`.
 
 .. literalinclude:: ../example/multi_type_vector.cpp
    :language: C++
@@ -70,7 +70,7 @@ define either a class or a struct that has the following methods:
 
 as its public methods, specify it as type named ``event_func`` in a trait struct,
 and pass it as the second template argument when instantiating your
-:cpp:class:`~mdds::mtv::soa::multi_type_vector` type.  Refer to :cpp:type:`mdds::mtv::empty_event_func`
+:cpp:type:`~mdds::multi_type_vector` type.  Refer to :cpp:type:`mdds::mtv::empty_event_func`
 for the detail on when each event handler method gets triggered.
 
 The following code example demonstrates how this all works:
@@ -103,7 +103,7 @@ to element blocks which are owned by non-empty blocks in the primary array,
 and empty blocks don't store any element block instances, creations or deletions
 of empty blocks don't trigger these event handlers.
 
-The trait also allows you to configure other behaviors of :cpp:type:`~mdds::mtv::soa::multi_type_vector`.
+The trait also allows you to configure other behaviors of :cpp:type:`~mdds::multi_type_vector`.
 Refer to :cpp:type:`mdds::mtv::default_trait` for all available parameters.
 
 
@@ -151,9 +151,9 @@ Traverse multiple multi_type_vector instances "sideways"
 --------------------------------------------------------
 
 In this section we will demonstrate a way to traverse multiple instances of
-:cpp:class:`~mdds::mtv::soa::multi_type_vector` "sideways" using the
+:cpp:type:`~mdds::multi_type_vector` "sideways" using the
 :cpp:class:`mdds::mtv::collection` class.  What this class does is to wrap
-multiple instances of :cpp:class:`~mdds::mtv::soa::multi_type_vector` and generate
+multiple instances of :cpp:type:`~mdds::multi_type_vector` and generate
 iterators that let you iterate the individual element values collectively in
 the direction orthogonal to the direction of the individual vector instances.
 
@@ -168,7 +168,7 @@ And let's say that the data looks like the following spreadsheet data:
 
 It consists of five columns, with each column storing 21 rows of data.  The
 first row is a header row, followed by 20 rows of values.  In this example, We
-will be using one :cpp:class:`~mdds::mtv::soa::multi_type_vector` instance for each
+will be using one :cpp:type:`~mdds::multi_type_vector` instance for each
 column thus creating five instances in total, and store them in a
 ``std::vector`` container.
 
@@ -179,7 +179,7 @@ The declaration of the data store will look like this::
 
     std::vector<mtv_type> columns(5);
 
-The first two lines specify the concrete :cpp:class:`~mdds::mtv::soa::multi_type_vector`
+The first two lines specify the concrete :cpp:type:`~mdds::multi_type_vector`
 type used for each individual column and the collection type that wraps the
 columns.  The third line instantiates the ``std::vector`` instance to store
 the columns, and we are setting its size to five to accommodate for five
@@ -279,7 +279,7 @@ That being said, you must meet the following prerequisites when passing the
 collection of vector instances to the constructor of the
 :cpp:class:`~mdds::mtv::collection` class:
 
-1. All :cpp:class:`~mdds::mtv::soa::multi_type_vector` instances that comprise the
+1. All :cpp:type:`~mdds::multi_type_vector` instances that comprise the
    collection must be of the same logical length i.e. their
    :cpp:func:`~mdds::mtv::soa::multi_type_vector::size` methods must all return the same
    value.
@@ -332,11 +332,11 @@ contains metadata about that cell including its value.  The node contains the
 following members:
 
 * ``type`` - an integer value representing the type of the value.
-* ``index`` -  a 0-based index of the :cpp:class:`~mdds::mtv::soa::multi_type_vector`
+* ``index`` -  a 0-based index of the :cpp:type:`~mdds::multi_type_vector`
   instance within the collection.  You can think of this as column index in
   this example.
 * ``position`` - a 0-based logical element position within each
-  :cpp:class:`~mdds::mtv::soa::multi_type_vector` instance.  You can think of this as
+  :cpp:type:`~mdds::multi_type_vector` instance.  You can think of this as
   row index in this example.
 
 In the current example we are only making use of the ``type`` and ``index``
@@ -521,7 +521,7 @@ position hint essentially turns the complexity of O(n^2) in the first example
 into O(1) in the second one if you are using an older version of mdds where the
 block position lookup had a linear complexity.
 
-This strategy should work with any methods in :cpp:class:`~mdds::mtv::soa::multi_type_vector`
+This strategy should work with any methods in :cpp:type:`~mdds::multi_type_vector`
 that take a position hint as the first argument.
 
 Note that, if you are using a more recent version of mdds (1.6.0 or newer), the
