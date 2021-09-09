@@ -1,3 +1,30 @@
+mdds 2.0.0
+
+* general
+
+  * set the baseline C++ version to C++17.
+
+* multi_type_vector
+
+  * implemented structure-of-arrays (SoA) storage as its default storage
+    layout for better CPU cache efficiency.
+
+  * added multiple block position adjustment implementations with various
+    loop-unrolling factors combined with SSE2 and AVX2 features.
+
+  * added a tool called runtime-env to benchmark different block position
+    adjustment implementations to determine the optimal loop-unrolling factor.
+
+* rectangle_set
+
+  * permanently removed.
+
+* rtree
+
+  * fixed a bug where the memory positions of invalidted child nodes were not
+    properly updated after update.  The problem manifested itself when using
+    libc++ as stdlib with clang.
+
 mdds 1.7.0
 
 * trie_map
