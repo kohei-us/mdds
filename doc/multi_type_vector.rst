@@ -551,8 +551,15 @@ Another factor that may play a role is `loop unrolling <https://en.wikipedia.org
 factor which can be configured via the :cpp:var:`~mdds::mtv::default_trait::loop_unrolling`
 variable in your custom trait type if you use version 2.0 or newer.  This variable
 is an enum class of type :cpp:type:`mdds::mtv::lu_factor_t` which enumerates
-several pre-defined loop-unrolling factors as well as some SIMD features when
-available.
+several pre-defined loop-unrolling factors as well as some SIMD features.
+
+The hardest part is to figure out which loop unrolling factor is the best option
+in your runtime environment, since it is highly dependent on the environment.
+Luckily mdds comes with a tool called `runtime-env <https://gitlab.com/mdds/mdds/-/tree/master/tools/runtime-env>`_
+which, when run, will perform some benchmarks and give you the best loop-unrolling
+factor in your runtime environment.  Be sure to build this tool with the same
+compiler and compiler flags as your target program in order for this tool to give
+you a representative answer.
 
 
 API Reference
