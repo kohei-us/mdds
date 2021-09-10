@@ -21,9 +21,9 @@ mdds 2.0.0
 
 * rtree
 
-  * fixed a bug where the memory positions of invalidted child nodes were not
-    properly updated after update.  The problem manifested itself when using
-    libc++ as stdlib with clang.
+  * fixed a bug where the memory positions of invalidated child nodes were not
+    properly updated after tree mutation.  The problem manifested itself when
+    using libc++ as stdlib with clang.
 
 mdds 1.7.0
 
