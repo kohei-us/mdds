@@ -529,7 +529,7 @@ cost of block position lookup is significantly lessoned thanks to the switch to
 binary search in performing the lookup.
 
 
-block shifting performance and loop-unrolling factor
+Block shifting performance and loop-unrolling factor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The introduction of binary search in the block position lookup implementation
