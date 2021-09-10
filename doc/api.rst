@@ -27,8 +27,6 @@ multi_type_vector
        - New header location
      * - mdds/multi_type_vector_types.hpp
        - mdds/multi_type_vector/types.hpp
-     * - mdds/multi_type_vector_types.hpp
-       - mdds/multi_type_vector/types.hpp
      * - mdds/multi_type_vector_macro.hpp
        - mdds/multi_type_vector/macro.hpp
      * - mdds/multi_type_vector_trait.hpp
