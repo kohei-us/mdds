@@ -2,23 +2,86 @@
 API Incompatibility Notes
 =========================
 
-2.0 (not yet released)
-----------------------
+v2.0
+----
 
 * baseline C++ version has been set to C++17.
 
 * deprecated ``rectangle_set`` data structure has been removed.
 
+multi_type_vector
+^^^^^^^^^^^^^^^^^
+
+* The second template parameter is now a trait type that specifies custom event
+  function type and loop-unrolling factor.  Prior to 2.0 the second template
+  parameter was custom event function type.
+
+* Due to the addition of the structure-of-arrays variant, the following header
+  files have been relocated:
+
+  .. list-table:: Relocated Headers
+     :widths: 50 50
+     :header-rows: 1
+
+     * - Old header location
+       - New header location
+     * - mdds/multi_type_vector_types.hpp
+       - mdds/multi_type_vector/types.hpp
+     * - mdds/multi_type_vector_types.hpp
+       - mdds/multi_type_vector/types.hpp
+     * - mdds/multi_type_vector_macro.hpp
+       - mdds/multi_type_vector/macro.hpp
+     * - mdds/multi_type_vector_trait.hpp
+       - mdds/multi_type_vector/trait.hpp
+     * - mdds/multi_type_vector_itr.hpp
+       - mdds/multi_type_vector/aos/iterator.hpp
+     * - mdds/multi_type_vector_custom_func1.hpp
+       - mdds/multi_type_vector/custom_func1.hpp
+     * - mdds/multi_type_vector_custom_func2.hpp
+       - mdds/multi_type_vector/custom_func2.hpp
+     * - mdds/multi_type_vector_custom_func3.hpp
+       - mdds/multi_type_vector/custom_func3.hpp
+
+  The old headers will continue to work for the time being, but consider them
+  deprecated.
+
+* Since now we have array-of-structures (AoS) and structure-of-arrays (SoA) variants
+  of multi_type_vector, there are two instances of multi_type_vector class in two
+  different headers and namespace locations. To use the AoS variant, include the header
+
+  .. code-block:: c++
+
+     #include <mdds/multi_type_vector/aos/main.hpp>
+
+  and instantiate the template class as ``mdds::mtv::aos::multi_type_vector``.
+  Likewise, to use the SoA variant, include the header
+
+  .. code-block:: c++
+
+     #include <mdds/multi_type_vector/soa/main.hpp>
+
+  and instantiate the template class as ``mdds::mtv::soa::multi_type_vector``.
+
+  If you include the original header
+
+  .. code-block:: c++
+
+     #include <mdds/multi_type_vector.hpp>
+
+  it will include a template alias ``mdds::multi_type_vector`` that simply references
+  ``mdds::mtv::soa::multi_type_vector``.
+
+
 segment_tree
 ^^^^^^^^^^^^
 
-* Some public types have been renamed:
+* The following public types have been renamed:
 
-  * search_result -> search_results
-  * search_result_type -> search_results_type
+  * ``search_result`` -> ``search_results``
+  * ``search_result_type`` -> ``search_results_type``
 
-1.5
----
+v1.5
+----
 
 multi_type_vector
 ^^^^^^^^^^^^^^^^^
@@ -46,8 +109,8 @@ multi_type_vector
   to make room for a new element block for float type named
   `float_element_block`.
 
-1.4
----
+v1.4
+----
 
 multi_type_matrix
 ^^^^^^^^^^^^^^^^^
@@ -60,8 +123,8 @@ multi_type_matrix
   function object stores data members that are expected to be altered by
   the walk() methods*.
 
-1.2
----
+v1.2
+----
 
 trie_map / packed_trie_map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -106,8 +169,8 @@ multi_type_matrix
   now needs to specify the type of block that stores integer values as its
   **integer_element_block** member.
 
-1.0
----
+v1.0
+----
 
 * Starting with version 1.0, mdds now requires support for C++11.  Stick with
   0.12 or earlier versions if you use a compiler that doesn't support C++11.
@@ -116,8 +179,8 @@ multi_type_matrix
   and point_quad_tree.
 
 
-0.9
----
+v0.9
+----
 
 multi_type_vector
 ^^^^^^^^^^^^^^^^^
@@ -128,8 +191,8 @@ multi_type_vector
   definition directly.  If you use the older variant, simply remove
   the template arguments that are numerical block IDs.
 
-0.8
----
+v0.8
+----
 
 flat_segment_tree
 ^^^^^^^^^^^^^^^^^
@@ -140,8 +203,8 @@ flat_segment_tree
   second parameter of the new return value which is equivalent of the
   previous return value.
 
-0.5
----
+v0.5
+----
 
 flat_segment_tree
 ^^^^^^^^^^^^^^^^^
