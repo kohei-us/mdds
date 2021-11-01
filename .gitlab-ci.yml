@@ -10,5 +10,7 @@ build:
     - apt -y install libboost-all-dev
     - apt -y install valgrind
     - ldconfig
+  variables:
+    CXXFLAGS: -Wunused-parameter
   script: 
     - ./autogen.sh --enable-memory-tests && make -j $(nproc) check
