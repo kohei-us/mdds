@@ -1004,7 +1004,7 @@ packed_trie_map<_KeyTrait,_ValueT>::packed_trie_map(const packed_trie_map& other
     {
         packed_trie_map& m_parent;
 
-        void node(const uintptr_t* node_pos, key_unit_type c, size_t depth, size_t index_size)
+        void node(const uintptr_t* node_pos, key_unit_type /*c*/, size_t /*depth*/, size_t /*index_size*/)
         {
             uintptr_t value_ptr = *node_pos;
 
@@ -1315,13 +1315,13 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
         }
 
         /** first element in the buffer. */
-        void root_offset(size_t i, const uintptr_t& v) const
+        void root_offset(size_t /*i*/, const uintptr_t& v) const
         {
             write(v);
         }
 
         /** first element in each node section. */
-        void node_value(size_t i, const uintptr_t& v) const
+        void node_value(size_t /*i*/, const uintptr_t& v) const
         {
             const value_type* p = reinterpret_cast<const value_type*>(v);
             if (p)
@@ -1348,19 +1348,19 @@ void packed_trie_map<_KeyTrait,_ValueT>::save_state(std::ostream& os) const
          * second element in each node section that stores the size of
          * the child data sub-section.
          */
-        void node_index_size(size_t i, const uintptr_t& v) const
+        void node_index_size(size_t /*i*/, const uintptr_t& v) const
         {
             write(v);
         }
 
         /** element that stores the key value for child node. */
-        void node_child_key(size_t i, const uintptr_t& v) const
+        void node_child_key(size_t /*i*/, const uintptr_t& v) const
         {
             write(v);
         }
 
         /** element that stores the relative offset of the child node. */
-        void node_child_offset(size_t i, const uintptr_t& v) const
+        void node_child_offset(size_t /*i*/, const uintptr_t& v) const
         {
             write(v);
         }

@@ -51,7 +51,10 @@ struct empty_event_func
      *
      * @param block pointer to the acquired element block instance.
      */
-    void element_block_acquired(const base_element_block* block) {}
+    void element_block_acquired(const base_element_block* block)
+    {
+        (void)block;
+    }
 
     /**
      * Callback function for element block release events.  This gets called
@@ -61,7 +64,10 @@ struct empty_event_func
      *
      * @param block pointer to the element block instance being released.
      */
-    void element_block_released(const base_element_block* block) {}
+    void element_block_released(const base_element_block* block)
+    {
+        (void)block;
+    }
 };
 
 /**
