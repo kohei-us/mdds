@@ -308,7 +308,7 @@ void rtree_test_bl_insert_extents_copy()
     }
 }
 
-int main(int argc, char** argv)
+int main()
 {
     try
     {

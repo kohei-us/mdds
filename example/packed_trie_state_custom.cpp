@@ -98,7 +98,7 @@ struct us_president_serializer
         os.write(buf.buffer, 1);
     }
 
-    static void read(std::istream& is, size_t n, us_president& v)
+    static void read(std::istream& is, size_t /*n*/, us_president& v)
     {
         // For a fixed-size value type, this should equal the defined value size.
         assert(n == 3);

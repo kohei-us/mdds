@@ -144,7 +144,7 @@ bool check_against_expected(const list<value_type>& test, value_type* expected)
  */
 template<typename key_type, typename value_type>
 bool check_search_result_only(
-    const segment_tree<key_type, value_type>& db,
+    const segment_tree<key_type, value_type>& /*db*/,
     const typename segment_tree<key_type, value_type>::search_results_type& result,
     key_type key, value_type* expected)
 {

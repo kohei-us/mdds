@@ -29,7 +29,7 @@
 #include "test_global.hpp" // This must be the first header to be included.
 #include "test_main.hpp"
 
-int main (int argc, char **argv)
+int main ()
 {
     try
     {

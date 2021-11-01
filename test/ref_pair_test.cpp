@@ -99,7 +99,7 @@ void test_used_in_iterator()
     assert(it->first == -23);
 }
 
-int main(int argc, char** argv)
+int main()
 {
     test_basic();
     test_used_in_iterator();

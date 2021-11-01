@@ -38,11 +38,13 @@ class event_hdl
 public:
     void element_block_acquired(mdds::mtv::base_element_block* block)
     {
+        (void)block;
         cout << "  * element block acquired" << endl;
     }
 
     void element_block_released(mdds::mtv::base_element_block* block)
     {
+        (void)block;
         cout << "  * element block released" << endl;
     }
 };

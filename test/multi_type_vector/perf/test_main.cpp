@@ -119,7 +119,7 @@ void mtv_perf_test_insert_via_position_object()
 
 }
 
-int main (int argc, char **argv)
+int main ()
 {
     mtv_perf_test_block_position_lookup();
     mtv_perf_test_insert_via_position_object();

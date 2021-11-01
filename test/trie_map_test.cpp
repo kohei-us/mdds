@@ -1937,7 +1937,7 @@ void trie_test_value_update_from_iterator()
     assert(it->second == 345);
 }
 
-int main(int argc, char** argv)
+int main()
 {
     try
     {

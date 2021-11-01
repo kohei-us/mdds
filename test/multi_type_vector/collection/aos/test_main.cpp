@@ -42,7 +42,7 @@ using cols_type = mdds::mtv::collection<mtv_type>;
 
 #include "all.inl"
 
-int main (int argc, char **argv)
+int main ()
 {
     try
     {
