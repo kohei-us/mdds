@@ -159,10 +159,10 @@ protected:
         return cur_node;
     }
 
-    iterator_base(empty_iterator_type) : m_type(iterator_type::empty) {}
+    iterator_base(empty_iterator_type) : m_current_value_ptr(nullptr), m_type(iterator_type::empty) {}
 public:
 
-    iterator_base() : m_type(iterator_type::normal) {}
+    iterator_base() : m_current_value_ptr(nullptr), m_type(iterator_type::normal) {}
 
     iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type) :
         m_node_stack(std::move(node_stack)),
