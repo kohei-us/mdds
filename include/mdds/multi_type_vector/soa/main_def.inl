@@ -5058,6 +5058,7 @@ template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::dump_blocks(std::ostream& os) const
 {
     os << "--- blocks" << endl;
+    std::ios_base::fmtflags origflags = os.flags();
     for (size_type i = 0, n = m_block_store.positions.size(); i < n; ++i)
     {
         size_type pos = m_block_store.positions[i];
@@ -5068,6 +5069,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::dump_blocks(std::ostream& os) cons
             cat = mtv::get_block_type(*data);
         os << "  block " << i << ": position=" << pos << " size=" << size << " type=" << std::dec << cat << " data=" << std::hex << data << endl;
     }
+    os.setf(origflags);
 }
 
 template<typename ElemBlockFunc, typename Trait>

@@ -154,7 +154,9 @@ int main()
         cities_loaded.load_state(infile);
     }
 
+    std::ios_base::fmtflags origflags = cout.flags();
     cout << "Equal to the original? " << std::boolalpha << (cities == cities_loaded) << endl;
+    cout.setf(origflags);
 
     cout << endl;
 

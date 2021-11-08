@@ -190,7 +190,9 @@ int main()
         us_presidents_loaded.load_state<us_president_serializer>(infile);
     }
 
+    std::ios_base::fmtflags origflags = cout.flags();
     cout << "Equal to the original? " << std::boolalpha << (us_presidents == us_presidents_loaded) << endl;
+    cout.setf(origflags);
 
     cout << endl;
 
