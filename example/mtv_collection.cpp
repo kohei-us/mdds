@@ -41,16 +41,16 @@ void example1()
     std::vector<mtv_type> columns(5);
 
     // Populate the header row.
-    auto headers = { "ID", "Make", "Model", "Year", "Color" };
+    std::array headers = { "ID", "Make", "Model", "Year", "Color" };
     size_t i = 0;
     std::for_each(headers.begin(), headers.end(), [&](const char* v) { columns[i++].push_back<std::string>(v); });
 
     // Fill column 1.
-    auto c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+    std::array c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     std::for_each(c1_values.begin(), c1_values.end(), [&columns](int v) { columns[0].push_back(v); });
 
     // Fill column 2.
-    auto c2_values =
+    std::array c2_values =
     {
         "Nissan", "Mercedes-Benz", "Nissan", "Suzuki", "Saab", "Subaru", "GMC", "Mercedes-Benz", "Toyota", "Nissan",
         "Mazda", "Dodge", "Ford", "Bentley", "GMC", "Audi", "GMC", "Mercury", "Pontiac", "BMW",
@@ -59,7 +59,7 @@ void example1()
     std::for_each(c2_values.begin(), c2_values.end(), [&columns](const char* v) { columns[1].push_back<std::string>(v); });
 
     // Fill column 3.
-    auto c3_values =
+    std::array c3_values =
     {
         "Frontier", "W201", "Frontier", "Equator", "9-5", "Tribeca", "Yukon XL 2500", "E-Class", "Camry Hybrid", "Frontier",
         "MX-5", "Ram Van 1500", "Edge", "Azure", "Sonoma Club Coupe", "S4", "3500 Club Coupe", "Villager", "Sunbird", "3 Series",
@@ -68,7 +68,7 @@ void example1()
     std::for_each(c3_values.begin(), c3_values.end(), [&columns](const char* v) { columns[2].push_back<std::string>(v); });
 
     // Fill column 4.  Replace -1 with "unknown".
-    std::initializer_list<int32_t> c4_values =
+    std::array c4_values =
     {
         1998, 1986, 2009, -1, -1, 2008, 2009, 2008, 2010, 2001,
         2008, 2000, -1, 2009, 1998, 2013, 1994, 2000, 1990, 1993,
@@ -84,7 +84,7 @@ void example1()
     }
 
     // Fill column 5
-    auto c5_values =
+    std::array c5_values =
     {
         "Turquoise", "Fuscia", "Teal", "Fuscia", "Green", "Khaki", "Pink", "Goldenrod", "Turquoise", "Yellow",
         "Orange", "Goldenrod", "Fuscia", "Goldenrod", "Mauv", "Crimson", "Turquoise", "Teal", "Indigo", "LKhaki",
