@@ -119,10 +119,14 @@ void mtv_perf_test_insert_via_position_object()
 
 }
 
-int main ()
+int main () try
 {
     mtv_perf_test_block_position_lookup();
     mtv_perf_test_insert_via_position_object();
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
