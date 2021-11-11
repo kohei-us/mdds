@@ -172,14 +172,7 @@ public:
         operator bool() const { return mp != nullptr; }
         bool operator== (const node_access& r) const { return mp == r.mp; }
 
-        node_access& operator= (const node_access& r)
-        {
-            mp = r.mp;
-            return *this;
-        }
-
         node_access() : mp(nullptr) {}
-        node_access(const node_access& r) : mp(r.mp) {}
         ~node_access() {}
 
     private:
