@@ -209,6 +209,12 @@ public:
         if (m_start)
             update_node();
     }
+    const_segment_iterator(const_segment_iterator&& other) :
+        m_start(std::move(other.m_start)), m_end(std::move(other.m_end))
+    {
+        if (m_start)
+            update_node();
+    }
 
     ~const_segment_iterator() {}
 
@@ -226,6 +232,15 @@ public:
     {
         m_start = other.m_start;
         m_end = other.m_end;
+        if (m_start)
+            update_node();
+        return *this;
+    }
+
+    const_segment_iterator& operator=(const_segment_iterator&& other)
+    {
+        m_start = std::move(other.m_start);
+        m_end = std::move(other.m_end);
         if (m_start)
             update_node();
         return *this;
