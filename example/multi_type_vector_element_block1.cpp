@@ -37,7 +37,7 @@ using mdds::mtv::string_element_block;
 
 using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
 
-int main()
+int main() try
 {
     mtv_type db;  // starts with an empty container.
 
@@ -80,6 +80,10 @@ int main()
         cout << *pz << endl;
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

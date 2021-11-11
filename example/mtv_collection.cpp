@@ -150,11 +150,15 @@ void example1()
     }
 }
 
-int main()
+int main() try
 {
     example1();
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -31,7 +31,7 @@
 #include <string>
 #include <iostream>
 
-int main()
+int main() try
 {
     // key values are of type double, and we are storing std::string as a
     // value for each spatial object.  By default, tree becomes 2-dimensional
@@ -83,6 +83,10 @@ int main()
     }
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -43,7 +43,7 @@ struct string_printer
     }
 };
 
-int main()
+int main() try
 {
     db_type db;
     std::string A("A");
@@ -64,6 +64,10 @@ int main()
     // Print the result.
     cout << "result size: " << result.size() << endl;
     std::for_each(result.begin(), result.end(), string_printer());
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -33,7 +33,7 @@
 using std::cout;
 using std::endl;
 
-int main()
+int main() try
 {
     typedef ::mdds::point_quad_tree<double, std::string> db_type;
     db_type db;
@@ -68,6 +68,10 @@ int main()
              << ": (latitude=" << res.first.x
              << ", longitude=" << res.first.y << ")" << endl;
     }
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

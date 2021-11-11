@@ -54,7 +54,7 @@ void print_block(const mtv_type::value_type& v)
     );
 }
 
-int main()
+int main() try
 {
     mtv_type con(20); // Initialized with 20 empty elements.
 
@@ -98,6 +98,10 @@ int main()
     }
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

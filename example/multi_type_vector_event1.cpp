@@ -58,7 +58,7 @@ struct trait
 
 using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, trait>;
 
-int main()
+int main() try
 {
     mtv_type db;  // starts with an empty container.
 
@@ -77,6 +77,10 @@ int main()
     cout << "exiting program..." << endl;
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

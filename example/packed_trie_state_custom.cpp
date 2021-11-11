@@ -115,7 +115,7 @@ struct us_president_serializer
     }
 };
 
-int main()
+int main() try
 {
 
     using map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, us_president>;
@@ -202,6 +202,10 @@ int main()
         cout << "  * " << entry.first << " (" << entry.second.year << "; " << entry.second.party << ")" << endl;
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

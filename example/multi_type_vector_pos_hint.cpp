@@ -113,12 +113,16 @@ void run_with_position_hint()
     }
 }
 
-int main()
+int main() try
 {
     run_no_position_hint();
     run_with_position_hint();
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

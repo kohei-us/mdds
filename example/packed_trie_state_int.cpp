@@ -34,7 +34,7 @@
 using std::cout;
 using std::endl;
 
-int main()
+int main() try
 {
     using map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, int>;
 
@@ -170,6 +170,10 @@ int main()
         cout << "  * " << city.first << ": " << city.second << endl;
 
     return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
