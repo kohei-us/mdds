@@ -86,7 +86,10 @@ int main()
             StackPrinter __stack_printer2__("  push_back");
             string* ptr = 0x00000000;
             for (size_t i = 0; i < store_size; ++i)
+            {
+                // coverity[dereference] - this is intentional
                 store.push_back(ptr++);
+            }
         }
         {
             StackPrinter __stack_printer2__("  find and pop_back");
@@ -99,6 +102,7 @@ int main()
                     *itr = store.back();
                     store.pop_back();
                 }
+                // coverity[dereference] - this is intentional
                 ++ptr;
             }
         }
