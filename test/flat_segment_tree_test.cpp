@@ -2097,6 +2097,13 @@ void fst_test_segment_iterator()
 
     it2 = it--; // post-decrement.
     assert(it2 == ite);
+
+    it = db.begin_segment();
+    auto it_moved{std::move(it)}; // move construction
+
+    assert(it_moved->start == 0);
+    assert(it_moved->end == 20);
+    assert(it_moved->value == false);
 }
 
 int main (int argc, char **argv)
