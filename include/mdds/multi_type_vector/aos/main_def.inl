@@ -353,6 +353,28 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const multi_type_vect
 }
 
 template<typename ElemBlockFunc, typename Trait>
+multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(multi_type_vector&& other) :
+    m_hdl_event(std::move(other.m_hdl_event)),
+    m_blocks(std::move(other.m_blocks)),
+    m_cur_size(other.m_cur_size)
+{
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in move construction" << std::endl;
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+}
+
+template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>::~multi_type_vector()
 {
     delete_element_blocks(m_blocks.begin(), m_blocks.end());
@@ -4472,6 +4494,14 @@ template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator= (const multi_type_vector& other)
 {
     multi_type_vector assigned(other);
+    swap(assigned);
+    return *this;
+}
+
+template<typename ElemBlockFunc, typename Trait>
+multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator= (multi_type_vector&& other)
+{
+    multi_type_vector assigned(std::move(other));
     swap(assigned);
     return *this;
 }

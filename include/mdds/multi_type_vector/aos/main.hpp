@@ -336,9 +336,16 @@ public:
     /**
      * Copy constructor.
      *
-     * @param other other column instance to copy values from.
+     * @param other the other instance to copy values from.
      */
     multi_type_vector(const multi_type_vector& other);
+
+    /**
+     * Move constructor.
+     *
+     * @param other the other instance to move values from.
+     */
+    multi_type_vector(multi_type_vector&& other);
 
     /**
      * Destructor.  It deletes all allocated data blocks.
@@ -1028,6 +1035,7 @@ public:
     bool operator!= (const multi_type_vector& other) const;
 
     multi_type_vector& operator= (const multi_type_vector& other);
+    multi_type_vector& operator= (multi_type_vector&& other);
 
     /**
      * Return the numerical identifier that represents passed element.
