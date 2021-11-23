@@ -1,3 +1,13 @@
+mdds 2.0.1 (not released yet)
+
+* general
+
+  * addressed various coverity issues.
+
+* multi_type_vector
+
+  * fixed random compiler warnings.
+
 mdds 2.0.0
 
 * general
