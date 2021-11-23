@@ -322,7 +322,7 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, 
 
 template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const multi_type_vector& other) :
-    m_cur_size(other.m_cur_size)
+    m_hdl_event(other.m_hdl_event), m_cur_size(other.m_cur_size)
 {
     // Clone all the blocks.
     m_blocks.reserve(other.m_blocks.size());

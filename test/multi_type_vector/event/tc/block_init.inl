@@ -31,6 +31,7 @@ struct event_block_init
     std::string name;
     std::string ctor_type;
 
+    event_block_init() : ctor_type("empty") {}
     event_block_init(const std::string& _name) : name(_name), ctor_type("normal") {}
     event_block_init(const event_block_init& other) : name(other.name), ctor_type("copy") {}
     event_block_init(event_block_init&& other) : name(std::move(other.name)), ctor_type("move") {}
@@ -56,6 +57,10 @@ void mtv_test_block_init()
         mtv_type db(event_block_init("some name")); // pass an rvalue
         assert(db.event_handler().name == "some name");
         assert(db.event_handler().ctor_type == "move");
+
+        auto db2{db};
+        assert(db2.event_handler().name == "some name");
+        assert(db2.event_handler().ctor_type == "copy");
     }
 
     {

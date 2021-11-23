@@ -370,6 +370,12 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const multi_type_vect
     m_block_store(other.m_block_store),
     m_cur_size(other.m_cur_size)
 {
+    for (const element_block_type* data : m_block_store.element_blocks)
+    {
+        if (data)
+            m_hdl_event.element_block_acquired(data);
+    }
+
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     try
     {

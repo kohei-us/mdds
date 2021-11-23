@@ -56,6 +56,24 @@ struct event_block_counter
         block_count_uint8(0)
     {}
 
+    /**
+     * This copy constructor intentionally does not copy the counters.
+     */
+    event_block_counter(const event_block_counter&) :
+        block_count(0),
+        block_count_numeric(0),
+        block_count_string(0),
+        block_count_int16(0),
+        block_count_uint16(0),
+        block_count_int32(0),
+        block_count_uint32(0),
+        block_count_int64(0),
+        block_count_uint64(0),
+        block_count_boolean(0),
+        block_count_int8(0),
+        block_count_uint8(0)
+    {}
+
     void element_block_acquired(const mdds::mtv::base_element_block* block)
     {
         ++block_count;
