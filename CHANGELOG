@@ -8,6 +8,11 @@ mdds 2.0.1 (not released yet)
 
   * fixed random compiler warnings.
 
+  * fixed event handling in copy construction.  In aos, the event object was
+    not copied when the parent container was copied.  In soa, the
+    element_block_acquired() callback was not called for the cloned element
+    blocks.
+
 mdds 2.0.0
 
 * general
