@@ -13,7 +13,7 @@ mdds 2.0.1 (not released yet)
     element_block_acquired() callback was not called for the cloned element
     blocks.
 
-  * added move constructor2 and move assignment operators to both aos and soa
+  * added move constructors and move assignment operators to both aos and soa
     variants.
 
 mdds 2.0.0
