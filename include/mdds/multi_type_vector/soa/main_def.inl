@@ -5101,7 +5101,7 @@ mtv::element_t multi_type_vector<ElemBlockFunc, Trait>::get_element_type(const T
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::dump_blocks(std::ostream& os) const
 {
-    os << "--- blocks" << endl;
+    os << "--- blocks" << std::endl;
     std::ios_base::fmtflags origflags = os.flags();
     for (size_type i = 0, n = m_block_store.positions.size(); i < n; ++i)
     {
@@ -5111,7 +5111,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::dump_blocks(std::ostream& os) cons
         element_category_type cat = mtv::element_type_empty;
         if (data)
             cat = mtv::get_block_type(*data);
-        os << "  block " << i << ": position=" << pos << " size=" << size << " type=" << std::dec << cat << " data=" << std::hex << data << endl;
+        os << "  block " << i << ": position=" << pos << " size=" << size << " type=" << std::dec << cat << " data=" << std::hex << data << std::endl;
     }
     os.setf(origflags);
 }
