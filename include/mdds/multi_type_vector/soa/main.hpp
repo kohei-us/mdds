@@ -35,6 +35,10 @@
 #include "./block_util.hpp"
 #include "./iterator.hpp"
 
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+#include <iostream>
+#endif
+
 namespace mdds { namespace mtv { namespace soa {
 
 /**
