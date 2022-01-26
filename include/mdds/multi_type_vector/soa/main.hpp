@@ -78,6 +78,8 @@ public:
     using element_category_type = mdds::mtv::element_t;
     using element_block_func = ElemBlockFunc;
 
+    using trait_type = Trait;
+
     /**
      * Optional event handler function structure, whose functions get called
      * at specific events.  The following events are currently supported:

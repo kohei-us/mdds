@@ -92,6 +92,35 @@ struct default_trait
 
 namespace detail { namespace mtv {
 
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+
+template<typename T, typename = void>
+struct has_trace : std::false_type {};
+
+template<typename T>
+struct has_trace<T, decltype((void)T::trace)> : std::true_type {};
+
+template<typename Trait>
+struct call_trace
+{
+    void call(std::false_type, const char*, const char*, int, const void*) const
+    {
+        // sink
+    }
+
+    void call(std::true_type, const char* funcname, const char* filename, int lineno, const void* self) const
+    {
+        Trait::trace(funcname, filename, lineno, self);
+    }
+
+    void operator()(const char* funcname, const char* filename, int lineno, const void* self) const
+    {
+        call(has_trace<Trait>{}, funcname, filename, lineno, self);
+    }
+};
+
+#endif
+
 inline void throw_block_position_not_found(
     const char* method_sig, int line, size_t pos, size_t block_size, size_t container_size)
 {
@@ -201,7 +230,17 @@ inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::m
 
 }} // namespace detail::mtv
 
-}
+} // namespace mdds
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+
+#define MDDS_MTV_TRACE() ::mdds::detail::mtv::call_trace<Trait>{}(__func__, __FILE__, __LINE__, this)
+
+#else
+
+#define MDDS_MTV_TRACE()
+
+#endif
 
 #endif
 

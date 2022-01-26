@@ -1,1 +1,1 @@
-SUBDIRS = custom-trait
+SUBDIRS = custom-trait debug-util
