@@ -1043,7 +1043,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::set_empty(size_type start_pos, size_type end_pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -1057,7 +1057,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=?; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -4719,7 +4719,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::append_empty(size_type len)
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::resize(size_type new_size)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "new_size=" << new_size);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
