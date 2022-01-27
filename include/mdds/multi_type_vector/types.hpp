@@ -93,6 +93,24 @@ enum class lu_factor_t : int
     avx2_x64_lu8 = 2 << 8 | 8,
 };
 
+enum class trace_method_t : int
+{
+    unspecified = 0,
+    accessor,
+    mutator,
+    constructor,
+    destructor
+};
+
+struct trace_method_properties_t
+{
+    trace_method_t type = trace_method_t::unspecified;
+    const void* instance = nullptr;
+    const char* function_name = nullptr;
+    const char* filepath = nullptr;
+    int line_number = -1;
+};
+
 /**
  * Generic exception used for errors specific to element block operations.
  */

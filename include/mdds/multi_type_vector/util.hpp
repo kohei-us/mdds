@@ -103,19 +103,19 @@ struct has_trace<T, decltype((void)T::trace)> : std::true_type {};
 template<typename Trait>
 struct call_trace
 {
-    void call(std::false_type, const char*, const char*, int, const void*) const
+    void call(std::false_type, const ::mdds::mtv::trace_method_properties_t&) const
     {
         // sink
     }
 
-    void call(std::true_type, const char* funcname, const char* filename, int lineno, const void* self) const
+    void call(std::true_type, const ::mdds::mtv::trace_method_properties_t& props) const
     {
-        Trait::trace(funcname, filename, lineno, self);
+        Trait::trace(props);
     }
 
-    void operator()(const char* funcname, const char* filename, int lineno, const void* self) const
+    void operator()(const ::mdds::mtv::trace_method_properties_t& props) const
     {
-        call(has_trace<Trait>{}, funcname, filename, lineno, self);
+        call(has_trace<Trait>{}, props);
     }
 };
 
@@ -234,11 +234,14 @@ inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::m
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 
-#define MDDS_MTV_TRACE() ::mdds::detail::mtv::call_trace<Trait>{}(__func__, __FILE__, __LINE__, this)
+#define MDDS_MTV_TRACE(method_type) \
+    ::mdds::detail::mtv::call_trace<Trait>{}( \
+        { trace_method_t::method_type, this, __func__, __FILE__, __LINE__ } \
+    )
 
 #else
 
-#define MDDS_MTV_TRACE()
+#define MDDS_MTV_TRACE(...)
 
 #endif
 

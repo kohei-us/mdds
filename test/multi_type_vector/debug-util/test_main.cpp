@@ -6,11 +6,9 @@
 
 struct mtv_custom_trait : public mdds::mtv::default_trait
 {
-    static void trace(const char* funcname, const char* filename, int lineno, const void* self)
+    static void trace(const mdds::mtv::trace_method_properties_t& props)
     {
-        (void)filename;
-        (void)lineno;
-        std::cout << "[" << self << "]: func=" << funcname << std::endl;
+        std::cout << "[" << props.instance << "]: func=" << props.function_name << "; type=" << int(props.type) << std::endl;
     }
 };
 
