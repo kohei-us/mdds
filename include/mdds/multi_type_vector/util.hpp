@@ -236,12 +236,24 @@ inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::m
 
 #define MDDS_MTV_TRACE(method_type) \
     ::mdds::detail::mtv::call_trace<Trait>{}( \
-        { trace_method_t::method_type, this, __func__, __FILE__, __LINE__ } \
+        { trace_method_t::method_type, this, __func__, "", __FILE__, __LINE__ } \
     )
+
+#define MDDS_MTV_TRACE_ARGS(method_type, stream) \
+    do \
+    { \
+        std::ostringstream _os_; \
+        _os_ << stream; \
+        ::mdds::detail::mtv::call_trace<Trait>{}( \
+            { trace_method_t::method_type, this, __func__, _os_.str(), __FILE__, __LINE__ } \
+        ); \
+    } while (false)
 
 #else
 
 #define MDDS_MTV_TRACE(...)
+
+#define MDDS_MTV_TRACE_ARGS(...)
 
 #endif
 

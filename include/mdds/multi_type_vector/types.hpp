@@ -107,6 +107,7 @@ struct trace_method_properties_t
     trace_method_t type = trace_method_t::unspecified;
     const void* instance = nullptr;
     const char* function_name = nullptr;
+    std::string function_args;
     const char* filepath = nullptr;
     int line_number = -1;
 };

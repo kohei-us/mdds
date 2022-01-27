@@ -8,7 +8,10 @@ struct mtv_custom_trait : public mdds::mtv::default_trait
 {
     static void trace(const mdds::mtv::trace_method_properties_t& props)
     {
-        std::cout << "[" << props.instance << "]: func=" << props.function_name << "; type=" << int(props.type) << std::endl;
+        std::cout << "[" << props.instance << "]: (" << props.function_name
+            << ": " << props.function_args
+            << "); type=" << int(props.type)
+            << std::endl;
     }
 };
 
