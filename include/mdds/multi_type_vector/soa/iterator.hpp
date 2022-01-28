@@ -195,7 +195,7 @@ protected:
             << "; position=" << m_cur_node.position
             << "; size=" << m_cur_node.size
             << "; type=" << m_cur_node.type
-            << "; data=0x" << std::hex << m_cur_node.data;
+            << "; data=" << m_cur_node.data;
     }
 
 public:
