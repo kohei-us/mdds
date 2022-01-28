@@ -681,7 +681,7 @@ template<typename T>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& value)
 {
-    MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "; value=?");
+    MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -720,7 +720,7 @@ template<typename T>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::set(const iterator& pos_hint, size_type pos, const T& value)
 {
-    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=?; pos=" << pos << "; value=?");
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=" << pos_hint << "; pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
     size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
@@ -759,7 +759,7 @@ template<typename T>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& it_begin, const T& it_end)
 {
-    MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "; it_begin=?; it_end=?");
+    MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "; it_begin=?; it_end=? (length=" << std::distance(it_begin, it_end) << ")");
 
     auto res = mdds::detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
 
@@ -805,7 +805,7 @@ template<typename T>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::set(const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
 {
-    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=?; pos=" << pos << "; it_begin=?; it_end=?");
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=" << pos_hint << "; pos=" << pos << "; it_begin=?; it_end=? (length=" << std::distance(it_begin, it_end) << ")");
 
     auto res = mdds::detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
     if (!res.second)
@@ -1057,7 +1057,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
-    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=?; start_pos=" << start_pos << "; end_pos=" << end_pos);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())
