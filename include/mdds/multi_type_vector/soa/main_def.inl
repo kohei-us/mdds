@@ -328,21 +328,21 @@ template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const event_func& hdl) :
     m_hdl_event(hdl), m_cur_size(0)
 {
-    MDDS_MTV_TRACE(constructor);
+    MDDS_MTV_TRACE_ARGS(constructor, "event_func=?");
 }
 
 template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(event_func&& hdl) :
     m_hdl_event(std::move(hdl)), m_cur_size(0)
 {
-    MDDS_MTV_TRACE(constructor);
+    MDDS_MTV_TRACE_ARGS(constructor, "event_func=? (move)");
 }
 
 template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size) :
     m_cur_size(init_size)
 {
-    MDDS_MTV_TRACE(constructor);
+    MDDS_MTV_TRACE_ARGS(constructor, "init_size=" << init_size);
 
     if (!init_size)
         return;
@@ -358,7 +358,7 @@ template<typename T>
 multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, const T& value) :
     m_cur_size(init_size)
 {
-    MDDS_MTV_TRACE(constructor);
+    MDDS_MTV_TRACE_ARGS(constructor, "init_size=" << init_size << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
     if (!init_size)
         return;
@@ -375,7 +375,7 @@ template<typename T>
 multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, const T& it_begin, const T& it_end) :
     m_cur_size(init_size)
 {
-    MDDS_MTV_TRACE(constructor);
+    MDDS_MTV_TRACE_ARGS(constructor, "init_size=" << init_size << "; it_begin=?; it_end=? (length=" << std::distance(it_begin, it_end) << ")");
 
     if (!m_cur_size)
         return;
@@ -397,7 +397,7 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const multi_type_vect
     m_block_store(other.m_block_store),
     m_cur_size(other.m_cur_size)
 {
-    MDDS_MTV_TRACE(constructor);
+    MDDS_MTV_TRACE_ARGS(constructor, "other=? (copy)");
 
     for (const element_block_type* data : m_block_store.element_blocks)
     {
@@ -427,7 +427,7 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(multi_type_vector&& o
     m_block_store(std::move(other.m_block_store)),
     m_cur_size(other.m_cur_size)
 {
-    MDDS_MTV_TRACE(constructor);
+    MDDS_MTV_TRACE_ARGS(constructor, "other=? (move)");
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     try
@@ -477,7 +477,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::position_type
 multi_type_vector<ElemBlockFunc, Trait>::position(size_type pos)
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
 
     if (pos == m_cur_size)
     {
@@ -501,7 +501,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::position_type
 multi_type_vector<ElemBlockFunc, Trait>::position(const iterator& pos_hint, size_type pos)
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos_hint=" << pos_hint << "; pos=" << pos);
 
     if (pos == m_cur_size)
     {
@@ -524,7 +524,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type
 multi_type_vector<ElemBlockFunc, Trait>::position(size_type pos) const
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
 
     if (pos == m_cur_size)
     {
@@ -548,7 +548,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type
 multi_type_vector<ElemBlockFunc, Trait>::position(const const_iterator& pos_hint, size_type pos) const
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos_hint=" << pos_hint << "; pos=" << pos);
 
     if (pos == m_cur_size)
     {
@@ -572,7 +572,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::transfer(
     size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest=?; dest_pos=" << dest_pos);
 
     if (&dest == this)
         throw invalid_arg_error("You cannot transfer between the same container.");
@@ -627,7 +627,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer(
     const iterator& pos_hint, size_type start_pos, size_type end_pos,
     multi_type_vector& dest, size_type dest_pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest=?; dest_pos=" << dest_pos);
 
     if (&dest == this)
         throw invalid_arg_error("You cannot transfer between the same container.");
@@ -846,7 +846,7 @@ template<typename T>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::push_back(const T& value)
 {
-    MDDS_MTV_TRACE_ARGS(mutator, "value=?");
+    MDDS_MTV_TRACE_ARGS(mutator, "value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -898,7 +898,7 @@ template<typename T>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::insert(size_type pos, const T& it_begin, const T& it_end)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "it_begin=?; it_end=? (length=" << std::distance(it_begin, it_end) << ")");
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -939,7 +939,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::insert(
     const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=" << pos_hint << "; pos=" << pos << "; it_begin=?; it_end=? (length=" << std::distance(it_begin, it_end) << ")");
 
     size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
@@ -1012,7 +1012,7 @@ multi_type_vector<ElemBlockFunc, Trait>::push_back_impl(const T& value)
 template<typename ElemBlockFunc, typename Trait>
 mtv::element_t multi_type_vector<ElemBlockFunc, Trait>::get_type(size_type pos) const
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -1029,7 +1029,7 @@ mtv::element_t multi_type_vector<ElemBlockFunc, Trait>::get_type(size_type pos) 
 template<typename ElemBlockFunc, typename Trait>
 bool multi_type_vector<ElemBlockFunc, Trait>::is_empty(size_type pos) const
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -1070,7 +1070,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty(const iterator& pos_hint, siz
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::erase(size_type start_pos, size_type end_pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     if (start_pos > end_pos)
         throw std::out_of_range("Start row is larger than the end row.");
@@ -1105,7 +1105,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::insert_empty(size_type pos, size_type length)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "; length=" << length);
 
     if (!length)
         // Nothing to insert.
@@ -1147,7 +1147,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::insert_empty(const iterator& pos_hint, size_type pos, size_type length)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=" << pos_hint << "; pos=" << pos << "; length=" << length);
 
     if (!length)
         // Nothing to insert.
@@ -3520,7 +3520,7 @@ template<typename ElemBlockFunc, typename Trait>
 template<typename T>
 void multi_type_vector<ElemBlockFunc, Trait>::get(size_type pos, T& value) const
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -3546,7 +3546,7 @@ template<typename ElemBlockFunc, typename Trait>
 template<typename T>
 T multi_type_vector<ElemBlockFunc, Trait>::get(size_type pos) const
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
 
     T cell;
     get(pos, cell);
@@ -3557,7 +3557,7 @@ template<typename ElemBlockFunc, typename Trait>
 template<typename T>
 T multi_type_vector<ElemBlockFunc, Trait>::release(size_type pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos);
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -3597,7 +3597,7 @@ template<typename T>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::release(size_type pos, T& value)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -3636,7 +3636,7 @@ template<typename T>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::release(const iterator& pos_hint, size_type pos, T& value)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=" << pos_hint << "; pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
     size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
@@ -3715,7 +3715,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::release_range(size_type start_pos, size_type end_pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -3730,7 +3730,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::release_range(
     const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -5090,7 +5090,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::swap(multi_type_vector& other)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "other=?");
 
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
@@ -5100,7 +5100,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap(multi_type_vector& other)
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::swap(size_type start_pos, size_type end_pos, multi_type_vector& other, size_type other_pos)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos << "; other=?; other_pos=" << other_pos);
 
     if (start_pos > end_pos)
         throw std::out_of_range("multi_type_vector::swap: start position is larger than the end position!");
@@ -5179,7 +5179,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::shrink_to_fit()
 template<typename ElemBlockFunc, typename Trait>
 bool multi_type_vector<ElemBlockFunc, Trait>::operator== (const multi_type_vector& other) const
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "other=?");
 
     if (this == &other)
         // Comparing to self is always equal.
@@ -5195,7 +5195,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::operator== (const multi_type_vecto
 template<typename ElemBlockFunc, typename Trait>
 bool multi_type_vector<ElemBlockFunc, Trait>::operator!= (const multi_type_vector& other) const
 {
-    MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE_ARGS(accessor, "other=?");
 
     return !operator== (other);
 }
@@ -5203,7 +5203,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::operator!= (const multi_type_vecto
 template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator= (const multi_type_vector& other)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "other=? (copy)");
 
     multi_type_vector assigned(other);
     swap(assigned);
@@ -5213,7 +5213,7 @@ multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>
 template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator= (multi_type_vector&& other)
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE_ARGS(mutator, "other=? (move)");
 
     multi_type_vector assigned(std::move(other));
     swap(assigned);
