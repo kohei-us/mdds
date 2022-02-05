@@ -303,9 +303,9 @@ public:
 
     void _print_state(std::ostream& os) const
     {
-        os << "(iterator: ";
+        os << "{iterator: ";
         updater::_print_state(os);
-        os << ")";
+        os << "}";
     }
 };
 
