@@ -3518,7 +3518,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::size_type
 multi_type_vector<ElemBlockFunc, Trait>::size() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return m_cur_size;
 }
@@ -3527,7 +3527,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::size_type
 multi_type_vector<ElemBlockFunc, Trait>::block_size() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return m_block_store.positions.size();
 }
@@ -3535,7 +3535,7 @@ multi_type_vector<ElemBlockFunc, Trait>::block_size() const
 template<typename ElemBlockFunc, typename Trait>
 bool multi_type_vector<ElemBlockFunc, Trait>::empty() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return m_block_store.positions.empty();
 }
@@ -3544,7 +3544,7 @@ template<typename ElemBlockFunc, typename Trait>
 template<typename T>
 void multi_type_vector<ElemBlockFunc, Trait>::get(size_type pos, T& value) const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
     get_impl(pos, value);
 }
 
@@ -3763,7 +3763,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::end()
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return iterator(
         { m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end() },

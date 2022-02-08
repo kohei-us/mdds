@@ -73,6 +73,7 @@ int main()
             [[maybe_unused]] std::string s = db.get<std::string>(2);
             [[maybe_unused]] bool b = db.is_empty(0);
             [[maybe_unused]] auto t = db.get_type(2);
+            [[maybe_unused]] auto size = db.size();
 
             db.clear();
 
@@ -84,6 +85,7 @@ int main()
                 { &db, "get", trace_method_t::accessor },
                 { &db, "is_empty", trace_method_t::accessor },
                 { &db, "get_type", trace_method_t::accessor },
+                { &db, "size", trace_method_t::accessor },
                 { &db, "clear", trace_method_t::mutator },
                 { &db, "~multi_type_vector", trace_method_t::destructor },
             };
@@ -97,13 +99,26 @@ int main()
             mtv_type db(10);
             db.set<std::string>(2, "str");
             db.set<int32_t>(4, 23);
+
+            [[maybe_unused]] auto bs = db.block_size();
+            [[maybe_unused]] bool b = db.empty();
+
+            [[maybe_unused]] int32_t v;
+            db.get(4, v);
+
             db.clear();
+
+            [[maybe_unused]] auto it_end = db.end();
 
             ts.expected() = {
                 { &db, "multi_type_vector", trace_method_t::constructor },
                 { &db, "set", trace_method_t::mutator },
                 { &db, "set", trace_method_t::mutator },
+                { &db, "block_size", trace_method_t::accessor },
+                { &db, "empty", trace_method_t::accessor },
+                { &db, "get", trace_method_t::accessor },
                 { &db, "clear", trace_method_t::mutator },
+                { &db, "end", trace_method_t::accessor },
                 { &db, "~multi_type_vector", trace_method_t::destructor },
             };
         }
