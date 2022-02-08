@@ -501,7 +501,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::position_type
 multi_type_vector<ElemBlockFunc, Trait>::position(size_type pos)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
 
     if (pos == m_cur_size)
     {
@@ -525,7 +525,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::position_type
 multi_type_vector<ElemBlockFunc, Trait>::position(const iterator& pos_hint, size_type pos)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(accessor_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos);
+    MDDS_MTV_TRACE_ARGS(accessor_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos);
 
     if (pos == m_cur_size)
     {
@@ -548,7 +548,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type
 multi_type_vector<ElemBlockFunc, Trait>::position(size_type pos) const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
+    MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
 
     if (pos == m_cur_size)
     {
@@ -572,7 +572,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type
 multi_type_vector<ElemBlockFunc, Trait>::position(const const_iterator& pos_hint, size_type pos) const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(accessor_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos);
+    MDDS_MTV_TRACE_ARGS(accessor_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos);
 
     if (pos == m_cur_size)
     {

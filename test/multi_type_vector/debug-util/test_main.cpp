@@ -151,5 +151,30 @@ int main()
         }
     }
 
+    {
+        // position methods
+        test_scope ts(observed);
+        {
+            mtv_type db(10);
+            const mtv_type& cdb = db; // const ref
+            auto pos = db.position(0);
+            auto pos_hint = db.begin();
+            pos = db.position(pos_hint, 2);
+
+            [[maybe_unused]] auto cpos = cdb.position(1); // const method
+            cpos = cdb.position(pos_hint, 1);
+
+            ts.expected() = {
+                { &db, "multi_type_vector", trace_method_t::constructor },
+                { &db, "position", trace_method_t::accessor },
+                { &db, "begin", trace_method_t::accessor },
+                { &db, "position", trace_method_t::accessor_with_pos_hint },
+                { &db, "position", trace_method_t::accessor },
+                { &db, "position", trace_method_t::accessor_with_pos_hint },
+                { &db, "~multi_type_vector", trace_method_t::destructor },
+            };
+        }
+    }
+
     return EXIT_SUCCESS;
 }
