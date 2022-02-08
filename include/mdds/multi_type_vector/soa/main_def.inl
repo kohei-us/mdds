@@ -304,7 +304,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::event_func&
 multi_type_vector<ElemBlockFunc, Trait>::event_handler()
 {
-    MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE(accessor);
 
     return m_hdl_event;
 }

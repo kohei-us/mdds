@@ -24,13 +24,18 @@ class test_scope
 {
     std::vector<checked_method_props> m_expected;
     std::vector<checked_method_props>& m_observed;
+    int m_line_number;
 public:
-    test_scope(std::vector<checked_method_props>& _observed) :
-        m_observed(_observed) {}
+    test_scope(std::vector<checked_method_props>& observed, int line_number) :
+        m_observed(observed), m_line_number(line_number) {}
 
     ~test_scope()
     {
-        assert(m_expected == m_observed);
+        if (m_expected != m_observed)
+        {
+            std::cerr << "test failed (line=" << m_line_number << ")" << std::endl;
+            assert(false);
+        }
         m_observed.clear();
     }
 
@@ -63,7 +68,7 @@ int main()
 {
     {
         // Random assortment of calls (1)
-        test_scope ts(observed);
+        test_scope ts(observed, __LINE__);
         {
             mtv_type db(10);
             auto pos = db.begin();
@@ -94,7 +99,7 @@ int main()
 
     {
         // Random assortment of calls (2)
-        test_scope ts(observed);
+        test_scope ts(observed, __LINE__);
         {
             mtv_type db(10);
             db.set<std::string>(2, "str");
@@ -126,7 +131,7 @@ int main()
 
     {
         // constructors & event handler access
-        test_scope ts(observed);
+        test_scope ts(observed, __LINE__);
         {
             mtv_type db1;
             mtv_type db2{ mtv_type::event_func() }; // move
@@ -148,7 +153,7 @@ int main()
                 { &db1, "multi_type_vector", trace_method_t::constructor },
                 { &db2, "multi_type_vector", trace_method_t::constructor },
                 { &db3, "multi_type_vector", trace_method_t::constructor },
-                { &db3, "event_handler", trace_method_t::mutator },
+                { &db3, "event_handler", trace_method_t::accessor },
                 { &db3, "event_handler", trace_method_t::accessor },
                 { &db4, "multi_type_vector", trace_method_t::constructor },
                 { &db5, "multi_type_vector", trace_method_t::constructor },
@@ -168,7 +173,7 @@ int main()
 
     {
         // position methods
-        test_scope ts(observed);
+        test_scope ts(observed, __LINE__);
         {
             mtv_type db(10);
             const mtv_type& cdb = db; // const ref
@@ -193,7 +198,7 @@ int main()
 
     {
         // set, push_back, insert, set_empty, erase, and insert_empty methods
-        test_scope ts(observed);
+        test_scope ts(observed, __LINE__);
         {
             mtv_type db(10);
             std::vector<uint8_t> values = { 3, 4, 5, 6 };
