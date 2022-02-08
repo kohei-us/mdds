@@ -1138,6 +1138,9 @@ private:
     void delete_element_blocks(size_type start, size_type end);
 
     template<typename T>
+    void get_impl(size_type pos, T& value) const;
+
+    template<typename T>
     bool set_cells_precheck(
         size_type row, const T& it_begin, const T& it_end, size_type& end_pos);
 

@@ -22,16 +22,21 @@ struct checked_method_props
 
 class test_scope
 {
-    std::vector<checked_method_props>& m_expected;
+    std::vector<checked_method_props> m_expected;
     std::vector<checked_method_props>& m_observed;
 public:
-    test_scope(std::vector<checked_method_props>& _expected, std::vector<checked_method_props>& _observed) :
-        m_expected(_expected), m_observed(_observed) {}
+    test_scope(std::vector<checked_method_props>& _observed) :
+        m_observed(_observed) {}
 
     ~test_scope()
     {
-        m_expected.clear();
+        assert(m_expected == m_observed);
         m_observed.clear();
+    }
+
+    auto& expected()
+    {
+        return m_expected;
     }
 };
 
@@ -56,39 +61,45 @@ using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func
 
 int main()
 {
-    std::vector<checked_method_props> expected;
-
     {
-        test_scope ts{expected, observed};
+        // Random assortment of calls (1)
+        test_scope ts(observed);
         {
             mtv_type db(10);
             auto pos = db.begin();
             pos = db.set<std::string>(pos, 2, "str");
             pos = db.set<int32_t>(pos, 4, 23);
+
+            [[maybe_unused]] std::string s = db.get<std::string>(2);
+            [[maybe_unused]] bool b = db.is_empty(0);
+            [[maybe_unused]] auto t = db.get_type(2);
+
             db.clear();
 
-            expected = {
+            ts.expected() = {
                 { &db, "multi_type_vector", trace_method_t::constructor },
                 { &db, "begin", trace_method_t::accessor },
-                { &db, "set", trace_method_t::mutator },
-                { &db, "set", trace_method_t::mutator },
+                { &db, "set", trace_method_t::mutator_with_pos_hint },
+                { &db, "set", trace_method_t::mutator_with_pos_hint },
+                { &db, "get", trace_method_t::accessor },
+                { &db, "is_empty", trace_method_t::accessor },
+                { &db, "get_type", trace_method_t::accessor },
                 { &db, "clear", trace_method_t::mutator },
                 { &db, "~multi_type_vector", trace_method_t::destructor },
             };
         }
-
-        assert(observed == expected);
     }
 
     {
-        test_scope ts{expected, observed};
+        // Random assortment of calls (2)
+        test_scope ts(observed);
         {
             mtv_type db(10);
             db.set<std::string>(2, "str");
             db.set<int32_t>(4, 23);
             db.clear();
 
-            expected = {
+            ts.expected() = {
                 { &db, "multi_type_vector", trace_method_t::constructor },
                 { &db, "set", trace_method_t::mutator },
                 { &db, "set", trace_method_t::mutator },
@@ -96,8 +107,48 @@ int main()
                 { &db, "~multi_type_vector", trace_method_t::destructor },
             };
         }
+    }
 
-        assert(observed == expected);
+    {
+        // constructors & event handler access
+        test_scope ts(observed);
+        {
+            mtv_type db1;
+            mtv_type db2{ mtv_type::event_func() }; // move
+            mtv_type::event_func ef;
+            mtv_type db3(ef); // copy
+
+            [[maybe_unused]] auto& ref_ef = db3.event_handler(); // non-const ref
+            const mtv_type& cdb3 = db3;
+            [[maybe_unused]] const auto& cref_ef = cdb3.event_handler(); // const ref
+
+            mtv_type db4(20, true); // constructor with one init value
+            std::vector<int32_t> values = { 1, 2, 3, 4, 5 };
+            mtv_type db5(5, values.begin(), values.end()); // constructor with a series of values
+
+            mtv_type db6(db5); // copy constructor
+            mtv_type db7(std::move(db6)); // move constructor
+
+            ts.expected() = {
+                { &db1, "multi_type_vector", trace_method_t::constructor },
+                { &db2, "multi_type_vector", trace_method_t::constructor },
+                { &db3, "multi_type_vector", trace_method_t::constructor },
+                { &db3, "event_handler", trace_method_t::mutator },
+                { &db3, "event_handler", trace_method_t::accessor },
+                { &db4, "multi_type_vector", trace_method_t::constructor },
+                { &db5, "multi_type_vector", trace_method_t::constructor },
+                { &db6, "multi_type_vector", trace_method_t::constructor },
+                { &db7, "multi_type_vector", trace_method_t::constructor },
+
+                { &db7, "~multi_type_vector", trace_method_t::destructor },
+                { &db6, "~multi_type_vector", trace_method_t::destructor },
+                { &db5, "~multi_type_vector", trace_method_t::destructor },
+                { &db4, "~multi_type_vector", trace_method_t::destructor },
+                { &db3, "~multi_type_vector", trace_method_t::destructor },
+                { &db2, "~multi_type_vector", trace_method_t::destructor },
+                { &db1, "~multi_type_vector", trace_method_t::destructor },
+            };
+        }
     }
 
     return EXIT_SUCCESS;

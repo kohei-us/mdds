@@ -96,10 +96,12 @@ enum class lu_factor_t : int
 enum class trace_method_t : int
 {
     unspecified = 0,
-    accessor,
-    mutator,
-    constructor,
-    destructor
+    accessor = 1,
+    accessor_with_pos_hint = 1 << 8 | 1,
+    mutator = 2,
+    mutator_with_pos_hint = 1 << 8 | 2,
+    constructor = 3,
+    destructor = 4
 };
 
 struct trace_method_properties_t
