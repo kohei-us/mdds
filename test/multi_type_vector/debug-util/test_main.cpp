@@ -176,5 +176,41 @@ int main()
         }
     }
 
+    {
+        // set, push_back, insert, set_empty, erase, and insert_empty methods
+        test_scope ts(observed);
+        {
+            mtv_type db(10);
+            std::vector<uint8_t> values = { 3, 4, 5, 6 };
+            auto pos_hint = db.set(2, values.begin(), values.end());
+            pos_hint = db.set(pos_hint, 4, values.begin(), values.end());
+            db.push_back<int16_t>(456);
+            db.push_back_empty();
+            pos_hint = db.insert(0, values.begin(), values.end());
+            db.insert(pos_hint, 0, values.begin(), values.end());
+            pos_hint = db.set_empty(0, 3);
+            pos_hint = db.set_empty(pos_hint, 4, 5);
+            db.erase(2, 3);
+            pos_hint = db.insert_empty(3, 10);
+            db.insert_empty(pos_hint, 15, 2);
+
+            ts.expected() = {
+                { &db, "multi_type_vector", trace_method_t::constructor },
+                { &db, "set", trace_method_t::mutator },
+                { &db, "set", trace_method_t::mutator_with_pos_hint },
+                { &db, "push_back", trace_method_t::mutator },
+                { &db, "push_back_empty", trace_method_t::mutator },
+                { &db, "insert", trace_method_t::mutator },
+                { &db, "insert", trace_method_t::mutator_with_pos_hint },
+                { &db, "set_empty", trace_method_t::mutator },
+                { &db, "set_empty", trace_method_t::mutator_with_pos_hint },
+                { &db, "erase", trace_method_t::mutator },
+                { &db, "insert_empty", trace_method_t::mutator },
+                { &db, "insert_empty", trace_method_t::mutator_with_pos_hint },
+                { &db, "~multi_type_vector", trace_method_t::destructor },
+            };
+        }
+    }
+
     return EXIT_SUCCESS;
 }
