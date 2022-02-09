@@ -232,5 +232,33 @@ int main()
         }
     }
 
+    {
+        // transfer
+        test_scope ts(observed, __LINE__);
+        {
+            mtv_type src(10, true), dst(10);
+            auto pos_hint = src.transfer(0, 3, dst, 0);
+            pos_hint = src.transfer(pos_hint, 6, 8, dst, 6);
+
+            ts.expected() = {
+                { &src, "multi_type_vector", trace_method_t::constructor },
+                { &dst, "multi_type_vector", trace_method_t::constructor },
+
+                // transfer() internally calls size() and set_empty() on the destination store.
+                { &src, "transfer", trace_method_t::mutator },
+                { &dst, "size", trace_method_t::accessor },
+                { &dst, "set_empty", trace_method_t::mutator },
+
+                // see above
+                { &src, "transfer", trace_method_t::mutator_with_pos_hint },
+                { &dst, "size", trace_method_t::accessor },
+                { &dst, "set_empty", trace_method_t::mutator },
+
+                { &dst, "~multi_type_vector", trace_method_t::destructor },
+                { &src, "~multi_type_vector", trace_method_t::destructor },
+            };
+        }
+    }
+
     return EXIT_SUCCESS;
 }

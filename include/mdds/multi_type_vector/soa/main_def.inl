@@ -596,7 +596,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::transfer(
     size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest=?; dest_pos=" << dest_pos);
+    MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest=?; dest_pos=" << dest_pos);
 
     if (&dest == this)
         throw invalid_arg_error("You cannot transfer between the same container.");
@@ -651,7 +651,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer(
     const iterator& pos_hint, size_type start_pos, size_type end_pos,
     multi_type_vector& dest, size_type dest_pos)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest=?; dest_pos=" << dest_pos);
+    MDDS_MTV_TRACE_ARGS(mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest=?; dest_pos=" << dest_pos);
 
     if (&dest == this)
         throw invalid_arg_error("You cannot transfer between the same container.");
