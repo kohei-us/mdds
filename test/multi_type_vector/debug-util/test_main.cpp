@@ -260,5 +260,27 @@ int main()
         }
     }
 
+    {
+        // release, which has 4 variants.
+        test_scope ts(observed, __LINE__);
+        {
+            mtv_type db(10, int32_t(42));
+
+            int32_t v = db.release<int32_t>(0); // variant 1
+            auto pos_hint = db.release(1, v); // variant 2
+            pos_hint = db.release(pos_hint, 2, v); // variant 3
+            db.release(); // final variant
+
+            ts.expected() = {
+                { &db, "multi_type_vector", trace_method_t::constructor },
+                { &db, "release", trace_method_t::mutator },
+                { &db, "release", trace_method_t::mutator },
+                { &db, "release", trace_method_t::mutator_with_pos_hint },
+                { &db, "release", trace_method_t::mutator },
+                { &db, "~multi_type_vector", trace_method_t::destructor },
+            };
+        }
+    }
+
     return EXIT_SUCCESS;
 }
