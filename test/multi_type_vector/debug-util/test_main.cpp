@@ -377,5 +377,21 @@ int main()
         }
     }
 
+    {
+        // assignment operators.  These methods internally call other public
+        // methods that cannot be tested, so we test check the first trace call.
+        mtv_type db, db2;
+        observed.clear();
+        db = db2; // copy
+        checked_method_props expected{ &db, "operator=", trace_method_t::mutator };
+        assert(observed.at(0) == expected);
+
+        observed.clear();
+        db = std::move(db2); // move
+        assert(observed.at(0) == expected);
+
+        observed.clear();
+    }
+
     return EXIT_SUCCESS;
 }

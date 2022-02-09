@@ -5209,7 +5209,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::operator!= (const multi_type_vecto
 template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator= (const multi_type_vector& other)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator, "other=? (copy)");
+    MDDS_MTV_TRACE_ARGS(mutator, "other=? (copy)");
 
     multi_type_vector assigned(other);
     swap(assigned);
@@ -5219,7 +5219,7 @@ multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>
 template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator= (multi_type_vector&& other)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator, "other=? (move)");
+    MDDS_MTV_TRACE_ARGS(mutator, "other=? (move)");
 
     multi_type_vector assigned(std::move(other));
     swap(assigned);
