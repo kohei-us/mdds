@@ -379,7 +379,7 @@ int main()
 
     {
         // assignment operators.  These methods internally call other public
-        // methods that cannot be tested, so we test check the first trace call.
+        // methods that cannot be tested, so we only check the first trace call.
         mtv_type db, db2;
         observed.clear();
         db = db2; // copy
