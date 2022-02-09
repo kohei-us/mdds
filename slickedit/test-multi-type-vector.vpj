@@ -131,6 +131,11 @@
                         <F N="../test/multi_type_vector/custom-trait/tc/loop_unrolling.inl"/>
                     </Folder>
                 </Folder>
+                <Folder Name="debug-util">
+                    <Folder Name="soa">
+                        <F N="../test/multi_type_vector/debug-util/soa/test_trace.cpp"/>
+                    </Folder>
+                </Folder>
                 <Folder Name="default">
                     <Folder Name="aos">
                         <F N="../test/multi_type_vector/default/aos/test_basic.cpp"/>

@@ -148,6 +148,7 @@ test/multi_type_vector/custom-trait/Makefile
 test/multi_type_vector/custom-trait/aos/Makefile
 test/multi_type_vector/custom-trait/soa/Makefile
 test/multi_type_vector/debug-util/Makefile
+test/multi_type_vector/debug-util/soa/Makefile
 tools/Makefile
 tools/runtime-env/Makefile
 flat_segment_tree_test_mem.mem:test/test.mem.in
