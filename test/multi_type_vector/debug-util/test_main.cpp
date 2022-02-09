@@ -282,5 +282,22 @@ int main()
         }
     }
 
+    {
+        // release_range (2 variants)
+        test_scope ts(observed, __LINE__);
+        {
+            mtv_type db(10, int32_t(42));
+            auto pos_hint = db.release_range(0, 2);
+            pos_hint = db.release_range(pos_hint, 5, 7);
+
+            ts.expected() = {
+                { &db, "multi_type_vector", trace_method_t::constructor },
+                { &db, "release_range", trace_method_t::mutator },
+                { &db, "release_range", trace_method_t::mutator_with_pos_hint },
+                { &db, "~multi_type_vector", trace_method_t::destructor },
+            };
+        }
+    }
+
     return EXIT_SUCCESS;
 }

@@ -3721,7 +3721,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::release_range(size_type start_pos, size_type end_pos)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
+    MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -3736,7 +3736,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator
 multi_type_vector<ElemBlockFunc, Trait>::release_range(
     const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
+    MDDS_MTV_TRACE_ARGS(mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())
