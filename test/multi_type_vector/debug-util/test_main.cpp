@@ -299,5 +299,51 @@ int main()
         }
     }
 
+    {
+        // iterator accessors.
+        test_scope ts(observed, __LINE__);
+        {
+            mtv_type db(10);
+            auto it = db.begin();
+            it = db.end();
+            const mtv_type& cdb = db;
+            auto cit = cdb.cbegin();
+            cit = cdb.cend();
+
+            cit = cdb.begin(); // proxy for cbegin()
+            cit = cdb.end(); // proxy for cend()
+
+            auto rit = db.rbegin();
+            rit = db.rend();
+
+            auto crit = cdb.rbegin(); // proxy for crbegin()
+            crit = cdb.rend(); // proxy for crend()
+
+            crit = cdb.crbegin();
+            crit = cdb.crend();
+
+            ts.expected() = {
+                { &db, "multi_type_vector", trace_method_t::constructor },
+                { &db, "begin", trace_method_t::accessor },
+                { &db, "end", trace_method_t::accessor },
+                { &db, "cbegin", trace_method_t::accessor },
+                { &db, "cend", trace_method_t::accessor },
+                { &db, "begin", trace_method_t::accessor }, // calls cbegin
+                { &db, "cbegin", trace_method_t::accessor },
+                { &db, "end", trace_method_t::accessor }, // calls cend
+                { &db, "cend", trace_method_t::accessor },
+                { &db, "rbegin", trace_method_t::accessor },
+                { &db, "rend", trace_method_t::accessor },
+                { &db, "rbegin", trace_method_t::accessor }, // calls crbegin
+                { &db, "crbegin", trace_method_t::accessor },
+                { &db, "rend", trace_method_t::accessor }, // calls crend
+                { &db, "crend", trace_method_t::accessor },
+                { &db, "crbegin", trace_method_t::accessor },
+                { &db, "crend", trace_method_t::accessor },
+                { &db, "~multi_type_vector", trace_method_t::destructor },
+            };
+        }
+    }
+
     return EXIT_SUCCESS;
 }

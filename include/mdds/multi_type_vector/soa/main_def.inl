@@ -3776,7 +3776,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator
 multi_type_vector<ElemBlockFunc, Trait>::begin() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return cbegin();
 }
@@ -3785,7 +3785,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator
 multi_type_vector<ElemBlockFunc, Trait>::end() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return cend();
 }
@@ -3794,7 +3794,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator
 multi_type_vector<ElemBlockFunc, Trait>::cbegin() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return const_iterator(
         { m_block_store.positions.cbegin(), m_block_store.sizes.cbegin(), m_block_store.element_blocks.cbegin() },
@@ -3807,7 +3807,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator
 multi_type_vector<ElemBlockFunc, Trait>::cend() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return const_iterator(
         { m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend() },
@@ -3820,7 +3820,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator
 multi_type_vector<ElemBlockFunc, Trait>::rbegin()
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return reverse_iterator(
         { m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin() },
@@ -3833,7 +3833,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator
 multi_type_vector<ElemBlockFunc, Trait>::rend()
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return reverse_iterator(
         { m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend() },
@@ -3846,7 +3846,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator
 multi_type_vector<ElemBlockFunc, Trait>::rbegin() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return crbegin();
 }
@@ -3855,7 +3855,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator
 multi_type_vector<ElemBlockFunc, Trait>::rend() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return crend();
 }
@@ -3864,7 +3864,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator
 multi_type_vector<ElemBlockFunc, Trait>::crbegin() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return const_reverse_iterator(
         { m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin() },
@@ -3877,7 +3877,7 @@ template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator
 multi_type_vector<ElemBlockFunc, Trait>::crend() const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(accessor);
+    MDDS_MTV_TRACE(accessor);
 
     return const_reverse_iterator(
         { m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend() },
