@@ -4725,7 +4725,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::append_empty(size_type len)
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::resize(size_type new_size)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator, "new_size=" << new_size);
+    MDDS_MTV_TRACE_ARGS(mutator, "new_size=" << new_size);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -5096,7 +5096,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::swap(multi_type_vector& other)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator, "other=?");
+    MDDS_MTV_TRACE_ARGS(mutator, "other=?");
 
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
@@ -5106,7 +5106,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap(multi_type_vector& other)
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::swap(size_type start_pos, size_type end_pos, multi_type_vector& other, size_type other_pos)
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos << "; other=?; other_pos=" << other_pos);
+    MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos << "; other=?; other_pos=" << other_pos);
 
     if (start_pos > end_pos)
         throw std::out_of_range("multi_type_vector::swap: start position is larger than the end position!");
@@ -5173,7 +5173,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap(size_type start_pos, size_typ
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::shrink_to_fit()
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE(mutator);
+    MDDS_MTV_TRACE(mutator);
 
     for (auto* data : m_block_store.element_blocks)
     {
@@ -5185,7 +5185,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::shrink_to_fit()
 template<typename ElemBlockFunc, typename Trait>
 bool multi_type_vector<ElemBlockFunc, Trait>::operator== (const multi_type_vector& other) const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(accessor, "other=?");
+    MDDS_MTV_TRACE_ARGS(accessor, "other=?");
 
     if (this == &other)
         // Comparing to self is always equal.
@@ -5201,7 +5201,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::operator== (const multi_type_vecto
 template<typename ElemBlockFunc, typename Trait>
 bool multi_type_vector<ElemBlockFunc, Trait>::operator!= (const multi_type_vector& other) const
 {
-    assert(!"TESTME"); MDDS_MTV_TRACE_ARGS(accessor, "other=?");
+    MDDS_MTV_TRACE_ARGS(accessor, "other=?");
 
     return !operator== (other);
 }
