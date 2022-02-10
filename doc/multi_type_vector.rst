@@ -457,8 +457,8 @@ reason not to.
 Also note that both variants are API compatibile with each other.
 
 
-Use of position hint to avoid the cost of block position lookup
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Use of position hints to avoid the cost of block position lookup
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Consider the following example code::
 
@@ -535,6 +535,20 @@ binary search in performing the lookup.
    of using position hints may still be there.  It's always a good idea to profile
    your specific use case and decide whether the use of position hints is worth
    it.
+
+One important thing to note is that, as a user, you must ensure that the position
+hint you pass stays valid between the calls.  A position hint becomes invalid when
+the content of the container changes.  A good strategy to maintain a valid position
+hint is to always receive the iterator returned from the mutator method you called
+to which you passed the previous position hint, which is what the code above does.
+Passing an invalid position hint to a method that takes one may result in invalid
+memory access or otherwise in some sort of undefined behavior.
+
+.. warning::
+
+   You must ensure that the position hint you pass stays valid. Passing an invalid
+   position hint to a method that takes one may result in invalid memory access
+   or otherwise in some sort of undefined behavior.
 
 
 Block shifting performance and loop-unrolling factor
