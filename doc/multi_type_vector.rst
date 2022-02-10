@@ -528,6 +528,14 @@ Note that, if you are using a more recent version of mdds (1.6.0 or newer), the
 cost of block position lookup is significantly lessoned thanks to the switch to
 binary search in performing the lookup.
 
+.. note::
+
+   If you are using mdds 1.6.0 or newer, the cost of block position lookup is
+   much less significant even without the use of position hints. But the benefit
+   of using position hints may still be there.  It's always a good idea to profile
+   your specific use case and decide whether the use of position hints is worth
+   it.
+
 
 Block shifting performance and loop-unrolling factor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
