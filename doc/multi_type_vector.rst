@@ -584,6 +584,15 @@ compiler and compiler flags as your target program in order for this tool to giv
 you a representative answer.
 
 
+Debugging
+---------
+
+Tracing of public methods
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TBD
+
+
 API Reference
 -------------
 
