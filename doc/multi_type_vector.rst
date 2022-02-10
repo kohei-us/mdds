@@ -676,6 +676,16 @@ mdds::mtv::lu_factor_t
 
 .. doxygenenum:: mdds::mtv::lu_factor_t
 
+mdds::mtv::trace_method_t
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. doxygenenum:: mdds::mtv::trace_method_t
+
+mdds::mtv::trace_method_properties_t
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. doxygenstruct:: mdds::mtv::trace_method_properties_t
+
 
 Exceptions
 ^^^^^^^^^^

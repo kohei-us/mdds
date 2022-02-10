@@ -93,6 +93,25 @@ enum class lu_factor_t : int
     avx2_x64_lu8 = 2 << 8 | 8,
 };
 
+/**
+ * Type of traced method.
+ *
+ * An <code>accessor</code> in this context is a method whose call alone does
+ * not mutate the state of the container.  All const methods are accessors.
+ * Note that some non-const methods that return non-const references to
+ * internal data are still considered accessors.
+ *
+ * A <code>mutator</code> is a method that, when called, may change the state
+ * of the stored data immediately.
+ *
+ * The <code>accessor_with_pos_hint</code> label signifies an accessor that
+ * takes a position hint as its first argument. Likewise,
+ * <code>mutator_with_pos_hint</code> signifies a mutator that takes a
+ * position hint as its first argument.
+ *
+ * The <code>constructor</code> and <code>destructor</code> labels are
+ * hopefully self-explanatory.
+ */
 enum class trace_method_t : int
 {
     unspecified = 0,
@@ -104,13 +123,32 @@ enum class trace_method_t : int
     destructor = 4
 };
 
+/**
+ * Struct containing the information about each traced method.
+ */
 struct trace_method_properties_t
 {
     trace_method_t type = trace_method_t::unspecified;
+
+    /**
+     * Memory address of the container instance the traced method belongs to.
+     * This is essentially a 'this' pointer inside the method.
+     */
     const void* instance = nullptr;
+
+    /** Name of the method. */
     const char* function_name = nullptr;
+
+    /**
+     * String containing the argument names as well as their values if
+     * available.
+     */
     std::string function_args;
+
+    /** Path of the file where the method body is. */
     const char* filepath = nullptr;
+
+    /** Line number of the first line of the traced method body. */
     int line_number = -1;
 };
 
