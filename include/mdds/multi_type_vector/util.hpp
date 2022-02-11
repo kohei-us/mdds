@@ -103,6 +103,11 @@ struct has_trace<T, decltype((void)T::trace)> : std::true_type {};
 template<typename Trait>
 struct call_trace
 {
+    static int call_depth;
+
+    call_trace() { ++call_depth; }
+    ~call_trace() noexcept { --call_depth; }
+
     void call(std::false_type, const ::mdds::mtv::trace_method_properties_t&) const
     {
         // sink
@@ -110,7 +115,9 @@ struct call_trace
 
     void call(std::true_type, const ::mdds::mtv::trace_method_properties_t& props) const
     {
-        Trait::trace(props);
+        // In case of recursive calls, only trace the first encountered method.
+        if (call_depth <= 1)
+            Trait::trace(props);
     }
 
     void operator()(const ::mdds::mtv::trace_method_properties_t& props) const
@@ -118,6 +125,9 @@ struct call_trace
         call(has_trace<Trait>{}, props);
     }
 };
+
+template<typename Trait>
+int call_trace<Trait>::call_depth = 0;
 
 #endif
 
@@ -235,16 +245,18 @@ inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::m
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 
 #define MDDS_MTV_TRACE(method_type) \
-    ::mdds::detail::mtv::call_trace<Trait>{}( \
+    ::mdds::detail::mtv::call_trace<Trait> mdds_mtv_ct; \
+    mdds_mtv_ct( \
         { trace_method_t::method_type, this, __func__, "", __FILE__, __LINE__ } \
     )
 
 #define MDDS_MTV_TRACE_ARGS(method_type, stream) \
+    ::mdds::detail::mtv::call_trace<Trait> mdds_mtv_ct; \
     do \
     { \
         std::ostringstream _os_; \
         _os_ << stream; \
-        ::mdds::detail::mtv::call_trace<Trait>{}( \
+        mdds_mtv_ct( \
             { trace_method_t::method_type, this, __func__, _os_.str(), __FILE__, __LINE__ } \
         ); \
     } while (false)

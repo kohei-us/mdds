@@ -243,17 +243,8 @@ int main()
             ts.expected() = {
                 { &src, "multi_type_vector", trace_method_t::constructor },
                 { &dst, "multi_type_vector", trace_method_t::constructor },
-
-                // transfer() internally calls size() and set_empty() on the destination store.
                 { &src, "transfer", trace_method_t::mutator },
-                { &dst, "size", trace_method_t::accessor },
-                { &dst, "set_empty", trace_method_t::mutator },
-
-                // see above
                 { &src, "transfer", trace_method_t::mutator_with_pos_hint },
-                { &dst, "size", trace_method_t::accessor },
-                { &dst, "set_empty", trace_method_t::mutator },
-
                 { &dst, "~multi_type_vector", trace_method_t::destructor },
                 { &src, "~multi_type_vector", trace_method_t::destructor },
             };
@@ -310,14 +301,14 @@ int main()
             auto cit = cdb.cbegin();
             cit = cdb.cend();
 
-            cit = cdb.begin(); // proxy for cbegin()
-            cit = cdb.end(); // proxy for cend()
+            cit = cdb.begin();
+            cit = cdb.end();
 
             auto rit = db.rbegin();
             rit = db.rend();
 
-            auto crit = cdb.rbegin(); // proxy for crbegin()
-            crit = cdb.rend(); // proxy for crend()
+            auto crit = cdb.rbegin();
+            crit = cdb.rend();
 
             crit = cdb.crbegin();
             crit = cdb.crend();
@@ -328,16 +319,12 @@ int main()
                 { &db, "end", trace_method_t::accessor },
                 { &db, "cbegin", trace_method_t::accessor },
                 { &db, "cend", trace_method_t::accessor },
-                { &db, "begin", trace_method_t::accessor }, // calls cbegin
-                { &db, "cbegin", trace_method_t::accessor },
-                { &db, "end", trace_method_t::accessor }, // calls cend
-                { &db, "cend", trace_method_t::accessor },
+                { &db, "begin", trace_method_t::accessor },
+                { &db, "end", trace_method_t::accessor },
                 { &db, "rbegin", trace_method_t::accessor },
                 { &db, "rend", trace_method_t::accessor },
-                { &db, "rbegin", trace_method_t::accessor }, // calls crbegin
-                { &db, "crbegin", trace_method_t::accessor },
-                { &db, "rend", trace_method_t::accessor }, // calls crend
-                { &db, "crend", trace_method_t::accessor },
+                { &db, "rbegin", trace_method_t::accessor },
+                { &db, "rend", trace_method_t::accessor },
                 { &db, "crbegin", trace_method_t::accessor },
                 { &db, "crend", trace_method_t::accessor },
                 { &db, "~multi_type_vector", trace_method_t::destructor },
@@ -369,8 +356,7 @@ int main()
                 { &db2, "swap", trace_method_t::mutator },
                 { &db2, "shrink_to_fit", trace_method_t::mutator },
                 { &db, "operator==", trace_method_t::accessor },
-                { &db, "operator!=", trace_method_t::accessor }, // internally calls operator==
-                { &db, "operator==", trace_method_t::accessor },
+                { &db, "operator!=", trace_method_t::accessor },
                 { &db2, "~multi_type_vector", trace_method_t::destructor },
                 { &db, "~multi_type_vector", trace_method_t::destructor },
             };
