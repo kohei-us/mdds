@@ -668,6 +668,14 @@ instead.  For some argument types, an additional information is displayed e.g.
 ``(type=5)`` in the above output which indicates that the type of the value
 being passed to the function is :cpp:var:`~mdds::mtv::element_type_int32`.
 
+If you want to limit your tracing to a specific function type or types, you
+can make use of the :cpp:member:`~mdds::mtv::trace_method_properties_t::type`
+property which specifies the type of the traced method.  Likewise, if you want
+to only trace methods of a certain instance, use
+:cpp:member:`~mdds::mtv::trace_method_properties_t::instance` to filter the
+incoming trace calls based on the memory addresses of the instances whose
+methods are being traced.
+
 API Reference
 -------------
 
