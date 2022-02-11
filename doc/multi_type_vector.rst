@@ -557,7 +557,7 @@ the trait type you pass as a template argument of multi_type_vector:
    :end-before: //!code-end: types
 
 Here, we are simply inheriting our trait type from the
-:cpp:class:`~mdds::mtv::default_trait` type and simply adding a static trace
+:cpp:class:`~mdds::mtv::default_trait` type and simply adding a static ``trace``
 function to it, and passing this trait type to the mtv_type definition below.
 This trace function must take one argument of type
 :cpp:class:`mdds::mtv::trace_method_properties_t` which includes various
@@ -566,6 +566,10 @@ properties named
 :cpp:member:`~mdds::mtv::trace_method_properties_t::function_name` and
 :cpp:member:`~mdds::mtv::trace_method_properties_t::function_args` each time a
 traced method is called.  Both of these properties are printable string types.
+
+Note that this ``trace`` function is entirely optional; the code will compile
+fine even when it's not defined.  Also, it must be declared as static for it to
+be called.
 
 Let's instantiate an object of ``mtv_type``, call some of its methods and see
 what happens.  When executing the following code:
@@ -613,6 +617,14 @@ to only trace methods of a certain instance, use
 :cpp:member:`~mdds::mtv::trace_method_properties_t::instance` to filter the
 incoming trace calls based on the memory addresses of the instances whose
 methods are being traced.
+
+Note that this feature is available for version 2.0.2 and newer, and currently
+only available for the SoA variant of :cpp:class:`~mdds::mtv::soa::multi_type_vector`.
+
+.. note::
+
+   This feature is only available for version 2.0.2 and newer, and only for the
+   SoA variant.
 
 API Reference
 -------------
