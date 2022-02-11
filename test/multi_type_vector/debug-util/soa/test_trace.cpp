@@ -243,8 +243,14 @@ int main()
             ts.expected() = {
                 { &src, "multi_type_vector", trace_method_t::constructor },
                 { &dst, "multi_type_vector", trace_method_t::constructor },
+                // transfer() calls destination's size() and set_empty() internally.
                 { &src, "transfer", trace_method_t::mutator },
+                { &dst, "size", trace_method_t::accessor },
+                { &dst, "set_empty", trace_method_t::mutator },
+                // same here...
                 { &src, "transfer", trace_method_t::mutator_with_pos_hint },
+                { &dst, "size", trace_method_t::accessor },
+                { &dst, "set_empty", trace_method_t::mutator },
                 { &dst, "~multi_type_vector", trace_method_t::destructor },
                 { &src, "~multi_type_vector", trace_method_t::destructor },
             };
