@@ -26,6 +26,7 @@
  *
  ************************************************************************/
 
+//!code-start
 #include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector/trait.hpp>
 #include <iostream>
@@ -103,5 +104,6 @@ catch (...)
 {
     return EXIT_FAILURE;
 }
+//!code-end
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

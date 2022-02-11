@@ -11,7 +11,8 @@ and :cpp:class:`std::string` types in a single container using :cpp:type:`~mdds:
 
 .. literalinclude:: ../example/multi_type_vector.cpp
    :language: C++
-   :lines: 29-105
+   :start-after: //!code-start
+   :end-before: //!code-end
 
 You'll see the following console output when you compile and execute this code:
 
@@ -77,7 +78,8 @@ The following code example demonstrates how this all works:
 
 .. literalinclude:: ../example/multi_type_vector_event1.cpp
    :language: C++
-   :lines: 29-84
+   :start-after: //!code-start
+   :end-before: //!code-end
 
 You'll see the following console output when you compile and execute this code:
 
@@ -126,7 +128,8 @@ element values directly from these array pointers.
 
 .. literalinclude:: ../example/multi_type_vector_element_block1.cpp
    :language: C++
-   :lines: 29-87
+   :start-after: //!code-start
+   :end-before: //!code-end
 
 Compiling and execute this code produces the following output:
 
