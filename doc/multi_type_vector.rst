@@ -175,12 +175,13 @@ will be using one :cpp:type:`~mdds::multi_type_vector` instance for each
 column thus creating five instances in total, and store them in a
 ``std::vector`` container.
 
-The declaration of the data store will look like this::
+The declaration of the data store will look like this:
 
-    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
-    using collection_type = mdds::mtv::collection<mtv_type>;
-
-    std::vector<mtv_type> columns(5);
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: declare
+   :end-before: //!code-end: declare
+   :dedent: 4
 
 The first two lines specify the concrete :cpp:type:`~mdds::multi_type_vector`
 type used for each individual column and the collection type that wraps the
@@ -190,87 +191,74 @@ columns.  We will make use of the collection_type later in this example after
 the columns have been populated.
 
 Now, we need to populate the columns with values.  First, we are setting the
-header row::
+header row:
 
-    // Populate the header row.
-    auto headers = { "ID", "Make", "Model", "Year", "Color" };
-    size_t i = 0;
-    std::for_each(headers.begin(), headers.end(), [&](const char* v) { columns[i++].push_back<std::string>(v); });
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: header-row
+   :end-before: //!code-end: header-row
+   :dedent: 4
 
 We are then filling each column individually from column 1 through column 5.
-First up is column 1::
+First up is column 1:
 
-    // Fill column 1.
-    auto c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
-    std::for_each(c1_values.begin(), c1_values.end(), [&columns](int v) { columns[0].push_back(v); });
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: column-1
+   :end-before: //!code-end: column-1
+   :dedent: 4
 
 Hopefully this code is straight-forward.  It initializes an array of values
 and push them to the column one at a time via
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::push_back`.  Next up is column 2::
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::push_back`.  Next up is column 2:
 
-    // Fill column 2.
-    auto c2_values =
-    {
-        "Nissan", "Mercedes-Benz", "Nissan", "Suzuki", "Saab", "Subaru", "GMC", "Mercedes-Benz", "Toyota", "Nissan",
-        "Mazda", "Dodge", "Ford", "Bentley", "GMC", "Audi", "GMC", "Mercury", "Pontiac", "BMW",
-    };
-
-    std::for_each(c2_values.begin(), c2_values.end(), [&columns](const char* v) { columns[1].push_back<std::string>(v); });
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: column-2
+   :end-before: //!code-end: column-2
+   :dedent: 4
 
 This is similar to the code for column 1, except that because we are using an
 array of string literals which implicitly becomes an initializer list of type
 ``const char*``, we need to explicitly specify the type for the
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::push_back` call to be ``std::string``.
 
-The code for column 3 is very similar to this::
+The code for column 3 is very similar to this:
 
-    // Fill column 3.
-    auto c3_values =
-    {
-        "Frontier", "W201", "Frontier", "Equator", "9-5", "Tribeca", "Yukon XL 2500", "E-Class", "Camry Hybrid", "Frontier",
-        "MX-5", "Ram Van 1500", "Edge", "Azure", "Sonoma Club Coupe", "S4", "3500 Club Coupe", "Villager", "Sunbird", "3 Series",
-    };
-
-    std::for_each(c3_values.begin(), c3_values.end(), [&columns](const char* v) { columns[2].push_back<std::string>(v); });
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: column-3
+   :end-before: //!code-end: column-3
+   :dedent: 4
 
 Populating column 4 needs slight pre-processing.  We are inserting a string
 value of "unknown" in lieu of an integer value of -1.  Therefore the following
-code will do::
+code will do:
 
-    // Fill column 4.  Replace -1 with "unknown".
-    std::initializer_list<int32_t> c4_values =
-    {
-        1998, 1986, 2009, -1, -1, 2008, 2009, 2008, 2010, 2001,
-        2008, 2000, -1, 2009, 1998, 2013, 1994, 2000, 1990, 1993,
-    };
-
-    for (int32_t v : c4_values)
-    {
-        if (v < 0)
-            // Insert a string value "unknown".
-            columns[3].push_back<std::string>("unknown");
-        else
-            columns[3].push_back(v);
-    }
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: column-4
+   :end-before: //!code-end: column-4
+   :dedent: 4
 
 Finally, the last column to fill, which uses the same logic as for columns 2
-and 3::
+and 3:
 
-    // Fill column 5
-    auto c5_values =
-    {
-        "Turquoise", "Fuscia", "Teal", "Fuscia", "Green", "Khaki", "Pink", "Goldenrod", "Turquoise", "Yellow",
-        "Orange", "Goldenrod", "Fuscia", "Goldenrod", "Mauv", "Crimson", "Turquoise", "Teal", "Indigo", "LKhaki",
-    };
-
-    std::for_each(c5_values.begin(), c5_values.end(), [&columns](const char* v) { columns[4].push_back<std::string>(v); });
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: column-5
+   :end-before: //!code-end: column-5
+   :dedent: 4
 
 At this point, the content we've put into the ``columns`` variable roughly
 reflects the tabular data shown at the beginning of this section.  Now we can
-use the collection type we've declared earlier to wrap the columns::
+use the collection type we've declared earlier to wrap the columns:
 
-    // Wrap the columns with the 'collection'...
-    collection_type rows(columns.begin(), columns.end());
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: wrap
+   :end-before: //!code-end: wrap
+   :dedent: 4
 
 We are naming this variable ``rows`` since what we are doing with this wrapper
 is to traverse the content of the tabular data in row-wise direction.  For
@@ -303,32 +291,13 @@ Additionally, when using the :cpp:class:`~mdds::mtv::collection` class, you
 must ensure that the content of the vector instances that it references will
 not change for the duration of its use.
 
-Finally, here is the code that does the traversing::
+Finally, here is the code that does the traversing:
 
-    // Traverse the tabular data in row-wise direction.
-    for (const auto& cell : rows)
-    {
-        if (cell.index > 0)
-            // Insert a column separator before each cell except for the ones in the first column.
-            std::cout << " | ";
-
-        switch (cell.type)
-        {
-            // In this example, we use two element types only.
-            case mdds::mtv::element_type_int32:
-                std::cout << cell.get<mdds::mtv::int32_element_block>();
-                break;
-            case mdds::mtv::element_type_string:
-                std::cout << cell.get<mdds::mtv::string_element_block>();
-                break;
-            default:
-                std::cout << "???"; // The default case should not hit in this example.
-        }
-
-        if (cell.index == 4)
-            // We are in the last column. Insert a line break.
-            std::cout << std::endl;
-    }
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: traverse-row
+   :end-before: //!code-end: traverse-row
+   :dedent: 4
 
 It's a simple for-loop, and in each iteration you get a single cell node that
 contains metadata about that cell including its value.  The node contains the
@@ -386,36 +355,21 @@ row range, or perhaps both.
 
 Let's see how this works in the current example.  Here, we are going to limit
 the iteration range to only columns 2 and 3, and rows 2 through 11.  The following
-code will set this limit::
+code will set this limit:
 
-    rows.set_collection_range(1, 2); // only columns 2 and 3.
-    rows.set_element_range(1, 10);   // only rows 2 through 11.
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: limit-range
+   :end-before: //!code-end: limit-range
+   :dedent: 4
 
-Then iterate through the collection once again::
+Then iterate through the collection once again:
 
-    for (const auto& cell : rows)
-    {
-        if (cell.index > 1)
-            // Insert a column separator before each cell except for the ones in the first column.
-            std::cout << " | ";
-
-        switch (cell.type)
-        {
-            // In this example, we use two element types only.
-            case mdds::mtv::element_type_int32:
-                std::cout << cell.get<mdds::mtv::int32_element_block>();
-                break;
-            case mdds::mtv::element_type_string:
-                std::cout << cell.get<mdds::mtv::string_element_block>();
-                break;
-            default:
-                std::cout << "???"; // The default case should not hit in this example.
-        }
-
-        if (cell.index == 2)
-            // We are in the last column. Insert a line break.
-            std::cout << std::endl;
-    }
+.. literalinclude:: ../example/mtv_collection.cpp
+   :language: C++
+   :start-after: //!code-start: traverse-row-range
+   :end-before: //!code-end: traverse-row-range
+   :dedent: 4
 
 This code is nearly identical to the previous one except for the index values
 used to control when to insert column separators and line breaks at the top

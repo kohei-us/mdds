@@ -35,20 +35,27 @@
 
 void example1()
 {
+    //!code-start: declare
     using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
     using collection_type = mdds::mtv::collection<mtv_type>;
 
     std::vector<mtv_type> columns(5);
+    //!code-end: declare
 
+    //!code-start: header-row
     // Populate the header row.
     std::array headers = { "ID", "Make", "Model", "Year", "Color" };
     size_t i = 0;
     std::for_each(headers.begin(), headers.end(), [&](const char* v) { columns[i++].push_back<std::string>(v); });
+    //!code-end: header-row
 
+    //!code-start: column-1
     // Fill column 1.
     std::array c1_values = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     std::for_each(c1_values.begin(), c1_values.end(), [&columns](int v) { columns[0].push_back(v); });
+    //!code-end: column-1
 
+    //!code-start: column-2
     // Fill column 2.
     std::array c2_values =
     {
@@ -57,7 +64,9 @@ void example1()
     };
 
     std::for_each(c2_values.begin(), c2_values.end(), [&columns](const char* v) { columns[1].push_back<std::string>(v); });
+    //!code-end: column-2
 
+    //!code-start: column-3
     // Fill column 3.
     std::array c3_values =
     {
@@ -66,7 +75,9 @@ void example1()
     };
 
     std::for_each(c3_values.begin(), c3_values.end(), [&columns](const char* v) { columns[2].push_back<std::string>(v); });
+    //!code-end: column-3
 
+    //!code-start: column-4
     // Fill column 4.  Replace -1 with "unknown".
     std::array c4_values =
     {
@@ -82,7 +93,9 @@ void example1()
         else
             columns[3].push_back(v);
     }
+    //!code-end: column-4
 
+    //!code-start: column-5
     // Fill column 5
     std::array c5_values =
     {
@@ -91,10 +104,14 @@ void example1()
     };
 
     std::for_each(c5_values.begin(), c5_values.end(), [&columns](const char* v) { columns[4].push_back<std::string>(v); });
+    //!code-end: column-5
 
+    //!code-start: wrap
     // Wrap the columns with the 'collection'...
     collection_type rows(columns.begin(), columns.end());
+    //!code-end: wrap
 
+    //!code-start: traverse-row
     // Traverse the tabular data in row-wise direction.
     for (const auto& cell : rows)
     {
@@ -119,12 +136,16 @@ void example1()
             // We are in the last column. Insert a line break.
             std::cout << std::endl;
     }
+    //!code-end: traverse-row
 
+    //!code-start: limit-range
     rows.set_collection_range(1, 2); // only columns 2 and 3.
     rows.set_element_range(1, 10);   // only rows 2 through 11.
+    //!code-end: limit-range
 
     std::cout << "--" << std::endl;
 
+    //!code-start: traverse-row-range
     for (const auto& cell : rows)
     {
         if (cell.index > 1)
@@ -148,6 +169,7 @@ void example1()
             // We are in the last column. Insert a line break.
             std::cout << std::endl;
     }
+    //!code-end: traverse-row-range
 }
 
 int main() try
