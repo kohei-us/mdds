@@ -417,21 +417,13 @@ Also note that both variants are API compatibile with each other.
 Use of position hints to avoid the cost of block position lookup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Consider the following example code::
+Consider the following example code:
 
-    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
-
-    size_t size = 50000;
-
-    // Initialize the container with one empty block of size 50000.
-    mtv_type db(size);
-
-    // Set non-empty value at every other logical position from top down.
-    for (size_t i = 0; i < size; ++i)
-    {
-        if (i % 2)
-            db.set<double>(i, 1.0);
-    }
+.. literalinclude:: ../example/multi_type_vector_pos_hint.cpp
+   :language: C++
+   :start-after: //!code-start: no-pos-hint
+   :end-before: //!code-end: no-pos-hint
+   :dedent: 4
 
 which, when executed, may take quite sometime to complete especially when you
 are using an older version of mdds.  This particular example exposes one
@@ -443,24 +435,13 @@ lookup complexity since it always inserts the next value at the last block
 position.
 
 Fortunately, there is a simple solution to this which the following code
-demonstrates::
+demonstrates:
 
-    using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
-
-    size_t size = 50000;
-
-    // Initialize the container with one empty block of size 50000.
-    mtv_type db(size);
-    mtv_type::iterator pos = db.begin();
-
-    // Set non-empty value at every other logical position from top down.
-    for (size_t i = 0; i < size; ++i)
-    {
-        if (i % 2)
-            // Pass the position hint as the first argument, and receive a new
-            // one returned from the method for the next call.
-            pos = db.set<double>(pos, i, 1.0);
-    }
+.. literalinclude:: ../example/multi_type_vector_pos_hint.cpp
+   :language: C++
+   :start-after: //!code-start: pos-hint
+   :end-before: //!code-end: pos-hint
+   :dedent: 4
 
 Compiling and executing this code should take only a fraction of a second.
 
