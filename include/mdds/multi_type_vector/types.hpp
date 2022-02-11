@@ -132,7 +132,8 @@ struct trace_method_properties_t
 
     /**
      * Memory address of the container instance the traced method belongs to.
-     * This is essentially a 'this' pointer inside the method.
+     * This is essentially the <code>this</code> pointer inside the traced
+     * method.
      */
     const void* instance = nullptr;
 
