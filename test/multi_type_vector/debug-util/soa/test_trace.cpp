@@ -1,3 +1,32 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/*************************************************************************
+ *
+ * Copyright (c) 2022 Kohei Yoshida
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ ************************************************************************/
+
+#include "test_global.hpp" // This must be the first header to be included.
 #include <iostream>
 
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
@@ -7,6 +36,12 @@
 using mdds::mtv::trace_method_t;
 
 namespace {
+
+bool starts_with(std::string_view s, std::string_view test)
+{
+    std::string_view ss = s.substr(0, test.size());
+    return ss == test;
+}
 
 struct checked_method_props
 {
@@ -20,6 +55,24 @@ struct checked_method_props
     }
 };
 
+std::ostream& operator<< (std::ostream& os, const checked_method_props& v)
+{
+    os << "{instance: " << v.instance << ", function_name: " << v.function_name << ", type: " << int(v.type);
+    return os;
+}
+
+bool compare(const checked_method_props& lhs, const checked_method_props& rhs)
+{
+    bool res = lhs.instance == rhs.instance && lhs.function_name == rhs.function_name && lhs.type == rhs.type;
+    if (!res)
+    {
+        std::cerr << "The two are not equal!" << std::endl;
+        std::cerr << "lhs: " << lhs << std::endl;
+        std::cerr << "rhs: " << rhs << std::endl;
+    }
+    return res;
+}
+
 class test_scope
 {
     std::vector<checked_method_props> m_expected;
@@ -27,11 +80,14 @@ class test_scope
     int m_line_number;
 public:
     test_scope(std::vector<checked_method_props>& observed, int line_number) :
-        m_observed(observed), m_line_number(line_number) {}
+        m_observed(observed), m_line_number(line_number)
+    {
+        std::cout << "--" << std::endl;
+    }
 
     ~test_scope()
     {
-        if (m_expected != m_observed)
+        if (!std::equal(m_expected.cbegin(), m_expected.cend(), m_observed.cbegin(), compare))
         {
             std::cerr << "test failed (line=" << m_line_number << ")" << std::endl;
             assert(false);
@@ -56,7 +112,14 @@ struct mtv_custom_trait : public mdds::mtv::default_trait
             << "}; type=" << int(props.type)
             << std::endl;
 
-        observed.push_back({ props.instance, props.function_name, props.type });
+        // Some compilers put an extra space after the 'operator'. Let's delete that extra space char.
+        std::string func_name = props.function_name;
+        if (starts_with(func_name, "operator "))
+        {
+            std::string rest = func_name.substr(9);
+            func_name = "operator" + rest;
+        }
+        observed.push_back({ props.instance, func_name, props.type });
     }
 };
 
@@ -370,20 +433,24 @@ int main()
     }
 
     {
+        std::cout << "--" << std::endl;
+
         // assignment operators.  These methods internally call other public
         // methods that cannot be tested, so we only check the first trace call.
         mtv_type db, db2;
         observed.clear();
         db = db2; // copy
         checked_method_props expected{ &db, "operator=", trace_method_t::mutator };
-        assert(observed.at(0) == expected);
+        assert(compare(observed.at(0), expected));
 
         observed.clear();
         db = std::move(db2); // move
-        assert(observed.at(0) == expected);
+        assert(compare(observed.at(0), expected));
 
         observed.clear();
     }
 
     return EXIT_SUCCESS;
 }
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */

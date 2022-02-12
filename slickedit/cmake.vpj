@@ -106,6 +106,12 @@
                     </Folder>
                     <F N="../test/multi_type_vector/custom-trait/CMakeLists.txt"/>
                 </Folder>
+                <Folder Name="debug-util">
+                    <Folder Name="soa">
+                        <F N="../test/multi_type_vector/debug-util/soa/CMakeLists.txt"/>
+                    </Folder>
+                    <F N="../test/multi_type_vector/debug-util/CMakeLists.txt"/>
+                </Folder>
                 <Folder Name="default">
                     <Folder Name="aos">
                         <F N="../test/multi_type_vector/default/aos/CMakeLists.txt"/>
