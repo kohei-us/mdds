@@ -1,3 +1,10 @@
+mdds 2.0.2
+
+* multi_type_vector
+
+  * added optional trace function that gets called on every called public
+    method.
+
 mdds 2.0.1
 
 * general
