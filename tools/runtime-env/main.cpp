@@ -466,7 +466,7 @@ public:
 
 } // namespace
 
-int main(int argc, char** argv)
+int main()
 {
     int block_count_init = 5;
     int block_count_step = 5;
