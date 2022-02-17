@@ -1,5 +1,11 @@
 
-# Windows
+# Coding Styles
+
+All C++ source code in this repository is formatted by `clang-format` according
+to the styles defined in the `.clang-format` file found in the root directory
+of this repository.
+
+# Build on Windows
 
 ## Using CMake
 
@@ -40,7 +46,7 @@ to see all the header files being installed to the destination path.  Now mdds
 is ready for use.
 
 
-# Linux & Mac OS X
+# Build on Linux & Mac OS X
 
 ## Using Autotools
 
