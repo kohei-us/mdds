@@ -47,20 +47,20 @@ template<typename _Key, typename _Value>
 class segment_tree
 {
 public:
-    typedef _Key        key_type;
-    typedef _Value      value_type;
-    typedef size_t      size_type;
+    typedef _Key key_type;
+    typedef _Value value_type;
+    typedef size_t size_type;
     typedef std::vector<value_type> search_results_type;
 
 #ifdef MDDS_UNIT_TEST
     struct segment_data
     {
-        key_type    begin_key;
-        key_type    end_key;
-        value_type   pdata;
+        key_type begin_key;
+        key_type end_key;
+        value_type pdata;
 
-        segment_data(key_type _beg, key_type _end, value_type p) :
-            begin_key(_beg), end_key(_end), pdata(p) {}
+        segment_data(key_type _beg, key_type _end, value_type p) : begin_key(_beg), end_key(_end), pdata(p)
+        {}
 
         bool operator==(const segment_data& r) const
         {
@@ -75,7 +75,7 @@ public:
 
     struct segment_map_printer
     {
-        void operator() (const ::std::pair<value_type, ::std::pair<key_type, key_type> >& r) const
+        void operator()(const ::std::pair<value_type, ::std::pair<key_type, key_type>>& r) const
         {
             using namespace std;
             cout << r.second.first << "-" << r.second.second << ": " << r.first->name << endl;
@@ -85,16 +85,16 @@ public:
 
 public:
     typedef ::std::vector<value_type> data_chain_type;
-    typedef std::unordered_map<value_type, ::std::pair<key_type, key_type> > segment_map_type;
-    typedef ::std::map<value_type, ::std::pair<key_type, key_type> >               sorted_segment_map_type;
+    typedef std::unordered_map<value_type, ::std::pair<key_type, key_type>> segment_map_type;
+    typedef ::std::map<value_type, ::std::pair<key_type, key_type>> sorted_segment_map_type;
 
     struct nonleaf_value_type
     {
-        key_type low;   /// low range value (inclusive)
-        key_type high;  /// high range value (non-inclusive)
+        key_type low; /// low range value (inclusive)
+        key_type high; /// high range value (non-inclusive)
         data_chain_type* data_chain;
 
-        bool operator== (const nonleaf_value_type& r) const
+        bool operator==(const nonleaf_value_type& r) const
         {
             return low == r.low && high == r.high && data_chain == r.data_chain;
         }
@@ -105,7 +105,7 @@ public:
         key_type key;
         data_chain_type* data_chain;
 
-        bool operator== (const leaf_value_type& r) const
+        bool operator==(const leaf_value_type& r) const
         {
             return key == r.key && data_chain == r.data_chain;
         }
@@ -125,14 +125,16 @@ public:
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (__st::nonleaf_node<segment_tree>& _self, const __st::node_base* left_node, const __st::node_base* right_node)
+        void operator()(
+            __st::nonleaf_node<segment_tree>& _self, const __st::node_base* left_node,
+            const __st::node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
             {
-                _self.value_nonleaf.low  = left_node->is_leaf ?
-                    static_cast<const node*>(left_node)->value_leaf.key :
-                    static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
+                _self.value_nonleaf.low = left_node->is_leaf
+                                              ? static_cast<const node*>(left_node)->value_leaf.key
+                                              : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
             }
             else
             {
@@ -161,9 +163,9 @@ public:
             }
             else
             {
-                _self.value_nonleaf.high = left_node->is_leaf ?
-                    static_cast<const node*>(left_node)->value_leaf.key :
-                    static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
+                _self.value_nonleaf.high = left_node->is_leaf
+                                               ? static_cast<const node*>(left_node)->value_leaf.key
+                                               : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
             }
         }
     };
@@ -171,24 +173,22 @@ public:
 #ifdef MDDS_UNIT_TEST
     struct to_string_handler
     {
-        std::string operator() (const node& _self) const
+        std::string operator()(const node& _self) const
         {
             std::ostringstream os;
             os << "[" << _self.value_leaf.key << "] ";
             return os.str();
         }
 
-        std::string operator() (const __st::nonleaf_node<segment_tree>& _self) const
+        std::string operator()(const __st::nonleaf_node<segment_tree>& _self) const
         {
             std::ostringstream os;
             os << "[" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
             if (_self.value_nonleaf.data_chain)
             {
                 os << " { ";
-                typename data_chain_type::const_iterator
-                    itr,
-                    itr_beg = _self.value_nonleaf.data_chain->begin(),
-                    itr_end = _self.value_nonleaf.data_chain->end();
+                typename data_chain_type::const_iterator itr, itr_beg = _self.value_nonleaf.data_chain->begin(),
+                                                              itr_end = _self.value_nonleaf.data_chain->end();
                 for (itr = itr_beg; itr != itr_end; ++itr)
                 {
                     if (itr != itr_beg)
@@ -205,12 +205,12 @@ public:
 
     struct init_handler
     {
-        void operator() (node& _self)
+        void operator()(node& _self)
         {
             _self.value_leaf.data_chain = nullptr;
         }
 
-        void operator() (__st::nonleaf_node<segment_tree>& _self)
+        void operator()(__st::nonleaf_node<segment_tree>& _self)
         {
             _self.value_nonleaf.data_chain = nullptr;
         }
@@ -218,12 +218,12 @@ public:
 
     struct dispose_handler
     {
-        void operator() (node& _self)
+        void operator()(node& _self)
         {
             delete _self.value_leaf.data_chain;
         }
 
-        void operator() (__st::nonleaf_node<segment_tree>& _self)
+        void operator()(__st::nonleaf_node<segment_tree>& _self)
         {
             delete _self.value_nonleaf.data_chain;
         }
@@ -232,7 +232,7 @@ public:
 #ifdef MDDS_UNIT_TEST
     struct node_printer
     {
-        void operator() (const __st::node_base* p) const
+        void operator()(const __st::node_base* p) const
         {
             if (p->is_leaf)
                 std::cout << static_cast<const node*>(p)->to_string() << " ";
@@ -243,7 +243,6 @@ public:
 #endif
 
 private:
-
     /**
      * This base class takes care of collecting data chain pointers during
      * tree descend for search.
@@ -251,15 +250,15 @@ private:
     class search_results_base
     {
     public:
-        typedef std::vector<data_chain_type*>       res_chains_type;
-        typedef std::shared_ptr<res_chains_type>    res_chains_ptr;
+        typedef std::vector<data_chain_type*> res_chains_type;
+        typedef std::shared_ptr<res_chains_type> res_chains_ptr;
+
     public:
+        search_results_base() : mp_res_chains(static_cast<res_chains_type*>(nullptr))
+        {}
 
-        search_results_base() :
-            mp_res_chains(static_cast<res_chains_type*>(nullptr)) {}
-
-        search_results_base(const search_results_base& r) :
-            mp_res_chains(r.mp_res_chains) {}
+        search_results_base(const search_results_base& r) : mp_res_chains(r.mp_res_chains)
+        {}
 
         size_t size() const
         {
@@ -267,8 +266,7 @@ private:
             if (!mp_res_chains)
                 return combined;
 
-            typename res_chains_type::const_iterator
-                itr = mp_res_chains->begin(), itr_end = mp_res_chains->end();
+            typename res_chains_type::const_iterator itr = mp_res_chains->begin(), itr_end = mp_res_chains->end();
             for (; itr != itr_end; ++itr)
                 combined += (*itr)->size();
             return combined;
@@ -284,10 +282,13 @@ private:
             mp_res_chains->push_back(chain);
         }
 
-    res_chains_ptr& get_res_chains() { return mp_res_chains; }
+        res_chains_ptr& get_res_chains()
+        {
+            return mp_res_chains;
+        }
 
     private:
-        res_chains_ptr  mp_res_chains;
+        res_chains_ptr mp_res_chains;
     };
 
     class iterator_base
@@ -296,26 +297,25 @@ private:
         typedef typename search_results_base::res_chains_type res_chains_type;
         typedef typename search_results_base::res_chains_ptr res_chains_ptr;
 
-        iterator_base(const res_chains_ptr& p) :
-            mp_res_chains(p), m_end_pos(true) {}
+        iterator_base(const res_chains_ptr& p) : mp_res_chains(p), m_end_pos(true)
+        {}
 
     public:
-        typedef ::std::bidirectional_iterator_tag           iterator_category;
-        typedef typename data_chain_type::value_type        value_type;
-        typedef typename data_chain_type::pointer           pointer;
-        typedef typename data_chain_type::reference         reference;
-        typedef typename data_chain_type::difference_type   difference_type;
+        typedef ::std::bidirectional_iterator_tag iterator_category;
+        typedef typename data_chain_type::value_type value_type;
+        typedef typename data_chain_type::pointer pointer;
+        typedef typename data_chain_type::reference reference;
+        typedef typename data_chain_type::difference_type difference_type;
 
-        iterator_base() :
-            mp_res_chains(static_cast<res_chains_type*>(nullptr)), m_end_pos(true) {}
+        iterator_base() : mp_res_chains(static_cast<res_chains_type*>(nullptr)), m_end_pos(true)
+        {}
 
-        iterator_base(const iterator_base& r) :
-            mp_res_chains(r.mp_res_chains),
-            m_cur_chain(r.m_cur_chain),
-            m_cur_pos_in_chain(r.m_cur_pos_in_chain),
-            m_end_pos(r.m_end_pos) {}
+        iterator_base(const iterator_base& r)
+            : mp_res_chains(r.mp_res_chains), m_cur_chain(r.m_cur_chain), m_cur_pos_in_chain(r.m_cur_pos_in_chain),
+              m_end_pos(r.m_end_pos)
+        {}
 
-        iterator_base& operator= (const iterator_base& r)
+        iterator_base& operator=(const iterator_base& r)
         {
             mp_res_chains = r.mp_res_chains;
             m_cur_chain = r.m_cur_chain;
@@ -324,7 +324,7 @@ private:
             return *this;
         }
 
-        typename data_chain_type::value_type* operator++ ()
+        typename data_chain_type::value_type* operator++()
         {
             // We don't check for end position flag for performance reasons.
             // The caller is responsible for making sure not to increment past
@@ -356,7 +356,7 @@ private:
             return operator->();
         }
 
-        typename data_chain_type::value_type* operator-- ()
+        typename data_chain_type::value_type* operator--()
         {
             if (!mp_res_chains)
                 return nullptr;
@@ -381,14 +381,13 @@ private:
             return operator->();
         }
 
-        bool operator== (const iterator_base& r) const
+        bool operator==(const iterator_base& r) const
         {
             if (mp_res_chains.get())
             {
                 // non-empty result set.
-                return mp_res_chains.get() == r.mp_res_chains.get() &&
-                    m_cur_chain == r.m_cur_chain && m_cur_pos_in_chain == r.m_cur_pos_in_chain &&
-                    m_end_pos == r.m_end_pos;
+                return mp_res_chains.get() == r.mp_res_chains.get() && m_cur_chain == r.m_cur_chain &&
+                       m_cur_pos_in_chain == r.m_cur_pos_in_chain && m_end_pos == r.m_end_pos;
             }
 
             // empty result set.
@@ -397,7 +396,10 @@ private:
             return m_end_pos == r.m_end_pos;
         }
 
-        bool operator!= (const iterator_base& r) const { return !operator==(r); }
+        bool operator!=(const iterator_base& r) const
+        {
+            return !operator==(r);
+        }
 
         typename data_chain_type::value_type& operator*()
         {
@@ -441,26 +443,29 @@ private:
 
     private:
         res_chains_ptr mp_res_chains;
-        typename res_chains_type::iterator  m_cur_chain;
-        typename data_chain_type::iterator  m_cur_pos_in_chain;
-        bool m_end_pos:1;
+        typename res_chains_type::iterator m_cur_chain;
+        typename data_chain_type::iterator m_cur_pos_in_chain;
+        bool m_end_pos : 1;
     };
 
 public:
-
     class search_results : public search_results_base
     {
         typedef typename search_results_base::res_chains_type res_chains_type;
         typedef typename search_results_base::res_chains_ptr res_chains_ptr;
-    public:
 
+    public:
         class iterator : public iterator_base
         {
-            friend class segment_tree<_Key,_Value>::search_results;
+            friend class segment_tree<_Key, _Value>::search_results;
+
         private:
-            iterator(const res_chains_ptr& p) : iterator_base(p) {}
+            iterator(const res_chains_ptr& p) : iterator_base(p)
+            {}
+
         public:
-            iterator() : iterator_base() {}
+            iterator() : iterator_base()
+            {}
         };
 
         typename search_results::iterator begin()
@@ -481,8 +486,9 @@ public:
     class search_result_vector_inserter
     {
     public:
-        search_result_vector_inserter(search_results_type& result) : m_result(result) {}
-        void operator() (data_chain_type* node_data)
+        search_result_vector_inserter(search_results_type& result) : m_result(result)
+        {}
+        void operator()(data_chain_type* node_data)
         {
             if (!node_data)
                 return;
@@ -491,6 +497,7 @@ public:
             for (; itr != itr_end; ++itr)
                 m_result.push_back(*itr);
         }
+
     private:
         search_results_type& m_result;
     };
@@ -498,14 +505,16 @@ public:
     class search_result_inserter
     {
     public:
-        search_result_inserter(search_results_base& result) : m_result(result) {}
-        void operator() (data_chain_type* node_data)
+        search_result_inserter(search_results_base& result) : m_result(result)
+        {}
+        void operator()(data_chain_type* node_data)
         {
             if (!node_data)
                 return;
 
             m_result.push_back_chain(node_data);
         }
+
     private:
         search_results_base& m_result;
     };
@@ -520,7 +529,10 @@ public:
      */
     bool operator==(const segment_tree& r) const;
 
-    bool operator!=(const segment_tree& r) const { return !operator==(r); }
+    bool operator!=(const segment_tree& r) const
+    {
+        return !operator==(r);
+    }
 
     /**
      * Check whether or not the internal tree is in a valid state.  The tree
@@ -528,7 +540,10 @@ public:
      *
      * @return true if the tree is valid, false otherwise.
      */
-    bool is_tree_valid() const { return m_valid_tree; }
+    bool is_tree_valid() const
+    {
+        return m_valid_tree;
+    }
 
     /**
      * Build or re-build tree based on the current set of segments.
@@ -677,12 +692,12 @@ private:
     data_node_map_type m_tagged_node_map;
 
     nonleaf_node* m_root_node;
-    node_ptr   m_left_leaf;
-    node_ptr   m_right_leaf;
-    bool m_valid_tree:1;
+    node_ptr m_left_leaf;
+    node_ptr m_right_leaf;
+    bool m_valid_tree : 1;
 };
 
-}
+} // namespace mdds
 
 #include "segment_tree_def.inl"
 

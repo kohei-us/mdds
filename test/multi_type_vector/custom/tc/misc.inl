@@ -91,8 +91,8 @@ void mtv_test_misc_custom_block_func3()
     // Insert custom elements.
     db.set(0, new muser_cell(12.3));
     db.set(1, apple);
-    db.set(2, date(1989,12,13));
-    db.set(3, date(2011,8,7));
+    db.set(2, date(1989, 12, 13));
+    db.set(3, date(2011, 8, 7));
     assert(db.get_type(0) == element_type_muser_block);
     assert(db.get_type(1) == element_type_fruit_block);
     assert(db.get_type(2) == element_type_date_block);
@@ -198,4 +198,3 @@ void mtv_test_misc_construction_with_array()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

@@ -90,4 +90,3 @@ void mtv_test_swap_range();
 void mtv_test_transfer();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

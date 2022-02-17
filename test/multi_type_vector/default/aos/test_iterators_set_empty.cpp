@@ -32,4 +32,3 @@
 #include "iterators_set_empty.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

@@ -160,7 +160,9 @@ void mtv_test_invalid_collection()
         cols_type collection(vectors.begin(), vectors.end());
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const mdds::invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&)
+    {
+    }
 
     vectors.clear();
     vectors.emplace_back(0);
@@ -302,7 +304,9 @@ void mtv_test_sub_element_ranges_invalid()
         collection.set_element_range(0, 0);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const mdds::invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&)
+    {
+    }
 
     try
     {
@@ -310,7 +314,9 @@ void mtv_test_sub_element_ranges_invalid()
         collection.set_element_range(5, 1);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const mdds::invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&)
+    {
+    }
 
     try
     {
@@ -318,7 +324,9 @@ void mtv_test_sub_element_ranges_invalid()
         collection.set_element_range(0, 6);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const mdds::invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&)
+    {
+    }
 }
 
 void mtv_test_sub_collection_ranges_invalid()
@@ -339,7 +347,9 @@ void mtv_test_sub_collection_ranges_invalid()
         collection.set_collection_range(0, 0);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const mdds::invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&)
+    {
+    }
 
     try
     {
@@ -347,7 +357,9 @@ void mtv_test_sub_collection_ranges_invalid()
         collection.set_collection_range(5, 1);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const mdds::invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&)
+    {
+    }
 
     try
     {
@@ -355,7 +367,9 @@ void mtv_test_sub_collection_ranges_invalid()
         collection.set_collection_range(0, 6);
         assert(!"invalid_arg_error is expected to be thrown");
     }
-    catch (const mdds::invalid_arg_error&) {}
+    catch (const mdds::invalid_arg_error&)
+    {
+    }
 }
 
 void mtv_test_boolean_block()
@@ -385,4 +399,3 @@ void mtv_test_boolean_block()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

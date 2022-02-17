@@ -37,13 +37,13 @@
 #include <string>
 #include <vector>
 
-#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
+#define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
 
 using namespace std;
 using namespace mdds;
 
 template<typename key_type, typename value_type>
-void build_and_dump(segment_tree<key_type, value_type>&db)
+void build_and_dump(segment_tree<key_type, value_type>& db)
 {
     cout << "build and dump (start) -----------------------------------------" << endl;
     db.build_tree();
@@ -56,11 +56,12 @@ struct test_data
 {
     string name; // data structure expects the data to have 'name' data member.
 
-    test_data(const string& s) : name(s) {}
+    test_data(const string& s) : name(s)
+    {}
 
     struct ptr_printer
     {
-        void operator() (const test_data* data) const
+        void operator()(const test_data* data) const
         {
             cout << data->name << " ";
         }
@@ -71,7 +72,7 @@ struct test_data
      */
     struct sort_by_name
     {
-        bool operator() (const test_data* left, const test_data* right) const
+        bool operator()(const test_data* left, const test_data* right) const
         {
             return left->name < right->name;
         }
@@ -79,7 +80,7 @@ struct test_data
 
     struct name_printer
     {
-        void operator() (const test_data* p) const
+        void operator()(const test_data* p) const
         {
             cout << p->name << " ";
         }
@@ -88,8 +89,7 @@ struct test_data
 
 template<typename key_type, typename value_type>
 bool check_leaf_nodes(
-    const segment_tree<key_type, value_type>& db,
-    const key_type* keys, value_type* data_chain, size_t key_size)
+    const segment_tree<key_type, value_type>& db, const key_type* keys, value_type* data_chain, size_t key_size)
 {
     typedef segment_tree<key_type, value_type> st_type;
     vector<typename st_type::leaf_node_check> checks;
@@ -145,8 +145,7 @@ bool check_against_expected(const list<value_type>& test, value_type* expected)
 template<typename key_type, typename value_type>
 bool check_search_result_only(
     const segment_tree<key_type, value_type>& /*db*/,
-    const typename segment_tree<key_type, value_type>::search_results_type& result,
-    key_type key, value_type* expected)
+    const typename segment_tree<key_type, value_type>::search_results_type& result, key_type key, value_type* expected)
 {
     cout << "search key: " << key << " ";
 
@@ -165,9 +164,7 @@ bool check_search_result_only(
  * Run the search and check the search result.
  */
 template<typename key_type, typename value_type>
-bool check_search_result(
-    const segment_tree<key_type, value_type>& db,
-    key_type key, value_type* expected)
+bool check_search_result(const segment_tree<key_type, value_type>& db, key_type key, value_type* expected)
 {
     cout << "search key: " << key << " ";
 
@@ -178,9 +175,7 @@ bool check_search_result(
 }
 
 template<typename key_type, typename value_type>
-bool check_search_result_iterator(
-    const segment_tree<key_type, value_type>& db,
-    key_type key, value_type* expected)
+bool check_search_result_iterator(const segment_tree<key_type, value_type>& db, key_type key, value_type* expected)
 {
     cout << "search key: " << key << " ";
 
@@ -484,12 +479,12 @@ void st_test_copy_constructor()
     db_type db;
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
     vector<db_type::segment_data> segments;
-    segments.push_back(db_type::segment_data( 0, 10, &A));
-    segments.push_back(db_type::segment_data( 0,  5, &B));
-    segments.push_back(db_type::segment_data( 5, 12, &C));
+    segments.push_back(db_type::segment_data(0, 10, &A));
+    segments.push_back(db_type::segment_data(0, 5, &B));
+    segments.push_back(db_type::segment_data(5, 12, &C));
     segments.push_back(db_type::segment_data(10, 24, &D));
-    segments.push_back(db_type::segment_data( 4, 24, &E));
-    segments.push_back(db_type::segment_data( 0, 26, &F));
+    segments.push_back(db_type::segment_data(4, 24, &E));
+    segments.push_back(db_type::segment_data(0, 26, &F));
     segments.push_back(db_type::segment_data(12, 26, &G));
     segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
@@ -565,12 +560,12 @@ void st_test_clear()
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
     vector<db_type::segment_data> segments;
-    segments.push_back(db_type::segment_data( 0, 10, &A));
-    segments.push_back(db_type::segment_data( 0,  5, &B));
-    segments.push_back(db_type::segment_data( 5, 12, &C));
+    segments.push_back(db_type::segment_data(0, 10, &A));
+    segments.push_back(db_type::segment_data(0, 5, &B));
+    segments.push_back(db_type::segment_data(5, 12, &C));
     segments.push_back(db_type::segment_data(10, 24, &D));
-    segments.push_back(db_type::segment_data( 4, 24, &E));
-    segments.push_back(db_type::segment_data( 0, 26, &F));
+    segments.push_back(db_type::segment_data(4, 24, &E));
+    segments.push_back(db_type::segment_data(0, 26, &F));
     segments.push_back(db_type::segment_data(12, 26, &G));
     segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
@@ -610,12 +605,12 @@ void st_test_duplicate_insertion()
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
     db_type db;
-    assert( db.insert(0, 10, &A));
+    assert(db.insert(0, 10, &A));
     assert(!db.insert(0, 10, &A));
     assert(!db.insert(2, 30, &A));
-    assert( db.insert(0, 10, &B));
+    assert(db.insert(0, 10, &B));
     db.remove(&A);
-    assert( db.insert(2, 30, &A));
+    assert(db.insert(2, 30, &A));
     build_and_dump(db);
 }
 
@@ -648,13 +643,13 @@ void st_test_search_on_uneven_tree()
         for (key_type i = 0; i < data_count; ++i)
         {
             test_data* p = data_store[i].get();
-            db.insert(0, i+1, p);
+            db.insert(0, i + 1, p);
         }
         assert(db.size() == static_cast<size_t>(data_count));
 
         db.build_tree();
 
-        for (key_type i = -1; i < data_count+1; ++i)
+        for (key_type i = -1; i < data_count + 1; ++i)
         {
             db_type::search_results_type result;
             bool success = db.search(i, result);
@@ -696,7 +691,7 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < data_count; ++i)
         {
             test_data* p = data_store[i].get();
-            db.insert(0, i+1, p);
+            db.insert(0, i + 1, p);
         }
     }
     assert(db.size() == data_count);
@@ -742,7 +737,7 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 200; ++i)
         {
             db_type::search_results_type result;
-            db.search(data_count/2, result);
+            db.search(data_count / 2, result);
             db_type::search_results_type::const_iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
             {
@@ -756,7 +751,7 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_results result = db.search(data_count/2);
+            db_type::search_results result = db.search(data_count / 2);
             db_type::search_results::iterator itr = result.begin(), itr_end = result.end();
             for (; itr != itr_end; ++itr)
             {
@@ -822,12 +817,12 @@ void st_test_aggregated_search_results()
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
     vector<db_type::segment_data> segments;
-    segments.push_back(db_type::segment_data( 0, 10, &A));
-    segments.push_back(db_type::segment_data( 0,  5, &B));
-    segments.push_back(db_type::segment_data( 5, 12, &C));
+    segments.push_back(db_type::segment_data(0, 10, &A));
+    segments.push_back(db_type::segment_data(0, 5, &B));
+    segments.push_back(db_type::segment_data(5, 12, &C));
     segments.push_back(db_type::segment_data(10, 24, &D));
-    segments.push_back(db_type::segment_data( 4, 24, &E));
-    segments.push_back(db_type::segment_data( 0, 26, &F));
+    segments.push_back(db_type::segment_data(4, 24, &E));
+    segments.push_back(db_type::segment_data(0, 26, &F));
     segments.push_back(db_type::segment_data(12, 26, &G));
     segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
@@ -991,8 +986,7 @@ void st_test_search_iterator_basic()
     {
         --itr;
         cout << (*itr)->name << " ";
-    }
-    while (itr != itr_beg);
+    } while (itr != itr_beg);
     cout << endl;
 
     cout << "Get the last item from the end position." << endl;
@@ -1140,4 +1134,3 @@ int main(int argc, char** argv)
     fprintf(stdout, "Test finished successfully!\n");
     return EXIT_SUCCESS;
 }
-

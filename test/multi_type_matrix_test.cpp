@@ -45,16 +45,29 @@ typedef multi_type_matrix<mtm::std_string_trait> mtx_type;
 class custom_string
 {
     string m_val;
+
 public:
-    custom_string() {}
-    custom_string(const string& val) : m_val(val) {}
-    custom_string(const custom_string& r) : m_val(r.m_val) {}
-    const string& get() const { return m_val; }
-    bool operator== (const custom_string& r) const { return m_val == r.m_val; }
-    bool operator!= (const custom_string& r) const { return !operator==(r); }
+    custom_string()
+    {}
+    custom_string(const string& val) : m_val(val)
+    {}
+    custom_string(const custom_string& r) : m_val(r.m_val)
+    {}
+    const string& get() const
+    {
+        return m_val;
+    }
+    bool operator==(const custom_string& r) const
+    {
+        return m_val == r.m_val;
+    }
+    bool operator!=(const custom_string& r) const
+    {
+        return !operator==(r);
+    }
 };
 
-ostream& operator<< (ostream& os, const custom_string& str)
+ostream& operator<<(ostream& os, const custom_string& str)
 {
     os << str.get();
     return os;
@@ -87,7 +100,7 @@ void check_value(mtx_type& mtx, size_t row, size_t col, const _T& val)
 
 bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
 {
-    size_t row_count = min(mx1.size().row,  mx2.size().row);
+    size_t row_count = min(mx1.size().row, mx2.size().row);
     size_t col_count = min(mx1.size().column, mx2.size().column);
     for (size_t i = 0; i < row_count; ++i)
     {
@@ -108,31 +121,30 @@ bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
                         cout << "check_copy: (row=" << i << ",column=" << j << ") different boolean values." << endl;
                         return false;
                     }
-                break;
+                    break;
                 case mtm::element_numeric:
                     if (mx1.get<double>(i, j) != mx2.get<double>(i, j))
                     {
                         cout << "check_copy: (row=" << i << ",column=" << j << ") different numeric values." << endl;
                         return false;
                     }
-                break;
+                    break;
                 case mtm::element_string:
                     if (mx1.get<mtx_type::string_type>(i, j) != mx2.get<mtx_type::string_type>(i, j))
                     {
                         cout << "check_copy: (row=" << i << ",column=" << j << ") different string values." << endl;
                         return false;
                     }
-                break;
+                    break;
                 case mtm::element_empty:
-                default:
-                    ;
+                default:;
             }
         }
     }
     return true;
 }
 
-}
+} // namespace
 
 void mtm_test_construction()
 {
@@ -156,10 +168,10 @@ void mtm_test_construction()
         mtx_type mtx(2, 5, string("foo"));
         mtx_type::size_pair_type sz = mtx.size();
         assert(sz.row == 2 && sz.column == 5);
-        assert(mtx.get_type(0,0) == mtm::element_string);
-        assert(mtx.get_string(0,0) == "foo");
-        assert(mtx.get_type(1,4) == mtm::element_string);
-        assert(mtx.get_string(1,4) == "foo");
+        assert(mtx.get_type(0, 0) == mtm::element_string);
+        assert(mtx.get_string(0, 0) == "foo");
+        assert(mtx.get_type(1, 4) == mtm::element_string);
+        assert(mtx.get_string(1, 4) == "foo");
     }
 
     {
@@ -172,10 +184,10 @@ void mtm_test_construction()
         mtx_type mtx(2, 2, vals.begin(), vals.end());
         mtx_type::size_pair_type sz = mtx.size();
         assert(sz.row == 2 && sz.column == 2);
-        assert(mtx.get_numeric(0,0) == 1.1);
-        assert(mtx.get_numeric(1,0) == 1.2);
-        assert(mtx.get_numeric(0,1) == 1.3);
-        assert(mtx.get_numeric(1,1) == 1.4);
+        assert(mtx.get_numeric(0, 0) == 1.1);
+        assert(mtx.get_numeric(1, 0) == 1.2);
+        assert(mtx.get_numeric(0, 1) == 1.3);
+        assert(mtx.get_numeric(1, 1) == 1.4);
 
         try
         {
@@ -210,14 +222,14 @@ void mtm_test_construction()
         vals.push_back(custom_string("C"));
         vals.push_back(custom_string("D"));
         mtx_custom_type mtx(1, 4, vals.begin(), vals.end());
-        assert(mtx.get_string(0,0).get() == "A");
-        assert(mtx.get_string(0,1).get() == "B");
-        assert(mtx.get_string(0,2).get() == "C");
-        assert(mtx.get_string(0,3).get() == "D");
-        assert(mtx.get_type(0,0) == mtm::element_string);
-        assert(mtx.get_type(0,1) == mtm::element_string);
-        assert(mtx.get_type(0,2) == mtm::element_string);
-        assert(mtx.get_type(0,3) == mtm::element_string);
+        assert(mtx.get_string(0, 0).get() == "A");
+        assert(mtx.get_string(0, 1).get() == "B");
+        assert(mtx.get_string(0, 2).get() == "C");
+        assert(mtx.get_string(0, 3).get() == "D");
+        assert(mtx.get_type(0, 0) == mtm::element_string);
+        assert(mtx.get_type(0, 1) == mtm::element_string);
+        assert(mtx.get_type(0, 2) == mtm::element_string);
+        assert(mtx.get_type(0, 3) == mtm::element_string);
     }
 
     {
@@ -237,8 +249,8 @@ void mtm_test_data_insertion()
         mtx_type::size_pair_type sz = mtx.size();
         assert(sz.row == 3 && sz.column == 4);
         assert(!mtx.empty());
-        assert(mtx.get_type(0,0) == mtm::element_empty);
-        assert(mtx.get_type(2,3) == mtm::element_empty);
+        assert(mtx.get_type(0, 0) == mtm::element_empty);
+        assert(mtx.get_type(2, 3) == mtm::element_empty);
         check_value(mtx, 1, 1, 1.2);
         check_value(mtx, 2, 1, true);
         check_value(mtx, 3, 1, false);
@@ -246,13 +258,13 @@ void mtm_test_data_insertion()
         check_value(mtx, 1, 2, 23.4);
 
         // Overwrite
-        assert(mtx.get_type(1,1) == mtm::element_numeric);
+        assert(mtx.get_type(1, 1) == mtm::element_numeric);
         check_value(mtx, 1, 1, string("baa"));
 
         // Setting empty.
-        assert(mtx.get_type(1,1) == mtm::element_string);
+        assert(mtx.get_type(1, 1) == mtm::element_string);
         mtx.set_empty(1, 1);
-        assert(mtx.get_type(1,1) == mtm::element_empty);
+        assert(mtx.get_type(1, 1) == mtm::element_empty);
 
         mtx.clear();
         assert(mtx.size().row == 0);
@@ -337,7 +349,7 @@ void mtm_test_data_insertion_integer()
     assert(mtx.get_boolean(0, 1) == true);
     assert(mtx.get_boolean(1, 0) == true);
 
-    assert(mtx.numeric());  // integers are considered numeric.
+    assert(mtx.numeric()); // integers are considered numeric.
 
     assert(mtx.get<int>(0, 0) == 0);
     assert(mtx.get<int>(1, 1) == 22);
@@ -355,10 +367,7 @@ void mtm_test_data_insertion_integer()
     vector<mtx_type::element_block_node_type> nodes;
 
     std::function<void(const mtx_type::element_block_node_type&)> f =
-        [&nodes](const mtx_type::element_block_node_type& node)
-        {
-            nodes.push_back(node);
-        };
+        [&nodes](const mtx_type::element_block_node_type& node) { nodes.push_back(node); };
 
     mtx.walk(f);
 
@@ -371,7 +380,7 @@ void mtm_test_data_insertion_integer()
     assert(nodes[2].size == 2);
 
     {
-        auto it  = nodes[2].begin<mtx_type::integer_block_type>();
+        auto it = nodes[2].begin<mtx_type::integer_block_type>();
         auto ite = nodes[2].end<mtx_type::integer_block_type>();
         assert(*it == 987);
         ++it;
@@ -1003,9 +1012,10 @@ struct sum_all_values
 {
     double result;
 
-    sum_all_values() : result(0.0) {}
+    sum_all_values() : result(0.0)
+    {}
 
-    void operator() (const mtx_type::element_block_node_type& blk)
+    void operator()(const mtx_type::element_block_node_type& blk)
     {
         mtv::double_element_block::const_iterator it = mtv::double_element_block::cbegin(*blk.data);
         mtv::double_element_block::const_iterator it_end = mtv::double_element_block::cend(*blk.data);
@@ -1025,7 +1035,7 @@ void mtm_perf_test_iterate_elements()
         stack_watch sw;
         double val = 1.0;
         std::vector<double> vals;
-        vals.reserve(rowsize*colsize);
+        vals.reserve(rowsize * colsize);
         for (size_t i = 0; i < rowsize; ++i)
         {
             for (size_t j = 0; j < colsize; ++j)
@@ -1043,7 +1053,8 @@ void mtm_perf_test_iterate_elements()
         sum_all_values func;
         mx.walk(func);
         double val = func.result;
-        cout << "all element values added.  (answer: " << val << ")  (duration: " << sw.get_duration() << " sec)" << endl;
+        cout << "all element values added.  (answer: " << val << ")  (duration: " << sw.get_duration() << " sec)"
+             << endl;
     }
 }
 
@@ -1085,7 +1096,7 @@ void mtm_perf_test_insert_via_position_object()
     }
 }
 
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
     try
     {

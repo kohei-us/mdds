@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2010 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -58,11 +58,11 @@ enum node_quadrant_t
     quad_unspecified
 };
 
-/** 
+/**
  *  NW  |  N  | NE
- * -----|-----|----- 
+ * -----|-----|-----
  *   W  |  C  |  E
- * -----|-----|----- 
+ * -----|-----|-----
  *  SW  |  S  | SE
  */
 enum search_region_space_t
@@ -78,15 +78,15 @@ enum search_region_space_t
     region_center
 };
 
-/** 
- *        N 
+/**
+ *        N
  *        |
  *        |
  * W -----+----- E
  *        |
  *        |
  *        S
- */ 
+ */
 enum direction_t
 {
     dir_north,
@@ -108,58 +108,45 @@ inline node_quadrant_t opposite(node_quadrant_t quad)
         case quad_southwest:
             return quad_northeast;
         case quad_unspecified:
-        default:
-            ;
+        default:;
     }
     return quad_unspecified;
 }
 
 template<typename _NodePtr, typename _NodeType, typename _Key>
 struct quad_node_base
-{    
-    typedef _Key        key_type;
-    typedef _NodePtr    node_ptr;
-    typedef _NodeType   node_type;
+{
+    typedef _Key key_type;
+    typedef _NodePtr node_ptr;
+    typedef _NodeType node_type;
 
-    size_t      refcount;
+    size_t refcount;
 
-    node_ptr    parent;
-    node_ptr    northeast;
-    node_ptr    northwest;
-    node_ptr    southeast;
-    node_ptr    southwest;
+    node_ptr parent;
+    node_ptr northeast;
+    node_ptr northwest;
+    node_ptr southeast;
+    node_ptr southwest;
 
-    key_type    x;
-    key_type    y;
+    key_type x;
+    key_type y;
 
-    quad_node_base(key_type _x, key_type _y) :
-        refcount(0),
-        parent(nullptr),
-        northeast(nullptr),
-        northwest(nullptr),
-        southeast(nullptr),
-        southwest(nullptr),
-        x(_x), 
-        y(_y)
+    quad_node_base(key_type _x, key_type _y)
+        : refcount(0), parent(nullptr), northeast(nullptr), northwest(nullptr), southeast(nullptr), southwest(nullptr),
+          x(_x), y(_y)
     {
 #ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
 #endif
     }
 
-    /** 
-     * When copying node, only the stored values should be copied. 
+    /**
+     * When copying node, only the stored values should be copied.
      * Connections to the parent and the neighboring nodes must not be copied.
      */
-    quad_node_base(const quad_node_base& r) :
-        refcount(0),
-        parent(nullptr),
-        northeast(nullptr),
-        northwest(nullptr),
-        southeast(nullptr),
-        southwest(nullptr),
-        x(r.x), 
-        y(r.y)
+    quad_node_base(const quad_node_base& r)
+        : refcount(0), parent(nullptr), northeast(nullptr), northwest(nullptr), southeast(nullptr), southwest(nullptr),
+          x(r.x), y(r.y)
     {
 #ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
@@ -176,8 +163,8 @@ struct quad_node_base
         return x == r.x && y == r.y;
     }
 
-    /** 
-     * Like the copy constructor, only the stored values should be copied. 
+    /**
+     * Like the copy constructor, only the stored values should be copied.
      */
     quad_node_base& operator=(const quad_node_base& r)
     {
@@ -200,8 +187,8 @@ struct quad_node_base
 
     /**
      * Return the quadrant of specified point in reference to this node.
-     * 
-     * @return quadrant where the other node is located in reference to this 
+     *
+     * @return quadrant where the other node is located in reference to this
      *         node.
      */
     node_quadrant_t get_quadrant(key_type other_x, key_type other_y) const
@@ -257,13 +244,13 @@ struct quad_node_base
 };
 
 template<typename _NodePtr, typename _NodeType, typename _Key>
-inline void intrusive_ptr_add_ref(::mdds::quad_node_base<_NodePtr,_NodeType,_Key>* p)
+inline void intrusive_ptr_add_ref(::mdds::quad_node_base<_NodePtr, _NodeType, _Key>* p)
 {
     ++p->refcount;
 }
 
 template<typename _NodePtr, typename _NodeType, typename _Key>
-inline void intrusive_ptr_release(::mdds::quad_node_base<_NodePtr,_NodeType,_Key>* p)
+inline void intrusive_ptr_release(::mdds::quad_node_base<_NodePtr, _NodeType, _Key>* p)
 {
     --p->refcount;
     if (!p->refcount)
@@ -332,8 +319,7 @@ void disconnect_all_nodes(_NodePtr p)
 }
 
 template<typename _NodeType, typename _Key>
-search_region_space_t get_search_region_space(
-    _NodeType* p, _Key x1, _Key y1, _Key x2, _Key y2)
+search_region_space_t get_search_region_space(_NodeType* p, _Key x1, _Key y1, _Key x2, _Key y2)
 {
     typedef _Key key_type;
 
@@ -368,7 +354,7 @@ search_region_space_t get_search_region_space(
         assert(y2 < y);
         return region_south;
     }
-    
+
     // eastern region
     assert(x2 < x);
     if (y < y1)
@@ -379,11 +365,11 @@ search_region_space_t get_search_region_space(
     {
         return region_east;
     }
-    
+
     assert(y2 < y);
     return region_southeast;
 }
 
-}
+} // namespace mdds
 
 #endif

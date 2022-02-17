@@ -57,4 +57,3 @@ void mtv_test_swap();
 void mtv_test_swap_2();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

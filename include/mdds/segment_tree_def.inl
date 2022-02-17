@@ -1,29 +1,29 @@
 /*************************************************************************
-*
-* Copyright (c) 2015 Kohei Yoshida
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*
-************************************************************************/
+ *
+ * Copyright (c) 2015 Kohei Yoshida
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ ************************************************************************/
 
 #include <algorithm>
 
@@ -32,8 +32,7 @@ namespace mdds {
 namespace __st {
 
 template<typename T, typename _Inserter>
-void descend_tree_for_search(
-    typename T::key_type point, const __st::node_base* pnode, _Inserter& result)
+void descend_tree_for_search(typename T::key_type point, const __st::node_base* pnode, _Inserter& result)
 {
     typedef typename T::node leaf_node;
     typedef typename T::nonleaf_node nonleaf_node;
@@ -89,8 +88,7 @@ void descend_tree_for_search(
     {
         // This child nodes are non-leaf nodes.
 
-        const nonleaf_value_type& vleft =
-            static_cast<const nonleaf_node*>(pchild)->value_nonleaf;
+        const nonleaf_value_type& vleft = static_cast<const nonleaf_node*>(pchild)->value_nonleaf;
 
         if (point < vleft.low)
         {
@@ -101,27 +99,23 @@ void descend_tree_for_search(
             // Follow the right child.
             pchild = pnonleaf->right;
 
-        assert(static_cast<const nonleaf_node*>(pchild)->value_nonleaf.low <= point &&
-               point < static_cast<const nonleaf_node*>(pchild)->value_nonleaf.high);
+        assert(
+            static_cast<const nonleaf_node*>(pchild)->value_nonleaf.low <= point &&
+            point < static_cast<const nonleaf_node*>(pchild)->value_nonleaf.high);
     }
 
-    descend_tree_for_search<T,_Inserter>(point, pchild, result);
+    descend_tree_for_search<T, _Inserter>(point, pchild, result);
 }
 
 } // namespace __st
 
 template<typename _Key, typename _Value>
-segment_tree<_Key, _Value>::segment_tree()
-    : m_root_node(nullptr)
-    , m_valid_tree(false)
-{
-}
+segment_tree<_Key, _Value>::segment_tree() : m_root_node(nullptr), m_valid_tree(false)
+{}
 
 template<typename _Key, typename _Value>
 segment_tree<_Key, _Value>::segment_tree(const segment_tree& r)
-    : m_segment_data(r.m_segment_data)
-    , m_root_node(nullptr)
-    , m_valid_tree(r.m_valid_tree)
+    : m_segment_data(r.m_segment_data), m_root_node(nullptr), m_valid_tree(r.m_valid_tree)
 {
     if (m_valid_tree)
         build_tree();
@@ -177,16 +171,14 @@ void segment_tree<_Key, _Value>::build_tree()
     m_root_node = builder.build(m_left_leaf);
 
     // Start "inserting" all segments from the root.
-    typename segment_map_type::const_iterator itr,
-        itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
+    typename segment_map_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
 
     data_node_map_type tagged_node_map;
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
         value_type pdata = itr->first;
-        auto r = tagged_node_map.insert(
-            typename data_node_map_type::value_type(
-                pdata, std::make_unique<node_list_type>()));
+        auto r =
+            tagged_node_map.insert(typename data_node_map_type::value_type(pdata, std::make_unique<node_list_type>()));
 
         node_list_type* plist = r.first->second.get();
         plist->reserve(10);
@@ -248,7 +240,7 @@ void segment_tree<_Key, _Value>::build_leaf_nodes()
 
     // In 1st pass, collect unique end-point values and sort them.
     vector<key_type> keys_uniq;
-    keys_uniq.reserve(m_segment_data.size()*2);
+    keys_uniq.reserve(m_segment_data.size() * 2);
     typename segment_map_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
@@ -264,7 +256,8 @@ void segment_tree<_Key, _Value>::build_leaf_nodes()
 }
 
 template<typename _Key, typename _Value>
-void segment_tree<_Key, _Value>::create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right)
+void segment_tree<_Key, _Value>::create_leaf_node_instances(
+    const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right)
 {
     if (keys.empty() || keys.size() < 2)
         // We need at least two keys in order to build tree.
@@ -330,24 +323,21 @@ bool segment_tree<_Key, _Value>::search(key_type point, search_results_type& res
         return true;
 
     search_result_vector_inserter result_inserter(result);
-    typedef segment_tree<_Key,_Value> tree_type;
-    __st::descend_tree_for_search<
-        tree_type, search_result_vector_inserter>(point, m_root_node, result_inserter);
+    typedef segment_tree<_Key, _Value> tree_type;
+    __st::descend_tree_for_search<tree_type, search_result_vector_inserter>(point, m_root_node, result_inserter);
     return true;
 }
 
 template<typename _Key, typename _Value>
-typename segment_tree<_Key, _Value>::search_results
-segment_tree<_Key, _Value>::search(key_type point) const
+typename segment_tree<_Key, _Value>::search_results segment_tree<_Key, _Value>::search(key_type point) const
 {
     search_results result;
     if (!m_valid_tree || !m_root_node)
         return result;
 
     search_result_inserter result_inserter(result);
-    typedef segment_tree<_Key,_Value> tree_type;
-    __st::descend_tree_for_search<tree_type, search_result_inserter>(
-        point, m_root_node, result_inserter);
+    typedef segment_tree<_Key, _Value> tree_type;
+    __st::descend_tree_for_search<tree_type, search_result_inserter>(point, m_root_node, result_inserter);
 
     return result;
 }
@@ -359,7 +349,7 @@ void segment_tree<_Key, _Value>::search(key_type point, search_results_base& res
         return;
 
     search_result_inserter result_inserter(result);
-    typedef segment_tree<_Key,_Value> tree_type;
+    typedef segment_tree<_Key, _Value> tree_type;
     __st::descend_tree_for_search<tree_type>(point, m_root_node, result_inserter);
 }
 
@@ -503,8 +493,7 @@ bool segment_tree<_Key, _Value>::verify_node_lists() const
 {
     using namespace std;
 
-    typename data_node_map_type::const_iterator
-        itr = m_tagged_node_map.begin(), itr_end = m_tagged_node_map.end();
+    typename data_node_map_type::const_iterator itr = m_tagged_node_map.begin(), itr_end = m_tagged_node_map.end();
     for (; itr != itr_end; ++itr)
     {
         // Print stored nodes.
@@ -610,8 +599,7 @@ bool segment_tree<_Key, _Value>::has_data_pointer(const node_list_type& node_lis
 {
     using namespace std;
 
-    typename node_list_type::const_iterator
-        itr = node_list.begin(), itr_end = node_list.end();
+    typename node_list_type::const_iterator itr = node_list.begin(), itr_end = node_list.end();
 
     for (; itr != itr_end; ++itr)
     {
@@ -653,4 +641,4 @@ void segment_tree<_Key, _Value>::print_leaf_value(const leaf_value_type& v)
 }
 #endif
 
-}
+} // namespace mdds

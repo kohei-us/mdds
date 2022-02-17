@@ -54,7 +54,7 @@ void rtree_test_directory_node_split()
             os << "(x=" << x << ",y=" << y << ")";
             std::string v = os.str();
             int16_t xe = x + 1, ye = y + 1;
-            point s({x,y}), e({xe,ye});
+            point s({x, y}), e({xe, ye});
             bounding_box bb(s, e);
             cout << "Inserting value '" << v << "' to {" << bb.to_string() << "} ..." << endl;
             tree.insert({s, e}, std::move(v));
@@ -67,11 +67,10 @@ void rtree_test_directory_node_split()
     // All value nodes in this tree should be at depth 4 (root having the
     // depth of 0).  Just check a few of them.
 
-    std::vector<point> pts =
-    {
-        { 5, 5 },
-        { 2, 3 },
-        { 7, 9 },
+    std::vector<point> pts = {
+        {5, 5},
+        {2, 3},
+        {7, 9},
     };
 
     for (const point& pt : pts)
@@ -84,4 +83,3 @@ void rtree_test_directory_node_split()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

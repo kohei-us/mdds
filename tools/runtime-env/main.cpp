@@ -39,10 +39,10 @@
 #include <limits>
 #include <iterator>
 
-using std::cout;
-using std::cerr;
-using std::endl;
 using mdds::mtv::lu_factor_t;
+using std::cerr;
+using std::cout;
+using std::endl;
 
 namespace {
 
@@ -53,9 +53,7 @@ std::string to_string(lu_factor_t lu)
     bool avx2 = (int(lu) & 0x200) != 0;
 
     std::ostringstream os;
-    os << (sse2 ? "sse2+":"")
-        << (avx2 ? "avx2+":"")
-        << std::setw(2) << std::setfill('0') << lu_value;
+    os << (sse2 ? "sse2+" : "") << (avx2 ? "avx2+" : "") << std::setw(2) << std::setfill('0') << lu_value;
 
     return os.str();
 }
@@ -133,8 +131,8 @@ private:
     double get_time() const
     {
         unsigned long usec_since_epoch =
-            std::chrono::duration_cast<std::chrono::microseconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count();
+            std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch())
+                .count();
 
         return usec_since_epoch / 1000000.0;
     }
@@ -149,7 +147,8 @@ class data_handler
         std::string type;
         lu_factor_t lu;
 
-        key_type(const std::string& type_, lu_factor_t lu_) : type(type_), lu(lu_) {}
+        key_type(const std::string& type_, lu_factor_t lu_) : type(type_), lu(lu_)
+        {}
 
         bool operator<(const key_type& other) const
         {
@@ -172,7 +171,8 @@ class data_handler
         double duration = 0.0;
         int count = 0;
 
-        duration_type(double duration_, int count_) : duration(duration_), count(count_) {}
+        duration_type(double duration_, int count_) : duration(duration_), count(count_)
+        {}
 
         std::string to_string() const
         {
@@ -204,12 +204,9 @@ class data_handler
         }
 
         // Sort by durations.
-        std::sort(averages.begin(), averages.end(),
-            [](const auto& left, const auto& right) -> bool
-            {
-                return std::get<1>(left) < std::get<1>(right);
-            }
-        );
+        std::sort(averages.begin(), averages.end(), [](const auto& left, const auto& right) -> bool {
+            return std::get<1>(left) < std::get<1>(right);
+        });
 
         const int n_ticks_max = 55;
 
@@ -278,7 +275,7 @@ class data_handler
         const key_type& top_key = std::get<0>(averages[0]);
         std::ostringstream os;
         os << "Storage of " << top_key.type << " with the LU factor of " << to_string(top_key.lu)
-            << " appears to be the best choice in this environment.";
+           << " appears to be the best choice in this environment.";
 
         graph_out << reflow_text(os.str(), 70) << endl;
 
@@ -303,18 +300,15 @@ class data_handler
             int repeats = std::get<3>(rec);
             double duration = std::get<4>(rec);
 
-            of << type << ","
-                << to_string(lu)
-                << "," << block_size
-                << "," << repeats
-                << "," << duration << "\n";
+            of << type << "," << to_string(lu) << "," << block_size << "," << repeats << "," << duration << "\n";
         }
 
         of << std::flush;
     }
 
 public:
-    data_handler() {}
+    data_handler()
+    {}
 
     void start()
     {
@@ -369,8 +363,8 @@ class mtv_aos_luf_runner
         std::size_t size;
         void* data;
 
-        block(std::size_t _position, std::size_t _size) :
-            position(_position), size(_size) {}
+        block(std::size_t _position, std::size_t _size) : position(_position), size(_size)
+        {}
     };
 
     using blocks_type = std::vector<block>;
@@ -388,7 +382,8 @@ class mtv_aos_luf_runner
     }
 
 public:
-    mtv_aos_luf_runner(data_handler& dh) : m_handler(dh) {}
+    mtv_aos_luf_runner(data_handler& dh) : m_handler(dh)
+    {}
 
     void run(int block_size, int repeats)
     {
@@ -434,7 +429,8 @@ class mtv_soa_luf_runner
     }
 
 public:
-    mtv_soa_luf_runner(data_handler& dh) : m_handler(dh) {}
+    mtv_soa_luf_runner(data_handler& dh) : m_handler(dh)
+    {}
 
     void run(int block_size, int repeats)
     {
@@ -468,7 +464,7 @@ public:
     }
 };
 
-}
+} // namespace
 
 int main(int argc, char** argv)
 {
@@ -498,4 +494,3 @@ int main(int argc, char** argv)
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

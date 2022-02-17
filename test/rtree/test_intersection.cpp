@@ -38,8 +38,8 @@ void rtree_test_intersection()
     stack_printer __stack_printer__("::rtree_test_intersection");
     using rt_type = rtree<int16_t, std::string>;
     using bounding_box = rt_type::extent_type;
-    using mdds::detail::rtree::calc_linear_intersection;
     using mdds::detail::rtree::calc_intersection;
+    using mdds::detail::rtree::calc_linear_intersection;
 
     struct check
     {
@@ -49,16 +49,12 @@ void rtree_test_intersection()
         int16_t expected_length2;
     };
 
-    std::vector<check> checks =
-    {
+    std::vector<check> checks = {
         // bounding box 1           bounding box 2
-        { { { 0,  0}, { 3,   6} }, { {1,   2}, { 7,  5} },  2, 3 },
-        { { { 3,  2}, { 7,  10} }, { {1,  10}, {10, 11} },  4, 0 },
-        { { { 3,  2}, { 7,  10} }, { {1,   9}, {10, 11} },  4, 1 },
-        { { { 3,  2}, { 7,   6} }, { {5,   4}, {11,  8} },  2, 2 },
-        { { {-2, -8}, { 2,  -5} }, { {0, -10}, { 8, -1} },  2, 3 },
-        { { { 2,  2}, {20,  12} }, { {5,   6}, {16,  9} }, 11, 3 },
-        { { { 0,  0}, { 6,   6} }, { {0,   0}, { 2,  3} },  2, 3 },
+        {{{0, 0}, {3, 6}}, {{1, 2}, {7, 5}}, 2, 3},       {{{3, 2}, {7, 10}}, {{1, 10}, {10, 11}}, 4, 0},
+        {{{3, 2}, {7, 10}}, {{1, 9}, {10, 11}}, 4, 1},    {{{3, 2}, {7, 6}}, {{5, 4}, {11, 8}}, 2, 2},
+        {{{-2, -8}, {2, -5}}, {{0, -10}, {8, -1}}, 2, 3}, {{{2, 2}, {20, 12}}, {{5, 6}, {16, 9}}, 11, 3},
+        {{{0, 0}, {6, 6}}, {{0, 0}, {2, 3}}, 2, 3},
     };
 
     for (const check& c : checks)
@@ -85,4 +81,3 @@ void rtree_test_intersection()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

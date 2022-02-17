@@ -40,7 +40,7 @@ using ::boost::uint16_t;
 
 struct data_printer
 {
-    void operator() (const string* p)
+    void operator()(const string* p)
     {
         cout << *p << " ";
     }
@@ -49,7 +49,7 @@ struct data_printer
 template<typename _DbType>
 struct search_result_printer
 {
-    void operator() (const pair<const typename _DbType::point, const typename _DbType::value_type>& r) const
+    void operator()(const pair<const typename _DbType::point, const typename _DbType::value_type>& r) const
     {
         cout << "  (x=" << r.first.x << ", y=" << r.first.y << ", value='" << *r.second << "')" << endl;
     }
@@ -77,9 +77,9 @@ void pqt_test_basic()
     string N("N");
 
     db.insert(25, 32, &A);
-    db.insert( 5, 45, &B);
+    db.insert(5, 45, &B);
     db.insert(52, 10, &C);
-    db.insert(80,  5, &D);
+    db.insert(80, 5, &D);
     db.insert(40, 50, &E);
     db.insert(10, 10, &F);
     db.insert(20, 20, &G);
@@ -159,8 +159,8 @@ void pqt_test_insertion_removal()
     {
         for (int32_t j = 0; j < 10; ++j)
         {
-            int32_t x = i*10 + 1, y = j*10 + 1;
-            size_t index = i*10 + j;
+            int32_t x = i * 10 + 1, y = j * 10 + 1;
+            size_t index = i * 10 + j;
             const string* data_ptr = data_store[index].get();
             cout << "inserting '" << *data_ptr << "' at (" << x << "," << y << ")" << endl;
             db.insert(x, y, data_ptr);
@@ -168,8 +168,8 @@ void pqt_test_insertion_removal()
 
             vector<db_type::node_data> stored_data;
             db.get_all_stored_data(stored_data);
-            assert(stored_data.size() == (index+1));
-            assert(db.size() == (index+1));
+            assert(stored_data.size() == (index + 1));
+            assert(db.size() == (index + 1));
             assert(!db.empty());
             bool success = db.verify_data(expected);
             assert(success);
@@ -183,10 +183,11 @@ void pqt_test_insertion_removal()
     {
         for (int32_t j = 0; j < 10; ++j)
         {
-            int32_t x = i*10 + 1, y = j*10 + 1;
+            int32_t x = i * 10 + 1, y = j * 10 + 1;
             db.remove(x, y);
             size_t n = db.size();
-            cout << "removing node at (" << x << "," << y << ")  " << "size after removal: " << n << endl;
+            cout << "removing node at (" << x << "," << y << ")  "
+                 << "size after removal: " << n << endl;
             --node_count;
             assert(node_count == n);
         }
@@ -359,8 +360,7 @@ void pqt_test_swap()
 
 template<typename _DbType>
 bool verify_find(
-    const _DbType& db,
-    typename _DbType::key_type x, typename _DbType::key_type y,
+    const _DbType& db, typename _DbType::key_type x, typename _DbType::key_type y,
     const typename _DbType::value_type data)
 {
     try

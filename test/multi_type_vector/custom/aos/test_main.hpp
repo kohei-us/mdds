@@ -39,7 +39,8 @@
 
 using mtv_type = mdds::mtv::aos::multi_type_vector<mdds::mtv::custom_block_func2<user_cell_block, muser_cell_block>>;
 using mtv_fruit_type = mdds::mtv::aos::multi_type_vector<mdds::mtv::custom_block_func1<fruit_block>>;
-using mtv3_type = mdds::mtv::aos::multi_type_vector<mdds::mtv::custom_block_func3<muser_cell_block, fruit_block, date_block>>;
+using mtv3_type =
+    mdds::mtv::aos::multi_type_vector<mdds::mtv::custom_block_func3<muser_cell_block, fruit_block, date_block>>;
 
 void mtv_test_misc_types();
 void mtv_test_misc_block_identifier();
@@ -55,4 +56,3 @@ void mtv_test_swap();
 void mtv_test_swap_2();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

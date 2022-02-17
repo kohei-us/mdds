@@ -26,23 +26,39 @@
  *
  ************************************************************************/
 
-enum test_mtv_type {
-    _mtv_bool, _mtv_int8, _mtv_uint8, _mtv_int16, _mtv_uint16, _mtv_int32, _mtv_uint32, _mtv_int64, _mtv_uint64, _mtv_float, _mtv_double, _mtv_string,
+enum test_mtv_type
+{
+    _mtv_bool,
+    _mtv_int8,
+    _mtv_uint8,
+    _mtv_int16,
+    _mtv_uint16,
+    _mtv_int32,
+    _mtv_uint32,
+    _mtv_int64,
+    _mtv_uint64,
+    _mtv_float,
+    _mtv_double,
+    _mtv_string,
 };
 
-#define TEST_TYPE(_type_,_type_enum_) test_mtv_type test_type(_type_) { return _type_enum_; }
-TEST_TYPE(bool,     _mtv_bool)
-TEST_TYPE(int8_t,   _mtv_int8)
-TEST_TYPE(uint8_t,  _mtv_uint8)
-TEST_TYPE(int16_t,  _mtv_int16)
+#define TEST_TYPE(_type_, _type_enum_) \
+    test_mtv_type test_type(_type_) \
+    { \
+        return _type_enum_; \
+    }
+TEST_TYPE(bool, _mtv_bool)
+TEST_TYPE(int8_t, _mtv_int8)
+TEST_TYPE(uint8_t, _mtv_uint8)
+TEST_TYPE(int16_t, _mtv_int16)
 TEST_TYPE(uint16_t, _mtv_uint16)
-TEST_TYPE(int32_t,  _mtv_int32)
+TEST_TYPE(int32_t, _mtv_int32)
 TEST_TYPE(uint32_t, _mtv_uint32)
-TEST_TYPE(int64_t,  _mtv_int64)
+TEST_TYPE(int64_t, _mtv_int64)
 TEST_TYPE(uint64_t, _mtv_uint64)
-TEST_TYPE(float,    _mtv_float)
-TEST_TYPE(double,   _mtv_double)
-TEST_TYPE(std::string,   _mtv_string)
+TEST_TYPE(float, _mtv_float)
+TEST_TYPE(double, _mtv_double)
+TEST_TYPE(std::string, _mtv_string)
 
 void mtv_test_misc_types()
 {
@@ -311,12 +327,9 @@ void mtv_test_misc_value_type()
     db.set(3, int32_t(12));
     db.set(4, int16_t(8));
 
-    std::for_each(db.begin(), db.end(),
-        [](const mtv_type::value_type& node)
-        {
-            cout << "type: " << node.type << "  size: " << node.size << "  data: " << node.data << endl;
-        }
-    );
+    std::for_each(db.begin(), db.end(), [](const mtv_type::value_type& node) {
+        cout << "type: " << node.type << "  size: " << node.size << "  data: " << node.data << endl;
+    });
 }
 
 void mtv_test_misc_block_identifier()
@@ -456,8 +469,7 @@ void mtv_test_misc_position_type_end_position()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    auto run = [](auto& db)
-    {
+    auto run = [](auto& db) {
         auto pos1 = db.position(9); // last valid position.
         pos1 = mtv_type::next_position(pos1);
         auto pos2 = db.position(10); // end position - one position past the last valid position
@@ -542,4 +554,3 @@ void mtv_test_misc_block_pos_adjustments()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

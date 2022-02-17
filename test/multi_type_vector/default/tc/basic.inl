@@ -113,7 +113,7 @@ void mtv_test_basic()
 
     {
         mtv_type col_db(4);
-        long order[] = { 3, 1, 2, 0 };
+        long order[] = {3, 1, 2, 0};
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
         {
@@ -124,7 +124,7 @@ void mtv_test_basic()
 
     {
         mtv_type col_db(4);
-        long order[] = { 0, 3, 1, 2 };
+        long order[] = {0, 3, 1, 2};
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
         {
@@ -135,7 +135,7 @@ void mtv_test_basic()
 
     {
         mtv_type col_db(4);
-        long order[] = { 0, 2, 3, 1 };
+        long order[] = {0, 2, 3, 1};
         double val = 1.0;
         for (size_t i = 0; i < 4; ++i, ++val)
         {
@@ -146,7 +146,7 @@ void mtv_test_basic()
 
     {
         mtv_type col_db(5);
-        long order[] = { 0, 4, 3, 2, 1 };
+        long order[] = {0, 4, 3, 2, 1};
         double val = 1.0;
         for (size_t i = 0; i < 5; ++i, ++val)
         {
@@ -667,4 +667,3 @@ void mtv_test_basic_numeric()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

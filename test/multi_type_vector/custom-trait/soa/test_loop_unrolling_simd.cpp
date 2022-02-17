@@ -60,7 +60,7 @@ void run_test()
     }
 }
 
-}
+} // namespace
 
 #if SIZEOF_VOID_P == 8 && defined(__SSE2__)
 
@@ -199,4 +199,3 @@ void mtv_test_loop_unrolling_avx2_x64_8()
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

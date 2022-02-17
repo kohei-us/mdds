@@ -29,7 +29,7 @@
 #include "test_global.hpp" // This must be the first header to be included.
 #include "test_main.hpp"
 
-int main ()
+int main()
 {
     try
     {
@@ -57,4 +57,3 @@ int main ()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

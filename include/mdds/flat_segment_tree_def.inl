@@ -28,26 +28,20 @@
 namespace mdds {
 
 template<typename _Key, typename _Value>
-typename flat_segment_tree<_Key, _Value>::const_segment_iterator
-flat_segment_tree<_Key, _Value>::begin_segment() const
+typename flat_segment_tree<_Key, _Value>::const_segment_iterator flat_segment_tree<_Key, _Value>::begin_segment() const
 {
     return const_segment_iterator(m_left_leaf.get(), m_left_leaf->next.get());
 }
 
 template<typename _Key, typename _Value>
-typename flat_segment_tree<_Key, _Value>::const_segment_iterator
-flat_segment_tree<_Key, _Value>::end_segment() const
+typename flat_segment_tree<_Key, _Value>::const_segment_iterator flat_segment_tree<_Key, _Value>::end_segment() const
 {
     return const_segment_iterator(m_right_leaf.get(), nullptr);
 }
 
 template<typename _Key, typename _Value>
-flat_segment_tree<_Key, _Value>::flat_segment_tree(key_type min_val, key_type max_val, value_type init_val) :
-    m_root_node(nullptr),
-    m_left_leaf(new node),
-    m_right_leaf(new node),
-    m_init_val(init_val),
-    m_valid_tree(false)
+flat_segment_tree<_Key, _Value>::flat_segment_tree(key_type min_val, key_type max_val, value_type init_val)
+    : m_root_node(nullptr), m_left_leaf(new node), m_right_leaf(new node), m_init_val(init_val), m_valid_tree(false)
 {
     // we need to create two end nodes during initialization.
     m_left_leaf->value_leaf.key = min_val;
@@ -64,12 +58,10 @@ flat_segment_tree<_Key, _Value>::flat_segment_tree(key_type min_val, key_type ma
 }
 
 template<typename _Key, typename _Value>
-flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key, _Value>& r) :
-    m_root_node(nullptr),
-    m_left_leaf(new node(static_cast<const node&>(*r.m_left_leaf))),
-    m_right_leaf(static_cast<node*>(nullptr)),
-    m_init_val(r.m_init_val),
-    m_valid_tree(false) // tree is invalid because we only copy the leaf nodes.
+flat_segment_tree<_Key, _Value>::flat_segment_tree(const flat_segment_tree<_Key, _Value>& r)
+    : m_root_node(nullptr), m_left_leaf(new node(static_cast<const node&>(*r.m_left_leaf))),
+      m_right_leaf(static_cast<node*>(nullptr)), m_init_val(r.m_init_val),
+      m_valid_tree(false) // tree is invalid because we only copy the leaf nodes.
 {
     // Copy all the leaf nodes from the original instance.
     node* src_node = r.m_left_leaf.get();
@@ -103,8 +95,8 @@ flat_segment_tree<_Key, _Value>::~flat_segment_tree()
 }
 
 template<typename _Key, typename _Value>
-flat_segment_tree<_Key, _Value>&
-flat_segment_tree<_Key, _Value>::operator=(const flat_segment_tree<_Key, _Value>& other)
+flat_segment_tree<_Key, _Value>& flat_segment_tree<_Key, _Value>::operator=(
+    const flat_segment_tree<_Key, _Value>& other)
 {
     flat_segment_tree<_Key, _Value> copy(other);
     swap(copy);
@@ -112,8 +104,7 @@ flat_segment_tree<_Key, _Value>::operator=(const flat_segment_tree<_Key, _Value>
 }
 
 template<typename _Key, typename _Value>
-void
-flat_segment_tree<_Key, _Value>::swap(flat_segment_tree<_Key, _Value>& other)
+void flat_segment_tree<_Key, _Value>::swap(flat_segment_tree<_Key, _Value>& other)
 {
     m_nonleaf_node_pool.swap(other.m_nonleaf_node_pool);
     std::swap(m_root_node, other.m_root_node);
@@ -124,8 +115,7 @@ flat_segment_tree<_Key, _Value>::swap(flat_segment_tree<_Key, _Value>& other)
 }
 
 template<typename _Key, typename _Value>
-void
-flat_segment_tree<_Key, _Value>::clear()
+void flat_segment_tree<_Key, _Value>::clear()
 {
     // the border nodes should not be destroyed--add a ref to keep them alive
     node_ptr left(m_left_leaf);
@@ -141,8 +131,8 @@ flat_segment_tree<_Key, _Value>::clear()
 }
 
 template<typename _Key, typename _Value>
-::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
-flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward)
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> flat_segment_tree<
+    _Key, _Value>::insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward)
 {
     typedef std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> ret_type;
 
@@ -177,9 +167,8 @@ flat_segment_tree<_Key, _Value>::insert_segment_impl(key_type start_key, key_typ
 }
 
 template<typename _Key, typename _Value>
-::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
-flat_segment_tree<_Key, _Value>::insert_to_pos(
-    node_ptr& start_pos, key_type start_key, key_type end_key, value_type val)
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> flat_segment_tree<
+    _Key, _Value>::insert_to_pos(node_ptr& start_pos, key_type start_key, key_type end_key, value_type val)
 {
     node_ptr end_pos;
     {
@@ -303,13 +292,11 @@ flat_segment_tree<_Key, _Value>::insert_to_pos(
     if (changed)
         m_valid_tree = false;
 
-    return ::std::pair<const_iterator, bool>(
-        const_iterator(this, new_start_node.get()), changed);
+    return ::std::pair<const_iterator, bool>(const_iterator(this, new_start_node.get()), changed);
 }
 
 template<typename _Key, typename _Value>
-::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
-flat_segment_tree<_Key, _Value>::insert(
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> flat_segment_tree<_Key, _Value>::insert(
     const const_iterator& pos, key_type start_key, key_type end_key, value_type val)
 {
     const node* p = pos.get_pos();
@@ -498,9 +485,8 @@ void flat_segment_tree<_Key, _Value>::shift_right(key_type pos, key_type size, b
 }
 
 template<typename _Key, typename _Value>
-::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
-flat_segment_tree<_Key, _Value>::search_impl(const node* pos,
-    key_type key, value_type& value, key_type* start_key, key_type* end_key) const
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> flat_segment_tree<_Key, _Value>::
+    search_impl(const node* pos, key_type key, value_type& value, key_type* start_key, key_type* end_key) const
 {
     typedef ::std::pair<const_iterator, bool> ret_type;
 
@@ -527,8 +513,7 @@ flat_segment_tree<_Key, _Value>::search_impl(const node* pos,
 }
 
 template<typename _Key, typename _Value>
-::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
-flat_segment_tree<_Key, _Value>::search(
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> flat_segment_tree<_Key, _Value>::search(
     key_type key, value_type& value, key_type* start_key, key_type* end_key) const
 {
     typedef ::std::pair<const_iterator, bool> ret_type;
@@ -542,9 +527,8 @@ flat_segment_tree<_Key, _Value>::search(
 }
 
 template<typename _Key, typename _Value>
-::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
-flat_segment_tree<_Key, _Value>::search(const const_iterator& pos,
-    key_type key, value_type& value, key_type* start_key, key_type* end_key) const
+::std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> flat_segment_tree<_Key, _Value>::search(
+    const const_iterator& pos, key_type key, value_type& value, key_type* start_key, key_type* end_key) const
 {
     typedef ::std::pair<const_iterator, bool> ret_type;
 
@@ -573,8 +557,7 @@ flat_segment_tree<_Key, _Value>::search(const const_iterator& pos,
 }
 
 template<typename _Key, typename _Value>
-std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool>
-flat_segment_tree<_Key, _Value>::search_tree(
+std::pair<typename flat_segment_tree<_Key, _Value>::const_iterator, bool> flat_segment_tree<_Key, _Value>::search_tree(
     key_type key, value_type& value, key_type* start_key, key_type* end_key) const
 {
     typedef std::pair<const_iterator, bool> ret_type;
@@ -691,8 +674,7 @@ void flat_segment_tree<_Key, _Value>::build_tree()
 }
 
 template<typename _Key, typename _Value>
-typename flat_segment_tree<_Key, _Value>::size_type
-flat_segment_tree<_Key, _Value>::leaf_size() const
+typename flat_segment_tree<_Key, _Value>::size_type flat_segment_tree<_Key, _Value>::leaf_size() const
 {
     return __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 }
@@ -728,8 +710,7 @@ bool flat_segment_tree<_Key, _Value>::operator==(const flat_segment_tree<key_typ
 }
 
 template<typename _Key, typename _Value>
-const typename flat_segment_tree<_Key, _Value>::node*
-flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
+const typename flat_segment_tree<_Key, _Value>::node* flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
     key_type key, const node* start_pos) const
 {
     const node* cur_node = start_pos;
@@ -746,8 +727,8 @@ flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf_reverse(
 }
 
 template<typename _Key, typename _Value>
-const typename flat_segment_tree<_Key, _Value>::node*
-flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(key_type key, const node* start_pos) const
+const typename flat_segment_tree<_Key, _Value>::node* flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(
+    key_type key, const node* start_pos) const
 {
     const node* cur_node = start_pos;
     while (cur_node)
@@ -763,8 +744,7 @@ flat_segment_tree<_Key, _Value>::get_insertion_pos_leaf(key_type key, const node
 }
 
 template<typename _Key, typename _Value>
-void
-flat_segment_tree<_Key, _Value>::destroy()
+void flat_segment_tree<_Key, _Value>::destroy()
 {
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
     m_nonleaf_node_pool.clear();
@@ -793,4 +773,4 @@ bool flat_segment_tree<_Key, _Value>::adjust_segment_range(key_type& start_key, 
     return true;
 }
 
-}
+} // namespace mdds

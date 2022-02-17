@@ -162,7 +162,8 @@ void mtv_test_iterators_element_block()
     assert(it_blk->data);
     {
         mdds::mtv::double_element_block::const_iterator it_data = mdds::mtv::double_element_block::begin(*it_blk->data);
-        mdds::mtv::double_element_block::const_iterator it_data_end = mdds::mtv::double_element_block::end(*it_blk->data);
+        mdds::mtv::double_element_block::const_iterator it_data_end =
+            mdds::mtv::double_element_block::end(*it_blk->data);
         assert(it_data != it_data_end);
         assert(*it_data == 1.1);
         ++it_data;
@@ -197,8 +198,10 @@ void mtv_test_iterators_element_block()
     assert(it_blk->size == 4);
     assert(it_blk->data);
     {
-        mdds::mtv::string_element_block::const_reverse_iterator it_data = mdds::mtv::string_element_block::rbegin(*it_blk->data);
-        mdds::mtv::string_element_block::const_reverse_iterator it_data_end = mdds::mtv::string_element_block::rend(*it_blk->data);
+        mdds::mtv::string_element_block::const_reverse_iterator it_data =
+            mdds::mtv::string_element_block::rbegin(*it_blk->data);
+        mdds::mtv::string_element_block::const_reverse_iterator it_data_end =
+            mdds::mtv::string_element_block::rend(*it_blk->data);
         assert(it_data != it_data_end);
         assert(*it_data == "D");
         ++it_data;
@@ -214,8 +217,10 @@ void mtv_test_iterators_element_block()
     {
         // Test crbegin() and crend() too, which should be identical to the
         // const variants of rbegin() and rend() from above.
-        mdds::mtv::string_element_block::const_reverse_iterator it_data = mdds::mtv::string_element_block::crbegin(*it_blk->data);
-        mdds::mtv::string_element_block::const_reverse_iterator it_data_end = mdds::mtv::string_element_block::crend(*it_blk->data);
+        mdds::mtv::string_element_block::const_reverse_iterator it_data =
+            mdds::mtv::string_element_block::crbegin(*it_blk->data);
+        mdds::mtv::string_element_block::const_reverse_iterator it_data_end =
+            mdds::mtv::string_element_block::crend(*it_blk->data);
         assert(it_data != it_data_end);
         assert(*it_data == "D");
         ++it_data;
@@ -249,8 +254,7 @@ void mtv_test_iterators_mutable_element_block()
      * @param it this is passed as a const reference, yet it should still allow
      *           being dereferenced as long as no data is modified.
      */
-    auto check_block_iterator = [](const mtv_type::iterator& it, mdds::mtv::element_t expected)
-    {
+    auto check_block_iterator = [](const mtv_type::iterator& it, mdds::mtv::element_t expected) {
         mdds::mtv::element_t actual = it->type;
         const mtv_type::element_block_type* data = (*it).data;
         assert(actual == expected);
@@ -357,4 +361,3 @@ void mtv_test_iterators_private_data()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

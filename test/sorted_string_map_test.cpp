@@ -36,7 +36,8 @@
 
 using namespace std;
 
-enum name_type {
+enum name_type
+{
     name_none = 0,
     name_andy,
     name_bruce,
@@ -50,17 +51,12 @@ void ssmap_test_basic()
 
     typedef mdds::sorted_string_map<name_type> map_type;
 
-    map_type::entry entries[] =
-    {
-        { MDDS_ASCII("andy"), name_andy },
-        { MDDS_ASCII("andy1"), name_andy },
-        { MDDS_ASCII("andy13"), name_andy },
-        { MDDS_ASCII("bruce"), name_bruce },
-        { MDDS_ASCII("charlie"), name_charlie },
-        { MDDS_ASCII("david"), name_david },
+    map_type::entry entries[] = {
+        {MDDS_ASCII("andy"), name_andy},   {MDDS_ASCII("andy1"), name_andy},      {MDDS_ASCII("andy13"), name_andy},
+        {MDDS_ASCII("bruce"), name_bruce}, {MDDS_ASCII("charlie"), name_charlie}, {MDDS_ASCII("david"), name_david},
     };
 
-    size_t entry_count = sizeof(entries)/sizeof(entries[0]);
+    size_t entry_count = sizeof(entries) / sizeof(entries[0]);
     map_type names(entries, entry_count, name_none);
     for (size_t i = 0; i < entry_count; ++i)
     {
@@ -80,15 +76,14 @@ void ssmap_test_mixed_case_null()
 
     typedef mdds::sorted_string_map<int> map_type;
 
-    map_type::entry entries[] =
-    {
-        { MDDS_ASCII("NULL"), 1 },
-        { MDDS_ASCII("Null"), 2 },
-        { MDDS_ASCII("null"), 3 },
-        { MDDS_ASCII("~"),    4 },
+    map_type::entry entries[] = {
+        {MDDS_ASCII("NULL"), 1},
+        {MDDS_ASCII("Null"), 2},
+        {MDDS_ASCII("null"), 3},
+        {MDDS_ASCII("~"), 4},
     };
 
-    size_t entry_count = sizeof(entries)/sizeof(entries[0]);
+    size_t entry_count = sizeof(entries) / sizeof(entries[0]);
     map_type names(entries, entry_count, -1);
     for (size_t i = 0; i < entry_count; ++i)
     {
@@ -122,7 +117,6 @@ void ssmap_test_perf()
         ++i;
     }
 
-
     assert(data.size() > 1000);
     {
         stack_printer __stack_printer__("::ssmap_test_perf");
@@ -137,7 +131,7 @@ void ssmap_test_perf()
     }
 }
 
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
     cmd_options opt;
     if (!parse_cmd_options(argc, argv, opt))
@@ -157,4 +151,3 @@ int main (int argc, char **argv)
     fprintf(stdout, "Test finished successfully!\n");
     return 0;
 }
-

@@ -12,8 +12,7 @@ namespace {
 class StackPrinter
 {
 public:
-    explicit StackPrinter(const char* msg) :
-        msMsg(msg)
+    explicit StackPrinter(const char* msg) : msMsg(msg)
     {
         fprintf(stdout, "%s: --begin\n", msMsg.c_str());
         mfStartTime = getTime();
@@ -22,13 +21,13 @@ public:
     ~StackPrinter()
     {
         double fEndTime = getTime();
-        fprintf(stdout, "%s: --end (duration: %g sec)\n", msMsg.c_str(), (fEndTime-mfStartTime));
+        fprintf(stdout, "%s: --end (duration: %g sec)\n", msMsg.c_str(), (fEndTime - mfStartTime));
     }
 
     void printTime(int line) const
     {
         double fEndTime = getTime();
-        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", msMsg.c_str(), line, (fEndTime-mfStartTime));
+        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", msMsg.c_str(), line, (fEndTime - mfStartTime));
     }
 
 private:
@@ -43,7 +42,7 @@ private:
     double mfStartTime;
 };
 
-}
+} // namespace
 
 using namespace std;
 using ::boost::object_pool;
@@ -51,8 +50,10 @@ using ::boost::object_pool;
 struct element
 {
     double number;
-    element() : number(0.0) {}
-    element(double num) : number(num) {}
+    element() : number(0.0)
+    {}
+    element(double num) : number(num)
+    {}
 };
 
 int main()

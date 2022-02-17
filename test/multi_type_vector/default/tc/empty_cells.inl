@@ -108,7 +108,7 @@ void mtv_test_empty_cells()
         // Empty multiple cells at the middle part of a block.
         mtv_type db(4);
         for (size_t i = 0; i < 4; ++i)
-            db.set(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i + 1));
 
         for (size_t i = 0; i < 4; ++i)
         {
@@ -447,4 +447,3 @@ void mtv_test_empty_cells()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

@@ -44,7 +44,7 @@
  * does not work with pointer values that point to strings defined
  * elsewhere.
  */
-#define MDDS_ASCII(literal) literal, sizeof(literal)-1
+#define MDDS_ASCII(literal) literal, sizeof(literal) - 1
 
 /**
  * \def MDDS_N_ELEMENTS(name)
@@ -52,14 +52,14 @@
  * Calculates the length of \a name array provided that the array definition
  * is given in the same compilation unit.
  */
-#define MDDS_N_ELEMENTS(name) sizeof(name)/sizeof(name[0])
+#define MDDS_N_ELEMENTS(name) sizeof(name) / sizeof(name[0])
 
 #ifdef __GNUC__
-    #define MDDS_DEPRECATED __attribute__ ((deprecated))
+#define MDDS_DEPRECATED __attribute__((deprecated))
 #elif defined(_MSC_VER)
-    #define MDDS_DEPRECATED __declspec(deprecated)
+#define MDDS_DEPRECATED __declspec(deprecated)
 #else
-    #define MDDS_DEPRECATED
+#define MDDS_DEPRECATED
 #endif
 
 #ifndef MDDS_LOOP_UNROLLING
@@ -71,9 +71,9 @@
 #endif
 
 #if defined(__AVX__) || defined(__AVX2__)
-    #ifndef __SSE2__
-        #define __SSE2__ 1
-    #endif
+#ifndef __SSE2__
+#define __SSE2__ 1
+#endif
 #endif
 
 namespace mdds {
@@ -81,13 +81,16 @@ namespace mdds {
 class general_error : public ::std::exception
 {
 public:
-    general_error(const ::std::string& msg) : m_msg(msg) {}
-    virtual ~general_error() throw() {}
+    general_error(const ::std::string& msg) : m_msg(msg)
+    {}
+    virtual ~general_error() throw()
+    {}
 
     virtual const char* what() const throw()
     {
         return m_msg.c_str();
     }
+
 private:
     ::std::string m_msg;
 };
@@ -95,38 +98,44 @@ private:
 class invalid_arg_error : public general_error
 {
 public:
-    invalid_arg_error(const ::std::string& msg) : general_error(msg) {}
+    invalid_arg_error(const ::std::string& msg) : general_error(msg)
+    {}
 };
 
 class size_error : public general_error
 {
 public:
-    size_error(const std::string& msg) : general_error(msg) {}
+    size_error(const std::string& msg) : general_error(msg)
+    {}
 };
 
 class type_error : public general_error
 {
 public:
-    type_error(const std::string& msg) : general_error(msg) {}
+    type_error(const std::string& msg) : general_error(msg)
+    {}
 };
 
 class integrity_error : public general_error
 {
 public:
-    integrity_error(const std::string& msg) : general_error(msg) {}
+    integrity_error(const std::string& msg) : general_error(msg)
+    {}
 };
 
 template<bool B>
 using bool_constant = std::integral_constant<bool, B>;
 
-template <typename T>
+template<typename T>
 class has_value_type
 {
     using y_type = char;
     using n_type = long;
 
-    template <typename U> static y_type test(typename U::value_type);
-    template <typename U> static n_type test(...);
+    template<typename U>
+    static y_type test(typename U::value_type);
+    template<typename U>
+    static n_type test(...);
 
 public:
     static constexpr bool value = sizeof(test<T>(0)) == sizeof(y_type);
@@ -171,6 +180,6 @@ constexpr bool invalid_static_int()
     return false;
 }
 
-}
+} // namespace mdds
 
 #endif

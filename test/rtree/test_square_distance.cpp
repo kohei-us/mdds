@@ -50,11 +50,10 @@ void rtree_test_square_distance()
             uint16_t expected;
         };
 
-        std::vector<test_case> tcs =
-        {
-            { {3}, {5},  4 },
-            { {9}, {2}, 49 },
-            { {0}, {0},  0 },
+        std::vector<test_case> tcs = {
+            {{3}, {5}, 4},
+            {{9}, {2}, 49},
+            {{0}, {0}, 0},
         };
 
         for (const test_case& tc : tcs)
@@ -82,12 +81,11 @@ void rtree_test_square_distance()
             uint16_t expected;
         };
 
-        std::vector<test_case> tcs =
-        {
-            { {0, 0}, {0, 0},  0 },
-            { {0, 0}, {1, 1},  2 },
-            { {0, 0}, {2, 2},  8 },
-            { {3, 0}, {0, 4},  25 },
+        std::vector<test_case> tcs = {
+            {{0, 0}, {0, 0}, 0},
+            {{0, 0}, {1, 1}, 2},
+            {{0, 0}, {2, 2}, 8},
+            {{3, 0}, {0, 4}, 25},
         };
 
         for (const test_case& tc : tcs)
@@ -105,4 +103,3 @@ void rtree_test_square_distance()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

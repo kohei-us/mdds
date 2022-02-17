@@ -48,7 +48,7 @@ void rtree_test_forced_reinsertion()
         int16_t w = 1;
         std::ostringstream os;
         os << "foo" << i;
-        tree.insert({{i, i}, {int16_t(i+w), int16_t(i+w)}}, os.str());
+        tree.insert({{i, i}, {int16_t(i + w), int16_t(i + w)}}, os.str());
     }
 
     assert(tree.size() == 6);
@@ -80,4 +80,3 @@ void rtree_test_forced_reinsertion()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

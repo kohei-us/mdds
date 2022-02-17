@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2010-2017 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -93,19 +93,19 @@ struct itr_reverse_handler
 template<typename _FstType, typename _Hdl>
 class const_iterator_base
 {
-    typedef _Hdl     handler_type;
+    typedef _Hdl handler_type;
+
 public:
     typedef _FstType fst_type;
 
     // iterator traits
     typedef ::std::pair<typename fst_type::key_type, typename fst_type::value_type> value_type;
-    typedef value_type*     pointer;
-    typedef value_type&     reference;
-    typedef ptrdiff_t       difference_type;
+    typedef value_type* pointer;
+    typedef value_type& reference;
+    typedef ptrdiff_t difference_type;
     typedef ::std::bidirectional_iterator_tag iterator_category;
 
-    explicit const_iterator_base(const fst_type* _db, bool _end) : 
-        m_db(_db), m_pos(nullptr), m_end_pos(_end)
+    explicit const_iterator_base(const fst_type* _db, bool _end) : m_db(_db), m_pos(nullptr), m_end_pos(_end)
     {
         if (!_db)
             return;
@@ -113,11 +113,12 @@ public:
         m_pos = handler_type::init_pos(_db, _end);
     }
 
-    explicit const_iterator_base(const fst_type* _db, const typename fst_type::node* pos) :
-        m_db(_db), m_pos(pos), m_end_pos(false) {}
+    explicit const_iterator_base(const fst_type* _db, const typename fst_type::node* pos)
+        : m_db(_db), m_pos(pos), m_end_pos(false)
+    {}
 
-    const_iterator_base(const const_iterator_base& r) :
-        m_db(r.m_db), m_pos(r.m_pos), m_end_pos(r.m_end_pos) {}
+    const_iterator_base(const const_iterator_base& r) : m_db(r.m_db), m_pos(r.m_pos), m_end_pos(r.m_end_pos)
+    {}
 
     const_iterator_base& operator=(const const_iterator_base& r)
     {
@@ -165,8 +166,14 @@ public:
     }
 
 protected:
-    const typename fst_type::node* get_pos() const { return m_pos; }
-    const fst_type* get_parent() const { return m_db; }
+    const typename fst_type::node* get_pos() const
+    {
+        return m_pos;
+    }
+    const fst_type* get_parent() const
+    {
+        return m_db;
+    }
 
 private:
     const value_type& get_current_node_pair()
@@ -177,8 +184,8 @@ private:
 
     const fst_type* m_db;
     const typename fst_type::node* m_pos;
-    value_type      m_current_pair;
-    bool            m_end_pos;
+    value_type m_current_pair;
+    bool m_end_pos;
 };
 
 template<typename _FstType>
@@ -187,11 +194,12 @@ class const_segment_iterator
     typedef _FstType fst_type;
     friend fst_type;
 
-    const_segment_iterator(const typename fst_type::node* start, const typename fst_type::node* end) :
-        m_start(start), m_end(end)
+    const_segment_iterator(const typename fst_type::node* start, const typename fst_type::node* end)
+        : m_start(start), m_end(end)
     {
         update_node();
     }
+
 public:
     struct value_type
     {
@@ -199,31 +207,33 @@ public:
         typename fst_type::key_type end;
         typename fst_type::value_type value;
 
-        value_type() : start(), end(), value() {}
+        value_type() : start(), end(), value()
+        {}
     };
 
-    const_segment_iterator() : m_start(nullptr), m_end(nullptr) {}
-    const_segment_iterator(const const_segment_iterator& other) :
-        m_start(other.m_start), m_end(other.m_end)
+    const_segment_iterator() : m_start(nullptr), m_end(nullptr)
+    {}
+    const_segment_iterator(const const_segment_iterator& other) : m_start(other.m_start), m_end(other.m_end)
     {
         if (m_start)
             update_node();
     }
-    const_segment_iterator(const_segment_iterator&& other) :
-        m_start(std::move(other.m_start)), m_end(std::move(other.m_end))
+    const_segment_iterator(const_segment_iterator&& other)
+        : m_start(std::move(other.m_start)), m_end(std::move(other.m_end))
     {
         if (m_start)
             update_node();
     }
 
-    ~const_segment_iterator() {}
+    ~const_segment_iterator()
+    {}
 
-    bool operator== (const const_segment_iterator& other) const
+    bool operator==(const const_segment_iterator& other) const
     {
         return m_start == other.m_start && m_end == other.m_end;
     }
 
-    bool operator!= (const const_segment_iterator& other) const
+    bool operator!=(const const_segment_iterator& other) const
     {
         return !operator==(other);
     }
@@ -312,6 +322,6 @@ private:
     value_type m_node;
 };
 
-}}
+}} // namespace mdds::__fst
 
 #endif

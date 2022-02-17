@@ -104,9 +104,10 @@ private:
         size_type size = 0;
         element_block_type* element_block = nullptr;
 
-        block_slot_type() {}
-        block_slot_type(size_type _position, size_type _size) :
-            position(_position), size(_size) {}
+        block_slot_type()
+        {}
+        block_slot_type(size_type _position, size_type _size) : position(_position), size(_size)
+        {}
     };
 
     struct blocks_type
@@ -233,14 +234,13 @@ private:
 
     struct element_block_deleter
     {
-        void operator() (const element_block_type* p)
+        void operator()(const element_block_type* p)
         {
             element_block_func::delete_block(p);
         }
     };
 
 public:
-
     using iterator = detail::iterator_base<iterator_trait>;
     using const_iterator = detail::const_iterator_base<const_iterator_trait, iterator>;
 
@@ -338,7 +338,6 @@ public:
      */
     multi_type_vector();
 
-
     /**
      * Constructor that takes an lvalue reference to an event handler object.
      * The event handler instance will be copy-constructed.
@@ -388,7 +387,7 @@ public:
      * @param it_end iterator that points to the end position of the values
      *               the container is being initialized to.  The end position
      *               is <i>not</i> inclusive.
-                                                                              */
+     */
     template<typename T>
     multi_type_vector(size_type init_size, const T& it_begin, const T& it_end);
 
@@ -536,7 +535,8 @@ public:
      * @return iterator referencing the block where the moved elements were
      *         prior to the transfer.
      */
-    iterator transfer(const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
+    iterator transfer(
+        const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
 
     /**
      * Set a value of an arbitrary type to a specified position.  The type of
@@ -1108,11 +1108,11 @@ public:
      */
     void shrink_to_fit();
 
-    bool operator== (const multi_type_vector& other) const;
-    bool operator!= (const multi_type_vector& other) const;
+    bool operator==(const multi_type_vector& other) const;
+    bool operator!=(const multi_type_vector& other) const;
 
-    multi_type_vector& operator= (const multi_type_vector& other);
-    multi_type_vector& operator= (multi_type_vector&& other);
+    multi_type_vector& operator=(const multi_type_vector& other);
+    multi_type_vector& operator=(multi_type_vector&& other);
 
     /**
      * Return the numerical identifier that represents passed element.
@@ -1139,8 +1139,7 @@ private:
     void get_impl(size_type pos, T& value) const;
 
     template<typename T>
-    bool set_cells_precheck(
-        size_type row, const T& it_begin, const T& it_end, size_type& end_pos);
+    bool set_cells_precheck(size_type row, const T& it_begin, const T& it_end, size_type& end_pos);
 
     template<typename T>
     iterator set_impl(size_type pos, size_type block_index, const T& value);
@@ -1149,20 +1148,20 @@ private:
     iterator release_impl(size_type pos, size_type block_index, T& value);
 
     void swap_impl(
-        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-        size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2);
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos, size_type block_index1,
+        size_type block_index2, size_type dblock_index1, size_type dblock_index2);
 
     void swap_single_block(
-        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-        size_type block_index, size_type other_block_index);
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos, size_type block_index,
+        size_type other_block_index);
 
     void swap_single_to_multi_blocks(
-        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-        size_type block_index, size_type dst_block_index1, size_type dst_block_index2);
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos, size_type block_index,
+        size_type dst_block_index1, size_type dst_block_index2);
 
     void swap_multi_to_multi_blocks(
-        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-        size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2);
+        multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos, size_type block_index1,
+        size_type block_index2, size_type dblock_index1, size_type dblock_index2);
 
     template<typename T>
     iterator insert_cells_impl(size_type row, size_type block_index, const T& it_begin, const T& it_end);
@@ -1174,8 +1173,8 @@ private:
      * blocks.
      */
     iterator transfer_multi_blocks(
-        size_type start_pos, size_type end_pos, size_type block_index1, size_type block_index2,
-        multi_type_vector& dest, size_type dest_pos);
+        size_type start_pos, size_type end_pos, size_type block_index1, size_type block_index2, multi_type_vector& dest,
+        size_type dest_pos);
 
     /**
      * @param start_pos logical start position.
@@ -1185,11 +1184,9 @@ private:
      *                  heap objects, objects pointed to by the overwritten
      *                  pointers should be freed from memory.
      */
-    iterator set_empty_impl(
-        size_type start_pos, size_type end_pos, size_type block_index1, bool overwrite);
+    iterator set_empty_impl(size_type start_pos, size_type end_pos, size_type block_index1, bool overwrite);
 
-    iterator set_empty_in_single_block(
-        size_type start_row, size_type end_row, size_type block_index, bool overwrite);
+    iterator set_empty_in_single_block(size_type start_row, size_type end_row, size_type block_index, bool overwrite);
 
     /**
      * @param start_row logical start position.
@@ -1201,8 +1198,7 @@ private:
      *                  pointers should be freed from memory.
      */
     iterator set_empty_in_multi_blocks(
-        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-        bool overwrite);
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2, bool overwrite);
 
     void erase_impl(size_type start_pos, size_type end_pos);
     void erase_in_single_block(size_type start_pos, size_type end_pos, size_type block_index);
@@ -1217,7 +1213,8 @@ private:
     void insert_blocks_at(size_type position, size_type insert_pos, blocks_type& new_blocks);
 
     void prepare_blocks_to_transfer(
-        blocks_to_transfer& bucket, size_type block_index1, size_type offset1, size_type block_index2, size_type offset2);
+        blocks_to_transfer& bucket, size_type block_index1, size_type offset1, size_type block_index2,
+        size_type offset2);
 
     iterator set_whole_block_empty(size_type block_index, bool overwrite);
 
@@ -1230,23 +1227,22 @@ private:
 
     template<typename T>
     iterator set_cells_to_single_block(
-        size_type start_row, size_type end_row, size_type block_index,
-        const T& it_begin, const T& it_end);
+        size_type start_row, size_type end_row, size_type block_index, const T& it_begin, const T& it_end);
 
     template<typename T>
     iterator set_cells_to_multi_blocks(
-        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-        const T& it_begin, const T& it_end);
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2, const T& it_begin,
+        const T& it_end);
 
     template<typename T>
     iterator set_cells_to_multi_blocks_block1_non_equal(
-        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-        const T& it_begin, const T& it_end);
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2, const T& it_begin,
+        const T& it_end);
 
     template<typename T>
     iterator set_cells_to_multi_blocks_block1_non_empty(
-        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-        const T& it_begin, const T& it_end);
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2, const T& it_begin,
+        const T& it_end);
 
     template<typename T>
     iterator set_cell_to_empty_block(size_type block_index, size_type pos_in_block, const T& cell);
@@ -1263,7 +1259,7 @@ private:
      *
      * @return index of the block that contains the specified logical row ID.
      */
-    size_type get_block_position(size_type row, size_type start_block_index=0) const;
+    size_type get_block_position(size_type row, size_type start_block_index = 0) const;
 
     /**
      * Same as above, but try to infer block position from the iterator first
@@ -1286,16 +1282,13 @@ private:
      */
     template<typename T>
     bool append_to_prev_block(
-        size_type block_index, element_category_type cat, size_type length,
-        const T& it_begin, const T& it_end);
+        size_type block_index, element_category_type cat, size_type length, const T& it_begin, const T& it_end);
 
     template<typename T>
-    void insert_cells_to_middle(
-        size_type row, size_type block_index, const T& it_begin, const T& it_end);
+    void insert_cells_to_middle(size_type row, size_type block_index, const T& it_begin, const T& it_end);
 
     template<typename T>
-    iterator set_cell_to_middle_of_block(
-        size_type block_index, size_type pos_in_block, const T& cell);
+    iterator set_cell_to_middle_of_block(size_type block_index, size_type pos_in_block, const T& cell);
 
     /**
      * Set a new value to the top of specified non-empty block. The block is
@@ -1309,15 +1302,13 @@ private:
     void set_cell_to_bottom_of_data_block(size_type block_index, const T& cell);
 
     iterator transfer_impl(
-        size_type start_pos, size_type end_pos, size_type block_index1,
-        multi_type_vector& dest, size_type dest_pos);
+        size_type start_pos, size_type end_pos, size_type block_index1, multi_type_vector& dest, size_type dest_pos);
 
     /**
      * All elements to transfer to the other instance is in the same block.
      */
     iterator transfer_single_block(
-        size_type start_pos, size_type end_pos, size_type block_index1,
-        multi_type_vector& dest, size_type dest_pos);
+        size_type start_pos, size_type end_pos, size_type block_index1, multi_type_vector& dest, size_type dest_pos);
 
     /**
      * Merge with previous or next block as needed.
@@ -1398,12 +1389,12 @@ private:
      *         its life cycle.
      */
     element_block_type* exchange_elements(
-        const element_block_type& src_data, size_type src_offset, size_type dst_index, size_type dst_offset, size_type len);
+        const element_block_type& src_data, size_type src_offset, size_type dst_index, size_type dst_offset,
+        size_type len);
 
     void exchange_elements(
-        const element_block_type& src_blk, size_type src_offset,
-        size_type dst_index1, size_type dst_offset1, size_type dst_index2, size_type dst_offset2,
-        size_type len, blocks_type& new_blocks);
+        const element_block_type& src_blk, size_type src_offset, size_type dst_index1, size_type dst_offset1,
+        size_type dst_index2, size_type dst_offset2, size_type len, blocks_type& new_blocks);
 
     bool append_empty(size_type len);
 
@@ -1417,10 +1408,9 @@ private:
         std::advance(iter_elem, block_index);
 
         return iterator(
-            { iter_pos, iter_size, iter_elem },
-            { m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end() },
-            block_index
-        );
+            {iter_pos, iter_size, iter_elem},
+            {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()},
+            block_index);
     }
 
     inline const_iterator get_const_iterator(size_type block_index) const
@@ -1433,15 +1423,13 @@ private:
         std::advance(iter_elem, block_index);
 
         return const_iterator(
-            { iter_pos, iter_size, iter_elem },
-            { m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend() },
-            block_index
-        );
+            {iter_pos, iter_size, iter_elem},
+            {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()},
+            block_index);
     }
 
 private:
-    using adjust_block_positions_func =
-        detail::adjust_block_positions<blocks_type, Trait::loop_unrolling>;
+    using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Trait::loop_unrolling>;
 
     event_func m_hdl_event;
     blocks_type m_block_store;
@@ -1452,11 +1440,10 @@ private:
 #endif
 };
 
-}}}
+}}} // namespace mdds::mtv::soa
 
 #include "main_def.inl"
 
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

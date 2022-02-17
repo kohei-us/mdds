@@ -26,10 +26,10 @@ void test_sorted_string_map();
 void test_trie_map();
 
 void stop()
-{
-}
+{}
 
-int main() try
+int main()
+try
 {
     test_flat_segment_tree();
     test_multi_type_matrix();

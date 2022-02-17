@@ -39,7 +39,7 @@ using namespace std;
 // Standard matrix that uses std::string as its string type.
 typedef multi_type_matrix<mtm::std_string_trait> mtx_type;
 
-inline std::ostream& operator<< (std::ostream& os, const mtx_type::element_block_node_type& node)
+inline std::ostream& operator<<(std::ostream& os, const mtx_type::element_block_node_type& node)
 {
     os << "(type=" << node.type << "; offset=" << node.offset << "; size=" << node.size << ")";
     return os;
@@ -48,7 +48,7 @@ inline std::ostream& operator<< (std::ostream& os, const mtx_type::element_block
 template<typename _T>
 struct print_element
 {
-    void operator() (const _T& v) const
+    void operator()(const _T& v) const
     {
         cout << v << endl;
     }
@@ -59,7 +59,7 @@ class walk_element_block
     size_t m_node_count = 0;
 
 public:
-    void operator() (const mtx_type::element_block_node_type& node)
+    void operator()(const mtx_type::element_block_node_type& node)
     {
         switch (node.type)
         {
@@ -92,15 +92,17 @@ public:
             break;
             case mtm::element_empty:
                 cout << "- empty block -" << endl;
-            break;
-            default:
-                ;
+                break;
+            default:;
         }
 
         ++m_node_count;
     }
 
-    size_t get_node_count() const { return m_node_count; }
+    size_t get_node_count() const
+    {
+        return m_node_count;
+    }
 };
 
 class walk_element_block_move_only
@@ -108,26 +110,30 @@ class walk_element_block_move_only
     size_t m_node_count = 0;
 
 public:
-    walk_element_block_move_only() {}
+    walk_element_block_move_only()
+    {}
 
     walk_element_block_move_only(walk_element_block_move_only&& other) : m_node_count(other.m_node_count)
     {
         other.m_node_count = 0;
     }
 
-    walk_element_block_move_only& operator= (walk_element_block_move_only&& other)
+    walk_element_block_move_only& operator=(walk_element_block_move_only&& other)
     {
         m_node_count = other.m_node_count;
         other.m_node_count = 0;
         return *this;
     }
 
-    void operator() (const mtx_type::element_block_node_type& /*node*/)
+    void operator()(const mtx_type::element_block_node_type& /*node*/)
     {
         ++m_node_count;
     }
 
-    size_t get_node_count() const { return m_node_count; }
+    size_t get_node_count() const
+    {
+        return m_node_count;
+    }
 };
 
 void mtm_test_walk()
@@ -164,7 +170,7 @@ void mtm_test_walk_subset()
         mtx.set(1, 2, string("A2"));
         mtx.set(2, 2, false);
         walk_element_block func;
-        func = mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+        func = mtx.walk(func, mtx_type::size_pair_type(1, 1), mtx_type::size_pair_type(2, 2));
         assert(func.get_node_count() == 3);
     }
     {
@@ -177,7 +183,7 @@ void mtm_test_walk_subset()
         mtx.set(2, 2, string("A3"));
         mtx.set(3, 2, string("A4"));
         walk_element_block func;
-        func = mtx.walk(func, mtx_type::size_pair_type(1,1), mtx_type::size_pair_type(2, 2));
+        func = mtx.walk(func, mtx_type::size_pair_type(1, 1), mtx_type::size_pair_type(2, 2));
         assert(func.get_node_count() == 3);
     }
 }
@@ -187,30 +193,25 @@ void push_to_buffer(const mtx_type::element_block_node_type& node, std::vector<s
 {
     auto it = node.begin<_Blk>();
     auto ite = node.end<_Blk>();
-    std::for_each(it, ite,
-        [&](const typename _Blk::value_type& v)
-        {
-            ostringstream os;
-            os << v;
-            buf.push_back(os.str());
-        }
-    );
+    std::for_each(it, ite, [&](const typename _Blk::value_type& v) {
+        ostringstream os;
+        os << v;
+        buf.push_back(os.str());
+    });
 }
 
 template<>
-void push_to_buffer<mtx_type::boolean_block_type>(const mtx_type::element_block_node_type& node, std::vector<string>& buf)
+void push_to_buffer<mtx_type::boolean_block_type>(
+    const mtx_type::element_block_node_type& node, std::vector<string>& buf)
 {
     using blk_type = mtx_type::boolean_block_type;
     auto it = node.begin<blk_type>();
     auto ite = node.end<blk_type>();
-    std::for_each(it, ite,
-        [&](bool v)
-        {
-            ostringstream os;
-            os << (v ? "true" : "false");
-            buf.push_back(os.str());
-        }
-    );
+    std::for_each(it, ite, [&](bool v) {
+        ostringstream os;
+        os << (v ? "true" : "false");
+        buf.push_back(os.str());
+    });
 }
 
 class parallel_walk_element_block
@@ -227,34 +228,33 @@ class parallel_walk_element_block
         {
             case mtm::element_boolean:
                 push_to_buffer<mtx_type::boolean_block_type>(node, buf);
-            break;
+                break;
             case mtm::element_string:
                 push_to_buffer<mtx_type::string_block_type>(node, buf);
-            break;
+                break;
             case mtm::element_numeric:
                 push_to_buffer<mtx_type::numeric_block_type>(node, buf);
-            break;
+                break;
             case mtm::element_empty:
                 for (size_t i = 0; i < node.size; ++i)
                     buf.push_back("' '");
-            break;
-            default:
-                ;
+                break;
+            default:;
         }
     }
-public:
-    parallel_walk_element_block(std::string name) :
-        m_name(std::move(name)),
-        m_ls(std::make_shared<strlist_type>()),
-        m_rs(std::make_shared<strlist_type>()) {}
-    parallel_walk_element_block(const parallel_walk_element_block& other) :
-        m_name(other.m_name),
-        m_ls(other.m_ls), m_rs(other.m_rs) {}
-    parallel_walk_element_block(parallel_walk_element_block&& other) :
-        m_name(std::move(other.m_name)),
-        m_ls(std::move(other.m_ls)), m_rs(std::move(other.m_rs)) {}
 
-    parallel_walk_element_block& operator= (parallel_walk_element_block other)
+public:
+    parallel_walk_element_block(std::string name)
+        : m_name(std::move(name)), m_ls(std::make_shared<strlist_type>()), m_rs(std::make_shared<strlist_type>())
+    {}
+    parallel_walk_element_block(const parallel_walk_element_block& other)
+        : m_name(other.m_name), m_ls(other.m_ls), m_rs(other.m_rs)
+    {}
+    parallel_walk_element_block(parallel_walk_element_block&& other)
+        : m_name(std::move(other.m_name)), m_ls(std::move(other.m_ls)), m_rs(std::move(other.m_rs))
+    {}
+
+    parallel_walk_element_block& operator=(parallel_walk_element_block other)
     {
         swap(other);
         return *this;
@@ -266,7 +266,7 @@ public:
         m_rs.swap(other.m_rs);
     }
 
-    void operator() (const mtx_type::element_block_node_type& left, const mtx_type::element_block_node_type& right)
+    void operator()(const mtx_type::element_block_node_type& left, const mtx_type::element_block_node_type& right)
     {
         cout << "--" << endl;
         cout << "l: " << left << endl;
@@ -297,9 +297,15 @@ public:
         m_rs->clear();
     }
 
-    const std::string& get_name() const { return m_name; }
+    const std::string& get_name() const
+    {
+        return m_name;
+    }
 
-    void set_name(std::string name) { m_name = std::move(name); }
+    void set_name(std::string name)
+    {
+        m_name = std::move(name);
+    }
 };
 
 bool check_concat_buffer(std::vector<string> concat, const char* expected[], size_t expected_size)
@@ -342,16 +348,8 @@ void mtm_test_parallel_walk()
         assert(func.get_name() == "test0");
 
         const char* expected[] = {
-            "122:'+'",
-            "' ':'+'",
-            "' ':1.2",
-            "' ':'+'",
-            "A12:'+'",
-            "A25:'+'",
-            "' ':'+'",
-            "' ':'+'",
-            "' ':false",
-            "' ':true",
+            "122:'+'", "' ':'+'", "' ':1.2", "' ':'+'",   "A12:'+'",
+            "A25:'+'", "' ':'+'", "' ':'+'", "' ':false", "' ':true",
         };
 
         size_t n = MDDS_N_ELEMENTS(expected);
@@ -366,13 +364,7 @@ void mtm_test_parallel_walk()
         assert(func.get_name() == "test0-2");
 
         const char* expected[] = {
-            "' ':1.2",
-            "' ':'+'",
-            "A12:'+'",
-            "A25:'+'",
-            "' ':'+'",
-            "' ':'+'",
-            "' ':false",
+            "' ':1.2", "' ':'+'", "A12:'+'", "A25:'+'", "' ':'+'", "' ':'+'", "' ':false",
         };
 
         size_t n = MDDS_N_ELEMENTS(expected);
@@ -464,17 +456,14 @@ void mtm_test_parallel_walk_non_equal_size()
 void mtm_test_walk_with_lambda()
 {
     stack_printer __stack_printer__("::mtm_test_walk_with_lambda");
-    vector<double> values = { 1.1, 1.2, 1.3, 1.4 };
+    vector<double> values = {1.1, 1.2, 1.3, 1.4};
     mtx_type mtx(2, 2, values.begin(), values.end());
 
-    mtx.walk(
-        [](const mtx_type::element_block_node_type& node)
-        {
-            assert(node.type == mdds::mtm::element_numeric);
-            assert(node.offset == 0);
-            assert(node.size == 4);
-        }
-    );
+    mtx.walk([](const mtx_type::element_block_node_type& node) {
+        assert(node.type == mdds::mtm::element_numeric);
+        assert(node.offset == 0);
+        assert(node.size == 4);
+    });
 
     struct section
     {
@@ -482,29 +471,27 @@ void mtm_test_walk_with_lambda()
         size_t offset;
         size_t size;
 
-        bool operator== (const section& other) const
+        bool operator==(const section& other) const
         {
             return type == other.type && offset == other.offset && size == other.size;
         }
     };
 
     std::vector<section> expected = {
-        { mdds::mtm::element_numeric, 0, 1 },
-        { mdds::mtm::element_numeric, 2, 1 },
+        {mdds::mtm::element_numeric, 0, 1},
+        {mdds::mtm::element_numeric, 2, 1},
     };
 
     std::vector<section> actual;
 
     mtx.walk(
-        [&](const mtx_type::element_block_node_type& node)
-        {
+        [&](const mtx_type::element_block_node_type& node) {
             actual.emplace_back();
             actual.back().type = node.type;
             actual.back().offset = node.offset;
             actual.back().size = node.size;
-        }
-        ,
-        { 0, 0 }, { 0, 1 } // (row=0, column=0) to (row=0, column=1)
+        },
+        {0, 0}, {0, 1} // (row=0, column=0) to (row=0, column=1)
     );
 
     assert(expected == actual);
@@ -514,7 +501,7 @@ void mtm_test_parallel_walk_with_lambda()
 {
     stack_printer __stack_printer__("::mtm_test_parallel_walk_with_lambda");
 
-    vector<double> values = { 1.1, 1.2, 1.3, 1.4 };
+    vector<double> values = {1.1, 1.2, 1.3, 1.4};
     mtx_type mtx1(2, 2, values.begin(), values.end());
 
     mtx_type mtx2(2, 2);
@@ -529,7 +516,7 @@ void mtm_test_parallel_walk_with_lambda()
         size_t offset;
         size_t size;
 
-        bool operator== (const section& other) const
+        bool operator==(const section& other) const
         {
             return type == other.type && offset == other.offset && size == other.size;
         }
@@ -540,15 +527,15 @@ void mtm_test_parallel_walk_with_lambda()
         section left;
         section right;
 
-        bool operator== (const section_pair& other) const
+        bool operator==(const section_pair& other) const
         {
             return left == other.left && right == other.right;
         }
     };
 
     std::vector<section_pair> expected = {
-        { { mdds::mtm::element_numeric, 0, 2 }, { mdds::mtm::element_numeric, 0, 2 } },
-        { { mdds::mtm::element_numeric, 2, 2 }, { mdds::mtm::element_boolean, 0, 2 } },
+        {{mdds::mtm::element_numeric, 0, 2}, {mdds::mtm::element_numeric, 0, 2}},
+        {{mdds::mtm::element_numeric, 2, 2}, {mdds::mtm::element_boolean, 0, 2}},
     };
 
     std::vector<section_pair> actual;
@@ -556,19 +543,17 @@ void mtm_test_parallel_walk_with_lambda()
     cout << "--" << endl;
 
     mtx1.walk(
-        [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r)
-        {
+        [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r) {
             cout << "left: " << l << "; right: " << r << endl;
             actual.emplace_back();
-            actual.back().left.type   = l.type;
+            actual.back().left.type = l.type;
             actual.back().left.offset = l.offset;
-            actual.back().left.size   = l.size;
-            actual.back().right.type   = r.type;
+            actual.back().left.size = l.size;
+            actual.back().right.type = r.type;
             actual.back().right.offset = r.offset;
-            actual.back().right.size   = r.size;
+            actual.back().right.size = r.size;
         },
-        mtx2
-    );
+        mtx2);
 
     assert(expected == actual);
 
@@ -583,15 +568,15 @@ void mtm_test_parallel_walk_with_lambda()
     mtx3.set(2, 2, false);
 
     expected = {
-        { { mdds::mtm::element_numeric, 0, 2 }, { mdds::mtm::element_string, 0, 2 } },
-        { { mdds::mtm::element_boolean, 0, 1 }, { mdds::mtm::element_string, 2, 1 } },
+        {{mdds::mtm::element_numeric, 0, 2}, {mdds::mtm::element_string, 0, 2}},
+        {{mdds::mtm::element_boolean, 0, 1}, {mdds::mtm::element_string, 2, 1}},
 
-        { { mdds::mtm::element_numeric, 0, 2 }, { mdds::mtm::element_numeric, 0, 2 } },
-        { { mdds::mtm::element_numeric, 2, 1 }, { mdds::mtm::element_string, 0, 1 } },
+        {{mdds::mtm::element_numeric, 0, 2}, {mdds::mtm::element_numeric, 0, 2}},
+        {{mdds::mtm::element_numeric, 2, 1}, {mdds::mtm::element_string, 0, 1}},
 
-        { { mdds::mtm::element_numeric, 4, 1 }, { mdds::mtm::element_numeric, 0, 1 } },
-        { { mdds::mtm::element_boolean, 0, 1 }, { mdds::mtm::element_numeric, 1, 1 } },
-        { { mdds::mtm::element_boolean, 1, 1 }, { mdds::mtm::element_string, 0, 1 } },
+        {{mdds::mtm::element_numeric, 4, 1}, {mdds::mtm::element_numeric, 0, 1}},
+        {{mdds::mtm::element_boolean, 0, 1}, {mdds::mtm::element_numeric, 1, 1}},
+        {{mdds::mtm::element_boolean, 1, 1}, {mdds::mtm::element_string, 0, 1}},
     };
 
     actual.clear();
@@ -599,20 +584,17 @@ void mtm_test_parallel_walk_with_lambda()
     cout << "--" << endl;
 
     mtx3.walk(
-        [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r)
-        {
+        [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r) {
             cout << "left: " << l << "; right: " << r << endl;
             actual.emplace_back();
-            actual.back().left.type   = l.type;
+            actual.back().left.type = l.type;
             actual.back().left.offset = l.offset;
-            actual.back().left.size   = l.size;
-            actual.back().right.type   = r.type;
+            actual.back().left.size = l.size;
+            actual.back().right.type = r.type;
             actual.back().right.offset = r.offset;
-            actual.back().right.size   = r.size;
+            actual.back().right.size = r.size;
         },
-        mtx4,
-        { 0, 0 }, { 2, 2 }
-    );
+        mtx4, {0, 0}, {2, 2});
 
     assert(expected.size() == actual.size());
     assert(expected[0] == actual[0]);
@@ -624,7 +606,7 @@ void mtm_test_parallel_walk_with_lambda()
     assert(expected[6] == actual[6]);
 }
 
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
     try
     {

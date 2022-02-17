@@ -1,7 +1,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2010 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -43,8 +43,7 @@ namespace {
 class StackPrinter
 {
 public:
-    explicit StackPrinter(const char* msg) :
-        msMsg(msg)
+    explicit StackPrinter(const char* msg) : msMsg(msg)
     {
         fprintf(stdout, "%s: --begin\n", msMsg.c_str());
         mfStartTime = getTime();
@@ -53,13 +52,13 @@ public:
     ~StackPrinter()
     {
         double fEndTime = getTime();
-        fprintf(stdout, "%s: --end (duration: %g sec)\n", msMsg.c_str(), (fEndTime-mfStartTime));
+        fprintf(stdout, "%s: --end (duration: %g sec)\n", msMsg.c_str(), (fEndTime - mfStartTime));
     }
 
     void printTime(int line) const
     {
         double fEndTime = getTime();
-        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", msMsg.c_str(), line, (fEndTime-mfStartTime));
+        fprintf(stdout, "%s: --(%d) (duration: %g sec)\n", msMsg.c_str(), line, (fEndTime - mfStartTime));
     }
 
 private:
@@ -74,7 +73,7 @@ private:
     double mfStartTime;
 };
 
-}
+} // namespace
 
 int main()
 {
@@ -156,7 +155,7 @@ int main()
 
     {
         StackPrinter __stack_printer__("set");
-        set<void*> store;   
+        set<void*> store;
         {
             StackPrinter __stack_printer2__("  insert");
             string* ptr = 0x00000000;

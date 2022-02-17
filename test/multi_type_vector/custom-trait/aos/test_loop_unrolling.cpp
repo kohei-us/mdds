@@ -32,4 +32,3 @@
 #include "loop_unrolling.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

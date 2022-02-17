@@ -71,10 +71,9 @@ void rtree_test_basic_search()
     size_t n = std::distance(it, it_end);
     assert(n == 2);
 
-    std::unordered_map<std::string, rt_type::extent_type> expected_values =
-    {
-        { "test",      {{ 0, 0}, {2, 2}} },
-        { "more test", {{-2, 1}, {3, 6}} },
+    std::unordered_map<std::string, rt_type::extent_type> expected_values = {
+        {"test", {{0, 0}, {2, 2}}},
+        {"more test", {{-2, 1}, {3, 6}}},
     };
 
     for (; it != it_end; ++it)
@@ -87,8 +86,7 @@ void rtree_test_basic_search()
     }
 
     // Perform an out-of-bound search by point.
-    std::vector<rt_type::point_type> pts =
-    {
+    std::vector<rt_type::point_type> pts = {
         {-10, -10},
         {1, 7},
         {6, 3},
@@ -111,7 +109,7 @@ void rtree_test_basic_erase()
 
     rt_type tree;
     const rt_type& ctree = tree;
-    tree.insert({{-2,-2}, {2,2}}, "erase me");
+    tree.insert({{-2, -2}, {2, 2}}, "erase me");
     assert(!tree.empty());
     assert(tree.size() == 1);
 
@@ -128,9 +126,9 @@ void rtree_test_basic_erase()
     assert(tree.size() == 0);
     assert(rt_type::extent_type() == tree.extent());
 
-    tree.insert({{0,0}, {2,2}}, "erase me");
-    tree.insert({{-10,-4}, {0,0}}, "erase me");
-    rt_type::extent_type expected_bb({-10,-4}, {2,2});
+    tree.insert({{0, 0}, {2, 2}}, "erase me");
+    tree.insert({{-10, -4}, {0, 0}}, "erase me");
+    rt_type::extent_type expected_bb({-10, -4}, {2, 2});
     assert(tree.extent() == expected_bb);
     assert(tree.size() == 2);
 
@@ -141,11 +139,10 @@ void rtree_test_basic_erase()
     tree.erase(it);
     assert(!tree.empty()); // there should be one value stored in the tree.
     assert(tree.size() == 1);
-    expected_bb = {{0,0}, {2,2}};
+    expected_bb = {{0, 0}, {2, 2}};
     assert(tree.extent() == expected_bb);
 
     tree.check_integrity(check_props);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

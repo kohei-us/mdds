@@ -49,13 +49,13 @@ struct checked_method_props
     std::string function_name;
     trace_method_t type = trace_method_t::unspecified;
 
-    bool operator== (const checked_method_props& other) const
+    bool operator==(const checked_method_props& other) const
     {
         return instance == other.instance && function_name == other.function_name && type == other.type;
     }
 };
 
-std::ostream& operator<< (std::ostream& os, const checked_method_props& v)
+std::ostream& operator<<(std::ostream& os, const checked_method_props& v)
 {
     os << "{instance: " << v.instance << ", function_name: " << v.function_name << ", type: " << int(v.type);
     return os;
@@ -78,9 +78,10 @@ class test_scope
     std::vector<checked_method_props> m_expected;
     std::vector<checked_method_props>& m_observed;
     int m_line_number;
+
 public:
-    test_scope(std::vector<checked_method_props>& observed, int line_number) :
-        m_observed(observed), m_line_number(line_number)
+    test_scope(std::vector<checked_method_props>& observed, int line_number)
+        : m_observed(observed), m_line_number(line_number)
     {
         std::cout << "--" << std::endl;
     }
@@ -107,10 +108,8 @@ struct mtv_custom_trait : public mdds::mtv::default_trait
 {
     static void trace(const mdds::mtv::trace_method_properties_t& props)
     {
-        std::cout << "[" << props.instance << "]: {" << props.function_name
-            << ": " << props.function_args
-            << "}; type=" << int(props.type)
-            << std::endl;
+        std::cout << "[" << props.instance << "]: {" << props.function_name << ": " << props.function_args
+                  << "}; type=" << int(props.type) << std::endl;
 
         // Some compilers put an extra space after the 'operator'. Let's delete that extra space char.
         std::string func_name = props.function_name;
@@ -119,7 +118,7 @@ struct mtv_custom_trait : public mdds::mtv::default_trait
             std::string rest = func_name.substr(9);
             func_name = "operator" + rest;
         }
-        observed.push_back({ props.instance, func_name, props.type });
+        observed.push_back({props.instance, func_name, props.type});
     }
 };
 
@@ -146,16 +145,16 @@ int main()
             db.clear();
 
             ts.expected() = {
-                { &db, "multi_type_vector", trace_method_t::constructor },
-                { &db, "begin", trace_method_t::accessor },
-                { &db, "set", trace_method_t::mutator_with_pos_hint },
-                { &db, "set", trace_method_t::mutator_with_pos_hint },
-                { &db, "get", trace_method_t::accessor },
-                { &db, "is_empty", trace_method_t::accessor },
-                { &db, "get_type", trace_method_t::accessor },
-                { &db, "size", trace_method_t::accessor },
-                { &db, "clear", trace_method_t::mutator },
-                { &db, "~multi_type_vector", trace_method_t::destructor },
+                {&db, "multi_type_vector", trace_method_t::constructor},
+                {&db, "begin", trace_method_t::accessor},
+                {&db, "set", trace_method_t::mutator_with_pos_hint},
+                {&db, "set", trace_method_t::mutator_with_pos_hint},
+                {&db, "get", trace_method_t::accessor},
+                {&db, "is_empty", trace_method_t::accessor},
+                {&db, "get_type", trace_method_t::accessor},
+                {&db, "size", trace_method_t::accessor},
+                {&db, "clear", trace_method_t::mutator},
+                {&db, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -179,15 +178,15 @@ int main()
             [[maybe_unused]] auto it_end = db.end();
 
             ts.expected() = {
-                { &db, "multi_type_vector", trace_method_t::constructor },
-                { &db, "set", trace_method_t::mutator },
-                { &db, "set", trace_method_t::mutator },
-                { &db, "block_size", trace_method_t::accessor },
-                { &db, "empty", trace_method_t::accessor },
-                { &db, "get", trace_method_t::accessor },
-                { &db, "clear", trace_method_t::mutator },
-                { &db, "end", trace_method_t::accessor },
-                { &db, "~multi_type_vector", trace_method_t::destructor },
+                {&db, "multi_type_vector", trace_method_t::constructor},
+                {&db, "set", trace_method_t::mutator},
+                {&db, "set", trace_method_t::mutator},
+                {&db, "block_size", trace_method_t::accessor},
+                {&db, "empty", trace_method_t::accessor},
+                {&db, "get", trace_method_t::accessor},
+                {&db, "clear", trace_method_t::mutator},
+                {&db, "end", trace_method_t::accessor},
+                {&db, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -197,7 +196,7 @@ int main()
         test_scope ts(observed, __LINE__);
         {
             mtv_type db1;
-            mtv_type db2{ mtv_type::event_func() }; // move
+            mtv_type db2{mtv_type::event_func()}; // move
             mtv_type::event_func ef;
             mtv_type db3(ef); // copy
 
@@ -206,30 +205,30 @@ int main()
             [[maybe_unused]] const auto& cref_ef = cdb3.event_handler(); // const ref
 
             mtv_type db4(20, true); // constructor with one init value
-            std::vector<int32_t> values = { 1, 2, 3, 4, 5 };
+            std::vector<int32_t> values = {1, 2, 3, 4, 5};
             mtv_type db5(5, values.begin(), values.end()); // constructor with a series of values
 
             mtv_type db6(db5); // copy constructor
             mtv_type db7(std::move(db6)); // move constructor
 
             ts.expected() = {
-                { &db1, "multi_type_vector", trace_method_t::constructor },
-                { &db2, "multi_type_vector", trace_method_t::constructor },
-                { &db3, "multi_type_vector", trace_method_t::constructor },
-                { &db3, "event_handler", trace_method_t::accessor },
-                { &db3, "event_handler", trace_method_t::accessor },
-                { &db4, "multi_type_vector", trace_method_t::constructor },
-                { &db5, "multi_type_vector", trace_method_t::constructor },
-                { &db6, "multi_type_vector", trace_method_t::constructor },
-                { &db7, "multi_type_vector", trace_method_t::constructor },
+                {&db1, "multi_type_vector", trace_method_t::constructor},
+                {&db2, "multi_type_vector", trace_method_t::constructor},
+                {&db3, "multi_type_vector", trace_method_t::constructor},
+                {&db3, "event_handler", trace_method_t::accessor},
+                {&db3, "event_handler", trace_method_t::accessor},
+                {&db4, "multi_type_vector", trace_method_t::constructor},
+                {&db5, "multi_type_vector", trace_method_t::constructor},
+                {&db6, "multi_type_vector", trace_method_t::constructor},
+                {&db7, "multi_type_vector", trace_method_t::constructor},
 
-                { &db7, "~multi_type_vector", trace_method_t::destructor },
-                { &db6, "~multi_type_vector", trace_method_t::destructor },
-                { &db5, "~multi_type_vector", trace_method_t::destructor },
-                { &db4, "~multi_type_vector", trace_method_t::destructor },
-                { &db3, "~multi_type_vector", trace_method_t::destructor },
-                { &db2, "~multi_type_vector", trace_method_t::destructor },
-                { &db1, "~multi_type_vector", trace_method_t::destructor },
+                {&db7, "~multi_type_vector", trace_method_t::destructor},
+                {&db6, "~multi_type_vector", trace_method_t::destructor},
+                {&db5, "~multi_type_vector", trace_method_t::destructor},
+                {&db4, "~multi_type_vector", trace_method_t::destructor},
+                {&db3, "~multi_type_vector", trace_method_t::destructor},
+                {&db2, "~multi_type_vector", trace_method_t::destructor},
+                {&db1, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -248,13 +247,13 @@ int main()
             cpos = cdb.position(pos_hint, 1);
 
             ts.expected() = {
-                { &db, "multi_type_vector", trace_method_t::constructor },
-                { &db, "position", trace_method_t::accessor },
-                { &db, "begin", trace_method_t::accessor },
-                { &db, "position", trace_method_t::accessor_with_pos_hint },
-                { &db, "position", trace_method_t::accessor },
-                { &db, "position", trace_method_t::accessor_with_pos_hint },
-                { &db, "~multi_type_vector", trace_method_t::destructor },
+                {&db, "multi_type_vector", trace_method_t::constructor},
+                {&db, "position", trace_method_t::accessor},
+                {&db, "begin", trace_method_t::accessor},
+                {&db, "position", trace_method_t::accessor_with_pos_hint},
+                {&db, "position", trace_method_t::accessor},
+                {&db, "position", trace_method_t::accessor_with_pos_hint},
+                {&db, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -264,7 +263,7 @@ int main()
         test_scope ts(observed, __LINE__);
         {
             mtv_type db(10);
-            std::vector<uint8_t> values = { 3, 4, 5, 6 };
+            std::vector<uint8_t> values = {3, 4, 5, 6};
             auto pos_hint = db.set(2, values.begin(), values.end());
             pos_hint = db.set(pos_hint, 4, values.begin(), values.end());
             db.push_back<int16_t>(456);
@@ -278,19 +277,19 @@ int main()
             db.insert_empty(pos_hint, 15, 2);
 
             ts.expected() = {
-                { &db, "multi_type_vector", trace_method_t::constructor },
-                { &db, "set", trace_method_t::mutator },
-                { &db, "set", trace_method_t::mutator_with_pos_hint },
-                { &db, "push_back", trace_method_t::mutator },
-                { &db, "push_back_empty", trace_method_t::mutator },
-                { &db, "insert", trace_method_t::mutator },
-                { &db, "insert", trace_method_t::mutator_with_pos_hint },
-                { &db, "set_empty", trace_method_t::mutator },
-                { &db, "set_empty", trace_method_t::mutator_with_pos_hint },
-                { &db, "erase", trace_method_t::mutator },
-                { &db, "insert_empty", trace_method_t::mutator },
-                { &db, "insert_empty", trace_method_t::mutator_with_pos_hint },
-                { &db, "~multi_type_vector", trace_method_t::destructor },
+                {&db, "multi_type_vector", trace_method_t::constructor},
+                {&db, "set", trace_method_t::mutator},
+                {&db, "set", trace_method_t::mutator_with_pos_hint},
+                {&db, "push_back", trace_method_t::mutator},
+                {&db, "push_back_empty", trace_method_t::mutator},
+                {&db, "insert", trace_method_t::mutator},
+                {&db, "insert", trace_method_t::mutator_with_pos_hint},
+                {&db, "set_empty", trace_method_t::mutator},
+                {&db, "set_empty", trace_method_t::mutator_with_pos_hint},
+                {&db, "erase", trace_method_t::mutator},
+                {&db, "insert_empty", trace_method_t::mutator},
+                {&db, "insert_empty", trace_method_t::mutator_with_pos_hint},
+                {&db, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -304,18 +303,18 @@ int main()
             pos_hint = src.transfer(pos_hint, 6, 8, dst, 6);
 
             ts.expected() = {
-                { &src, "multi_type_vector", trace_method_t::constructor },
-                { &dst, "multi_type_vector", trace_method_t::constructor },
+                {&src, "multi_type_vector", trace_method_t::constructor},
+                {&dst, "multi_type_vector", trace_method_t::constructor},
                 // transfer() calls destination's size() and set_empty() internally.
-                { &src, "transfer", trace_method_t::mutator },
-                { &dst, "size", trace_method_t::accessor },
-                { &dst, "set_empty", trace_method_t::mutator },
+                {&src, "transfer", trace_method_t::mutator},
+                {&dst, "size", trace_method_t::accessor},
+                {&dst, "set_empty", trace_method_t::mutator},
                 // same here...
-                { &src, "transfer", trace_method_t::mutator_with_pos_hint },
-                { &dst, "size", trace_method_t::accessor },
-                { &dst, "set_empty", trace_method_t::mutator },
-                { &dst, "~multi_type_vector", trace_method_t::destructor },
-                { &src, "~multi_type_vector", trace_method_t::destructor },
+                {&src, "transfer", trace_method_t::mutator_with_pos_hint},
+                {&dst, "size", trace_method_t::accessor},
+                {&dst, "set_empty", trace_method_t::mutator},
+                {&dst, "~multi_type_vector", trace_method_t::destructor},
+                {&src, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -332,12 +331,12 @@ int main()
             db.release(); // final variant
 
             ts.expected() = {
-                { &db, "multi_type_vector", trace_method_t::constructor },
-                { &db, "release", trace_method_t::mutator },
-                { &db, "release", trace_method_t::mutator },
-                { &db, "release", trace_method_t::mutator_with_pos_hint },
-                { &db, "release", trace_method_t::mutator },
-                { &db, "~multi_type_vector", trace_method_t::destructor },
+                {&db, "multi_type_vector", trace_method_t::constructor},
+                {&db, "release", trace_method_t::mutator},
+                {&db, "release", trace_method_t::mutator},
+                {&db, "release", trace_method_t::mutator_with_pos_hint},
+                {&db, "release", trace_method_t::mutator},
+                {&db, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -351,10 +350,10 @@ int main()
             pos_hint = db.release_range(pos_hint, 5, 7);
 
             ts.expected() = {
-                { &db, "multi_type_vector", trace_method_t::constructor },
-                { &db, "release_range", trace_method_t::mutator },
-                { &db, "release_range", trace_method_t::mutator_with_pos_hint },
-                { &db, "~multi_type_vector", trace_method_t::destructor },
+                {&db, "multi_type_vector", trace_method_t::constructor},
+                {&db, "release_range", trace_method_t::mutator},
+                {&db, "release_range", trace_method_t::mutator_with_pos_hint},
+                {&db, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -383,20 +382,20 @@ int main()
             crit = cdb.crend();
 
             ts.expected() = {
-                { &db, "multi_type_vector", trace_method_t::constructor },
-                { &db, "begin", trace_method_t::accessor },
-                { &db, "end", trace_method_t::accessor },
-                { &db, "cbegin", trace_method_t::accessor },
-                { &db, "cend", trace_method_t::accessor },
-                { &db, "begin", trace_method_t::accessor },
-                { &db, "end", trace_method_t::accessor },
-                { &db, "rbegin", trace_method_t::accessor },
-                { &db, "rend", trace_method_t::accessor },
-                { &db, "rbegin", trace_method_t::accessor },
-                { &db, "rend", trace_method_t::accessor },
-                { &db, "crbegin", trace_method_t::accessor },
-                { &db, "crend", trace_method_t::accessor },
-                { &db, "~multi_type_vector", trace_method_t::destructor },
+                {&db, "multi_type_vector", trace_method_t::constructor},
+                {&db, "begin", trace_method_t::accessor},
+                {&db, "end", trace_method_t::accessor},
+                {&db, "cbegin", trace_method_t::accessor},
+                {&db, "cend", trace_method_t::accessor},
+                {&db, "begin", trace_method_t::accessor},
+                {&db, "end", trace_method_t::accessor},
+                {&db, "rbegin", trace_method_t::accessor},
+                {&db, "rend", trace_method_t::accessor},
+                {&db, "rbegin", trace_method_t::accessor},
+                {&db, "rend", trace_method_t::accessor},
+                {&db, "crbegin", trace_method_t::accessor},
+                {&db, "crend", trace_method_t::accessor},
+                {&db, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -418,16 +417,16 @@ int main()
             b = db != db2;
 
             ts.expected() = {
-                { &db, "multi_type_vector", trace_method_t::constructor },
-                { &db, "resize", trace_method_t::mutator },
-                { &db2, "multi_type_vector", trace_method_t::constructor },
-                { &db2, "swap", trace_method_t::mutator },
-                { &db2, "swap", trace_method_t::mutator },
-                { &db2, "shrink_to_fit", trace_method_t::mutator },
-                { &db, "operator==", trace_method_t::accessor },
-                { &db, "operator!=", trace_method_t::accessor },
-                { &db2, "~multi_type_vector", trace_method_t::destructor },
-                { &db, "~multi_type_vector", trace_method_t::destructor },
+                {&db, "multi_type_vector", trace_method_t::constructor},
+                {&db, "resize", trace_method_t::mutator},
+                {&db2, "multi_type_vector", trace_method_t::constructor},
+                {&db2, "swap", trace_method_t::mutator},
+                {&db2, "swap", trace_method_t::mutator},
+                {&db2, "shrink_to_fit", trace_method_t::mutator},
+                {&db, "operator==", trace_method_t::accessor},
+                {&db, "operator!=", trace_method_t::accessor},
+                {&db2, "~multi_type_vector", trace_method_t::destructor},
+                {&db, "~multi_type_vector", trace_method_t::destructor},
             };
         }
     }
@@ -440,7 +439,7 @@ int main()
         mtv_type db, db2;
         observed.clear();
         db = db2; // copy
-        checked_method_props expected{ &db, "operator=", trace_method_t::mutator };
+        checked_method_props expected{&db, "operator=", trace_method_t::mutator};
         assert(compare(observed.at(0), expected));
 
         observed.clear();

@@ -37,7 +37,7 @@ void mtv_test_insert_empty()
 
         // Insert data from row 0 to 4.
         for (long i = 0; i < 5; ++i)
-            db.set(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i + 1));
 
         assert(db.block_size() == 2);
         assert(db.size() == 10);
@@ -63,7 +63,7 @@ void mtv_test_insert_empty()
     {
         mtv_type db(5);
         for (long i = 0; i < 5; ++i)
-            db.set(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i + 1));
 
         assert(db.block_size() == 1);
         assert(db.size() == 5);
@@ -158,9 +158,9 @@ void mtv_test_insert_cells()
         assert(db.block_size() == 1);
         assert(db.size() == 1);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.insert(0, p, p+3);
+        db.insert(0, p, p + 3);
         assert(db.block_size() == 1);
         assert(db.size() == 4);
         assert(db.get<double>(0) == 2.1);
@@ -175,9 +175,9 @@ void mtv_test_insert_cells()
         assert(db.block_size() == 1);
         assert(db.size() == 1);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.insert(0, p, p+3);
+        db.insert(0, p, p + 3);
         assert(db.block_size() == 2);
         assert(db.size() == 4);
         assert(db.get<double>(0) == 2.1);
@@ -192,9 +192,9 @@ void mtv_test_insert_cells()
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.insert(1, p, p+3);
+        db.insert(1, p, p + 3);
         assert(db.block_size() == 2);
         assert(db.size() == 5);
         assert(db.get<double>(0) == 1.1);
@@ -210,9 +210,9 @@ void mtv_test_insert_cells()
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.insert(1, p, p+3);
+        db.insert(1, p, p + 3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
         assert(db.get<uint64_t>(0) == 23);
@@ -224,9 +224,9 @@ void mtv_test_insert_cells()
 
     {
         mtv_type db(2);
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.insert(1, p, p+3);
+        db.insert(1, p, p + 3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
         assert(db.is_empty(0));
@@ -243,9 +243,9 @@ void mtv_test_insert_cells()
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.insert(1, p, p+3);
+        db.insert(1, p, p + 3);
         assert(db.block_size() == 2);
         assert(db.size() == 5);
         assert(db.get<double>(0) == 1.1);
@@ -262,9 +262,9 @@ void mtv_test_insert_cells()
         assert(db.block_size() == 2);
         assert(db.size() == 2);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.insert(1, p, p+3);
+        db.insert(1, p, p + 3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
         assert(db.get<bool>(0) == true);
@@ -281,9 +281,9 @@ void mtv_test_insert_cells()
         assert(db.block_size() == 1);
         assert(db.size() == 2);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.insert(1, p, p+3);
+        db.insert(1, p, p + 3);
         assert(db.block_size() == 3);
         assert(db.size() == 5);
         assert(db.get<uint64_t>(0) == 12);
@@ -300,9 +300,9 @@ void mtv_test_insert_cells()
         db.set(2, std::string("baa"));
         assert(db.size() == 3);
         assert(db.block_size() == 2);
-        double vals[] = { 2.1 };
+        double vals[] = {2.1};
         const double* p = &vals[0];
-        db.insert(2, p, p+1);
+        db.insert(2, p, p + 1);
         assert(db.size() == 4);
         assert(db.block_size() == 4);
     }
@@ -311,15 +311,15 @@ void mtv_test_insert_cells()
         mtv_type db(2);
         db.set(0, static_cast<uint64_t>(11));
         db.set(1, static_cast<uint64_t>(12));
-        double vals[] = { 1.2 };
+        double vals[] = {1.2};
         const double* p = &vals[0];
-        db.insert(1, p, p+1);
+        db.insert(1, p, p + 1);
         assert(db.block_size() == 3);
 
         // Append value to the top block.
-        uint64_t vals2[] = { 22 };
+        uint64_t vals2[] = {22};
         const uint64_t* p2 = &vals2[0];
-        db.insert(1, p2, p2+1);
+        db.insert(1, p2, p2 + 1);
         assert(db.block_size() == 3);
         assert(db.get<uint64_t>(0) == 11);
         assert(db.get<uint64_t>(1) == 22);
@@ -332,7 +332,7 @@ void mtv_test_insert_cells()
         db.push_back<double>(1.1);
         db.push_back<double>(1.2);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         const double* p = vals;
         db.insert(2, p, p + 3);
         assert(db.block_size() == 4);
@@ -354,7 +354,7 @@ void mtv_test_insert_cells()
         db.push_back<int32_t>(12);
         db.push_back<int32_t>(34);
 
-        int16_t vals[] = { 5, 6, 7 };
+        int16_t vals[] = {5, 6, 7};
         const int16_t* p = vals;
         db.insert(1, p, p + 3);
         assert(db.block_size() == 2);
@@ -373,4 +373,3 @@ void mtv_test_insert_cells()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

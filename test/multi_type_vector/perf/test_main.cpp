@@ -51,13 +51,13 @@ void mtv_perf_test_block_position_lookup()
         // from the position of the first block.  As such, as the block size
         // grows, so does the time it takes to search for the right block.
 
-        mtv_type db(n*2);
+        mtv_type db(n * 2);
         double val1 = 1.1;
         int val2 = 23;
         stack_printer __stack_printer__("::mtv_perf_test_block_position_lookup::default insertion");
         for (size_t i = 0; i < n; ++i)
         {
-            size_t pos1 = i*2, pos2 = i*2 + 1;
+            size_t pos1 = i * 2, pos2 = i * 2 + 1;
             db.set(pos1, val1);
             db.set(pos2, val2);
         }
@@ -67,14 +67,14 @@ void mtv_perf_test_block_position_lookup()
         // As a solution for this, we can use an iterator to specify the start
         // position, which eliminates the above scalability problem nicely.
 
-        mtv_type db(n*2);
+        mtv_type db(n * 2);
         mtv_type::iterator pos_hint = db.begin();
         double val1 = 1.1;
         int val2 = 23;
         stack_printer __stack_printer__("::mtv_perf_test_block_position_lookup::insertion with position hint");
         for (size_t i = 0; i < n; ++i)
         {
-            size_t pos1 = i*2, pos2 = i*2 + 1;
+            size_t pos1 = i * 2, pos2 = i * 2 + 1;
             pos_hint = db.set(pos_hint, pos1, val1);
             pos_hint = db.set(pos_hint, pos2, val2);
         }
@@ -90,7 +90,7 @@ void mtv_perf_test_insert_via_position_object()
         mtv_type::iterator it = db.begin();
         for (size_t i = 0, n = db.size() / 2; i < n; ++i)
         {
-            it = db.set(it, i*2, 1.1);
+            it = db.set(it, i * 2, 1.1);
         }
     }
 
@@ -117,9 +117,10 @@ void mtv_perf_test_insert_via_position_object()
     }
 }
 
-}
+} // namespace
 
-int main () try
+int main()
+try
 {
     mtv_perf_test_block_position_lookup();
     mtv_perf_test_insert_via_position_object();

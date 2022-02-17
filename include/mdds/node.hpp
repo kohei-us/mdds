@@ -45,8 +45,10 @@ struct node_base
     node_base* parent; /// parent nonleaf_node
     bool is_leaf;
 
-    node_base(bool _is_leaf) : parent(nullptr), is_leaf(_is_leaf) {}
-    node_base(const node_base& r) : parent(nullptr), is_leaf(r.is_leaf) {}
+    node_base(bool _is_leaf) : parent(nullptr), is_leaf(_is_leaf)
+    {}
+    node_base(const node_base& r) : parent(nullptr), is_leaf(r.is_leaf)
+    {}
 };
 
 template<typename T>
@@ -61,22 +63,19 @@ struct nonleaf_node : public node_base
 #endif
     nonleaf_value_type value_nonleaf;
 
-    node_base* left;   /// left child nonleaf_node
-    node_base* right;  /// right child nonleaf_node
+    node_base* left; /// left child nonleaf_node
+    node_base* right; /// right child nonleaf_node
 
 private:
-    fill_nonleaf_value_handler  _hdl_fill_nonleaf;
-    init_handler                _hdl_init;
-    dispose_handler             _hdl_dispose;
+    fill_nonleaf_value_handler _hdl_fill_nonleaf;
+    init_handler _hdl_init;
+    dispose_handler _hdl_dispose;
 #ifdef MDDS_UNIT_TEST
-    to_string_handler           _hdl_to_string;
+    to_string_handler _hdl_to_string;
 #endif
 
 public:
-    nonleaf_node() :
-        node_base(false),
-        left(nullptr),
-        right(nullptr)
+    nonleaf_node() : node_base(false), left(nullptr), right(nullptr)
     {
         _hdl_init(*this);
     }
@@ -85,10 +84,7 @@ public:
      * When copying nonleaf_node, only the stored values should be copied.
      * Connections to the parent, left and right nodes must not be copied.
      */
-    nonleaf_node(const nonleaf_node& r) :
-        node_base(r),
-        left(nullptr),
-        right(nullptr)
+    nonleaf_node(const nonleaf_node& r) : node_base(r), left(nullptr), right(nullptr)
     {
         value_nonleaf = r.value_nonleaf;
     }
@@ -142,7 +138,7 @@ public:
 template<typename T>
 struct node : public node_base
 {
-    typedef ::boost::intrusive_ptr<node>  node_ptr;
+    typedef ::boost::intrusive_ptr<node> node_ptr;
 
     typedef typename T::leaf_value_type leaf_value_type;
     typedef typename T::init_handler init_handler;
@@ -160,17 +156,18 @@ struct node : public node_base
 #endif
     }
 
-    leaf_value_type     value_leaf;
+    leaf_value_type value_leaf;
 
-    node_ptr    prev;   /// previous sibling leaf node.
-    node_ptr    next;  /// next sibling leaf node.
+    node_ptr prev; /// previous sibling leaf node.
+    node_ptr next; /// next sibling leaf node.
 
-    size_t      refcount;
+    size_t refcount;
+
 private:
-    init_handler                _hdl_init;
-    dispose_handler             _hdl_dispose;
+    init_handler _hdl_init;
+    dispose_handler _hdl_dispose;
 #ifdef MDDS_UNIT_TEST
-    to_string_handler           _hdl_to_string;
+    to_string_handler _hdl_to_string;
 #endif
 
 public:
@@ -268,8 +265,8 @@ public:
     typedef mdds::__st::nonleaf_node<T> nonleaf_node;
     typedef std::vector<nonleaf_node> nonleaf_node_pool_type;
 
-    tree_builder(nonleaf_node_pool_type& pool) :
-        m_pool(pool), m_pool_pos(pool.begin()), m_pool_pos_end(pool.end()) {}
+    tree_builder(nonleaf_node_pool_type& pool) : m_pool(pool), m_pool_pos(pool.begin()), m_pool_pos_end(pool.end())
+    {}
 
     nonleaf_node* build(const leaf_node_ptr& left_leaf_node)
     {
@@ -297,7 +294,6 @@ public:
     }
 
 private:
-
     nonleaf_node* make_parent_node(node_base* node1, node_base* node2)
     {
         assert(m_pool_pos != m_pool_pos_end);
@@ -360,7 +356,6 @@ private:
     typename nonleaf_node_pool_type::iterator m_pool_pos_end;
 };
 
-
 template<typename T>
 void disconnect_all_nodes(node<T>* p)
 {
@@ -385,8 +380,7 @@ void disconnect_leaf_nodes(node<T>* left_node, node<T>* right_node)
         node<T>* next_node = cur_node->next.get();
         disconnect_all_nodes(cur_node);
         cur_node = next_node;
-    }
-    while (cur_node != right_node);
+    } while (cur_node != right_node);
 
     disconnect_all_nodes(right_node);
 }
@@ -452,7 +446,7 @@ private:
         size_t node_count = node_list.size();
 
         bool is_leaf = node_list.front()->is_leaf;
-        cout << "level " << level << " (" << (is_leaf?"leaf":"non-leaf") << ")" << endl;
+        cout << "level " << level << " (" << (is_leaf ? "leaf" : "non-leaf") << ")" << endl;
 
         node_list_type new_list;
         typename node_list_type::const_iterator it = node_list.begin(), it_end = node_list.end();
@@ -483,7 +477,7 @@ private:
         cout << endl;
 
         if (!new_list.empty())
-            node_count += dump_layer(new_list, level+1);
+            node_count += dump_layer(new_list, level + 1);
 
         return node_count;
     }
@@ -491,6 +485,6 @@ private:
 
 #endif
 
-}}
+}} // namespace mdds::__st
 
 #endif

@@ -42,27 +42,27 @@ struct ref_pair
     first_type first;
     second_type second;
 
-    ref_pair(first_type _first, second_type _second) :
-        first(_first), second(_second) {}
+    ref_pair(first_type _first, second_type _second) : first(_first), second(_second)
+    {}
 
     ref_pair(const ref_pair& other) = default;
 
-    bool operator== (const std::pair<typename std::decay<T1>::type, typename std::decay<T2>::type>& other) const
+    bool operator==(const std::pair<typename std::decay<T1>::type, typename std::decay<T2>::type>& other) const
     {
         return first == other.first && second == other.second;
     }
 
-    bool operator!= (const std::pair<typename std::decay<T1>::type, typename std::decay<T2>::type>& other) const
+    bool operator!=(const std::pair<typename std::decay<T1>::type, typename std::decay<T2>::type>& other) const
     {
         return !operator==(other);
     }
 
-    bool operator== (const ref_pair& other) const
+    bool operator==(const ref_pair& other) const
     {
         return first == other.first && second == other.second;
     }
 
-    bool operator!= (const ref_pair& other) const
+    bool operator!=(const ref_pair& other) const
     {
         return !operator==(other);
     }
@@ -73,8 +73,7 @@ struct ref_pair
     }
 };
 
-}}
-
+}} // namespace mdds::detail
 
 #endif
 

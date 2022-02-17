@@ -83,4 +83,3 @@ void rtree_test_exact_search_by_extent()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

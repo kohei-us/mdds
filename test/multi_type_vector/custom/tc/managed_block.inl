@@ -291,9 +291,9 @@ void mtv_test_managed_block()
         mtv_type db(2);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
-        double vals[] = { 3.0 };
+        double vals[] = {3.0};
         const double* p = &vals[0];
-        db.set(0, p, p+1);
+        db.set(0, p, p + 1);
         assert(db.get<double>(0) == 3.0);
         assert(db.get<muser_cell*>(1)->value == 2.0);
     }
@@ -303,9 +303,9 @@ void mtv_test_managed_block()
         mtv_type db(2);
         db.set(0, new muser_cell(1.0));
         db.set(1, new muser_cell(2.0));
-        double vals[] = { 3.0 };
+        double vals[] = {3.0};
         const double* p = &vals[0];
-        db.set(1, p, p+1);
+        db.set(1, p, p + 1);
         assert(db.get<muser_cell*>(0)->value == 1.0);
         assert(db.get<double>(1) == 3.0);
     }
@@ -317,9 +317,9 @@ void mtv_test_managed_block()
         db.set(1, new muser_cell(1.0));
         db.set(2, new muser_cell(2.0));
         db.set(3, new muser_cell(3.0));
-        double vals[] = { 4.0 };
+        double vals[] = {4.0};
         const double* p = &vals[0];
-        db.set(2, p, p+1);
+        db.set(2, p, p + 1);
         assert(db.get<muser_cell*>(1)->value == 1.0);
         assert(db.get<double>(2) == 4.0);
         assert(db.get<muser_cell*>(3)->value == 3.0);
@@ -362,9 +362,9 @@ void mtv_test_managed_block()
         db.set(2, 1.2);
         db.set(3, new muser_cell(3.0));
         db.set(4, new muser_cell(4.0));
-        uint64_t vals[] = { 5, 6, 7 };
+        uint64_t vals[] = {5, 6, 7};
         const uint64_t* p = &vals[0];
-        db.set(1, p, p+3);
+        db.set(1, p, p + 3);
     }
 
     {
@@ -432,9 +432,9 @@ void mtv_test_managed_block()
         mtv_type db(2);
         db.set(0, new muser_cell(2.1));
         db.set(1, new muser_cell(2.2));
-        double vals[] = { 3.1, 3.2 };
+        double vals[] = {3.1, 3.2};
         const double* p = &vals[0];
-        db.insert(1, p, p+2);
+        db.insert(1, p, p + 2);
     }
 
     {
@@ -653,4 +653,3 @@ void mtv_test_managed_block()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

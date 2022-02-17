@@ -887,4 +887,3 @@ void mtv_test_iterators_set_2()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

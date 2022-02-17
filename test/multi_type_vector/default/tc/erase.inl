@@ -54,7 +54,7 @@ void mtv_test_erase()
         // Single non-empty block.
         mtv_type db(5);
         for (long i = 0; i < 5; ++i)
-            db.set(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i + 1));
 
         assert(db.block_size() == 1);
         assert(db.size() == 5);
@@ -76,7 +76,7 @@ void mtv_test_erase()
         // Two blocks - non-empty to empty blocks.
         mtv_type db(8);
         for (long i = 0; i < 4; ++i)
-            db.set(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i + 1));
 
         assert(db.block_size() == 2);
         assert(db.size() == 8);
@@ -105,10 +105,10 @@ void mtv_test_erase()
         // Two blocks - non-empty to non-empty blocks.
         mtv_type db(8);
         for (long i = 0; i < 4; ++i)
-            db.set(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i + 1));
 
         for (long i = 4; i < 8; ++i)
-            db.set(i, static_cast<uint64_t>(i+1));
+            db.set(i, static_cast<uint64_t>(i + 1));
 
         assert(db.block_size() == 2);
         assert(db.size() == 8);
@@ -138,15 +138,15 @@ void mtv_test_erase()
         // 3 blocks, all non-empty.
         mtv_type db(9);
         for (long i = 0; i < 3; ++i)
-            db.set(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i + 1));
 
         for (long i = 3; i < 6; ++i)
-            db.set(i, static_cast<uint64_t>(i+1));
+            db.set(i, static_cast<uint64_t>(i + 1));
 
         for (long i = 6; i < 9; ++i)
         {
             std::ostringstream os;
-            os << i+1;
+            os << i + 1;
             db.set(i, os.str());
         }
 
@@ -358,4 +358,3 @@ void mtv_test_erase()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

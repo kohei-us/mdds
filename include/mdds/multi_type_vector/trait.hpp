@@ -197,8 +197,7 @@ void element_block_func_base::delete_block(const base_element_block* p)
             // destructor and destructors should not throw exceptions.
             std::ostringstream os;
             os << __FILE__ << "#" << __LINE__ << " (element_block_func_base:delete_block): "
-                 << "failed to delete a block of unknown type (" << get_block_type(*p) << ")"
-                 << std::endl;
+               << "failed to delete a block of unknown type (" << get_block_type(*p) << ")" << std::endl;
             throw general_error(os.str());
 #else
             throw general_error("delete_block: failed to delete a block of unknown type.");
@@ -651,8 +650,7 @@ bool element_block_func_base::equal_block(const base_element_block& left, const 
             return int8_element_block::get(left) == int8_element_block::get(right);
         case element_type_uint8:
             return uint8_element_block::get(left) == uint8_element_block::get(right);
-        default:
-            ;
+        default:;
     }
     return false;
 }
@@ -744,11 +742,12 @@ size_t element_block_func_base::size(const base_element_block& block)
  * Default cell block function definitions.  Implementation can use this if
  * it only uses the default block types implemented by the library.
  */
-struct element_block_func : public element_block_func_base {};
+struct element_block_func : public element_block_func_base
+{
+};
 
-}}
+}} // namespace mdds::mtv
 
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

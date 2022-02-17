@@ -28,7 +28,7 @@
 
 struct event_block_counter
 {
-    size_t block_count;  // number of element (data) blocks
+    size_t block_count; // number of element (data) blocks
     size_t block_count_numeric;
     size_t block_count_string;
     size_t block_count_int16;
@@ -41,37 +41,19 @@ struct event_block_counter
     size_t block_count_int8;
     size_t block_count_uint8;
 
-    event_block_counter() :
-        block_count(0),
-        block_count_numeric(0),
-        block_count_string(0),
-        block_count_int16(0),
-        block_count_uint16(0),
-        block_count_int32(0),
-        block_count_uint32(0),
-        block_count_int64(0),
-        block_count_uint64(0),
-        block_count_boolean(0),
-        block_count_int8(0),
-        block_count_uint8(0)
+    event_block_counter()
+        : block_count(0), block_count_numeric(0), block_count_string(0), block_count_int16(0), block_count_uint16(0),
+          block_count_int32(0), block_count_uint32(0), block_count_int64(0), block_count_uint64(0),
+          block_count_boolean(0), block_count_int8(0), block_count_uint8(0)
     {}
 
     /**
      * This copy constructor intentionally does not copy the counters.
      */
-    event_block_counter(const event_block_counter&) :
-        block_count(0),
-        block_count_numeric(0),
-        block_count_string(0),
-        block_count_int16(0),
-        block_count_uint16(0),
-        block_count_int32(0),
-        block_count_uint32(0),
-        block_count_int64(0),
-        block_count_uint64(0),
-        block_count_boolean(0),
-        block_count_int8(0),
-        block_count_uint8(0)
+    event_block_counter(const event_block_counter&)
+        : block_count(0), block_count_numeric(0), block_count_string(0), block_count_int16(0), block_count_uint16(0),
+          block_count_int32(0), block_count_uint32(0), block_count_int64(0), block_count_uint64(0),
+          block_count_boolean(0), block_count_int8(0), block_count_uint8(0)
     {}
 
     void element_block_acquired(const mdds::mtv::base_element_block* block)
@@ -82,39 +64,38 @@ struct event_block_counter
         {
             case mdds::mtv::element_type_double:
                 ++block_count_numeric;
-            break;
+                break;
             case mdds::mtv::element_type_string:
                 ++block_count_string;
-            break;
+                break;
             case mdds::mtv::element_type_int16:
                 ++block_count_int16;
-            break;
+                break;
             case mdds::mtv::element_type_uint16:
                 ++block_count_uint16;
-            break;
+                break;
             case mdds::mtv::element_type_int32:
                 ++block_count_int32;
-            break;
+                break;
             case mdds::mtv::element_type_uint32:
                 ++block_count_uint32;
-            break;
+                break;
             case mdds::mtv::element_type_int64:
                 ++block_count_int64;
-            break;
+                break;
             case mdds::mtv::element_type_uint64:
                 ++block_count_uint64;
-            break;
+                break;
             case mdds::mtv::element_type_boolean:
                 ++block_count_boolean;
-            break;
+                break;
             case mdds::mtv::element_type_int8:
                 ++block_count_int8;
-            break;
+                break;
             case mdds::mtv::element_type_uint8:
                 ++block_count_uint8;
-            break;
-            default:
-                ;
+                break;
+            default:;
         }
     }
 
@@ -126,39 +107,38 @@ struct event_block_counter
         {
             case mdds::mtv::element_type_double:
                 --block_count_numeric;
-            break;
+                break;
             case mdds::mtv::element_type_string:
                 --block_count_string;
-            break;
+                break;
             case mdds::mtv::element_type_int16:
                 --block_count_int16;
-            break;
+                break;
             case mdds::mtv::element_type_uint16:
                 --block_count_uint16;
-            break;
+                break;
             case mdds::mtv::element_type_int32:
                 --block_count_int32;
-            break;
+                break;
             case mdds::mtv::element_type_uint32:
                 --block_count_uint32;
-            break;
+                break;
             case mdds::mtv::element_type_int64:
                 --block_count_int64;
-            break;
+                break;
             case mdds::mtv::element_type_uint64:
                 --block_count_uint64;
-            break;
+                break;
             case mdds::mtv::element_type_boolean:
                 --block_count_boolean;
-            break;
+                break;
             case mdds::mtv::element_type_int8:
                 --block_count_int8;
-            break;
+                break;
             case mdds::mtv::element_type_uint8:
                 --block_count_uint8;
-            break;
-            default:
-                ;
+                break;
+            default:;
         }
     }
 };
@@ -191,13 +171,13 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count == 0);
         assert(db.event_handler().block_count_numeric == 0);
 
-        db.push_back(5.5);  // create a new block.
+        db.push_back(5.5); // create a new block.
         assert(db.event_handler().block_count == 1);
         assert(db.event_handler().block_count_numeric == 1);
-        db.push_back(6.6);  // no new block creation.
+        db.push_back(6.6); // no new block creation.
         assert(db.event_handler().block_count == 1);
         assert(db.event_handler().block_count_numeric == 1);
-        db.push_back(std::string("foo"));  // another new block.
+        db.push_back(std::string("foo")); // another new block.
         assert(db.event_handler().block_count == 2);
         assert(db.event_handler().block_count_numeric == 1);
         assert(db.event_handler().block_count_string == 1);
@@ -295,9 +275,9 @@ void mtv_test_block_counter()
 
     {
         mtv_type db(2);
-        db.set(1, 1.2);  // This creates a new element block.
+        db.set(1, 1.2); // This creates a new element block.
         assert(db.event_handler().block_count == 1);
-        db.set(0, 1.1);  // The element block count should not change.
+        db.set(0, 1.1); // The element block count should not change.
         assert(db.event_handler().block_count == 1);
     }
 
@@ -325,7 +305,7 @@ void mtv_test_block_counter()
         mtv_type db(2);
         db.set(0, std::string("test")); // This creates a new string block.
         assert(db.event_handler().block_count == 1);
-        db.set(1, std::string("foo"));  // This appends to the existing string block.
+        db.set(1, std::string("foo")); // This appends to the existing string block.
         assert(db.event_handler().block_count == 1);
         assert(db.event_handler().block_count_string == 1);
     }
@@ -381,7 +361,7 @@ void mtv_test_block_counter()
     }
 
     {
-        std::vector<double> vals = { 1.1, 1.2, 1.3 };
+        std::vector<double> vals = {1.1, 1.2, 1.3};
         mtv_type db(vals.size(), vals.begin(), vals.end());
         assert(db.event_handler().block_count == 1);
 
@@ -504,7 +484,7 @@ void mtv_test_block_counter()
     }
 
     {
-        std::vector<double> vals = { 1.1, 1.2 };
+        std::vector<double> vals = {1.1, 1.2};
         mtv_type db(4);
         db.set(0, 0.1);
         db.set(1, 0.2);
@@ -519,7 +499,7 @@ void mtv_test_block_counter()
     }
 
     {
-        std::vector<double> vals = { 1.1, 1.2 };
+        std::vector<double> vals = {1.1, 1.2};
         mtv_type db(4);
         db.set(0, int32_t(5));
         db.set(1, int32_t(10));
@@ -532,7 +512,7 @@ void mtv_test_block_counter()
     }
 
     {
-        std::vector<double> vals = { 1.1, 1.2 };
+        std::vector<double> vals = {1.1, 1.2};
         mtv_type db(4);
         db.set(0, int32_t(5));
         db.set(1, int32_t(10));
@@ -548,7 +528,7 @@ void mtv_test_block_counter()
     }
 
     {
-        std::vector<double> vals = { 1.1, 1.2 };
+        std::vector<double> vals = {1.1, 1.2};
         mtv_type db(4, std::string("foo"));
         assert(db.event_handler().block_count == 1);
         assert(db.event_handler().block_count_string == 1);
@@ -559,7 +539,7 @@ void mtv_test_block_counter()
     }
 
     {
-        std::vector<double> vals = { 1.1, 1.2 };
+        std::vector<double> vals = {1.1, 1.2};
         mtv_type db(4, std::string("foo"));
         assert(db.event_handler().block_count == 1);
         db.set(2, vals.begin(), vals.end()); // replace the lower part of the last block.
@@ -567,7 +547,7 @@ void mtv_test_block_counter()
     }
 
     {
-        std::vector<double> vals = { 1.1, 1.2 };
+        std::vector<double> vals = {1.1, 1.2};
         mtv_type db(4, std::string("foo"));
         db.push_back(int64_t(100));
         assert(db.event_handler().block_count == 2);
@@ -579,7 +559,7 @@ void mtv_test_block_counter()
     }
 
     {
-        std::vector<double> vals = { 1.1, 1.2 };
+        std::vector<double> vals = {1.1, 1.2};
         mtv_type db(6, std::string("foo"));
         assert(db.event_handler().block_count == 1);
         db.set(2, vals.begin(), vals.end()); // set the values to the middle of a block.
@@ -597,7 +577,7 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count_int32 == 1);
         assert(db.event_handler().block_count_numeric == 1);
 
-        std::vector<double> vals = { 1.1, 1.2, 1.3 }; // same type as the top block.
+        std::vector<double> vals = {1.1, 1.2, 1.3}; // same type as the top block.
         db.set(0, vals.begin(), vals.end()); // overwrite multiple blocks.
         assert(db.event_handler().block_count == 1);
         assert(db.event_handler().block_count_numeric == 1);
@@ -612,7 +592,7 @@ void mtv_test_block_counter()
         assert(db.event_handler().block_count_int32 == 1);
         assert(db.event_handler().block_count_string == 1);
 
-        std::vector<double> vals = { 1.1, 1.2, 1.3 }; // differene type from that of the top block.
+        std::vector<double> vals = {1.1, 1.2, 1.3}; // differene type from that of the top block.
         db.set(0, vals.begin(), vals.end()); // overwrite multiple blocks.
         assert(db.event_handler().block_count == 1);
         assert(db.event_handler().block_count_numeric == 1);
@@ -1110,7 +1090,7 @@ void mtv_test_block_counter()
         // Leave some empty range.
         mtv_type db2(10);
         for (int32_t i = 0; i < 10; ++i)
-            db2.set<int32_t>(i, 10+i);
+            db2.set<int32_t>(i, 10 + i);
         db2.set<int8_t>(5, 'Z');
 
         assert(db1.event_handler().block_count == 2);
@@ -1136,4 +1116,3 @@ void mtv_test_block_counter()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

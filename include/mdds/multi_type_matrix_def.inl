@@ -28,12 +28,14 @@
 namespace mdds {
 
 template<typename _MtxTrait>
-multi_type_matrix<_MtxTrait>::element_block_node_type::element_block_node_type() :
-    type(mtm::element_empty), offset(0), size(0), data(nullptr) {}
+multi_type_matrix<_MtxTrait>::element_block_node_type::element_block_node_type()
+    : type(mtm::element_empty), offset(0), size(0), data(nullptr)
+{}
 
 template<typename _MtxTrait>
-multi_type_matrix<_MtxTrait>::element_block_node_type::element_block_node_type(const element_block_node_type& other) :
-    type(other.type), offset(other.offset), size(other.size), data(other.data) {}
+multi_type_matrix<_MtxTrait>::element_block_node_type::element_block_node_type(const element_block_node_type& other)
+    : type(other.type), offset(other.offset), size(other.size), data(other.data)
+{}
 
 template<typename _MtxTrait>
 void multi_type_matrix<_MtxTrait>::element_block_node_type::assign(
@@ -49,8 +51,7 @@ void multi_type_matrix<_MtxTrait>::element_block_node_type::assign(
 
 template<typename _MtxTrait>
 template<typename _Blk>
-typename _Blk::const_iterator
-multi_type_matrix<_MtxTrait>::element_block_node_type::begin() const
+typename _Blk::const_iterator multi_type_matrix<_MtxTrait>::element_block_node_type::begin() const
 {
     typename _Blk::const_iterator it = _Blk::begin(*data);
     std::advance(it, offset);
@@ -59,45 +60,46 @@ multi_type_matrix<_MtxTrait>::element_block_node_type::begin() const
 
 template<typename _MtxTrait>
 template<typename _Blk>
-typename _Blk::const_iterator
-multi_type_matrix<_MtxTrait>::element_block_node_type::end() const
+typename _Blk::const_iterator multi_type_matrix<_MtxTrait>::element_block_node_type::end() const
 {
     typename _Blk::const_iterator it = _Blk::begin(*data);
-    std::advance(it, offset+size);
+    std::advance(it, offset + size);
     return it;
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::next_position(const position_type& pos)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::next_position(
+    const position_type& pos)
 {
     return store_type::next_position(pos);
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::const_position_type
-multi_type_matrix<_MtxTrait>::next_position(const const_position_type& pos)
+typename multi_type_matrix<_MtxTrait>::const_position_type multi_type_matrix<_MtxTrait>::next_position(
+    const const_position_type& pos)
 {
     return store_type::next_position(pos);
 }
 
 template<typename _MtxTrait>
-multi_type_matrix<_MtxTrait>::multi_type_matrix() : m_size(0, 0) {}
+multi_type_matrix<_MtxTrait>::multi_type_matrix() : m_size(0, 0)
+{}
 
 template<typename _MtxTrait>
-multi_type_matrix<_MtxTrait>::multi_type_matrix(size_type rows, size_type cols) :
-    m_store(rows*cols), m_size(rows, cols) {}
-
-template<typename _MtxTrait>
-template<typename _T>
-multi_type_matrix<_MtxTrait>::multi_type_matrix(size_type rows, size_type cols, const _T& value) :
-    m_store(rows*cols, value), m_size(rows, cols) {}
+multi_type_matrix<_MtxTrait>::multi_type_matrix(size_type rows, size_type cols)
+    : m_store(rows * cols), m_size(rows, cols)
+{}
 
 template<typename _MtxTrait>
 template<typename _T>
-multi_type_matrix<_MtxTrait>::multi_type_matrix(
-    size_type rows, size_type cols, const _T& it_begin, const _T& it_end) :
-    m_store(rows*cols, it_begin, it_end), m_size(rows, cols)
+multi_type_matrix<_MtxTrait>::multi_type_matrix(size_type rows, size_type cols, const _T& value)
+    : m_store(rows * cols, value), m_size(rows, cols)
+{}
+
+template<typename _MtxTrait>
+template<typename _T>
+multi_type_matrix<_MtxTrait>::multi_type_matrix(size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
+    : m_store(rows * cols, it_begin, it_end), m_size(rows, cols)
 {
     if (m_store.empty())
         return;
@@ -108,27 +110,27 @@ multi_type_matrix<_MtxTrait>::multi_type_matrix(
 }
 
 template<typename _MtxTrait>
-multi_type_matrix<_MtxTrait>::multi_type_matrix(const multi_type_matrix& r) :
-    m_store(r.m_store), m_size(r.m_size) {}
+multi_type_matrix<_MtxTrait>::multi_type_matrix(const multi_type_matrix& r) : m_store(r.m_store), m_size(r.m_size)
+{}
 
 template<typename _MtxTrait>
-multi_type_matrix<_MtxTrait>::~multi_type_matrix() {}
+multi_type_matrix<_MtxTrait>::~multi_type_matrix()
+{}
 
 template<typename _MtxTrait>
-bool multi_type_matrix<_MtxTrait>::operator== (const multi_type_matrix& r) const
+bool multi_type_matrix<_MtxTrait>::operator==(const multi_type_matrix& r) const
 {
     return m_size == r.m_size && m_store == r.m_store;
 }
 
 template<typename _MtxTrait>
-bool multi_type_matrix<_MtxTrait>::operator!= (const multi_type_matrix& r) const
+bool multi_type_matrix<_MtxTrait>::operator!=(const multi_type_matrix& r) const
 {
-    return !operator== (r);
+    return !operator==(r);
 }
 
 template<typename _MtxTrait>
-multi_type_matrix<_MtxTrait>&
-multi_type_matrix<_MtxTrait>::operator= (const multi_type_matrix& r)
+multi_type_matrix<_MtxTrait>& multi_type_matrix<_MtxTrait>::operator=(const multi_type_matrix& r)
 {
     if (this == &r)
         return *this;
@@ -140,36 +142,36 @@ multi_type_matrix<_MtxTrait>::operator= (const multi_type_matrix& r)
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::position(size_type row, size_type col)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::position(
+    size_type row, size_type col)
 {
-    return m_store.position(get_pos(row,col));
+    return m_store.position(get_pos(row, col));
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::position(const position_type& pos_hint, size_type row, size_type col)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::position(
+    const position_type& pos_hint, size_type row, size_type col)
 {
-    return m_store.position(pos_hint.first, get_pos(row,col));
+    return m_store.position(pos_hint.first, get_pos(row, col));
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::const_position_type
-multi_type_matrix<_MtxTrait>::position(size_type row, size_type col) const
+typename multi_type_matrix<_MtxTrait>::const_position_type multi_type_matrix<_MtxTrait>::position(
+    size_type row, size_type col) const
 {
-    return m_store.position(get_pos(row,col));
+    return m_store.position(get_pos(row, col));
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::const_position_type
-multi_type_matrix<_MtxTrait>::position(const const_position_type& pos_hint, size_type row, size_type col) const
+typename multi_type_matrix<_MtxTrait>::const_position_type multi_type_matrix<_MtxTrait>::position(
+    const const_position_type& pos_hint, size_type row, size_type col) const
 {
-    return m_store.position(pos_hint.first, get_pos(row,col));
+    return m_store.position(pos_hint.first, get_pos(row, col));
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::size_pair_type
-multi_type_matrix<_MtxTrait>::matrix_position(const const_position_type& pos) const
+typename multi_type_matrix<_MtxTrait>::size_pair_type multi_type_matrix<_MtxTrait>::matrix_position(
+    const const_position_type& pos) const
 {
     size_type mtv_pos = store_type::logical_position(pos);
     size_type col = mtv_pos / m_size.row;
@@ -178,37 +180,33 @@ multi_type_matrix<_MtxTrait>::matrix_position(const const_position_type& pos) co
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::end_position()
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::end_position()
 {
     return position_type(m_store.end(), 0);
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::const_position_type
-multi_type_matrix<_MtxTrait>::end_position() const
+typename multi_type_matrix<_MtxTrait>::const_position_type multi_type_matrix<_MtxTrait>::end_position() const
 {
     return const_position_type(m_store.end(), 0);
 }
 
 template<typename _MtxTrait>
-mtm::element_t
-multi_type_matrix<_MtxTrait>::get_type(const const_position_type& pos) const
+mtm::element_t multi_type_matrix<_MtxTrait>::get_type(const const_position_type& pos) const
 {
     return to_mtm_type(pos.first->type);
 }
 
 template<typename _MtxTrait>
-mtm::element_t
-multi_type_matrix<_MtxTrait>::get_type(size_type row, size_type col) const
+mtm::element_t multi_type_matrix<_MtxTrait>::get_type(size_type row, size_type col) const
 {
-    return to_mtm_type(m_store.get_type(get_pos(row,col)));
+    return to_mtm_type(m_store.get_type(get_pos(row, col)));
 }
 
 template<typename _MtxTrait>
 double multi_type_matrix<_MtxTrait>::get_numeric(size_type row, size_type col) const
 {
-    return get_numeric(m_store.position(get_pos(row,col)));
+    return get_numeric(m_store.position(get_pos(row, col)));
 }
 
 template<typename _MtxTrait>
@@ -237,15 +235,15 @@ double multi_type_matrix<_MtxTrait>::get_numeric(const const_position_type& pos)
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::integer_type
-multi_type_matrix<_MtxTrait>::get_integer(size_type row, size_type col) const
+typename multi_type_matrix<_MtxTrait>::integer_type multi_type_matrix<_MtxTrait>::get_integer(
+    size_type row, size_type col) const
 {
-    return get_integer(m_store.position(get_pos(row,col)));
+    return get_integer(m_store.position(get_pos(row, col)));
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::integer_type
-multi_type_matrix<_MtxTrait>::get_integer(const const_position_type& pos) const
+typename multi_type_matrix<_MtxTrait>::integer_type multi_type_matrix<_MtxTrait>::get_integer(
+    const const_position_type& pos) const
 {
     return static_cast<integer_type>(get_numeric(pos));
 }
@@ -263,15 +261,15 @@ bool multi_type_matrix<_MtxTrait>::get_boolean(const const_position_type& pos) c
 }
 
 template<typename _MtxTrait>
-const typename multi_type_matrix<_MtxTrait>::string_type&
-multi_type_matrix<_MtxTrait>::get_string(size_type row, size_type col) const
+const typename multi_type_matrix<_MtxTrait>::string_type& multi_type_matrix<_MtxTrait>::get_string(
+    size_type row, size_type col) const
 {
-    return get_string(m_store.position(get_pos(row,col)));
+    return get_string(m_store.position(get_pos(row, col)));
 }
 
 template<typename _MtxTrait>
-const typename multi_type_matrix<_MtxTrait>::string_type&
-multi_type_matrix<_MtxTrait>::get_string(const const_position_type& pos) const
+const typename multi_type_matrix<_MtxTrait>::string_type& multi_type_matrix<_MtxTrait>::get_string(
+    const const_position_type& pos) const
 {
     if (pos.first->type != string_block_type::block_type)
         throw general_error("multi_type_matrix: unknown element type.");
@@ -281,11 +279,10 @@ multi_type_matrix<_MtxTrait>::get_string(const const_position_type& pos) const
 
 template<typename _MtxTrait>
 template<typename _T>
-_T
-multi_type_matrix<_MtxTrait>::get(size_type row, size_type col) const
+_T multi_type_matrix<_MtxTrait>::get(size_type row, size_type col) const
 {
     _T val;
-    m_store.get(get_pos(row,col), val);
+    m_store.get(get_pos(row, col), val);
     return val;
 }
 
@@ -302,12 +299,11 @@ void multi_type_matrix<_MtxTrait>::set_empty(size_type row, size_type col, size_
         throw general_error("multi_type_matrix::set_empty: length of zero is not permitted.");
 
     size_type pos1 = get_pos(row, col);
-    m_store.set_empty(pos1, pos1+length-1);
+    m_store.set_empty(pos1, pos1 + length - 1);
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::set_empty(const position_type& pos)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::set_empty(const position_type& pos)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set_empty(pos.first, store_pos, store_pos);
@@ -317,7 +313,7 @@ multi_type_matrix<_MtxTrait>::set_empty(const position_type& pos)
 template<typename _MtxTrait>
 void multi_type_matrix<_MtxTrait>::set_column_empty(size_type col)
 {
-    m_store.set_empty(get_pos(0, col), get_pos(m_size.row-1, col));
+    m_store.set_empty(get_pos(0, col), get_pos(m_size.row - 1, col));
 }
 
 template<typename _MtxTrait>
@@ -333,12 +329,12 @@ void multi_type_matrix<_MtxTrait>::set_row_empty(size_type row)
 template<typename _MtxTrait>
 void multi_type_matrix<_MtxTrait>::set(size_type row, size_type col, double val)
 {
-    m_store.set(get_pos(row,col), val);
+    m_store.set(get_pos(row, col), val);
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::set(const position_type& pos, double val)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::set(
+    const position_type& pos, double val)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
@@ -348,12 +344,12 @@ multi_type_matrix<_MtxTrait>::set(const position_type& pos, double val)
 template<typename _MtxTrait>
 void multi_type_matrix<_MtxTrait>::set(size_type row, size_type col, bool val)
 {
-    m_store.set(get_pos(row,col), val);
+    m_store.set(get_pos(row, col), val);
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::set(const position_type& pos, bool val)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::set(
+    const position_type& pos, bool val)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
@@ -363,12 +359,12 @@ multi_type_matrix<_MtxTrait>::set(const position_type& pos, bool val)
 template<typename _MtxTrait>
 void multi_type_matrix<_MtxTrait>::set(size_type row, size_type col, const string_type& str)
 {
-    m_store.set(get_pos(row,col), str);
+    m_store.set(get_pos(row, col), str);
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::set(const position_type& pos, const string_type& str)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::set(
+    const position_type& pos, const string_type& str)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, str);
@@ -378,12 +374,12 @@ multi_type_matrix<_MtxTrait>::set(const position_type& pos, const string_type& s
 template<typename _MtxTrait>
 void multi_type_matrix<_MtxTrait>::set(size_type row, size_type col, integer_type val)
 {
-    m_store.set(get_pos(row,col), val);
+    m_store.set(get_pos(row, col), val);
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::set(const position_type& pos, integer_type val)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::set(
+    const position_type& pos, integer_type val)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
@@ -394,13 +390,13 @@ template<typename _MtxTrait>
 template<typename _T>
 void multi_type_matrix<_MtxTrait>::set(size_type row, size_type col, const _T& it_begin, const _T& it_end)
 {
-    m_store.set(get_pos(row,col), it_begin, it_end);
+    m_store.set(get_pos(row, col), it_begin, it_end);
 }
 
 template<typename _MtxTrait>
 template<typename _T>
-typename multi_type_matrix<_MtxTrait>::position_type
-multi_type_matrix<_MtxTrait>::set(const position_type& pos, const _T& it_begin, const _T& it_end)
+typename multi_type_matrix<_MtxTrait>::position_type multi_type_matrix<_MtxTrait>::set(
+    const position_type& pos, const _T& it_begin, const _T& it_end)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, it_begin, it_end);
@@ -426,46 +422,44 @@ void multi_type_matrix<_MtxTrait>::set_column(size_type col, const _T& it_begin,
 }
 
 template<typename _MtxTrait>
-typename multi_type_matrix<_MtxTrait>::size_pair_type
-multi_type_matrix<_MtxTrait>::size() const
+typename multi_type_matrix<_MtxTrait>::size_pair_type multi_type_matrix<_MtxTrait>::size() const
 {
     return m_size;
 }
 
 template<typename _MtxTrait>
-multi_type_matrix<_MtxTrait>&
-multi_type_matrix<_MtxTrait>::transpose()
+multi_type_matrix<_MtxTrait>& multi_type_matrix<_MtxTrait>::transpose()
 {
     multi_type_matrix tmp(m_size.column, m_size.row);
     for (size_type old_row_new_col = 0; old_row_new_col < m_size.row; ++old_row_new_col)
     {
         for (size_type old_col_new_row = 0; old_col_new_row < m_size.column; ++old_col_new_row)
         {
-            switch (get_type(old_row_new_col,old_col_new_row))
+            switch (get_type(old_row_new_col, old_col_new_row))
             {
                 case mtm::element_numeric:
                 {
                     double val;
-                    m_store.get(get_pos(old_row_new_col,old_col_new_row), val);
+                    m_store.get(get_pos(old_row_new_col, old_col_new_row), val);
                     tmp.set(old_col_new_row, old_row_new_col, val);
                 }
                 break;
                 case mtm::element_boolean:
                 {
                     bool val;
-                    m_store.get(get_pos(old_row_new_col,old_col_new_row), val);
+                    m_store.get(get_pos(old_row_new_col, old_col_new_row), val);
                     tmp.set(old_col_new_row, old_row_new_col, val);
                 }
                 break;
                 case mtm::element_string:
                 {
                     string_type val;
-                    m_store.get(get_pos(old_row_new_col,old_col_new_row), val);
+                    m_store.get(get_pos(old_row_new_col, old_col_new_row), val);
                     tmp.set(old_col_new_row, old_row_new_col, val);
                 }
                 break;
                 case mtm::element_empty:
-                break;
+                    break;
                 default:
                     throw general_error("multi_type_matrix: unknown element type.");
             }
@@ -558,27 +552,23 @@ void multi_type_matrix<_MtxTrait>::copy(const multi_type_matrix& src)
 
             // Move source to the head of the next block in the column.
             pos_src = const_position_type(++pos_src.first, 0);
-        }
-        while (remaining_rows);
+        } while (remaining_rows);
     }
 }
 
 template<typename _MtxTrait>
 template<typename _T>
-void multi_type_matrix<_MtxTrait>::copy(
-    size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
+void multi_type_matrix<_MtxTrait>::copy(size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
 {
     size_t n = std::distance(it_begin, it_end);
     if (!n || empty())
         return;
 
-    if (n != rows*cols)
-        throw size_error(
-            "multi_type_matrix: size of the array does not match the destination size.");
+    if (n != rows * cols)
+        throw size_error("multi_type_matrix: size of the array does not match the destination size.");
 
     if (rows > m_size.row || cols > m_size.column)
-        throw size_error(
-            "multi_type_matrix: specified destination size is larger than the current matrix.");
+        throw size_error("multi_type_matrix: specified destination size is larger than the current matrix.");
 
     // Ensure that the passed array is supported by this matrix.
     to_mtm_type(store_type::get_element_type(*it_begin));
@@ -593,7 +583,7 @@ void multi_type_matrix<_MtxTrait>::copy(
         auto it_this_end = it;
         std::advance(it_this_end, rows);
 
-        pos_dest.first = m_store.set(pos_dest.first, get_pos(0,col), it, it_this_end);
+        pos_dest.first = m_store.set(pos_dest.first, get_pos(0, col), it, it_this_end);
         it = it_this_end;
     }
 }
@@ -693,14 +683,13 @@ _Func multi_type_matrix<_MtxTrait>::walk(_Func func) const
 
 template<typename _MtxTrait>
 template<typename _Func>
-_Func multi_type_matrix<_MtxTrait>::walk(
-    _Func func, const size_pair_type& start, const size_pair_type& end) const
+_Func multi_type_matrix<_MtxTrait>::walk(_Func func, const size_pair_type& start, const size_pair_type& end) const
 {
     if (end.row < start.row || end.column < start.column)
     {
         std::ostringstream os;
-        os << "multi_type_matrix: invalid start/end position pair: (row="
-            << start.row << "; column=" << start.column << ") - (row=" << end.row << "; column=" << end.column << ")";
+        os << "multi_type_matrix: invalid start/end position pair: (row=" << start.row << "; column=" << start.column
+           << ") - (row=" << end.row << "; column=" << end.column << ")";
         throw size_error(os.str());
     }
 
@@ -734,8 +723,7 @@ _Func multi_type_matrix<_MtxTrait>::walk(
 
             // Move to the head of the next block in the column.
             pos = const_position_type(++pos.first, 0);
-        }
-        while (remaining_rows != 0);
+        } while (remaining_rows != 0);
     }
 
     return func;
@@ -760,9 +748,7 @@ _Func multi_type_matrix<_MtxTrait>::walk(_Func func, const multi_type_matrix& ri
 
     while (remaining_size)
     {
-        size_t section_size = std::min(
-            pos1.first->size - pos1.second,
-            pos2.first->size - pos2.second);
+        size_t section_size = std::min(pos1.first->size - pos1.second, pos2.first->size - pos2.second);
 
         node1.assign(pos1, section_size);
         node2.assign(pos2, section_size);
@@ -781,19 +767,18 @@ _Func multi_type_matrix<_MtxTrait>::walk(_Func func, const multi_type_matrix& ri
 template<typename _MtxTrait>
 template<typename _Func>
 _Func multi_type_matrix<_MtxTrait>::walk(
-    _Func func, const multi_type_matrix& right,
-    const size_pair_type& start, const size_pair_type& end) const
+    _Func func, const multi_type_matrix& right, const size_pair_type& start, const size_pair_type& end) const
 {
     if (end.row < start.row || end.column < start.column)
     {
         std::ostringstream os;
-        os << "multi_type_matrix: invalid start/end position pair: (row="
-            << start.row << "; column=" << start.column << ") - (row=" << end.row << "; column=" << end.column << ")";
+        os << "multi_type_matrix: invalid start/end position pair: (row=" << start.row << "; column=" << start.column
+           << ") - (row=" << end.row << "; column=" << end.column << ")";
         throw size_error(os.str());
     }
 
-    if (end.row > m_size.row || end.column > m_size.column ||
-        end.row > right.size().row || end.column > right.size().column)
+    if (end.row > m_size.row || end.column > m_size.column || end.row > right.size().row ||
+        end.column > right.size().column)
         throw size_error("multi_type_matrix: end position is out-of-bound.");
 
     size_t rows = end.row - start.row + 1;
@@ -826,11 +811,10 @@ _Func multi_type_matrix<_MtxTrait>::walk(
             pos2 = store_type::advance_position(pos2, section_size);
 
             remaining_rows -= section_size;
-        }
-        while (remaining_rows);
+        } while (remaining_rows);
     }
 
     return func;
 }
 
-}
+} // namespace mdds

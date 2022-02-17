@@ -45,9 +45,7 @@ using namespace mdds;
 using packed_int_map_type = packed_trie_map<trie::std_string_trait, int>;
 using packed_str_map_type = packed_trie_map<trie::std_string_trait, std::string>;
 
-bool verify_entries(
-    const packed_int_map_type& db, const packed_int_map_type::entry* entries,
-    size_t entry_size)
+bool verify_entries(const packed_int_map_type& db, const packed_int_map_type::entry* entries, size_t entry_size)
 {
     auto results = db.prefix_search(nullptr, 0);
     for (auto it = results.begin(), ite = results.end(); it != ite; ++it)
@@ -87,12 +85,11 @@ void trie_packed_test1()
 {
     stack_printer __stack_printer__("::trie_packed_test1");
 
-    packed_int_map_type::entry entries[] =
-    {
-        { MDDS_ASCII("a"),  13 },
-        { MDDS_ASCII("aa"), 10 },
-        { MDDS_ASCII("ab"), 3 },
-        { MDDS_ASCII("b"),  7 },
+    packed_int_map_type::entry entries[] = {
+        {MDDS_ASCII("a"), 13},
+        {MDDS_ASCII("aa"), 10},
+        {MDDS_ASCII("ab"), 3},
+        {MDDS_ASCII("b"), 7},
     };
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
@@ -147,20 +144,10 @@ void trie_packed_test2()
 {
     stack_printer __stack_printer__("::trie_packed_test2");
 
-    packed_int_map_type::entry entries[] =
-    {
-        { MDDS_ASCII("aaron"),     0 },
-        { MDDS_ASCII("al"),        1 },
-        { MDDS_ASCII("aldi"),      2 },
-        { MDDS_ASCII("andy"),      3 },
-        { MDDS_ASCII("bison"),     4 },
-        { MDDS_ASCII("bruce"),     5 },
-        { MDDS_ASCII("charlie"),   6 },
-        { MDDS_ASCII("charlotte"), 7 },
-        { MDDS_ASCII("david"),     8 },
-        { MDDS_ASCII("dove"),      9 },
-        { MDDS_ASCII("e"),        10 },
-        { MDDS_ASCII("eva"),      11 },
+    packed_int_map_type::entry entries[] = {
+        {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
+        {MDDS_ASCII("bison"), 4}, {MDDS_ASCII("bruce"), 5}, {MDDS_ASCII("charlie"), 6}, {MDDS_ASCII("charlotte"), 7},
+        {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},  {MDDS_ASCII("e"), 10},      {MDDS_ASCII("eva"), 11},
     };
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
@@ -179,12 +166,11 @@ void trie_packed_test3()
 {
     stack_printer __stack_printer__("::trie_packed_test3");
 
-    packed_int_map_type::entry entries[] =
-    {
-        { MDDS_ASCII("NULL"), 1 },
-        { MDDS_ASCII("Null"), 2 },
-        { MDDS_ASCII("null"), 3 },
-        { MDDS_ASCII("~"),    4 },
+    packed_int_map_type::entry entries[] = {
+        {MDDS_ASCII("NULL"), 1},
+        {MDDS_ASCII("Null"), 2},
+        {MDDS_ASCII("null"), 3},
+        {MDDS_ASCII("~"), 4},
     };
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
@@ -203,7 +189,8 @@ void trie_packed_test4()
 {
     stack_printer __stack_printer__("::trie_packed_test4");
 
-    enum name_type {
+    enum name_type
+    {
         name_none = 0,
         name_andy,
         name_bruce,
@@ -211,14 +198,9 @@ void trie_packed_test4()
         name_david
     };
 
-    packed_int_map_type::entry entries[] =
-    {
-        { MDDS_ASCII("andy"),    name_andy },
-        { MDDS_ASCII("andy1"),   name_andy },
-        { MDDS_ASCII("andy13"),  name_andy },
-        { MDDS_ASCII("bruce"),   name_bruce },
-        { MDDS_ASCII("charlie"), name_charlie },
-        { MDDS_ASCII("david"),   name_david },
+    packed_int_map_type::entry entries[] = {
+        {MDDS_ASCII("andy"), name_andy},   {MDDS_ASCII("andy1"), name_andy},      {MDDS_ASCII("andy13"), name_andy},
+        {MDDS_ASCII("bruce"), name_bruce}, {MDDS_ASCII("charlie"), name_charlie}, {MDDS_ASCII("david"), name_david},
     };
 
     size_t entry_size = MDDS_N_ELEMENTS(entries);
@@ -265,8 +247,10 @@ struct value_wrapper
 {
     int value;
 
-    value_wrapper() : value(0) {}
-    value_wrapper(int _value) : value(_value) {}
+    value_wrapper() : value(0)
+    {}
+    value_wrapper(int _value) : value(_value)
+    {}
 };
 
 std::ostream& operator<<(std::ostream& os, const value_wrapper& vw)
@@ -296,12 +280,9 @@ void trie_packed_test_value_life_cycle()
     entries.reset();
 
     auto results = db.prefix_search(nullptr, 0);
-    std::for_each(results.begin(), results.end(),
-        [](const packed_value_map_type::const_iterator::value_type& v)
-        {
-            cout << v.first << ": " << v.second.value << endl;
-        }
-    );
+    std::for_each(results.begin(), results.end(), [](const packed_value_map_type::const_iterator::value_type& v) {
+        cout << v.first << ": " << v.second.value << endl;
+    });
 
     auto it = db.find(MDDS_ASCII("twelve"));
     assert(it->second.value == 12);
@@ -317,8 +298,10 @@ struct custom_string
 {
     std::string data;
 
-    custom_string() {}
-    custom_string(const std::string& _data) : data(_data) {}
+    custom_string()
+    {}
+    custom_string(const std::string& _data) : data(_data)
+    {}
 };
 
 struct custom_string_trait
@@ -352,12 +335,7 @@ struct custom_string_trait
         // Cast all uint16_t chars to regular chars.
         key_type s;
 
-        std::for_each(buf.begin(), buf.end(),
-            [&](key_unit_type c)
-            {
-                s.data.push_back(static_cast<char>(c));
-            }
-        );
+        std::for_each(buf.begin(), buf.end(), [&](key_unit_type c) { s.data.push_back(static_cast<char>(c)); });
         return s;
     }
 };
@@ -368,16 +346,16 @@ void trie_packed_test_custom_string()
 {
     stack_printer __stack_printer__("::trie_packed_test_custom_string");
 
-    const uint16_t key_alex[] = { 0x41, 0x6C, 0x65, 0x78 };
-    const uint16_t key_bob[]  = { 0x42, 0x6F, 0x62 };
-    const uint16_t key_max[]  = { 0x4D, 0x61, 0x78 };
-    const uint16_t key_ming[] = { 0x4D, 0x69, 0x6E, 0x67 };
+    const uint16_t key_alex[] = {0x41, 0x6C, 0x65, 0x78};
+    const uint16_t key_bob[] = {0x42, 0x6F, 0x62};
+    const uint16_t key_max[] = {0x4D, 0x61, 0x78};
+    const uint16_t key_ming[] = {0x4D, 0x69, 0x6E, 0x67};
 
     const packed_custom_str_map_type::entry entries[] = {
-        { key_alex, 4, "Alex" },
-        { key_bob,  3, "Bob"  },
-        { key_max,  3, "Max"  },
-        { key_ming, 4, "Ming" },
+        {key_alex, 4, "Alex"},
+        {key_bob, 3, "Bob"},
+        {key_max, 3, "Max"},
+        {key_ming, 4, "Ming"},
     };
 
     size_t n_entries = MDDS_N_ELEMENTS(entries);
@@ -452,7 +430,7 @@ void trie_packed_test_iterator()
     db.insert(MDDS_ASCII("aba"), 3);
     db.insert(MDDS_ASCII("abb"), 4);
     db.insert(MDDS_ASCII("abc"), 5);
-    db.insert(MDDS_ASCII("bc"),  6);
+    db.insert(MDDS_ASCII("bc"), 6);
     db.insert(MDDS_ASCII("bcd"), 7);
 
     packed = db.pack();
@@ -466,7 +444,7 @@ void trie_packed_test_iterator()
     assert(check_equal(*(++it), kv("aba", 3)));
     assert(check_equal(*(++it), kv("abb", 4)));
     assert(check_equal(*(++it), kv("abc", 5)));
-    assert(check_equal(*(++it), kv("bc",  6)));
+    assert(check_equal(*(++it), kv("bc", 6)));
     assert(check_equal(*(++it), kv("bcd", 7)));
     assert(it->first == "bcd");
     assert(it->second == 7);
@@ -489,12 +467,12 @@ void trie_packed_test_iterator()
     assert(check_equal(*(--it), kv("a", 1)));
     assert(it == packed.begin());
 
-    assert(check_equal(*(++it), kv("ab",  2)));
+    assert(check_equal(*(++it), kv("ab", 2)));
     assert(check_equal(*(++it), kv("aba", 3)));
     --it;
     assert(check_equal(*it, kv("ab", 2)));
     --it;
-    assert(check_equal(*it, kv("a",  1)));
+    assert(check_equal(*it, kv("a", 1)));
     ++it;
     assert(check_equal(*it, kv("ab", 2)));
     ++it;
@@ -513,8 +491,8 @@ void trie_packed_test_prefix_search1()
     using packed_type = trie_map_type::packed_type;
 
     trie_map_type db;
-    db.insert(MDDS_ASCII("andy"),   1);
-    db.insert(MDDS_ASCII("andy1"),  2);
+    db.insert(MDDS_ASCII("andy"), 1);
+    db.insert(MDDS_ASCII("andy1"), 2);
     db.insert(MDDS_ASCII("andy12"), 3);
 
     {
@@ -581,24 +559,13 @@ void trie_packed_test_copying()
     stack_printer __stack_printer__("::trie_packed_test_copying");
     using map_type = packed_trie_map<trie::std_string_trait, int>;
 
-    map_type::entry entries[] =
-    {
-        { MDDS_ASCII("aaron"),     0 },
-        { MDDS_ASCII("al"),        1 },
-        { MDDS_ASCII("aldi"),      2 },
-        { MDDS_ASCII("andy"),      3 },
-        { MDDS_ASCII("bison"),     4 },
-        { MDDS_ASCII("bruce"),     5 },
-        { MDDS_ASCII("charlie"),   6 },
-        { MDDS_ASCII("charlotte"), 7 },
-        { MDDS_ASCII("david"),     8 },
-        { MDDS_ASCII("dove"),      9 },
-        { MDDS_ASCII("e"),        10 },
-        { MDDS_ASCII("eva"),      11 },
+    map_type::entry entries[] = {
+        {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
+        {MDDS_ASCII("bison"), 4}, {MDDS_ASCII("bruce"), 5}, {MDDS_ASCII("charlie"), 6}, {MDDS_ASCII("charlotte"), 7},
+        {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},  {MDDS_ASCII("e"), 10},      {MDDS_ASCII("eva"), 11},
     };
 
-    auto verify_content = [&entries](const map_type& db)
-    {
+    auto verify_content = [&entries](const map_type& db) {
         auto it = db.begin();
         const map_type::entry* p_entries = entries;
         const map_type::entry* p_entries_end = p_entries + db.size();
@@ -664,52 +631,24 @@ void trie_packed_test_non_equal()
 
     using map_type = packed_trie_map<trie::std_string_trait, int>;
 
-    map_type::entry entries1[] =
-    {
-        { MDDS_ASCII("aaron"),     0 },
-        { MDDS_ASCII("al"),        1 },
-        { MDDS_ASCII("aldi"),      2 },
-        { MDDS_ASCII("andy"),      3 },
-        { MDDS_ASCII("bison"),     4 },
-        { MDDS_ASCII("bruce"),     5 },
-        { MDDS_ASCII("charlie"),   6 },
-        { MDDS_ASCII("charlotte"), 7 },
-        { MDDS_ASCII("david"),     8 },
-        { MDDS_ASCII("dove"),      9 },
-        { MDDS_ASCII("e"),        10 },
-        { MDDS_ASCII("eva"),      11 },
+    map_type::entry entries1[] = {
+        {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
+        {MDDS_ASCII("bison"), 4}, {MDDS_ASCII("bruce"), 5}, {MDDS_ASCII("charlie"), 6}, {MDDS_ASCII("charlotte"), 7},
+        {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},  {MDDS_ASCII("e"), 10},      {MDDS_ASCII("eva"), 11},
     };
 
-    map_type::entry entries2[] =
-    {
-        { MDDS_ASCII("aaron"),     0 },
-        { MDDS_ASCII("al"),        1 },
-        { MDDS_ASCII("aldi"),      2 },
-        { MDDS_ASCII("andy"),      3 },
-        { MDDS_ASCII("bison"),     4 },
-        { MDDS_ASCII("bruce"),     2 }, // different value
-        { MDDS_ASCII("charlie"),   6 },
-        { MDDS_ASCII("charlotte"), 7 },
-        { MDDS_ASCII("david"),     8 },
-        { MDDS_ASCII("dove"),      9 },
-        { MDDS_ASCII("e"),        10 },
-        { MDDS_ASCII("eva"),      11 },
+    map_type::entry entries2[] = {
+        {MDDS_ASCII("aaron"), 0},   {MDDS_ASCII("al"), 1},        {MDDS_ASCII("aldi"), 2},
+        {MDDS_ASCII("andy"), 3},    {MDDS_ASCII("bison"), 4},     {MDDS_ASCII("bruce"), 2}, // different value
+        {MDDS_ASCII("charlie"), 6}, {MDDS_ASCII("charlotte"), 7}, {MDDS_ASCII("david"), 8},
+        {MDDS_ASCII("dove"), 9},    {MDDS_ASCII("e"), 10},        {MDDS_ASCII("eva"), 11},
     };
 
     // fewer entries
-    map_type::entry entries3[] =
-    {
-        { MDDS_ASCII("aaron"),     0 },
-        { MDDS_ASCII("al"),        1 },
-        { MDDS_ASCII("aldi"),      2 },
-        { MDDS_ASCII("andy"),      3 },
-        { MDDS_ASCII("bison"),     4 },
-        { MDDS_ASCII("bruce"),     5 },
-        { MDDS_ASCII("charlie"),   6 },
-        { MDDS_ASCII("charlotte"), 7 },
-        { MDDS_ASCII("david"),     8 },
-        { MDDS_ASCII("dove"),      9 },
-        { MDDS_ASCII("e"),        10 },
+    map_type::entry entries3[] = {
+        {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
+        {MDDS_ASCII("bison"), 4}, {MDDS_ASCII("bruce"), 5}, {MDDS_ASCII("charlie"), 6}, {MDDS_ASCII("charlotte"), 7},
+        {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},  {MDDS_ASCII("e"), 10},
     };
 
     map_type db1(entries1, MDDS_N_ELEMENTS(entries1));
@@ -732,17 +671,33 @@ namespace trie_packed_test_save_and_load_state {
 
 struct _custom_variable_value
 {
-    enum class v_type { unknown, fp32, int64 };
+    enum class v_type
+    {
+        unknown,
+        fp32,
+        int64
+    };
 
     v_type type;
 
-    union { float fp32; int64_t int64; } value;
+    union
+    {
+        float fp32;
+        int64_t int64;
+    } value;
 
-    _custom_variable_value() : type(v_type::unknown) {}
+    _custom_variable_value() : type(v_type::unknown)
+    {}
 
-    _custom_variable_value(float v) : type(v_type::fp32) { value.fp32 = v; }
+    _custom_variable_value(float v) : type(v_type::fp32)
+    {
+        value.fp32 = v;
+    }
 
-    _custom_variable_value(int v) : type(v_type::int64) { value.int64 = v; }
+    _custom_variable_value(int v) : type(v_type::int64)
+    {
+        value.int64 = v;
+    }
 
     _custom_variable_value(const _custom_variable_value& other) : type(other.type)
     {
@@ -754,12 +709,11 @@ struct _custom_variable_value
             case v_type::int64:
                 value.int64 = other.value.int64;
                 break;
-            default:
-                ;
+            default:;
         }
     }
 
-    bool operator== (const _custom_variable_value& other) const
+    bool operator==(const _custom_variable_value& other) const
     {
         if (type != other.type)
             return false;
@@ -770,16 +724,15 @@ struct _custom_variable_value
                 return value.fp32 == other.value.fp32;
             case v_type::int64:
                 return value.int64 == other.value.int64;
-            default:
-                ;
+            default:;
         }
 
         return true;
     }
 
-    bool operator!= (const _custom_variable_value& other) const
+    bool operator!=(const _custom_variable_value& other) const
     {
-        return !operator== (other);
+        return !operator==(other);
     }
 };
 
@@ -878,16 +831,18 @@ struct _custom_fixed_value
 {
     std::string value_string; // only stores "zero", "one", "two" or "three".
 
-    _custom_fixed_value() {}
+    _custom_fixed_value()
+    {}
 
-    _custom_fixed_value(const char* p) : value_string(p, std::strlen(p)) {}
+    _custom_fixed_value(const char* p) : value_string(p, std::strlen(p))
+    {}
 
-    bool operator== (const _custom_fixed_value& other) const
+    bool operator==(const _custom_fixed_value& other) const
     {
         return value_string == other.value_string;
     }
 
-    bool operator!= (const _custom_fixed_value& other) const
+    bool operator!=(const _custom_fixed_value& other) const
     {
         return !operator==(other);
     }
@@ -966,13 +921,9 @@ void test1()
 void test2()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test2");
-    packed_int_map_type::entry entries[] =
-    {
-        { MDDS_ASCII("bruce"),     5 },
-        { MDDS_ASCII("charlie"),   6 },
-        { MDDS_ASCII("charlotte"), 7 },
-        { MDDS_ASCII("david"),     8 },
-        { MDDS_ASCII("dove"),      9 },
+    packed_int_map_type::entry entries[] = {
+        {MDDS_ASCII("bruce"), 5}, {MDDS_ASCII("charlie"), 6}, {MDDS_ASCII("charlotte"), 7},
+        {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},
     };
 
     packed_int_map_type db(entries, MDDS_N_ELEMENTS(entries));
@@ -999,28 +950,27 @@ void test2()
 void test3()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test3");
-    std::vector<packed_str_map_type::entry> entries =
-    {
-        { MDDS_ASCII("Abby"),       "ABBY"       },
-        { MDDS_ASCII("Ashley"),     "ASHLEY"     },
-        { MDDS_ASCII("Candelaria"), "CANDELARIA" },
-        { MDDS_ASCII("Carita"),     "CARITA"     },
-        { MDDS_ASCII("Christal"),   "CHRISTAL"   },
-        { MDDS_ASCII("Cory"),       "CORY"       },
-        { MDDS_ASCII("Estrella"),   "ESTRELLA"   },
-        { MDDS_ASCII("Etha"),       "ETHA"       },
-        { MDDS_ASCII("Harley"),     "HARLEY"     },
-        { MDDS_ASCII("Irish"),      "IRISH"      },
-        { MDDS_ASCII("Kiara"),      "KIARA"      },
-        { MDDS_ASCII("Korey"),      "KOREY"      },
-        { MDDS_ASCII("Laurene"),    "LAURENE"    },
-        { MDDS_ASCII("Michiko"),    "MICHIKO"    },
-        { MDDS_ASCII("Miriam"),     "MIRIAM"     },
-        { MDDS_ASCII("Mitzi"),      "MITZI"      },
-        { MDDS_ASCII("Seth"),       "SETH"       },
-        { MDDS_ASCII("Sindy"),      "SINDY"      },
-        { MDDS_ASCII("Tawanna"),    "TAWANNA"    },
-        { MDDS_ASCII("Tyra"),       "TYRA"       },
+    std::vector<packed_str_map_type::entry> entries = {
+        {MDDS_ASCII("Abby"), "ABBY"},
+        {MDDS_ASCII("Ashley"), "ASHLEY"},
+        {MDDS_ASCII("Candelaria"), "CANDELARIA"},
+        {MDDS_ASCII("Carita"), "CARITA"},
+        {MDDS_ASCII("Christal"), "CHRISTAL"},
+        {MDDS_ASCII("Cory"), "CORY"},
+        {MDDS_ASCII("Estrella"), "ESTRELLA"},
+        {MDDS_ASCII("Etha"), "ETHA"},
+        {MDDS_ASCII("Harley"), "HARLEY"},
+        {MDDS_ASCII("Irish"), "IRISH"},
+        {MDDS_ASCII("Kiara"), "KIARA"},
+        {MDDS_ASCII("Korey"), "KOREY"},
+        {MDDS_ASCII("Laurene"), "LAURENE"},
+        {MDDS_ASCII("Michiko"), "MICHIKO"},
+        {MDDS_ASCII("Miriam"), "MIRIAM"},
+        {MDDS_ASCII("Mitzi"), "MITZI"},
+        {MDDS_ASCII("Seth"), "SETH"},
+        {MDDS_ASCII("Sindy"), "SINDY"},
+        {MDDS_ASCII("Tawanna"), "TAWANNA"},
+        {MDDS_ASCII("Tyra"), "TYRA"},
     };
 
     packed_str_map_type db(entries.data(), entries.size());
@@ -1065,15 +1015,14 @@ void test4()
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test4");
     using map_type = packed_trie_map<trie::std_string_trait, std::vector<int64_t>>;
 
-    std::vector<map_type::entry> entries =
-    {
-        { MDDS_ASCII("Abby"),     { 65, 98, 98, 121 }                      },
-        { MDDS_ASCII("Ashley"),   { 65, 115, 104, 108, 101, 121 }          },
-        { MDDS_ASCII("Christal"), { 67, 104, 114, 105, 115, 116, 97, 108 } },
-        { MDDS_ASCII("Cory"),     { 67, 111, 114, 121 }                    },
-        { MDDS_ASCII("Harley"),   { 72, 97, 114, 108, 101, 121 }           },
-        { MDDS_ASCII("Kiara"),    { 75, 105, 97, 114, 97 }                 },
-        { MDDS_ASCII("Mitzi"),    { 77, 105, 116, 122, 105 }               },
+    std::vector<map_type::entry> entries = {
+        {MDDS_ASCII("Abby"), {65, 98, 98, 121}},
+        {MDDS_ASCII("Ashley"), {65, 115, 104, 108, 101, 121}},
+        {MDDS_ASCII("Christal"), {67, 104, 114, 105, 115, 116, 97, 108}},
+        {MDDS_ASCII("Cory"), {67, 111, 114, 121}},
+        {MDDS_ASCII("Harley"), {72, 97, 114, 108, 101, 121}},
+        {MDDS_ASCII("Kiara"), {75, 105, 97, 114, 97}},
+        {MDDS_ASCII("Mitzi"), {77, 105, 116, 122, 105}},
     };
 
     map_type db(entries.data(), entries.size());
@@ -1101,15 +1050,10 @@ void test5()
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test5");
     using map_type = packed_trie_map<trie::std_string_trait, float>;
 
-    std::vector<map_type::entry> entries =
-    {
-        { MDDS_ASCII("Abby"),     1.0f },
-        { MDDS_ASCII("Ashley"),   1.1f },
-        { MDDS_ASCII("Christal"), 1.2f },
-        { MDDS_ASCII("Cory"),     1.3f },
-        { MDDS_ASCII("Harley"),   1.4f },
-        { MDDS_ASCII("Kiara"),    1.5f },
-        { MDDS_ASCII("Mitzi"),    1.6f },
+    std::vector<map_type::entry> entries = {
+        {MDDS_ASCII("Abby"), 1.0f},  {MDDS_ASCII("Ashley"), 1.1f}, {MDDS_ASCII("Christal"), 1.2f},
+        {MDDS_ASCII("Cory"), 1.3f},  {MDDS_ASCII("Harley"), 1.4f}, {MDDS_ASCII("Kiara"), 1.5f},
+        {MDDS_ASCII("Mitzi"), 1.6f},
     };
 
     map_type db(entries.data(), entries.size());
@@ -1138,15 +1082,14 @@ void test6()
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test6");
     using map_type = packed_trie_map<trie::std_string_trait, SeqT>;
 
-    std::vector<typename map_type::entry> entries =
-    {
-        { MDDS_ASCII("Abby"),     { 65.0, 98.1, 98.2, 121.3 }              },
-        { MDDS_ASCII("Ashley"),   { 65.0, 11.5, 1.04, 1.08, .101, .12586 } },
-        { MDDS_ASCII("Christal"), { 67.0, -10.4, -114.236 }                },
-        { MDDS_ASCII("Cory"),     { 67.0, 122.111 }                        },
-        { MDDS_ASCII("Harley"),   { 72.0, 97.12, -1.114 }                  },
-        { MDDS_ASCII("Kiara"),    { 75.0, 1.05, 9.7, 1.14, -97.5 }         },
-        { MDDS_ASCII("Mitzi"),    { 77.0, 10.5, 11.6, 1.22, 10.5 }         },
+    std::vector<typename map_type::entry> entries = {
+        {MDDS_ASCII("Abby"), {65.0, 98.1, 98.2, 121.3}},
+        {MDDS_ASCII("Ashley"), {65.0, 11.5, 1.04, 1.08, .101, .12586}},
+        {MDDS_ASCII("Christal"), {67.0, -10.4, -114.236}},
+        {MDDS_ASCII("Cory"), {67.0, 122.111}},
+        {MDDS_ASCII("Harley"), {72.0, 97.12, -1.114}},
+        {MDDS_ASCII("Kiara"), {75.0, 1.05, 9.7, 1.14, -97.5}},
+        {MDDS_ASCII("Mitzi"), {77.0, 10.5, 11.6, 1.22, 10.5}},
     };
 
     map_type db(entries.data(), entries.size());
@@ -1174,17 +1117,10 @@ void test7()
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test7");
     using map_type = packed_trie_map<trie::std_string_trait, _custom_variable_value>;
 
-    std::vector<map_type::entry> entries =
-    {
-        { MDDS_ASCII("Alan"),      1.2f },
-        { MDDS_ASCII("Cory"),      -125 },
-        { MDDS_ASCII("Eleni"),     966 },
-        { MDDS_ASCII("Evia"),      -0.987f },
-        { MDDS_ASCII("Nathaniel"), 0 },
-        { MDDS_ASCII("Rebbecca"),  1.234f },
-        { MDDS_ASCII("Rodrick"),   34253536 },
-        { MDDS_ASCII("Stuart"),    12 },
-        { MDDS_ASCII("Verline"),   56 },
+    std::vector<map_type::entry> entries = {
+        {MDDS_ASCII("Alan"), 1.2f},        {MDDS_ASCII("Cory"), -125},   {MDDS_ASCII("Eleni"), 966},
+        {MDDS_ASCII("Evia"), -0.987f},     {MDDS_ASCII("Nathaniel"), 0}, {MDDS_ASCII("Rebbecca"), 1.234f},
+        {MDDS_ASCII("Rodrick"), 34253536}, {MDDS_ASCII("Stuart"), 12},   {MDDS_ASCII("Verline"), 56},
     };
 
     map_type db(entries.data(), entries.size());
@@ -1212,18 +1148,11 @@ void test8()
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test8");
     using map_type = packed_trie_map<trie::std_string_trait, _custom_fixed_value>;
 
-    std::vector<map_type::entry> entries =
-    {
-        { MDDS_ASCII("Bernardine"), "zero"  },
-        { MDDS_ASCII("Donny"),      "two"   },
-        { MDDS_ASCII("Julia"),      "one"   },
-        { MDDS_ASCII("Lindsy"),     "three" },
-        { MDDS_ASCII("Martine"),    "three" },
-        { MDDS_ASCII("Shana"),      "two"   },
-        { MDDS_ASCII("Sonia"),      "zero"  },
-        { MDDS_ASCII("Tracie"),     "one"   },
-        { MDDS_ASCII("Vanita"),     "two"   },
-        { MDDS_ASCII("Yung"),       "zero"  },
+    std::vector<map_type::entry> entries = {
+        {MDDS_ASCII("Bernardine"), "zero"}, {MDDS_ASCII("Donny"), "two"},     {MDDS_ASCII("Julia"), "one"},
+        {MDDS_ASCII("Lindsy"), "three"},    {MDDS_ASCII("Martine"), "three"}, {MDDS_ASCII("Shana"), "two"},
+        {MDDS_ASCII("Sonia"), "zero"},      {MDDS_ASCII("Tracie"), "one"},    {MDDS_ASCII("Vanita"), "two"},
+        {MDDS_ASCII("Yung"), "zero"},
     };
 
     map_type db(entries.data(), entries.size());
@@ -1265,7 +1194,7 @@ void run()
     test8();
 }
 
-}
+} // namespace trie_packed_test_save_and_load_state
 
 void trie_test1()
 {
@@ -1402,15 +1331,14 @@ void trie_test2()
     using map_type = trie_map<key_trait, int>;
     using key_type = map_type::key_type;
 
-    auto print_key = [](const std::vector<uint16_t>& key, const char* msg)
-    {
+    auto print_key = [](const std::vector<uint16_t>& key, const char* msg) {
         cout << msg << ": ";
         std::copy(key.begin(), key.end(), std::ostream_iterator<uint16_t>(std::cout, " "));
         cout << endl;
     };
 
     map_type db;
-    key_type key = { 2393, 99, 32589, 107, 0, 65535 };
+    key_type key = {2393, 99, 32589, 107, 0, 65535};
     print_key(key, "original");
     int value = 1;
     db.insert(key, value);
@@ -1496,7 +1424,7 @@ void trie_test_iterator()
     db.insert(MDDS_ASCII("aba"), 3);
     db.insert(MDDS_ASCII("abb"), 4);
     db.insert(MDDS_ASCII("abc"), 5);
-    db.insert(MDDS_ASCII("bc"),  6);
+    db.insert(MDDS_ASCII("bc"), 6);
     db.insert(MDDS_ASCII("bcd"), 7);
 
     it = dbc.begin();
@@ -1510,7 +1438,7 @@ void trie_test_iterator()
     ++it;
     assert(*it == kv("abc", 5));
     ++it;
-    assert(*it == kv("bc",  6));
+    assert(*it == kv("bc", 6));
     ++it;
     assert(*it == kv("bcd", 7));
     assert(it->first == "bcd");
@@ -1535,13 +1463,13 @@ void trie_test_iterator()
     assert(*it == kv("a", 1));
     assert(it == dbc.begin());
     ++it;
-    assert(*it == kv("ab",  2));
+    assert(*it == kv("ab", 2));
     ++it;
     assert(*it == kv("aba", 3));
     --it;
     assert(*it == kv("ab", 2));
     --it;
-    assert(*it == kv("a",  1));
+    assert(*it == kv("a", 1));
     ++it;
     assert(*it == kv("ab", 2));
     ++it;
@@ -1561,10 +1489,10 @@ void trie_test_iterator_with_erase()
     bool check_true = false;
 
     db.insert(MDDS_ASCII("Python"), 1);
-    db.insert(MDDS_ASCII("C++"),    2);
+    db.insert(MDDS_ASCII("C++"), 2);
 
     auto it = dbc.begin(), ite = dbc.end();
-    check_true = (*it++ == kv("C++",    2));
+    check_true = (*it++ == kv("C++", 2));
     assert(check_true);
     check_true = (*it++ == kv("Python", 1));
     assert(check_true);
@@ -1582,13 +1510,13 @@ void trie_test_iterator_with_erase()
     db.clear();
     assert(dbc.begin() == dbc.end());
 
-    db.insert(MDDS_ASCII("A"),   1);
-    db.insert(MDDS_ASCII("AB"),  2);
+    db.insert(MDDS_ASCII("A"), 1);
+    db.insert(MDDS_ASCII("AB"), 2);
     db.insert(MDDS_ASCII("ABC"), 3);
     db.erase(MDDS_ASCII("AB"));
 
     it = dbc.begin();
-    check_true = (*it++ == kv("A",  1));
+    check_true = (*it++ == kv("A", 1));
     assert(check_true);
     check_true = (*it++ == kv("ABC", 3));
     assert(check_true);
@@ -1601,13 +1529,13 @@ void trie_test_iterator_with_erase()
     assert(it == dbc.begin());
 
     db.clear();
-    db.insert(MDDS_ASCII("A"),   1);
-    db.insert(MDDS_ASCII("AB"),  2);
+    db.insert(MDDS_ASCII("A"), 1);
+    db.insert(MDDS_ASCII("AB"), 2);
     db.insert(MDDS_ASCII("ABC"), 3);
     db.erase(MDDS_ASCII("ABC"));
 
     it = dbc.begin();
-    check_true = (*it++ == kv("A",  1));
+    check_true = (*it++ == kv("A", 1));
     assert(check_true);
     check_true = (*it++ == kv("AB", 2));
     assert(check_true);
@@ -1615,14 +1543,14 @@ void trie_test_iterator_with_erase()
 
     check_true = (*(--it) == kv("AB", 2));
     assert(check_true);
-    check_true = (*(--it) == kv("A",  1));
+    check_true = (*(--it) == kv("A", 1));
     assert(check_true);
     assert(it == dbc.begin());
 
     it = ite;
     --it;
     assert(*it-- == kv("AB", 2)); // test post-decrement operator.
-    assert(*it == kv("A",  1));
+    assert(*it == kv("A", 1));
 }
 
 void trie_test_find_iterator()
@@ -1632,10 +1560,10 @@ void trie_test_find_iterator()
     trie_map_type db;
     const trie_map_type& dbc = db;
 
-    db.insert(MDDS_ASCII("a"),  1);
+    db.insert(MDDS_ASCII("a"), 1);
     db.insert(MDDS_ASCII("aa"), 2);
     db.insert(MDDS_ASCII("ab"), 3);
-    db.insert(MDDS_ASCII("b"),  4);
+    db.insert(MDDS_ASCII("b"), 4);
     {
         auto it = dbc.find(MDDS_ASCII("a"));
         assert(it->first == "a");
@@ -1734,10 +1662,10 @@ void trie_test_prefix_search()
     trie_map_type db;
     const trie_map_type& dbc = db;
 
-    db.insert(MDDS_ASCII("a"),  1);
+    db.insert(MDDS_ASCII("a"), 1);
     db.insert(MDDS_ASCII("aa"), 2);
     db.insert(MDDS_ASCII("ab"), 3);
-    db.insert(MDDS_ASCII("b"),  4);
+    db.insert(MDDS_ASCII("b"), 4);
 
     cout << "Performing prefix search on 'a'..." << endl;
 

@@ -47,8 +47,9 @@ struct iterator_value_node
     size_type size;
     mdds::mtv::base_element_block* data;
 
-    iterator_value_node(size_type block_index) :
-        type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr), __private_data(block_index) {}
+    iterator_value_node(size_type block_index)
+        : type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr), __private_data(block_index)
+    {}
 
     void swap(iterator_value_node& other)
     {
@@ -64,9 +65,10 @@ struct iterator_value_node
     {
         size_type block_index;
 
-        private_data() : block_index(0) {}
-        private_data(size_type _block_index) :
-            block_index(_block_index) {}
+        private_data() : block_index(0)
+        {}
+        private_data(size_type _block_index) : block_index(_block_index)
+        {}
 
         void swap(private_data& other)
         {
@@ -75,15 +77,15 @@ struct iterator_value_node
     };
     private_data __private_data;
 
-    bool operator== (const iterator_value_node& other) const
+    bool operator==(const iterator_value_node& other) const
     {
         return type == other.type && position == other.position && size == other.size && data == other.data &&
-            __private_data.block_index == other.__private_data.block_index;
+               __private_data.block_index == other.__private_data.block_index;
     }
 
-    bool operator!= (const iterator_value_node& other) const
+    bool operator!=(const iterator_value_node& other) const
     {
-        return !operator== (other);
+        return !operator==(other);
     }
 };
 
@@ -92,8 +94,10 @@ struct private_data_no_update
 {
     using node_type = iterator_value_node<_SizeT>;
 
-    static void inc(node_type&) {}
-    static void dec(node_type&) {}
+    static void inc(node_type&)
+    {}
+    static void dec(node_type&)
+    {}
 };
 
 template<typename _SizeT>
@@ -112,9 +116,8 @@ struct private_data_forward_update
     }
 };
 
-}}}
+}}} // namespace mdds::detail::mtv
 
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

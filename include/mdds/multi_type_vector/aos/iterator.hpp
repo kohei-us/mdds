@@ -50,24 +50,19 @@ protected:
     typedef typename parent_type::size_type size_type;
     typedef mdds::detail::mtv::iterator_value_node<size_type> node;
 
-    iterator_common_base() : m_cur_node(0) {}
+    iterator_common_base() : m_cur_node(0)
+    {}
 
-    iterator_common_base(
-        const base_iterator_type& pos, const base_iterator_type& end, size_type block_index) :
-        m_cur_node(block_index),
-        m_pos(pos),
-        m_end(end)
+    iterator_common_base(const base_iterator_type& pos, const base_iterator_type& end, size_type block_index)
+        : m_cur_node(block_index), m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
     }
 
-    iterator_common_base(const iterator_common_base& other) :
-        m_cur_node(other.m_cur_node),
-        m_pos(other.m_pos),
-        m_end(other.m_end)
-    {
-    }
+    iterator_common_base(const iterator_common_base& other)
+        : m_cur_node(other.m_cur_node), m_pos(other.m_pos), m_end(other.m_end)
+    {}
 
     void update_node()
     {
@@ -109,7 +104,7 @@ protected:
     base_iterator_type m_end;
 
 public:
-    bool operator== (const iterator_common_base& other) const
+    bool operator==(const iterator_common_base& other) const
     {
         if (m_pos != m_end && other.m_pos != other.m_end)
         {
@@ -121,12 +116,12 @@ public:
         return m_pos == other.m_pos && m_end == other.m_end;
     }
 
-    bool operator!= (const iterator_common_base& other) const
+    bool operator!=(const iterator_common_base& other) const
     {
         return !operator==(other);
     }
 
-    iterator_common_base& operator= (const iterator_common_base& other)
+    iterator_common_base& operator=(const iterator_common_base& other)
     {
         m_cur_node = other.m_cur_node;
         m_pos = other.m_pos;
@@ -141,9 +136,18 @@ public:
         std::swap(m_end, other.m_end);
     }
 
-    const node& get_node() const { return m_cur_node; }
-    const base_iterator_type& get_pos() const { return m_pos; }
-    const base_iterator_type& get_end() const { return m_end; }
+    const node& get_node() const
+    {
+        return m_cur_node;
+    }
+    const base_iterator_type& get_pos() const
+    {
+        return m_pos;
+    }
+    const base_iterator_type& get_end() const
+    {
+        return m_end;
+    }
 };
 
 template<typename _Trait, typename _NodeUpdateFunc>
@@ -156,27 +160,27 @@ class iterator_base : public iterator_common_base<_Trait>
     typedef typename trait::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
-    using common_base::inc;
     using common_base::dec;
+    using common_base::inc;
     using common_base::m_cur_node;
 
 public:
-
-    using common_base::get_pos;
     using common_base::get_end;
+    using common_base::get_pos;
 
     // iterator traits
     typedef typename common_base::node value_type;
     typedef value_type* pointer;
     typedef value_type& reference;
-    typedef ptrdiff_t   difference_type;
+    typedef ptrdiff_t difference_type;
     typedef std::bidirectional_iterator_tag iterator_category;
 
 public:
-    iterator_base() {}
-    iterator_base(
-        const base_iterator_type& pos, const base_iterator_type& end, size_type block_index) :
-        common_base(pos, end, block_index) {}
+    iterator_base()
+    {}
+    iterator_base(const base_iterator_type& pos, const base_iterator_type& end, size_type block_index)
+        : common_base(pos, end, block_index)
+    {}
 
     value_type& operator*()
     {
@@ -223,14 +227,13 @@ class const_iterator_base : public iterator_common_base<_Trait>
     typedef typename trait::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
-    using common_base::inc;
     using common_base::dec;
+    using common_base::inc;
     using common_base::m_cur_node;
 
 public:
-
-    using common_base::get_pos;
     using common_base::get_end;
+    using common_base::get_pos;
 
     typedef _NonConstItrBase iterator_base;
 
@@ -238,23 +241,22 @@ public:
     typedef typename common_base::node value_type;
     typedef value_type* pointer;
     typedef value_type& reference;
-    typedef ptrdiff_t   difference_type;
+    typedef ptrdiff_t difference_type;
     typedef std::bidirectional_iterator_tag iterator_category;
 
 public:
-    const_iterator_base() : common_base() {}
-    const_iterator_base(
-        const base_iterator_type& pos, const base_iterator_type& end, size_type block_index) :
-        common_base(pos, end, block_index) {}
+    const_iterator_base() : common_base()
+    {}
+    const_iterator_base(const base_iterator_type& pos, const base_iterator_type& end, size_type block_index)
+        : common_base(pos, end, block_index)
+    {}
 
     /**
      * Take the non-const iterator counterpart to create a const iterator.
      */
-    const_iterator_base(const iterator_base& other) :
-        common_base(
-            other.get_pos(),
-            other.get_end(),
-            other.get_node().__private_data.block_index) {}
+    const_iterator_base(const iterator_base& other)
+        : common_base(other.get_pos(), other.get_end(), other.get_node().__private_data.block_index)
+    {}
 
     const value_type& operator*() const
     {
@@ -280,17 +282,17 @@ public:
         return *this;
     }
 
-    bool operator== (const const_iterator_base& other) const
+    bool operator==(const const_iterator_base& other) const
     {
         return iterator_common_base<_Trait>::operator==(other);
     }
 
-    bool operator!= (const const_iterator_base& other) const
+    bool operator!=(const const_iterator_base& other) const
     {
         return iterator_common_base<_Trait>::operator!=(other);
     }
 };
 
-}}}}
+}}}} // namespace mdds::mtv::aos::detail
 
 #endif

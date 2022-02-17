@@ -317,12 +317,12 @@ void mtv_test_swap_range()
 
     // Do the same, but merge with the next block in the source.
     db1 = mtv_type(3, true);
-    db1.set<int32_t>(2, int_val+1);
+    db1.set<int32_t>(2, int_val + 1);
     db2 = mtv_type(1, int_val);
     db1.swap(1, 1, db2, 0);
     assert(db1.get<bool>(0) == true);
     assert(db1.get<int32_t>(1) == int_val);
-    assert(db1.get<int32_t>(2) == int_val+1);
+    assert(db1.get<int32_t>(2) == int_val + 1);
     assert(db2.get<bool>(0) == true);
 
     // Replace the middle of existing source block.
@@ -451,7 +451,7 @@ void mtv_test_swap_range()
     // The source range is in the middle of a block.
     db1 = mtv_type(8);
     for (int32_t i = 0; i < 8; ++i)
-        db1.set<int32_t>(i, i+2);
+        db1.set<int32_t>(i, i + 2);
     db2 = mtv_type(4);
     db2.set<int32_t>(0, 12);
     db2.set<int16_t>(1, 13);
@@ -519,7 +519,7 @@ void mtv_test_swap_range()
     // Leave some empty range.
     db2 = mtv_type(10);
     for (int32_t i = 0; i < 10; ++i)
-        db2.set<int32_t>(i, 10+i);
+        db2.set<int32_t>(i, 10 + i);
     db2.set<int8_t>(5, 'Z');
     db1.swap(1, 7, db2, 2);
 
@@ -549,4 +549,3 @@ void mtv_test_swap_range()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

@@ -42,7 +42,7 @@ using cols_type = mdds::mtv::collection<mtv_type>;
 
 #include "all.inl"
 
-int main ()
+int main()
 {
     try
     {
@@ -66,4 +66,3 @@ int main ()
     cout << "Test finished successfully!" << endl;
     return EXIT_SUCCESS;
 }
-

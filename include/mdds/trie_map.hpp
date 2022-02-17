@@ -189,13 +189,20 @@ struct numeric_sequence_value_serializer
  * numeric types.
  */
 template<typename T, typename U = void>
-struct value_serializer : numeric_value_serializer<T> {};
+struct value_serializer : numeric_value_serializer<T>
+{
+};
 
 template<typename T>
-struct value_serializer<T, typename std::enable_if<has_value_type<T>::value>::type> : numeric_sequence_value_serializer<T> {};
+struct value_serializer<T, typename std::enable_if<has_value_type<T>::value>::type>
+    : numeric_sequence_value_serializer<T>
+{
+};
 
 template<>
-struct value_serializer<std::string> : variable_value_serializer<std::string> {};
+struct value_serializer<std::string> : variable_value_serializer<std::string>
+{
+};
 
 } // namespace trie
 
@@ -225,7 +232,7 @@ public:
     typedef _KeyTrait key_trait_type;
     typedef typename key_trait_type::key_type key_type;
     typedef typename key_trait_type::key_buffer_type key_buffer_type;
-    typedef typename key_trait_type::key_unit_type   key_unit_type;
+    typedef typename key_trait_type::key_unit_type key_unit_type;
     typedef _ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
@@ -235,7 +242,6 @@ public:
     typedef trie::detail::search_results<trie_map> search_results;
 
 private:
-
     struct trie_node
     {
         typedef std::map<key_unit_type, trie_node> children_type;
@@ -256,26 +262,24 @@ private:
     {
         using _is_const = bool_constant<_IsConst>;
 
-        using child_pos_type =
-            typename get_iterator_type<
-                typename trie_node::children_type, _is_const>::type;
+        using child_pos_type = typename get_iterator_type<typename trie_node::children_type, _is_const>::type;
 
         using trie_node_type = typename const_or_not<trie_node, _is_const>::type;
 
         trie_node_type* node;
         child_pos_type child_pos;
 
-        stack_item(trie_node_type* _node, const child_pos_type& _child_pos) :
-            node(_node), child_pos(_child_pos) {}
+        stack_item(trie_node_type* _node, const child_pos_type& _child_pos) : node(_node), child_pos(_child_pos)
+        {}
 
-        bool operator== (const stack_item& r) const
+        bool operator==(const stack_item& r) const
         {
             return node == r.node && child_pos == r.child_pos;
         }
 
-        bool operator!= (const stack_item& r) const
+        bool operator!=(const stack_item& r) const
         {
-            return !operator== (r);
+            return !operator==(r);
         }
     };
 
@@ -283,7 +287,6 @@ private:
     using node_stack_type = std::vector<stack_item<false>>;
 
 public:
-
     /**
      * Default constructor.
      */
@@ -301,7 +304,7 @@ public:
 
     iterator end();
 
-    trie_map& operator= (trie_map other);
+    trie_map& operator=(trie_map other);
 
     void swap(trie_map& other);
 
@@ -436,14 +439,11 @@ private:
 
     template<bool _IsConst>
     void find_prefix_node_with_stack(
-        std::vector<stack_item<_IsConst>>& node_stack,
-        const_t<trie_node, _IsConst>& node,
-        const key_unit_type* prefix,
+        std::vector<stack_item<_IsConst>>& node_stack, const_t<trie_node, _IsConst>& node, const key_unit_type* prefix,
         const key_unit_type* prefix_end) const;
 
     template<bool _IsConst>
-    key_buffer_type build_key_buffer_from_node_stack(
-        const std::vector<stack_item<_IsConst>>& node_stack) const;
+    key_buffer_type build_key_buffer_from_node_stack(const std::vector<stack_item<_IsConst>>& node_stack) const;
 
     void count_values(size_type& n, const trie_node& node) const;
 
@@ -471,7 +471,7 @@ public:
     typedef _KeyTrait key_trait_type;
     typedef typename key_trait_type::key_type key_type;
     typedef typename key_trait_type::key_buffer_type key_buffer_type;
-    typedef typename key_trait_type::key_unit_type   key_unit_type;
+    typedef typename key_trait_type::key_unit_type key_unit_type;
     typedef _ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
@@ -488,8 +488,9 @@ public:
         size_type keylen;
         value_type value;
 
-        entry(const key_unit_type* _key, size_type _keylen, value_type _value) :
-            key(_key), keylen(_keylen), value(_value) {}
+        entry(const key_unit_type* _key, size_type _keylen, value_type _value)
+            : key(_key), keylen(_keylen), value(_value)
+        {}
     };
 
 private:
@@ -500,7 +501,8 @@ private:
 
         std::deque<trie_node*> children;
 
-        trie_node(key_unit_type _key) : key(_key), value(nullptr) {}
+        trie_node(key_unit_type _key) : key(_key), value(nullptr)
+        {}
     };
 
     struct stack_item
@@ -509,15 +511,16 @@ private:
         const uintptr_t* child_pos;
         const uintptr_t* child_end;
 
-        stack_item(const uintptr_t* _node_pos, const uintptr_t* _child_pos, const uintptr_t* _child_end) :
-            node_pos(_node_pos), child_pos(_child_pos), child_end(_child_end) {}
+        stack_item(const uintptr_t* _node_pos, const uintptr_t* _child_pos, const uintptr_t* _child_end)
+            : node_pos(_node_pos), child_pos(_child_pos), child_end(_child_end)
+        {}
 
-        bool operator== (const stack_item& other) const
+        bool operator==(const stack_item& other) const
         {
             return node_pos == other.node_pos && child_pos == other.child_pos;
         }
 
-        bool operator!= (const stack_item& other) const
+        bool operator!=(const stack_item& other) const
         {
             return !operator==(other);
         }
@@ -542,7 +545,6 @@ private:
     typedef std::vector<std::tuple<size_t, key_unit_type>> child_offsets_type;
 
 public:
-
     packed_trie_map();
 
     /**
@@ -567,11 +569,11 @@ public:
 
     packed_trie_map(packed_trie_map&& other);
 
-    packed_trie_map& operator= (packed_trie_map other);
+    packed_trie_map& operator=(packed_trie_map other);
 
-    bool operator== (const packed_trie_map& other) const;
+    bool operator==(const packed_trie_map& other) const;
 
-    bool operator!= (const packed_trie_map& other) const;
+    bool operator!=(const packed_trie_map& other) const;
 
     const_iterator begin() const;
 
@@ -667,8 +669,7 @@ private:
     node_stack_type get_root_stack() const;
 
     void traverse_range(
-        trie_node& root, node_pool_type& node_pool, const entry* start, const entry* end,
-        size_type pos);
+        trie_node& root, node_pool_type& node_pool, const entry* start, const entry* end, size_type pos);
 
     size_type compact_node(const trie_node& node);
     size_type compact_node(const typename trie_map<_KeyTrait, _ValueT>::trie_node& node);
@@ -682,8 +683,8 @@ private:
         const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     void find_prefix_node_with_stack(
-        node_stack_type& node_stack,
-        const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
+        node_stack_type& node_stack, const uintptr_t* p, const key_unit_type* prefix,
+        const key_unit_type* prefix_end) const;
 
     template<typename _Handler>
     void traverse_tree(_Handler hdl) const;
@@ -702,7 +703,7 @@ private:
     packed_type m_packed;
 };
 
-}
+} // namespace mdds
 
 #include "trie_map_def.inl"
 

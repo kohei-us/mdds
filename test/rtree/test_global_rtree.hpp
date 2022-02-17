@@ -69,30 +69,46 @@ struct tiny_trait_2d_forced_reinsertion
 class only_movable
 {
     double m_value;
+
 public:
-    only_movable() : m_value(0.0) {}
-    only_movable(double v) : m_value(v) {}
+    only_movable() : m_value(0.0)
+    {}
+    only_movable(double v) : m_value(v)
+    {}
     only_movable(const only_movable&) = delete;
     only_movable(only_movable&& other) : m_value(other.m_value)
     {
         other.m_value = 0.0;
     }
 
-    double get() const { return m_value; }
+    double get() const
+    {
+        return m_value;
+    }
 };
 
 class only_copyable
 {
     double m_value;
+
 public:
-    only_copyable() : m_value(0.0) {}
-    only_copyable(double v) : m_value(v) {}
-    only_copyable(const only_copyable& other) : m_value(other.m_value) {}
+    only_copyable() : m_value(0.0)
+    {}
+    only_copyable(double v) : m_value(v)
+    {}
+    only_copyable(const only_copyable& other) : m_value(other.m_value)
+    {}
 
     only_copyable(only_copyable&&) = delete;
 
-    void set(double v) { m_value = v; }
-    double get() const { return m_value; }
+    void set(double v)
+    {
+        m_value = v;
+    }
+    double get() const
+    {
+        return m_value;
+    }
 };
 
 template<typename T>
@@ -130,4 +146,3 @@ void rtree_test_exact_search_by_point();
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

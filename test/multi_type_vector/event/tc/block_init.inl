@@ -31,13 +31,19 @@ struct event_block_init
     std::string name;
     std::string ctor_type;
 
-    event_block_init() : ctor_type("empty") {}
-    event_block_init(const std::string& _name) : name(_name), ctor_type("normal") {}
-    event_block_init(const event_block_init& other) : name(other.name), ctor_type("copy") {}
-    event_block_init(event_block_init&& other) : name(std::move(other.name)), ctor_type("move") {}
+    event_block_init() : ctor_type("empty")
+    {}
+    event_block_init(const std::string& _name) : name(_name), ctor_type("normal")
+    {}
+    event_block_init(const event_block_init& other) : name(other.name), ctor_type("copy")
+    {}
+    event_block_init(event_block_init&& other) : name(std::move(other.name)), ctor_type("move")
+    {}
 
-    void element_block_acquired(const mdds::mtv::base_element_block* /*block*/) {}
-    void element_block_released(const mdds::mtv::base_element_block* /*block*/) {}
+    void element_block_acquired(const mdds::mtv::base_element_block* /*block*/)
+    {}
+    void element_block_released(const mdds::mtv::base_element_block* /*block*/)
+    {}
 };
 
 struct eb_init_trait
@@ -73,4 +79,3 @@ void mtv_test_block_init()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

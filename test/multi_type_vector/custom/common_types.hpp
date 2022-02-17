@@ -36,8 +36,10 @@ struct user_cell
 {
     double value;
 
-    user_cell() : value(0.0) {}
-    user_cell(double _v) : value(_v) {}
+    user_cell() : value(0.0)
+    {}
+    user_cell(double _v) : value(_v)
+    {}
 };
 
 /**
@@ -48,13 +50,24 @@ struct muser_cell
 {
     double value;
 
-    muser_cell() : value(0.0) {}
-    muser_cell(const muser_cell& r) : value(r.value) {}
-    muser_cell(double _v) : value(_v) {}
-    ~muser_cell() {}
+    muser_cell() : value(0.0)
+    {}
+    muser_cell(const muser_cell& r) : value(r.value)
+    {}
+    muser_cell(double _v) : value(_v)
+    {}
+    ~muser_cell()
+    {}
 };
 
-enum my_fruit_type { unknown_fruit = 0, apple, orange, mango, peach };
+enum my_fruit_type
+{
+    unknown_fruit = 0,
+    apple,
+    orange,
+    mango,
+    peach
+};
 
 struct date
 {
@@ -62,15 +75,17 @@ struct date
     int month;
     int day;
 
-    date() : year(0), month(0), day(0) {}
-    date(int _year, int _month, int _day) : year(_year), month(_month), day(_day) {}
+    date() : year(0), month(0), day(0)
+    {}
+    date(int _year, int _month, int _day) : year(_year), month(_month), day(_day)
+    {}
 };
 
 /** custom cell type definition. */
 constexpr mdds::mtv::element_t element_type_user_block = mdds::mtv::element_type_user_start;
-constexpr mdds::mtv::element_t element_type_muser_block = mdds::mtv::element_type_user_start+1;
-constexpr mdds::mtv::element_t element_type_fruit_block = mdds::mtv::element_type_user_start+2;
-constexpr mdds::mtv::element_t element_type_date_block = mdds::mtv::element_type_user_start+3;
+constexpr mdds::mtv::element_t element_type_muser_block = mdds::mtv::element_type_user_start + 1;
+constexpr mdds::mtv::element_t element_type_fruit_block = mdds::mtv::element_type_user_start + 2;
+constexpr mdds::mtv::element_t element_type_date_block = mdds::mtv::element_type_user_start + 3;
 
 using user_cell_block = mdds::mtv::default_element_block<element_type_user_block, user_cell*>;
 using muser_cell_block = mdds::mtv::managed_element_block<element_type_muser_block, muser_cell>;
@@ -86,6 +101,7 @@ template<typename T>
 class cell_pool
 {
     std::vector<std::unique_ptr<T>> m_pool;
+
 public:
     cell_pool() = default;
     cell_pool(const cell_pool&) = delete;
@@ -97,13 +113,15 @@ public:
         return m_pool.back().get();
     }
 
-    void clear() { m_pool.clear(); }
+    void clear()
+    {
+        m_pool.clear();
+    }
 };
 
 class user_cell_pool : public cell_pool<user_cell>
 {
 public:
-
     user_cell* construct(double val)
     {
         user_cell* p = cell_pool<user_cell>::construct();
@@ -113,4 +131,3 @@ public:
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

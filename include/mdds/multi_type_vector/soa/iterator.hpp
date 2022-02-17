@@ -93,9 +93,8 @@ protected:
 
         bool operator==(const grouped_iterator_type& other) const
         {
-            return position_iterator == other.position_iterator &&
-                size_iterator == other.size_iterator &&
-                element_block_iterator == other.element_block_iterator;
+            return position_iterator == other.position_iterator && size_iterator == other.size_iterator &&
+                   element_block_iterator == other.element_block_iterator;
         }
 
         bool operator!=(const grouped_iterator_type& other) const
@@ -106,54 +105,36 @@ protected:
         grouped_iterator_type() = default;
 
         grouped_iterator_type(
-            const positions_iterator_type& itr_pos,
-            const sizes_iterator_type& itr_size,
-            const element_blocks_iterator_type& itr_elem_blocks) :
-            position_iterator(itr_pos),
-            size_iterator(itr_size),
-            element_block_iterator(itr_elem_blocks)
-        {
-        }
+            const positions_iterator_type& itr_pos, const sizes_iterator_type& itr_size,
+            const element_blocks_iterator_type& itr_elem_blocks)
+            : position_iterator(itr_pos), size_iterator(itr_size), element_block_iterator(itr_elem_blocks)
+        {}
     };
 
     node m_cur_node;
     grouped_iterator_type m_pos;
     grouped_iterator_type m_end;
 
-    iterator_updater() : m_cur_node(0) {}
+    iterator_updater() : m_cur_node(0)
+    {}
 
-    iterator_updater(
-        const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index) :
-        m_cur_node(block_index),
-        m_pos(pos),
-        m_end(end)
+    iterator_updater(const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index)
+        : m_cur_node(block_index), m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
     }
 
     iterator_updater(
-        const positions_iterator_type& positions_pos,
-        const sizes_iterator_type& sizes_pos,
-        const element_blocks_iterator_type& eb_pos,
-        const positions_iterator_type& positions_end,
-        const sizes_iterator_type& sizes_end,
-        const element_blocks_iterator_type& eb_end,
-        size_type block_index) :
-        iterator_updater(
-            { positions_pos, sizes_pos, eb_pos },
-            { positions_end, sizes_end, eb_end },
-            block_index
-        )
-    {
-    }
+        const positions_iterator_type& positions_pos, const sizes_iterator_type& sizes_pos,
+        const element_blocks_iterator_type& eb_pos, const positions_iterator_type& positions_end,
+        const sizes_iterator_type& sizes_end, const element_blocks_iterator_type& eb_end, size_type block_index)
+        : iterator_updater({positions_pos, sizes_pos, eb_pos}, {positions_end, sizes_end, eb_end}, block_index)
+    {}
 
-    iterator_updater(const iterator_updater& other) :
-        m_cur_node(other.m_cur_node),
-        m_pos(other.m_pos),
-        m_end(other.m_end)
-    {
-    }
+    iterator_updater(const iterator_updater& other)
+        : m_cur_node(other.m_cur_node), m_pos(other.m_pos), m_end(other.m_end)
+    {}
 
     void update_node()
     {
@@ -191,15 +172,12 @@ protected:
 
     void _print_state(std::ostream& os) const
     {
-        os << "block-index=" << m_cur_node.__private_data.block_index
-            << "; position=" << m_cur_node.position
-            << "; size=" << m_cur_node.size
-            << "; type=" << m_cur_node.type
-            << "; data=" << m_cur_node.data;
+        os << "block-index=" << m_cur_node.__private_data.block_index << "; position=" << m_cur_node.position
+           << "; size=" << m_cur_node.size << "; type=" << m_cur_node.type << "; data=" << m_cur_node.data;
     }
 
 public:
-    bool operator== (const iterator_updater& other) const
+    bool operator==(const iterator_updater& other) const
     {
         if (m_pos != m_end && other.m_pos != other.m_end)
         {
@@ -211,12 +189,12 @@ public:
         return m_pos == other.m_pos && m_end == other.m_end;
     }
 
-    bool operator!= (const iterator_updater& other) const
+    bool operator!=(const iterator_updater& other) const
     {
         return !operator==(other);
     }
 
-    iterator_updater& operator= (const iterator_updater& other)
+    iterator_updater& operator=(const iterator_updater& other)
     {
         m_cur_node = other.m_cur_node;
         m_pos = other.m_pos;
@@ -231,9 +209,18 @@ public:
         std::swap(m_end, other.m_end);
     }
 
-    const node& get_node() const { return m_cur_node; }
-    const grouped_iterator_type& get_pos() const { return m_pos; }
-    const grouped_iterator_type& get_end() const { return m_end; }
+    const node& get_node() const
+    {
+        return m_cur_node;
+    }
+    const grouped_iterator_type& get_pos() const
+    {
+        return m_pos;
+    }
+    const grouped_iterator_type& get_end() const
+    {
+        return m_end;
+    }
 };
 
 template<typename _Trait>
@@ -245,14 +232,13 @@ class iterator_base : public iterator_updater<_Trait>
     using grouped_iterator_type = typename updater::grouped_iterator_type;
     using size_type = typename updater::size_type;
 
-    using updater::inc;
     using updater::dec;
+    using updater::inc;
     using updater::m_cur_node;
 
 public:
-
-    using updater::get_pos;
     using updater::get_end;
+    using updater::get_pos;
 
     // iterator traits
     using value_type = typename updater::node;
@@ -262,10 +248,11 @@ public:
     using iterator_category = std::bidirectional_iterator_tag;
 
 public:
-    iterator_base() {}
-    iterator_base(
-        const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index) :
-        updater(pos, end, block_index) {}
+    iterator_base()
+    {}
+    iterator_base(const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index)
+        : updater(pos, end, block_index)
+    {}
 
     value_type& operator*()
     {
@@ -318,14 +305,13 @@ class const_iterator_base : public iterator_updater<_Trait>
     using grouped_iterator_type = typename updater::grouped_iterator_type;
     using size_type = typename updater::size_type;
 
-    using updater::inc;
     using updater::dec;
+    using updater::inc;
     using updater::m_cur_node;
 
 public:
-
-    using updater::get_pos;
     using updater::get_end;
+    using updater::get_pos;
 
     using iterator_base = _NonConstItrBase;
 
@@ -337,23 +323,21 @@ public:
     using iterator_category = std::bidirectional_iterator_tag;
 
 public:
-    const_iterator_base() : updater() {}
-    const_iterator_base(
-        const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index) :
-        updater(pos, end, block_index) {}
+    const_iterator_base() : updater()
+    {}
+    const_iterator_base(const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index)
+        : updater(pos, end, block_index)
+    {}
 
     /**
      * Take the non-const iterator counterpart to create a const iterator.
      */
-    const_iterator_base(const iterator_base& other) :
-        updater(
-            other.get_pos().position_iterator,
-            other.get_pos().size_iterator,
-            other.get_pos().element_block_iterator,
-            other.get_end().position_iterator,
-            other.get_end().size_iterator,
-            other.get_end().element_block_iterator,
-            other.get_node().__private_data.block_index) {}
+    const_iterator_base(const iterator_base& other)
+        : updater(
+              other.get_pos().position_iterator, other.get_pos().size_iterator, other.get_pos().element_block_iterator,
+              other.get_end().position_iterator, other.get_end().size_iterator, other.get_end().element_block_iterator,
+              other.get_node().__private_data.block_index)
+    {}
 
     const value_type& operator*() const
     {
@@ -379,12 +363,12 @@ public:
         return *this;
     }
 
-    bool operator== (const const_iterator_base& other) const
+    bool operator==(const const_iterator_base& other) const
     {
         return updater::operator==(other);
     }
 
-    bool operator!= (const const_iterator_base& other) const
+    bool operator!=(const const_iterator_base& other) const
     {
         return updater::operator!=(other);
     }
@@ -398,23 +382,21 @@ public:
 };
 
 template<typename _Trait>
-std::ostream& operator<< (std::ostream& os, const iterator_base<_Trait>& it)
+std::ostream& operator<<(std::ostream& os, const iterator_base<_Trait>& it)
 {
     it._print_state(os);
     return os;
 }
 
 template<typename _Trait, typename _NonConstItrBase>
-std::ostream& operator<< (std::ostream& os, const const_iterator_base<_Trait, _NonConstItrBase>& it)
+std::ostream& operator<<(std::ostream& os, const const_iterator_base<_Trait, _NonConstItrBase>& it)
 {
     it._print_state(os);
     return os;
 }
 
-}}}}
-
+}}}} // namespace mdds::mtv::soa::detail
 
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

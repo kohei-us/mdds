@@ -50,7 +50,7 @@ void rtree_test_point_objects()
     {
         for (key_type y = 0; y < 10; ++y)
         {
-            tree.insert({x, y}, x*y);
+            tree.insert({x, y}, x * y);
         }
     }
 
@@ -62,7 +62,7 @@ void rtree_test_point_objects()
         {
             auto results = tree.search({x, y}, search_type::overlap);
             assert(std::distance(results.begin(), results.end()) == 1);
-            double expected = x*y;
+            double expected = x * y;
             auto it = results.begin();
             assert(expected == *it);
         }
@@ -77,4 +77,3 @@ void rtree_test_point_objects()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

@@ -37,8 +37,8 @@ namespace detail {
 // don't use it!
 // Implementation detail!
 template<typename _ValueT>
-bool compare(const typename sorted_string_map<_ValueT>::entry& entry1,
-        const typename sorted_string_map<_ValueT>::entry& entry2)
+bool compare(
+    const typename sorted_string_map<_ValueT>::entry& entry1, const typename sorted_string_map<_ValueT>::entry& entry2)
 {
     if (entry1.keylen != entry2.keylen)
     {
@@ -55,14 +55,11 @@ bool compare(const typename sorted_string_map<_ValueT>::entry& entry1,
     }
 }
 
-}
+} // namespace detail
 
 template<typename _ValueT>
-sorted_string_map<_ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value) :
-    m_entries(entries),
-    m_null_value(null_value),
-    m_entry_size(entry_size),
-    m_entry_end(m_entries+m_entry_size)
+sorted_string_map<_ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value)
+    : m_entries(entries), m_null_value(null_value), m_entry_size(entry_size), m_entry_end(m_entries + m_entry_size)
 {
 #if defined(_GLIBCXX_DEBUG) || defined(MDDS_ASSERT_STRING_MAP)
     assert(std::is_sorted(m_entries, m_entry_end, detail::compare<_ValueT>));
@@ -70,8 +67,7 @@ sorted_string_map<_ValueT>::sorted_string_map(const entry* entries, size_type en
 }
 
 template<typename _ValueT>
-typename sorted_string_map<_ValueT>::value_type
-sorted_string_map<_ValueT>::find(const char* input, size_type len) const
+typename sorted_string_map<_ValueT>::value_type sorted_string_map<_ValueT>::find(const char* input, size_type len) const
 {
     if (m_entry_size == 0)
         return m_null_value;
@@ -88,10 +84,9 @@ sorted_string_map<_ValueT>::find(const char* input, size_type len) const
 }
 
 template<typename _ValueT>
-typename sorted_string_map<_ValueT>::size_type
-sorted_string_map<_ValueT>::size() const
+typename sorted_string_map<_ValueT>::size_type sorted_string_map<_ValueT>::size() const
 {
     return m_entry_size;
 }
 
-}
+} // namespace mdds

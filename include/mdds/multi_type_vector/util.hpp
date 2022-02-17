@@ -95,18 +95,28 @@ namespace detail { namespace mtv {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 
 template<typename T, typename = void>
-struct has_trace : std::false_type {};
+struct has_trace : std::false_type
+{
+};
 
 template<typename T>
-struct has_trace<T, decltype((void)T::trace)> : std::true_type {};
+struct has_trace<T, decltype((void)T::trace)> : std::true_type
+{
+};
 
 template<typename Trait>
 struct call_trace
 {
     int& call_depth;
 
-    call_trace(int& _call_depth) : call_depth(_call_depth) { ++call_depth; }
-    ~call_trace() noexcept { --call_depth; }
+    call_trace(int& _call_depth) : call_depth(_call_depth)
+    {
+        ++call_depth;
+    }
+    ~call_trace() noexcept
+    {
+        --call_depth;
+    }
 
     void call(std::false_type, const ::mdds::mtv::trace_method_properties_t&) const
     {
@@ -132,8 +142,8 @@ inline void throw_block_position_not_found(
     const char* method_sig, int line, size_t pos, size_t block_size, size_t container_size)
 {
     std::ostringstream os;
-    os << method_sig << "#" << line << ": block position not found! (logical pos="
-        << pos << ", block size=" << block_size << ", logical size=" << container_size << ")";
+    os << method_sig << "#" << line << ": block position not found! (logical pos=" << pos
+       << ", block size=" << block_size << ", logical size=" << container_size << ")";
     throw std::out_of_range(os.str());
 }
 
@@ -156,8 +166,7 @@ inline void throw_block_position_not_found(
  *         not the input value sequence is empty (second).
  */
 template<typename _T, typename _SizeT>
-std::pair<_SizeT, bool> calc_input_end_position(
-    const _T& it_begin, const _T& it_end, _SizeT pos, _SizeT total_size)
+std::pair<_SizeT, bool> calc_input_end_position(const _T& it_begin, const _T& it_end, _SizeT pos, _SizeT total_size)
 {
     using ret_type = std::pair<_SizeT, bool>;
 
@@ -226,7 +235,8 @@ inline typename _Blk::value_type get_block_element_at(const mdds::mtv::base_elem
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
 
 template<>
-inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::mtv::base_element_block& data, size_t offset)
+inline bool get_block_element_at<mdds::mtv::boolean_element_block>(
+    const mdds::mtv::base_element_block& data, size_t offset)
 {
     auto it = mdds::mtv::boolean_element_block::cbegin(data);
     std::advance(it, offset);
@@ -243,9 +253,7 @@ inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::m
 
 #define MDDS_MTV_TRACE(method_type) \
     ::mdds::detail::mtv::call_trace<Trait> mdds_mtv_ct(m_trace_call_depth); \
-    mdds_mtv_ct( \
-        { trace_method_t::method_type, this, __func__, "", __FILE__, __LINE__ } \
-    )
+    mdds_mtv_ct({trace_method_t::method_type, this, __func__, "", __FILE__, __LINE__})
 
 #define MDDS_MTV_TRACE_ARGS(method_type, stream) \
     ::mdds::detail::mtv::call_trace<Trait> mdds_mtv_ct(m_trace_call_depth); \
@@ -253,9 +261,7 @@ inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::m
     { \
         std::ostringstream _os_; \
         _os_ << stream; \
-        mdds_mtv_ct( \
-            { trace_method_t::method_type, this, __func__, _os_.str(), __FILE__, __LINE__ } \
-        ); \
+        mdds_mtv_ct({trace_method_t::method_type, this, __func__, _os_.str(), __FILE__, __LINE__}); \
     } while (false)
 
 #else
@@ -269,4 +275,3 @@ inline bool get_block_element_at<mdds::mtv::boolean_element_block>(const mdds::m
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

@@ -72,9 +72,10 @@ void test_used_in_iterator()
         int m_v1 = 222;
         int m_v2 = 456;
 
-        fake_iterator() {}
+        fake_iterator()
+        {}
 
-        rp_type operator* ()
+        rp_type operator*()
         {
             return rp_type(m_v1, m_v2);
         }

@@ -42,11 +42,11 @@
 #include <vector>
 #endif
 
-#if defined(MDDS_UNIT_TEST) || defined (MDDS_MULTI_TYPE_VECTOR_DEBUG)
+#if defined(MDDS_UNIT_TEST) || defined(MDDS_MULTI_TYPE_VECTOR_DEBUG)
 #include <iostream>
 #include <sstream>
-using std::cout;
 using std::cerr;
+using std::cout;
 using std::endl;
 #endif
 
@@ -57,17 +57,17 @@ using element_t = int;
 constexpr element_t element_type_empty = -1;
 
 constexpr element_t element_type_boolean = 0;
-constexpr element_t element_type_int8    = 1;
-constexpr element_t element_type_uint8   = 2;
-constexpr element_t element_type_int16   = 3;
-constexpr element_t element_type_uint16  = 4;
-constexpr element_t element_type_int32   = 5;
-constexpr element_t element_type_uint32  = 6;
-constexpr element_t element_type_int64   = 7;
-constexpr element_t element_type_uint64  = 8;
-constexpr element_t element_type_float   = 9;
-constexpr element_t element_type_double  = 10;
-constexpr element_t element_type_string  = 11;
+constexpr element_t element_type_int8 = 1;
+constexpr element_t element_type_uint8 = 2;
+constexpr element_t element_type_int16 = 3;
+constexpr element_t element_type_uint16 = 4;
+constexpr element_t element_type_int32 = 5;
+constexpr element_t element_type_uint32 = 6;
+constexpr element_t element_type_int64 = 7;
+constexpr element_t element_type_uint64 = 8;
+constexpr element_t element_type_float = 9;
+constexpr element_t element_type_double = 10;
+constexpr element_t element_type_string = 11;
 
 constexpr element_t element_type_user_start = 50;
 
@@ -159,7 +159,8 @@ struct trace_method_properties_t
 class element_block_error : public mdds::general_error
 {
 public:
-    element_block_error(const std::string& msg) : mdds::general_error(msg) {}
+    element_block_error(const std::string& msg) : mdds::general_error(msg)
+    {}
 };
 
 class base_element_block;
@@ -172,9 +173,11 @@ element_t get_block_type(const base_element_block&);
 class base_element_block
 {
     friend element_t get_block_type(const base_element_block&);
+
 protected:
     element_t type;
-    base_element_block(element_t _t) : type(_t) {}
+    base_element_block(element_t _t) : type(_t)
+    {}
 };
 
 template<typename _Self, element_t _TypeId, typename _Data>
@@ -183,7 +186,7 @@ class element_block : public base_element_block
 #ifdef MDDS_UNIT_TEST
     struct print_block_array
     {
-        void operator() (const _Data& val) const
+        void operator()(const _Data& val) const
         {
             std::cout << val << " ";
         }
@@ -198,12 +201,16 @@ protected:
 #endif
     store_type m_array;
 
-    element_block() : base_element_block(_TypeId) {}
-    element_block(size_t n) : base_element_block(_TypeId), m_array(n) {}
-    element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val) {}
+    element_block() : base_element_block(_TypeId)
+    {}
+    element_block(size_t n) : base_element_block(_TypeId), m_array(n)
+    {}
+    element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val)
+    {}
 
     template<typename _Iter>
-    element_block(const _Iter& it_begin, const _Iter& it_end) : base_element_block(_TypeId), m_array(it_begin, it_end) {}
+    element_block(const _Iter& it_begin, const _Iter& it_end) : base_element_block(_TypeId), m_array(it_begin, it_end)
+    {}
 
 public:
     static const element_t block_type = _TypeId;
@@ -214,12 +221,12 @@ public:
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
     typedef _Data value_type;
 
-    bool operator== (const _Self& r) const
+    bool operator==(const _Self& r) const
     {
         return m_array == r.m_array;
     }
 
-    bool operator!= (const _Self& r) const
+    bool operator!=(const _Self& r) const
     {
         return !operator==(r);
     }
@@ -310,7 +317,8 @@ public:
         if (get_block_type(block) != _TypeId)
         {
             std::ostringstream os;
-            os << "incorrect block type: expected block type=" << _TypeId << ", passed block type=" << get_block_type(block);
+            os << "incorrect block type: expected block type=" << _TypeId
+               << ", passed block type=" << get_block_type(block);
             throw general_error(os.str());
         }
 #endif
@@ -323,7 +331,8 @@ public:
         if (get_block_type(block) != _TypeId)
         {
             std::ostringstream os;
-            os << "incorrect block type: expected block type=" << _TypeId << ", passed block type=" << get_block_type(block);
+            os << "incorrect block type: expected block type=" << _TypeId
+               << ", passed block type=" << get_block_type(block);
             throw general_error(os.str());
         }
 #endif
@@ -385,19 +394,20 @@ public:
         std::cout << std::endl;
     }
 #else
-    static void print_block(const base_element_block&) {}
+    static void print_block(const base_element_block&)
+    {}
 #endif
 
     static void erase_block(base_element_block& blk, size_t pos)
     {
         store_type& blk2 = get(blk).m_array;
-        blk2.erase(blk2.begin()+pos);
+        blk2.erase(blk2.begin() + pos);
     }
 
     static void erase_block(base_element_block& blk, size_t pos, size_t size)
     {
         store_type& blk2 = get(blk).m_array;
-        blk2.erase(blk2.begin()+pos, blk2.begin()+pos+size);
+        blk2.erase(blk2.begin() + pos, blk2.begin() + pos + size);
     }
 
     static void append_values_from_block(base_element_block& dest, const base_element_block& src)
@@ -412,7 +422,7 @@ public:
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
-        std::pair<const_iterator,const_iterator> its = get_iterator_pair(s, begin_pos, len);
+        std::pair<const_iterator, const_iterator> its = get_iterator_pair(s, begin_pos, len);
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
         d.reserve(d.size() + len);
 #endif
@@ -424,7 +434,7 @@ public:
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
-        std::pair<const_iterator,const_iterator> its = get_iterator_pair(s, begin_pos, len);
+        std::pair<const_iterator, const_iterator> its = get_iterator_pair(s, begin_pos, len);
         d.assign(its.first, its.second);
     }
 
@@ -433,15 +443,14 @@ public:
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
-        std::pair<const_iterator,const_iterator> its = get_iterator_pair(s, begin_pos, len);
+        std::pair<const_iterator, const_iterator> its = get_iterator_pair(s, begin_pos, len);
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
         d.reserve(d.size() + len);
 #endif
         d.insert(d.begin(), its.first, its.second);
     }
 
-    static void swap_values(
-        base_element_block& blk1, base_element_block& blk2, size_t pos1, size_t pos2, size_t len)
+    static void swap_values(base_element_block& blk1, base_element_block& blk2, size_t pos1, size_t pos2, size_t len)
     {
         store_type& st1 = get(blk1).m_array;
         store_type& st2 = get(blk2).m_array;
@@ -464,8 +473,7 @@ public:
     }
 
     template<typename _Iter>
-    static void set_values(
-        base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
+    static void set_values(base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
     {
         store_type& d = get(block).m_array;
         typename store_type::iterator it_dest = d.begin();
@@ -497,11 +505,10 @@ public:
     }
 
     template<typename _Iter>
-    static void insert_values(
-        base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
+    static void insert_values(base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
     {
         store_type& blk = get(block).m_array;
-        blk.insert(blk.begin()+pos, it_begin, it_end);
+        blk.insert(blk.begin() + pos, it_begin, it_end);
     }
 
     static size_t capacity(const base_element_block& block)
@@ -522,29 +529,34 @@ public:
     }
 
 private:
-    static std::pair<const_iterator,const_iterator>
-    get_iterator_pair(const store_type& array, size_t begin_pos, size_t len)
+    static std::pair<const_iterator, const_iterator> get_iterator_pair(
+        const store_type& array, size_t begin_pos, size_t len)
     {
         assert(begin_pos + len <= array.size());
         const_iterator it = array.begin();
         std::advance(it, begin_pos);
         const_iterator it_end = it;
         std::advance(it_end, len);
-        return std::pair<const_iterator,const_iterator>(it, it_end);
+        return std::pair<const_iterator, const_iterator>(it, it_end);
     }
 };
 
 template<typename _Self, element_t _TypeId, typename _Data>
 class copyable_element_block : public element_block<_Self, _TypeId, _Data>
 {
-    typedef element_block<_Self,_TypeId,_Data> base_type;
+    typedef element_block<_Self, _TypeId, _Data> base_type;
+
 protected:
-    copyable_element_block() : base_type() {}
-    copyable_element_block(size_t n) : base_type(n) {}
-    copyable_element_block(size_t n, const _Data& val) : base_type(n, val) {}
+    copyable_element_block() : base_type()
+    {}
+    copyable_element_block(size_t n) : base_type(n)
+    {}
+    copyable_element_block(size_t n, const _Data& val) : base_type(n, val)
+    {}
 
     template<typename _Iter>
-    copyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+    copyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    {}
 
 public:
     using base_type::get;
@@ -559,14 +571,19 @@ public:
 template<typename _Self, element_t _TypeId, typename _Data>
 class noncopyable_element_block : public element_block<_Self, _TypeId, _Data>
 {
-    typedef element_block<_Self,_TypeId,_Data> base_type;
+    typedef element_block<_Self, _TypeId, _Data> base_type;
+
 protected:
-    noncopyable_element_block() : base_type() {}
-    noncopyable_element_block(size_t n) : base_type(n) {}
-    noncopyable_element_block(size_t n, const _Data& val) : base_type(n, val) {}
+    noncopyable_element_block() : base_type()
+    {}
+    noncopyable_element_block(size_t n) : base_type(n)
+    {}
+    noncopyable_element_block(size_t n, const _Data& val) : base_type(n, val)
+    {}
 
     template<typename _Iter>
-    noncopyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+    noncopyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    {}
 
 public:
     noncopyable_element_block(const noncopyable_element_block&) = delete;
@@ -595,17 +612,21 @@ inline element_t get_block_type(const base_element_block& blk)
  * multi_type_vector.
  */
 template<element_t _TypeId, typename _Data>
-struct default_element_block : public copyable_element_block<default_element_block<_TypeId,_Data>, _TypeId, _Data>
+struct default_element_block : public copyable_element_block<default_element_block<_TypeId, _Data>, _TypeId, _Data>
 {
     typedef copyable_element_block<default_element_block, _TypeId, _Data> base_type;
-    typedef default_element_block<_TypeId,_Data> self_type;
+    typedef default_element_block<_TypeId, _Data> self_type;
 
-    default_element_block() : base_type() {}
-    default_element_block(size_t n) : base_type(n) {}
-    default_element_block(size_t n, const _Data& val) : base_type(n, val) {}
+    default_element_block() : base_type()
+    {}
+    default_element_block(size_t n) : base_type(n)
+    {}
+    default_element_block(size_t n, const _Data& val) : base_type(n, val)
+    {}
 
     template<typename _Iter>
-    default_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+    default_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    {}
 
     static self_type* create_block_with_value(size_t init_size, const _Data& val)
     {
@@ -629,17 +650,19 @@ struct default_element_block : public copyable_element_block<default_element_blo
  * cycles are managed by the block.
  */
 template<element_t _TypeId, typename _Data>
-struct managed_element_block : public copyable_element_block<managed_element_block<_TypeId,_Data>, _TypeId, _Data*>
+struct managed_element_block : public copyable_element_block<managed_element_block<_TypeId, _Data>, _TypeId, _Data*>
 {
-    typedef copyable_element_block<managed_element_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
-    typedef managed_element_block<_TypeId,_Data> self_type;
+    typedef copyable_element_block<managed_element_block<_TypeId, _Data>, _TypeId, _Data*> base_type;
+    typedef managed_element_block<_TypeId, _Data> self_type;
 
     using base_type::get;
-    using base_type::set_value;
     using base_type::m_array;
+    using base_type::set_value;
 
-    managed_element_block() : base_type() {}
-    managed_element_block(size_t n) : base_type(n) {}
+    managed_element_block() : base_type()
+    {}
+    managed_element_block(size_t n) : base_type(n)
+    {}
     managed_element_block(const managed_element_block& r)
     {
 #ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
@@ -651,7 +674,8 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
     }
 
     template<typename _Iter>
-    managed_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+    managed_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    {}
 
     ~managed_element_block()
     {
@@ -687,20 +711,24 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
 };
 
 template<element_t _TypeId, typename _Data>
-struct noncopyable_managed_element_block : public noncopyable_element_block<noncopyable_managed_element_block<_TypeId,_Data>, _TypeId, _Data*>
+struct noncopyable_managed_element_block
+    : public noncopyable_element_block<noncopyable_managed_element_block<_TypeId, _Data>, _TypeId, _Data*>
 {
-    typedef noncopyable_element_block<noncopyable_managed_element_block<_TypeId,_Data>, _TypeId, _Data*> base_type;
-    typedef managed_element_block<_TypeId,_Data> self_type;
+    typedef noncopyable_element_block<noncopyable_managed_element_block<_TypeId, _Data>, _TypeId, _Data*> base_type;
+    typedef managed_element_block<_TypeId, _Data> self_type;
 
     using base_type::get;
     using base_type::m_array;
     using base_type::set_value;
 
-    noncopyable_managed_element_block() : base_type() {}
-    noncopyable_managed_element_block(size_t n) : base_type(n) {}
+    noncopyable_managed_element_block() : base_type()
+    {}
+    noncopyable_managed_element_block(size_t n) : base_type(n)
+    {}
 
     template<typename _Iter>
-    noncopyable_managed_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end) {}
+    noncopyable_managed_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    {}
 
     ~noncopyable_managed_element_block()
     {
@@ -736,21 +764,20 @@ struct noncopyable_managed_element_block : public noncopyable_element_block<nonc
 };
 
 using boolean_element_block = default_element_block<mtv::element_type_boolean, bool>;
-using int8_element_block    = default_element_block<mtv::element_type_int8,    int8_t>;
-using uint8_element_block   = default_element_block<mtv::element_type_uint8,   uint8_t>;
-using int16_element_block   = default_element_block<mtv::element_type_int16,   int16_t>;
-using uint16_element_block  = default_element_block<mtv::element_type_uint16,  uint16_t>;
-using int32_element_block   = default_element_block<mtv::element_type_int32,   int32_t>;
-using uint32_element_block  = default_element_block<mtv::element_type_uint32,  uint32_t>;
-using int64_element_block   = default_element_block<mtv::element_type_int64,   int64_t>;
-using uint64_element_block  = default_element_block<mtv::element_type_uint64,  uint64_t>;
-using float_element_block   = default_element_block<mtv::element_type_float,   float>;
-using double_element_block  = default_element_block<mtv::element_type_double,  double>;
-using string_element_block  = default_element_block<mtv::element_type_string,  std::string>;
+using int8_element_block = default_element_block<mtv::element_type_int8, int8_t>;
+using uint8_element_block = default_element_block<mtv::element_type_uint8, uint8_t>;
+using int16_element_block = default_element_block<mtv::element_type_int16, int16_t>;
+using uint16_element_block = default_element_block<mtv::element_type_uint16, uint16_t>;
+using int32_element_block = default_element_block<mtv::element_type_int32, int32_t>;
+using uint32_element_block = default_element_block<mtv::element_type_uint32, uint32_t>;
+using int64_element_block = default_element_block<mtv::element_type_int64, int64_t>;
+using uint64_element_block = default_element_block<mtv::element_type_uint64, uint64_t>;
+using float_element_block = default_element_block<mtv::element_type_float, float>;
+using double_element_block = default_element_block<mtv::element_type_double, double>;
+using string_element_block = default_element_block<mtv::element_type_string, std::string>;
 
-}}
+}} // namespace mdds::mtv
 
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

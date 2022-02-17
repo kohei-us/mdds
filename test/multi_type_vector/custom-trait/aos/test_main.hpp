@@ -42,4 +42,3 @@ void mtv_test_loop_unrolling_16();
 void mtv_test_loop_unrolling_32();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

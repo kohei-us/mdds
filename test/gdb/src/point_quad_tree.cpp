@@ -33,9 +33,9 @@ void test_point_quad_tree()
 
     point_quad_tree<unsigned, std::string> pqt_string;
     pqt_string.insert(25, 32, "a");
-    pqt_string.insert( 5, 45, "b");
+    pqt_string.insert(5, 45, "b");
     pqt_string.insert(52, 10, "c");
-    pqt_string.insert(80,  5, "d");
+    pqt_string.insert(80, 5, "d");
     pqt_string.insert(40, 50, "e");
     pqt_string.insert(10, 10, "f");
 

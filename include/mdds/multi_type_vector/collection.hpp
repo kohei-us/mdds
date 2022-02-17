@@ -58,8 +58,9 @@ class side_iterator
         const_iterator block_pos;
         const_iterator block_end;
 
-        mtv_item(const mtv_type* v, const const_iterator& bp, const const_iterator& be) :
-            vector(v), block_pos(bp), block_end(be) {}
+        mtv_item(const mtv_type* v, const const_iterator& bp, const const_iterator& be)
+            : vector(v), block_pos(bp), block_end(be)
+        {}
     };
 
     /** single element value. */
@@ -87,8 +88,14 @@ class side_iterator
         const_position_type __position;
     };
 
-    enum begin_state_type { begin_state };
-    enum end_state_type { end_state };
+    enum begin_state_type
+    {
+        begin_state
+    };
+    enum end_state_type
+    {
+        end_state
+    };
 
     std::vector<mtv_item> m_vectors;
     node m_cur_node;
@@ -98,12 +105,12 @@ class side_iterator
     uintptr_t m_identity;
 
     side_iterator(
-        std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
-        size_type index_offset, uintptr_t identity, begin_state_type);
+        std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size, size_type index_offset,
+        uintptr_t identity, begin_state_type);
 
     side_iterator(
-        std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size,
-        size_type index_offset, uintptr_t identity, end_state_type);
+        std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size, size_type index_offset,
+        uintptr_t identity, end_state_type);
 
 public:
     typedef node value_type;
@@ -127,11 +134,11 @@ public:
 
     side_iterator operator++(int);
 
-    bool operator== (const side_iterator& other) const;
-    bool operator!= (const side_iterator& other) const;
+    bool operator==(const side_iterator& other) const;
+    bool operator!=(const side_iterator& other) const;
 };
 
-}
+} // namespace detail
 
 /**
  * Special-purpose collection of multiple multi_type_vector instances to
@@ -147,13 +154,13 @@ public:
     typedef typename mtv_type::size_type size_type;
 
 private:
-
     struct range
     {
         size_type start;
         size_type size;
 
-        range() : start(0), size(0) {}
+        range() : start(0), size(0)
+        {}
     };
 
     std::vector<const mtv_type*> m_vectors;
@@ -161,10 +168,9 @@ private:
     uintptr_t m_identity;
 
     range m_elem_range; /// element range.
-    range m_col_range;  /// collection range.
+    range m_col_range; /// collection range.
 
 public:
-
     typedef detail::side_iterator<mtv_type> const_iterator;
 
     collection();
@@ -249,7 +255,6 @@ public:
     void set_element_range(size_type start, size_type size);
 
 private:
-
     void check_collection_range(size_type start, size_type size) const;
     void check_element_range(size_type start, size_type size) const;
 
@@ -268,7 +273,7 @@ private:
     void check_vector_size(const mtv_type& t);
 };
 
-}}
+}} // namespace mdds::mtv
 
 #include "collection_def.inl"
 

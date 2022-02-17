@@ -87,8 +87,8 @@ private:
     double m_start_time;
 };
 
-using std::cout;
 using std::cerr;
+using std::cout;
 using std::endl;
 
 #endif

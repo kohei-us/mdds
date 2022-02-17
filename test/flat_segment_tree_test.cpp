@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <memory>
 
-#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
+#define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
 
 using namespace std;
 using namespace mdds;
@@ -55,7 +55,7 @@ void fst_test_leaf_search()
         flat_segment_tree<int, int> int_ranges(0, 100, -1);
         for (int i = 0; i < 20; ++i)
         {
-            int start = i*5;
+            int start = i * 5;
             int end = start + 5;
             int_ranges.insert_front(start, end, i);
         }
@@ -86,19 +86,19 @@ void fst_test_leaf_search()
         merge_test.dump_leaf_nodes();
 
         for (int i = 10; i <= 80; i += 10)
-            merge_test.insert_front(i, i+10, i);
+            merge_test.insert_front(i, i + 10, i);
         merge_test.dump_leaf_nodes();
         merge_test.insert_front(10, 90, -1);
         merge_test.dump_leaf_nodes();
 
         for (int i = 10; i <= 80; i += 10)
-            merge_test.insert_front(i, i+10, i);
+            merge_test.insert_front(i, i + 10, i);
         merge_test.dump_leaf_nodes();
         merge_test.insert_front(8, 92, -1);
         merge_test.dump_leaf_nodes();
 
         for (int i = 10; i <= 80; i += 10)
-            merge_test.insert_front(i, i+10, i);
+            merge_test.insert_front(i, i + 10, i);
         merge_test.dump_leaf_nodes();
         merge_test.insert_front(12, 88, 25);
         merge_test.dump_leaf_nodes();
@@ -109,9 +109,9 @@ void fst_test_leaf_search()
         flat_segment_tree<int, int> db(0, 100, -1);
         for (int i = 0; i < 10; ++i)
         {
-            int key = i*10;
-            int val = i*5;
-            db.insert_front(key, key+10, val);
+            int key = i * 10;
+            int val = i * 5;
+            db.insert_front(key, key + 10, val);
         }
         db.dump_leaf_nodes();
         for (int i = 0; i <= 100; ++i)
@@ -144,8 +144,8 @@ void fst_test_tree_build()
         flat_segment_tree<int, int> db(lower, upper, 0);
         {
             stack_printer __stack_printer2__("::fst_test_tree_build insertion");
-            for (int i = lower; i < upper; i+=delta)
-                db.insert_front(i, i+delta, i*2);
+            for (int i = lower; i < upper; i += delta)
+                db.insert_front(i, i + delta, i * 2);
         }
         db.dump_leaf_nodes();
 
@@ -168,8 +168,8 @@ void fst_perf_test_search_leaf()
 
     int lower = 0, upper = 50000;
     flat_segment_tree<int, int> db(lower, upper, 0);
-    for (int i = upper-1; i >= lower; --i)
-        db.insert_front(i, i+1, i);
+    for (int i = upper - 1; i >= lower; --i)
+        db.insert_front(i, i + 1, i);
 
     int success = 0, failure = 0;
     int val;
@@ -189,8 +189,8 @@ void fst_perf_test_search_tree()
 
     int lower = 0, upper = 5000000;
     flat_segment_tree<int, int> db(lower, upper, 0);
-    for (int i = upper-1; i >= lower; --i)
-        db.insert_front(i, i+1, i);
+    for (int i = upper - 1; i >= lower; --i)
+        db.insert_front(i, i + 1, i);
 
     {
         stack_printer sp2("::fst_perf_test_search_tree (build tree)");
@@ -220,7 +220,7 @@ void fst_test_tree_search()
     int lower = 0, upper = 200, delta = 5;
     fst_type db(lower, upper, 0);
     for (int i = lower; i < upper; i += delta)
-        db.insert_front(i, i+delta, i);
+        db.insert_front(i, i + delta, i);
 
     db.build_tree();
     db.dump_tree();
@@ -228,7 +228,7 @@ void fst_test_tree_search()
 
     int val, start, end;
     int success = 0, failure = 0;
-    for (int i = lower-10; i < upper+10; ++i)
+    for (int i = lower - 10; i < upper + 10; ++i)
     {
         if (db.search_tree(i, val, &start, &end).second)
         {
@@ -250,7 +250,7 @@ void fst_test_tree_search()
     db.insert_back(23, 28, 4);
     db.build_tree();
 
-    typedef pair<fst_type::const_iterator,bool> ret_type;
+    typedef pair<fst_type::const_iterator, bool> ret_type;
     ret_type ret = db.search_tree(0, val, &start, &end);
     assert(ret.second);
     assert(start == 0 && end == 5 && val == 0);
@@ -275,7 +275,7 @@ void fst_test_tree_search()
     std::advance(check, 3);
     assert(ret.first == check);
 
-    ret = db.search_tree(upper+10, val, &start, &end);
+    ret = db.search_tree(upper + 10, val, &start, &end);
     assert(!ret.second); // This search should fail.
     assert(ret.first == db.end());
 }
@@ -290,7 +290,7 @@ void test_single_tree_search(const flat_segment_tree<int, int>& db, int key, int
 }
 
 template<typename key_type, typename value_type>
-void build_and_dump(flat_segment_tree<key_type, value_type>&db)
+void build_and_dump(flat_segment_tree<key_type, value_type>& db)
 {
     db.build_tree();
     db.dump_tree();
@@ -299,8 +299,7 @@ void build_and_dump(flat_segment_tree<key_type, value_type>&db)
 
 template<typename key_type, typename value_type>
 bool check_leaf_nodes(
-    const flat_segment_tree<key_type, value_type>& db,
-    const key_type* keys, const value_type* values, size_t key_size)
+    const flat_segment_tree<key_type, value_type>& db, const key_type* keys, const value_type* values, size_t key_size)
 {
     if (key_size <= 1)
         return false;
@@ -314,8 +313,8 @@ bool check_leaf_nodes(
         return false;
 
     vector<value_type> value_checks;
-    value_checks.reserve(key_size-1);
-    for (size_t i = 0; i < key_size-1; ++i)
+    value_checks.reserve(key_size - 1);
+    for (size_t i = 0; i < key_size - 1; ++i)
         value_checks.push_back(values[i]);
 
     if (!db.verify_values(value_checks))
@@ -327,8 +326,8 @@ bool check_leaf_nodes(
 template<typename key_type, typename value_type>
 bool is_iterator_valid(
     const typename flat_segment_tree<key_type, value_type>::const_iterator& beg,
-    const typename flat_segment_tree<key_type, value_type>::const_iterator& end,
-    const key_type* keys, const value_type* values, size_t key_size)
+    const typename flat_segment_tree<key_type, value_type>::const_iterator& end, const key_type* keys,
+    const value_type* values, size_t key_size)
 {
     assert(key_size > 1);
 
@@ -374,8 +373,7 @@ bool is_iterator_valid(
             if (values[idx] != itr->second)
                 return false;
         }
-    }
-    while (itr != beg);
+    } while (itr != beg);
 
     return true;
 }
@@ -383,8 +381,8 @@ bool is_iterator_valid(
 template<typename key_type, typename value_type>
 bool is_iterator_valid(
     const typename flat_segment_tree<key_type, value_type>::const_reverse_iterator& beg,
-    const typename flat_segment_tree<key_type, value_type>::const_reverse_iterator& end,
-    const key_type* keys, const value_type* values, size_t key_size)
+    const typename flat_segment_tree<key_type, value_type>::const_reverse_iterator& end, const key_type* keys,
+    const value_type* values, size_t key_size)
 {
     assert(key_size > 1);
 
@@ -430,8 +428,7 @@ bool is_iterator_valid(
             if (values[idx] != itr->second)
                 return false;
         }
-    }
-    while (itr != beg);
+    } while (itr != beg);
 
     return true;
 }
@@ -586,7 +583,7 @@ void fst_test_shift_left()
     build_and_dump(db);
     {
         int keys[] = {0, 1, 15, 25, 35, 45, 55, 100};
-        int vals[] = {0, 5,  0, 10,  0, 15,  0};
+        int vals[] = {0, 5, 0, 10, 0, 15, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -595,8 +592,8 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0, 1,  2, 7, 17, 27, 100};
-        int vals[] = {0, 5, 10, 0, 15,  0};
+        int keys[] = {0, 1, 2, 7, 17, 27, 100};
+        int vals[] = {0, 5, 10, 0, 15, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -605,8 +602,8 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  1, 6, 16, 26, 100};
-        int vals[] = {5, 10, 0, 15,  0};
+        int keys[] = {0, 1, 6, 16, 26, 100};
+        int vals[] = {5, 10, 0, 15, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -617,7 +614,7 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  1, 6, 100};
+        int keys[] = {0, 1, 6, 100};
         int vals[] = {5, 10, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -628,8 +625,8 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  1, 6,  10, 20,  30, 40, 100};
-        int vals[] = {5, 10, 0, 400,  0, 400,  0};
+        int keys[] = {0, 1, 6, 10, 20, 30, 40, 100};
+        int vals[] = {5, 10, 0, 400, 0, 400, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -639,8 +636,8 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  1, 6,  10, 30, 100};
-        int vals[] = {5, 10, 0, 400,  0};
+        int keys[] = {0, 1, 6, 10, 30, 100};
+        int vals[] = {5, 10, 0, 400, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -660,7 +657,7 @@ void fst_test_shift_left_right_edge()
     db.shift_left(2, 100);
     build_and_dump(db);
     {
-        int  keys[] = {0, 100};
+        int keys[] = {0, 100};
         bool vals[] = {false};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -668,7 +665,7 @@ void fst_test_shift_left_right_edge()
     db.insert_front(20, 100, true);
     build_and_dump(db);
     {
-        int  keys[] = {    0,   20, 100};
+        int keys[] = {0, 20, 100};
         bool vals[] = {false, true};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -678,7 +675,7 @@ void fst_test_shift_left_right_edge()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int  keys[] = {    0,   20,    80, 100};
+        int keys[] = {0, 20, 80, 100};
         bool vals[] = {false, true, false};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -689,7 +686,7 @@ void fst_test_shift_left_right_edge()
     assert(db.is_tree_valid()); // tree must still be valid.
     build_and_dump(db);
     {
-        int  keys[] = {    0,   20,    80, 100};
+        int keys[] = {0, 20, 80, 100};
         bool vals[] = {false, true, false};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -699,7 +696,7 @@ void fst_test_shift_left_right_edge()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int  keys[] = {    0,   20,    80,   85, 100};
+        int keys[] = {0, 20, 80, 85, 100};
         bool vals[] = {false, true, false, true};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -708,7 +705,7 @@ void fst_test_shift_left_right_edge()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int  keys[] = {    0,   20,    80,   85,    95, 100};
+        int keys[] = {0, 20, 80, 85, 95, 100};
         bool vals[] = {false, true, false, true, false};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -722,7 +719,7 @@ void fst_test_shift_left_append_new_segment()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int  keys[] = {   0, 100};
+        int keys[] = {0, 100};
         bool vals[] = {true};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -731,7 +728,7 @@ void fst_test_shift_left_append_new_segment()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int  keys[] = {   0,    90, 100};
+        int keys[] = {0, 90, 100};
         bool vals[] = {true, false};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -744,7 +741,7 @@ void fst_test_shift_left_append_new_segment()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int  keys[] = {   0,    10,   20,    60,   80, 100};
+        int keys[] = {0, 10, 20, 60, 80, 100};
         bool vals[] = {true, false, true, false, true};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -753,7 +750,7 @@ void fst_test_shift_left_append_new_segment()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int  keys[] = {   0,    10,    30, 100};
+        int keys[] = {0, 10, 30, 100};
         bool vals[] = {false, true, false};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
@@ -764,15 +761,15 @@ void fst_test_shift_right_init0()
     stack_printer __stack_printer__("fst_test_shift_segment_right_init0");
 
     flat_segment_tree<int, int> db(0, 100, 0);
-    db.insert_front(0,  10,  15);
-    db.insert_front(10, 20,  1);
-    db.insert_front(20, 30,  2);
-    db.insert_front(30, 40,  3);
-    db.insert_front(40, 50,  4);
-    db.insert_front(50, 60,  5);
-    db.insert_front(60, 70,  6);
-    db.insert_front(70, 80,  7);
-    db.insert_front(80, 90,  8);
+    db.insert_front(0, 10, 15);
+    db.insert_front(10, 20, 1);
+    db.insert_front(20, 30, 2);
+    db.insert_front(30, 40, 3);
+    db.insert_front(40, 50, 4);
+    db.insert_front(50, 60, 5);
+    db.insert_front(60, 70, 6);
+    db.insert_front(70, 80, 7);
+    db.insert_front(80, 90, 8);
     assert(!db.is_tree_valid());
     build_and_dump(db);
 
@@ -783,8 +780,8 @@ void fst_test_shift_right_init0()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        int keys[] = {0,  5, 15, 25, 35, 45, 55, 65, 75, 85, 95,100};
-        int vals[] = {0, 15,  1,  2,  3,  4,  5,  6,  7,  8,  0};
+        int keys[] = {0, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 100};
+        int vals[] = {0, 15, 1, 2, 3, 4, 5, 6, 7, 8, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -796,7 +793,7 @@ void fst_test_shift_right_init0()
     build_and_dump(db);
     {
         int keys[] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-        int vals[] = {0, 15,  1,  2,  3,  4,  5,  6,  7,  8};
+        int vals[] = {0, 15, 1, 2, 3, 4, 5, 6, 7, 8};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -806,7 +803,7 @@ void fst_test_shift_right_init0()
     build_and_dump(db);
     {
         int keys[] = {0, 59, 69, 79, 89, 99, 100};
-        int vals[] = {0, 15,  1,  2,  3,  4};
+        int vals[] = {0, 15, 1, 2, 3, 4};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -817,7 +814,7 @@ void fst_test_shift_right_init0()
     build_and_dump(db);
     {
         int keys[] = {0, 70, 80, 90, 100};
-        int vals[] = {0, 15,  1,  2};
+        int vals[] = {0, 15, 1, 2};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -838,7 +835,7 @@ void fst_test_shift_right_init0()
     build_and_dump(db);
     {
         int keys[] = {0, 5, 10, 20, 30, 100};
-        int vals[] = {0, 5,  0,  5,  0};
+        int vals[] = {0, 5, 0, 5, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -849,7 +846,7 @@ void fst_test_shift_right_init0()
     build_and_dump(db);
     {
         int keys[] = {0, 5, 30, 40, 50, 100};
-        int vals[] = {0, 5,  0,  5,  0};
+        int vals[] = {0, 5, 0, 5, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -859,7 +856,7 @@ void fst_test_shift_right_init0()
     build_and_dump(db);
     {
         int keys[] = {0, 25, 50, 60, 70, 100};
-        int vals[] = {0, 5,  0,  5,  0};
+        int vals[] = {0, 5, 0, 5, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -869,7 +866,7 @@ void fst_test_shift_right_init0()
     build_and_dump(db);
     {
         int keys[] = {0, 25, 50, 60, 100};
-        int vals[] = {0, 5,  0,  5};
+        int vals[] = {0, 5, 0, 5};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 
@@ -879,7 +876,7 @@ void fst_test_shift_right_init0()
     build_and_dump(db);
     {
         int keys[] = {0, 25, 90, 100};
-        int vals[] = {0,  5,  0};
+        int vals[] = {0, 5, 0};
         assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
     }
 }
@@ -962,7 +959,7 @@ void fst_test_shift_right_skip_start_node()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        long  k[] = {0, 3, 7, 1048576};
+        long k[] = {0, 3, 7, 1048576};
         short v[] = {0, 5, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
@@ -971,7 +968,7 @@ void fst_test_shift_right_skip_start_node()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        long  k[] = {0, 3, 9, 1048576};
+        long k[] = {0, 3, 9, 1048576};
         short v[] = {0, 5, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
@@ -981,7 +978,7 @@ void fst_test_shift_right_skip_start_node()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        long  k[] = {0, 4, 9, 1048576};
+        long k[] = {0, 4, 9, 1048576};
         short v[] = {2, 5, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
@@ -989,7 +986,7 @@ void fst_test_shift_right_skip_start_node()
     db.shift_right(0, 2, true);
     build_and_dump(db);
     {
-        long  k[] = {0, 6, 11, 1048576};
+        long k[] = {0, 6, 11, 1048576};
         short v[] = {2, 5, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
@@ -1032,9 +1029,8 @@ void fst_test_shift_right_all_nodes()
 template<typename key_type, typename value_type>
 struct leaf_node_functor
 {
-    void operator() (const pair<key_type, value_type>&) const
-    {
-    }
+    void operator()(const pair<key_type, value_type>&) const
+    {}
 };
 
 void fst_test_const_iterator()
@@ -1042,8 +1038,8 @@ void fst_test_const_iterator()
     stack_printer __stack_printer__("::fst_test_const_iterator");
 
     {
-        typedef unsigned int    key_type;
-        typedef unsigned short  value_type;
+        typedef unsigned int key_type;
+        typedef unsigned short value_type;
         unsigned short max_value = numeric_limits<value_type>::max();
         typedef flat_segment_tree<key_type, value_type> container_type;
 
@@ -1051,7 +1047,7 @@ void fst_test_const_iterator()
 
         build_and_dump(db);
         {
-            unsigned int   k[] = {0, 1000};
+            unsigned int k[] = {0, 1000};
             unsigned short v[] = {max_value};
             assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
         }
@@ -1061,7 +1057,7 @@ void fst_test_const_iterator()
         db.insert_front(100, 300, 55);
         build_and_dump(db);
         {
-            unsigned int   k[] = {0, 10, 20, 50, 100, 300, 1000};
+            unsigned int k[] = {0, 10, 20, 50, 100, 300, 1000};
             unsigned short v[] = {max_value, 10, 20, max_value, 55, max_value};
             assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
             fprintf(stdout, "fst_test_const_iterator:   leaf nodes valid\n");
@@ -1135,7 +1131,7 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
     container_type db_front(start_key, end_key, default_value);
     for (key_type i = start_key; i < end_key - 10; ++i)
     {
-        itr_type itr = db_front.insert_front(i, i+1, val).first;
+        itr_type itr = db_front.insert_front(i, i + 1, val).first;
         assert(itr->first == i);
         assert(itr->second == val);
         if (++val > 10)
@@ -1147,7 +1143,7 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
     val = 0;
     for (key_type i = start_key; i < end_key - 10; ++i)
     {
-        itr_type itr = db_back.insert_back(i, i+1, val).first;
+        itr_type itr = db_back.insert_back(i, i + 1, val).first;
         assert(itr->first == i);
         assert(itr->second == val);
         if (++val > 10)
@@ -1160,7 +1156,8 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
         // They are not identical!
         db_front.dump_leaf_nodes();
         db_back.dump_leaf_nodes();
-        cout << "start_key = " << start_key << "  end_key = " << end_key << "  default_value = " << default_value << endl;
+        cout << "start_key = " << start_key << "  end_key = " << end_key << "  default_value = " << default_value
+             << endl;
         assert(!"Contents of the two containers are not identical!");
     }
 }
@@ -1168,7 +1165,7 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
 void fst_perf_test_insert_front_back()
 {
     typedef unsigned long key_type;
-    typedef int           value_type;
+    typedef int value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
     key_type upper_bound = 20000;
     {
@@ -1177,7 +1174,7 @@ void fst_perf_test_insert_front_back()
         value_type val = 0;
         for (key_type i = 0; i < upper_bound; ++i)
         {
-            db.insert_front(i, i+1, val);
+            db.insert_front(i, i + 1, val);
             if (++val > 10)
                 val = 0;
         }
@@ -1189,7 +1186,7 @@ void fst_perf_test_insert_front_back()
         value_type val = 0;
         for (key_type i = 0; i < upper_bound; ++i)
         {
-            db.insert_back(i, i+1, val);
+            db.insert_back(i, i + 1, val);
             if (++val > 10)
                 val = 0;
         }
@@ -1200,7 +1197,7 @@ void fst_test_copy_ctor()
 {
     stack_printer __stack_printer__("::fst_test_copy_ctor");
     typedef unsigned long key_type;
-    typedef int           value_type;
+    typedef int value_type;
     typedef flat_segment_tree<key_type, value_type> fst;
 
     // Test copy construction of node first.
@@ -1208,7 +1205,7 @@ void fst_test_copy_ctor()
     {
         // Original node.
         fst::node_ptr node1(new fst::node);
-        node1->value_leaf.key   = 10;
+        node1->value_leaf.key = 10;
         node1->value_leaf.value = 500;
         assert(node1->is_leaf);
         assert(!node1->parent);
@@ -1225,7 +1222,7 @@ void fst_test_copy_ctor()
         assert(node2->value_leaf.value == 500);
 
         // Changing the values of the original should not modify the second node.
-        node1->value_leaf.key   = 35;
+        node1->value_leaf.key = 35;
         node1->value_leaf.value = 200;
         assert(node2->value_leaf.key == 10);
         assert(node2->value_leaf.value == 500);
@@ -1234,7 +1231,7 @@ void fst_test_copy_ctor()
     {
         // Test non-leaf node objects.
         fst::nonleaf_node node1;
-        node1.value_nonleaf.low  = 123;
+        node1.value_nonleaf.low = 123;
         node1.value_nonleaf.high = 789;
 
         // Test the copying of non-leaf values.
@@ -1254,7 +1251,7 @@ void fst_test_copy_ctor()
     fst db_copied(db);
     assert(db == db_copied);
     {
-        key_type   k[] = {0, 100};
+        key_type k[] = {0, 100};
         value_type v[] = {5};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
@@ -1265,8 +1262,8 @@ void fst_test_copy_ctor()
     db_copied.insert_front(5, 10, 0);
     assert(db == db_copied);
     {
-        key_type   k[] = {0, 5, 10, 100};
-        value_type v[] = {5, 0,  5};
+        key_type k[] = {0, 5, 10, 100};
+        value_type v[] = {5, 0, 5};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
@@ -1274,8 +1271,8 @@ void fst_test_copy_ctor()
     db_copied.insert_front(15, 20, 35);
     assert(db != db_copied);
     {
-        key_type   k[] = {0, 5, 10, 15, 20, 100};
-        value_type v[] = {5, 0,  5, 35,  5};
+        key_type k[] = {0, 5, 10, 15, 20, 100};
+        value_type v[] = {5, 0, 5, 35, 5};
         assert(check_leaf_nodes(db_copied, k, v, ARRAY_SIZE(k)));
     }
 
@@ -1300,7 +1297,7 @@ void fst_test_equality()
 {
     stack_printer __stack_printer__("::fst_test_equality");
     typedef unsigned long key_type;
-    typedef int           value_type;
+    typedef int value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
 
     container_type db1(0, 100, 0);
@@ -1338,63 +1335,63 @@ void fst_test_equality()
 void fst_test_back_insert()
 {
     stack_printer __stack_printer__("::fst_test_back_insert");
-    typedef unsigned int   key_type;
+    typedef unsigned int key_type;
     typedef unsigned short value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
     container_type db(0, 100, 0);
     db.insert_back(1, 2, 1);
     {
-        unsigned int   k[] = {0, 1, 2, 100};
+        unsigned int k[] = {0, 1, 2, 100};
         unsigned short v[] = {0, 1, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_back(3, 4, 2);
     {
-        unsigned int   k[] = {0, 1, 2, 3, 4, 100};
+        unsigned int k[] = {0, 1, 2, 3, 4, 100};
         unsigned short v[] = {0, 1, 0, 2, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_back(4, 5, 2);
     {
-        unsigned int   k[] = {0, 1, 2, 3, 5, 100};
+        unsigned int k[] = {0, 1, 2, 3, 5, 100};
         unsigned short v[] = {0, 1, 0, 2, 0};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_back(90, 120, 10);
     {
-        unsigned int   k[] = {0, 1, 2, 3, 5, 90, 100};
+        unsigned int k[] = {0, 1, 2, 3, 5, 90, 100};
         unsigned short v[] = {0, 1, 0, 2, 0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_back(0, 10, 20);
     {
-        unsigned int   k[] = {0, 10, 90, 100};
+        unsigned int k[] = {0, 10, 90, 100};
         unsigned short v[] = {20, 0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_back(5, 20, 20);
     {
-        unsigned int   k[] = {0, 20, 90, 100};
+        unsigned int k[] = {0, 20, 90, 100};
         unsigned short v[] = {20, 0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_back(15, 30, 5);
     {
-        unsigned int   k[] = {0, 15, 30, 90, 100};
-        unsigned short v[] = {20, 5,  0, 10};
+        unsigned int k[] = {0, 15, 30, 90, 100};
+        unsigned short v[] = {20, 5, 0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
     db.insert_back(0, 1, 2);
     {
-        unsigned int   k[] = {0,  1, 15, 30, 90, 100};
-        unsigned short v[] = {2, 20,  5,  0, 10};
+        unsigned int k[] = {0, 1, 15, 30, 90, 100};
+        unsigned short v[] = {2, 20, 5, 0, 10};
         assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
     }
 
@@ -1402,7 +1399,7 @@ void fst_test_back_insert()
 }
 
 template<typename A, typename B>
-void print_iterator(typename flat_segment_tree<A,B>::const_iterator& itr)
+void print_iterator(typename flat_segment_tree<A, B>::const_iterator& itr)
 {
     cout << "iterator: (key=" << itr->first << ",value=" << itr->second << ")" << endl;
 }
@@ -1578,7 +1575,7 @@ void fst_perf_test_insert_position()
         bool val = false;
         for (long i = 0; i < upper; ++i)
         {
-            db.insert_front(i, i+1, val);
+            db.insert_front(i, i + 1, val);
             val = !val;
         }
     }
@@ -1589,7 +1586,7 @@ void fst_perf_test_insert_position()
         bool val = false;
         for (long i = 0; i < upper; ++i)
         {
-            db.insert_back(i, i+1, val);
+            db.insert_back(i, i + 1, val);
             val = !val;
         }
     }
@@ -1602,7 +1599,7 @@ void fst_perf_test_insert_position()
             bool val = false;
             for (long i = 0; i < upper; ++i)
             {
-                ret_type ret = db.insert(itr, i, i+1, val);
+                ret_type ret = db.insert(itr, i, i + 1, val);
                 val = !val;
                 itr = ret.first;
             }
@@ -1613,7 +1610,7 @@ void fst_perf_test_insert_position()
             bool val = true;
             for (long i = 0; i < upper; ++i)
             {
-                ret_type ret = db.insert(itr, i, i+1, val);
+                ret_type ret = db.insert(itr, i, i + 1, val);
                 val = !val;
                 itr = ret.first;
             }
@@ -1633,7 +1630,7 @@ void fst_perf_test_position_search()
     bool val = false;
     for (long i = 0; i < upper; ++i)
     {
-        ret_type ret = db.insert(itr, i, i+1, val);
+        ret_type ret = db.insert(itr, i, i + 1, val);
         val = !val;
         itr = ret.first;
     }
@@ -1663,9 +1660,8 @@ void fst_perf_test_position_search()
 
 template<typename K, typename V>
 bool check_pos_search_result(
-    const flat_segment_tree<K, V>& db,
-    typename flat_segment_tree<K, V>::const_iterator& itr,
-    K key, K start_expected, K end_expected, V value_expected)
+    const flat_segment_tree<K, V>& db, typename flat_segment_tree<K, V>::const_iterator& itr, K key, K start_expected,
+    K end_expected, V value_expected)
 {
     typedef flat_segment_tree<K, V> db_type;
     typedef pair<typename db_type::const_iterator, bool> ret_type;
@@ -1678,9 +1674,8 @@ bool check_pos_search_result(
     cout << "expected: start=" << start_expected << " end=" << end_expected << " value=" << value_expected << endl;
     cout << "observed: start=" << _start << " end=" << _end << " value=" << _val << endl;
 
-    bool result =
-        _start == start_expected && _end == end_expected && _val == value_expected &&
-        r.first->first == start_expected && r.first->second == value_expected;
+    bool result = _start == start_expected && _end == end_expected && _val == value_expected &&
+                  r.first->first == start_expected && r.first->second == value_expected;
     itr = r.first;
     return result;
 }
@@ -1697,17 +1692,12 @@ void fst_test_position_search()
 
     db_type db2(-10, 10, 1);
 
-    struct {
+    struct
+    {
         long start_range;
         long end_range;
         short value_expected;
-    } params[] = {
-        {  0,  10, 0 },
-        { 10,  20, 1 },
-        { 20,  30, 0 },
-        { 30,  50, 5 },
-        { 50, 100, 0 }
-    };
+    } params[] = {{0, 10, 0}, {10, 20, 1}, {20, 30, 0}, {30, 50, 5}, {50, 100, 0}};
 
     size_t n = sizeof(params) / sizeof(params[0]);
 
@@ -1786,8 +1776,8 @@ void fst_test_swap()
 
     // Check the content of db1.
     {
-        db_type::key_type   k[] = {0,  20, 30, 40, 50, 200};
-        db_type::value_type v[] = {20,  1,  2,  3, 20};
+        db_type::key_type k[] = {0, 20, 30, 40, 50, 200};
+        db_type::value_type v[] = {20, 1, 2, 3, 20};
         assert(check_leaf_nodes(db1, k, v, ARRAY_SIZE(k)));
     }
     assert(db1.min_key() == 0);
@@ -1799,8 +1789,8 @@ void fst_test_swap()
 
     // Now db2 should inherit the content of db1.
     {
-        db_type::key_type   k[] = {0,  20, 30, 40, 50, 200};
-        db_type::value_type v[] = {20,  1,  2,  3, 20};
+        db_type::key_type k[] = {0, 20, 30, 40, 50, 200};
+        db_type::value_type v[] = {20, 1, 2, 3, 20};
         assert(check_leaf_nodes(db2, k, v, ARRAY_SIZE(k)));
     }
     assert(db2.min_key() == 0);
@@ -2106,7 +2096,7 @@ void fst_test_segment_iterator()
     assert(it_moved->value == false);
 }
 
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
     try
     {
@@ -2120,21 +2110,21 @@ int main (int argc, char **argv)
             fst_test_copy_ctor();
             fst_test_back_insert();
             {
-                typedef unsigned int   key_type;
+                typedef unsigned int key_type;
                 typedef unsigned short value_type;
                 for (value_type i = 0; i <= 100; ++i)
                     fst_test_insert_front_back<key_type, value_type>(0, 100, i);
             }
 
             {
-                typedef int   key_type;
+                typedef int key_type;
                 typedef short value_type;
                 for (value_type i = 0; i <= 100; ++i)
                     fst_test_insert_front_back<key_type, value_type>(0, 100, i);
             }
 
             {
-                typedef long         key_type;
+                typedef long key_type;
                 typedef unsigned int value_type;
                 for (value_type i = 0; i <= 100; ++i)
                     fst_test_insert_front_back<key_type, value_type>(0, 100, i);
@@ -2185,4 +2175,3 @@ int main (int argc, char **argv)
     fprintf(stdout, "Test finished successfully!\n");
     return 0;
 }
-

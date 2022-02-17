@@ -184,4 +184,3 @@ void mtv_test_hints_insert_empty()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

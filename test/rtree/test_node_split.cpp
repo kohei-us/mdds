@@ -53,7 +53,7 @@ void rtree_test_node_split()
         int16_t w = 1;
         std::ostringstream os;
         os << "foo" << i;
-        tree.insert({{i, i}, {int16_t(i+w), int16_t(i+w)}}, os.str());
+        tree.insert({{i, i}, {int16_t(i + w), int16_t(i + w)}}, os.str());
     }
 
     assert(tree.size() == 6);
@@ -64,8 +64,7 @@ void rtree_test_node_split()
     size_t count_leaf = 0;
     size_t count_nonleaf = 0;
 
-    auto walker = [&](const rt_type::node_properties& np)
-    {
+    auto walker = [&](const rt_type::node_properties& np) {
         switch (np.type)
         {
             case rt_type::node_type::value:
@@ -77,8 +76,7 @@ void rtree_test_node_split()
             case rt_type::node_type::directory_nonleaf:
                 ++count_nonleaf;
                 break;
-            default:
-                ;
+            default:;
         }
     };
 
@@ -98,7 +96,7 @@ void rtree_test_node_split()
         int16_t w = 1;
         std::ostringstream os;
         os << "bar" << i;
-        tree.insert({{i, i}, {int16_t(i+w), int16_t(i+w)}}, os.str());
+        tree.insert({{i, i}, {int16_t(i + w), int16_t(i + w)}}, os.str());
     }
 
     assert(tree.size() == 8);
@@ -140,4 +138,3 @@ void rtree_test_node_split()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

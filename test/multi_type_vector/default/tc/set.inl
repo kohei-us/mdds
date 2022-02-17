@@ -38,7 +38,7 @@ void mtv_test_set_cells()
             std::vector<double> vals;
             vals.reserve(5);
             for (size_t i = 0; i < db.size(); ++i)
-                vals.push_back(double(i+1));
+                vals.push_back(double(i + 1));
 
             db.set(0, vals.begin(), vals.end());
 
@@ -55,7 +55,7 @@ void mtv_test_set_cells()
             for (size_t i = 0; i < db.size(); ++i)
             {
                 std::ostringstream os;
-                os << (i+1);
+                os << (i + 1);
                 vals.push_back(os.str());
             }
 
@@ -69,7 +69,7 @@ void mtv_test_set_cells()
         }
 
         {
-            double vals[] = { 5.0, 6.0, 7.0, 8.0, 9.0 };
+            double vals[] = {5.0, 6.0, 7.0, 8.0, 9.0};
             double* p = &vals[0];
             double* p_end = p + 5;
             db.set(0, p, p_end);
@@ -83,7 +83,7 @@ void mtv_test_set_cells()
         {
             // Replace the whole block of the same type, which shouldn't
             // delete the old data array.
-            double vals[] = { 5.1, 6.1, 7.1, 8.1, 9.1 };
+            double vals[] = {5.1, 6.1, 7.1, 8.1, 9.1};
             double* p = &vals[0];
             double* p_end = p + 5;
             db.set(0, p, p_end);
@@ -93,7 +93,7 @@ void mtv_test_set_cells()
             db.get(4, test);
             assert(test == 9.1);
 
-            double vals2[] = { 8.2, 9.2 };
+            double vals2[] = {8.2, 9.2};
             p = &vals2[0];
             p_end = p + 2;
             db.set(3, p, p_end);
@@ -105,7 +105,7 @@ void mtv_test_set_cells()
 
         {
             // Replace the upper part of a single block.
-            uint64_t vals[] = { 1, 2, 3 };
+            uint64_t vals[] = {1, 2, 3};
             uint64_t* p = &vals[0];
             uint64_t* p_end = p + 3;
             db.set(0, p, p_end);
@@ -123,7 +123,7 @@ void mtv_test_set_cells()
 
         {
             // Merge with the previos block and erase the whole block.
-            uint64_t vals[] = { 4, 5 };
+            uint64_t vals[] = {4, 5};
             uint64_t* p = &vals[0];
             uint64_t* p_end = p + 2;
             db.set(3, p, p_end);
@@ -168,13 +168,13 @@ void mtv_test_set_cells()
     {
         mtv_type db(5);
         for (size_t i = 0; i < 5; ++i)
-            db.set(i, static_cast<double>(i+1));
+            db.set(i, static_cast<double>(i + 1));
 
         assert(db.block_size() == 1);
         assert(db.size() == 5);
 
         {
-            uint64_t vals[] = { 10, 11 };
+            uint64_t vals[] = {10, 11};
             uint64_t* p = &vals[0];
             uint64_t* p_end = p + 2;
             db.set(3, p, p_end);
@@ -211,9 +211,9 @@ void mtv_test_set_cells()
 
     {
         mtv_type db(6);
-        double vals_d[] = { 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
-        uint64_t vals_i[] = { 12, 13, 14, 15 };
-        std::string vals_s[] = { "a", "b" };
+        double vals_d[] = {1.0, 1.1, 1.2, 1.3, 1.4, 1.5};
+        uint64_t vals_i[] = {12, 13, 14, 15};
+        std::string vals_s[] = {"a", "b"};
 
         {
             double* p = &vals_d[0];
@@ -262,7 +262,7 @@ void mtv_test_set_cells()
     {
         mtv_type db(3);
         {
-            double vals[] = { 2.1, 2.2, 2.3 };
+            double vals[] = {2.1, 2.2, 2.3};
             double* p = &vals[0];
             double* p_end = p + 3;
             db.set(0, p, p_end);
@@ -294,7 +294,7 @@ void mtv_test_set_cells()
         db.set(1, std::string("foo"));
         assert(db.block_size() == 2);
 
-        double vals[] = { 2.1, 2.2 };
+        double vals[] = {2.1, 2.2};
         double* p = &vals[0];
         double* p_end = p + 2;
         db.set(0, p, p_end);
@@ -316,7 +316,7 @@ void mtv_test_set_cells()
         db.set(1, std::string("foo"));
         db.set(2, std::string("baa"));
 
-        double vals[] = { 2.1, 2.2 };
+        double vals[] = {2.1, 2.2};
         double* p = &vals[0];
         double* p_end = p + 2;
         db.set(0, p, p_end);
@@ -342,7 +342,7 @@ void mtv_test_set_cells()
         assert(db.block_size() == 2);
         assert(db.size() == 3);
 
-        double vals[] = { 2.1, 2.2 };
+        double vals[] = {2.1, 2.2};
         double* p = &vals[0];
         double* p_end = p + 2;
         db.set(1, p, p_end);
@@ -365,7 +365,7 @@ void mtv_test_set_cells()
         db.set(4, 1.4);
         assert(db.block_size() == 3);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
         double* p_end = p + 3;
         db.set(1, p, p_end);
@@ -386,9 +386,9 @@ void mtv_test_set_cells()
         db.set(3, 1.2);
         assert(db.block_size() == 2);
 
-        double vals[] = { 2.1, 2.2, 2.3 };
+        double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
-        db.set(1, p, p+3);
+        db.set(1, p, p + 3);
         assert(db.block_size() == 2);
         assert(db.get<std::string>(0) == std::string("A"));
         assert(db.get<double>(1) == 2.1);
@@ -404,9 +404,9 @@ void mtv_test_set_cells()
         db.set(3, 1.2);
         assert(db.block_size() == 2);
 
-        double vals[] = { 2.1, 2.2 };
+        double vals[] = {2.1, 2.2};
         double* p = &vals[0];
-        db.set(1, p, p+2);
+        db.set(1, p, p + 2);
         assert(db.block_size() == 2);
         assert(db.get<std::string>(0) == std::string("A"));
         assert(db.get<double>(1) == 2.1);
@@ -423,9 +423,9 @@ void mtv_test_set_cells()
         db.set(4, static_cast<uint64_t>(12));
         assert(db.block_size() == 3);
 
-        uint64_t vals[] = { 21, 22, 23 };
+        uint64_t vals[] = {21, 22, 23};
         uint64_t* p = &vals[0];
-        db.set(1, p, p+3);
+        db.set(1, p, p + 3);
         assert(db.block_size() == 2);
         assert(db.get<std::string>(0) == std::string("A"));
         assert(db.get<uint64_t>(1) == 21);
@@ -441,9 +441,9 @@ void mtv_test_set_cells()
         db.set(2, 1.2);
         assert(db.block_size() == 2);
 
-        uint64_t vals[] = { 11, 12 };
+        uint64_t vals[] = {11, 12};
         uint64_t* p = &vals[0];
-        db.set(0, p, p+2);
+        db.set(0, p, p + 2);
         assert(db.block_size() == 2);
         assert(db.get<uint64_t>(0) == 11);
         assert(db.get<uint64_t>(1) == 12);
@@ -458,9 +458,9 @@ void mtv_test_set_cells()
         db.set(3, 1.2);
         assert(db.block_size() == 3);
 
-        uint64_t vals[] = { 11, 12 };
+        uint64_t vals[] = {11, 12};
         uint64_t* p = &vals[0];
-        db.set(1, p, p+2);
+        db.set(1, p, p + 2);
         assert(db.block_size() == 2);
         assert(db.get<uint64_t>(0) == 35);
         assert(db.get<uint64_t>(1) == 11);
@@ -475,9 +475,9 @@ void mtv_test_set_cells()
         db.set(1, 1.2);
         assert(db.block_size() == 2);
 
-        double vals[] = { 2.1, 2.2 };
+        double vals[] = {2.1, 2.2};
         double* p = &vals[0];
-        db.set(0, p, p+2);
+        db.set(0, p, p + 2);
         assert(db.block_size() == 1);
         assert(db.get<double>(0) == 2.1);
         assert(db.get<double>(1) == 2.2);
@@ -489,9 +489,9 @@ void mtv_test_set_cells()
         db.set(2, 1.2);
         assert(db.block_size() == 3);
 
-        double vals[] = { 2.1, 2.2 };
+        double vals[] = {2.1, 2.2};
         double* p = &vals[0];
-        db.set(1, p, p+2);
+        db.set(1, p, p + 2);
         assert(db.block_size() == 1);
         assert(db.get<double>(0) == 1.1);
         assert(db.get<double>(1) == 2.1);
@@ -505,9 +505,9 @@ void mtv_test_set_cells()
         db.set(4, std::string("C"));
         assert(db.block_size() == 2);
 
-        double vals[] = { 1.1, 1.2, 1.3 };
+        double vals[] = {1.1, 1.2, 1.3};
         double* p = &vals[0];
-        db.set(1, p, p+3);
+        db.set(1, p, p + 3);
         assert(db.block_size() == 3);
 
         assert(db.is_empty(0));
@@ -608,7 +608,7 @@ void mtv_test_set_cells()
             db.push_back<double>(i);
 
         for (int i = 0; i < 2; ++i)
-            db.push_back<int64_t>(i+20);
+            db.push_back<int64_t>(i + 20);
 
         std::vector<int32_t> data(3, 15);
         db.set(2, data.begin(), data.end());
@@ -633,7 +633,7 @@ void mtv_test_set_cells()
             db.push_back<double>(i);
 
         for (int i = 0; i < 2; ++i)
-            db.push_back<int64_t>(i+20);
+            db.push_back<int64_t>(i + 20);
 
         std::vector<int32_t> data(3, 15);
         db.set(1, data.begin(), data.end());
@@ -650,4 +650,3 @@ void mtv_test_set_cells()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

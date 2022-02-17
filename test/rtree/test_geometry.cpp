@@ -47,13 +47,12 @@ void rtree_test_area_enlargement()
         int16_t expected_area;
     };
 
-    std::vector<check> checks =
-    {
-        { {{0,0}, {2,2}}, {{ 2, 2}, { 3, 3}},  5 }, // 3x3 - 2x2 = 5
-        { {{0,0}, {2,2}}, {{ 0, 1}, { 1, 2}},  0 }, // no enlargement
-        { {{0,0}, {3,3}}, {{-3, 1}, { 7, 2}}, 21 }, // 10x3 - 3x3 = 21
-        { {{0,0}, {0,0}}, {{-1,-1}, { 0, 0}},  1 }, // 1x1 = 1
-        { {{0,0}, {1,1}}, {{-4,-3}, {-3,-2}}, 19 }, // 5x4 - 1x1 = 19
+    std::vector<check> checks = {
+        {{{0, 0}, {2, 2}}, {{2, 2}, {3, 3}}, 5}, // 3x3 - 2x2 = 5
+        {{{0, 0}, {2, 2}}, {{0, 1}, {1, 2}}, 0}, // no enlargement
+        {{{0, 0}, {3, 3}}, {{-3, 1}, {7, 2}}, 21}, // 10x3 - 3x3 = 21
+        {{{0, 0}, {0, 0}}, {{-1, -1}, {0, 0}}, 1}, // 1x1 = 1
+        {{{0, 0}, {1, 1}}, {{-4, -3}, {-3, -2}}, 19}, // 5x4 - 1x1 = 19
     };
 
     for (const check& c : checks)
@@ -77,11 +76,10 @@ void rtree_test_center_point()
         point_type expected;
     };
 
-    std::vector<test_case> tcs =
-    {
-        { {{0, 0}, {2, 2}}, {1, 1} },
-        { {{-2, -4}, {2, 4}}, {0, 0} },
-        { {{3, 5}, {8, 10}}, {5, 7} },
+    std::vector<test_case> tcs = {
+        {{{0, 0}, {2, 2}}, {1, 1}},
+        {{{-2, -4}, {2, 4}}, {0, 0}},
+        {{{3, 5}, {8, 10}}, {5, 7}},
     };
 
     for (const test_case& tc : tcs)
@@ -93,4 +91,3 @@ void rtree_test_center_point()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

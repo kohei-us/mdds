@@ -42,4 +42,3 @@ void mtv_test_block_counter();
 void mtv_test_block_init();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

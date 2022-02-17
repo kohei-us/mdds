@@ -69,18 +69,22 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int64_t, mdds::mtv::element_type_int64, 0, mdd
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint64_t, mdds::mtv::element_type_uint64, 0, mdds::mtv::uint64_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(float, mdds::mtv::element_type_float, 0.0, mdds::mtv::float_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mdds::mtv::element_type_double, 0.0, mdds::mtv::double_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, mdds::mtv::element_type_string, std::string(), mdds::mtv::string_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(
+    std::string, mdds::mtv::element_type_string, std::string(), mdds::mtv::string_element_block)
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::block::block() : position(0), size(0), data(nullptr) {}
+multi_type_vector<ElemBlockFunc, Trait>::block::block() : position(0), size(0), data(nullptr)
+{}
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::block::block(size_type _position, size_type _size) :
-    position(_position), size(_size), data(nullptr) {}
+multi_type_vector<ElemBlockFunc, Trait>::block::block(size_type _position, size_type _size)
+    : position(_position), size(_size), data(nullptr)
+{}
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::block::block(size_type _position, size_type _size, element_block_type* _data) :
-    position(_position), size(_size), data(_data) {}
+multi_type_vector<ElemBlockFunc, Trait>::block::block(size_type _position, size_type _size, element_block_type* _data)
+    : position(_position), size(_size), data(_data)
+{}
 
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::block::swap(block& other)
@@ -102,11 +106,12 @@ void multi_type_vector<ElemBlockFunc, Trait>::block::clone_to(block& other) cons
 }
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::blocks_to_transfer::blocks_to_transfer() : insert_index(0) {}
+multi_type_vector<ElemBlockFunc, Trait>::blocks_to_transfer::blocks_to_transfer() : insert_index(0)
+{}
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::position_type
-multi_type_vector<ElemBlockFunc, Trait>::next_position(const position_type& pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::position_type multi_type_vector<ElemBlockFunc, Trait>::next_position(
+    const position_type& pos)
 {
     position_type ret = pos;
     if (pos.second + 1 < pos.first->size)
@@ -124,15 +129,15 @@ multi_type_vector<ElemBlockFunc, Trait>::next_position(const position_type& pos)
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::position_type
-multi_type_vector<ElemBlockFunc, Trait>::advance_position(const position_type& pos, int steps)
+typename multi_type_vector<ElemBlockFunc, Trait>::position_type multi_type_vector<
+    ElemBlockFunc, Trait>::advance_position(const position_type& pos, int steps)
 {
     return mdds::detail::mtv::advance_position<position_type>(pos, steps);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type
-multi_type_vector<ElemBlockFunc, Trait>::next_position(const const_position_type& pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type multi_type_vector<
+    ElemBlockFunc, Trait>::next_position(const const_position_type& pos)
 {
     const_position_type ret = pos;
     if (pos.second + 1 < pos.first->size)
@@ -150,135 +155,127 @@ multi_type_vector<ElemBlockFunc, Trait>::next_position(const const_position_type
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type
-multi_type_vector<ElemBlockFunc, Trait>::advance_position(const const_position_type& pos, int steps)
+typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type multi_type_vector<
+    ElemBlockFunc, Trait>::advance_position(const const_position_type& pos, int steps)
 {
     return mdds::detail::mtv::advance_position<const_position_type>(pos, steps);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::size_type
-multi_type_vector<ElemBlockFunc, Trait>::logical_position(const const_position_type& pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<ElemBlockFunc, Trait>::logical_position(
+    const const_position_type& pos)
 {
     return pos.first->position + pos.second;
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename Blk>
-typename Blk::value_type
-multi_type_vector<ElemBlockFunc, Trait>::get(const const_position_type& pos)
+typename Blk::value_type multi_type_vector<ElemBlockFunc, Trait>::get(const const_position_type& pos)
 {
     return mdds::detail::mtv::get_block_element_at<Blk>(*pos.first->data, pos.second);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::begin()
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::begin()
 {
     return iterator(m_blocks.begin(), m_blocks.end(), 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::end()
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::end()
 {
     return iterator(m_blocks.end(), m_blocks.end(), m_blocks.size());
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator
-multi_type_vector<ElemBlockFunc, Trait>::begin() const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vector<ElemBlockFunc, Trait>::begin() const
 {
     return cbegin();
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator
-multi_type_vector<ElemBlockFunc, Trait>::end() const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vector<ElemBlockFunc, Trait>::end() const
 {
     return cend();
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator
-multi_type_vector<ElemBlockFunc, Trait>::cbegin() const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vector<ElemBlockFunc, Trait>::cbegin() const
 {
     return const_iterator(m_blocks.cbegin(), m_blocks.cend(), 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator
-multi_type_vector<ElemBlockFunc, Trait>::cend() const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vector<ElemBlockFunc, Trait>::cend() const
 {
     return const_iterator(m_blocks.end(), m_blocks.end(), m_blocks.size());
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator
-multi_type_vector<ElemBlockFunc, Trait>::rbegin()
+typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator multi_type_vector<ElemBlockFunc, Trait>::rbegin()
 {
     return reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator
-multi_type_vector<ElemBlockFunc, Trait>::rend()
+typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator multi_type_vector<ElemBlockFunc, Trait>::rend()
 {
     return reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator
-multi_type_vector<ElemBlockFunc, Trait>::rbegin() const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_type_vector<
+    ElemBlockFunc, Trait>::rbegin() const
 {
     return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator
-multi_type_vector<ElemBlockFunc, Trait>::rend() const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_type_vector<ElemBlockFunc, Trait>::rend()
+    const
 {
     return const_reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator
-multi_type_vector<ElemBlockFunc, Trait>::crbegin() const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_type_vector<
+    ElemBlockFunc, Trait>::crbegin() const
 {
     return const_reverse_iterator(m_blocks.crbegin(), m_blocks.crend(), 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator
-multi_type_vector<ElemBlockFunc, Trait>::crend() const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_type_vector<
+    ElemBlockFunc, Trait>::crend() const
 {
     return const_reverse_iterator(m_blocks.crend(), m_blocks.crend(), 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::event_func&
-multi_type_vector<ElemBlockFunc, Trait>::event_handler()
+typename multi_type_vector<ElemBlockFunc, Trait>::event_func& multi_type_vector<ElemBlockFunc, Trait>::event_handler()
 {
     return m_hdl_event;
 }
 
 template<typename ElemBlockFunc, typename Trait>
-const typename multi_type_vector<ElemBlockFunc, Trait>::event_func&
-multi_type_vector<ElemBlockFunc, Trait>::event_handler() const
+const typename multi_type_vector<ElemBlockFunc, Trait>::event_func& multi_type_vector<
+    ElemBlockFunc, Trait>::event_handler() const
 {
     return m_hdl_event;
 }
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector() : m_cur_size(0) {}
+multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector() : m_cur_size(0)
+{}
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const event_func& hdl) :
-    m_hdl_event(hdl), m_cur_size(0) {}
+multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const event_func& hdl) : m_hdl_event(hdl), m_cur_size(0)
+{}
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(event_func&& hdl) :
-    m_hdl_event(std::move(hdl)), m_cur_size(0) {}
+multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(event_func&& hdl)
+    : m_hdl_event(std::move(hdl)), m_cur_size(0)
+{}
 
 template<typename ElemBlockFunc, typename Trait>
 multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size) : m_cur_size(init_size)
@@ -292,8 +289,7 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size) 
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, const T& value) :
-    m_cur_size(init_size)
+multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, const T& value) : m_cur_size(init_size)
 {
     if (!init_size)
         return;
@@ -305,8 +301,8 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, 
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, const T& it_begin, const T& it_end) :
-    m_cur_size(init_size)
+multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, const T& it_begin, const T& it_end)
+    : m_cur_size(init_size)
 {
     if (!m_cur_size)
         return;
@@ -321,8 +317,8 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(size_type init_size, 
 }
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const multi_type_vector& other) :
-    m_hdl_event(other.m_hdl_event), m_cur_size(other.m_cur_size)
+multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const multi_type_vector& other)
+    : m_hdl_event(other.m_hdl_event), m_cur_size(other.m_cur_size)
 {
     // Clone all the blocks.
     m_blocks.reserve(other.m_blocks.size());
@@ -353,10 +349,8 @@ multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(const multi_type_vect
 }
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(multi_type_vector&& other) :
-    m_hdl_event(std::move(other.m_hdl_event)),
-    m_blocks(std::move(other.m_blocks)),
-    m_cur_size(other.m_cur_size)
+multi_type_vector<ElemBlockFunc, Trait>::multi_type_vector(multi_type_vector&& other)
+    : m_hdl_event(std::move(other.m_hdl_event)), m_blocks(std::move(other.m_blocks)), m_cur_size(other.m_cur_size)
 {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     try
@@ -382,12 +376,13 @@ multi_type_vector<ElemBlockFunc, Trait>::~multi_type_vector()
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& value)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set(
+    size_type pos, const T& value)
 {
     size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::set", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -418,12 +413,13 @@ multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& value)
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set(const iterator& pos_hint, size_type pos, const T& value)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set(
+    const iterator& pos_hint, size_type pos, const T& value)
 {
     size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::set", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -468,18 +464,13 @@ template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::delete_element_blocks(
     typename blocks_type::iterator it, typename blocks_type::iterator it_end)
 {
-    std::for_each(it, it_end,
-        [&](block& r)
-        {
-            delete_element_block(r);
-        }
-    );
+    std::for_each(it, it_end, [&](block& r) { delete_element_block(r); });
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_impl(size_type pos, size_type block_index, const T& value)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set_impl(
+    size_type pos, size_type block_index, const T& value)
 {
     size_type start_row = m_blocks[block_index].position;
     element_category_type cat = mdds_mtv_get_element_type(value);
@@ -532,7 +523,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_impl(size_type pos, size_type block
             element_block_func::erase(*blk->data, 0);
             blk_prev->size += 1;
             mdds_mtv_append_value(*blk_prev->data, value);
-            return get_iterator(block_index-1);
+            return get_iterator(block_index - 1);
         }
 
         set_cell_to_top_of_data_block(block_index, value);
@@ -576,19 +567,19 @@ multi_type_vector<ElemBlockFunc, Trait>::set_impl(size_type pos, size_type block
 
         // Pop the last cell off the current block, and prepend the
         // new value to the next block.
-        element_block_func::overwrite_values(*blk->data, blk->size-1, 1);
-        element_block_func::erase(*blk->data, blk->size-1);
+        element_block_func::overwrite_values(*blk->data, blk->size - 1, 1);
+        element_block_func::erase(*blk->data, blk->size - 1);
         blk->size -= 1;
         mdds_mtv_prepend_value(*blk_next->data, value);
         blk_next->size += 1;
         blk_next->position -= 1;
 
-        return get_iterator(block_index+1);
+        return get_iterator(block_index + 1);
     }
 
     assert(block_index > 0);
 
-    if (block_index == m_blocks.size()-1)
+    if (block_index == m_blocks.size() - 1)
     {
         // This is the last block.
         set_cell_to_bottom_of_data_block(block_index, value);
@@ -602,25 +593,25 @@ multi_type_vector<ElemBlockFunc, Trait>::set_impl(size_type pos, size_type block
     {
         // Next block is either empty or of different type than that of the cell being inserted.
         set_cell_to_bottom_of_data_block(block_index, value); // This invalidates m_blocks.
-        return get_iterator(block_index+1);
+        return get_iterator(block_index + 1);
     }
 
     // Pop the last element from the current block, and prepend the cell
     // into the next block.
-    element_block_func::overwrite_values(*blk->data, blk->size-1, 1);
-    element_block_func::erase(*blk->data, blk->size-1);
+    element_block_func::overwrite_values(*blk->data, blk->size - 1, 1);
+    element_block_func::erase(*blk->data, blk->size - 1);
     blk->size -= 1;
     mdds_mtv_prepend_value(*blk_next->data, value);
     blk_next->size += 1;
     blk_next->position -= 1;
 
-    return get_iterator(block_index+1);
+    return get_iterator(block_index + 1);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::release_impl(size_type pos, size_type block_index, T& value)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::release_impl(
+    size_type pos, size_type block_index, T& value)
 {
     const block& blk = m_blocks[block_index];
     size_type start_pos = blk.position;
@@ -643,8 +634,8 @@ multi_type_vector<ElemBlockFunc, Trait>::release_impl(size_type pos, size_type b
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& it_begin, const T& it_end)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set(
+    size_type pos, const T& it_begin, const T& it_end)
 {
     auto res = mdds::detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
 
@@ -655,7 +646,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& it_begin, c
 
     size_type block_index1 = get_block_position(pos);
     if (block_index1 == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::set", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::set", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -686,8 +678,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set(size_type pos, const T& it_begin, c
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set(const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set(
+    const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
 {
     auto res = mdds::detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
     if (!res.second)
@@ -701,8 +693,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set(const iterator& pos_hint, size_type
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::push_back(const T& value)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::push_back(
+    const T& value)
 {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -733,8 +725,8 @@ multi_type_vector<ElemBlockFunc, Trait>::push_back(const T& value)
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::push_back_impl(const T& value)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::push_back_impl(
+    const T& value)
 {
     element_category_type cat = mdds_mtv_get_element_type(value);
 
@@ -768,8 +760,7 @@ multi_type_vector<ElemBlockFunc, Trait>::push_back_impl(const T& value)
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::push_back_empty()
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::push_back_empty()
 {
     size_type block_index = m_blocks.size();
 
@@ -788,12 +779,13 @@ multi_type_vector<ElemBlockFunc, Trait>::push_back_empty()
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::insert(size_type pos, const T& it_begin, const T& it_end)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::insert(
+    size_type pos, const T& it_begin, const T& it_end)
 {
     size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::insert", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::insert", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -812,7 +804,8 @@ multi_type_vector<ElemBlockFunc, Trait>::insert(size_type pos, const T& it_begin
         std::ostringstream os;
         os << e.what() << std::endl;
         element_category_type cat = mdds_mtv_get_element_type(*it_begin);
-        os << "block integrity check failed in insert (pos=" << pos << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << std::endl;
+        os << "block integrity check failed in insert (pos=" << pos
+           << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << std::endl;
         os << "previous block state:" << std::endl;
         os << os_prev_block.str();
         std::cerr << os.str() << std::endl;
@@ -825,12 +818,13 @@ multi_type_vector<ElemBlockFunc, Trait>::insert(size_type pos, const T& it_begin
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::insert(const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::insert(
+    const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
 {
     size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::insert", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::insert", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -849,7 +843,8 @@ multi_type_vector<ElemBlockFunc, Trait>::insert(const iterator& pos_hint, size_t
         std::ostringstream os;
         os << e.what() << std::endl;
         element_category_type cat = mdds_mtv_get_element_type(*it_begin);
-        os << "block integrity check failed in insert (pos=" << pos << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << std::endl;
+        os << "block integrity check failed in insert (pos=" << pos
+           << "; value-size=" << std::distance(it_begin, it_end) << "; value-type=" << cat << ")" << std::endl;
         os << "previous block state:" << std::endl;
         os << os_prev_block.str();
         std::cerr << os.str() << std::endl;
@@ -861,8 +856,8 @@ multi_type_vector<ElemBlockFunc, Trait>::insert(const iterator& pos_hint, size_t
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::size_type
-multi_type_vector<ElemBlockFunc, Trait>::get_block_position(size_type row, size_type start_block_index) const
+typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<ElemBlockFunc, Trait>::get_block_position(
+    size_type row, size_type start_block_index) const
 {
     if (row >= m_cur_size || start_block_index >= m_blocks.size())
         return m_blocks.size();
@@ -886,8 +881,8 @@ multi_type_vector<ElemBlockFunc, Trait>::get_block_position(size_type row, size_
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::size_type
-multi_type_vector<ElemBlockFunc, Trait>::get_block_position(const const_iterator& pos_hint, size_type row) const
+typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<ElemBlockFunc, Trait>::get_block_position(
+    const const_iterator& pos_hint, size_type row) const
 {
     size_type block_index = 0;
     if (pos_hint.get_end() == m_blocks.end())
@@ -945,15 +940,14 @@ void multi_type_vector<ElemBlockFunc, Trait>::create_new_block_with_new_cell(ele
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_middle_of_block(
-    size_type block_index, size_type pos_in_block, const T& cell)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
+    ElemBlockFunc, Trait>::set_cell_to_middle_of_block(size_type block_index, size_type pos_in_block, const T& cell)
 {
     block& blk_new = set_new_block_to_middle(block_index, pos_in_block, 1, true);
     create_new_block_with_new_cell(blk_new.data, cell);
 
     // Return the iterator referencing the inserted block.
-    return get_iterator(block_index+1);
+    return get_iterator(block_index + 1);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -966,9 +960,8 @@ void multi_type_vector<ElemBlockFunc, Trait>::append_cell_to_block(size_type blo
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
-    size_type block_index, size_type pos_in_block, const T& cell)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
+    ElemBlockFunc, Trait>::set_cell_to_empty_block(size_type block_index, size_type pos_in_block, const T& cell)
 {
     block* blk = &m_blocks[block_index];
     assert(!blk->data); // In this call, the current block is an empty block.
@@ -1026,7 +1019,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
 
         if (pos_in_block == 0)
         {
-            assert(block_index < m_blocks.size()-1);
+            assert(block_index < m_blocks.size() - 1);
             if (blk->size == 1)
             {
                 // Top empty block with only one cell size.
@@ -1080,15 +1073,15 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                 // Shrink the current empty block by one, and create a new block of size 1 to store the new value.
                 blk->size -= 1;
                 typename blocks_type::iterator it = m_blocks.begin();
-                std::advance(it, block_index+1);
+                std::advance(it, block_index + 1);
                 size_type new_position = detail::calc_next_block_position(*blk);
                 m_blocks.emplace(it, new_position, 1);
                 blk = &m_blocks[block_index]; // old pointer is invalid.
-                block* blk2 = &m_blocks[block_index+1];
+                block* blk2 = &m_blocks[block_index + 1];
                 create_new_block_with_new_cell(blk2->data, cell);
             }
 
-            return get_iterator(block_index+1);
+            return get_iterator(block_index + 1);
         }
 
         // Inserting into the middle of an empty block.
@@ -1096,12 +1089,12 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
     }
 
     // This empty block is right below a non-empty block.
-    assert(block_index > 0 && m_blocks[block_index-1].data != nullptr);
+    assert(block_index > 0 && m_blocks[block_index - 1].data != nullptr);
 
     if (pos_in_block == 0)
     {
         // New cell is right below the non-empty block.
-        element_category_type blk_cat_prev = mdds::mtv::get_block_type(*m_blocks[block_index-1].data);
+        element_category_type blk_cat_prev = mdds::mtv::get_block_type(*m_blocks[block_index - 1].data);
         element_category_type cat = mdds_mtv_get_element_type(cell);
         if (blk_cat_prev == cat)
         {
@@ -1110,13 +1103,13 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
             if (blk->size == 1)
             {
                 // Check if we need to merge with the following block.
-                if (block_index == m_blocks.size()-1)
+                if (block_index == m_blocks.size() - 1)
                 {
                     // Last block.  Delete this block and extend the previous
                     // block by one.
                     delete_element_block(m_blocks[block_index]);
                     m_blocks.pop_back();
-                    append_cell_to_block(block_index-1, cell);
+                    append_cell_to_block(block_index - 1, cell);
                 }
                 else
                 {
@@ -1130,7 +1123,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                         // delete the current and next blocks.  Be sure to
                         // resize the next block to zero to prevent the
                         // transferred cells to be deleted.
-                        block& blk_prev = m_blocks[block_index-1];
+                        block& blk_prev = m_blocks[block_index - 1];
 
                         // Check if the next block is bigger.
                         if (blk_prev.size < blk_next->size)
@@ -1146,7 +1139,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                             mdds_mtv_prepend_value(*blk_next->data, cell);
 
                             // Preprend the content of previous block to the next block.
-                            element_block_func::prepend_values_from_block(*blk_next->data, *blk_prev.data, 0, blk_prev.size);
+                            element_block_func::prepend_values_from_block(
+                                *blk_next->data, *blk_prev.data, 0, blk_prev.size);
                             blk_next->size += blk_prev.size;
                             blk_next->position = position;
 
@@ -1162,7 +1156,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                             typename blocks_type::iterator it = m_blocks.begin() + block_index - 1;
 
                             // So we can use it to remove the two blocks
-                            m_blocks.erase(it, it+2);
+                            m_blocks.erase(it, it + 2);
                         }
                         else
                         {
@@ -1176,7 +1170,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                             element_block_func::delete_block(blk->data);
                             element_block_func::delete_block(blk_next->data);
                             typename blocks_type::iterator it = m_blocks.begin() + block_index;
-                            m_blocks.erase(it, it+2);
+                            m_blocks.erase(it, it + 2);
                         }
                     }
                     else
@@ -1184,7 +1178,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                         // Ignore the next block. Just extend the previous block.
                         delete_element_block(m_blocks[block_index]);
                         m_blocks.erase(m_blocks.begin() + block_index);
-                        append_cell_to_block(block_index-1, cell);
+                        append_cell_to_block(block_index - 1, cell);
                     }
                 }
             }
@@ -1194,17 +1188,17 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                 assert(blk->size > 1);
                 blk->size -= 1;
                 blk->position += 1;
-                append_cell_to_block(block_index-1, cell);
+                append_cell_to_block(block_index - 1, cell);
             }
 
-            return get_iterator(block_index-1);
+            return get_iterator(block_index - 1);
         }
         else
         {
             // Cell type is different from the type of the previous block.
             if (blk->size == 1)
             {
-                if (block_index == m_blocks.size()-1)
+                if (block_index == m_blocks.size() - 1)
                 {
                     // There is no more block below.  Simply turn this empty block into a non-empty one.
                     create_new_block_with_new_cell(blk->data, cell);
@@ -1212,7 +1206,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                 else
                 {
                     // Check the type of the following non-empty block.
-                    assert(block_index < m_blocks.size()-1);
+                    assert(block_index < m_blocks.size() - 1);
                     block* blk_next = get_next_block_of_type(block_index, cat);
                     if (blk_next)
                     {
@@ -1221,7 +1215,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                         blk_next->position -= 1;
                         mdds_mtv_prepend_value(*blk_next->data, cell);
                         delete_element_block(m_blocks[block_index]);
-                        m_blocks.erase(m_blocks.begin()+block_index);
+                        m_blocks.erase(m_blocks.begin() + block_index);
                     }
                     else
                     {
@@ -1240,7 +1234,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                 size_type new_block_position = blk->position + 1;
                 blk->size = 1;
                 create_new_block_with_new_cell(blk->data, cell);
-                m_blocks.emplace(m_blocks.begin()+block_index+1, new_block_position, new_block_size);
+                m_blocks.emplace(m_blocks.begin() + block_index + 1, new_block_position, new_block_size);
             }
 
             return get_iterator(block_index);
@@ -1250,7 +1244,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
     {
         // New cell is at the end of the current block.
         assert(blk->size > 1);
-        if (block_index == m_blocks.size()-1)
+        if (block_index == m_blocks.size() - 1)
         {
             // The current block is the last block.
             blk->size -= 1;
@@ -1281,13 +1275,13 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
                 // block of size 1 below it to store the new value.
                 blk->size -= 1;
                 size_type new_position = detail::calc_next_block_position(*blk);
-                m_blocks.emplace(m_blocks.begin()+block_index+1, new_position, 1);
+                m_blocks.emplace(m_blocks.begin() + block_index + 1, new_position, 1);
                 blk = &m_blocks[block_index]; // old pointer is invalid.
-                block& blk2 = m_blocks[block_index+1];
+                block& blk2 = m_blocks[block_index + 1];
                 create_new_block_with_new_cell(blk2.data, cell);
             }
 
-            return get_iterator(block_index+1);
+            return get_iterator(block_index + 1);
         }
     }
 
@@ -1297,8 +1291,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_empty_block(
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type block_index, const T& cell)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
+    ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type block_index, const T& cell)
 {
     block* blk = &m_blocks[block_index];
     assert(blk->size == 1);
@@ -1309,7 +1303,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
     if (block_index == 0)
     {
         // This is the topmost block of size 1.
-        if (block_index == m_blocks.size()-1)
+        if (block_index == m_blocks.size() - 1)
         {
             // This is the only block.
             create_new_block_with_new_cell(blk->data, cell);
@@ -1330,16 +1324,16 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
         blk_next->position -= 1;
         mdds_mtv_prepend_value(*blk_next->data, cell);
         delete_element_block(*blk);
-        m_blocks.erase(m_blocks.begin()+block_index);
+        m_blocks.erase(m_blocks.begin() + block_index);
         return begin();
     }
 
     assert(block_index > 0);
 
-    if (block_index == m_blocks.size()-1)
+    if (block_index == m_blocks.size() - 1)
     {
         // This is the last block, and a block exists above.
-        block* blk_prev = &m_blocks[block_index-1];
+        block* blk_prev = &m_blocks[block_index - 1];
         if (!blk_prev->data || mdds::mtv::get_block_type(*blk_prev->data) != cat)
         {
             // Previous block is empty. Replace the current block with a new one.
@@ -1352,7 +1346,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
             mdds_mtv_append_value(*blk_prev->data, cell);
             blk_prev->size += 1;
             delete_element_block(*blk);
-            m_blocks.erase(m_blocks.begin()+block_index);
+            m_blocks.erase(m_blocks.begin() + block_index);
         }
 
         iterator itr = end();
@@ -1364,8 +1358,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
     // to the previous block, or prepended to the following block.
     // Also check if the blocks above and below need to be combined.
 
-    block* blk_prev = &m_blocks[block_index-1];
-    block* blk_next = &m_blocks[block_index+1];
+    block* blk_prev = &m_blocks[block_index - 1];
+    block* blk_next = &m_blocks[block_index + 1];
     if (!blk_prev->data)
     {
         // Previous block is empty.
@@ -1382,7 +1376,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
         {
             // Delete the current block, and prepend the new cell to the next block.
             delete_element_block(*blk);
-            m_blocks.erase(m_blocks.begin()+block_index);
+            m_blocks.erase(m_blocks.begin() + block_index);
             blk = &m_blocks[block_index];
             blk->size += 1;
             blk->position -= 1;
@@ -1406,8 +1400,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
             blk_prev->size += 1;
             mdds_mtv_append_value(*blk_prev->data, cell);
             delete_element_block(*blk);
-            m_blocks.erase(m_blocks.begin()+block_index);
-            return get_iterator(block_index-1);
+            m_blocks.erase(m_blocks.begin() + block_index);
+            return get_iterator(block_index - 1);
         }
 
         // Just overwrite the current block.
@@ -1438,7 +1432,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
             typename blocks_type::iterator it = m_blocks.begin() + block_index;
             typename blocks_type::iterator it_last = it + 2;
             m_blocks.erase(it, it_last);
-            return get_iterator(block_index-1);
+            return get_iterator(block_index - 1);
         }
 
         // Just overwrite the current block.
@@ -1454,8 +1448,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
         blk_prev->size += 1;
         mdds_mtv_append_value(*blk_prev->data, cell);
         delete_element_block(*blk);
-        m_blocks.erase(m_blocks.begin()+block_index);
-        return get_iterator(block_index-1);
+        m_blocks.erase(m_blocks.begin() + block_index);
+        return get_iterator(block_index - 1);
     }
 
     if (blk_cat_next == cat)
@@ -1465,7 +1459,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_block_of_size_one(size_type
         blk_next->position -= 1;
         mdds_mtv_prepend_value(*blk_next->data, cell);
         delete_element_block(*blk);
-        m_blocks.erase(m_blocks.begin()+block_index);
+        m_blocks.erase(m_blocks.begin() + block_index);
         return get_iterator(block_index);
     }
 
@@ -1489,7 +1483,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_top_of_data_block(size
         element_block_func::erase(*blk.data, 0);
     }
 
-    m_blocks.emplace(m_blocks.begin()+block_index, position, 1);
+    m_blocks.emplace(m_blocks.begin() + block_index, position, 1);
     create_new_block_with_new_cell(m_blocks[block_index].data, cell);
 }
 
@@ -1501,13 +1495,13 @@ void multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_bottom_of_data_block(s
     block& blk = m_blocks[block_index];
     if (blk.data)
     {
-        element_block_func::overwrite_values(*blk.data, blk.size-1, 1);
-        element_block_func::erase(*blk.data, blk.size-1);
+        element_block_func::overwrite_values(*blk.data, blk.size - 1, 1);
+        element_block_func::erase(*blk.data, blk.size - 1);
     }
     blk.size -= 1;
     size_type next_position = detail::calc_next_block_position(blk);
-    m_blocks.emplace(m_blocks.begin()+block_index+1, next_position, 1);
-    create_new_block_with_new_cell(m_blocks[block_index+1].data, cell);
+    m_blocks.emplace(m_blocks.begin() + block_index + 1, next_position, 1);
+    create_new_block_with_new_cell(m_blocks[block_index + 1].data, cell);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -1516,7 +1510,8 @@ void multi_type_vector<ElemBlockFunc, Trait>::get(size_type pos, T& value) const
 {
     size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::get", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::get", __LINE__, pos, block_size(), size());
 
     const block* blk = &m_blocks[block_index];
     assert(blk);
@@ -1550,7 +1545,8 @@ T multi_type_vector<ElemBlockFunc, Trait>::release(size_type pos)
 {
     size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::release", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::release", __LINE__, pos, block_size(), size());
 
     T value;
     release_impl(pos, block_index, value);
@@ -1559,8 +1555,8 @@ T multi_type_vector<ElemBlockFunc, Trait>::release(size_type pos)
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::release(size_type pos, T& value)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::release(
+    size_type pos, T& value)
 {
     size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
@@ -1572,8 +1568,8 @@ multi_type_vector<ElemBlockFunc, Trait>::release(size_type pos, T& value)
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::release(const iterator& pos_hint, size_type pos, T& value)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::release(
+    const iterator& pos_hint, size_type pos, T& value)
 {
     size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
@@ -1603,8 +1599,8 @@ void multi_type_vector<ElemBlockFunc, Trait>::release()
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::release_range(size_type start_pos, size_type end_pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::release_range(
+    size_type start_pos, size_type end_pos)
 {
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_blocks.size())
@@ -1615,8 +1611,7 @@ multi_type_vector<ElemBlockFunc, Trait>::release_range(size_type start_pos, size
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::release_range(
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::release_range(
     const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
     size_type block_index1 = get_block_position(pos_hint, start_pos);
@@ -1628,8 +1623,8 @@ multi_type_vector<ElemBlockFunc, Trait>::release_range(
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::position_type
-multi_type_vector<ElemBlockFunc, Trait>::position(size_type pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::position_type multi_type_vector<ElemBlockFunc, Trait>::position(
+    size_type pos)
 {
     if (pos == m_cur_size)
     {
@@ -1650,8 +1645,8 @@ multi_type_vector<ElemBlockFunc, Trait>::position(size_type pos)
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::position_type
-multi_type_vector<ElemBlockFunc, Trait>::position(const iterator& pos_hint, size_type pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::position_type multi_type_vector<ElemBlockFunc, Trait>::position(
+    const iterator& pos_hint, size_type pos)
 {
     if (pos == m_cur_size)
     {
@@ -1671,8 +1666,8 @@ multi_type_vector<ElemBlockFunc, Trait>::position(const iterator& pos_hint, size
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type
-multi_type_vector<ElemBlockFunc, Trait>::position(size_type pos) const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type multi_type_vector<ElemBlockFunc, Trait>::position(
+    size_type pos) const
 {
     if (pos == m_cur_size)
     {
@@ -1695,8 +1690,8 @@ multi_type_vector<ElemBlockFunc, Trait>::position(size_type pos) const
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type
-multi_type_vector<ElemBlockFunc, Trait>::position(const const_iterator& pos_hint, size_type pos) const
+typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type multi_type_vector<ElemBlockFunc, Trait>::position(
+    const const_iterator& pos_hint, size_type pos) const
 {
     if (pos == m_cur_size)
     {
@@ -1716,8 +1711,7 @@ multi_type_vector<ElemBlockFunc, Trait>::position(const const_iterator& pos_hint
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::transfer(
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::transfer(
     size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
 {
     if (&dest == this)
@@ -1750,7 +1744,9 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer(
     {
         std::ostringstream os;
         os << e.what() << std::endl;
-        os << std::endl << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest_pos=" << dest_pos << ")" << std::endl;
+        os << std::endl
+           << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos
+           << "; dest_pos=" << dest_pos << ")" << std::endl;
         os << std::endl << "previous block state (source):" << std::endl;
         os << os_prev_block.str();
         os << std::endl << "previous block state (destination):" << std::endl;
@@ -1768,10 +1764,8 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer(
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::transfer(
-    const iterator& pos_hint, size_type start_pos, size_type end_pos,
-    multi_type_vector& dest, size_type dest_pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::transfer(
+    const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
 {
     size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_blocks.size())
@@ -1800,7 +1794,9 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer(
     {
         std::ostringstream os;
         os << e.what() << std::endl;
-        os << std::endl << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos << "; dest_pos=" << dest_pos << ")" << std::endl;
+        os << std::endl
+           << "block integrity check failed in transfer (start_pos=" << start_pos << "; end_pos=" << end_pos
+           << "; dest_pos=" << dest_pos << ")" << std::endl;
         os << std::endl << "previous block state (source):" << std::endl;
         os << os_prev_block.str();
         os << std::endl << "previous block state (destination):" << std::endl;
@@ -1822,7 +1818,8 @@ mtv::element_t multi_type_vector<ElemBlockFunc, Trait>::get_type(size_type pos) 
 {
     size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::get_type", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::get_type", __LINE__, pos, block_size(), size());
 
     const block* blk = &m_blocks[block_index];
     if (!blk->data)
@@ -1836,14 +1833,15 @@ bool multi_type_vector<ElemBlockFunc, Trait>::is_empty(size_type pos) const
 {
     size_type block_index = get_block_position(pos);
     if (block_index == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::is_empty", __LINE__, pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::is_empty", __LINE__, pos, block_size(), size());
 
     return m_blocks[block_index].data == nullptr;
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_empty(size_type start_pos, size_type end_pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set_empty(
+    size_type start_pos, size_type end_pos)
 {
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_blocks.size())
@@ -1854,8 +1852,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty(size_type start_pos, size_typ
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set_empty(
+    const iterator& pos_hint, size_type start_pos, size_type end_pos)
 {
     size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_blocks.size())
@@ -1866,10 +1864,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty(const iterator& pos_hint, siz
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::transfer_impl(
-    size_type start_pos, size_type end_pos, size_type block_index1,
-    multi_type_vector& dest, size_type dest_pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::transfer_impl(
+    size_type start_pos, size_type end_pos, size_type block_index1, multi_type_vector& dest, size_type dest_pos)
 {
     if (start_pos > end_pos)
     {
@@ -1881,7 +1877,8 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_impl(
 
     size_type block_index2 = get_block_position(end_pos, block_index1);
     if (block_index2 == m_blocks.size())
-        mdds::detail::mtv::throw_block_position_not_found("multi_type_vector::transfer_impl", __LINE__, end_pos, block_size(), size());
+        mdds::detail::mtv::throw_block_position_not_found(
+            "multi_type_vector::transfer_impl", __LINE__, end_pos, block_size(), size());
 
     size_type len = end_pos - start_pos + 1;
     size_type last_dest_pos = dest_pos + len - 1;
@@ -1896,15 +1893,13 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_impl(
         return transfer_single_block(start_pos, end_pos, block_index1, dest, dest_pos);
     }
 
-    return transfer_multi_blocks(
-        start_pos, end_pos, block_index1, block_index2, dest, dest_pos);
+    return transfer_multi_blocks(start_pos, end_pos, block_index1, block_index2, dest, dest_pos);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::transfer_single_block(
-    size_type start_pos, size_type end_pos, size_type block_index1,
-    multi_type_vector& dest, size_type dest_pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::
+    transfer_single_block(
+        size_type start_pos, size_type end_pos, size_type block_index1, multi_type_vector& dest, size_type dest_pos)
 {
     size_type len = end_pos - start_pos + 1;
     size_type last_dest_pos = dest_pos + len - 1;
@@ -1940,7 +1935,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_single_block(
             size_type position = blk_dest->position;
             blk_dest->position += len;
             blk_dest->size -= len;
-            dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index, position, len);
+            dest.m_blocks.emplace(dest.m_blocks.begin() + dest_block_index, position, len);
             blk_dest = &dest.m_blocks[dest_block_index]; // The old pointer is invalid.
         }
     }
@@ -1951,8 +1946,8 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_single_block(
         // Insert a new block below current, and shrink the current block.
         dest.m_blocks[dest_block_index].size -= len;
         size_type position = detail::calc_next_block_position(dest.m_blocks, dest_block_index);
-        dest.m_blocks.emplace(dest.m_blocks.begin()+dest_block_index+1, position, len);
-        blk_dest = &dest.m_blocks[dest_block_index+1];
+        dest.m_blocks.emplace(dest.m_blocks.begin() + dest_block_index + 1, position, len);
+        blk_dest = &dest.m_blocks[dest_block_index + 1];
         ++dest_block_index; // Must point to the new copied block.
     }
     else
@@ -1961,15 +1956,17 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_single_block(
 
         // Insert two new blocks below current.
         size_type blk2_size = blk_dest->size - dest_pos_in_block - len;
-        dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, 2u, block());
+        dest.m_blocks.insert(dest.m_blocks.begin() + dest_block_index + 1, 2u, block());
         dest.m_blocks[dest_block_index].size = dest_pos_in_block;
-        dest.m_blocks[dest_block_index+1].size = len;
-        dest.m_blocks[dest_block_index+2].size = blk2_size;
+        dest.m_blocks[dest_block_index + 1].size = len;
+        dest.m_blocks[dest_block_index + 2].size = blk2_size;
 
-        dest.m_blocks[dest_block_index+1].position = detail::calc_next_block_position(dest.m_blocks, dest_block_index);
-        dest.m_blocks[dest_block_index+2].position = detail::calc_next_block_position(dest.m_blocks, dest_block_index+1);
+        dest.m_blocks[dest_block_index + 1].position =
+            detail::calc_next_block_position(dest.m_blocks, dest_block_index);
+        dest.m_blocks[dest_block_index + 2].position =
+            detail::calc_next_block_position(dest.m_blocks, dest_block_index + 1);
 
-        blk_dest = &dest.m_blocks[dest_block_index+1];
+        blk_dest = &dest.m_blocks[dest_block_index + 1];
 
         ++dest_block_index; // Must point to the new copied block.
     }
@@ -2010,10 +2007,10 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_single_block(
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
-    size_type start_pos, size_type end_pos, size_type block_index1, size_type block_index2,
-    multi_type_vector& dest, size_type dest_pos)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::
+    transfer_multi_blocks(
+        size_type start_pos, size_type end_pos, size_type block_index1, size_type block_index2, multi_type_vector& dest,
+        size_type dest_pos)
 {
     assert(block_index1 < block_index2);
     size_type start_pos_in_block1 = m_blocks[block_index1].position;
@@ -2046,7 +2043,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
             // Shrink the existing block and insert slots for the new blocks before it.
             blk_dest->size -= len;
             blk_dest->position += len;
-            dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, block_len, block());
+            dest.m_blocks.insert(dest.m_blocks.begin() + dest_block_index, block_len, block());
         }
         else
         {
@@ -2054,14 +2051,14 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
             dest.delete_element_block(*blk_dest);
             blk_dest->size = 0;
             if (block_len > 1)
-                dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index, block_len-1, block());
+                dest.m_blocks.insert(dest.m_blocks.begin() + dest_block_index, block_len - 1, block());
         }
     }
     else if (dest_pos_in_block + len - 1 == it_dest_blk->size - 1)
     {
         // Copy to the bottom part of destination block. Insert slots for new
         // blocks below current, and shrink the current block.
-        dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len, block());
+        dest.m_blocks.insert(dest.m_blocks.begin() + dest_block_index + 1, block_len, block());
         blk_dest = &dest.m_blocks[dest_block_index];
         blk_dest->size -= len;
 
@@ -2073,13 +2070,13 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
         // new blocks (plus one extra for the bottom empty block) below the
         // current block.
         size_type blk2_size = blk_dest->size - dest_pos_in_block - len;
-        dest.m_blocks.insert(dest.m_blocks.begin()+dest_block_index+1, block_len+1, block());
+        dest.m_blocks.insert(dest.m_blocks.begin() + dest_block_index + 1, block_len + 1, block());
         blk_dest = &dest.m_blocks[dest_block_index];
-        assert(dest.m_blocks.size() > dest_block_index+block_len+1);
+        assert(dest.m_blocks.size() > dest_block_index + block_len + 1);
         blk_dest->size = dest_pos_in_block;
 
         // Re-calculate the size and position of the lower part of the destination block.
-        block& blk_dest_lower = dest.m_blocks[dest_block_index+block_len+1];
+        block& blk_dest_lower = dest.m_blocks[dest_block_index + block_len + 1];
         blk_dest_lower.position = detail::calc_next_block_position(*blk_dest) + len;
         blk_dest_lower.size = blk2_size;
 
@@ -2100,7 +2097,8 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
         assert(dest.m_blocks[dest_block_index1].size == 0);
         dest.m_blocks[dest_block_index1].size = blk->size - offset;
         if (dest_block_index1 > 0)
-            dest.m_blocks[dest_block_index1].position = detail::calc_next_block_position(dest.m_blocks, dest_block_index1-1);
+            dest.m_blocks[dest_block_index1].position =
+                detail::calc_next_block_position(dest.m_blocks, dest_block_index1 - 1);
 
         if (blk->data)
         {
@@ -2112,7 +2110,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
 
             // Shallow-copy the elements to the destination block, and shrink
             // the source block to remove the transferred elements.
-            element_block_func::assign_values_from_block(*blk_dest->data, *blk->data, offset, blk->size-offset);
+            element_block_func::assign_values_from_block(*blk_dest->data, *blk->data, offset, blk->size - offset);
             element_block_func::resize_block(*blk->data, offset);
         }
 
@@ -2125,7 +2123,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
         block& blk = m_blocks[block_index1];
         dest.m_blocks[dest_block_index1] = blk; // copied.
         dest.m_blocks[dest_block_index1].position =
-            dest_block_index1 > 0 ? detail::calc_next_block_position(dest.m_blocks, dest_block_index1-1) : 0;
+            dest_block_index1 > 0 ? detail::calc_next_block_position(dest.m_blocks, dest_block_index1 - 1) : 0;
 
         if (blk.data)
         {
@@ -2173,7 +2171,8 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
         {
             // Transfer the upper part of this block.
             assert(dest_block_pos > 0);
-            dest.m_blocks[dest_block_pos].position = detail::calc_next_block_position(dest.m_blocks, dest_block_pos-1);
+            dest.m_blocks[dest_block_pos].position =
+                detail::calc_next_block_position(dest.m_blocks, dest_block_pos - 1);
             dest.m_blocks[dest_block_pos].size = size_to_trans;
             blk_dest = &dest.m_blocks[dest_block_pos];
             if (blk.data)
@@ -2195,7 +2194,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
             // Just move the whole block over.
             dest.m_blocks[dest_block_pos] = blk;
             dest.m_blocks[dest_block_pos].position =
-                dest_block_pos > 0 ? detail::calc_next_block_position(dest.m_blocks, dest_block_pos-1) : 0;
+                dest_block_pos > 0 ? detail::calc_next_block_position(dest.m_blocks, dest_block_pos - 1) : 0;
 
             if (blk.data)
             {
@@ -2210,7 +2209,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
     // Now that all the elements have been transferred, check the bordering
     // blocks in the destination and merge them as needed.
     if (block_len > 1)
-        dest.merge_with_adjacent_blocks(dest_block_index1+block_len-1);
+        dest.merge_with_adjacent_blocks(dest_block_index1 + block_len - 1);
     dest.merge_with_adjacent_blocks(dest_block_index1);
 
     // Delete all transferred blocks, and replace it with one empty block.
@@ -2245,16 +2244,16 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
         // between them. After the insertion, the old block2 position becomes
         // the position of the inserted block.
         size_type position = detail::calc_next_block_position(blk1);
-        m_blocks.emplace(m_blocks.begin()+block_index2, position, len);
+        m_blocks.emplace(m_blocks.begin() + block_index2, position, len);
         // No need to adjust local index vars
         return get_iterator(block_index2);
     }
 
-    if (del_index1 > 0 && !m_blocks[del_index1-1].data)
+    if (del_index1 > 0 && !m_blocks[del_index1 - 1].data)
     {
         // The block before the first block to be deleted is empty.  Simply
         // extend that block to cover the deleted block segment.
-        block& blk_prev = m_blocks[del_index1-1];
+        block& blk_prev = m_blocks[del_index1 - 1];
 
         // Extend the previous block.
         blk_prev.size += len;
@@ -2274,7 +2273,7 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
         typename blocks_type::iterator it_blk = m_blocks.begin();
         typename blocks_type::iterator it_blk_end = m_blocks.begin();
         std::advance(it_blk, del_index1);
-        std::advance(it_blk_end, del_index2+1);
+        std::advance(it_blk_end, del_index2 + 1);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
         typename blocks_type::iterator it_test = it_blk;
@@ -2296,14 +2295,13 @@ multi_type_vector<ElemBlockFunc, Trait>::transfer_multi_blocks(
     assert(!start_pos_offset);
 
     m_blocks[ret_block_index].position =
-        ret_block_index > 0 ? detail::calc_next_block_position(m_blocks, ret_block_index-1) : 0;
+        ret_block_index > 0 ? detail::calc_next_block_position(m_blocks, ret_block_index - 1) : 0;
 
     return get_iterator(ret_block_index);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_empty_impl(
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set_empty_impl(
     size_type start_pos, size_type end_pos, size_type block_index1, bool overwrite)
 {
     if (start_pos > end_pos)
@@ -2323,8 +2321,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_impl(
     if (block_index1 == block_index2)
         ret_it = set_empty_in_single_block(start_pos, end_pos, block_index1, overwrite);
     else
-        ret_it = set_empty_in_multi_blocks(
-            start_pos, end_pos, block_index1, block_index2, overwrite);
+        ret_it = set_empty_in_multi_blocks(start_pos, end_pos, block_index1, block_index2, overwrite);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     try
@@ -2335,7 +2332,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_impl(
     {
         std::ostringstream os;
         os << e.what() << std::endl;
-        os << "block integrity check failed in set_empty(start_pos=" << start_pos << "; end_pos=" << end_pos << ")" << std::endl;
+        os << "block integrity check failed in set_empty(start_pos=" << start_pos << "; end_pos=" << end_pos << ")"
+           << std::endl;
         os << "previous block state:" << std::endl;
         os << os_prev_block.str();
         std::cerr << os.str() << std::endl;
@@ -2347,8 +2345,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_impl(
 
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::swap_impl(
-    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-    size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2)
+    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos, size_type block_index1,
+    size_type block_index2, size_type dblock_index1, size_type dblock_index2)
 {
     if (block_index1 == block_index2)
     {
@@ -2356,15 +2354,13 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_impl(
         if (dblock_index1 == dblock_index2)
         {
             // Destination range is also in a single block.
-            swap_single_block(
-                other, start_pos, end_pos, other_pos, block_index1, dblock_index1);
+            swap_single_block(other, start_pos, end_pos, other_pos, block_index1, dblock_index1);
         }
         else
         {
             // Source is single-, and destination is multi-blocks.
             swap_single_to_multi_blocks(
-                other, start_pos, end_pos, other_pos, block_index1,
-                dblock_index1, dblock_index2);
+                other, start_pos, end_pos, other_pos, block_index1, dblock_index1, dblock_index2);
         }
     }
     else if (dblock_index1 == dblock_index2)
@@ -2372,22 +2368,20 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_impl(
         // Destination range is over a single block. Switch source and destination.
         size_type len = end_pos - start_pos + 1;
         other.swap_single_to_multi_blocks(
-            *this, other_pos, other_pos+len-1, start_pos, dblock_index1,
-            block_index1, block_index2);
+            *this, other_pos, other_pos + len - 1, start_pos, dblock_index1, block_index1, block_index2);
     }
     else
     {
         // Both source and destinations are multi-block.
         swap_multi_to_multi_blocks(
-            other, start_pos, end_pos, other_pos,
-            block_index1, block_index2, dblock_index1, dblock_index2);
+            other, start_pos, end_pos, other_pos, block_index1, block_index2, dblock_index1, dblock_index2);
     }
 }
 
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
-    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-    size_type block_index, size_type other_block_index)
+    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos, size_type block_index,
+    size_type other_block_index)
 {
     block* blk_src = &m_blocks[block_index];
     block* blk_dst = &other.m_blocks[other_block_index];
@@ -2447,8 +2441,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
             // the whole block needs to be replaced.
             std::unique_ptr<element_block_type, element_block_deleter> src_data(blk_src->data);
             m_hdl_event.element_block_released(blk_src->data);
-            blk_src->data = other.exchange_elements(
-                *src_data, src_offset, other_block_index, dst_offset, len);
+            blk_src->data = other.exchange_elements(*src_data, src_offset, other_block_index, dst_offset, len);
             m_hdl_event.element_block_acquired(blk_src->data);
 
             // Release elements in the source block to prevent double-deletion.
@@ -2478,7 +2471,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
         {
             // Insert a new block to store the new elements.
             size_type position = blk_src->position - len;
-            m_blocks.emplace(m_blocks.begin()+block_index, position, len);
+            m_blocks.emplace(m_blocks.begin() + block_index, position, len);
             block& blk = m_blocks[block_index];
             blk.data = dst_data.release();
             m_hdl_event.element_block_acquired(blk.data);
@@ -2510,8 +2503,8 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
         else
         {
             size_type position = detail::calc_next_block_position(*blk_src);
-            m_blocks.emplace(m_blocks.begin()+block_index+1, position, len);
-            block& blk = m_blocks[block_index+1];
+            m_blocks.emplace(m_blocks.begin() + block_index + 1, position, len);
+            block& blk = m_blocks[block_index + 1];
             blk.data = dst_data.release();
             m_hdl_event.element_block_acquired(blk.data);
         }
@@ -2527,8 +2520,8 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
 
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::swap_single_to_multi_blocks(
-    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-    size_type block_index, size_type dst_block_index1, size_type dst_block_index2)
+    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos, size_type block_index,
+    size_type dst_block_index1, size_type dst_block_index2)
 {
     block* blk_src = &m_blocks[block_index];
     size_type start_pos_in_block = blk_src->position;
@@ -2545,7 +2538,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_to_multi_blocks(
     {
         // The source block is empty. Use transfer.
         other.transfer_multi_blocks(
-            other_pos, other_pos+len-1, dst_block_index1, dst_block_index2, *this, start_pos);
+            other_pos, other_pos + len - 1, dst_block_index1, dst_block_index2, *this, start_pos);
         return;
     }
 
@@ -2577,7 +2570,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_to_multi_blocks(
             // have been transferred over to the destination block.
             element_block_func::resize_block(*blk_src->data, 0);
             delete_element_block(*blk_src);
-            m_blocks.erase(m_blocks.begin()+block_index);
+            m_blocks.erase(m_blocks.begin() + block_index);
         }
         else
         {
@@ -2588,9 +2581,9 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_to_multi_blocks(
         }
 
         insert_blocks_at(src_position, block_index, new_blocks);
-        merge_with_next_block(block_index+new_blocks.size()-1); // last block inserted.
+        merge_with_next_block(block_index + new_blocks.size() - 1); // last block inserted.
         if (block_index > 0)
-            merge_with_next_block(block_index-1); // block before the first block inserted.
+            merge_with_next_block(block_index - 1); // block before the first block inserted.
 
         return;
     }
@@ -2615,20 +2608,20 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_to_multi_blocks(
         // we will immediately remove.  The new blocks from the other
         // container will be inserted at the removed slot.
         set_new_block_to_middle(block_index, src_offset, len, false);
-        delete_element_block(m_blocks[block_index+1]);
-        m_blocks.erase(m_blocks.begin()+block_index+1);
+        delete_element_block(m_blocks[block_index + 1]);
+        m_blocks.erase(m_blocks.begin() + block_index + 1);
         position = detail::calc_next_block_position(m_blocks, block_index);
     }
 
-    insert_blocks_at(position, block_index+1, new_blocks);
-    merge_with_next_block(block_index+new_blocks.size()); // last block inserted.
+    insert_blocks_at(position, block_index + 1, new_blocks);
+    merge_with_next_block(block_index + new_blocks.size()); // last block inserted.
     merge_with_next_block(block_index); // block before the first block inserted.
 }
 
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::swap_multi_to_multi_blocks(
-    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos,
-    size_type block_index1, size_type block_index2, size_type dblock_index1, size_type dblock_index2)
+    multi_type_vector& other, size_type start_pos, size_type end_pos, size_type other_pos, size_type block_index1,
+    size_type block_index2, size_type dblock_index1, size_type dblock_index2)
 {
     assert(block_index1 < block_index2);
     assert(dblock_index1 < dblock_index2);
@@ -2648,39 +2641,38 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_multi_to_multi_blocks(
     prepare_blocks_to_transfer(src_bucket, block_index1, src_offset1, block_index2, src_offset2);
     other.prepare_blocks_to_transfer(dst_bucket, dblock_index1, dst_offset1, dblock_index2, dst_offset2);
 
-    size_type position = src_bucket.insert_index > 0 ? detail::calc_next_block_position(m_blocks, src_bucket.insert_index-1) : 0;
+    size_type position =
+        src_bucket.insert_index > 0 ? detail::calc_next_block_position(m_blocks, src_bucket.insert_index - 1) : 0;
     insert_blocks_at(position, src_bucket.insert_index, dst_bucket.blocks);
 
     // Merge the boundary blocks in the source.
-    merge_with_next_block(src_bucket.insert_index + dst_bucket.blocks.size()-1);
+    merge_with_next_block(src_bucket.insert_index + dst_bucket.blocks.size() - 1);
     if (src_bucket.insert_index > 0)
         merge_with_next_block(src_bucket.insert_index - 1);
 
-    position = dst_bucket.insert_index > 0 ? detail::calc_next_block_position(other.m_blocks, dst_bucket.insert_index-1) : 0;
+    position =
+        dst_bucket.insert_index > 0 ? detail::calc_next_block_position(other.m_blocks, dst_bucket.insert_index - 1) : 0;
     other.insert_blocks_at(position, dst_bucket.insert_index, src_bucket.blocks);
 
     // Merge the boundary blocks in the destination.
-    other.merge_with_next_block(dst_bucket.insert_index + src_bucket.blocks.size()-1);
+    other.merge_with_next_block(dst_bucket.insert_index + src_bucket.blocks.size() - 1);
     if (dst_bucket.insert_index > 0)
-        other.merge_with_next_block(dst_bucket.insert_index-1);
+        other.merge_with_next_block(dst_bucket.insert_index - 1);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::insert_blocks_at(
     size_type position, size_type insert_pos, blocks_type& new_blocks)
 {
-    std::for_each(new_blocks.begin(), new_blocks.end(),
-        [&](block& r)
-        {
-            r.position = position;
-            position += r.size;
+    std::for_each(new_blocks.begin(), new_blocks.end(), [&](block& r) {
+        r.position = position;
+        position += r.size;
 
-            if (r.data)
-                m_hdl_event.element_block_acquired(r.data);
-        }
-    );
+        if (r.data)
+            m_hdl_event.element_block_acquired(r.data);
+    });
 
-    m_blocks.insert(m_blocks.begin()+insert_pos, new_blocks.begin(), new_blocks.end());
+    m_blocks.insert(m_blocks.begin() + insert_pos, new_blocks.begin(), new_blocks.end());
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -2696,9 +2688,9 @@ void multi_type_vector<ElemBlockFunc, Trait>::prepare_blocks_to_transfer(
     typename blocks_type::iterator it_begin = m_blocks.begin();
     typename blocks_type::iterator it_end = m_blocks.begin();
 
-    std::advance(it_begin, block_index1+1);
+    std::advance(it_begin, block_index1 + 1);
     std::advance(it_end, block_index2);
-    bucket.insert_index = block_index1+1;
+    bucket.insert_index = block_index1 + 1;
 
     if (offset1 == 0)
     {
@@ -2725,7 +2717,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::prepare_blocks_to_transfer(
     }
 
     block* blk = &m_blocks[block_index2];
-    if (offset2 == blk->size-1)
+    if (offset2 == blk->size - 1)
     {
         // The whole last block needs to be swapped.
         ++it_end;
@@ -2752,14 +2744,11 @@ void multi_type_vector<ElemBlockFunc, Trait>::prepare_blocks_to_transfer(
     if (block_first.size)
         bucket.blocks.push_back(std::move(block_first));
 
-    std::for_each(it_begin, it_end,
-        [&](block& r)
-        {
-            if (r.data)
-                m_hdl_event.element_block_released(r.data);
-            bucket.blocks.push_back(r);
-        }
-    );
+    std::for_each(it_begin, it_end, [&](block& r) {
+        if (r.data)
+            m_hdl_event.element_block_released(r.data);
+        bucket.blocks.push_back(r);
+    });
 
     if (block_last.size)
         bucket.blocks.push_back(std::move(block_last));
@@ -2830,7 +2819,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_impl(size_type start_row, si
 
     // Initially, we set to erase all blocks between the first and the last.
     typename blocks_type::iterator it_erase_begin = m_blocks.begin() + block_pos1 + 1;
-    typename blocks_type::iterator it_erase_end   = m_blocks.begin() + block_pos2;
+    typename blocks_type::iterator it_erase_end = m_blocks.begin() + block_pos2;
 
     // First, inspect the first block.
     if (start_row_in_block1 == start_row)
@@ -2846,7 +2835,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_impl(size_type start_row, si
         if (blk->data)
         {
             // Shrink the data array.
-            element_block_func::overwrite_values(*blk->data, new_size, blk->size-new_size);
+            element_block_func::overwrite_values(*blk->data, new_size, blk->size - new_size);
             element_block_func::resize_block(*blk->data, new_size);
         }
         blk->size = new_size;
@@ -2918,13 +2907,13 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
     if (blk->size)
     {
         // Block still contains data.  Bail out.
-        adjust_block_positions_func{}(m_blocks, block_pos+1, -size_to_erase);
+        adjust_block_positions_func{}(m_blocks, block_pos + 1, -size_to_erase);
         return;
     }
 
     // Delete the current block since it's become empty.
     delete_element_block(*blk);
-    m_blocks.erase(m_blocks.begin()+block_pos);
+    m_blocks.erase(m_blocks.begin() + block_pos);
     // No need to update blk_index which is not used again.
 
     if (block_pos == 0)
@@ -2939,7 +2928,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
         return;
 
     // Check the previous and next blocks to see if they should be merged.
-    block* blk_prev = &m_blocks[block_pos-1];
+    block* blk_prev = &m_blocks[block_pos - 1];
     block* blk_next = &m_blocks[block_pos];
     if (blk_prev->data)
     {
@@ -2961,7 +2950,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
             // Resize to 0 to prevent deletion of cells in case of managed cells.
             element_block_func::resize_block(*blk_next->data, 0);
             delete_element_block(*blk_next);
-            m_blocks.erase(m_blocks.begin()+block_pos);
+            m_blocks.erase(m_blocks.begin() + block_pos);
         }
 
         adjust_block_positions_func{}(m_blocks, block_pos, -size_to_erase);
@@ -2980,14 +2969,14 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
         // previous block.
         blk_prev->size += blk_next->size;
         delete_element_block(*blk_next);
-        m_blocks.erase(m_blocks.begin()+block_pos);
+        m_blocks.erase(m_blocks.begin() + block_pos);
         adjust_block_positions_func{}(m_blocks, block_pos, -size_to_erase);
     }
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::insert_empty(size_type pos, size_type length)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::insert_empty(
+    size_type pos, size_type length)
 {
     if (!length)
         // Nothing to insert.
@@ -3026,8 +3015,8 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty(size_type pos, size_type l
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::insert_empty(const iterator& pos_hint, size_type pos, size_type length)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::insert_empty(
+    const iterator& pos_hint, size_type pos, size_type length)
 {
     if (!length)
         // Nothing to insert.
@@ -3066,8 +3055,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty(const iterator& pos_hint, 
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
     size_type pos, size_type block_index, size_type length)
 {
     assert(pos < m_cur_size);
@@ -3079,7 +3067,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
         // with it.
         blk->size += length;
         m_cur_size += length;
-        adjust_block_positions_func{}(m_blocks, block_index+1, length);
+        adjust_block_positions_func{}(m_blocks, block_index + 1, length);
         return get_iterator(block_index);
     }
 
@@ -3097,13 +3085,13 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
             blk_prev->size += length;
             m_cur_size += length;
             adjust_block_positions_func{}(m_blocks, block_index, length);
-            return get_iterator(block_index-1);
+            return get_iterator(block_index - 1);
         }
 
         // Insert a new empty block.
-        m_blocks.emplace(m_blocks.begin()+block_index, blk->position, length);
+        m_blocks.emplace(m_blocks.begin() + block_index, blk->position, length);
         m_cur_size += length;
-        adjust_block_positions_func{}(m_blocks, block_index+1, length);
+        adjust_block_positions_func{}(m_blocks, block_index + 1, length);
         return get_iterator(block_index);
     }
 
@@ -3116,15 +3104,14 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
     // Insert two new blocks below the current; one for the empty block being
     // inserted, and the other for the lower part of the current non-empty
     // block.
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, block());
+    m_blocks.insert(m_blocks.begin() + block_index + 1, 2u, block());
 
     blk = &m_blocks[block_index]; // The old pointer is invalid.
-    m_blocks[block_index+1].size = length;
-    m_blocks[block_index+2].size = size_blk_next;
+    m_blocks[block_index + 1].size = length;
+    m_blocks[block_index + 2].size = size_blk_next;
 
-    block* blk_next = &m_blocks[block_index+2];
-    blk_next->data =
-        element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->data), 0);
+    block* blk_next = &m_blocks[block_index + 2];
+    blk_next->data = element_block_func::create_new_block(mdds::mtv::get_block_type(*blk->data), 0);
     m_hdl_event.element_block_acquired(blk_next->data);
 
     // Check if the previous block is the bigger one
@@ -3156,17 +3143,16 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_empty_impl(
     }
 
     m_cur_size += length;
-    m_blocks[block_index+1].position = detail::calc_next_block_position(m_blocks, block_index);
-    m_blocks[block_index+2].position = detail::calc_next_block_position(m_blocks, block_index+1);
-    adjust_block_positions_func{}(m_blocks, block_index+3, length);
+    m_blocks[block_index + 1].position = detail::calc_next_block_position(m_blocks, block_index);
+    m_blocks[block_index + 2].position = detail::calc_next_block_position(m_blocks, block_index + 1);
+    adjust_block_positions_func{}(m_blocks, block_index + 3, length);
 
-    return get_iterator(block_index+1);
+    return get_iterator(block_index + 1);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_cells_impl(
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::set_cells_impl(
     size_type row, size_type end_row, size_type block_index1, const T& it_begin, const T& it_end)
 {
     size_type block_index2 = get_block_position(end_row, block_index1);
@@ -3180,14 +3166,12 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_impl(
         return set_cells_to_single_block(row, end_row, block_index1, it_begin, it_end);
     }
 
-    return set_cells_to_multi_blocks(
-        row, end_row, block_index1, block_index2, it_begin, it_end);
+    return set_cells_to_multi_blocks(row, end_row, block_index1, block_index2, it_begin, it_end);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
     size_type row, size_type block_index, const T& it_begin, const T& it_end)
 {
     size_type start_row = m_blocks[block_index].position;
@@ -3214,18 +3198,18 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
                 m_cur_size += length;
                 adjust_block_positions_func{}(m_blocks, block_index, length);
 
-                return get_iterator(block_index-1);
+                return get_iterator(block_index - 1);
             }
 
             // Just insert a new block before the current block.
             size_type position = m_blocks[block_index].position;
-            m_blocks.emplace(m_blocks.begin()+block_index, position, length);
+            m_blocks.emplace(m_blocks.begin() + block_index, position, length);
             blk = &m_blocks[block_index];
             blk->data = element_block_func::create_new_block(cat, 0);
             m_hdl_event.element_block_acquired(blk->data);
             mdds_mtv_assign_values(*blk->data, *it_begin, it_begin, it_end);
             m_cur_size += length;
-            adjust_block_positions_func{}(m_blocks, block_index+1, length);
+            adjust_block_positions_func{}(m_blocks, block_index + 1, length);
 
             return get_iterator(block_index);
         }
@@ -3233,7 +3217,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
         insert_cells_to_middle(row, block_index, it_begin, it_end);
         m_cur_size += length;
 
-        return get_iterator(block_index+1);
+        return get_iterator(block_index + 1);
     }
 
     assert(blk->data);
@@ -3242,10 +3226,10 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
     {
         // Simply insert the new data series into existing block.
         assert(it_begin != it_end);
-        mdds_mtv_insert_values(*blk->data, row-start_row, *it_begin, it_begin, it_end);
+        mdds_mtv_insert_values(*blk->data, row - start_row, *it_begin, it_begin, it_end);
         blk->size += length;
         m_cur_size += length;
-        adjust_block_positions_func{}(m_blocks, block_index+1, length);
+        adjust_block_positions_func{}(m_blocks, block_index + 1, length);
 
         return get_iterator(block_index);
     }
@@ -3263,18 +3247,18 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
             m_cur_size += length;
             adjust_block_positions_func{}(m_blocks, block_index, length);
 
-            return get_iterator(block_index-1);
+            return get_iterator(block_index - 1);
         }
 
         // Just insert a new block before the current block.
-        m_blocks.emplace(m_blocks.begin()+block_index, blk->position, length);
+        m_blocks.emplace(m_blocks.begin() + block_index, blk->position, length);
         blk = &m_blocks[block_index];
         blk->data = element_block_func::create_new_block(cat, 0);
         m_hdl_event.element_block_acquired(blk->data);
         mdds_mtv_assign_values(*blk->data, *it_begin, it_begin, it_end);
         blk->size = length;
         m_cur_size += length;
-        adjust_block_positions_func{}(m_blocks, block_index+1, length);
+        adjust_block_positions_func{}(m_blocks, block_index + 1, length);
 
         return get_iterator(block_index);
     }
@@ -3282,7 +3266,7 @@ multi_type_vector<ElemBlockFunc, Trait>::insert_cells_impl(
     insert_cells_to_middle(row, block_index, it_begin, it_end);
     m_cur_size += length;
 
-    return get_iterator(block_index+1);
+    return get_iterator(block_index + 1);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -3297,17 +3281,17 @@ void multi_type_vector<ElemBlockFunc, Trait>::insert_cells_to_middle(
     // Insert two new blocks after the specified block position.
     size_type n1 = row - start_row;
     size_type n2 = m_blocks[block_index].size - n1;
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, block());
+    m_blocks.insert(m_blocks.begin() + block_index + 1, 2u, block());
     block* blk = &m_blocks[block_index];
     blk->size = n1;
 
-    m_blocks[block_index+1].size = length;
-    m_blocks[block_index+1].position = detail::calc_next_block_position(*blk);
-    m_blocks[block_index+2].size = n2;
-    m_blocks[block_index+2].position = detail::calc_next_block_position(m_blocks[block_index+1]);
+    m_blocks[block_index + 1].size = length;
+    m_blocks[block_index + 1].position = detail::calc_next_block_position(*blk);
+    m_blocks[block_index + 2].size = n2;
+    m_blocks[block_index + 2].position = detail::calc_next_block_position(m_blocks[block_index + 1]);
 
     // block for data series.
-    block* blk2 = &m_blocks[block_index+1];
+    block* blk2 = &m_blocks[block_index + 1];
     blk2->data = element_block_func::create_new_block(cat, 0);
     m_hdl_event.element_block_acquired(blk2->data);
     mdds_mtv_assign_values(*blk2->data, *it_begin, it_begin, it_end);
@@ -3317,7 +3301,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::insert_cells_to_middle(
         element_category_type blk_cat = mdds::mtv::get_block_type(*blk->data);
 
         // block to hold data from the lower part of the existing block.
-        block* blk3 = &m_blocks[block_index+2];
+        block* blk3 = &m_blocks[block_index + 2];
         blk3->data = element_block_func::create_new_block(blk_cat, 0);
         m_hdl_event.element_block_acquired(blk3->data);
 
@@ -3327,28 +3311,27 @@ void multi_type_vector<ElemBlockFunc, Trait>::insert_cells_to_middle(
         element_block_func::resize_block(*blk->data, blk->size);
     }
 
-    adjust_block_positions_func{}(m_blocks, block_index+3, length);
+    adjust_block_positions_func{}(m_blocks, block_index + 3, length);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::block&
-multi_type_vector<ElemBlockFunc, Trait>::set_new_block_to_middle(
-    size_type block_index, size_type offset, size_type new_block_size, bool overwrite)
+typename multi_type_vector<ElemBlockFunc, Trait>::block& multi_type_vector<ElemBlockFunc, Trait>::
+    set_new_block_to_middle(size_type block_index, size_type offset, size_type new_block_size, bool overwrite)
 {
     assert(block_index < m_blocks.size());
 
     // First, insert two new blocks at position past the current block.
     size_type lower_block_size = m_blocks[block_index].size - offset - new_block_size;
-    m_blocks.insert(m_blocks.begin()+block_index+1, 2u, block());
-    m_blocks[block_index+1].size = new_block_size; // empty block.
-    m_blocks[block_index+2].size = lower_block_size;
+    m_blocks.insert(m_blocks.begin() + block_index + 1, 2u, block());
+    m_blocks[block_index + 1].size = new_block_size; // empty block.
+    m_blocks[block_index + 2].size = lower_block_size;
 
     block& blk = m_blocks[block_index];
 
     if (blk.data)
     {
         size_type lower_data_start = offset + new_block_size;
-        block& blk_lower = m_blocks[block_index+2];
+        block& blk_lower = m_blocks[block_index + 2];
         assert(blk_lower.size == lower_block_size);
         element_category_type cat = mtv::get_block_type(*blk.data);
         blk_lower.data = element_block_func::create_new_block(cat, 0);
@@ -3407,22 +3390,21 @@ multi_type_vector<ElemBlockFunc, Trait>::set_new_block_to_middle(
     }
 
     // Re-calculate the block positions.
-    m_blocks[block_index+1].position = detail::calc_next_block_position(m_blocks, block_index);
-    m_blocks[block_index+2].position = detail::calc_next_block_position(m_blocks, block_index+1);
+    m_blocks[block_index + 1].position = detail::calc_next_block_position(m_blocks, block_index);
+    m_blocks[block_index + 2].position = detail::calc_next_block_position(m_blocks, block_index + 1);
 
-    return m_blocks[block_index+1];
+    return m_blocks[block_index + 1];
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::block*
-multi_type_vector<ElemBlockFunc, Trait>::get_previous_block_of_type(
-    size_type block_index, element_category_type cat)
+typename multi_type_vector<ElemBlockFunc, Trait>::block* multi_type_vector<
+    ElemBlockFunc, Trait>::get_previous_block_of_type(size_type block_index, element_category_type cat)
 {
     if (block_index == 0)
         // No previous block.
         return nullptr;
 
-    block& blk = m_blocks[block_index-1];
+    block& blk = m_blocks[block_index - 1];
     if (blk.data)
         return (cat == mtv::get_block_type(*blk.data)) ? &blk : nullptr;
 
@@ -3430,15 +3412,14 @@ multi_type_vector<ElemBlockFunc, Trait>::get_previous_block_of_type(
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::block*
-multi_type_vector<ElemBlockFunc, Trait>::get_next_block_of_type(
-    size_type block_index, element_category_type cat)
+typename multi_type_vector<ElemBlockFunc, Trait>::block* multi_type_vector<
+    ElemBlockFunc, Trait>::get_next_block_of_type(size_type block_index, element_category_type cat)
 {
-    if (block_index == m_blocks.size()-1)
+    if (block_index == m_blocks.size() - 1)
         // No next block.
         return nullptr;
 
-    block* blk = &m_blocks[block_index+1];
+    block* blk = &m_blocks[block_index + 1];
     if (blk->data)
         return (cat == mtv::get_block_type(*blk->data)) ? blk : nullptr;
 
@@ -3446,10 +3427,10 @@ multi_type_vector<ElemBlockFunc, Trait>::get_next_block_of_type(
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type*
-multi_type_vector<ElemBlockFunc, Trait>::exchange_elements(
-    const element_block_type& src_data, size_type src_offset, size_type dst_index,
-    size_type dst_offset, size_type len)
+typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type_vector<ElemBlockFunc, Trait>::
+    exchange_elements(
+        const element_block_type& src_data, size_type src_offset, size_type dst_index, size_type dst_offset,
+        size_type len)
 {
     assert(dst_index < m_blocks.size());
     block* blk = &m_blocks[dst_index];
@@ -3503,7 +3484,7 @@ multi_type_vector<ElemBlockFunc, Trait>::exchange_elements(
                 element_block_func::prepend_values_from_block(*blk_next->data, src_data, src_offset, len);
                 blk_next->position -= len;
                 blk_next->size += len;
-                m_blocks.erase(m_blocks.begin()+dst_index);
+                m_blocks.erase(m_blocks.begin() + dst_index);
             }
             else
             {
@@ -3543,7 +3524,7 @@ multi_type_vector<ElemBlockFunc, Trait>::exchange_elements(
         else
         {
             // Insert a new block to house the new elements.
-            m_blocks.emplace(m_blocks.begin()+dst_index, position, len);
+            m_blocks.emplace(m_blocks.begin() + dst_index, position, len);
             blk = &m_blocks[dst_index];
             blk->data = element_block_func::create_new_block(cat_src, 0);
             m_hdl_event.element_block_acquired(blk->data);
@@ -3585,8 +3566,8 @@ multi_type_vector<ElemBlockFunc, Trait>::exchange_elements(
         {
             // Insert a new block to store the new elements.
             size_type position = blk->position + dst_offset;
-            m_blocks.emplace(m_blocks.begin()+dst_index+1, position, len);
-            blk = &m_blocks[dst_index+1];
+            m_blocks.emplace(m_blocks.begin() + dst_index + 1, position, len);
+            blk = &m_blocks[dst_index + 1];
             blk->data = element_block_func::create_new_block(cat_src, 0);
             assert(blk->data);
             m_hdl_event.element_block_acquired(blk->data);
@@ -3643,9 +3624,8 @@ bool multi_type_vector<ElemBlockFunc, Trait>::append_empty(size_type len)
 
 template<typename ElemBlockFunc, typename Trait>
 void multi_type_vector<ElemBlockFunc, Trait>::exchange_elements(
-    const element_block_type& src_data, size_type src_offset,
-    size_type dst_index1, size_type dst_offset1, size_type dst_index2, size_type dst_offset2,
-    size_type len, blocks_type& new_blocks)
+    const element_block_type& src_data, size_type src_offset, size_type dst_index1, size_type dst_offset1,
+    size_type dst_index2, size_type dst_offset2, size_type len, blocks_type& new_blocks)
 {
     assert(dst_index1 < dst_index2);
     assert(dst_offset1 < m_blocks[dst_index1].size);
@@ -3654,10 +3634,10 @@ void multi_type_vector<ElemBlockFunc, Trait>::exchange_elements(
     blocks_to_transfer bucket;
     prepare_blocks_to_transfer(bucket, dst_index1, dst_offset1, dst_index2, dst_offset2);
 
-    m_blocks.emplace(m_blocks.begin()+bucket.insert_index, 0, len);
+    m_blocks.emplace(m_blocks.begin() + bucket.insert_index, 0, len);
     block* blk = &m_blocks[bucket.insert_index];
     if (bucket.insert_index > 0)
-        blk->position = detail::calc_next_block_position(m_blocks, bucket.insert_index-1);
+        blk->position = detail::calc_next_block_position(m_blocks, bucket.insert_index - 1);
 
     blk->data = element_block_func::create_new_block(mtv::get_block_type(src_data), 0);
     m_hdl_event.element_block_acquired(blk->data);
@@ -3669,10 +3649,9 @@ void multi_type_vector<ElemBlockFunc, Trait>::exchange_elements(
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_single_block(
-    size_type start_row, size_type end_row, size_type block_index,
-    const T& it_begin, const T& it_end)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::
+    set_cells_to_single_block(
+        size_type start_row, size_type end_row, size_type block_index, const T& it_begin, const T& it_end)
 {
     assert(it_begin != it_end);
     assert(!m_blocks.empty());
@@ -3702,10 +3681,10 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_single_block(
         if (end_row == end_row_in_block)
         {
             // Check if we could append it to the previous block.
-            if (append_to_prev_block(block_index, cat, end_row-start_row+1, it_begin, it_end))
+            if (append_to_prev_block(block_index, cat, end_row - start_row + 1, it_begin, it_end))
             {
                 delete_element_block(*blk);
-                m_blocks.erase(m_blocks.begin()+block_index);
+                m_blocks.erase(m_blocks.begin() + block_index);
 
                 // Check if we need to merge it with the next block.
                 --block_index;
@@ -3760,14 +3739,14 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_single_block(
         {
             // The new values have been successfully appended to the previous block.
             blk->position += length;
-            return get_iterator(block_index-1);
+            return get_iterator(block_index - 1);
         }
 
         // Insert a new block before the current block, and populate it with
         // the new data.
         size_type position = blk->position;
         blk->position += length;
-        m_blocks.emplace(m_blocks.begin()+block_index, position, length);
+        m_blocks.emplace(m_blocks.begin() + block_index, position, length);
         blk = &m_blocks[block_index];
         blk->data = element_block_func::create_new_block(cat, 0);
         m_hdl_event.element_block_acquired(blk->data);
@@ -3800,49 +3779,49 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_single_block(
                 mdds_mtv_prepend_values(*blk_next->data, *it_begin, it_begin, it_end);
                 blk_next->size += new_size;
                 blk_next->position -= new_size;
-                return get_iterator(block_index+1);
+                return get_iterator(block_index + 1);
             }
 
             // Next block has a different data type. Do the normal insertion.
             size_type position = detail::calc_next_block_position(*blk);
-            m_blocks.emplace(m_blocks.begin()+block_index+1, position, new_size);
-            blk = &m_blocks[block_index+1];
+            m_blocks.emplace(m_blocks.begin() + block_index + 1, position, new_size);
+            blk = &m_blocks[block_index + 1];
             blk->data = element_block_func::create_new_block(cat, 0);
             m_hdl_event.element_block_acquired(blk->data);
             mdds_mtv_assign_values(*blk->data, *it_begin, it_begin, it_end);
-            return get_iterator(block_index+1);
+            return get_iterator(block_index + 1);
         }
 
         // Last block.
         assert(block_index == m_blocks.size() - 1);
 
-        m_blocks.emplace_back(m_cur_size-new_size, new_size);
+        m_blocks.emplace_back(m_cur_size - new_size, new_size);
         blk = &m_blocks.back();
         blk->data = element_block_func::create_new_block(cat, 0);
         m_hdl_event.element_block_acquired(blk->data);
         mdds_mtv_assign_values(*blk->data, *it_begin, it_begin, it_end);
-        return get_iterator(block_index+1);
+        return get_iterator(block_index + 1);
     }
 
     // new data array will be in the middle of the current block.
     assert(start_row_in_block < start_row && end_row < end_row_in_block);
 
-    block& blk_new = set_new_block_to_middle(
-        block_index, start_row-start_row_in_block, end_row-start_row+1, true);
+    block& blk_new =
+        set_new_block_to_middle(block_index, start_row - start_row_in_block, end_row - start_row + 1, true);
 
     blk_new.data = element_block_func::create_new_block(cat, 0);
     m_hdl_event.element_block_acquired(blk_new.data);
     mdds_mtv_assign_values(*blk_new.data, *it_begin, it_begin, it_end);
 
-    return get_iterator(block_index+1);
+    return get_iterator(block_index + 1);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks(
-    size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-    const T& it_begin, const T& it_end)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::
+    set_cells_to_multi_blocks(
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2, const T& it_begin,
+        const T& it_end)
 {
     assert(block_index1 < block_index2);
     assert(it_begin != it_end);
@@ -3858,16 +3837,15 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks(
     // Block 1 is empty.
     assert(!blk1->data);
 
-    return set_cells_to_multi_blocks_block1_non_equal(
-        start_row, end_row, block_index1, block_index2, it_begin, it_end);
+    return set_cells_to_multi_blocks_block1_non_equal(start_row, end_row, block_index1, block_index2, it_begin, it_end);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks_block1_non_equal(
-    size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-    const T& it_begin, const T& it_end)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::
+    set_cells_to_multi_blocks_block1_non_equal(
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2, const T& it_begin,
+        const T& it_end)
 {
     element_category_type cat = mdds_mtv_get_element_type(*it_begin);
     block* blk1 = &m_blocks[block_index1];
@@ -3894,7 +3872,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks_block1_non_eq
         // Check the type of the previous block (block 0) if exists.
         if (block_index1 > 0)
         {
-            block* blk0 = &m_blocks[block_index1-1];
+            block* blk0 = &m_blocks[block_index1 - 1];
             if (blk0->data && cat == mdds::mtv::get_block_type(*blk0->data))
             {
                 // Transfer the whole data from block 0 to data block.
@@ -3935,10 +3913,10 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks_block1_non_eq
         // Remove block 2.
         ++it_erase_end;
 
-        if (block_index2+1 < m_blocks.size())
+        if (block_index2 + 1 < m_blocks.size())
         {
             // There is at least one block after block 2.
-            block* blk3 = &m_blocks[block_index2+1];
+            block* blk3 = &m_blocks[block_index2 + 1];
             if (blk3->data && mdds::mtv::get_block_type(*blk3->data) == cat)
             {
                 // Merge the whole block 3 with the new data. Remove block 3
@@ -3963,8 +3941,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks_block1_non_eq
                 // copied portion of the block.
                 size_type copy_pos = end_row - start_row_in_block2 + 1;
                 size_type size_to_copy = end_row_in_block2 - end_row;
-                element_block_func::append_values_from_block(
-                    *data_blk.data, *blk2->data, copy_pos, size_to_copy);
+                element_block_func::append_values_from_block(*data_blk.data, *blk2->data, copy_pos, size_to_copy);
                 element_block_func::resize_block(*blk2->data, copy_pos);
                 data_blk.size += size_to_copy;
 
@@ -3994,17 +3971,17 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks_block1_non_eq
     m_blocks.erase(it_erase_begin, it_erase_end);
 
     // Insert the new data block.
-    m_blocks.insert(m_blocks.begin()+insert_pos, std::move(data_blk));
+    m_blocks.insert(m_blocks.begin() + insert_pos, std::move(data_blk));
 
     return get_iterator(insert_pos);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks_block1_non_empty(
-    size_type start_row, size_type end_row, size_type block_index1, size_type block_index2,
-    const T& it_begin, const T& it_end)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::
+    set_cells_to_multi_blocks_block1_non_empty(
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2, const T& it_begin,
+        const T& it_end)
 {
     size_type start_row_in_block1 = m_blocks[block_index1].position;
     size_type start_row_in_block2 = m_blocks[block_index2].position;
@@ -4028,7 +4005,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks_block1_non_em
         // Extend the first block to store the new data set.
 
         // Shrink it first to remove the old values, then append new values.
-        element_block_func::overwrite_values(*blk1->data, offset, blk1->size-offset);
+        element_block_func::overwrite_values(*blk1->data, offset, blk1->size - offset);
         element_block_func::resize_block(*blk1->data, offset);
         mdds_mtv_append_values(*blk1->data, *it_begin, it_begin, it_end);
         blk1->size = offset + length;
@@ -4081,17 +4058,16 @@ multi_type_vector<ElemBlockFunc, Trait>::set_cells_to_multi_blocks_block1_non_em
     // The first block type is different.
     assert(blk_cat1 != cat);
 
-    return set_cells_to_multi_blocks_block1_non_equal(
-        start_row, end_row, block_index1, block_index2, it_begin, it_end);
+    return set_cells_to_multi_blocks_block1_non_equal(start_row, end_row, block_index1, block_index2, it_begin, it_end);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::size_type
-multi_type_vector<ElemBlockFunc, Trait>::merge_with_adjacent_blocks(size_type block_index)
+typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<
+    ElemBlockFunc, Trait>::merge_with_adjacent_blocks(size_type block_index)
 {
     assert(!m_blocks.empty());
     assert(block_index < m_blocks.size());
-    block* blk_prev = block_index > 0 ? &m_blocks[block_index-1] : nullptr;
+    block* blk_prev = block_index > 0 ? &m_blocks[block_index - 1] : nullptr;
 
     if (!blk_prev)
     {
@@ -4102,7 +4078,7 @@ multi_type_vector<ElemBlockFunc, Trait>::merge_with_adjacent_blocks(size_type bl
 
     size_type size_prev = blk_prev->size; // size of previous block.
     block* blk = &m_blocks[block_index];
-    block* blk_next = block_index < (m_blocks.size()-1) ? &m_blocks[block_index+1] : nullptr;
+    block* blk_next = block_index < (m_blocks.size() - 1) ? &m_blocks[block_index + 1] : nullptr;
 
     // Check the previous block.
     if (blk_prev->data)
@@ -4139,7 +4115,7 @@ multi_type_vector<ElemBlockFunc, Trait>::merge_with_adjacent_blocks(size_type bl
         }
 
         // Merge only the previous and current blocks.
-        bool merged = merge_with_next_block(block_index-1);
+        bool merged = merge_with_next_block(block_index - 1);
         if (!merged)
             assert(!"Blocks were not merged!");
 
@@ -4173,7 +4149,7 @@ multi_type_vector<ElemBlockFunc, Trait>::merge_with_adjacent_blocks(size_type bl
     }
 
     // Next block is not empty, or does not exist. Merge the current block with the previous one.
-    bool merged = merge_with_next_block(block_index-1);
+    bool merged = merge_with_next_block(block_index - 1);
     if (!merged)
         assert(!"Blocks were not merged!");
 
@@ -4186,13 +4162,13 @@ bool multi_type_vector<ElemBlockFunc, Trait>::merge_with_next_block(size_type bl
     assert(!m_blocks.empty());
     assert(block_index < m_blocks.size());
 
-    if (block_index >= m_blocks.size()-1)
+    if (block_index >= m_blocks.size() - 1)
         // No more block below this one.
         return false;
 
     // Block exists below.
     block* blk = &m_blocks[block_index];
-    block* blk_next = &m_blocks[block_index+1];
+    block* blk_next = &m_blocks[block_index + 1];
     if (!blk->data)
     {
         // Empty block. Merge only if the next block is also empty.
@@ -4202,7 +4178,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::merge_with_next_block(size_type bl
 
         // Merge the two blocks.
         blk->size += blk_next->size;
-        m_blocks.erase(m_blocks.begin()+block_index+1);
+        m_blocks.erase(m_blocks.begin() + block_index + 1);
         return true;
     }
 
@@ -4218,15 +4194,14 @@ bool multi_type_vector<ElemBlockFunc, Trait>::merge_with_next_block(size_type bl
     element_block_func::resize_block(*blk_next->data, 0);
     blk->size += blk_next->size;
     delete_element_block(*blk_next);
-    m_blocks.erase(m_blocks.begin()+block_index+1);
+    m_blocks.erase(m_blocks.begin() + block_index + 1);
     return true;
 }
 
 template<typename ElemBlockFunc, typename Trait>
 template<typename T>
 bool multi_type_vector<ElemBlockFunc, Trait>::append_to_prev_block(
-    size_type block_index, element_category_type cat, size_type length,
-    const T& it_begin, const T& it_end)
+    size_type block_index, element_category_type cat, size_type length, const T& it_begin, const T& it_end)
 {
     block* blk_prev = get_previous_block_of_type(block_index, cat);
     if (!blk_prev)
@@ -4247,15 +4222,13 @@ void multi_type_vector<ElemBlockFunc, Trait>::clear()
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::size_type
-multi_type_vector<ElemBlockFunc, Trait>::size() const
+typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<ElemBlockFunc, Trait>::size() const
 {
     return m_cur_size;
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::size_type
-multi_type_vector<ElemBlockFunc, Trait>::block_size() const
+typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<ElemBlockFunc, Trait>::block_size() const
 {
     return m_blocks.size();
 }
@@ -4332,7 +4305,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::resize_impl(size_type new_size)
         size_type new_block_size = new_end_row - start_row_in_block + 1;
         if (blk->data)
         {
-            element_block_func::overwrite_values(*blk->data, new_end_row+1, end_row_in_block-new_end_row);
+            element_block_func::overwrite_values(*blk->data, new_end_row + 1, end_row_in_block - new_end_row);
             element_block_func::resize_block(*blk->data, new_block_size);
         }
         blk->size = new_block_size;
@@ -4354,7 +4327,8 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap(multi_type_vector& other)
 }
 
 template<typename ElemBlockFunc, typename Trait>
-void multi_type_vector<ElemBlockFunc, Trait>::swap(size_type start_pos, size_type end_pos, multi_type_vector& other, size_type other_pos)
+void multi_type_vector<ElemBlockFunc, Trait>::swap(
+    size_type start_pos, size_type end_pos, multi_type_vector& other, size_type other_pos)
 {
     if (start_pos > end_pos)
         throw std::out_of_range("multi_type_vector::swap: start position is larger than the end position!");
@@ -4386,8 +4360,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap(size_type start_pos, size_typ
     other.dump_blocks(os_prev_block_other);
 #endif
 
-    swap_impl(
-        other, start_pos, end_pos, other_pos, block_index1, block_index2, dest_block_index1, dest_block_index2);
+    swap_impl(other, start_pos, end_pos, other_pos, block_index1, block_index2, dest_block_index1, dest_block_index2);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_block, os_block_other;
@@ -4403,7 +4376,9 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap(size_type start_pos, size_typ
     {
         std::ostringstream os;
         os << e.what() << std::endl;
-        os << std::endl << "block integrity check failed in swap (start_pos=" << start_pos << "; end_pos=" << end_pos << "; other_pos=" << other_pos << ")" << std::endl;
+        os << std::endl
+           << "block integrity check failed in swap (start_pos=" << start_pos << "; end_pos=" << end_pos
+           << "; other_pos=" << other_pos << ")" << std::endl;
         os << std::endl << "previous block state (source):" << std::endl;
         os << os_prev_block.str();
         os << std::endl << "previous block state (destination):" << std::endl;
@@ -4432,7 +4407,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::shrink_to_fit()
 }
 
 template<typename ElemBlockFunc, typename Trait>
-bool multi_type_vector<ElemBlockFunc, Trait>::operator== (const multi_type_vector& other) const
+bool multi_type_vector<ElemBlockFunc, Trait>::operator==(const multi_type_vector& other) const
 {
     if (this == &other)
         // Comparing to self is always equal.
@@ -4485,13 +4460,14 @@ bool multi_type_vector<ElemBlockFunc, Trait>::operator== (const multi_type_vecto
 }
 
 template<typename ElemBlockFunc, typename Trait>
-bool multi_type_vector<ElemBlockFunc, Trait>::operator!= (const multi_type_vector& other) const
+bool multi_type_vector<ElemBlockFunc, Trait>::operator!=(const multi_type_vector& other) const
 {
-    return !operator== (other);
+    return !operator==(other);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator= (const multi_type_vector& other)
+multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator=(
+    const multi_type_vector& other)
 {
     multi_type_vector assigned(other);
     swap(assigned);
@@ -4499,7 +4475,7 @@ multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>
 }
 
 template<typename ElemBlockFunc, typename Trait>
-multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator= (multi_type_vector&& other)
+multi_type_vector<ElemBlockFunc, Trait>& multi_type_vector<ElemBlockFunc, Trait>::operator=(multi_type_vector&& other)
 {
     multi_type_vector assigned(std::move(other));
     swap(assigned);
@@ -4514,8 +4490,8 @@ mtv::element_t multi_type_vector<ElemBlockFunc, Trait>::get_element_type(const T
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_whole_block_empty(size_type block_index, bool overwrite)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
+    ElemBlockFunc, Trait>::set_whole_block_empty(size_type block_index, bool overwrite)
 {
     block* blk = &m_blocks[block_index];
     if (!overwrite)
@@ -4548,7 +4524,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_whole_block_empty(size_type block_i
             std::advance(it_end, 2);
             m_blocks.erase(it, it_end);
 
-            return get_iterator(block_index-1);
+            return get_iterator(block_index - 1);
         }
 
         // Only the preceding block is empty. Merge the current block with the previous.
@@ -4557,7 +4533,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_whole_block_empty(size_type block_i
         std::advance(it, block_index);
         m_blocks.erase(it);
 
-        return get_iterator(block_index-1);
+        return get_iterator(block_index - 1);
     }
     else if (blk_next)
     {
@@ -4566,7 +4542,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_whole_block_empty(size_type block_i
         // Only the next block is empty. Merge the next block with the current.
         blk->size += blk_next->size;
         typename blocks_type::iterator it = m_blocks.begin();
-        std::advance(it, block_index+1);
+        std::advance(it, block_index + 1);
         m_blocks.erase(it);
 
         return get_iterator(block_index);
@@ -4576,9 +4552,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_whole_block_empty(size_type block_i
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_empty_in_single_block(
-    size_type start_row, size_type end_row, size_type block_index, bool overwrite)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::
+    set_empty_in_single_block(size_type start_row, size_type end_row, size_type block_index, bool overwrite)
 {
     // Range is within a single block.
     block* blk = &m_blocks[block_index];
@@ -4611,13 +4586,13 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_in_single_block(
             // Extend the previous empty block.
             blk_prev->size += empty_block_size;
             blk->position += empty_block_size;
-            return get_iterator(block_index-1);
+            return get_iterator(block_index - 1);
         }
 
         // Insert a new empty block before the current one.
         size_type block_position = blk->position;
         blk->position += empty_block_size;
-        m_blocks.emplace(m_blocks.begin()+block_index, block_position, empty_block_size);
+        m_blocks.emplace(m_blocks.begin() + block_index, block_position, empty_block_size);
         return get_iterator(block_index);
     }
 
@@ -4644,24 +4619,23 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_in_single_block(
         else
         {
             // Insert a new empty block after the current one.
-            m_blocks.emplace(m_blocks.begin()+block_index+1, start_row, empty_block_size);
+            m_blocks.emplace(m_blocks.begin() + block_index + 1, start_row, empty_block_size);
         }
 
-        return get_iterator(block_index+1);
+        return get_iterator(block_index + 1);
     }
 
     // Empty the middle part of a block.
     assert(end_row_in_block - end_row > 0);
-    set_new_block_to_middle(block_index, start_row-start_row_in_block, empty_block_size, overwrite);
+    set_new_block_to_middle(block_index, start_row - start_row_in_block, empty_block_size, overwrite);
 
-    return get_iterator(block_index+1);
+    return get_iterator(block_index + 1);
 }
 
 template<typename ElemBlockFunc, typename Trait>
-typename multi_type_vector<ElemBlockFunc, Trait>::iterator
-multi_type_vector<ElemBlockFunc, Trait>::set_empty_in_multi_blocks(
-    size_type start_row, size_type end_row,
-    size_type block_index1, size_type block_index2, bool overwrite)
+typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::
+    set_empty_in_multi_blocks(
+        size_type start_row, size_type end_row, size_type block_index1, size_type block_index2, bool overwrite)
 {
     assert(block_index1 < block_index2);
     size_type start_row_in_block1 = m_blocks[block_index1].position;
@@ -4680,7 +4654,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_in_multi_blocks(
                 block* blk_prev = nullptr;
                 if (block_index1 > 0)
                 {
-                    blk_prev = &m_blocks[block_index1-1];
+                    blk_prev = &m_blocks[block_index1 - 1];
                     if (blk_prev->data)
                         // Not empty.  Ignore it.
                         blk_prev = nullptr;
@@ -4708,7 +4682,7 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_in_multi_blocks(
                 // Empty the lower part.
                 size_type new_size = start_row - start_row_in_block1;
                 if (overwrite)
-                    element_block_func::overwrite_values(*blk->data, new_size, blk->size-new_size);
+                    element_block_func::overwrite_values(*blk->data, new_size, blk->size - new_size);
 
                 element_block_func::resize_block(*blk->data, new_size);
                 blk->size = new_size;
@@ -4737,9 +4711,9 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_in_multi_blocks(
 
                 // Check if the following block (if exists) is also empty.
                 block* blk_next = nullptr;
-                if (block_index2+1 < m_blocks.size())
+                if (block_index2 + 1 < m_blocks.size())
                 {
-                    blk_next = &m_blocks[block_index2+1];
+                    blk_next = &m_blocks[block_index2 + 1];
                     if (blk_next->data)
                         // Not empty.  Ignore it.
                         blk_next = nullptr;
@@ -4796,8 +4770,8 @@ multi_type_vector<ElemBlockFunc, Trait>::set_empty_in_multi_blocks(
     if (blk->data)
     {
         // Insert a new empty block after the first block.
-        m_blocks.emplace(m_blocks.begin()+block_index1+1, start_row, empty_block_size);
-        return get_iterator(block_index1+1);
+        m_blocks.emplace(m_blocks.begin() + block_index1 + 1, start_row, empty_block_size);
+        return get_iterator(block_index1 + 1);
     }
 
     // Current block is already empty. Just extend its size.
@@ -4860,9 +4834,8 @@ void multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
         if (blk->position != cur_position)
         {
             std::ostringstream os;
-            os << "position of the current block is wrong! (expected="
-                << cur_position << "; actual=" << blk->position << ")"
-                << std::endl;
+            os << "position of the current block is wrong! (expected=" << cur_position << "; actual=" << blk->position
+               << ")" << std::endl;
 
             dump_blocks(os);
             throw mdds::integrity_error(os.str());
@@ -4874,8 +4847,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
             cat = mtv::get_block_type(*blk->data);
 
             if (element_block_func::size(*blk->data) != blk->size)
-                throw mdds::integrity_error(
-                    "block size cache and the actual element block size differ!");
+                throw mdds::integrity_error("block size cache and the actual element block size differ!");
         }
 
         if (cat_prev == cat)
@@ -4904,7 +4876,6 @@ void multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
 }
 #endif
 
-}}}
+}}} // namespace mdds::mtv::aos
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

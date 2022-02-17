@@ -39,6 +39,6 @@ namespace mdds {
 template<typename ElemBlockFunc, typename Trait = mtv::default_trait>
 using multi_type_vector = mtv::soa::multi_type_vector<ElemBlockFunc, Trait>;
 
-}
+} // namespace mdds
 
 #endif

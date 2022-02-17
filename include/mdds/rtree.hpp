@@ -97,7 +97,13 @@ struct integrity_check_properties
     bool error_on_min_node_size = true;
 };
 
-enum class node_type { unspecified, directory_leaf, directory_nonleaf, value };
+enum class node_type
+{
+    unspecified,
+    directory_leaf,
+    directory_nonleaf,
+    value
+};
 
 enum class export_tree_type
 {
@@ -143,7 +149,7 @@ enum class search_type
 template<typename _NodePtrT>
 struct ptr_to_string;
 
-}}
+}} // namespace detail::rtree
 
 template<typename _Key, typename _Value, typename _Trait = detail::rtree::default_rtree_trait>
 class rtree
@@ -165,8 +171,8 @@ public:
 
         std::string to_string() const;
 
-        bool operator== (const point_type& other) const;
-        bool operator!= (const point_type& other) const;
+        bool operator==(const point_type& other) const;
+        bool operator!=(const point_type& other) const;
     };
 
     struct extent_type
@@ -181,8 +187,8 @@ public:
 
         bool is_point() const;
 
-        bool operator== (const extent_type& other) const;
-        bool operator!= (const extent_type& other) const;
+        bool operator==(const extent_type& other) const;
+        bool operator!=(const extent_type& other) const;
 
         /**
          * Determine whether or not the specified point lies within this
@@ -236,7 +242,6 @@ public:
     };
 
 private:
-
     struct node;
     struct directory_node;
 
@@ -256,7 +261,7 @@ private:
         bool valid_pointer;
 
         node_store(const node_store&) = delete;
-        node_store& operator= (const node_store&) = delete;
+        node_store& operator=(const node_store&) = delete;
 
         node_store();
         node_store(node_store&& r);
@@ -270,7 +275,7 @@ private:
         static node_store create_value_node(const extent_type& extent, value_type&& v);
         static node_store create_value_node(const extent_type& extent, const value_type& v);
 
-        node_store& operator= (node_store&& other);
+        node_store& operator=(node_store&& other);
 
         /**
          * Re-calculate the extent based on its current children.
@@ -319,15 +324,13 @@ private:
         typename dir_store_type::iterator end;
         size_t size;
 
-        dir_store_segment() : size(0) {}
+        dir_store_segment() : size(0)
+        {}
 
         dir_store_segment(
-            typename dir_store_type::iterator _begin,
-            typename dir_store_type::iterator _end,
-            size_t _size) :
-            begin(std::move(_begin)),
-            end(std::move(_end)),
-            size(_size) {}
+            typename dir_store_type::iterator _begin, typename dir_store_type::iterator _end, size_t _size)
+            : begin(std::move(_begin)), end(std::move(_end)), size(_size)
+        {}
     };
 
     struct distribution
@@ -404,11 +407,11 @@ private:
     };
 
 public:
-
     template<typename _NS>
     class search_results_base
     {
         friend class rtree;
+
     protected:
         using node_store_type = _NS;
 
@@ -434,6 +437,7 @@ public:
     {
         using base_type = search_results_base<const node_store>;
         using base_type::m_store;
+
     public:
         const_iterator cbegin() const;
         const_iterator cend() const;
@@ -445,6 +449,7 @@ public:
     {
         using base_type = search_results_base<node_store>;
         using base_type::m_store;
+
     public:
         iterator begin();
         iterator end();
@@ -470,8 +475,8 @@ public:
         using difference_type = std::ptrdiff_t;
         using iterator_category = std::bidirectional_iterator_tag;
 
-        bool operator== (const self_iterator_type& other) const;
-        bool operator!= (const self_iterator_type& other) const;
+        bool operator==(const self_iterator_type& other) const;
+        bool operator!=(const self_iterator_type& other) const;
 
         self_iterator_type& operator++();
         self_iterator_type operator++(int);
@@ -483,23 +488,21 @@ public:
         size_t depth() const;
     };
 
-    class const_iterator : public iterator_base<
-        const_iterator,
-        typename const_search_results::store_type::const_iterator,
-        const rtree::value_type>
+    class const_iterator
+        : public iterator_base<
+              const_iterator, typename const_search_results::store_type::const_iterator, const rtree::value_type>
     {
         using base_type = iterator_base<
-            const_iterator,
-            typename const_search_results::store_type::const_iterator,
-            const rtree::value_type>;
+            const_iterator, typename const_search_results::store_type::const_iterator, const rtree::value_type>;
 
         using store_type = typename const_search_results::store_type;
-        using typename base_type::store_iterator_type;
         using base_type::m_pos;
+        using typename base_type::store_iterator_type;
 
         friend class rtree;
 
         const_iterator(store_iterator_type pos);
+
     public:
         using typename base_type::value_type;
 
@@ -514,23 +517,18 @@ public:
         }
     };
 
-    class iterator : public iterator_base<
-        iterator,
-        typename search_results::store_type::iterator,
-        rtree::value_type>
+    class iterator : public iterator_base<iterator, typename search_results::store_type::iterator, rtree::value_type>
     {
-        using base_type = iterator_base<
-            iterator,
-            typename search_results::store_type::iterator,
-            rtree::value_type>;
+        using base_type = iterator_base<iterator, typename search_results::store_type::iterator, rtree::value_type>;
 
         using store_type = typename const_search_results::store_type;
-        using typename base_type::store_iterator_type;
         using base_type::m_pos;
+        using typename base_type::store_iterator_type;
 
         friend class rtree;
 
         iterator(store_iterator_type pos);
+
     public:
         using typename base_type::value_type;
 
@@ -582,9 +580,9 @@ private:
 public:
     ~rtree();
 
-    rtree& operator= (const rtree& other);
+    rtree& operator=(const rtree& other);
 
-    rtree& operator= (rtree&& other);
+    rtree& operator=(rtree&& other);
 
     /**
      * Insert a new value associated with a bounding box.  The new value
@@ -762,7 +760,6 @@ public:
     std::string export_tree(export_tree_type mode) const;
 
 private:
-
     void insert_impl(const point_type& start, const point_type& end, value_type&& value);
     void insert_impl(const point_type& start, const point_type& end, const value_type& value);
 

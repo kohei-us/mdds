@@ -2,7 +2,7 @@
 /*************************************************************************
  *
  * Copyright (c) 2008-2017 Kohei Yoshida
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -11,10 +11,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -49,42 +49,36 @@ template<typename _Key, typename _Value>
 class flat_segment_tree
 {
 public:
-    typedef _Key    key_type;
-    typedef _Value  value_type;
-    typedef size_t  size_type;
+    typedef _Key key_type;
+    typedef _Value value_type;
+    typedef size_t size_type;
 
     struct nonleaf_value_type
     {
-        key_type low;   /// low range value (inclusive)
-        key_type high;  /// high range value (non-inclusive)
+        key_type low; /// low range value (inclusive)
+        key_type high; /// high range value (non-inclusive)
 
-        bool operator== (const nonleaf_value_type& r) const
+        bool operator==(const nonleaf_value_type& r) const
         {
             return low == r.low && high == r.high;
         }
-    
-        nonleaf_value_type()
-            : low(0)
-            , high(0)
-        {
-        }
+
+        nonleaf_value_type() : low(0), high(0)
+        {}
     };
 
     struct leaf_value_type
     {
-        key_type    key;
-        value_type  value;
-        
-        bool operator== (const leaf_value_type& r) const
+        key_type key;
+        value_type value;
+
+        bool operator==(const leaf_value_type& r) const
         {
             return key == r.key && value == r.value;
         }
 
-        leaf_value_type()
-            : key(0)
-            , value()
-        {
-        }
+        leaf_value_type() : key(0), value()
+        {}
     };
 
     // Handlers required by the node template class.
@@ -102,24 +96,26 @@ public:
 
     struct fill_nonleaf_value_handler
     {
-        void operator() (__st::nonleaf_node<flat_segment_tree>& _self, const __st::node_base* left_node, const __st::node_base* right_node)
+        void operator()(
+            __st::nonleaf_node<flat_segment_tree>& _self, const __st::node_base* left_node,
+            const __st::node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
             {
-                _self.value_nonleaf.low =
-                    left_node->is_leaf ?
-                        static_cast<const node*>(left_node)->value_leaf.key :
-                        static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
+                _self.value_nonleaf.low = left_node->is_leaf
+                                              ? static_cast<const node*>(left_node)->value_leaf.key
+                                              : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
             }
             else
             {
                 // Having a left node is prerequisite.
-                throw general_error("flat_segment_tree::fill_nonleaf_value_handler: Having a left node is prerequisite.");
+                throw general_error(
+                    "flat_segment_tree::fill_nonleaf_value_handler: Having a left node is prerequisite.");
             }
 
             if (right_node)
-            {    
+            {
                 if (right_node->is_leaf)
                 {
                     // When the child nodes are leaf nodes, the upper bound
@@ -138,10 +134,9 @@ public:
             }
             else
             {
-                _self.value_nonleaf.high =
-                    left_node->is_leaf ?
-                    static_cast<const node*>(left_node)->value_leaf.key :
-                    static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
+                _self.value_nonleaf.high = left_node->is_leaf
+                                               ? static_cast<const node*>(left_node)->value_leaf.key
+                                               : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
             }
         }
     };
@@ -149,14 +144,14 @@ public:
 #ifdef MDDS_UNIT_TEST
     struct to_string_handler
     {
-        std::string operator() (const node& _self) const
+        std::string operator()(const node& _self) const
         {
             std::ostringstream os;
             os << "(" << _self.value_leaf.key << ") ";
             return os.str();
         }
 
-        std::string operator() (const mdds::__st::nonleaf_node<flat_segment_tree>& _self) const
+        std::string operator()(const mdds::__st::nonleaf_node<flat_segment_tree>& _self) const
         {
             std::ostringstream os;
             os << "(" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ") ";
@@ -167,54 +162,60 @@ public:
 
     struct init_handler
     {
-        void operator() (node& /*_self*/) {}
-        void operator() (__st::nonleaf_node<flat_segment_tree>& /*_self*/) {}
+        void operator()(node& /*_self*/)
+        {}
+        void operator()(__st::nonleaf_node<flat_segment_tree>& /*_self*/)
+        {}
     };
 
     struct dispose_handler
     {
-        void operator() (node& /*_self*/) {}
-        void operator() (__st::nonleaf_node<flat_segment_tree>& /*_self*/) {}
+        void operator()(node& /*_self*/)
+        {}
+        void operator()(__st::nonleaf_node<flat_segment_tree>& /*_self*/)
+        {}
     };
 
 private:
-
     friend struct ::mdds::__fst::itr_forward_handler<flat_segment_tree>;
     friend struct ::mdds::__fst::itr_reverse_handler<flat_segment_tree>;
 
 public:
     class const_iterator : public ::mdds::__fst::const_iterator_base<
-        flat_segment_tree, ::mdds::__fst::itr_forward_handler<flat_segment_tree> > 
+                               flat_segment_tree, ::mdds::__fst::itr_forward_handler<flat_segment_tree>>
     {
         typedef ::mdds::__fst::const_iterator_base<
-            flat_segment_tree, ::mdds::__fst::itr_forward_handler<flat_segment_tree> > 
-                base_type;
+            flat_segment_tree, ::mdds::__fst::itr_forward_handler<flat_segment_tree>>
+            base_type;
         friend class flat_segment_tree;
+
     public:
-        const_iterator() :
-            base_type(nullptr, false) {}
+        const_iterator() : base_type(nullptr, false)
+        {}
 
     private:
-        explicit const_iterator(const typename base_type::fst_type* _db, bool _end) :
-            base_type(_db, _end) {}
+        explicit const_iterator(const typename base_type::fst_type* _db, bool _end) : base_type(_db, _end)
+        {}
 
-        explicit const_iterator(const typename base_type::fst_type* _db, const node* p) :
-            base_type(_db, p) {}
+        explicit const_iterator(const typename base_type::fst_type* _db, const node* p) : base_type(_db, p)
+        {}
     };
 
     class const_reverse_iterator : public ::mdds::__fst::const_iterator_base<
-        flat_segment_tree, ::mdds::__fst::itr_reverse_handler<flat_segment_tree> > 
+                                       flat_segment_tree, ::mdds::__fst::itr_reverse_handler<flat_segment_tree>>
     {
         typedef ::mdds::__fst::const_iterator_base<
-            flat_segment_tree, ::mdds::__fst::itr_reverse_handler<flat_segment_tree> > 
-                base_type;
+            flat_segment_tree, ::mdds::__fst::itr_reverse_handler<flat_segment_tree>>
+            base_type;
         friend class flat_segment_tree;
+
     public:
-        const_reverse_iterator() :
-            base_type(nullptr, false) {}
+        const_reverse_iterator() : base_type(nullptr, false)
+        {}
+
     private:
-        explicit const_reverse_iterator(const typename base_type::fst_type* _db, bool _end) : 
-            base_type(_db, _end) {}
+        explicit const_reverse_iterator(const typename base_type::fst_type* _db, bool _end) : base_type(_db, _end)
+        {}
     };
 
     using const_segment_iterator = mdds::__fst::const_segment_iterator<flat_segment_tree>;
@@ -309,18 +310,17 @@ public:
      */
     flat_segment_tree(key_type min_val, key_type max_val, value_type init_val);
 
-    /** 
-     * Copy constructor only copies the leaf nodes.  
+    /**
+     * Copy constructor only copies the leaf nodes.
      */
     flat_segment_tree(const flat_segment_tree<key_type, value_type>& r);
 
     ~flat_segment_tree();
 
     /**
-      * Assignment only copies the leaf nodes.
-      */
-    flat_segment_tree<key_type, value_type>&
-    operator=(const flat_segment_tree<key_type, value_type>& other);
+     * Assignment only copies the leaf nodes.
+     */
+    flat_segment_tree<key_type, value_type>& operator=(const flat_segment_tree<key_type, value_type>& other);
 
     /**
      * Swap the content of the tree with another instance.
@@ -336,43 +336,41 @@ public:
      */
     void clear();
 
-    /** 
-     * Insert a new segment into the tree.  It searches for the point of 
-     * insertion from the first leaf node. 
+    /**
+     * Insert a new segment into the tree.  It searches for the point of
+     * insertion from the first leaf node.
      *
-     * @param start_key start value of the segment being inserted.  The value 
+     * @param start_key start value of the segment being inserted.  The value
      *              is inclusive.
-     * @param end_key end value of the segment being inserted.  The value is 
+     * @param end_key end value of the segment being inserted.  The value is
      *            not inclusive.
-     * @param val value associated with this segment. 
-     *  
-     * @return pair of const_iterator corresponding to the start position of 
+     * @param val value associated with this segment.
+     *
+     * @return pair of const_iterator corresponding to the start position of
      *         the inserted segment, and a boolean value indicating whether or
      *         not the insertion has modified the tree.
      */
-    std::pair<const_iterator, bool>
-    insert_front(key_type start_key, key_type end_key, value_type val)
+    std::pair<const_iterator, bool> insert_front(key_type start_key, key_type end_key, value_type val)
     {
         return insert_segment_impl(start_key, end_key, val, true);
     }
 
-    /** 
+    /**
      * Insert a new segment into the tree.  Unlike the insert_front()
      * counterpart, this method searches for the point of insertion from the
      * last leaf node toward the first.
-     *  
-     * @param start_key start value of the segment being inserted.  The value 
+     *
+     * @param start_key start value of the segment being inserted.  The value
      *              is inclusive.
-     * @param end_key end value of the segment being inserted.  The value is 
+     * @param end_key end value of the segment being inserted.  The value is
      *            not inclusive.
-     * @param val value associated with this segment. 
-     *  
-     * @return pair of const_iterator corresponding to the start position of 
+     * @param val value associated with this segment.
+     *
+     * @return pair of const_iterator corresponding to the start position of
      *         the inserted segment, and a boolean value indicating whether or
      *         not the insertion has modified the tree.
      */
-    std::pair<const_iterator, bool>
-    insert_back(key_type start_key, key_type end_key, value_type val)
+    std::pair<const_iterator, bool> insert_back(key_type start_key, key_type end_key, value_type val)
     {
         return insert_segment_impl(start_key, end_key, val, false);
     }
@@ -380,39 +378,39 @@ public:
     /**
      * Insert a new segment into the tree at or after specified point of
      * insertion.
-     * 
+     *
      * @param pos specified insertion point
-     * @param start_key start value of the segment being inserted.  The value 
+     * @param start_key start value of the segment being inserted.  The value
      *              is inclusive.
-     * @param end_key end value of the segment being inserted.  The value is 
+     * @param end_key end value of the segment being inserted.  The value is
      *            not inclusive.
-     * @param val value associated with this segment. 
-     *  
-     * @return pair of const_iterator corresponding to the start position of 
+     * @param val value associated with this segment.
+     *
+     * @return pair of const_iterator corresponding to the start position of
      *         the inserted segment, and a boolean value indicating whether or
      *         not the insertion has modified the tree.
      */
-    std::pair<const_iterator, bool>
-    insert(const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
+    std::pair<const_iterator, bool> insert(
+        const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
 
-    /** 
-     * Remove a segment specified by the start and end key values, and shift 
+    /**
+     * Remove a segment specified by the start and end key values, and shift
      * the remaining segments (i.e. those segments that come after the removed
-     * segment) to left.  Note that the start and end positions of the segment 
+     * segment) to left.  Note that the start and end positions of the segment
      * being removed <b>must</b> be within the base segment span.
      *
      * @param start_key start position of the segment being removed.
-     * @param end_key end position of the segment being removed. 
+     * @param end_key end position of the segment being removed.
      */
     void shift_left(key_type start_key, key_type end_key);
 
-    /** 
-     * Shift all segments that occur at or after the specified start position 
+    /**
+     * Shift all segments that occur at or after the specified start position
      * to right by the size specified.
      *
      * @param pos position where the right-shift occurs.
-     * @param size amount of shift (must be greater than 0) 
-     * @param skip_start_node if true, and the specified position is at an 
+     * @param size amount of shift (must be greater than 0)
+     * @param skip_start_node if true, and the specified position is at an
      *                        existing node position, that node will
      *                        <i>not</i> be shifted.  This argument has no
      *                        effect if the position specified does not
@@ -422,7 +420,7 @@ public:
 
     /**
      * Perform leaf-node search for a value associated with a key.
-     * 
+     *
      * @param key key value
      * @param value value associated with key specified gets stored upon
      *              successful search.
@@ -435,15 +433,15 @@ public:
      * @return a pair of const_iterator corresponding to the start position of
      *         the segment containing the key, and a boolean value indicating
      *         whether or not the search has been successful.
-     * 
+     *
      */
-    std::pair<const_iterator, bool>
-    search(key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
+    std::pair<const_iterator, bool> search(
+        key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
 
     /**
      * Perform leaf-node search for a value associated with a key.
-     *  
-     * @param pos position from which the search should start.  When the 
+     *
+     * @param pos position from which the search should start.  When the
      *            position is invalid, it falls back to the normal search.
      * @param key key value
      * @param value value associated with key specified gets stored upon
@@ -458,15 +456,16 @@ public:
      *         the segment containing the key, and a boolean value indicating
      *         whether or not the search has been successful.
      */
-    std::pair<const_iterator, bool>
-    search(const const_iterator& pos, key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
+    std::pair<const_iterator, bool> search(
+        const const_iterator& pos, key_type key, value_type& value, key_type* start_key = nullptr,
+        key_type* end_key = nullptr) const;
 
     /**
-     * Perform tree search for a value associated with a key.  This method 
+     * Perform tree search for a value associated with a key.  This method
      * assumes that the tree is valid.  Call is_tree_valid() to find out
      * whether the tree is valid, and build_tree() to build a new tree in case
      * it's not.
-     * 
+     *
      * @param key key value
      * @param value value associated with key specified gets stored upon
      *              successful search.
@@ -480,8 +479,8 @@ public:
      *         the segment containing the key, and a boolean value indicating
      *         whether or not the search has been successful.
      */
-    std::pair<const_iterator, bool>
-    search_tree(key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
+    std::pair<const_iterator, bool> search_tree(
+        key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
 
     /**
      * Build a tree of non-leaf nodes based on the values stored in the leaf
@@ -499,14 +498,14 @@ public:
         return m_valid_tree;
     }
 
-    /** 
-     * Equality between two flat_segment_tree instances is evaluated by 
-     * comparing the keys and the values of the leaf nodes only.  Neither the 
-     * non-leaf nodes nor the validity of the tree is evaluated. 
+    /**
+     * Equality between two flat_segment_tree instances is evaluated by
+     * comparing the keys and the values of the leaf nodes only.  Neither the
+     * non-leaf nodes nor the validity of the tree is evaluated.
      */
     bool operator==(const flat_segment_tree<key_type, value_type>& r) const;
 
-    bool operator !=(const flat_segment_tree<key_type, value_type>& r) const
+    bool operator!=(const flat_segment_tree<key_type, value_type>& r) const
     {
         return !operator==(r);
     }
@@ -551,8 +550,8 @@ public:
         size_t node_instance_count = node::get_instance_count();
         size_t leaf_count = leaf_size();
 
-        cout << "tree node count = " << node_count << "; node instance count = "
-            << node_instance_count << "; leaf node count = " << leaf_count << endl;
+        cout << "tree node count = " << node_count << "; node instance count = " << node_instance_count
+             << "; leaf node count = " << leaf_count << endl;
 
         assert(leaf_count == node_instance_count);
     }
@@ -569,17 +568,16 @@ public:
         while (cur_node)
         {
             cout << "  node " << node_id++ << ": key = " << cur_node->value_leaf.key
-                << "; value = " << cur_node->value_leaf.value 
-                << endl;
+                 << "; value = " << cur_node->value_leaf.value << endl;
             cur_node = cur_node->next;
         }
         cout << endl << "  node instance count = " << node::get_instance_count() << endl;
     }
 
-    /** 
+    /**
      * Verify keys in the leaf nodes.
      *
-     * @param key_values vector containing key values in the left-to-right 
+     * @param key_values vector containing key values in the left-to-right
      *                   order, including the key value of the rightmost leaf
      *                   node.
      */
@@ -594,11 +592,11 @@ public:
                 if (!cur_node)
                     // Position past the right-mode node.  Invalid.
                     return false;
-    
+
                 if (cur_node->value_leaf.key != *itr)
                     // Key values differ.
                     return false;
-    
+
                 cur_node = cur_node->next.get();
             }
 
@@ -611,17 +609,18 @@ public:
         {
             // Start from the right-most node, and traverse left.
             node* cur_node = m_right_leaf.get();
-            typename ::std::vector<key_type>::const_reverse_iterator itr = key_values.rbegin(), itr_end = key_values.rend();
+            typename ::std::vector<key_type>::const_reverse_iterator itr = key_values.rbegin(),
+                                                                     itr_end = key_values.rend();
             for (; itr != itr_end; ++itr)
             {
                 if (!cur_node)
                     // Position past the left-mode node.  Invalid.
                     return false;
-    
+
                 if (cur_node->value_leaf.key != *itr)
                     // Key values differ.
                     return false;
-    
+
                 cur_node = cur_node->prev.get();
             }
 
@@ -630,14 +629,14 @@ public:
                 // left-most node, in which case the node value is nullptr.
                 return false;
         }
-        
+
         return true;
     }
 
-    /** 
+    /**
      * Verify values in the leaf nodes.
      *
-     * @param values vector containing values to verify against, in the 
+     * @param values vector containing values to verify against, in the
      *               left-to-right order, <i>not</i> including the value of
      *               the rightmost leaf node.
      */
@@ -659,7 +658,7 @@ public:
         }
 
         if (cur_node != end_node)
-            // At this point, we expect the current node to be at the end of 
+            // At this point, we expect the current node to be at the end of
             // range.
             return false;
 
@@ -679,18 +678,18 @@ private:
         }
 
 #ifdef MDDS_UNIT_TEST
-        // The start position must come after the position of the last node 
+        // The start position must come after the position of the last node
         // before the right-most node.
         assert(m_right_leaf->prev->value_leaf.key < start_key);
 #endif
 
         if (m_right_leaf->prev->value_leaf.value == m_init_val)
-            // The existing segment has the same value.  No need to insert a 
+            // The existing segment has the same value.  No need to insert a
             // new segment.
             return;
 
         node_ptr new_node(new node);
-        new_node->value_leaf.key   = start_key;
+        new_node->value_leaf.key = start_key;
         new_node->value_leaf.value = m_init_val;
         new_node->prev = m_right_leaf->prev;
         new_node->next = m_right_leaf;
@@ -699,14 +698,14 @@ private:
         m_valid_tree = false;
     }
 
-    ::std::pair<const_iterator, bool>
-        insert_segment_impl(key_type start_key, key_type end_key, value_type val, bool forward);
+    ::std::pair<const_iterator, bool> insert_segment_impl(
+        key_type start_key, key_type end_key, value_type val, bool forward);
 
-    ::std::pair<const_iterator, bool>
-        insert_to_pos(node_ptr& start_pos, key_type start_key, key_type end_key, value_type val);
+    ::std::pair<const_iterator, bool> insert_to_pos(
+        node_ptr& start_pos, key_type start_key, key_type end_key, value_type val);
 
-    ::std::pair<const_iterator, bool>
-        search_impl(const node* pos, key_type key, value_type& value, key_type* start_key, key_type* end_key) const;
+    ::std::pair<const_iterator, bool> search_impl(
+        const node* pos, key_type key, value_type& value, key_type* start_key, key_type* end_key) const;
 
     const node* get_insertion_pos_leaf_reverse(key_type key, const node* start_pos) const;
 
@@ -768,15 +767,14 @@ private:
     std::vector<nonleaf_node> m_nonleaf_node_pool;
 
     nonleaf_node* m_root_node;
-    node_ptr   m_left_leaf;
-    node_ptr   m_right_leaf;
+    node_ptr m_left_leaf;
+    node_ptr m_right_leaf;
     value_type m_init_val;
-    bool       m_valid_tree;
+    bool m_valid_tree;
 };
 
 template<typename _Key, typename _Value>
-void
-swap(flat_segment_tree<_Key, _Value>& left, flat_segment_tree<_Key, _Value>& right)
+void swap(flat_segment_tree<_Key, _Value>& left, flat_segment_tree<_Key, _Value>& right)
 {
     left.swap(right);
 }
