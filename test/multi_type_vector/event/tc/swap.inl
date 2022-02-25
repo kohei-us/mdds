@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2021 Kohei Yoshida
+ * Copyright (c) 2022 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,20 +26,40 @@
  *
  ************************************************************************/
 
-#pragma once
+struct event_handler : public mdds::mtv::empty_event_func
+{
+    std::string name;
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector/aos/main.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
+    event_handler() {}
+};
 
-#include <iostream>
-#include <vector>
+struct trait : public mdds::mtv::default_trait
+{
+    using event_func = event_handler;
+};
 
-template<typename BlkFunc, typename Trait>
-using mtv_template_type = mdds::mtv::aos::multi_type_vector<BlkFunc, Trait>;
+using mtv_type = mtv_template_type<mdds::mtv::element_block_func, trait>;
 
-void mtv_test_block_counter();
-void mtv_test_block_init();
-void mtv_test_swap();
+void mtv_test_swap()
+{
+    stack_printer __stack_printer__(__FUNCTION__);
+
+    mtv_type db1(10), db2(2);
+    db1.event_handler().name = "db1";
+    db2.event_handler().name = "db2";
+
+    assert(db1.size() == 10);
+    assert(db2.size() == 2);
+    assert(db1.event_handler().name == "db1");
+    assert(db2.event_handler().name == "db2");
+
+    // This should also swap the event handlers.
+    db1.swap(db2);
+
+    assert(db1.size() == 2);
+    assert(db2.size() == 10);
+    assert(db1.event_handler().name == "db2");
+    assert(db2.event_handler().name == "db1");
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

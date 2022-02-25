@@ -92,8 +92,10 @@ multi_type_vector_test_event_aos_SOURCES = \
 	test/multi_type_vector/event/aos/test_main.cpp \
 	test/multi_type_vector/event/aos/test_block_counter.cpp \
 	test/multi_type_vector/event/aos/test_block_init.cpp \
+	test/multi_type_vector/event/aos/test_swap.cpp \
 	test/multi_type_vector/event/tc/block_counter.inl \
 	test/multi_type_vector/event/tc/block_init.inl \
+	test/multi_type_vector/event/tc/swap.inl \
 	test/include/test_global.hpp \
 	test/test_global.cpp
 
@@ -107,6 +109,7 @@ multi_type_vector_test_event_soa_SOURCES = \
 	test/multi_type_vector/event/soa/test_main.cpp \
 	test/multi_type_vector/event/soa/test_block_counter.cpp \
 	test/multi_type_vector/event/soa/test_block_init.cpp \
+	test/multi_type_vector/event/aos/test_swap.cpp \
 	test/include/test_global.hpp \
 	test/test_global.cpp
 

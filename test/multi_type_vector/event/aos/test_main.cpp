@@ -34,6 +34,7 @@ int main()
     {
         mtv_test_block_counter();
         mtv_test_block_init();
+        mtv_test_swap();
     }
     catch (const std::exception& e)
     {

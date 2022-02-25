@@ -40,5 +40,6 @@ using mtv_template_type = mdds::mtv::soa::multi_type_vector<BlkFunc, Trait>;
 
 void mtv_test_block_counter();
 void mtv_test_block_init();
+void mtv_test_swap();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

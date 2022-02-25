@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2021 Kohei Yoshida
+ * Copyright (c) 2022 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,20 +26,9 @@
  *
  ************************************************************************/
 
-#pragma once
+#include "test_global.hpp" // This must be the first header to be included.
+#include "test_main.hpp"
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector/aos/main.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
-
-#include <iostream>
-#include <vector>
-
-template<typename BlkFunc, typename Trait>
-using mtv_template_type = mdds::mtv::aos::multi_type_vector<BlkFunc, Trait>;
-
-void mtv_test_block_counter();
-void mtv_test_block_init();
-void mtv_test_swap();
+#include "swap.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
