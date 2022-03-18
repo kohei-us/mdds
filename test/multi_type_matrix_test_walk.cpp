@@ -352,7 +352,7 @@ void mtm_test_parallel_walk()
             "A25:'+'", "' ':'+'", "' ':'+'", "' ':false", "' ':true",
         };
 
-        size_t n = MDDS_N_ELEMENTS(expected);
+        size_t n = std::size(expected);
         assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 
@@ -367,7 +367,7 @@ void mtm_test_parallel_walk()
             "' ':1.2", "' ':'+'", "A12:'+'", "A25:'+'", "' ':'+'", "' ':'+'", "' ':false",
         };
 
-        size_t n = MDDS_N_ELEMENTS(expected);
+        size_t n = std::size(expected);
         assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 
@@ -383,7 +383,7 @@ void mtm_test_parallel_walk()
             "A12:'+'",
         };
 
-        size_t n = MDDS_N_ELEMENTS(expected);
+        size_t n = std::size(expected);
         assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 }
@@ -422,7 +422,7 @@ void mtm_test_parallel_walk_non_equal_size()
             "50:D",
         };
 
-        size_t n = MDDS_N_ELEMENTS(expected);
+        size_t n = std::size(expected);
         assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 
@@ -445,7 +445,7 @@ void mtm_test_parallel_walk_non_equal_size()
             "50:-9.9",
         };
 
-        size_t n = MDDS_N_ELEMENTS(expected);
+        size_t n = std::size(expected);
         assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 }

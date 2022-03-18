@@ -173,7 +173,7 @@ int main()
 {
     static const size_t repeat_count = 10000000;
 
-    map_type sorted_map(entries, MDDS_N_ELEMENTS(entries), -1);
+    map_type sorted_map(entries, std::size(entries), -1);
     size_t n = sorted_map.size();
     cout << "entry count = " << n << endl;
 
@@ -186,7 +186,7 @@ int main()
         }
     }
 
-    trie_map_type trie_map(trie_entries, MDDS_N_ELEMENTS(trie_entries), -1);
+    trie_map_type trie_map(trie_entries, std::size(trie_entries), -1);
     n = trie_map.size();
     cout << "entry count = " << n << endl;
 

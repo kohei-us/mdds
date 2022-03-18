@@ -92,7 +92,7 @@ void trie_packed_test1()
         {MDDS_ASCII("b"), 7},
     };
 
-    size_t entry_size = MDDS_N_ELEMENTS(entries);
+    size_t entry_size = std::size(entries);
     packed_int_map_type db(entries, entry_size);
     assert(db.size() == 4);
     assert(verify_entries(db, entries, entry_size));
@@ -150,7 +150,7 @@ void trie_packed_test2()
         {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},  {MDDS_ASCII("e"), 10},      {MDDS_ASCII("eva"), 11},
     };
 
-    size_t entry_size = MDDS_N_ELEMENTS(entries);
+    size_t entry_size = std::size(entries);
     packed_int_map_type db(entries, entry_size);
     assert(db.size() == 12);
     assert(verify_entries(db, entries, entry_size));
@@ -173,7 +173,7 @@ void trie_packed_test3()
         {MDDS_ASCII("~"), 4},
     };
 
-    size_t entry_size = MDDS_N_ELEMENTS(entries);
+    size_t entry_size = std::size(entries);
     packed_int_map_type db(entries, entry_size);
     assert(db.size() == 4);
     assert(verify_entries(db, entries, entry_size));
@@ -203,7 +203,7 @@ void trie_packed_test4()
         {MDDS_ASCII("bruce"), name_bruce}, {MDDS_ASCII("charlie"), name_charlie}, {MDDS_ASCII("david"), name_david},
     };
 
-    size_t entry_size = MDDS_N_ELEMENTS(entries);
+    size_t entry_size = std::size(entries);
     packed_int_map_type db(entries, entry_size);
     assert(db.size() == 6);
     assert(verify_entries(db, entries, entry_size));
@@ -358,7 +358,7 @@ void trie_packed_test_custom_string()
         {key_ming, 4, "Ming"},
     };
 
-    size_t n_entries = MDDS_N_ELEMENTS(entries);
+    size_t n_entries = std::size(entries);
     packed_custom_str_map_type db(entries, n_entries);
     for (size_t i = 0; i < n_entries; ++i)
     {
@@ -581,7 +581,7 @@ void trie_packed_test_copying()
         }
     };
 
-    auto db = std::make_unique<map_type>(entries, MDDS_N_ELEMENTS(entries));
+    auto db = std::make_unique<map_type>(entries, std::size(entries));
     auto db_copied(*db);
     assert(*db == db_copied);
     assert(db->size() == db_copied.size());
@@ -597,7 +597,7 @@ void trie_packed_test_copying()
     auto db_moved(std::move(db_copied));
     assert(db_copied.empty());
     assert(!db_moved.empty());
-    assert(db_moved.size() == MDDS_N_ELEMENTS(entries));
+    assert(db_moved.size() == std::size(entries));
 
     it = db_copied.find("bison");
     assert(it == db_copied.end());
@@ -651,16 +651,16 @@ void trie_packed_test_non_equal()
         {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},  {MDDS_ASCII("e"), 10},
     };
 
-    map_type db1(entries1, MDDS_N_ELEMENTS(entries1));
-    map_type db2(entries2, MDDS_N_ELEMENTS(entries2));
-    map_type db3(entries3, MDDS_N_ELEMENTS(entries3));
+    map_type db1(entries1, std::size(entries1));
+    map_type db2(entries2, std::size(entries2));
+    map_type db3(entries3, std::size(entries3));
     assert(db1 != db2);
     assert(db1 != db3);
     assert(db2 != db3);
 
-    map_type db4(entries1, MDDS_N_ELEMENTS(entries1));
-    map_type db5(entries2, MDDS_N_ELEMENTS(entries2));
-    map_type db6(entries3, MDDS_N_ELEMENTS(entries3));
+    map_type db4(entries1, std::size(entries1));
+    map_type db5(entries2, std::size(entries2));
+    map_type db6(entries3, std::size(entries3));
 
     assert(db1 == db4);
     assert(db2 == db5);
@@ -926,7 +926,7 @@ void test2()
         {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},
     };
 
-    packed_int_map_type db(entries, MDDS_N_ELEMENTS(entries));
+    packed_int_map_type db(entries, std::size(entries));
 
     std::string saved_state;
 
