@@ -25,3 +25,11 @@ check:
     - build
   script:
     - make -j $(nproc) check
+
+build-runtime-env:
+  stage: build
+  dependencies:
+    - build
+  script:
+    - cd tools/runtime-env
+    - make runtime-env
