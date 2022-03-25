@@ -1,7 +1,12 @@
 image: gcc
 
-build:
-  stage: build
+stages:
+  - configure
+  - build
+  - test
+
+configure:
+  stage: configure
   before_script:
     - apt update
     - apt -y install gfortran-9
@@ -18,17 +23,17 @@ build:
     untracked: true
     expire_in: 1 hr
 
-check:
-  stage: test
-  dependencies:
-    - build
-  script:
-    - make -j $(nproc) check
-
 build-runtime-env:
   stage: build
   dependencies:
-    - build
+    - configure
   script:
     - cd tools/runtime-env
     - make runtime-env
+
+check:
+  stage: test
+  dependencies:
+    - configure
+  script:
+    - make -j $(nproc) check
