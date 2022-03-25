@@ -1,40 +1,20 @@
 image: gcc
 
-stages:
-  - configure
-  - build
-  - test
-
-before_script:
-  - apt update
-  - apt -y install gfortran-9
-  - update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-9 999
-  - apt -y install make autoconf automake libtool pkg-config git python3-dev
-  - apt -y install libboost-all-dev
-  - apt -y install valgrind
-  - ldconfig
-
-configure:
-  stage: configure
+build:
+  stage: build
+  before_script:
+    - apt update
+    - apt -y install gfortran-9
+    - update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-9 999
+    - apt -y install make autoconf automake libtool pkg-config git python3-dev
+    - apt -y install libboost-all-dev
+    - apt -y install valgrind
+    - ldconfig
   variables:
     CXXFLAGS: -Wunused-parameter
   script: 
     - ./autogen.sh --enable-memory-tests
-  artifacts:
-    untracked: true
-    expire_in: 1 hr
-
-build-runtime-env:
-  stage: build
-  dependencies:
-    - configure
-  script:
-    - cd tools/runtime-env
+    - pushd tools/runtime-env
     - make runtime-env
-
-check:
-  stage: test
-  dependencies:
-    - configure
-  script:
+    - popd
     - make -j $(nproc) check
