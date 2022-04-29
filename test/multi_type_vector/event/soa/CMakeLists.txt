@@ -5,6 +5,7 @@ add_executable(${TARGET_NAME} EXCLUDE_FROM_ALL
     test_block_counter.cpp
     test_block_init.cpp
     test_main.cpp
+    test_swap.cpp
 )
 
 target_link_libraries(${TARGET_NAME} PUBLIC test-global)
