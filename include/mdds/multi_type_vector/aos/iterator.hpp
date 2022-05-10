@@ -48,13 +48,14 @@ protected:
     typedef typename Trait::base_iterator base_iterator_type;
 
     typedef typename parent_type::size_type size_type;
-    typedef mdds::detail::mtv::iterator_value_node<size_type> node;
+    typedef mdds::detail::mtv::iterator_value_node<parent_type, size_type> node;
 
-    iterator_common_base() : m_cur_node(0)
+    iterator_common_base() : m_cur_node(nullptr, 0)
     {}
 
-    iterator_common_base(const base_iterator_type& pos, const base_iterator_type& end, size_type block_index)
-        : m_cur_node(block_index), m_pos(pos), m_end(end)
+    iterator_common_base(
+        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index)
+        : m_cur_node(parent, block_index), m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
@@ -153,11 +154,11 @@ public:
 template<typename Trait, typename NodeUpdateFunc>
 class iterator_base : public iterator_common_base<Trait>
 {
-    typedef Trait trait;
+    using parent_type = typename Trait::parent;
     typedef NodeUpdateFunc node_update_func;
-    typedef iterator_common_base<trait> common_base;
+    typedef iterator_common_base<Trait> common_base;
 
-    typedef typename trait::base_iterator base_iterator_type;
+    typedef typename Trait::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
     using common_base::dec;
@@ -178,8 +179,9 @@ public:
 public:
     iterator_base()
     {}
-    iterator_base(const base_iterator_type& pos, const base_iterator_type& end, size_type block_index)
-        : common_base(pos, end, block_index)
+    iterator_base(
+        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index)
+        : common_base(pos, end, parent, block_index)
     {}
 
     value_type& operator*()
@@ -220,11 +222,11 @@ public:
 template<typename Trait, typename NodeUpdateFunc, typename NonConstItrBase>
 class const_iterator_base : public iterator_common_base<Trait>
 {
-    typedef Trait trait;
+    using parent_type = typename Trait::parent;
     typedef NodeUpdateFunc node_update_func;
-    typedef iterator_common_base<trait> common_base;
+    typedef iterator_common_base<Trait> common_base;
 
-    typedef typename trait::base_iterator base_iterator_type;
+    typedef typename Trait::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
     using common_base::dec;
@@ -247,15 +249,18 @@ public:
 public:
     const_iterator_base() : common_base()
     {}
-    const_iterator_base(const base_iterator_type& pos, const base_iterator_type& end, size_type block_index)
-        : common_base(pos, end, block_index)
+    const_iterator_base(
+        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index)
+        : common_base(pos, end, parent, block_index)
     {}
 
     /**
      * Take the non-const iterator counterpart to create a const iterator.
      */
     const_iterator_base(const iterator_base& other)
-        : common_base(other.get_pos(), other.get_end(), other.get_node().__private_data.block_index)
+        : common_base(
+              other.get_pos(), other.get_end(), other.get_node().__private_data.parent,
+              other.get_node().__private_data.block_index)
     {}
 
     const value_type& operator*() const

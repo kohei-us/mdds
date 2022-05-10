@@ -187,7 +187,7 @@ private:
         using sizes_iterator_type = typename sizes_type::iterator;
         using element_blocks_iterator_type = typename element_blocks_type::iterator;
 
-        using private_data_update = mdds::detail::mtv::private_data_forward_update<size_type>;
+        using private_data_update = mdds::detail::mtv::private_data_forward_update<multi_type_vector, size_type>;
     };
 
     struct const_iterator_trait
@@ -201,7 +201,7 @@ private:
         using sizes_iterator_type = typename sizes_type::const_iterator;
         using element_blocks_iterator_type = typename element_blocks_type::const_iterator;
 
-        using private_data_update = mdds::detail::mtv::private_data_forward_update<size_type>;
+        using private_data_update = mdds::detail::mtv::private_data_forward_update<multi_type_vector, size_type>;
     };
 
     struct reverse_iterator_trait
@@ -215,7 +215,7 @@ private:
         using sizes_iterator_type = typename sizes_type::reverse_iterator;
         using element_blocks_iterator_type = typename element_blocks_type::reverse_iterator;
 
-        using private_data_update = mdds::detail::mtv::private_data_no_update<size_type>;
+        using private_data_update = mdds::detail::mtv::private_data_no_update<multi_type_vector, size_type>;
     };
 
     struct const_reverse_iterator_trait
@@ -229,7 +229,7 @@ private:
         using sizes_iterator_type = typename sizes_type::const_reverse_iterator;
         using element_blocks_iterator_type = typename element_blocks_type::const_reverse_iterator;
 
-        using private_data_update = mdds::detail::mtv::private_data_no_update<size_type>;
+        using private_data_update = mdds::detail::mtv::private_data_no_update<multi_type_vector, size_type>;
     };
 
     struct element_block_deleter
@@ -265,7 +265,7 @@ public:
      * <code>nullptr</code> in case the block represents an empty segment.</li>
      * </ul>
      */
-    using value_type = mdds::detail::mtv::iterator_value_node<size_type>;
+    using value_type = mdds::detail::mtv::iterator_value_node<multi_type_vector, size_type>;
 
     /**
      * Move the position object to the next logical position.  Caller must
@@ -1409,7 +1409,7 @@ private:
 
         return iterator(
             {iter_pos, iter_size, iter_elem},
-            {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()},
+            {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this,
             block_index);
     }
 
@@ -1424,7 +1424,7 @@ private:
 
         return const_iterator(
             {iter_pos, iter_size, iter_elem},
-            {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()},
+            {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, this,
             block_index);
     }
 

@@ -162,9 +162,9 @@ private:
         typedef typename blocks_type::const_reverse_iterator base_iterator;
     };
 
-    typedef mdds::detail::mtv::iterator_value_node<size_type> itr_node;
-    typedef mdds::detail::mtv::private_data_forward_update<size_type> itr_forward_update;
-    typedef mdds::detail::mtv::private_data_no_update<size_type> itr_no_update;
+    typedef mdds::detail::mtv::iterator_value_node<multi_type_vector, size_type> itr_node;
+    typedef mdds::detail::mtv::private_data_forward_update<multi_type_vector, size_type> itr_forward_update;
+    typedef mdds::detail::mtv::private_data_no_update<multi_type_vector, size_type> itr_no_update;
 
 public:
     typedef detail::iterator_base<iterator_trait, itr_forward_update> iterator;
@@ -1308,14 +1308,14 @@ private:
     {
         typename blocks_type::iterator block_pos = m_blocks.begin();
         std::advance(block_pos, block_index);
-        return iterator(block_pos, m_blocks.end(), block_index);
+        return iterator(block_pos, m_blocks.end(), this, block_index);
     }
 
     inline const_iterator get_const_iterator(size_type block_index) const
     {
         typename blocks_type::const_iterator block_pos = m_blocks.begin();
         std::advance(block_pos, block_index);
-        return const_iterator(block_pos, m_blocks.end(), block_index);
+        return const_iterator(block_pos, m_blocks.end(), this, block_index);
     }
 
 private:

@@ -178,13 +178,13 @@ typename Blk::value_type multi_type_vector<ElemBlockFunc, Trait>::get(const cons
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::begin()
 {
-    return iterator(m_blocks.begin(), m_blocks.end(), 0);
+    return iterator(m_blocks.begin(), m_blocks.end(), this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<ElemBlockFunc, Trait>::end()
 {
-    return iterator(m_blocks.end(), m_blocks.end(), m_blocks.size());
+    return iterator(m_blocks.end(), m_blocks.end(), this, m_blocks.size());
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -202,53 +202,53 @@ typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vect
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vector<ElemBlockFunc, Trait>::cbegin() const
 {
-    return const_iterator(m_blocks.cbegin(), m_blocks.cend(), 0);
+    return const_iterator(m_blocks.cbegin(), m_blocks.cend(), this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vector<ElemBlockFunc, Trait>::cend() const
 {
-    return const_iterator(m_blocks.end(), m_blocks.end(), m_blocks.size());
+    return const_iterator(m_blocks.end(), m_blocks.end(), this, m_blocks.size());
 }
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator multi_type_vector<ElemBlockFunc, Trait>::rbegin()
 {
-    return reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0);
+    return reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator multi_type_vector<ElemBlockFunc, Trait>::rend()
 {
-    return reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0);
+    return reverse_iterator(m_blocks.rend(), m_blocks.rend(), this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_type_vector<
     ElemBlockFunc, Trait>::rbegin() const
 {
-    return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), 0);
+    return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_type_vector<ElemBlockFunc, Trait>::rend()
     const
 {
-    return const_reverse_iterator(m_blocks.rend(), m_blocks.rend(), 0);
+    return const_reverse_iterator(m_blocks.rend(), m_blocks.rend(), this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_type_vector<
     ElemBlockFunc, Trait>::crbegin() const
 {
-    return const_reverse_iterator(m_blocks.crbegin(), m_blocks.crend(), 0);
+    return const_reverse_iterator(m_blocks.crbegin(), m_blocks.crend(), this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_type_vector<
     ElemBlockFunc, Trait>::crend() const
 {
-    return const_reverse_iterator(m_blocks.crend(), m_blocks.crend(), 0);
+    return const_reverse_iterator(m_blocks.crend(), m_blocks.crend(), this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -499,7 +499,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         size_type i = pos - start_row;
         element_block_func::overwrite_values(*blk->data, i, 1);
         mdds_mtv_set_value(*blk->data, i, value);
-        return iterator(block_pos, m_blocks.end(), block_index);
+        return iterator(block_pos, m_blocks.end(), this, block_index);
     }
 
     assert(blk_cat != cat);
@@ -774,7 +774,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
     typename blocks_type::iterator block_pos = m_blocks.end();
     --block_pos;
 
-    return iterator(block_pos, m_blocks.end(), block_index);
+    return iterator(block_pos, m_blocks.end(), this, block_index);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -1685,7 +1685,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type multi_type
 
     typename blocks_type::const_iterator block_pos = m_blocks.begin();
     std::advance(block_pos, block_index);
-    const_iterator it = const_iterator(block_pos, m_blocks.end(), block_index);
+    const_iterator it = const_iterator(block_pos, m_blocks.end(), this, block_index);
     return const_position_type(it, pos - start_row);
 }
 

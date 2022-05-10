@@ -61,7 +61,7 @@ protected:
     using element_blocks_type = typename Trait::element_blocks_type;
     using size_type = typename Trait::parent::size_type;
 
-    using node = mdds::detail::mtv::iterator_value_node<size_type>;
+    using node = mdds::detail::mtv::iterator_value_node<parent_type, size_type>;
 
     using positions_iterator_type = typename Trait::positions_iterator_type;
     using sizes_iterator_type = typename Trait::sizes_iterator_type;
@@ -115,11 +115,13 @@ protected:
     grouped_iterator_type m_pos;
     grouped_iterator_type m_end;
 
-    iterator_updater() : m_cur_node(0)
+    iterator_updater() : m_cur_node(nullptr, 0)
     {}
 
-    iterator_updater(const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index)
-        : m_cur_node(block_index), m_pos(pos), m_end(end)
+    iterator_updater(
+        const grouped_iterator_type& pos, const grouped_iterator_type& end, const parent_type* parent,
+        size_type block_index)
+        : m_cur_node(parent, block_index), m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
@@ -128,8 +130,9 @@ protected:
     iterator_updater(
         const positions_iterator_type& positions_pos, const sizes_iterator_type& sizes_pos,
         const element_blocks_iterator_type& eb_pos, const positions_iterator_type& positions_end,
-        const sizes_iterator_type& sizes_end, const element_blocks_iterator_type& eb_end, size_type block_index)
-        : iterator_updater({positions_pos, sizes_pos, eb_pos}, {positions_end, sizes_end, eb_end}, block_index)
+        const sizes_iterator_type& sizes_end, const element_blocks_iterator_type& eb_end, const parent_type* parent,
+        size_type block_index)
+        : iterator_updater({positions_pos, sizes_pos, eb_pos}, {positions_end, sizes_end, eb_end}, parent, block_index)
     {}
 
     iterator_updater(const iterator_updater& other)
@@ -172,8 +175,11 @@ protected:
 
     void _print_state(std::ostream& os) const
     {
-        os << "block-index=" << m_cur_node.__private_data.block_index << "; position=" << m_cur_node.position
+        auto prev_flags = os.flags();
+        os << "parent=" << std::hex << m_cur_node.__private_data.parent
+           << "; block-index=" << m_cur_node.__private_data.block_index << "; position=" << m_cur_node.position
            << "; size=" << m_cur_node.size << "; type=" << m_cur_node.type << "; data=" << m_cur_node.data;
+        os.flags(prev_flags);
     }
 
 public:
@@ -226,6 +232,7 @@ public:
 template<typename Trait>
 class iterator_base : public iterator_updater<Trait>
 {
+    using parent_type = typename Trait::parent;
     using node_update_func = typename Trait::private_data_update;
     using updater = iterator_updater<Trait>;
 
@@ -250,8 +257,10 @@ public:
 public:
     iterator_base()
     {}
-    iterator_base(const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index)
-        : updater(pos, end, block_index)
+    iterator_base(
+        const grouped_iterator_type& pos, const grouped_iterator_type& end, const parent_type* parent,
+        size_type block_index)
+        : updater(pos, end, parent, block_index)
     {}
 
     value_type& operator*()
@@ -299,6 +308,7 @@ public:
 template<typename Trait, typename NonConstItrBase>
 class const_iterator_base : public iterator_updater<Trait>
 {
+    using parent_type = typename Trait::parent;
     using node_update_func = typename Trait::private_data_update;
     using updater = iterator_updater<Trait>;
 
@@ -325,8 +335,10 @@ public:
 public:
     const_iterator_base() : updater()
     {}
-    const_iterator_base(const grouped_iterator_type& pos, const grouped_iterator_type& end, size_type block_index)
-        : updater(pos, end, block_index)
+    const_iterator_base(
+        const grouped_iterator_type& pos, const grouped_iterator_type& end, const parent_type* parent,
+        size_type block_index)
+        : updater(pos, end, parent, block_index)
     {}
 
     /**
@@ -336,7 +348,7 @@ public:
         : updater(
               other.get_pos().position_iterator, other.get_pos().size_iterator, other.get_pos().element_block_iterator,
               other.get_end().position_iterator, other.get_end().size_iterator, other.get_end().element_block_iterator,
-              other.get_node().__private_data.block_index)
+              other.get_node().__private_data.parent, other.get_node().__private_data.block_index)
     {}
 
     const value_type& operator*() const

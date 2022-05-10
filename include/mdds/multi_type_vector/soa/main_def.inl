@@ -3731,7 +3731,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
 
     return iterator(
         {m_block_store.positions.begin(), m_block_store.sizes.begin(), m_block_store.element_blocks.begin()},
-        {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, 0);
+        {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -3741,7 +3741,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
 
     return iterator(
         {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()},
-        {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()},
+        {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this,
         m_block_store.positions.size());
 }
 
@@ -3768,7 +3768,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vect
 
     return const_iterator(
         {m_block_store.positions.cbegin(), m_block_store.sizes.cbegin(), m_block_store.element_blocks.cbegin()},
-        {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, 0);
+        {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -3778,7 +3778,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::const_iterator multi_type_vect
 
     return const_iterator(
         {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()},
-        {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()},
+        {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, this,
         m_block_store.positions.size());
 }
 
@@ -3789,7 +3789,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator multi_type_ve
 
     return reverse_iterator(
         {m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin()},
-        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, 0);
+        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -3799,7 +3799,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::reverse_iterator multi_type_ve
 
     return reverse_iterator(
         {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()},
-        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, 0);
+        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -3828,7 +3828,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_t
 
     return const_reverse_iterator(
         {m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin()},
-        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, 0);
+        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>
@@ -3839,7 +3839,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::const_reverse_iterator multi_t
 
     return const_reverse_iterator(
         {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()},
-        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, 0);
+        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
 }
 
 template<typename ElemBlockFunc, typename Trait>

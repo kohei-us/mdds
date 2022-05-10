@@ -37,9 +37,10 @@ namespace mdds { namespace detail { namespace mtv {
  * What the end position stores in its private data is totally &
  * intentionally undefined.
  */
-template<typename SizeT>
+template<typename ParentT, typename SizeT>
 struct iterator_value_node
 {
+    using parent_type = ParentT;
     using size_type = SizeT;
 
     mdds::mtv::element_t type;
@@ -47,8 +48,8 @@ struct iterator_value_node
     size_type size;
     mdds::mtv::base_element_block* data;
 
-    iterator_value_node(size_type block_index)
-        : type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr), __private_data(block_index)
+    iterator_value_node(const parent_type* parent, size_type block_index)
+        : type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr), __private_data(parent, block_index)
     {}
 
     void swap(iterator_value_node& other)
@@ -63,15 +64,17 @@ struct iterator_value_node
 
     struct private_data
     {
+        const parent_type* parent;
         size_type block_index;
 
-        private_data() : block_index(0)
+        private_data() : parent(nullptr), block_index(0)
         {}
-        private_data(size_type _block_index) : block_index(_block_index)
+        private_data(const parent_type* _parent, size_type _block_index) : parent(_parent), block_index(_block_index)
         {}
 
         void swap(private_data& other)
         {
+            std::swap(parent, other.parent);
             std::swap(block_index, other.block_index);
         }
     };
@@ -80,6 +83,7 @@ struct iterator_value_node
     bool operator==(const iterator_value_node& other) const
     {
         return type == other.type && position == other.position && size == other.size && data == other.data &&
+               __private_data.parent == other.__private_data.parent &&
                __private_data.block_index == other.__private_data.block_index;
     }
 
@@ -89,10 +93,10 @@ struct iterator_value_node
     }
 };
 
-template<typename SizeT>
+template<typename ParentT, typename SizeT>
 struct private_data_no_update
 {
-    using node_type = iterator_value_node<SizeT>;
+    using node_type = iterator_value_node<ParentT, SizeT>;
 
     static void inc(node_type&)
     {}
@@ -100,10 +104,10 @@ struct private_data_no_update
     {}
 };
 
-template<typename SizeT>
+template<typename ParentT, typename SizeT>
 struct private_data_forward_update
 {
-    using node_type = iterator_value_node<SizeT>;
+    using node_type = iterator_value_node<ParentT, SizeT>;
 
     static void inc(node_type& nd)
     {
