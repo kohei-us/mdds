@@ -523,7 +523,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::position_type multi_type_vecto
         return position_type(end(), 0);
     }
 
-    size_type block_index = get_block_position(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -570,7 +570,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::const_position_type multi_type
         return const_position_type(cend(), 0);
     }
 
-    size_type block_index = get_block_position(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -647,7 +647,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
     if (&dest == this)
         throw invalid_arg_error("You cannot transfer between the same container.");
 
-    size_type block_index1 = get_block_position(pos_hint, start_pos);
+    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
     if (block_index1 == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
@@ -741,7 +741,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         mutator_with_pos_hint,
         "pos_hint=" << pos_hint << "; pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
-    size_type block_index = get_block_position(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set", __LINE__, pos, block_size(), size());
@@ -834,7 +834,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         return end();
 
     size_type end_pos = res.first;
-    size_type block_index1 = get_block_position(pos_hint, pos);
+    size_type block_index1 = get_block_position(pos_hint->__private_data, pos);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -965,7 +965,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos << "; it_begin=?; it_end=? (length="
                                            << std::distance(it_begin, it_end) << ")");
 
-    size_type block_index = get_block_position(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::insert", __LINE__, pos, block_size(), size());
@@ -1086,7 +1086,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
-    size_type block_index1 = get_block_position(pos_hint, start_pos);
+    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
     if (block_index1 == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
@@ -1180,7 +1180,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         // Nothing to insert.
         return end();
 
-    size_type block_index = get_block_position(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
@@ -3622,7 +3622,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         mutator_with_pos_hint,
         "pos_hint=" << pos_hint << "; pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
-    size_type block_index = get_block_position(pos_hint, pos);
+    size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
@@ -3716,7 +3716,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
-    size_type block_index1 = get_block_position(pos_hint, start_pos);
+    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
     if (block_index1 == m_block_store.positions.size())
         mdds::detail::mtv::throw_block_position_not_found(
             "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
@@ -3869,19 +3869,11 @@ typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<El
 
 template<typename ElemBlockFunc, typename Trait>
 typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<ElemBlockFunc, Trait>::get_block_position(
-    const const_iterator& pos_hint, size_type row) const
+    const typename value_type::private_data& pos_data, size_type row) const
 {
     size_type block_index = 0;
-
-    if (pos_hint.get_end().position_iterator == m_block_store.positions.end() &&
-        pos_hint.get_end().size_iterator == m_block_store.sizes.end() &&
-        pos_hint.get_end().element_block_iterator == m_block_store.element_blocks.end())
-    {
-        // Iterator is valid. Get the block position from it unless it's the
-        // end position.
-        if (pos_hint.get_pos() != pos_hint.get_end())
-            block_index = pos_hint->__private_data.block_index;
-    }
+    if (pos_data.parent == this && pos_data.block_index < m_block_store.positions.size())
+        block_index = pos_data.block_index;
 
     size_type start_row = m_block_store.positions[block_index];
 

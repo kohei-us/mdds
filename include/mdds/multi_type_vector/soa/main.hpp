@@ -1262,10 +1262,10 @@ private:
     size_type get_block_position(size_type row, size_type start_block_index = 0) const;
 
     /**
-     * Same as above, but try to infer block position from the iterator first
-     * before trying full search.
+     * Same as above, but try to infer block position from the private position
+     * data stored in the iterator first before trying full search.
      */
-    size_type get_block_position(const const_iterator& pos_hint, size_type row) const;
+    size_type get_block_position(const typename value_type::private_data& pos_data, size_type row) const;
 
     template<typename T>
     void create_new_block_with_new_cell(size_type block_index, const T& cell);
