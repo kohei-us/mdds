@@ -51,6 +51,8 @@
  *
  * Calculates the length of \a name array provided that the array definition
  * is given in the same compilation unit.
+ *
+ * @deprecated Please use \c std::size instead.
  */
 #define MDDS_N_ELEMENTS(name) sizeof(name) / sizeof(name[0])
 
