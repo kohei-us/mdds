@@ -30,7 +30,8 @@ struct event_handler : public mdds::mtv::empty_event_func
 {
     std::string name;
 
-    event_handler() {}
+    event_handler()
+    {}
 };
 
 struct trait : public mdds::mtv::default_trait

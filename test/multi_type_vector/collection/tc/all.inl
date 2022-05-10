@@ -161,8 +161,7 @@ void mtv_test_invalid_collection()
         assert(!"invalid_arg_error is expected to be thrown");
     }
     catch (const mdds::invalid_arg_error&)
-    {
-    }
+    {}
 
     vectors.clear();
     vectors.emplace_back(0);
@@ -305,8 +304,7 @@ void mtv_test_sub_element_ranges_invalid()
         assert(!"invalid_arg_error is expected to be thrown");
     }
     catch (const mdds::invalid_arg_error&)
-    {
-    }
+    {}
 
     try
     {
@@ -315,8 +313,7 @@ void mtv_test_sub_element_ranges_invalid()
         assert(!"invalid_arg_error is expected to be thrown");
     }
     catch (const mdds::invalid_arg_error&)
-    {
-    }
+    {}
 
     try
     {
@@ -325,8 +322,7 @@ void mtv_test_sub_element_ranges_invalid()
         assert(!"invalid_arg_error is expected to be thrown");
     }
     catch (const mdds::invalid_arg_error&)
-    {
-    }
+    {}
 }
 
 void mtv_test_sub_collection_ranges_invalid()
@@ -348,8 +344,7 @@ void mtv_test_sub_collection_ranges_invalid()
         assert(!"invalid_arg_error is expected to be thrown");
     }
     catch (const mdds::invalid_arg_error&)
-    {
-    }
+    {}
 
     try
     {
@@ -358,8 +353,7 @@ void mtv_test_sub_collection_ranges_invalid()
         assert(!"invalid_arg_error is expected to be thrown");
     }
     catch (const mdds::invalid_arg_error&)
-    {
-    }
+    {}
 
     try
     {
@@ -368,8 +362,7 @@ void mtv_test_sub_collection_ranges_invalid()
         assert(!"invalid_arg_error is expected to be thrown");
     }
     catch (const mdds::invalid_arg_error&)
-    {
-    }
+    {}
 }
 
 void mtv_test_boolean_block()
