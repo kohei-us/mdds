@@ -39,13 +39,13 @@ namespace mdds { namespace mtv { namespace aos { namespace detail {
  * and dec() methods have non-const return type, and the derived classes
  * wrap them and return values with their respective const modifiers.
  */
-template<typename _Trait>
+template<typename Trait>
 class iterator_common_base
 {
 protected:
-    typedef typename _Trait::parent parent_type;
-    typedef typename _Trait::blocks blocks_type;
-    typedef typename _Trait::base_iterator base_iterator_type;
+    typedef typename Trait::parent parent_type;
+    typedef typename Trait::blocks blocks_type;
+    typedef typename Trait::base_iterator base_iterator_type;
 
     typedef typename parent_type::size_type size_type;
     typedef mdds::detail::mtv::iterator_value_node<size_type> node;
@@ -150,11 +150,11 @@ public:
     }
 };
 
-template<typename _Trait, typename _NodeUpdateFunc>
-class iterator_base : public iterator_common_base<_Trait>
+template<typename Trait, typename NodeUpdateFunc>
+class iterator_base : public iterator_common_base<Trait>
 {
-    typedef _Trait trait;
-    typedef _NodeUpdateFunc node_update_func;
+    typedef Trait trait;
+    typedef NodeUpdateFunc node_update_func;
     typedef iterator_common_base<trait> common_base;
 
     typedef typename trait::base_iterator base_iterator_type;
@@ -217,11 +217,11 @@ public:
     }
 };
 
-template<typename _Trait, typename _NodeUpdateFunc, typename _NonConstItrBase>
-class const_iterator_base : public iterator_common_base<_Trait>
+template<typename Trait, typename NodeUpdateFunc, typename NonConstItrBase>
+class const_iterator_base : public iterator_common_base<Trait>
 {
-    typedef _Trait trait;
-    typedef _NodeUpdateFunc node_update_func;
+    typedef Trait trait;
+    typedef NodeUpdateFunc node_update_func;
     typedef iterator_common_base<trait> common_base;
 
     typedef typename trait::base_iterator base_iterator_type;
@@ -235,7 +235,7 @@ public:
     using common_base::get_end;
     using common_base::get_pos;
 
-    typedef _NonConstItrBase iterator_base;
+    typedef NonConstItrBase iterator_base;
 
     // iterator traits
     typedef typename common_base::node value_type;
@@ -284,12 +284,12 @@ public:
 
     bool operator==(const const_iterator_base& other) const
     {
-        return iterator_common_base<_Trait>::operator==(other);
+        return iterator_common_base<Trait>::operator==(other);
     }
 
     bool operator!=(const const_iterator_base& other) const
     {
-        return iterator_common_base<_Trait>::operator!=(other);
+        return iterator_common_base<Trait>::operator!=(other);
     }
 };
 
