@@ -143,37 +143,37 @@ public:
     static constexpr bool value = sizeof(test<T>(0)) == sizeof(y_type);
 };
 
-template<typename _T, typename _IsConst>
+template<typename T, typename IsConst>
 struct const_or_not;
 
-template<typename _T>
-struct const_or_not<_T, std::true_type>
+template<typename T>
+struct const_or_not<T, std::true_type>
 {
-    using type = typename std::add_const<_T>::type;
+    using type = typename std::add_const<T>::type;
 };
 
-template<typename _T>
-struct const_or_not<_T, std::false_type>
+template<typename T>
+struct const_or_not<T, std::false_type>
 {
-    using type = _T;
+    using type = T;
 };
 
-template<typename _T, bool _Const>
-using const_t = typename const_or_not<_T, bool_constant<_Const>>::type;
+template<typename T, bool Const>
+using const_t = typename const_or_not<T, bool_constant<Const>>::type;
 
-template<typename _T, typename _IsConst>
+template<typename T, typename IsConst>
 struct get_iterator_type;
 
-template<typename _T>
-struct get_iterator_type<_T, std::true_type>
+template<typename T>
+struct get_iterator_type<T, std::true_type>
 {
-    using type = typename _T::const_iterator;
+    using type = typename T::const_iterator;
 };
 
-template<typename _T>
-struct get_iterator_type<_T, std::false_type>
+template<typename T>
+struct get_iterator_type<T, std::false_type>
 {
-    using type = typename _T::iterator;
+    using type = typename T::iterator;
 };
 
 template<int T>
