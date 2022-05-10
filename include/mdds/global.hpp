@@ -85,10 +85,10 @@ class general_error : public ::std::exception
 public:
     general_error(const ::std::string& msg) : m_msg(msg)
     {}
-    virtual ~general_error() throw()
+    virtual ~general_error() noexcept
     {}
 
-    virtual const char* what() const throw()
+    virtual const char* what() const noexcept
     {
         return m_msg.c_str();
     }
