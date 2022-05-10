@@ -45,12 +45,12 @@
 
 namespace mdds {
 
-template<typename _Key, typename _Value>
+template<typename Key, typename Value>
 class flat_segment_tree
 {
 public:
-    typedef _Key key_type;
-    typedef _Value value_type;
+    typedef Key key_type;
+    typedef Value value_type;
     typedef size_t size_type;
 
     struct nonleaf_value_type
@@ -773,8 +773,8 @@ private:
     bool m_valid_tree;
 };
 
-template<typename _Key, typename _Value>
-void swap(flat_segment_tree<_Key, _Value>& left, flat_segment_tree<_Key, _Value>& right)
+template<typename Key, typename Value>
+void swap(flat_segment_tree<Key, Value>& left, flat_segment_tree<Key, Value>& right)
 {
     left.swap(right);
 }
