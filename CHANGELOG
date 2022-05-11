@@ -1,3 +1,17 @@
+mdds 2.0.3
+
+  * general
+
+    * defined clang-format rules, and globally applied them to all active
+      source files.
+
+  * multi_type_vector
+
+    * revised the block position lookup implementation to avoid using the
+      internal STL iterators.  The new implementation should be able to handle
+      invalid position hints more gracefully without potential process
+      termination.
+
 mdds 2.0.2
 
 * multi_type_vector
