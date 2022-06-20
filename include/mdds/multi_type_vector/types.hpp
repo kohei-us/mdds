@@ -203,6 +203,7 @@ public:
     typedef typename store_type::const_iterator const_iterator;
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
     
+    enhanced_vector() : m_vec() {}
     enhanced_vector(size_t n, const T& val) : m_vec(n, val) {}
     enhanced_vector(size_t n) : m_vec(n) {}
     template< class InputIt >
@@ -285,6 +286,9 @@ public:
         clear_removed();
         m_vec.assign(first, last);
     }
+
+    T* data() { return m_vec.data() + m_removedFront; }
+    const T* data() const { return m_vec.data() + m_removedFront; }
 
 private:
     void clear_removed() const
