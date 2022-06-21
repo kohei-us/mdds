@@ -189,7 +189,7 @@ class enhanced_vector
 {
     typedef std::vector<T> store_type;
     mutable store_type m_vec;
-    mutable size_t m_removedFront = 0; // number of elements removed from front of array
+    mutable size_t m_removed_front = 0; // number of elements removed from front of array
 public:
     typedef typename store_type::value_type value_type;
     typedef typename store_type::size_type size_type;
@@ -209,21 +209,21 @@ public:
     template< class InputIt >
     enhanced_vector( InputIt first, InputIt last ) : m_vec(first, last) {}
 
-    iterator begin() noexcept { return m_vec.begin() + m_removedFront; }
+    iterator begin() noexcept { return m_vec.begin() + m_removed_front; }
     iterator end() noexcept { return m_vec.end(); }
-    const_iterator begin() const noexcept { return m_vec.begin() + m_removedFront; }
+    const_iterator begin() const noexcept { return m_vec.begin() + m_removed_front; }
     const_iterator end() const noexcept { return m_vec.end(); }
     
     reverse_iterator rbegin() { return m_vec.rbegin(); }
     const_reverse_iterator rbegin() const { return m_vec.rbegin(); }
-    reverse_iterator rend() { return m_vec.rend() - m_removedFront; }
-    const_reverse_iterator rend() const { return m_vec.rend() - m_removedFront; }
+    reverse_iterator rend() { return m_vec.rend() - m_removed_front; }
+    const_reverse_iterator rend() const { return m_vec.rend() - m_removed_front; }
     
-    reference operator[]( size_type pos ) { return m_vec[pos + m_removedFront]; }
-    const_reference operator[]( size_type pos ) const { return m_vec[pos + m_removedFront]; }
+    reference operator[]( size_type pos ) { return m_vec[pos + m_removed_front]; }
+    const_reference operator[]( size_type pos ) const { return m_vec[pos + m_removed_front]; }
     
-    reference at( size_type pos ) { return m_vec.at(pos + m_removedFront); }
-    const_reference at( size_type pos ) const { return m_vec.at(pos + m_removedFront); }
+    reference at( size_type pos ) { return m_vec.at(pos + m_removed_front); }
+    const_reference at( size_type pos ) const { return m_vec.at(pos + m_removed_front); }
 
     void push_back( const T& value ) { m_vec.push_back(value); }
     
@@ -243,10 +243,10 @@ public:
     
     iterator erase( iterator pos )
     {
-        if (pos == m_vec.begin() + m_removedFront)
+        if (pos == m_vec.begin() + m_removed_front)
         {
-            ++m_removedFront;
-            return m_vec.begin() + m_removedFront;
+            ++m_removed_front;
+            return m_vec.begin() + m_removed_front;
         }
         else
             return m_vec.erase(pos);
@@ -277,7 +277,7 @@ public:
     
     size_type size() const
     {
-        return m_vec.size() - m_removedFront;
+        return m_vec.size() - m_removed_front;
     }
     
     template< class InputIt >
@@ -287,14 +287,14 @@ public:
         m_vec.assign(first, last);
     }
 
-    T* data() { return m_vec.data() + m_removedFront; }
-    const T* data() const { return m_vec.data() + m_removedFront; }
+    T* data() { return m_vec.data() + m_removed_front; }
+    const T* data() const { return m_vec.data() + m_removed_front; }
 
 private:
     void clear_removed() const
     {
-        m_vec.erase(m_vec.begin(), m_vec.begin() + m_removedFront);
-        m_removedFront = 0;
+        m_vec.erase(m_vec.begin(), m_vec.begin() + m_removed_front);
+        m_removed_front = 0;
     }
 };
 
