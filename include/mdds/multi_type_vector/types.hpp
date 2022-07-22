@@ -182,15 +182,15 @@ protected:
 
 /**
  * Vector that delays deleting from the front of the vector, which avoids
- * O(n^2) memory move operations when code needs to deletes items from one
- * mdds block and add to another mdds block.
+ * O(n^2) memory move operations when code needs to delete items from one
+ * element block and add to another element block.
  */
 template<typename T>
-class enhanced_vector
+class delayed_delete_vector
 {
     typedef std::vector<T> store_type;
     store_type m_vec;
-    size_t m_removed_front = 0; // number of elements removed from front of array
+    size_t m_front_offset = 0; // number of elements removed from front of array
 public:
     typedef typename store_type::value_type value_type;
     typedef typename store_type::size_type size_type;
@@ -204,22 +204,22 @@ public:
     typedef typename store_type::const_iterator const_iterator;
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
 
-    enhanced_vector() : m_vec()
+    delayed_delete_vector() : m_vec()
     {}
 
-    enhanced_vector(size_t n, const T& val) : m_vec(n, val)
+    delayed_delete_vector(size_t n, const T& val) : m_vec(n, val)
     {}
 
-    enhanced_vector(size_t n) : m_vec(n)
+    delayed_delete_vector(size_t n) : m_vec(n)
     {}
 
     template<typename InputIt>
-    enhanced_vector(InputIt first, InputIt last) : m_vec(first, last)
+    delayed_delete_vector(InputIt first, InputIt last) : m_vec(first, last)
     {}
 
     iterator begin() noexcept
     {
-        return m_vec.begin() + m_removed_front;
+        return m_vec.begin() + m_front_offset;
     }
 
     iterator end() noexcept
@@ -229,7 +229,7 @@ public:
 
     const_iterator begin() const noexcept
     {
-        return m_vec.begin() + m_removed_front;
+        return m_vec.begin() + m_front_offset;
     }
 
     const_iterator end() const noexcept
@@ -249,32 +249,32 @@ public:
 
     reverse_iterator rend() noexcept
     {
-        return m_vec.rend() - m_removed_front;
+        return m_vec.rend() - m_front_offset;
     }
 
     const_reverse_iterator rend() const noexcept
     {
-        return m_vec.rend() - m_removed_front;
+        return m_vec.rend() - m_front_offset;
     }
 
     reference operator[](size_type pos)
     {
-        return m_vec[pos + m_removed_front];
+        return m_vec[pos + m_front_offset];
     }
 
     const_reference operator[](size_type pos) const
     {
-        return m_vec[pos + m_removed_front];
+        return m_vec[pos + m_front_offset];
     }
 
     reference at(size_type pos)
     {
-        return m_vec.at(pos + m_removed_front);
+        return m_vec.at(pos + m_front_offset);
     }
 
     const_reference at(size_type pos) const
     {
-        return m_vec.at(pos + m_removed_front);
+        return m_vec.at(pos + m_front_offset);
     }
 
     void push_back(const T& value)
@@ -306,10 +306,10 @@ public:
 
     iterator erase(iterator pos)
     {
-        if (pos == m_vec.begin() + m_removed_front)
+        if (pos == m_vec.begin() + m_front_offset)
         {
-            ++m_removed_front;
-            return m_vec.begin() + m_removed_front;
+            ++m_front_offset;
+            return m_vec.begin() + m_front_offset;
         }
         else
             return m_vec.erase(pos);
@@ -339,7 +339,7 @@ public:
 
     size_type size() const
     {
-        return m_vec.size() - m_removed_front;
+        return m_vec.size() - m_front_offset;
     }
 
     template<typename InputIt>
@@ -351,24 +351,24 @@ public:
 
     T* data()
     {
-        return m_vec.data() + m_removed_front;
+        return m_vec.data() + m_front_offset;
     }
 
     const T* data() const
     {
-        return m_vec.data() + m_removed_front;
+        return m_vec.data() + m_front_offset;
     }
 
 private:
     void clear_removed()
     {
-        m_vec.erase(m_vec.begin(), m_vec.begin() + m_removed_front);
-        m_removed_front = 0;
+        m_vec.erase(m_vec.begin(), m_vec.begin() + m_front_offset);
+        m_front_offset = 0;
     }
 };
 
 template<typename T>
-bool operator==(const enhanced_vector<T>& lhs, const enhanced_vector<T>& rhs)
+bool operator==(const delayed_delete_vector<T>& lhs, const delayed_delete_vector<T>& rhs)
 {
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
@@ -390,7 +390,7 @@ protected:
 #ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
     typedef std::deque<_Data> store_type;
 #else
-    typedef enhanced_vector<_Data> store_type;
+    typedef delayed_delete_vector<_Data> store_type;
 #endif
     store_type m_array;
 
