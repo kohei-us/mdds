@@ -237,22 +237,22 @@ public:
         return m_vec.end();
     }
 
-    reverse_iterator rbegin()
+    reverse_iterator rbegin() noexcept
     {
         return m_vec.rbegin();
     }
 
-    const_reverse_iterator rbegin() const
+    const_reverse_iterator rbegin() const noexcept
     {
         return m_vec.rbegin();
     }
 
-    reverse_iterator rend()
+    reverse_iterator rend() noexcept
     {
         return m_vec.rend() - m_removed_front;
     }
 
-    const_reverse_iterator rend() const
+    const_reverse_iterator rend() const noexcept
     {
         return m_vec.rend() - m_removed_front;
     }
