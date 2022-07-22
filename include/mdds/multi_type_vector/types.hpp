@@ -189,8 +189,8 @@ template<typename T>
 class enhanced_vector
 {
     typedef std::vector<T> store_type;
-    mutable store_type m_vec;
-    mutable size_t m_removed_front = 0; // number of elements removed from front of array
+    store_type m_vec;
+    size_t m_removed_front = 0; // number of elements removed from front of array
 public:
     typedef typename store_type::value_type value_type;
     typedef typename store_type::size_type size_type;
@@ -320,13 +320,12 @@ public:
         return m_vec.erase(first, last);
     }
 
-    size_type capacity() const
+    size_type capacity() const noexcept
     {
-        clear_removed();
         return m_vec.capacity();
     }
 
-    void shrink_to_fit() const
+    void shrink_to_fit()
     {
         clear_removed();
         m_vec.shrink_to_fit();
@@ -361,7 +360,7 @@ public:
     }
 
 private:
-    void clear_removed() const
+    void clear_removed()
     {
         m_vec.erase(m_vec.begin(), m_vec.begin() + m_removed_front);
         m_removed_front = 0;
