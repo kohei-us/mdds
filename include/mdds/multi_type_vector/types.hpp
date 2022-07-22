@@ -181,8 +181,9 @@ protected:
 };
 
 /**
- * Vector that delays deleting from the front of the vector, which avoids O(n^2) memory move
- * operations when code needs to deletes items from one mdds block and add to another mdds block.
+ * Vector that delays deleting from the front of the vector, which avoids
+ * O(n^2) memory move operations when code needs to deletes items from one
+ * mdds block and add to another mdds block.
  */
 template<typename T>
 class enhanced_vector
@@ -202,46 +203,108 @@ public:
     typedef typename store_type::reverse_iterator reverse_iterator;
     typedef typename store_type::const_iterator const_iterator;
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
-    
-    enhanced_vector() : m_vec() {}
-    enhanced_vector(size_t n, const T& val) : m_vec(n, val) {}
-    enhanced_vector(size_t n) : m_vec(n) {}
-    template< class InputIt >
-    enhanced_vector( InputIt first, InputIt last ) : m_vec(first, last) {}
 
-    iterator begin() noexcept { return m_vec.begin() + m_removed_front; }
-    iterator end() noexcept { return m_vec.end(); }
-    const_iterator begin() const noexcept { return m_vec.begin() + m_removed_front; }
-    const_iterator end() const noexcept { return m_vec.end(); }
-    
-    reverse_iterator rbegin() { return m_vec.rbegin(); }
-    const_reverse_iterator rbegin() const { return m_vec.rbegin(); }
-    reverse_iterator rend() { return m_vec.rend() - m_removed_front; }
-    const_reverse_iterator rend() const { return m_vec.rend() - m_removed_front; }
-    
-    reference operator[]( size_type pos ) { return m_vec[pos + m_removed_front]; }
-    const_reference operator[]( size_type pos ) const { return m_vec[pos + m_removed_front]; }
-    
-    reference at( size_type pos ) { return m_vec.at(pos + m_removed_front); }
-    const_reference at( size_type pos ) const { return m_vec.at(pos + m_removed_front); }
+    enhanced_vector() : m_vec()
+    {}
 
-    void push_back( const T& value ) { m_vec.push_back(value); }
-    
-    iterator insert( iterator pos, const T& value ) { return m_vec.insert(pos, value); }
-    iterator insert( const_iterator pos, T&& value ) { return m_vec.insert(pos, std::move(value)); }
-    template< class InputIt >
-    void insert( iterator pos, InputIt first, InputIt last )
+    enhanced_vector(size_t n, const T& val) : m_vec(n, val)
+    {}
+
+    enhanced_vector(size_t n) : m_vec(n)
+    {}
+
+    template<typename InputIt>
+    enhanced_vector(InputIt first, InputIt last) : m_vec(first, last)
+    {}
+
+    iterator begin() noexcept
+    {
+        return m_vec.begin() + m_removed_front;
+    }
+
+    iterator end() noexcept
+    {
+        return m_vec.end();
+    }
+
+    const_iterator begin() const noexcept
+    {
+        return m_vec.begin() + m_removed_front;
+    }
+
+    const_iterator end() const noexcept
+    {
+        return m_vec.end();
+    }
+
+    reverse_iterator rbegin()
+    {
+        return m_vec.rbegin();
+    }
+
+    const_reverse_iterator rbegin() const
+    {
+        return m_vec.rbegin();
+    }
+
+    reverse_iterator rend()
+    {
+        return m_vec.rend() - m_removed_front;
+    }
+
+    const_reverse_iterator rend() const
+    {
+        return m_vec.rend() - m_removed_front;
+    }
+
+    reference operator[](size_type pos)
+    {
+        return m_vec[pos + m_removed_front];
+    }
+
+    const_reference operator[](size_type pos) const
+    {
+        return m_vec[pos + m_removed_front];
+    }
+
+    reference at(size_type pos)
+    {
+        return m_vec.at(pos + m_removed_front);
+    }
+
+    const_reference at(size_type pos) const
+    {
+        return m_vec.at(pos + m_removed_front);
+    }
+
+    void push_back(const T& value)
+    {
+        m_vec.push_back(value);
+    }
+
+    iterator insert(iterator pos, const T& value)
+    {
+        return m_vec.insert(pos, value);
+    }
+
+    iterator insert(const_iterator pos, T&& value)
+    {
+        return m_vec.insert(pos, std::move(value));
+    }
+
+    template<typename InputIt>
+    void insert(iterator pos, InputIt first, InputIt last)
     {
         m_vec.insert(pos, first, last);
     }
-    
-    void resize( size_type count )
+
+    void resize(size_type count)
     {
         clear_removed();
         m_vec.resize(count);
     }
-    
-    iterator erase( iterator pos )
+
+    iterator erase(iterator pos)
     {
         if (pos == m_vec.begin() + m_removed_front)
         {
@@ -251,44 +314,51 @@ public:
         else
             return m_vec.erase(pos);
     }
-    
-    iterator erase( iterator first, iterator last )
+
+    iterator erase(iterator first, iterator last)
     {
-        return m_vec.erase( first, last );
+        return m_vec.erase(first, last);
     }
-    
+
     size_type capacity() const
     {
         clear_removed();
         return m_vec.capacity();
     }
-    
+
     void shrink_to_fit() const
     {
         clear_removed();
         m_vec.shrink_to_fit();
     }
-    
-    void reserve( size_type new_cap )
+
+    void reserve(size_type new_cap)
     {
         clear_removed();
         m_vec.reserve(new_cap);
     }
-    
+
     size_type size() const
     {
         return m_vec.size() - m_removed_front;
     }
-    
-    template< class InputIt >
-    void assign( InputIt first, InputIt last )
+
+    template<typename InputIt>
+    void assign(InputIt first, InputIt last)
     {
         clear_removed();
         m_vec.assign(first, last);
     }
 
-    T* data() { return m_vec.data() + m_removed_front; }
-    const T* data() const { return m_vec.data() + m_removed_front; }
+    T* data()
+    {
+        return m_vec.data() + m_removed_front;
+    }
+
+    const T* data() const
+    {
+        return m_vec.data() + m_removed_front;
+    }
 
 private:
     void clear_removed() const
@@ -298,9 +368,8 @@ private:
     }
 };
 
-template< class T >
-bool operator==( const enhanced_vector<T>& lhs,
-                 const enhanced_vector<T>& rhs )
+template<typename T>
+bool operator==(const enhanced_vector<T>& lhs, const enhanced_vector<T>& rhs)
 {
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
