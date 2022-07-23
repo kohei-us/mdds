@@ -50,7 +50,8 @@ using std::cout;
 using std::endl;
 #endif
 
-namespace mdds { namespace mtv {
+namespace mdds {
+namespace mtv {
 
 using element_t = int;
 
@@ -956,20 +957,19 @@ struct noncopyable_managed_element_block
     }
 };
 
-using boolean_element_block = default_element_block<mtv::element_type_boolean, bool>;
-using int8_element_block = default_element_block<mtv::element_type_int8, int8_t>;
-using uint8_element_block = default_element_block<mtv::element_type_uint8, uint8_t>;
-using int16_element_block = default_element_block<mtv::element_type_int16, int16_t>;
-using uint16_element_block = default_element_block<mtv::element_type_uint16, uint16_t>;
-using int32_element_block = default_element_block<mtv::element_type_int32, int32_t>;
-using uint32_element_block = default_element_block<mtv::element_type_uint32, uint32_t>;
-using int64_element_block = default_element_block<mtv::element_type_int64, int64_t>;
-using uint64_element_block = default_element_block<mtv::element_type_uint64, uint64_t>;
-using float_element_block = default_element_block<mtv::element_type_float, float>;
-using double_element_block = default_element_block<mtv::element_type_double, double>;
-using string_element_block = default_element_block<mtv::element_type_string, std::string>;
+} // namespace mtv
 
-}} // namespace mdds::mtv
+namespace detail { namespace mtv {
+
+template<typename Blk>
+inline typename Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
+{
+    return Blk::at(data, offset);
+}
+
+}} // namespace detail::mtv
+
+} // namespace mdds
 
 #endif
 

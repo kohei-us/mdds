@@ -242,6 +242,7 @@
                     <F N="../include/mdds/multi_type_vector/custom_func3.hpp"/>
                     <F N="../include/mdds/multi_type_vector/iterator_node.hpp"/>
                     <F N="../include/mdds/multi_type_vector/macro.hpp"/>
+                    <F N="../include/mdds/multi_type_vector/standard_element_blocks.hpp"/>
                     <F N="../include/mdds/multi_type_vector/trait.hpp"/>
                     <F N="../include/mdds/multi_type_vector/types.hpp"/>
                     <F N="../include/mdds/multi_type_vector/util.hpp"/>

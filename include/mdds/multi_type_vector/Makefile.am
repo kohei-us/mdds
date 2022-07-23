@@ -10,6 +10,7 @@ headers_HEADERS = \
     custom_func3.hpp \
     iterator_node.hpp \
     macro.hpp \
+    standard_element_blocks.hpp \
     trait.hpp \
     types.hpp \
     util.hpp
