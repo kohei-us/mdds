@@ -1,11 +1,11 @@
 
 AM_CPPFLAGS = \
-    -I$(top_srcdir)/include
+	-I$(top_srcdir)/include
 
 EXTRA_PROGRAMS = \
-    runtime-env
+	runtime-env
 
 CLEANFILES = \
-    runtime-env
+	runtime-env
 
 runtime_env_SOURCES = main.cpp
