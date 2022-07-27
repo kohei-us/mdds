@@ -77,6 +77,7 @@ public:
     using element_block_type = mdds::mtv::base_element_block;
     using element_category_type = mdds::mtv::element_t;
     using element_block_func = ElemBlockFunc;
+    using block_funcs = typename Trait::block_funcs;
 
     /**
      * Optional event handler function structure, whose functions get called

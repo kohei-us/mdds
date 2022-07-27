@@ -29,7 +29,7 @@
 #ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_UTIL_HPP
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_UTIL_HPP
 
-#include "./types.hpp"
+#include "./block_funcs.hpp"
 
 #include <sstream>
 
@@ -86,6 +86,8 @@ struct default_trait
      * position adjustment function.  This must be a const expression.
      */
     static constexpr lu_factor_t loop_unrolling = lu_factor_t::lu16;
+
+    using block_funcs = element_block_funcs<>;
 };
 
 } // namespace mtv

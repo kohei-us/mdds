@@ -29,6 +29,7 @@
 //!code-start
 #include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector/trait.hpp>
+#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 #include <iostream>
 
 using std::cout;
@@ -50,11 +51,9 @@ public:
     }
 };
 
-struct trait
+struct trait : mdds::mtv::standard_element_blocks_trait
 {
     using event_func = event_hdl;
-
-    constexpr static mdds::mtv::lu_factor_t loop_unrolling = mdds::mtv::lu_factor_t::none;
 };
 
 using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, trait>;

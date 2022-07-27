@@ -32,10 +32,12 @@
 #include <mdds/multi_type_vector/soa/main.hpp>
 #include <mdds/multi_type_vector/types.hpp>
 #include <mdds/multi_type_vector/trait.hpp>
+#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <deque>
 
-using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
+using mtv_type =
+    mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func, mdds::mtv::standard_element_blocks_trait>;
 
 template<typename _ValT>
 bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)

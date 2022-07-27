@@ -35,7 +35,8 @@
 #endif
 
 #include "multi_type_vector.hpp"
-#include "multi_type_vector_trait.hpp"
+#include "multi_type_vector/trait.hpp"
+#include "multi_type_vector/standard_element_blocks.hpp"
 
 namespace mdds {
 
@@ -89,7 +90,8 @@ public:
     typedef size_t size_type;
 
 private:
-    typedef mdds::multi_type_vector<typename matrix_trait::element_block_func> store_type;
+    using store_type =
+        mdds::multi_type_vector<typename matrix_trait::element_block_func, mtv::standard_element_blocks_trait>;
 
 public:
     typedef typename store_type::position_type position_type;

@@ -407,7 +407,7 @@ protected:
     {}
 
 public:
-    static const element_t block_type = _TypeId;
+    static constexpr element_t block_type = _TypeId;
 
     typedef typename store_type::iterator iterator;
     typedef typename store_type::reverse_iterator reverse_iterator;

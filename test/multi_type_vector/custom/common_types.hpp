@@ -30,6 +30,7 @@
 
 #include <mdds/multi_type_vector/types.hpp>
 #include <mdds/multi_type_vector/macro.hpp>
+#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 /** Caller manages the life cycle of these cells. */
 struct user_cell
@@ -128,6 +129,35 @@ public:
         p->value = val;
         return p;
     }
+};
+
+struct user_muser_trait : public mdds::mtv::default_trait
+{
+    using block_funcs = mdds::mtv::element_block_funcs<
+        mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::uint8_element_block,
+        mdds::mtv::int16_element_block, mdds::mtv::uint16_element_block, mdds::mtv::int32_element_block,
+        mdds::mtv::uint32_element_block, mdds::mtv::int64_element_block, mdds::mtv::uint64_element_block,
+        mdds::mtv::float_element_block, mdds::mtv::double_element_block, mdds::mtv::string_element_block,
+        user_cell_block, muser_cell_block>;
+};
+
+struct fruit_trait : public mdds::mtv::default_trait
+{
+    using block_funcs = mdds::mtv::element_block_funcs<
+        mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::uint8_element_block,
+        mdds::mtv::int16_element_block, mdds::mtv::uint16_element_block, mdds::mtv::int32_element_block,
+        mdds::mtv::uint32_element_block, mdds::mtv::int64_element_block, mdds::mtv::uint64_element_block,
+        mdds::mtv::float_element_block, mdds::mtv::double_element_block, mdds::mtv::string_element_block, fruit_block>;
+};
+
+struct muser_fruit_date_trait : public mdds::mtv::default_trait
+{
+    using block_funcs = mdds::mtv::element_block_funcs<
+        mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::uint8_element_block,
+        mdds::mtv::int16_element_block, mdds::mtv::uint16_element_block, mdds::mtv::int32_element_block,
+        mdds::mtv::uint32_element_block, mdds::mtv::int64_element_block, mdds::mtv::uint64_element_block,
+        mdds::mtv::float_element_block, mdds::mtv::double_element_block, mdds::mtv::string_element_block,
+        muser_cell_block, fruit_block, date_block>;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -46,7 +46,7 @@ struct event_block_init
     {}
 };
 
-struct eb_init_trait
+struct eb_init_trait : public mdds::mtv::standard_element_blocks_trait
 {
     using event_func = event_block_init;
 

@@ -29,6 +29,8 @@
 #pragma once
 
 #include "types.hpp"
+#include "util.hpp"
+#include "block_funcs.hpp"
 
 namespace mdds {
 namespace mtv {
@@ -59,6 +61,14 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(float, mdds::mtv::element_type_float, 0.0, mdd
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mdds::mtv::element_type_double, 0.0, mdds::mtv::double_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(
     std::string, mdds::mtv::element_type_string, std::string(), mdds::mtv::string_element_block)
+
+struct standard_element_blocks_trait : public default_trait
+{
+    using block_funcs = element_block_funcs<
+        boolean_element_block, int8_element_block, uint8_element_block, int16_element_block, uint16_element_block,
+        int32_element_block, uint32_element_block, int64_element_block, uint64_element_block, float_element_block,
+        double_element_block, string_element_block>;
+};
 
 } // namespace mtv
 

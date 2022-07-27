@@ -77,6 +77,7 @@ public:
     typedef mdds::mtv::base_element_block element_block_type;
     typedef mdds::mtv::element_t element_category_type;
     typedef ElemBlockFunc element_block_func;
+    using block_funcs = typename Trait::block_funcs;
 
     /**
      * Optional event handler function structure, whose functions get called

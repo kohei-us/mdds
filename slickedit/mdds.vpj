@@ -235,6 +235,7 @@
                         <F N="../include/mdds/multi_type_vector/soa/main.hpp"/>
                         <F N="../include/mdds/multi_type_vector/soa/main_def.inl"/>
                     </Folder>
+                    <F N="../include/mdds/multi_type_vector/block_funcs.hpp"/>
                     <F N="../include/mdds/multi_type_vector/collection.hpp"/>
                     <F N="../include/mdds/multi_type_vector/collection_def.inl"/>
                     <F N="../include/mdds/multi_type_vector/custom_func1.hpp"/>

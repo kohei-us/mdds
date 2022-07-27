@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2021 Kohei Yoshida
+ * Copyright (c) 2022 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,27 +28,30 @@
 
 #pragma once
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
-#include <mdds/multi_type_vector/standard_element_blocks.hpp>
+#include "./types.hpp"
+#include "../global.hpp"
 
-template<typename Trait>
-using mtv_alias_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func, Trait>;
+#include <unordered_map>
+#include <functional>
 
-void mtv_test_loop_unrolling_0();
-void mtv_test_loop_unrolling_4();
-void mtv_test_loop_unrolling_8();
-void mtv_test_loop_unrolling_16();
-void mtv_test_loop_unrolling_32();
+namespace mdds { namespace mtv {
 
-void mtv_test_loop_unrolling_sse2_x64(); // SoA only
-void mtv_test_loop_unrolling_sse2_x64_4(); // SoA only
-void mtv_test_loop_unrolling_sse2_x64_8(); // SoA only
-void mtv_test_loop_unrolling_sse2_x64_16(); // SoA only
+template<typename... Ts>
+struct element_block_funcs
+{
+    static base_element_block* create_new_block(element_t type, std::size_t init_size)
+    {
+        static const std::unordered_map<element_t, std::function<base_element_block*(std::size_t)>> func_map{
+            {Ts::block_type, Ts::create_block}...};
 
-void mtv_test_loop_unrolling_avx2_x64(); // SoA only
-void mtv_test_loop_unrolling_avx2_x64_4(); // SoA only
-void mtv_test_loop_unrolling_avx2_x64_8(); // SoA only
+        auto it = func_map.find(type);
+        if (it == func_map.end())
+            throw general_error("create_new_block: failed to create a new block of unknown type.");
+
+        return it->second(init_size);
+    }
+};
+
+}} // namespace mdds::mtv
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
