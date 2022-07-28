@@ -103,6 +103,15 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
         f(block, new_size);
     }
+
+    static void print_block(const base_element_block& block)
+    {
+        static std::unordered_map<element_t, std::function<void(const base_element_block&)>> func_map{
+            {Ts::block_type, Ts::print_block}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        f(block);
+    }
 };
 
 }} // namespace mdds::mtv
