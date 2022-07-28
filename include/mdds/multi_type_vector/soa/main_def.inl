@@ -1491,7 +1491,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
             m_hdl_event.element_block_acquired(src_data);
 
             // Release elements in the source block to prevent double-deletion.
-            element_block_func::resize_block(*src_data_original, 0);
+            block_funcs::resize_block(*src_data_original, 0);
             merge_with_adjacent_blocks(block_index);
             return;
         }
@@ -1511,7 +1511,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
             // Append the new elements to the previous block.
             element_block_type* prev_data = m_block_store.element_blocks[block_index - 1];
             element_block_func::append_values_from_block(*prev_data, *new_dst_data);
-            element_block_func::resize_block(*new_dst_data, 0); // prevent double-delete.
+            block_funcs::resize_block(*new_dst_data, 0); // prevent double-delete.
             m_block_store.sizes[block_index - 1] += len;
         }
         else
@@ -1534,7 +1534,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
         // Source range is at the bottom of a block.
 
         // Shrink the current block.
-        element_block_func::resize_block(*src_data, src_offset);
+        block_funcs::resize_block(*src_data, src_offset);
         m_block_store.sizes[block_index] = src_offset;
 
         if (is_next_block_of_type(block_index, cat_dst))
@@ -1542,7 +1542,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
             // Merge with the next block.
             element_block_type* next_data = m_block_store.element_blocks[block_index + 1];
             element_block_func::prepend_values_from_block(*next_data, *data_from_dst, 0, len);
-            element_block_func::resize_block(*data_from_dst, 0); // prevent double-delete.
+            block_funcs::resize_block(*data_from_dst, 0); // prevent double-delete.
             m_block_store.sizes[block_index + 1] += len;
             m_block_store.positions[block_index + 1] -= len;
         }
@@ -1613,7 +1613,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_to_multi_blocks(
             // the whole block needs to be replaced.  Delete the block, but
             // don't delete the managed elements the block contains since they
             // have been transferred over to the destination block.
-            element_block_func::resize_block(*src_data, 0);
+            block_funcs::resize_block(*src_data, 0);
             delete_element_block(block_index);
             m_block_store.erase(block_index);
         }
@@ -1640,7 +1640,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_to_multi_blocks(
         // Source range is at the bottom of a block.
 
         // Shrink the current block.
-        element_block_func::resize_block(*src_data, src_offset);
+        block_funcs::resize_block(*src_data, src_offset);
         m_block_store.sizes[block_index] = src_offset;
         position = m_block_store.positions[block_index] + m_block_store.sizes[block_index];
     }
@@ -1973,7 +1973,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 {
                     // Make block 1 empty.
                     if (!overwrite)
-                        element_block_func::resize_block(*blk_data, 0);
+                        block_funcs::resize_block(*blk_data, 0);
 
                     delete_element_block(block_index1);
                 }
@@ -1986,7 +1986,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                     element_block_func::overwrite_values(
                         *blk_data, new_size, m_block_store.sizes[block_index1] - new_size);
 
-                element_block_func::resize_block(*blk_data, new_size);
+                block_funcs::resize_block(*blk_data, new_size);
                 m_block_store.sizes[block_index1] = new_size;
             }
         }
@@ -2050,7 +2050,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         {
             element_block_type* data = m_block_store.element_blocks[i];
             if (!overwrite && data)
-                element_block_func::resize_block(*data, 0);
+                block_funcs::resize_block(*data, 0);
 
             delete_element_block(i);
         }
@@ -2121,7 +2121,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_impl(size_type start_row, si
         {
             // Shrink the element block.
             element_block_func::overwrite_values(*blk_data, new_size, m_block_store.sizes[block_pos1] - new_size);
-            element_block_func::resize_block(*blk_data, new_size);
+            block_funcs::resize_block(*blk_data, new_size);
         }
         m_block_store.sizes[block_pos1] = new_size;
     }
@@ -2236,7 +2236,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
             element_block_func::append_values_from_block(*prev_data, *next_data);
             m_block_store.sizes[block_index - 1] += m_block_store.sizes[block_index];
             // Resize to 0 to prevent deletion of cells in case of managed cells.
-            element_block_func::resize_block(*next_data, 0);
+            block_funcs::resize_block(*next_data, 0);
             delete_element_block(block_index);
             m_block_store.erase(block_index);
         }
@@ -2328,7 +2328,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         // Upper (previous) block is larger than the lower (next) block. Copy
         // the lower values to the next block.
         element_block_func::assign_values_from_block(*next_data, *blk_data, size_blk_prev, size_blk_next);
-        element_block_func::resize_block(*blk_data, size_blk_prev);
+        block_funcs::resize_block(*blk_data, size_blk_prev);
         m_block_store.sizes[block_index] = size_blk_prev;
     }
     else
@@ -2410,7 +2410,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::prepare_blocks_to_transfer(
             element_block_func::assign_values_from_block(*block_first.element_block, *blk_data1, offset1, blk_size);
 
             // Shrink the existing block.
-            element_block_func::resize_block(*blk_data1, offset1);
+            block_funcs::resize_block(*blk_data1, offset1);
         }
 
         m_block_store.sizes[block_index1] = offset1;
@@ -2468,7 +2468,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
     element_block_type* blk_data = m_block_store.element_blocks[block_index];
     if (!overwrite)
         // Resize block to 0 before deleting, to prevent its elements from getting deleted.
-        element_block_func::resize_block(*blk_data, 0);
+        block_funcs::resize_block(*blk_data, 0);
 
     delete_element_block(block_index);
 
@@ -2613,7 +2613,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
             element_block_func::assign_values_from_block(*new_data, *blk_data, pos, length);
             element_block_func::overwrite_values(*blk_data, 0, pos);
 
-            element_block_func::resize_block(*blk_data, 0); // to prevent deletion of elements
+            block_funcs::resize_block(*blk_data, 0); // to prevent deletion of elements
             block_funcs::delete_block(blk_data);
             m_block_store.element_blocks[block_index] = new_data.release();
 
@@ -2653,7 +2653,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         if (blk_data)
         {
             element_block_func::overwrite_values(*blk_data, new_size, data_length);
-            element_block_func::resize_block(*blk_data, new_size);
+            block_funcs::resize_block(*blk_data, new_size);
         }
 
         new_size = end_row - start_row + 1; // size of the data array being inserted.
@@ -2788,7 +2788,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         {
             size_type n = m_block_store.sizes[block_index1] - offset;
             element_block_func::overwrite_values(*blk1_data, offset, n);
-            element_block_func::resize_block(*blk1_data, offset);
+            block_funcs::resize_block(*blk1_data, offset);
         }
         m_block_store.sizes[block_index1] = offset;
     }
@@ -2818,7 +2818,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 // Merge the whole block 3 with the new data. Remove block 3
                 // afterward.  Resize block 3 to zero to prevent invalid free.
                 element_block_func::append_values_from_block(*data_blk.element_block, *blk3_data);
-                element_block_func::resize_block(*blk3_data, 0);
+                block_funcs::resize_block(*blk3_data, 0);
                 data_blk.size += m_block_store.sizes[block_index2 + 1];
                 ++index_erase_end;
             }
@@ -2840,7 +2840,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 size_type size_to_copy = end_row_in_block2 - end_row;
                 element_block_func::append_values_from_block(
                     *data_blk.element_block, *blk2_data, copy_pos, size_to_copy);
-                element_block_func::resize_block(*blk2_data, copy_pos);
+                block_funcs::resize_block(*blk2_data, copy_pos);
                 data_blk.size += size_to_copy;
 
                 ++index_erase_end;
@@ -2905,7 +2905,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
 
         // Shrink it first to remove the old values, then append new values.
         element_block_func::overwrite_values(*blk1_data, offset, m_block_store.sizes[block_index1] - offset);
-        element_block_func::resize_block(*blk1_data, offset);
+        block_funcs::resize_block(*blk1_data, offset);
         mdds_mtv_append_values(*blk1_data, *it_begin, it_begin, it_end);
         m_block_store.sizes[block_index1] = offset + length;
 
@@ -2930,7 +2930,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 size_type begin_pos = end_row - start_row_in_block2 + 1;
                 element_block_func::append_values_from_block(*blk1_data, *blk2_data, begin_pos, data_length);
                 element_block_func::overwrite_values(*blk2_data, 0, begin_pos);
-                element_block_func::resize_block(*blk2_data, 0);
+                block_funcs::resize_block(*blk2_data, 0);
                 m_block_store.sizes[block_index1] += data_length;
                 ++index_erase_end;
             }
@@ -3161,7 +3161,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
                             m_block_store.positions[block_index + 1] = position;
 
                             // Resize the previous block to zero
-                            element_block_func::resize_block(*prev_data, 0);
+                            block_funcs::resize_block(*prev_data, 0);
                             m_hdl_event.element_block_released(prev_data);
 
                             // Release both blocks which are no longer used
@@ -3181,7 +3181,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
                             element_block_type* data_next = m_block_store.element_blocks[block_index + 1];
                             mdds_mtv_append_value(*data_prev, cell);
                             element_block_func::append_values_from_block(*data_prev, *data_next);
-                            element_block_func::resize_block(*data_next, 0);
+                            block_funcs::resize_block(*data_next, 0);
                             m_hdl_event.element_block_released(data_next);
                             block_funcs::delete_block(data);
                             block_funcs::delete_block(data_next);
@@ -3436,7 +3436,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
             m_block_store.sizes[block_index - 1] += 1 + m_block_store.sizes[block_index + 1];
             mdds_mtv_append_value(*prev_data, cell);
             element_block_func::append_values_from_block(*prev_data, *next_data);
-            element_block_func::resize_block(*next_data, 0); // to prevent deletion of managed cells on block deletion
+            block_funcs::resize_block(*next_data, 0); // to prevent deletion of managed cells on block deletion
 
             // Delete the current and next blocks.
             delete_element_block(block_index);
@@ -3656,7 +3656,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::release()
         if (!data)
             continue;
 
-        element_block_func::resize_block(*data, 0);
+        block_funcs::resize_block(*data, 0);
         m_hdl_event.element_block_released(data);
         block_funcs::delete_block(data);
     }
@@ -3972,7 +3972,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::insert_cells_to_middle(
         // Transfer the lower part of the current block to the new block.
         size_type offset = row - start_row;
         element_block_func::assign_values_from_block(*blk3_data, *blk_data, offset, n2);
-        element_block_func::resize_block(*blk_data, m_block_store.sizes[block_index]);
+        block_funcs::resize_block(*blk_data, m_block_store.sizes[block_index]);
     }
 
     adjust_block_positions_func{}(m_block_store, block_index + 3, length);
@@ -4211,8 +4211,8 @@ typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<
             element_block_func::append_values_from_block(*prev_data, *next_data);
 
             // Avoid overwriting the transferred elements.
-            element_block_func::resize_block(*blk_data, 0);
-            element_block_func::resize_block(*next_data, 0);
+            block_funcs::resize_block(*blk_data, 0);
+            block_funcs::resize_block(*next_data, 0);
 
             delete_element_block(block_index);
             delete_element_block(block_index + 1);
@@ -4295,7 +4295,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::merge_with_next_block(size_type bl
 
     // Merge it with the next block.
     element_block_func::append_values_from_block(*blk_data, *next_data);
-    element_block_func::resize_block(*next_data, 0);
+    block_funcs::resize_block(*next_data, 0);
     m_block_store.sizes[block_index] += m_block_store.sizes[block_index + 1];
     delete_element_block(block_index + 1);
     m_block_store.erase(block_index + 1);
@@ -4338,7 +4338,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<El
             }
 
             // Shrink the current data block.
-            element_block_func::resize_block(*blk_data, offset);
+            block_funcs::resize_block(*blk_data, offset);
             m_block_store.sizes[block_index] = offset;
             m_block_store.sizes[block_index + 2] = lower_block_size;
         }
@@ -4545,7 +4545,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
     {
         // The new elements will replace the lower part of the block.
         assert(dst_blk_data);
-        element_block_func::resize_block(*dst_blk_data, dst_offset);
+        block_funcs::resize_block(*dst_blk_data, dst_offset);
         m_block_store.sizes[dst_index] = dst_offset;
 
         if (blk_next)
@@ -4714,7 +4714,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::resize_impl(size_type new_size)
         if (data)
         {
             element_block_func::overwrite_values(*data, new_end_row + 1, end_row_in_block - new_end_row);
-            element_block_func::resize_block(*data, new_block_size);
+            block_funcs::resize_block(*data, new_block_size);
         }
         m_block_store.sizes[block_index] = new_block_size;
     }
@@ -4828,7 +4828,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
             // the source block to remove the transferred elements.
             element_block_func::assign_values_from_block(
                 *dst_data1, *blk_data1, offset, m_block_store.sizes[block_index1] - offset);
-            element_block_func::resize_block(*blk_data1, offset);
+            block_funcs::resize_block(*blk_data1, offset);
         }
 
         m_block_store.sizes[block_index1] = offset;

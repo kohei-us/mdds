@@ -94,6 +94,15 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, get_block_type(*p), __func__);
         f(p);
     }
+
+    static void resize_block(base_element_block& block, std::size_t new_size)
+    {
+        static std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t)>> func_map{
+            {Ts::block_type, Ts::resize_block}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        f(block, new_size);
+    }
 };
 
 }} // namespace mdds::mtv
