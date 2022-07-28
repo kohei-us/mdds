@@ -46,6 +46,18 @@ inline void throw_unknown_block(const char* func, const mdds::mtv::element_t typ
     throw general_error(os.str());
 }
 
+template<typename Ret, typename... Args>
+auto& find_func(
+    const std::unordered_map<element_t, std::function<Ret(Args...)>>& func_map, element_t type,
+    const char* src_func_name)
+{
+    auto it = func_map.find(type);
+    if (it == func_map.end())
+        detail::throw_unknown_block(src_func_name, type);
+
+    return it->second;
+}
+
 } // namespace detail
 
 template<typename... Ts>
@@ -56,11 +68,8 @@ struct element_block_funcs
         static const std::unordered_map<element_t, std::function<base_element_block*(std::size_t)>> func_map{
             {Ts::block_type, Ts::create_block}...};
 
-        auto it = func_map.find(type);
-        if (it == func_map.end())
-            detail::throw_unknown_block(__func__, type);
-
-        return it->second(init_size);
+        auto& f = detail::find_func(func_map, type, __func__);
+        return f(init_size);
     }
 
     static base_element_block* clone_block(const base_element_block& block)
@@ -68,11 +77,8 @@ struct element_block_funcs
         static const std::unordered_map<element_t, std::function<base_element_block*(const base_element_block&)>>
             func_map{{Ts::block_type, Ts::clone_block}...};
 
-        auto it = func_map.find(get_block_type(block));
-        if (it == func_map.end())
-            detail::throw_unknown_block(__func__, get_block_type(block));
-
-        return it->second(block);
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        return f(block);
     }
 
     static void delete_block(const base_element_block* p)
@@ -83,15 +89,10 @@ struct element_block_funcs
         static std::unordered_map<element_t, std::function<void(const base_element_block*)>> func_map{
             {Ts::block_type, Ts::delete_block}...};
 
-        auto it = func_map.find(get_block_type(*p));
-        if (it == func_map.end())
-        {
-            // TODO: We should not throw an exception here as this gets called
-            // from a destructor and destructors should not throw exceptions.
-            detail::throw_unknown_block(__func__, get_block_type(*p));
-        }
-
-        it->second(p);
+        // TODO: We should not throw an exception here as this gets called
+        // from a destructor and destructors should not throw exceptions.
+        auto& f = detail::find_func(func_map, get_block_type(*p), __func__);
+        f(p);
     }
 };
 
