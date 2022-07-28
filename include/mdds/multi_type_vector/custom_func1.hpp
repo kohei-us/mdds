@@ -108,7 +108,7 @@ struct custom_block_func1
         switch (get_block_type(block))
         {
             case _Block::block_type:
-                _Block::erase_block(block, pos);
+                _Block::erase_value(block, pos);
                 break;
             default:
                 element_block_func::erase(block, pos);
@@ -120,7 +120,7 @@ struct custom_block_func1
         switch (get_block_type(block))
         {
             case _Block::block_type:
-                _Block::erase_block(block, pos, size);
+                _Block::erase_values(block, pos, size);
                 break;
             default:
                 element_block_func_base::erase(block, pos, size);

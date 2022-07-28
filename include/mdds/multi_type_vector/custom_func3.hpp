@@ -131,13 +131,13 @@ struct custom_block_func3
         switch (get_block_type(block))
         {
             case _Block1::block_type:
-                _Block1::erase_block(block, pos);
+                _Block1::erase_value(block, pos);
                 break;
             case _Block2::block_type:
-                _Block2::erase_block(block, pos);
+                _Block2::erase_value(block, pos);
                 break;
             case _Block3::block_type:
-                _Block3::erase_block(block, pos);
+                _Block3::erase_value(block, pos);
                 break;
             default:
                 element_block_func::erase(block, pos);
@@ -149,13 +149,13 @@ struct custom_block_func3
         switch (get_block_type(block))
         {
             case _Block1::block_type:
-                _Block1::erase_block(block, pos, size);
+                _Block1::erase_values(block, pos, size);
                 break;
             case _Block2::block_type:
-                _Block2::erase_block(block, pos, size);
+                _Block2::erase_values(block, pos, size);
                 break;
             case _Block3::block_type:
-                _Block3::erase_block(block, pos, size);
+                _Block3::erase_values(block, pos, size);
                 break;
             default:
                 element_block_func_base::erase(block, pos, size);

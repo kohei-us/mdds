@@ -507,7 +507,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
             blk->size -= 1;
             blk->position += 1;
             element_block_func::overwrite_values(*blk->data, 0, 1);
-            element_block_func::erase(*blk->data, 0);
+            block_funcs::erase(*blk->data, 0);
             blk_prev->size += 1;
             mdds_mtv_append_value(*blk_prev->data, value);
             return get_iterator(block_index - 1);
@@ -555,7 +555,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         // Pop the last cell off the current block, and prepend the
         // new value to the next block.
         element_block_func::overwrite_values(*blk->data, blk->size - 1, 1);
-        element_block_func::erase(*blk->data, blk->size - 1);
+        block_funcs::erase(*blk->data, blk->size - 1);
         blk->size -= 1;
         mdds_mtv_prepend_value(*blk_next->data, value);
         blk_next->size += 1;
@@ -586,7 +586,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
     // Pop the last element from the current block, and prepend the cell
     // into the next block.
     element_block_func::overwrite_values(*blk->data, blk->size - 1, 1);
-    element_block_func::erase(*blk->data, blk->size - 1);
+    block_funcs::erase(*blk->data, blk->size - 1);
     blk->size -= 1;
     mdds_mtv_prepend_value(*blk_next->data, value);
     blk_next->size += 1;
@@ -1462,7 +1462,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_top_of_data_block(size
     if (blk.data)
     {
         element_block_func::overwrite_values(*blk.data, 0, 1);
-        element_block_func::erase(*blk.data, 0);
+        block_funcs::erase(*blk.data, 0);
     }
 
     m_blocks.emplace(m_blocks.begin() + block_index, position, 1);
@@ -1478,7 +1478,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::set_cell_to_bottom_of_data_block(s
     if (blk.data)
     {
         element_block_func::overwrite_values(*blk.data, blk.size - 1, 1);
-        element_block_func::erase(*blk.data, blk.size - 1);
+        block_funcs::erase(*blk.data, blk.size - 1);
     }
     blk.size -= 1;
     size_type next_position = detail::calc_next_block_position(blk);
@@ -2164,7 +2164,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 dest.m_hdl_event.element_block_acquired(blk_dest->data);
 
                 element_block_func::assign_values_from_block(*blk_dest->data, *blk.data, 0, size_to_trans);
-                element_block_func::erase(*blk.data, 0, size_to_trans);
+                block_funcs::erase(*blk.data, 0, size_to_trans);
             }
 
             blk.position += size_to_trans;
@@ -2437,7 +2437,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
             other.exchange_elements(*blk_src->data, src_offset, other_block_index, dst_offset, len));
 
         // Shrink the current block by erasing the top part.
-        element_block_func::erase(*blk_src->data, 0, len);
+        block_funcs::erase(*blk_src->data, 0, len);
         blk_src->position += len;
         blk_src->size -= len;
 
@@ -2557,7 +2557,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_to_multi_blocks(
         else
         {
             // Shrink the current block by erasing the top part.
-            element_block_func::erase(*blk_src->data, 0, len);
+            block_funcs::erase(*blk_src->data, 0, len);
             blk_src->size -= len;
             blk_src->position += len;
         }
@@ -2715,7 +2715,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::prepare_blocks_to_transfer(
             element_block_func::assign_values_from_block(*block_last.data, *blk->data, 0, blk_size);
 
             // Shrink the existing block.
-            element_block_func::erase(*blk->data, 0, blk_size);
+            block_funcs::erase(*blk->data, 0, blk_size);
         }
 
         blk->position += blk_size;
@@ -2842,7 +2842,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_impl(size_type start_row, si
         {
             // Erase the upper part.
             element_block_func::overwrite_values(*blk->data, 0, size_to_erase);
-            element_block_func::erase(*blk->data, 0, size_to_erase);
+            block_funcs::erase(*blk->data, 0, size_to_erase);
         }
 
         adjust_block_offset = 1; // Exclude this block from later block position adjustment.
@@ -2880,7 +2880,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
         // Erase data in the data block.
         size_type offset = start_pos - blk->position;
         element_block_func::overwrite_values(*blk->data, offset, size_to_erase);
-        element_block_func::erase(*blk->data, offset, size_to_erase);
+        block_funcs::erase(*blk->data, offset, size_to_erase);
     }
 
     blk->size -= size_to_erase;
@@ -3113,7 +3113,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         blk_next->size = size_blk_prev;
 
         // Remove the copied values and push the rest to the top.
-        element_block_func::erase(*blk->data, 0, size_blk_prev);
+        block_funcs::erase(*blk->data, 0, size_blk_prev);
 
         // Set the size of the current block to its new size ( what is after the new block )
         blk->size = size_blk_next;
@@ -3353,7 +3353,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::block& multi_type_vector<ElemB
             }
 
             // Remove the upper and middle values and push the rest to the top.
-            element_block_func::erase(*blk.data, 0, lower_data_start);
+            block_funcs::erase(*blk.data, 0, lower_data_start);
 
             // Set the size of the current block to its new size ( what is after the new block )
             blk.size = lower_block_size;
@@ -3490,7 +3490,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
 
             // We need to keep the tail elements of the current block.
             element_block_func::assign_values_from_block(*data, *blk->data, 0, len);
-            element_block_func::erase(*blk->data, 0, len);
+            block_funcs::erase(*blk->data, 0, len);
         }
 
         size_type position = blk->position;
@@ -3939,7 +3939,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
             if (blk2->data)
             {
                 element_block_func::overwrite_values(*blk2->data, 0, size_to_erase);
-                element_block_func::erase(*blk2->data, 0, size_to_erase);
+                block_funcs::erase(*blk2->data, 0, size_to_erase);
             }
             blk2->size -= size_to_erase;
             blk2->position += size_to_erase;
@@ -4018,7 +4018,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
             {
                 // Erase the upper part of block 2.
                 size_type size_to_erase = end_row - start_row_in_block2 + 1;
-                element_block_func::erase(*blk2->data, 0, size_to_erase);
+                block_funcs::erase(*blk2->data, 0, size_to_erase);
                 blk2->size -= size_to_erase;
                 blk2->position += size_to_erase;
             }
@@ -4558,7 +4558,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         // Set the upper part of the block empty.
         if (overwrite)
             element_block_func::overwrite_values(*blk->data, 0, empty_block_size);
-        element_block_func::erase(*blk->data, 0, empty_block_size);
+        block_funcs::erase(*blk->data, 0, empty_block_size);
         blk->size -= empty_block_size;
 
         // Check if the preceding block (if exists) is also empty.
@@ -4587,7 +4587,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
         size_type start_pos = start_row - start_row_in_block;
         if (overwrite)
             element_block_func::overwrite_values(*blk->data, start_pos, empty_block_size);
-        element_block_func::erase(*blk->data, start_pos, empty_block_size);
+        block_funcs::erase(*blk->data, start_pos, empty_block_size);
         blk->size -= empty_block_size;
 
         // Check if the following block (if exists) is also empty.
@@ -4715,7 +4715,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 if (overwrite)
                     element_block_func::overwrite_values(*blk->data, 0, size_to_erase);
 
-                element_block_func::erase(*blk->data, 0, size_to_erase);
+                block_funcs::erase(*blk->data, 0, size_to_erase);
                 blk->size -= size_to_erase;
                 blk->position = start_row_in_block2 + size_to_erase;
             }

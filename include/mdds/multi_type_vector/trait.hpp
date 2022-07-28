@@ -301,40 +301,40 @@ void element_block_func_base::erase(base_element_block& block, size_t pos)
     switch (get_block_type(block))
     {
         case element_type_float:
-            float_element_block::erase_block(block, pos);
+            float_element_block::erase_value(block, pos);
             break;
         case element_type_double:
-            double_element_block::erase_block(block, pos);
+            double_element_block::erase_value(block, pos);
             break;
         case element_type_string:
-            string_element_block::erase_block(block, pos);
+            string_element_block::erase_value(block, pos);
             break;
         case element_type_int16:
-            int16_element_block::erase_block(block, pos);
+            int16_element_block::erase_value(block, pos);
             break;
         case element_type_uint16:
-            uint16_element_block::erase_block(block, pos);
+            uint16_element_block::erase_value(block, pos);
             break;
         case element_type_int32:
-            int32_element_block::erase_block(block, pos);
+            int32_element_block::erase_value(block, pos);
             break;
         case element_type_uint32:
-            uint32_element_block::erase_block(block, pos);
+            uint32_element_block::erase_value(block, pos);
             break;
         case element_type_int64:
-            int64_element_block::erase_block(block, pos);
+            int64_element_block::erase_value(block, pos);
             break;
         case element_type_uint64:
-            uint64_element_block::erase_block(block, pos);
+            uint64_element_block::erase_value(block, pos);
             break;
         case element_type_boolean:
-            boolean_element_block::erase_block(block, pos);
+            boolean_element_block::erase_value(block, pos);
             break;
         case element_type_int8:
-            int8_element_block::erase_block(block, pos);
+            int8_element_block::erase_value(block, pos);
             break;
         case element_type_uint8:
-            uint8_element_block::erase_block(block, pos);
+            uint8_element_block::erase_value(block, pos);
             break;
         default:
             throw general_error("erase: failed to erase an element from a block of unknown type.");
@@ -346,40 +346,40 @@ void element_block_func_base::erase(base_element_block& block, size_t pos, size_
     switch (get_block_type(block))
     {
         case element_type_float:
-            float_element_block::erase_block(block, pos, size);
+            float_element_block::erase_values(block, pos, size);
             break;
         case element_type_double:
-            double_element_block::erase_block(block, pos, size);
+            double_element_block::erase_values(block, pos, size);
             break;
         case element_type_string:
-            string_element_block::erase_block(block, pos, size);
+            string_element_block::erase_values(block, pos, size);
             break;
         case element_type_int16:
-            int16_element_block::erase_block(block, pos, size);
+            int16_element_block::erase_values(block, pos, size);
             break;
         case element_type_uint16:
-            uint16_element_block::erase_block(block, pos, size);
+            uint16_element_block::erase_values(block, pos, size);
             break;
         case element_type_int32:
-            int32_element_block::erase_block(block, pos, size);
+            int32_element_block::erase_values(block, pos, size);
             break;
         case element_type_uint32:
-            uint32_element_block::erase_block(block, pos, size);
+            uint32_element_block::erase_values(block, pos, size);
             break;
         case element_type_int64:
-            int64_element_block::erase_block(block, pos, size);
+            int64_element_block::erase_values(block, pos, size);
             break;
         case element_type_uint64:
-            uint64_element_block::erase_block(block, pos, size);
+            uint64_element_block::erase_values(block, pos, size);
             break;
         case element_type_boolean:
-            boolean_element_block::erase_block(block, pos, size);
+            boolean_element_block::erase_values(block, pos, size);
             break;
         case element_type_int8:
-            int8_element_block::erase_block(block, pos, size);
+            int8_element_block::erase_values(block, pos, size);
             break;
         case element_type_uint8:
-            uint8_element_block::erase_block(block, pos, size);
+            uint8_element_block::erase_values(block, pos, size);
             break;
         default:
             throw general_error("erase: failed to erase elements from a block of unknown type.");

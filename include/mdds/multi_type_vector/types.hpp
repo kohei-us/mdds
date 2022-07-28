@@ -592,13 +592,13 @@ public:
     {}
 #endif
 
-    static void erase_block(base_element_block& blk, size_t pos)
+    static void erase_value(base_element_block& blk, size_t pos)
     {
         store_type& blk2 = get(blk).m_array;
         blk2.erase(blk2.begin() + pos);
     }
 
-    static void erase_block(base_element_block& blk, size_t pos, size_t size)
+    static void erase_values(base_element_block& blk, size_t pos, size_t size)
     {
         store_type& blk2 = get(blk).m_array;
         blk2.erase(blk2.begin() + pos, blk2.begin() + pos + size);

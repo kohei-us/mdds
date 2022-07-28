@@ -112,6 +112,24 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
         f(block);
     }
+
+    static void erase(base_element_block& block, std::size_t pos)
+    {
+        static std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t)>> func_map{
+            {Ts::block_type, Ts::erase_value}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        f(block, pos);
+    }
+
+    static void erase(base_element_block& block, std::size_t pos, std::size_t size)
+    {
+        static std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t, std::size_t)>>
+            func_map{{Ts::block_type, Ts::erase_values}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        f(block, pos, size);
+    }
 };
 
 }} // namespace mdds::mtv
