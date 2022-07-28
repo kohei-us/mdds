@@ -90,8 +90,14 @@ public:
     typedef size_t size_type;
 
 private:
-    using store_type =
-        mdds::multi_type_vector<typename matrix_trait::element_block_func, mtv::standard_element_blocks_trait>;
+    struct mtv_trait : public mdds::mtv::default_trait
+    {
+        using block_funcs = mdds::mtv::element_block_funcs<
+            mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::double_element_block,
+            typename matrix_trait::string_element_block, typename matrix_trait::integer_element_block>;
+    };
+
+    using store_type = mdds::multi_type_vector<typename matrix_trait::element_block_func, mtv_trait>;
 
 public:
     typedef typename store_type::position_type position_type;

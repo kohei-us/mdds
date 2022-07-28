@@ -31,13 +31,15 @@
 #include <mdds/multi_type_vector/soa/main.hpp>
 #include <mdds/multi_type_vector/trait.hpp>
 #include <mdds/multi_type_vector/collection.hpp>
+#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <iostream>
 #include <vector>
 #include <deque>
 #include <memory>
 
-using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func>;
+using mtv_type =
+    mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func, mdds::mtv::standard_element_blocks_trait>;
 using cols_type = mdds::mtv::collection<mtv_type>;
 
 #include "all.inl"

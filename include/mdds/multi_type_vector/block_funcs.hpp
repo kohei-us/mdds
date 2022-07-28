@@ -33,6 +33,7 @@
 
 #include <unordered_map>
 #include <functional>
+#include <sstream>
 
 namespace mdds { namespace mtv {
 
@@ -49,6 +50,44 @@ struct element_block_funcs
             throw general_error("create_new_block: failed to create a new block of unknown type.");
 
         return it->second(init_size);
+    }
+
+    static base_element_block* clone_block(const base_element_block& block)
+    {
+        static const std::unordered_map<element_t, std::function<base_element_block*(const base_element_block&)>>
+            func_map{{Ts::block_type, Ts::clone_block}...};
+
+        auto it = func_map.find(get_block_type(block));
+        if (it == func_map.end())
+            throw general_error("clone_block: failed to clone a block of unknown type.");
+
+        return it->second(block);
+    }
+
+    static void delete_block(const base_element_block* p)
+    {
+        if (!p)
+            return;
+
+        static std::unordered_map<element_t, std::function<void(const base_element_block*)>> func_map{
+            {Ts::block_type, Ts::delete_block}...};
+
+        auto it = func_map.find(get_block_type(*p));
+        if (it == func_map.end())
+        {
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+            // We sould not throw an exception here as this gets called from a
+            // destructor and destructors should not throw exceptions.
+            std::ostringstream os;
+            os << __FILE__ << "#" << __LINE__ << " (element_block_func_base:delete_block): "
+               << "failed to delete a block of unknown type (" << get_block_type(*p) << ")" << std::endl;
+            throw general_error(os.str());
+#else
+            throw general_error("delete_block: failed to delete a block of unknown type.");
+#endif
+        }
+
+        it->second(p);
     }
 };
 

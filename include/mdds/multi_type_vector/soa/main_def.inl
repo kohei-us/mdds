@@ -54,7 +54,7 @@ multi_type_vector<ElemBlockFunc, Trait>::blocks_type::blocks_type(const blocks_t
     for (element_block_type*& data : element_blocks)
     {
         if (data)
-            data = element_block_func::clone_block(*data);
+            data = block_funcs::clone_block(*data);
     }
 }
 
@@ -438,7 +438,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::delete_element_block(size_type blo
         return;
 
     m_hdl_event.element_block_released(data);
-    element_block_func::delete_block(data);
+    block_funcs::delete_block(data);
     m_block_store.element_blocks[block_index] = nullptr;
 }
 
@@ -2584,7 +2584,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
             if (blk_data)
             {
                 m_hdl_event.element_block_released(blk_data);
-                element_block_func::delete_block(blk_data);
+                block_funcs::delete_block(blk_data);
             }
 
             m_block_store.element_blocks[block_index] = block_funcs::create_new_block(cat, 0);
@@ -2614,7 +2614,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
             element_block_func::overwrite_values(*blk_data, 0, pos);
 
             element_block_func::resize_block(*blk_data, 0); // to prevent deletion of elements
-            element_block_func::delete_block(blk_data);
+            block_funcs::delete_block(blk_data);
             m_block_store.element_blocks[block_index] = new_data.release();
 
             // We intentionally don't trigger element block events here.
@@ -3165,8 +3165,8 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
                             m_hdl_event.element_block_released(prev_data);
 
                             // Release both blocks which are no longer used
-                            element_block_func::delete_block(data);
-                            element_block_func::delete_block(prev_data);
+                            block_funcs::delete_block(data);
+                            block_funcs::delete_block(prev_data);
 
                             // Remove the previous and current blocks.
                             m_block_store.erase(block_index - 1, 2);
@@ -3183,8 +3183,8 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
                             element_block_func::append_values_from_block(*data_prev, *data_next);
                             element_block_func::resize_block(*data_next, 0);
                             m_hdl_event.element_block_released(data_next);
-                            element_block_func::delete_block(data);
-                            element_block_func::delete_block(data_next);
+                            block_funcs::delete_block(data);
+                            block_funcs::delete_block(data_next);
                             m_block_store.erase(block_index, 2);
                         }
                     }
@@ -3658,7 +3658,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::release()
 
         element_block_func::resize_block(*data, 0);
         m_hdl_event.element_block_released(data);
-        element_block_func::delete_block(data);
+        block_funcs::delete_block(data);
     }
 
     m_block_store.clear();
@@ -3897,7 +3897,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::create_new_block_with_new_cell(siz
     if (data)
     {
         m_hdl_event.element_block_released(data);
-        element_block_func::delete_block(data);
+        block_funcs::delete_block(data);
     }
 
     // New cell block with size 1.

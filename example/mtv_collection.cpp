@@ -29,6 +29,7 @@
 #include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector/collection.hpp>
 #include <mdds/multi_type_vector/trait.hpp>
+#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <vector>
 #include <iostream>
@@ -36,7 +37,7 @@
 void example1()
 {
     //!code-start: declare
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func>;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, mdds::mtv::standard_element_blocks_trait>;
     using collection_type = mdds::mtv::collection<mtv_type>;
 
     std::vector<mtv_type> columns(5);

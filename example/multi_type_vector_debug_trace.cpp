@@ -30,6 +30,7 @@
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector/soa/main.hpp>
 #include <mdds/multi_type_vector/trait.hpp>
+#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <iostream>
 //!code-end: header
@@ -37,7 +38,7 @@
 //!code-start: types
 namespace mtv = mdds::mtv;
 
-struct mtv_trait : public mtv::default_trait
+struct mtv_trait : public mtv::standard_element_blocks_trait
 {
     static void trace(const mtv::trace_method_properties_t& props)
     {
