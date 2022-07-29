@@ -76,7 +76,6 @@ public:
 
     using element_block_type = mdds::mtv::base_element_block;
     using element_category_type = mdds::mtv::element_t;
-    using element_block_func = ElemBlockFunc;
     using block_funcs = typename Trait::block_funcs;
 
     /**
@@ -237,7 +236,7 @@ private:
     {
         void operator()(const element_block_type* p)
         {
-            element_block_func::delete_block(p);
+            block_funcs::delete_block(p);
         }
     };
 
