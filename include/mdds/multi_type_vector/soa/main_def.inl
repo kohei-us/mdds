@@ -1454,7 +1454,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
             // Both are empty blocks. Nothing to swap.
             return;
 
-        element_block_func::swap_values(*src_data, *dst_data, src_offset, dst_offset, len);
+        block_funcs::swap_values(*src_data, *dst_data, src_offset, dst_offset, len);
         return;
     }
 

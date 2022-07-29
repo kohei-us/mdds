@@ -172,6 +172,20 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, get_block_type(dest), __func__);
         f(dest, src, begin_pos, len);
     }
+
+    static void swap_values(
+        base_element_block& blk1, base_element_block& blk2, std::size_t pos1, std::size_t pos2, std::size_t len)
+    {
+        element_t blk1_type = get_block_type(blk1);
+        assert(blk1_type == get_block_type(blk2));
+
+        using func_type =
+            std::function<void(base_element_block&, base_element_block&, std::size_t, std::size_t, std::size_t)>;
+        static const std::unordered_map<element_t, func_type> func_map{{Ts::block_type, Ts::swap_values}...};
+
+        auto& f = detail::find_func(func_map, blk1_type, __func__);
+        f(blk1, blk2, pos1, pos2, len);
+    }
 };
 
 }} // namespace mdds::mtv
