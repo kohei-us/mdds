@@ -186,6 +186,19 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, blk1_type, __func__);
         f(blk1, blk2, pos1, pos2, len);
     }
+
+    static bool equal_block(const base_element_block& left, const base_element_block& right)
+    {
+        element_t block_type = get_block_type(left);
+        if (block_type != get_block_type(right))
+            return false;
+
+        using func_type = std::function<bool(const base_element_block&, const base_element_block&)>;
+        static const std::unordered_map<element_t, func_type> func_map{{Ts::block_type, Ts::equal_block}...};
+
+        auto& f = detail::find_func(func_map, block_type, __func__);
+        return f(left, right);
+    }
 };
 
 }} // namespace mdds::mtv

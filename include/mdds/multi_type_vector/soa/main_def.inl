@@ -189,7 +189,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::blocks_type::equals(const blocks_t
         }
 
         assert(data1 && data2);
-        if (!element_block_func::equal_block(*data1, *data2))
+        if (!block_funcs::equal_block(*data1, *data2))
             return false;
     }
 

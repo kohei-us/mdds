@@ -666,6 +666,11 @@ public:
         }
     }
 
+    static bool equal_block(const base_element_block& left, const base_element_block& right)
+    {
+        return get(left) == get(right);
+    }
+
     template<typename _Iter>
     static void set_values(base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
     {

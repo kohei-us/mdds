@@ -4432,7 +4432,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::operator==(const multi_type_vector
         }
 
         assert(blk1->data && blk2->data);
-        if (!element_block_func::equal_block(*blk1->data, *blk2->data))
+        if (!block_funcs::equal_block(*blk1->data, *blk2->data))
             return false;
     }
 
