@@ -4382,7 +4382,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::shrink_to_fit()
         block* blk = &(*it);
         assert(blk);
         if (blk->data)
-            element_block_func::shrink_to_fit(*blk->data);
+            block_funcs::shrink_to_fit(*blk->data);
     }
 }
 

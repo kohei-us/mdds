@@ -5100,7 +5100,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::shrink_to_fit()
     for (auto* data : m_block_store.element_blocks)
     {
         if (data)
-            element_block_func::shrink_to_fit(*data);
+            block_funcs::shrink_to_fit(*data);
     }
 }
 

@@ -208,6 +208,15 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
         f(block, pos, len);
     }
+
+    static void shrink_to_fit(base_element_block& block)
+    {
+        using func_type = std::function<void(base_element_block&)>;
+        static const std::unordered_map<element_t, func_type> func_map{{Ts::block_type, Ts::shrink_to_fit}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        f(block);
+    }
 };
 
 }} // namespace mdds::mtv
