@@ -3434,7 +3434,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
             if (blk_prev)
             {
                 // Append to the previous block. Remove the current block.
-                element_block_func::append_values_from_block(*blk_prev->data, src_data, src_offset, len);
+                block_funcs::append_values_from_block(*blk_prev->data, src_data, src_offset, len);
                 blk_prev->size += len;
                 typename blocks_type::iterator it = m_blocks.begin();
                 std::advance(it, dst_index);
@@ -3500,7 +3500,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
         if (blk_prev)
         {
             // Append the new elements to the previous block.
-            element_block_func::append_values_from_block(*blk_prev->data, src_data, src_offset, len);
+            block_funcs::append_values_from_block(*blk_prev->data, src_data, src_offset, len);
             blk_prev->size += len;
         }
         else
@@ -3923,7 +3923,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 // copied portion of the block.
                 size_type copy_pos = end_row - start_row_in_block2 + 1;
                 size_type size_to_copy = end_row_in_block2 - end_row;
-                element_block_func::append_values_from_block(*data_blk.data, *blk2->data, copy_pos, size_to_copy);
+                block_funcs::append_values_from_block(*data_blk.data, *blk2->data, copy_pos, size_to_copy);
                 block_funcs::resize_block(*blk2->data, copy_pos);
                 data_blk.size += size_to_copy;
 
@@ -4008,7 +4008,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 // being deleted on block deletion.
                 size_type data_length = end_row_in_block2 - end_row;
                 size_type begin_pos = end_row - start_row_in_block2 + 1;
-                element_block_func::append_values_from_block(*blk1->data, *blk2->data, begin_pos, data_length);
+                block_funcs::append_values_from_block(*blk1->data, *blk2->data, begin_pos, data_length);
                 element_block_func::overwrite_values(*blk2->data, 0, begin_pos);
                 block_funcs::resize_block(*blk2->data, 0);
                 blk1->size += data_length;

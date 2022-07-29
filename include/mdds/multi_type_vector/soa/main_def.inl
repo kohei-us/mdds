@@ -2838,7 +2838,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 // portion of the block.
                 size_type copy_pos = end_row - start_row_in_block2 + 1;
                 size_type size_to_copy = end_row_in_block2 - end_row;
-                element_block_func::append_values_from_block(
+                block_funcs::append_values_from_block(
                     *data_blk.element_block, *blk2_data, copy_pos, size_to_copy);
                 block_funcs::resize_block(*blk2_data, copy_pos);
                 data_blk.size += size_to_copy;
@@ -2928,7 +2928,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
                 // deleted on block deletion.
                 size_type data_length = end_row_in_block2 - end_row;
                 size_type begin_pos = end_row - start_row_in_block2 + 1;
-                element_block_func::append_values_from_block(*blk1_data, *blk2_data, begin_pos, data_length);
+                block_funcs::append_values_from_block(*blk1_data, *blk2_data, begin_pos, data_length);
                 element_block_func::overwrite_values(*blk2_data, 0, begin_pos);
                 block_funcs::resize_block(*blk2_data, 0);
                 m_block_store.sizes[block_index1] += data_length;
@@ -4444,7 +4444,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
             {
                 // Append to the previous block. Remove the current block.
                 element_block_type* dst_prev_data = m_block_store.element_blocks[dst_index - 1];
-                element_block_func::append_values_from_block(*dst_prev_data, src_data, src_offset, len);
+                block_funcs::append_values_from_block(*dst_prev_data, src_data, src_offset, len);
                 m_block_store.sizes[dst_index - 1] += len;
 
                 size_type dst_erase_size = 1;
@@ -4511,7 +4511,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
         {
             // Append the new elements to the previous block.
             element_block_type* dst_prev_data = m_block_store.element_blocks[dst_index - 1];
-            element_block_func::append_values_from_block(*dst_prev_data, src_data, src_offset, len);
+            block_funcs::append_values_from_block(*dst_prev_data, src_data, src_offset, len);
             m_block_store.sizes[dst_index - 1] += len;
         }
         else
