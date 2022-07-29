@@ -199,6 +199,15 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, block_type, __func__);
         return f(left, right);
     }
+
+    static void overwrite_values(base_element_block& block, std::size_t pos, std::size_t len)
+    {
+        using func_type = std::function<void(base_element_block&, std::size_t, std::size_t)>;
+        static const std::unordered_map<element_t, func_type> func_map{{Ts::block_type, Ts::overwrite_values}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        f(block, pos, len);
+    }
 };
 
 }} // namespace mdds::mtv
