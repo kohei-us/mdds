@@ -4826,7 +4826,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::check_block_integrity() const
         {
             cat = mtv::get_block_type(*blk->data);
 
-            if (element_block_func::size(*blk->data) != blk->size)
+            if (block_funcs::size(*blk->data) != blk->size)
                 throw mdds::integrity_error("block size cache and the actual element block size differ!");
         }
 

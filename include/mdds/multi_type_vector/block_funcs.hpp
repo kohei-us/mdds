@@ -217,6 +217,15 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
         f(block);
     }
+
+    static std::size_t size(const base_element_block& block)
+    {
+        using func_type = std::function<std::size_t(const base_element_block&)>;
+        static const std::unordered_map<element_t, func_type> func_map{{Ts::block_type, Ts::size}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        return f(block);
+    }
 };
 
 }} // namespace mdds::mtv
