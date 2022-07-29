@@ -150,6 +150,17 @@ struct element_block_funcs
         auto& f = detail::find_func(func_map, get_block_type(dest), __func__);
         f(dest, src, begin_pos, len);
     }
+
+    static void assign_values_from_block(
+        base_element_block& dest, const base_element_block& src, std::size_t begin_pos, std::size_t len)
+    {
+        using func_type = std::function<void(base_element_block&, const base_element_block&, std::size_t, std::size_t)>;
+        static const std::unordered_map<element_t, func_type> func_map{
+            {Ts::block_type, Ts::assign_values_from_block}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(dest), __func__);
+        f(dest, src, begin_pos, len);
+    }
 };
 
 }} // namespace mdds::mtv
