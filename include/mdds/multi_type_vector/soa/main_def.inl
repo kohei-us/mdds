@@ -1541,7 +1541,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
         {
             // Merge with the next block.
             element_block_type* next_data = m_block_store.element_blocks[block_index + 1];
-            element_block_func::prepend_values_from_block(*next_data, *data_from_dst, 0, len);
+            block_funcs::prepend_values_from_block(*next_data, *data_from_dst, 0, len);
             block_funcs::resize_block(*data_from_dst, 0); // prevent double-delete.
             m_block_store.sizes[block_index + 1] += len;
             m_block_store.positions[block_index + 1] -= len;
@@ -3155,7 +3155,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
 
                             // Preprend the content of previous block to the next block.
                             size_type prev_size = m_block_store.sizes[block_index - 1];
-                            element_block_func::prepend_values_from_block(*next_data, *prev_data, 0, prev_size);
+                            block_funcs::prepend_values_from_block(*next_data, *prev_data, 0, prev_size);
                             m_block_store.sizes[block_index + 1] += prev_size;
                             m_block_store.positions[block_index + 1] = position;
 
@@ -4471,7 +4471,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
                 // block and use the next block to store the new elements as
                 // well as the existing ones.
                 element_block_type* dst_next_data = m_block_store.element_blocks[dst_index + 1];
-                element_block_func::prepend_values_from_block(*dst_next_data, src_data, src_offset, len);
+                block_funcs::prepend_values_from_block(*dst_next_data, src_data, src_offset, len);
                 m_block_store.positions[dst_index + 1] -= len;
                 m_block_store.sizes[dst_index + 1] += len;
                 m_block_store.erase(dst_index);
@@ -4551,7 +4551,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
         {
             // Merge with the next block.
             element_block_type* dst_next_data = m_block_store.element_blocks[dst_index + 1];
-            element_block_func::prepend_values_from_block(*dst_next_data, src_data, src_offset, len);
+            block_funcs::prepend_values_from_block(*dst_next_data, src_data, src_offset, len);
             m_block_store.positions[dst_index + 1] -= len;
             m_block_store.sizes[dst_index + 1] += len;
         }

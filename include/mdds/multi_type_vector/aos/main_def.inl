@@ -1121,8 +1121,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
                             mdds_mtv_prepend_value(*blk_next->data, cell);
 
                             // Preprend the content of previous block to the next block.
-                            element_block_func::prepend_values_from_block(
-                                *blk_next->data, *blk_prev.data, 0, blk_prev.size);
+                            block_funcs::prepend_values_from_block(*blk_next->data, *blk_prev.data, 0, blk_prev.size);
                             blk_next->size += blk_prev.size;
                             blk_next->position = position;
 
@@ -2477,7 +2476,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
         if (blk_next)
         {
             // Merge with the next block.
-            element_block_func::prepend_values_from_block(*blk_next->data, *dst_data, 0, len);
+            block_funcs::prepend_values_from_block(*blk_next->data, *dst_data, 0, len);
             block_funcs::resize_block(*dst_data, 0); // prevent double-delete.
             blk_next->size += len;
             blk_next->position -= len;
@@ -3462,7 +3461,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
                 // We need to merge with the next block.  Remove the current
                 // block and use the next block to store the new elements as
                 // well as the existing ones.
-                element_block_func::prepend_values_from_block(*blk_next->data, src_data, src_offset, len);
+                block_funcs::prepend_values_from_block(*blk_next->data, src_data, src_offset, len);
                 blk_next->position -= len;
                 blk_next->size += len;
                 m_blocks.erase(m_blocks.begin() + dst_index);
@@ -3539,7 +3538,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
         if (blk_next)
         {
             // Merge with the next block.
-            element_block_func::prepend_values_from_block(*blk_next->data, src_data, src_offset, len);
+            block_funcs::prepend_values_from_block(*blk_next->data, src_data, src_offset, len);
             blk_next->position -= len;
             blk_next->size += len;
         }
