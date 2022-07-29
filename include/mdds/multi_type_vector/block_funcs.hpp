@@ -86,7 +86,7 @@ struct element_block_funcs
         if (!p)
             return;
 
-        static std::unordered_map<element_t, std::function<void(const base_element_block*)>> func_map{
+        static const std::unordered_map<element_t, std::function<void(const base_element_block*)>> func_map{
             {Ts::block_type, Ts::delete_block}...};
 
         // TODO: We should not throw an exception here as this gets called
@@ -97,7 +97,7 @@ struct element_block_funcs
 
     static void resize_block(base_element_block& block, std::size_t new_size)
     {
-        static std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t)>> func_map{
+        static const std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t)>> func_map{
             {Ts::block_type, Ts::resize_block}...};
 
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
@@ -106,7 +106,7 @@ struct element_block_funcs
 
     static void print_block(const base_element_block& block)
     {
-        static std::unordered_map<element_t, std::function<void(const base_element_block&)>> func_map{
+        static const std::unordered_map<element_t, std::function<void(const base_element_block&)>> func_map{
             {Ts::block_type, Ts::print_block}...};
 
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
@@ -115,7 +115,7 @@ struct element_block_funcs
 
     static void erase(base_element_block& block, std::size_t pos)
     {
-        static std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t)>> func_map{
+        static const std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t)>> func_map{
             {Ts::block_type, Ts::erase_value}...};
 
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
@@ -124,11 +124,20 @@ struct element_block_funcs
 
     static void erase(base_element_block& block, std::size_t pos, std::size_t size)
     {
-        static std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t, std::size_t)>>
+        static const std::unordered_map<element_t, std::function<void(base_element_block&, std::size_t, std::size_t)>>
             func_map{{Ts::block_type, Ts::erase_values}...};
 
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
         f(block, pos, size);
+    }
+
+    static void append_block(base_element_block& dest, const base_element_block& src)
+    {
+        static const std::unordered_map<element_t, std::function<void(base_element_block&, const base_element_block&)>>
+            func_map{{Ts::block_type, Ts::append_block}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(dest), __func__);
+        f(dest, src);
     }
 };
 

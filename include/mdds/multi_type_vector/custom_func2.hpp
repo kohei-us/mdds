@@ -146,18 +146,18 @@ struct custom_block_func2
         }
     }
 
-    static void append_values_from_block(base_element_block& dest, const base_element_block& src)
+    static void append_block(base_element_block& dest, const base_element_block& src)
     {
         switch (get_block_type(dest))
         {
             case _Block1::block_type:
-                _Block1::append_values_from_block(dest, src);
+                _Block1::append_block(dest, src);
                 break;
             case _Block2::block_type:
-                _Block2::append_values_from_block(dest, src);
+                _Block2::append_block(dest, src);
                 break;
             default:
-                element_block_func_base::append_values_from_block(dest, src);
+                element_block_func_base::append_block(dest, src);
         }
     }
 

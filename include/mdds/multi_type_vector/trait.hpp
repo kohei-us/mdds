@@ -51,7 +51,7 @@ struct element_block_func_base
 
     inline static void erase(base_element_block& block, size_t pos, size_t size);
 
-    inline static void append_values_from_block(base_element_block& dest, const base_element_block& src);
+    inline static void append_block(base_element_block& dest, const base_element_block& src);
 
     inline static void append_values_from_block(
         base_element_block& dest, const base_element_block& src, size_t begin_pos, size_t len);
@@ -386,45 +386,45 @@ void element_block_func_base::erase(base_element_block& block, size_t pos, size_
     }
 }
 
-void element_block_func_base::append_values_from_block(base_element_block& dest, const base_element_block& src)
+void element_block_func_base::append_block(base_element_block& dest, const base_element_block& src)
 {
     switch (get_block_type(dest))
     {
         case element_type_float:
-            float_element_block::append_values_from_block(dest, src);
+            float_element_block::append_block(dest, src);
             break;
         case element_type_double:
-            double_element_block::append_values_from_block(dest, src);
+            double_element_block::append_block(dest, src);
             break;
         case element_type_string:
-            string_element_block::append_values_from_block(dest, src);
+            string_element_block::append_block(dest, src);
             break;
         case element_type_int16:
-            int16_element_block::append_values_from_block(dest, src);
+            int16_element_block::append_block(dest, src);
             break;
         case element_type_uint16:
-            uint16_element_block::append_values_from_block(dest, src);
+            uint16_element_block::append_block(dest, src);
             break;
         case element_type_int32:
-            int32_element_block::append_values_from_block(dest, src);
+            int32_element_block::append_block(dest, src);
             break;
         case element_type_uint32:
-            uint32_element_block::append_values_from_block(dest, src);
+            uint32_element_block::append_block(dest, src);
             break;
         case element_type_int64:
-            int64_element_block::append_values_from_block(dest, src);
+            int64_element_block::append_block(dest, src);
             break;
         case element_type_uint64:
-            uint64_element_block::append_values_from_block(dest, src);
+            uint64_element_block::append_block(dest, src);
             break;
         case element_type_boolean:
-            boolean_element_block::append_values_from_block(dest, src);
+            boolean_element_block::append_block(dest, src);
             break;
         case element_type_int8:
-            int8_element_block::append_values_from_block(dest, src);
+            int8_element_block::append_block(dest, src);
             break;
         case element_type_uint8:
-            uint8_element_block::append_values_from_block(dest, src);
+            uint8_element_block::append_block(dest, src);
             break;
         default:
             throw general_error("append_values: failed to append values to a block of unknown type.");

@@ -1146,7 +1146,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
                             // transferred cells to be deleted.
                             blk_prev.size += 1 + blk_next->size;
                             mdds_mtv_append_value(*blk_prev.data, cell);
-                            element_block_func::append_values_from_block(*blk_prev.data, *blk_next->data);
+                            block_funcs::append_block(*blk_prev.data, *blk_next->data);
                             block_funcs::resize_block(*blk_next->data, 0);
                             m_hdl_event.element_block_released(blk_next->data);
                             block_funcs::delete_block(blk->data);
@@ -1405,7 +1405,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<
             // deletion of mananged cells on block deletion.
             blk_prev->size += 1 + blk_next->size;
             mdds_mtv_append_value(*blk_prev->data, cell);
-            element_block_func::append_values_from_block(*blk_prev->data, *blk_next->data);
+            block_funcs::append_block(*blk_prev->data, *blk_next->data);
             block_funcs::resize_block(*blk_next->data, 0);
 
             // Delete the current and next blocks.
@@ -2445,7 +2445,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::swap_single_block(
         if (blk_prev)
         {
             // Append the new elements to the previous block.
-            element_block_func::append_values_from_block(*blk_prev->data, *dst_data);
+            block_funcs::append_block(*blk_prev->data, *dst_data);
             block_funcs::resize_block(*dst_data, 0); // prevent double-delete.
             blk_prev->size += len;
         }
@@ -2927,7 +2927,7 @@ void multi_type_vector<ElemBlockFunc, Trait>::erase_in_single_block(
         if (cat1 == cat2)
         {
             // Merge the two blocks.
-            element_block_func::append_values_from_block(*blk_prev->data, *blk_next->data);
+            block_funcs::append_block(*blk_prev->data, *blk_next->data);
             blk_prev->size += blk_next->size;
             // Resize to 0 to prevent deletion of cells in case of managed cells.
             block_funcs::resize_block(*blk_next->data, 0);
@@ -3447,7 +3447,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::element_block_type* multi_type
                 if (blk_next)
                 {
                     // Apend elements from the next block too.
-                    element_block_func::append_values_from_block(*blk_prev->data, *blk_next->data);
+                    block_funcs::append_block(*blk_prev->data, *blk_next->data);
                     blk_prev->size += blk_next->size;
                     ++it_end;
                     delete_element_block(*blk_next);
@@ -3903,7 +3903,7 @@ typename multi_type_vector<ElemBlockFunc, Trait>::iterator multi_type_vector<Ele
             {
                 // Merge the whole block 3 with the new data. Remove block 3
                 // afterward.  Resize block 3 to zero to prevent invalid free.
-                element_block_func::append_values_from_block(*data_blk.data, *blk3->data);
+                block_funcs::append_block(*data_blk.data, *blk3->data);
                 block_funcs::resize_block(*blk3->data, 0);
                 data_blk.size += blk3->size;
                 ++it_erase_end;
@@ -4079,8 +4079,8 @@ typename multi_type_vector<ElemBlockFunc, Trait>::size_type multi_type_vector<
         {
             // Merge all three blocks.
             blk_prev->size += blk->size + blk_next->size;
-            element_block_func::append_values_from_block(*blk_prev->data, *blk->data);
-            element_block_func::append_values_from_block(*blk_prev->data, *blk_next->data);
+            block_funcs::append_block(*blk_prev->data, *blk->data);
+            block_funcs::append_block(*blk_prev->data, *blk_next->data);
             // Avoid overwriting the transferred elements.
             block_funcs::resize_block(*blk->data, 0);
             block_funcs::resize_block(*blk_next->data, 0);
@@ -4172,7 +4172,7 @@ bool multi_type_vector<ElemBlockFunc, Trait>::merge_with_next_block(size_type bl
         return false;
 
     // Merge it with the next block.
-    element_block_func::append_values_from_block(*blk->data, *blk_next->data);
+    block_funcs::append_block(*blk->data, *blk_next->data);
     block_funcs::resize_block(*blk_next->data, 0);
     blk->size += blk_next->size;
     delete_element_block(*blk_next);

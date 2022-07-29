@@ -604,7 +604,7 @@ public:
         blk2.erase(blk2.begin() + pos, blk2.begin() + pos + size);
     }
 
-    static void append_values_from_block(base_element_block& dest, const base_element_block& src)
+    static void append_block(base_element_block& dest, const base_element_block& src)
     {
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
