@@ -35,6 +35,19 @@
 namespace mdds {
 namespace mtv {
 
+constexpr element_t element_type_boolean = element_type_reserved_start;
+constexpr element_t element_type_int8 = element_type_reserved_start + 1;
+constexpr element_t element_type_uint8 = element_type_reserved_start + 2;
+constexpr element_t element_type_int16 = element_type_reserved_start + 3;
+constexpr element_t element_type_uint16 = element_type_reserved_start + 4;
+constexpr element_t element_type_int32 = element_type_reserved_start + 5;
+constexpr element_t element_type_uint32 = element_type_reserved_start + 6;
+constexpr element_t element_type_int64 = element_type_reserved_start + 7;
+constexpr element_t element_type_uint64 = element_type_reserved_start + 8;
+constexpr element_t element_type_float = element_type_reserved_start + 9;
+constexpr element_t element_type_double = element_type_reserved_start + 10;
+constexpr element_t element_type_string = element_type_reserved_start + 11;
+
 using boolean_element_block = default_element_block<mtv::element_type_boolean, bool>;
 using int8_element_block = default_element_block<mtv::element_type_int8, int8_t>;
 using uint8_element_block = default_element_block<mtv::element_type_uint8, uint8_t>;

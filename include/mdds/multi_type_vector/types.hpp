@@ -57,18 +57,8 @@ using element_t = int;
 
 constexpr element_t element_type_empty = -1;
 
-constexpr element_t element_type_boolean = 0;
-constexpr element_t element_type_int8 = 1;
-constexpr element_t element_type_uint8 = 2;
-constexpr element_t element_type_int16 = 3;
-constexpr element_t element_type_uint16 = 4;
-constexpr element_t element_type_int32 = 5;
-constexpr element_t element_type_uint32 = 6;
-constexpr element_t element_type_int64 = 7;
-constexpr element_t element_type_uint64 = 8;
-constexpr element_t element_type_float = 9;
-constexpr element_t element_type_double = 10;
-constexpr element_t element_type_string = 11;
+constexpr element_t element_type_reserved_start = 0;
+constexpr element_t element_type_reserved_end = 49;
 
 constexpr element_t element_type_user_start = 50;
 
