@@ -176,10 +176,10 @@ protected:
  * O(n^2) memory move operations when code needs to delete items from one
  * element block and add to another element block.
  */
-template<typename T>
+template<typename T, typename Allocator = std::allocator<T>>
 class delayed_delete_vector
 {
-    typedef std::vector<T> store_type;
+    typedef std::vector<T, Allocator> store_type;
     store_type m_vec;
     size_t m_front_offset = 0; // number of elements removed from front of array
 public:
@@ -364,53 +364,39 @@ bool operator==(const delayed_delete_vector<T>& lhs, const delayed_delete_vector
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
-template<typename _Self, element_t _TypeId, typename _Data>
+template<typename Self, element_t TypeId, typename ValueT, template<typename, typename> class StoreT>
 class element_block : public base_element_block
 {
-#ifdef MDDS_UNIT_TEST
-    struct print_block_array
-    {
-        void operator()(const _Data& val) const
-        {
-            std::cout << val << " ";
-        }
-    };
-#endif
-
 protected:
-#ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
-    typedef std::deque<_Data> store_type;
-#else
-    typedef delayed_delete_vector<_Data> store_type;
-#endif
+    using store_type = StoreT<ValueT, std::allocator<ValueT>>;
     store_type m_array;
 
-    element_block() : base_element_block(_TypeId)
+    element_block() : base_element_block(TypeId)
     {}
-    element_block(size_t n) : base_element_block(_TypeId), m_array(n)
+    element_block(size_t n) : base_element_block(TypeId), m_array(n)
     {}
-    element_block(size_t n, const _Data& val) : base_element_block(_TypeId), m_array(n, val)
+    element_block(size_t n, const ValueT& val) : base_element_block(TypeId), m_array(n, val)
     {}
 
-    template<typename _Iter>
-    element_block(const _Iter& it_begin, const _Iter& it_end) : base_element_block(_TypeId), m_array(it_begin, it_end)
+    template<typename Iter>
+    element_block(const Iter& it_begin, const Iter& it_end) : base_element_block(TypeId), m_array(it_begin, it_end)
     {}
 
 public:
-    static constexpr element_t block_type = _TypeId;
+    static constexpr element_t block_type = TypeId;
 
     typedef typename store_type::iterator iterator;
     typedef typename store_type::reverse_iterator reverse_iterator;
     typedef typename store_type::const_iterator const_iterator;
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
-    typedef _Data value_type;
+    typedef ValueT value_type;
 
-    bool operator==(const _Self& r) const
+    bool operator==(const Self& r) const
     {
         return m_array == r.m_array;
     }
 
-    bool operator!=(const _Self& r) const
+    bool operator!=(const Self& r) const
     {
         return !operator==(r);
     }
@@ -495,40 +481,40 @@ public:
         return get(block).m_array.rend();
     }
 
-    static _Self& get(base_element_block& block)
+    static Self& get(base_element_block& block)
     {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-        if (get_block_type(block) != _TypeId)
+        if (get_block_type(block) != TypeId)
         {
             std::ostringstream os;
-            os << "incorrect block type: expected block type=" << _TypeId
+            os << "incorrect block type: expected block type=" << TypeId
                << ", passed block type=" << get_block_type(block);
             throw general_error(os.str());
         }
 #endif
-        return static_cast<_Self&>(block);
+        return static_cast<Self&>(block);
     }
 
-    static const _Self& get(const base_element_block& block)
+    static const Self& get(const base_element_block& block)
     {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-        if (get_block_type(block) != _TypeId)
+        if (get_block_type(block) != TypeId)
         {
             std::ostringstream os;
-            os << "incorrect block type: expected block type=" << _TypeId
+            os << "incorrect block type: expected block type=" << TypeId
                << ", passed block type=" << get_block_type(block);
             throw general_error(os.str());
         }
 #endif
-        return static_cast<const _Self&>(block);
+        return static_cast<const Self&>(block);
     }
 
-    static void set_value(base_element_block& blk, size_t pos, const _Data& val)
+    static void set_value(base_element_block& blk, size_t pos, const ValueT& val)
     {
         get(blk).m_array[pos] = val;
     }
 
-    static void get_value(const base_element_block& blk, size_t pos, _Data& val)
+    static void get_value(const base_element_block& blk, size_t pos, ValueT& val)
     {
         val = get(blk).m_array[pos];
     }
@@ -538,25 +524,25 @@ public:
         return get(blk).m_array[pos];
     }
 
-    static void append_value(base_element_block& blk, const _Data& val)
+    static void append_value(base_element_block& blk, const ValueT& val)
     {
         get(blk).m_array.push_back(val);
     }
 
-    static void prepend_value(base_element_block& blk, const _Data& val)
+    static void prepend_value(base_element_block& blk, const ValueT& val)
     {
         store_type& blk2 = get(blk).m_array;
         blk2.insert(blk2.begin(), val);
     }
 
-    static _Self* create_block(size_t init_size)
+    static Self* create_block(size_t init_size)
     {
-        return new _Self(init_size);
+        return new Self(init_size);
     }
 
     static void delete_block(const base_element_block* p)
     {
-        delete static_cast<const _Self*>(p);
+        delete static_cast<const Self*>(p);
     }
 
     static void resize_block(base_element_block& blk, size_t new_size)
@@ -574,7 +560,9 @@ public:
     static void print_block(const base_element_block& blk)
     {
         const store_type& blk2 = get(blk).m_array;
-        std::for_each(blk2.begin(), blk2.end(), print_block_array());
+        for (const auto& val : blk2)
+            std::cout << val << " ";
+
         std::cout << std::endl;
     }
 #else
@@ -730,17 +718,17 @@ private:
     }
 };
 
-template<typename _Self, element_t _TypeId, typename _Data>
-class copyable_element_block : public element_block<_Self, _TypeId, _Data>
+template<typename Self, element_t TypeId, typename ValueT, template<typename, typename> class StoreT>
+class copyable_element_block : public element_block<Self, TypeId, ValueT, StoreT>
 {
-    typedef element_block<_Self, _TypeId, _Data> base_type;
+    using base_type = element_block<Self, TypeId, ValueT, StoreT>;
 
 protected:
     copyable_element_block() : base_type()
     {}
     copyable_element_block(size_t n) : base_type(n)
     {}
-    copyable_element_block(size_t n, const _Data& val) : base_type(n, val)
+    copyable_element_block(size_t n, const ValueT& val) : base_type(n, val)
     {}
 
     template<typename _Iter>
@@ -750,24 +738,24 @@ protected:
 public:
     using base_type::get;
 
-    static _Self* clone_block(const base_element_block& blk)
+    static Self* clone_block(const base_element_block& blk)
     {
         // Use copy constructor to copy the data.
-        return new _Self(get(blk));
+        return new Self(get(blk));
     }
 };
 
-template<typename _Self, element_t _TypeId, typename _Data>
-class noncopyable_element_block : public element_block<_Self, _TypeId, _Data>
+template<typename Self, element_t TypeId, typename ValueT, template<typename, typename> class StoreT>
+class noncopyable_element_block : public element_block<Self, TypeId, ValueT, StoreT>
 {
-    typedef element_block<_Self, _TypeId, _Data> base_type;
+    using base_type = element_block<Self, TypeId, ValueT, StoreT>;
 
 protected:
     noncopyable_element_block() : base_type()
     {}
     noncopyable_element_block(size_t n) : base_type(n)
     {}
-    noncopyable_element_block(size_t n, const _Data& val) : base_type(n, val)
+    noncopyable_element_block(size_t n, const ValueT& val) : base_type(n, val)
     {}
 
     template<typename _Iter>
@@ -778,7 +766,7 @@ public:
     noncopyable_element_block(const noncopyable_element_block&) = delete;
     noncopyable_element_block& operator=(const noncopyable_element_block&) = delete;
 
-    static _Self* clone_block(const base_element_block&)
+    static Self* clone_block(const base_element_block&)
     {
         throw element_block_error("attempted to clone a noncopyable element block.");
     }
@@ -800,30 +788,31 @@ inline element_t get_block_type(const base_element_block& blk)
  * Template for default, unmanaged element block for use in
  * multi_type_vector.
  */
-template<element_t _TypeId, typename _Data>
-struct default_element_block : public copyable_element_block<default_element_block<_TypeId, _Data>, _TypeId, _Data>
+template<element_t TypeId, typename ValueT, template<typename, typename> class StoreT = delayed_delete_vector>
+struct default_element_block
+    : public copyable_element_block<default_element_block<TypeId, ValueT, StoreT>, TypeId, ValueT, StoreT>
 {
-    typedef copyable_element_block<default_element_block, _TypeId, _Data> base_type;
-    typedef default_element_block<_TypeId, _Data> self_type;
+    using self_type = default_element_block<TypeId, ValueT, StoreT>;
+    using base_type = copyable_element_block<self_type, TypeId, ValueT, StoreT>;
 
     default_element_block() : base_type()
     {}
     default_element_block(size_t n) : base_type(n)
     {}
-    default_element_block(size_t n, const _Data& val) : base_type(n, val)
+    default_element_block(size_t n, const ValueT& val) : base_type(n, val)
     {}
 
-    template<typename _Iter>
-    default_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    template<typename Iter>
+    default_element_block(const Iter& it_begin, const Iter& it_end) : base_type(it_begin, it_end)
     {}
 
-    static self_type* create_block_with_value(size_t init_size, const _Data& val)
+    static self_type* create_block_with_value(size_t init_size, const ValueT& val)
     {
         return new self_type(init_size, val);
     }
 
-    template<typename _Iter>
-    static self_type* create_block_with_values(const _Iter& it_begin, const _Iter& it_end)
+    template<typename Iter>
+    static self_type* create_block_with_values(const Iter& it_begin, const Iter& it_end)
     {
         return new self_type(it_begin, it_end);
     }
@@ -838,11 +827,12 @@ struct default_element_block : public copyable_element_block<default_element_blo
  * Template for element block that stores pointers to objects whose life
  * cycles are managed by the block.
  */
-template<element_t _TypeId, typename _Data>
-struct managed_element_block : public copyable_element_block<managed_element_block<_TypeId, _Data>, _TypeId, _Data*>
+template<element_t TypeId, typename ValueT, template<typename, typename> class StoreT = delayed_delete_vector>
+struct managed_element_block
+    : public copyable_element_block<managed_element_block<TypeId, ValueT, StoreT>, TypeId, ValueT*, StoreT>
 {
-    typedef copyable_element_block<managed_element_block<_TypeId, _Data>, _TypeId, _Data*> base_type;
-    typedef managed_element_block<_TypeId, _Data> self_type;
+    using self_type = managed_element_block<TypeId, ValueT, StoreT>;
+    using base_type = copyable_element_block<self_type, TypeId, ValueT*, StoreT>;
 
     using base_type::get;
     using base_type::m_array;
@@ -859,7 +849,7 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
 #endif
         typename managed_element_block::store_type::const_iterator it = r.m_array.begin(), it_end = r.m_array.end();
         for (; it != it_end; ++it)
-            m_array.push_back(new _Data(**it));
+            m_array.push_back(new ValueT(**it));
     }
 
     template<typename _Iter>
@@ -868,10 +858,10 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
 
     ~managed_element_block()
     {
-        std::for_each(m_array.begin(), m_array.end(), std::default_delete<_Data>());
+        std::for_each(m_array.begin(), m_array.end(), std::default_delete<ValueT>());
     }
 
-    static self_type* create_block_with_value(size_t init_size, _Data* val)
+    static self_type* create_block_with_value(size_t init_size, ValueT* val)
     {
         // Managed blocks don't support initialization with value.
         if (init_size > 1)
@@ -895,16 +885,17 @@ struct managed_element_block : public copyable_element_block<managed_element_blo
         managed_element_block& blk = get(block);
         typename managed_element_block::store_type::iterator it = blk.m_array.begin() + pos;
         typename managed_element_block::store_type::iterator it_end = it + len;
-        std::for_each(it, it_end, std::default_delete<_Data>());
+        std::for_each(it, it_end, std::default_delete<ValueT>());
     }
 };
 
-template<element_t _TypeId, typename _Data>
+template<element_t TypeId, typename ValueT, template<typename, typename> class StoreT = delayed_delete_vector>
 struct noncopyable_managed_element_block
-    : public noncopyable_element_block<noncopyable_managed_element_block<_TypeId, _Data>, _TypeId, _Data*>
+    : public noncopyable_element_block<
+          noncopyable_managed_element_block<TypeId, ValueT, StoreT>, TypeId, ValueT*, StoreT>
 {
-    typedef noncopyable_element_block<noncopyable_managed_element_block<_TypeId, _Data>, _TypeId, _Data*> base_type;
-    typedef managed_element_block<_TypeId, _Data> self_type;
+    using self_type = managed_element_block<TypeId, ValueT, StoreT>;
+    using base_type = noncopyable_element_block<self_type, TypeId, ValueT*, StoreT>;
 
     using base_type::get;
     using base_type::m_array;
@@ -921,10 +912,10 @@ struct noncopyable_managed_element_block
 
     ~noncopyable_managed_element_block()
     {
-        std::for_each(m_array.begin(), m_array.end(), std::default_delete<_Data>());
+        std::for_each(m_array.begin(), m_array.end(), std::default_delete<ValueT>());
     }
 
-    static self_type* create_block_with_value(size_t init_size, _Data* val)
+    static self_type* create_block_with_value(size_t init_size, ValueT* val)
     {
         // Managed blocks don't support initialization with value.
         if (init_size > 1)
@@ -948,7 +939,7 @@ struct noncopyable_managed_element_block
         noncopyable_managed_element_block& blk = get(block);
         typename noncopyable_managed_element_block::store_type::iterator it = blk.m_array.begin() + pos;
         typename noncopyable_managed_element_block::store_type::iterator it_end = it + len;
-        std::for_each(it, it_end, std::default_delete<_Data>());
+        std::for_each(it, it_end, std::default_delete<ValueT>());
     }
 };
 
