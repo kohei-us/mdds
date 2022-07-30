@@ -18,7 +18,8 @@
 #include <string>
 
 #include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector_trait.hpp>
+#include <mdds/multi_type_vector/trait.hpp>
+#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 void stop();
 
@@ -26,7 +27,7 @@ using mdds::multi_type_vector;
 
 void test_multi_type_vector()
 {
-    typedef mdds::multi_type_vector<mdds::mtv::element_block_func> mtv_type;
+    typedef mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait> mtv_type;
 
     mtv_type empty_mtv;
 

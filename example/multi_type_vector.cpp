@@ -28,7 +28,6 @@
 
 //!code-start
 #include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
 #include <mdds/multi_type_vector/standard_element_blocks.hpp>
 #include <iostream>
 #include <vector>
@@ -37,7 +36,7 @@
 using std::cout;
 using std::endl;
 
-using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, mdds::mtv::standard_element_blocks_trait>;
+using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
 
 template<typename _Blk>
 void print_block(const mtv_type::value_type& v)

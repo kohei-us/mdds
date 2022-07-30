@@ -28,7 +28,6 @@
 
 //!code-start
 #include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
 #include <mdds/multi_type_vector/standard_element_blocks.hpp>
 #include <iostream>
 
@@ -56,7 +55,7 @@ struct trait : mdds::mtv::standard_element_blocks_trait
     using event_func = event_hdl;
 };
 
-using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, trait>;
+using mtv_type = mdds::multi_type_vector<trait>;
 
 int main() try
 {

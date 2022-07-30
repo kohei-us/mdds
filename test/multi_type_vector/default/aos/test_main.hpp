@@ -30,7 +30,6 @@
 
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector/aos/main.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
 #include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <cassert>
@@ -38,8 +37,7 @@
 #include <vector>
 #include <deque>
 
-using mtv_type =
-    mdds::mtv::aos::multi_type_vector<mdds::mtv::element_block_func, mdds::mtv::standard_element_blocks_trait>;
+using mtv_type = mdds::mtv::aos::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
 
 template<typename _ValT>
 bool test_cell_insertion(mtv_type& col_db, std::size_t row, _ValT val)

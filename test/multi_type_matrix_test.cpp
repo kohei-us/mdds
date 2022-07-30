@@ -82,8 +82,6 @@ struct custom_string_trait
 {
     typedef mdds::mtv::int32_element_block integer_element_block;
     typedef custom_string_block string_element_block;
-
-    typedef mtv::custom_block_func1<string_element_block> element_block_func;
 };
 
 typedef mdds::multi_type_matrix<custom_string_trait> mtx_custom_type;

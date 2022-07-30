@@ -32,17 +32,13 @@
 
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector_custom_func1.hpp>
-#include <mdds/multi_type_vector_custom_func2.hpp>
-#include <mdds/multi_type_vector_custom_func3.hpp>
 
-template<typename T1, typename T2>
-using mtv_template_type = mdds::mtv::soa::multi_type_vector<T1, T2>;
+template<typename T>
+using mtv_template_type = mdds::mtv::soa::multi_type_vector<T>;
 
-using mtv_type = mtv_template_type<mdds::mtv::custom_block_func2<user_cell_block, muser_cell_block>, user_muser_trait>;
-using mtv_fruit_type = mtv_template_type<mdds::mtv::custom_block_func1<fruit_block>, fruit_trait>;
-using mtv3_type =
-    mtv_template_type<mdds::mtv::custom_block_func3<muser_cell_block, fruit_block, date_block>, muser_fruit_date_trait>;
+using mtv_type = mtv_template_type<user_muser_trait>;
+using mtv_fruit_type = mtv_template_type<fruit_trait>;
+using mtv3_type = mtv_template_type<muser_fruit_date_trait>;
 
 void mtv_test_misc_types();
 void mtv_test_misc_block_identifier();

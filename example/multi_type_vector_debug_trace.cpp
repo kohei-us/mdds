@@ -29,7 +29,6 @@
 //!code-start: header
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
 #include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <iostream>
@@ -48,7 +47,7 @@ struct mtv_trait : public mtv::standard_element_blocks_trait
     }
 };
 
-using mtv_type = mtv::soa::multi_type_vector<mtv::element_block_func, mtv_trait>;
+using mtv_type = mtv::soa::multi_type_vector<mtv_trait>;
 //!code-end: types
 
 int main() try

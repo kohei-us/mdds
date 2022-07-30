@@ -35,7 +35,6 @@
 #endif
 
 #include "multi_type_vector.hpp"
-#include "multi_type_vector/trait.hpp"
 #include "multi_type_vector/standard_element_blocks.hpp"
 
 namespace mdds {
@@ -61,8 +60,6 @@ struct std_string_trait
 {
     typedef mdds::mtv::int32_element_block integer_element_block;
     typedef mdds::mtv::string_element_block string_element_block;
-
-    typedef mdds::mtv::element_block_func element_block_func;
 };
 
 } // namespace mtm
@@ -97,7 +94,7 @@ private:
             typename matrix_trait::string_element_block, typename matrix_trait::integer_element_block>;
     };
 
-    using store_type = mdds::multi_type_vector<typename matrix_trait::element_block_func, mtv_trait>;
+    using store_type = mdds::multi_type_vector<mtv_trait>;
 
 public:
     typedef typename store_type::position_type position_type;

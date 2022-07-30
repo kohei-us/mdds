@@ -68,7 +68,7 @@ namespace mdds { namespace mtv { namespace soa {
  *
  * @see mdds::mtv::soa::multi_type_vector::value_type
  */
-template<typename ElemBlockFunc, typename Trait = mdds::mtv::default_trait>
+template<typename Trait = mdds::mtv::default_trait>
 class multi_type_vector
 {
 public:

@@ -31,7 +31,6 @@
 
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
 #include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 using mdds::mtv::trace_method_t;
@@ -123,7 +122,7 @@ struct mtv_custom_trait : public mdds::mtv::standard_element_blocks_trait
     }
 };
 
-using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::element_block_func, mtv_custom_trait>;
+using mtv_type = mdds::mtv::soa::multi_type_vector<mtv_custom_trait>;
 
 } // anonymous namespace
 

@@ -57,7 +57,7 @@ void mtv_test_block_init()
 {
     stack_printer __stack_printer__(__FUNCTION__);
 
-    using mtv_type = mtv_template_type<mdds::mtv::element_block_func, eb_init_trait>;
+    using mtv_type = mtv_template_type<eb_init_trait>;
 
     {
         mtv_type db(event_block_init("some name")); // pass an rvalue

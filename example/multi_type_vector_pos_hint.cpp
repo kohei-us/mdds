@@ -27,7 +27,6 @@
  ************************************************************************/
 
 #include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector/trait.hpp>
 #include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <iostream>
@@ -79,7 +78,7 @@ void run_no_position_hint()
     stack_printer __stack_printer__("::run_no_position_hint");
 
     //!code-start: no-pos-hint
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, mdds::mtv::standard_element_blocks_trait>;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
 
     size_t size = 50000;
 
@@ -100,7 +99,7 @@ void run_with_position_hint()
     stack_printer __stack_printer__("::run_with_position_hint");
 
     //!code-start: pos-hint
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::element_block_func, mdds::mtv::standard_element_blocks_trait>;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
 
     size_t size = 50000;
 

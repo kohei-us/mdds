@@ -209,6 +209,7 @@
                     <Folder Name="tc">
                         <F N="../test/multi_type_vector/event/tc/block_counter.inl"/>
                         <F N="../test/multi_type_vector/event/tc/block_init.inl"/>
+                        <F N="../test/multi_type_vector/event/tc/swap.inl"/>
                     </Folder>
                 </Folder>
                 <Folder Name="perf">
