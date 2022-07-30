@@ -48,32 +48,31 @@ constexpr element_t element_type_float = element_type_reserved_start + 9;
 constexpr element_t element_type_double = element_type_reserved_start + 10;
 constexpr element_t element_type_string = element_type_reserved_start + 11;
 
-using boolean_element_block = default_element_block<mtv::element_type_boolean, bool>;
-using int8_element_block = default_element_block<mtv::element_type_int8, int8_t>;
-using uint8_element_block = default_element_block<mtv::element_type_uint8, uint8_t>;
-using int16_element_block = default_element_block<mtv::element_type_int16, int16_t>;
-using uint16_element_block = default_element_block<mtv::element_type_uint16, uint16_t>;
-using int32_element_block = default_element_block<mtv::element_type_int32, int32_t>;
-using uint32_element_block = default_element_block<mtv::element_type_uint32, uint32_t>;
-using int64_element_block = default_element_block<mtv::element_type_int64, int64_t>;
-using uint64_element_block = default_element_block<mtv::element_type_uint64, uint64_t>;
-using float_element_block = default_element_block<mtv::element_type_float, float>;
-using double_element_block = default_element_block<mtv::element_type_double, double>;
-using string_element_block = default_element_block<mtv::element_type_string, std::string>;
+using boolean_element_block = default_element_block<element_type_boolean, bool>;
+using int8_element_block = default_element_block<element_type_int8, int8_t>;
+using uint8_element_block = default_element_block<element_type_uint8, uint8_t>;
+using int16_element_block = default_element_block<element_type_int16, int16_t>;
+using uint16_element_block = default_element_block<element_type_uint16, uint16_t>;
+using int32_element_block = default_element_block<element_type_int32, int32_t>;
+using uint32_element_block = default_element_block<element_type_uint32, uint32_t>;
+using int64_element_block = default_element_block<element_type_int64, int64_t>;
+using uint64_element_block = default_element_block<element_type_uint64, uint64_t>;
+using float_element_block = default_element_block<element_type_float, float>;
+using double_element_block = default_element_block<element_type_double, double>;
+using string_element_block = default_element_block<element_type_string, std::string>;
 
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, mdds::mtv::element_type_boolean, false, mdds::mtv::boolean_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int8_t, mdds::mtv::element_type_int8, 0, mdds::mtv::int8_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint8_t, mdds::mtv::element_type_uint8, 0, mdds::mtv::uint8_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int16_t, mdds::mtv::element_type_int16, 0, mdds::mtv::int16_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint16_t, mdds::mtv::element_type_uint16, 0, mdds::mtv::uint16_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int32_t, mdds::mtv::element_type_int32, 0, mdds::mtv::int32_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint32_t, mdds::mtv::element_type_uint32, 0, mdds::mtv::uint32_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int64_t, mdds::mtv::element_type_int64, 0, mdds::mtv::int64_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint64_t, mdds::mtv::element_type_uint64, 0, mdds::mtv::uint64_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(float, mdds::mtv::element_type_float, 0.0, mdds::mtv::float_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, mdds::mtv::element_type_double, 0.0, mdds::mtv::double_element_block)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(
-    std::string, mdds::mtv::element_type_string, std::string(), mdds::mtv::string_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(bool, element_type_boolean, false, boolean_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int8_t, element_type_int8, 0, int8_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint8_t, element_type_uint8, 0, uint8_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int16_t, element_type_int16, 0, int16_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint16_t, element_type_uint16, 0, uint16_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int32_t, element_type_int32, 0, int32_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint32_t, element_type_uint32, 0, uint32_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(int64_t, element_type_int64, 0, int64_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(uint64_t, element_type_uint64, 0, uint64_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(float, element_type_float, 0.0, float_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, element_type_double, 0.0, double_element_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, element_type_string, std::string(), string_element_block)
 
 struct standard_element_blocks_trait : public default_trait
 {
