@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <vector>
+
 namespace mdds { namespace mtv { namespace detail {
 
 template<typename T>
@@ -139,6 +141,24 @@ void shrink_to_fit(T& blk)
     typename has_shrink_to_fit_method<T>::type v;
     shrink_to_fit(blk, v);
 }
+
+template<typename T>
+struct is_std_vector_bool_store
+{
+    using type = std::false_type;
+};
+
+template<>
+struct is_std_vector_bool_store<std::vector<bool>>
+{
+    using type = std::true_type;
+};
+
+template<typename Blk>
+struct has_std_vector_bool_store
+{
+    using type = typename is_std_vector_bool_store<typename Blk::store_type>::type;
+};
 
 }}} // namespace mdds::mtv::detail
 

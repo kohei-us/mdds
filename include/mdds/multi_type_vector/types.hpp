@@ -354,6 +354,16 @@ private:
     }
 };
 
+namespace detail {
+
+template<>
+struct is_std_vector_bool_store<delayed_delete_vector<bool>>
+{
+    using type = std::true_type;
+};
+
+} // namespace detail
+
 template<typename T>
 bool operator==(const delayed_delete_vector<T>& lhs, const delayed_delete_vector<T>& rhs)
 {
@@ -933,9 +943,25 @@ struct noncopyable_managed_element_block
 namespace detail { namespace mtv {
 
 template<typename Blk>
-inline typename Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
+inline bool get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset, std::true_type)
+{
+    auto it = Blk::cbegin(data);
+    std::advance(it, offset);
+    return *it;
+}
+
+template<typename Blk>
+inline typename Blk::value_type get_block_element_at(
+    const mdds::mtv::base_element_block& data, size_t offset, std::false_type)
 {
     return Blk::at(data, offset);
+}
+
+template<typename Blk>
+inline typename Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
+{
+    typename mdds::mtv::detail::has_std_vector_bool_store<Blk>::type v;
+    return get_block_element_at<Blk>(data, offset, v);
 }
 
 }} // namespace detail::mtv

@@ -28,22 +28,44 @@
 
 #include "test_main.hpp"
 
-int main()
-{
-    try
-    {
-        mtv_test_element_blocks_std_vector();
-        mtv_test_element_blocks_std_deque();
-        mtv_test_element_blocks_std_vector_bool();
-    }
-    catch (const std::exception& e)
-    {
-        cout << "Test failed: " << e.what() << endl;
-        return EXIT_FAILURE;
-    }
+#include <vector>
+#include <deque>
 
-    cout << "Test finished successfully!" << endl;
-    return EXIT_SUCCESS;
+namespace {
+
+constexpr mdds::mtv::element_t element_type_bool = mdds::mtv::element_type_user_start + 3;
+
+using vector_block = mdds::mtv::default_element_block<element_type_bool, bool, std::vector>;
+using deque_block = mdds::mtv::default_element_block<element_type_bool, bool, std::deque>;
+
+} // namespace
+
+void mtv_test_element_blocks_std_vector_bool()
+{
+    using this_block = vector_block;
+
+    static_assert(this_block::block_type == element_type_bool);
+    static_assert(mdds::mtv::detail::has_std_vector_bool_store<this_block>::type::value);
+
+    auto* blk = this_block::create_block(10);
+
+    [[maybe_unused]] auto v = mdds::detail::mtv::get_block_element_at<this_block>(*blk, 2);
+
+    this_block::delete_block(blk);
+}
+
+void mtv_test_element_blocks_std_deque_bool()
+{
+    using this_block = deque_block;
+
+    static_assert(this_block::block_type == element_type_bool);
+    static_assert(!mdds::mtv::detail::has_std_vector_bool_store<this_block>::type::value);
+
+    auto* blk = this_block::create_block(10);
+
+    [[maybe_unused]] auto v = mdds::detail::mtv::get_block_element_at<this_block>(*blk, 2);
+
+    this_block::delete_block(blk);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

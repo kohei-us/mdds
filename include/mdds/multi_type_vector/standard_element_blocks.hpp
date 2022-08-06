@@ -32,8 +32,7 @@
 #include "util.hpp"
 #include "block_funcs.hpp"
 
-namespace mdds {
-namespace mtv {
+namespace mdds { namespace mtv {
 
 constexpr element_t element_type_boolean = element_type_reserved_start;
 constexpr element_t element_type_int8 = element_type_reserved_start + 1;
@@ -82,25 +81,6 @@ struct standard_element_blocks_trait : public default_trait
         double_element_block, string_element_block>;
 };
 
-} // namespace mtv
-
-namespace detail { namespace mtv {
-
-#if !defined(MDDS_MULTI_TYPE_VECTOR_USE_DEQUE)
-
-template<>
-inline bool get_block_element_at<mdds::mtv::boolean_element_block>(
-    const mdds::mtv::base_element_block& data, size_t offset)
-{
-    auto it = mdds::mtv::boolean_element_block::cbegin(data);
-    std::advance(it, offset);
-    return *it;
-}
-
-#endif
-
-}} // namespace detail::mtv
-
-} // namespace mdds
+}} // namespace mdds::mtv
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

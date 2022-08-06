@@ -26,24 +26,16 @@
  *
  ************************************************************************/
 
-#include "test_main.hpp"
+#pragma once
 
-int main()
-{
-    try
-    {
-        mtv_test_element_blocks_std_vector();
-        mtv_test_element_blocks_std_deque();
-        mtv_test_element_blocks_std_vector_bool();
-    }
-    catch (const std::exception& e)
-    {
-        cout << "Test failed: " << e.what() << endl;
-        return EXIT_FAILURE;
-    }
+#include "test_global.hpp" // This must be the first header to be included.
 
-    cout << "Test finished successfully!" << endl;
-    return EXIT_SUCCESS;
-}
+#include <mdds/multi_type_vector/types.hpp>
+#include <mdds/multi_type_vector/block_funcs.hpp>
+
+void mtv_test_element_blocks_std_vector();
+void mtv_test_element_blocks_std_deque();
+void mtv_test_element_blocks_std_vector_bool();
+void mtv_test_element_blocks_std_deque_bool();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
