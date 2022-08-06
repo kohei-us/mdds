@@ -104,6 +104,42 @@ void reserve(T& blk, typename T::size_type size)
     reserve(blk, size, v);
 }
 
+template<typename T>
+struct has_shrink_to_fit_method
+{
+    using yes_type = char;
+    using no_type = int;
+
+    template<typename U, void (U::*)()>
+    struct test_has_method
+    {
+    };
+
+    template<typename U>
+    static yes_type test(test_has_method<U, &U::shrink_to_fit>*);
+    template<typename U>
+    static no_type test(...);
+
+    using type = std::conditional_t<sizeof(test<T>(0)) == sizeof(yes_type), std::true_type, std::false_type>;
+};
+
+template<typename T>
+void shrink_to_fit(T& blk, std::true_type)
+{
+    return blk.shrink_to_fit();
+}
+
+template<typename T>
+void shrink_to_fit(T&, std::false_type)
+{}
+
+template<typename T>
+void shrink_to_fit(T& blk)
+{
+    typename has_shrink_to_fit_method<T>::type v;
+    shrink_to_fit(blk, v);
+}
+
 }}} // namespace mdds::mtv::detail
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -62,6 +62,8 @@ void mtv_test_element_blocks_std_vector()
     cap = this_block::capacity(*blk);
     assert(cap >= 100u);
 
+    this_block::shrink_to_fit(*blk);
+
     this_block::delete_block(blk);
 }
 
@@ -92,6 +94,9 @@ void mtv_test_element_blocks_std_deque()
 
     // std::deque does not have a reserve() method either.
     this_block::reserve(*blk, 100u);
+
+    // ditto with shrink_to_fit()
+    this_block::shrink_to_fit(*blk);
 
     this_block::delete_block(blk);
 }

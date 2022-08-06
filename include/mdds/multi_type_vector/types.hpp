@@ -700,9 +700,8 @@ public:
 
     static void shrink_to_fit(base_element_block& block)
     {
-#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
-        get(block).m_array.shrink_to_fit();
-#endif
+        store_type& blk = get(block).m_array;
+        detail::shrink_to_fit(blk);
     }
 
 private:
