@@ -246,6 +246,7 @@
                     <F N="../include/mdds/multi_type_vector/standard_element_blocks.hpp"/>
                     <F N="../include/mdds/multi_type_vector/trait.hpp"/>
                     <F N="../include/mdds/multi_type_vector/types.hpp"/>
+                    <F N="../include/mdds/multi_type_vector/types_util.hpp"/>
                     <F N="../include/mdds/multi_type_vector/util.hpp"/>
                 </Folder>
                 <F N="../include/mdds/flat_segment_tree.hpp"/>

@@ -32,6 +32,8 @@
 #include <mdds/multi_type_vector/block_funcs.hpp>
 
 #include <vector>
+#include <deque>
+#include <type_traits>
 
 namespace test1 {
 
@@ -46,22 +48,62 @@ void mtv_test_element_blocks_std_vector()
     using this_block = int8_element_block;
 
     static_assert(this_block::block_type == element_type_int8);
+    static_assert(std::is_same_v<this_block::store_type, std::vector<std::int8_t>>);
 
     auto* blk = this_block::create_block(10);
 
     assert(mdds::mtv::get_block_type(*blk) == this_block::block_type);
     assert(this_block::size(*blk) == 10u);
 
+    auto cap = this_block::capacity(*blk);
+    assert(cap >= 10u);
+
+    this_block::reserve(*blk, 100u);
+    cap = this_block::capacity(*blk);
+    assert(cap >= 100u);
+
     this_block::delete_block(blk);
 }
 
 } // namespace test1
+
+namespace test2 {
+
+constexpr mdds::mtv::element_t element_type_int8 = mdds::mtv::element_type_user_start + 20;
+
+using int8_element_block = mdds::mtv::default_element_block<element_type_int8, std::int8_t, std::deque>;
+
+void mtv_test_element_blocks_std_deque()
+{
+    stack_printer __stack_printer__(__func__);
+
+    using this_block = int8_element_block;
+
+    static_assert(this_block::block_type == element_type_int8);
+    static_assert(std::is_same_v<this_block::store_type, std::deque<std::int8_t>>);
+
+    auto* blk = this_block::create_block(10);
+
+    assert(mdds::mtv::get_block_type(*blk) == this_block::block_type);
+    assert(this_block::size(*blk) == 10u);
+
+    // std::deque does not have a capacity() method, but this should still compile.
+    [[maybe_unused]] auto cap = this_block::capacity(*blk);
+
+    // std::deque does not have a reserve() method either.
+    this_block::reserve(*blk, 100u);
+
+    this_block::delete_block(blk);
+}
+
+} // namespace test2
 
 int main()
 {
     try
     {
         test1::mtv_test_element_blocks_std_vector();
+        test2::mtv_test_element_blocks_std_deque();
     }
     catch (const std::exception& e)
     {

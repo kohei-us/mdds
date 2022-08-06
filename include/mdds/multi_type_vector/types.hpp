@@ -30,6 +30,7 @@
 #define INCLUDED_MDDS_MULTI_TYPE_VECTOR_TYPES_2_HPP
 
 #include "../global.hpp"
+#include "./types_util.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -367,8 +368,11 @@ bool operator==(const delayed_delete_vector<T>& lhs, const delayed_delete_vector
 template<typename Self, element_t TypeId, typename ValueT, template<typename, typename> class StoreT>
 class element_block : public base_element_block
 {
-protected:
+public:
     using store_type = StoreT<ValueT, std::allocator<ValueT>>;
+    static constexpr element_t block_type = TypeId;
+
+protected:
     store_type m_array;
 
     element_block() : base_element_block(TypeId)
@@ -383,8 +387,6 @@ protected:
     {}
 
 public:
-    static constexpr element_t block_type = TypeId;
-
     typedef typename store_type::iterator iterator;
     typedef typename store_type::reverse_iterator reverse_iterator;
     typedef typename store_type::const_iterator const_iterator;
@@ -595,9 +597,7 @@ public:
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
         std::pair<const_iterator, const_iterator> its = get_iterator_pair(s, begin_pos, len);
-#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
-        d.reserve(d.size() + len);
-#endif
+        detail::reserve(d, d.size() + len);
         d.insert(d.end(), its.first, its.second);
     }
 
@@ -616,9 +616,7 @@ public:
         store_type& d = get(dest).m_array;
         const store_type& s = get(src).m_array;
         std::pair<const_iterator, const_iterator> its = get_iterator_pair(s, begin_pos, len);
-#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
-        d.reserve(d.size() + len);
-#endif
+        detail::reserve(d, d.size() + len);
         d.insert(d.begin(), its.first, its.second);
     }
 
@@ -690,12 +688,14 @@ public:
 
     static size_t capacity(const base_element_block& block)
     {
-#ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
-        return 0;
-#else
         const store_type& blk = get(block).m_array;
-        return blk.capacity();
-#endif
+        return detail::get_block_capacity(blk);
+    }
+
+    static void reserve(base_element_block& block, std::size_t size)
+    {
+        store_type& blk = get(block).m_array;
+        detail::reserve(blk, size);
     }
 
     static void shrink_to_fit(base_element_block& block)

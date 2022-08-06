@@ -14,5 +14,6 @@ headers_HEADERS = \
 	standard_element_blocks.hpp \
 	trait.hpp \
 	types.hpp \
+	types_util.hpp \
 	util.hpp
 
