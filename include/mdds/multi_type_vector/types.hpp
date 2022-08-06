@@ -36,12 +36,7 @@
 #include <cassert>
 #include <memory>
 #include <cstdint>
-
-#ifdef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
-#include <deque>
-#else
 #include <vector>
-#endif
 
 #if defined(MDDS_UNIT_TEST) || defined(MDDS_MULTI_TYPE_VECTOR_DEBUG)
 #include <iostream>
@@ -828,6 +823,7 @@ struct managed_element_block
 
     using base_type::get;
     using base_type::m_array;
+    using base_type::reserve;
     using base_type::set_value;
 
     managed_element_block() : base_type()
@@ -836,12 +832,9 @@ struct managed_element_block
     {}
     managed_element_block(const managed_element_block& r)
     {
-#ifndef MDDS_MULTI_TYPE_VECTOR_USE_DEQUE
-        m_array.reserve(r.m_array.size());
-#endif
-        typename managed_element_block::store_type::const_iterator it = r.m_array.begin(), it_end = r.m_array.end();
-        for (; it != it_end; ++it)
-            m_array.push_back(new ValueT(**it));
+        detail::reserve(m_array, r.m_array.size());
+        for (const auto& v : r.m_array)
+            m_array.push_back(new ValueT(*v));
     }
 
     template<typename _Iter>
