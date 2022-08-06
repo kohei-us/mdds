@@ -1,1 +1,1 @@
-SUBDIRS = custom-trait debug-util
+SUBDIRS = custom-trait debug-util element-blocks
