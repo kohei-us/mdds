@@ -112,15 +112,14 @@ Refer to :cpp:type:`mdds::mtv::default_trait` for all available parameters.
 Get raw pointer to element block array
 --------------------------------------
 
-Sometimes you need to expose a pointer to an element block array
-especially when you need to pass such an array pointer to C API that
-requires one.  You can do this by calling the ``data`` method of the
-element_block template class .  This works since the element block
-internally just wraps :cpp:class:`std::vector` (or
-:cpp:class:`std::deque` in case the ``MDDS_MULTI_TYPE_VECTOR_USE_DEQUE``
-preprocessing macro is defined), and its ``data`` method simply exposes
-vector's own ``data`` method which returns the memory location of its
-internal array storage.
+Sometimes you need to expose a pointer to an element block array especially
+when you need to pass such an array pointer to C API that requires one.  You
+can do this by calling the ``data`` method of the element_block template
+class.  This works since the element block internally just wraps
+:cpp:class:`std::vector` or one that acts like it, such as
+:cpp:class:`std::deque` or :cpp:class:`~mdds::mtv::delayed_delete_vector`, and
+its ``data`` method simply exposes the internal storage types's own ``data``
+method which returns the memory location of its internal buffer.
 
 The following code demonstrates this by exposing raw array pointers to the
 internal arrays of numeric and string element blocks, and printing their
@@ -661,6 +660,11 @@ mdds::mtv::default_trait
 .. doxygenstruct:: mdds::mtv::default_trait
    :members:
 
+Element Stores
+^^^^^^^^^^^^^^
+
+.. doxygenclass:: mdds::mtv::delayed_delete_vector
+   :members:
 
 Element Blocks
 ^^^^^^^^^^^^^^
@@ -686,9 +690,8 @@ Element Blocks
 .. doxygenstruct:: mdds::mtv::noncopyable_managed_element_block
    :members:
 
-.. doxygenstruct:: mdds::mtv::element_block_func
+.. doxygenstruct:: mdds::mtv::element_block_funcs
    :members:
-
 
 Types
 ^^^^^
@@ -699,18 +702,8 @@ mdds::mtv::element_t
 .. doxygentypedef:: mdds::mtv::element_t
 
 .. doxygenvariable:: mdds::mtv::element_type_empty
-.. doxygenvariable:: mdds::mtv::element_type_boolean
-.. doxygenvariable:: mdds::mtv::element_type_int8
-.. doxygenvariable:: mdds::mtv::element_type_uint8
-.. doxygenvariable:: mdds::mtv::element_type_int16
-.. doxygenvariable:: mdds::mtv::element_type_uint16
-.. doxygenvariable:: mdds::mtv::element_type_int32
-.. doxygenvariable:: mdds::mtv::element_type_uint32
-.. doxygenvariable:: mdds::mtv::element_type_int64
-.. doxygenvariable:: mdds::mtv::element_type_uint64
-.. doxygenvariable:: mdds::mtv::element_type_float
-.. doxygenvariable:: mdds::mtv::element_type_double
-.. doxygenvariable:: mdds::mtv::element_type_string
+.. doxygenvariable:: mdds::mtv::element_type_reserved_start
+.. doxygenvariable:: mdds::mtv::element_type_reserved_end
 .. doxygenvariable:: mdds::mtv::element_type_user_start
 
 mdds::mtv::lu_factor_t
@@ -727,6 +720,52 @@ mdds::mtv::trace_method_properties_t
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. doxygenstruct:: mdds::mtv::trace_method_properties_t
+
+
+Standard Element Blocks
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The following types become available by including the
+``mdds/multi_type_vector/standard_element_blocks.hpp`` header file.  Note that
+the block types defined here use the default store type which is
+:cpp:class:`~mdds::mtv::delayed_delete_vector`.  If you need to use a
+different store type, you must **NOT** include the aforementioned header file,
+and instead must define your own block type(s) with your desired store type(s).
+
+Constants
+~~~~~~~~~
+
+.. doxygenvariable:: mdds::mtv::element_type_boolean
+.. doxygenvariable:: mdds::mtv::element_type_int8
+.. doxygenvariable:: mdds::mtv::element_type_uint8
+.. doxygenvariable:: mdds::mtv::element_type_int16
+.. doxygenvariable:: mdds::mtv::element_type_uint16
+.. doxygenvariable:: mdds::mtv::element_type_int32
+.. doxygenvariable:: mdds::mtv::element_type_uint32
+.. doxygenvariable:: mdds::mtv::element_type_int64
+.. doxygenvariable:: mdds::mtv::element_type_uint64
+.. doxygenvariable:: mdds::mtv::element_type_float
+.. doxygenvariable:: mdds::mtv::element_type_double
+.. doxygenvariable:: mdds::mtv::element_type_string
+
+Block Types and Trait
+~~~~~~~~~~~~~~~~~~~~~
+
+.. doxygentypedef:: mdds::mtv::boolean_element_block
+.. doxygentypedef:: mdds::mtv::int8_element_block
+.. doxygentypedef:: mdds::mtv::uint8_element_block
+.. doxygentypedef:: mdds::mtv::int16_element_block
+.. doxygentypedef:: mdds::mtv::uint16_element_block
+.. doxygentypedef:: mdds::mtv::int32_element_block
+.. doxygentypedef:: mdds::mtv::uint32_element_block
+.. doxygentypedef:: mdds::mtv::int64_element_block
+.. doxygentypedef:: mdds::mtv::uint64_element_block
+.. doxygentypedef:: mdds::mtv::float_element_block
+.. doxygentypedef:: mdds::mtv::double_element_block
+.. doxygentypedef:: mdds::mtv::string_element_block
+
+.. doxygenstruct:: mdds::mtv::standard_element_blocks_trait
+   :members:
 
 
 Exceptions

@@ -85,6 +85,14 @@ struct default_trait
      */
     static constexpr lu_factor_t loop_unrolling = lu_factor_t::lu16;
 
+    /**
+     * Type that contains block functions used throughout the multi_type_vector
+     * implementation.  The user must overwrite this type to specify one or more
+     * block types as template arguments to element_block_funcs.  Alternatively,
+     * you may be interested in using standard_element_blocks_trait which
+     * already supports the pre-defined block types for the optional standard
+     * data types.
+     */
     using block_funcs = element_block_funcs<>;
 };
 
