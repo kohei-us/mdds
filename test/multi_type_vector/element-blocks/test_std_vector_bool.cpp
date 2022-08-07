@@ -41,7 +41,7 @@ void mtv_test_element_blocks_std_vector_bool()
 
     auto* blk = this_block::create_block(10);
 
-    [[maybe_unused]] auto v = mdds::detail::mtv::get_block_element_at<this_block>(*blk, 2);
+    [[maybe_unused]] auto v = mdds::mtv::detail::get_block_element_at<this_block>(*blk, 2);
 
     this_block::delete_block(blk);
 }
@@ -56,7 +56,7 @@ void mtv_test_element_blocks_std_deque_bool()
 
     auto* blk = this_block::create_block(10);
 
-    [[maybe_unused]] auto v = mdds::detail::mtv::get_block_element_at<this_block>(*blk, 2);
+    [[maybe_unused]] auto v = mdds::mtv::detail::get_block_element_at<this_block>(*blk, 2);
 
     this_block::delete_block(blk);
 }
@@ -71,7 +71,7 @@ void mtv_test_element_blocks_delayed_delete_vector()
 
     auto* blk = this_block::create_block(10);
 
-    [[maybe_unused]] auto v = mdds::detail::mtv::get_block_element_at<this_block>(*blk, 2);
+    [[maybe_unused]] auto v = mdds::mtv::detail::get_block_element_at<this_block>(*blk, 2);
 
     this_block::delete_block(blk);
 }

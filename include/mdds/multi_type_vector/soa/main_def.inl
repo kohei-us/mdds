@@ -275,7 +275,7 @@ template<typename Trait>
 template<typename _Blk>
 typename _Blk::value_type multi_type_vector<Trait>::get(const const_position_type& pos)
 {
-    return mdds::detail::mtv::get_block_element_at<_Blk>(*pos.first->data, pos.second);
+    return mdds::mtv::detail::get_block_element_at<_Blk>(*pos.first->data, pos.second);
 }
 
 template<typename Trait>

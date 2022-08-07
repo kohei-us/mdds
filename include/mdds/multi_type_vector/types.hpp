@@ -46,8 +46,7 @@ using std::cout;
 using std::endl;
 #endif
 
-namespace mdds {
-namespace mtv {
+namespace mdds { namespace mtv {
 
 using element_t = int;
 
@@ -942,9 +941,7 @@ struct noncopyable_managed_element_block
     }
 };
 
-} // namespace mtv
-
-namespace detail { namespace mtv {
+namespace detail {
 
 template<typename Blk>
 inline bool get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset, std::true_type)
@@ -968,9 +965,9 @@ inline typename Blk::value_type get_block_element_at(const mdds::mtv::base_eleme
     return get_block_element_at<Blk>(data, offset, v);
 }
 
-}} // namespace detail::mtv
+} // namespace detail
 
-} // namespace mdds
+}} // namespace mdds::mtv
 
 #endif
 
