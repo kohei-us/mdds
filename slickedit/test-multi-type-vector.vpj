@@ -194,6 +194,7 @@
                     </Folder>
                 </Folder>
                 <Folder Name="element-blocks">
+                    <F N="../test/multi_type_vector/element-blocks/test_main.cpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_main.hpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_std_vector_bool.cpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_store_types.cpp"/>
