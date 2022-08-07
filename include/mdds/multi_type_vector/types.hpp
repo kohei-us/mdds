@@ -944,7 +944,7 @@ struct noncopyable_managed_element_block
 namespace detail {
 
 template<typename Blk>
-inline bool get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset, std::true_type)
+bool get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset, std::true_type)
 {
     auto it = Blk::cbegin(data);
     std::advance(it, offset);
@@ -952,14 +952,13 @@ inline bool get_block_element_at(const mdds::mtv::base_element_block& data, size
 }
 
 template<typename Blk>
-inline typename Blk::value_type get_block_element_at(
-    const mdds::mtv::base_element_block& data, size_t offset, std::false_type)
+typename Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset, std::false_type)
 {
     return Blk::at(data, offset);
 }
 
 template<typename Blk>
-inline typename Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
+typename Blk::value_type get_block_element_at(const mdds::mtv::base_element_block& data, size_t offset)
 {
     typename mdds::mtv::detail::has_std_vector_bool_store<Blk>::type v;
     return get_block_element_at<Blk>(data, offset, v);
