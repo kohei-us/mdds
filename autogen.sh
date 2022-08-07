@@ -6,7 +6,7 @@ test -z "$srcdir" && srcdir=.
 olddir=`pwd`
 cd $srcdir
 
-autoreconf || {
+autoreconf -i || {
     echo "error: autoreconf failed"
     exit 1
 }
