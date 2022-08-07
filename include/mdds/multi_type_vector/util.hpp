@@ -33,9 +33,7 @@
 
 #include <sstream>
 
-namespace mdds {
-
-namespace mtv {
+namespace mdds { namespace mtv {
 
 /**
  * Empty event function handler structure, used when no custom function
@@ -90,9 +88,7 @@ struct default_trait
     using block_funcs = element_block_funcs<>;
 };
 
-} // namespace mtv
-
-namespace detail { namespace mtv {
+namespace detail {
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 
@@ -228,18 +224,18 @@ T advance_position(const T& pos, int steps)
     return ret;
 }
 
-}} // namespace detail::mtv
+} // namespace detail
 
-} // namespace mdds
+}} // namespace mdds::mtv
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 
 #define MDDS_MTV_TRACE(method_type) \
-    ::mdds::detail::mtv::call_trace<Trait> mdds_mtv_ct(m_trace_call_depth); \
+    ::mdds::mtv::detail::call_trace<Trait> mdds_mtv_ct(m_trace_call_depth); \
     mdds_mtv_ct({trace_method_t::method_type, this, __func__, "", __FILE__, __LINE__})
 
 #define MDDS_MTV_TRACE_ARGS(method_type, stream) \
-    ::mdds::detail::mtv::call_trace<Trait> mdds_mtv_ct(m_trace_call_depth); \
+    ::mdds::mtv::detail::call_trace<Trait> mdds_mtv_ct(m_trace_call_depth); \
     do \
     { \
         std::ostringstream _os_; \

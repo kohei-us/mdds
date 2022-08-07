@@ -236,7 +236,7 @@ template<typename Trait>
 typename multi_type_vector<Trait>::position_type multi_type_vector<Trait>::advance_position(
     const position_type& pos, int steps)
 {
-    return mdds::detail::mtv::advance_position<position_type>(pos, steps);
+    return mdds::mtv::detail::advance_position<position_type>(pos, steps);
 }
 
 template<typename Trait>
@@ -262,7 +262,7 @@ template<typename Trait>
 typename multi_type_vector<Trait>::const_position_type multi_type_vector<Trait>::advance_position(
     const const_position_type& pos, int steps)
 {
-    return mdds::detail::mtv::advance_position<const_position_type>(pos, steps);
+    return mdds::mtv::detail::advance_position<const_position_type>(pos, steps);
 }
 
 template<typename Trait>
@@ -451,7 +451,7 @@ void multi_type_vector<Trait>::get_impl(size_type pos, T& value) const
 {
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::get", __LINE__, pos, block_size(), size());
 
     assert(block_index < m_block_store.element_blocks.size());
@@ -483,7 +483,7 @@ typename multi_type_vector<Trait>::position_type multi_type_vector<Trait>::posit
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
 
     size_type start_pos = m_block_store.positions[block_index];
@@ -507,7 +507,7 @@ typename multi_type_vector<Trait>::position_type multi_type_vector<Trait>::posit
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
 
     iterator it = get_iterator(block_index);
@@ -529,7 +529,7 @@ typename multi_type_vector<Trait>::const_position_type multi_type_vector<Trait>:
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
 
     size_type start_pos = m_block_store.positions[block_index];
@@ -553,7 +553,7 @@ typename multi_type_vector<Trait>::const_position_type multi_type_vector<Trait>:
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
 
     const_iterator it = get_const_iterator(block_index);
@@ -573,7 +573,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::transfer(
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -630,7 +630,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::transfer(
 
     size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
     if (block_index1 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -682,7 +682,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set(size_t
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -723,7 +723,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set(
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -761,7 +761,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set(
     MDDS_MTV_TRACE_ARGS(
         mutator, "pos=" << pos << "; it_begin=?; it_end=? (length=" << std::distance(it_begin, it_end) << ")");
 
-    auto res = mdds::detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
+    auto res = mdds::mtv::detail::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
 
     if (!res.second)
         return end();
@@ -770,7 +770,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set(
     size_type block_index1 = get_block_position(pos);
 
     if (block_index1 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -809,7 +809,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos << "; it_begin=?; it_end=? (length="
                                            << std::distance(it_begin, it_end) << ")");
 
-    auto res = mdds::detail::mtv::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
+    auto res = mdds::mtv::detail::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
     if (!res.second)
         return end();
 
@@ -903,7 +903,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::insert(
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::insert", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -946,7 +946,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::insert(
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::insert", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -1020,7 +1020,7 @@ mtv::element_t multi_type_vector<Trait>::get_type(size_type pos) const
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::get_type", __LINE__, pos, block_size(), size());
 
     element_block_type* blk_data = m_block_store.element_blocks[block_index];
@@ -1037,7 +1037,7 @@ bool multi_type_vector<Trait>::is_empty(size_type pos) const
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::is_empty", __LINE__, pos, block_size(), size());
 
     return m_block_store.element_blocks[block_index] == nullptr;
@@ -1050,7 +1050,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set_empty(
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
 
     return set_empty_impl(start_pos, end_pos, block_index1, true);
@@ -1065,7 +1065,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set_empty(
 
     size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
     if (block_index1 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
 
     return set_empty_impl(start_pos, end_pos, block_index1, true);
@@ -1116,7 +1116,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::insert_emp
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -1158,7 +1158,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::insert_emp
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -1813,7 +1813,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set_empty_
 
     size_type block_index2 = get_block_position(end_pos, block_index1);
     if (block_index2 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set_empty_impl", __LINE__, end_pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -2069,12 +2069,12 @@ void multi_type_vector<Trait>::erase_impl(size_type start_row, size_type end_row
 
     size_type block_pos1 = get_block_position(start_row);
     if (block_pos1 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::erase_impl", __LINE__, start_row, block_size(), size());
 
     size_type block_pos2 = get_block_position(end_row, block_pos1);
     if (block_pos2 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::erase_impl", __LINE__, start_row, block_size(), size());
 
     size_type start_row_in_block1 = m_block_store.positions[block_pos1];
@@ -2505,7 +2505,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::set_cells_
 {
     size_type block_index2 = get_block_position(end_row, block_index1);
     if (block_index2 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set_cells_impl", __LINE__, end_row, block_size(), size());
 
     if (block_index1 == block_index2)
@@ -3509,7 +3509,7 @@ T multi_type_vector<Trait>::release(size_type pos)
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -3548,7 +3548,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::release(si
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -3589,7 +3589,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::release(
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -3668,7 +3668,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::release_ra
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
 
     return set_empty_impl(start_pos, end_pos, block_index1, false);
@@ -3683,7 +3683,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::release_ra
 
     size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
     if (block_index1 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
 
     return set_empty_impl(start_pos, end_pos, block_index1, false);
@@ -4020,7 +4020,7 @@ typename multi_type_vector<Trait>::iterator multi_type_vector<Trait>::transfer_i
 
     size_type block_index2 = get_block_position(end_pos, block_index1);
     if (block_index2 == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::transfer_impl", __LINE__, end_pos, block_size(), size());
 
     size_type len = end_pos - start_pos + 1;
@@ -4668,7 +4668,7 @@ void multi_type_vector<Trait>::resize_impl(size_type new_size)
     size_type new_end_row = new_size - 1;
     size_type block_index = get_block_position(new_end_row);
     if (block_index == m_block_store.positions.size())
-        mdds::detail::mtv::throw_block_position_not_found(
+        mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::resize", __LINE__, new_end_row, block_size(), size());
 
     element_block_type* data = m_block_store.element_blocks[block_index];
