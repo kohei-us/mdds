@@ -648,40 +648,40 @@ public:
         return get(left) == get(right);
     }
 
-    template<typename _Iter>
-    static void set_values(base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
+    template<typename Iter>
+    static void set_values(base_element_block& block, size_t pos, const Iter& it_begin, const Iter& it_end)
     {
         store_type& d = get(block).m_array;
         typename store_type::iterator it_dest = d.begin();
         std::advance(it_dest, pos);
-        for (_Iter it = it_begin; it != it_end; ++it, ++it_dest)
+        for (Iter it = it_begin; it != it_end; ++it, ++it_dest)
             *it_dest = *it;
     }
 
-    template<typename _Iter>
-    static void append_values(base_element_block& block, const _Iter& it_begin, const _Iter& it_end)
+    template<typename Iter>
+    static void append_values(base_element_block& block, const Iter& it_begin, const Iter& it_end)
     {
         store_type& d = get(block).m_array;
         typename store_type::iterator it = d.end();
         d.insert(it, it_begin, it_end);
     }
 
-    template<typename _Iter>
-    static void prepend_values(base_element_block& block, const _Iter& it_begin, const _Iter& it_end)
+    template<typename Iter>
+    static void prepend_values(base_element_block& block, const Iter& it_begin, const Iter& it_end)
     {
         store_type& d = get(block).m_array;
         d.insert(d.begin(), it_begin, it_end);
     }
 
-    template<typename _Iter>
-    static void assign_values(base_element_block& dest, const _Iter& it_begin, const _Iter& it_end)
+    template<typename Iter>
+    static void assign_values(base_element_block& dest, const Iter& it_begin, const Iter& it_end)
     {
         store_type& d = get(dest).m_array;
         d.assign(it_begin, it_end);
     }
 
-    template<typename _Iter>
-    static void insert_values(base_element_block& block, size_t pos, const _Iter& it_begin, const _Iter& it_end)
+    template<typename Iter>
+    static void insert_values(base_element_block& block, size_t pos, const Iter& it_begin, const Iter& it_end)
     {
         store_type& blk = get(block).m_array;
         blk.insert(blk.begin() + pos, it_begin, it_end);
@@ -731,8 +731,8 @@ protected:
     copyable_element_block(size_t n, const ValueT& val) : base_type(n, val)
     {}
 
-    template<typename _Iter>
-    copyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    template<typename Iter>
+    copyable_element_block(const Iter& it_begin, const Iter& it_end) : base_type(it_begin, it_end)
     {}
 
 public:
@@ -758,8 +758,8 @@ protected:
     noncopyable_element_block(size_t n, const ValueT& val) : base_type(n, val)
     {}
 
-    template<typename _Iter>
-    noncopyable_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    template<typename Iter>
+    noncopyable_element_block(const Iter& it_begin, const Iter& it_end) : base_type(it_begin, it_end)
     {}
 
 public:
@@ -850,8 +850,8 @@ struct managed_element_block
             m_array.push_back(new ValueT(*v));
     }
 
-    template<typename _Iter>
-    managed_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    template<typename Iter>
+    managed_element_block(const Iter& it_begin, const Iter& it_end) : base_type(it_begin, it_end)
     {}
 
     ~managed_element_block()
@@ -872,8 +872,8 @@ struct managed_element_block
         return blk.release();
     }
 
-    template<typename _Iter>
-    static self_type* create_block_with_values(const _Iter& it_begin, const _Iter& it_end)
+    template<typename Iter>
+    static self_type* create_block_with_values(const Iter& it_begin, const Iter& it_end)
     {
         return new self_type(it_begin, it_end);
     }
@@ -904,8 +904,8 @@ struct noncopyable_managed_element_block
     noncopyable_managed_element_block(size_t n) : base_type(n)
     {}
 
-    template<typename _Iter>
-    noncopyable_managed_element_block(const _Iter& it_begin, const _Iter& it_end) : base_type(it_begin, it_end)
+    template<typename Iter>
+    noncopyable_managed_element_block(const Iter& it_begin, const Iter& it_end) : base_type(it_begin, it_end)
     {}
 
     ~noncopyable_managed_element_block()
@@ -926,8 +926,8 @@ struct noncopyable_managed_element_block
         return blk.release();
     }
 
-    template<typename _Iter>
-    static self_type* create_block_with_values(const _Iter& it_begin, const _Iter& it_end)
+    template<typename Iter>
+    static self_type* create_block_with_values(const Iter& it_begin, const Iter& it_end)
     {
         return new self_type(it_begin, it_end);
     }
