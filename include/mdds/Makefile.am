@@ -9,13 +9,9 @@ headers_HEADERS = \
 	global.hpp \
 	multi_type_matrix_def.inl \
 	multi_type_matrix.hpp \
-	multi_type_vector_custom_func1.hpp \
-	multi_type_vector_custom_func2.hpp \
-	multi_type_vector_custom_func3.hpp \
 	multi_type_vector.hpp \
 	multi_type_vector_itr.hpp \
 	multi_type_vector_macro.hpp \
-	multi_type_vector_trait.hpp \
 	multi_type_vector_types.hpp \
 	node.hpp \
 	point_quad_tree.hpp \
