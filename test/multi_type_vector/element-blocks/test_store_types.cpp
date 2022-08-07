@@ -32,21 +32,14 @@
 #include <deque>
 #include <type_traits>
 
-namespace test1 {
-
-constexpr mdds::mtv::element_t element_type_int8 = mdds::mtv::element_type_user_start + 2;
-
-using int8_element_block = mdds::mtv::default_element_block<element_type_int8, std::int8_t, std::vector>;
-
-} // namespace test1
-
 void mtv_test_element_blocks_std_vector()
 {
     stack_printer __stack_printer__(__func__);
 
-    using this_block = test1::int8_element_block;
+    constexpr mdds::mtv::element_t element_type_int8 = mdds::mtv::element_type_user_start + 2;
+    using this_block = mdds::mtv::default_element_block<element_type_int8, std::int8_t, std::vector>;
 
-    static_assert(this_block::block_type == test1::element_type_int8);
+    static_assert(this_block::block_type == element_type_int8);
     static_assert(std::is_same_v<this_block::store_type, std::vector<std::int8_t>>);
 
     auto* blk = this_block::create_block(10);
@@ -66,21 +59,14 @@ void mtv_test_element_blocks_std_vector()
     this_block::delete_block(blk);
 }
 
-namespace test2 {
-
-constexpr mdds::mtv::element_t element_type_int8 = mdds::mtv::element_type_user_start + 20;
-
-using int8_element_block = mdds::mtv::default_element_block<element_type_int8, std::int8_t, std::deque>;
-
-} // namespace test2
-
 void mtv_test_element_blocks_std_deque()
 {
     stack_printer __stack_printer__(__func__);
 
-    using this_block = test2::int8_element_block;
+    constexpr mdds::mtv::element_t element_type_int8 = mdds::mtv::element_type_user_start + 20;
+    using this_block = mdds::mtv::default_element_block<element_type_int8, std::int8_t, std::deque>;
 
-    static_assert(this_block::block_type == test2::element_type_int8);
+    static_assert(this_block::block_type == element_type_int8);
     static_assert(std::is_same_v<this_block::store_type, std::deque<std::int8_t>>);
 
     auto* blk = this_block::create_block(10);

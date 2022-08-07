@@ -33,6 +33,8 @@
 
 void mtv_test_element_blocks_std_vector_bool()
 {
+    stack_printer __stack_printer__(__func__);
+
     constexpr mdds::mtv::element_t element_type_bool = mdds::mtv::element_type_user_start + 3;
     using this_block = mdds::mtv::default_element_block<element_type_bool, bool, std::vector>;
 
@@ -48,6 +50,8 @@ void mtv_test_element_blocks_std_vector_bool()
 
 void mtv_test_element_blocks_std_deque_bool()
 {
+    stack_printer __stack_printer__(__func__);
+
     constexpr mdds::mtv::element_t element_type_bool = mdds::mtv::element_type_user_start + 2;
     using this_block = mdds::mtv::default_element_block<element_type_bool, bool, std::deque>;
 
@@ -61,8 +65,10 @@ void mtv_test_element_blocks_std_deque_bool()
     this_block::delete_block(blk);
 }
 
-void mtv_test_element_blocks_delayed_delete_vector()
+void mtv_test_element_blocks_delayed_delete_vector_bool()
 {
+    stack_printer __stack_printer__(__func__);
+
     constexpr mdds::mtv::element_t element_type_bool = mdds::mtv::element_type_user_start + 1;
     using this_block = mdds::mtv::default_element_block<element_type_bool, bool, mdds::mtv::delayed_delete_vector>;
 
