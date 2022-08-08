@@ -38,14 +38,14 @@ using std::endl;
 
 using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
 
-template<typename _Blk>
+template<typename BlockT>
 void print_block(const mtv_type::value_type& v)
 {
     // Each element block has static begin() and end() methods that return
     // begin and end iterators, respectively, from the passed element block
     // instance.
-    auto it = _Blk::begin(*v.data);
-    auto it_end = _Blk::end(*v.data);
+    auto it = BlockT::begin(*v.data);
+    auto it_end = BlockT::end(*v.data);
 
     std::for_each(it, it_end,
         [](const typename _Blk::value_type& elem)
