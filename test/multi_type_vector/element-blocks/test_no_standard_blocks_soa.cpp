@@ -26,17 +26,26 @@
  *
  ************************************************************************/
 
-#pragma once
+#include "test_main.hpp"
 
-#include "test_global.hpp" // This must be the first header to be included.
+// Settting this to 0 should make the multi_type_vector code to NOT include
+// the header for the standard element blocks.
+#define MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS 0
+#include <mdds/multi_type_vector/soa/main.hpp>
+#include <mdds/global.hpp>
 
-// We don't include any multi_type_vector specific headers here in order to
-// test features controlled by preprocessor defines.
+namespace mdds { namespace mtv {
 
-void mtv_test_element_blocks_std_vector();
-void mtv_test_element_blocks_std_deque();
-void mtv_test_element_blocks_std_vector_bool();
-void mtv_test_element_blocks_std_deque_bool();
-void mtv_test_element_blocks_delayed_delete_vector_bool();
+// This variable is defined in the header, so if it's included it should cause
+// a compiler error.
+constexpr element_t element_type_boolean = element_type_reserved_start;
+
+struct standard_element_blocks_trait;
+static_assert(!mdds::is_complete<standard_element_blocks_trait>::value,
+    "The standard_element_blocks_trait struct should not have been defined.");
+
+}}
+
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+

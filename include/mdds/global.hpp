@@ -182,6 +182,16 @@ constexpr bool invalid_static_int()
     return false;
 }
 
+template<typename T, typename = void>
+struct is_complete : std::false_type
+{
+};
+
+template<typename T>
+struct is_complete<T, std::void_t<decltype(sizeof(T) != 0)>> : std::true_type
+{
+};
+
 } // namespace mdds
 
 #endif

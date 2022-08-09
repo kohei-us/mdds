@@ -28,6 +28,9 @@
 
 #include "test_main.hpp"
 
+#include <mdds/multi_type_vector/types.hpp>
+#include <mdds/multi_type_vector/block_funcs.hpp>
+
 #include <vector>
 #include <deque>
 #include <type_traits>

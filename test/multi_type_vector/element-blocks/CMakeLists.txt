@@ -5,6 +5,8 @@ add_executable(${TARGET_NAME} EXCLUDE_FROM_ALL
     test_main.cpp
     test_std_vector_bool.cpp
     test_store_types.cpp
+    test_no_standard_blocks_aos.cpp
+    test_no_standard_blocks_soa.cpp
 )
 
 target_link_libraries(${TARGET_NAME} PUBLIC test-global)
