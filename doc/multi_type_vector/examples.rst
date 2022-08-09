@@ -58,6 +58,54 @@ numeric and string blocks, their ``data`` members, which should point to the
 memory addresses of their respective element blocks, are dereferenced in order
 to print out their element values to stdout inside the ``print_block`` function.
 
+Using standard block types
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is worth noting that the two block types used in this example, namely
+:cpp:type:`~mdds::mtv::double_element_block` and :cpp:type:`~mdds::mtv::string_element_block`
+didn't come out of nowhere.  They are defined in the ``mdds/multi_type_vector/standard_element_blocks.hpp``
+header.  By including this header, you make available the following block types:
+
+* :cpp:type:`mdds::mtv::boolean_element_block`
+* :cpp:type:`mdds::mtv::int8_element_block`
+* :cpp:type:`mdds::mtv::uint8_element_block`
+* :cpp:type:`mdds::mtv::int16_element_block`
+* :cpp:type:`mdds::mtv::uint16_element_block`
+* :cpp:type:`mdds::mtv::int32_element_block`
+* :cpp:type:`mdds::mtv::uint32_element_block`
+* :cpp:type:`mdds::mtv::int64_element_block`
+* :cpp:type:`mdds::mtv::uint64_element_block`
+* :cpp:type:`mdds::mtv::float_element_block`
+* :cpp:type:`mdds::mtv::double_element_block`
+* :cpp:type:`mdds::mtv::string_element_block`
+
+which respectively store elements of the following value types:
+
+* ``bool``
+* ``int8_t``
+* ``uint8_t``
+* ``int16_t``
+* ``uint16_t``
+* ``int32_t``
+* ``uint32_t``
+* ``int64_t``
+* ``uint64_t``
+* ``float``
+* ``double``
+* ``std::string``
+
+The header also defines the
+:cpp:class:`mdds::mtv::standard_element_blocks_trait` type which you can pass
+to the template instance of multi_type_vector in order to have all of the
+above block types available.
+
+Instead of including this header, and thereby pulling in all of the above
+block types automatically, you can manually define only those blocks you need
+in your code and create your own custom trait type to pass to
+multi_type_vector.  One advantage of manually defining the blocks is that you
+can then specify the underlying storage type used to store the elements in.
+We will talk more about that in a later section.
+
 
 Use custom event handlers
 -------------------------
