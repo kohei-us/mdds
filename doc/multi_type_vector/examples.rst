@@ -440,10 +440,10 @@ which clearly shows that your iteration range did indeed shrink as expected.
 
 
 Performance Considerations
---------------------------
+==========================
 
 Select SoA or AoS storage types
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 
 If you instantiate a multi_type_vector instance via
 :cpp:type:`mdds::multi_type_vector`, which is an alias type for
@@ -462,7 +462,7 @@ Also note that both variants are API compatibile with each other.
 
 
 Use of position hints to avoid the cost of block position lookup
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------------------
 
 Consider the following example code:
 
@@ -537,7 +537,7 @@ memory access or otherwise in some sort of undefined behavior.
 
 
 Block shifting performance and loop-unrolling factor
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------
 
 The introduction of binary search in the block position lookup implementation
 in version 1.6 has significantly improved its lookup performance, but has
@@ -570,10 +570,10 @@ you a representative answer.
 
 
 Debugging
----------
+=========
 
 Tracing of public methods
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 When using :cpp:class:`~mdds::mtv::soa::multi_type_vector` to handle a series
 of data reads and writes in an non-trivial code base, sometimes you may find
