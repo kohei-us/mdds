@@ -1,7 +1,7 @@
 .. highlight:: cpp
 
-Multi Type Vector
-=================
+Examples
+========
 
 Quick start
 -----------
@@ -9,7 +9,7 @@ Quick start
 The following code demonstrates a simple use case of storing values of double
 and :cpp:class:`std::string` types in a single container using :cpp:type:`~mdds::multi_type_vector`.
 
-.. literalinclude:: ../example/multi_type_vector.cpp
+.. literalinclude:: ../../example/multi_type_vector.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -36,7 +36,7 @@ You'll see the following console output when you compile and execute this code:
    empty block of size 7
     - no data -
 
-.. figure:: _static/images/mtv_block_structure.png
+.. figure:: ../_static/images/mtv_block_structure.png
    :align: center
 
    Logical structure between the primary array, blocks, and element blocks.
@@ -76,7 +76,7 @@ for the detail on when each event handler method gets triggered.
 
 The following code example demonstrates how this all works:
 
-.. literalinclude:: ../example/multi_type_vector_event1.cpp
+.. literalinclude:: ../../example/multi_type_vector_event1.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -125,7 +125,7 @@ The following code demonstrates this by exposing raw array pointers to the
 internal arrays of numeric and string element blocks, and printing their
 element values directly from these array pointers.
 
-.. literalinclude:: ../example/multi_type_vector_element_block1.cpp
+.. literalinclude:: ../../example/multi_type_vector_element_block1.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -165,7 +165,7 @@ where each cell in the data set is associated with row and column indices.
 Each cell may store a value of string type, integer type, numeric type, etc.
 And let's say that the data looks like the following spreadsheet data:
 
-.. figure:: _static/images/mtv_collection_sheet.png
+.. figure:: ../_static/images/mtv_collection_sheet.png
    :align: center
 
 It consists of five columns, with each column storing 21 rows of data.  The
@@ -176,7 +176,7 @@ column thus creating five instances in total, and store them in a
 
 The declaration of the data store will look like this:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: declare
    :end-before: //!code-end: declare
@@ -192,7 +192,7 @@ the columns have been populated.
 Now, we need to populate the columns with values.  First, we are setting the
 header row:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: header-row
    :end-before: //!code-end: header-row
@@ -201,7 +201,7 @@ header row:
 We are then filling each column individually from column 1 through column 5.
 First up is column 1:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-1
    :end-before: //!code-end: column-1
@@ -211,7 +211,7 @@ Hopefully this code is straight-forward.  It initializes an array of values
 and push them to the column one at a time via
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::push_back`.  Next up is column 2:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-2
    :end-before: //!code-end: column-2
@@ -224,7 +224,7 @@ array of string literals which implicitly becomes an initializer list of type
 
 The code for column 3 is very similar to this:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-3
    :end-before: //!code-end: column-3
@@ -234,7 +234,7 @@ Populating column 4 needs slight pre-processing.  We are inserting a string
 value of "unknown" in lieu of an integer value of -1.  Therefore the following
 code will do:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-4
    :end-before: //!code-end: column-4
@@ -243,7 +243,7 @@ code will do:
 Finally, the last column to fill, which uses the same logic as for columns 2
 and 3:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-5
    :end-before: //!code-end: column-5
@@ -253,7 +253,7 @@ At this point, the content we've put into the ``columns`` variable roughly
 reflects the tabular data shown at the beginning of this section.  Now we can
 use the collection type we've declared earlier to wrap the columns:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: wrap
    :end-before: //!code-end: wrap
@@ -292,7 +292,7 @@ not change for the duration of its use.
 
 Finally, here is the code that does the traversing:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: traverse-row
    :end-before: //!code-end: traverse-row
@@ -356,7 +356,7 @@ Let's see how this works in the current example.  Here, we are going to limit
 the iteration range to only columns 2 and 3, and rows 2 through 11.  The following
 code will set this limit:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: limit-range
    :end-before: //!code-end: limit-range
@@ -364,7 +364,7 @@ code will set this limit:
 
 Then iterate through the collection once again:
 
-.. literalinclude:: ../example/mtv_collection.cpp
+.. literalinclude:: ../../example/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: traverse-row-range
    :end-before: //!code-end: traverse-row-range
@@ -418,7 +418,7 @@ Use of position hints to avoid the cost of block position lookup
 
 Consider the following example code:
 
-.. literalinclude:: ../example/multi_type_vector_pos_hint.cpp
+.. literalinclude:: ../../example/multi_type_vector_pos_hint.cpp
    :language: C++
    :start-after: //!code-start: no-pos-hint
    :end-before: //!code-end: no-pos-hint
@@ -436,7 +436,7 @@ position.
 Fortunately, there is a simple solution to this which the following code
 demonstrates:
 
-.. literalinclude:: ../example/multi_type_vector_pos_hint.cpp
+.. literalinclude:: ../../example/multi_type_vector_pos_hint.cpp
    :language: C++
    :start-after: //!code-start: pos-hint
    :end-before: //!code-end: pos-hint
@@ -538,7 +538,7 @@ First, you need to define a preprocessor macro named
 ``MDDS_MULTI_TYPE_VECTOR_DEBUG`` before including the header for
 :cpp:class:`~mdds::mtv::soa::multi_type_vector`:
 
-.. literalinclude:: ../example/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector_debug_trace.cpp
    :language: C++
    :start-after: //!code-start: header
    :end-before: //!code-end: header
@@ -550,7 +550,7 @@ is defined.  You can also define one as a compiler option as well.
 Once defined, the next step is to add a ``trace`` method as a static function to
 the trait type you pass as a template argument of multi_type_vector:
 
-.. literalinclude:: ../example/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector_debug_trace.cpp
    :language: C++
    :start-after: //!code-start: types
    :end-before: //!code-end: types
@@ -573,7 +573,7 @@ be called.
 Let's instantiate an object of ``mtv_type``, call some of its methods and see
 what happens.  When executing the following code:
 
-.. literalinclude:: ../example/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector_debug_trace.cpp
    :language: C++
    :start-after: //!code-start: main
    :end-before: //!code-end: main
@@ -625,157 +625,3 @@ only available for the SoA variant of :cpp:class:`~mdds::mtv::soa::multi_type_ve
    This feature is only available for version 2.0.2 and newer, and only for the
    SoA variant.
 
-API Reference
--------------
-
-Core
-^^^^
-
-mdds::multi_type_vector
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygentypedef:: mdds::multi_type_vector
-
-mdds::mtv::soa::multi_type_vector
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygenclass:: mdds::mtv::soa::multi_type_vector
-   :members:
-
-mdds::mtv::aos::multi_type_vector
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygenclass:: mdds::mtv::aos::multi_type_vector
-   :members:
-
-mdds::mtv::empty_event_func
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygenstruct:: mdds::mtv::empty_event_func
-   :members:
-
-mdds::mtv::default_trait
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygenstruct:: mdds::mtv::default_trait
-   :members:
-
-Element Stores
-^^^^^^^^^^^^^^
-
-.. doxygenclass:: mdds::mtv::delayed_delete_vector
-   :members:
-
-Element Blocks
-^^^^^^^^^^^^^^
-
-.. doxygenclass:: mdds::mtv::base_element_block
-   :members:
-
-.. doxygenclass:: mdds::mtv::element_block
-   :members:
-
-.. doxygenstruct:: mdds::mtv::default_element_block
-   :members:
-
-.. doxygenclass:: mdds::mtv::copyable_element_block
-   :members:
-
-.. doxygenclass:: mdds::mtv::noncopyable_element_block
-   :members:
-
-.. doxygenstruct:: mdds::mtv::managed_element_block
-   :members:
-
-.. doxygenstruct:: mdds::mtv::noncopyable_managed_element_block
-   :members:
-
-.. doxygenstruct:: mdds::mtv::element_block_funcs
-   :members:
-
-Types
-^^^^^
-
-mdds::mtv::element_t
-~~~~~~~~~~~~~~~~~~~~
-
-.. doxygentypedef:: mdds::mtv::element_t
-
-.. doxygenvariable:: mdds::mtv::element_type_empty
-.. doxygenvariable:: mdds::mtv::element_type_reserved_start
-.. doxygenvariable:: mdds::mtv::element_type_reserved_end
-.. doxygenvariable:: mdds::mtv::element_type_user_start
-
-mdds::mtv::lu_factor_t
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygenenum:: mdds::mtv::lu_factor_t
-
-mdds::mtv::trace_method_t
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygenenum:: mdds::mtv::trace_method_t
-
-mdds::mtv::trace_method_properties_t
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygenstruct:: mdds::mtv::trace_method_properties_t
-
-
-Standard Element Blocks
-^^^^^^^^^^^^^^^^^^^^^^^
-
-The following types become available by including the
-``mdds/multi_type_vector/standard_element_blocks.hpp`` header file.  Note that
-the block types defined here use the default store type which is
-:cpp:class:`~mdds::mtv::delayed_delete_vector`.  If you need to use a
-different store type, you must **NOT** include the aforementioned header file,
-and instead must define your own block type(s) with your desired store type(s).
-
-Constants
-~~~~~~~~~
-
-.. doxygenvariable:: mdds::mtv::element_type_boolean
-.. doxygenvariable:: mdds::mtv::element_type_int8
-.. doxygenvariable:: mdds::mtv::element_type_uint8
-.. doxygenvariable:: mdds::mtv::element_type_int16
-.. doxygenvariable:: mdds::mtv::element_type_uint16
-.. doxygenvariable:: mdds::mtv::element_type_int32
-.. doxygenvariable:: mdds::mtv::element_type_uint32
-.. doxygenvariable:: mdds::mtv::element_type_int64
-.. doxygenvariable:: mdds::mtv::element_type_uint64
-.. doxygenvariable:: mdds::mtv::element_type_float
-.. doxygenvariable:: mdds::mtv::element_type_double
-.. doxygenvariable:: mdds::mtv::element_type_string
-
-Block Types and Trait
-~~~~~~~~~~~~~~~~~~~~~
-
-.. doxygentypedef:: mdds::mtv::boolean_element_block
-.. doxygentypedef:: mdds::mtv::int8_element_block
-.. doxygentypedef:: mdds::mtv::uint8_element_block
-.. doxygentypedef:: mdds::mtv::int16_element_block
-.. doxygentypedef:: mdds::mtv::uint16_element_block
-.. doxygentypedef:: mdds::mtv::int32_element_block
-.. doxygentypedef:: mdds::mtv::uint32_element_block
-.. doxygentypedef:: mdds::mtv::int64_element_block
-.. doxygentypedef:: mdds::mtv::uint64_element_block
-.. doxygentypedef:: mdds::mtv::float_element_block
-.. doxygentypedef:: mdds::mtv::double_element_block
-.. doxygentypedef:: mdds::mtv::string_element_block
-
-.. doxygenstruct:: mdds::mtv::standard_element_blocks_trait
-   :members:
-
-
-Exceptions
-^^^^^^^^^^
-
-.. doxygenclass:: mdds::mtv::element_block_error
-
-
-Collection
-^^^^^^^^^^
-
-.. doxygenclass:: mdds::mtv::collection
-   :members:
