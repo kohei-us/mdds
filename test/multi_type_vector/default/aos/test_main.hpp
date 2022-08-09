@@ -30,7 +30,6 @@
 
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector/aos/main.hpp>
-#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <cassert>
 #include <sstream>

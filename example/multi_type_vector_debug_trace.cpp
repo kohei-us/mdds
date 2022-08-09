@@ -29,7 +29,6 @@
 //!code-start: header
 #define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <iostream>
 //!code-end: header

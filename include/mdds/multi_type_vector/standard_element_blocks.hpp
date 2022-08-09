@@ -25,12 +25,12 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  ************************************************************************/
-
 #pragma once
 
 #include "types.hpp"
 #include "util.hpp"
 #include "block_funcs.hpp"
+#include "macro.hpp"
 
 namespace mdds { namespace mtv {
 

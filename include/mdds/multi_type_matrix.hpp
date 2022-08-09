@@ -35,7 +35,6 @@
 #endif
 
 #include "multi_type_vector.hpp"
-#include "multi_type_vector/standard_element_blocks.hpp"
 
 namespace mdds {
 

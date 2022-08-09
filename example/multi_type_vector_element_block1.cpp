@@ -28,7 +28,6 @@
 
 //!code-start
 #include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 #include <iostream>
 
 using std::cout;

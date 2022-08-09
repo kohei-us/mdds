@@ -238,6 +238,7 @@
                     <F N="../include/mdds/multi_type_vector/block_funcs.hpp"/>
                     <F N="../include/mdds/multi_type_vector/collection.hpp"/>
                     <F N="../include/mdds/multi_type_vector/collection_def.inl"/>
+                    <F N="../include/mdds/multi_type_vector/env.hpp"/>
                     <F N="../include/mdds/multi_type_vector/iterator_node.hpp"/>
                     <F N="../include/mdds/multi_type_vector/macro.hpp"/>
                     <F N="../include/mdds/multi_type_vector/standard_element_blocks.hpp"/>

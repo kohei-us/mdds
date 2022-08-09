@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include <mdds/multi_type_vector/types.hpp>
 #include <mdds/multi_type_vector/macro.hpp>
 #include <mdds/multi_type_vector/standard_element_blocks.hpp>
 

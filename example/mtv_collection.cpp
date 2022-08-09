@@ -28,7 +28,6 @@
 
 #include <mdds/multi_type_vector.hpp>
 #include <mdds/multi_type_vector/collection.hpp>
-#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <vector>
 #include <iostream>

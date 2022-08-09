@@ -26,9 +26,11 @@
  *
  ************************************************************************/
 
-#include "../macro.hpp"
+#include "../env.hpp"
 #include "../util.hpp"
+#if MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS
 #include "../standard_element_blocks.hpp"
+#endif
 
 #include <stdexcept>
 #include <memory>

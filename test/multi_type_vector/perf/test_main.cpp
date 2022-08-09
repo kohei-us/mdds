@@ -28,7 +28,6 @@
 #include "test_global.hpp" // This must be the first header to be included.
 
 #include <mdds/multi_type_vector.hpp>
-#include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
 #include <cassert>
 #include <sstream>
