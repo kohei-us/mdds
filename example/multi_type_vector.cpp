@@ -48,7 +48,7 @@ void print_block(const mtv_type::value_type& v)
     auto it_end = BlockT::end(*v.data);
 
     std::for_each(it, it_end,
-        [](const typename _Blk::value_type& elem)
+        [](const typename BlockT::value_type& elem)
         {
             cout << " * " << elem << endl;
         }
@@ -69,12 +69,12 @@ int main() try
     con.set(3, vals.begin(), vals.end());
 
     // Set string values.
-    con.set(10, std::string("Andy"));
-    con.set(11, std::string("Bruce"));
-    con.set(12, std::string("Charlie"));
+    con.set<std::string>(10, "Andy");
+    con.set<std::string>(11, "Bruce");
+    con.set<std::string>(12, "Charlie");
 
     // Iterate through all blocks and print all elements.
-    for (const mtv_type::value_type& v : con)
+    for (const auto& v : con)
     {
         switch (v.type)
         {
