@@ -13,4 +13,6 @@ test_SOURCES = \
 	test_no_standard_blocks_soa.cpp \
 	$(top_srcdir)/test/test_global.cpp
 
+EXTRA_DIST = no_standard_blocks.inl
+
 TESTS = test

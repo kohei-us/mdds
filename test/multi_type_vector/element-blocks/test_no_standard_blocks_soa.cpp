@@ -32,20 +32,7 @@
 // the header for the standard element blocks.
 #define MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS 0
 #include <mdds/multi_type_vector/soa/main.hpp>
-#include <mdds/global.hpp>
 
-namespace mdds { namespace mtv {
-
-// This variable is defined in the header, so if it's included it should cause
-// a compiler error.
-constexpr element_t element_type_boolean = element_type_reserved_start;
-
-struct standard_element_blocks_trait;
-static_assert(!mdds::is_complete<standard_element_blocks_trait>::value,
-    "The standard_element_blocks_trait struct should not have been defined.");
-
-}}
-
+#include "no_standard_blocks.inl"
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

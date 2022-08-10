@@ -26,13 +26,36 @@
  *
  ************************************************************************/
 
-#include "test_main.hpp"
+// NB: code in this file must be soa vs aos neutral.
 
-// Settting this to 0 should make the multi_type_vector code to NOT include
-// the header for the standard element blocks.
-#define MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS 0
-#include <mdds/multi_type_vector/aos/main.hpp>
+#include <mdds/global.hpp>
 
-#include "no_standard_blocks.inl"
+#include <deque>
+#include <vector>
+#include <type_traits>
+
+namespace mdds { namespace mtv {
+
+// These variables are defined in the header, so if it's included it should
+// cause a compiler error.
+constexpr element_t element_type_boolean = element_type_user_start;
+constexpr element_t element_type_int32 = element_type_user_start + 1;
+constexpr element_t element_type_uint32 = element_type_user_start + 2;
+
+using boolean_element_block = default_element_block<element_type_boolean, bool, std::deque>;
+using int32_element_block = default_element_block<element_type_int32, std::int32_t, std::vector>;
+using uint32_element_block = default_element_block<element_type_uint32, std::uint32_t, delayed_delete_vector>;
+
+struct standard_element_blocks_trait;
+static_assert(
+    !mdds::is_complete<standard_element_blocks_trait>::value,
+    "The standard_element_blocks_trait struct should not have been defined.");
+
+}} // namespace mdds::mtv
+
+static_assert(std::is_same_v<mdds::mtv::boolean_element_block::store_type, std::deque<bool>>);
+static_assert(std::is_same_v<mdds::mtv::int32_element_block::store_type, std::vector<std::int32_t>>);
+static_assert(std::is_same_v<mdds::mtv::uint32_element_block::store_type, mdds::mtv::delayed_delete_vector<std::uint32_t>>);
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+
