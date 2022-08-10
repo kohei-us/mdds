@@ -26,16 +26,24 @@
  *
  ************************************************************************/
 
-#include "no_standard_blocks_defs.inl"
+void test_mtv_basic()
+{
+    using this_mtv_type = mtv_type<my_trait>;
 
-// Settting this to 0 should make the multi_type_vector code to NOT include
-// the header for the standard element blocks.
-#define MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS 0
-#include <mdds/multi_type_vector/aos/main.hpp>
+    this_mtv_type db{};
 
-template<typename ...Ts>
-using mtv_type = mdds::mtv::aos::multi_type_vector<Ts...>;
+    db.push_back(true);
+    db.push_back(false);
+    db.push_back<std::int32_t>(123);
+    db.push_back<std::uint32_t>(456u);
 
-#include "no_standard_blocks_funcs.inl"
+    assert(db.size() == 4);
+    assert(db.block_size() == 3);
+    assert(db.get<bool>(0) == true);
+    assert(db.get<bool>(1) == false);
+    assert(db.get<std::int32_t>(2) == 123);
+    assert(db.get<std::uint32_t>(3) == 456u);
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+

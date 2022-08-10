@@ -194,8 +194,17 @@
                     </Folder>
                 </Folder>
                 <Folder Name="element-blocks">
+                    <F N="../test/multi_type_vector/element-blocks/no_standard_blocks.inl"/>
+                    <F N="../test/multi_type_vector/element-blocks/no_standard_blocks_defs.inl"/>
+                    <F N="../test/multi_type_vector/element-blocks/no_standard_blocks_funcs.inl"/>
+                    <F N="../test/multi_type_vector/element-blocks/test_aos.cpp"/>
+                    <F N="../test/multi_type_vector/element-blocks/test_aos.hpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_main.cpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_main.hpp"/>
+                    <F N="../test/multi_type_vector/element-blocks/test_no_standard_blocks_aos.cpp"/>
+                    <F N="../test/multi_type_vector/element-blocks/test_no_standard_blocks_soa.cpp"/>
+                    <F N="../test/multi_type_vector/element-blocks/test_soa.cpp"/>
+                    <F N="../test/multi_type_vector/element-blocks/test_soa.hpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_std_vector_bool.cpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_store_types.cpp"/>
                 </Folder>
