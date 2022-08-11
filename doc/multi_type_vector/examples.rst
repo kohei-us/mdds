@@ -9,7 +9,7 @@ Quick start
 The following code demonstrates a simple use case of storing values of double
 and :cpp:class:`std::string` types in a single container using :cpp:type:`~mdds::multi_type_vector`.
 
-.. literalinclude:: ../../example/multi_type_vector.cpp
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -58,13 +58,13 @@ numeric and string blocks, their ``data`` members, which should point to the
 memory addresses of their respective element blocks, are dereferenced in order
 to print out their element values to stdout inside the ``print_block`` function.
 
-Using standard block types
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Standard block types
+^^^^^^^^^^^^^^^^^^^^
 
-It is worth noting that the two block types used in this example, namely
+It is worth noting that the two block types used in the previous example, namely
 :cpp:type:`~mdds::mtv::double_element_block` and :cpp:type:`~mdds::mtv::string_element_block`
-didn't come out of nowhere.  They are defined in the ``mdds/multi_type_vector/standard_element_blocks.hpp``
-header.  By including this header, you make available the following block types:
+didn't come out of nowhere.  By default, including the header that defines multi_type_vector
+implicitly also defines the following block types:
 
 * :cpp:type:`mdds::mtv::boolean_element_block`
 * :cpp:type:`mdds::mtv::int8_element_block`
@@ -94,17 +94,9 @@ which respectively store elements of the following value types:
 * ``double``
 * ``std::string``
 
-The header also defines the
-:cpp:class:`mdds::mtv::standard_element_blocks_trait` type which you can pass
-to the template instance of multi_type_vector in order to have all of the
-above block types available.
-
-Instead of including this header, and thereby pulling in all of the above
-block types automatically, you can manually define only those blocks you need
-in your code and create your own custom trait type to pass to
-multi_type_vector.  One advantage of manually defining the blocks is that you
-can then specify the underlying storage type used to store the elements in.
-We will talk more about that in a later section.
+The header also defines the :cpp:class:`mdds::mtv::standard_element_blocks_trait`
+type which you can pass to the template instance of multi_type_vector in order to
+have all of the above mentioned block types available for use.
 
 
 Use custom event handlers
@@ -124,7 +116,7 @@ for the detail on when each event handler method gets triggered.
 
 The following code example demonstrates how this all works:
 
-.. literalinclude:: ../../example/multi_type_vector_event1.cpp
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_event1.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -173,7 +165,7 @@ The following code demonstrates this by exposing raw array pointers to the
 internal arrays of numeric and string element blocks, and printing their
 element values directly from these array pointers.
 
-.. literalinclude:: ../../example/multi_type_vector_element_block1.cpp
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_element_block1.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -224,7 +216,7 @@ column thus creating five instances in total, and store them in a
 
 The declaration of the data store will look like this:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: declare
    :end-before: //!code-end: declare
@@ -240,7 +232,7 @@ the columns have been populated.
 Now, we need to populate the columns with values.  First, we are setting the
 header row:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: header-row
    :end-before: //!code-end: header-row
@@ -249,7 +241,7 @@ header row:
 We are then filling each column individually from column 1 through column 5.
 First up is column 1:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-1
    :end-before: //!code-end: column-1
@@ -259,7 +251,7 @@ Hopefully this code is straight-forward.  It initializes an array of values
 and push them to the column one at a time via
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::push_back`.  Next up is column 2:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-2
    :end-before: //!code-end: column-2
@@ -272,7 +264,7 @@ array of string literals which implicitly becomes an initializer list of type
 
 The code for column 3 is very similar to this:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-3
    :end-before: //!code-end: column-3
@@ -282,7 +274,7 @@ Populating column 4 needs slight pre-processing.  We are inserting a string
 value of "unknown" in lieu of an integer value of -1.  Therefore the following
 code will do:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-4
    :end-before: //!code-end: column-4
@@ -291,7 +283,7 @@ code will do:
 Finally, the last column to fill, which uses the same logic as for columns 2
 and 3:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-5
    :end-before: //!code-end: column-5
@@ -301,7 +293,7 @@ At this point, the content we've put into the ``columns`` variable roughly
 reflects the tabular data shown at the beginning of this section.  Now we can
 use the collection type we've declared earlier to wrap the columns:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: wrap
    :end-before: //!code-end: wrap
@@ -340,7 +332,7 @@ not change for the duration of its use.
 
 Finally, here is the code that does the traversing:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: traverse-row
    :end-before: //!code-end: traverse-row
@@ -404,7 +396,7 @@ Let's see how this works in the current example.  Here, we are going to limit
 the iteration range to only columns 2 and 3, and rows 2 through 11.  The following
 code will set this limit:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: limit-range
    :end-before: //!code-end: limit-range
@@ -412,7 +404,7 @@ code will set this limit:
 
 Then iterate through the collection once again:
 
-.. literalinclude:: ../../example/mtv_collection.cpp
+.. literalinclude:: ../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: traverse-row-range
    :end-before: //!code-end: traverse-row-range
@@ -437,6 +429,14 @@ following output:
     Nissan | Frontier
 
 which clearly shows that your iteration range did indeed shrink as expected.
+
+Specifying custom blocks
+------------------------
+
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_standard_custom_store.cpp
+   :language: C++
+   :start-after: //!code-start
+   :end-before: //!code-end
 
 
 Performance Considerations
@@ -466,7 +466,7 @@ Use of position hints to avoid the cost of block position lookup
 
 Consider the following example code:
 
-.. literalinclude:: ../../example/multi_type_vector_pos_hint.cpp
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_pos_hint.cpp
    :language: C++
    :start-after: //!code-start: no-pos-hint
    :end-before: //!code-end: no-pos-hint
@@ -484,7 +484,7 @@ position.
 Fortunately, there is a simple solution to this which the following code
 demonstrates:
 
-.. literalinclude:: ../../example/multi_type_vector_pos_hint.cpp
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_pos_hint.cpp
    :language: C++
    :start-after: //!code-start: pos-hint
    :end-before: //!code-end: pos-hint
@@ -586,7 +586,7 @@ First, you need to define a preprocessor macro named
 ``MDDS_MULTI_TYPE_VECTOR_DEBUG`` before including the header for
 :cpp:class:`~mdds::mtv::soa::multi_type_vector`:
 
-.. literalinclude:: ../../example/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_debug_trace.cpp
    :language: C++
    :start-after: //!code-start: header
    :end-before: //!code-end: header
@@ -598,7 +598,7 @@ is defined.  You can also define one as a compiler option as well.
 Once defined, the next step is to add a ``trace`` method as a static function to
 the trait type you pass as a template argument of multi_type_vector:
 
-.. literalinclude:: ../../example/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_debug_trace.cpp
    :language: C++
    :start-after: //!code-start: types
    :end-before: //!code-end: types
@@ -621,7 +621,7 @@ be called.
 Let's instantiate an object of ``mtv_type``, call some of its methods and see
 what happens.  When executing the following code:
 
-.. literalinclude:: ../../example/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_debug_trace.cpp
    :language: C++
    :start-after: //!code-start: main
    :end-before: //!code-end: main

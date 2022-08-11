@@ -1,0 +1,16 @@
+*.svg
+cities.bin
+flat-segment-tree
+flat-segment-tree-itrs
+multi-type-matrix
+packed-trie-map
+packed-trie-state-custom
+packed-trie-state-int
+point-quad-tree
+rtree-erase
+rtree-medium
+rtree-medium-bulkload
+rtree-simple
+segment-tree
+trie-map
+us-presidents.bin

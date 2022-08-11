@@ -63,15 +63,13 @@ static_assert(
 
 static_assert(std::is_same_v<mdds::mtv::boolean_element_block::store_type, std::deque<bool>>);
 static_assert(std::is_same_v<mdds::mtv::int32_element_block::store_type, std::vector<std::int32_t>>);
-static_assert(std::is_same_v<mdds::mtv::uint32_element_block::store_type, mdds::mtv::delayed_delete_vector<std::uint32_t>>);
+static_assert(
+    std::is_same_v<mdds::mtv::uint32_element_block::store_type, mdds::mtv::delayed_delete_vector<std::uint32_t>>);
 
 struct my_trait : mdds::mtv::default_trait
 {
     using block_funcs = mdds::mtv::element_block_funcs<
-        mdds::mtv::boolean_element_block,
-        mdds::mtv::int32_element_block,
-        mdds::mtv::uint32_element_block>;
+        mdds::mtv::boolean_element_block, mdds::mtv::int32_element_block, mdds::mtv::uint32_element_block>;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

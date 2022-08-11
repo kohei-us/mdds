@@ -26,16 +26,49 @@
  *
  ************************************************************************/
 
-#include "no_standard_blocks_defs.inl"
+//!code-start
+#include <mdds/multi_type_vector/types.hpp>
+#include <mdds/multi_type_vector/macro.hpp>
 
-// Settting this to 0 should make the multi_type_vector code to NOT include
-// the header for the standard element blocks.
+#include <string>
+#include <deque>
+
+// Define element ID's for the standard element types.
+constexpr mdds::mtv::element_t my_doube_type_id = mdds::mtv::element_type_user_start;
+constexpr mdds::mtv::element_t my_string_type_id = mdds::mtv::element_type_user_start + 1;
+
+// Define the block types.
+using my_double_block = mdds::mtv::default_element_block<my_doube_type_id, double>;
+using my_string_block = mdds::mtv::default_element_block<my_string_type_id, std::string>;
+
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, my_doube_type_id, 0.0, my_double_block)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, my_string_type_id, std::string(), my_string_block)
+
+// Provide the above before including the multi_type_vector's main header.
 #define MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS 0
-#include <mdds/multi_type_vector/aos/main.hpp>
+#include <mdds/multi_type_vector/soa/main.hpp>
 
-template<typename... Ts>
-using mtv_type = mdds::mtv::aos::multi_type_vector<Ts...>;
+struct my_custom_trait : public mdds::mtv::default_trait
+{
+    using block_funcs = mdds::mtv::element_block_funcs<my_double_block, my_string_block>;
+};
 
-#include "no_standard_blocks_funcs.inl"
+using mtv_type = mdds::mtv::soa::multi_type_vector<my_custom_trait>;
+
+int main() try
+{
+    mtv_type con(20); // Initialized with 20 empty elements.
+
+    con.set<std::string>(0, "string value");
+    con.set<double>(1, 425.1);
+
+    return EXIT_SUCCESS;
+}
+catch (...)
+{
+    return EXIT_FAILURE;
+}
+//!code-end
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+

@@ -33,7 +33,7 @@
 #define MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS 0
 #include <mdds/multi_type_vector/soa/main.hpp>
 
-template<typename ...Ts>
+template<typename... Ts>
 using mtv_type = mdds::mtv::soa::multi_type_vector<Ts...>;
 
 #include "no_standard_blocks_funcs.inl"
