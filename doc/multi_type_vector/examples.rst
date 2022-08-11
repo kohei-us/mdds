@@ -9,7 +9,7 @@ Quick start
 The following code demonstrates a simple use case of storing values of double
 and :cpp:class:`std::string` types in a single container using :cpp:type:`~mdds::multi_type_vector`.
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector.cpp
+.. literalinclude:: ../../example/multi_type_vector/basic.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -116,7 +116,7 @@ for the detail on when each event handler method gets triggered.
 
 The following code example demonstrates how this all works:
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_event1.cpp
+.. literalinclude:: ../../example/multi_type_vector/event1.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -165,7 +165,7 @@ The following code demonstrates this by exposing raw array pointers to the
 internal arrays of numeric and string element blocks, and printing their
 element values directly from these array pointers.
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_element_block1.cpp
+.. literalinclude:: ../../example/multi_type_vector/element_block1.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -433,7 +433,7 @@ which clearly shows that your iteration range did indeed shrink as expected.
 Specifying custom blocks
 ------------------------
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_standard_custom_store.cpp
+.. literalinclude:: ../../example/multi_type_vector/standard_custom_store.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
@@ -466,7 +466,7 @@ Use of position hints to avoid the cost of block position lookup
 
 Consider the following example code:
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_pos_hint.cpp
+.. literalinclude:: ../../example/multi_type_vector/pos_hint.cpp
    :language: C++
    :start-after: //!code-start: no-pos-hint
    :end-before: //!code-end: no-pos-hint
@@ -484,7 +484,7 @@ position.
 Fortunately, there is a simple solution to this which the following code
 demonstrates:
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_pos_hint.cpp
+.. literalinclude:: ../../example/multi_type_vector/pos_hint.cpp
    :language: C++
    :start-after: //!code-start: pos-hint
    :end-before: //!code-end: pos-hint
@@ -586,7 +586,7 @@ First, you need to define a preprocessor macro named
 ``MDDS_MULTI_TYPE_VECTOR_DEBUG`` before including the header for
 :cpp:class:`~mdds::mtv::soa::multi_type_vector`:
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector/debug_trace.cpp
    :language: C++
    :start-after: //!code-start: header
    :end-before: //!code-end: header
@@ -598,7 +598,7 @@ is defined.  You can also define one as a compiler option as well.
 Once defined, the next step is to add a ``trace`` method as a static function to
 the trait type you pass as a template argument of multi_type_vector:
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector/debug_trace.cpp
    :language: C++
    :start-after: //!code-start: types
    :end-before: //!code-end: types
@@ -621,7 +621,7 @@ be called.
 Let's instantiate an object of ``mtv_type``, call some of its methods and see
 what happens.  When executing the following code:
 
-.. literalinclude:: ../../example/multi_type_vector/multi_type_vector_debug_trace.cpp
+.. literalinclude:: ../../example/multi_type_vector/debug_trace.cpp
    :language: C++
    :start-after: //!code-start: main
    :end-before: //!code-end: main
