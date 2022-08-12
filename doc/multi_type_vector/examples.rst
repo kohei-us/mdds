@@ -95,8 +95,93 @@ which respectively store elements of the following value types:
 * ``std::string``
 
 The header also defines the :cpp:class:`mdds::mtv::standard_element_blocks_trait`
-type which you can pass to the template instance of multi_type_vector in order to
-have all of the above mentioned block types available for use.
+struct which you can pass to the :cpp:type:`~mdds::multi_type_vector` template
+definition in order to have all of the above mentioned block types and their
+respective value types available for use.
+
+
+Specifying custom types in element blocks
+-----------------------------------------
+
+There are times when you need to store a set of user-defined types in :cpp:type:`~mdds::multi_type_vector`.
+That is what we are going to talk about in this section.
+
+First, let's include the header:
+
+.. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
+   :language: C++
+   :start-after: //!code-start: header
+   :end-before: //!code-end: header
+
+then proceed to define some constant values to use as element types. We are going
+to define three custom value types, so we need three element types defined:
+
+.. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
+   :language: C++
+   :start-after: //!code-start: element-types
+   :end-before: //!code-end: element-types
+
+Here, you need to ensure that the values used will not collide with the values
+that may be used for the standard value types.  The best way to ensure that is
+to assign the values that are greater than or equal to :cpp:var:`~mdds::mtv::element_type_user_start`
+as the code above does.  Values less than :cpp:var:`~mdds::mtv::element_type_user_start`
+are reserved for use either for the standard value types or any other internal uses
+in the future.
+
+Now, let's define the first two custom value types, and their respective block types:
+
+.. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
+   :language: C++
+   :start-after: //!code-start: custom-values
+   :end-before: //!code-end: custom-values
+
+Here, we are using the :cpp:type:`~mdds::mtv::default_element_block` as the basis
+to define their block types.  At minimum, you need to specify the element type constant
+and the value type as its template arguments.  There is a third optional template
+argument you can specify which will become the underlying storage type.  By
+default, :cpp:class:`~mdds::mtv::delayed_delete_vector` is used when the third
+argument is not given.  But you can specify other types such as :cpp:type:`std::vector`
+or :cpp:type:`std::deque` instead, or any other types that have similar interfaces
+to :cpp:type:`std::vector`.
+
+.. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
+   :language: C++
+   :start-after: //!code-start: custom-values-macro
+   :end-before: //!code-end: custom-values-macro
+
+TBD
+
+.. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
+   :language: C++
+   :start-after: //!code-start: custom-value-ns
+   :end-before: //!code-end: custom-value-ns
+
+TBD
+
+.. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
+   :language: C++
+   :start-after: //!code-start: trait-and-mtv
+   :end-before: //!code-end: trait-and-mtv
+
+TBD
+
+.. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
+   :language: C++
+   :start-after: //!code-start: main
+   :end-before: //!code-end: main
+
+TBD
+
+
+Using different storage types in element blocks
+-----------------------------------------------
+
+TBD
+
+.. literalinclude:: ../../example/multi_type_vector/standard_custom_store.cpp
+   :language: C++
+   :start-after: //!code-start
+   :end-before: //!code-end
 
 
 Use custom event handlers
@@ -429,14 +514,6 @@ following output:
     Nissan | Frontier
 
 which clearly shows that your iteration range did indeed shrink as expected.
-
-Specifying custom blocks
-------------------------
-
-.. literalinclude:: ../../example/multi_type_vector/standard_custom_store.cpp
-   :language: C++
-   :start-after: //!code-start
-   :end-before: //!code-end
 
 
 Performance Considerations

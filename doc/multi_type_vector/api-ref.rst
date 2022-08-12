@@ -68,6 +68,7 @@ Element Blocks
 .. doxygenstruct:: mdds::mtv::element_block_funcs
    :members:
 
+
 Types
 -----
 
@@ -147,6 +148,13 @@ Exceptions
 ----------
 
 .. doxygenclass:: mdds::mtv::element_block_error
+
+
+Macros
+------
+
+.. doxygendefine:: MDDS_MTV_DEFINE_ELEMENT_CALLBACKS
+.. doxygendefine:: MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR
 
 
 Collection

@@ -38,8 +38,8 @@ constexpr mdds::mtv::element_t my_doube_type_id = mdds::mtv::element_type_user_s
 constexpr mdds::mtv::element_t my_string_type_id = mdds::mtv::element_type_user_start + 1;
 
 // Define the block types.
-using my_double_block = mdds::mtv::default_element_block<my_doube_type_id, double>;
-using my_string_block = mdds::mtv::default_element_block<my_string_type_id, std::string>;
+using my_double_block = mdds::mtv::default_element_block<my_doube_type_id, double, std::deque>;
+using my_string_block = mdds::mtv::default_element_block<my_string_type_id, std::string, std::deque>;
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, my_doube_type_id, 0.0, my_double_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, my_string_type_id, std::string(), my_string_block)
