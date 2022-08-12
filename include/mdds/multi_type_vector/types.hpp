@@ -558,8 +558,8 @@ public:
 
         // Test if the vector's capacity is larger than twice its current
         // size, and if so, shrink its capacity to free up some memory.
-        if (new_size < (st.capacity() / 2))
-            st.shrink_to_fit();
+        if (new_size < (detail::get_block_capacity(st) / 2))
+            detail::shrink_to_fit(st);
     }
 
 #ifdef MDDS_UNIT_TEST
