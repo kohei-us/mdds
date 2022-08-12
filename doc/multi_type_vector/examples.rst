@@ -144,17 +144,33 @@ argument is not given.  But you can specify other types such as :cpp:type:`std::
 or :cpp:type:`std::deque` instead, or any other types that have similar interfaces
 to :cpp:type:`std::vector`.
 
+Once the block types are defined, it's time to define callback functions for them.
+This should be as simple as using the :c:macro:`MDDS_MTV_DEFINE_ELEMENT_CALLBACKS` with
+all necessary parameters provided:
+
 .. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: custom-values-macro
    :end-before: //!code-end: custom-values-macro
 
-TBD
+Our third type is defined in a namespace ``ns``, and its associated block type is
+also defined in the same namespace.  One thing to keep in mind is that, when the
+custom type is defined in a namespace, its callback functions must also be defined
+in the same namespace in order for them to be discovered per argument dependent lookup
+during overload resolution.  This means that you must place the macro that defines
+the callback functions in the same namespace as the namespace that encompasses the
+original value type:
 
 .. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: custom-value-ns
    :end-before: //!code-end: custom-value-ns
+
+.. warning::
+
+   If the original value type is defined inside a namespace, its associated callback
+   functions must also be defined in the same namespace, due to the way argument
+   dependent lookup works during overload resolution.
 
 TBD
 
