@@ -172,21 +172,42 @@ original value type:
    functions must also be defined in the same namespace, due to the way argument
    dependent lookup works during overload resolution.
 
-TBD
+The next step is to define a trait type that specifies these block types.  The
+easiest way is to have your trait inherit from :cpp:struct:`mdds::mtv::default_trait`
+and overwrite the :cpp:type:`~mdds::mtv::default_trait::block_funcs` static member
+type with an instance of :cpp:type:`mdds::mtv::element_block_funcs` with one or
+more block types specified as its template arguments:
 
 .. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
-   :start-after: //!code-start: trait-and-mtv
-   :end-before: //!code-end: trait-and-mtv
+   :start-after: //!code-start: trait
+   :end-before: //!code-end: trait
 
-TBD
+Now we are ready to define the final :cpp:class:`~mdds::mtv::multi_type_vector` type
+with the trait we just defined:
+
+.. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
+   :language: C++
+   :start-after: //!code-start: mtv-type
+   :end-before: //!code-end: mtv-type
+
+And that's it!  With this in place, you can write a code like the following:
 
 .. literalinclude:: ../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: main
    :end-before: //!code-end: main
+   :dedent: 4
 
-TBD
+to put some values of the custom types into your container and accessing them.  This
+code should generate the following output:
+
+.. code-block:: none
+
+    is this custom_value1? 1
+    is this custom_value2? 1
+    is this ns::custom_value3? 1
+
 
 
 Using different storage types in element blocks
