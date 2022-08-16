@@ -253,6 +253,12 @@ which should generate the following output:
    custom_value2 stored in std::deque? 1
    ns::custom_value3 stored in delayed_delete_vector? 1
 
+One thing to note is that, in order for a class to be usable as the storage type for
+:cpp:class:`~mdds::mtv::default_element_block`, it must be a template class
+with two parameters: the first one being the value type while the second one
+is the allocator type just like how :cpp:class:`std::vector` or :cpp:class:`std::deque`
+are defined.
+
 
 Using different storage types in element blocks
 -----------------------------------------------
