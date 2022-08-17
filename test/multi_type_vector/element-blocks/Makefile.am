@@ -7,6 +7,7 @@ check_PROGRAMS = test test-soa test-aos
 
 test_SOURCES = \
 	test_main.cpp \
+	test_basic.cpp \
 	test_std_vector_bool.cpp \
 	test_store_types.cpp \
 	$(top_srcdir)/test/test_global.cpp

@@ -892,7 +892,7 @@ struct noncopyable_managed_element_block
     : public noncopyable_element_block<
           noncopyable_managed_element_block<TypeId, ValueT, StoreT>, TypeId, ValueT*, StoreT>
 {
-    using self_type = managed_element_block<TypeId, ValueT, StoreT>;
+    using self_type = noncopyable_managed_element_block<TypeId, ValueT, StoreT>;
     using base_type = noncopyable_element_block<self_type, TypeId, ValueT*, StoreT>;
 
     using base_type::get;

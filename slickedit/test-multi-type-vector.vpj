@@ -199,6 +199,7 @@
                     <F N="../test/multi_type_vector/element-blocks/no_standard_blocks_funcs.inl"/>
                     <F N="../test/multi_type_vector/element-blocks/test_aos.cpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_aos.hpp"/>
+                    <F N="../test/multi_type_vector/element-blocks/test_basic.cpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_main.cpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_main.hpp"/>
                     <F N="../test/multi_type_vector/element-blocks/test_no_standard_blocks_aos.cpp"/>

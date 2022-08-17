@@ -33,6 +33,7 @@
 // We don't include any multi_type_vector specific headers here in order to
 // test features controlled by preprocessor defines.
 
+void mtv_test_element_blocks_buildability();
 void mtv_test_element_blocks_std_vector();
 void mtv_test_element_blocks_std_deque();
 void mtv_test_element_blocks_std_vector_bool();

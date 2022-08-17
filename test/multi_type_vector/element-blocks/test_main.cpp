@@ -32,6 +32,7 @@ int main()
 {
     try
     {
+        mtv_test_element_blocks_buildability();
         mtv_test_element_blocks_std_vector();
         mtv_test_element_blocks_std_deque();
         mtv_test_element_blocks_std_vector_bool();
