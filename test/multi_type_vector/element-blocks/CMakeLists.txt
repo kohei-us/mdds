@@ -14,7 +14,7 @@ add_executable(${TARGET_NAME}-aos EXCLUDE_FROM_ALL
     test_no_standard_blocks_aos.cpp
 )
 
-add_executable(${TARGET_NAME}-aos EXCLUDE_FROM_ALL
+add_executable(${TARGET_NAME}-soa EXCLUDE_FROM_ALL
     test_soa.cpp
     test_soa.cpp
     test_no_standard_blocks_soa.cpp
