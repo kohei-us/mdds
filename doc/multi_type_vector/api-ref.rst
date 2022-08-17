@@ -101,12 +101,17 @@ mdds::mtv::trace_method_properties_t
 Standard Element Blocks
 -----------------------
 
-The following types become available by including the
-``mdds/multi_type_vector/standard_element_blocks.hpp`` header file.  Note that
-the block types defined here use the default store type which is
-:cpp:class:`~mdds::mtv::delayed_delete_vector`.  If you need to use a
-different store type, you must **NOT** include the aforementioned header file,
-and instead must define your own block type(s) with your desired store type(s).
+The following types are automatically defined by default when including one of
+the following headers:
+
+* ``mdds/multi_type_vector.hpp``
+* ``mdds/multi_type_vector/aos/main.hpp``
+* ``mdds/multi_type_vector/soa/main.hpp``
+
+To disable automatic definitions of these standard element block types, you must
+define the :c:macro:`MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS` macro and set its value
+to 0.  Refer to the :ref:`custom-value-types-custom-store` section for more details
+on when you may want to disable these block types.
 
 Constants
 ^^^^^^^^^
