@@ -26,7 +26,6 @@
  ************************************************************************/
 
 #include "test_global.hpp"
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include "mdds/sorted_string_map.hpp"
 #include "mdds/global.hpp"
 
