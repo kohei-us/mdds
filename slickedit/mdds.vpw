@@ -9,6 +9,7 @@
         <Project File="test-global.vpj"/>
         <Project File="test-multi-type-vector.vpj"/>
         <Project File="test-rtree.vpj"/>
+        <Project File="test-sorted-string-map.vpj"/>
         <Project File="test.vpj"/>
         <Project File="tools.vpj"/>
     </Projects>

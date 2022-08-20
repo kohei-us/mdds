@@ -3,7 +3,7 @@
     Version="10.0"
     VendorName="SlickEdit"
     TemplateName="(Other)"
-    WorkingDir=".">
+    WorkingDir="../test/sorted_string_map">
     <Config
         Name="Release"
         OutputFile=""
@@ -45,46 +45,32 @@
                 MenuCaption="E&amp;xecute"
                 SaveOption="SaveNone"
                 RunFromDir="%rw">
-                <Exec CmdLine='"test.exe"'/>
+                <Exec CmdLine='"test-sorted-string-map.exe"'/>
             </Target>
         </Menu>
     </Config>
-    <CustomFolders>
+    <Files>
         <Folder
             Name="Source Files"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
-            GUID="{36E07EC9-AD26-43E0-A97B-4804FD20B19F}"></Folder>
+            GUID="{47B5A05D-0100-4B92-BE32-BD026B7C557F}">
+            <F N="../test/sorted_string_map/test_main.cpp"/>
+        </Folder>
         <Folder
             Name="Header Files"
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
-            GUID="{9D4562DF-16B8-45FC-AE5A-6A05D7F2EA6F}"/>
+            GUID="{78504E00-034F-473D-881D-7ADDD466DBCF}"/>
         <Folder
             Name="Resource Files"
             Filters="*.ico;*.cur;*.dlg"
-            GUID="{5621AD4E-D494-451F-A030-5BB4F053EC67}"/>
+            GUID="{FADEE8D3-FFC4-4F61-A437-9FE517E3521B}"/>
         <Folder
             Name="Bitmaps"
             Filters="*.bmp"
-            GUID="{6307EEDE-5A25-4B1A-93F0-BD5810E1BA99}"/>
+            GUID="{C61EF105-F79C-4A9D-8751-858C9C1B17C0}"/>
         <Folder
             Name="Other Files"
             Filters=""
-            GUID="{3A9559FC-E298-49F5-9A38-E2545FC14761}"/>
-    </CustomFolders>
-    <List Name="RTE">
-    </List>
-    <Files AutoFolders="DirectoryView">
-        <Folder Name="../test">
-            <F N="../test/array_creation_perf_test.cpp"/>
-            <F N="../test/flat_segment_tree_test.cpp"/>
-            <F N="../test/multi_type_matrix_test.cpp"/>
-            <F N="../test/multi_type_matrix_test_walk.cpp"/>
-            <F N="../test/point_quad_tree_test.cpp"/>
-            <F N="../test/ref_pair_test.cpp"/>
-            <F N="../test/segment_tree_test.cpp"/>
-            <F N="../test/stlperf_test.cpp"/>
-            <F N="../test/template_test.cpp"/>
-            <F N="../test/trie_map_test.cpp"/>
-        </Folder>
+            GUID="{F5C9723F-364C-43ED-A7C3-7597AE2C7D05}"/>
     </Files>
 </Project>

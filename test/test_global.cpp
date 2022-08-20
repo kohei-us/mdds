@@ -54,10 +54,8 @@ bool parse_cmd_options(int argc, char** argv, cmd_options& opt)
         }
     }
     else
-    {
-        cout << "please specify test categories: [perf, func]" << endl;
-        return false;
-    }
+        opt.test_func = true;
+
     return true;
 }
 

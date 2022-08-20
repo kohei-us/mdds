@@ -48,7 +48,6 @@ rtree-test-*.svg
 rtree_test
 rtree_test_bulkload
 segment_tree_test
-sorted_string_map_test
 stlperf_test
 template_test
 test-driver

@@ -151,6 +151,7 @@ test/multi_type_vector/custom-trait/soa/Makefile
 test/multi_type_vector/debug-util/Makefile
 test/multi_type_vector/debug-util/soa/Makefile
 test/multi_type_vector/element-blocks/Makefile
+test/sorted_string_map/Makefile
 tools/Makefile
 tools/runtime-env/Makefile
 flat_segment_tree_test_mem.mem:test/test.mem.in
@@ -168,7 +169,6 @@ multi_type_vector_test_collection_soa_mem.mem:test/test.mem.in
 point_quad_tree_test_mem.mem:test/test.mem.in
 rectangle_set_test_mem.mem:test/test.mem.in
 segment_tree_test_mem.mem:test/test.mem.in
-sorted_string_map_test_mem.mem:test/test.mem.in
 trie_map_test_mem.mem:test/test.mem.in
 rtree_test_mem.mem:test/test.mem.in
 rtree_test_bulkload_mem.mem:test/test.mem.in

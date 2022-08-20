@@ -64,7 +64,6 @@ check_PROGRAMS = \
 	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
 	segment_tree_test \
-	sorted_string_map_test \
 	stlperf_test \
 	template_test \
 	trie_map_test \
@@ -259,11 +258,6 @@ segment_tree_test_SOURCES = \
 
 stlperf_test_SOURCES = test/stlperf_test.cpp
 
-sorted_string_map_test_SOURCES = \
-	test/sorted_string_map_test.cpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
 template_test_SOURCES = test/template_test.cpp
 
 trie_map_test_SOURCES = \
@@ -335,7 +329,6 @@ TESTS = \
 	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
 	segment_tree_test \
-	sorted_string_map_test \
 	trie_map_test \
 	rtree_test \
 	rtree_test_bulkload \
@@ -359,7 +352,6 @@ TESTS += \
 	multi_type_vector_test_collection_soa_mem.mem \
 	point_quad_tree_test_mem.mem \
 	segment_tree_test_mem.mem \
-	sorted_string_map_test_mem.mem \
 	trie_map_test_mem.mem \
 	rtree_test_mem.mem \
 	rtree_test_bulkload_mem.mem
