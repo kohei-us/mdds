@@ -9,9 +9,15 @@ constexpr mdds::mtv::element_t type_2 = mdds::mtv::element_type_user_start + 1;
 constexpr mdds::mtv::element_t type_3 = mdds::mtv::element_type_user_start + 2;
 constexpr mdds::mtv::element_t type_4 = mdds::mtv::element_type_user_start + 3;
 
-struct my_type_1 {};
-struct my_type_2 {};
-struct my_type_3 {};
+struct my_type_1
+{
+};
+struct my_type_2
+{
+};
+struct my_type_3
+{
+};
 
 // Make sure these three block types can be instantiated without compile errors.
 using my_block1 = mdds::mtv::default_element_block<type_1, my_type_1>;
@@ -38,4 +44,3 @@ void mtv_test_element_blocks_buildability()
     con.set(1, new my_type_2);
     con.set(2, new my_type_3);
 }
-
