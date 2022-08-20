@@ -33,8 +33,6 @@
 #include <vector>
 #include <fstream>
 
-using namespace std;
-
 enum name_type
 {
     name_none = 0,
