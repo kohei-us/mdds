@@ -42,15 +42,15 @@ namespace mdds {
  * @param keylen length of the char buffer.
  * @param value value associated with the key.
  */
-template<typename ValueT>
+template<typename ValueT, typename SizeT>
 struct chars_map_entry
 {
     const char* key;
-    std::size_t keylen;
+    SizeT keylen;
     ValueT value;
 };
 
-template<typename ValueT>
+template<typename ValueT, typename SizeT>
 struct string_view_map_entry
 {
     std::string_view key;
@@ -62,13 +62,13 @@ struct string_view_map_entry
  * arbitrary values, provided that the keys are known at compile time and
  * are sorted in ascending order.
  */
-template<typename ValueT, template<typename> class EntryT = chars_map_entry>
+template<typename ValueT, template<typename, typename> class EntryT = chars_map_entry>
 class sorted_string_map
 {
 public:
     using value_type = ValueT;
     using size_type = std::size_t;
-    using entry = EntryT<ValueT>;
+    using entry = EntryT<ValueT, size_type>;
 
     /**
      * Constructor.
@@ -91,6 +91,16 @@ public:
      *         key is not found.
      */
     value_type find(const char* input, size_type len) const;
+
+    /**
+     * Find a value associated with a specified string key.
+     *
+     * @param input string key to match.
+     *
+     * @return value associated with the key, or the null value in case the
+     *         key is not found.
+     */
+    value_type find(std::string_view input) const;
 
     /**
      * Return the number of entries in the map.  Since the number of entries

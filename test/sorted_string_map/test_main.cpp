@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
  * Copyright (c) 2014-2015 Kohei Yoshida
@@ -44,7 +45,7 @@ enum name_type
 
 void ssmap_test_basic()
 {
-    stack_printer __stack_printer__("::ssmap_test_basic");
+    stack_printer __sp__(__func__);
 
     typedef mdds::sorted_string_map<name_type> map_type;
 
@@ -69,7 +70,7 @@ void ssmap_test_basic()
 
 void ssmap_test_mixed_case_null()
 {
-    stack_printer __stack_printer__("::ssmap_test_mixed_case_null");
+    stack_printer __sp__(__func__);
 
     typedef mdds::sorted_string_map<int> map_type;
 
@@ -96,8 +97,50 @@ void ssmap_test_mixed_case_null()
     assert(names.find(MDDS_ASCII("hell")) == -1);
 }
 
+void ssmap_test_string_view_entry()
+{
+    stack_printer __sp__(__func__);
+
+    constexpr int cv_unknown = -1;
+    constexpr int cv_days = 0;
+    constexpr int cv_hours = 1;
+    constexpr int cv_minutes = 2;
+    constexpr int cv_months = 3;
+    constexpr int cv_quarters = 4;
+    constexpr int cv_range = 5;
+    constexpr int cv_seconds = 6;
+    constexpr int cv_years = 7;
+
+    using map_type = mdds::sorted_string_map<int, mdds::string_view_map_entry>;
+
+    constexpr map_type::entry entries[] = {
+        {"days", cv_days},         {"hours", cv_hours}, {"minutes", cv_minutes}, {"months", cv_months},
+        {"quarters", cv_quarters}, {"range", cv_range}, {"seconds", cv_seconds}, {"years", cv_years},
+    };
+
+    map_type mapping{entries, std::size(entries), cv_unknown};
+
+    for (const auto entry : entries)
+    {
+        auto v = mapping.find(entry.key);
+        assert(v == entry.value);
+    }
+
+    constexpr std::string_view unknown_keys[] = {
+        "dayss", "Days", "ddays", "adfsd", "secoonds", "years ",
+    };
+
+    for (auto key : unknown_keys)
+    {
+        auto v = mapping.find(key);
+        assert(v == cv_unknown);
+    }
+}
+
 void ssmap_test_perf()
 {
+    stack_printer __sp__(__func__);
+
     std::ifstream in("misc/sorted_string_data.dat");
     typedef mdds::sorted_string_map<int> map_type;
     std::vector<map_type::entry> data;
@@ -138,6 +181,7 @@ int main(int argc, char** argv)
     {
         ssmap_test_basic();
         ssmap_test_mixed_case_null();
+        ssmap_test_string_view_entry();
     }
 
     if (opt.test_perf)
@@ -148,3 +192,5 @@ int main(int argc, char** argv)
     fprintf(stdout, "Test finished successfully!\n");
     return 0;
 }
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
