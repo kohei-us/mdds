@@ -39,14 +39,14 @@ namespace mdds {
  *
  * @param key memory address of the first character of the char buffer that
  *            stores the key.
- * @param keylen length of the char buffer.
+ * @param key_length length of the char buffer.
  * @param value value associated with the key.
  */
 template<typename ValueT, typename SizeT>
 struct chars_map_entry
 {
     const char* key;
-    SizeT keylen;
+    SizeT key_length;
     ValueT value;
 };
 

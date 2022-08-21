@@ -46,18 +46,18 @@ struct entry_funcs<ValueT, SizeT, chars_map_entry>
 
     static bool compare(const entry& entry1, const entry& entry2)
     {
-        if (entry1.keylen != entry2.keylen)
+        if (entry1.key_length != entry2.key_length)
         {
-            std::size_t keylen = std::min(entry1.keylen, entry2.keylen);
-            int ret = std::memcmp(entry1.key, entry2.key, keylen);
+            std::size_t key_length = std::min(entry1.key_length, entry2.key_length);
+            int ret = std::memcmp(entry1.key, entry2.key, key_length);
             if (ret == 0)
-                return entry1.keylen < entry2.keylen;
+                return entry1.key_length < entry2.key_length;
 
             return ret < 0;
         }
         else
         {
-            return std::memcmp(entry1.key, entry2.key, entry1.keylen) < 0;
+            return std::memcmp(entry1.key, entry2.key, entry1.key_length) < 0;
         }
     }
 
@@ -73,7 +73,7 @@ struct entry_funcs<ValueT, SizeT, chars_map_entry>
 
     static size_type get_key_size(const entry& e)
     {
-        return e.keylen;
+        return e.key_length;
     }
 };
 
@@ -87,8 +87,8 @@ struct entry_funcs<ValueT, SizeT, string_view_map_entry>
     {
         if (entry1.key.size() != entry2.key.size())
         {
-            std::size_t keylen = std::min(entry1.key.size(), entry2.key.size());
-            int ret = std::memcmp(entry1.key.data(), entry2.key.data(), keylen);
+            std::size_t key_length = std::min(entry1.key.size(), entry2.key.size());
+            int ret = std::memcmp(entry1.key.data(), entry2.key.data(), key_length);
             if (ret == 0)
                 return entry1.key.size() < entry2.key.size();
 

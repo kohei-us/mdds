@@ -149,7 +149,7 @@ void ssmap_test_perf()
     while (std::getline(in, line))
     {
         data.push_back(map_type::entry());
-        data.back().keylen = line.size();
+        data.back().key_length = line.size();
         data.back().value = i;
         char* str = new char[line.size()];
         data.back().key = str;
