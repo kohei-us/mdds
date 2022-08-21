@@ -120,7 +120,7 @@ void ssmap_test_string_view_entry()
 
     map_type mapping{entries, std::size(entries), cv_unknown};
 
-    for (const auto entry : entries)
+    for (const auto& entry : entries)
     {
         auto v = mapping.find(entry.key);
         assert(v == entry.value);
@@ -130,7 +130,7 @@ void ssmap_test_string_view_entry()
         "dayss", "Days", "ddays", "adfsd", "secoonds", "years ",
     };
 
-    for (auto key : unknown_keys)
+    for (const auto& key : unknown_keys)
     {
         auto v = mapping.find(key);
         assert(v == cv_unknown);
