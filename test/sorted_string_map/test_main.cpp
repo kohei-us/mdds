@@ -27,6 +27,7 @@
  ************************************************************************/
 
 #include "test_global.hpp"
+#define MDDS_SORTED_STRING_MAP_DEBUG 1
 #include "mdds/sorted_string_map.hpp"
 #include "mdds/global.hpp"
 

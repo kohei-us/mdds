@@ -122,10 +122,12 @@ template<typename ValueT, template<typename, typename> class EntryT>
 sorted_string_map<ValueT, EntryT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value)
     : m_entries(entries), m_null_value(null_value), m_entry_size(entry_size), m_entry_end(m_entries + m_entry_size)
 {
+#ifdef MDDS_SORTED_STRING_MAP_DEBUG
     using entry_funcs = detail::entry_funcs<value_type, size_type, EntryT>;
 
     if (!std::is_sorted(m_entries, m_entry_end, entry_funcs::compare))
         throw invalid_arg_error("mapped entries are not sorted");
+#endif
 }
 
 template<typename ValueT, template<typename, typename> class EntryT>
