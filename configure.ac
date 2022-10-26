@@ -165,6 +165,7 @@ test/multi_type_vector/perf/Makefile
 test/point_quad_tree/Makefile
 test/segment_tree/Makefile
 test/sorted_string_map/Makefile
+test/trie_map/Makefile
 tools/Makefile
 tools/runtime-env/Makefile
 misc/mdds-$API_VERSION.pc:misc/mdds.pc.in

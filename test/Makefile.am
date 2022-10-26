@@ -6,4 +6,5 @@ SUBDIRS = \
 	multi_type_matrix \
 	point_quad_tree \
 	segment_tree \
-	sorted_string_map
+	sorted_string_map \
+	trie_map
