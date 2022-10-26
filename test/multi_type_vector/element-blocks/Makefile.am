@@ -27,3 +27,5 @@ test_aos_SOURCES = \
 EXTRA_DIST = no_standard_blocks_defs.inl no_standard_blocks_funcs.inl
 
 TESTS = test test-soa test-aos
+
+@VALGRIND_CHECK_RULES@

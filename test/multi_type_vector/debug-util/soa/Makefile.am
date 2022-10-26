@@ -9,3 +9,5 @@ test_trace_SOURCES = \
 	$(top_srcdir)/test/test_global.cpp
 
 TESTS = test-trace
+
+@VALGRIND_CHECK_RULES@

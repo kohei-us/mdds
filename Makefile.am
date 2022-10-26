@@ -44,10 +44,7 @@ EXTRA_DIST = \
 	misc/matrix_perf.cpp \
 	misc/mdds.pc.in \
 	misc/sorted_string_map_perf.cpp \
-	quickcheck/flat_segment_tree.cpp \
-	test/mem-wrapper.sh \
-	test/test-wrapper.sh \
-	test/test.mem.in
+	quickcheck/flat_segment_tree.cpp
 
 check_PROGRAMS = \
 	flat_segment_tree_test \
@@ -307,14 +304,6 @@ test.mtmatrix.perf: multi_type_matrix_test
 test.stl: stlperf_test
 	./stlperf_test
 
-TEST_EXTENSIONS = .mem
-LOG_COMPILER = $(top_srcdir)/test/test-wrapper.sh
-MEM_LOG_COMPILER = $(top_srcdir)/test/mem-wrapper.sh
-AM_TESTS_ENVIRONMENT = \
-	VALGRIND="$(VALGRIND)"; export VALGRIND; \
-	VALGRINDFLAGS="$(VALGRINDFLAGS)"; export VALGRINDFLAGS; \
-	EXEEXT="$(EXEEXT)"; export EXEEXT;
-
 TESTS = \
 	flat_segment_tree_test \
 	multi_type_matrix_test \
@@ -334,28 +323,7 @@ TESTS = \
 	rtree_test_bulkload \
 	ref_pair_test
 
-# NOTE: AFAIK automake does not support running the same test executable
-# in different ways. I workaround this limitation by creating dummy
-# test files and redirecting to the real executable inside the wrapper.
-if RUN_MEMORY_TESTS
-TESTS += \
-	flat_segment_tree_test_mem.mem \
-	multi_type_matrix_test_mem.mem \
-	multi_type_matrix_test_walk_mem.mem \
-	multi_type_vector_test_event_aos_mem.mem \
-	multi_type_vector_test_event_soa_mem.mem \
-	multi_type_vector_test_custom_aos_mem.mem \
-	multi_type_vector_test_custom_soa_mem.mem \
-	multi_type_vector_test_default_aos_mem.mem \
-	multi_type_vector_test_default_soa_mem.mem \
-	multi_type_vector_test_collection_aos_mem.mem \
-	multi_type_vector_test_collection_soa_mem.mem \
-	point_quad_tree_test_mem.mem \
-	segment_tree_test_mem.mem \
-	trie_map_test_mem.mem \
-	rtree_test_mem.mem \
-	rtree_test_bulkload_mem.mem
-endif
+@VALGRIND_CHECK_RULES@
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(docdir)

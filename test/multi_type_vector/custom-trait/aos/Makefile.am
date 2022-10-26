@@ -13,3 +13,5 @@ test_SOURCES = \
 	$(top_srcdir)/test/test_global.cpp
 
 TESTS = test
+
+@VALGRIND_CHECK_RULES@

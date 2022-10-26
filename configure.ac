@@ -94,17 +94,6 @@ AC_PATH_PROG([GDB], [gdb])
 AC_PATH_PROG([EXPECT], [expect])
 AC_PATH_PROG([RUNTEST_BIN], [runtest])
 
-AC_ARG_ENABLE([memory-tests],
-  [AS_HELP_STRING([--enable-memory-tests], [Run memory tests.])],
-  [enable_memory_tests=$enableval],
-  [enable_memory_tests=no]
-)
-AS_IF([test "$enable_memory_tests" = yes],
-  [AC_PATH_PROG([VALGRIND], [valgrind])]
-  AS_IF([test -z "$VALGRIND"], [AC_MSG_ERROR([valgrind not found])])
-)
-AM_CONDITIONAL([RUN_MEMORY_TESTS], [test "$enable_memory_tests" = yes])
-
 AC_ARG_ENABLE([docs],
   [AS_HELP_STRING([--enable-docs], [Generate docs during build.])],
   [enable_docs=$enableval],
@@ -132,6 +121,8 @@ AS_IF([test x"$enable_werror" == "xyes"], [
 CXXFLAGS_UNITTESTS="-DMDDS_DEBUG_NODE_BASE -DMDDS_UNIT_TEST"
 AC_SUBST(CXXFLAGS_UNITTESTS)
 
+AX_VALGRIND_CHECK()
+
 AC_CONFIG_FILES([
 Makefile
 include/Makefile
@@ -154,24 +145,7 @@ test/multi_type_vector/element-blocks/Makefile
 test/sorted_string_map/Makefile
 tools/Makefile
 tools/runtime-env/Makefile
-flat_segment_tree_test_mem.mem:test/test.mem.in
 misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
-multi_type_matrix_test_mem.mem:test/test.mem.in
-multi_type_matrix_test_walk_mem.mem:test/test.mem.in
-multi_type_vector_test_event_aos_mem.mem:test/test.mem.in
-multi_type_vector_test_event_soa_mem.mem:test/test.mem.in
-multi_type_vector_test_custom_aos_mem.mem:test/test.mem.in
-multi_type_vector_test_custom_soa_mem.mem:test/test.mem.in
-multi_type_vector_test_default_aos_mem.mem:test/test.mem.in
-multi_type_vector_test_default_soa_mem.mem:test/test.mem.in
-multi_type_vector_test_collection_aos_mem.mem:test/test.mem.in
-multi_type_vector_test_collection_soa_mem.mem:test/test.mem.in
-point_quad_tree_test_mem.mem:test/test.mem.in
-rectangle_set_test_mem.mem:test/test.mem.in
-segment_tree_test_mem.mem:test/test.mem.in
-trie_map_test_mem.mem:test/test.mem.in
-rtree_test_mem.mem:test/test.mem.in
-rtree_test_bulkload_mem.mem:test/test.mem.in
 ])
 AC_OUTPUT
 
