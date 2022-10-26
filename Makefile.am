@@ -47,34 +47,12 @@ EXTRA_DIST = \
 	quickcheck/flat_segment_tree.cpp
 
 check_PROGRAMS = \
-	multi_type_vector_test_collection_aos \
-	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
 	segment_tree_test \
 	trie_map_test \
 	rtree_test \
 	rtree_test_bulkload \
 	ref_pair_test
-
-multi_type_vector_test_collection_aos_SOURCES = \
-	test/multi_type_vector/collection/aos/test_main.cpp \
-	test/multi_type_vector/collection/tc/all.inl \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_vector_test_collection_aos_CPPFLAGS = \
-	-I$(top_srcdir)/test/multi_type_vector/collection/tc \
-	$(AM_CPPFLAGS)
-
-multi_type_vector_test_collection_soa_SOURCES = \
-	test/multi_type_vector/collection/soa/test_main.cpp \
-	test/multi_type_vector/collection/tc/all.inl \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_vector_test_collection_soa_CPPFLAGS = \
-	-I$(top_srcdir)/test/multi_type_vector/collection/tc \
-	$(AM_CPPFLAGS)
 
 point_quad_tree_test_SOURCES = \
 	test/point_quad_tree_test.cpp \
@@ -122,8 +100,6 @@ test.st.perf: segment_tree_test
 	./segment_tree_test perf
 
 TESTS = \
-	multi_type_vector_test_collection_aos \
-	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
 	segment_tree_test \
 	trie_map_test \
