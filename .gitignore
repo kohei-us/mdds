@@ -32,7 +32,6 @@ misc/mdds-*.pc
 missing
 multi_type_vector_test_perf
 multi_type_vector_test_side_iterator
-point_quad_tree_test
 ref_pair_test
 rtree-test-*.svg
 rtree_test

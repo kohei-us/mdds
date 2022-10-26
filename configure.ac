@@ -162,6 +162,7 @@ test/multi_type_vector/event/aos/Makefile
 test/multi_type_vector/event/soa/Makefile
 test/multi_type_vector/event/tc/Makefile
 test/multi_type_vector/perf/Makefile
+test/point_quad_tree/Makefile
 test/sorted_string_map/Makefile
 tools/Makefile
 tools/runtime-env/Makefile
