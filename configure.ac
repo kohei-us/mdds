@@ -163,6 +163,7 @@ test/multi_type_vector/event/soa/Makefile
 test/multi_type_vector/event/tc/Makefile
 test/multi_type_vector/perf/Makefile
 test/point_quad_tree/Makefile
+test/rtree/Makefile
 test/segment_tree/Makefile
 test/sorted_string_map/Makefile
 test/trie_map/Makefile

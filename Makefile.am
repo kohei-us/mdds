@@ -11,9 +11,7 @@ dist_doc_DATA = AUTHORS README.md
 nodist_pkgconf_DATA = misc/mdds-@API_VERSION@.pc
 
 DISTCLEANFILES = \
-	misc/mdds-@API_VERSION@.pc \
-	rtree-test-*.obj \
-	rtree-test-*.svg
+	misc/mdds-@API_VERSION@.pc
 
 EXTRA_DIST = \
 	autogen.sh \
@@ -47,40 +45,11 @@ EXTRA_DIST = \
 	quickcheck/flat_segment_tree.cpp
 
 check_PROGRAMS = \
-	rtree_test \
-	rtree_test_bulkload \
 	ref_pair_test
-
-rtree_test_SOURCES = \
-	test/rtree/test_main.cpp \
-	test/rtree/test_basic.cpp \
-	test/rtree/test_copy.cpp \
-	test/rtree/test_erase_directories.cpp \
-	test/rtree/test_node_split.cpp \
-	test/rtree/test_directory_node_split.cpp \
-	test/rtree/test_intersection.cpp \
-	test/rtree/test_move.cpp \
-	test/rtree/test_square_distance.cpp \
-	test/rtree/test_geometry.cpp \
-	test/rtree/test_exact_search_by_extent.cpp \
-	test/rtree/test_exact_search_by_point.cpp \
-	test/rtree/test_forced_reinsertion.cpp \
-	test/rtree/test_point_objects.cpp \
-	test/rtree/test_global_rtree.hpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-rtree_test_bulkload_SOURCES = \
-	test/rtree/test_bulkload_main.cpp \
-	test/rtree/test_global_rtree.hpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
 
 ref_pair_test_SOURCES = test/ref_pair_test.cpp test/test_global.cpp
 
 TESTS = \
-	rtree_test \
-	rtree_test_bulkload \
 	ref_pair_test
 
 @VALGRIND_CHECK_RULES@
