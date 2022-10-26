@@ -47,8 +47,6 @@ EXTRA_DIST = \
 	quickcheck/flat_segment_tree.cpp
 
 check_PROGRAMS = \
-	multi_type_vector_test_event_aos \
-	multi_type_vector_test_event_soa \
 	multi_type_vector_test_custom_aos \
 	multi_type_vector_test_custom_soa \
 	multi_type_vector_test_default_aos \
@@ -61,37 +59,6 @@ check_PROGRAMS = \
 	rtree_test \
 	rtree_test_bulkload \
 	ref_pair_test
-
-multi_type_vector_test_event_aos_SOURCES = \
-	test/multi_type_vector/event/aos/test_main.hpp \
-	test/multi_type_vector/event/aos/test_main.cpp \
-	test/multi_type_vector/event/aos/test_block_counter.cpp \
-	test/multi_type_vector/event/aos/test_block_init.cpp \
-	test/multi_type_vector/event/aos/test_swap.cpp \
-	test/multi_type_vector/event/tc/block_counter.inl \
-	test/multi_type_vector/event/tc/block_init.inl \
-	test/multi_type_vector/event/tc/swap.inl \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_vector_test_event_aos_CPPFLAGS = \
-	-I$(top_srcdir)/test/multi_type_vector/event \
-	-I$(top_srcdir)/test/multi_type_vector/event/tc \
-	$(AM_CPPFLAGS)
-
-multi_type_vector_test_event_soa_SOURCES = \
-	test/multi_type_vector/event/soa/test_main.hpp \
-	test/multi_type_vector/event/soa/test_main.cpp \
-	test/multi_type_vector/event/soa/test_block_counter.cpp \
-	test/multi_type_vector/event/soa/test_block_init.cpp \
-	test/multi_type_vector/event/aos/test_swap.cpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_vector_test_event_soa_CPPFLAGS = \
-	-I$(top_srcdir)/test/multi_type_vector/event \
-	-I$(top_srcdir)/test/multi_type_vector/event/tc \
-	$(AM_CPPFLAGS)
 
 multi_type_vector_test_custom_aos_SOURCES = \
 	test/multi_type_vector/custom/aos/test_main.hpp \
@@ -263,8 +230,6 @@ test.st.perf: segment_tree_test
 	./segment_tree_test perf
 
 TESTS = \
-	multi_type_vector_test_event_aos \
-	multi_type_vector_test_event_soa \
 	multi_type_vector_test_custom_aos \
 	multi_type_vector_test_custom_soa \
 	multi_type_vector_test_default_aos \
