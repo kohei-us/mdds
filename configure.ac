@@ -142,6 +142,7 @@ test/multi_type_vector/custom-trait/soa/Makefile
 test/multi_type_vector/debug-util/Makefile
 test/multi_type_vector/debug-util/soa/Makefile
 test/multi_type_vector/element-blocks/Makefile
+test/multi_type_vector/perf/Makefile
 test/sorted_string_map/Makefile
 tools/Makefile
 tools/runtime-env/Makefile

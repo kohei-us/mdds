@@ -56,7 +56,6 @@ check_PROGRAMS = \
 	multi_type_vector_test_custom_soa \
 	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
-	multi_type_vector_test_perf \
 	multi_type_vector_test_collection_aos \
 	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
@@ -216,11 +215,6 @@ multi_type_vector_test_default_soa_CPPFLAGS = \
 	-I$(top_srcdir)/test/multi_type_vector/default/tc \
 	$(AM_CPPFLAGS)
 
-multi_type_vector_test_perf_SOURCES = \
-	test/multi_type_vector/perf/test_main.cpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
 multi_type_vector_test_collection_aos_SOURCES = \
 	test/multi_type_vector/collection/aos/test_main.cpp \
 	test/multi_type_vector/collection/tc/all.inl \
@@ -288,9 +282,6 @@ test.fst.perf: flat_segment_tree_test
 
 test.st.perf: segment_tree_test
 	./segment_tree_test perf
-
-test.mtv.perf: multi_type_vector_test_perf
-	./multi_type_vector_test_perf
 
 test.mtmatrix.perf: multi_type_matrix_test
 	./multi_type_matrix_test perf

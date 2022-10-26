@@ -1,1 +1,1 @@
-SUBDIRS = custom-trait debug-util element-blocks
+SUBDIRS = custom-trait debug-util element-blocks perf
