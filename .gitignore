@@ -32,8 +32,6 @@ misc/mdds-*.pc
 missing
 multi_type_vector_test_collection_aos
 multi_type_vector_test_collection_soa
-multi_type_vector_test_custom_aos
-multi_type_vector_test_custom_soa
 multi_type_vector_test_default_aos
 multi_type_vector_test_default_soa
 multi_type_vector_test_perf

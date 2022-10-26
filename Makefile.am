@@ -47,8 +47,6 @@ EXTRA_DIST = \
 	quickcheck/flat_segment_tree.cpp
 
 check_PROGRAMS = \
-	multi_type_vector_test_custom_aos \
-	multi_type_vector_test_custom_soa \
 	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
 	multi_type_vector_test_collection_aos \
@@ -59,45 +57,6 @@ check_PROGRAMS = \
 	rtree_test \
 	rtree_test_bulkload \
 	ref_pair_test
-
-multi_type_vector_test_custom_aos_SOURCES = \
-	test/multi_type_vector/custom/aos/test_main.hpp \
-	test/multi_type_vector/custom/aos/test_main.cpp \
-	test/multi_type_vector/custom/aos/test_basic.cpp \
-	test/multi_type_vector/custom/aos/test_managed_block.cpp \
-	test/multi_type_vector/custom/aos/test_misc.cpp \
-	test/multi_type_vector/custom/aos/test_swap.cpp \
-	test/multi_type_vector/custom/aos/test_transfer.cpp \
-	test/multi_type_vector/custom/tc/basic.inl \
-	test/multi_type_vector/custom/tc/managed_block.inl \
-	test/multi_type_vector/custom/tc/misc.inl \
-	test/multi_type_vector/custom/tc/swap.inl \
-	test/multi_type_vector/custom/tc/transfer.inl \
-	test/multi_type_vector/custom/common_types.hpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_vector_test_custom_aos_CPPFLAGS = \
-	-I$(top_srcdir)/test/multi_type_vector/custom \
-	-I$(top_srcdir)/test/multi_type_vector/custom/tc \
-	$(AM_CPPFLAGS)
-
-multi_type_vector_test_custom_soa_SOURCES = \
-	test/multi_type_vector/custom/soa/test_main.hpp \
-	test/multi_type_vector/custom/soa/test_main.cpp \
-	test/multi_type_vector/custom/soa/test_basic.cpp \
-	test/multi_type_vector/custom/soa/test_managed_block.cpp \
-	test/multi_type_vector/custom/soa/test_misc.cpp \
-	test/multi_type_vector/custom/soa/test_swap.cpp \
-	test/multi_type_vector/custom/soa/test_transfer.cpp \
-	test/multi_type_vector/custom/common_types.hpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_vector_test_custom_soa_CPPFLAGS = \
-	-I$(top_srcdir)/test/multi_type_vector/custom \
-	-I$(top_srcdir)/test/multi_type_vector/custom/tc \
-	$(AM_CPPFLAGS)
 
 multi_type_vector_test_default_aos_SOURCES = \
 	test/multi_type_vector/default/aos/test_construction.cpp \
@@ -230,8 +189,6 @@ test.st.perf: segment_tree_test
 	./segment_tree_test perf
 
 TESTS = \
-	multi_type_vector_test_custom_aos \
-	multi_type_vector_test_custom_soa \
 	multi_type_vector_test_default_aos \
 	multi_type_vector_test_default_soa \
 	multi_type_vector_test_collection_aos \
