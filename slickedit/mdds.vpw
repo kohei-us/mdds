@@ -6,6 +6,7 @@
         <Project File="example.vpj"/>
         <Project File="mdds.vpj"/>
         <Project File="misc.vpj"/>
+        <Project File="test-flat-segment-tree.vpj"/>
         <Project File="test-global.vpj"/>
         <Project File="test-multi-type-vector.vpj"/>
         <Project File="test-rtree.vpj"/>
