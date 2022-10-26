@@ -1,1 +1,1 @@
-SUBDIRS = gdb flat_segment_tree multi_type_vector multi_type_matrix sorted_string_map
+SUBDIRS = gdb flat_segment_tree include multi_type_vector multi_type_matrix sorted_string_map

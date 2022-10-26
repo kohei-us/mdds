@@ -47,8 +47,6 @@ EXTRA_DIST = \
 	quickcheck/flat_segment_tree.cpp
 
 check_PROGRAMS = \
-	multi_type_vector_test_default_aos \
-	multi_type_vector_test_default_soa \
 	multi_type_vector_test_collection_aos \
 	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
@@ -57,71 +55,6 @@ check_PROGRAMS = \
 	rtree_test \
 	rtree_test_bulkload \
 	ref_pair_test
-
-multi_type_vector_test_default_aos_SOURCES = \
-	test/multi_type_vector/default/aos/test_construction.cpp \
-	test/multi_type_vector/default/aos/test_basic.cpp \
-	test/multi_type_vector/default/aos/test_empty_cells.cpp \
-	test/multi_type_vector/default/aos/test_erase.cpp \
-	test/multi_type_vector/default/aos/test_hints.cpp \
-	test/multi_type_vector/default/aos/test_insert.cpp \
-	test/multi_type_vector/default/aos/test_iterators.cpp \
-	test/multi_type_vector/default/aos/test_iterators_insert.cpp \
-	test/multi_type_vector/default/aos/test_iterators_set.cpp \
-	test/multi_type_vector/default/aos/test_iterators_set_empty.cpp \
-	test/multi_type_vector/default/aos/test_misc.cpp \
-	test/multi_type_vector/default/aos/test_position.cpp \
-	test/multi_type_vector/default/aos/test_set.cpp \
-	test/multi_type_vector/default/aos/test_swap_range.cpp \
-	test/multi_type_vector/default/aos/test_transfer.cpp \
-	test/multi_type_vector/default/aos/test_main.hpp \
-	test/multi_type_vector/default/aos/test_main.cpp \
-	test/multi_type_vector/default/tc/construction.inl \
-	test/multi_type_vector/default/tc/basic.inl \
-	test/multi_type_vector/default/tc/empty_cells.inl \
-	test/multi_type_vector/default/tc/erase.inl \
-	test/multi_type_vector/default/tc/hints.inl \
-	test/multi_type_vector/default/tc/insert.inl \
-	test/multi_type_vector/default/tc/iterators.inl \
-	test/multi_type_vector/default/tc/iterators_insert.inl \
-	test/multi_type_vector/default/tc/iterators_set.inl \
-	test/multi_type_vector/default/tc/iterators_set_empty.inl \
-	test/multi_type_vector/default/tc/misc.inl \
-	test/multi_type_vector/default/tc/position.inl \
-	test/multi_type_vector/default/tc/set.inl \
-	test/multi_type_vector/default/tc/swap_range.inl \
-	test/multi_type_vector/default/tc/transfer.inl \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_vector_test_default_aos_CPPFLAGS = \
-	-I$(top_srcdir)/test/multi_type_vector/default/tc \
-	$(AM_CPPFLAGS)
-
-multi_type_vector_test_default_soa_SOURCES = \
-	test/multi_type_vector/default/soa/test_main.hpp \
-	test/multi_type_vector/default/soa/test_main.cpp \
-	test/multi_type_vector/default/soa/test_construction.cpp \
-	test/multi_type_vector/default/soa/test_basic.cpp \
-	test/multi_type_vector/default/soa/test_empty_cells.cpp \
-	test/multi_type_vector/default/soa/test_erase.cpp \
-	test/multi_type_vector/default/soa/test_hints.cpp \
-	test/multi_type_vector/default/soa/test_insert.cpp \
-	test/multi_type_vector/default/soa/test_iterators.cpp \
-	test/multi_type_vector/default/soa/test_iterators_insert.cpp \
-	test/multi_type_vector/default/soa/test_iterators_set.cpp \
-	test/multi_type_vector/default/soa/test_iterators_set_empty.cpp \
-	test/multi_type_vector/default/soa/test_misc.cpp \
-	test/multi_type_vector/default/soa/test_position.cpp \
-	test/multi_type_vector/default/soa/test_set.cpp \
-	test/multi_type_vector/default/soa/test_swap_range.cpp \
-	test/multi_type_vector/default/soa/test_transfer.cpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_vector_test_default_soa_CPPFLAGS = \
-	-I$(top_srcdir)/test/multi_type_vector/default/tc \
-	$(AM_CPPFLAGS)
 
 multi_type_vector_test_collection_aos_SOURCES = \
 	test/multi_type_vector/collection/aos/test_main.cpp \
@@ -189,8 +122,6 @@ test.st.perf: segment_tree_test
 	./segment_tree_test perf
 
 TESTS = \
-	multi_type_vector_test_default_aos \
-	multi_type_vector_test_default_soa \
 	multi_type_vector_test_collection_aos \
 	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \

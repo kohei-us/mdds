@@ -1,0 +1,1 @@
+SUBDIRS = aos soa tc
