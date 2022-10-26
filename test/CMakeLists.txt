@@ -6,8 +6,6 @@ target_include_directories(test-global PUBLIC
 )
 
 set(_TESTS
-    multi-type-matrix-test
-    multi-type-matrix-test-walk
     point-quad-tree-test
     segment-tree-test
     trie-map-test
@@ -29,5 +27,6 @@ add_dependencies(check
 
 add_subdirectory(flat_segment_tree)
 add_subdirectory(multi_type_vector)
+add_subdirectory(multi_type_matrix)
 add_subdirectory(rtree)
 add_subdirectory(sorted_string_map)

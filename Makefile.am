@@ -47,8 +47,6 @@ EXTRA_DIST = \
 	quickcheck/flat_segment_tree.cpp
 
 check_PROGRAMS = \
-	multi_type_matrix_test \
-	multi_type_matrix_test_walk \
 	multi_type_vector_test_event_aos \
 	multi_type_vector_test_event_soa \
 	multi_type_vector_test_custom_aos \
@@ -63,16 +61,6 @@ check_PROGRAMS = \
 	rtree_test \
 	rtree_test_bulkload \
 	ref_pair_test
-
-multi_type_matrix_test_SOURCES = \
-	test/multi_type_matrix_test.cpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
-
-multi_type_matrix_test_walk_SOURCES = \
-	test/multi_type_matrix_test_walk.cpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
 
 multi_type_vector_test_event_aos_SOURCES = \
 	test/multi_type_vector/event/aos/test_main.hpp \
@@ -274,12 +262,7 @@ ref_pair_test_SOURCES = test/ref_pair_test.cpp test/test_global.cpp
 test.st.perf: segment_tree_test
 	./segment_tree_test perf
 
-test.mtmatrix.perf: multi_type_matrix_test
-	./multi_type_matrix_test perf
-
 TESTS = \
-	multi_type_matrix_test \
-	multi_type_matrix_test_walk \
 	multi_type_vector_test_event_aos \
 	multi_type_vector_test_event_soa \
 	multi_type_vector_test_custom_aos \

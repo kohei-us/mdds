@@ -136,6 +136,7 @@ test/Makefile
 test/gdb/Makefile
 test/gdb/src/Makefile
 test/flat_segment_tree/Makefile
+test/multi_type_matrix/Makefile
 test/multi_type_vector/Makefile
 test/multi_type_vector/custom-trait/Makefile
 test/multi_type_vector/custom-trait/aos/Makefile
