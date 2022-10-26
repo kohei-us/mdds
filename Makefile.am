@@ -61,8 +61,6 @@ check_PROGRAMS = \
 	multi_type_vector_test_collection_soa \
 	point_quad_tree_test \
 	segment_tree_test \
-	stlperf_test \
-	template_test \
 	trie_map_test \
 	rtree_test \
 	rtree_test_bulkload \
@@ -253,10 +251,6 @@ segment_tree_test_SOURCES = \
 	test/include/test_global.hpp \
 	test/test_global.cpp
 
-stlperf_test_SOURCES = test/stlperf_test.cpp
-
-template_test_SOURCES = test/template_test.cpp
-
 trie_map_test_SOURCES = \
 	test/trie_map_test.cpp \
 	test/include/test_global.hpp \
@@ -300,9 +294,6 @@ test.mtv.perf: multi_type_vector_test_perf
 
 test.mtmatrix.perf: multi_type_matrix_test
 	./multi_type_matrix_test perf
-
-test.stl: stlperf_test
-	./stlperf_test
 
 TESTS = \
 	flat_segment_tree_test \

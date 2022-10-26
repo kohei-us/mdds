@@ -82,8 +82,6 @@
             <F N="../test/point_quad_tree_test.cpp"/>
             <F N="../test/ref_pair_test.cpp"/>
             <F N="../test/segment_tree_test.cpp"/>
-            <F N="../test/stlperf_test.cpp"/>
-            <F N="../test/template_test.cpp"/>
             <F N="../test/trie_map_test.cpp"/>
         </Folder>
     </Files>
