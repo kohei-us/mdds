@@ -47,16 +47,10 @@ EXTRA_DIST = \
 	quickcheck/flat_segment_tree.cpp
 
 check_PROGRAMS = \
-	segment_tree_test \
 	trie_map_test \
 	rtree_test \
 	rtree_test_bulkload \
 	ref_pair_test
-
-segment_tree_test_SOURCES = \
-	test/segment_tree_test.cpp \
-	test/include/test_global.hpp \
-	test/test_global.cpp
 
 trie_map_test_SOURCES = \
 	test/trie_map_test.cpp \
@@ -90,11 +84,7 @@ rtree_test_bulkload_SOURCES = \
 
 ref_pair_test_SOURCES = test/ref_pair_test.cpp test/test_global.cpp
 
-test.st.perf: segment_tree_test
-	./segment_tree_test perf
-
 TESTS = \
-	segment_tree_test \
 	trie_map_test \
 	rtree_test \
 	rtree_test_bulkload \
