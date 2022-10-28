@@ -13,18 +13,21 @@ test_SOURCES = \
 	$(top_srcdir)/test/test_global.cpp
 
 test_soa_SOURCES = \
-	test_soa.hpp \
 	test_soa.cpp \
 	test_no_standard_blocks_soa.cpp \
 	$(top_srcdir)/test/test_global.cpp
 
 test_aos_SOURCES = \
-	test_aos.hpp \
 	test_aos.cpp \
 	test_no_standard_blocks_aos.cpp \
 	$(top_srcdir)/test/test_global.cpp
 
-EXTRA_DIST = no_standard_blocks_defs.inl no_standard_blocks_funcs.inl
+EXTRA_DIST = \
+	no_standard_blocks_defs.inl \
+	no_standard_blocks_funcs.inl \
+	test_soa.hpp \
+	test_aos.hpp \
+	test_main.hpp
 
 TESTS = test test-soa test-aos
 

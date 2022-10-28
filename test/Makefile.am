@@ -10,6 +10,11 @@ SUBDIRS = \
 	sorted_string_map \
 	trie_map
 
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/test/include \
+	$(CXXFLAGS_UNITTESTS)
+
 check_PROGRAMS = \
 	ref-pair-test
 

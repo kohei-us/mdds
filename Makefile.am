@@ -19,25 +19,42 @@ EXTRA_DIST = \
 	LICENSE \
 	doc/conf.py \
 	doc/doxygen.conf \
-	doc/flat_segment_tree.rst \
-	doc/index.rst \
-	doc/multi_type_matrix.rst \
-	doc/multi_type_vector.rst \
 	doc/point_quad_tree.rst \
+	doc/rtree.rst \
+	doc/api.rst \
+	doc/index.rst \
+	doc/flat_segment_tree.rst \
 	doc/segment_tree.rst \
-	doc/sorted_string_map.rst \
+	doc/multi_type_matrix.rst \
 	doc/trie_map.rst \
+	doc/sorted_string_map.rst \
+	doc/global.rst \
+	doc/multi_type_vector/index.rst \
+	doc/multi_type_vector/examples.rst \
+	doc/multi_type_vector/api-ref.rst \
 	doc/_static/images/mtv_block_structure.png \
-	example/flat_segment_tree.cpp \
+	example/rtree_simple.cpp \
+	example/packed_trie_state_int.cpp \
 	example/multi_type_matrix.cpp \
-	example/multi_type_vector.cpp \
-	example/multi_type_vector_element_block1.cpp \
-	example/multi_type_vector_event1.cpp \
-	example/multi_type_vector_pos_hint.cpp \
+	example/rtree_erase.cpp \
 	example/packed_trie_map.cpp \
-	example/point_quad_tree.cpp \
-	example/segment_tree.cpp \
 	example/trie_map.cpp \
+	example/rtree_medium_bulkload.cpp \
+	example/packed_trie_state_custom.cpp \
+	example/segment_tree.cpp \
+	example/point_quad_tree.cpp \
+	example/flat_segment_tree_itrs.cpp \
+	example/multi_type_vector/pos_hint.cpp \
+	example/multi_type_vector/basic.cpp \
+	example/multi_type_vector/debug_trace.cpp \
+	example/multi_type_vector/custom_value_types.cpp \
+	example/multi_type_vector/custom_value_types_custom_store.cpp \
+	example/multi_type_vector/mtv_collection.cpp \
+	example/multi_type_vector/standard_custom_store.cpp \
+	example/multi_type_vector/event1.cpp \
+	example/multi_type_vector/element_block1.cpp \
+	example/rtree_medium.cpp \
+	example/flat_segment_tree.cpp \
 	misc/gdb/mdds/__init__.py \
 	misc/matrix_perf.cpp \
 	misc/mdds.pc.in \

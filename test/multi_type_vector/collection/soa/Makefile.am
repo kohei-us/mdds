@@ -14,8 +14,6 @@ test_main_CPPFLAGS = \
 	-I$(srcdir)/../tc \
 	$(AM_CPPFLAGS)
 
-EXTRA_DIST = test_main.hpp
-
 TESTS = test-main
 
 @VALGRIND_CHECK_RULES@
