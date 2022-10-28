@@ -9,3 +9,15 @@ SUBDIRS = \
 	segment_tree \
 	sorted_string_map \
 	trie_map
+
+check_PROGRAMS = \
+	ref-pair-test
+
+ref_pair_test_SOURCES = \
+	ref_pair_test.cpp \
+	test_global.cpp
+
+TESTS = \
+	ref-pair-test
+
+@VALGRIND_CHECK_RULES@

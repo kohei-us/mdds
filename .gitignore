@@ -29,5 +29,4 @@ m4/libtool.m4
 m4/lt*.m4
 misc/mdds-*.pc
 missing
-ref_pair_test
 test-driver

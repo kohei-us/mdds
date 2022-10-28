@@ -44,16 +44,6 @@ EXTRA_DIST = \
 	misc/sorted_string_map_perf.cpp \
 	quickcheck/flat_segment_tree.cpp
 
-check_PROGRAMS = \
-	ref_pair_test
-
-ref_pair_test_SOURCES = test/ref_pair_test.cpp test/test_global.cpp
-
-TESTS = \
-	ref_pair_test
-
-@VALGRIND_CHECK_RULES@
-
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(docdir)
 	$(INSTALL_DATA) $(top_srcdir)/LICENSE $(DESTDIR)$(docdir)/COPYING
