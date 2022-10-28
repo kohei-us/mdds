@@ -35,7 +35,7 @@ AC_ARG_ENABLE(debug-stdcxx,
 ]
 ,debug_stdcxx=yes)
 
-AS_IF([test x"$debug_stdcxx" == "xyes"], [
+AS_IF([test x"$debug_stdcxx" = "xyes"], [
   CXXFLAGS="$CXXFLAGS -D_GLIBCXX_DEBUG"
 ])
 
@@ -45,7 +45,7 @@ AC_ARG_ENABLE(release-tests,
 ]
 ,release_tests=yes)
 
-AS_IF([test x"$release_tests" == "xyes"], [
+AS_IF([test x"$release_tests" = "xyes"], [
   CXXFLAGS="$CXXFLAGS -DNDEBUG -O2"
 ])
 
@@ -59,11 +59,11 @@ AC_ARG_ENABLE(loop-unrolling,
     [enable_loop_unrolling="$enableval"],[enable_loop_unrolling=yes]
 )
 
-AS_IF([test x"$enable_loop_unrolling" == "xno"], [
+AS_IF([test x"$enable_loop_unrolling" = "xno"], [
   CXXFLAGS="$CXXFLAGS -DMDDS_LOOP_UNROLLING=0"
 ])
 
-AS_IF([test x"$enable_gcov" == "xyes"], [
+AS_IF([test x"$enable_gcov" = "xyes"], [
   CXXFLAGS="$CXXFLAGS --coverage -O0"
 ])
 
@@ -72,7 +72,7 @@ AC_ARG_ENABLE(openmp,
     [enable_openmp="$enableval"],[enable_openmp=no]
 )
 
-AS_IF([test x"$enable_openmp" == "xyes"], [
+AS_IF([test x"$enable_openmp" = "xyes"], [
   CXXFLAGS="$CXXFLAGS -fopenmp -DMDDS_USE_OPENMP=1"
   LDFLAGS="$LDFLAGS -fopenmp"
 ])
@@ -82,7 +82,7 @@ AC_ARG_ENABLE(sanitizer-coverage,
     [enable_sanitizer_coverage="$enableval"],[enable_sanitizer_coverage=no]
 )
 
-AS_IF([test x"$enable_sanitizer_coverage" == "xyes"], [
+AS_IF([test x"$enable_sanitizer_coverage" = "xyes"], [
   CXXFLAGS="$CXXFLAGS -fprofile-instr-generate -fcoverage-mapping -O0"
 ])
 
@@ -114,7 +114,7 @@ AC_ARG_ENABLE([werror],
 	[enable_werror="$enableval"],
 	[enable_werror=no]
 )
-AS_IF([test x"$enable_werror" == "xyes"], [
+AS_IF([test x"$enable_werror" = "xyes"], [
 	CXXFLAGS="$CXXFLAGS -Werror"
 ])
 
