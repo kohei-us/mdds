@@ -28,7 +28,7 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(my_type_1, type_1, my_type_1{}, my_block1)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(my_type_2, type_2, nullptr, my_block2)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(my_type_3, type_3, nullptr, my_block3)
 
-struct my_trait : mdds::mtv::default_trait
+struct my_trait : mdds::mtv::default_traits
 {
     using block_funcs = mdds::mtv::element_block_funcs<my_block1, my_block2, my_block3>;
 };

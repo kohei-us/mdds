@@ -66,7 +66,7 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(custom_value3, custom_value2_type, custom_valu
 //!code-end: custom-value-ns
 
 //!code-start: trait
-struct my_custom_trait : public mdds::mtv::default_trait
+struct my_custom_trait : public mdds::mtv::default_traits
 {
     using block_funcs = mdds::mtv::element_block_funcs<
         custom_value1_block, custom_value2_block, ns::custom_value3_block>;

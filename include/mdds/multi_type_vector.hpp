@@ -36,7 +36,7 @@ namespace mdds {
  * Type alias for the concrete implementation to maintain backward API
  * compatibility.
  */
-template<typename Trait = mtv::default_trait>
+template<typename Trait = mtv::default_traits>
 using multi_type_vector = mtv::soa::multi_type_vector<Trait>;
 
 } // namespace mdds

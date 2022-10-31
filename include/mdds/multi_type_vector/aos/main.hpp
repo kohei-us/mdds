@@ -68,7 +68,7 @@ namespace mdds { namespace mtv { namespace aos {
  *
  * @see mdds::mtv::aos::multi_type_vector::value_type
  */
-template<typename Trait = mdds::mtv::default_trait>
+template<typename Trait = mdds::mtv::default_traits>
 class multi_type_vector
 {
 public:

@@ -66,7 +66,7 @@ static_assert(std::is_same_v<mdds::mtv::int32_element_block::store_type, std::ve
 static_assert(
     std::is_same_v<mdds::mtv::uint32_element_block::store_type, mdds::mtv::delayed_delete_vector<std::uint32_t>>);
 
-struct my_trait : mdds::mtv::default_trait
+struct my_trait : mdds::mtv::default_traits
 {
     using block_funcs = mdds::mtv::element_block_funcs<
         mdds::mtv::boolean_element_block, mdds::mtv::int32_element_block, mdds::mtv::uint32_element_block>;

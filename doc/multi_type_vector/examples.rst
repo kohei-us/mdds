@@ -178,8 +178,8 @@ original value type:
    dependent lookup works during overload resolution.
 
 The next step is to define a trait type that specifies these block types.  The
-easiest way is to have your trait inherit from :cpp:struct:`mdds::mtv::default_trait`
-and overwrite the :cpp:type:`~mdds::mtv::default_trait::block_funcs` static member
+easiest way is to have your trait inherit from :cpp:struct:`mdds::mtv::default_traits`
+and overwrite the :cpp:type:`~mdds::mtv::default_traits::block_funcs` static member
 type with an instance of :cpp:type:`mdds::mtv::element_block_funcs` with one or
 more block types specified as its template arguments:
 
@@ -408,7 +408,7 @@ and empty blocks don't store any element block instances, creations or deletions
 of empty blocks don't trigger these event handlers.
 
 The trait also allows you to configure other behaviors of :cpp:type:`~mdds::multi_type_vector`.
-Refer to :cpp:type:`mdds::mtv::default_trait` for all available parameters.
+Refer to :cpp:type:`mdds::mtv::default_traits` for all available parameters.
 
 
 Get raw pointer to element block array
@@ -809,7 +809,7 @@ didn't show any noticeable improvements or even showed worse performance, while
 other CPU types showed consistent improvements with SoA over AoS.
 
 Another factor that may play a role is `loop unrolling <https://en.wikipedia.org/wiki/Loop_unrolling>`_
-factor which can be configured via the :cpp:var:`~mdds::mtv::default_trait::loop_unrolling`
+factor which can be configured via the :cpp:var:`~mdds::mtv::default_traits::loop_unrolling`
 variable in your custom trait type if you use version 2.0 or newer.  This variable
 is an enum class of type :cpp:type:`mdds::mtv::lu_factor_t` which enumerates
 several pre-defined loop-unrolling factors as well as some SIMD features.
@@ -858,7 +858,7 @@ the trait type you pass as a template argument of multi_type_vector:
    :end-before: //!code-end: types
 
 Here, we are simply inheriting our trait type from the
-:cpp:class:`~mdds::mtv::default_trait` type and simply adding a static ``trace``
+:cpp:class:`~mdds::mtv::default_traits` type and simply adding a static ``trace``
 function to it, and passing this trait type to the mtv_type definition below.
 This trace function must take one argument of type
 :cpp:class:`mdds::mtv::trace_method_properties_t` which includes various

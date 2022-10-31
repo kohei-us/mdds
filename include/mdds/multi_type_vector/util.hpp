@@ -71,7 +71,7 @@ struct empty_event_func
 /**
  * Default trait to be used when no custom trait is specified.
  */
-struct default_trait
+struct default_traits
 {
     /**
      * Class or struct type that contains callback functions for element block

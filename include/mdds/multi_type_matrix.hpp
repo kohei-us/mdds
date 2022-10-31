@@ -86,7 +86,7 @@ public:
     typedef size_t size_type;
 
 private:
-    struct mtv_trait : public mdds::mtv::default_trait
+    struct mtv_trait : public mdds::mtv::default_traits
     {
         using block_funcs = mdds::mtv::element_block_funcs<
             mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::double_element_block,

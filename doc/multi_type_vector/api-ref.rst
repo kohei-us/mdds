@@ -29,10 +29,10 @@ mdds::mtv::empty_event_func
 .. doxygenstruct:: mdds::mtv::empty_event_func
    :members:
 
-mdds::mtv::default_trait
-^^^^^^^^^^^^^^^^^^^^^^^^
+mdds::mtv::default_traits
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenstruct:: mdds::mtv::default_trait
+.. doxygenstruct:: mdds::mtv::default_traits
    :members:
 
 Element Stores
