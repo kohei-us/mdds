@@ -51,21 +51,21 @@ namespace mdds { namespace mtv { namespace soa { namespace detail {
  *     <li><code>element_blocks_type</code></li>
  * </ul>
  */
-template<typename Trait>
+template<typename Traits>
 class iterator_updater
 {
 protected:
-    using parent_type = typename Trait::parent;
-    using positions_type = typename Trait::positions_type;
-    using sizes_type = typename Trait::sizes_type;
-    using element_blocks_type = typename Trait::element_blocks_type;
-    using size_type = typename Trait::parent::size_type;
+    using parent_type = typename Traits::parent;
+    using positions_type = typename Traits::positions_type;
+    using sizes_type = typename Traits::sizes_type;
+    using element_blocks_type = typename Traits::element_blocks_type;
+    using size_type = typename Traits::parent::size_type;
 
     using node = mdds::detail::mtv::iterator_value_node<parent_type, size_type>;
 
-    using positions_iterator_type = typename Trait::positions_iterator_type;
-    using sizes_iterator_type = typename Trait::sizes_iterator_type;
-    using element_blocks_iterator_type = typename Trait::element_blocks_iterator_type;
+    using positions_iterator_type = typename Traits::positions_iterator_type;
+    using sizes_iterator_type = typename Traits::sizes_iterator_type;
+    using element_blocks_iterator_type = typename Traits::element_blocks_iterator_type;
 
     /**
      * This struct groups together the iterators for the three array types for
@@ -229,12 +229,12 @@ public:
     }
 };
 
-template<typename Trait>
-class iterator_base : public iterator_updater<Trait>
+template<typename Traits>
+class iterator_base : public iterator_updater<Traits>
 {
-    using parent_type = typename Trait::parent;
-    using node_update_func = typename Trait::private_data_update;
-    using updater = iterator_updater<Trait>;
+    using parent_type = typename Traits::parent;
+    using node_update_func = typename Traits::private_data_update;
+    using updater = iterator_updater<Traits>;
 
     using grouped_iterator_type = typename updater::grouped_iterator_type;
     using size_type = typename updater::size_type;
@@ -305,12 +305,12 @@ public:
     }
 };
 
-template<typename Trait, typename NonConstItrBase>
-class const_iterator_base : public iterator_updater<Trait>
+template<typename Traits, typename NonConstItrBase>
+class const_iterator_base : public iterator_updater<Traits>
 {
-    using parent_type = typename Trait::parent;
-    using node_update_func = typename Trait::private_data_update;
-    using updater = iterator_updater<Trait>;
+    using parent_type = typename Traits::parent;
+    using node_update_func = typename Traits::private_data_update;
+    using updater = iterator_updater<Traits>;
 
     using grouped_iterator_type = typename updater::grouped_iterator_type;
     using size_type = typename updater::size_type;
@@ -393,15 +393,15 @@ public:
     }
 };
 
-template<typename Trait>
-std::ostream& operator<<(std::ostream& os, const iterator_base<Trait>& it)
+template<typename Traits>
+std::ostream& operator<<(std::ostream& os, const iterator_base<Traits>& it)
 {
     it._print_state(os);
     return os;
 }
 
-template<typename Trait, typename NonConstItrBase>
-std::ostream& operator<<(std::ostream& os, const const_iterator_base<Trait, NonConstItrBase>& it)
+template<typename Traits, typename NonConstItrBase>
+std::ostream& operator<<(std::ostream& os, const const_iterator_base<Traits, NonConstItrBase>& it)
 {
     it._print_state(os);
     return os;

@@ -68,7 +68,7 @@ namespace mdds { namespace mtv { namespace soa {
  *
  * @see mdds::mtv::soa::multi_type_vector::value_type
  */
-template<typename Trait = mdds::mtv::default_traits>
+template<typename Traits = mdds::mtv::default_traits>
 class multi_type_vector
 {
 public:
@@ -76,7 +76,7 @@ public:
 
     using element_block_type = mdds::mtv::base_element_block;
     using element_category_type = mdds::mtv::element_t;
-    using block_funcs = typename Trait::block_funcs;
+    using block_funcs = typename Traits::block_funcs;
 
     /**
      * Optional event handler function structure, whose functions get called
@@ -95,7 +95,7 @@ public:
      * @see mdds::mtv::empty_event_func for the precise function signatures of
      *      the event handler functions.
      */
-    using event_func = typename Trait::event_func;
+    using event_func = typename Traits::event_func;
 
 private:
     struct block_slot_type
@@ -1429,7 +1429,7 @@ private:
     }
 
 private:
-    using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Trait::loop_unrolling>;
+    using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Traits::loop_unrolling>;
 
     event_func m_hdl_event;
     blocks_type m_block_store;

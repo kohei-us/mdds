@@ -129,8 +129,8 @@ Constants
 .. doxygenvariable:: mdds::mtv::element_type_double
 .. doxygenvariable:: mdds::mtv::element_type_string
 
-Block Types and Trait
-^^^^^^^^^^^^^^^^^^^^^
+Block Types and Traits
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygentypedef:: mdds::mtv::boolean_element_block
 .. doxygentypedef:: mdds::mtv::int8_element_block

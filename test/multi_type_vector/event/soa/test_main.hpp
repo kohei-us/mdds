@@ -34,8 +34,8 @@
 #include <iostream>
 #include <vector>
 
-template<typename Trait>
-using mtv_template_type = mdds::mtv::soa::multi_type_vector<Trait>;
+template<typename Traits>
+using mtv_template_type = mdds::mtv::soa::multi_type_vector<Traits>;
 
 void mtv_test_block_counter();
 void mtv_test_block_init();

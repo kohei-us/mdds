@@ -39,13 +39,13 @@ namespace mdds { namespace mtv { namespace aos { namespace detail {
  * and dec() methods have non-const return type, and the derived classes
  * wrap them and return values with their respective const modifiers.
  */
-template<typename Trait>
+template<typename Traits>
 class iterator_common_base
 {
 protected:
-    typedef typename Trait::parent parent_type;
-    typedef typename Trait::blocks blocks_type;
-    typedef typename Trait::base_iterator base_iterator_type;
+    typedef typename Traits::parent parent_type;
+    typedef typename Traits::blocks blocks_type;
+    typedef typename Traits::base_iterator base_iterator_type;
 
     typedef typename parent_type::size_type size_type;
     typedef mdds::detail::mtv::iterator_value_node<parent_type, size_type> node;
@@ -151,14 +151,14 @@ public:
     }
 };
 
-template<typename Trait, typename NodeUpdateFunc>
-class iterator_base : public iterator_common_base<Trait>
+template<typename Traits, typename NodeUpdateFunc>
+class iterator_base : public iterator_common_base<Traits>
 {
-    using parent_type = typename Trait::parent;
+    using parent_type = typename Traits::parent;
     typedef NodeUpdateFunc node_update_func;
-    typedef iterator_common_base<Trait> common_base;
+    typedef iterator_common_base<Traits> common_base;
 
-    typedef typename Trait::base_iterator base_iterator_type;
+    typedef typename Traits::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
     using common_base::dec;
@@ -219,14 +219,14 @@ public:
     }
 };
 
-template<typename Trait, typename NodeUpdateFunc, typename NonConstItrBase>
-class const_iterator_base : public iterator_common_base<Trait>
+template<typename Traits, typename NodeUpdateFunc, typename NonConstItrBase>
+class const_iterator_base : public iterator_common_base<Traits>
 {
-    using parent_type = typename Trait::parent;
+    using parent_type = typename Traits::parent;
     typedef NodeUpdateFunc node_update_func;
-    typedef iterator_common_base<Trait> common_base;
+    typedef iterator_common_base<Traits> common_base;
 
-    typedef typename Trait::base_iterator base_iterator_type;
+    typedef typename Traits::base_iterator base_iterator_type;
     typedef typename common_base::size_type size_type;
 
     using common_base::dec;
@@ -289,12 +289,12 @@ public:
 
     bool operator==(const const_iterator_base& other) const
     {
-        return iterator_common_base<Trait>::operator==(other);
+        return iterator_common_base<Traits>::operator==(other);
     }
 
     bool operator!=(const const_iterator_base& other) const
     {
-        return iterator_common_base<Trait>::operator!=(other);
+        return iterator_common_base<Traits>::operator!=(other);
     }
 };
 
