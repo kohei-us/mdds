@@ -84,19 +84,19 @@ struct get_node_stack_type<_TrieType, std::false_type>
 template<typename _TrieType>
 class search_results;
 
-template<typename _TrieType, bool _IsConst>
+template<typename _TrieType, bool IsConst>
 class iterator_base
 {
 protected:
     using trie_type = _TrieType;
 
-    using _is_const = bool_constant<_IsConst>;
+    using _is_const = bool_constant<IsConst>;
 
     friend trie_type;
     friend search_results<trie_type>;
 
     using node_stack_type = typename get_node_stack_type<trie_type, _is_const>::type;
-    using trie_node_type = const_t<typename trie_type::trie_node, _IsConst>;
+    using trie_node_type = const_t<typename trie_type::trie_node, IsConst>;
     using trie_node_child_pos_type =
         typename get_iterator_type<typename std::remove_const<trie_node_type>::type::children_type, _is_const>::type;
 

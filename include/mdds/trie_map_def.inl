@@ -519,9 +519,9 @@ const typename trie_map<KeyTraits, ValueT>::trie_node* trie_map<KeyTraits, Value
 }
 
 template<typename KeyTraits, typename ValueT>
-template<bool _IsConst>
+template<bool IsConst>
 void trie_map<KeyTraits, ValueT>::find_prefix_node_with_stack(
-    std::vector<stack_item<_IsConst>>& node_stack, const_t<trie_node, _IsConst>& node, const key_unit_type* prefix,
+    std::vector<stack_item<IsConst>>& node_stack, const_t<trie_node, IsConst>& node, const key_unit_type* prefix,
     const key_unit_type* prefix_end) const
 {
     if (prefix == prefix_end)
@@ -542,15 +542,15 @@ void trie_map<KeyTraits, ValueT>::find_prefix_node_with_stack(
 }
 
 template<typename KeyTraits, typename ValueT>
-template<bool _IsConst>
+template<bool IsConst>
 typename trie_map<KeyTraits, ValueT>::key_buffer_type trie_map<KeyTraits, ValueT>::build_key_buffer_from_node_stack(
-    const std::vector<stack_item<_IsConst>>& node_stack) const
+    const std::vector<stack_item<IsConst>>& node_stack) const
 {
     // Build the key value from the stack.
     key_buffer_type buf;
     auto end = node_stack.end();
     --end; // Skip the node with value which doesn't store a key element.
-    std::for_each(node_stack.begin(), end, [&](const stack_item<_IsConst>& si) {
+    std::for_each(node_stack.begin(), end, [&](const stack_item<IsConst>& si) {
         using ktt = key_traits_type;
         ktt::push_back(buf, si.child_pos->first);
     });

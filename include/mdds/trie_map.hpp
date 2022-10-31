@@ -257,10 +257,10 @@ private:
         void swap(trie_node& other);
     };
 
-    template<bool _IsConst>
+    template<bool IsConst>
     struct stack_item
     {
-        using _is_const = bool_constant<_IsConst>;
+        using _is_const = bool_constant<IsConst>;
 
         using child_pos_type = typename get_iterator_type<typename trie_node::children_type, _is_const>::type;
 
@@ -437,13 +437,13 @@ private:
     const trie_node* find_prefix_node(
         const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
-    template<bool _IsConst>
+    template<bool IsConst>
     void find_prefix_node_with_stack(
-        std::vector<stack_item<_IsConst>>& node_stack, const_t<trie_node, _IsConst>& node, const key_unit_type* prefix,
+        std::vector<stack_item<IsConst>>& node_stack, const_t<trie_node, IsConst>& node, const key_unit_type* prefix,
         const key_unit_type* prefix_end) const;
 
-    template<bool _IsConst>
-    key_buffer_type build_key_buffer_from_node_stack(const std::vector<stack_item<_IsConst>>& node_stack) const;
+    template<bool IsConst>
+    key_buffer_type build_key_buffer_from_node_stack(const std::vector<stack_item<IsConst>>& node_stack) const;
 
     void count_values(size_type& n, const trie_node& node) const;
 
