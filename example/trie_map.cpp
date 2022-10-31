@@ -34,7 +34,7 @@ using std::endl;
 
 int main()
 {
-    using trie_map_type = mdds::trie_map<mdds::trie::std_string_trait, int>;
+    using trie_map_type = mdds::trie_map<mdds::trie::std_string_traits, int>;
 
     // Cities in North Carolina and their populations in 2013.
     trie_map_type nc_cities;

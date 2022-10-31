@@ -45,7 +45,7 @@ namespace trie {
  * Template for a key type implemented using a typical STL container type.
  */
 template<typename ContainerT>
-struct std_container_trait
+struct std_container_traits
 {
     /** type used to store a key value. */
     using key_type = ContainerT;
@@ -139,7 +139,7 @@ struct std_container_trait
     }
 };
 
-using std_string_trait = std_container_trait<std::string>;
+using std_string_traits = std_container_traits<std::string>;
 
 /** Serializer for numeric data types. */
 template<typename T>

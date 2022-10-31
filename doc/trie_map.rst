@@ -17,11 +17,11 @@ names as keys.
 
 Let's define the type first::
 
-    using trie_map_type = mdds::trie_map<mdds::trie::std_string_trait, int>;
+    using trie_map_type = mdds::trie_map<mdds::trie::std_string_traits, int>;
 
 The first template argument specifies the trait of the key.  In this example,
 we are using a pre-defined trait for std::string, which is defined in
-:cpp:type:`~mdds::trie::std_string_trait`.  The second template argument
+:cpp:type:`~mdds::trie::std_string_traits`.  The second template argument
 specifies the value type, which in this example is simply an ``int``.
 
 Once the type is defined, the next step is instantiation::
@@ -191,7 +191,7 @@ directly, and that is what we will cover in this section.
 
 First, declare the type::
 
-    using trie_map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, int>;
+    using trie_map_type = mdds::packed_trie_map<mdds::trie::std_string_traits, int>;
 
 Once again, we are using the pre-defined trait for std::string as its key, and int
 as its value type.  The next step is to prepare its entries ahead of time::
@@ -258,7 +258,7 @@ is now possible by using the :cpp:func:`~mdds::packed_trie_map::save_state` and
 
 First, let's define the type of use::
 
-    using map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, int>;
+    using map_type = mdds::packed_trie_map<mdds::trie::std_string_traits, int>;
 
 As with the previous examples, we will use ``std::string`` as the key type and
 ``int`` as the value type.  In this example, we are going to use `the world's
@@ -520,7 +520,7 @@ value of 8-bit width.
 
 Next, let's define the container type::
 
-    using map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, us_president>;
+    using map_type = mdds::packed_trie_map<mdds::trie::std_string_traits, us_president>;
 
 As with the previous example, the first step is to define the entries that are
 sorted by the keys, which in this case are the president's names::
@@ -745,10 +745,10 @@ Packed Trie Map
 Traits
 ^^^^^^
 
-.. doxygenstruct:: mdds::trie::std_container_trait
+.. doxygenstruct:: mdds::trie::std_container_traits
    :members:
 
-.. doxygentypedef:: mdds::trie::std_string_trait
+.. doxygentypedef:: mdds::trie::std_string_traits
 
 
 Value Serializers

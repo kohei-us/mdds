@@ -35,7 +35,7 @@ using std::endl;
 
 int main()
 {
-    using trie_map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, int>;
+    using trie_map_type = mdds::packed_trie_map<mdds::trie::std_string_traits, int>;
 
     // Entries must be known prior to creating the instance, and they must be
     // sorted by the key in ascending order.

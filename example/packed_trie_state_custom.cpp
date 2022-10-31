@@ -118,7 +118,7 @@ struct us_president_serializer
 int main() try
 {
 
-    using map_type = mdds::packed_trie_map<mdds::trie::std_string_trait, us_president>;
+    using map_type = mdds::packed_trie_map<mdds::trie::std_string_traits, us_president>;
 
     // source: https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States
     //

@@ -42,8 +42,8 @@
 using namespace std;
 using namespace mdds;
 
-using packed_int_map_type = packed_trie_map<trie::std_string_trait, int>;
-using packed_str_map_type = packed_trie_map<trie::std_string_trait, std::string>;
+using packed_int_map_type = packed_trie_map<trie::std_string_traits, int>;
+using packed_str_map_type = packed_trie_map<trie::std_string_traits, std::string>;
 
 bool verify_entries(const packed_int_map_type& db, const packed_int_map_type::entry* entries, size_t entry_size)
 {
@@ -259,7 +259,7 @@ std::ostream& operator<<(std::ostream& os, const value_wrapper& vw)
     return os;
 }
 
-typedef packed_trie_map<trie::std_string_trait, value_wrapper> packed_value_map_type;
+typedef packed_trie_map<trie::std_string_traits, value_wrapper> packed_value_map_type;
 
 void trie_packed_test_value_life_cycle()
 {
@@ -397,7 +397,7 @@ void trie_packed_test_iterator()
 {
     stack_printer __stack_printer__("::trie_packed_test_iterator");
 
-    using trie_map_type = trie_map<trie::std_string_trait, int>;
+    using trie_map_type = trie_map<trie::std_string_traits, int>;
     using packed_type = trie_map_type::packed_type;
     using kv = packed_type::key_value_type;
 
@@ -487,7 +487,7 @@ void trie_packed_test_prefix_search1()
 {
     stack_printer __stack_printer__("::trie_packed_test_prefix_search1");
 
-    using trie_map_type = trie_map<trie::std_string_trait, int>;
+    using trie_map_type = trie_map<trie::std_string_traits, int>;
     using packed_type = trie_map_type::packed_type;
 
     trie_map_type db;
@@ -533,7 +533,7 @@ void trie_packed_test_key_as_input()
 {
     stack_printer __stack_printer__("::trie_packed_test_key_as_input");
 
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     trie_map_type db;
 
     db.insert(std::string("string as key"), 1);
@@ -557,7 +557,7 @@ void trie_packed_test_key_as_input()
 void trie_packed_test_copying()
 {
     stack_printer __stack_printer__("::trie_packed_test_copying");
-    using map_type = packed_trie_map<trie::std_string_trait, int>;
+    using map_type = packed_trie_map<trie::std_string_traits, int>;
 
     map_type::entry entries[] = {
         {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
@@ -629,7 +629,7 @@ void trie_packed_test_non_equal()
 {
     stack_printer __stack_printer__("::trie_packed_test_non_equal");
 
-    using map_type = packed_trie_map<trie::std_string_trait, int>;
+    using map_type = packed_trie_map<trie::std_string_traits, int>;
 
     map_type::entry entries1[] = {
         {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
@@ -1013,7 +1013,7 @@ void test3()
 void test4()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test4");
-    using map_type = packed_trie_map<trie::std_string_trait, std::vector<int64_t>>;
+    using map_type = packed_trie_map<trie::std_string_traits, std::vector<int64_t>>;
 
     std::vector<map_type::entry> entries = {
         {MDDS_ASCII("Abby"), {65, 98, 98, 121}},
@@ -1048,7 +1048,7 @@ void test4()
 void test5()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test5");
-    using map_type = packed_trie_map<trie::std_string_trait, float>;
+    using map_type = packed_trie_map<trie::std_string_traits, float>;
 
     std::vector<map_type::entry> entries = {
         {MDDS_ASCII("Abby"), 1.0f},  {MDDS_ASCII("Ashley"), 1.1f}, {MDDS_ASCII("Christal"), 1.2f},
@@ -1080,7 +1080,7 @@ template<typename SeqT>
 void test6()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test6");
-    using map_type = packed_trie_map<trie::std_string_trait, SeqT>;
+    using map_type = packed_trie_map<trie::std_string_traits, SeqT>;
 
     std::vector<typename map_type::entry> entries = {
         {MDDS_ASCII("Abby"), {65.0, 98.1, 98.2, 121.3}},
@@ -1115,7 +1115,7 @@ void test6()
 void test7()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test7");
-    using map_type = packed_trie_map<trie::std_string_trait, _custom_variable_value>;
+    using map_type = packed_trie_map<trie::std_string_traits, _custom_variable_value>;
 
     std::vector<map_type::entry> entries = {
         {MDDS_ASCII("Alan"), 1.2f},        {MDDS_ASCII("Cory"), -125},   {MDDS_ASCII("Eleni"), 966},
@@ -1146,7 +1146,7 @@ void test7()
 void test8()
 {
     stack_printer __stack_printer__("trie_packed_test_save_and_load_state::test8");
-    using map_type = packed_trie_map<trie::std_string_trait, _custom_fixed_value>;
+    using map_type = packed_trie_map<trie::std_string_traits, _custom_fixed_value>;
 
     std::vector<map_type::entry> entries = {
         {MDDS_ASCII("Bernardine"), "zero"}, {MDDS_ASCII("Donny"), "two"},     {MDDS_ASCII("Julia"), "one"},
@@ -1200,8 +1200,8 @@ void trie_test1()
 {
     stack_printer __stack_printer__("::trie_test1");
 
-    typedef trie_map<trie::std_string_trait, custom_string> trie_map_type;
-    typedef packed_trie_map<trie::std_string_trait, custom_string> packed_trie_map_type;
+    typedef trie_map<trie::std_string_traits, custom_string> trie_map_type;
+    typedef packed_trie_map<trie::std_string_traits, custom_string> packed_trie_map_type;
 
     trie_map_type db;
     const trie_map_type& dbc = db;
@@ -1327,7 +1327,7 @@ void trie_test1()
 void trie_test2()
 {
     stack_printer __stack_printer__("::trie_test2");
-    using key_trait = trie::std_container_trait<std::vector<uint16_t>>;
+    using key_trait = trie::std_container_traits<std::vector<uint16_t>>;
     using map_type = trie_map<key_trait, int>;
     using key_type = map_type::key_type;
 
@@ -1365,7 +1365,7 @@ void trie_test2()
 void trie_test_iterator_empty()
 {
     stack_printer __stack_printer__("::trie_test_iterator_empty");
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -1381,7 +1381,7 @@ void trie_test_iterator_empty()
 void trie_test_iterator()
 {
     stack_printer __stack_printer__("::trie_test_iterator");
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     using kv = trie_map_type::key_value_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
@@ -1482,7 +1482,7 @@ void trie_test_iterator()
 void trie_test_iterator_with_erase()
 {
     stack_printer __stack_printer__("::trie_test_iterator_with_erase");
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     using kv = trie_map_type::key_value_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
@@ -1556,7 +1556,7 @@ void trie_test_iterator_with_erase()
 void trie_test_find_iterator()
 {
     stack_printer __stack_printer__("::trie_test_find_iterator");
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -1658,7 +1658,7 @@ void trie_test_prefix_search()
 {
     stack_printer __stack_printer__("::trie_test_prefix_search");
 
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -1725,7 +1725,7 @@ void trie_test_key_as_input()
 {
     stack_printer __stack_printer__("::trie_test_key_as_input");
 
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -1750,7 +1750,7 @@ void trie_test_copying()
 {
     stack_printer __stack_printer__("::trie_test_copying");
 
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     trie_map_type db;
     assert(db.empty());
 
@@ -1842,7 +1842,7 @@ void trie_test_value_update_from_iterator()
 {
     stack_printer __stack_printer__("::trie_test_value_update_from_iterator");
 
-    typedef trie_map<trie::std_string_trait, int> trie_map_type;
+    typedef trie_map<trie::std_string_traits, int> trie_map_type;
     trie_map_type db;
     db.insert("one", 1);
     db.insert("two", 2);
