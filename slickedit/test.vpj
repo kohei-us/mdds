@@ -76,12 +76,7 @@
     <Files AutoFolders="DirectoryView">
         <Folder Name="../test">
             <F N="../test/array_creation_perf_test.cpp"/>
-            <F N="../test/multi_type_matrix_test.cpp"/>
-            <F N="../test/multi_type_matrix_test_walk.cpp"/>
-            <F N="../test/point_quad_tree_test.cpp"/>
             <F N="../test/ref_pair_test.cpp"/>
-            <F N="../test/segment_tree_test.cpp"/>
-            <F N="../test/trie_map_test.cpp"/>
         </Folder>
     </Files>
 </Project>

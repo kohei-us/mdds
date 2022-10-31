@@ -76,161 +76,21 @@
     <Files AutoFolders="DirectoryView">
         <Folder Name="../test">
             <Folder Name="multi_type_vector">
-                <Folder Name="collection">
-                    <Folder Name="aos">
-                        <F N="../test/multi_type_vector/collection/aos/test_main.cpp"/>
-                    </Folder>
-                    <Folder Name="soa">
-                        <F N="../test/multi_type_vector/collection/soa/test_main.cpp"/>
-                    </Folder>
-                    <Folder Name="tc">
-                        <F N="../test/multi_type_vector/collection/tc/all.inl"/>
-                    </Folder>
-                </Folder>
-                <Folder Name="custom">
-                    <Folder Name="aos">
-                        <F N="../test/multi_type_vector/custom/aos/test_basic.cpp"/>
-                        <F N="../test/multi_type_vector/custom/aos/test_main.cpp"/>
-                        <F N="../test/multi_type_vector/custom/aos/test_main.hpp"/>
-                        <F N="../test/multi_type_vector/custom/aos/test_managed_block.cpp"/>
-                        <F N="../test/multi_type_vector/custom/aos/test_misc.cpp"/>
-                        <F N="../test/multi_type_vector/custom/aos/test_swap.cpp"/>
-                        <F N="../test/multi_type_vector/custom/aos/test_transfer.cpp"/>
-                    </Folder>
-                    <Folder Name="soa">
-                        <F N="../test/multi_type_vector/custom/soa/test_basic.cpp"/>
-                        <F N="../test/multi_type_vector/custom/soa/test_main.cpp"/>
-                        <F N="../test/multi_type_vector/custom/soa/test_main.hpp"/>
-                        <F N="../test/multi_type_vector/custom/soa/test_managed_block.cpp"/>
-                        <F N="../test/multi_type_vector/custom/soa/test_misc.cpp"/>
-                        <F N="../test/multi_type_vector/custom/soa/test_swap.cpp"/>
-                        <F N="../test/multi_type_vector/custom/soa/test_transfer.cpp"/>
-                    </Folder>
-                    <Folder Name="tc">
-                        <F N="../test/multi_type_vector/custom/tc/basic.inl"/>
-                        <F N="../test/multi_type_vector/custom/tc/managed_block.inl"/>
-                        <F N="../test/multi_type_vector/custom/tc/misc.inl"/>
-                        <F N="../test/multi_type_vector/custom/tc/swap.inl"/>
-                        <F N="../test/multi_type_vector/custom/tc/transfer.inl"/>
-                    </Folder>
-                    <F N="../test/multi_type_vector/custom/common_types.hpp"/>
-                </Folder>
-                <Folder Name="custom-trait">
-                    <Folder Name="aos">
-                        <F N="../test/multi_type_vector/custom-trait/aos/test_loop_unrolling.cpp"/>
-                        <F N="../test/multi_type_vector/custom-trait/aos/test_main.cpp"/>
-                        <F N="../test/multi_type_vector/custom-trait/aos/test_main.hpp"/>
-                    </Folder>
-                    <Folder Name="soa">
-                        <F N="../test/multi_type_vector/custom-trait/soa/test_loop_unrolling.cpp"/>
-                        <F N="../test/multi_type_vector/custom-trait/soa/test_loop_unrolling_simd.cpp"/>
-                        <F N="../test/multi_type_vector/custom-trait/soa/test_main.cpp"/>
-                        <F N="../test/multi_type_vector/custom-trait/soa/test_main.hpp"/>
-                    </Folder>
-                    <Folder Name="tc">
-                        <F N="../test/multi_type_vector/custom-trait/tc/loop_unrolling.inl"/>
-                    </Folder>
-                </Folder>
-                <Folder Name="debug-util">
-                    <Folder Name="soa">
-                        <F N="../test/multi_type_vector/debug-util/soa/test_trace.cpp"/>
-                    </Folder>
-                </Folder>
-                <Folder Name="default">
-                    <Folder Name="aos">
-                        <F N="../test/multi_type_vector/default/aos/test_basic.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_construction.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_empty_cells.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_erase.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_hints.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_insert.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_iterators.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_iterators_insert.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_iterators_set.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_iterators_set_empty.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_main.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_main.hpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_misc.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_position.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_set.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_swap_range.cpp"/>
-                        <F N="../test/multi_type_vector/default/aos/test_transfer.cpp"/>
-                    </Folder>
-                    <Folder Name="soa">
-                        <F N="../test/multi_type_vector/default/soa/test_basic.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_construction.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_empty_cells.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_erase.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_hints.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_insert.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_iterators.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_iterators_insert.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_iterators_set.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_iterators_set_empty.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_main.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_main.hpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_misc.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_position.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_set.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_swap_range.cpp"/>
-                        <F N="../test/multi_type_vector/default/soa/test_transfer.cpp"/>
-                    </Folder>
-                    <Folder Name="tc">
-                        <F N="../test/multi_type_vector/default/tc/basic.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/construction.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/empty_cells.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/erase.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/hints.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/insert.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/iterators.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/iterators_insert.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/iterators_set.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/iterators_set_empty.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/misc.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/position.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/set.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/swap_range.inl"/>
-                        <F N="../test/multi_type_vector/default/tc/transfer.inl"/>
-                    </Folder>
-                </Folder>
-                <Folder Name="element-blocks">
-                    <F N="../test/multi_type_vector/element-blocks/no_standard_blocks.inl"/>
-                    <F N="../test/multi_type_vector/element-blocks/no_standard_blocks_defs.inl"/>
-                    <F N="../test/multi_type_vector/element-blocks/no_standard_blocks_funcs.inl"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_aos.cpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_aos.hpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_basic.cpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_main.cpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_main.hpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_no_standard_blocks_aos.cpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_no_standard_blocks_soa.cpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_soa.cpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_soa.hpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_std_vector_bool.cpp"/>
-                    <F N="../test/multi_type_vector/element-blocks/test_store_types.cpp"/>
-                </Folder>
-                <Folder Name="event">
-                    <Folder Name="aos">
-                        <F N="../test/multi_type_vector/event/aos/test_block_counter.cpp"/>
-                        <F N="../test/multi_type_vector/event/aos/test_block_init.cpp"/>
-                        <F N="../test/multi_type_vector/event/aos/test_main.cpp"/>
-                        <F N="../test/multi_type_vector/event/aos/test_main.hpp"/>
-                    </Folder>
-                    <Folder Name="soa">
-                        <F N="../test/multi_type_vector/event/soa/test_block_counter.cpp"/>
-                        <F N="../test/multi_type_vector/event/soa/test_block_init.cpp"/>
-                        <F N="../test/multi_type_vector/event/soa/test_main.cpp"/>
-                        <F N="../test/multi_type_vector/event/soa/test_main.hpp"/>
-                    </Folder>
-                    <Folder Name="tc">
-                        <F N="../test/multi_type_vector/event/tc/block_counter.inl"/>
-                        <F N="../test/multi_type_vector/event/tc/block_init.inl"/>
-                        <F N="../test/multi_type_vector/event/tc/swap.inl"/>
-                    </Folder>
-                </Folder>
-                <Folder Name="perf">
-                    <F N="../test/multi_type_vector/perf/test_main.cpp"/>
-                </Folder>
+                <F
+                    N="../test/multi_type_vector/*.cpp"
+                    Recurse="1"
+                    Excludes="*.tiff;*.tbz;*.pdb;*.avi;*.msi;*.cpgz;*.rpm;*.class;*.a;*.gif;*.taz;*.bin;*.jpg;*.svgz;*.exe;*.mp3;*.jar;*.ico;*.tif;*.txz;*.sl;*.png;*.jpeg;*.tar;*.Z;*.sta;*.xslx;*.gz;*.bz2;*.xz;*.mpeg;*.vpb;*.chm;*.dll;*.7z;*.lib;*.so;*.ex;*.tgz;*.war;*.vtg;*.docx;*.rar;*.o;*.wmv;*.cpio;*.zip;*.bmp;*.suo;*.xlsx;*.7zip;*.winmd;*.obj;*.z;*.tbz2;.svn/;.CVS/;SSCS/;.DS_Store;*.vpw;*.vpj;*.vpwhist;*.vpwhistu;*.vpwwildcardcache"
+                    L="1"/>
+                <F
+                    N="../test/multi_type_vector/*.hpp"
+                    Recurse="1"
+                    Excludes="*.tiff;*.tbz;*.pdb;*.avi;*.msi;*.cpgz;*.rpm;*.class;*.a;*.gif;*.taz;*.bin;*.jpg;*.svgz;*.exe;*.mp3;*.jar;*.ico;*.tif;*.txz;*.sl;*.png;*.jpeg;*.tar;*.Z;*.sta;*.xslx;*.gz;*.bz2;*.xz;*.mpeg;*.vpb;*.chm;*.dll;*.7z;*.lib;*.so;*.ex;*.tgz;*.war;*.vtg;*.docx;*.rar;*.o;*.wmv;*.cpio;*.zip;*.bmp;*.suo;*.xlsx;*.7zip;*.winmd;*.obj;*.z;*.tbz2;.svn/;.CVS/;SSCS/;.DS_Store;*.vpw;*.vpj;*.vpwhist;*.vpwhistu;*.vpwwildcardcache"
+                    L="1"/>
+                <F
+                    N="../test/multi_type_vector/*.inl"
+                    Recurse="1"
+                    Excludes="*.tiff;*.tbz;*.pdb;*.avi;*.msi;*.cpgz;*.rpm;*.class;*.a;*.gif;*.taz;*.bin;*.jpg;*.svgz;*.exe;*.mp3;*.jar;*.ico;*.tif;*.txz;*.sl;*.png;*.jpeg;*.tar;*.Z;*.sta;*.xslx;*.gz;*.bz2;*.xz;*.mpeg;*.vpb;*.chm;*.dll;*.7z;*.lib;*.so;*.ex;*.tgz;*.war;*.vtg;*.docx;*.rar;*.o;*.wmv;*.cpio;*.zip;*.bmp;*.suo;*.xlsx;*.7zip;*.winmd;*.obj;*.z;*.tbz2;.svn/;.CVS/;SSCS/;.DS_Store;*.vpw;*.vpj;*.vpwhist;*.vpwhistu;*.vpwwildcardcache"
+                    L="1"/>
             </Folder>
         </Folder>
     </Files>
