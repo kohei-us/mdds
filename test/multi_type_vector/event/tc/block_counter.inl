@@ -143,7 +143,7 @@ struct event_block_counter
     }
 };
 
-struct eb_counter_trait : public mdds::mtv::standard_element_blocks_trait
+struct eb_counter_trait : public mdds::mtv::standard_element_blocks_traits
 {
     using event_func = event_block_counter;
 

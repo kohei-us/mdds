@@ -34,7 +34,7 @@ namespace {
 using mdds::mtv::lu_factor_t;
 
 template<lu_factor_t F>
-struct trait_lu : public mdds::mtv::standard_element_blocks_trait
+struct trait_lu : public mdds::mtv::standard_element_blocks_traits
 {
     using event_func = mdds::mtv::empty_event_func;
 

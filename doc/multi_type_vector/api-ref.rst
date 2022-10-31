@@ -145,7 +145,7 @@ Block Types and Traits
 .. doxygentypedef:: mdds::mtv::double_element_block
 .. doxygentypedef:: mdds::mtv::string_element_block
 
-.. doxygenstruct:: mdds::mtv::standard_element_blocks_trait
+.. doxygenstruct:: mdds::mtv::standard_element_blocks_traits
    :members:
 
 

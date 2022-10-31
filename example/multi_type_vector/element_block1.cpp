@@ -35,7 +35,7 @@ using std::endl;
 using mdds::mtv::double_element_block;
 using mdds::mtv::string_element_block;
 
-using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
+using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_traits>;
 
 int main() try
 {

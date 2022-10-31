@@ -89,7 +89,7 @@ struct default_traits
      * Type that contains block functions used throughout the multi_type_vector
      * implementation.  The user must overwrite this type to specify one or more
      * block types as template arguments to element_block_funcs.  Alternatively,
-     * you may be interested in using standard_element_blocks_trait which
+     * you may be interested in using standard_element_blocks_traits which
      * already supports the pre-defined block types for the optional standard
      * data types.
      */

@@ -35,7 +35,7 @@
 void example1()
 {
     //!code-start: declare
-    using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
+    using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_traits>;
     using collection_type = mdds::mtv::collection<mtv_type>;
 
     std::vector<mtv_type> columns(5);

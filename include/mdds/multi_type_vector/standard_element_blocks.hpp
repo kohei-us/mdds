@@ -73,7 +73,7 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(float, element_type_float, 0.0, float_element_
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(double, element_type_double, 0.0, double_element_block)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::string, element_type_string, std::string(), string_element_block)
 
-struct standard_element_blocks_trait : public default_traits
+struct standard_element_blocks_traits : public default_traits
 {
     using block_funcs = element_block_funcs<
         boolean_element_block, int8_element_block, uint8_element_block, int16_element_block, uint16_element_block,

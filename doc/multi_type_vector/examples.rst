@@ -97,7 +97,7 @@ which respectively store elements of the following value types:
 * ``double``
 * ``std::string``
 
-The header also defines the :cpp:class:`mdds::mtv::standard_element_blocks_trait`
+The header also defines the :cpp:class:`mdds::mtv::standard_element_blocks_traits`
 struct which you can pass to the :cpp:type:`~mdds::multi_type_vector` template
 definition in order to have all of the above mentioned block types and their
 respective value types available for use.

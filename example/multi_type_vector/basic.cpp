@@ -35,7 +35,7 @@
 using std::cout;
 using std::endl;
 
-using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
+using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_traits>;
 
 template<typename BlockT>
 void print_block(const mtv_type::value_type& v)

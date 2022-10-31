@@ -25,7 +25,7 @@ using mdds::multi_type_vector;
 
 void test_multi_type_vector()
 {
-    typedef mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait> mtv_type;
+    typedef mdds::multi_type_vector<mdds::mtv::standard_element_blocks_traits> mtv_type;
 
     mtv_type empty_mtv;
 

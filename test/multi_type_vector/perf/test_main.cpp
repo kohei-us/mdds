@@ -39,7 +39,7 @@ using namespace mdds;
 
 namespace {
 
-typedef mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trait> mtv_type;
+typedef mdds::multi_type_vector<mdds::mtv::standard_element_blocks_traits> mtv_type;
 
 void mtv_perf_test_block_position_lookup()
 {

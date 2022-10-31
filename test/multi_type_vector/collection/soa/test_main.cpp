@@ -36,7 +36,7 @@
 #include <deque>
 #include <memory>
 
-using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::standard_element_blocks_trait>;
+using mtv_type = mdds::mtv::soa::multi_type_vector<mdds::mtv::standard_element_blocks_traits>;
 using cols_type = mdds::mtv::collection<mtv_type>;
 
 #include "all.inl"

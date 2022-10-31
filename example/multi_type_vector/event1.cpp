@@ -49,7 +49,7 @@ public:
     }
 };
 
-struct trait : mdds::mtv::standard_element_blocks_trait
+struct trait : mdds::mtv::standard_element_blocks_traits
 {
     using event_func = event_hdl;
 };

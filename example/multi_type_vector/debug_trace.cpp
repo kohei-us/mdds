@@ -36,7 +36,7 @@
 //!code-start: types
 namespace mtv = mdds::mtv;
 
-struct mtv_trait : public mtv::standard_element_blocks_trait
+struct mtv_trait : public mtv::standard_element_blocks_traits
 {
     static void trace(const mtv::trace_method_properties_t& props)
     {

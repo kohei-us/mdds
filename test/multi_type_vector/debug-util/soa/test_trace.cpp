@@ -103,7 +103,7 @@ public:
 
 std::vector<checked_method_props> observed;
 
-struct mtv_custom_trait : public mdds::mtv::standard_element_blocks_trait
+struct mtv_custom_trait : public mdds::mtv::standard_element_blocks_traits
 {
     static void trace(const mdds::mtv::trace_method_properties_t& props)
     {
