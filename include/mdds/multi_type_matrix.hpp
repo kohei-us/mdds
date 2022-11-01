@@ -72,14 +72,14 @@ struct std_string_traits
  * Internally it uses mdds::multi_type_vector as its value store.  The
  * element values are linearly stored in column-major order.
  */
-template<typename _MtxTrait>
+template<typename Traits>
 class multi_type_matrix
 {
-    typedef _MtxTrait matrix_trait;
+    typedef Traits traits_type;
 
 public:
-    typedef typename matrix_trait::string_element_block string_block_type;
-    typedef typename matrix_trait::integer_element_block integer_block_type;
+    typedef typename traits_type::string_element_block string_block_type;
+    typedef typename traits_type::integer_element_block integer_block_type;
 
     typedef typename string_block_type::value_type string_type;
     typedef typename integer_block_type::value_type integer_type;
@@ -90,7 +90,7 @@ private:
     {
         using block_funcs = mdds::mtv::element_block_funcs<
             mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::double_element_block,
-            typename matrix_trait::string_element_block, typename matrix_trait::integer_element_block>;
+            typename traits_type::string_element_block, typename traits_type::integer_element_block>;
     };
 
     using store_type = mdds::multi_type_vector<mtv_trait>;
