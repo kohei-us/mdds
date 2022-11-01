@@ -407,13 +407,13 @@ private:
     };
 
 public:
-    template<typename _NS>
+    template<typename NS>
     class search_results_base
     {
         friend class rtree;
 
     protected:
-        using node_store_type = _NS;
+        using node_store_type = NS;
 
         struct entry
         {

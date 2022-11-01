@@ -84,8 +84,8 @@ inline size_t calc_optimal_segment_size_for_pack(size_t init_size, size_t min_si
     return init_size;
 }
 
-template<typename _Extent>
-auto calc_linear_intersection(size_t dim, const _Extent& bb1, const _Extent& bb2)
+template<typename Extent>
+auto calc_linear_intersection(size_t dim, const Extent& bb1, const Extent& bb2)
     -> remove_cvref_t<decltype(bb1.start.d[0])>
 {
     using key_type = remove_cvref_t<decltype(bb1.start.d[0])>;
@@ -126,8 +126,8 @@ auto calc_linear_intersection(size_t dim, const _Extent& bb1, const _Extent& bb2
     return end2 - start2;
 }
 
-template<typename _Extent>
-bool intersects(const _Extent& bb1, const _Extent& bb2)
+template<typename Extent>
+bool intersects(const Extent& bb1, const Extent& bb2)
 {
     constexpr size_t dim_size = sizeof(bb1.start.d) / sizeof(bb1.start.d[0]);
     using key_type = remove_cvref_t<decltype(bb1.start.d[0])>;
@@ -160,20 +160,20 @@ bool intersects(const _Extent& bb1, const _Extent& bb2)
     return true;
 }
 
-template<typename _Extent>
-auto calc_intersection(const _Extent& bb1, const _Extent& bb2) -> remove_cvref_t<decltype(bb1.start.d[0])>
+template<typename Extent>
+auto calc_intersection(const Extent& bb1, const Extent& bb2) -> remove_cvref_t<decltype(bb1.start.d[0])>
 {
     constexpr size_t dim_size = sizeof(bb1.start.d) / sizeof(bb1.start.d[0]);
     static_assert(dim_size > 0, "Dimension cannot be zero.");
     using key_type = remove_cvref_t<decltype(bb1.start.d[0])>;
 
-    key_type total_volume = calc_linear_intersection<_Extent>(0, bb1, bb2);
+    key_type total_volume = calc_linear_intersection<Extent>(0, bb1, bb2);
     if (!total_volume)
         return key_type();
 
     for (size_t dim = 1; dim < dim_size; ++dim)
     {
-        key_type segment_len = calc_linear_intersection<_Extent>(dim, bb1, bb2);
+        key_type segment_len = calc_linear_intersection<Extent>(dim, bb1, bb2);
         if (!segment_len)
             return key_type();
 
@@ -183,8 +183,8 @@ auto calc_intersection(const _Extent& bb1, const _Extent& bb2) -> remove_cvref_t
     return total_volume;
 }
 
-template<typename _Extent>
-bool enlarge_extent_to_fit(_Extent& parent, const _Extent& child)
+template<typename Extent>
+bool enlarge_extent_to_fit(Extent& parent, const Extent& child)
 {
     constexpr size_t dim_size = sizeof(parent.start.d) / sizeof(parent.start.d[0]);
     static_assert(dim_size > 0, "Dimension cannot be zero.");
@@ -208,8 +208,8 @@ bool enlarge_extent_to_fit(_Extent& parent, const _Extent& child)
     return enlarged;
 }
 
-template<typename _Extent>
-auto calc_area(const _Extent& bb) -> remove_cvref_t<decltype(bb.start.d[0])>
+template<typename Extent>
+auto calc_area(const Extent& bb) -> remove_cvref_t<decltype(bb.start.d[0])>
 {
     constexpr size_t dim_size = sizeof(bb.start.d) / sizeof(bb.start.d[0]);
     static_assert(dim_size > 0, "Dimension cannot be zero.");
@@ -222,8 +222,8 @@ auto calc_area(const _Extent& bb) -> remove_cvref_t<decltype(bb.start.d[0])>
     return area;
 }
 
-template<typename _Pt>
-auto calc_square_distance(const _Pt& pt1, const _Pt& pt2) -> remove_cvref_t<decltype(pt1.d[0])>
+template<typename Pt>
+auto calc_square_distance(const Pt& pt1, const Pt& pt2) -> remove_cvref_t<decltype(pt1.d[0])>
 {
     constexpr size_t dim_size = sizeof(pt1.d) / sizeof(pt1.d[0]);
     static_assert(dim_size > 0, "Dimension cannot be zero.");
@@ -251,8 +251,8 @@ auto calc_square_distance(const _Pt& pt1, const _Pt& pt2) -> remove_cvref_t<decl
  * bounding box, per the original paper on R*-tree.  It's half-margin
  * because it only adds one of the two edges in each dimension.
  */
-template<typename _Extent>
-auto calc_half_margin(const _Extent& bb) -> remove_cvref_t<decltype(bb.start.d[0])>
+template<typename Extent>
+auto calc_half_margin(const Extent& bb) -> remove_cvref_t<decltype(bb.start.d[0])>
 {
     constexpr size_t dim_size = sizeof(bb.start.d) / sizeof(bb.start.d[0]);
     static_assert(dim_size > 0, "Dimension cannot be zero.");
@@ -274,32 +274,32 @@ auto calc_half_margin(const _Extent& bb) -> remove_cvref_t<decltype(bb.start.d[0
  *
  * @return quantity of the area enlargement.
  */
-template<typename _Extent>
-auto calc_area_enlargement(const _Extent& bb_host, const _Extent& bb_guest)
+template<typename Extent>
+auto calc_area_enlargement(const Extent& bb_host, const Extent& bb_guest)
     -> remove_cvref_t<decltype(bb_host.start.d[0])>
 {
     constexpr size_t dim_size = sizeof(bb_host.start.d) / sizeof(bb_host.start.d[0]);
     static_assert(dim_size > 0, "Dimension cannot be zero.");
     using key_type = remove_cvref_t<decltype(bb_host.start.d[0])>;
-    using extent = _Extent;
+    using extent = Extent;
 
     // Calculate the original area.
-    key_type original_area = calc_area<_Extent>(bb_host);
+    key_type original_area = calc_area<Extent>(bb_host);
 
     // Enlarge the box for the new object if needed.
     extent bb_host_enlarged = bb_host; // make a copy.
-    bool enlarged = enlarge_extent_to_fit<_Extent>(bb_host_enlarged, bb_guest);
+    bool enlarged = enlarge_extent_to_fit<Extent>(bb_host_enlarged, bb_guest);
     if (!enlarged)
         // Area enlargement did not take place.
         return key_type();
 
-    key_type enlarged_area = calc_area<_Extent>(bb_host_enlarged);
+    key_type enlarged_area = calc_area<Extent>(bb_host_enlarged);
 
     return enlarged_area - original_area;
 }
 
-template<typename _Iter>
-auto calc_extent(_Iter it, _Iter it_end) -> decltype(it->extent)
+template<typename Iter>
+auto calc_extent(Iter it, Iter it_end) -> decltype(it->extent)
 {
     auto bb = it->extent;
     for (++it; it != it_end; ++it)
@@ -308,8 +308,8 @@ auto calc_extent(_Iter it, _Iter it_end) -> decltype(it->extent)
     return bb;
 }
 
-template<typename _Extent>
-auto get_center_point(const _Extent& extent) -> decltype(extent.start)
+template<typename Extent>
+auto get_center_point(const Extent& extent) -> decltype(extent.start)
 {
     constexpr size_t dim_size = sizeof(extent.start.d) / sizeof(extent.start.d[0]);
     static_assert(dim_size > 0, "Dimension cannot be zero.");
@@ -968,15 +968,15 @@ bool rtree<KeyT, ValueT, Traits>::directory_node::has_leaf_directory() const
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _NS>
-void rtree<KeyT, ValueT, Traits>::search_results_base<_NS>::add_node_store(node_store_type* ns, size_t depth)
+template<typename NS>
+void rtree<KeyT, ValueT, Traits>::search_results_base<NS>::add_node_store(node_store_type* ns, size_t depth)
 {
     m_store.emplace_back(ns, depth);
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _NS>
-rtree<KeyT, ValueT, Traits>::search_results_base<_NS>::entry::entry(node_store_type* _ns, size_t _depth)
+template<typename NS>
+rtree<KeyT, ValueT, Traits>::search_results_base<NS>::entry::entry(node_store_type* _ns, size_t _depth)
     : ns(_ns), depth(_depth)
 {}
 
