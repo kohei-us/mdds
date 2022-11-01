@@ -1102,8 +1102,7 @@ typename packed_trie_map<KeyTraits, ValueT>::const_iterator packed_trie_map<KeyT
 }
 
 template<typename KeyTraits, typename ValueT>
-typename packed_trie_map<KeyTraits, ValueT>::node_stack_type packed_trie_map<KeyTraits, ValueT>::get_root_stack()
-    const
+typename packed_trie_map<KeyTraits, ValueT>::node_stack_type packed_trie_map<KeyTraits, ValueT>::get_root_stack() const
 {
     assert(!m_packed.empty());
     size_t root_offset = m_packed[0];

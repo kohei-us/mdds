@@ -268,7 +268,8 @@ typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::logical_position(const const_position_type& pos)
+typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::logical_position(
+    const const_position_type& pos)
 {
     return pos.first->position + pos.second;
 }
@@ -1046,7 +1047,8 @@ bool multi_type_vector<Traits>::is_empty(size_type pos) const
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empty(size_type start_pos, size_type end_pos)
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empty(
+    size_type start_pos, size_type end_pos)
 {
     MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
 
@@ -1202,7 +1204,8 @@ void multi_type_vector<Traits>::clear()
 
 template<typename Traits>
 template<typename T>
-bool multi_type_vector<Traits>::set_cells_precheck(size_type pos, const T& it_begin, const T& it_end, size_type& end_pos)
+bool multi_type_vector<Traits>::set_cells_precheck(
+    size_type pos, const T& it_begin, const T& it_end, size_type& end_pos)
 {
     size_type length = std::distance(it_begin, it_end);
     if (!length)
@@ -4145,7 +4148,8 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::transfer
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::merge_with_adjacent_blocks(size_type block_index)
+typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::merge_with_adjacent_blocks(
+    size_type block_index)
 {
     assert(!m_block_store.positions.empty());
     assert(block_index < m_block_store.positions.size());

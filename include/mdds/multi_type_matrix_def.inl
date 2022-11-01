@@ -38,8 +38,7 @@ multi_type_matrix<Traits>::element_block_node_type::element_block_node_type(cons
 {}
 
 template<typename Traits>
-void multi_type_matrix<Traits>::element_block_node_type::assign(
-    const const_position_type& pos, size_type section_size)
+void multi_type_matrix<Traits>::element_block_node_type::assign(const const_position_type& pos, size_type section_size)
 {
     assert(section_size <= pos.first->size - pos.second);
 
@@ -68,8 +67,7 @@ typename _Blk::const_iterator multi_type_matrix<Traits>::element_block_node_type
 }
 
 template<typename Traits>
-typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::next_position(
-    const position_type& pos)
+typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::next_position(const position_type& pos)
 {
     return store_type::next_position(pos);
 }
@@ -86,8 +84,7 @@ multi_type_matrix<Traits>::multi_type_matrix() : m_size(0, 0)
 {}
 
 template<typename Traits>
-multi_type_matrix<Traits>::multi_type_matrix(size_type rows, size_type cols)
-    : m_store(rows * cols), m_size(rows, cols)
+multi_type_matrix<Traits>::multi_type_matrix(size_type rows, size_type cols) : m_store(rows * cols), m_size(rows, cols)
 {}
 
 template<typename Traits>
@@ -142,8 +139,7 @@ multi_type_matrix<Traits>& multi_type_matrix<Traits>::operator=(const multi_type
 }
 
 template<typename Traits>
-typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::position(
-    size_type row, size_type col)
+typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::position(size_type row, size_type col)
 {
     return m_store.position(get_pos(row, col));
 }
@@ -333,8 +329,7 @@ void multi_type_matrix<Traits>::set(size_type row, size_type col, double val)
 }
 
 template<typename Traits>
-typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(
-    const position_type& pos, double val)
+typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(const position_type& pos, double val)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
@@ -348,8 +343,7 @@ void multi_type_matrix<Traits>::set(size_type row, size_type col, bool val)
 }
 
 template<typename Traits>
-typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(
-    const position_type& pos, bool val)
+typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(const position_type& pos, bool val)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, val);

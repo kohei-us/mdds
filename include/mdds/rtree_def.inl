@@ -1208,7 +1208,8 @@ void rtree<KeyT, ValueT, Traits>::bulk_loader::pack_level(dir_store_type& store,
 
             // Size of each segment in this dimension splits.
             size_t segment_size = detail::rtree::calc_optimal_segment_size_for_pack(
-                std::ceil(seg.size / n_splits_per_dim), traits_type::min_node_size, traits_type::max_node_size, seg.size);
+                std::ceil(seg.size / n_splits_per_dim), traits_type::min_node_size, traits_type::max_node_size,
+                seg.size);
 
             size_t n_cur_segment = 0;
             auto begin = seg.begin;

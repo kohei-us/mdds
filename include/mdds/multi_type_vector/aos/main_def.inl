@@ -150,7 +150,8 @@ typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::logical_position(const const_position_type& pos)
+typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::logical_position(
+    const const_position_type& pos)
 {
     return pos.first->position + pos.second;
 }
@@ -1809,7 +1810,8 @@ bool multi_type_vector<Traits>::is_empty(size_type pos) const
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empty(size_type start_pos, size_type end_pos)
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empty(
+    size_type start_pos, size_type end_pos)
 {
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_blocks.size())
@@ -4018,7 +4020,8 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::merge_with_adjacent_blocks(size_type block_index)
+typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::merge_with_adjacent_blocks(
+    size_type block_index)
 {
     assert(!m_blocks.empty());
     assert(block_index < m_blocks.size());
