@@ -131,7 +131,7 @@ struct write_fixed_size_values_to_ostream
     }
 };
 
-template<typename FuncT, typename ValueT, typename _SizeTrait>
+template<typename FuncT, typename ValueT, typename SizeTrait>
 struct write_values_to_ostream;
 
 template<typename FuncT, typename ValueT>
@@ -200,7 +200,7 @@ struct read_variable_size_values_from_istream
     }
 };
 
-template<typename FuncT, typename ValueT, typename _SizeTrait>
+template<typename FuncT, typename ValueT, typename SizeTrait>
 struct read_values_from_istream;
 
 template<typename FuncT, typename ValueT>
