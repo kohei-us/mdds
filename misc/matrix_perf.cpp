@@ -34,7 +34,7 @@ private:
 using namespace std;
 
 typedef mdds::mixed_type_matrix<std::string, bool> mixed_mx_type;
-typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> multi_mx_type;
+typedef mdds::multi_type_matrix<mdds::mtm::std_string_traits> multi_mx_type;
 
 namespace {
 

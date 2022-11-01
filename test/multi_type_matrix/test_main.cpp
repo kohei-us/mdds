@@ -37,7 +37,7 @@ using namespace mdds;
 using namespace std;
 
 // Standard matrix that uses std::string as its string type.
-typedef multi_type_matrix<mtm::std_string_trait> mtx_type;
+typedef multi_type_matrix<mtm::std_string_traits> mtx_type;
 
 // Custom string code --------------------------------------------------------
 

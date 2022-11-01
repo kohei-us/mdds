@@ -29,7 +29,7 @@
 #include <mdds/multi_type_matrix.hpp>
 #include <vector>
 
-typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> mtm_type;
+typedef mdds::multi_type_matrix<mdds::mtm::std_string_traits> mtm_type;
 
 int main() try
 {

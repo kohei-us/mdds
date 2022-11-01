@@ -55,7 +55,7 @@ enum element_t
 /**
  * Default matrix trait that uses std::string as its string type.
  */
-struct std_string_trait
+struct std_string_traits
 {
     typedef mdds::mtv::int32_element_block integer_element_block;
     typedef mdds::mtv::string_element_block string_element_block;
@@ -67,7 +67,7 @@ struct std_string_trait
  * Matrix that can store numeric, integer, boolean, empty and string types.
  * The string and integer types can be specified in the matrix trait
  * template parameter. To use std::string as the string type and int as the
- * integer type, use mdds::mtm::std_string_trait.
+ * integer type, use mdds::mtm::std_string_traits.
  *
  * Internally it uses mdds::multi_type_vector as its value store.  The
  * element values are linearly stored in column-major order.

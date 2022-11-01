@@ -23,7 +23,7 @@ using mdds::multi_type_matrix;
 
 void test_multi_type_matrix()
 {
-    typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> mtm_type;
+    typedef mdds::multi_type_matrix<mdds::mtm::std_string_traits> mtm_type;
 
     mtm_type empty_mtm;
 
