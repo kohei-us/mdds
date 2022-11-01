@@ -62,17 +62,17 @@ union bin_value
 
 using value_addrs_type = std::map<const void*, size_t>;
 
-template<typename FuncT, typename _V>
+template<typename FuncT, typename ValueT>
 struct write_variable_size_values_to_ostream
 {
-    value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store) const
+    value_addrs_type operator()(std::ostream& os, const std::deque<ValueT>& value_store) const
     {
         bin_value bv;
 
         value_addrs_type value_addrs;
 
         size_t pos = 0;
-        for (const _V& v : value_store)
+        for (const ValueT& v : value_store)
         {
             auto sp_size = os.tellp(); // position to come back to to write the size.
             bv.ui32 = 0;
@@ -96,10 +96,10 @@ struct write_variable_size_values_to_ostream
     }
 };
 
-template<typename FuncT, typename _V>
+template<typename FuncT, typename ValueT>
 struct write_fixed_size_values_to_ostream
 {
-    value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store) const
+    value_addrs_type operator()(std::ostream& os, const std::deque<ValueT>& value_store) const
     {
         bin_value bv;
         value_addrs_type value_addrs;
@@ -109,7 +109,7 @@ struct write_fixed_size_values_to_ostream
         os.write(bv.buffer, 4);
 
         size_t pos = 0;
-        for (const _V& v : value_store)
+        for (const ValueT& v : value_store)
         {
             auto sp_start = os.tellp();
             FuncT::write(os, v);
@@ -131,23 +131,23 @@ struct write_fixed_size_values_to_ostream
     }
 };
 
-template<typename FuncT, typename _V, typename _SizeTrait>
+template<typename FuncT, typename ValueT, typename _SizeTrait>
 struct write_values_to_ostream;
 
-template<typename FuncT, typename _V>
-struct write_values_to_ostream<FuncT, _V, std::true_type> : write_variable_size_values_to_ostream<FuncT, _V>
+template<typename FuncT, typename ValueT>
+struct write_values_to_ostream<FuncT, ValueT, std::true_type> : write_variable_size_values_to_ostream<FuncT, ValueT>
 {
 };
 
-template<typename FuncT, typename _V>
-struct write_values_to_ostream<FuncT, _V, std::false_type> : write_fixed_size_values_to_ostream<FuncT, _V>
+template<typename FuncT, typename ValueT>
+struct write_values_to_ostream<FuncT, ValueT, std::false_type> : write_fixed_size_values_to_ostream<FuncT, ValueT>
 {
 };
 
-template<typename FuncT, typename _V>
+template<typename FuncT, typename ValueT>
 struct read_fixed_size_values_from_istream
 {
-    using value_store_type = std::deque<_V>;
+    using value_store_type = std::deque<ValueT>;
 
     value_store_type operator()(std::istream& is, uint32_t value_count) const
     {
@@ -175,10 +175,10 @@ struct read_fixed_size_values_from_istream
     }
 };
 
-template<typename FuncT, typename _V>
+template<typename FuncT, typename ValueT>
 struct read_variable_size_values_from_istream
 {
-    using value_store_type = std::deque<_V>;
+    using value_store_type = std::deque<ValueT>;
 
     value_store_type operator()(std::istream& is, uint32_t value_count) const
     {
@@ -190,7 +190,7 @@ struct read_variable_size_values_from_istream
             is.read(bv.buffer, 4);
             size_t size = bv.ui32;
 
-            _V v;
+            ValueT v;
             FuncT::read(is, size, v);
 
             value_store.push_back(std::move(v));
@@ -200,16 +200,16 @@ struct read_variable_size_values_from_istream
     }
 };
 
-template<typename FuncT, typename _V, typename _SizeTrait>
+template<typename FuncT, typename ValueT, typename _SizeTrait>
 struct read_values_from_istream;
 
-template<typename FuncT, typename _V>
-struct read_values_from_istream<FuncT, _V, std::true_type> : read_variable_size_values_from_istream<FuncT, _V>
+template<typename FuncT, typename ValueT>
+struct read_values_from_istream<FuncT, ValueT, std::true_type> : read_variable_size_values_from_istream<FuncT, ValueT>
 {
 };
 
-template<typename FuncT, typename _V>
-struct read_values_from_istream<FuncT, _V, std::false_type> : read_fixed_size_values_from_istream<FuncT, _V>
+template<typename FuncT, typename ValueT>
+struct read_values_from_istream<FuncT, ValueT, std::false_type> : read_fixed_size_values_from_istream<FuncT, ValueT>
 {
 };
 
