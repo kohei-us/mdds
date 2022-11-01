@@ -175,11 +175,11 @@ public:
     }
 
 private:
-    template<typename _Func>
+    template<typename FuncT>
     struct walk_func
     {
-        _Func& m_func;
-        walk_func(_Func& func) : m_func(func)
+        FuncT& m_func;
+        walk_func(FuncT& func) : m_func(func)
         {}
 
         void operator()(const typename store_type::const_iterator::value_type& mtv_node)
@@ -747,8 +747,8 @@ public:
      *
      * @return function object passed to this method.
      */
-    template<typename _Func>
-    _Func walk(_Func func) const;
+    template<typename FuncT>
+    FuncT walk(FuncT func) const;
 
     /**
      * Walk through the element blocks in a sub-matrix range defined by start
@@ -766,8 +766,8 @@ public:
      *
      * @return function object passed to this method.
      */
-    template<typename _Func>
-    _Func walk(_Func func, const size_pair_type& start, const size_pair_type& end) const;
+    template<typename FuncT>
+    FuncT walk(FuncT func, const size_pair_type& start, const size_pair_type& end) const;
 
     /**
      * Walk through all element blocks in parallel with another matrix
@@ -779,8 +779,8 @@ public:
      *
      * @param right another matrix instance to parallel-walk with.
      */
-    template<typename _Func>
-    _Func walk(_Func func, const multi_type_matrix& right) const;
+    template<typename FuncT>
+    FuncT walk(FuncT func, const multi_type_matrix& right) const;
 
     /**
      * Walk through the element blocks in a sub-matrix range in parallel with
@@ -800,9 +800,9 @@ public:
      *          sub-matrix.  Both column and row must be greater or equal to
      *          those of the start position.
      */
-    template<typename _Func>
-    _Func walk(
-        _Func func, const multi_type_matrix& right, const size_pair_type& start, const size_pair_type& end) const;
+    template<typename FuncT>
+    FuncT walk(
+        FuncT func, const multi_type_matrix& right, const size_pair_type& start, const size_pair_type& end) const;
 
 #ifdef MDDS_MULTI_TYPE_MATRIX_DEBUG
     void dump() const

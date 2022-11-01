@@ -1752,8 +1752,8 @@ void rtree<KeyT, ValueT, Traits>::clear()
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _Func>
-void rtree<KeyT, ValueT, Traits>::walk(_Func func) const
+template<typename FuncT>
+void rtree<KeyT, ValueT, Traits>::walk(FuncT func) const
 {
     descend_with_func(std::move(func));
 }
@@ -2535,8 +2535,8 @@ typename rtree<KeyT, ValueT, Traits>::node_store* rtree<
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _Func>
-void rtree<KeyT, ValueT, Traits>::descend_with_func(_Func func) const
+template<typename FuncT>
+void rtree<KeyT, ValueT, Traits>::descend_with_func(FuncT func) const
 {
     std::function<void(const node_store*)> func_descend = [&](const node_store* ns) {
         node_properties np;

@@ -62,7 +62,7 @@ union bin_value
 
 using value_addrs_type = std::map<const void*, size_t>;
 
-template<typename _Func, typename _V>
+template<typename FuncT, typename _V>
 struct write_variable_size_values_to_ostream
 {
     value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store) const
@@ -79,7 +79,7 @@ struct write_variable_size_values_to_ostream
             os.write(bv.buffer, 4); // write 0 as a placeholder.
 
             auto sp_start = os.tellp();
-            _Func::write(os, v);
+            FuncT::write(os, v);
             auto sp_end = os.tellp();
 
             bv.ui32 = sp_end - sp_start; // bytes written
@@ -96,7 +96,7 @@ struct write_variable_size_values_to_ostream
     }
 };
 
-template<typename _Func, typename _V>
+template<typename FuncT, typename _V>
 struct write_fixed_size_values_to_ostream
 {
     value_addrs_type operator()(std::ostream& os, const std::deque<_V>& value_store) const
@@ -105,21 +105,21 @@ struct write_fixed_size_values_to_ostream
         value_addrs_type value_addrs;
 
         // Write the size of constant-size values.
-        bv.ui32 = _Func::value_size;
+        bv.ui32 = FuncT::value_size;
         os.write(bv.buffer, 4);
 
         size_t pos = 0;
         for (const _V& v : value_store)
         {
             auto sp_start = os.tellp();
-            _Func::write(os, v);
+            FuncT::write(os, v);
             auto sp_end = os.tellp();
 
             size_t bytes_written = sp_end - sp_start;
-            if (bytes_written != _Func::value_size)
+            if (bytes_written != FuncT::value_size)
             {
                 std::ostringstream msg;
-                msg << "bytes written (" << bytes_written << ") does not equal the value size (" << _Func::value_size
+                msg << "bytes written (" << bytes_written << ") does not equal the value size (" << FuncT::value_size
                     << ")";
                 throw size_error(msg.str());
             }
@@ -131,20 +131,20 @@ struct write_fixed_size_values_to_ostream
     }
 };
 
-template<typename _Func, typename _V, typename _SizeTrait>
+template<typename FuncT, typename _V, typename _SizeTrait>
 struct write_values_to_ostream;
 
-template<typename _Func, typename _V>
-struct write_values_to_ostream<_Func, _V, std::true_type> : write_variable_size_values_to_ostream<_Func, _V>
+template<typename FuncT, typename _V>
+struct write_values_to_ostream<FuncT, _V, std::true_type> : write_variable_size_values_to_ostream<FuncT, _V>
 {
 };
 
-template<typename _Func, typename _V>
-struct write_values_to_ostream<_Func, _V, std::false_type> : write_fixed_size_values_to_ostream<_Func, _V>
+template<typename FuncT, typename _V>
+struct write_values_to_ostream<FuncT, _V, std::false_type> : write_fixed_size_values_to_ostream<FuncT, _V>
 {
 };
 
-template<typename _Func, typename _V>
+template<typename FuncT, typename _V>
 struct read_fixed_size_values_from_istream
 {
     using value_store_type = std::deque<_V>;
@@ -158,24 +158,24 @@ struct read_fixed_size_values_from_istream
         is.read(bv.buffer, 4);
         size_t size = bv.ui32;
 
-        if (size != _Func::value_size)
+        if (size != FuncT::value_size)
         {
             std::ostringstream os;
-            os << "wrong size of fixed value type (expected: " << _Func::value_size << "; actual: " << size << ")";
+            os << "wrong size of fixed value type (expected: " << FuncT::value_size << "; actual: " << size << ")";
             throw std::invalid_argument(os.str());
         }
 
         for (uint32_t i = 0; i < value_count; ++i)
         {
             value_store.emplace_back();
-            _Func::read(is, size, value_store.back());
+            FuncT::read(is, size, value_store.back());
         }
 
         return value_store;
     }
 };
 
-template<typename _Func, typename _V>
+template<typename FuncT, typename _V>
 struct read_variable_size_values_from_istream
 {
     using value_store_type = std::deque<_V>;
@@ -191,7 +191,7 @@ struct read_variable_size_values_from_istream
             size_t size = bv.ui32;
 
             _V v;
-            _Func::read(is, size, v);
+            FuncT::read(is, size, v);
 
             value_store.push_back(std::move(v));
         }
@@ -200,16 +200,16 @@ struct read_variable_size_values_from_istream
     }
 };
 
-template<typename _Func, typename _V, typename _SizeTrait>
+template<typename FuncT, typename _V, typename _SizeTrait>
 struct read_values_from_istream;
 
-template<typename _Func, typename _V>
-struct read_values_from_istream<_Func, _V, std::true_type> : read_variable_size_values_from_istream<_Func, _V>
+template<typename FuncT, typename _V>
+struct read_values_from_istream<FuncT, _V, std::true_type> : read_variable_size_values_from_istream<FuncT, _V>
 {
 };
 
-template<typename _Func, typename _V>
-struct read_values_from_istream<_Func, _V, std::false_type> : read_fixed_size_values_from_istream<_Func, _V>
+template<typename FuncT, typename _V>
+struct read_values_from_istream<FuncT, _V, std::false_type> : read_fixed_size_values_from_istream<FuncT, _V>
 {
 };
 
@@ -1220,13 +1220,13 @@ void packed_trie_map<KeyTraits, ValueT>::swap(packed_trie_map& other)
 }
 
 template<typename KeyTraits, typename ValueT>
-template<typename _Func>
+template<typename FuncT>
 void packed_trie_map<KeyTraits, ValueT>::save_state(std::ostream& os) const
 {
     detail::trie::bin_value bv;
 
     bv.ui16 = 0x0000; // write 2-byte flags
-    bv.ui16 |= (0x0001 & _Func::variable_size);
+    bv.ui16 |= (0x0001 & FuncT::variable_size);
     os.write(bv.buffer, 2);
 
     // Write the number of values (4-bytes).
@@ -1237,9 +1237,9 @@ void packed_trie_map<KeyTraits, ValueT>::save_state(std::ostream& os) const
     value_addrs_type value_addrs;
 
     // Dump the stored values first.
-    using value_size_type = bool_constant<_Func::variable_size>;
+    using value_size_type = bool_constant<FuncT::variable_size>;
 
-    detail::trie::write_values_to_ostream<_Func, value_type, value_size_type> func;
+    detail::trie::write_values_to_ostream<FuncT, value_type, value_size_type> func;
     value_addrs = func(os, m_value_store);
 
     // Write 0xFF to signify the end of the value section.
@@ -1332,7 +1332,7 @@ void packed_trie_map<KeyTraits, ValueT>::save_state(std::ostream& os) const
 }
 
 template<typename KeyTraits, typename ValueT>
-template<typename _Func>
+template<typename FuncT>
 void packed_trie_map<KeyTraits, ValueT>::load_state(std::istream& is)
 {
     detail::trie::bin_value bv;
@@ -1341,11 +1341,11 @@ void packed_trie_map<KeyTraits, ValueT>::load_state(std::istream& is)
     uint16_t flags = bv.ui16;
     bool variable_size = (flags & 0x0001) != 0;
 
-    if (variable_size != _Func::variable_size)
+    if (variable_size != FuncT::variable_size)
     {
         std::ostringstream os;
         os << "This stream is meant for a value type of " << detail::trie::value_type_size_name(variable_size)
-           << ", but the actual value type is of " << detail::trie::value_type_size_name(_Func::variable_size) << ".";
+           << ", but the actual value type is of " << detail::trie::value_type_size_name(FuncT::variable_size) << ".";
         throw std::invalid_argument(os.str());
     }
 
@@ -1353,8 +1353,8 @@ void packed_trie_map<KeyTraits, ValueT>::load_state(std::istream& is)
     is.read(bv.buffer, 4);
     uint32_t value_count = bv.ui32;
 
-    using value_size_type = bool_constant<_Func::variable_size>;
-    detail::trie::read_values_from_istream<_Func, value_type, value_size_type> func;
+    using value_size_type = bool_constant<FuncT::variable_size>;
+    detail::trie::read_values_from_istream<FuncT, value_type, value_size_type> func;
     m_value_store = func(is, value_count);
 
     // There should be a check byte of 0xFF.

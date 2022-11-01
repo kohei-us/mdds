@@ -673,17 +673,17 @@ void multi_type_matrix<Traits>::swap(multi_type_matrix& r)
 }
 
 template<typename Traits>
-template<typename _Func>
-_Func multi_type_matrix<Traits>::walk(_Func func) const
+template<typename FuncT>
+FuncT multi_type_matrix<Traits>::walk(FuncT func) const
 {
-    walk_func<_Func> wf(func);
+    walk_func<FuncT> wf(func);
     std::for_each(m_store.begin(), m_store.end(), wf);
     return func;
 }
 
 template<typename Traits>
-template<typename _Func>
-_Func multi_type_matrix<Traits>::walk(_Func func, const size_pair_type& start, const size_pair_type& end) const
+template<typename FuncT>
+FuncT multi_type_matrix<Traits>::walk(FuncT func, const size_pair_type& start, const size_pair_type& end) const
 {
     if (end.row < start.row || end.column < start.column)
     {
@@ -730,8 +730,8 @@ _Func multi_type_matrix<Traits>::walk(_Func func, const size_pair_type& start, c
 }
 
 template<typename Traits>
-template<typename _Func>
-_Func multi_type_matrix<Traits>::walk(_Func func, const multi_type_matrix& right) const
+template<typename FuncT>
+FuncT multi_type_matrix<Traits>::walk(FuncT func, const multi_type_matrix& right) const
 {
     if (size() != right.size())
         throw size_error("multi_type_matrix: left and right matrices must have the same geometry.");
@@ -765,9 +765,9 @@ _Func multi_type_matrix<Traits>::walk(_Func func, const multi_type_matrix& right
 }
 
 template<typename Traits>
-template<typename _Func>
-_Func multi_type_matrix<Traits>::walk(
-    _Func func, const multi_type_matrix& right, const size_pair_type& start, const size_pair_type& end) const
+template<typename FuncT>
+FuncT multi_type_matrix<Traits>::walk(
+    FuncT func, const multi_type_matrix& right, const size_pair_type& start, const size_pair_type& end) const
 {
     if (end.row < start.row || end.column < start.column)
     {

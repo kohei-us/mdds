@@ -737,8 +737,8 @@ public:
      * @param func function or function object that gets called at each node in
      *       the tree.
      */
-    template<typename _Func>
-    void walk(_Func func) const;
+    template<typename FuncT>
+    void walk(FuncT func) const;
 
     /**
      * Check the integrity of the entire tree structure.
@@ -805,8 +805,8 @@ private:
     insertion_point find_leaf_directory_node_for_insertion(const extent_type& bb);
     node_store* find_nonleaf_directory_node_for_insertion(const extent_type& bb, size_t max_depth);
 
-    template<typename _Func>
-    void descend_with_func(_Func func) const;
+    template<typename FuncT>
+    void descend_with_func(FuncT func) const;
 
     using search_condition_type = std::function<bool(const node_store&)>;
 

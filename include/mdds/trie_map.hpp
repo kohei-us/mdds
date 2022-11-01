@@ -646,7 +646,7 @@ public:
      *
      * @param os output stream to write the state to.
      */
-    template<typename _Func = trie::value_serializer<value_type>>
+    template<typename FuncT = trie::value_serializer<value_type>>
     void save_state(std::ostream& os) const;
 
     /**
@@ -655,7 +655,7 @@ public:
      *
      * @param is input stream to load the state from.
      */
-    template<typename _Func = trie::value_serializer<value_type>>
+    template<typename FuncT = trie::value_serializer<value_type>>
     void load_state(std::istream& is);
 
     /**
