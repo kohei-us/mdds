@@ -326,14 +326,14 @@ auto get_center_point(const _Extent& extent) -> decltype(extent.start)
     return ret;
 }
 
-template<typename _Key>
+template<typename KeyT>
 struct min_value_pos
 {
-    _Key value = _Key();
+    KeyT value = KeyT();
     size_t pos = 0;
     size_t count = 0;
 
-    void assign(_Key new_value, size_t new_pos)
+    void assign(KeyT new_value, size_t new_pos)
     {
         if (count)
         {
@@ -355,10 +355,10 @@ struct min_value_pos
     }
 };
 
-template<typename _Key>
+template<typename KeyT>
 struct reinsertion_bucket
 {
-    using key_type = _Key;
+    using key_type = KeyT;
 
     key_type distance;
     size_t src_pos;
@@ -390,23 +390,23 @@ struct ptr_to_string
 
 }} // namespace detail::rtree
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::point_type::point_type()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::point_type::point_type()
 {
     // Initialize the point values with the key type's default value.
     key_type* p = d;
-    key_type* p_end = p + trait_type::dimensions;
+    key_type* p_end = p + traits_type::dimensions;
 
     for (; p != p_end; ++p)
         *p = key_type{};
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::point_type::point_type(std::initializer_list<key_type> vs)
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::point_type::point_type(std::initializer_list<key_type> vs)
 {
     // Initialize the point values with the key type's default value.
     key_type* dst = d;
-    key_type* dst_end = dst + trait_type::dimensions;
+    key_type* dst_end = dst + traits_type::dimensions;
 
     for (const key_type& v : vs)
     {
@@ -418,13 +418,13 @@ rtree<_Key, _Value, _Trait>::point_type::point_type(std::initializer_list<key_ty
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-std::string rtree<_Key, _Value, _Trait>::point_type::to_string() const
+template<typename KeyT, typename ValueT, typename Traits>
+std::string rtree<KeyT, ValueT, Traits>::point_type::to_string() const
 {
     std::ostringstream os;
 
     os << "(";
-    for (size_t i = 0; i < trait_type::dimensions; ++i)
+    for (size_t i = 0; i < traits_type::dimensions; ++i)
     {
         if (i > 0)
             os << ", ";
@@ -435,12 +435,12 @@ std::string rtree<_Key, _Value, _Trait>::point_type::to_string() const
     return os.str();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::point_type::operator==(const point_type& other) const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::point_type::operator==(const point_type& other) const
 {
     const key_type* left = d;
     const key_type* right = other.d;
-    const key_type* left_end = left + trait_type::dimensions;
+    const key_type* left_end = left + traits_type::dimensions;
 
     for (; left != left_end; ++left, ++right)
     {
@@ -451,23 +451,23 @@ bool rtree<_Key, _Value, _Trait>::point_type::operator==(const point_type& other
     return true;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::point_type::operator!=(const point_type& other) const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::point_type::operator!=(const point_type& other) const
 {
     return !operator==(other);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::extent_type::extent_type()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::extent_type::extent_type()
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::extent_type::extent_type(const point_type& _start, const point_type& _end)
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::extent_type::extent_type(const point_type& _start, const point_type& _end)
     : start(_start), end(_end)
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-std::string rtree<_Key, _Value, _Trait>::extent_type::to_string() const
+template<typename KeyT, typename ValueT, typename Traits>
+std::string rtree<KeyT, ValueT, Traits>::extent_type::to_string() const
 {
     std::ostringstream os;
     os << start.to_string();
@@ -478,28 +478,28 @@ std::string rtree<_Key, _Value, _Trait>::extent_type::to_string() const
     return os.str();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::extent_type::is_point() const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::extent_type::is_point() const
 {
     return start == end;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::extent_type::operator==(const extent_type& other) const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::extent_type::operator==(const extent_type& other) const
 {
     return start == other.start && end == other.end;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::extent_type::operator!=(const extent_type& other) const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::extent_type::operator!=(const extent_type& other) const
 {
     return !operator==(other);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::extent_type::contains(const point_type& pt) const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::extent_type::contains(const point_type& pt) const
 {
-    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    for (size_t dim = 0; dim < traits_type::dimensions; ++dim)
     {
         if (pt.d[dim] < start.d[dim] || end.d[dim] < pt.d[dim])
             return false;
@@ -508,10 +508,10 @@ bool rtree<_Key, _Value, _Trait>::extent_type::contains(const point_type& pt) co
     return true;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::extent_type::contains(const extent_type& bb) const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::extent_type::contains(const extent_type& bb) const
 {
-    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    for (size_t dim = 0; dim < traits_type::dimensions; ++dim)
     {
         if (bb.start.d[dim] < start.d[dim] || end.d[dim] < bb.end.d[dim])
             return false;
@@ -520,16 +520,16 @@ bool rtree<_Key, _Value, _Trait>::extent_type::contains(const extent_type& bb) c
     return true;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::extent_type::intersects(const extent_type& bb) const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::extent_type::intersects(const extent_type& bb) const
 {
     return detail::rtree::intersects(bb, *this);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::extent_type::contains_at_boundary(const extent_type& bb) const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::extent_type::contains_at_boundary(const extent_type& bb) const
 {
-    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    for (size_t dim = 0; dim < traits_type::dimensions; ++dim)
     {
         if (start.d[dim] == bb.start.d[dim] || bb.end.d[dim] == end.d[dim])
             return true;
@@ -538,13 +538,13 @@ bool rtree<_Key, _Value, _Trait>::extent_type::contains_at_boundary(const extent
     return false;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::node_store::node_store()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::node_store::node_store()
     : type(node_type::unspecified), parent(nullptr), node_ptr(nullptr), count(0), valid_pointer(true)
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::node_store::node_store(node_store&& r)
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::node_store::node_store(node_store&& r)
     : type(r.type), extent(r.extent), parent(r.parent), node_ptr(r.node_ptr), count(r.count),
       valid_pointer(r.valid_pointer)
 {
@@ -556,13 +556,13 @@ rtree<_Key, _Value, _Trait>::node_store::node_store(node_store&& r)
     r.valid_pointer = true;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::node_store::node_store(node_type _type, const extent_type& _extent, node* _node_ptr)
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::node_store::node_store(node_type _type, const extent_type& _extent, node* _node_ptr)
     : type(_type), extent(_extent), parent(nullptr), node_ptr(_node_ptr), count(0), valid_pointer(true)
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::node_store::~node_store()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::node_store::~node_store()
 {
     if (node_ptr)
     {
@@ -582,8 +582,8 @@ rtree<_Key, _Value, _Trait>::node_store::~node_store()
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store rtree<_Key, _Value, _Trait>::node_store::clone() const
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store rtree<KeyT, ValueT, Traits>::node_store::clone() const
 {
     auto func_copy_dir = [this](node_store& cloned, const directory_node* src) {
         directory_node* dir = cloned.get_directory_node();
@@ -622,49 +622,49 @@ typename rtree<_Key, _Value, _Trait>::node_store rtree<_Key, _Value, _Trait>::no
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store rtree<_Key, _Value, _Trait>::node_store::create_leaf_directory_node()
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store rtree<KeyT, ValueT, Traits>::node_store::create_leaf_directory_node()
 {
     node_store ret(node_type::directory_leaf, extent_type(), new directory_node);
     ret.valid_pointer = false;
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store rtree<
-    _Key, _Value, _Trait>::node_store::create_nonleaf_directory_node()
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store rtree<
+    KeyT, ValueT, Traits>::node_store::create_nonleaf_directory_node()
 {
     node_store ret(node_type::directory_nonleaf, extent_type(), new directory_node);
     ret.valid_pointer = false;
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store rtree<_Key, _Value, _Trait>::node_store::create_value_node(
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store rtree<KeyT, ValueT, Traits>::node_store::create_value_node(
     const extent_type& extent, value_type&& v)
 {
     node_store ret(node_type::value, extent, new value_node(std::move(v)));
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store rtree<_Key, _Value, _Trait>::node_store::create_value_node(
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store rtree<KeyT, ValueT, Traits>::node_store::create_value_node(
     const extent_type& extent, const value_type& v)
 {
     node_store ret(node_type::value, extent, new value_node(v));
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store& rtree<_Key, _Value, _Trait>::node_store::operator=(node_store&& other)
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store& rtree<KeyT, ValueT, Traits>::node_store::operator=(node_store&& other)
 {
     node_store tmp(std::move(other));
     swap(tmp);
     return *this;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::node_store::pack()
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::node_store::pack()
 {
     const directory_node* dir = get_directory_node();
     if (!dir)
@@ -686,16 +686,16 @@ bool rtree<_Key, _Value, _Trait>::node_store::pack()
     return changed;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::node_store::pack_upward()
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::node_store::pack_upward()
 {
     bool propagate = true;
     for (node_store* p = parent; propagate && p; p = p->parent)
         propagate = p->pack();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::node_store::is_directory() const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::node_store::is_directory() const
 {
     switch (type)
     {
@@ -708,23 +708,23 @@ bool rtree<_Key, _Value, _Trait>::node_store::is_directory() const
     return false;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::node_store::is_root() const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::node_store::is_root() const
 {
     return parent == nullptr;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::node_store::exceeds_capacity() const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::node_store::exceeds_capacity() const
 {
     if (type != node_type::directory_leaf)
         return false;
 
-    return count > trait_type::max_node_size;
+    return count > traits_type::max_node_size;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::node_store::swap(node_store& other)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::node_store::swap(node_store& other)
 {
     std::swap(type, other.type);
     std::swap(extent, other.extent);
@@ -734,8 +734,8 @@ void rtree<_Key, _Value, _Trait>::node_store::swap(node_store& other)
     std::swap(valid_pointer, other.valid_pointer);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::node_store::reset_parent_pointers_of_children()
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::node_store::reset_parent_pointers_of_children()
 {
     if (valid_pointer)
         return;
@@ -753,15 +753,15 @@ void rtree<_Key, _Value, _Trait>::node_store::reset_parent_pointers_of_children(
     valid_pointer = true;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::node_store::reset_parent_pointers()
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::node_store::reset_parent_pointers()
 {
     valid_pointer = false;
     reset_parent_pointers_of_children();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::directory_node* rtree<_Key, _Value, _Trait>::node_store::get_directory_node()
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::directory_node* rtree<KeyT, ValueT, Traits>::node_store::get_directory_node()
 {
     if (!is_directory())
         return nullptr;
@@ -769,9 +769,9 @@ typename rtree<_Key, _Value, _Trait>::directory_node* rtree<_Key, _Value, _Trait
     return static_cast<directory_node*>(node_ptr);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-const typename rtree<_Key, _Value, _Trait>::directory_node* rtree<
-    _Key, _Value, _Trait>::node_store::get_directory_node() const
+template<typename KeyT, typename ValueT, typename Traits>
+const typename rtree<KeyT, ValueT, Traits>::directory_node* rtree<
+    KeyT, ValueT, Traits>::node_store::get_directory_node() const
 {
     if (!is_directory())
         return nullptr;
@@ -779,8 +779,8 @@ const typename rtree<_Key, _Value, _Trait>::directory_node* rtree<
     return static_cast<const directory_node*>(node_ptr);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::node_store::erase_child(const node_store* p)
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::node_store::erase_child(const node_store* p)
 {
     if (!is_directory())
         return false;
@@ -794,36 +794,36 @@ bool rtree<_Key, _Value, _Trait>::node_store::erase_child(const node_store* p)
     return erased;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::node::node()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::node::node()
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::node::~node()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::node::~node()
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::value_node::value_node(value_type&& _value) : value(std::move(_value))
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::value_node::value_node(value_type&& _value) : value(std::move(_value))
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::value_node::value_node(const value_type& _value) : value(_value)
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::value_node::value_node(const value_type& _value) : value(_value)
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::value_node::~value_node()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::value_node::~value_node()
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::directory_node::directory_node()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::directory_node::directory_node()
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::directory_node::~directory_node()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::directory_node::~directory_node()
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::directory_node::erase(const node_store* ns)
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::directory_node::erase(const node_store* ns)
 {
     auto it = std::find_if(
         children.begin(), children.end(), [ns](const node_store& this_ns) -> bool { return &this_ns == ns; });
@@ -849,9 +849,9 @@ bool rtree<_Key, _Value, _Trait>::directory_node::erase(const node_store* ns)
     return true;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store* rtree<
-    _Key, _Value, _Trait>::directory_node::get_child_with_minimal_overlap(const extent_type& bb)
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store* rtree<
+    KeyT, ValueT, Traits>::directory_node::get_child_with_minimal_overlap(const extent_type& bb)
 {
     key_type min_overlap = key_type();
     key_type min_area_enlargement = key_type();
@@ -893,9 +893,9 @@ typename rtree<_Key, _Value, _Trait>::node_store* rtree<
     return dst;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store* rtree<
-    _Key, _Value, _Trait>::directory_node::get_child_with_minimal_area_enlargement(const extent_type& bb)
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store* rtree<
+    KeyT, ValueT, Traits>::directory_node::get_child_with_minimal_area_enlargement(const extent_type& bb)
 {
     // Compare the costs of area enlargements.
     key_type min_cost = key_type();
@@ -931,8 +931,8 @@ typename rtree<_Key, _Value, _Trait>::node_store* rtree<
     return dst;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::extent_type rtree<_Key, _Value, _Trait>::directory_node::calc_extent() const
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::extent_type rtree<KeyT, ValueT, Traits>::directory_node::calc_extent() const
 {
     auto it = children.cbegin(), ite = children.cend();
 
@@ -943,8 +943,8 @@ typename rtree<_Key, _Value, _Trait>::extent_type rtree<_Key, _Value, _Trait>::d
     return box;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::key_type rtree<_Key, _Value, _Trait>::directory_node::calc_overlap_cost(
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::key_type rtree<KeyT, ValueT, Traits>::directory_node::calc_overlap_cost(
     const extent_type& bb) const
 {
     key_type overlap_cost = key_type();
@@ -955,8 +955,8 @@ typename rtree<_Key, _Value, _Trait>::key_type rtree<_Key, _Value, _Trait>::dire
     return overlap_cost;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::directory_node::has_leaf_directory() const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::directory_node::has_leaf_directory() const
 {
     for (const auto& ns : children)
     {
@@ -967,191 +967,191 @@ bool rtree<_Key, _Value, _Trait>::directory_node::has_leaf_directory() const
     return false;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _NS>
-void rtree<_Key, _Value, _Trait>::search_results_base<_NS>::add_node_store(node_store_type* ns, size_t depth)
+void rtree<KeyT, ValueT, Traits>::search_results_base<_NS>::add_node_store(node_store_type* ns, size_t depth)
 {
     m_store.emplace_back(ns, depth);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _NS>
-rtree<_Key, _Value, _Trait>::search_results_base<_NS>::entry::entry(node_store_type* _ns, size_t _depth)
+rtree<KeyT, ValueT, Traits>::search_results_base<_NS>::entry::entry(node_store_type* _ns, size_t _depth)
     : ns(_ns), depth(_depth)
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-rtree<_Key, _Value, _Trait>::iterator_base<_SelfIter, _StoreIter, _ValueT>::iterator_base(store_iterator_type pos)
+rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::iterator_base(store_iterator_type pos)
     : m_pos(std::move(pos))
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-bool rtree<_Key, _Value, _Trait>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator==(
+bool rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator==(
     const self_iterator_type& other) const
 {
     return m_pos == other.m_pos;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-bool rtree<_Key, _Value, _Trait>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator!=(
+bool rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator!=(
     const self_iterator_type& other) const
 {
     return !operator==(other);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-typename rtree<_Key, _Value, _Trait>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type& rtree<
-    _Key, _Value, _Trait>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator++()
+typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type& rtree<
+    KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator++()
 {
     ++m_pos;
     return static_cast<self_iterator_type&>(*this);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-typename rtree<_Key, _Value, _Trait>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type rtree<
-    _Key, _Value, _Trait>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator++(int)
+typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type rtree<
+    KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator++(int)
 {
     self_iterator_type ret(m_pos);
     ++m_pos;
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-typename rtree<_Key, _Value, _Trait>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type& rtree<
-    _Key, _Value, _Trait>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator--()
+typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type& rtree<
+    KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator--()
 {
     --m_pos;
     return static_cast<self_iterator_type&>(*this);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-typename rtree<_Key, _Value, _Trait>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type rtree<
-    _Key, _Value, _Trait>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator--(int)
+typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type rtree<
+    KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator--(int)
 {
     self_iterator_type ret(m_pos);
     --m_pos;
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-const typename rtree<_Key, _Value, _Trait>::extent_type& rtree<_Key, _Value, _Trait>::iterator_base<
+const typename rtree<KeyT, ValueT, Traits>::extent_type& rtree<KeyT, ValueT, Traits>::iterator_base<
     _SelfIter, _StoreIter, _ValueT>::extent() const
 {
     return m_pos->ns->extent;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-size_t rtree<_Key, _Value, _Trait>::iterator_base<_SelfIter, _StoreIter, _ValueT>::depth() const
+size_t rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::depth() const
 {
     return m_pos->depth;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::const_iterator rtree<_Key, _Value, _Trait>::const_search_results::cbegin() const
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::const_iterator rtree<KeyT, ValueT, Traits>::const_search_results::cbegin() const
 {
     return const_iterator(m_store.cbegin());
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::const_iterator rtree<_Key, _Value, _Trait>::const_search_results::cend() const
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::const_iterator rtree<KeyT, ValueT, Traits>::const_search_results::cend() const
 {
     return const_iterator(m_store.cend());
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::const_iterator rtree<_Key, _Value, _Trait>::const_search_results::begin() const
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::const_iterator rtree<KeyT, ValueT, Traits>::const_search_results::begin() const
 {
     return const_iterator(m_store.cbegin());
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::const_iterator rtree<_Key, _Value, _Trait>::const_search_results::end() const
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::const_iterator rtree<KeyT, ValueT, Traits>::const_search_results::end() const
 {
     return const_iterator(m_store.cend());
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::iterator rtree<_Key, _Value, _Trait>::search_results::begin()
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::iterator rtree<KeyT, ValueT, Traits>::search_results::begin()
 {
     return iterator(m_store.begin());
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::iterator rtree<_Key, _Value, _Trait>::search_results::end()
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::iterator rtree<KeyT, ValueT, Traits>::search_results::end()
 {
     return iterator(m_store.end());
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::const_iterator::const_iterator(store_iterator_type pos) : base_type(std::move(pos))
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::const_iterator::const_iterator(store_iterator_type pos) : base_type(std::move(pos))
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::iterator::iterator(store_iterator_type pos) : base_type(std::move(pos))
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::iterator::iterator(store_iterator_type pos) : base_type(std::move(pos))
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::bulk_loader::bulk_loader()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::bulk_loader::bulk_loader()
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::bulk_loader::insert(const extent_type& extent, value_type&& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::bulk_loader::insert(const extent_type& extent, value_type&& value)
 {
     insert_impl(extent, std::move(value));
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::bulk_loader::insert(const extent_type& extent, const value_type& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::bulk_loader::insert(const extent_type& extent, const value_type& value)
 {
     insert_impl(extent, value);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::bulk_loader::insert(const point_type& position, value_type&& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::bulk_loader::insert(const point_type& position, value_type&& value)
 {
     insert_impl(extent_type({position, position}), std::move(value));
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::bulk_loader::insert(const point_type& position, const value_type& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::bulk_loader::insert(const point_type& position, const value_type& value)
 {
     insert_impl(extent_type({position, position}), value);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::bulk_loader::insert_impl(const extent_type& extent, value_type&& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::bulk_loader::insert_impl(const extent_type& extent, value_type&& value)
 {
     node_store ns_value = node_store::create_value_node(extent, std::move(value));
     m_store.emplace_back(std::move(ns_value));
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::bulk_loader::insert_impl(const extent_type& extent, const value_type& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::bulk_loader::insert_impl(const extent_type& extent, const value_type& value)
 {
     node_store ns_value = node_store::create_value_node(extent, value);
     m_store.emplace_back(std::move(ns_value));
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait> rtree<_Key, _Value, _Trait>::bulk_loader::pack()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits> rtree<KeyT, ValueT, Traits>::bulk_loader::pack()
 {
     size_t depth = 0;
-    for (; m_store.size() > trait_type::max_node_size; ++depth)
+    for (; m_store.size() > traits_type::max_node_size; ++depth)
         pack_level(m_store, depth);
 
     // By this point, the number of directory nodes should have been reduced
     // below the max node size. Create a root directory and store them there.
 
-    assert(m_store.size() <= trait_type::max_node_size);
+    assert(m_store.size() <= traits_type::max_node_size);
 
     node_store root = node_store::create_leaf_directory_node();
     if (depth > 0)
@@ -1168,21 +1168,21 @@ rtree<_Key, _Value, _Trait> rtree<_Key, _Value, _Trait>::bulk_loader::pack()
     return tree;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::bulk_loader::pack_level(dir_store_type& store, size_t depth)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::bulk_loader::pack_level(dir_store_type& store, size_t depth)
 {
     assert(!store.empty());
 
-    float n_total_node = std::ceil(store.size() / float(trait_type::max_node_size));
-    float n_splits_per_dim = std::ceil(std::pow(n_total_node, 1.0f / float(trait_type::dimensions)));
+    float n_total_node = std::ceil(store.size() / float(traits_type::max_node_size));
+    float n_splits_per_dim = std::ceil(std::pow(n_total_node, 1.0f / float(traits_type::dimensions)));
 
     // The first dimension will start with one segment.
     std::vector<dir_store_segment> segments;
     segments.emplace_back(store.begin(), store.end(), store.size());
 
-    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    for (size_t dim = 0; dim < traits_type::dimensions; ++dim)
     {
-        if (segments[0].size <= trait_type::max_node_size)
+        if (segments[0].size <= traits_type::max_node_size)
             break;
 
         std::vector<dir_store_segment> next_segments;
@@ -1191,7 +1191,7 @@ void rtree<_Key, _Value, _Trait>::bulk_loader::pack_level(dir_store_type& store,
         {
             assert(seg.size == size_t(std::distance(seg.begin, seg.end)));
 
-            if (seg.size <= trait_type::max_node_size)
+            if (seg.size <= traits_type::max_node_size)
             {
                 next_segments.push_back(seg);
                 continue;
@@ -1208,7 +1208,7 @@ void rtree<_Key, _Value, _Trait>::bulk_loader::pack_level(dir_store_type& store,
 
             // Size of each segment in this dimension splits.
             size_t segment_size = detail::rtree::calc_optimal_segment_size_for_pack(
-                std::ceil(seg.size / n_splits_per_dim), trait_type::min_node_size, trait_type::max_node_size, seg.size);
+                std::ceil(seg.size / n_splits_per_dim), traits_type::min_node_size, traits_type::max_node_size, seg.size);
 
             size_t n_cur_segment = 0;
             auto begin = seg.begin;
@@ -1275,20 +1275,20 @@ void rtree<_Key, _Value, _Trait>::bulk_loader::pack_level(dir_store_type& store,
     store.swap(next_store);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::rtree() : m_root(node_store::create_leaf_directory_node())
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::rtree() : m_root(node_store::create_leaf_directory_node())
 {
     static_assert(
-        trait_type::min_node_size <= trait_type::max_node_size / 2,
+        traits_type::min_node_size <= traits_type::max_node_size / 2,
         "Minimum node size must be less than half of the maximum node size.");
 
     static_assert(
-        trait_type::reinsertion_size <= (trait_type::max_node_size - trait_type::min_node_size + 1),
+        traits_type::reinsertion_size <= (traits_type::max_node_size - traits_type::min_node_size + 1),
         "Reinsertion size is too large.");
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::rtree(rtree&& other) : m_root(std::move(other.m_root))
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::rtree(rtree&& other) : m_root(std::move(other.m_root))
 {
     // The root node must be a valid directory at all times.
     other.m_root = node_store::create_leaf_directory_node();
@@ -1298,64 +1298,64 @@ rtree<_Key, _Value, _Trait>::rtree(rtree&& other) : m_root(std::move(other.m_roo
     m_root.reset_parent_pointers();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::rtree(const rtree& other) : m_root(other.m_root.clone())
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::rtree(const rtree& other) : m_root(other.m_root.clone())
 {
     m_root.reset_parent_pointers();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::rtree(node_store&& root) : m_root(std::move(root))
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::rtree(node_store&& root) : m_root(std::move(root))
 {
     m_root.reset_parent_pointers();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>::~rtree()
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>::~rtree()
 {}
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>& rtree<_Key, _Value, _Trait>::operator=(const rtree& other)
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>& rtree<KeyT, ValueT, Traits>::operator=(const rtree& other)
 {
     rtree tmp(other);
     tmp.swap(*this);
     return *this;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-rtree<_Key, _Value, _Trait>& rtree<_Key, _Value, _Trait>::operator=(rtree&& other)
+template<typename KeyT, typename ValueT, typename Traits>
+rtree<KeyT, ValueT, Traits>& rtree<KeyT, ValueT, Traits>::operator=(rtree&& other)
 {
     rtree tmp(std::move(other));
     tmp.swap(*this);
     return *this;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::insert(const extent_type& extent, value_type&& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::insert(const extent_type& extent, value_type&& value)
 {
     insert_impl(extent.start, extent.end, std::move(value));
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::insert(const extent_type& extent, const value_type& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::insert(const extent_type& extent, const value_type& value)
 {
     insert_impl(extent.start, extent.end, value);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::insert(const point_type& position, value_type&& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::insert(const point_type& position, value_type&& value)
 {
     insert_impl(position, position, std::move(value));
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::insert(const point_type& position, const value_type& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::insert(const point_type& position, const value_type& value)
 {
     insert_impl(position, position, value);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::insert_impl(const point_type& start, const point_type& end, value_type&& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::insert_impl(const point_type& start, const point_type& end, value_type&& value)
 {
     extent_type bb(start, end);
     node_store new_ns = node_store::create_value_node(bb, std::move(value));
@@ -1364,8 +1364,8 @@ void rtree<_Key, _Value, _Trait>::insert_impl(const point_type& start, const poi
     insert(std::move(new_ns), &reinserted_depths);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::insert_impl(const point_type& start, const point_type& end, const value_type& value)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::insert_impl(const point_type& start, const point_type& end, const value_type& value)
 {
     extent_type bb(start, end);
     node_store new_ns = node_store::create_value_node(bb, value);
@@ -1374,8 +1374,8 @@ void rtree<_Key, _Value, _Trait>::insert_impl(const point_type& start, const poi
     insert(std::move(new_ns), &reinserted_depths);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::insert(node_store&& ns, std::unordered_set<size_t>* reinserted_depths)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::insert(node_store&& ns, std::unordered_set<size_t>* reinserted_depths)
 {
     extent_type ns_box = ns.extent;
 
@@ -1394,7 +1394,7 @@ void rtree<_Key, _Value, _Trait>::insert(node_store&& ns, std::unordered_set<siz
 
     if (dir_ns->exceeds_capacity())
     {
-        if (trait_type::enable_forced_reinsertion)
+        if (traits_type::enable_forced_reinsertion)
         {
             if (reinserted_depths && !reinserted_depths->count(depth))
             {
@@ -1426,8 +1426,8 @@ void rtree<_Key, _Value, _Trait>::insert(node_store&& ns, std::unordered_set<siz
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::insert_dir(node_store&& ns, size_t max_depth)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::insert_dir(node_store&& ns, size_t max_depth)
 {
     assert(ns.is_directory());
     extent_type ns_box = ns.extent;
@@ -1464,8 +1464,8 @@ void rtree<_Key, _Value, _Trait>::insert_dir(node_store&& ns, size_t max_depth)
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::const_search_results rtree<_Key, _Value, _Trait>::search(
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::const_search_results rtree<KeyT, ValueT, Traits>::search(
     const point_type& pt, search_type st) const
 {
     search_condition_type dir_cond, value_cond;
@@ -1496,8 +1496,8 @@ typename rtree<_Key, _Value, _Trait>::const_search_results rtree<_Key, _Value, _
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::search_results rtree<_Key, _Value, _Trait>::search(
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::search_results rtree<KeyT, ValueT, Traits>::search(
     const point_type& pt, search_type st)
 {
     search_condition_type dir_cond, value_cond;
@@ -1528,8 +1528,8 @@ typename rtree<_Key, _Value, _Trait>::search_results rtree<_Key, _Value, _Trait>
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::const_search_results rtree<_Key, _Value, _Trait>::search(
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::const_search_results rtree<KeyT, ValueT, Traits>::search(
     const extent_type& extent, search_type st) const
 {
     search_condition_type dir_cond, value_cond;
@@ -1560,8 +1560,8 @@ typename rtree<_Key, _Value, _Trait>::const_search_results rtree<_Key, _Value, _
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::search_results rtree<_Key, _Value, _Trait>::search(
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::search_results rtree<KeyT, ValueT, Traits>::search(
     const extent_type& extent, search_type st)
 {
     search_condition_type dir_cond, value_cond;
@@ -1592,24 +1592,24 @@ typename rtree<_Key, _Value, _Trait>::search_results rtree<_Key, _Value, _Trait>
     return ret;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::erase(const const_iterator& pos)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::erase(const const_iterator& pos)
 {
     const node_store* ns = pos.m_pos->ns;
     size_t depth = pos.m_pos->depth;
     erase_impl(ns, depth);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::erase(const iterator& pos)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::erase(const iterator& pos)
 {
     const node_store* ns = pos.m_pos->ns;
     size_t depth = pos.m_pos->depth;
     erase_impl(ns, depth);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::erase_impl(const node_store* ns, size_t depth)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::erase_impl(const node_store* ns, size_t depth)
 {
     assert(ns->type == node_type::value);
     assert(ns->parent);
@@ -1630,7 +1630,7 @@ void rtree<_Key, _Value, _Trait>::erase_impl(const node_store* ns, size_t depth)
         return;
     }
 
-    if (dir_ns->count >= trait_type::min_node_size)
+    if (dir_ns->count >= traits_type::min_node_size)
     {
         // The parent directory still contains enough nodes. No need to dissolve it.
         shrink_tree_upward(dir_ns, bb_erased);
@@ -1641,7 +1641,7 @@ void rtree<_Key, _Value, _Trait>::erase_impl(const node_store* ns, size_t depth)
     // all its siblings.
 
     assert(!dir_ns->is_root());
-    assert(dir_ns->count < trait_type::min_node_size);
+    assert(dir_ns->count < traits_type::min_node_size);
 
     dir_store_type orphan_value_nodes;
     directory_node* dir = static_cast<directory_node*>(dir_ns->node_ptr);
@@ -1659,7 +1659,7 @@ void rtree<_Key, _Value, _Trait>::erase_impl(const node_store* ns, size_t depth)
 
     orphan_node_entries_type orphan_dir_nodes;
 
-    while (!dir_ns->is_root() && dir_ns->count < trait_type::min_node_size)
+    while (!dir_ns->is_root() && dir_ns->count < traits_type::min_node_size)
     {
         // This directory node is now underfilled. Move all its children out
         // for re-insertion and dissolve this node.
@@ -1712,20 +1712,20 @@ void rtree<_Key, _Value, _Trait>::erase_impl(const node_store* ns, size_t depth)
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-const typename rtree<_Key, _Value, _Trait>::extent_type& rtree<_Key, _Value, _Trait>::extent() const
+template<typename KeyT, typename ValueT, typename Traits>
+const typename rtree<KeyT, ValueT, Traits>::extent_type& rtree<KeyT, ValueT, Traits>::extent() const
 {
     return m_root.extent;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-bool rtree<_Key, _Value, _Trait>::empty() const
+template<typename KeyT, typename ValueT, typename Traits>
+bool rtree<KeyT, ValueT, Traits>::empty() const
 {
     return !m_root.count;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-size_t rtree<_Key, _Value, _Trait>::size() const
+template<typename KeyT, typename ValueT, typename Traits>
+size_t rtree<KeyT, ValueT, Traits>::size() const
 {
     size_t n = 0;
     descend_with_func([&n](const node_properties& np) {
@@ -1736,30 +1736,30 @@ size_t rtree<_Key, _Value, _Trait>::size() const
     return n;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::swap(rtree& other)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::swap(rtree& other)
 {
     m_root.swap(other.m_root);
     m_root.reset_parent_pointers();
     other.m_root.reset_parent_pointers();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::clear()
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::clear()
 {
     node_store new_root = node_store::create_leaf_directory_node();
     m_root.swap(new_root);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _Func>
-void rtree<_Key, _Value, _Trait>::walk(_Func func) const
+void rtree<KeyT, ValueT, Traits>::walk(_Func func) const
 {
     descend_with_func(std::move(func));
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::check_integrity(const integrity_check_properties& props) const
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::check_integrity(const integrity_check_properties& props) const
 {
     auto func_ptr_to_string = build_ptr_to_string_map();
 
@@ -1897,11 +1897,11 @@ void rtree<_Key, _Value, _Trait>::check_integrity(const integrity_check_properti
                     // If the root directory is a leaf, it's allowed to be underfilled.
                     node_underfill_allowed = true;
 
-                if (!node_underfill_allowed && ns->count < trait_type::min_node_size)
+                if (!node_underfill_allowed && ns->count < traits_type::min_node_size)
                 {
                     std::ostringstream os;
                     os << "The number of child nodes (" << ns->count << ") is less than the minimum allowed number of "
-                       << trait_type::min_node_size;
+                       << traits_type::min_node_size;
 
                     if (props.error_on_min_node_size && props.throw_on_first_error)
                         throw integrity_error(os.str());
@@ -1912,11 +1912,11 @@ void rtree<_Key, _Value, _Trait>::check_integrity(const integrity_check_properti
                         valid = false;
                 }
 
-                if (trait_type::max_node_size < ns->count)
+                if (traits_type::max_node_size < ns->count)
                 {
                     std::ostringstream os;
                     os << "The number of child nodes (" << ns->count << ") exceeds the maximum allowed number of "
-                       << trait_type::max_node_size;
+                       << traits_type::max_node_size;
 
                     if (props.throw_on_first_error)
                         throw integrity_error(os.str());
@@ -1969,8 +1969,8 @@ void rtree<_Key, _Value, _Trait>::check_integrity(const integrity_check_properti
         throw integrity_error("Tree contains one or more errors.");
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-std::string rtree<_Key, _Value, _Trait>::export_tree(export_tree_type mode) const
+template<typename KeyT, typename ValueT, typename Traits>
+std::string rtree<KeyT, ValueT, Traits>::export_tree(export_tree_type mode) const
 {
     switch (mode)
     {
@@ -1985,9 +1985,9 @@ std::string rtree<_Key, _Value, _Trait>::export_tree(export_tree_type mode) cons
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-detail::rtree::ptr_to_string<const typename rtree<_Key, _Value, _Trait>::node_store*> rtree<
-    _Key, _Value, _Trait>::build_ptr_to_string_map() const
+template<typename KeyT, typename ValueT, typename Traits>
+detail::rtree::ptr_to_string<const typename rtree<KeyT, ValueT, Traits>::node_store*> rtree<
+    KeyT, ValueT, Traits>::build_ptr_to_string_map() const
 {
     detail::rtree::ptr_to_string<const node_store*> func;
 
@@ -2023,8 +2023,8 @@ detail::rtree::ptr_to_string<const typename rtree<_Key, _Value, _Trait>::node_st
     return func;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-std::string rtree<_Key, _Value, _Trait>::export_tree_formatted() const
+template<typename KeyT, typename ValueT, typename Traits>
+std::string rtree<KeyT, ValueT, Traits>::export_tree_formatted() const
 {
     auto func_ptr_to_string = build_ptr_to_string_map();
 
@@ -2064,10 +2064,10 @@ std::string rtree<_Key, _Value, _Trait>::export_tree_formatted() const
     return os.str();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-std::string rtree<_Key, _Value, _Trait>::export_tree_extent_as_obj() const
+template<typename KeyT, typename ValueT, typename Traits>
+std::string rtree<KeyT, ValueT, Traits>::export_tree_extent_as_obj() const
 {
-    if (trait_type::dimensions != 2u)
+    if (traits_type::dimensions != 2u)
         throw size_error("Only 2-dimensional trees are supported.");
 
     float unit_height =
@@ -2130,10 +2130,10 @@ std::string rtree<_Key, _Value, _Trait>::export_tree_extent_as_obj() const
     return os.str();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-std::string rtree<_Key, _Value, _Trait>::export_tree_extent_as_svg() const
+template<typename KeyT, typename ValueT, typename Traits>
+std::string rtree<KeyT, ValueT, Traits>::export_tree_extent_as_svg() const
 {
-    if (trait_type::dimensions != 2u)
+    if (traits_type::dimensions != 2u)
         throw size_error("Only 2-dimensional trees are supported.");
 
     constexpr float min_avg_root_length = 800.0f;
@@ -2235,13 +2235,13 @@ std::string rtree<_Key, _Value, _Trait>::export_tree_extent_as_svg() const
     return os.str();
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::split_node(node_store* ns)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::split_node(node_store* ns)
 {
     directory_node* dir = ns->get_directory_node();
 
     assert(dir);
-    assert(ns->count == trait_type::max_node_size + 1);
+    assert(ns->count == traits_type::max_node_size + 1);
 
     dir_store_type& children = dir->children;
 
@@ -2306,7 +2306,7 @@ void rtree<_Key, _Value, _Trait>::split_node(node_store* ns)
         ns->reset_parent_pointers();
         dir_parent->children.back().reset_parent_pointers_of_children();
 
-        if (ns_parent->count > trait_type::max_node_size)
+        if (ns_parent->count > traits_type::max_node_size)
             // The parent node is overfilled.  Split it and keep working upward.
             split_node(ns_parent);
         else if (parent_size_changed)
@@ -2315,11 +2315,11 @@ void rtree<_Key, _Value, _Trait>::split_node(node_store* ns)
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::perform_forced_reinsertion(
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::perform_forced_reinsertion(
     node_store* ns, std::unordered_set<size_t>& reinserted_depth)
 {
-    assert(ns->count == trait_type::max_node_size + 1);
+    assert(ns->count == traits_type::max_node_size + 1);
 
     // Compute the distance between the centers of the value extents and the
     // center of the extent of the parent directory.
@@ -2351,12 +2351,12 @@ void rtree<_Key, _Value, _Trait>::perform_forced_reinsertion(
             return left.distance < right.distance;
         });
 
-    assert(trait_type::reinsertion_size < buckets.size());
+    assert(traits_type::reinsertion_size < buckets.size());
 
     // Remove the first set of entries from the parent directory.
-    std::deque<node_store> nodes_to_reinsert(trait_type::reinsertion_size);
+    std::deque<node_store> nodes_to_reinsert(traits_type::reinsertion_size);
 
-    for (size_t i = 0; i < trait_type::reinsertion_size; ++i)
+    for (size_t i = 0; i < traits_type::reinsertion_size; ++i)
     {
         size_t this_pos = buckets[i].src_pos;
         dir->children[this_pos].swap(nodes_to_reinsert[i]);
@@ -2387,13 +2387,13 @@ void rtree<_Key, _Value, _Trait>::perform_forced_reinsertion(
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::sort_dir_store_by_split_dimension(dir_store_type& children)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::sort_dir_store_by_split_dimension(dir_store_type& children)
 {
     // Store the sum of margins for each dimension axis.
     detail::rtree::min_value_pos<key_type> min_margin_dim;
 
-    for (size_t dim = 0; dim < trait_type::dimensions; ++dim)
+    for (size_t dim = 0; dim < traits_type::dimensions; ++dim)
     {
         // Sort the entries by the lower then by the upper value of their
         // bounding boxes.  This invalidates the pointers of the child nodes.
@@ -2408,7 +2408,7 @@ void rtree<_Key, _Value, _Trait>::sort_dir_store_by_split_dimension(dir_store_ty
 
             auto it = children.begin();
             auto it_end = it;
-            std::advance(it_end, trait_type::min_node_size - 1 + dist);
+            std::advance(it_end, traits_type::min_node_size - 1 + dist);
 
             extent_type bb1 = detail::rtree::calc_extent(it, it_end);
             it = it_end;
@@ -2433,8 +2433,8 @@ void rtree<_Key, _Value, _Trait>::sort_dir_store_by_split_dimension(dir_store_ty
     sort_dir_store_by_dimension(min_dim, children);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::sort_dir_store_by_dimension(size_t dim, dir_store_type& children)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::sort_dir_store_by_dimension(size_t dim, dir_store_type& children)
 {
     std::sort(children.begin(), children.end(), [dim](const node_store& a, const node_store& b) -> bool {
         if (a.extent.start.d[dim] != b.extent.start.d[dim])
@@ -2447,8 +2447,8 @@ void rtree<_Key, _Value, _Trait>::sort_dir_store_by_dimension(size_t dim, dir_st
         ns.valid_pointer = false;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-size_t rtree<_Key, _Value, _Trait>::pick_optimal_distribution(dir_store_type& children) const
+template<typename KeyT, typename ValueT, typename Traits>
+size_t rtree<KeyT, ValueT, Traits>::pick_optimal_distribution(dir_store_type& children) const
 {
     // Along the chosen dimension axis, pick the distribution with the minimum
     // overlap value.
@@ -2469,14 +2469,14 @@ size_t rtree<_Key, _Value, _Trait>::pick_optimal_distribution(dir_store_type& ch
     return min_overlap_dist.pos;
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::insertion_point rtree<
-    _Key, _Value, _Trait>::find_leaf_directory_node_for_insertion(const extent_type& bb)
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::insertion_point rtree<
+    KeyT, ValueT, Traits>::find_leaf_directory_node_for_insertion(const extent_type& bb)
 {
     insertion_point ret;
     ret.ns = &m_root;
 
-    for (size_t i = 0; i <= trait_type::max_tree_depth; ++i)
+    for (size_t i = 0; i <= traits_type::max_tree_depth; ++i)
     {
         if (ret.ns->type == node_type::directory_leaf)
         {
@@ -2502,13 +2502,13 @@ typename rtree<_Key, _Value, _Trait>::insertion_point rtree<
     throw std::runtime_error("Maximum tree depth has been reached.");
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-typename rtree<_Key, _Value, _Trait>::node_store* rtree<
-    _Key, _Value, _Trait>::find_nonleaf_directory_node_for_insertion(const extent_type& bb, size_t max_depth)
+template<typename KeyT, typename ValueT, typename Traits>
+typename rtree<KeyT, ValueT, Traits>::node_store* rtree<
+    KeyT, ValueT, Traits>::find_nonleaf_directory_node_for_insertion(const extent_type& bb, size_t max_depth)
 {
     node_store* dst = &m_root;
 
-    for (size_t i = 0; i <= trait_type::max_tree_depth; ++i)
+    for (size_t i = 0; i <= traits_type::max_tree_depth; ++i)
     {
         assert(dst->is_directory());
 
@@ -2534,9 +2534,9 @@ typename rtree<_Key, _Value, _Trait>::node_store* rtree<
     throw std::runtime_error("Maximum tree depth has been reached.");
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _Func>
-void rtree<_Key, _Value, _Trait>::descend_with_func(_Func func) const
+void rtree<KeyT, ValueT, Traits>::descend_with_func(_Func func) const
 {
     std::function<void(const node_store*)> func_descend = [&](const node_store* ns) {
         node_properties np;
@@ -2567,9 +2567,9 @@ void rtree<_Key, _Value, _Trait>::descend_with_func(_Func func) const
     func_descend(&m_root);
 }
 
-template<typename _Key, typename _Value, typename _Trait>
+template<typename KeyT, typename ValueT, typename Traits>
 template<typename _ResT>
-void rtree<_Key, _Value, _Trait>::search_descend(
+void rtree<KeyT, ValueT, Traits>::search_descend(
     size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
     typename _ResT::node_store_type& ns, _ResT& results) const
 {
@@ -2599,8 +2599,8 @@ void rtree<_Key, _Value, _Trait>::search_descend(
     }
 }
 
-template<typename _Key, typename _Value, typename _Trait>
-void rtree<_Key, _Value, _Trait>::shrink_tree_upward(node_store* ns, const extent_type& bb_affected)
+template<typename KeyT, typename ValueT, typename Traits>
+void rtree<KeyT, ValueT, Traits>::shrink_tree_upward(node_store* ns, const extent_type& bb_affected)
 {
     if (!ns)
         return;

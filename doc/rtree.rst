@@ -431,7 +431,7 @@ argument which is a struct containing several static constant values.  These
 constant values define certain characteristics of your R-tree, and there are
 some restrictions you need to be aware of in case you need to use your own
 custom trait for your R-tree.  Refer to
-:cpp:class:`~mdds::detail::rtree::default_rtree_trait`, which is the default
+:cpp:class:`~mdds::detail::rtree::default_rtree_traits`, which is the default
 trait used when you don't specify your own, for the descriptions of the
 individual constants that your trait struct is expected to have as well as
 restrictions that you must be aware of.
@@ -714,7 +714,7 @@ API Reference
 .. doxygenclass:: mdds::rtree
    :members:
 
-.. doxygenstruct:: mdds::detail::rtree::default_rtree_trait
+.. doxygenstruct:: mdds::detail::rtree::default_rtree_traits
    :members:
 
 .. doxygenstruct:: mdds::detail::rtree::integrity_check_properties
