@@ -36,7 +36,7 @@
 //!code-start: types
 namespace mtv = mdds::mtv;
 
-struct mtv_trait : public mtv::standard_element_blocks_traits
+struct mtv_traits : public mtv::standard_element_blocks_traits
 {
     static void trace(const mtv::trace_method_properties_t& props)
     {
@@ -46,7 +46,7 @@ struct mtv_trait : public mtv::standard_element_blocks_traits
     }
 };
 
-using mtv_type = mtv::soa::multi_type_vector<mtv_trait>;
+using mtv_type = mtv::soa::multi_type_vector<mtv_traits>;
 //!code-end: types
 
 int main() try

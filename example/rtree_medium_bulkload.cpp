@@ -32,7 +32,7 @@
 #include <fstream>
 
 // Make the node capacity intentionally small.
-struct tiny_trait_2d
+struct tiny_traits_2d
 {
     constexpr static size_t dimensions = 2;
     constexpr static size_t min_node_size = 2;
@@ -43,7 +43,7 @@ struct tiny_trait_2d
     constexpr static size_t reinsertion_size = 2;
 };
 
-using rt_type = mdds::rtree<int, int, tiny_trait_2d>;
+using rt_type = mdds::rtree<int, int, tiny_traits_2d>;
 
 // 2D rectangle with the top-left position (x, y), width and height.
 struct rect

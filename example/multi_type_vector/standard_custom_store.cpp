@@ -54,12 +54,12 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::int32_t, my_int32_type_id, 0, my_int32_bl
 //!code-end: mtv-header
 
 //!code-start: mtv-def
-struct my_custom_trait : public mdds::mtv::default_traits
+struct my_custom_traits : public mdds::mtv::default_traits
 {
     using block_funcs = mdds::mtv::element_block_funcs<my_double_block, my_int32_block>;
 };
 
-using mtv_type = mdds::mtv::soa::multi_type_vector<my_custom_trait>;
+using mtv_type = mdds::mtv::soa::multi_type_vector<my_custom_traits>;
 //!code-end: mtv-def
 
 int main() try

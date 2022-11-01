@@ -66,13 +66,13 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(custom_value3, custom_value2_type, custom_valu
 
 } // namespace ns
 
-struct my_custom_trait : public mdds::mtv::default_traits
+struct my_custom_traits : public mdds::mtv::default_traits
 {
     using block_funcs = mdds::mtv::element_block_funcs<
         custom_value1_block, custom_value2_block, ns::custom_value3_block>;
 };
 
-using mtv_type = mdds::multi_type_vector<my_custom_trait>;
+using mtv_type = mdds::multi_type_vector<my_custom_traits>;
 
 int main() try
 {
