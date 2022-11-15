@@ -5,14 +5,70 @@ API Incompatibility Notes
 v2.1
 ----
 
-* The following template classes and structs have been put into ``mdds::detail``
-  namespace:
+* The following public template types have been put into ``mdds::detail`` namespace:
 
   * ``has_value_type``
   * ``const_or_not``
   * ``const_t``
   * ``get_iterator_type``
   * ``invalid_static_int``
+
+multi_type_vector
+^^^^^^^^^^^^^^^^^
+
+* In 2.0, multi_type_vector took two template parameters: one for the element block
+  functions and one for other traits.  In 2.1, multi_type_vector only takes one
+  template parameter for the traits, and the traits now must include the element
+  block functions.
+
+* The following block function helpers have been removed:
+
+  * ``mdds::mtv::custom_block_func1``
+  * ``mdds::mtv::custom_block_func2``
+  * ``mdds::mtv::custom_block_func3``
+
+  They have been replaced with ``mdds::mtv::element_block_funcs`` which uses
+  `template parameter pack <https://en.cppreference.com/w/cpp/language/parameter_pack>`_
+  to allow unspecified number of standard and custom blocks.
+
+  As a result of this change, the following headers have been removed:
+
+  * ``include/mdds/multi_type_vector/custom_func1.hpp``
+  * ``include/mdds/multi_type_vector/custom_func2.hpp``
+  * ``include/mdds/multi_type_vector/custom_func3.hpp``
+  * ``include/mdds/multi_type_vector/trait.hpp``
+  * ``include/mdds/multi_type_vector_custom_func2.hpp``
+  * ``include/mdds/multi_type_vector_custom_func3.hpp``
+  * ``include/mdds/multi_type_vector_trait.hpp``
+
+* ``mdds::mtv::default_trait`` has been renamed to ``mdds::mtv::default_traits``.
+
+* The following element block types have an additional template parameter to specify
+  the underlying storage type.  This can be used to specify, for instance, whether
+  the element block uses ``std::vector``, ``std::deque`` or another custom container
+  type with API compatible with the aforementioned two.
+
+  * ``mdds::mtv::default_element_block``
+  * ``mdds::mtv::managed_element_block``
+  * ``mdds::mtv::noncopyable_managed_element_block``
+
+  With this change, the compiler macro named ``MDDS_MULTI_TYPE_VECTOR_USE_DEQUE``,
+  which was previously used to switch from ``std::vector`` to ``std::deque`` as the
+  underlying storage type for all element blocks, has been removed.
+
+multi_type_matrix
+^^^^^^^^^^^^^^^^^
+
+* ``mdds::mtm::std_string_trait`` has been renamed to ``mdds::mtm::std_string_traits``.
+
+trie_map / packed_trie_map
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* The following public types have been renamed:
+
+  * ``mdds::trie::std_container_trait`` -> ``mdds::trie::std_container_traits``
+  * ``mdds::trie::std_string_trait`` -> ``mdds::trie::std_string_traits``
+
 
 v2.0
 ----
