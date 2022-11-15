@@ -128,6 +128,8 @@ public:
 template<bool B>
 using bool_constant = std::integral_constant<bool, B>;
 
+namespace detail {
+
 template<typename T>
 class has_value_type
 {
@@ -191,6 +193,8 @@ template<typename T>
 struct is_complete<T, std::void_t<decltype(sizeof(T) != 0)>> : std::true_type
 {
 };
+
+} // namespace detail
 
 } // namespace mdds
 

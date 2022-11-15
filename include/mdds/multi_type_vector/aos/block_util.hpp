@@ -39,7 +39,8 @@ struct adjust_block_positions
 {
     void operator()(Blks& blocks, int64_t start_block_index, int64_t delta) const
     {
-        static_assert(invalid_static_int<F>, "The loop-unrolling factor must be one of 0, 4, 8, 16, or 32.");
+        static_assert(
+            mdds::detail::invalid_static_int<F>, "The loop-unrolling factor must be one of 0, 4, 8, 16, or 32.");
     }
 };
 

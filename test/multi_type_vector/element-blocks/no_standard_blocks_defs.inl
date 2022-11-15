@@ -56,7 +56,7 @@ MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(std::uint32_t, element_type_uint32, 0, uint32_
 
 struct standard_element_blocks_traits;
 static_assert(
-    !mdds::is_complete<standard_element_blocks_traits>::value,
+    !mdds::detail::is_complete<standard_element_blocks_traits>::value,
     "The standard_element_blocks_traits struct should not have been defined.");
 
 }} // namespace mdds::mtv

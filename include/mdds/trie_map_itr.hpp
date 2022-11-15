@@ -96,14 +96,14 @@ protected:
     friend search_results<trie_type>;
 
     using node_stack_type = typename get_node_stack_type<trie_type, _is_const>::type;
-    using trie_node_type = const_t<typename trie_type::trie_node, IsConst>;
-    using trie_node_child_pos_type =
-        typename get_iterator_type<typename std::remove_const<trie_node_type>::type::children_type, _is_const>::type;
+    using trie_node_type = mdds::detail::const_t<typename trie_type::trie_node, IsConst>;
+    using trie_node_child_pos_type = typename mdds::detail::get_iterator_type<
+        typename std::remove_const<trie_node_type>::type::children_type, _is_const>::type;
 
     using key_traits_type = typename trie_type::key_traits_type;
     using key_type = typename key_traits_type::key_type;
     using key_buffer_type = typename key_traits_type::key_buffer_type;
-    using trie_value_type = typename const_or_not<typename trie_type::value_type, _is_const>::type;
+    using trie_value_type = typename mdds::detail::const_or_not<typename trie_type::value_type, _is_const>::type;
 
 public:
     // iterator traits

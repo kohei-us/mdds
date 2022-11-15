@@ -2,6 +2,18 @@
 API Incompatibility Notes
 =========================
 
+v2.1
+----
+
+* The following template classes and structs have been put into ``mdds::detail``
+  namespace:
+
+  * ``has_value_type``
+  * ``const_or_not``
+  * ``const_t``
+  * ``get_iterator_type``
+  * ``invalid_static_int``
+
 v2.0
 ----
 

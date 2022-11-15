@@ -194,7 +194,7 @@ struct value_serializer : numeric_value_serializer<T>
 };
 
 template<typename T>
-struct value_serializer<T, typename std::enable_if<has_value_type<T>::value>::type>
+struct value_serializer<T, typename std::enable_if<mdds::detail::has_value_type<T>::value>::type>
     : numeric_sequence_value_serializer<T>
 {
 };
@@ -262,9 +262,10 @@ private:
     {
         using _is_const = bool_constant<IsConst>;
 
-        using child_pos_type = typename get_iterator_type<typename trie_node::children_type, _is_const>::type;
+        using child_pos_type =
+            typename mdds::detail::get_iterator_type<typename trie_node::children_type, _is_const>::type;
 
-        using trie_node_type = typename const_or_not<trie_node, _is_const>::type;
+        using trie_node_type = typename mdds::detail::const_or_not<trie_node, _is_const>::type;
 
         trie_node_type* node;
         child_pos_type child_pos;
@@ -439,8 +440,8 @@ private:
 
     template<bool IsConst>
     void find_prefix_node_with_stack(
-        std::vector<stack_item<IsConst>>& node_stack, const_t<trie_node, IsConst>& node, const key_unit_type* prefix,
-        const key_unit_type* prefix_end) const;
+        std::vector<stack_item<IsConst>>& node_stack, mdds::detail::const_t<trie_node, IsConst>& node,
+        const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     template<bool IsConst>
     key_buffer_type build_key_buffer_from_node_stack(const std::vector<stack_item<IsConst>>& node_stack) const;
