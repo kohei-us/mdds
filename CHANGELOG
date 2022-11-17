@@ -1,3 +1,30 @@
+mdds 2.1.0
+
+  * general
+
+    * switched to using ax_valgrind_check for running memory tests.  This
+      introduces additional build targets, such as check-valgrind to run the
+      tests under valgrind.
+
+  * multi_type_vector
+
+    * delayed_delete_vector has been introduced as the new default storage
+      type for the element blocks.  This storage type is optimized for use
+      cases where elements get repeatedly erased from the front of the array,
+      by delaying the actual deletion of the elements until much later.  This
+      reduces the amount of element shifting associated with the element
+      deletions, which can be costly.
+
+    * added an additional template parameter to the element block types in
+      order to allow the underlying storage type to be specified per element
+      type.  This can be used to switch between std::vector, std::deque,
+      delayed_delete_vector, or any other compatible custom container types.
+
+  * sorted_string_map
+
+    * made the entry type a template parameter to allow optionally defining
+      the keys in the entry values as std::string_view.
+
 mdds 2.0.3
 
   * general
