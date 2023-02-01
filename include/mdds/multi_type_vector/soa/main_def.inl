@@ -425,7 +425,14 @@ multi_type_vector<Traits>::~multi_type_vector()
 {
     MDDS_MTV_TRACE(destructor);
 
-    delete_element_blocks(0, m_block_store.positions.size());
+    try
+    {
+        delete_element_blocks(0, m_block_store.positions.size());
+    }
+    catch (...)
+    {
+        std::terminate();
+    }
 }
 
 template<typename Traits>

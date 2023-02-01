@@ -353,7 +353,14 @@ multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other)
 template<typename Traits>
 multi_type_vector<Traits>::~multi_type_vector()
 {
-    delete_element_blocks(m_blocks.begin(), m_blocks.end());
+    try
+    {
+        delete_element_blocks(m_blocks.begin(), m_blocks.end());
+    }
+    catch (...)
+    {
+        std::terminate();
+    }
 }
 
 template<typename Traits>
