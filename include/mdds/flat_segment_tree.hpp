@@ -297,6 +297,8 @@ public:
      */
     const_segment_iterator end_segment() const;
 
+    flat_segment_tree() = delete;
+
     /**
      * Constructor that takes minimum and maximum keys and the value to be
      * used for the initial segment.
@@ -675,7 +677,6 @@ public:
 #endif
 
 private:
-    flat_segment_tree(); // default constructor is not allowed.
 
     void append_new_segment(key_type start_key)
     {
