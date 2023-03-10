@@ -36,8 +36,6 @@
 #include <algorithm>
 #include <memory>
 
-#define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
-
 using namespace std;
 using namespace mdds;
 
@@ -584,7 +582,7 @@ void fst_test_shift_left()
     {
         int keys[] = {0, 1, 15, 25, 35, 45, 55, 100};
         int vals[] = {0, 5, 0, 10, 0, 15, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // shift with two overlapping nodes.
@@ -594,7 +592,7 @@ void fst_test_shift_left()
     {
         int keys[] = {0, 1, 2, 7, 17, 27, 100};
         int vals[] = {0, 5, 10, 0, 15, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // shift with both ends at existing nodes, but no nodes in between.
@@ -604,7 +602,7 @@ void fst_test_shift_left()
     {
         int keys[] = {0, 1, 6, 16, 26, 100};
         int vals[] = {5, 10, 0, 15, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // shift with both ends at existing nodes, no nodes in between, and
@@ -616,7 +614,7 @@ void fst_test_shift_left()
     {
         int keys[] = {0, 1, 6, 100};
         int vals[] = {5, 10, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // insert two new segments for the next test....
@@ -627,7 +625,7 @@ void fst_test_shift_left()
     {
         int keys[] = {0, 1, 6, 10, 20, 30, 40, 100};
         int vals[] = {5, 10, 0, 400, 0, 400, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // same test as the previous one, but the value of the combined segment
@@ -638,7 +636,7 @@ void fst_test_shift_left()
     {
         int keys[] = {0, 1, 6, 10, 30, 100};
         int vals[] = {5, 10, 0, 400, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // remove all.
@@ -659,7 +657,7 @@ void fst_test_shift_left_right_edge()
     {
         int keys[] = {0, 100};
         bool vals[] = {false};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     db.insert_front(20, 100, true);
@@ -667,7 +665,7 @@ void fst_test_shift_left_right_edge()
     {
         int keys[] = {0, 20, 100};
         bool vals[] = {false, true};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // This should insert a new segment at the end with the initial base value.
@@ -677,7 +675,7 @@ void fst_test_shift_left_right_edge()
     {
         int keys[] = {0, 20, 80, 100};
         bool vals[] = {false, true, false};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // This should not modify the tree since the removed segment already has
@@ -688,7 +686,7 @@ void fst_test_shift_left_right_edge()
     {
         int keys[] = {0, 20, 80, 100};
         bool vals[] = {false, true, false};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // Insert a new segment at the end with the value 'true' again...
@@ -698,7 +696,7 @@ void fst_test_shift_left_right_edge()
     {
         int keys[] = {0, 20, 80, 85, 100};
         bool vals[] = {false, true, false, true};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     db.shift_left(90, 95);
@@ -707,7 +705,7 @@ void fst_test_shift_left_right_edge()
     {
         int keys[] = {0, 20, 80, 85, 95, 100};
         bool vals[] = {false, true, false, true, false};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 }
 
@@ -721,7 +719,7 @@ void fst_test_shift_left_append_new_segment()
     {
         int keys[] = {0, 100};
         bool vals[] = {true};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     db.shift_left(10, 20);
@@ -730,7 +728,7 @@ void fst_test_shift_left_append_new_segment()
     {
         int keys[] = {0, 90, 100};
         bool vals[] = {true, false};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     db.insert_front(0, 10, true);
@@ -743,7 +741,7 @@ void fst_test_shift_left_append_new_segment()
     {
         int keys[] = {0, 10, 20, 60, 80, 100};
         bool vals[] = {true, false, true, false, true};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     db.shift_left(0, 70);
@@ -752,7 +750,7 @@ void fst_test_shift_left_append_new_segment()
     {
         int keys[] = {0, 10, 30, 100};
         bool vals[] = {false, true, false};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 }
 
@@ -782,7 +780,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 100};
         int vals[] = {0, 15, 1, 2, 3, 4, 5, 6, 7, 8, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // shifting position is at the lower bound, and after the shift, the upper
@@ -794,7 +792,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
         int vals[] = {0, 15, 1, 2, 3, 4, 5, 6, 7, 8};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // Shift by some odd number.
@@ -804,7 +802,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 59, 69, 79, 89, 99, 100};
         int vals[] = {0, 15, 1, 2, 3, 4};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // Shift so that the 2nd node from the right-most node becomes the new
@@ -815,7 +813,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 70, 80, 90, 100};
         int vals[] = {0, 15, 1, 2};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // This should remove all segments.
@@ -825,7 +823,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 100};
         int vals[] = {0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // Insert a few new segments for the next series of tests...
@@ -836,7 +834,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 5, 10, 20, 30, 100};
         int vals[] = {0, 5, 0, 5, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // Inserting at a non-node position.  This should simply extend that
@@ -847,7 +845,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 5, 30, 40, 50, 100};
         int vals[] = {0, 5, 0, 5, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // Inserting at a node position.
@@ -857,7 +855,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 25, 50, 60, 70, 100};
         int vals[] = {0, 5, 0, 5, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // Inserting at a non-node position, pushing a node out-of-bound.
@@ -867,7 +865,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 25, 50, 60, 100};
         int vals[] = {0, 5, 0, 5};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 
     // Inserting at a node position, pushing a node out-of-bound.
@@ -877,7 +875,7 @@ void fst_test_shift_right_init0()
     {
         int keys[] = {0, 25, 90, 100};
         int vals[] = {0, 5, 0};
-        assert(check_leaf_nodes(db, keys, vals, ARRAY_SIZE(keys)));
+        assert(check_leaf_nodes(db, keys, vals, std::size(keys)));
     }
 }
 
@@ -893,7 +891,7 @@ void fst_test_shift_right_init999()
     {
         int k[] = {0, 10, 100};
         int v[] = {0, 999};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     // This should only extend the first segment.
@@ -903,7 +901,7 @@ void fst_test_shift_right_init999()
     {
         int k[] = {0, 20, 100};
         int v[] = {0, 999};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     // Inserting at the leftmost node position should create a new segment
@@ -914,7 +912,7 @@ void fst_test_shift_right_init999()
     {
         int k[] = {0, 10, 30, 100};
         int v[] = {999, 0, 999};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     // Invalid shifts -- these should not invalidate the tree.
@@ -937,7 +935,7 @@ void fst_test_shift_right_bool()
     {
         long k[] = {0, 3, 7, 1048576};
         bool v[] = {false, true, false};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.shift_right(1, 1, false);
@@ -946,7 +944,7 @@ void fst_test_shift_right_bool()
     {
         long k[] = {0, 4, 8, 1048576};
         bool v[] = {false, true, false};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 }
 
@@ -961,7 +959,7 @@ void fst_test_shift_right_skip_start_node()
     {
         long k[] = {0, 3, 7, 1048576};
         short v[] = {0, 5, 0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.shift_right(3, 2, true);
@@ -970,7 +968,7 @@ void fst_test_shift_right_skip_start_node()
     {
         long k[] = {0, 3, 9, 1048576};
         short v[] = {0, 5, 0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     // shift_right from the leftmost node should not change its value
@@ -980,7 +978,7 @@ void fst_test_shift_right_skip_start_node()
     {
         long k[] = {0, 4, 9, 1048576};
         short v[] = {2, 5, 0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.shift_right(0, 2, true);
@@ -988,7 +986,7 @@ void fst_test_shift_right_skip_start_node()
     {
         long k[] = {0, 6, 11, 1048576};
         short v[] = {2, 5, 0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 }
 
@@ -1004,7 +1002,7 @@ void fst_test_shift_right_all_nodes()
     {
         unsigned k[] = {0, 10};
         unsigned v[] = {0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.insert_back(0, 8, 2);
@@ -1012,7 +1010,7 @@ void fst_test_shift_right_all_nodes()
     {
         unsigned k[] = {0, 8, 10};
         unsigned v[] = {2, 0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     // Shift all nodes out of range.  After this, there should be only the
@@ -1022,7 +1020,7 @@ void fst_test_shift_right_all_nodes()
     {
         unsigned k[] = {0, 10};
         unsigned v[] = {0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 }
 
@@ -1049,7 +1047,7 @@ void fst_test_const_iterator()
         {
             unsigned int k[] = {0, 1000};
             unsigned short v[] = {max_value};
-            assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+            assert(check_leaf_nodes(db, k, v, std::size(k)));
         }
 
         db.insert_front(10, 20, 10);
@@ -1059,15 +1057,15 @@ void fst_test_const_iterator()
         {
             unsigned int k[] = {0, 10, 20, 50, 100, 300, 1000};
             unsigned short v[] = {max_value, 10, 20, max_value, 55, max_value};
-            assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+            assert(check_leaf_nodes(db, k, v, std::size(k)));
             fprintf(stdout, "fst_test_const_iterator:   leaf nodes valid\n");
 
             // Check the forward iterator's integrity.
-            assert(is_iterator_valid(db.begin(), db.end(), k, v, ARRAY_SIZE(k)));
+            assert(is_iterator_valid(db.begin(), db.end(), k, v, std::size(k)));
             fprintf(stdout, "fst_test_const_iterator:   forward iterator valid\n");
 
             // Check the reverse iterator's integrity.
-            assert(is_iterator_valid(db.rbegin(), db.rend(), k, v, ARRAY_SIZE(k)));
+            assert(is_iterator_valid(db.rbegin(), db.rend(), k, v, std::size(k)));
             fprintf(stdout, "fst_test_const_iterator:   reverse iterator valid\n");
         }
 
@@ -1253,7 +1251,7 @@ void fst_test_copy_ctor()
     {
         key_type k[] = {0, 100};
         value_type v[] = {5};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     // Inserting the same segment value to both instances.  They should still
@@ -1264,7 +1262,7 @@ void fst_test_copy_ctor()
     {
         key_type k[] = {0, 5, 10, 100};
         value_type v[] = {5, 0, 5};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     // Inserting a new segment only to the 2nd instance.  They should differ.
@@ -1273,7 +1271,7 @@ void fst_test_copy_ctor()
     {
         key_type k[] = {0, 5, 10, 15, 20, 100};
         value_type v[] = {5, 0, 5, 35, 5};
-        assert(check_leaf_nodes(db_copied, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db_copied, k, v, std::size(k)));
     }
 
     // Make sure that copying will leave the tree invalid.
@@ -1343,56 +1341,56 @@ void fst_test_back_insert()
     {
         unsigned int k[] = {0, 1, 2, 100};
         unsigned short v[] = {0, 1, 0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.insert_back(3, 4, 2);
     {
         unsigned int k[] = {0, 1, 2, 3, 4, 100};
         unsigned short v[] = {0, 1, 0, 2, 0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.insert_back(4, 5, 2);
     {
         unsigned int k[] = {0, 1, 2, 3, 5, 100};
         unsigned short v[] = {0, 1, 0, 2, 0};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.insert_back(90, 120, 10);
     {
         unsigned int k[] = {0, 1, 2, 3, 5, 90, 100};
         unsigned short v[] = {0, 1, 0, 2, 0, 10};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.insert_back(0, 10, 20);
     {
         unsigned int k[] = {0, 10, 90, 100};
         unsigned short v[] = {20, 0, 10};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.insert_back(5, 20, 20);
     {
         unsigned int k[] = {0, 20, 90, 100};
         unsigned short v[] = {20, 0, 10};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.insert_back(15, 30, 5);
     {
         unsigned int k[] = {0, 15, 30, 90, 100};
         unsigned short v[] = {20, 5, 0, 10};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.insert_back(0, 1, 2);
     {
         unsigned int k[] = {0, 1, 15, 30, 90, 100};
         unsigned short v[] = {2, 20, 5, 0, 10};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
 
     db.dump_leaf_nodes();
@@ -1778,7 +1776,7 @@ void fst_test_swap()
     {
         db_type::key_type k[] = {0, 20, 30, 40, 50, 200};
         db_type::value_type v[] = {20, 1, 2, 3, 20};
-        assert(check_leaf_nodes(db1, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db1, k, v, std::size(k)));
     }
     assert(db1.min_key() == 0);
     assert(db1.max_key() == 200);
@@ -1791,7 +1789,7 @@ void fst_test_swap()
     {
         db_type::key_type k[] = {0, 20, 30, 40, 50, 200};
         db_type::value_type v[] = {20, 1, 2, 3, 20};
-        assert(check_leaf_nodes(db2, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db2, k, v, std::size(k)));
     }
     assert(db2.min_key() == 0);
     assert(db2.max_key() == 200);
@@ -1841,7 +1839,7 @@ void fst_test_clear()
     {
         db_type::key_type k[] = {0, 10, 20, 30, 100};
         db_type::value_type v[] = {0, 1, 2, 42};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
     assert(db.min_key() == 0);
     assert(db.max_key() == 100);
@@ -1853,7 +1851,7 @@ void fst_test_clear()
     {
         db_type::key_type k[] = {0, 100};
         db_type::value_type v[] = {42};
-        assert(check_leaf_nodes(db, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db, k, v, std::size(k)));
     }
     assert(db.min_key() == 0);
     assert(db.max_key() == 100);
@@ -1875,7 +1873,7 @@ void fst_test_assignment()
     {
         db_type::key_type k[] = {0, 10, 20, 30, 100};
         db_type::value_type v[] = {0, 1, 2, 42};
-        assert(check_leaf_nodes(db1, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db1, k, v, std::size(k)));
     }
     assert(db1.min_key() == 0);
     assert(db1.max_key() == 100);
@@ -1889,7 +1887,7 @@ void fst_test_assignment()
     {
         db_type::key_type k[] = {20, 30, 40};
         db_type::value_type v[] = {8, 0};
-        assert(check_leaf_nodes(db2, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db2, k, v, std::size(k)));
     }
     assert(db2.min_key() == 20);
     assert(db2.max_key() == 40);
@@ -1902,7 +1900,7 @@ void fst_test_assignment()
     {
         db_type::key_type k[] = {10, 80};
         db_type::value_type v[] = {4};
-        assert(check_leaf_nodes(db3, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db3, k, v, std::size(k)));
     }
     assert(db3.min_key() == 10);
     assert(db3.max_key() == 80);
@@ -1914,7 +1912,7 @@ void fst_test_assignment()
     {
         db_type::key_type k[] = {0, 10, 20, 30, 100};
         db_type::value_type v[] = {0, 1, 2, 42};
-        assert(check_leaf_nodes(db1, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db1, k, v, std::size(k)));
     }
     assert(db1.min_key() == 0);
     assert(db1.max_key() == 100);
@@ -1924,7 +1922,7 @@ void fst_test_assignment()
     {
         db_type::key_type k[] = {0, 10, 20, 30, 100};
         db_type::value_type v[] = {0, 1, 2, 42};
-        assert(check_leaf_nodes(db2, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db2, k, v, std::size(k)));
     }
     assert(db2.min_key() == 0);
     assert(db2.max_key() == 100);
@@ -1934,7 +1932,7 @@ void fst_test_assignment()
     {
         db_type::key_type k[] = {0, 10, 20, 30, 100};
         db_type::value_type v[] = {0, 1, 2, 42};
-        assert(check_leaf_nodes(db3, k, v, ARRAY_SIZE(k)));
+        assert(check_leaf_nodes(db3, k, v, std::size(k)));
     }
     assert(db3.min_key() == 0);
     assert(db3.max_key() == 100);
