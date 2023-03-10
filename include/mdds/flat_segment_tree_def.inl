@@ -110,7 +110,7 @@ flat_segment_tree<Key, Value>::~flat_segment_tree()
 template<typename Key, typename Value>
 flat_segment_tree<Key, Value>& flat_segment_tree<Key, Value>::operator=(const flat_segment_tree& other)
 {
-    flat_segment_tree<Key, Value> copy(other);
+    flat_segment_tree copy(other);
     swap(copy);
     return *this;
 }
