@@ -89,6 +89,19 @@ flat_segment_tree<Key, Value>::flat_segment_tree(const flat_segment_tree& r)
 }
 
 template<typename Key, typename Value>
+flat_segment_tree<Key, Value>::flat_segment_tree(flat_segment_tree&& other)
+    : m_nonleaf_node_pool(std::move(other.m_nonleaf_node_pool)), m_root_node(other.m_root_node),
+      m_left_leaf(other.m_left_leaf), m_right_leaf(other.m_right_leaf), m_init_val(other.m_init_val),
+      m_valid_tree(other.m_valid_tree)
+{
+    // NB: boost::intrusive_ptr doesn't have move constructor
+    other.m_left_leaf.reset();
+    other.m_right_leaf.reset();
+    other.m_root_node = nullptr;
+    other.m_valid_tree = false;
+}
+
+template<typename Key, typename Value>
 flat_segment_tree<Key, Value>::~flat_segment_tree()
 {
     destroy();

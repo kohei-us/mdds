@@ -1307,6 +1307,48 @@ void fst_test_copy_ctor()
     assert(answer == 35);
 }
 
+void fst_test_move_ctor()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    {
+        // initial condition (2 nodes)
+        using container_type = mdds::flat_segment_tree<int64_t, std::string>;
+        container_type src(-50, 50, "none");
+        container_type moved(std::move(src));
+        assert(moved.min_key() == -50);
+        assert(moved.max_key() == 50);
+        assert(moved.default_value() == "none");
+        assert(moved.leaf_size() == 2);
+        assert(!moved.is_tree_valid());
+
+        moved.build_tree();
+        assert(moved.is_tree_valid());
+
+        {
+            // Make sure search_tree() won't access invalid memory
+            std::string v;
+            moved.search_tree(0, v);
+            assert(v == "none");
+        }
+
+        // move again with valid tree
+        container_type moved2(std::move(moved));
+        assert(moved2.min_key() == -50);
+        assert(moved2.max_key() == 50);
+        assert(moved2.default_value() == "none");
+        assert(moved2.leaf_size() == 2);
+        assert(moved2.is_tree_valid());
+
+        {
+            // Make sure search_tree() won't access invalid memory
+            std::string v;
+            moved2.search_tree(0, v);
+            assert(v == "none");
+        }
+    }
+}
+
 void fst_test_equality()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -2136,6 +2178,7 @@ int main(int argc, char** argv)
         {
             fst_test_equality();
             fst_test_copy_ctor();
+            fst_test_move_ctor();
             fst_test_back_insert();
             {
                 typedef unsigned int key_type;

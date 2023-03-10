@@ -315,6 +315,14 @@ public:
      */
     flat_segment_tree(const flat_segment_tree& r);
 
+    /**
+     * Move constructor.
+     *
+     * @warning The source instance will not be usable after the move
+     *          construction.
+     */
+    flat_segment_tree(flat_segment_tree&& other);
+
     ~flat_segment_tree();
 
     /**
