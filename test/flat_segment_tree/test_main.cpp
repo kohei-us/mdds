@@ -36,7 +36,6 @@
 #include <algorithm>
 #include <memory>
 
-using namespace std;
 using namespace mdds;
 
 void print_title(const char* msg)
@@ -252,7 +251,7 @@ void fst_test_tree_search()
     db.insert_back(23, 28, 4);
     db.build_tree();
 
-    typedef pair<fst_type::const_iterator, bool> ret_type;
+    typedef std::pair<fst_type::const_iterator, bool> ret_type;
     ret_type ret = db.search_tree(0, val, &start, &end);
     assert(ret.second);
     assert(start == 0 && end == 5 && val == 0);
@@ -306,7 +305,7 @@ bool check_leaf_nodes(
     if (key_size <= 1)
         return false;
 
-    vector<key_type> key_checks;
+    std::vector<key_type> key_checks;
     key_checks.reserve(key_size);
     for (size_t i = 0; i < key_size; ++i)
         key_checks.push_back(keys[i]);
@@ -314,7 +313,7 @@ bool check_leaf_nodes(
     if (!db.verify_keys(key_checks))
         return false;
 
-    vector<value_type> value_checks;
+    std::vector<value_type> value_checks;
     value_checks.reserve(key_size - 1);
     for (size_t i = 0; i < key_size - 1; ++i)
         value_checks.push_back(values[i]);
@@ -534,7 +533,7 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        vector<int> key_checks;
+        std::vector<int> key_checks;
         key_checks.push_back(0);
         key_checks.push_back(15);
         key_checks.push_back(35);
@@ -551,7 +550,7 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        vector<int> key_checks;
+        std::vector<int> key_checks;
         key_checks.push_back(0);
         key_checks.push_back(10);
         key_checks.push_back(30);
@@ -569,7 +568,7 @@ void fst_test_shift_left()
     assert(!db.is_tree_valid());
     build_and_dump(db);
     {
-        vector<int> key_checks;
+        std::vector<int> key_checks;
         key_checks.push_back(0);
         key_checks.push_back(5);
         key_checks.push_back(25);
@@ -1039,7 +1038,7 @@ void fst_test_shift_right_all_nodes()
 template<typename key_type, typename value_type>
 struct leaf_node_functor
 {
-    void operator()(const pair<key_type, value_type>&) const
+    void operator()(const std::pair<key_type, value_type>&) const
     {}
 };
 
@@ -1050,7 +1049,7 @@ void fst_test_const_iterator()
     {
         typedef unsigned int key_type;
         typedef unsigned short value_type;
-        unsigned short max_value = numeric_limits<value_type>::max();
+        unsigned short max_value = std::numeric_limits<value_type>::max();
         typedef flat_segment_tree<key_type, value_type> container_type;
 
         container_type db(0, 1000, max_value);
@@ -1082,7 +1081,7 @@ void fst_test_const_iterator()
         }
 
         // Make sure it works with for_each.
-        for_each(db.begin(), db.end(), leaf_node_functor<key_type, value_type>());
+        std::for_each(db.begin(), db.end(), leaf_node_functor<key_type, value_type>());
     }
 
     {
@@ -1491,7 +1490,7 @@ void fst_test_insert_state_changed()
     typedef long key_type;
     typedef short value_type;
     typedef flat_segment_tree<key_type, value_type> db_type;
-    typedef pair<db_type::const_iterator, bool> ret_type;
+    typedef std::pair<db_type::const_iterator, bool> ret_type;
 
     db_type db(0, 1000, 0);
 
@@ -1587,7 +1586,7 @@ void fst_perf_test_insert_position()
     MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<long, bool> db_type;
-    typedef pair<db_type::const_iterator, bool> ret_type;
+    typedef std::pair<db_type::const_iterator, bool> ret_type;
     long upper = 60000;
     {
         stack_printer __stack_printer__("::fst_perf_test_insert_position (front)");
@@ -1644,7 +1643,7 @@ void fst_perf_test_position_search()
     MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<long, bool> db_type;
-    typedef pair<db_type::const_iterator, bool> ret_type;
+    typedef std::pair<db_type::const_iterator, bool> ret_type;
     long upper = 60000;
     db_type db(0, upper, false);
 
@@ -1687,7 +1686,7 @@ bool check_pos_search_result(
     K end_expected, V value_expected)
 {
     typedef flat_segment_tree<K, V> db_type;
-    typedef pair<typename db_type::const_iterator, bool> ret_type;
+    typedef std::pair<typename db_type::const_iterator, bool> ret_type;
 
     V _val;
     K _start = -1, _end = -1;
@@ -1708,7 +1707,7 @@ void fst_test_position_search()
     MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<long, short> db_type;
-    typedef pair<db_type::const_iterator, bool> ret_type;
+    typedef std::pair<db_type::const_iterator, bool> ret_type;
 
     db_type db(0, 100, 0);
     db.insert_front(10, 20, 1);
