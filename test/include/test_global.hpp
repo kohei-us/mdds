@@ -38,14 +38,8 @@
 #include <cassert>
 #endif
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
-#ifdef _WIN32
-#include <windows.h>
-#undef max
-#undef min
-#endif
-
 #include <cstdint>
 #include <iostream>
 #include <sstream>
