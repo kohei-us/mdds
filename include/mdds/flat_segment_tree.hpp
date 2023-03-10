@@ -328,14 +328,14 @@ public:
     /**
      * Assignment only copies the leaf nodes.
      */
-    flat_segment_tree<key_type, value_type>& operator=(const flat_segment_tree<key_type, value_type>& other);
+    flat_segment_tree<key_type, value_type>& operator=(const flat_segment_tree& other);
 
     /**
      * Swap the content of the tree with another instance.
      *
      * @param other instance of flat_segment_tree to swap content with.
      */
-    void swap(flat_segment_tree<key_type, value_type>& other);
+    void swap(flat_segment_tree& other);
 
     /**
      * Remove all stored segments except for the initial segment. The minimum
@@ -511,11 +511,11 @@ public:
      * comparing the keys and the values of the leaf nodes only.  Neither the
      * non-leaf nodes nor the validity of the tree is evaluated.
      */
-    bool operator==(const flat_segment_tree<key_type, value_type>& r) const;
+    bool operator==(const flat_segment_tree& other) const;
 
-    bool operator!=(const flat_segment_tree<key_type, value_type>& r) const
+    bool operator!=(const flat_segment_tree& other) const
     {
-        return !operator==(r);
+        return !operator==(other);
     }
 
     key_type min_key() const

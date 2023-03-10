@@ -108,7 +108,7 @@ flat_segment_tree<Key, Value>::~flat_segment_tree()
 }
 
 template<typename Key, typename Value>
-flat_segment_tree<Key, Value>& flat_segment_tree<Key, Value>::operator=(const flat_segment_tree<Key, Value>& other)
+flat_segment_tree<Key, Value>& flat_segment_tree<Key, Value>::operator=(const flat_segment_tree& other)
 {
     flat_segment_tree<Key, Value> copy(other);
     swap(copy);
@@ -116,7 +116,7 @@ flat_segment_tree<Key, Value>& flat_segment_tree<Key, Value>::operator=(const fl
 }
 
 template<typename Key, typename Value>
-void flat_segment_tree<Key, Value>::swap(flat_segment_tree<Key, Value>& other)
+void flat_segment_tree<Key, Value>::swap(flat_segment_tree& other)
 {
     m_nonleaf_node_pool.swap(other.m_nonleaf_node_pool);
     std::swap(m_root_node, other.m_root_node);
@@ -692,10 +692,10 @@ typename flat_segment_tree<Key, Value>::size_type flat_segment_tree<Key, Value>:
 }
 
 template<typename Key, typename Value>
-bool flat_segment_tree<Key, Value>::operator==(const flat_segment_tree<key_type, value_type>& r) const
+bool flat_segment_tree<Key, Value>::operator==(const flat_segment_tree& other) const
 {
     const node* n1 = m_left_leaf.get();
-    const node* n2 = r.m_left_leaf.get();
+    const node* n2 = other.m_left_leaf.get();
 
     if ((!n1 && n2) || (n1 && !n2))
         // Either one of them is nullptr;
