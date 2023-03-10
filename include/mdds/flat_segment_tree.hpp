@@ -313,7 +313,7 @@ public:
     /**
      * Copy constructor only copies the leaf nodes.
      */
-    flat_segment_tree(const flat_segment_tree<key_type, value_type>& r);
+    flat_segment_tree(const flat_segment_tree& r);
 
     ~flat_segment_tree();
 

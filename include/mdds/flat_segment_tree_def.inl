@@ -58,7 +58,7 @@ flat_segment_tree<Key, Value>::flat_segment_tree(key_type min_val, key_type max_
 }
 
 template<typename Key, typename Value>
-flat_segment_tree<Key, Value>::flat_segment_tree(const flat_segment_tree<Key, Value>& r)
+flat_segment_tree<Key, Value>::flat_segment_tree(const flat_segment_tree& r)
     : m_root_node(nullptr), m_left_leaf(new node(static_cast<const node&>(*r.m_left_leaf))),
       m_right_leaf(static_cast<node*>(nullptr)), m_init_val(r.m_init_val),
       m_valid_tree(false) // tree is invalid because we only copy the leaf nodes.
