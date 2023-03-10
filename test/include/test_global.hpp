@@ -48,6 +48,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <sstream>
 
 struct cmd_options
 {
@@ -77,6 +78,7 @@ class stack_printer
 {
 public:
     explicit stack_printer(const char* msg);
+    stack_printer(std::string msg);
 
     ~stack_printer();
 
@@ -90,5 +92,12 @@ private:
 using std::cerr;
 using std::cout;
 using std::endl;
+
+#define MDDS_TEST_FUNC_SCOPE stack_printer __sp__(__func__)
+
+#define MDDS_TEST_FUNC_SCOPE_MSG(stream) \
+    std::ostringstream __sp_os__; \
+    __sp_os__ << __func__ << ' ' << stream; \
+    stack_printer __sp__(__sp_os__.str())
 
 #endif

@@ -48,6 +48,8 @@ void print_title(const char* msg)
 
 void fst_test_leaf_search()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     {
         print_title("Simple insert test");
         flat_segment_tree<int, int> int_ranges(0, 100, -1);
@@ -136,7 +138,8 @@ void fst_test_leaf_search()
  */
 void fst_test_tree_build()
 {
-    stack_printer __stack_printer__("::fst_test_tree_build");
+    MDDS_TEST_FUNC_SCOPE;
+
     {
         int lower = 0, upper = 100, delta = 10;
         flat_segment_tree<int, int> db(lower, upper, 0);
@@ -162,7 +165,7 @@ void fst_test_tree_build()
 
 void fst_perf_test_search_leaf()
 {
-    stack_printer __stack_printer__("fst_perf_test_search_leaf");
+    MDDS_TEST_FUNC_SCOPE;
 
     int lower = 0, upper = 50000;
     flat_segment_tree<int, int> db(lower, upper, 0);
@@ -183,7 +186,7 @@ void fst_perf_test_search_leaf()
 
 void fst_perf_test_search_tree()
 {
-    stack_printer __stack_printer__("fst_perf_test_leaf_search");
+    MDDS_TEST_FUNC_SCOPE;
 
     int lower = 0, upper = 5000000;
     flat_segment_tree<int, int> db(lower, upper, 0);
@@ -213,7 +216,8 @@ void fst_perf_test_search_tree()
 
 void fst_test_tree_search()
 {
-    stack_printer __stack_printer__("::fst_test_tree_search");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<int, int> fst_type;
     int lower = 0, upper = 200, delta = 5;
     fst_type db(lower, upper, 0);
@@ -433,7 +437,8 @@ bool is_iterator_valid(
 
 void fst_test_insert_search_mix()
 {
-    stack_printer __stack_printer__("fst_test_insert_search_mix");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<int, int> db_type;
     db_type db(0, 100, 0);
 
@@ -498,7 +503,8 @@ void fst_test_insert_search_mix()
 
 void fst_test_shift_left()
 {
-    stack_printer __stack_printer__("fst_test_shift_segment_left");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<int, int> db_type;
     db_type db(0, 100, 0);
     db.insert_front(20, 40, 5);
@@ -647,7 +653,8 @@ void fst_test_shift_left()
 
 void fst_test_shift_left_right_edge()
 {
-    stack_printer __stack_printer__("fst_test_shift_segment_left_right_edge");
+    MDDS_TEST_FUNC_SCOPE;
+
     flat_segment_tree<int, bool> db(0, 100, false);
     build_and_dump(db);
 
@@ -711,7 +718,8 @@ void fst_test_shift_left_right_edge()
 
 void fst_test_shift_left_append_new_segment()
 {
-    stack_printer __stack_printer__("fst_test_shift_segment_left_append_new_segment");
+    MDDS_TEST_FUNC_SCOPE;
+
     flat_segment_tree<int, bool> db(0, 100, false);
     db.insert_front(0, 100, true);
     assert(!db.is_tree_valid());
@@ -756,7 +764,7 @@ void fst_test_shift_left_append_new_segment()
 
 void fst_test_shift_right_init0()
 {
-    stack_printer __stack_printer__("fst_test_shift_segment_right_init0");
+    MDDS_TEST_FUNC_SCOPE;
 
     flat_segment_tree<int, int> db(0, 100, 0);
     db.insert_front(0, 10, 15);
@@ -881,7 +889,7 @@ void fst_test_shift_right_init0()
 
 void fst_test_shift_right_init999()
 {
-    stack_printer __stack_printer__("fst_test_shift_segment_right_init999");
+    MDDS_TEST_FUNC_SCOPE;
 
     // Initialize the tree with a default value of 999.
     flat_segment_tree<int, int> db(0, 100, 999);
@@ -928,6 +936,8 @@ void fst_test_shift_right_init999()
 
 void fst_test_shift_right_bool()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     flat_segment_tree<long, bool> db(0, 1048576, false);
     db.insert_front(3, 7, true);
     assert(!db.is_tree_valid());
@@ -950,7 +960,7 @@ void fst_test_shift_right_bool()
 
 void fst_test_shift_right_skip_start_node()
 {
-    stack_printer __stack_printer__("fst_test_shift_segment_right_skip_start_node");
+    MDDS_TEST_FUNC_SCOPE;
 
     flat_segment_tree<long, short> db(0, 1048576, 0);
     db.insert_front(3, 7, 5);
@@ -996,6 +1006,8 @@ void fst_test_shift_right_skip_start_node()
  */
 void fst_test_shift_right_all_nodes()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<unsigned, unsigned> fst_type;
 
     fst_type db(0, 10, 0);
@@ -1033,7 +1045,7 @@ struct leaf_node_functor
 
 void fst_test_const_iterator()
 {
-    stack_printer __stack_printer__("::fst_test_const_iterator");
+    MDDS_TEST_FUNC_SCOPE;
 
     {
         typedef unsigned int key_type;
@@ -1120,6 +1132,8 @@ void fst_test_const_iterator()
 template<typename key_type, typename value_type>
 void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type default_value)
 {
+    MDDS_TEST_FUNC_SCOPE_MSG("start-key=" << start_key << "; end-key=" << end_key << "; default-value=" << default_value);
+
     typedef flat_segment_tree<key_type, value_type> container_type;
     typedef typename container_type::const_iterator itr_type;
 
@@ -1162,6 +1176,8 @@ void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type
 
 void fst_perf_test_insert_front_back()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef unsigned long key_type;
     typedef int value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
@@ -1193,7 +1209,8 @@ void fst_perf_test_insert_front_back()
 
 void fst_test_copy_ctor()
 {
-    stack_printer __stack_printer__("::fst_test_copy_ctor");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef unsigned long key_type;
     typedef int value_type;
     typedef flat_segment_tree<key_type, value_type> fst;
@@ -1293,7 +1310,8 @@ void fst_test_copy_ctor()
 
 void fst_test_equality()
 {
-    stack_printer __stack_printer__("::fst_test_equality");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef unsigned long key_type;
     typedef int value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
@@ -1332,7 +1350,8 @@ void fst_test_equality()
 
 void fst_test_back_insert()
 {
-    stack_printer __stack_printer__("::fst_test_back_insert");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef unsigned int key_type;
     typedef unsigned short value_type;
     typedef flat_segment_tree<key_type, value_type> container_type;
@@ -1404,7 +1423,8 @@ void print_iterator(typename flat_segment_tree<A, B>::const_iterator& itr)
 
 void fst_test_insert_iterator()
 {
-    stack_printer __stack_printer__("::fst_test_insert_iterator");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef long key_type;
     typedef short value_type;
     typedef flat_segment_tree<key_type, value_type> db_type;
@@ -1466,7 +1486,8 @@ void fst_test_insert_iterator()
 
 void fst_test_insert_state_changed()
 {
-    stack_printer __stack_printer__("::fst_test_insert_state_changed");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef long key_type;
     typedef short value_type;
     typedef flat_segment_tree<key_type, value_type> db_type;
@@ -1563,6 +1584,8 @@ void fst_test_insert_state_changed()
 
 void fst_perf_test_insert_position()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<long, bool> db_type;
     typedef pair<db_type::const_iterator, bool> ret_type;
     long upper = 60000;
@@ -1618,6 +1641,8 @@ void fst_perf_test_insert_position()
 
 void fst_perf_test_position_search()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<long, bool> db_type;
     typedef pair<db_type::const_iterator, bool> ret_type;
     long upper = 60000;
@@ -1680,7 +1705,8 @@ bool check_pos_search_result(
 
 void fst_test_position_search()
 {
-    stack_printer __stack_printer__("::fst_test_position_search");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<long, short> db_type;
     typedef pair<db_type::const_iterator, bool> ret_type;
 
@@ -1697,7 +1723,7 @@ void fst_test_position_search()
         short value_expected;
     } params[] = {{0, 10, 0}, {10, 20, 1}, {20, 30, 0}, {30, 50, 5}, {50, 100, 0}};
 
-    size_t n = sizeof(params) / sizeof(params[0]);
+    size_t n = std::size(params);
 
     cout << "Testing for searches with various valid and invalid iterators." << endl;
     for (size_t i = 0; i < n; ++i)
@@ -1755,6 +1781,8 @@ void fst_test_position_search()
 
 void fst_test_min_max_default()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<long, short> db_type;
     db_type db(0, 100, 2);
     assert(db.min_key() == 0);
@@ -1764,6 +1792,8 @@ void fst_test_min_max_default()
 
 void fst_test_swap()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<long, int> db_type;
     db_type db1(0, 200, 20);
     db_type db2(20, 40, 0);
@@ -1804,7 +1834,8 @@ void fst_test_swap()
 
 void fst_test_swap_tree_memory()
 {
-    stack_printer __stack_printer__("::fst_test_swap_tree_memory");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef flat_segment_tree<long, int> db_type;
     auto db1 = std::make_unique<db_type>(0, 100, 0);
     db1->insert_back(10, 40, 999);
@@ -1827,7 +1858,7 @@ void fst_test_swap_tree_memory()
 
 void fst_test_clear()
 {
-    stack_printer __stack_printer__("::fst_test_clear");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<long, int> db_type;
     db_type db(0, 100, 42);
@@ -1861,7 +1892,7 @@ void fst_test_clear()
 
 void fst_test_assignment()
 {
-    stack_printer __stack_printer__("::fst_test_assignment");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<long, int> db_type;
     db_type db1(0, 100, 42);
@@ -1942,7 +1973,7 @@ void fst_test_assignment()
 
 void fst_test_non_numeric_value()
 {
-    stack_printer __stack_printer__("::fst_test_non_numeric_value");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<int, std::string> db_type;
     db_type db(0, 4, "42");
@@ -1962,7 +1993,7 @@ void fst_test_non_numeric_value()
 
 void fst_test_insert_out_of_bound()
 {
-    stack_printer __stack_printer__("::fst_test_insert_out_of_bound");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<int, bool> db_type;
     db_type db(0, 10, false);
@@ -2000,7 +2031,7 @@ void fst_test_insert_out_of_bound()
 
 void fst_test_insert_out_of_bound_2()
 {
-    stack_printer __stack_printer__("::fst_test_insert_out_of_bound_2");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<int, bool> db_type;
     db_type db(0, 256, false);
@@ -2016,7 +2047,7 @@ void fst_test_insert_out_of_bound_2()
 
 void fst_test_segment_iterator()
 {
-    stack_printer __stack_printer__("::fst_test_segment_iterator");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef flat_segment_tree<int16_t, bool> db_type;
     db_type db(0, 100, false);
