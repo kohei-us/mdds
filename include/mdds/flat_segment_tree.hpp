@@ -543,7 +543,7 @@ public:
     size_type leaf_size() const;
 
 #ifdef MDDS_UNIT_TEST
-    nonleaf_node* get_root_node() const
+    const nonleaf_node* get_root_node() const
     {
         return m_root_node;
     }
@@ -775,7 +775,7 @@ private:
 private:
     std::vector<nonleaf_node> m_nonleaf_node_pool;
 
-    nonleaf_node* m_root_node;
+    const nonleaf_node* m_root_node;
     node_ptr m_left_leaf;
     node_ptr m_right_leaf;
     value_type m_init_val;
