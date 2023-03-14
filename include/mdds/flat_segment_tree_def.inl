@@ -116,6 +116,14 @@ flat_segment_tree<Key, Value>& flat_segment_tree<Key, Value>::operator=(const fl
 }
 
 template<typename Key, typename Value>
+flat_segment_tree<Key, Value>& flat_segment_tree<Key, Value>::operator=(flat_segment_tree&& other)
+{
+    flat_segment_tree moved(std::move(other));
+    swap(moved);
+    return *this;
+}
+
+template<typename Key, typename Value>
 void flat_segment_tree<Key, Value>::swap(flat_segment_tree& other)
 {
     m_nonleaf_node_pool.swap(other.m_nonleaf_node_pool);

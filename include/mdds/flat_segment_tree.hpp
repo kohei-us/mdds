@@ -328,9 +328,20 @@ public:
     ~flat_segment_tree();
 
     /**
-     * Assignment only copies the leaf nodes.
+     * Copy assignment operator.
+     *
+     * @param other Source instance to copy from.
+     *
+     * @note It only copies the leaf nodes.
      */
-    flat_segment_tree<key_type, value_type>& operator=(const flat_segment_tree& other);
+    flat_segment_tree<Key, Value>& operator=(const flat_segment_tree& other);
+
+    /**
+     * Move assignment operator.
+     *
+     * @param other Source instance to move from.
+     */
+    flat_segment_tree<Key, Value>& operator=(flat_segment_tree&& other);
 
     /**
      * Swap the content of the tree with another instance.
@@ -677,7 +688,6 @@ public:
 #endif
 
 private:
-
     void append_new_segment(key_type start_key)
     {
         if (m_right_leaf->prev->value_leaf.key == start_key)

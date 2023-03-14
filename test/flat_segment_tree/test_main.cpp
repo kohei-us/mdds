@@ -1131,7 +1131,8 @@ void fst_test_const_iterator()
 template<typename key_type, typename value_type>
 void fst_test_insert_front_back(key_type start_key, key_type end_key, value_type default_value)
 {
-    MDDS_TEST_FUNC_SCOPE_MSG("start-key=" << start_key << "; end-key=" << end_key << "; default-value=" << default_value);
+    MDDS_TEST_FUNC_SCOPE_MSG(
+        "start-key=" << start_key << "; end-key=" << end_key << "; default-value=" << default_value);
 
     typedef flat_segment_tree<key_type, value_type> container_type;
     typedef typename container_type::const_iterator itr_type;
@@ -2072,6 +2073,44 @@ void fst_test_assignment()
     assert(!db3.is_tree_valid());
 }
 
+void fst_test_move_assignment()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using container_type = flat_segment_tree<uint32_t, std::string>;
+    container_type src{0, 100, "base"};
+    container_type moved{10, 200, "base2"};
+    moved = std::move(src);
+
+    assert(moved.min_key() == 0);
+    assert(moved.max_key() == 100);
+    assert(moved.default_value() == "base");
+    assert(moved.leaf_size() == 2);
+    assert(!moved.is_tree_valid());
+
+    moved.insert_back(10, 25, "10-25");
+    moved.build_tree();
+    assert(moved.is_tree_valid());
+    assert(moved.leaf_size() == 4);
+
+    container_type moved2{30, 450, "base3"};
+    moved2 = std::move(moved);
+    assert(moved2.min_key() == 0);
+    assert(moved2.max_key() == 100);
+    assert(moved2.default_value() == "base");
+    assert(moved2.leaf_size() == 4);
+    assert(moved2.is_tree_valid());
+
+    // Make sure we can perform tree search.
+    std::string v;
+    uint32_t key1, key2;
+    auto res = moved2.search_tree(20, v, &key1, &key2);
+    assert(res.second);
+    assert(v == "10-25");
+    assert(key1 == 10);
+    assert(key2 == 25);
+}
+
 void fst_test_non_numeric_value()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -2282,6 +2321,7 @@ int main(int argc, char** argv)
             fst_test_swap_tree_memory();
             fst_test_clear();
             fst_test_assignment();
+            fst_test_move_assignment();
             fst_test_non_numeric_value();
             fst_test_insert_out_of_bound();
             fst_test_insert_out_of_bound_2();
