@@ -1355,6 +1355,58 @@ void fst_test_move_ctor()
             assert(v == "none");
         }
     }
+
+    {
+        // 4 nodes
+        using container_type = mdds::flat_segment_tree<int64_t, std::string>;
+        container_type src(-50, 50, "none");
+        src.insert_back(-10, 10, "middle");
+
+        // pointer to the root node should stay the same before and after the move.
+        auto src_root = src.get_root_node();
+
+        container_type moved(std::move(src));
+        assert(moved.min_key() == -50);
+        assert(moved.max_key() == 50);
+        assert(moved.default_value() == "none");
+        assert(moved.leaf_size() == 4);
+        assert(!moved.is_tree_valid());
+        assert(moved.get_root_node() == src_root);
+
+        moved.build_tree();
+        assert(moved.is_tree_valid());
+
+        {
+            // Make sure search_tree() won't access invalid memory
+            std::string v;
+            moved.search_tree(-40, v);
+            assert(v == "none");
+
+            moved.search_tree(0, v);
+            assert(v == "middle");
+        }
+
+        src_root = moved.get_root_node();
+
+        // move again with valid tree
+        container_type moved2(std::move(moved));
+        assert(moved2.min_key() == -50);
+        assert(moved2.max_key() == 50);
+        assert(moved2.default_value() == "none");
+        assert(moved2.leaf_size() == 4);
+        assert(moved2.is_tree_valid());
+        assert(src_root == moved2.get_root_node());
+
+        {
+            // Make sure search_tree() won't access invalid memory
+            std::string v;
+            moved2.search_tree(-40, v);
+            assert(v == "none");
+
+            moved2.search_tree(0, v);
+            assert(v == "middle");
+        }
+    }
 }
 
 void fst_test_equality()
