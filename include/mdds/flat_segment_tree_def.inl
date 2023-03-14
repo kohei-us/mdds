@@ -183,12 +183,12 @@ template<typename Key, typename Value>
         return ret_type(const_iterator(this, true), false);
     }
 
-    return insert_to_pos(start_pos, start_key, end_key, val);
+    return insert_to_pos(start_pos, std::move(start_key), std::move(end_key), std::move(val));
 }
 
 template<typename Key, typename Value>
 ::std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_segment_tree<Key, Value>::insert_to_pos(
-    node_ptr& start_pos, key_type start_key, key_type end_key, value_type val)
+    node_ptr start_pos, key_type start_key, key_type end_key, value_type val)
 {
     node_ptr end_pos;
     {
@@ -235,7 +235,7 @@ template<typename Key, typename Value>
     {
         // Insert a new node before the insertion position node.
         node_ptr new_node(new node);
-        new_node->value_leaf.key = start_key;
+        new_node->value_leaf.key = std::move(start_key);
         new_node->value_leaf.value = val;
         new_start_node = new_node;
 
@@ -298,7 +298,7 @@ template<typename Key, typename Value>
     {
         // Insert a new node before the insertion position node.
         node_ptr new_node(new node);
-        new_node->value_leaf.key = end_key;
+        new_node->value_leaf.key = std::move(end_key);
         new_node->value_leaf.value = old_value;
 
         // Link to the left node.
@@ -731,7 +731,7 @@ bool flat_segment_tree<Key, Value>::operator==(const flat_segment_tree& other) c
 
 template<typename Key, typename Value>
 const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value>::get_insertion_pos_leaf_reverse(
-    key_type key, const node* start_pos) const
+    const key_type& key, const node* start_pos) const
 {
     const node* cur_node = start_pos;
     while (cur_node)
@@ -748,7 +748,7 @@ const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value
 
 template<typename Key, typename Value>
 const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value>::get_insertion_pos_leaf(
-    key_type key, const node* start_pos) const
+    const key_type& key, const node* start_pos) const
 {
     const node* cur_node = start_pos;
     while (cur_node)

@@ -373,7 +373,7 @@ public:
      */
     std::pair<const_iterator, bool> insert_front(key_type start_key, key_type end_key, value_type val)
     {
-        return insert_segment_impl(start_key, end_key, val, true);
+        return insert_segment_impl(std::move(start_key), std::move(end_key), std::move(val), true);
     }
 
     /**
@@ -393,7 +393,7 @@ public:
      */
     std::pair<const_iterator, bool> insert_back(key_type start_key, key_type end_key, value_type val)
     {
-        return insert_segment_impl(start_key, end_key, val, false);
+        return insert_segment_impl(std::move(start_key), std::move(end_key), std::move(val), false);
     }
 
     /**
@@ -721,14 +721,14 @@ private:
         key_type start_key, key_type end_key, value_type val, bool forward);
 
     ::std::pair<const_iterator, bool> insert_to_pos(
-        node_ptr& start_pos, key_type start_key, key_type end_key, value_type val);
+        node_ptr start_pos, key_type start_key, key_type end_key, value_type val);
 
     ::std::pair<const_iterator, bool> search_impl(
         const node* pos, key_type key, value_type& value, key_type* start_key, key_type* end_key) const;
 
-    const node* get_insertion_pos_leaf_reverse(key_type key, const node* start_pos) const;
+    const node* get_insertion_pos_leaf_reverse(const key_type& key, const node* start_pos) const;
 
-    const node* get_insertion_pos_leaf(key_type key, const node* start_pos) const;
+    const node* get_insertion_pos_leaf(const key_type& key, const node* start_pos) const;
 
     static void shift_leaf_key_left(node_ptr& begin_node, node_ptr& end_node, key_type shift_value)
     {
