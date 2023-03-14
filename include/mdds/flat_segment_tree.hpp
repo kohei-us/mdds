@@ -63,7 +63,7 @@ public:
             return low == r.low && high == r.high;
         }
 
-        nonleaf_value_type() : low(0), high(0)
+        nonleaf_value_type() : low{}, high{}
         {}
     };
 
@@ -77,7 +77,7 @@ public:
             return key == r.key && value == r.value;
         }
 
-        leaf_value_type() : key(0), value()
+        leaf_value_type() : key{}, value{}
         {}
     };
 
