@@ -41,20 +41,21 @@ typename flat_segment_tree<Key, Value>::const_segment_iterator flat_segment_tree
 
 template<typename Key, typename Value>
 flat_segment_tree<Key, Value>::flat_segment_tree(key_type min_val, key_type max_val, value_type init_val)
-    : m_root_node(nullptr), m_left_leaf(new node), m_right_leaf(new node), m_init_val(init_val), m_valid_tree(false)
+    : m_root_node(nullptr), m_left_leaf(new node), m_right_leaf(new node), m_init_val(std::move(init_val)),
+      m_valid_tree(false)
 {
     // we need to create two end nodes during initialization.
-    m_left_leaf->value_leaf.key = min_val;
-    m_left_leaf->value_leaf.value = init_val;
+    m_left_leaf->value_leaf.key = std::move(min_val);
+    m_left_leaf->value_leaf.value = m_init_val; // copy
     m_left_leaf->next = m_right_leaf;
 
-    m_right_leaf->value_leaf.key = max_val;
+    m_right_leaf->value_leaf.key = std::move(max_val);
     m_right_leaf->prev = m_left_leaf;
 
     // We don't ever use the value of the right leaf node, but we need the
     // value to be always the same, to make it easier to check for
     // equality.
-    m_right_leaf->value_leaf.value = init_val;
+    m_right_leaf->value_leaf.value = value_type{};
 }
 
 template<typename Key, typename Value>
