@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010-2017 Kohei Yoshida
+ * Copyright (c) 2010-2023 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@
 #ifndef INCLUDED_MDDS_FLAT_SEGMENT_TREE_ITR_HPP
 #define INCLUDED_MDDS_FLAT_SEGMENT_TREE_ITR_HPP
 
-namespace mdds { namespace __fst {
+namespace mdds { namespace fst { namespace detail {
 
 /**
  * Handler for forward iterator
@@ -322,6 +322,6 @@ private:
     value_type m_node;
 };
 
-}} // namespace mdds::__fst
+}}} // namespace mdds::fst::detail
 
 #endif

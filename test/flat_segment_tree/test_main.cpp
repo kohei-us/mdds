@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2008-2018 Kohei Yoshida
+ * Copyright (c) 2008-2023 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation

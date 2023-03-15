@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2008-2017 Kohei Yoshida
+ * Copyright (c) 2008-2023 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -177,15 +177,15 @@ public:
     };
 
 private:
-    friend struct ::mdds::__fst::itr_forward_handler<flat_segment_tree>;
-    friend struct ::mdds::__fst::itr_reverse_handler<flat_segment_tree>;
+    friend struct ::mdds::fst::detail::itr_forward_handler<flat_segment_tree>;
+    friend struct ::mdds::fst::detail::itr_reverse_handler<flat_segment_tree>;
 
 public:
-    class const_iterator : public ::mdds::__fst::const_iterator_base<
-                               flat_segment_tree, ::mdds::__fst::itr_forward_handler<flat_segment_tree>>
+    class const_iterator : public ::mdds::fst::detail::const_iterator_base<
+                               flat_segment_tree, ::mdds::fst::detail::itr_forward_handler<flat_segment_tree>>
     {
-        typedef ::mdds::__fst::const_iterator_base<
-            flat_segment_tree, ::mdds::__fst::itr_forward_handler<flat_segment_tree>>
+        typedef ::mdds::fst::detail::const_iterator_base<
+            flat_segment_tree, ::mdds::fst::detail::itr_forward_handler<flat_segment_tree>>
             base_type;
         friend class flat_segment_tree;
 
@@ -201,11 +201,11 @@ public:
         {}
     };
 
-    class const_reverse_iterator : public ::mdds::__fst::const_iterator_base<
-                                       flat_segment_tree, ::mdds::__fst::itr_reverse_handler<flat_segment_tree>>
+    class const_reverse_iterator : public ::mdds::fst::detail::const_iterator_base<
+                                       flat_segment_tree, ::mdds::fst::detail::itr_reverse_handler<flat_segment_tree>>
     {
-        typedef ::mdds::__fst::const_iterator_base<
-            flat_segment_tree, ::mdds::__fst::itr_reverse_handler<flat_segment_tree>>
+        typedef ::mdds::fst::detail::const_iterator_base<
+            flat_segment_tree, ::mdds::fst::detail::itr_reverse_handler<flat_segment_tree>>
             base_type;
         friend class flat_segment_tree;
 
@@ -218,7 +218,7 @@ public:
         {}
     };
 
-    using const_segment_iterator = mdds::__fst::const_segment_iterator<flat_segment_tree>;
+    using const_segment_iterator = mdds::fst::detail::const_segment_iterator<flat_segment_tree>;
 
     /**
      * Return an iterator that points to the first leaf node that correspondes
