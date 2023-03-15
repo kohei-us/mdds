@@ -177,15 +177,15 @@ public:
     };
 
 private:
-    friend struct ::mdds::fst::detail::itr_forward_handler<flat_segment_tree>;
-    friend struct ::mdds::fst::detail::itr_reverse_handler<flat_segment_tree>;
+    friend struct ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>;
+    friend struct ::mdds::fst::detail::reverse_itr_handler<flat_segment_tree>;
 
 public:
     class const_iterator : public ::mdds::fst::detail::const_iterator_base<
-                               flat_segment_tree, ::mdds::fst::detail::itr_forward_handler<flat_segment_tree>>
+                               flat_segment_tree, ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>>
     {
         typedef ::mdds::fst::detail::const_iterator_base<
-            flat_segment_tree, ::mdds::fst::detail::itr_forward_handler<flat_segment_tree>>
+            flat_segment_tree, ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>>
             base_type;
         friend class flat_segment_tree;
 
@@ -202,10 +202,10 @@ public:
     };
 
     class const_reverse_iterator : public ::mdds::fst::detail::const_iterator_base<
-                                       flat_segment_tree, ::mdds::fst::detail::itr_reverse_handler<flat_segment_tree>>
+                                       flat_segment_tree, ::mdds::fst::detail::reverse_itr_handler<flat_segment_tree>>
     {
         typedef ::mdds::fst::detail::const_iterator_base<
-            flat_segment_tree, ::mdds::fst::detail::itr_reverse_handler<flat_segment_tree>>
+            flat_segment_tree, ::mdds::fst::detail::reverse_itr_handler<flat_segment_tree>>
             base_type;
         friend class flat_segment_tree;
 

@@ -33,10 +33,10 @@ namespace mdds { namespace fst { namespace detail {
 /**
  * Handler for forward iterator
  */
-template<typename _FstType>
-struct itr_forward_handler
+template<typename FstType>
+struct forward_itr_handler
 {
-    typedef _FstType fst_type;
+    using fst_type = FstType;
 
     static const typename fst_type::node* init_pos(const fst_type* _db, bool _end)
     {
@@ -63,10 +63,10 @@ struct itr_forward_handler
 /**
  * Handler for reverse iterator
  */
-template<typename _FstType>
-struct itr_reverse_handler
+template<typename FstType>
+struct reverse_itr_handler
 {
-    typedef _FstType fst_type;
+    using fst_type = FstType;
 
     static const typename fst_type::node* init_pos(const fst_type* _db, bool _end)
     {
@@ -90,13 +90,13 @@ struct itr_reverse_handler
     }
 };
 
-template<typename _FstType, typename _Hdl>
+template<typename FstType, typename Hdl>
 class const_iterator_base
 {
-    typedef _Hdl handler_type;
+    typedef Hdl handler_type;
 
 public:
-    typedef _FstType fst_type;
+    typedef FstType fst_type;
 
     // iterator traits
     typedef ::std::pair<typename fst_type::key_type, typename fst_type::value_type> value_type;
@@ -188,10 +188,10 @@ private:
     bool m_end_pos;
 };
 
-template<typename _FstType>
+template<typename FstType>
 class const_segment_iterator
 {
-    typedef _FstType fst_type;
+    typedef FstType fst_type;
     friend fst_type;
 
     const_segment_iterator(const typename fst_type::node* start, const typename fst_type::node* end)
