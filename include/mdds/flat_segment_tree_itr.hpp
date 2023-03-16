@@ -209,6 +209,21 @@ public:
 
         value_type() : start(), end(), value()
         {}
+
+        value_type(
+            typename fst_type::key_type _start, typename fst_type::key_type _end, typename fst_type::value_type _value)
+            : start(std::move(_start)), end(std::move(_end)), value(std::move(_value))
+        {}
+
+        bool operator==(const value_type& other) const
+        {
+            return start == other.start && end == other.end && value == other.value;
+        }
+
+        bool operator!=(const value_type& other) const
+        {
+            return !operator==(other);
+        }
     };
 
     const_segment_iterator() : m_start(nullptr), m_end(nullptr)

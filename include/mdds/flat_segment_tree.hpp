@@ -220,6 +220,18 @@ public:
 
     using const_segment_iterator = mdds::fst::detail::const_segment_iterator<flat_segment_tree>;
 
+    class const_segment_range_type
+    {
+        node_ptr m_left_leaf;
+        node_ptr m_right_leaf;
+
+    public:
+        const_segment_range_type(node_ptr left_leaf, node_ptr right_leaf);
+
+        const_segment_iterator begin() const;
+        const_segment_iterator end() const;
+    };
+
     /**
      * Return an iterator that points to the first leaf node that correspondes
      * with the start position of the first segment.
@@ -296,6 +308,11 @@ public:
      *         segment stored in the tree.
      */
     const_segment_iterator end_segment() const;
+
+    /**
+     * Return a range object that provides a begin iterator and an end sentinel.
+     */
+    const_segment_range_type segment_range() const;
 
     flat_segment_tree() = delete;
 

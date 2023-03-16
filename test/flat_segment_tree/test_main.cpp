@@ -2265,6 +2265,66 @@ void fst_test_segment_iterator()
     assert(it_moved->value == false);
 }
 
+void fst_test_segment_range()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using container_type = mdds::flat_segment_tree<int32_t, std::string>;
+    using node_type = container_type::const_segment_iterator::value_type;
+
+    {
+        container_type db{0, 100, "-"};
+
+        const std::vector<node_type> expected = {
+            {0, 100, "-"},
+        };
+
+        std::cout << "--" << std::endl;
+
+        std::vector<node_type> actual;
+        for (const node_type& v : db.segment_range())
+        {
+            std::cout << "start=" << v.start << "; end=" << v.end << "; value='" << v.value << "'" << std::endl;
+            actual.push_back(v);
+        }
+
+        assert(expected == actual);
+    }
+
+    {
+        container_type db{0, 100, "-"};
+        db.insert_back(10, 25, "10-25");
+
+        const std::vector<node_type> expected = {
+            {0, 10, "-"},
+            {10, 25, "10-25"},
+            {25, 100, "-"},
+        };
+
+        std::cout << "--" << std::endl;
+
+        std::vector<node_type> actual;
+        for (const node_type& v : db.segment_range())
+        {
+            std::cout << "start=" << v.start << "; end=" << v.end << "; value='" << v.value << "'" << std::endl;
+            actual.push_back(v);
+        }
+
+        assert(expected == actual);
+
+        // Use it with structured binding
+        std::cout << "--" << std::endl;
+        actual.clear();
+        for (const auto& [start, end, value] : db.segment_range())
+        {
+            std::cout << "start=" << start << "; end=" << end << "; value='" << value << "'" << std::endl;
+            actual.emplace_back(start, end, value);
+        }
+
+        assert(expected == actual);
+    }
+}
+
 int main(int argc, char** argv)
 {
     try
@@ -2326,6 +2386,7 @@ int main(int argc, char** argv)
             fst_test_insert_out_of_bound();
             fst_test_insert_out_of_bound_2();
             fst_test_segment_iterator();
+            fst_test_segment_range();
         }
 
         if (opt.test_perf)

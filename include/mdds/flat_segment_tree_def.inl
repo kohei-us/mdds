@@ -28,6 +28,26 @@
 namespace mdds {
 
 template<typename Key, typename Value>
+flat_segment_tree<Key, Value>::const_segment_range_type::const_segment_range_type(
+    node_ptr left_leaf, node_ptr right_leaf)
+    : m_left_leaf(left_leaf), m_right_leaf(right_leaf)
+{}
+
+template<typename Key, typename Value>
+typename flat_segment_tree<Key, Value>::const_segment_iterator flat_segment_tree<
+    Key, Value>::const_segment_range_type::begin() const
+{
+    return const_segment_iterator(m_left_leaf.get(), m_left_leaf->next.get());
+}
+
+template<typename Key, typename Value>
+typename flat_segment_tree<Key, Value>::const_segment_iterator flat_segment_tree<
+    Key, Value>::const_segment_range_type::end() const
+{
+    return const_segment_iterator(m_right_leaf.get(), nullptr);
+}
+
+template<typename Key, typename Value>
 typename flat_segment_tree<Key, Value>::const_segment_iterator flat_segment_tree<Key, Value>::begin_segment() const
 {
     return const_segment_iterator(m_left_leaf.get(), m_left_leaf->next.get());
@@ -37,6 +57,12 @@ template<typename Key, typename Value>
 typename flat_segment_tree<Key, Value>::const_segment_iterator flat_segment_tree<Key, Value>::end_segment() const
 {
     return const_segment_iterator(m_right_leaf.get(), nullptr);
+}
+
+template<typename Key, typename Value>
+typename flat_segment_tree<Key, Value>::const_segment_range_type flat_segment_tree<Key, Value>::segment_range() const
+{
+    return const_segment_range_type(m_left_leaf, m_right_leaf);
 }
 
 template<typename Key, typename Value>
