@@ -2325,6 +2325,72 @@ void fst_test_segment_range()
     }
 }
 
+class custom_key_type
+{
+    long value;
+
+public:
+    custom_key_type() : value(0)
+    {}
+    custom_key_type(const std::string& src) : value(std::stol(src))
+    {}
+
+    bool operator==(const custom_key_type& other) const
+    {
+        return value == other.value;
+    }
+
+    bool operator!=(const custom_key_type& other) const
+    {
+        return !operator==(other);
+    }
+
+    bool operator<(const custom_key_type& other) const
+    {
+        return value < other.value;
+    }
+
+    bool operator<=(const custom_key_type& other) const
+    {
+        return value <= other.value;
+    }
+
+    bool operator>(const custom_key_type& other) const
+    {
+        return value > other.value;
+    }
+
+    bool operator>=(const custom_key_type& other) const
+    {
+        return value >= other.value;
+    }
+};
+
+void fst_test_custom_key_type()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using container_type = mdds::flat_segment_tree<custom_key_type, std::string>;
+    using node_type = container_type::const_segment_iterator::value_type;
+
+    container_type db(custom_key_type{"0"}, custom_key_type{"123"}, "-");
+
+    db.insert_back(custom_key_type{"10"}, custom_key_type{"45"}, "10-45");
+
+    const std::vector<node_type> expected = {
+        {custom_key_type{"0"}, custom_key_type{"10"}, "-"},
+        {custom_key_type{"10"}, custom_key_type{"45"}, "10-45"},
+        {custom_key_type{"45"}, custom_key_type{"123"}, "-"},
+    };
+
+    std::vector<node_type> actual;
+
+    for (const node_type& v : db.segment_range())
+        actual.push_back(v);
+
+    assert(expected == actual);
+}
+
 int main(int argc, char** argv)
 {
     try
@@ -2387,6 +2453,7 @@ int main(int argc, char** argv)
             fst_test_insert_out_of_bound_2();
             fst_test_segment_iterator();
             fst_test_segment_range();
+            fst_test_custom_key_type();
         }
 
         if (opt.test_perf)
