@@ -2355,6 +2355,7 @@ public:
         return value <= other.value;
     }
 
+#if 0 // intentionally not implementing these operators
     bool operator>(const custom_key_type& other) const
     {
         return value > other.value;
@@ -2364,6 +2365,7 @@ public:
     {
         return value >= other.value;
     }
+#endif
 };
 
 void fst_test_custom_key_type()

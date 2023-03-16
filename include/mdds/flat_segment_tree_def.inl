@@ -762,7 +762,7 @@ const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value
     const node* cur_node = start_pos;
     while (cur_node)
     {
-        if (key > cur_node->value_leaf.key)
+        if (cur_node->value_leaf.key < key)
         {
             // Found the insertion position.
             return cur_node;
@@ -800,11 +800,11 @@ void flat_segment_tree<Key, Value>::destroy()
 template<typename Key, typename Value>
 bool flat_segment_tree<Key, Value>::adjust_segment_range(key_type& start_key, key_type& end_key) const
 {
-    if (start_key >= end_key)
+    if (end_key <= start_key)
         // Invalid order of segment range.
         return false;
 
-    if (end_key < m_left_leaf->value_leaf.key || start_key >= m_right_leaf->value_leaf.key)
+    if (end_key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= start_key)
         // The new segment does not overlap the current interval.
         return false;
 
@@ -812,7 +812,7 @@ bool flat_segment_tree<Key, Value>::adjust_segment_range(key_type& start_key, ke
         // The start value should not be smaller than the current minimum.
         start_key = m_left_leaf->value_leaf.key;
 
-    if (end_key > m_right_leaf->value_leaf.key)
+    if (m_right_leaf->value_leaf.key < end_key)
         // The end value should not be larger than the current maximum.
         end_key = m_right_leaf->value_leaf.key;
 
