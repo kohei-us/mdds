@@ -617,11 +617,25 @@ template<typename Key, typename Value>
 template<typename Key, typename Value>
 typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Value>::search(key_type key) const
 {
+    return search_by_key_impl(m_left_leaf.get(), key);
+}
+
+template<typename Key, typename Value>
+typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Value>::search(
+    const const_iterator& pos, key_type key) const
+{
+    return search_by_key_impl(pos.get_pos(), key);
+}
+
+template<typename Key, typename Value>
+typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Value>::search_by_key_impl(
+    const node* start_pos, key_type key) const
+{
     if (key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= key)
         // key value is out-of-bound.
         return const_iterator(this, true);
 
-    const node* pos = get_insertion_pos_leaf(key, m_left_leaf.get());
+    const node* pos = get_insertion_pos_leaf(key, start_pos);
     if (!pos)
         return const_iterator(this, true);
 

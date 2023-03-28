@@ -511,13 +511,27 @@ public:
     /**
      * Perform leaf-node search for a value associated with a key.
      *
-     * @param key key value.
+     * @param key Key value to perform search for.
      *
      * @return iterator position associated with the start position of the
      *         segment containing the key, or end iterator position upon search
      *         failure.
      */
     const_iterator search(key_type key) const;
+
+    /**
+     * Perform leaf-node search for a value associated with a key.
+     *
+     * @param pos Position from which the search should start if valid. In case
+     *            of an invalid position, it falls back to a search starting
+     *            with the first position.
+     * @param key Key value to perform search for.
+     *
+     * @return iterator position associated with the start position of the
+     *         segment containing the key, or end iterator position upon search
+     *         failure.
+     */
+    const_iterator search(const const_iterator& pos, key_type key) const;
 
     /**
      * Perform tree search for a value associated with a key.  This method
@@ -726,6 +740,9 @@ public:
 #endif
 
 private:
+
+    const_iterator search_by_key_impl(const node* start_pos, key_type key) const;
+
     void append_new_segment(key_type start_key)
     {
         if (m_right_leaf->prev->value_leaf.key == start_key)

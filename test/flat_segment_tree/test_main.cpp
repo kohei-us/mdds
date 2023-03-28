@@ -160,9 +160,32 @@ void fst_test_leaf_search_2()
         {4, 4, 6, "4-6"}, {5, 4, 6, "4-6"}, {6, 6, 8, "-"},   {7, 6, 8, "-"},
     };
 
+    // variant of search() without a position hint
     for (const auto& c : checks)
     {
         it = db.search(c.key);
+        assert(it != db.end());
+        assert(it->first == c.start);
+        assert(it->second == c.value);
+
+        auto sit = it.to_segment();
+        assert(sit->start == c.start);
+        assert(sit->end == c.end);
+        assert(sit->value == c.value);
+    }
+
+    // variant of search() with a position hint
+
+    it = db.search(db.begin(), -1); // out-of-bound
+    assert(it == db.end());
+
+    it = db.search(db.begin(), 8); // out-of-bound
+    assert(it == db.end());
+
+    it = db.begin();
+    for (const auto& c : checks)
+    {
+        it = db.search(it, c.key);
         assert(it != db.end());
         assert(it->first == c.start);
         assert(it->second == c.value);
