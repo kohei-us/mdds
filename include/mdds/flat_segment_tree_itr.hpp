@@ -170,9 +170,15 @@ protected:
     {
         return m_pos;
     }
+
     const fst_type* get_parent() const
     {
         return m_db;
+    }
+
+    bool is_end_pos() const
+    {
+        return m_end_pos;
     }
 
 private:

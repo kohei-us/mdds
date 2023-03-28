@@ -28,6 +28,18 @@
 namespace mdds {
 
 template<typename Key, typename Value>
+typename flat_segment_tree<Key, Value>::const_segment_iterator flat_segment_tree<
+    Key, Value>::const_iterator::to_segment() const
+{
+    const node* pos = get_pos();
+    const auto* parent = get_parent();
+    if (!parent || is_end_pos() || !pos || !pos->next)
+        return parent->end_segment();
+
+    return const_segment_iterator(pos, pos->next.get());
+}
+
+template<typename Key, typename Value>
 flat_segment_tree<Key, Value>::const_segment_range_type::const_segment_range_type(
     node_ptr left_leaf, node_ptr right_leaf)
     : m_left_leaf(left_leaf), m_right_leaf(right_leaf)
@@ -603,6 +615,25 @@ template<typename Key, typename Value>
 }
 
 template<typename Key, typename Value>
+typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Value>::search(key_type key) const
+{
+    if (key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= key)
+        // key value is out-of-bound.
+        return const_iterator(this, true);
+
+    const node* pos = get_insertion_pos_leaf(key, m_left_leaf.get());
+    if (!pos)
+        return const_iterator(this, true);
+
+    if (pos->value_leaf.key == key)
+        return const_iterator(this, pos);
+    else if (pos->prev && pos->prev->value_leaf.key < key)
+        return const_iterator(this, pos->prev.get());
+
+    return const_iterator(this, true);
+}
+
+template<typename Key, typename Value>
 std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_segment_tree<Key, Value>::search_tree(
     key_type key, value_type& value, key_type* start_key, key_type* end_key) const
 {
@@ -776,6 +807,8 @@ template<typename Key, typename Value>
 const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value>::get_insertion_pos_leaf(
     const key_type& key, const node* start_pos) const
 {
+    assert(m_left_leaf->value_leaf.key <= key);
+
     const node* cur_node = start_pos;
     while (cur_node)
     {

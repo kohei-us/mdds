@@ -181,6 +181,8 @@ private:
     friend struct ::mdds::fst::detail::reverse_itr_handler<flat_segment_tree>;
 
 public:
+    using const_segment_iterator = mdds::fst::detail::const_segment_iterator<flat_segment_tree>;
+
     class const_iterator : public ::mdds::fst::detail::const_iterator_base<
                                flat_segment_tree, ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>>
     {
@@ -189,9 +191,19 @@ public:
             base_type;
         friend class flat_segment_tree;
 
+        using base_type::get_parent;
+        using base_type::get_pos;
+        using base_type::is_end_pos;
+
     public:
         const_iterator() : base_type(nullptr, false)
         {}
+
+        /**
+         * Create a segment iterator that references the same segment the source
+         * iterator references the start key of.
+         */
+        const_segment_iterator to_segment() const;
 
     private:
         explicit const_iterator(const typename base_type::fst_type* _db, bool _end) : base_type(_db, _end)
@@ -217,8 +229,6 @@ public:
         explicit const_reverse_iterator(const typename base_type::fst_type* _db, bool _end) : base_type(_db, _end)
         {}
     };
-
-    using const_segment_iterator = mdds::fst::detail::const_segment_iterator<flat_segment_tree>;
 
     class const_segment_range_type
     {
@@ -481,7 +491,7 @@ public:
      *
      * @param pos position from which the search should start.  When the
      *            position is invalid, it falls back to the normal search.
-     * @param key key value
+     * @param key key value.
      * @param value value associated with key specified gets stored upon
      *              successful search.
      * @param start_key pointer to a variable where the start key value of the
@@ -497,6 +507,17 @@ public:
     std::pair<const_iterator, bool> search(
         const const_iterator& pos, key_type key, value_type& value, key_type* start_key = nullptr,
         key_type* end_key = nullptr) const;
+
+    /**
+     * Perform leaf-node search for a value associated with a key.
+     *
+     * @param key key value.
+     *
+     * @return iterator position associated with the start position of the
+     *         segment containing the key, or end iterator position upon search
+     *         failure.
+     */
+    const_iterator search(key_type key) const;
 
     /**
      * Perform tree search for a value associated with a key.  This method
@@ -745,6 +766,16 @@ private:
 
     const node* get_insertion_pos_leaf_reverse(const key_type& key, const node* start_pos) const;
 
+    /**
+     * Find a node with the largest value whose key equals or less than a
+     * specified key, starting with a specific node.
+     *
+     * @pre The caller must ensure that the key equals or greater than the min
+     *      key.
+     *
+     * @note If the key exceeds the max key value, it will return
+     *       <code>nullptr</code>.
+     */
     const node* get_insertion_pos_leaf(const key_type& key, const node* start_pos) const;
 
     static void shift_leaf_key_left(node_ptr& begin_node, node_ptr& end_node, key_type shift_value)
