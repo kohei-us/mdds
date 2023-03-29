@@ -513,7 +513,7 @@ public:
      *
      * @param key Key value to perform search for.
      *
-     * @return iterator position associated with the start position of the
+     * @return Iterator position associated with the start position of the
      *         segment containing the key, or end iterator position upon search
      *         failure.
      */
@@ -527,9 +527,9 @@ public:
      *            with the first position.
      * @param key Key value to perform search for.
      *
-     * @return iterator position associated with the start position of the
-     *         segment containing the key, or end iterator position upon search
-     *         failure.
+     * @return Iterator position associated with the start position of the
+     *         segment containing the key, or end iterator position if the
+     *         search has failed.
      */
     const_iterator search(const const_iterator& pos, key_type key) const;
 
@@ -554,6 +554,18 @@ public:
      */
     std::pair<const_iterator, bool> search_tree(
         key_type key, value_type& value, key_type* start_key = nullptr, key_type* end_key = nullptr) const;
+
+    /**
+     * Perform tree search for a value associated with a key.  The tree must be
+     * valid before performing the search, else the search will fail.
+     *
+     * @param key Key value to perform search for.
+     *
+     * @return Iterator position associated with the start position of the
+     *         segment containing the key, or end iterator position if the
+     *         search has failed.
+     */
+    const_iterator search_tree(key_type key) const;
 
     /**
      * Build a tree of non-leaf nodes based on the values stored in the leaf
@@ -740,7 +752,6 @@ public:
 #endif
 
 private:
-
     const_iterator search_by_key_impl(const node* start_pos, key_type key) const;
 
     const node* search_tree_for_leaf_node(key_type key) const;

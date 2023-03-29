@@ -675,8 +675,18 @@ std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_seg
 }
 
 template<typename Key, typename Value>
-const typename flat_segment_tree<Key, Value>::node*
-flat_segment_tree<Key, Value>::search_tree_for_leaf_node(key_type key) const
+typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Value>::search_tree(key_type key) const
+{
+    const node* dest_node = search_tree_for_leaf_node(key);
+    if (!dest_node)
+        return const_iterator(this, true);
+
+    return const_iterator(this, dest_node);
+}
+
+template<typename Key, typename Value>
+const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value>::search_tree_for_leaf_node(
+    key_type key) const
 {
     if (!m_root_node || !m_valid_tree)
     {

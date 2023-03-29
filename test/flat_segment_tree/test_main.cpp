@@ -346,6 +346,51 @@ void fst_test_tree_search()
     assert(ret.first == db.end());
 }
 
+void fst_test_tree_search_2()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using db_type = mdds::flat_segment_tree<int32_t, std::string>;
+    db_type db(0, 8, "-");
+    db.insert_back(2, 4, "2-4");
+    db.insert_back(4, 6, "4-6");
+
+    db.build_tree();
+
+    db_type::const_iterator it = db.search_tree(-1); // out-of-bound
+    assert(it == db.end());
+
+    it = db.search_tree(8); // out-of-bound
+    assert(it == db.end());
+
+    struct check
+    {
+        int32_t key;
+        int32_t start;
+        int32_t end;
+        std::string value;
+    };
+
+    std::vector<check> checks = {
+        {0, 0, 2, "-"},   {1, 0, 2, "-"},   {2, 2, 4, "2-4"}, {3, 2, 4, "2-4"},
+        {4, 4, 6, "4-6"}, {5, 4, 6, "4-6"}, {6, 6, 8, "-"},   {7, 6, 8, "-"},
+    };
+
+    // variant of search() without a position hint
+    for (const auto& c : checks)
+    {
+        it = db.search_tree(c.key);
+        assert(it != db.end());
+        assert(it->first == c.start);
+        assert(it->second == c.value);
+
+        auto sit = it.to_segment();
+        assert(sit->start == c.start);
+        assert(sit->end == c.end);
+        assert(sit->value == c.value);
+    }
+}
+
 void test_single_tree_search(const flat_segment_tree<int, int>& db, int key, int val, int start, int end)
 {
     int r_val, r_start, r_end;
@@ -2497,6 +2542,7 @@ int main(int argc, char** argv)
             fst_test_leaf_search_2();
             fst_test_tree_build();
             fst_test_tree_search();
+            fst_test_tree_search_2();
             fst_test_insert_search_mix();
             fst_test_shift_left();
             fst_test_shift_left_right_edge();
