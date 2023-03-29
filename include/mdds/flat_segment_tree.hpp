@@ -743,6 +743,8 @@ private:
 
     const_iterator search_by_key_impl(const node* start_pos, key_type key) const;
 
+    const node* search_tree_for_leaf_node(key_type key) const;
+
     void append_new_segment(key_type start_key)
     {
         if (m_right_leaf->prev->value_leaf.key == start_key)

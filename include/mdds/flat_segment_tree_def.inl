@@ -651,17 +651,43 @@ template<typename Key, typename Value>
 std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_segment_tree<Key, Value>::search_tree(
     key_type key, value_type& value, key_type* start_key, key_type* end_key) const
 {
-    typedef std::pair<const_iterator, bool> ret_type;
+    using ret_type = std::pair<const_iterator, bool>;
+
+    const node* dest_node = search_tree_for_leaf_node(key);
+    if (!dest_node)
+        return ret_type(const_iterator(this, true), false);
+
+    value = dest_node->value_leaf.value;
+    if (start_key)
+        *start_key = dest_node->value_leaf.key;
+
+    if (end_key)
+    {
+        assert(dest_node->next);
+        if (dest_node->next)
+            *end_key = dest_node->next->value_leaf.key;
+        else
+            // This should never happen, but just in case....
+            *end_key = m_right_leaf->value_leaf.key;
+    }
+
+    return ret_type(const_iterator(this, dest_node), true);
+}
+
+template<typename Key, typename Value>
+const typename flat_segment_tree<Key, Value>::node*
+flat_segment_tree<Key, Value>::search_tree_for_leaf_node(key_type key) const
+{
     if (!m_root_node || !m_valid_tree)
     {
         // either tree has not been built, or is in an invalid state.
-        return ret_type(const_iterator(this, true), false);
+        return nullptr;
     }
 
     if (key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= key)
     {
         // key value is out-of-bound.
-        return ret_type(const_iterator(this, true), false);
+        return nullptr;
     }
 
     // Descend down the tree through the last non-leaf layer.
@@ -686,7 +712,7 @@ std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_seg
         else
         {
             // left child node can't be missing !
-            return ret_type(const_iterator(this, true), false);
+            return nullptr;
         }
 
         if (cur_node->right)
@@ -701,7 +727,7 @@ std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_seg
                 continue;
             }
         }
-        return ret_type(const_iterator(this, true), false);
+        return nullptr;
     }
 
     // Current node must be a non-leaf whose child nodes are leaf nodes.
@@ -723,25 +749,9 @@ std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_seg
     }
 
     if (!dest_node)
-    {
-        return ret_type(const_iterator(this, true), false);
-    }
+        return nullptr;
 
-    value = dest_node->value_leaf.value;
-    if (start_key)
-        *start_key = dest_node->value_leaf.key;
-
-    if (end_key)
-    {
-        assert(dest_node->next);
-        if (dest_node->next)
-            *end_key = dest_node->next->value_leaf.key;
-        else
-            // This should never happen, but just in case....
-            *end_key = m_right_leaf->value_leaf.key;
-    }
-
-    return ret_type(const_iterator(this, dest_node), true);
+    return dest_node;
 }
 
 template<typename Key, typename Value>
