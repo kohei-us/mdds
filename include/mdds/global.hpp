@@ -163,6 +163,24 @@ struct const_or_not<T, std::false_type>
 template<typename T, bool Const>
 using const_t = typename const_or_not<T, bool_constant<Const>>::type;
 
+template<typename T, typename Mutable>
+struct mutable_or_not;
+
+template<typename T>
+struct mutable_or_not<T, std::true_type>
+{
+    using type = T;
+};
+
+template<typename T>
+struct mutable_or_not<T, std::false_type>
+{
+    using type = typename std::add_const<T>::type;
+};
+
+template<typename T, bool Mutable>
+using mutable_t = typename mutable_or_not<T, std::bool_constant<Mutable>>::type;
+
 template<typename T, typename IsConst>
 struct get_iterator_type;
 

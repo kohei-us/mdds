@@ -397,6 +397,34 @@ public:
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
     typedef ValueT value_type;
 
+private:
+    template<bool Mutable>
+    class base_range_type
+    {
+        using block_type = mdds::detail::mutable_t<base_element_block, Mutable>;
+        block_type& m_blk;
+
+    public:
+        using iter_type = std::conditional_t<Mutable, iterator, const_iterator>;
+
+        base_range_type(block_type& blk) : m_blk(blk)
+        {}
+
+        iter_type begin()
+        {
+            return element_block::begin(m_blk);
+        }
+
+        iter_type end()
+        {
+            return element_block::end(m_blk);
+        }
+    };
+
+public:
+    using range_type = base_range_type<true>;
+    using const_range_type = base_range_type<false>;
+
     bool operator==(const Self& r) const
     {
         return m_array == r.m_array;
@@ -485,6 +513,16 @@ public:
     static const_reverse_iterator crend(const base_element_block& block)
     {
         return get(block).m_array.rend();
+    }
+
+    static const_range_type range(const base_element_block& block)
+    {
+        return const_range_type(block);
+    }
+
+    static range_type range(base_element_block& block)
+    {
+        return range_type(block);
     }
 
     static Self& get(base_element_block& block)

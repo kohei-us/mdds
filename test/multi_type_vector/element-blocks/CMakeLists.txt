@@ -6,6 +6,7 @@ add_executable(${TARGET_NAME} EXCLUDE_FROM_ALL
     test_basic.cpp
     test_std_vector_bool.cpp
     test_store_types.cpp
+    test_functions.cpp
 )
 
 add_executable(${TARGET_NAME}-aos EXCLUDE_FROM_ALL

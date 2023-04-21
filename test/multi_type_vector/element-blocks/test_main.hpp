@@ -39,5 +39,6 @@ void mtv_test_element_blocks_std_deque();
 void mtv_test_element_blocks_std_vector_bool();
 void mtv_test_element_blocks_std_deque_bool();
 void mtv_test_element_blocks_delayed_delete_vector_bool();
+void mtv_test_element_blocks_range();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

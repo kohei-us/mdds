@@ -10,6 +10,7 @@ test_SOURCES = \
 	test_basic.cpp \
 	test_std_vector_bool.cpp \
 	test_store_types.cpp \
+	test_functions.cpp \
 	$(top_srcdir)/test/test_global.cpp
 
 test_soa_SOURCES = \

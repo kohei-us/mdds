@@ -38,6 +38,7 @@ int main()
         mtv_test_element_blocks_std_vector_bool();
         mtv_test_element_blocks_std_deque_bool();
         mtv_test_element_blocks_delayed_delete_vector_bool();
+        mtv_test_element_blocks_range();
     }
     catch (const std::exception& e)
     {
