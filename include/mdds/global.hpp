@@ -125,9 +125,6 @@ public:
     {}
 };
 
-template<bool B>
-using bool_constant = std::integral_constant<bool, B>;
-
 namespace detail {
 
 template<typename T>
@@ -161,7 +158,7 @@ struct const_or_not<T, std::false_type>
 };
 
 template<typename T, bool Const>
-using const_t = typename const_or_not<T, bool_constant<Const>>::type;
+using const_t = typename const_or_not<T, std::bool_constant<Const>>::type;
 
 template<typename T, typename Mutable>
 struct mutable_or_not;

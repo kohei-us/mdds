@@ -90,7 +90,7 @@ class iterator_base
 protected:
     using trie_type = _TrieType;
 
-    using _is_const = bool_constant<IsConst>;
+    using _is_const = std::bool_constant<IsConst>;
 
     friend trie_type;
     friend search_results<trie_type>;
