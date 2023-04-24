@@ -29,35 +29,53 @@
 #include <mdds/flat_segment_tree.hpp>
 #include <iostream>
 
-using std::cout;
-using std::endl;
-using fst_type = mdds::flat_segment_tree<long, int>;
-
 int main() try
 {
-    // Define the begin and end points of the whole segment, and the default 
+    //!code-start: type
+    using fst_type = mdds::flat_segment_tree<long, int>;
+    //!code-end: type
+
+    //!code-start: instance
+    // Define the begin and end points of the whole segment, and the default
     // value.
     fst_type db(0, 500, 0);
-    
+    //!code-end: instance
+
+    //!code-start: insert-1
     db.insert_front(10, 20, 10);
     db.insert_back(50, 70, 15);
+    //!code-end: insert-1
+
+    //!code-start: insert-2
     db.insert_back(60, 65, 5);
+    //!code-end: insert-2
 
-    int value = -1;
-    long beg = -1, end = -1;
+    //!code-start: linear-search
+    // Perform linear search.  This doesn't require the tree to be built ahead
+    // of time.
+    if (auto it = db.search(15); it != db.end())
+    {
+        auto segment = it.to_segment();
+        std::cout << "The value at 15 is " << segment->value
+            << ", and this segment spans from " << segment->start << " to "
+            << segment->end << std::endl;
+    }
+    //!code-end: linear-search
 
-    // Perform linear search.  This doesn't require the tree to be built 
-    // beforehand.  Note that the begin and end point parameters are optional.
-    db.search(15, value, &beg, &end);
-    cout << "The value at 15 is " << value << ", and this segment spans from " << beg << " to " << end << endl;;
-
+    //!code-start: tree-search
     // Don't forget to build tree before calling search_tree().
     db.build_tree();
 
     // Perform tree search.  Tree search is generally a lot faster than linear
-    // search, but requires the tree to be built beforehand.
-    db.search_tree(62, value, &beg, &end);
-    cout << "The value at 62 is " << value << ", and this segment spans from " << beg << " to " << end << endl;;
+    // search, but requires the tree to be built ahead of time.
+    if (auto it = db.search_tree(62); it != db.end())
+    {
+        auto segment = it.to_segment();
+        std::cout << "The value at 62 is " << segment->value
+            << ", and this segment spans from " << segment->start << " to "
+            << segment->end << std::endl;
+    }
+    //!code-end: tree-search
 }
 catch (...)
 {

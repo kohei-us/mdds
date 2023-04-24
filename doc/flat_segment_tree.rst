@@ -28,24 +28,29 @@ used only for queries.
 Quick start
 -----------
 
-The following code demonstrates a simple use case of storing non-overlapping
-ranged values and performing queries using :cpp:class:`~mdds::flat_segment_tree`:
+This section demonstrates a simple use case of storing non-overlapping ranged
+values and performing queries using :cpp:class:`~mdds::flat_segment_tree`.
+
+First, we need to instantiate a concrete type from the template:
 
 .. literalinclude:: ../example/flat_segment_tree.cpp
    :language: C++
-   :lines: 29-61
+   :start-after: //!code-start: type
+   :end-before: //!code-end: type
+   :dedent: 4
 
-Let's walk through this code step-by-step.  The first step is to declare the
-instance::
+then create an instance of this type:
 
-    // Define the begin and end points of the whole segment, and the default
-    // value.
-    fst_type db(0, 500, 0);
+.. literalinclude:: ../example/flat_segment_tree.cpp
+   :language: C++
+   :start-after: //!code-start: instance
+   :end-before: //!code-end: instance
+   :dedent: 4
 
 Here, the first and second arguments specify the lower and upper boundaries of
 the whole segment.  The third argument specifies the value for the empty
 segments.  What this line does is to create a new instance and initializes it
-with one initial segment ranging from 0 to 500 with a value of 0.
+with one initial segment ranging from 0 to 500 with a value of 0:
 
 .. figure:: _static/images/fst_example1_initial.png
    :align: center
@@ -53,14 +58,18 @@ with one initial segment ranging from 0 to 500 with a value of 0.
 Internally, this initial range is represented by two leaf nodes, with the
 first one storing the start key and the value for the segment both of which
 happen to be 0 in this example, and the second one storing the end key of 500.
+Note that the end key of a segment is not inclusive.
 
-The following lines insert two new segments into this structure::
+The following lines insert two new segments into this structure:
 
-    db.insert_front(10, 20, 10);
-    db.insert_back(50, 70, 15);
+.. literalinclude:: ../example/flat_segment_tree.cpp
+   :language: C++
+   :start-after: //!code-start: insert-1
+   :end-before: //!code-end: insert-1
+   :dedent: 4
 
 The first line inserts a segment ranging from 10 to 20 with a value of 10, and
-the second line from 50 to 70 with a value of 15.
+the second line from 50 to 70 with a value of 15:
 
 .. figure:: _static/images/fst_example1_insert1.png
    :align: center
@@ -73,57 +82,58 @@ the insertion point from the first node associated with the minimum key value,
 whereas :cpp:func:`~mdds::flat_segment_tree::insert_back` starts its search
 from the last node associated with the maximum key value.
 
-At this point, the tree contains six leaf nodes in total to represent all
-stored segments.  Note that one leaf node represents both the end of a segment
-and the start of the adjacent segment that comes after it, unless it's either
-the first or the last node.
+After the insertions, the tree now contains a total of six leaf nodes to
+represent all stored segments.  Note that one leaf node typically represents
+both the end of a segment and the start of the adjacent segment that comes
+after it, unless it's either the first or the last node.
 
 The next line inserts another segment ranging from 60 to 65 having a value of
-5::
+5:
 
-    db.insert_back(60, 65, 5);
+.. literalinclude:: ../example/flat_segment_tree.cpp
+   :language: C++
+   :start-after: //!code-start: insert-2
+   :end-before: //!code-end: insert-2
+   :dedent: 4
 
 As this new segment overlaps with the existing segment of 50 to 70, it will
-cut into a middle part of that segment to make room for itself.  At this point,
-the tree contains eight leaf nodes representing seven segments in total.
+cut into a middle part of that segment to make room for the new segment.  At
+this point, the tree contains a total of eight leaf nodes representing seven
+segments:
 
 .. figure:: _static/images/fst_example1_insert2.png
    :align: center
 
-The next part queries the value associated with a key value of 15 via
-:cpp:func:`~mdds::flat_segment_tree::search`::
+Next, we are going to query the value associated with a key of 15 via
+:cpp:func:`~mdds::flat_segment_tree::search`:
 
-    int value = -1;
-    long beg = -1, end = -1;
+.. literalinclude:: ../example/flat_segment_tree.cpp
+   :language: C++
+   :start-after: //!code-start: linear-search
+   :end-before: //!code-end: linear-search
+   :dedent: 4
 
-    // Perform linear search.  This doesn't require the tree to be built
-    // beforehand.  Note that the begin and end point parameters are optional.
-    db.search(15, value, &beg, &end);
-    cout << "The value at 15 is " << value << ", and this segment spans from " << beg << " to " << end << endl;;
-
-When executing this code, you will see the following output:
+Executing this code will yield the following output:
 
 .. code-block:: none
 
     The value at 15 is 10, and this segment spans from 10 to 20
 
 One thing to note is that the :cpp:func:`~mdds::flat_segment_tree::search`
-method performs a linear search which involves traversing only through
-the leaf nodes of the structure in order to find the target segment.  As such,
-the worst-case lookup performance is directly proportional to the number of
-linear nodes.
+method performs a linear search which involves traversing only through the
+leaf nodes in this data structure in order to find the target segment.  As
+such, the worst-case lookup performance is directly proportional to the number
+of leaf nodes.
 
 There is another way to perform the query with better worse-case performance,
 that is through :cpp:func:`~mdds::flat_segment_tree::search_tree` as seen in
-the following code::
+the following code:
 
-    // Don't forget to build tree before calling search_tree().
-    db.build_tree();
-
-    // Perform tree search.  Tree search is generally a lot faster than linear
-    // search, but requires the tree to be built beforehand.
-    db.search_tree(62, value, &beg, &end);
-    cout << "The value at 62 is " << value << ", and this segment spans from " << beg << " to " << end << endl;;
+.. literalinclude:: ../example/flat_segment_tree.cpp
+   :language: C++
+   :start-after: //!code-start: tree-search
+   :end-before: //!code-end: tree-search
+   :dedent: 4
 
 The signature of the :cpp:func:`~mdds::flat_segment_tree::search_tree` method
 is identical to that of the :cpp:func:`~mdds::flat_segment_tree::search` method
@@ -136,7 +146,16 @@ except for the name.  This code generates the following output:
 Query via :cpp:func:`~mdds::flat_segment_tree::search_tree` generally performs
 better since it traverses through the search tree to find the target segment.
 But it does require the search tree to be built ahead of time by calling
-:cpp:func:`~mdds::flat_segment_tree::build_tree`.
+:cpp:func:`~mdds::flat_segment_tree::build_tree`.  Please be aware that if the
+segments have been modified after the tree was last built, you will have to rebuild
+the tree by calling :cpp:func:`~mdds::flat_segment_tree::build_tree`.
+
+.. warning::
+
+   You need to build the tree by calling :cpp:func:`~mdds::flat_segment_tree::build_tree`
+   before performing a tree-based search via :cpp:func:`~mdds::flat_segment_tree::search_tree`.
+   If the segments have been modified after the tree was last built, you will have to
+   rebuild the tree by calling :cpp:func:`~mdds::flat_segment_tree::build_tree` again.
 
 
 Iterate through stored segments

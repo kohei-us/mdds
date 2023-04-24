@@ -40,7 +40,7 @@ void mtv_test_element_blocks_range()
     constexpr mdds::mtv::element_t element_type_int32 = mdds::mtv::element_type_user_start + 2;
     using block_type = mdds::mtv::default_element_block<element_type_int32, std::int32_t, std::vector>;
 
-    const std::vector<std::int8_t> values = { 1, 2, 3, 4, 5 };
+    const std::vector<std::int8_t> values = {1, 2, 3, 4, 5};
     auto blk = block_type(values.begin(), values.end());
     const auto& crblk = blk;
 
@@ -93,4 +93,3 @@ void mtv_test_element_blocks_range()
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-
