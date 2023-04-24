@@ -170,13 +170,9 @@ code with the tree from the example code above, you'll get the following output:
 
 Each node stores the start key and the value of the segment it initiates, and
 the key stored in each node is also the end key of the segment that the
-previous node initiates except for the first node.
-
-except
-for the last node, which stores the end key of the segment the previous note
-initiates.  Note that the value stored in the last node is not associated with
-any of the segments stored in the tree; in fact it is the default value for
-empty segments.
+previous node initiates except for the first node.  Note that the value stored
+in the last node is currently not used.  It is set to be the zero value of the
+value type, but this may change in the future.
 
 One thing to keep in mind is that :cpp:class:`~mdds::flat_segment_tree` does
 not support mutable iterators that let you modify the stored keys or values.
