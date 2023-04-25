@@ -170,12 +170,13 @@ Iterate through stored segments
 :cpp:class:`~mdds::flat_segment_tree` supports two types of iterators to allow
 you to iterate through the segments stored in your tree.  The first way is to
 iterate through the individual leaf nodes one at a time by using
-:cpp:func:`~mdds::flat_segment_tree::begin` and :cpp:func:`~mdds::flat_segment_tree::end`::
+:cpp:func:`~mdds::flat_segment_tree::begin` and :cpp:func:`~mdds::flat_segment_tree::end`:
 
-    for (auto it = db.begin(); it != db.end(); ++it)
-    {
-        cout << "key: " << it->first << "; value: " << it->second << endl;
-    }
+.. literalinclude:: ../example/flat_segment_tree_itrs.cpp
+   :language: C++
+   :start-after: //!code-start: iterate-nodes
+   :end-before: //!code-end: iterate-nodes
+   :dedent: 4
 
 Each iterator value contains a pair of two values named ``first`` and ``second``,
 with the first one being the key of the segment that the node initiates, and the
@@ -208,32 +209,35 @@ not support mutable iterators that let you modify the stored keys or values.
    you can only traverse the values in a read-only fashion.
 
 You can also use range-based for loop to iterate through the leaf nodes in a
-similar fashion::
+similar fashion:
 
-    for (const auto& node : db)
-    {
-        cout << "key: " << node.first << "; value: " << node.second << endl;
-    }
+.. literalinclude:: ../example/flat_segment_tree_itrs.cpp
+   :language: C++
+   :start-after: //!code-start: loop-nodes
+   :end-before: //!code-end: loop-nodes
+   :dedent: 4
 
 The output from this code is identical to that from the previous one.
 
 Now, one major inconvenience of navigating through the individual leaf nodes
-one node at a time is that you need to keep track of the start and end points
-of each segment if you need to operate on the segments rather than the nodes
-that comprise the segments.  The good news is that :cpp:class:`~mdds::flat_segment_tree`
-does provide a way to iterate through the segments directly as the following
-code demonstrates::
+is that you need to manually keep track of the start and end points of each
+segment if you need to operate on the segments rather than the nodes that
+comprise the segments.  The good news is that
+:cpp:class:`~mdds::flat_segment_tree` does provide a way to iterate through
+the segments directly as the following code demonstrates:
 
-    for (auto it = db.begin_segment(); it != db.end_segment(); ++it)
-    {
-        cout << "start: " << it->start << "; end: " << it->end << "; value: " << it->value << endl;
-    }
+.. literalinclude:: ../example/flat_segment_tree_itrs.cpp
+   :language: C++
+   :start-after: //!code-start: iterate-segments
+   :end-before: //!code-end: iterate-segments
+   :dedent: 4
 
 This code uses :cpp:func:`~mdds::flat_segment_tree::begin_segment` and
 :cpp:func:`~mdds::flat_segment_tree::end_segment` to iterate through one
-segment at a time with each iterator value containing ``start``, ``end`` and
-``value`` members that correspond with the start key, end key and the value of
-the segment, respectively.  Running this code produces the following output:
+segment at a time with the value of each iterator containing ``start``,
+``end`` and ``value`` members that correspond with the start key, end key and
+the value of the segment, respectively.  Running this code produces the
+following output:
 
 .. code-block:: none
 
@@ -244,6 +248,17 @@ the segment, respectively.  Running this code produces the following output:
     start: 60; end: 65; value: 5
     start: 65; end: 70; value: 15
     start: 70; end: 500; value: 0
+
+It's also possible to iterate through the segments in a range-based for loop, by
+calling :cpp:func:`~mdds::flat_segment_tree::segment_range()`:
+
+.. literalinclude:: ../example/flat_segment_tree_itrs.cpp
+   :language: C++
+   :start-after: //!code-start: loop-segments
+   :end-before: //!code-end: loop-segments
+   :dedent: 4
+
+This code should generate output identical to that of the previous code.
 
 
 API Reference
