@@ -52,8 +52,10 @@ the whole segment.  The third argument specifies the value for the empty
 segments.  What this line does is to create a new instance and initializes it
 with one initial segment ranging from 0 to 500 with a value of 0:
 
-.. figure:: _static/images/fst_example1_initial.png
+.. figure:: _static/images/fst-example1-initial.svg
    :align: center
+
+   The new instance is initialized with an initial segment.
 
 Internally, this initial range is represented by two leaf nodes, with the
 first one storing the start key and the value for the segment both of which
@@ -71,8 +73,10 @@ The following lines insert two new segments into this structure:
 The first line inserts a segment ranging from 10 to 20 with a value of 10, and
 the second line from 50 to 70 with a value of 15:
 
-.. figure:: _static/images/fst_example1_insert1.png
+.. figure:: _static/images/fst-example1-insert1.svg
    :align: center
+
+   Two new segments have been inserted.
 
 You can insert a new segment either via :cpp:func:`~mdds::flat_segment_tree::insert_front`
 or :cpp:func:`~mdds::flat_segment_tree::insert_back`.  The end result will be
@@ -101,8 +105,10 @@ cut into a middle part of that segment to make room for the new segment.  At
 this point, the tree contains a total of eight leaf nodes representing seven
 segments:
 
-.. figure:: _static/images/fst_example1_insert2.png
+.. figure:: _static/images/fst-example1-insert2.svg
    :align: center
+
+   A new segment has been inserted that overlaps an existing non-empty segment.
 
 Next, we are going to query the value associated with a key of 15 via
 :cpp:func:`~mdds::flat_segment_tree::search`:
