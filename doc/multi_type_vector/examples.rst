@@ -36,7 +36,7 @@ You'll see the following console output when you compile and execute this code:
    empty block of size 7
     - no data -
 
-.. figure:: ../_static/images/mtv_block_structure.png
+.. figure:: ../_static/images/mtv-block-structure.svg
    :align: center
 
    Logical structure between the primary array, blocks, and element blocks.
