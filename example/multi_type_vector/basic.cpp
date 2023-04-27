@@ -40,18 +40,10 @@ using mtv_type = mdds::multi_type_vector<mdds::mtv::standard_element_blocks_trai
 template<typename BlockT>
 void print_block(const mtv_type::value_type& v)
 {
-    // Each element block has static begin() and end() methods that return
-    // begin and end iterators, respectively, from the passed element block
-    // instance.
-    auto it = BlockT::begin(*v.data);
-    auto it_end = BlockT::end(*v.data);
-
-    std::for_each(it, it_end,
-        [](const typename BlockT::value_type& elem)
-        {
-            cout << " * " << elem << endl;
-        }
-    );
+    for (const auto& elem : BlockT::range(*v.data))
+    {
+        cout << " * " << elem << endl;
+    }
 }
 
 int main() try
