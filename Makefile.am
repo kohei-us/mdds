@@ -32,7 +32,15 @@ EXTRA_DIST = \
 	doc/multi_type_vector/index.rst \
 	doc/multi_type_vector/examples.rst \
 	doc/multi_type_vector/api-ref.rst \
-	doc/_static/images/mtv_block_structure.png \
+	doc/_static/images/mtv-block-structure.svg \
+	doc/_static/images/rtree_bounds_src.png \
+	doc/_static/images/mtv_collection_sheet.png \
+	doc/_static/images/rtree_bounds2_tree_bulkload.png \
+	doc/_static/images/rtree_bounds2_tree.png \
+	doc/_static/images/fst-example1-initial.svg \
+	doc/_static/images/fst-example1-insert2.svg \
+	doc/_static/images/rtree_bounds_tree.png \
+	doc/_static/images/fst-example1-insert1.svg \
 	example/rtree_simple.cpp \
 	example/packed_trie_state_int.cpp \
 	example/multi_type_matrix.cpp \
