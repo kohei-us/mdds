@@ -265,7 +265,5 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 breathe_projects = {"mdds": "./_doxygen/xml"}
-
 breathe_default_project = "mdds"
-
 breathe_default_members = ('members', 'undoc-members')
