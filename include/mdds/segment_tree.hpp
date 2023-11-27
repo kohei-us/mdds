@@ -448,41 +448,6 @@ private:
         bool m_end_pos : 1;
     };
 
-public:
-    class search_results : public search_results_base
-    {
-        typedef typename search_results_base::res_chains_type res_chains_type;
-        typedef typename search_results_base::res_chains_ptr res_chains_ptr;
-
-    public:
-        class iterator : public iterator_base
-        {
-            friend class segment_tree<_Key, _Value>::search_results;
-
-        private:
-            iterator(const res_chains_ptr& p) : iterator_base(p)
-            {}
-
-        public:
-            iterator() : iterator_base()
-            {}
-        };
-
-        typename search_results::iterator begin()
-        {
-            typename search_results::iterator itr(search_results_base::get_res_chains());
-            itr.move_to_front();
-            return itr;
-        }
-
-        typename search_results::iterator end()
-        {
-            typename search_results::iterator itr(search_results_base::get_res_chains());
-            itr.move_to_end();
-            return itr;
-        }
-    };
-
     class search_result_vector_inserter
     {
     public:
@@ -517,6 +482,41 @@ public:
 
     private:
         search_results_base& m_result;
+    };
+
+public:
+    class search_results : public search_results_base
+    {
+        typedef typename search_results_base::res_chains_type res_chains_type;
+        typedef typename search_results_base::res_chains_ptr res_chains_ptr;
+
+    public:
+        class iterator : public iterator_base
+        {
+            friend class segment_tree<_Key, _Value>::search_results;
+
+        private:
+            iterator(const res_chains_ptr& p) : iterator_base(p)
+            {}
+
+        public:
+            iterator() : iterator_base()
+            {}
+        };
+
+        typename search_results::iterator begin()
+        {
+            typename search_results::iterator itr(search_results_base::get_res_chains());
+            itr.move_to_front();
+            return itr;
+        }
+
+        typename search_results::iterator end()
+        {
+            typename search_results::iterator itr(search_results_base::get_res_chains());
+            itr.move_to_end();
+            return itr;
+        }
     };
 
     segment_tree();
