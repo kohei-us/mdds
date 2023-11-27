@@ -194,7 +194,7 @@ bool check_search_result_iterator(const segment_tree<key_type, value_type>& db, 
 
 void st_test_insert_search_removal()
 {
-    stack_printer __stack_printer__("::st_test_insert_segments");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef long key_type;
     typedef test_data value_type;
@@ -470,7 +470,7 @@ void st_test_insert_search_removal()
 
 void st_test_copy_constructor()
 {
-    stack_printer __stack_printer__("::st_test_copy_constructor");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef long key_type;
     typedef test_data value_type;
@@ -521,7 +521,7 @@ void st_test_copy_constructor()
 
 void st_test_equality()
 {
-    stack_printer __stack_printer__("::st_test_equality");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef uint32_t key_type;
     typedef test_data value_type;
@@ -551,7 +551,7 @@ void st_test_equality()
 
 void st_test_clear()
 {
-    stack_printer __stack_printer__("::st_test_clear");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef uint8_t key_type;
     typedef test_data value_type;
@@ -596,7 +596,7 @@ void st_test_clear()
 
 void st_test_duplicate_insertion()
 {
-    stack_printer __stack_printer__("::st_test_duplicate_insertion");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef short key_type;
     typedef test_data value_type;
@@ -621,7 +621,7 @@ void st_test_duplicate_insertion()
  */
 void st_test_search_on_uneven_tree()
 {
-    stack_printer __stack_printer__("::st_test_search_on_uneven_tree");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef int16_t key_type;
     typedef test_data value_type;
@@ -663,7 +663,7 @@ void st_test_search_on_uneven_tree()
 
 void st_test_perf_insertion()
 {
-    stack_printer __stack_printer__("::st_test_perf_insertion");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef uint32_t key_type;
     typedef test_data value_type;
@@ -808,7 +808,7 @@ void st_test_perf_insertion()
 
 void st_test_aggregated_search_results()
 {
-    stack_printer __stack_printer__("::st_test_aggregated_search_results");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef uint16_t key_type;
     typedef test_data value_type;
@@ -867,7 +867,7 @@ void st_test_aggregated_search_results()
 
 void st_test_dense_tree_search()
 {
-    stack_printer __stack_printer__("::st_test_dense_tree_search");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef uint16_t key_type;
     typedef test_data value_type;
@@ -930,7 +930,7 @@ void st_test_dense_tree_search()
 
 void st_test_search_on_empty_set()
 {
-    stack_printer __stack_printer__("::st_test_search_on_empty_set");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef uint16_t key_type;
     typedef test_data value_type;
@@ -949,7 +949,8 @@ void st_test_search_on_empty_set()
 
 void st_test_search_iterator_basic()
 {
-    stack_printer __stack_printer__("::st_test_search_iterator");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef uint16_t key_type;
     typedef test_data value_type;
     typedef segment_tree<key_type, value_type*> db_type;
@@ -1001,7 +1002,7 @@ void st_test_search_iterator_basic()
 
 void st_test_search_iterator_result_check()
 {
-    stack_printer __stack_printer__("::st_test_search_iterator_result_check");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef uint16_t key_type;
     typedef test_data value_type;
@@ -1066,7 +1067,8 @@ void st_test_search_iterator_result_check()
  */
 void st_test_empty_result_set()
 {
-    stack_printer __stack_printer__("::st_test_empty_result_set");
+    MDDS_TEST_FUNC_SCOPE;
+
     typedef segment_tree<long, string*> db_type;
     db_type db;
     db_type::search_results result = db.search(0);
@@ -1076,7 +1078,7 @@ void st_test_empty_result_set()
 
 void st_test_non_pointer_data()
 {
-    stack_printer __stack_printer__("::st_test_non_pointer_data");
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef uint16_t key_type;
     typedef size_t value_type;
