@@ -57,14 +57,14 @@ public:
     {
         key_type begin_key;
         key_type end_key;
-        value_type pdata;
+        value_type value;
 
-        segment_data(key_type _beg, key_type _end, value_type p) : begin_key(_beg), end_key(_end), pdata(p)
+        segment_data(key_type _beg, key_type _end, value_type p) : begin_key(_beg), end_key(_end), value(p)
         {}
 
         bool operator==(const segment_data& r) const
         {
-            return begin_key == r.begin_key && end_key == r.end_key && pdata == r.pdata;
+            return begin_key == r.begin_key && end_key == r.end_key && value == r.value;
         }
 
         bool operator!=(const segment_data& r) const
@@ -555,11 +555,9 @@ public:
      *
      * @param begin_key begin point of the segment.  The value is inclusive.
      * @param end_key end point of the segment.  The value is non-inclusive.
-     * @param pdata pointer to the data instance associated with this segment.
-     *               Note that <i>the caller must manage the life cycle of the
-     *               data instance</i>.
+     * @param value value to associate with this segment.
      */
-    bool insert(key_type begin_key, key_type end_key, value_type pdata);
+    bool insert(key_type begin_key, key_type end_key, value_type value);
 
     /**
      * Search the tree and collect all segments that include a specified
@@ -639,7 +637,7 @@ public:
      * Verify the validity of the segment data array.
      *
      * @param checks null-terminated array of expected values.  The last item
-     *               must have a nullptr pdata value to terminate the array.
+     *               must have a nullptr value value to terminate the array.
      */
     bool verify_segment_data(const segment_map_type& checks) const;
 #endif
@@ -661,7 +659,7 @@ private:
      * record their positions as a list of node pointers.
      */
     void descend_tree_and_mark(
-        __st::node_base* pnode, value_type pdata, key_type begin_key, key_type end_key, node_list_type* plist);
+        __st::node_base* pnode, value_type value, key_type begin_key, key_type end_key, node_list_type* plist);
 
     void build_leaf_nodes();
 
@@ -669,13 +667,13 @@ private:
      * Go through the list of nodes, and remove the specified data pointer
      * value from the nodes.
      */
-    void remove_data_from_nodes(node_list_type* plist, const value_type pdata);
-    void remove_data_from_chain(data_chain_type& chain, const value_type pdata);
+    void remove_data_from_nodes(node_list_type* plist, const value_type value);
+    void remove_data_from_chain(data_chain_type& chain, const value_type value);
 
     void clear_all_nodes();
 
 #ifdef MDDS_UNIT_TEST
-    static bool has_data_pointer(const node_list_type& node_list, const value_type pdata);
+    static bool has_data_pointer(const node_list_type& node_list, const value_type value);
     static void print_leaf_value(const leaf_value_type& v);
 #endif
 

@@ -176,14 +176,14 @@ void segment_tree<KeyT, ValueT>::build_tree()
     data_node_map_type tagged_node_map;
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
-        value_type pdata = itr->first;
+        value_type value = itr->first;
         auto r =
-            tagged_node_map.insert(typename data_node_map_type::value_type(pdata, std::make_unique<node_list_type>()));
+            tagged_node_map.insert(typename data_node_map_type::value_type(value, std::make_unique<node_list_type>()));
 
         node_list_type* plist = r.first->second.get();
         plist->reserve(10);
 
-        descend_tree_and_mark(m_root_node, pdata, itr->second.first, itr->second.second, plist);
+        descend_tree_and_mark(m_root_node, value, itr->second.first, itr->second.second, plist);
     }
 
     m_tagged_node_map.swap(tagged_node_map);
@@ -192,7 +192,7 @@ void segment_tree<KeyT, ValueT>::build_tree()
 
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
-    __st::node_base* pnode, value_type pdata, key_type begin_key, key_type end_key, node_list_type* plist)
+    __st::node_base* pnode, value_type value, key_type begin_key, key_type end_key, node_list_type* plist)
 {
     if (!pnode)
         return;
@@ -206,7 +206,7 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
             leaf_value_type& v = pleaf->value_leaf;
             if (!v.data_chain)
                 v.data_chain = new data_chain_type;
-            v.data_chain->push_back(pdata);
+            v.data_chain->push_back(value);
             plist->push_back(pnode);
         }
         return;
@@ -222,13 +222,13 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
         // mark this non-leaf node and stop.
         if (!v.data_chain)
             v.data_chain = new data_chain_type;
-        v.data_chain->push_back(pdata);
+        v.data_chain->push_back(value);
         plist->push_back(pnode);
         return;
     }
 
-    descend_tree_and_mark(pnonleaf->left, pdata, begin_key, end_key, plist);
-    descend_tree_and_mark(pnonleaf->right, pdata, begin_key, end_key, plist);
+    descend_tree_and_mark(pnonleaf->left, value, begin_key, end_key, plist);
+    descend_tree_and_mark(pnonleaf->right, value, begin_key, end_key, plist);
 }
 
 template<typename KeyT, typename ValueT>
@@ -292,19 +292,19 @@ void segment_tree<KeyT, ValueT>::create_leaf_node_instances(
 }
 
 template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::insert(key_type begin_key, key_type end_key, value_type pdata)
+bool segment_tree<KeyT, ValueT>::insert(key_type begin_key, key_type end_key, value_type value)
 {
     if (begin_key >= end_key)
         return false;
 
-    if (m_segment_data.find(pdata) != m_segment_data.end())
+    if (m_segment_data.find(value) != m_segment_data.end())
         // Insertion of duplicate data is not allowed.
         return false;
 
     ::std::pair<key_type, key_type> range;
     range.first = begin_key;
     range.second = end_key;
-    m_segment_data.insert(typename segment_map_type::value_type(pdata, range));
+    m_segment_data.insert(typename segment_map_type::value_type(value, range));
 
     m_valid_tree = false;
     return true;
@@ -404,7 +404,7 @@ size_t segment_tree<KeyT, ValueT>::leaf_size() const
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, const value_type pdata)
+void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, const value_type value)
 {
     typename node_list_type::iterator itr = plist->begin(), itr_end = plist->end();
     for (; itr != itr_end; ++itr)
@@ -419,14 +419,14 @@ void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, c
         if (!chain)
             continue;
 
-        remove_data_from_chain(*chain, pdata);
+        remove_data_from_chain(*chain, value);
     }
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove_data_from_chain(data_chain_type& chain, const value_type pdata)
+void segment_tree<KeyT, ValueT>::remove_data_from_chain(data_chain_type& chain, const value_type value)
 {
-    typename data_chain_type::iterator itr = ::std::find(chain.begin(), chain.end(), pdata);
+    typename data_chain_type::iterator itr = ::std::find(chain.begin(), chain.end(), value);
     if (itr != chain.end())
     {
         *itr = chain.back();
@@ -595,7 +595,7 @@ bool segment_tree<KeyT, ValueT>::verify_segment_data(const segment_map_type& che
 }
 
 template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::has_data_pointer(const node_list_type& node_list, const value_type pdata)
+bool segment_tree<KeyT, ValueT>::has_data_pointer(const node_list_type& node_list, const value_type value)
 {
     using namespace std;
 
@@ -603,7 +603,7 @@ bool segment_tree<KeyT, ValueT>::has_data_pointer(const node_list_type& node_lis
 
     for (; itr != itr_end; ++itr)
     {
-        // Check each node, and make sure each node has the pdata pointer
+        // Check each node, and make sure each node has the value pointer
         // listed.
         const __st::node_base* pnode = *itr;
         const data_chain_type* chain = nullptr;
@@ -615,7 +615,7 @@ bool segment_tree<KeyT, ValueT>::has_data_pointer(const node_list_type& node_lis
         if (!chain)
             return false;
 
-        if (find(chain->begin(), chain->end(), pdata) == chain->end())
+        if (find(chain->begin(), chain->end(), value) == chain->end())
             return false;
     }
     return true;

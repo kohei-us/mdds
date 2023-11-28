@@ -488,13 +488,13 @@ void st_test_copy_constructor()
     segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
     db_type::segment_map_type checks;
-    for (size_t i = 0; segments[i].pdata; ++i)
+    for (size_t i = 0; segments[i].value; ++i)
     {
-        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].value);
         std::pair<key_type, key_type> range;
         range.first = segments[i].begin_key;
         range.second = segments[i].end_key;
-        checks.insert(db_type::segment_map_type::value_type(segments[i].pdata, range));
+        checks.insert(db_type::segment_map_type::value_type(segments[i].value, range));
     }
 
     // Copy before the tree is built.
@@ -569,8 +569,8 @@ void st_test_clear()
     segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
     db_type db;
-    for (size_t i = 0; segments[i].pdata; ++i)
-        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
+    for (size_t i = 0; segments[i].value; ++i)
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].value);
 
     assert(!db.empty());
     assert(db.size() == 7);
@@ -581,8 +581,8 @@ void st_test_clear()
     assert(db.size() == 0);
 
     // Insert the same data set once again, but this time build tree afterwards.
-    for (size_t i = 0; segments[i].pdata; ++i)
-        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
+    for (size_t i = 0; segments[i].value; ++i)
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].value);
 
     db.build_tree();
     assert(!db.empty());
@@ -826,8 +826,8 @@ void st_test_aggregated_search_results()
     segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
     db_type db;
-    for (size_t i = 0; segments[i].pdata; ++i)
-        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
+    for (size_t i = 0; segments[i].value; ++i)
+        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].value);
 
     db.dump_segment_data();
     db.build_tree();
