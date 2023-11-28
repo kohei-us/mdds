@@ -39,7 +39,6 @@
 
 #define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
 
-using namespace std;
 using namespace mdds;
 
 template<typename key_type, typename value_type>
@@ -54,9 +53,9 @@ void build_and_dump(segment_tree<key_type, value_type>& db)
 
 struct test_data
 {
-    string name; // data structure expects the data to have 'name' data member.
+    std::string name; // data structure expects the data to have 'name' data member.
 
-    test_data(const string& s) : name(s)
+    test_data(const std::string& s) : name(s)
     {}
 
     struct ptr_printer
@@ -92,7 +91,7 @@ bool check_leaf_nodes(
     const segment_tree<key_type, value_type>& db, const key_type* keys, value_type* data_chain, size_t key_size)
 {
     typedef segment_tree<key_type, value_type> st_type;
-    vector<typename st_type::leaf_node_check> checks;
+    std::vector<typename st_type::leaf_node_check> checks;
     checks.reserve(key_size);
     size_t dcid = 0;
     for (size_t i = 0; i < key_size; ++i)
@@ -113,11 +112,11 @@ bool check_leaf_nodes(
 }
 
 template<typename value_type>
-bool check_against_expected(const list<value_type>& test, value_type* expected)
+bool check_against_expected(const std::list<value_type>& test, value_type* expected)
 {
     size_t i = 0;
     value_type p = expected[i++];
-    typename list<value_type>::const_iterator itr = test.begin(), itr_end = test.end();
+    typename std::list<value_type>::const_iterator itr = test.begin(), itr_end = test.end();
     while (p)
     {
         if (itr == itr_end)
@@ -149,12 +148,12 @@ bool check_search_result_only(
 {
     cout << "search key: " << key << " ";
 
-    list<value_type> test;
-    copy(result.begin(), result.end(), back_inserter(test));
+    std::list<value_type> test;
+    std::copy(result.begin(), result.end(), std::back_inserter(test));
     test.sort(test_data::sort_by_name());
 
     cout << "search result (sorted): ";
-    for_each(test.begin(), test.end(), test_data::name_printer());
+    std::for_each(test.begin(), test.end(), test_data::name_printer());
     cout << endl;
 
     return check_against_expected(test, expected);
@@ -181,12 +180,12 @@ bool check_search_result_iterator(const segment_tree<key_type, value_type>& db, 
 
     typedef segment_tree<key_type, value_type> db_type;
     typename db_type::search_results result = db.search(key);
-    list<value_type> test;
-    copy(result.begin(), result.end(), back_inserter(test));
+    std::list<value_type> test;
+    std::copy(result.begin(), result.end(), std::back_inserter(test));
     test.sort(test_data::sort_by_name());
 
     cout << "search result (sorted): ";
-    for_each(test.begin(), test.end(), test_data::name_printer());
+    std::for_each(test.begin(), test.end(), test_data::name_printer());
     cout << endl;
 
     return check_against_expected(test, expected);
@@ -282,7 +281,7 @@ void st_test_insert_search_removal()
         db_type::search_results_type data_chain;
         db.search(i, data_chain);
         cout << "search key " << i << ": ";
-        for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
+        std::for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
         cout << endl;
     }
 
@@ -354,7 +353,7 @@ void st_test_insert_search_removal()
         db_type::search_results_type data_chain;
         db.search(i, data_chain);
         cout << "search key " << i << ": ";
-        for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
+        std::for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
         cout << endl;
     }
 
@@ -478,7 +477,7 @@ void st_test_copy_constructor()
 
     db_type db;
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
-    vector<db_type::segment_data> segments;
+    std::vector<db_type::segment_data> segments;
     segments.push_back(db_type::segment_data(0, 10, &A));
     segments.push_back(db_type::segment_data(0, 5, &B));
     segments.push_back(db_type::segment_data(5, 12, &C));
@@ -492,7 +491,7 @@ void st_test_copy_constructor()
     for (size_t i = 0; segments[i].pdata; ++i)
     {
         db.insert(segments[i].begin_key, segments[i].end_key, segments[i].pdata);
-        pair<key_type, key_type> range;
+        std::pair<key_type, key_type> range;
         range.first = segments[i].begin_key;
         range.second = segments[i].end_key;
         checks.insert(db_type::segment_map_type::value_type(segments[i].pdata, range));
@@ -559,7 +558,7 @@ void st_test_clear()
 
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
-    vector<db_type::segment_data> segments;
+    std::vector<db_type::segment_data> segments;
     segments.push_back(db_type::segment_data(0, 10, &A));
     segments.push_back(db_type::segment_data(0, 5, &B));
     segments.push_back(db_type::segment_data(5, 12, &C));
@@ -629,12 +628,12 @@ void st_test_search_on_uneven_tree()
 
     for (key_type data_count = 10; data_count < 20; ++data_count)
     {
-        vector<unique_ptr<test_data>> data_store;
+        std::vector<std::unique_ptr<test_data>> data_store;
         data_store.reserve(data_count);
         for (key_type i = 0; i < data_count; ++i)
         {
-            ostringstream os;
-            os << hex << showbase << i;
+            std::ostringstream os;
+            os << std::hex << std::showbase << i;
             data_store.emplace_back(new test_data(os.str()));
         }
         assert(data_store.size() == static_cast<size_t>(data_count));
@@ -655,7 +654,7 @@ void st_test_search_on_uneven_tree()
             bool success = db.search(i, result);
             assert(success);
             cout << "search key: " << i << "  result: ";
-            for_each(result.begin(), result.end(), test_data::name_printer());
+            std::for_each(result.begin(), result.end(), test_data::name_printer());
             cout << endl;
         }
     }
@@ -672,14 +671,14 @@ void st_test_perf_insertion()
     key_type data_count = 1000000;
 
     // First, create test data instances and store them into a vector.
-    vector<unique_ptr<test_data>> data_store;
+    std::vector<std::unique_ptr<test_data>> data_store;
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: data array creation");
         data_store.reserve(data_count);
         for (key_type i = 0; i < data_count; ++i)
         {
-            ostringstream os;
-            os << hex << i;
+            std::ostringstream os;
+            os << std::hex << i;
             data_store.emplace_back(new test_data(os.str()));
         }
     }
@@ -816,7 +815,7 @@ void st_test_aggregated_search_results()
 
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
-    vector<db_type::segment_data> segments;
+    std::vector<db_type::segment_data> segments;
     segments.push_back(db_type::segment_data(0, 10, &A));
     segments.push_back(db_type::segment_data(0, 5, &B));
     segments.push_back(db_type::segment_data(5, 12, &C));
@@ -995,8 +994,8 @@ void st_test_search_iterator_basic()
     --itr;
     cout << (*itr)->name << endl;
 
-    cout << "Use for_each to print names." << endl;
-    for_each(itr_beg, itr_end, test_data::ptr_printer());
+    cout << "Use std::for_each to print names." << endl;
+    std::for_each(itr_beg, itr_end, test_data::ptr_printer());
     cout << endl;
 }
 
@@ -1069,7 +1068,7 @@ void st_test_empty_result_set()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef segment_tree<long, string*> db_type;
+    typedef segment_tree<long, std::string*> db_type;
     db_type db;
     db_type::search_results result = db.search(0);
     cout << "size of empty result set: " << result.size() << endl;

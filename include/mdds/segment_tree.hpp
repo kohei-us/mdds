@@ -43,12 +43,12 @@
 
 namespace mdds {
 
-template<typename _Key, typename _Value>
+template<typename KeyT, typename ValueT>
 class segment_tree
 {
 public:
-    typedef _Key key_type;
-    typedef _Value value_type;
+    typedef KeyT key_type;
+    typedef ValueT value_type;
     typedef size_t size_type;
     typedef std::vector<value_type> search_results_type;
 
@@ -493,7 +493,7 @@ public:
     public:
         class iterator : public iterator_base
         {
-            friend class segment_tree<_Key, _Value>::search_results;
+            friend class segment_tree<KeyT, ValueT>::search_results;
 
         private:
             iterator(const res_chains_ptr& p) : iterator_base(p)
