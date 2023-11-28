@@ -34,15 +34,13 @@ namespace st { namespace detail {
 template<typename T, typename InserterT>
 void descend_tree_for_search(typename T::key_type point, const __st::node_base* pnode, InserterT& result)
 {
+    assert(pnode);
+
     typedef typename T::node leaf_node;
     typedef typename T::nonleaf_node nonleaf_node;
 
     typedef typename T::nonleaf_value_type nonleaf_value_type;
     typedef typename T::leaf_value_type leaf_value_type;
-
-    if (!pnode)
-        // This should never happen, but just in case.
-        return;
 
     if (pnode->is_leaf)
     {
@@ -170,20 +168,20 @@ void segment_tree<KeyT, ValueT>::build_tree()
     mdds::__st::tree_builder<segment_tree> builder(m_nonleaf_node_pool);
     m_root_node = builder.build(m_left_leaf);
 
-    // Start "inserting" all segments from the root.
-    typename segment_map_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
+    // Star t "inserting" all segments from the root.
 
     data_node_map_type tagged_node_map;
-    for (itr = itr_beg; itr != itr_end; ++itr)
+
+    for (const auto& v : m_segment_data)
     {
-        value_type value = itr->first;
-        auto r =
-            tagged_node_map.insert(typename data_node_map_type::value_type(value, std::make_unique<node_list_type>()));
+        value_type value = v.first;
+        auto r = tagged_node_map.insert({value, std::make_unique<node_list_type>()});
+        assert(r.second);
 
         node_list_type* plist = r.first->second.get();
         plist->reserve(10);
 
-        descend_tree_and_mark(m_root_node, value, itr->second.first, itr->second.second, plist);
+        descend_tree_and_mark(m_root_node, value, v.second.first, v.second.second, plist);
     }
 
     m_tagged_node_map.swap(tagged_node_map);
@@ -234,40 +232,37 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::build_leaf_nodes()
 {
-    using namespace std;
-
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 
-    // In 1st pass, collect unique end-point values and sort them.
-    vector<key_type> keys_uniq;
-    keys_uniq.reserve(m_segment_data.size() * 2);
-    typename segment_map_type::const_iterator itr, itr_beg = m_segment_data.begin(), itr_end = m_segment_data.end();
-    for (itr = itr_beg; itr != itr_end; ++itr)
+    // Collect all boundary keys.
+    std::vector<key_type> keys;
+    keys.reserve(m_segment_data.size() * 2);
+
+    for (const auto& v : m_segment_data)
     {
-        keys_uniq.push_back(itr->second.first);
-        keys_uniq.push_back(itr->second.second);
+        keys.push_back(v.second.first);
+        keys.push_back(v.second.second);
     }
 
-    // sort and remove duplicates.
-    sort(keys_uniq.begin(), keys_uniq.end());
-    keys_uniq.erase(unique(keys_uniq.begin(), keys_uniq.end()), keys_uniq.end());
-
-    create_leaf_node_instances(keys_uniq, m_left_leaf, m_right_leaf);
+    create_leaf_node_instances(std::move(keys), m_left_leaf, m_right_leaf);
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::create_leaf_node_instances(
-    const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right)
+void segment_tree<KeyT, ValueT>::create_leaf_node_instances(std::vector<key_type> keys, node_ptr& left, node_ptr& right)
 {
     if (keys.empty() || keys.size() < 2)
         // We need at least two keys in order to build tree.
         return;
 
-    typename ::std::vector<key_type>::const_iterator itr = keys.begin(), itr_end = keys.end();
+    // sort and remove duplicates.
+    std::sort(keys.begin(), keys.end());
+    keys.erase(std::unique(keys.begin(), keys.end()), keys.end());
+
+    auto it = keys.cbegin();
 
     // left-most node
     left.reset(new node);
-    left->value_leaf.key = *itr;
+    left->value_leaf.key = *it;
 
     // move on to next.
     left->next.reset(new node);
@@ -275,9 +270,9 @@ void segment_tree<KeyT, ValueT>::create_leaf_node_instances(
     node_ptr cur_node = left->next;
     cur_node->prev = prev_node;
 
-    for (++itr; itr != itr_end; ++itr)
+    for (++it; it != keys.cend(); ++it)
     {
-        cur_node->value_leaf.key = *itr;
+        cur_node->value_leaf.key = *it;
 
         // move on to next
         cur_node->next.reset(new node);

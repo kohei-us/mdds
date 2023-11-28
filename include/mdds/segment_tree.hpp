@@ -647,7 +647,7 @@ private:
     typedef std::vector<__st::node_base*> node_list_type;
     typedef std::map<value_type, std::unique_ptr<node_list_type>> data_node_map_type;
 
-    static void create_leaf_node_instances(const ::std::vector<key_type>& keys, node_ptr& left, node_ptr& right);
+    static void create_leaf_node_instances(std::vector<key_type> keys, node_ptr& left, node_ptr& right);
 
     /**
      * Descend the tree from the root node, and mark appropriate nodes, both
