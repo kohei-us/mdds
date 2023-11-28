@@ -464,7 +464,7 @@ private:
     class search_result_vector_inserter
     {
     public:
-        search_result_vector_inserter(search_results_type& result) : m_result(result)
+        search_result_vector_inserter(search_results_type& results) : m_results(results)
         {}
         void operator()(data_chain_type* node_data)
         {
@@ -473,28 +473,28 @@ private:
 
             typename data_chain_type::const_iterator itr = node_data->begin(), itr_end = node_data->end();
             for (; itr != itr_end; ++itr)
-                m_result.push_back(*itr);
+                m_results.push_back(*itr);
         }
 
     private:
-        search_results_type& m_result;
+        search_results_type& m_results;
     };
 
     class search_result_inserter
     {
     public:
-        search_result_inserter(search_results_base& result) : m_result(result)
+        search_result_inserter(search_results_base& results) : m_results(results)
         {}
         void operator()(data_chain_type* node_data)
         {
             if (!node_data)
                 return;
 
-            m_result.push_back_chain(node_data);
+            m_results.push_back_chain(node_data);
         }
 
     private:
-        search_results_base& m_result;
+        search_results_base& m_results;
     };
 
 public:
