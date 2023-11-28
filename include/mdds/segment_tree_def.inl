@@ -311,24 +311,6 @@ bool segment_tree<KeyT, ValueT>::insert(key_type begin_key, key_type end_key, va
 }
 
 template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::search(key_type point, search_results_type& result) const
-{
-    if (!m_valid_tree)
-        // Tree is invalidated.
-        return false;
-
-    if (!m_root_node)
-        // Tree doesn't exist.  Since the tree is flagged valid, this means no
-        // segments have been inserted.
-        return true;
-
-    search_result_vector_inserter result_inserter(result);
-    typedef segment_tree<KeyT, ValueT> tree_type;
-    st::detail::descend_tree_for_search<tree_type, search_result_vector_inserter>(point, m_root_node, result_inserter);
-    return true;
-}
-
-template<typename KeyT, typename ValueT>
 typename segment_tree<KeyT, ValueT>::search_results segment_tree<KeyT, ValueT>::search(key_type point) const
 {
     search_results result;
@@ -340,17 +322,6 @@ typename segment_tree<KeyT, ValueT>::search_results segment_tree<KeyT, ValueT>::
     st::detail::descend_tree_for_search<tree_type, search_result_inserter>(point, m_root_node, result_inserter);
 
     return result;
-}
-
-template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::search(key_type point, search_results_base& result) const
-{
-    if (!m_valid_tree || !m_root_node)
-        return;
-
-    search_result_inserter result_inserter(result);
-    typedef segment_tree<KeyT, ValueT> tree_type;
-    st::detail::descend_tree_for_search<tree_type>(point, m_root_node, result_inserter);
 }
 
 template<typename KeyT, typename ValueT>

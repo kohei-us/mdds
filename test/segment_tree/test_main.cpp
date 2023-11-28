@@ -137,19 +137,25 @@ bool check_against_expected(const std::list<value_type>& test, value_type* expec
     return true;
 }
 
+template<typename ValueT, typename ResT>
+std::vector<ValueT> to_vector(ResT results)
+{
+    std::vector<ValueT> vec;
+    std::copy(results.begin(), results.end(), std::back_inserter(vec));
+    return vec;
+}
+
 /**
  * Only check the search result against expected result set.  The caller
  * needs to run search and pass the result to this function.
  */
-template<typename key_type, typename value_type>
-bool check_search_result_only(
-    const segment_tree<key_type, value_type>& /*db*/,
-    const typename segment_tree<key_type, value_type>::search_results_type& result, key_type key, value_type* expected)
+template<typename KeyT, typename ValueT>
+bool check_search_result_only(std::vector<ValueT> results, KeyT key, ValueT* expected)
 {
     cout << "search key: " << key << " ";
 
-    std::list<value_type> test;
-    std::copy(result.begin(), result.end(), std::back_inserter(test));
+    std::list<ValueT> test;
+    std::copy(results.begin(), results.end(), std::back_inserter(test));
     test.sort(test_data::sort_by_name());
 
     cout << "search result (sorted): ";
@@ -162,15 +168,13 @@ bool check_search_result_only(
 /**
  * Run the search and check the search result.
  */
-template<typename key_type, typename value_type>
-bool check_search_result(const segment_tree<key_type, value_type>& db, key_type key, value_type* expected)
+template<typename KeyT, typename ValueT>
+bool check_search_result(const segment_tree<KeyT, ValueT>& db, KeyT key, ValueT* expected)
 {
     cout << "search key: " << key << " ";
 
-    typedef typename segment_tree<key_type, value_type>::search_results_type search_result_type;
-    search_result_type data_chain;
-    db.search(key, data_chain);
-    return check_search_result_only(db, data_chain, key, expected);
+    auto results = db.search(key);
+    return check_search_result_only(to_vector<ValueT>(results), key, expected);
 }
 
 template<typename key_type, typename value_type>
@@ -278,11 +282,12 @@ void st_test_insert_search_removal()
 
     for (key_type i = -10; i <= 30; ++i)
     {
-        db_type::search_results_type data_chain;
-        db.search(i, data_chain);
-        cout << "search key " << i << ": ";
-        std::for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
-        cout << endl;
+        auto results = db.search(i);
+        std::cout << "search key " << i << ": ";
+        for (const auto& result : results)
+            std::cout << result->name << " ";
+
+        std::cout << std::endl;
     }
 
     {
@@ -350,11 +355,11 @@ void st_test_insert_search_removal()
 
     for (key_type i = -10; i <= 30; ++i)
     {
-        db_type::search_results_type data_chain;
-        db.search(i, data_chain);
-        cout << "search key " << i << ": ";
-        std::for_each(data_chain.begin(), data_chain.end(), test_data::ptr_printer());
-        cout << endl;
+        auto results = db.search(i);
+        std::cout << "search key " << i << ": ";
+        for (const auto& result : results)
+            std::cout << result->name << " ";
+        std::cout << std::endl;
     }
 
     {
@@ -650,12 +655,11 @@ void st_test_search_on_uneven_tree()
 
         for (key_type i = -1; i < data_count + 1; ++i)
         {
-            db_type::search_results_type result;
-            bool success = db.search(i, result);
-            assert(success);
-            cout << "search key: " << i << "  result: ";
-            std::for_each(result.begin(), result.end(), test_data::name_printer());
-            cout << endl;
+            auto results = db.search(i);
+            std::cout << "search key: " << i << "  result: ";
+            for (const auto& result : results)
+                std::cout << result->name << " ";
+            std::cout << endl;
         }
     }
 }
@@ -701,19 +705,13 @@ void st_test_perf_insertion()
     }
     assert(db.is_tree_valid());
 
-    const test_data* test = nullptr;
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_results_type result;
-            db.search(0, result);
-            db_type::search_results_type::const_iterator itr = result.begin(), itr_end = result.end();
-            for (; itr != itr_end; ++itr)
-            {
-                test = *itr;
+            auto results = db.search(0);
+            for (const auto& test : results)
                 assert(test);
-            }
         }
     }
 
@@ -721,13 +719,9 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_results result = db.search(0);
-            db_type::search_results::iterator itr = result.begin(), itr_end = result.end();
-            for (; itr != itr_end; ++itr)
-            {
-                test = *itr;
+            db_type::search_results results = db.search(0);
+            for (const auto& test : results)
                 assert(test);
-            }
         }
     }
 
@@ -735,14 +729,9 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_results_type result;
-            db.search(data_count / 2, result);
-            db_type::search_results_type::const_iterator itr = result.begin(), itr_end = result.end();
-            for (; itr != itr_end; ++itr)
-            {
-                test = *itr;
+            auto results = db.search(data_count / 2);
+            for (const auto& test : results)
                 assert(test);
-            }
         }
     }
 
@@ -750,13 +739,9 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_results result = db.search(data_count / 2);
-            db_type::search_results::iterator itr = result.begin(), itr_end = result.end();
-            for (; itr != itr_end; ++itr)
-            {
-                test = *itr;
+            db_type::search_results results = db.search(data_count / 2);
+            for (const auto& test : results)
                 assert(test);
-            }
         }
     }
 
@@ -764,14 +749,9 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_results_type result;
-            db.search(data_count, result);
-            db_type::search_results_type::const_iterator itr = result.begin(), itr_end = result.end();
-            for (; itr != itr_end; ++itr)
-            {
-                test = *itr;
+            auto results = db.search(data_count);
+            for (const auto& test : results)
                 assert(test);
-            }
         }
     }
 
@@ -779,13 +759,9 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
-            db_type::search_results result = db.search(data_count);
-            db_type::search_results::iterator itr = result.begin(), itr_end = result.end();
-            for (; itr != itr_end; ++itr)
-            {
-                test = *itr;
+            auto results = db.search(data_count);
+            for (const auto& test : results)
                 assert(test);
-            }
         }
     }
 
@@ -832,35 +808,39 @@ void st_test_aggregated_search_results()
     db.dump_segment_data();
     db.build_tree();
 
-    db_type::search_results_type result;
+    db_type::search_results_type results;
     {
         key_type key = 0;
-        db.search(key, result);
+        auto res = db.search(key);
+        std::copy(res.begin(), res.end(), std::back_inserter(results));
         value_type* expected[] = {&A, &B, &F, 0};
-        assert(check_search_result_only(db, result, key, expected));
+        assert(check_search_result_only(results, key, expected));
     }
 
     {
         key_type key = 10;
-        db.search(key, result);
+        auto res = db.search(key);
+        std::copy(res.begin(), res.end(), std::back_inserter(results));
         // Note the duplicated F's in the search result.
         value_type* expected[] = {&A, &B, &C, &D, &E, &F, &F, 0};
-        assert(check_search_result_only(db, result, key, expected));
+        assert(check_search_result_only(results, key, expected));
     }
 
     {
         key_type key = 5;
-        db.search(key, result);
+        auto res = db.search(key);
+        std::copy(res.begin(), res.end(), std::back_inserter(results));
         value_type* expected[] = {&A, &A, &B, &C, &C, &D, &E, &E, &F, &F, &F, 0};
-        assert(check_search_result_only(db, result, key, expected));
+        assert(check_search_result_only(results, key, expected));
     }
 
     {
-        result.clear(); // clear the accumulated result set.
+        results.clear(); // clear the accumulated result set.
         key_type key = 5;
-        db.search(key, result);
+        auto res = db.search(key);
+        std::copy(res.begin(), res.end(), std::back_inserter(results));
         value_type* expected[] = {&A, &C, &E, &F, 0};
-        assert(check_search_result_only(db, result, key, expected));
+        assert(check_search_result_only(results, key, expected));
     }
 }
 
@@ -940,10 +920,10 @@ void st_test_search_on_empty_set()
 
     // Search on an empty set should still be considered a success as long as
     // the tree is built beforehand.
-    db_type::search_results_type result;
-    bool success = db.search(0, result);
-    assert(success);
-    assert(result.empty());
+    auto results = db.search(0);
+    assert(results.size() == 0);
+    assert(results.empty());
+    assert(results.begin() == results.end());
 }
 
 void st_test_search_iterator_basic()
@@ -1070,9 +1050,10 @@ void st_test_empty_result_set()
 
     typedef segment_tree<long, std::string*> db_type;
     db_type db;
-    db_type::search_results result = db.search(0);
-    cout << "size of empty result set: " << result.size() << endl;
-    assert(result.size() == 0);
+    db_type::search_results results = db.search(0);
+    cout << "size of empty result set: " << results.size() << endl;
+    assert(results.size() == 0);
+    assert(results.empty());
 }
 
 void st_test_non_pointer_data()
@@ -1087,9 +1068,10 @@ void st_test_non_pointer_data()
     db.insert(0, 1, 10);
     db.build_tree();
 
-    db_type::search_results result = db.search(0);
-    assert(result.size() == 1);
-    assert(*result.begin() == 10);
+    db_type::search_results results = db.search(0);
+    assert(results.size() == 1);
+    assert(!results.empty());
+    assert(*results.begin() == 10);
 }
 
 int main(int argc, char** argv)

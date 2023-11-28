@@ -49,7 +49,7 @@ class segment_tree
 public:
     typedef KeyT key_type;
     typedef ValueT value_type;
-    typedef size_t size_type;
+    typedef std::size_t size_type;
     typedef std::vector<value_type> search_results_type;
 
 #ifdef MDDS_UNIT_TEST
@@ -243,32 +243,45 @@ public:
 #endif
 
 private:
+    class search_result_inserter;
+
     /**
      * This base class takes care of collecting data chain pointers during
      * tree descend for search.
      */
     class search_results_base
     {
+        friend class search_result_inserter;
+
     public:
         typedef std::vector<data_chain_type*> res_chains_type;
         typedef std::shared_ptr<res_chains_type> res_chains_ptr;
 
-    public:
+    protected:
         search_results_base() : mp_res_chains(static_cast<res_chains_type*>(nullptr))
         {}
 
         search_results_base(const search_results_base& r) : mp_res_chains(r.mp_res_chains)
         {}
 
-        size_t size() const
+        bool empty() const
         {
-            size_t combined = 0;
+            if (!mp_res_chains)
+                return true;
+
+            // mp_res_chains only contains non-empty chain, that is, if it's not
+            // empty, it does contain one or more results.
+            return mp_res_chains->empty();
+        }
+
+        size_type size() const
+        {
+            size_type combined = 0;
             if (!mp_res_chains)
                 return combined;
 
-            typename res_chains_type::const_iterator itr = mp_res_chains->begin(), itr_end = mp_res_chains->end();
-            for (; itr != itr_end; ++itr)
-                combined += (*itr)->size();
+            for (const data_chain_type* p : *mp_res_chains)
+                combined += p->size();
             return combined;
         }
 
@@ -282,7 +295,7 @@ private:
             mp_res_chains->push_back(chain);
         }
 
-        res_chains_ptr& get_res_chains()
+        const res_chains_ptr& get_res_chains() const
         {
             return mp_res_chains;
         }
@@ -504,6 +517,26 @@ public:
             {}
         };
 
+        /**
+         * Check if this results pool is empty or not.
+         *
+         * @return true if this results pool is empty, otherwise false.
+         */
+        bool empty() const
+        {
+            return search_results_base::empty();
+        }
+
+        /**
+         * Count the number of results in this results pool.
+         *
+         * @return number of results in this results pool.
+         */
+        size_type size() const
+        {
+            return search_results_base::size();
+        }
+
         typename search_results::iterator begin()
         {
             typename search_results::iterator itr(search_results_base::get_res_chains());
@@ -558,24 +591,6 @@ public:
      * @param value value to associate with this segment.
      */
     bool insert(key_type begin_key, key_type end_key, value_type value);
-
-    /**
-     * Search the tree and collect all segments that include a specified
-     * point.
-     *
-     * @param point specified point value
-     * @param result doubly-linked list of data instances associated with
-     *                   the segments that include the specified point.
-     *                   <i>Note that the search result gets appended to the
-     *                   list; the list will not get emptied on each
-     *                   search.</i>  It is caller's responsibility to empty
-     *                   the list before passing it to this method in case the
-     *                   caller so desires.
-     *
-     * @return true if the search is performed successfully, false if the
-     *         search has ended prematurely due to error conditions.
-     */
-    bool search(key_type point, search_results_type& result) const;
 
     /**
      * Search the tree and collect all segments that include a specified
