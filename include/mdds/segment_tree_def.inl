@@ -29,7 +29,7 @@
 
 namespace mdds {
 
-namespace __st {
+namespace st { namespace detail {
 
 template<typename T, typename InserterT>
 void descend_tree_for_search(typename T::key_type point, const __st::node_base* pnode, InserterT& result)
@@ -107,7 +107,7 @@ void descend_tree_for_search(typename T::key_type point, const __st::node_base* 
     descend_tree_for_search<T, InserterT>(point, pchild, result);
 }
 
-} // namespace __st
+}} // namespace st::detail
 
 template<typename KeyT, typename ValueT>
 segment_tree<KeyT, ValueT>::segment_tree() : m_root_node(nullptr), m_valid_tree(false)
@@ -324,7 +324,7 @@ bool segment_tree<KeyT, ValueT>::search(key_type point, search_results_type& res
 
     search_result_vector_inserter result_inserter(result);
     typedef segment_tree<KeyT, ValueT> tree_type;
-    __st::descend_tree_for_search<tree_type, search_result_vector_inserter>(point, m_root_node, result_inserter);
+    st::detail::descend_tree_for_search<tree_type, search_result_vector_inserter>(point, m_root_node, result_inserter);
     return true;
 }
 
@@ -337,7 +337,7 @@ typename segment_tree<KeyT, ValueT>::search_results segment_tree<KeyT, ValueT>::
 
     search_result_inserter result_inserter(result);
     typedef segment_tree<KeyT, ValueT> tree_type;
-    __st::descend_tree_for_search<tree_type, search_result_inserter>(point, m_root_node, result_inserter);
+    st::detail::descend_tree_for_search<tree_type, search_result_inserter>(point, m_root_node, result_inserter);
 
     return result;
 }
@@ -350,7 +350,7 @@ void segment_tree<KeyT, ValueT>::search(key_type point, search_results_base& res
 
     search_result_inserter result_inserter(result);
     typedef segment_tree<KeyT, ValueT> tree_type;
-    __st::descend_tree_for_search<tree_type>(point, m_root_node, result_inserter);
+    st::detail::descend_tree_for_search<tree_type>(point, m_root_node, result_inserter);
 }
 
 template<typename KeyT, typename ValueT>
