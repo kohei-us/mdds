@@ -461,25 +461,6 @@ private:
         bool m_end_pos : 1;
     };
 
-    class search_result_vector_inserter
-    {
-    public:
-        search_result_vector_inserter(search_results_type& results) : m_results(results)
-        {}
-        void operator()(data_chain_type* node_data)
-        {
-            if (!node_data)
-                return;
-
-            typename data_chain_type::const_iterator itr = node_data->begin(), itr_end = node_data->end();
-            for (; itr != itr_end; ++itr)
-                m_results.push_back(*itr);
-        }
-
-    private:
-        search_results_type& m_results;
-    };
-
     class search_result_inserter
     {
     public:
