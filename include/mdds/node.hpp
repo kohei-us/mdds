@@ -56,8 +56,6 @@ struct nonleaf_node : public node_base
 {
     typedef typename T::nonleaf_value_type nonleaf_value_type;
     typedef typename T::fill_nonleaf_value_handler fill_nonleaf_value_handler;
-    typedef typename T::init_handler init_handler;
-    typedef typename T::dispose_handler dispose_handler;
 #ifdef MDDS_UNIT_TEST
     typedef typename T::to_string_handler to_string_handler;
 #endif
@@ -68,16 +66,14 @@ struct nonleaf_node : public node_base
 
 private:
     fill_nonleaf_value_handler _hdl_fill_nonleaf;
-    init_handler _hdl_init;
-    dispose_handler _hdl_dispose;
+
 #ifdef MDDS_UNIT_TEST
     to_string_handler _hdl_to_string;
 #endif
 
 public:
-    nonleaf_node() : node_base(false), left(nullptr), right(nullptr)
+    nonleaf_node() : node_base(false), value_nonleaf(), left(nullptr), right(nullptr)
     {
-        _hdl_init(*this);
     }
 
     /**
@@ -104,12 +100,6 @@ public:
 
     ~nonleaf_node()
     {
-        dispose();
-    }
-
-    void dispose()
-    {
-        _hdl_dispose(*this);
     }
 
     bool equals(const nonleaf_node& r) const
@@ -141,8 +131,6 @@ struct node : public node_base
     typedef ::boost::intrusive_ptr<node> node_ptr;
 
     typedef typename T::leaf_value_type leaf_value_type;
-    typedef typename T::init_handler init_handler;
-    typedef typename T::dispose_handler dispose_handler;
 #ifdef MDDS_UNIT_TEST
     typedef typename T::to_string_handler to_string_handler;
 #endif
@@ -164,8 +152,6 @@ struct node : public node_base
     size_t refcount;
 
 private:
-    init_handler _hdl_init;
-    dispose_handler _hdl_dispose;
 #ifdef MDDS_UNIT_TEST
     to_string_handler _hdl_to_string;
 #endif
@@ -176,7 +162,6 @@ public:
 #ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
 #endif
-        _hdl_init(*this);
     }
 
     /**
@@ -209,12 +194,6 @@ public:
 #ifdef MDDS_DEBUG_NODE_BASE
         --node_instance_count;
 #endif
-        dispose();
-    }
-
-    void dispose()
-    {
-        _hdl_dispose(*this);
     }
 
     bool equals(const node& r) const

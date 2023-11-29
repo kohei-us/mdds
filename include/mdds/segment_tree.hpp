@@ -90,30 +90,52 @@ public:
 
     struct nonleaf_value_type
     {
-        key_type low; /// low range value (inclusive)
-        key_type high; /// high range value (non-inclusive)
-        data_chain_type* data_chain;
+        key_type low = {}; /// low range value (inclusive)
+        key_type high = {}; /// high range value (non-inclusive)
+        data_chain_type* data_chain = nullptr;
+
+        nonleaf_value_type() {}
+        nonleaf_value_type(const nonleaf_value_type& r) : low(r.low), high(r.high)
+        {
+            if (r.data_chain)
+                data_chain = new data_chain_type(*r.data_chain);
+        }
 
         bool operator==(const nonleaf_value_type& r) const
         {
             return low == r.low && high == r.high && data_chain == r.data_chain;
         }
+
+        ~nonleaf_value_type()
+        {
+            delete data_chain;
+        }
     };
 
     struct leaf_value_type
     {
-        key_type key;
-        data_chain_type* data_chain;
+        key_type key = {};
+        data_chain_type* data_chain = nullptr;
+
+        leaf_value_type() {}
+        leaf_value_type(const leaf_value_type& r) : key(r.key)
+        {
+            if (r.data_chain)
+                data_chain = new data_chain_type(*r.data_chain);
+        }
 
         bool operator==(const leaf_value_type& r) const
         {
             return key == r.key && data_chain == r.data_chain;
         }
+
+        ~leaf_value_type()
+        {
+            delete data_chain;
+        }
     };
 
     struct fill_nonleaf_value_handler;
-    struct init_handler;
-    struct dispose_handler;
 #ifdef MDDS_UNIT_TEST
     struct to_string_handler;
 #endif
@@ -202,32 +224,6 @@ public:
         }
     };
 #endif
-
-    struct init_handler
-    {
-        void operator()(node& _self)
-        {
-            _self.value_leaf.data_chain = nullptr;
-        }
-
-        void operator()(st::detail::nonleaf_node<segment_tree>& _self)
-        {
-            _self.value_nonleaf.data_chain = nullptr;
-        }
-    };
-
-    struct dispose_handler
-    {
-        void operator()(node& _self)
-        {
-            delete _self.value_leaf.data_chain;
-        }
-
-        void operator()(st::detail::nonleaf_node<segment_tree>& _self)
-        {
-            delete _self.value_nonleaf.data_chain;
-        }
-    };
 
 #ifdef MDDS_UNIT_TEST
     struct node_printer

@@ -83,8 +83,6 @@ public:
 
     // Handlers required by the node template class.
     struct fill_nonleaf_value_handler;
-    struct init_handler;
-    struct dispose_handler;
 #ifdef MDDS_UNIT_TEST
     struct to_string_handler;
 #endif
@@ -159,22 +157,6 @@ public:
         }
     };
 #endif
-
-    struct init_handler
-    {
-        void operator()(node& /*_self*/)
-        {}
-        void operator()(st::detail::nonleaf_node<flat_segment_tree>& /*_self*/)
-        {}
-    };
-
-    struct dispose_handler
-    {
-        void operator()(node& /*_self*/)
-        {}
-        void operator()(st::detail::nonleaf_node<flat_segment_tree>& /*_self*/)
-        {}
-    };
 
 private:
     friend struct ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>;
