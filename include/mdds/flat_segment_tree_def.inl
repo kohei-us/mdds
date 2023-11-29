@@ -183,7 +183,7 @@ void flat_segment_tree<Key, Value>::clear()
     destroy();
 
     // and construct the default tree
-    st::detail::link_nodes<node>(m_left_leaf, m_right_leaf);
+    st::detail::link_nodes<node_ptr>(m_left_leaf, m_right_leaf);
     m_left_leaf->value_leaf.value = m_init_val;
     m_valid_tree = false;
 }
@@ -281,10 +281,10 @@ template<typename Key, typename Value>
         old_value = left_node->value_leaf.value;
 
         // Link to the left node.
-        st::detail::link_nodes<flat_segment_tree>(left_node, new_node);
+        st::detail::link_nodes<node_ptr>(left_node, new_node);
 
         // Link to the right node.
-        st::detail::link_nodes<flat_segment_tree>(new_node, start_pos);
+        st::detail::link_nodes<node_ptr>(new_node, start_pos);
         changed = true;
     }
 
@@ -328,7 +328,7 @@ template<typename Key, typename Value>
     {
         if (new_start_node->next != end_pos)
         {
-            st::detail::link_nodes<flat_segment_tree>(new_start_node, end_pos);
+            st::detail::link_nodes<node_ptr>(new_start_node, end_pos);
             changed = true;
         }
     }
@@ -340,10 +340,10 @@ template<typename Key, typename Value>
         new_node->value_leaf.value = old_value;
 
         // Link to the left node.
-        st::detail::link_nodes<flat_segment_tree>(new_start_node, new_node);
+        st::detail::link_nodes<node_ptr>(new_start_node, new_node);
 
         // Link to the right node.
-        st::detail::link_nodes<flat_segment_tree>(new_node, end_pos);
+        st::detail::link_nodes<node_ptr>(new_node, end_pos);
         changed = true;
     }
 

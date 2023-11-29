@@ -182,8 +182,8 @@ inline void intrusive_ptr_release(node<T>* p)
         delete p;
 }
 
-template<typename NodeT>
-void link_nodes(typename NodeT::node_ptr& left, typename NodeT::node_ptr& right)
+template<typename NodePtrT>
+void link_nodes(NodePtrT& left, NodePtrT& right)
 {
     left->next = right;
     right->prev = left;
