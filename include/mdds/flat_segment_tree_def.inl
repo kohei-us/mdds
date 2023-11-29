@@ -183,7 +183,7 @@ void flat_segment_tree<Key, Value>::clear()
     destroy();
 
     // and construct the default tree
-    __st::link_nodes<flat_segment_tree>(m_left_leaf, m_right_leaf);
+    st::detail::link_nodes<flat_segment_tree>(m_left_leaf, m_right_leaf);
     m_left_leaf->value_leaf.value = m_init_val;
     m_valid_tree = false;
 }
@@ -281,10 +281,10 @@ template<typename Key, typename Value>
         old_value = left_node->value_leaf.value;
 
         // Link to the left node.
-        __st::link_nodes<flat_segment_tree>(left_node, new_node);
+        st::detail::link_nodes<flat_segment_tree>(left_node, new_node);
 
         // Link to the right node.
-        __st::link_nodes<flat_segment_tree>(new_node, start_pos);
+        st::detail::link_nodes<flat_segment_tree>(new_node, start_pos);
         changed = true;
     }
 
@@ -328,7 +328,7 @@ template<typename Key, typename Value>
     {
         if (new_start_node->next != end_pos)
         {
-            __st::link_nodes<flat_segment_tree>(new_start_node, end_pos);
+            st::detail::link_nodes<flat_segment_tree>(new_start_node, end_pos);
             changed = true;
         }
     }
@@ -340,10 +340,10 @@ template<typename Key, typename Value>
         new_node->value_leaf.value = old_value;
 
         // Link to the left node.
-        __st::link_nodes<flat_segment_tree>(new_start_node, new_node);
+        st::detail::link_nodes<flat_segment_tree>(new_start_node, new_node);
 
         // Link to the right node.
-        __st::link_nodes<flat_segment_tree>(new_node, end_pos);
+        st::detail::link_nodes<flat_segment_tree>(new_node, end_pos);
         changed = true;
     }
 
@@ -776,10 +776,10 @@ void flat_segment_tree<Key, Value>::build_tree()
     size_t leaf_count = leaf_size();
 
     // Determine the total number of non-leaf nodes needed to build the whole tree.
-    size_t nonleaf_count = __st::count_needed_nonleaf_nodes(leaf_count);
+    size_t nonleaf_count = st::detail::count_needed_nonleaf_nodes(leaf_count);
 
     m_nonleaf_node_pool.resize(nonleaf_count);
-    mdds::__st::tree_builder<flat_segment_tree> builder(m_nonleaf_node_pool);
+    mdds::st::detail::tree_builder<flat_segment_tree> builder(m_nonleaf_node_pool);
     m_root_node = builder.build(m_left_leaf);
     m_valid_tree = true;
 }
@@ -787,7 +787,7 @@ void flat_segment_tree<Key, Value>::build_tree()
 template<typename Key, typename Value>
 typename flat_segment_tree<Key, Value>::size_type flat_segment_tree<Key, Value>::leaf_size() const
 {
-    return __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    return st::detail::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 }
 
 template<typename Key, typename Value>

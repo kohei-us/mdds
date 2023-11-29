@@ -34,7 +34,7 @@
 
 #include <boost/intrusive_ptr.hpp>
 
-namespace mdds { namespace __st {
+namespace mdds { namespace st { namespace detail {
 
 #ifdef MDDS_DEBUG_NODE_BASE
 size_t node_instance_count = 0;
@@ -260,9 +260,9 @@ template<typename T>
 class tree_builder
 {
 public:
-    typedef mdds::__st::node<T> leaf_node;
-    typedef typename mdds::__st::node<T>::node_ptr leaf_node_ptr;
-    typedef mdds::__st::nonleaf_node<T> nonleaf_node;
+    typedef mdds::st::detail::node<T> leaf_node;
+    typedef typename mdds::st::detail::node<T>::node_ptr leaf_node_ptr;
+    typedef mdds::st::detail::nonleaf_node<T> nonleaf_node;
     typedef std::vector<nonleaf_node> nonleaf_node_pool_type;
 
     tree_builder(nonleaf_node_pool_type& pool) : m_pool(pool), m_pool_pos(pool.begin()), m_pool_pos_end(pool.end())
@@ -485,6 +485,6 @@ private:
 
 #endif
 
-}} // namespace mdds::__st
+}}} // namespace mdds::st::detail
 
 #endif

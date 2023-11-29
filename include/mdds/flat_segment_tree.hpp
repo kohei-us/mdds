@@ -89,16 +89,16 @@ public:
     struct to_string_handler;
 #endif
 
-    typedef __st::node<flat_segment_tree> node;
+    typedef st::detail::node<flat_segment_tree> node;
     typedef typename node::node_ptr node_ptr;
 
-    typedef __st::nonleaf_node<flat_segment_tree> nonleaf_node;
+    typedef st::detail::nonleaf_node<flat_segment_tree> nonleaf_node;
 
     struct fill_nonleaf_value_handler
     {
         void operator()(
-            __st::nonleaf_node<flat_segment_tree>& _self, const __st::node_base* left_node,
-            const __st::node_base* right_node)
+            st::detail::nonleaf_node<flat_segment_tree>& _self, const st::detail::node_base* left_node,
+            const st::detail::node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -151,7 +151,7 @@ public:
             return os.str();
         }
 
-        std::string operator()(const mdds::__st::nonleaf_node<flat_segment_tree>& _self) const
+        std::string operator()(const mdds::st::detail::nonleaf_node<flat_segment_tree>& _self) const
         {
             std::ostringstream os;
             os << "(" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ") ";
@@ -164,7 +164,7 @@ public:
     {
         void operator()(node& /*_self*/)
         {}
-        void operator()(__st::nonleaf_node<flat_segment_tree>& /*_self*/)
+        void operator()(st::detail::nonleaf_node<flat_segment_tree>& /*_self*/)
         {}
     };
 
@@ -172,7 +172,7 @@ public:
     {
         void operator()(node& /*_self*/)
         {}
-        void operator()(__st::nonleaf_node<flat_segment_tree>& /*_self*/)
+        void operator()(st::detail::nonleaf_node<flat_segment_tree>& /*_self*/)
         {}
     };
 
@@ -631,7 +631,7 @@ public:
         if (!m_valid_tree)
             assert(!"attempted to dump an invalid tree!");
 
-        size_t node_count = mdds::__st::tree_dumper<node, nonleaf_node>::dump(m_root_node);
+        size_t node_count = mdds::st::detail::tree_dumper<node, nonleaf_node>::dump(m_root_node);
         size_t node_instance_count = node::get_instance_count();
         size_t leaf_count = leaf_size();
 

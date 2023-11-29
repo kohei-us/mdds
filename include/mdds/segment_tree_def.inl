@@ -32,7 +32,7 @@ namespace mdds {
 namespace st { namespace detail {
 
 template<typename T, typename InserterT>
-void descend_tree_for_search(typename T::key_type point, const __st::node_base* pnode, InserterT& result)
+void descend_tree_for_search(typename T::key_type point, const st::detail::node_base* pnode, InserterT& result)
 {
     assert(pnode);
 
@@ -57,7 +57,7 @@ void descend_tree_for_search(typename T::key_type point, const __st::node_base* 
     result(v.data_chain);
 
     // Check the left child node first, then the right one.
-    __st::node_base* pchild = pnonleaf->left;
+    st::detail::node_base* pchild = pnonleaf->left;
     if (!pchild)
         return;
 
@@ -158,14 +158,14 @@ void segment_tree<KeyT, ValueT>::build_tree()
     m_nonleaf_node_pool.clear();
 
     // Count the number of leaf nodes.
-    size_t leaf_count = __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    size_t leaf_count = st::detail::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 
     // Determine the total number of non-leaf nodes needed to build the whole tree.
-    size_t nonleaf_count = __st::count_needed_nonleaf_nodes(leaf_count);
+    size_t nonleaf_count = st::detail::count_needed_nonleaf_nodes(leaf_count);
 
     m_nonleaf_node_pool.resize(nonleaf_count);
 
-    mdds::__st::tree_builder<segment_tree> builder(m_nonleaf_node_pool);
+    mdds::st::detail::tree_builder<segment_tree> builder(m_nonleaf_node_pool);
     m_root_node = builder.build(m_left_leaf);
 
     // Star t "inserting" all segments from the root.
@@ -190,7 +190,7 @@ void segment_tree<KeyT, ValueT>::build_tree()
 
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
-    __st::node_base* pnode, value_type value, key_type begin_key, key_type end_key, node_list_type* plist)
+    st::detail::node_base* pnode, value_type value, key_type begin_key, key_type end_key, node_list_type* plist)
 {
     if (!pnode)
         return;
@@ -366,7 +366,7 @@ bool segment_tree<KeyT, ValueT>::empty() const
 template<typename KeyT, typename ValueT>
 size_t segment_tree<KeyT, ValueT>::leaf_size() const
 {
-    return __st::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    return st::detail::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 }
 
 template<typename KeyT, typename ValueT>
@@ -376,7 +376,7 @@ void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, c
     for (; itr != itr_end; ++itr)
     {
         data_chain_type* chain = nullptr;
-        __st::node_base* p = *itr;
+        st::detail::node_base* p = *itr;
         if (p->is_leaf)
             chain = static_cast<node*>(p)->value_leaf.data_chain;
         else
@@ -421,7 +421,7 @@ void segment_tree<KeyT, ValueT>::dump_tree() const
         assert(!"attempted to dump an invalid tree!");
 
     cout << "dump tree ------------------------------------------------------" << endl;
-    size_t node_count = mdds::__st::tree_dumper<node, nonleaf_node>::dump(m_root_node);
+    size_t node_count = mdds::st::detail::tree_dumper<node, nonleaf_node>::dump(m_root_node);
     size_t node_instance_count = node::get_instance_count();
 
     cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
@@ -571,7 +571,7 @@ bool segment_tree<KeyT, ValueT>::has_data_pointer(const node_list_type& node_lis
     {
         // Check each node, and make sure each node has the value pointer
         // listed.
-        const __st::node_base* pnode = *itr;
+        const st::detail::node_base* pnode = *itr;
         const data_chain_type* chain = nullptr;
         if (pnode->is_leaf)
             chain = static_cast<const node*>(pnode)->value_leaf.data_chain;

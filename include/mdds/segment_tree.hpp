@@ -118,16 +118,16 @@ public:
     struct to_string_handler;
 #endif
 
-    typedef __st::node<segment_tree> node;
+    typedef st::detail::node<segment_tree> node;
     typedef typename node::node_ptr node_ptr;
 
-    typedef typename __st::nonleaf_node<segment_tree> nonleaf_node;
+    typedef typename st::detail::nonleaf_node<segment_tree> nonleaf_node;
 
     struct fill_nonleaf_value_handler
     {
         void operator()(
-            __st::nonleaf_node<segment_tree>& _self, const __st::node_base* left_node,
-            const __st::node_base* right_node)
+            st::detail::nonleaf_node<segment_tree>& _self, const st::detail::node_base* left_node,
+            const st::detail::node_base* right_node)
         {
             // Parent node should carry the range of all of its child nodes.
             if (left_node)
@@ -180,7 +180,7 @@ public:
             return os.str();
         }
 
-        std::string operator()(const __st::nonleaf_node<segment_tree>& _self) const
+        std::string operator()(const st::detail::nonleaf_node<segment_tree>& _self) const
         {
             std::ostringstream os;
             os << "[" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
@@ -210,7 +210,7 @@ public:
             _self.value_leaf.data_chain = nullptr;
         }
 
-        void operator()(__st::nonleaf_node<segment_tree>& _self)
+        void operator()(st::detail::nonleaf_node<segment_tree>& _self)
         {
             _self.value_nonleaf.data_chain = nullptr;
         }
@@ -223,7 +223,7 @@ public:
             delete _self.value_leaf.data_chain;
         }
 
-        void operator()(__st::nonleaf_node<segment_tree>& _self)
+        void operator()(st::detail::nonleaf_node<segment_tree>& _self)
         {
             delete _self.value_nonleaf.data_chain;
         }
@@ -232,7 +232,7 @@ public:
 #ifdef MDDS_UNIT_TEST
     struct node_printer
     {
-        void operator()(const __st::node_base* p) const
+        void operator()(const st::detail::node_base* p) const
         {
             if (p->is_leaf)
                 std::cout << static_cast<const node*>(p)->to_string() << " ";
@@ -644,7 +644,7 @@ private:
      */
     void search(key_type point, search_results_base& result) const;
 
-    typedef std::vector<__st::node_base*> node_list_type;
+    typedef std::vector<st::detail::node_base*> node_list_type;
     typedef std::map<value_type, std::unique_ptr<node_list_type>> data_node_map_type;
 
     static void create_leaf_node_instances(std::vector<key_type> keys, node_ptr& left, node_ptr& right);
@@ -655,7 +655,7 @@ private:
      * record their positions as a list of node pointers.
      */
     void descend_tree_and_mark(
-        __st::node_base* pnode, value_type value, key_type begin_key, key_type end_key, node_list_type* plist);
+        st::detail::node_base* pnode, value_type value, key_type begin_key, key_type end_key, node_list_type* plist);
 
     void build_leaf_nodes();
 
