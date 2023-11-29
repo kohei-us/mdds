@@ -65,6 +65,13 @@ public:
 
         nonleaf_value_type() : low{}, high{}
         {}
+
+        std::string to_string() const
+        {
+            std::ostringstream os;
+            os << "(" << low << "-" << high << ")";
+            return os.str();
+        }
     };
 
     struct leaf_value_type
@@ -79,6 +86,13 @@ public:
 
         leaf_value_type() : key{}, value{}
         {}
+
+        std::string to_string() const
+        {
+            std::ostringstream os;
+            os << "(" << key << ")";
+            return os.str();
+        }
     };
 
     // Handlers required by the node template class.
@@ -138,25 +152,6 @@ public:
             }
         }
     };
-
-#ifdef MDDS_UNIT_TEST
-    struct to_string_handler
-    {
-        std::string operator()(const node& _self) const
-        {
-            std::ostringstream os;
-            os << "(" << _self.value_leaf.key << ") ";
-            return os.str();
-        }
-
-        std::string operator()(const mdds::st::detail::nonleaf_node<flat_segment_tree>& _self) const
-        {
-            std::ostringstream os;
-            os << "(" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ") ";
-            return os.str();
-        }
-    };
-#endif
 
 private:
     friend struct ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>;

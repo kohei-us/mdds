@@ -36,10 +36,7 @@
 #include <map>
 #include <unordered_map>
 #include <memory>
-
-#ifdef MDDS_UNIT_TEST
 #include <sstream>
-#endif
 
 namespace mdds {
 
@@ -94,7 +91,8 @@ public:
         key_type high = {}; /// high range value (non-inclusive)
         data_chain_type* data_chain = nullptr;
 
-        nonleaf_value_type() {}
+        nonleaf_value_type()
+        {}
         nonleaf_value_type(const nonleaf_value_type& r) : low(r.low), high(r.high)
         {
             if (r.data_chain)
@@ -110,6 +108,13 @@ public:
         {
             delete data_chain;
         }
+
+        std::string to_string() const
+        {
+            std::ostringstream os;
+            os << "[" << low << "-" << high << ")";
+            return os.str();
+        }
     };
 
     struct leaf_value_type
@@ -117,7 +122,8 @@ public:
         key_type key = {};
         data_chain_type* data_chain = nullptr;
 
-        leaf_value_type() {}
+        leaf_value_type()
+        {}
         leaf_value_type(const leaf_value_type& r) : key(r.key)
         {
             if (r.data_chain)
@@ -133,12 +139,16 @@ public:
         {
             delete data_chain;
         }
+
+        std::string to_string() const
+        {
+            std::ostringstream os;
+            os << "[" << key << "]";
+            return os.str();
+        }
     };
 
     struct fill_nonleaf_value_handler;
-#ifdef MDDS_UNIT_TEST
-    struct to_string_handler;
-#endif
 
     typedef st::detail::node<segment_tree> node;
     typedef typename node::node_ptr node_ptr;
@@ -193,47 +203,14 @@ public:
     };
 
 #ifdef MDDS_UNIT_TEST
-    struct to_string_handler
-    {
-        std::string operator()(const node& _self) const
-        {
-            std::ostringstream os;
-            os << "[" << _self.value_leaf.key << "] ";
-            return os.str();
-        }
-
-        std::string operator()(const st::detail::nonleaf_node<segment_tree>& _self) const
-        {
-            std::ostringstream os;
-            os << "[" << _self.value_nonleaf.low << "-" << _self.value_nonleaf.high << ")";
-            if (_self.value_nonleaf.data_chain)
-            {
-                os << " { ";
-                typename data_chain_type::const_iterator itr, itr_beg = _self.value_nonleaf.data_chain->begin(),
-                                                              itr_end = _self.value_nonleaf.data_chain->end();
-                for (itr = itr_beg; itr != itr_end; ++itr)
-                {
-                    if (itr != itr_beg)
-                        os << ", ";
-                    os << (*itr)->name;
-                }
-                os << " }";
-            }
-            os << " ";
-            return os.str();
-        }
-    };
-#endif
-
-#ifdef MDDS_UNIT_TEST
     struct node_printer
     {
         void operator()(const st::detail::node_base* p) const
         {
             if (p->is_leaf)
-                std::cout << static_cast<const node*>(p)->to_string() << " ";
+                std::cout << static_cast<const node*>(p)->value_leaf.to_string() << " ";
             else
-                std::cout << static_cast<const nonleaf_node*>(p)->to_string() << " ";
+                std::cout << static_cast<const nonleaf_node*>(p)->value_nonleaf.to_string() << " ";
         }
     };
 #endif

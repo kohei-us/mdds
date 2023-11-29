@@ -56,9 +56,6 @@ struct nonleaf_node : public node_base
 {
     typedef typename T::nonleaf_value_type nonleaf_value_type;
     typedef typename T::fill_nonleaf_value_handler fill_nonleaf_value_handler;
-#ifdef MDDS_UNIT_TEST
-    typedef typename T::to_string_handler to_string_handler;
-#endif
     nonleaf_value_type value_nonleaf;
 
     node_base* left; /// left child nonleaf_node
@@ -67,14 +64,9 @@ struct nonleaf_node : public node_base
 private:
     fill_nonleaf_value_handler _hdl_fill_nonleaf;
 
-#ifdef MDDS_UNIT_TEST
-    to_string_handler _hdl_to_string;
-#endif
-
 public:
     nonleaf_node() : node_base(false), value_nonleaf(), left(nullptr), right(nullptr)
-    {
-    }
+    {}
 
     /**
      * When copying nonleaf_node, only the stored values should be copied.
@@ -99,8 +91,7 @@ public:
     }
 
     ~nonleaf_node()
-    {
-    }
+    {}
 
     bool equals(const nonleaf_node& r) const
     {
@@ -111,18 +102,6 @@ public:
     {
         _hdl_fill_nonleaf(*this, left_node, right_node);
     }
-
-#ifdef MDDS_UNIT_TEST
-    void dump_value() const
-    {
-        ::std::cout << _hdl_to_string(*this);
-    }
-
-    ::std::string to_string() const
-    {
-        return _hdl_to_string(*this);
-    }
-#endif
 };
 
 template<typename T>
@@ -131,9 +110,6 @@ struct node : public node_base
     typedef ::boost::intrusive_ptr<node> node_ptr;
 
     typedef typename T::leaf_value_type leaf_value_type;
-#ifdef MDDS_UNIT_TEST
-    typedef typename T::to_string_handler to_string_handler;
-#endif
 
     static size_t get_instance_count()
     {
@@ -150,11 +126,6 @@ struct node : public node_base
     node_ptr next; /// next sibling leaf node.
 
     size_t refcount;
-
-private:
-#ifdef MDDS_UNIT_TEST
-    to_string_handler _hdl_to_string;
-#endif
 
 public:
     node() : node_base(true), refcount(0)
@@ -200,18 +171,6 @@ public:
     {
         return value_leaf == r.value_leaf;
     }
-
-#ifdef MDDS_UNIT_TEST
-    void dump_value() const
-    {
-        ::std::cout << _hdl_to_string(*this);
-    }
-
-    ::std::string to_string() const
-    {
-        return _hdl_to_string(*this);
-    }
-#endif
 };
 
 template<typename T>
@@ -439,9 +398,9 @@ private:
             }
 
             if (p->is_leaf)
-                static_cast<const _Leaf*>(p)->dump_value();
+                cout << static_cast<const _Leaf*>(p)->value_leaf.to_string();
             else
-                static_cast<const _NonLeaf*>(p)->dump_value();
+                cout << static_cast<const _NonLeaf*>(p)->value_nonleaf.to_string();
 
             if (p->is_leaf)
                 continue;
