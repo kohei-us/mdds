@@ -51,10 +51,10 @@ struct node_base
     {}
 };
 
-template<typename T>
+template<typename ValueT>
 struct nonleaf_node : public node_base
 {
-    typedef typename T::nonleaf_value_type nonleaf_value_type;
+    using nonleaf_value_type = ValueT;
     nonleaf_value_type value_nonleaf;
 
     node_base* left; /// left child nonleaf_node
@@ -100,12 +100,11 @@ public:
     }
 };
 
-template<typename T>
+template<typename ValueT>
 struct node : public node_base
 {
-    typedef ::boost::intrusive_ptr<node> node_ptr;
-
-    typedef typename T::leaf_value_type leaf_value_type;
+    using node_ptr = boost::intrusive_ptr<node>;
+    using leaf_value_type = ValueT;
 
     static size_t get_instance_count()
     {
@@ -183,8 +182,8 @@ inline void intrusive_ptr_release(node<T>* p)
         delete p;
 }
 
-template<typename T>
-void link_nodes(typename node<T>::node_ptr& left, typename node<T>::node_ptr& right)
+template<typename NodeT>
+void link_nodes(typename NodeT::node_ptr& left, typename NodeT::node_ptr& right)
 {
     left->next = right;
     right->prev = left;
@@ -194,9 +193,9 @@ template<typename T>
 class tree_builder
 {
 public:
-    typedef mdds::st::detail::node<T> leaf_node;
-    typedef typename mdds::st::detail::node<T>::node_ptr leaf_node_ptr;
-    typedef mdds::st::detail::nonleaf_node<T> nonleaf_node;
+    typedef typename T::node leaf_node;
+    typedef typename leaf_node::node_ptr leaf_node_ptr;
+    typedef typename T::nonleaf_node nonleaf_node;
     typedef std::vector<nonleaf_node> nonleaf_node_pool_type;
 
     tree_builder(nonleaf_node_pool_type& pool) : m_pool(pool), m_pool_pos(pool.begin()), m_pool_pos_end(pool.end())

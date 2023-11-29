@@ -188,10 +188,9 @@ public:
         }
     };
 
-    typedef st::detail::node<segment_tree> node;
-    typedef typename node::node_ptr node_ptr;
-
-    typedef typename st::detail::nonleaf_node<segment_tree> nonleaf_node;
+    using node = st::detail::node<leaf_value_type>;
+    using node_ptr = typename node::node_ptr;
+    using nonleaf_node = typename st::detail::nonleaf_node<nonleaf_value_type>;
 
 #ifdef MDDS_UNIT_TEST
     struct node_printer

@@ -135,10 +135,9 @@ public:
         }
     };
 
-    typedef st::detail::node<flat_segment_tree> node;
-    typedef typename node::node_ptr node_ptr;
-
-    typedef st::detail::nonleaf_node<flat_segment_tree> nonleaf_node;
+    using node = st::detail::node<leaf_value_type>;
+    using node_ptr = typename node::node_ptr;
+    using nonleaf_node = st::detail::nonleaf_node<nonleaf_value_type>;
 
 private:
     friend struct ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>;

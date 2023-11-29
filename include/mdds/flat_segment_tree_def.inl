@@ -183,7 +183,7 @@ void flat_segment_tree<Key, Value>::clear()
     destroy();
 
     // and construct the default tree
-    st::detail::link_nodes<flat_segment_tree>(m_left_leaf, m_right_leaf);
+    st::detail::link_nodes<node>(m_left_leaf, m_right_leaf);
     m_left_leaf->value_leaf.value = m_init_val;
     m_valid_tree = false;
 }
