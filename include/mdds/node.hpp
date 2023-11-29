@@ -55,14 +55,10 @@ template<typename T>
 struct nonleaf_node : public node_base
 {
     typedef typename T::nonleaf_value_type nonleaf_value_type;
-    typedef typename T::fill_nonleaf_value_handler fill_nonleaf_value_handler;
     nonleaf_value_type value_nonleaf;
 
     node_base* left; /// left child nonleaf_node
     node_base* right; /// right child nonleaf_node
-
-private:
-    fill_nonleaf_value_handler _hdl_fill_nonleaf;
 
 public:
     nonleaf_node() : node_base(false), value_nonleaf(), left(nullptr), right(nullptr)
@@ -100,7 +96,7 @@ public:
 
     void fill_nonleaf_value(const node_base* left_node, const node_base* right_node)
     {
-        _hdl_fill_nonleaf(*this, left_node, right_node);
+        value_nonleaf.fill_value(left_node, right_node);
     }
 };
 

@@ -115,6 +115,46 @@ public:
             os << "[" << low << "-" << high << ")";
             return os.str();
         }
+
+        void fill_value(const st::detail::node_base* left_node, const st::detail::node_base* right_node)
+        {
+            // Parent node should carry the range of all of its child nodes.
+            if (left_node)
+            {
+                low = left_node->is_leaf ? static_cast<const node*>(left_node)->value_leaf.key
+                                         : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
+            }
+            else
+            {
+                // Having a left node is prerequisite.
+                throw general_error("segment_tree::fill_nonleaf_value_handler: Having a left node is prerequisite.");
+            }
+
+            if (right_node)
+            {
+                if (right_node->is_leaf)
+                {
+                    // When the child nodes are leaf nodes, the upper bound
+                    // must be the value of the node that comes after the
+                    // right leaf node (if such node exists).
+
+                    const node* p = static_cast<const node*>(right_node);
+                    if (p->next)
+                        high = p->next->value_leaf.key;
+                    else
+                        high = p->value_leaf.key;
+                }
+                else
+                {
+                    high = static_cast<const nonleaf_node*>(right_node)->value_nonleaf.high;
+                }
+            }
+            else
+            {
+                high = left_node->is_leaf ? static_cast<const node*>(left_node)->value_leaf.key
+                                          : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
+            }
+        }
     };
 
     struct leaf_value_type
@@ -148,59 +188,10 @@ public:
         }
     };
 
-    struct fill_nonleaf_value_handler;
-
     typedef st::detail::node<segment_tree> node;
     typedef typename node::node_ptr node_ptr;
 
     typedef typename st::detail::nonleaf_node<segment_tree> nonleaf_node;
-
-    struct fill_nonleaf_value_handler
-    {
-        void operator()(
-            st::detail::nonleaf_node<segment_tree>& _self, const st::detail::node_base* left_node,
-            const st::detail::node_base* right_node)
-        {
-            // Parent node should carry the range of all of its child nodes.
-            if (left_node)
-            {
-                _self.value_nonleaf.low = left_node->is_leaf
-                                              ? static_cast<const node*>(left_node)->value_leaf.key
-                                              : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
-            }
-            else
-            {
-                // Having a left node is prerequisite.
-                throw general_error("segment_tree::fill_nonleaf_value_handler: Having a left node is prerequisite.");
-            }
-
-            if (right_node)
-            {
-                if (right_node->is_leaf)
-                {
-                    // When the child nodes are leaf nodes, the upper bound
-                    // must be the value of the node that comes after the
-                    // right leaf node (if such node exists).
-
-                    const node* p = static_cast<const node*>(right_node);
-                    if (p->next)
-                        _self.value_nonleaf.high = p->next->value_leaf.key;
-                    else
-                        _self.value_nonleaf.high = p->value_leaf.key;
-                }
-                else
-                {
-                    _self.value_nonleaf.high = static_cast<const nonleaf_node*>(right_node)->value_nonleaf.high;
-                }
-            }
-            else
-            {
-                _self.value_nonleaf.high = left_node->is_leaf
-                                               ? static_cast<const node*>(left_node)->value_leaf.key
-                                               : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
-            }
-        }
-    };
 
 #ifdef MDDS_UNIT_TEST
     struct node_printer
