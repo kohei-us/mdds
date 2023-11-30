@@ -87,14 +87,14 @@ public:
 
     struct nonleaf_value_type
     {
-        data_chain_type* data_chain = nullptr;
+        std::unique_ptr<data_chain_type> data_chain;
 
         nonleaf_value_type()
         {}
         nonleaf_value_type(const nonleaf_value_type& r)
         {
             if (r.data_chain)
-                data_chain = new data_chain_type(*r.data_chain);
+                data_chain = std::make_unique<data_chain_type>(*r.data_chain);
         }
 
         bool operator==(const nonleaf_value_type& r) const
@@ -103,21 +103,19 @@ public:
         }
 
         ~nonleaf_value_type()
-        {
-            delete data_chain;
-        }
+        {}
     };
 
     struct leaf_value_type
     {
-        data_chain_type* data_chain = nullptr;
+        std::unique_ptr<data_chain_type> data_chain;
 
         leaf_value_type()
         {}
         leaf_value_type(const leaf_value_type& r)
         {
             if (r.data_chain)
-                data_chain = new data_chain_type(*r.data_chain);
+                data_chain = std::make_unique<data_chain_type>(*r.data_chain);
         }
 
         bool operator==(const leaf_value_type& r) const
@@ -126,9 +124,7 @@ public:
         }
 
         ~leaf_value_type()
-        {
-            delete data_chain;
-        }
+        {}
     };
 
     using node = st::detail::node<key_type, leaf_value_type>;

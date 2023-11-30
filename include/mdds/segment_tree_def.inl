@@ -41,7 +41,7 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
 
     if (pnode->is_leaf)
     {
-        result(static_cast<const leaf_node*>(pnode)->value_leaf.data_chain);
+        result(static_cast<const leaf_node*>(pnode)->value_leaf.data_chain.get());
         return;
     }
 
@@ -50,7 +50,7 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
         // Query point is out-of-range.
         return;
 
-    result(pnonleaf->value_nonleaf.data_chain);
+    result(pnonleaf->value_nonleaf.data_chain.get());
 
     // Check the left child node first, then the right one.
     st::detail::node_base* pchild = pnonleaf->left;
@@ -197,7 +197,7 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
         {
             leaf_value_type& v = pleaf->value_leaf;
             if (!v.data_chain)
-                v.data_chain = new data_chain_type;
+                v.data_chain = std::make_unique<data_chain_type>();
             v.data_chain->push_back(value);
             plist->push_back(pnode);
         }
@@ -214,7 +214,7 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
         nonleaf_value_type& v = pnonleaf->value_nonleaf;
 
         if (!v.data_chain)
-            v.data_chain = new data_chain_type;
+            v.data_chain = std::make_unique<data_chain_type>();
         v.data_chain->push_back(value);
         plist->push_back(pnode);
         return;
@@ -373,9 +373,9 @@ void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, c
         data_chain_type* chain = nullptr;
         st::detail::node_base* p = *itr;
         if (p->is_leaf)
-            chain = static_cast<node*>(p)->value_leaf.data_chain;
+            chain = static_cast<node*>(p)->value_leaf.data_chain.get();
         else
-            chain = static_cast<nonleaf_node*>(p)->value_nonleaf.data_chain;
+            chain = static_cast<nonleaf_node*>(p)->value_nonleaf.data_chain.get();
 
         if (!chain)
             continue;
@@ -569,9 +569,9 @@ bool segment_tree<KeyT, ValueT>::has_data_pointer(const node_list_type& node_lis
         const st::detail::node_base* pnode = *itr;
         const data_chain_type* chain = nullptr;
         if (pnode->is_leaf)
-            chain = static_cast<const node*>(pnode)->value_leaf.data_chain;
+            chain = static_cast<const node*>(pnode)->value_leaf.data_chain.get();
         else
-            chain = static_cast<const nonleaf_node*>(pnode)->value_nonleaf.data_chain;
+            chain = static_cast<const nonleaf_node*>(pnode)->value_nonleaf.data_chain.get();
 
         if (!chain)
             return false;
