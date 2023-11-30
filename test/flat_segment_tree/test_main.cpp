@@ -1330,7 +1330,7 @@ void fst_test_copy_ctor()
     {
         // Original node.
         fst::node_ptr node1(new fst::node);
-        node1->value_leaf.key = 10;
+        node1->key = 10;
         node1->value_leaf.value = 500;
         assert(node1->is_leaf);
         assert(!node1->parent);
@@ -1343,21 +1343,21 @@ void fst_test_copy_ctor()
         assert(!node2->parent);
         assert(!node2->prev);
         assert(!node2->next);
-        assert(node2->value_leaf.key == 10);
+        assert(node2->key == 10);
         assert(node2->value_leaf.value == 500);
 
         // Changing the values of the original should not modify the second node.
-        node1->value_leaf.key = 35;
+        node1->key = 35;
         node1->value_leaf.value = 200;
-        assert(node2->value_leaf.key == 10);
+        assert(node2->key == 10);
         assert(node2->value_leaf.value == 500);
     }
 
     {
         // Test non-leaf node objects.
         fst::nonleaf_node node1;
-        node1.value_nonleaf.low = 123;
-        node1.value_nonleaf.high = 789;
+        node1.low = 123;
+        node1.high = 789;
 
         // Test the copying of non-leaf values.
         fst::nonleaf_node node2(node1);
@@ -1365,8 +1365,8 @@ void fst_test_copy_ctor()
         assert(!node2.parent);
         assert(!node2.left);
         assert(!node2.right);
-        assert(node2.value_nonleaf.low == 123);
-        assert(node2.value_nonleaf.high == 789);
+        assert(node2.low == 123);
+        assert(node2.high == 789);
     }
 
     // Now, test the copy construction of the flat_segment_tree.

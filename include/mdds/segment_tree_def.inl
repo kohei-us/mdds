@@ -39,9 +39,6 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
     typedef typename T::node leaf_node;
     typedef typename T::nonleaf_node nonleaf_node;
 
-    typedef typename T::nonleaf_value_type nonleaf_value_type;
-    typedef typename T::leaf_value_type leaf_value_type;
-
     if (pnode->is_leaf)
     {
         result(static_cast<const leaf_node*>(pnode)->value_leaf.data_chain);
@@ -49,12 +46,11 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
     }
 
     const nonleaf_node* pnonleaf = static_cast<const nonleaf_node*>(pnode);
-    const nonleaf_value_type& v = pnonleaf->value_nonleaf;
-    if (point < v.low || v.high <= point)
+    if (point < pnonleaf->low || pnonleaf->high <= point)
         // Query point is out-of-range.
         return;
 
-    result(v.data_chain);
+    result(pnonleaf->value_nonleaf.data_chain);
 
     // Check the left child node first, then the right one.
     st::detail::node_base* pchild = pnonleaf->left;
@@ -66,8 +62,7 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
     if (pchild->is_leaf)
     {
         // The child node are leaf nodes.
-        const leaf_value_type& vleft = static_cast<const leaf_node*>(pchild)->value_leaf;
-        if (point < vleft.key)
+        if (point < static_cast<const leaf_node*>(pchild)->key)
         {
             // Out-of-range.  Nothing more to do.
             return;
@@ -76,8 +71,7 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
         if (pnonleaf->right)
         {
             assert(pnonleaf->right->is_leaf);
-            const leaf_value_type& vright = static_cast<const leaf_node*>(pnonleaf->right)->value_leaf;
-            if (vright.key <= point)
+            if (static_cast<const leaf_node*>(pnonleaf->right)->key <= point)
                 // Follow the right node.
                 pchild = pnonleaf->right;
         }
@@ -86,20 +80,20 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
     {
         // This child nodes are non-leaf nodes.
 
-        const nonleaf_value_type& vleft = static_cast<const nonleaf_node*>(pchild)->value_nonleaf;
+        const auto* pleaf_left = static_cast<const nonleaf_node*>(pchild);
 
-        if (point < vleft.low)
+        if (point < pleaf_left->low)
         {
             // Out-of-range.  Nothing more to do.
             return;
         }
-        if (vleft.high <= point && pnonleaf->right)
+        if (pleaf_left->high <= point && pnonleaf->right)
             // Follow the right child.
             pchild = pnonleaf->right;
 
         assert(
-            static_cast<const nonleaf_node*>(pchild)->value_nonleaf.low <= point &&
-            point < static_cast<const nonleaf_node*>(pchild)->value_nonleaf.high);
+            static_cast<const nonleaf_node*>(pchild)->low <= point &&
+            point < static_cast<const nonleaf_node*>(pchild)->high);
     }
 
     descend_tree_for_search<T, InserterT>(point, pchild, result);
@@ -199,7 +193,7 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
     {
         // This is a leaf node.
         node* pleaf = static_cast<node*>(pnode);
-        if (begin_key <= pleaf->value_leaf.key && pleaf->value_leaf.key < end_key)
+        if (begin_key <= pleaf->key && pleaf->key < end_key)
         {
             leaf_value_type& v = pleaf->value_leaf;
             if (!v.data_chain)
@@ -211,13 +205,14 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
     }
 
     nonleaf_node* pnonleaf = static_cast<nonleaf_node*>(pnode);
-    if (end_key < pnonleaf->value_nonleaf.low || pnonleaf->value_nonleaf.high <= begin_key)
+    if (end_key < pnonleaf->low || pnonleaf->high <= begin_key)
         return;
 
-    nonleaf_value_type& v = pnonleaf->value_nonleaf;
-    if (begin_key <= v.low && v.high < end_key)
+    if (begin_key <= pnonleaf->low && pnonleaf->high < end_key)
     {
         // mark this non-leaf node and stop.
+        nonleaf_value_type& v = pnonleaf->value_nonleaf;
+
         if (!v.data_chain)
             v.data_chain = new data_chain_type;
         v.data_chain->push_back(value);
@@ -262,7 +257,7 @@ void segment_tree<KeyT, ValueT>::create_leaf_node_instances(std::vector<key_type
 
     // left-most node
     left.reset(new node);
-    left->value_leaf.key = *it;
+    left->key = *it;
 
     // move on to next.
     left->next.reset(new node);
@@ -272,7 +267,7 @@ void segment_tree<KeyT, ValueT>::create_leaf_node_instances(std::vector<key_type
 
     for (++it; it != keys.cend(); ++it)
     {
-        cur_node->value_leaf.key = *it;
+        cur_node->key = *it;
 
         // move on to next
         cur_node->next.reset(new node);
@@ -438,7 +433,7 @@ void segment_tree<KeyT, ValueT>::dump_leaf_nodes() const
     node* p = m_left_leaf.get();
     while (p)
     {
-        print_leaf_value(p->value_leaf);
+        print_leaf_value(*p);
         p = p->next.get();
     }
     cout << "  node instance count = " << node::get_instance_count() << endl;
@@ -490,7 +485,7 @@ bool segment_tree<KeyT, ValueT>::verify_leaf_nodes(const ::std::vector<leaf_node
             // Position past the right-mode node.  Invalid.
             return false;
 
-        if (cur_node->value_leaf.key != itr->key)
+        if (cur_node->key != itr->key)
             // Key values differ.
             return false;
 
@@ -588,22 +583,16 @@ bool segment_tree<KeyT, ValueT>::has_data_pointer(const node_list_type& node_lis
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::print_leaf_value(const leaf_value_type& v)
+void segment_tree<KeyT, ValueT>::print_leaf_value(const node& n)
 {
-    using namespace std;
-    cout << v.key << ": { ";
-    if (v.data_chain)
+    cout << n.to_string() << ": {";
+
+    if (n.value_leaf.data_chain)
     {
-        const data_chain_type* pchain = v.data_chain;
-        typename data_chain_type::const_iterator itr, itr_beg = pchain->begin(), itr_end = pchain->end();
-        for (itr = itr_beg; itr != itr_end; ++itr)
-        {
-            if (itr != itr_beg)
-                cout << ", ";
-            cout << (*itr)->name;
-        }
+        for (const auto& v : *n.value_leaf.data_chain)
+            std::cout << v << ", ";
     }
-    cout << " }" << endl;
+    cout << "}" << endl;
 }
 #endif
 

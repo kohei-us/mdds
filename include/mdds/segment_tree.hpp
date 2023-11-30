@@ -87,13 +87,11 @@ public:
 
     struct nonleaf_value_type
     {
-        key_type low = {}; /// low range value (inclusive)
-        key_type high = {}; /// high range value (non-inclusive)
         data_chain_type* data_chain = nullptr;
 
         nonleaf_value_type()
         {}
-        nonleaf_value_type(const nonleaf_value_type& r) : low(r.low), high(r.high)
+        nonleaf_value_type(const nonleaf_value_type& r)
         {
             if (r.data_chain)
                 data_chain = new data_chain_type(*r.data_chain);
@@ -101,70 +99,22 @@ public:
 
         bool operator==(const nonleaf_value_type& r) const
         {
-            return low == r.low && high == r.high && data_chain == r.data_chain;
+            return data_chain == r.data_chain;
         }
 
         ~nonleaf_value_type()
         {
             delete data_chain;
         }
-
-        std::string to_string() const
-        {
-            std::ostringstream os;
-            os << "[" << low << "-" << high << ")";
-            return os.str();
-        }
-
-        void fill_value(const st::detail::node_base* left_node, const st::detail::node_base* right_node)
-        {
-            // Parent node should carry the range of all of its child nodes.
-            if (left_node)
-            {
-                low = left_node->is_leaf ? static_cast<const node*>(left_node)->value_leaf.key
-                                         : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
-            }
-            else
-            {
-                // Having a left node is prerequisite.
-                throw general_error("segment_tree::fill_nonleaf_value_handler: Having a left node is prerequisite.");
-            }
-
-            if (right_node)
-            {
-                if (right_node->is_leaf)
-                {
-                    // When the child nodes are leaf nodes, the upper bound
-                    // must be the value of the node that comes after the
-                    // right leaf node (if such node exists).
-
-                    const node* p = static_cast<const node*>(right_node);
-                    if (p->next)
-                        high = p->next->value_leaf.key;
-                    else
-                        high = p->value_leaf.key;
-                }
-                else
-                {
-                    high = static_cast<const nonleaf_node*>(right_node)->value_nonleaf.high;
-                }
-            }
-            else
-            {
-                high = left_node->is_leaf ? static_cast<const node*>(left_node)->value_leaf.key
-                                          : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
-            }
-        }
     };
 
     struct leaf_value_type
     {
-        key_type key = {};
         data_chain_type* data_chain = nullptr;
 
         leaf_value_type()
         {}
-        leaf_value_type(const leaf_value_type& r) : key(r.key)
+        leaf_value_type(const leaf_value_type& r)
         {
             if (r.data_chain)
                 data_chain = new data_chain_type(*r.data_chain);
@@ -172,25 +122,18 @@ public:
 
         bool operator==(const leaf_value_type& r) const
         {
-            return key == r.key && data_chain == r.data_chain;
+            return data_chain == r.data_chain;
         }
 
         ~leaf_value_type()
         {
             delete data_chain;
         }
-
-        std::string to_string() const
-        {
-            std::ostringstream os;
-            os << "[" << key << "]";
-            return os.str();
-        }
     };
 
-    using node = st::detail::node<leaf_value_type>;
+    using node = st::detail::node<key_type, leaf_value_type>;
     using node_ptr = typename node::node_ptr;
-    using nonleaf_node = typename st::detail::nonleaf_node<nonleaf_value_type>;
+    using nonleaf_node = typename st::detail::nonleaf_node<key_type, nonleaf_value_type>;
 
 #ifdef MDDS_UNIT_TEST
     struct node_printer
@@ -198,9 +141,9 @@ public:
         void operator()(const st::detail::node_base* p) const
         {
             if (p->is_leaf)
-                std::cout << static_cast<const node*>(p)->value_leaf.to_string() << " ";
+                std::cout << static_cast<const node*>(p)->to_string() << " ";
             else
-                std::cout << static_cast<const nonleaf_node*>(p)->value_nonleaf.to_string() << " ";
+                std::cout << static_cast<const nonleaf_node*>(p)->to_string() << " ";
         }
     };
 #endif
@@ -633,7 +576,7 @@ private:
 
 #ifdef MDDS_UNIT_TEST
     static bool has_data_pointer(const node_list_type& node_list, const value_type value);
-    static void print_leaf_value(const leaf_value_type& v);
+    static void print_leaf_value(const node& n);
 #endif
 
 private:

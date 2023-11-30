@@ -184,7 +184,7 @@ protected:
 private:
     const value_type& get_current_node_pair()
     {
-        m_current_pair = value_type(m_pos->value_leaf.key, m_pos->value_leaf.value);
+        m_current_pair = value_type(m_pos->key, m_pos->value_leaf.value);
         return m_current_pair;
     }
 
@@ -332,8 +332,8 @@ private:
             // The iterator is at its end position. Nothing to do.
             return;
 
-        m_node.start = m_start->value_leaf.key;
-        m_node.end = m_end->value_leaf.key;
+        m_node.start = m_start->key;
+        m_node.end = m_end->key;
         m_node.value = m_start->value_leaf.value;
     }
 

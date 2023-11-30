@@ -83,11 +83,11 @@ flat_segment_tree<Key, Value>::flat_segment_tree(key_type min_val, key_type max_
       m_valid_tree(false)
 {
     // we need to create two end nodes during initialization.
-    m_left_leaf->value_leaf.key = std::move(min_val);
+    m_left_leaf->key = std::move(min_val);
     m_left_leaf->value_leaf.value = m_init_val; // copy
     m_left_leaf->next = m_right_leaf;
 
-    m_right_leaf->value_leaf.key = std::move(max_val);
+    m_right_leaf->key = std::move(max_val);
     m_right_leaf->prev = m_left_leaf;
 
     // We don't ever use the value of the right leaf node, but we need the
@@ -243,7 +243,7 @@ template<typename Key, typename Value>
 
     bool changed = false;
 
-    if (start_pos->value_leaf.key == start_key)
+    if (start_pos->key == start_key)
     {
         // Re-use the existing node, but save the old value for later.
 
@@ -273,7 +273,7 @@ template<typename Key, typename Value>
     {
         // Insert a new node before the insertion position node.
         node_ptr new_node(new node);
-        new_node->value_leaf.key = std::move(start_key);
+        new_node->key = std::move(start_key);
         new_node->value_leaf.value = val;
         new_start_node = new_node;
 
@@ -302,7 +302,7 @@ template<typename Key, typename Value>
 
     // Set the end node.
 
-    if (end_pos->value_leaf.key == end_key)
+    if (end_pos->key == end_key)
     {
         // The new segment ends exactly at the end node position.
 
@@ -336,7 +336,7 @@ template<typename Key, typename Value>
     {
         // Insert a new node before the insertion position node.
         node_ptr new_node(new node);
-        new_node->value_leaf.key = std::move(end_key);
+        new_node->key = std::move(end_key);
         new_node->value_leaf.value = old_value;
 
         // Link to the left node.
@@ -366,7 +366,7 @@ template<typename Key, typename Value>
 
     assert(p->is_leaf);
 
-    if (start_key < p->value_leaf.key)
+    if (start_key < p->key)
     {
         // Specified position is already past the start key position.  Not good.
         return insert_front(start_key, end_key, val);
@@ -389,8 +389,8 @@ void flat_segment_tree<Key, Value>::shift_left(key_type start_key, key_type end_
     if (start_key >= end_key)
         return;
 
-    key_type left_leaf_key = m_left_leaf->value_leaf.key;
-    key_type right_leaf_key = m_right_leaf->value_leaf.key;
+    key_type left_leaf_key = m_left_leaf->key;
+    key_type right_leaf_key = m_right_leaf->key;
     if (start_key < left_leaf_key || end_key < left_leaf_key)
         // invalid key value
         return;
@@ -434,7 +434,7 @@ void flat_segment_tree<Key, Value>::shift_left(key_type start_key, key_type end_
         return;
     }
 
-    if (end_key < node_pos->value_leaf.key)
+    if (end_key < node_pos->key)
     {
         // The removed segment does not overlap with any nodes.  Simply
         // shift the key values of those nodes that come after the removed
@@ -447,11 +447,11 @@ void flat_segment_tree<Key, Value>::shift_left(key_type start_key, key_type end_
 
     // Move the first node to the starting position, and from there search
     // for the first node whose key value is greater than the end value.
-    node_pos->value_leaf.key = start_key;
+    node_pos->key = start_key;
     node_ptr start_pos = node_pos;
     node_pos = node_pos->next;
     value_type last_seg_value = start_pos->value_leaf.value;
-    while (node_pos.get() != m_right_leaf.get() && node_pos->value_leaf.key <= end_key)
+    while (node_pos.get() != m_right_leaf.get() && node_pos->key <= end_key)
     {
         last_seg_value = node_pos->value_leaf.value;
         node_ptr next = node_pos->next;
@@ -486,11 +486,11 @@ void flat_segment_tree<Key, Value>::shift_right(key_type pos, key_type size, boo
     if (size <= 0)
         return;
 
-    if (pos < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= pos)
+    if (pos < m_left_leaf->key || m_right_leaf->key <= pos)
         // specified position is out-of-bound
         return;
 
-    if (m_left_leaf->value_leaf.key == pos)
+    if (m_left_leaf->key == pos)
     {
         // Position is at the leftmost node.  Shift all the other nodes,
         // and insert a new node at (pos + size) position.
@@ -499,12 +499,12 @@ void flat_segment_tree<Key, Value>::shift_right(key_type pos, key_type size, boo
 
         if (m_left_leaf->value_leaf.value != m_init_val && !skip_start_node)
         {
-            if (size < m_right_leaf->value_leaf.key - m_left_leaf->value_leaf.key)
+            if (size < m_right_leaf->key - m_left_leaf->key)
             {
                 // The leftmost leaf node has a non-initial value.  We need to
                 // insert a new node to carry that value after the shift.
                 node_ptr new_node(new node);
-                new_node->value_leaf.key = pos + size;
+                new_node->key = pos + size;
                 new_node->value_leaf.value = m_left_leaf->value_leaf.value;
                 m_left_leaf->value_leaf.value = m_init_val;
                 new_node->prev = m_left_leaf;
@@ -532,7 +532,7 @@ void flat_segment_tree<Key, Value>::shift_right(key_type pos, key_type size, boo
     // If the point of insertion is at an existing node position, don't
     // shift that node but start with the one after it if that's
     // requested.
-    if (skip_start_node && cur_node && cur_node->value_leaf.key == pos)
+    if (skip_start_node && cur_node && cur_node->key == pos)
         cur_node = cur_node->next;
 
     if (!cur_node)
@@ -548,22 +548,22 @@ template<typename Key, typename Value>
 {
     typedef ::std::pair<const_iterator, bool> ret_type;
 
-    if (pos->value_leaf.key == key)
+    if (pos->key == key)
     {
         value = pos->value_leaf.value;
         if (start_key)
-            *start_key = pos->value_leaf.key;
+            *start_key = pos->key;
         if (end_key && pos->next)
-            *end_key = pos->next->value_leaf.key;
+            *end_key = pos->next->key;
         return ret_type(const_iterator(this, pos), true);
     }
-    else if (pos->prev && pos->prev->value_leaf.key < key)
+    else if (pos->prev && pos->prev->key < key)
     {
         value = pos->prev->value_leaf.value;
         if (start_key)
-            *start_key = pos->prev->value_leaf.key;
+            *start_key = pos->prev->key;
         if (end_key)
-            *end_key = pos->value_leaf.key;
+            *end_key = pos->key;
         return ret_type(const_iterator(this, pos->prev.get()), true);
     }
 
@@ -576,7 +576,7 @@ template<typename Key, typename Value>
 {
     typedef ::std::pair<const_iterator, bool> ret_type;
 
-    if (key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= key)
+    if (key < m_left_leaf->key || m_right_leaf->key <= key)
         // key value is out-of-bound.
         return ret_type(const_iterator(this, true), false);
 
@@ -590,7 +590,7 @@ template<typename Key, typename Value>
 {
     typedef ::std::pair<const_iterator, bool> ret_type;
 
-    if (key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= key)
+    if (key < m_left_leaf->key || m_right_leaf->key <= key)
         // key value is out-of-bound.
         return ret_type(const_iterator(this, true), false);
 
@@ -603,7 +603,7 @@ template<typename Key, typename Value>
 
     assert(p->is_leaf);
 
-    if (key < p->value_leaf.key)
+    if (key < p->key)
     {
         // Specified position is already past the start key position.  Fall
         // back to normal search.
@@ -631,7 +631,7 @@ template<typename Key, typename Value>
 typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Value>::search_by_key_impl(
     const node* start_pos, key_type key) const
 {
-    if (key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= key)
+    if (key < m_left_leaf->key || m_right_leaf->key <= key)
         // key value is out-of-bound.
         return const_iterator(this, true);
 
@@ -639,9 +639,9 @@ typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Va
     if (!pos)
         return const_iterator(this, true);
 
-    if (pos->value_leaf.key == key)
+    if (pos->key == key)
         return const_iterator(this, pos);
-    else if (pos->prev && pos->prev->value_leaf.key < key)
+    else if (pos->prev && pos->prev->key < key)
         return const_iterator(this, pos->prev.get());
 
     return const_iterator(this, true);
@@ -659,16 +659,16 @@ std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_seg
 
     value = dest_node->value_leaf.value;
     if (start_key)
-        *start_key = dest_node->value_leaf.key;
+        *start_key = dest_node->key;
 
     if (end_key)
     {
         assert(dest_node->next);
         if (dest_node->next)
-            *end_key = dest_node->next->value_leaf.key;
+            *end_key = dest_node->next->key;
         else
             // This should never happen, but just in case....
-            *end_key = m_right_leaf->value_leaf.key;
+            *end_key = m_right_leaf->key;
     }
 
     return ret_type(const_iterator(this, dest_node), true);
@@ -694,7 +694,7 @@ const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value
         return nullptr;
     }
 
-    if (key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= key)
+    if (key < m_left_leaf->key || m_right_leaf->key <= key)
     {
         // key value is out-of-bound.
         return nullptr;
@@ -711,8 +711,7 @@ const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value
                 break;
 
             const nonleaf_node* left_nonleaf = static_cast<const nonleaf_node*>(cur_node->left);
-            const nonleaf_value_type& v = left_nonleaf->value_nonleaf;
-            if (v.low <= key && key < v.high)
+            if (left_nonleaf->low <= key && key < left_nonleaf->high)
             {
                 // Descend one level through the left child node.
                 cur_node = left_nonleaf;
@@ -729,8 +728,7 @@ const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value
         {
             assert(!cur_node->right->is_leaf);
             const nonleaf_node* right_nonleaf = static_cast<const nonleaf_node*>(cur_node->right);
-            const nonleaf_value_type& v = right_nonleaf->value_nonleaf;
-            if (v.low <= key && key < v.high)
+            if (right_nonleaf->low <= key && key < right_nonleaf->high)
             {
                 // Descend one level through the right child node.
                 cur_node = right_nonleaf;
@@ -746,14 +744,14 @@ const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value
     const node* dest_node = nullptr;
     const node* leaf_left = static_cast<const node*>(cur_node->left);
     const node* leaf_right = static_cast<const node*>(cur_node->right);
-    key_type key1 = leaf_left->value_leaf.key;
-    key_type key2 = leaf_right->value_leaf.key;
+    key_type key1 = leaf_left->key;
+    key_type key2 = leaf_right->key;
 
     if (key1 <= key && key < key2)
     {
         dest_node = leaf_left;
     }
-    else if (key2 <= key && key < cur_node->value_nonleaf.high)
+    else if (key2 <= key && key < cur_node->high)
     {
         dest_node = leaf_right;
     }
@@ -805,7 +803,10 @@ bool flat_segment_tree<Key, Value>::operator==(const flat_segment_tree& other) c
         if (!n2)
             return false;
 
-        if (!n1->equals(*n2))
+        if (n1->key != n2->key)
+            return false;
+
+        if (n1->value_leaf != n2->value_leaf)
             return false;
 
         n1 = n1->next.get();
@@ -827,7 +828,7 @@ const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value
     const node* cur_node = start_pos;
     while (cur_node)
     {
-        if (cur_node->value_leaf.key < key)
+        if (cur_node->key < key)
         {
             // Found the insertion position.
             return cur_node;
@@ -841,12 +842,12 @@ template<typename Key, typename Value>
 const typename flat_segment_tree<Key, Value>::node* flat_segment_tree<Key, Value>::get_insertion_pos_leaf(
     const key_type& key, const node* start_pos) const
 {
-    assert(m_left_leaf->value_leaf.key <= key);
+    assert(m_left_leaf->key <= key);
 
     const node* cur_node = start_pos;
     while (cur_node)
     {
-        if (key <= cur_node->value_leaf.key)
+        if (key <= cur_node->key)
         {
             // Found the insertion position.
             return cur_node;
@@ -871,17 +872,17 @@ bool flat_segment_tree<Key, Value>::adjust_segment_range(key_type& start_key, ke
         // Invalid order of segment range.
         return false;
 
-    if (end_key < m_left_leaf->value_leaf.key || m_right_leaf->value_leaf.key <= start_key)
+    if (end_key < m_left_leaf->key || m_right_leaf->key <= start_key)
         // The new segment does not overlap the current interval.
         return false;
 
-    if (start_key < m_left_leaf->value_leaf.key)
+    if (start_key < m_left_leaf->key)
         // The start value should not be smaller than the current minimum.
-        start_key = m_left_leaf->value_leaf.key;
+        start_key = m_left_leaf->key;
 
-    if (m_right_leaf->value_leaf.key < end_key)
+    if (m_right_leaf->key < end_key)
         // The end value should not be larger than the current maximum.
-        end_key = m_right_leaf->value_leaf.key;
+        end_key = m_right_leaf->key;
 
     return true;
 }

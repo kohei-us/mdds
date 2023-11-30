@@ -55,89 +55,29 @@ public:
 
     struct nonleaf_value_type
     {
-        key_type low; /// low range value (inclusive)
-        key_type high; /// high range value (non-inclusive)
-
-        bool operator==(const nonleaf_value_type& r) const
-        {
-            return low == r.low && high == r.high;
-        }
-
-        nonleaf_value_type() : low{}, high{}
-        {}
-
-        std::string to_string() const
-        {
-            std::ostringstream os;
-            os << "(" << low << "-" << high << ")";
-            return os.str();
-        }
-
-        void fill_value(const st::detail::node_base* left_node, const st::detail::node_base* right_node)
-        {
-            // Parent node should carry the range of all of its child nodes.
-            if (left_node)
-            {
-                low = left_node->is_leaf ? static_cast<const node*>(left_node)->value_leaf.key
-                                         : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.low;
-            }
-            else
-            {
-                // Having a left node is prerequisite.
-                throw general_error(
-                    "flat_segment_tree::fill_nonleaf_value_handler: Having a left node is prerequisite.");
-            }
-
-            if (right_node)
-            {
-                if (right_node->is_leaf)
-                {
-                    // When the child nodes are leaf nodes, the upper bound
-                    // must be the value of the node that comes after the
-                    // right leaf node (if such node exists).
-                    const node* p = static_cast<const node*>(right_node);
-                    if (p->next)
-                        high = p->next->value_leaf.key;
-                    else
-                        high = p->value_leaf.key;
-                }
-                else
-                {
-                    high = static_cast<const nonleaf_node*>(right_node)->value_nonleaf.high;
-                }
-            }
-            else
-            {
-                high = left_node->is_leaf ? static_cast<const node*>(left_node)->value_leaf.key
-                                          : static_cast<const nonleaf_node*>(left_node)->value_nonleaf.high;
-            }
-        }
     };
 
     struct leaf_value_type
     {
-        key_type key;
         value_type value;
 
         bool operator==(const leaf_value_type& r) const
         {
-            return key == r.key && value == r.value;
+            return value == r.value;
         }
 
-        leaf_value_type() : key{}, value{}
-        {}
-
-        std::string to_string() const
+        bool operator!=(const leaf_value_type& r) const
         {
-            std::ostringstream os;
-            os << "(" << key << ")";
-            return os.str();
+            return !operator==(r);
         }
+
+        leaf_value_type() : value{}
+        {}
     };
 
-    using node = st::detail::node<leaf_value_type>;
+    using node = st::detail::node<key_type, leaf_value_type>;
     using node_ptr = typename node::node_ptr;
-    using nonleaf_node = st::detail::nonleaf_node<nonleaf_value_type>;
+    using nonleaf_node = st::detail::nonleaf_node<key_type, nonleaf_value_type>;
 
 private:
     friend struct ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>;
@@ -560,12 +500,12 @@ public:
 
     key_type min_key() const
     {
-        return m_left_leaf->value_leaf.key;
+        return m_left_leaf->key;
     }
 
     key_type max_key() const
     {
-        return m_right_leaf->value_leaf.key;
+        return m_right_leaf->key;
     }
 
     value_type default_value() const
@@ -615,8 +555,8 @@ public:
         long node_id = 0;
         while (cur_node)
         {
-            cout << "  node " << node_id++ << ": key = " << cur_node->value_leaf.key
-                 << "; value = " << cur_node->value_leaf.value << endl;
+            cout << "  node " << node_id++ << ": key = " << cur_node->key << "; value = " << cur_node->value_leaf.value
+                 << endl;
             cur_node = cur_node->next;
         }
         cout << endl << "  node instance count = " << node::get_instance_count() << endl;
@@ -641,7 +581,7 @@ public:
                     // Position past the right-mode node.  Invalid.
                     return false;
 
-                if (cur_node->value_leaf.key != *itr)
+                if (cur_node->key != *itr)
                     // Key values differ.
                     return false;
 
@@ -665,7 +605,7 @@ public:
                     // Position past the left-mode node.  Invalid.
                     return false;
 
-                if (cur_node->value_leaf.key != *itr)
+                if (cur_node->key != *itr)
                     // Key values differ.
                     return false;
 
@@ -721,7 +661,7 @@ private:
 
     void append_new_segment(key_type start_key)
     {
-        if (m_right_leaf->prev->value_leaf.key == start_key)
+        if (m_right_leaf->prev->key == start_key)
         {
             m_right_leaf->prev->value_leaf.value = m_init_val;
             return;
@@ -730,7 +670,7 @@ private:
 #ifdef MDDS_UNIT_TEST
         // The start position must come after the position of the last node
         // before the right-most node.
-        assert(m_right_leaf->prev->value_leaf.key < start_key);
+        assert(m_right_leaf->prev->key < start_key);
 #endif
 
         if (m_right_leaf->prev->value_leaf.value == m_init_val)
@@ -739,7 +679,7 @@ private:
             return;
 
         node_ptr new_node(new node);
-        new_node->value_leaf.key = start_key;
+        new_node->key = start_key;
         new_node->value_leaf.value = m_init_val;
         new_node->prev = m_right_leaf->prev;
         new_node->next = m_right_leaf;
@@ -777,18 +717,18 @@ private:
         node* end_node_p = end_node.get();
         while (cur_node_p != end_node_p)
         {
-            cur_node_p->value_leaf.key -= shift_value;
+            cur_node_p->key -= shift_value;
             cur_node_p = cur_node_p->next.get();
         }
     }
 
     static void shift_leaf_key_right(node_ptr& cur_node, node_ptr& end_node, key_type shift_value)
     {
-        key_type end_node_key = end_node->value_leaf.key;
+        key_type end_node_key = end_node->key;
         while (cur_node.get() != end_node.get())
         {
-            cur_node->value_leaf.key += shift_value;
-            if (cur_node->value_leaf.key < end_node_key)
+            cur_node->key += shift_value;
+            if (cur_node->key < end_node_key)
             {
                 // The node is still in-bound.  Keep shifting.
                 cur_node = cur_node->next;

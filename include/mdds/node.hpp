@@ -28,9 +28,12 @@
 #ifndef __MDDS_NODE_HXX__
 #define __MDDS_NODE_HXX__
 
+#include "mdds/global.hpp"
+
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <sstream>
 
 #include <boost/intrusive_ptr.hpp>
 
@@ -51,27 +54,33 @@ struct node_base
     {}
 };
 
-template<typename ValueT>
+/**
+ * Represents a non-leaf node in a segment-tree like structure.
+ */
+template<typename KeyT, typename ValueT>
 struct nonleaf_node : public node_base
 {
+    using key_type = KeyT;
     using nonleaf_value_type = ValueT;
+
     nonleaf_value_type value_nonleaf;
 
-    node_base* left; /// left child nonleaf_node
-    node_base* right; /// right child nonleaf_node
+    key_type low = {}; /// low range value (inclusive)
+    key_type high = {}; /// high range value (non-inclusive)
+
+    node_base* left = nullptr; /// left child nonleaf_node
+    node_base* right = nullptr; /// right child nonleaf_node
 
 public:
-    nonleaf_node() : node_base(false), value_nonleaf(), left(nullptr), right(nullptr)
+    nonleaf_node() : node_base(false), value_nonleaf()
     {}
 
     /**
      * When copying nonleaf_node, only the stored values should be copied.
      * Connections to the parent, left and right nodes must not be copied.
      */
-    nonleaf_node(const nonleaf_node& r) : node_base(r), left(nullptr), right(nullptr)
-    {
-        value_nonleaf = r.value_nonleaf;
-    }
+    nonleaf_node(const nonleaf_node& r) : node_base(r), value_nonleaf(r.value_nonleaf), low(r.low), high(r.high)
+    {}
 
     /**
      * Like the copy constructor, only the stored values should be copied.
@@ -86,25 +95,33 @@ public:
         return *this;
     }
 
-    ~nonleaf_node()
-    {}
-
-    bool equals(const nonleaf_node& r) const
+    bool operator==(const nonleaf_node& r) const
     {
-        return value_nonleaf == r.value_nonleaf;
+        return low == r.low && high == r.high && value_nonleaf == r.value_nonleaf;
     }
 
-    void fill_nonleaf_value(const node_base* left_node, const node_base* right_node)
+    bool operator!=(const nonleaf_node& r) const
     {
-        value_nonleaf.fill_value(left_node, right_node);
+        return !operator==(r);
+    }
+
+    std::string to_string() const
+    {
+        std::ostringstream os;
+        os << "[" << low << "-" << high << ")";
+        return os.str();
     }
 };
 
-template<typename ValueT>
-struct node : public node_base
+/**
+ * Represents a leaf node in a segment-tree like structure.
+ */
+template<typename KeyT, typename ValueT>
+struct node : node_base
 {
-    using node_ptr = boost::intrusive_ptr<node>;
+    using key_type = KeyT;
     using leaf_value_type = ValueT;
+    using node_ptr = boost::intrusive_ptr<node>;
 
     static size_t get_instance_count()
     {
@@ -117,13 +134,15 @@ struct node : public node_base
 
     leaf_value_type value_leaf;
 
+    key_type key = {};
+
     node_ptr prev; /// previous sibling leaf node.
     node_ptr next; /// next sibling leaf node.
 
-    size_t refcount;
+    std::size_t refcount = 0;
 
 public:
-    node() : node_base(true), refcount(0)
+    node() : node_base(true)
     {
 #ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
@@ -134,7 +153,7 @@ public:
      * When copying node, only the stored values should be copied.
      * Connections to the parent, left and right nodes must not be copied.
      */
-    node(const node& r) : node_base(r), refcount(0)
+    node(const node& r) : node_base(r), key(r.key)
     {
 #ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
@@ -162,20 +181,32 @@ public:
 #endif
     }
 
-    bool equals(const node& r) const
+    bool operator==(const node& r) const
     {
-        return value_leaf == r.value_leaf;
+        return key == r.key && value_leaf == r.value_leaf;
+    }
+
+    bool operator!=(const node& r) const
+    {
+        return !operator==(r);
+    }
+
+    std::string to_string() const
+    {
+        std::ostringstream os;
+        os << "[" << key << "]";
+        return os.str();
     }
 };
 
-template<typename T>
-inline void intrusive_ptr_add_ref(node<T>* p)
+template<typename KeyT, typename ValueT>
+inline void intrusive_ptr_add_ref(node<KeyT, ValueT>* p)
 {
     ++p->refcount;
 }
 
-template<typename T>
-inline void intrusive_ptr_release(node<T>* p)
+template<typename KeyT, typename ValueT>
+inline void intrusive_ptr_release(node<KeyT, ValueT>* p)
 {
     --p->refcount;
     if (!p->refcount)
@@ -241,8 +272,48 @@ private:
             parent_node->right = node2;
         }
 
-        parent_node->fill_nonleaf_value(node1, node2);
+        fill_nonleaf_parent_node(parent_node, node1, node2);
         return parent_node;
+    }
+
+    void fill_nonleaf_parent_node(nonleaf_node* parent_node, const node_base* left_node, const node_base* right_node)
+    {
+        // Parent node should carry the range of all of its child nodes.
+        if (left_node)
+        {
+            parent_node->low = left_node->is_leaf ? static_cast<const leaf_node*>(left_node)->key
+                                                  : static_cast<const nonleaf_node*>(left_node)->low;
+        }
+        else
+        {
+            // Having a left node is prerequisite.
+            throw general_error("fill_nonleaf_parent_node: Having a left node is prerequisite.");
+        }
+
+        if (right_node)
+        {
+            if (right_node->is_leaf)
+            {
+                // When the child nodes are leaf nodes, the upper bound
+                // must be the value of the node that comes after the
+                // right leaf node (if such node exists).
+
+                const auto* p = static_cast<const leaf_node*>(right_node);
+                if (p->next)
+                    parent_node->high = p->next->key;
+                else
+                    parent_node->high = p->key;
+            }
+            else
+            {
+                parent_node->high = static_cast<const nonleaf_node*>(right_node)->high;
+            }
+        }
+        else
+        {
+            parent_node->high = left_node->is_leaf ? static_cast<const leaf_node*>(left_node)->key
+                                                   : static_cast<const nonleaf_node*>(left_node)->high;
+        }
     }
 
     nonleaf_node* build_tree_non_leaf(const std::vector<nonleaf_node*>& node_list)
@@ -289,8 +360,8 @@ private:
     typename nonleaf_node_pool_type::iterator m_pool_pos_end;
 };
 
-template<typename T>
-void disconnect_all_nodes(node<T>* p)
+template<typename KeyT, typename ValueT>
+void disconnect_all_nodes(node<KeyT, ValueT>* p)
 {
     if (!p)
         return;
@@ -300,17 +371,17 @@ void disconnect_all_nodes(node<T>* p)
     p->parent = nullptr;
 }
 
-template<typename T>
-void disconnect_leaf_nodes(node<T>* left_node, node<T>* right_node)
+template<typename KeyT, typename ValueT>
+void disconnect_leaf_nodes(node<KeyT, ValueT>* left_node, node<KeyT, ValueT>* right_node)
 {
     if (!left_node || !right_node)
         return;
 
     // Go through all leaf nodes, and disconnect their links.
-    node<T>* cur_node = left_node;
+    auto* cur_node = left_node;
     do
     {
-        node<T>* next_node = cur_node->next.get();
+        auto* next_node = cur_node->next.get();
         disconnect_all_nodes(cur_node);
         cur_node = next_node;
     } while (cur_node != right_node);
@@ -318,12 +389,12 @@ void disconnect_leaf_nodes(node<T>* left_node, node<T>* right_node)
     disconnect_all_nodes(right_node);
 }
 
-template<typename T>
-size_t count_leaf_nodes(const node<T>* left_end, const node<T>* right_end)
+template<typename KeyT, typename ValueT>
+size_t count_leaf_nodes(const node<KeyT, ValueT>* left_end, const node<KeyT, ValueT>* right_end)
 {
     size_t leaf_count = 1;
-    const node<T>* p = left_end;
-    const node<T>* p_end = right_end;
+    const auto* p = left_end;
+    const auto* p_end = right_end;
     for (; p != p_end; p = p->next.get(), ++leaf_count)
         ;
 
@@ -393,9 +464,9 @@ private:
             }
 
             if (p->is_leaf)
-                cout << static_cast<const _Leaf*>(p)->value_leaf.to_string();
+                cout << static_cast<const _Leaf*>(p)->to_string();
             else
-                cout << static_cast<const _NonLeaf*>(p)->value_nonleaf.to_string();
+                cout << static_cast<const _NonLeaf*>(p)->to_string();
 
             if (p->is_leaf)
                 continue;
