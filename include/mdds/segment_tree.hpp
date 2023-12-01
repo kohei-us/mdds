@@ -70,14 +70,6 @@ public:
         }
     };
 
-    struct segment_map_printer
-    {
-        void operator()(const ::std::pair<value_type, ::std::pair<key_type, key_type>>& r) const
-        {
-            using namespace std;
-            cout << r.second.first << "-" << r.second.second << ": " << r.first->name << endl;
-        }
-    };
 #endif
 
 public:
@@ -130,19 +122,6 @@ public:
     using node = st::detail::node<key_type, leaf_value_type>;
     using node_ptr = typename node::node_ptr;
     using nonleaf_node = typename st::detail::nonleaf_node<key_type, nonleaf_value_type>;
-
-#ifdef MDDS_UNIT_TEST
-    struct node_printer
-    {
-        void operator()(const st::detail::node_base* p) const
-        {
-            if (p->is_leaf)
-                std::cout << static_cast<const node*>(p)->to_string() << " ";
-            else
-                std::cout << static_cast<const nonleaf_node*>(p)->to_string() << " ";
-        }
-    };
-#endif
 
 private:
     class search_result_inserter;

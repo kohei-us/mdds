@@ -86,6 +86,18 @@ struct test_data
     };
 };
 
+std::ostream& operator<<(std::ostream& os, const test_data* v)
+{
+    os << v->name;
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const test_data& v)
+{
+    os << v.name;
+    return os;
+}
+
 template<typename key_type, typename value_type>
 bool check_leaf_nodes(
     const segment_tree<key_type, value_type>& db, const key_type* keys, value_type* data_chain, size_t key_size)

@@ -442,11 +442,10 @@ void segment_tree<KeyT, ValueT>::dump_leaf_nodes() const
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::dump_segment_data() const
 {
-    using namespace std;
-    cout << "dump segment data ----------------------------------------------" << endl;
+    std::cout << "dump segment data ----------------------------------------------" << std::endl;
 
-    segment_map_printer func;
-    for_each(m_segment_data.begin(), m_segment_data.end(), func);
+    for (const auto& v : m_segment_data)
+        std::cout << v.second.first << "-" << v.second.second << ": " << v.first << std::endl;
 }
 
 template<typename KeyT, typename ValueT>
@@ -461,8 +460,14 @@ bool segment_tree<KeyT, ValueT>::verify_node_lists() const
         cout << "node list " << itr->first->name << ": ";
         const node_list_type* plist = itr->second.get();
         assert(plist);
-        node_printer func;
-        for_each(plist->begin(), plist->end(), func);
+
+        for (const st::detail::node_base* p : *plist)
+        {
+            if (p->is_leaf)
+                std::cout << static_cast<const node*>(p)->to_string() << " ";
+            else
+                std::cout << static_cast<const nonleaf_node*>(p)->to_string() << " ";
+        }
         cout << endl;
 
         // Verify that all of these nodes have the data pointer.
