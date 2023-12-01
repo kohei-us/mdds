@@ -76,7 +76,6 @@ private:
     typedef ::std::vector<value_type> data_chain_type;
     typedef std::unordered_map<value_type, ::std::pair<key_type, key_type>> segment_map_type;
 
-public:
     struct nonleaf_value_type
     {
         std::unique_ptr<data_chain_type> data_chain;
@@ -119,6 +118,7 @@ public:
         {}
     };
 
+public:
     using node = st::detail::node<key_type, leaf_value_type>;
     using node_ptr = typename node::node_ptr;
     using nonleaf_node = typename st::detail::nonleaf_node<key_type, nonleaf_value_type>;
