@@ -72,11 +72,11 @@ public:
 
 #endif
 
-public:
+private:
     typedef ::std::vector<value_type> data_chain_type;
     typedef std::unordered_map<value_type, ::std::pair<key_type, key_type>> segment_map_type;
-    typedef ::std::map<value_type, ::std::pair<key_type, key_type>> sorted_segment_map_type;
 
+public:
     struct nonleaf_value_type
     {
         std::unique_ptr<data_chain_type> data_chain;
@@ -420,7 +420,7 @@ public:
 
     /**
      * Equality between two segment_tree instances is evaluated by comparing
-     * the segments that they store.  The trees are not compared.
+     * the stored segments only; the tree parts are not compared.
      */
     bool operator==(const segment_tree& r) const;
 
@@ -510,13 +510,6 @@ public:
 
     bool verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const;
 
-    /**
-     * Verify the validity of the segment data array.
-     *
-     * @param checks null-terminated array of expected values.  The last item
-     *               must have a nullptr value value to terminate the array.
-     */
-    bool verify_segment_data(const segment_map_type& checks) const;
 #endif
 
 private:

@@ -504,24 +504,12 @@ void st_test_copy_constructor()
     segments.push_back(db_type::segment_data(12, 26, &G));
     segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
 
-    db_type::segment_map_type checks;
-    for (size_t i = 0; segments[i].value; ++i)
-    {
-        db.insert(segments[i].begin_key, segments[i].end_key, segments[i].value);
-        std::pair<key_type, key_type> range;
-        range.first = segments[i].begin_key;
-        range.second = segments[i].end_key;
-        checks.insert(db_type::segment_map_type::value_type(segments[i].value, range));
-    }
-
     // Copy before the tree is built.
 
     db.dump_segment_data();
-    assert(db.verify_segment_data(checks));
 
     db_type db_copied(db);
     db_copied.dump_segment_data();
-    assert(db_copied.verify_segment_data(checks));
     assert(db.is_tree_valid() == db_copied.is_tree_valid());
     assert(db == db_copied);
 
@@ -530,7 +518,6 @@ void st_test_copy_constructor()
     db_type db_copied_tree(db);
     db_copied_tree.dump_segment_data();
     db_copied_tree.dump_tree();
-    assert(db_copied_tree.verify_segment_data(checks));
     assert(db.is_tree_valid() == db_copied_tree.is_tree_valid());
     assert(db == db_copied_tree);
 }

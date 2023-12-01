@@ -125,24 +125,9 @@ bool segment_tree<KeyT, ValueT>::operator==(const segment_tree& r) const
     if (m_valid_tree != r.m_valid_tree)
         return false;
 
-    // Sort the data by key values first.
-    sorted_segment_map_type seg1(m_segment_data.begin(), m_segment_data.end());
-    sorted_segment_map_type seg2(r.m_segment_data.begin(), r.m_segment_data.end());
-    typename sorted_segment_map_type::const_iterator itr1 = seg1.begin(), itr1_end = seg1.end();
-    typename sorted_segment_map_type::const_iterator itr2 = seg2.begin(), itr2_end = seg2.end();
-
-    for (; itr1 != itr1_end; ++itr1, ++itr2)
-    {
-        if (itr2 == itr2_end)
-            return false;
-
-        if (*itr1 != *itr2)
-            return false;
-    }
-    if (itr2 != itr2_end)
-        return false;
-
-    return true;
+    // std::unordered_map's equality should not depend on the order of the stored
+    // key-value pairs according to the standard.
+    return m_segment_data == r.m_segment_data;
 }
 
 template<typename KeyT, typename ValueT>
@@ -532,29 +517,6 @@ bool segment_tree<KeyT, ValueT>::verify_leaf_nodes(const ::std::vector<leaf_node
     if (cur_node)
         // At this point, we expect the current node to be at the position
         // past the right-most node, which is nullptr.
-        return false;
-
-    return true;
-}
-
-template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::verify_segment_data(const segment_map_type& checks) const
-{
-    // Sort the data by key values first.
-    sorted_segment_map_type seg1(checks.begin(), checks.end());
-    sorted_segment_map_type seg2(m_segment_data.begin(), m_segment_data.end());
-
-    typename sorted_segment_map_type::const_iterator itr1 = seg1.begin(), itr1_end = seg1.end();
-    typename sorted_segment_map_type::const_iterator itr2 = seg2.begin(), itr2_end = seg2.end();
-    for (; itr1 != itr1_end; ++itr1, ++itr2)
-    {
-        if (itr2 == itr2_end)
-            return false;
-
-        if (*itr1 != *itr2)
-            return false;
-    }
-    if (itr2 != itr2_end)
         return false;
 
     return true;
