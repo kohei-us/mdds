@@ -519,10 +519,6 @@ private:
 
     void clear_all_nodes();
 
-#ifdef MDDS_UNIT_TEST
-    static void print_leaf_value(const node& n);
-#endif
-
 private:
     std::vector<nonleaf_node> m_nonleaf_node_pool;
 

@@ -410,18 +410,23 @@ void segment_tree<KeyT, ValueT>::dump_tree() const
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::dump_leaf_nodes() const
 {
-    using ::std::cout;
-    using ::std::endl;
+    auto print_leaf_value = [](const node& n) {
+        std::cout << n.to_string() << ": {";
 
-    cout << "dump leaf nodes ------------------------------------------------" << endl;
+        if (n.value_leaf.data_chain)
+        {
+            for (const auto& v : *n.value_leaf.data_chain)
+                std::cout << v << ", ";
+        }
+        std::cout << "}" << std::endl;
+    };
 
-    node* p = m_left_leaf.get();
-    while (p)
-    {
+    std::cout << "dump leaf nodes ------------------------------------------------" << std::endl;
+
+    for (node* p = m_left_leaf.get(); p; p = p->next.get())
         print_leaf_value(*p);
-        p = p->next.get();
-    }
-    cout << "  node instance count = " << node::get_instance_count() << endl;
+
+    std::cout << "  node instance count = " << node::get_instance_count() << std::endl;
 }
 
 template<typename KeyT, typename ValueT>
@@ -540,18 +545,6 @@ bool segment_tree<KeyT, ValueT>::verify_leaf_nodes(const ::std::vector<leaf_node
     return true;
 }
 
-template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::print_leaf_value(const node& n)
-{
-    cout << n.to_string() << ": {";
-
-    if (n.value_leaf.data_chain)
-    {
-        for (const auto& v : *n.value_leaf.data_chain)
-            std::cout << v << ", ";
-    }
-    cout << "}" << endl;
-}
 #endif
 
 } // namespace mdds
