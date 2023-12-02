@@ -520,7 +520,6 @@ private:
     void clear_all_nodes();
 
 #ifdef MDDS_UNIT_TEST
-    static bool has_data_pointer(const node_list_type& node_list, const value_type value);
     static void print_leaf_value(const node& n);
 #endif
 

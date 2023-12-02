@@ -436,14 +436,32 @@ void segment_tree<KeyT, ValueT>::dump_segment_data() const
 template<typename KeyT, typename ValueT>
 bool segment_tree<KeyT, ValueT>::verify_node_lists() const
 {
-    using namespace std;
+    auto has_data_pointer = [](const node_list_type& node_list, const value_type& value) {
+        for (const st::detail::node_base* pnode : node_list)
+        {
+            // Check each node, and make sure each node has the value pointer
+            // listed.
+            const data_chain_type* chain = nullptr;
 
-    typename data_node_map_type::const_iterator itr = m_tagged_node_map.begin(), itr_end = m_tagged_node_map.end();
-    for (; itr != itr_end; ++itr)
+            if (pnode->is_leaf)
+                chain = static_cast<const node*>(pnode)->value_leaf.data_chain.get();
+            else
+                chain = static_cast<const nonleaf_node*>(pnode)->value_nonleaf.data_chain.get();
+
+            if (!chain)
+                return false;
+
+            if (std::find(chain->begin(), chain->end(), value) == chain->end())
+                return false;
+        }
+        return true;
+    };
+
+    for (const auto& v : m_tagged_node_map)
     {
         // Print stored nodes.
-        cout << "node list " << itr->first->name << ": ";
-        const node_list_type* plist = itr->second.get();
+        std::cout << "node list " << v.first->name << ": ";
+        const node_list_type* plist = v.second.get();
         assert(plist);
 
         for (const st::detail::node_base* p : *plist)
@@ -453,10 +471,10 @@ bool segment_tree<KeyT, ValueT>::verify_node_lists() const
             else
                 std::cout << static_cast<const nonleaf_node*>(p)->to_string() << " ";
         }
-        cout << endl;
+        std::cout << std::endl;
 
         // Verify that all of these nodes have the data pointer.
-        if (!has_data_pointer(*plist, itr->first))
+        if (!has_data_pointer(*plist, v.first))
             return false;
     }
     return true;
@@ -519,33 +537,6 @@ bool segment_tree<KeyT, ValueT>::verify_leaf_nodes(const ::std::vector<leaf_node
         // past the right-most node, which is nullptr.
         return false;
 
-    return true;
-}
-
-template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::has_data_pointer(const node_list_type& node_list, const value_type value)
-{
-    using namespace std;
-
-    typename node_list_type::const_iterator itr = node_list.begin(), itr_end = node_list.end();
-
-    for (; itr != itr_end; ++itr)
-    {
-        // Check each node, and make sure each node has the value pointer
-        // listed.
-        const st::detail::node_base* pnode = *itr;
-        const data_chain_type* chain = nullptr;
-        if (pnode->is_leaf)
-            chain = static_cast<const node*>(pnode)->value_leaf.data_chain.get();
-        else
-            chain = static_cast<const nonleaf_node*>(pnode)->value_nonleaf.data_chain.get();
-
-        if (!chain)
-            return false;
-
-        if (find(chain->begin(), chain->end(), value) == chain->end())
-            return false;
-    }
     return true;
 }
 
