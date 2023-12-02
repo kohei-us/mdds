@@ -98,6 +98,30 @@ std::ostream& operator<<(std::ostream& os, const test_data& v)
     return os;
 }
 
+template<typename StoreT>
+struct segment_data_type
+{
+    using key_type = typename StoreT::key_type;
+    using value_type = typename StoreT::value_type;
+
+    key_type begin_key;
+    key_type end_key;
+    value_type value;
+
+    segment_data_type(key_type _beg, key_type _end, value_type p) : begin_key(_beg), end_key(_end), value(p)
+    {}
+
+    bool operator==(const segment_data_type& r) const
+    {
+        return begin_key == r.begin_key && end_key == r.end_key && value == r.value;
+    }
+
+    bool operator!=(const segment_data_type& r) const
+    {
+        return !operator==(r);
+    }
+};
+
 template<typename key_type, typename value_type>
 bool check_leaf_nodes(
     const segment_tree<key_type, value_type>& db, const key_type* keys, value_type* data_chain, size_t key_size)
@@ -491,18 +515,19 @@ void st_test_copy_constructor()
     typedef long key_type;
     typedef test_data value_type;
     typedef segment_tree<key_type, value_type*> db_type;
+    using segment_data = segment_data_type<db_type>;
 
     db_type db;
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
-    std::vector<db_type::segment_data> segments;
-    segments.push_back(db_type::segment_data(0, 10, &A));
-    segments.push_back(db_type::segment_data(0, 5, &B));
-    segments.push_back(db_type::segment_data(5, 12, &C));
-    segments.push_back(db_type::segment_data(10, 24, &D));
-    segments.push_back(db_type::segment_data(4, 24, &E));
-    segments.push_back(db_type::segment_data(0, 26, &F));
-    segments.push_back(db_type::segment_data(12, 26, &G));
-    segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
+    std::vector<segment_data> segments;
+    segments.push_back(segment_data(0, 10, &A));
+    segments.push_back(segment_data(0, 5, &B));
+    segments.push_back(segment_data(5, 12, &C));
+    segments.push_back(segment_data(10, 24, &D));
+    segments.push_back(segment_data(4, 24, &E));
+    segments.push_back(segment_data(0, 26, &F));
+    segments.push_back(segment_data(12, 26, &G));
+    segments.push_back(segment_data(0, 0, nullptr)); // null-terminated
 
     // Copy before the tree is built.
 
@@ -559,18 +584,19 @@ void st_test_clear()
     typedef uint8_t key_type;
     typedef test_data value_type;
     typedef segment_tree<key_type, value_type*> db_type;
+    using segment_data = segment_data_type<db_type>;
 
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
-    std::vector<db_type::segment_data> segments;
-    segments.push_back(db_type::segment_data(0, 10, &A));
-    segments.push_back(db_type::segment_data(0, 5, &B));
-    segments.push_back(db_type::segment_data(5, 12, &C));
-    segments.push_back(db_type::segment_data(10, 24, &D));
-    segments.push_back(db_type::segment_data(4, 24, &E));
-    segments.push_back(db_type::segment_data(0, 26, &F));
-    segments.push_back(db_type::segment_data(12, 26, &G));
-    segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
+    std::vector<segment_data> segments;
+    segments.push_back(segment_data(0, 10, &A));
+    segments.push_back(segment_data(0, 5, &B));
+    segments.push_back(segment_data(5, 12, &C));
+    segments.push_back(segment_data(10, 24, &D));
+    segments.push_back(segment_data(4, 24, &E));
+    segments.push_back(segment_data(0, 26, &F));
+    segments.push_back(segment_data(12, 26, &G));
+    segments.push_back(segment_data(0, 0, nullptr)); // null-terminated
 
     db_type db;
     for (size_t i = 0; segments[i].value; ++i)
@@ -787,18 +813,19 @@ void st_test_aggregated_search_results()
     typedef uint16_t key_type;
     typedef test_data value_type;
     typedef segment_tree<key_type, value_type*> db_type;
+    using segment_data = segment_data_type<db_type>;
 
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
-    std::vector<db_type::segment_data> segments;
-    segments.push_back(db_type::segment_data(0, 10, &A));
-    segments.push_back(db_type::segment_data(0, 5, &B));
-    segments.push_back(db_type::segment_data(5, 12, &C));
-    segments.push_back(db_type::segment_data(10, 24, &D));
-    segments.push_back(db_type::segment_data(4, 24, &E));
-    segments.push_back(db_type::segment_data(0, 26, &F));
-    segments.push_back(db_type::segment_data(12, 26, &G));
-    segments.push_back(db_type::segment_data(0, 0, nullptr)); // null-terminated
+    std::vector<segment_data> segments;
+    segments.push_back(segment_data(0, 10, &A));
+    segments.push_back(segment_data(0, 5, &B));
+    segments.push_back(segment_data(5, 12, &C));
+    segments.push_back(segment_data(10, 24, &D));
+    segments.push_back(segment_data(4, 24, &E));
+    segments.push_back(segment_data(0, 26, &F));
+    segments.push_back(segment_data(12, 26, &G));
+    segments.push_back(segment_data(0, 0, nullptr)); // null-terminated
 
     db_type db;
     for (size_t i = 0; segments[i].value; ++i)

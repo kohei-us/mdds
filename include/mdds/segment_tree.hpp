@@ -49,29 +49,6 @@ public:
     typedef std::size_t size_type;
     typedef std::vector<value_type> search_results_type;
 
-#ifdef MDDS_UNIT_TEST
-    struct segment_data
-    {
-        key_type begin_key;
-        key_type end_key;
-        value_type value;
-
-        segment_data(key_type _beg, key_type _end, value_type p) : begin_key(_beg), end_key(_end), value(p)
-        {}
-
-        bool operator==(const segment_data& r) const
-        {
-            return begin_key == r.begin_key && end_key == r.end_key && value == r.value;
-        }
-
-        bool operator!=(const segment_data& r) const
-        {
-            return !operator==(r);
-        }
-    };
-
-#endif
-
 private:
     typedef ::std::vector<value_type> data_chain_type;
     typedef std::unordered_map<value_type, ::std::pair<key_type, key_type>> segment_map_type;
