@@ -37,18 +37,13 @@
 #include <string>
 #include <vector>
 
-#define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
-
 using namespace mdds;
 
 template<typename key_type, typename value_type>
 void build_and_dump(segment_tree<key_type, value_type>& db)
 {
-    cout << "build and dump (start) -----------------------------------------" << endl;
     db.build_tree();
-    db.dump_tree();
-    db.dump_leaf_nodes();
-    cout << "build and dump (end) -------------------------------------------" << endl;
+    std::cout << db.to_string() << std::endl;
 }
 
 struct test_data
@@ -121,31 +116,6 @@ struct segment_data_type
         return !operator==(r);
     }
 };
-
-template<typename key_type, typename value_type>
-bool check_leaf_nodes(
-    const segment_tree<key_type, value_type>& db, const key_type* keys, value_type* data_chain, size_t key_size)
-{
-    typedef segment_tree<key_type, value_type> st_type;
-    std::vector<typename st_type::leaf_node_check> checks;
-    checks.reserve(key_size);
-    size_t dcid = 0;
-    for (size_t i = 0; i < key_size; ++i)
-    {
-        typename st_type::leaf_node_check c;
-        c.key = keys[i];
-        value_type p = data_chain[dcid];
-        while (p)
-        {
-            c.data_chain.push_back(p);
-            p = data_chain[++dcid];
-        }
-        checks.push_back(c);
-        ++dcid;
-    }
-
-    return db.verify_leaf_nodes(checks);
-}
 
 template<typename value_type>
 bool check_against_expected(const std::list<value_type>& test, value_type* expected)
@@ -231,6 +201,22 @@ bool check_search_result_iterator(const segment_tree<key_type, value_type>& db, 
     return check_against_expected(test, expected);
 }
 
+template<typename TreeT>
+bool check_integrity(const TreeT& db, const typename TreeT::integrity_check_properties& props)
+{
+    try
+    {
+        db.check_integrity(props);
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::cout << e.what() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 void st_test_insert_search_removal()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -248,70 +234,140 @@ void st_test_insert_search_removal()
     db.insert(0, 10, &A);
     build_and_dump(db);
     {
-        key_type keys[] = {0, 10};
-        value_type* data_chain[] = {&A, 0, 0};
-        assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == db.leaf_size());
-        assert(db.verify_node_lists());
+
+        db_type::integrity_check_properties props;
+        // clang-format off
+        props.leaf_nodes = {
+            // key, value chain
+            {0u, {&A,}},
+            {10u, {}},
+        };
+        // clang-format on
+
+        assert(check_integrity(db, props));
     }
 
     db.insert(0, 5, &B);
     build_and_dump(db);
     {
-        key_type keys[] = {0, 5, 10};
-        value_type* data_chain[] = {&A, &B, 0, &A, 0, 0};
-        assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == db.leaf_size());
+
+        db_type::integrity_check_properties props;
+        // clang-format off
+        props.leaf_nodes = {
+            // key, value chain
+            {0u, {&A, &B,}},
+            {5u, {&A,}},
+            {10u, {}},
+        };
+        // clang-format on
+
+        assert(check_integrity(db, props));
     }
 
     db.insert(5, 12, &C);
     build_and_dump(db);
     {
-        key_type keys[] = {0, 5, 10, 12};
-        value_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, 0, 0};
-        assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == db.leaf_size());
-        assert(db.verify_node_lists());
+
+        db_type::integrity_check_properties props;
+        // clang-format off
+        props.leaf_nodes = {
+            // key, value chain
+            {0u, {&A, &B,}},
+            {5u, {&A, &C}},
+            {10u, {&C,}},
+            {12u, {}},
+        };
+        // clang-format on
+
+        assert(check_integrity(db, props));
     }
 
     db.insert(10, 24, &D);
     build_and_dump(db);
     {
-        key_type keys[] = {0, 5, 10, 12, 24};
-        value_type* data_chain[] = {&A, &B, 0, &A, &C, 0, &C, &D, 0, &D, 0, 0};
-        assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == db.leaf_size());
-        assert(db.verify_node_lists());
+
+        db_type::integrity_check_properties props;
+        // clang-format off
+        props.leaf_nodes = {
+            // key, value chain
+            {0u, {&A, &B,}},
+            {5u, {&A, &C}},
+            {10u, {&C, &D}},
+            {12u, {&D,}},
+            {24u, {}},
+        };
+        // clang-format on
+
+        assert(check_integrity(db, props));
     }
 
     db.insert(4, 24, &E);
     build_and_dump(db);
     {
-        key_type keys[] = {0, 4, 5, 10, 12, 24};
-        value_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, 0, 0};
-        assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == db.leaf_size());
-        assert(db.verify_node_lists());
+
+        db_type::integrity_check_properties props;
+        // clang-format off
+        props.leaf_nodes = {
+            // key, value chain
+            {0u, {&B,}},
+            {4u, {&B, &E}},
+            {5u, {&A, &C}},
+            {10u, {&C, &D}},
+            {12u, {&D, &E}},
+            {24u, {}},
+        };
+        // clang-format on
+
+        assert(check_integrity(db, props));
     }
 
     db.insert(0, 26, &F);
     build_and_dump(db);
     {
-        key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        value_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &F, 0, &F, 0, 0};
-        assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == db.leaf_size());
-        assert(db.verify_node_lists());
+
+        db_type::integrity_check_properties props;
+        // clang-format off
+        props.leaf_nodes = {
+            // key, value chain
+            {0u, {&B,}},
+            {4u, {&B, &E}},
+            {5u, {&A, &C}},
+            {10u, {&C, &D}},
+            {12u, {&D, &E, &F}},
+            {24u, {&F,}},
+            {26u, {}},
+        };
+        // clang-format on
+
+        assert(check_integrity(db, props));
     }
 
     db.insert(12, 26, &G);
     build_and_dump(db);
     {
-        key_type keys[] = {0, 4, 5, 10, 12, 24, 26};
-        value_type* data_chain[] = {&B, 0, &B, &E, 0, &A, &C, 0, &C, &D, 0, &D, &E, &F, &G, 0, &F, &G, 0, 0};
-        assert(check_leaf_nodes(db, keys, data_chain, ARRAY_SIZE(keys)));
         assert(db_type::node::get_instance_count() == db.leaf_size());
-        assert(db.verify_node_lists());
+
+        db_type::integrity_check_properties props;
+        // clang-format off
+        props.leaf_nodes = {
+            // key, value chain
+            {0u, {&B,}},
+            {4u, {&B, &E}},
+            {5u, {&A, &C}},
+            {10u, {&C, &D}},
+            {12u, {&D, &E, &F, &G}},
+            {24u, {&F, &G}},
+            {26u, {}},
+        };
+        // clang-format on
+
+        assert(check_integrity(db, props));
     }
 
     // Search tests.  Test boundary cases.
@@ -386,8 +442,7 @@ void st_test_insert_search_removal()
     db.remove(&F);
     db.remove(&G);
     cout << "removed: E F G" << endl;
-    db.dump_tree();
-    db.dump_leaf_nodes();
+    cout << db.to_string() << endl;
 
     for (key_type i = -10; i <= 30; ++i)
     {
@@ -456,8 +511,7 @@ void st_test_insert_search_removal()
     // we get the same results.
 
     db.build_tree();
-    db.dump_tree();
-    db.dump_leaf_nodes();
+    cout << db.to_string() << endl;
 
     {
         key_type key = -1;
@@ -508,6 +562,28 @@ void st_test_insert_search_removal()
     }
 }
 
+void st_test_invalid_insertion()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using db_type = segment_tree<int, std::string>;
+    db_type db;
+
+    try
+    {
+        db.insert(2, 1, "some value");
+        assert(!"exception didn't get thrown!");
+    }
+    catch (const std::invalid_argument&)
+    {
+        // expected
+    }
+    catch (...)
+    {
+        assert(!"wrong exception caught");
+    }
+}
+
 void st_test_copy_constructor()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -531,18 +607,20 @@ void st_test_copy_constructor()
 
     // Copy before the tree is built.
 
-    db.dump_segment_data();
+    cout << "--" << endl;
+    cout << db.to_string() << endl;
 
     db_type db_copied(db);
-    db_copied.dump_segment_data();
+    cout << "--" << endl;
+    cout << db_copied.to_string() << endl;
     assert(db.is_tree_valid() == db_copied.is_tree_valid());
     assert(db == db_copied);
 
     // Copy after the tree is built.
     db.build_tree();
+    cout << "--" << endl;
     db_type db_copied_tree(db);
-    db_copied_tree.dump_segment_data();
-    db_copied_tree.dump_tree();
+    cout << db_copied_tree.to_string() << endl;
     assert(db.is_tree_valid() == db_copied_tree.is_tree_valid());
     assert(db == db_copied_tree);
 }
@@ -634,13 +712,15 @@ void st_test_duplicate_insertion()
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
     db_type db;
-    assert(db.insert(0, 10, &A));
-    assert(!db.insert(0, 10, &A));
-    assert(!db.insert(2, 30, &A));
-    assert(db.insert(0, 10, &B));
+    db.insert(0, 10, &A);
+    db.insert(0, 10, &A); // a duplicate segment
+    db.insert(2, 30, &A);
+    db.insert(0, 10, &B);
     db.remove(&A);
-    assert(db.insert(2, 30, &A));
+    db.insert(2, 30, &A);
     build_and_dump(db);
+    assert(db.size() == 5);
+    assert(db.leaf_size() == 4); // 0, 2, 10, 30
 }
 
 /**
@@ -831,7 +911,6 @@ void st_test_aggregated_search_results()
     for (size_t i = 0; segments[i].value; ++i)
         db.insert(segments[i].begin_key, segments[i].end_key, segments[i].value);
 
-    db.dump_segment_data();
     db.build_tree();
 
     db_type::search_results_type results;
@@ -888,8 +967,8 @@ void st_test_dense_tree_search()
     db.insert(0, 6, &F);
     db.insert(0, 7, &G);
     db.build_tree();
-    db.dump_tree();
-    db.dump_leaf_nodes();
+    cout << "--" << endl;
+    cout << db.to_string() << endl;
 
     {
         db_type::value_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
@@ -955,7 +1034,6 @@ void st_test_search_on_empty_set()
 void st_test_search_iterator_basic()
 {
     MDDS_TEST_FUNC_SCOPE;
-
     typedef uint16_t key_type;
     typedef test_data value_type;
     typedef segment_tree<key_type, value_type*> db_type;
@@ -970,13 +1048,14 @@ void st_test_search_iterator_basic()
     db.insert(0, 6, &F);
     db.insert(0, 7, &G);
     db.build_tree();
-    db.dump_tree();
-    db.dump_leaf_nodes();
+    cout << "--" << endl;
+    cout << db.to_string() << endl;
 
-    db_type::search_results result = db.search(0);
+    db_type::search_results results = db.search(0);
+    assert(results.size() == 7);
     db_type::search_results::iterator itr;
-    db_type::search_results::iterator itr_beg = result.begin();
-    db_type::search_results::iterator itr_end = result.end();
+    db_type::search_results::iterator itr_beg = results.begin();
+    db_type::search_results::iterator itr_end = results.end();
     cout << "Iterate through the search results." << endl;
     for (itr = itr_beg; itr != itr_end; ++itr)
         cout << (*itr)->name << " ";
@@ -1111,6 +1190,7 @@ int main(int argc, char** argv)
         if (opt.test_func)
         {
             st_test_insert_search_removal();
+            st_test_invalid_insertion();
             st_test_copy_constructor();
             st_test_equality();
             st_test_clear();

@@ -526,6 +526,29 @@ public:
         return m_root_node;
     }
 
+    struct tree_dumper_traits
+    {
+        using leaf_type = node;
+        using nonleaf_type = nonleaf_node;
+        using tree_type = flat_segment_tree;
+
+        struct to_string
+        {
+            to_string(const tree_type&)
+            {}
+
+            std::string operator()(const leaf_type& leaf) const
+            {
+                return leaf.to_string();
+            }
+
+            std::string operator()(const nonleaf_type& nonleaf) const
+            {
+                return nonleaf.to_string();
+            }
+        };
+    };
+
     void dump_tree() const
     {
         using ::std::cout;
@@ -534,7 +557,7 @@ public:
         if (!m_valid_tree)
             assert(!"attempted to dump an invalid tree!");
 
-        size_t node_count = mdds::st::detail::tree_dumper<node, nonleaf_node>::dump(m_root_node);
+        size_t node_count = mdds::st::detail::tree_dumper<tree_dumper_traits>::dump(std::cout, *this, m_root_node);
         size_t node_instance_count = node::get_instance_count();
         size_t leaf_count = leaf_size();
 

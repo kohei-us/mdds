@@ -26,6 +26,8 @@
  ************************************************************************/
 
 #include <algorithm>
+#include <limits>
+#include <iterator>
 
 namespace mdds {
 
@@ -102,12 +104,45 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
 }} // namespace st::detail
 
 template<typename KeyT, typename ValueT>
+segment_tree<KeyT, ValueT>::segment_type::segment_type() : start{}, end{}, value{}
+{}
+
+template<typename KeyT, typename ValueT>
+segment_tree<KeyT, ValueT>::segment_type::segment_type(key_type _start, key_type _end, value_type _value)
+    : start(std::move(_start)), end(std::move(_end)), value(std::move(_value))
+{}
+
+template<typename KeyT, typename ValueT>
+bool segment_tree<KeyT, ValueT>::segment_type::operator<(const segment_type& r) const
+{
+    if (start != r.start)
+        return start < r.start;
+
+    if (end != r.end)
+        return end < r.end;
+
+    return value < r.value;
+}
+
+template<typename KeyT, typename ValueT>
+bool segment_tree<KeyT, ValueT>::segment_type::operator==(const segment_type& r) const
+{
+    if (start != r.start)
+        return false;
+
+    if (end != r.end)
+        return false;
+
+    return value == r.value;
+}
+
+template<typename KeyT, typename ValueT>
 segment_tree<KeyT, ValueT>::segment_tree() : m_root_node(nullptr), m_valid_tree(false)
 {}
 
 template<typename KeyT, typename ValueT>
 segment_tree<KeyT, ValueT>::segment_tree(const segment_tree& r)
-    : m_segment_data(r.m_segment_data), m_root_node(nullptr), m_valid_tree(r.m_valid_tree)
+    : m_segment_store(r.m_segment_store), m_root_node(nullptr), m_valid_tree(r.m_valid_tree)
 {
     if (m_valid_tree)
         build_tree();
@@ -125,9 +160,17 @@ bool segment_tree<KeyT, ValueT>::operator==(const segment_tree& r) const
     if (m_valid_tree != r.m_valid_tree)
         return false;
 
-    // std::unordered_map's equality should not depend on the order of the stored
-    // key-value pairs according to the standard.
-    return m_segment_data == r.m_segment_data;
+    if (m_segment_store.size() != r.m_segment_store.size())
+        return false;
+
+    // copy both stores, sort them and check their equality
+    auto lhs = m_segment_store;
+    auto rhs = r.m_segment_store;
+
+    std::sort(lhs.begin(), lhs.end());
+    std::sort(rhs.begin(), rhs.end());
+
+    return lhs == rhs;
 }
 
 template<typename KeyT, typename ValueT>
@@ -147,20 +190,18 @@ void segment_tree<KeyT, ValueT>::build_tree()
     mdds::st::detail::tree_builder<segment_tree> builder(m_nonleaf_node_pool);
     m_root_node = builder.build(m_left_leaf);
 
-    // Star t "inserting" all segments from the root.
+    // Start "inserting" all segments from the root.
 
     data_node_map_type tagged_node_map;
 
-    for (const auto& v : m_segment_data)
+    for (value_pos_type i = 0; i < m_segment_store.size(); ++i)
     {
-        value_type value = v.first;
-        auto r = tagged_node_map.insert({value, std::make_unique<node_list_type>()});
+        const auto& v = m_segment_store[i];
+        auto r = tagged_node_map.insert({i, std::make_unique<node_list_type>()});
         assert(r.second);
 
         node_list_type* plist = r.first->second.get();
-        plist->reserve(10);
-
-        descend_tree_and_mark(m_root_node, value, v.second.first, v.second.second, plist);
+        descend_tree_and_mark(m_root_node, i, v.start, v.end, plist);
     }
 
     m_tagged_node_map.swap(tagged_node_map);
@@ -169,7 +210,7 @@ void segment_tree<KeyT, ValueT>::build_tree()
 
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
-    st::detail::node_base* pnode, value_type value, key_type begin_key, key_type end_key, node_list_type* plist)
+    st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key, node_list_type* plist)
 {
     if (!pnode)
         return;
@@ -178,7 +219,7 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
     {
         // This is a leaf node.
         node* pleaf = static_cast<node*>(pnode);
-        if (begin_key <= pleaf->key && pleaf->key < end_key)
+        if (start_key <= pleaf->key && pleaf->key < end_key)
         {
             leaf_value_type& v = pleaf->value_leaf;
             if (!v.data_chain)
@@ -190,10 +231,10 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
     }
 
     nonleaf_node* pnonleaf = static_cast<nonleaf_node*>(pnode);
-    if (end_key < pnonleaf->low || pnonleaf->high <= begin_key)
+    if (end_key < pnonleaf->low || pnonleaf->high <= start_key)
         return;
 
-    if (begin_key <= pnonleaf->low && pnonleaf->high < end_key)
+    if (start_key <= pnonleaf->low && pnonleaf->high < end_key)
     {
         // mark this non-leaf node and stop.
         nonleaf_value_type& v = pnonleaf->value_nonleaf;
@@ -205,8 +246,8 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
         return;
     }
 
-    descend_tree_and_mark(pnonleaf->left, value, begin_key, end_key, plist);
-    descend_tree_and_mark(pnonleaf->right, value, begin_key, end_key, plist);
+    descend_tree_and_mark(pnonleaf->left, value, start_key, end_key, plist);
+    descend_tree_and_mark(pnonleaf->right, value, start_key, end_key, plist);
 }
 
 template<typename KeyT, typename ValueT>
@@ -216,12 +257,12 @@ void segment_tree<KeyT, ValueT>::build_leaf_nodes()
 
     // Collect all boundary keys.
     std::vector<key_type> keys;
-    keys.reserve(m_segment_data.size() * 2);
+    keys.reserve(m_segment_store.size() * 2);
 
-    for (const auto& v : m_segment_data)
+    for (const auto& v : m_segment_store)
     {
-        keys.push_back(v.second.first);
-        keys.push_back(v.second.second);
+        keys.push_back(v.start);
+        keys.push_back(v.end);
     }
 
     create_leaf_node_instances(std::move(keys), m_left_leaf, m_right_leaf);
@@ -267,28 +308,19 @@ void segment_tree<KeyT, ValueT>::create_leaf_node_instances(std::vector<key_type
 }
 
 template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::insert(key_type begin_key, key_type end_key, value_type value)
+void segment_tree<KeyT, ValueT>::insert(key_type start_key, key_type end_key, value_type value)
 {
-    if (begin_key >= end_key)
-        return false;
+    if (start_key >= end_key)
+        throw std::invalid_argument("start key cannot be greater than or equal to the end key");
 
-    if (m_segment_data.find(value) != m_segment_data.end())
-        // Insertion of duplicate data is not allowed.
-        return false;
-
-    ::std::pair<key_type, key_type> range;
-    range.first = begin_key;
-    range.second = end_key;
-    m_segment_data.insert(typename segment_map_type::value_type(value, range));
-
+    m_segment_store.emplace_back(std::move(start_key), std::move(end_key), std::move(value));
     m_valid_tree = false;
-    return true;
 }
 
 template<typename KeyT, typename ValueT>
-typename segment_tree<KeyT, ValueT>::search_results segment_tree<KeyT, ValueT>::search(key_type point) const
+typename segment_tree<KeyT, ValueT>::search_results segment_tree<KeyT, ValueT>::search(const key_type& point) const
 {
-    search_results result;
+    search_results result(m_segment_store);
     if (!m_valid_tree || !m_root_node)
         return result;
 
@@ -300,33 +332,40 @@ typename segment_tree<KeyT, ValueT>::search_results segment_tree<KeyT, ValueT>::
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove(value_type value)
+void segment_tree<KeyT, ValueT>::remove(const value_type& value)
 {
-    using namespace std;
+    value_pos_type pos = value_pos_type{};
 
-    typename data_node_map_type::iterator itr = m_tagged_node_map.find(value);
-    if (itr != m_tagged_node_map.end())
+    auto it_seg = std::find_if(
+        m_segment_store.begin(), m_segment_store.end(), [&value](const segment_type& s) { return s.value == value; });
+
+    if (it_seg == m_segment_store.end())
+        // value not found
+        return;
+
+    pos = std::distance(m_segment_store.begin(), it_seg);
+
+    if (auto it = m_tagged_node_map.find(pos); it != m_tagged_node_map.end())
     {
         // Tagged node list found.  Remove all the tags from the tree nodes.
-        node_list_type* plist = itr->second.get();
+        node_list_type* plist = it->second.get();
         if (!plist)
             return;
 
-        remove_data_from_nodes(plist, value);
+        remove_data_from_nodes(plist, pos);
 
         // Remove the tags associated with this pointer from the data set.
-        m_tagged_node_map.erase(itr);
+        m_tagged_node_map.erase(it);
     }
 
-    // Remove from the segment data array.
-    m_segment_data.erase(value);
+    *it_seg = segment_type();
 }
 
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::clear()
 {
     m_tagged_node_map.clear();
-    m_segment_data.clear();
+    m_segment_store.clear();
     clear_all_nodes();
     m_valid_tree = false;
 }
@@ -334,13 +373,13 @@ void segment_tree<KeyT, ValueT>::clear()
 template<typename KeyT, typename ValueT>
 size_t segment_tree<KeyT, ValueT>::size() const
 {
-    return m_segment_data.size();
+    return m_segment_store.size();
 }
 
 template<typename KeyT, typename ValueT>
 bool segment_tree<KeyT, ValueT>::empty() const
 {
-    return m_segment_data.empty();
+    return m_segment_store.empty();
 }
 
 template<typename KeyT, typename ValueT>
@@ -350,7 +389,7 @@ size_t segment_tree<KeyT, ValueT>::leaf_size() const
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, const value_type value)
+void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, value_pos_type value)
 {
     typename node_list_type::iterator itr = plist->begin(), itr_end = plist->end();
     for (; itr != itr_end; ++itr)
@@ -370,7 +409,7 @@ void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, c
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove_data_from_chain(data_chain_type& chain, const value_type value)
+void segment_tree<KeyT, ValueT>::remove_data_from_chain(data_chain_type& chain, value_pos_type value)
 {
     typename data_chain_type::iterator itr = ::std::find(chain.begin(), chain.end(), value);
     if (itr != chain.end())
@@ -390,148 +429,162 @@ void segment_tree<KeyT, ValueT>::clear_all_nodes()
     m_root_node = nullptr;
 }
 
-#ifdef MDDS_UNIT_TEST
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::dump_tree() const
+segment_tree<KeyT, ValueT>::tree_dumper_traits::to_string::to_string(const tree_type& _tree) : tree(_tree)
+{}
+
+template<typename KeyT, typename ValueT>
+std::string segment_tree<KeyT, ValueT>::tree_dumper_traits::to_string::operator()(const leaf_type& leaf) const
 {
-    using ::std::cout;
-    using ::std::endl;
+    std::ostringstream os;
+    os << leaf.to_string();
+
+    if (leaf.value_leaf.data_chain)
+    {
+        os << ":{";
+        for (const auto pos : *leaf.value_leaf.data_chain)
+            os << tree.m_segment_store[pos].value << ',';
+        os << '}';
+    }
+    else
+        os << ":{}";
+
+    return os.str();
+}
+
+template<typename KeyT, typename ValueT>
+std::string segment_tree<KeyT, ValueT>::tree_dumper_traits::to_string::operator()(const nonleaf_type& nonleaf) const
+{
+    std::ostringstream os;
+    os << nonleaf.to_string();
+
+    if (nonleaf.value_nonleaf.data_chain)
+    {
+        os << ":{";
+        for (const auto pos : *nonleaf.value_nonleaf.data_chain)
+            os << tree.m_segment_store[pos].value << ',';
+        os << '}';
+    }
+    else
+        os << ":{}";
+
+    return os.str();
+}
+
+template<typename KeyT, typename ValueT>
+std::string segment_tree<KeyT, ValueT>::to_string() const
+{
+    std::ostringstream os;
+
+    os << "valid tree: " << (m_valid_tree ? "true" : "false") << std::endl;
+    os << "stored segments:" << std::endl;
+
+    for (const segment_type& v : m_segment_store)
+    {
+        if (v == segment_type())
+            // skip deleted segment
+            continue;
+
+        os << "  - range: '[" << v.start << '-' << v.end << ")'" << std::endl;
+        os << "    value: " << v.value << std::endl;
+    }
 
     if (!m_valid_tree)
-        assert(!"attempted to dump an invalid tree!");
+        return os.str();
 
-    cout << "dump tree ------------------------------------------------------" << endl;
-    size_t node_count = mdds::st::detail::tree_dumper<node, nonleaf_node>::dump(m_root_node);
-    size_t node_instance_count = node::get_instance_count();
+    std::size_t node_count = mdds::st::detail::tree_dumper<tree_dumper_traits>::dump(os, *this, m_root_node);
+    os << "tree node count: " << node_count;
 
-    cout << "tree node count = " << node_count << "    node instance count = " << node_instance_count << endl;
+    return os.str();
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::dump_leaf_nodes() const
+void segment_tree<KeyT, ValueT>::check_integrity(const integrity_check_properties& props) const
 {
-    auto print_leaf_value = [](const node& n) {
-        std::cout << n.to_string() << ": {";
+    node* cur_node = m_left_leaf.get();
 
-        if (n.value_leaf.data_chain)
-        {
-            for (const auto& v : *n.value_leaf.data_chain)
-                std::cout << v << ", ";
-        }
-        std::cout << "}" << std::endl;
+    const auto& segstore = m_segment_store;
+    auto to_string = [&segstore](const data_chain_type& chain) -> std::string {
+        std::ostringstream os;
+        for (auto pos : chain)
+            os << segstore[pos].value << ", ";
+        return os.str();
     };
 
-    std::cout << "dump leaf nodes ------------------------------------------------" << std::endl;
+    auto has_value_index = [](const st::detail::node_base* pnode, value_pos_type value_index) {
+        const data_chain_type* chain = nullptr;
 
-    for (node* p = m_left_leaf.get(); p; p = p->next.get())
-        print_leaf_value(*p);
+        if (pnode->is_leaf)
+            chain = static_cast<const node*>(pnode)->value_leaf.data_chain.get();
+        else
+            chain = static_cast<const nonleaf_node*>(pnode)->value_nonleaf.data_chain.get();
 
-    std::cout << "  node instance count = " << node::get_instance_count() << std::endl;
-}
+        if (!chain)
+            return false;
 
-template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::dump_segment_data() const
-{
-    std::cout << "dump segment data ----------------------------------------------" << std::endl;
+        if (std::find(chain->begin(), chain->end(), value_index) == chain->end())
+            return false;
 
-    for (const auto& v : m_segment_data)
-        std::cout << v.second.first << "-" << v.second.second << ": " << v.first << std::endl;
-}
-
-template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::verify_node_lists() const
-{
-    auto has_data_pointer = [](const node_list_type& node_list, const value_type& value) {
-        for (const st::detail::node_base* pnode : node_list)
-        {
-            // Check each node, and make sure each node has the value pointer
-            // listed.
-            const data_chain_type* chain = nullptr;
-
-            if (pnode->is_leaf)
-                chain = static_cast<const node*>(pnode)->value_leaf.data_chain.get();
-            else
-                chain = static_cast<const nonleaf_node*>(pnode)->value_nonleaf.data_chain.get();
-
-            if (!chain)
-                return false;
-
-            if (std::find(chain->begin(), chain->end(), value) == chain->end())
-                return false;
-        }
         return true;
     };
 
-    for (const auto& v : m_tagged_node_map)
-    {
-        // Print stored nodes.
-        std::cout << "node list " << v.first->name << ": ";
-        const node_list_type* plist = v.second.get();
-        assert(plist);
+    // Check the integrity of the leaf nodes first.
 
-        for (const st::detail::node_base* p : *plist)
+    for (const auto& node_check : props.leaf_nodes)
+    {
+        data_chain_type chain_expected;
+
+        for (const auto& v : node_check.value_chain)
         {
-            if (p->is_leaf)
-                std::cout << static_cast<const node*>(p)->to_string() << " ";
-            else
-                std::cout << static_cast<const nonleaf_node*>(p)->to_string() << " ";
+            auto it = std::find_if(
+                m_segment_store.cbegin(), m_segment_store.cend(), [&v](const auto& seg) { return seg.value == v; });
+
+            if (it == m_segment_store.cend())
+            {
+                std::ostringstream os;
+                os << "value '" << v << "' is not stored in this instance";
+                throw std::invalid_argument(os.str());
+            }
+
+            chain_expected.push_back(std::distance(m_segment_store.cbegin(), it));
         }
-        std::cout << std::endl;
 
-        // Verify that all of these nodes have the data pointer.
-        if (!has_data_pointer(*plist, v.first))
-            return false;
-    }
-    return true;
-}
+        assert(chain_expected.size() == node_check.value_chain.size());
 
-template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const
-{
-    using namespace std;
-
-    node* cur_node = m_left_leaf.get();
-    typename ::std::vector<leaf_node_check>::const_iterator itr = checks.begin(), itr_end = checks.end();
-    for (; itr != itr_end; ++itr)
-    {
         if (!cur_node)
-            // Position past the right-mode node.  Invalid.
-            return false;
+            throw integrity_error("current node position is past the right-most node which is unexpected");
 
-        if (cur_node->key != itr->key)
-            // Key values differ.
-            return false;
+        if (cur_node->key != node_check.key)
+        {
+            std::ostringstream os;
+            os << "key values differ: expected='" << node_check.key << "'; actual='" << cur_node->key << "'";
+            throw integrity_error(os.str());
+        }
 
-        if (itr->data_chain.empty())
+        if (chain_expected.empty())
         {
             if (cur_node->value_leaf.data_chain)
-                // The data chain should be empty (i.e. the pointer should be nullptr).
-                return false;
+                throw integrity_error("data chain should be empty i.e. its pointer value should be nullptr");
         }
         else
         {
             if (!cur_node->value_leaf.data_chain)
-                // This node should have data pointers!
-                return false;
+                throw integrity_error("node has empty data chain but it should have a non-empty data chain");
 
-            data_chain_type chain1 = itr->data_chain;
-            data_chain_type chain2 = *cur_node->value_leaf.data_chain;
-
-            if (chain1.size() != chain2.size())
-                return false;
-
-            ::std::vector<value_type> test1, test2;
-            test1.reserve(chain1.size());
-            test2.reserve(chain2.size());
-            copy(chain1.begin(), chain1.end(), back_inserter(test1));
-            copy(chain2.begin(), chain2.end(), back_inserter(test2));
+            data_chain_type chain_actual = *cur_node->value_leaf.data_chain; // copy
 
             // Sort both arrays before comparing them.
-            sort(test1.begin(), test1.end());
-            sort(test2.begin(), test2.end());
+            std::sort(chain_expected.begin(), chain_expected.end());
+            std::sort(chain_actual.begin(), chain_actual.end());
 
-            if (test1 != test2)
-                return false;
+            if (chain_expected != chain_actual)
+            {
+                std::ostringstream os;
+                os << "data chain of leaf node with key '" << cur_node->key << "' is not as expected:" << std::endl;
+                os << "  expected: " << to_string(chain_expected) << std::endl;
+                os << "  actual: " << to_string(chain_actual);
+                throw integrity_error(os.str());
+            }
         }
 
         cur_node = cur_node->next.get();
@@ -540,11 +593,23 @@ bool segment_tree<KeyT, ValueT>::verify_leaf_nodes(const ::std::vector<leaf_node
     if (cur_node)
         // At this point, we expect the current node to be at the position
         // past the right-most node, which is nullptr.
-        return false;
+        throw integrity_error("current node position was expected to be past the right-most node but it isn't");
 
-    return true;
+    // Check the integrity of the tagged-node map.
+
+    for (const auto& [value_index, nodes] : m_tagged_node_map)
+    {
+        for (const st::detail::node_base* this_node : *nodes)
+        {
+            if (!has_value_index(this_node, value_index))
+            {
+                std::ostringstream os;
+                os << "invalid tagged node map: node (" << this_node << ") does not contain a value index of "
+                   << value_index;
+                throw integrity_error(os.str());
+            }
+        }
+    }
 }
-
-#endif
 
 } // namespace mdds

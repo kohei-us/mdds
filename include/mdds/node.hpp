@@ -420,29 +420,30 @@ inline size_t count_needed_nonleaf_nodes(size_t leaf_count)
     return nonleaf_count;
 }
 
-#ifdef MDDS_UNIT_TEST
-
-template<typename _Leaf, typename _NonLeaf>
+template<typename TraitsT>
 class tree_dumper
 {
-    typedef std::vector<const node_base*> node_list_type;
+    using node_list_type = std::vector<const node_base*>;
+    using tree_type = typename TraitsT::tree_type;
 
 public:
-    static size_t dump(const node_base* root_node)
+    static size_t dump(std::ostream& os, const tree_type& tree, const node_base* root_node)
     {
         if (!root_node)
             return 0;
 
         node_list_type node_list;
         node_list.push_back(root_node);
-        return dump_layer(node_list, 0);
+        return dump_layer(os, tree, node_list, 0);
     }
 
 private:
-    static size_t dump_layer(const node_list_type& node_list, unsigned int level)
+    static size_t dump_layer(
+        std::ostream& os, const tree_type& tree, const node_list_type& node_list, unsigned int level)
     {
-        using ::std::cout;
-        using ::std::endl;
+        using leaf_type = typename TraitsT::leaf_type;
+        using nonleaf_type = typename TraitsT::nonleaf_type;
+        using to_string = typename TraitsT::to_string;
 
         if (node_list.empty())
             return 0;
@@ -450,44 +451,46 @@ private:
         size_t node_count = node_list.size();
 
         bool is_leaf = node_list.front()->is_leaf;
-        cout << "level " << level << " (" << (is_leaf ? "leaf" : "non-leaf") << ")" << endl;
+        os << "level " << level << ':' << std::endl;
+        os << "  type: " << (is_leaf ? "leaf" : "non-leaf") << std::endl;
+        os << "  nodes:" << std::endl;
 
         node_list_type new_list;
-        typename node_list_type::const_iterator it = node_list.begin(), it_end = node_list.end();
-        for (; it != it_end; ++it)
+
+        for (const node_base* p : node_list)
         {
-            const node_base* p = *it;
+            os << "    - '";
+
             if (!p)
             {
-                cout << "(x) ";
+                os << "*'" << std::endl;
                 continue;
             }
 
             if (p->is_leaf)
-                cout << static_cast<const _Leaf*>(p)->to_string();
-            else
-                cout << static_cast<const _NonLeaf*>(p)->to_string();
-
-            if (p->is_leaf)
-                continue;
-
-            if (static_cast<const _NonLeaf*>(p)->left)
             {
-                new_list.push_back(static_cast<const _NonLeaf*>(p)->left);
-                if (static_cast<const _NonLeaf*>(p)->right)
-                    new_list.push_back(static_cast<const _NonLeaf*>(p)->right);
+                const auto* pl = static_cast<const leaf_type*>(p);
+                os << to_string{tree}(*pl) << "'" << std::endl;
+                continue;
+            }
+
+            const auto* pnl = static_cast<const nonleaf_type*>(p);
+            os << to_string{tree}(*pnl) << "'" << std::endl;
+
+            if (pnl->left)
+            {
+                new_list.push_back(pnl->left);
+                if (pnl->right)
+                    new_list.push_back(pnl->right);
             }
         }
-        cout << endl;
 
         if (!new_list.empty())
-            node_count += dump_layer(new_list, level + 1);
+            node_count += dump_layer(os, tree, new_list, level + 1);
 
         return node_count;
     }
 };
-
-#endif
 
 }}} // namespace mdds::st::detail
 

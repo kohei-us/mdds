@@ -32,6 +32,7 @@
 #include "mdds/global.hpp"
 
 #include <vector>
+#include <deque>
 #include <iostream>
 #include <map>
 #include <unordered_map>
@@ -50,8 +51,28 @@ public:
     typedef std::vector<value_type> search_results_type;
 
 private:
-    typedef ::std::vector<value_type> data_chain_type;
-    typedef std::unordered_map<value_type, ::std::pair<key_type, key_type>> segment_map_type;
+    struct segment_type
+    {
+        key_type start;
+        key_type end;
+        value_type value;
+
+        segment_type();
+        segment_type(key_type _start, key_type _end, value_type _value);
+        segment_type(const segment_type&) = default;
+        segment_type(segment_type&&) = default;
+
+        segment_type& operator=(const segment_type& r) = default;
+        bool operator<(const segment_type& r) const;
+        bool operator==(const segment_type& r) const;
+    };
+
+    using segment_store_type = std::deque<segment_type>;
+    using value_pos_type = typename segment_store_type::size_type;
+    using data_chain_type = std::vector<value_pos_type>;
+
+    using node_list_type = std::vector<st::detail::node_base*>;
+    using data_node_map_type = std::map<value_pos_type, std::unique_ptr<node_list_type>>;
 
     struct nonleaf_value_type
     {
@@ -116,10 +137,11 @@ private:
         typedef std::shared_ptr<res_chains_type> res_chains_ptr;
 
     protected:
-        search_results_base() : mp_res_chains(static_cast<res_chains_type*>(nullptr))
+        search_results_base(const segment_store_type& segment_store) : m_segment_store(&segment_store)
         {}
 
-        search_results_base(const search_results_base& r) : mp_res_chains(r.mp_res_chains)
+        search_results_base(const search_results_base& r)
+            : m_segment_store(r.m_segment_store), mp_res_chains(r.mp_res_chains)
         {}
 
         bool empty() const
@@ -153,12 +175,18 @@ private:
             mp_res_chains->push_back(chain);
         }
 
+        const segment_store_type* get_segment_store() const
+        {
+            return m_segment_store;
+        }
+
         const res_chains_ptr& get_res_chains() const
         {
             return mp_res_chains;
         }
 
     private:
+        const segment_store_type* m_segment_store = nullptr;
         res_chains_ptr mp_res_chains;
     };
 
@@ -168,26 +196,28 @@ private:
         typedef typename search_results_base::res_chains_type res_chains_type;
         typedef typename search_results_base::res_chains_ptr res_chains_ptr;
 
-        iterator_base(const res_chains_ptr& p) : mp_res_chains(p), m_end_pos(true)
+        iterator_base(const segment_store_type* segment_store, const res_chains_ptr& p)
+            : m_segment_store(segment_store), mp_res_chains(p), m_end_pos(true)
         {}
 
     public:
-        typedef ::std::bidirectional_iterator_tag iterator_category;
-        typedef typename data_chain_type::value_type value_type;
-        typedef typename data_chain_type::pointer pointer;
-        typedef typename data_chain_type::reference reference;
-        typedef typename data_chain_type::difference_type difference_type;
+        using iterator_category = std::bidirectional_iterator_tag;
+        using value_type = const segment_tree::value_type;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using difference_type = std::ptrdiff_t;
 
-        iterator_base() : mp_res_chains(static_cast<res_chains_type*>(nullptr)), m_end_pos(true)
+        iterator_base()
         {}
 
         iterator_base(const iterator_base& r)
-            : mp_res_chains(r.mp_res_chains), m_cur_chain(r.m_cur_chain), m_cur_pos_in_chain(r.m_cur_pos_in_chain),
-              m_end_pos(r.m_end_pos)
+            : m_segment_store(r.m_segment_store), mp_res_chains(r.mp_res_chains), m_cur_chain(r.m_cur_chain),
+              m_cur_pos_in_chain(r.m_cur_pos_in_chain), m_end_pos(r.m_end_pos)
         {}
 
         iterator_base& operator=(const iterator_base& r)
         {
+            m_segment_store = r.m_segment_store;
             mp_res_chains = r.mp_res_chains;
             m_cur_chain = r.m_cur_chain;
             m_cur_pos_in_chain = r.m_cur_pos_in_chain;
@@ -195,7 +225,7 @@ private:
             return *this;
         }
 
-        typename data_chain_type::value_type* operator++()
+        value_type* operator++()
         {
             // We don't check for end position flag for performance reasons.
             // The caller is responsible for making sure not to increment past
@@ -227,7 +257,7 @@ private:
             return operator->();
         }
 
-        typename data_chain_type::value_type* operator--()
+        value_type* operator--()
         {
             if (!mp_res_chains)
                 return nullptr;
@@ -235,7 +265,7 @@ private:
             if (m_end_pos)
             {
                 m_end_pos = false;
-                return &(*m_cur_pos_in_chain);
+                return &cur_value();
             }
 
             if (m_cur_pos_in_chain == (*m_cur_chain)->begin())
@@ -272,14 +302,14 @@ private:
             return !operator==(r);
         }
 
-        typename data_chain_type::value_type& operator*()
+        value_type& operator*()
         {
-            return *m_cur_pos_in_chain;
+            return cur_value();
         }
 
-        typename data_chain_type::value_type* operator->()
+        const value_type* operator->()
         {
-            return &(*m_cur_pos_in_chain);
+            return &cur_value();
         }
 
     protected:
@@ -313,10 +343,17 @@ private:
         }
 
     private:
+        value_type& cur_value()
+        {
+            auto pos = *m_cur_pos_in_chain;
+            return (*m_segment_store)[pos].value;
+        }
+
+        const segment_store_type* m_segment_store = nullptr;
         res_chains_ptr mp_res_chains;
         typename res_chains_type::iterator m_cur_chain;
         typename data_chain_type::iterator m_cur_pos_in_chain;
-        bool m_end_pos : 1;
+        bool m_end_pos = true;
     };
 
     class search_result_inserter
@@ -339,8 +376,13 @@ private:
 public:
     class search_results : public search_results_base
     {
+        friend class segment_tree;
+
         typedef typename search_results_base::res_chains_type res_chains_type;
         typedef typename search_results_base::res_chains_ptr res_chains_ptr;
+
+        search_results(const segment_store_type& segment_tree) : search_results_base(segment_tree)
+        {}
 
     public:
         class iterator : public iterator_base
@@ -348,12 +390,21 @@ public:
             friend class segment_tree<KeyT, ValueT>::search_results;
 
         private:
-            iterator(const res_chains_ptr& p) : iterator_base(p)
+            iterator(const segment_store_type* segment_store, const res_chains_ptr& p) : iterator_base(segment_store, p)
             {}
 
         public:
             iterator() : iterator_base()
             {}
+
+            iterator(const iterator& r) : iterator_base(r)
+            {}
+
+            iterator& operator=(const iterator& r)
+            {
+                iterator_base::operator=(r);
+                return *this;
+            }
         };
 
         /**
@@ -378,16 +429,18 @@ public:
 
         typename search_results::iterator begin()
         {
-            typename search_results::iterator itr(search_results_base::get_res_chains());
-            itr.move_to_front();
-            return itr;
+            typename search_results::iterator it(
+                search_results_base::get_segment_store(), search_results_base::get_res_chains());
+            it.move_to_front();
+            return it;
         }
 
         typename search_results::iterator end()
         {
-            typename search_results::iterator itr(search_results_base::get_res_chains());
-            itr.move_to_end();
-            return itr;
+            typename search_results::iterator it(
+                search_results_base::get_segment_store(), search_results_base::get_res_chains());
+            it.move_to_end();
+            return it;
         }
     };
 
@@ -396,8 +449,11 @@ public:
     ~segment_tree();
 
     /**
-     * Equality between two segment_tree instances is evaluated by comparing
-     * the stored segments only; the tree parts are not compared.
+     * Check equality with another instance.
+     *
+     * @note Equality between two segment_tree instances is evaluated
+     * by comparing the logically stored segments only; the tree parts of the
+     * structures are not compared.
      */
     bool operator==(const segment_tree& r) const;
 
@@ -423,13 +479,14 @@ public:
     void build_tree();
 
     /**
-     * Insert a new segment.
+     * Insert a new segment.  Duplicate segments are allowed.
      *
-     * @param begin_key begin point of the segment.  The value is inclusive.
-     * @param end_key end point of the segment.  The value is non-inclusive.
+     * @param start_key start key of a segment.  The value is inclusive.
+     * @param end_key end key of a segment.  The value is non-inclusive.
+     *                It must be greater than the start key.
      * @param value value to associate with this segment.
      */
-    bool insert(key_type begin_key, key_type end_key, value_type value);
+    void insert(key_type start_key, key_type end_key, value_type value);
 
     /**
      * Search the tree and collect all segments that include a specified
@@ -440,16 +497,18 @@ public:
      * @return object containing the result of the search, which can be
      *         accessed via iterator.
      */
-    search_results search(key_type point) const;
+    search_results search(const key_type& point) const;
 
     /**
      * Remove a segment that matches by the value.  This will <i>not</i>
-     * invalidate the tree; however, if you have removed lots of segments, you
-     * might want to re-build the tree to shrink its size.
+     * invalidate the tree; however, if you have removed a large amount of
+     * of segments, you might want to re-build the tree to compact its size.
      *
-     * @param value value to remove a segment by.
+     * @param value Value to remove a segment by.
+     *
+     * @todo This needs to be replaced with better alternatives.
      */
-    void remove(value_type value);
+    void remove(const value_type& value);
 
     /**
      * Remove all segments data.
@@ -473,30 +532,31 @@ public:
      */
     size_t leaf_size() const;
 
-#ifdef MDDS_UNIT_TEST
-    void dump_tree() const;
-    void dump_leaf_nodes() const;
-    void dump_segment_data() const;
-    bool verify_node_lists() const;
+    /**
+     * Create a string representation of the internal state of a tree.
+     *
+     * @return String representation of the internal state of a tree.
+     */
+    std::string to_string() const;
 
-    struct leaf_node_check
+    struct integrity_check_properties
     {
-        key_type key;
-        data_chain_type data_chain;
+        struct leaf_node
+        {
+            key_type key = {};
+            std::vector<value_type> value_chain;
+        };
+
+        std::vector<leaf_node> leaf_nodes;
     };
 
-    bool verify_leaf_nodes(const ::std::vector<leaf_node_check>& checks) const;
-
-#endif
+    void check_integrity(const integrity_check_properties& props) const;
 
 private:
     /**
      * To be called from rectangle_set.
      */
     void search(key_type point, search_results_base& result) const;
-
-    typedef std::vector<st::detail::node_base*> node_list_type;
-    typedef std::map<value_type, std::unique_ptr<node_list_type>> data_node_map_type;
 
     static void create_leaf_node_instances(std::vector<key_type> keys, node_ptr& left, node_ptr& right);
 
@@ -506,7 +566,8 @@ private:
      * record their positions as a list of node pointers.
      */
     void descend_tree_and_mark(
-        st::detail::node_base* pnode, value_type value, key_type begin_key, key_type end_key, node_list_type* plist);
+        st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key,
+        node_list_type* plist);
 
     void build_leaf_nodes();
 
@@ -514,27 +575,48 @@ private:
      * Go through the list of nodes, and remove the specified data pointer
      * value from the nodes.
      */
-    void remove_data_from_nodes(node_list_type* plist, const value_type value);
-    void remove_data_from_chain(data_chain_type& chain, const value_type value);
+    void remove_data_from_nodes(node_list_type* plist, value_pos_type value);
+    void remove_data_from_chain(data_chain_type& chain, value_pos_type value);
 
     void clear_all_nodes();
 
 private:
+    struct tree_dumper_traits
+    {
+        using leaf_type = node;
+        using nonleaf_type = nonleaf_node;
+        using tree_type = segment_tree;
+
+        struct to_string
+        {
+            const tree_type& tree;
+
+            to_string(const tree_type& _tree);
+            std::string operator()(const leaf_type& leaf) const;
+            std::string operator()(const nonleaf_type& nonleaf) const;
+        };
+    };
+
     std::vector<nonleaf_node> m_nonleaf_node_pool;
 
-    segment_map_type m_segment_data;
+    /**
+     * Storage for inserted segments.  Note that real values are only stored
+     * here. The rest of the structure only stores indices into this storage to
+     * find the values when needed.
+     */
+    segment_store_type m_segment_store;
 
     /**
-     * For each data pointer, it keeps track of all nodes, leaf or non-leaf,
-     * that stores the data pointer label.  This data is used when removing
-     * segments by the data pointer value.
+     * For each segment index, it keeps track of all nodes, leaf or non-leaf,
+     * that are marked with that index.  This is used for removing segments by
+     * value.
      */
     data_node_map_type m_tagged_node_map;
 
     nonleaf_node* m_root_node;
     node_ptr m_left_leaf;
     node_ptr m_right_leaf;
-    bool m_valid_tree : 1;
+    bool m_valid_tree;
 };
 
 } // namespace mdds
