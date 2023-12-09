@@ -53,14 +53,6 @@ struct test_data
     test_data(const std::string& s) : name(s)
     {}
 
-    struct ptr_printer
-    {
-        void operator()(const test_data* data) const
-        {
-            cout << data->name << " ";
-        }
-    };
-
     /**
      * Use this to sort instances of test_data by name, in ascending order.
      */
@@ -1064,9 +1056,9 @@ void st_test_search_iterator_basic()
 
     db_type::search_results results = db.search(0);
     assert(results.size() == 7);
-    db_type::search_results::iterator itr;
-    db_type::search_results::iterator itr_beg = results.begin();
-    db_type::search_results::iterator itr_end = results.end();
+    db_type::search_results::const_iterator itr;
+    db_type::search_results::const_iterator itr_beg = results.begin();
+    db_type::search_results::const_iterator itr_end = results.end();
     cout << "Iterate through the search results." << endl;
     for (itr = itr_beg; itr != itr_end; ++itr)
         cout << (*itr).value->name << " ";

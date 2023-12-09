@@ -190,13 +190,13 @@ private:
         res_chains_ptr mp_res_chains;
     };
 
-    class iterator_base
+    class const_iterator_base
     {
     protected:
         typedef typename search_results_base::res_chains_type res_chains_type;
         typedef typename search_results_base::res_chains_ptr res_chains_ptr;
 
-        iterator_base(const segment_store_type* segment_store, const res_chains_ptr& p)
+        const_iterator_base(const segment_store_type* segment_store, const res_chains_ptr& p)
             : m_segment_store(segment_store), mp_res_chains(p), m_end_pos(true)
         {}
 
@@ -207,15 +207,15 @@ private:
         using reference = value_type&;
         using difference_type = std::ptrdiff_t;
 
-        iterator_base()
+        const_iterator_base()
         {}
 
-        iterator_base(const iterator_base& r)
+        const_iterator_base(const const_iterator_base& r)
             : m_segment_store(r.m_segment_store), mp_res_chains(r.mp_res_chains), m_cur_chain(r.m_cur_chain),
               m_cur_pos_in_chain(r.m_cur_pos_in_chain), m_end_pos(r.m_end_pos)
         {}
 
-        iterator_base& operator=(const iterator_base& r)
+        const_iterator_base& operator=(const const_iterator_base& r)
         {
             m_segment_store = r.m_segment_store;
             mp_res_chains = r.mp_res_chains;
@@ -236,12 +236,12 @@ private:
             // This is why we need to make copies of the iterators, and copy
             // them back once done.
 
-            typename data_chain_type::iterator cur_pos_in_chain = m_cur_pos_in_chain;
+            auto cur_pos_in_chain = m_cur_pos_in_chain;
 
             if (++cur_pos_in_chain == (*m_cur_chain)->end())
             {
                 // End of current chain.  Inspect the next chain if exists.
-                typename res_chains_type::iterator cur_chain = m_cur_chain;
+                auto cur_chain = m_cur_chain;
                 ++cur_chain;
                 if (cur_chain == mp_res_chains->end())
                 {
@@ -282,7 +282,7 @@ private:
             return operator->();
         }
 
-        bool operator==(const iterator_base& r) const
+        bool operator==(const const_iterator_base& r) const
         {
             if (mp_res_chains.get())
             {
@@ -297,7 +297,7 @@ private:
             return m_end_pos == r.m_end_pos;
         }
 
-        bool operator!=(const iterator_base& r) const
+        bool operator!=(const const_iterator_base& r) const
         {
             return !operator==(r);
         }
@@ -351,8 +351,8 @@ private:
 
         const segment_store_type* m_segment_store = nullptr;
         res_chains_ptr mp_res_chains;
-        typename res_chains_type::iterator m_cur_chain;
-        typename data_chain_type::iterator m_cur_pos_in_chain;
+        typename res_chains_type::const_iterator m_cur_chain;
+        typename data_chain_type::const_iterator m_cur_pos_in_chain;
         bool m_end_pos = true;
     };
 
@@ -385,24 +385,25 @@ public:
         {}
 
     public:
-        class iterator : public iterator_base
+        class const_iterator : public const_iterator_base
         {
             friend class segment_tree<KeyT, ValueT>::search_results;
 
         private:
-            iterator(const segment_store_type* segment_store, const res_chains_ptr& p) : iterator_base(segment_store, p)
+            const_iterator(const segment_store_type* segment_store, const res_chains_ptr& p)
+                : const_iterator_base(segment_store, p)
             {}
 
         public:
-            iterator() : iterator_base()
+            const_iterator() : const_iterator_base()
             {}
 
-            iterator(const iterator& r) : iterator_base(r)
+            const_iterator(const const_iterator& r) : const_iterator_base(r)
             {}
 
-            iterator& operator=(const iterator& r)
+            const_iterator& operator=(const const_iterator& r)
             {
-                iterator_base::operator=(r);
+                const_iterator_base::operator=(r);
                 return *this;
             }
         };
@@ -427,17 +428,17 @@ public:
             return search_results_base::size();
         }
 
-        typename search_results::iterator begin() const
+        typename search_results::const_iterator begin() const
         {
-            typename search_results::iterator it(
+            typename search_results::const_iterator it(
                 search_results_base::get_segment_store(), search_results_base::get_res_chains());
             it.move_to_front();
             return it;
         }
 
-        typename search_results::iterator end() const
+        typename search_results::const_iterator end() const
         {
-            typename search_results::iterator it(
+            typename search_results::const_iterator it(
                 search_results_base::get_segment_store(), search_results_base::get_res_chains());
             it.move_to_end();
             return it;
