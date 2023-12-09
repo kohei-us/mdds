@@ -202,7 +202,7 @@ private:
 
     public:
         using iterator_category = std::bidirectional_iterator_tag;
-        using value_type = const segment_tree::value_type;
+        using value_type = const segment_tree::segment_type;
         using pointer = value_type*;
         using reference = value_type&;
         using difference_type = std::ptrdiff_t;
@@ -346,7 +346,7 @@ private:
         value_type& cur_value()
         {
             auto pos = *m_cur_pos_in_chain;
-            return (*m_segment_store)[pos].value;
+            return (*m_segment_store)[pos];
         }
 
         const segment_store_type* m_segment_store = nullptr;
@@ -427,7 +427,7 @@ public:
             return search_results_base::size();
         }
 
-        typename search_results::iterator begin()
+        typename search_results::iterator begin() const
         {
             typename search_results::iterator it(
                 search_results_base::get_segment_store(), search_results_base::get_res_chains());
@@ -435,7 +435,7 @@ public:
             return it;
         }
 
-        typename search_results::iterator end()
+        typename search_results::iterator end() const
         {
             typename search_results::iterator it(
                 search_results_base::get_segment_store(), search_results_base::get_res_chains());

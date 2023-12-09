@@ -30,18 +30,7 @@
 #include <string>
 #include <iostream>
 
-using std::cout;
-using std::endl;
-
-typedef ::mdds::segment_tree<long, std::string> db_type;
-
-struct string_printer
-{
-    void operator() (const std::string& s) const
-    {
-        cout << "search hit: " << s << endl;
-    }
-};
+using db_type = mdds::segment_tree<long, std::string>;
 
 int main() try
 {
@@ -59,11 +48,12 @@ int main() try
     db.build_tree();
 
     // Run search and get the result.
-    db_type::search_results result = db.search(5);
+    db_type::search_results results = db.search(5);
 
-    // Print the result.
-    cout << "result size: " << result.size() << endl;
-    std::for_each(result.begin(), result.end(), string_printer());
+    // Print the results.
+    std::cout << "results size: " << results.size() << std::endl;
+    for (const auto& result : results)
+        std::cout << "range: " << result.start << "-" << result.end << "; value: " << result.value << std::endl;
 }
 catch (...)
 {

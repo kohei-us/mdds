@@ -144,10 +144,11 @@ bool check_against_expected(const std::list<value_type>& test, value_type* expec
 }
 
 template<typename ValueT, typename ResT>
-std::vector<ValueT> to_vector(ResT results)
+std::vector<ValueT> to_vector(const ResT& results)
 {
     std::vector<ValueT> vec;
-    std::copy(results.begin(), results.end(), std::back_inserter(vec));
+    for (const auto& v : results)
+        vec.push_back(v.value);
     return vec;
 }
 
@@ -189,9 +190,11 @@ bool check_search_result_iterator(const segment_tree<key_type, value_type>& db, 
     cout << "search key: " << key << " ";
 
     typedef segment_tree<key_type, value_type> db_type;
-    typename db_type::search_results result = db.search(key);
+    typename db_type::search_results results = db.search(key);
     std::list<value_type> test;
-    std::copy(result.begin(), result.end(), std::back_inserter(test));
+    for (const auto& v : results)
+        test.push_back(v.value);
+
     test.sort(test_data::sort_by_name());
 
     cout << "search result (sorted): ";
@@ -377,7 +380,7 @@ void st_test_insert_search_removal()
         auto results = db.search(i);
         std::cout << "search key " << i << ": ";
         for (const auto& result : results)
-            std::cout << result->name << " ";
+            std::cout << result.value->name << " ";
 
         std::cout << std::endl;
     }
@@ -449,7 +452,7 @@ void st_test_insert_search_removal()
         auto results = db.search(i);
         std::cout << "search key " << i << ": ";
         for (const auto& result : results)
-            std::cout << result->name << " ";
+            std::cout << result.value->name << " ";
         std::cout << std::endl;
     }
 
@@ -763,7 +766,7 @@ void st_test_search_on_uneven_tree()
             auto results = db.search(i);
             std::cout << "search key: " << i << "  result: ";
             for (const auto& result : results)
-                std::cout << result->name << " ";
+                std::cout << result.value->name << " ";
             std::cout << endl;
         }
     }
@@ -816,7 +819,7 @@ void st_test_perf_insertion()
         {
             auto results = db.search(0);
             for (const auto& test : results)
-                assert(test);
+                assert(test.value);
         }
     }
 
@@ -826,7 +829,7 @@ void st_test_perf_insertion()
         {
             db_type::search_results results = db.search(0);
             for (const auto& test : results)
-                assert(test);
+                assert(test.value);
         }
     }
 
@@ -836,7 +839,7 @@ void st_test_perf_insertion()
         {
             auto results = db.search(data_count / 2);
             for (const auto& test : results)
-                assert(test);
+                assert(test.value);
         }
     }
 
@@ -846,7 +849,7 @@ void st_test_perf_insertion()
         {
             db_type::search_results results = db.search(data_count / 2);
             for (const auto& test : results)
-                assert(test);
+                assert(test.value);
         }
     }
 
@@ -856,7 +859,7 @@ void st_test_perf_insertion()
         {
             auto results = db.search(data_count);
             for (const auto& test : results)
-                assert(test);
+                assert(test.value);
         }
     }
 
@@ -866,7 +869,7 @@ void st_test_perf_insertion()
         {
             auto results = db.search(data_count);
             for (const auto& test : results)
-                assert(test);
+                assert(test.value);
         }
     }
 
@@ -917,7 +920,9 @@ void st_test_aggregated_search_results()
     {
         key_type key = 0;
         auto res = db.search(key);
-        std::copy(res.begin(), res.end(), std::back_inserter(results));
+        for (const auto& v : res)
+            results.push_back(v.value);
+
         value_type* expected[] = {&A, &B, &F, 0};
         assert(check_search_result_only(results, key, expected));
     }
@@ -925,7 +930,9 @@ void st_test_aggregated_search_results()
     {
         key_type key = 10;
         auto res = db.search(key);
-        std::copy(res.begin(), res.end(), std::back_inserter(results));
+        for (const auto& v : res)
+            results.push_back(v.value);
+
         // Note the duplicated F's in the search result.
         value_type* expected[] = {&A, &B, &C, &D, &E, &F, &F, 0};
         assert(check_search_result_only(results, key, expected));
@@ -934,7 +941,9 @@ void st_test_aggregated_search_results()
     {
         key_type key = 5;
         auto res = db.search(key);
-        std::copy(res.begin(), res.end(), std::back_inserter(results));
+        for (const auto& v : res)
+            results.push_back(v.value);
+
         value_type* expected[] = {&A, &A, &B, &C, &C, &D, &E, &E, &F, &F, &F, 0};
         assert(check_search_result_only(results, key, expected));
     }
@@ -943,7 +952,9 @@ void st_test_aggregated_search_results()
         results.clear(); // clear the accumulated result set.
         key_type key = 5;
         auto res = db.search(key);
-        std::copy(res.begin(), res.end(), std::back_inserter(results));
+        for (const auto& v : res)
+            results.push_back(v.value);
+
         value_type* expected[] = {&A, &C, &E, &F, 0};
         assert(check_search_result_only(results, key, expected));
     }
@@ -1058,29 +1069,29 @@ void st_test_search_iterator_basic()
     db_type::search_results::iterator itr_end = results.end();
     cout << "Iterate through the search results." << endl;
     for (itr = itr_beg; itr != itr_end; ++itr)
-        cout << (*itr)->name << " ";
+        cout << (*itr).value->name << " ";
     cout << endl;
 
     cout << "Do it again." << endl;
     for (itr = itr_beg; itr != itr_end; ++itr)
-        cout << (*itr)->name << " ";
+        cout << (*itr).value->name << " ";
     cout << endl;
 
     cout << "Iterate backwards" << endl;
     do
     {
         --itr;
-        cout << (*itr)->name << " ";
+        cout << (*itr).value->name << " ";
     } while (itr != itr_beg);
     cout << endl;
 
     cout << "Get the last item from the end position." << endl;
     itr = itr_end;
     --itr;
-    cout << (*itr)->name << endl;
+    cout << (*itr).value->name << endl;
 
     cout << "Use std::for_each to print names." << endl;
-    std::for_each(itr_beg, itr_end, test_data::ptr_printer());
+    std::for_each(itr_beg, itr_end, [](const auto& v) { std::cout << v.value->name; });
     cout << endl;
 }
 
@@ -1176,7 +1187,7 @@ void st_test_non_pointer_data()
     db_type::search_results results = db.search(0);
     assert(results.size() == 1);
     assert(!results.empty());
-    assert(*results.begin() == 10);
+    assert(results.begin()->value == 10);
 }
 
 int main(int argc, char** argv)
