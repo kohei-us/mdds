@@ -65,6 +65,7 @@ private:
         segment_type& operator=(const segment_type& r) = default;
         bool operator<(const segment_type& r) const;
         bool operator==(const segment_type& r) const;
+        bool operator!=(const segment_type& r) const;
     };
 
     using segment_store_type = std::deque<segment_type>;
@@ -192,6 +193,8 @@ private:
 
     class const_iterator_base
     {
+        friend class segment_tree;
+
     protected:
         typedef typename search_results_base::res_chains_type res_chains_type;
         typedef typename search_results_base::res_chains_ptr res_chains_ptr;
@@ -349,6 +352,11 @@ private:
             return (*m_segment_store)[pos];
         }
 
+        size_type cur_pos() const
+        {
+            return *m_cur_pos_in_chain;
+        }
+
         const segment_store_type* m_segment_store = nullptr;
         res_chains_ptr mp_res_chains;
         typename res_chains_type::const_iterator m_cur_chain;
@@ -501,15 +509,24 @@ public:
     search_results search(const key_type& point) const;
 
     /**
-     * Remove a segment that matches by the value.  This will <i>not</i>
-     * invalidate the tree; however, if you have removed a large amount of
-     * of segments, you might want to re-build the tree to compact its size.
+     * Remove a segment referenced by an iterator.  Calling this method will
+     * <em>not</em> invalidate the tree; however, you might want to re-build the
+     * tree to compact its size if you have removed a large number of segments.
      *
-     * @param value Value to remove a segment by.
-     *
-     * @todo This needs to be replaced with better alternatives.
+     * @param pos Position that references the segment to be removed.
      */
-    void remove(const value_type& value);
+    void erase(const typename search_results::const_iterator& pos);
+
+    /**
+     * Remove all segments that satisfy a predicate.
+     *
+     * @param pred Predicate that tests each segment.  A segment that evaluates
+     *             true by the predicate gets removed.
+     *
+     * @return Number of erased elements.
+     */
+    template<typename Pred>
+    size_type erase_if(Pred pred);
 
     /**
      * Remove all segments data.
@@ -578,6 +595,7 @@ private:
      */
     void remove_data_from_nodes(node_list_type* plist, value_pos_type value);
     void remove_data_from_chain(data_chain_type& chain, value_pos_type value);
+    void remove_value_pos(size_type pos);
 
     void clear_all_nodes();
 

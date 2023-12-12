@@ -432,10 +432,55 @@ void st_test_insert_search_removal()
     }
 
     // Remove E, F and G and check search results.
+    // E: 4-24; F: 0-26; G: 12-26
+    {
+        auto res = db.search(10);
+        assert(!res.empty());
+        bool erased = false;
+        for (auto it = res.begin(); it != res.end(); ++it)
+        {
+            if (it->value == &E)
+            {
+                db.erase(it);
+                erased = true;
+                break;
+            }
+        }
+        assert(erased);
+    }
 
-    db.remove(&E);
-    db.remove(&F);
-    db.remove(&G);
+    {
+        auto res = db.search(10);
+        assert(!res.empty());
+        bool erased = false;
+        for (auto it = res.begin(); it != res.end(); ++it)
+        {
+            if (it->value == &F)
+            {
+                db.erase(it);
+                erased = true;
+                break;
+            }
+        }
+        assert(erased);
+    }
+
+    {
+        auto res = db.search(20);
+        assert(!res.empty());
+        bool erased = false;
+        for (auto it = res.begin(); it != res.end(); ++it)
+        {
+            if (it->value == &G)
+            {
+                db.erase(it);
+                erased = true;
+                break;
+            }
+        }
+        assert(erased);
+    }
+
     cout << "removed: E F G" << endl;
     cout << db.to_string() << endl;
 
@@ -638,8 +683,10 @@ void st_test_equality()
         assert(db1 != db2);
         db1.insert(5, 12, &C);
         assert(db1 != db2);
-        db1.remove(&C);
-        db2.remove(&B);
+        auto n_removed = db1.erase_if([&C](const auto& v) { return v.value == &C; });
+        assert(n_removed == 1);
+        n_removed = db2.erase_if([&B](const auto& v) { return v.value == &B; });
+        assert(n_removed == 1);
         assert(db1 == db2);
         db1.insert(4, 20, &D);
         db2.insert(4, 20, &D);
@@ -708,13 +755,17 @@ void st_test_duplicate_insertion()
 
     db_type db;
     db.insert(0, 10, &A);
-    db.insert(0, 10, &A); // a duplicate segment
+    db.insert(0, 10, &A); // duplicate segments are allowed
     db.insert(2, 30, &A);
     db.insert(0, 10, &B);
-    db.remove(&A);
+    assert(db.size() == 4);
+    auto n_removed = db.erase_if([&A](const auto& v) { return v.start == 0 && v.end == 10 && v.value == &A; });
+    assert(n_removed == 2);
+    assert(db.size() == 2);
     db.insert(2, 30, &A);
+    assert(db.size() == 3);
     build_and_dump(db);
-    assert(db.size() == 5);
+    assert(db.size() == 3);
     assert(db.leaf_size() == 4); // 0, 2, 10, 30
 }
 
@@ -870,7 +921,7 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 10000; ++i)
         {
             test_data* p = data_store[i].get();
-            db.remove(p);
+            db.erase_if([p](const auto& v) { return v.value == p; });
         }
     }
     assert(db.size() == data_count - 10000);

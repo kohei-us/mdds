@@ -101,6 +101,15 @@ void descend_tree_for_search(typename T::key_type point, const st::detail::node_
     descend_tree_for_search<T, InserterT>(point, pchild, result);
 }
 
+template<typename SegStoreT>
+void erase_deleted_segments(SegStoreT& segments)
+{
+    using segment_type = typename SegStoreT::value_type;
+
+    auto pred_deleted = [](const segment_type& seg) { return seg == segment_type(); };
+    segments.erase(std::remove_if(segments.begin(), segments.end(), pred_deleted), segments.end());
+}
+
 }} // namespace st::detail
 
 template<typename KeyT, typename ValueT>
@@ -137,6 +146,12 @@ bool segment_tree<KeyT, ValueT>::segment_type::operator==(const segment_type& r)
 }
 
 template<typename KeyT, typename ValueT>
+bool segment_tree<KeyT, ValueT>::segment_type::operator!=(const segment_type& r) const
+{
+    return !operator==(r);
+}
+
+template<typename KeyT, typename ValueT>
 segment_tree<KeyT, ValueT>::segment_tree() : m_root_node(nullptr), m_valid_tree(false)
 {}
 
@@ -160,12 +175,12 @@ bool segment_tree<KeyT, ValueT>::operator==(const segment_tree& r) const
     if (m_valid_tree != r.m_valid_tree)
         return false;
 
-    if (m_segment_store.size() != r.m_segment_store.size())
-        return false;
-
-    // copy both stores, sort them and check their equality
+    // copy both stores, sort them, remove deleted elements, and check their equality
     auto lhs = m_segment_store;
     auto rhs = r.m_segment_store;
+
+    st::detail::erase_deleted_segments(lhs);
+    st::detail::erase_deleted_segments(rhs);
 
     std::sort(lhs.begin(), lhs.end());
     std::sort(rhs.begin(), rhs.end());
@@ -176,6 +191,9 @@ bool segment_tree<KeyT, ValueT>::operator==(const segment_tree& r) const
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::build_tree()
 {
+    // Remove deleted entries first
+    st::detail::erase_deleted_segments(m_segment_store);
+
     build_leaf_nodes();
     m_nonleaf_node_pool.clear();
 
@@ -253,6 +271,8 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::build_leaf_nodes()
 {
+    // NB: m_segment_store must not contain deleted segments!
+
     disconnect_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 
     // Collect all boundary keys.
@@ -332,33 +352,30 @@ typename segment_tree<KeyT, ValueT>::search_results segment_tree<KeyT, ValueT>::
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove(const value_type& value)
+void segment_tree<KeyT, ValueT>::erase(const typename search_results::const_iterator& pos)
 {
-    value_pos_type pos = value_pos_type{};
+    remove_value_pos(pos.cur_pos());
+}
 
-    auto it_seg = std::find_if(
-        m_segment_store.begin(), m_segment_store.end(), [&value](const segment_type& s) { return s.value == value; });
+template<typename KeyT, typename ValueT>
+template<typename Pred>
+typename segment_tree<KeyT, ValueT>::size_type segment_tree<KeyT, ValueT>::erase_if(Pred pred)
+{
+    size_type n_erased = 0;
 
-    if (it_seg == m_segment_store.end())
-        // value not found
-        return;
-
-    pos = std::distance(m_segment_store.begin(), it_seg);
-
-    if (auto it = m_tagged_node_map.find(pos); it != m_tagged_node_map.end())
+    for (size_type pos = 0; pos < m_segment_store.size(); ++pos)
     {
-        // Tagged node list found.  Remove all the tags from the tree nodes.
-        node_list_type* plist = it->second.get();
-        if (!plist)
-            return;
+        if (m_segment_store[pos] == segment_type())
+            continue; // skip deleted segments
 
-        remove_data_from_nodes(plist, pos);
+        if (!pred(m_segment_store[pos]))
+            continue;
 
-        // Remove the tags associated with this pointer from the data set.
-        m_tagged_node_map.erase(it);
+        remove_value_pos(pos);
+        ++n_erased;
     }
 
-    *it_seg = segment_type();
+    return n_erased;
 }
 
 template<typename KeyT, typename ValueT>
@@ -373,7 +390,8 @@ void segment_tree<KeyT, ValueT>::clear()
 template<typename KeyT, typename ValueT>
 size_t segment_tree<KeyT, ValueT>::size() const
 {
-    return m_segment_store.size();
+    return std::count_if(
+        m_segment_store.cbegin(), m_segment_store.cend(), [](const auto& v) { return v != segment_type(); });
 }
 
 template<typename KeyT, typename ValueT>
@@ -417,6 +435,26 @@ void segment_tree<KeyT, ValueT>::remove_data_from_chain(data_chain_type& chain, 
         *itr = chain.back();
         chain.pop_back();
     }
+}
+template<typename KeyT, typename ValueT>
+void segment_tree<KeyT, ValueT>::remove_value_pos(size_type pos)
+{
+    assert(pos < m_segment_store.size());
+
+    if (auto it = m_tagged_node_map.find(pos); it != m_tagged_node_map.end())
+    {
+        // Tagged node list found.  Remove all the tags from the tree nodes.
+        node_list_type* plist = it->second.get();
+        if (!plist)
+            return;
+
+        remove_data_from_nodes(plist, pos);
+
+        // Remove the tags associated with this pointer from the data set.
+        m_tagged_node_map.erase(it);
+    }
+
+    m_segment_store[pos] = segment_type();
 }
 
 template<typename KeyT, typename ValueT>
