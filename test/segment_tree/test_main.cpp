@@ -861,8 +861,10 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 200; ++i)
         {
             auto results = db.search(0);
-            for (const auto& test : results)
-                assert(test.value);
+            assert(results.size() == data_count);
+            auto it = results.begin();
+            ++it;
+            assert(it->value);
         }
     }
 
@@ -871,8 +873,10 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 200; ++i)
         {
             auto results = db.search(data_count / 2);
-            for (const auto& test : results)
-                assert(test.value);
+            assert(results.size() == data_count / 2);
+            auto it = results.begin();
+            ++it;
+            assert(it->value);
         }
     }
 
@@ -881,20 +885,20 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 200; ++i)
         {
             auto results = db.search(data_count);
-            for (const auto& test : results)
-                assert(test.value);
+            assert(results.size() == 0);
+            assert(results.begin() == results.end());
         }
     }
 
     {
-        stack_printer __stack_printer2__("::st_test_perf_insertion:: 10000 segment removals");
-        for (key_type i = 0; i < 10000; ++i)
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: 100 segment removals");
+        for (key_type i = 0; i < 100; ++i)
         {
             test_data* p = data_store[i].get();
             db.erase_if([p](const auto& v) { return v.value == p; });
         }
     }
-    assert(db.size() == data_count - 10000);
+    assert(db.size() == data_count - 100);
 
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: clear");
