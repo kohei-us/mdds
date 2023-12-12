@@ -659,7 +659,7 @@ void st_test_copy_constructor()
     db_type db_copied(db);
     cout << "--" << endl;
     cout << db_copied.to_string() << endl;
-    assert(db.is_tree_valid() == db_copied.is_tree_valid());
+    assert(db.valid_tree() == db_copied.valid_tree());
     assert(db == db_copied);
 
     // Copy after the tree is built.
@@ -667,7 +667,7 @@ void st_test_copy_constructor()
     cout << "--" << endl;
     db_type db_copied_tree(db);
     cout << db_copied_tree.to_string() << endl;
-    assert(db.is_tree_valid() == db_copied_tree.is_tree_valid());
+    assert(db.valid_tree() == db_copied_tree.valid_tree());
     assert(db == db_copied_tree);
 }
 
@@ -884,7 +884,7 @@ void st_test_perf_insertion()
         stack_printer __stack_printer2__("::st_test_perf_insertion:: build tree");
         db.build_tree();
     }
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results");

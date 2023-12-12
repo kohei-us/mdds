@@ -477,7 +477,7 @@ public:
      *
      * @return true if the tree is valid, false otherwise.
      */
-    bool is_tree_valid() const
+    bool valid_tree() const
     {
         return m_valid_tree;
     }
