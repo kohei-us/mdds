@@ -434,6 +434,7 @@ void st_test_insert_search_removal()
     // Remove E, F and G and check search results.
     // E: 4-24; F: 0-26; G: 12-26
     {
+        auto count_before = db.size();
         auto res = db.search(10);
         assert(!res.empty());
         bool erased = false;
@@ -447,9 +448,11 @@ void st_test_insert_search_removal()
             }
         }
         assert(erased);
+        assert(db.size() == count_before - 1);
     }
 
     {
+        auto count_before = db.size();
         auto res = db.search(10);
         assert(!res.empty());
         bool erased = false;
@@ -463,9 +466,11 @@ void st_test_insert_search_removal()
             }
         }
         assert(erased);
+        assert(db.size() == count_before - 1);
     }
 
     {
+        auto count_before = db.size();
         auto res = db.search(20);
         assert(!res.empty());
         bool erased = false;
@@ -479,6 +484,7 @@ void st_test_insert_search_removal()
             }
         }
         assert(erased);
+        assert(db.size() == count_before - 1);
     }
 
     cout << "removed: E F G" << endl;
@@ -694,6 +700,30 @@ void st_test_equality()
         db1.insert(3, 12, &E);
         db2.insert(3, 15, &E);
         assert(db1 != db2);
+    }
+
+    {
+        // different insertion orders
+        db_type db1, db2;
+        assert(db1 == db2);
+        db1.insert(0, 10, &A);
+        db1.insert(10, 20, &B);
+        db2.insert(10, 20, &B);
+        db2.insert(0, 10, &A);
+        assert(db1 == db2);
+    }
+
+    {
+        // one contains a deleted segment
+        db_type db1, db2;
+        db1.insert(0, 10, &C);
+        assert(!db1.empty());
+        assert(db2.empty());
+        assert(db1 != db2);
+        db1.erase_if([](const auto& v) { return v.start == 0; });
+        assert(db1 == db2);
+        assert(db1.empty());
+        assert(db2.empty());
     }
 }
 

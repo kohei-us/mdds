@@ -397,7 +397,11 @@ size_t segment_tree<KeyT, ValueT>::size() const
 template<typename KeyT, typename ValueT>
 bool segment_tree<KeyT, ValueT>::empty() const
 {
-    return m_segment_store.empty();
+    if (m_segment_store.empty())
+        return true;
+
+    // NB: take deleted segments into account
+    return size() == 0;
 }
 
 template<typename KeyT, typename ValueT>
