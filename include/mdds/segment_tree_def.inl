@@ -409,11 +409,9 @@ size_t segment_tree<KeyT, ValueT>::leaf_size() const
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, value_pos_type value)
 {
-    typename node_list_type::iterator itr = plist->begin(), itr_end = plist->end();
-    for (; itr != itr_end; ++itr)
+    for (st::detail::node_base* p : *plist)
     {
         data_chain_type* chain = nullptr;
-        st::detail::node_base* p = *itr;
         if (p->is_leaf)
             chain = static_cast<node*>(p)->value_leaf.data_chain.get();
         else
@@ -429,10 +427,9 @@ void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, v
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::remove_data_from_chain(data_chain_type& chain, value_pos_type value)
 {
-    typename data_chain_type::iterator itr = ::std::find(chain.begin(), chain.end(), value);
-    if (itr != chain.end())
+    if (auto it = std::find(chain.begin(), chain.end(), value); it != chain.end())
     {
-        *itr = chain.back();
+        *it = chain.back();
         chain.pop_back();
     }
 }
