@@ -867,16 +867,6 @@ void st_test_perf_insertion()
     }
 
     {
-        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results (iterator)");
-        for (key_type i = 0; i < 200; ++i)
-        {
-            db_type::search_results results = db.search(0);
-            for (const auto& test : results)
-                assert(test.value);
-        }
-    }
-
-    {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results");
         for (key_type i = 0; i < 200; ++i)
         {
@@ -887,27 +877,7 @@ void st_test_perf_insertion()
     }
 
     {
-        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with median results (iterator)");
-        for (key_type i = 0; i < 200; ++i)
-        {
-            db_type::search_results results = db.search(data_count / 2);
-            for (const auto& test : results)
-                assert(test.value);
-        }
-    }
-
-    {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results");
-        for (key_type i = 0; i < 200; ++i)
-        {
-            auto results = db.search(data_count);
-            for (const auto& test : results)
-                assert(test.value);
-        }
-    }
-
-    {
-        stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with empty results (iterator)");
         for (key_type i = 0; i < 200; ++i)
         {
             auto results = db.search(data_count);
