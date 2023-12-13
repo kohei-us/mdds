@@ -455,6 +455,7 @@ public:
 
     segment_tree();
     segment_tree(const segment_tree& r);
+    segment_tree(segment_tree&& r);
     ~segment_tree();
 
     /**
@@ -571,11 +572,6 @@ public:
     void check_integrity(const integrity_check_properties& props) const;
 
 private:
-    /**
-     * To be called from rectangle_set.
-     */
-    void search(key_type point, search_results_base& result) const;
-
     static void create_leaf_node_instances(std::vector<key_type> keys, node_ptr& left, node_ptr& right);
 
     /**

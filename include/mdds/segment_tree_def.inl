@@ -106,8 +106,16 @@ void erase_deleted_segments(SegStoreT& segments)
 {
     using segment_type = typename SegStoreT::value_type;
 
-    auto pred_deleted = [](const segment_type& seg) { return seg == segment_type(); };
-    segments.erase(std::remove_if(segments.begin(), segments.end(), pred_deleted), segments.end());
+    SegStoreT compacted;
+    for (auto&& v : segments)
+    {
+        if (v == segment_type{})
+            continue;
+
+        compacted.push_back(std::move(v));
+    }
+
+    segments.swap(compacted);
 }
 
 }} // namespace st::detail
@@ -161,6 +169,16 @@ segment_tree<KeyT, ValueT>::segment_tree(const segment_tree& r)
 {
     if (m_valid_tree)
         build_tree();
+}
+
+template<typename KeyT, typename ValueT>
+segment_tree<KeyT, ValueT>::segment_tree(segment_tree&& r)
+    : m_nonleaf_node_pool(std::move(r.m_nonleaf_node_pool)), m_segment_store(std::move(r.m_segment_store)),
+      m_tagged_node_map(std::move(r.m_tagged_node_map)), m_root_node(r.m_root_node),
+      m_left_leaf(std::move(r.m_left_leaf)), m_right_leaf(std::move(r.m_right_leaf)), m_valid_tree(r.m_valid_tree)
+{
+    r.m_root_node = nullptr;
+    r.m_valid_tree = false;
 }
 
 template<typename KeyT, typename ValueT>
