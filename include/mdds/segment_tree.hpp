@@ -63,6 +63,7 @@ private:
         segment_type(segment_type&&) = default;
 
         segment_type& operator=(const segment_type& r) = default;
+        segment_type& operator=(segment_type&& r) = default;
         bool operator<(const segment_type& r) const;
         bool operator==(const segment_type& r) const;
         bool operator!=(const segment_type& r) const;
