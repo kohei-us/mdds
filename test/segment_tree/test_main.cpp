@@ -1005,14 +1005,26 @@ void st_test_perf_insertion()
     }
 
     {
-        stack_printer __stack_printer2__("::st_test_perf_insertion:: 500 segment removals");
+        auto db_copy = db;
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: first 500 segment removals");
         for (key_type i = 0; i < 500; ++i)
         {
             test_data* p = data_store[i].get();
-            db.erase_if([p](const auto& v) { return v.value == p; });
+            db_copy.erase_if([p](const auto& v) { return v.value == p; });
         }
     }
-    assert(db.size() == data_count - 500);
+    assert(db.size() == data_count);
+
+    {
+        auto db_copy = db;
+        stack_printer __stack_printer2__("::st_test_perf_insertion:: last 500 segment removals");
+        for (key_type i = 0; i < 500; ++i)
+        {
+            test_data* p = data_store[data_store.size() - i - 1].get();
+            db_copy.erase_if([p](const auto& v) { return v.value == p; });
+        }
+    }
+    assert(db.size() == data_count);
 
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: clear");
