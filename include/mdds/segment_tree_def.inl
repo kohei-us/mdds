@@ -249,11 +249,11 @@ void segment_tree<KeyT, ValueT>::build_tree()
     for (value_pos_type i = 0; i < m_segment_store.size(); ++i)
     {
         const auto& v = m_segment_store[i];
-        auto r = tagged_node_map.insert({i, std::make_unique<node_list_type>()});
+        auto r = tagged_node_map.emplace(std::make_pair(i, node_list_type{}));
         assert(r.second);
 
-        node_list_type* plist = r.first->second.get();
-        descend_tree_and_mark(m_root_node, i, v.start, v.end, plist);
+        node_list_type& nodelist = r.first->second;
+        descend_tree_and_mark(m_root_node, i, v.start, v.end, nodelist);
     }
 
     m_tagged_node_map.swap(tagged_node_map);
@@ -262,7 +262,7 @@ void segment_tree<KeyT, ValueT>::build_tree()
 
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
-    st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key, node_list_type* plist)
+    st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key, node_list_type& nodelist)
 {
     if (!pnode)
         return;
@@ -277,7 +277,7 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
             if (!v.data_chain)
                 v.data_chain = std::make_unique<data_chain_type>();
             v.data_chain->push_back(value);
-            plist->push_back(pnode);
+            nodelist.push_back(pnode);
         }
         return;
     }
@@ -294,12 +294,12 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
         if (!v.data_chain)
             v.data_chain = std::make_unique<data_chain_type>();
         v.data_chain->push_back(value);
-        plist->push_back(pnode);
+        nodelist.push_back(pnode);
         return;
     }
 
-    descend_tree_and_mark(pnonleaf->left, value, start_key, end_key, plist);
-    descend_tree_and_mark(pnonleaf->right, value, start_key, end_key, plist);
+    descend_tree_and_mark(pnonleaf->left, value, start_key, end_key, nodelist);
+    descend_tree_and_mark(pnonleaf->right, value, start_key, end_key, nodelist);
 }
 
 template<typename KeyT, typename ValueT>
@@ -457,9 +457,9 @@ size_t segment_tree<KeyT, ValueT>::leaf_size() const
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type* plist, value_pos_type value)
+void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type& nodelist, value_pos_type value)
 {
-    for (st::detail::node_base* p : *plist)
+    for (st::detail::node_base* p : nodelist)
     {
         data_chain_type* chain = nullptr;
         if (p->is_leaf)
@@ -491,11 +491,7 @@ void segment_tree<KeyT, ValueT>::remove_value_pos(size_type pos)
     if (auto it = m_tagged_node_map.find(pos); it != m_tagged_node_map.end())
     {
         // Tagged node list found.  Remove all the tags from the tree nodes.
-        node_list_type* plist = it->second.get();
-        if (!plist)
-            return;
-
-        remove_data_from_nodes(plist, pos);
+        remove_data_from_nodes(it->second, pos);
 
         // Remove the tags associated with this pointer from the data set.
         m_tagged_node_map.erase(it);
@@ -684,7 +680,7 @@ void segment_tree<KeyT, ValueT>::check_integrity(const integrity_check_propertie
 
     for (const auto& [value_index, nodes] : m_tagged_node_map)
     {
-        for (const st::detail::node_base* this_node : *nodes)
+        for (const st::detail::node_base* this_node : nodes)
         {
             if (!has_value_index(this_node, value_index))
             {

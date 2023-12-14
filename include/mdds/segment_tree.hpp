@@ -73,7 +73,7 @@ private:
     using data_chain_type = std::vector<value_pos_type>;
 
     using node_list_type = std::vector<st::detail::node_base*>;
-    using data_node_map_type = std::map<value_pos_type, std::unique_ptr<node_list_type>>;
+    using data_node_map_type = std::map<value_pos_type, node_list_type>;
 
     struct nonleaf_value_type
     {
@@ -532,6 +532,11 @@ public:
     template<typename Pred>
     size_type erase_if(Pred pred);
 
+    /**
+     * Exchange the content of the tree with that of another.
+     *
+     * @param r Another tree instance to swap the contents with.
+     */
     void swap(segment_tree& r) noexcept;
 
     /**
@@ -586,7 +591,7 @@ private:
      */
     void descend_tree_and_mark(
         st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key,
-        node_list_type* plist);
+        node_list_type& nodelist);
 
     void build_leaf_nodes();
 
@@ -594,7 +599,7 @@ private:
      * Go through the list of nodes, and remove the specified data pointer
      * value from the nodes.
      */
-    void remove_data_from_nodes(node_list_type* plist, value_pos_type value);
+    void remove_data_from_nodes(node_list_type& nodelist, value_pos_type value);
     void remove_data_from_chain(data_chain_type& chain, value_pos_type value);
     void remove_value_pos(size_type pos);
 
