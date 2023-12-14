@@ -458,6 +458,9 @@ public:
     segment_tree(segment_tree&& r);
     ~segment_tree();
 
+    segment_tree& operator=(const segment_tree& r);
+    segment_tree& operator=(segment_tree&& r);
+
     /**
      * Check equality with another instance.
      *
@@ -528,6 +531,8 @@ public:
      */
     template<typename Pred>
     size_type erase_if(Pred pred);
+
+    void swap(segment_tree& r) noexcept;
 
     /**
      * Remove all segments data.

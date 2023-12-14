@@ -691,13 +691,22 @@ void st_test_copy_constructor()
     assert(db.valid_tree() == db_copied.valid_tree());
     assert(db == db_copied);
 
+    db_type db_assigned;
+    db_assigned = db_copied; // copy assignment
+    assert(db_assigned.valid_tree() == db_copied.valid_tree());
+    assert(db_assigned == db_copied);
+
     // Copy after the tree is built.
     db.build_tree();
-    cout << "--" << endl;
     db_type db_copied_tree(db);
+    cout << "--" << endl;
     cout << db_copied_tree.to_string() << endl;
     assert(db.valid_tree() == db_copied_tree.valid_tree());
     assert(db == db_copied_tree);
+
+    db_assigned = db_copied_tree; // copy assignment
+    assert(db_assigned.valid_tree() == db_copied_tree.valid_tree());
+    assert(db_assigned == db_copied_tree);
 }
 
 void st_test_move_constructor()
@@ -716,16 +725,34 @@ void st_test_move_constructor()
     // constructor, not the copy constructor.
     db_type db_moved(std::move(db));
 
-    assert(db_moved.valid_tree());
-    assert(db_moved.size() == 3);
+    {
+        assert(db_moved.valid_tree());
+        assert(db_moved.size() == 3);
 
-    auto results = db_moved.search(19);
-    assert(results.size() == 1);
-    const auto& v = *results.begin();
-    assert(v.start == 5);
-    assert(v.end == 20);
-    assert(v.value == "5:20");
-    assert(std::next(results.begin()) == results.end());
+        auto results = db_moved.search(19);
+        assert(results.size() == 1);
+        const auto& v = *results.begin();
+        assert(v.start == 5);
+        assert(v.end == 20);
+        assert(v.value == "5:20");
+        assert(std::next(results.begin()) == results.end());
+    }
+
+    db_type db_assigned;
+    db_assigned = std::move(db_moved); // move assignment
+
+    {
+        assert(db_assigned.valid_tree());
+        assert(db_assigned.size() == 3);
+
+        auto results = db_assigned.search(19);
+        assert(results.size() == 1);
+        const auto& v = *results.begin();
+        assert(v.start == 5);
+        assert(v.end == 20);
+        assert(v.value == "5:20");
+        assert(std::next(results.begin()) == results.end());
+    }
 }
 
 void st_test_equality()

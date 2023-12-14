@@ -188,6 +188,22 @@ segment_tree<KeyT, ValueT>::~segment_tree()
 }
 
 template<typename KeyT, typename ValueT>
+segment_tree<KeyT, ValueT>& segment_tree<KeyT, ValueT>::operator=(const segment_tree& r)
+{
+    segment_tree tmp(r);
+    swap(tmp);
+    return *this;
+}
+
+template<typename KeyT, typename ValueT>
+segment_tree<KeyT, ValueT>& segment_tree<KeyT, ValueT>::operator=(segment_tree&& r)
+{
+    segment_tree tmp(std::move(r));
+    swap(tmp);
+    return *this;
+}
+
+template<typename KeyT, typename ValueT>
 bool segment_tree<KeyT, ValueT>::operator==(const segment_tree& r) const
 {
     if (m_valid_tree != r.m_valid_tree)
@@ -394,6 +410,18 @@ typename segment_tree<KeyT, ValueT>::size_type segment_tree<KeyT, ValueT>::erase
     }
 
     return n_erased;
+}
+
+template<typename KeyT, typename ValueT>
+void segment_tree<KeyT, ValueT>::swap(segment_tree& r) noexcept
+{
+    m_nonleaf_node_pool.swap(r.m_nonleaf_node_pool);
+    m_segment_store.swap(r.m_segment_store);
+    m_tagged_node_map.swap(r.m_tagged_node_map);
+    std::swap(m_root_node, r.m_root_node);
+    m_left_leaf.swap(r.m_left_leaf);
+    m_right_leaf.swap(r.m_right_leaf);
+    std::swap(m_valid_tree, r.m_valid_tree);
 }
 
 template<typename KeyT, typename ValueT>
