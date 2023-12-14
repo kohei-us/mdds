@@ -71,21 +71,21 @@ private:
 
     using segment_store_type = std::deque<segment_type>;
     using value_pos_type = typename segment_store_type::size_type;
-    using data_chain_type = std::vector<value_pos_type>;
+    using value_chain_type = std::vector<value_pos_type>;
 
     using node_chain_type = std::vector<st::detail::node_base*>;
     using value_to_nodes_type = std::map<value_pos_type, node_chain_type>;
 
     struct nonleaf_value_type
     {
-        std::unique_ptr<data_chain_type> data_chain;
+        std::unique_ptr<value_chain_type> data_chain;
 
         nonleaf_value_type()
         {}
         nonleaf_value_type(const nonleaf_value_type& r)
         {
             if (r.data_chain)
-                data_chain = std::make_unique<data_chain_type>(*r.data_chain);
+                data_chain = std::make_unique<value_chain_type>(*r.data_chain);
         }
 
         bool operator==(const nonleaf_value_type& r) const
@@ -99,14 +99,14 @@ private:
 
     struct leaf_value_type
     {
-        std::unique_ptr<data_chain_type> data_chain;
+        std::unique_ptr<value_chain_type> data_chain;
 
         leaf_value_type()
         {}
         leaf_value_type(const leaf_value_type& r)
         {
             if (r.data_chain)
-                data_chain = std::make_unique<data_chain_type>(*r.data_chain);
+                data_chain = std::make_unique<value_chain_type>(*r.data_chain);
         }
 
         bool operator==(const leaf_value_type& r) const
@@ -135,7 +135,7 @@ private:
         friend class search_result_inserter;
 
     public:
-        typedef std::vector<data_chain_type*> res_chains_type;
+        typedef std::vector<value_chain_type*> res_chains_type;
         typedef std::shared_ptr<res_chains_type> res_chains_ptr;
 
     protected:
@@ -162,12 +162,12 @@ private:
             if (!mp_res_chains)
                 return combined;
 
-            for (const data_chain_type* p : *mp_res_chains)
+            for (const value_chain_type* p : *mp_res_chains)
                 combined += p->size();
             return combined;
         }
 
-        void push_back_chain(data_chain_type* chain)
+        void push_back_chain(value_chain_type* chain)
         {
             if (!chain || chain->empty())
                 return;
@@ -361,7 +361,7 @@ private:
         const segment_store_type* m_segment_store = nullptr;
         res_chains_ptr mp_res_chains;
         typename res_chains_type::const_iterator m_cur_chain;
-        typename data_chain_type::const_iterator m_cur_pos_in_chain;
+        typename value_chain_type::const_iterator m_cur_pos_in_chain;
         bool m_end_pos = true;
     };
 
@@ -370,7 +370,7 @@ private:
     public:
         search_result_inserter(search_results_base& results) : m_results(results)
         {}
-        void operator()(data_chain_type* node_data)
+        void operator()(value_chain_type* node_data)
         {
             if (!node_data)
                 return;
@@ -601,7 +601,7 @@ private:
      * value from the nodes.
      */
     void remove_data_from_nodes(node_chain_type& nodelist, value_pos_type value);
-    void remove_data_from_chain(data_chain_type& chain, value_pos_type value);
+    void remove_data_from_chain(value_chain_type& chain, value_pos_type value);
     void remove_value_pos(size_type pos);
 
     void clear_all_nodes();

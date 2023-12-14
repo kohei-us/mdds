@@ -275,7 +275,7 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
         {
             leaf_value_type& v = pleaf->value_leaf;
             if (!v.data_chain)
-                v.data_chain = std::make_unique<data_chain_type>();
+                v.data_chain = std::make_unique<value_chain_type>();
             v.data_chain->push_back(value);
             nodelist.push_back(pnode);
         }
@@ -292,7 +292,7 @@ void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
         nonleaf_value_type& v = pnonleaf->value_nonleaf;
 
         if (!v.data_chain)
-            v.data_chain = std::make_unique<data_chain_type>();
+            v.data_chain = std::make_unique<value_chain_type>();
         v.data_chain->push_back(value);
         nodelist.push_back(pnode);
         return;
@@ -461,7 +461,7 @@ void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_chain_type& nodelis
 {
     for (st::detail::node_base* p : nodelist)
     {
-        data_chain_type* chain = nullptr;
+        value_chain_type* chain = nullptr;
         if (p->is_leaf)
             chain = static_cast<node*>(p)->value_leaf.data_chain.get();
         else
@@ -475,7 +475,7 @@ void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_chain_type& nodelis
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove_data_from_chain(data_chain_type& chain, value_pos_type value)
+void segment_tree<KeyT, ValueT>::remove_data_from_chain(value_chain_type& chain, value_pos_type value)
 {
     if (auto it = std::find(chain.begin(), chain.end(), value); it != chain.end())
     {
@@ -585,7 +585,7 @@ void segment_tree<KeyT, ValueT>::check_integrity(const integrity_check_propertie
     node* cur_node = m_left_leaf.get();
 
     const auto& segstore = m_segment_store;
-    auto to_string = [&segstore](const data_chain_type& chain) -> std::string {
+    auto to_string = [&segstore](const value_chain_type& chain) -> std::string {
         std::ostringstream os;
         for (auto pos : chain)
             os << segstore[pos].value << ", ";
@@ -593,7 +593,7 @@ void segment_tree<KeyT, ValueT>::check_integrity(const integrity_check_propertie
     };
 
     auto has_value_index = [](const st::detail::node_base* pnode, value_pos_type value_index) {
-        const data_chain_type* chain = nullptr;
+        const value_chain_type* chain = nullptr;
 
         if (pnode->is_leaf)
             chain = static_cast<const node*>(pnode)->value_leaf.data_chain.get();
@@ -613,7 +613,7 @@ void segment_tree<KeyT, ValueT>::check_integrity(const integrity_check_propertie
 
     for (const auto& node_check : props.leaf_nodes)
     {
-        data_chain_type chain_expected;
+        value_chain_type chain_expected;
 
         for (const auto& v : node_check.value_chain)
         {
@@ -652,7 +652,7 @@ void segment_tree<KeyT, ValueT>::check_integrity(const integrity_check_propertie
             if (!cur_node->value_leaf.data_chain)
                 throw integrity_error("node has empty data chain but it should have a non-empty data chain");
 
-            data_chain_type chain_actual = *cur_node->value_leaf.data_chain; // copy
+            value_chain_type chain_actual = *cur_node->value_leaf.data_chain; // copy
 
             // Sort both arrays before comparing them.
             std::sort(chain_expected.begin(), chain_expected.end());
