@@ -553,60 +553,60 @@ void fst_test_insert_search_mix()
 
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == db.leaf_size());
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
     test_single_tree_search(db, 0, 0, 0, 100);
     test_single_tree_search(db, 99, 0, 0, 100);
 
     db.insert_front(0, 10, 1);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == db.leaf_size());
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
     test_single_tree_search(db, 0, 1, 0, 10);
     test_single_tree_search(db, 5, 1, 0, 10);
     test_single_tree_search(db, 9, 1, 0, 10);
     test_single_tree_search(db, 10, 0, 10, 100);
 
     db.insert_front(0, 100, 0);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == db.leaf_size());
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
     test_single_tree_search(db, 0, 0, 0, 100);
     test_single_tree_search(db, 99, 0, 0, 100);
 
     db.insert_front(10, 20, 5);
     db.insert_front(30, 40, 5);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == db.leaf_size());
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
     test_single_tree_search(db, 10, 5, 10, 20);
     test_single_tree_search(db, 20, 0, 20, 30);
     test_single_tree_search(db, 30, 5, 30, 40);
     test_single_tree_search(db, 40, 0, 40, 100);
 
     db.insert_front(18, 22, 6);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == db.leaf_size());
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
     test_single_tree_search(db, 18, 6, 18, 22);
     test_single_tree_search(db, 22, 0, 22, 30);
     test_single_tree_search(db, 30, 5, 30, 40);
 
     db.insert_front(19, 30, 5);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == db.leaf_size());
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
     test_single_tree_search(db, 19, 5, 19, 40);
 
     db.insert_front(-100, 500, 999);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     assert(db_type::node::get_instance_count() == db.leaf_size());
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
     test_single_tree_search(db, 30, 999, 0, 100);
 }
 
@@ -624,23 +624,23 @@ void fst_test_shift_left()
     // invalid segment ranges -- these should not modify the state of the
     // tree, hence the tree should remain valid.
     db.shift_left(5, 0);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     db.shift_left(95, 120);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     db.shift_left(105, 120);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     db.shift_left(-10, -5);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     db.shift_left(-10, 5);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     // shift without removing nodes (including the lower bound).
     db.shift_left(0, 5);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         std::vector<int> key_checks;
@@ -657,7 +657,7 @@ void fst_test_shift_left()
 
     // shift without removing nodes (not including the lower bound).
     db.shift_left(1, 6);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         std::vector<int> key_checks;
@@ -675,7 +675,7 @@ void fst_test_shift_left()
     // shift without removing nodes (the upper bound of the removed segment
     // coincides with a node).
     db.shift_left(5, 10);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         std::vector<int> key_checks;
@@ -692,7 +692,7 @@ void fst_test_shift_left()
 
     // shift with one overlapping node.
     db.shift_left(1, 11);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 1, 15, 25, 35, 45, 55, 100};
@@ -702,7 +702,7 @@ void fst_test_shift_left()
 
     // shift with two overlapping nodes.
     db.shift_left(2, 30);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 1, 2, 7, 17, 27, 100};
@@ -712,7 +712,7 @@ void fst_test_shift_left()
 
     // shift with both ends at existing nodes, but no nodes in between.
     db.shift_left(0, 1);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 1, 6, 16, 26, 100};
@@ -724,7 +724,7 @@ void fst_test_shift_left()
     // removing the segment results in two consecutive segments with identical
     // value.  The segments should get combined into one.
     db.shift_left(16, 26);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 1, 6, 100};
@@ -735,7 +735,7 @@ void fst_test_shift_left()
     // insert two new segments for the next test....
     db.insert_front(10, 20, 400);
     db.insert_front(30, 40, 400);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 1, 6, 10, 20, 30, 40, 100};
@@ -746,7 +746,7 @@ void fst_test_shift_left()
     // same test as the previous one, but the value of the combined segment
     // differs from the value of the rightmost leaf node.
     db.shift_left(20, 30);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 1, 6, 10, 30, 100};
@@ -756,7 +756,7 @@ void fst_test_shift_left()
 
     // remove all.
     db.shift_left(0, 100);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
 }
 
@@ -786,7 +786,7 @@ void fst_test_shift_left_right_edge()
 
     // This should insert a new segment at the end with the initial base value.
     db.shift_left(80, 100);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 20, 80, 100};
@@ -797,7 +797,7 @@ void fst_test_shift_left_right_edge()
     // This should not modify the tree since the removed segment already has
     // the initial base value.
     db.shift_left(85, 100);
-    assert(db.is_tree_valid()); // tree must still be valid.
+    assert(db.valid_tree()); // tree must still be valid.
     build_and_dump(db);
     {
         int keys[] = {0, 20, 80, 100};
@@ -807,7 +807,7 @@ void fst_test_shift_left_right_edge()
 
     // Insert a new segment at the end with the value 'true' again...
     db.insert_front(85, 100, true);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 20, 80, 85, 100};
@@ -816,7 +816,7 @@ void fst_test_shift_left_right_edge()
     }
 
     db.shift_left(90, 95);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 20, 80, 85, 95, 100};
@@ -831,7 +831,7 @@ void fst_test_shift_left_append_new_segment()
 
     flat_segment_tree<int, bool> db(0, 100, false);
     db.insert_front(0, 100, true);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 100};
@@ -840,7 +840,7 @@ void fst_test_shift_left_append_new_segment()
     }
 
     db.shift_left(10, 20);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 90, 100};
@@ -853,7 +853,7 @@ void fst_test_shift_left_append_new_segment()
     db.insert_front(20, 60, true);
     db.insert_front(60, 80, false);
     db.insert_front(80, 100, true);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 10, 20, 60, 80, 100};
@@ -862,7 +862,7 @@ void fst_test_shift_left_append_new_segment()
     }
 
     db.shift_left(0, 70);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 10, 30, 100};
@@ -885,14 +885,14 @@ void fst_test_shift_right_init0()
     db.insert_front(60, 70, 6);
     db.insert_front(70, 80, 7);
     db.insert_front(80, 90, 8);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
 
     // shifting position is at the lower bound.  The leftmost segment has a
     // non-zero value which needs to be preserved after the shift by adding a
     // new node.
     db.shift_right(0, 5, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 100};
@@ -904,7 +904,7 @@ void fst_test_shift_right_init0()
     // bound of the last non-zero segment (10) becomes the upper bound of the
     // global range.
     db.shift_right(0, 5, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
@@ -914,7 +914,7 @@ void fst_test_shift_right_init0()
 
     // Shift by some odd number.
     db.shift_right(0, 49, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 59, 69, 79, 89, 99, 100};
@@ -925,7 +925,7 @@ void fst_test_shift_right_init0()
     // Shift so that the 2nd node from the right-most node becomes the new
     // right-most node.
     db.shift_right(0, 11, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 70, 80, 90, 100};
@@ -935,7 +935,7 @@ void fst_test_shift_right_init0()
 
     // This should remove all segments.
     db.shift_right(0, 30, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 100};
@@ -946,7 +946,7 @@ void fst_test_shift_right_init0()
     // Insert a few new segments for the next series of tests...
     db.insert_front(5, 10, 5);
     db.insert_front(20, 30, 5);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 5, 10, 20, 30, 100};
@@ -957,7 +957,7 @@ void fst_test_shift_right_init0()
     // Inserting at a non-node position.  This should simply extend that
     // segment and shift all the others.
     db.shift_right(6, 20, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 5, 30, 40, 50, 100};
@@ -967,7 +967,7 @@ void fst_test_shift_right_init0()
 
     // Inserting at a node position.
     db.shift_right(5, 20, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 25, 50, 60, 70, 100};
@@ -977,7 +977,7 @@ void fst_test_shift_right_init0()
 
     // Inserting at a non-node position, pushing a node out-of-bound.
     db.shift_right(65, 40, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 25, 50, 60, 100};
@@ -987,7 +987,7 @@ void fst_test_shift_right_init0()
 
     // Inserting at a node position, pushing a node out-of-bound.
     db.shift_right(50, 40, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int keys[] = {0, 25, 90, 100};
@@ -1003,7 +1003,7 @@ void fst_test_shift_right_init999()
     // Initialize the tree with a default value of 999.
     flat_segment_tree<int, int> db(0, 100, 999);
     db.insert_front(0, 10, 0);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int k[] = {0, 10, 100};
@@ -1013,7 +1013,7 @@ void fst_test_shift_right_init999()
 
     // This should only extend the first segment.
     db.shift_right(1, 10, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int k[] = {0, 20, 100};
@@ -1024,7 +1024,7 @@ void fst_test_shift_right_init999()
     // Inserting at the leftmost node position should create a new segment
     // with a default value of 999.
     db.shift_right(0, 10, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         int k[] = {0, 10, 30, 100};
@@ -1034,13 +1034,13 @@ void fst_test_shift_right_init999()
 
     // Invalid shifts -- these should not invalidate the tree.
     db.shift_right(-10, 10, false);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     db.shift_right(100, 10, false);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     db.shift_right(0, 0, false);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 }
 
 void fst_test_shift_right_bool()
@@ -1049,7 +1049,7 @@ void fst_test_shift_right_bool()
 
     flat_segment_tree<long, bool> db(0, 1048576, false);
     db.insert_front(3, 7, true);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         long k[] = {0, 3, 7, 1048576};
@@ -1058,7 +1058,7 @@ void fst_test_shift_right_bool()
     }
 
     db.shift_right(1, 1, false);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         long k[] = {0, 4, 8, 1048576};
@@ -1073,7 +1073,7 @@ void fst_test_shift_right_skip_start_node()
 
     flat_segment_tree<long, short> db(0, 1048576, 0);
     db.insert_front(3, 7, 5);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         long k[] = {0, 3, 7, 1048576};
@@ -1082,7 +1082,7 @@ void fst_test_shift_right_skip_start_node()
     }
 
     db.shift_right(3, 2, true);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         long k[] = {0, 3, 9, 1048576};
@@ -1092,7 +1092,7 @@ void fst_test_shift_right_skip_start_node()
 
     // shift_right from the leftmost node should not change its value
     db.insert_front(0, 4, 2);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
     build_and_dump(db);
     {
         long k[] = {0, 4, 9, 1048576};
@@ -1402,19 +1402,19 @@ void fst_test_copy_ctor()
     }
 
     // Make sure that copying will leave the tree invalid.
-    assert(!db_copied.is_tree_valid());
+    assert(!db_copied.valid_tree());
     db_copied.build_tree();
-    assert(db_copied.is_tree_valid());
+    assert(db_copied.valid_tree());
     fst db_copied_again(db_copied);
     assert(db_copied == db_copied_again);
-    assert(!db_copied_again.is_tree_valid());
+    assert(!db_copied_again.valid_tree());
     assert(!db_copied_again.get_root_node());
 
     // Make sure we can still perform tree search correctly.
     value_type answer = 0;
     db_copied_again.build_tree();
     db_copied_again.search_tree(18, answer);
-    assert(db_copied_again.is_tree_valid());
+    assert(db_copied_again.valid_tree());
     assert(answer == 35);
 }
 
@@ -1435,11 +1435,11 @@ void fst_test_move_ctor()
         assert(moved.max_key() == 50);
         assert(moved.default_value() == "none");
         assert(moved.leaf_size() == 2);
-        assert(!moved.is_tree_valid());
+        assert(!moved.valid_tree());
         assert(moved.get_root_node() == src_root);
 
         moved.build_tree();
-        assert(moved.is_tree_valid());
+        assert(moved.valid_tree());
 
         {
             // Make sure search_tree() won't access invalid memory
@@ -1456,7 +1456,7 @@ void fst_test_move_ctor()
         assert(moved2.max_key() == 50);
         assert(moved2.default_value() == "none");
         assert(moved2.leaf_size() == 2);
-        assert(moved2.is_tree_valid());
+        assert(moved2.valid_tree());
         assert(src_root == moved2.get_root_node());
 
         {
@@ -1481,11 +1481,11 @@ void fst_test_move_ctor()
         assert(moved.max_key() == 50);
         assert(moved.default_value() == "none");
         assert(moved.leaf_size() == 4);
-        assert(!moved.is_tree_valid());
+        assert(!moved.valid_tree());
         assert(moved.get_root_node() == src_root);
 
         moved.build_tree();
-        assert(moved.is_tree_valid());
+        assert(moved.valid_tree());
 
         {
             // Make sure search_tree() won't access invalid memory
@@ -1505,7 +1505,7 @@ void fst_test_move_ctor()
         assert(moved2.max_key() == 50);
         assert(moved2.default_value() == "none");
         assert(moved2.leaf_size() == 4);
-        assert(moved2.is_tree_valid());
+        assert(moved2.valid_tree());
         assert(src_root == moved2.get_root_node());
 
         {
@@ -2023,7 +2023,7 @@ void fst_test_swap()
     assert(db1.min_key() == 0);
     assert(db1.max_key() == 200);
     assert(db1.default_value() == 20);
-    assert(db1.is_tree_valid());
+    assert(db1.valid_tree());
 
     db1.swap(db2);
 
@@ -2036,7 +2036,7 @@ void fst_test_swap()
     assert(db2.min_key() == 0);
     assert(db2.max_key() == 200);
     assert(db2.default_value() == 20);
-    assert(db2.is_tree_valid());
+    assert(db2.valid_tree());
 
     // Tree search should work on db2.
     db_type::value_type val = 0;
@@ -2062,7 +2062,7 @@ void fst_test_swap_tree_memory()
     db1.reset();
 
     // Make sure that the tree is valid, and you can still search through the tree.
-    assert(db2.is_tree_valid());
+    assert(db2.valid_tree());
     value = -1;
     db2.search_tree(20, value);
     assert(value == 999);
@@ -2087,7 +2087,7 @@ void fst_test_clear()
     assert(db.min_key() == 0);
     assert(db.max_key() == 100);
     assert(db.default_value() == 42);
-    assert(db.is_tree_valid());
+    assert(db.valid_tree());
 
     db.clear();
 
@@ -2099,7 +2099,7 @@ void fst_test_clear()
     assert(db.min_key() == 0);
     assert(db.max_key() == 100);
     assert(db.default_value() == 42);
-    assert(!db.is_tree_valid());
+    assert(!db.valid_tree());
 }
 
 void fst_test_assignment()
@@ -2121,7 +2121,7 @@ void fst_test_assignment()
     assert(db1.min_key() == 0);
     assert(db1.max_key() == 100);
     assert(db1.default_value() == 42);
-    assert(db1.is_tree_valid());
+    assert(db1.valid_tree());
 
     db_type db2(20, 40, 0);
     db2.insert_back(20, 30, 8);
@@ -2135,7 +2135,7 @@ void fst_test_assignment()
     assert(db2.min_key() == 20);
     assert(db2.max_key() == 40);
     assert(db2.default_value() == 0);
-    assert(db2.is_tree_valid());
+    assert(db2.valid_tree());
 
     db_type db3(10, 80, 4);
     db3.build_tree();
@@ -2148,7 +2148,7 @@ void fst_test_assignment()
     assert(db3.min_key() == 10);
     assert(db3.max_key() == 80);
     assert(db3.default_value() == 4);
-    assert(db3.is_tree_valid());
+    assert(db3.valid_tree());
 
     db3 = db2 = db1;
 
@@ -2160,7 +2160,7 @@ void fst_test_assignment()
     assert(db1.min_key() == 0);
     assert(db1.max_key() == 100);
     assert(db1.default_value() == 42);
-    assert(db1.is_tree_valid());
+    assert(db1.valid_tree());
 
     {
         db_type::key_type k[] = {0, 10, 20, 30, 100};
@@ -2170,7 +2170,7 @@ void fst_test_assignment()
     assert(db2.min_key() == 0);
     assert(db2.max_key() == 100);
     assert(db2.default_value() == 42);
-    assert(!db2.is_tree_valid());
+    assert(!db2.valid_tree());
 
     {
         db_type::key_type k[] = {0, 10, 20, 30, 100};
@@ -2180,7 +2180,7 @@ void fst_test_assignment()
     assert(db3.min_key() == 0);
     assert(db3.max_key() == 100);
     assert(db3.default_value() == 42);
-    assert(!db3.is_tree_valid());
+    assert(!db3.valid_tree());
 }
 
 void fst_test_move_assignment()
@@ -2196,11 +2196,11 @@ void fst_test_move_assignment()
     assert(moved.max_key() == 100);
     assert(moved.default_value() == "base");
     assert(moved.leaf_size() == 2);
-    assert(!moved.is_tree_valid());
+    assert(!moved.valid_tree());
 
     moved.insert_back(10, 25, "10-25");
     moved.build_tree();
-    assert(moved.is_tree_valid());
+    assert(moved.valid_tree());
     assert(moved.leaf_size() == 4);
 
     container_type moved2{30, 450, "base3"};
@@ -2209,7 +2209,7 @@ void fst_test_move_assignment()
     assert(moved2.max_key() == 100);
     assert(moved2.default_value() == "base");
     assert(moved2.leaf_size() == 4);
-    assert(moved2.is_tree_valid());
+    assert(moved2.valid_tree());
 
     // Make sure we can perform tree search.
     std::string v;

@@ -481,7 +481,7 @@ public:
      * @return true if the tree is valid, otherwise false.  The tree must be
      *         valid before you can call the search_tree() method.
      */
-    bool is_tree_valid() const
+    bool valid_tree() const noexcept
     {
         return m_valid_tree;
     }
