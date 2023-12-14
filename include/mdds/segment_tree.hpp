@@ -72,8 +72,8 @@ private:
     using value_pos_type = typename segment_store_type::size_type;
     using data_chain_type = std::vector<value_pos_type>;
 
-    using node_list_type = std::vector<st::detail::node_base*>;
-    using data_node_map_type = std::map<value_pos_type, node_list_type>;
+    using node_chain_type = std::vector<st::detail::node_base*>;
+    using value_to_nodes_type = std::map<value_pos_type, node_chain_type>;
 
     struct nonleaf_value_type
     {
@@ -591,7 +591,7 @@ private:
      */
     void descend_tree_and_mark(
         st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key,
-        node_list_type& nodelist);
+        node_chain_type& nodelist);
 
     void build_leaf_nodes();
 
@@ -599,7 +599,7 @@ private:
      * Go through the list of nodes, and remove the specified data pointer
      * value from the nodes.
      */
-    void remove_data_from_nodes(node_list_type& nodelist, value_pos_type value);
+    void remove_data_from_nodes(node_chain_type& nodelist, value_pos_type value);
     void remove_data_from_chain(data_chain_type& chain, value_pos_type value);
     void remove_value_pos(size_type pos);
 
@@ -636,7 +636,7 @@ private:
      * that are marked with that index.  This is used for removing segments by
      * value.
      */
-    data_node_map_type m_tagged_node_map;
+    value_to_nodes_type m_tagged_nodes_map;
 
     nonleaf_node* m_root_node;
     node_ptr m_left_leaf;

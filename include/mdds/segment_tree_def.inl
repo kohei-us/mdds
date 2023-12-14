@@ -174,7 +174,7 @@ segment_tree<KeyT, ValueT>::segment_tree(const segment_tree& r)
 template<typename KeyT, typename ValueT>
 segment_tree<KeyT, ValueT>::segment_tree(segment_tree&& r)
     : m_nonleaf_node_pool(std::move(r.m_nonleaf_node_pool)), m_segment_store(std::move(r.m_segment_store)),
-      m_tagged_node_map(std::move(r.m_tagged_node_map)), m_root_node(r.m_root_node),
+      m_tagged_nodes_map(std::move(r.m_tagged_nodes_map)), m_root_node(r.m_root_node),
       m_left_leaf(std::move(r.m_left_leaf)), m_right_leaf(std::move(r.m_right_leaf)), m_valid_tree(r.m_valid_tree)
 {
     r.m_root_node = nullptr;
@@ -244,25 +244,25 @@ void segment_tree<KeyT, ValueT>::build_tree()
 
     // Start "inserting" all segments from the root.
 
-    data_node_map_type tagged_node_map;
+    value_to_nodes_type tagged_node_map;
 
     for (value_pos_type i = 0; i < m_segment_store.size(); ++i)
     {
         const auto& v = m_segment_store[i];
-        auto r = tagged_node_map.emplace(std::make_pair(i, node_list_type{}));
+        auto r = tagged_node_map.emplace(std::make_pair(i, node_chain_type{}));
         assert(r.second);
 
-        node_list_type& nodelist = r.first->second;
+        node_chain_type& nodelist = r.first->second;
         descend_tree_and_mark(m_root_node, i, v.start, v.end, nodelist);
     }
 
-    m_tagged_node_map.swap(tagged_node_map);
+    m_tagged_nodes_map.swap(tagged_node_map);
     m_valid_tree = true;
 }
 
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
-    st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key, node_list_type& nodelist)
+    st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key, node_chain_type& nodelist)
 {
     if (!pnode)
         return;
@@ -417,7 +417,7 @@ void segment_tree<KeyT, ValueT>::swap(segment_tree& r) noexcept
 {
     m_nonleaf_node_pool.swap(r.m_nonleaf_node_pool);
     m_segment_store.swap(r.m_segment_store);
-    m_tagged_node_map.swap(r.m_tagged_node_map);
+    m_tagged_nodes_map.swap(r.m_tagged_nodes_map);
     std::swap(m_root_node, r.m_root_node);
     m_left_leaf.swap(r.m_left_leaf);
     m_right_leaf.swap(r.m_right_leaf);
@@ -427,7 +427,7 @@ void segment_tree<KeyT, ValueT>::swap(segment_tree& r) noexcept
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::clear()
 {
-    m_tagged_node_map.clear();
+    m_tagged_nodes_map.clear();
     m_segment_store.clear();
     clear_all_nodes();
     m_valid_tree = false;
@@ -457,7 +457,7 @@ size_t segment_tree<KeyT, ValueT>::leaf_size() const
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_list_type& nodelist, value_pos_type value)
+void segment_tree<KeyT, ValueT>::remove_data_from_nodes(node_chain_type& nodelist, value_pos_type value)
 {
     for (st::detail::node_base* p : nodelist)
     {
@@ -488,13 +488,13 @@ void segment_tree<KeyT, ValueT>::remove_value_pos(size_type pos)
 {
     assert(pos < m_segment_store.size());
 
-    if (auto it = m_tagged_node_map.find(pos); it != m_tagged_node_map.end())
+    if (auto it = m_tagged_nodes_map.find(pos); it != m_tagged_nodes_map.end())
     {
         // Tagged node list found.  Remove all the tags from the tree nodes.
         remove_data_from_nodes(it->second, pos);
 
         // Remove the tags associated with this pointer from the data set.
-        m_tagged_node_map.erase(it);
+        m_tagged_nodes_map.erase(it);
     }
 
     m_segment_store[pos] = segment_type();
@@ -678,7 +678,7 @@ void segment_tree<KeyT, ValueT>::check_integrity(const integrity_check_propertie
 
     // Check the integrity of the tagged-node map.
 
-    for (const auto& [value_index, nodes] : m_tagged_node_map)
+    for (const auto& [value_index, nodes] : m_tagged_nodes_map)
     {
         for (const st::detail::node_base* this_node : nodes)
         {
