@@ -1059,7 +1059,7 @@ void st_test_aggregated_search_results()
 
     db.build_tree();
 
-    db_type::search_results_type results;
+    std::vector<test_data*> results;
     {
         key_type key = 0;
         auto res = db.search(key);

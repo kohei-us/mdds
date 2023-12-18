@@ -48,7 +48,6 @@ public:
     typedef KeyT key_type;
     typedef ValueT value_type;
     typedef std::size_t size_type;
-    typedef std::vector<value_type> search_results_type;
 
 private:
     struct segment_type
