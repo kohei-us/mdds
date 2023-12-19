@@ -262,7 +262,8 @@ void segment_tree<KeyT, ValueT>::build_tree()
 
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::descend_tree_and_mark(
-    st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key, node_chain_type& nodelist)
+    st::detail::node_base* pnode, value_pos_type value, const key_type& start_key, const key_type& end_key,
+    node_chain_type& nodelist)
 {
     if (!pnode)
         return;

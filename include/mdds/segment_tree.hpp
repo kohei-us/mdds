@@ -590,7 +590,7 @@ private:
      * record their positions as a list of node pointers.
      */
     void descend_tree_and_mark(
-        st::detail::node_base* pnode, value_pos_type value, key_type start_key, key_type end_key,
+        st::detail::node_base* pnode, value_pos_type value, const key_type& start_key, const key_type& end_key,
         node_chain_type& nodelist);
 
     void build_leaf_nodes();
