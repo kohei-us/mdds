@@ -26,34 +26,53 @@
  *
  ************************************************************************/
 
+//!code-start: header
 #include <mdds/segment_tree.hpp>
 #include <string>
 #include <iostream>
+//!code-end: header
 
-using db_type = mdds::segment_tree<long, std::string>;
+//!code-start: type
+using tree_type = mdds::segment_tree<long, std::string>;
+//!code-end: type
+
+//!code-start: search-and-print
+void search_and_print(const tree_type& tree, long pos)
+{
+    auto results = tree.search(pos);
+
+    std::cout << "--" << std::endl;
+    std::cout << "search at " << pos << std::endl;
+    std::cout << "number of results: " << results.size() << std::endl;
+
+    for (const auto& [start, end, value] : results)
+        std::cout << "range: [" << start << ":" << end << "); value: " << value << std::endl;
+}
+//!code-end: search-and-print
 
 int main() try
 {
-    db_type db;
-    std::string A("A");
-    std::string B("B");
-    std::string C("C");
+    //!code-start: insert
+    tree_type tree;
 
-    // Insert data into the tree.
-    db.insert(0,  10, A);
-    db.insert(2,  20, B);
-    db.insert(10, 15, C);
+    tree.insert(0, 10, "A");
+    tree.insert(2, 15, "B");
+    tree.insert(-2, 5, "C");
+    tree.insert(5, 22, "D");
+    tree.insert(20, 35, "E");
+    //!code-end: insert
 
-    // Don't forget to build it before calling search().
-    db.build_tree();
+    //!code-start: build
+    tree.build_tree();
+    //!code-end: build
 
-    // Run search and get the result.
-    db_type::search_results results = db.search(5);
+    //!code-start: search-5
+    search_and_print(tree, 5);
+    //!code-end: search-5
 
-    // Print the results.
-    std::cout << "results size: " << results.size() << std::endl;
-    for (const auto& result : results)
-        std::cout << "range: " << result.start << "-" << result.end << "; value: " << result.value << std::endl;
+    //!code-start: search-0
+    search_and_print(tree, 0);
+    //!code-end: search-0
 }
 catch (...)
 {
