@@ -127,9 +127,9 @@ This will print the following output:
    range: [0:10); value: A
 
 The results look just about right.  Note that it is entirely safe to call
-:cpp:func:`~mdds::segment_tree::search()` with a point that's below the minimum
+:cpp:func:`~mdds::segment_tree::search()` with points that are below the minimum
 position or above the maximum position in the tree; you will simply get empty
-results in such a case.
+results in such cases.
 
 
 API Reference
