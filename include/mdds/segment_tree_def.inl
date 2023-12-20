@@ -435,7 +435,7 @@ void segment_tree<KeyT, ValueT>::clear()
 }
 
 template<typename KeyT, typename ValueT>
-size_t segment_tree<KeyT, ValueT>::size() const
+typename segment_tree<KeyT, ValueT>::size_type segment_tree<KeyT, ValueT>::size() const
 {
     return std::count_if(
         m_segment_store.cbegin(), m_segment_store.cend(), [](const auto& v) { return v != segment_type(); });
@@ -452,7 +452,7 @@ bool segment_tree<KeyT, ValueT>::empty() const
 }
 
 template<typename KeyT, typename ValueT>
-size_t segment_tree<KeyT, ValueT>::leaf_size() const
+typename segment_tree<KeyT, ValueT>::size_type segment_tree<KeyT, ValueT>::leaf_size() const
 {
     return st::detail::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
 }

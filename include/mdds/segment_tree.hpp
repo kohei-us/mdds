@@ -547,7 +547,7 @@ public:
     /**
      * Return the number of segments currently stored in this container.
      */
-    size_t size() const;
+    size_type size() const;
 
     /**
      * Return whether or not the container stores any segments or none at all.
@@ -559,7 +559,7 @@ public:
      *
      * @return number of leaf nodes.
      */
-    size_t leaf_size() const;
+    size_type leaf_size() const;
 
     /**
      * Create a string representation of the internal state of a tree.
