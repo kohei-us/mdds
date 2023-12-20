@@ -487,7 +487,7 @@ public:
     }
 
     /**
-     * Build or re-build tree based on the current set of segments.
+     * Build or re-build a tree based on the current set of segments.
      */
     void build_tree();
 
@@ -502,13 +502,20 @@ public:
     void insert(key_type start_key, key_type end_key, value_type value);
 
     /**
-     * Search the tree and collect all segments that include a specified
-     * point.
+     * Search the tree to find all the segments that contain a specified point.
      *
-     * @param point specified point value
+     * @param point A point to search the tree with.
      *
-     * @return object containing the result of the search, which can be
-     *         accessed via iterator.
+     * @return Results object containing the segments that contain the specified
+     *         point.
+     *
+     * @note You need to have a valid tree prior to calling this method.  Call
+     *       build_tree() to build one.  To check if you have a valid tree, call
+     *       valid_tree() and see if it returns true.
+     *
+     * @note A point value can be any value allowed by the key_type.
+     *       If the point is outside of the range of the tree, empty results
+     *       will be returned.
      */
     search_results search(const key_type& point) const;
 
