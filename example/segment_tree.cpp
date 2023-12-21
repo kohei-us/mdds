@@ -1,7 +1,7 @@
 /* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*************************************************************************
  *
- * Copyright (c) 2020 Kohei Yoshida
+ * Copyright (c) 2020-2023 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -50,6 +50,41 @@ void search_and_print(const tree_type& tree, long pos)
 }
 //!code-end: search-and-print
 
+void erase_by_iterator(tree_type tree)
+{
+    //!code-start: erase-by-iterator
+    auto results = tree.search(5);
+    for (auto it = results.begin(); it != results.end(); ++it)
+    {
+        if (it->value == "A")
+        {
+            tree.erase(it);
+            break;
+        }
+    }
+    //!code-end: erase-by-iterator
+
+    //!code-start: search-5-after-erase-by-iterator
+    search_and_print(tree, 5);
+    //!code-end: search-5-after-erase-by-iterator
+}
+
+void erase_by_predicate(tree_type tree)
+{
+    //!code-start: erase-by-predicate
+    auto pred = [](const auto& v) { return v.start <= 5 && 5 < v.end; };
+
+    auto n = tree.erase_if(pred);
+
+    std::cout << "--" << std::endl;
+    std::cout << n << " segments have been removed" << std::endl;
+    //!code-end: erase-by-predicate
+
+    //!code-start: search-5-after-erase-by-predicate
+    search_and_print(tree, 5);
+    //!code-end: search-5-after-erase-by-predicate
+}
+
 int main() try
 {
     //!code-start: insert
@@ -73,6 +108,9 @@ int main() try
     //!code-start: search-0
     search_and_print(tree, 0);
     //!code-end: search-0
+
+    erase_by_iterator(tree);
+    erase_by_predicate(tree);
 }
 catch (...)
 {
