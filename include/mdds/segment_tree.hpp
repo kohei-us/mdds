@@ -531,6 +531,21 @@ public:
     /**
      * Remove all segments that satisfy a predicate.
      *
+     * The predicate must take a struct value that contains @p start, @p end,
+     * and @p value data members, and must return a bool.  The @p start and @p
+     * end members hold const references to values of the type @p key_type,
+     * whereas the @p value member holds a const reference to a value of the
+     * type @p value_type.
+     *
+     * @code{.cpp}
+     * // Given int as key_type and std::string as value_type, this predicate removes
+     * // all the segments that 1) contain 5 and 2) store a value of "A".
+     * auto pred = [](const auto& v)
+     * {
+     *     return v.start <= 5 && 5 < v.end && v.value == "A";
+     * };
+     * @endcode
+     *
      * @param pred Predicate that tests each segment.  A segment that evaluates
      *             true by the predicate gets removed.
      *
