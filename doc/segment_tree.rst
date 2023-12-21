@@ -140,6 +140,9 @@ one is to use an iterator from the search results object, and another is to
 specify a match condition predicate and remove all values that the predicate
 evaluates to true.
 
+Removing with iterator
+^^^^^^^^^^^^^^^^^^^^^^
+
 Let's first cover how to remove a value with an iterator.  Our goal here is to
 remove the segment value "A" that extends from 0 to 10.  To obtain an iterator,
 you first need to perform a search then get an iterator from the results object.
@@ -180,6 +183,14 @@ necessitates you to exit your iteration once a value has been removed using an
 iterator.  Note that the search results object itself remains valid even after
 the value removal.
 
+Even though removing a value does not invalidate the tree, if you remove a large
+enough number of values re-building it may reduce the overall size of the tree,
+as the size of the tree is dependent upon the number of unique end points of all
+the stored segments.  And smaller the tree, the better the search performance.
+
+Removing with predicate
+^^^^^^^^^^^^^^^^^^^^^^^
+
 Another way to remove values is to call :cpp:func:`~mdds::segment_tree::erase_if()`
 with a predicate that matches the value to be removed.  The following code removes
 all the segments that contains 5:
@@ -195,8 +206,8 @@ The predicate function takes a struct value of contains ``start``, ``end``, and
 references to values of the same type as the
 :cpp:type:`~mdds::segment_tree::key_type`, while the ``value`` member holds a
 const reference to a value of the same type as the
-:cpp:type:`~mdds::segment_tree::value_type`.  Running this code produces the following
-output:
+:cpp:type:`~mdds::segment_tree::value_type`.  Running this code produces the
+following output:
 
 .. code-block:: none
 
