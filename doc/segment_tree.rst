@@ -201,13 +201,9 @@ all the segments that contains 5:
    :end-before: //!code-end: erase-by-predicate
    :dedent: 4
 
-The predicate function takes a struct value of contains ``start``, ``end``, and
-``value`` as its data members.  The ``start`` and ``end`` members hold const
-references to values of the same type as the
-:cpp:type:`~mdds::segment_tree::key_type`, while the ``value`` member holds a
-const reference to a value of the same type as the
-:cpp:type:`~mdds::segment_tree::value_type`.  Running this code produces the
-following output:
+The predicate function takes three parameters that are start position, end
+position, and a value of a segment.  Running this code produces the following
+output:
 
 .. code-block:: none
 

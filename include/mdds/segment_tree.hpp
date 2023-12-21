@@ -45,9 +45,11 @@ template<typename KeyT, typename ValueT>
 class segment_tree
 {
 public:
-    typedef KeyT key_type;
-    typedef ValueT value_type;
-    typedef std::size_t size_type;
+    /** The key type must be copyable, and may be moveable. */
+    using key_type = KeyT;
+    /** The value type must be either copyable or moveable. */
+    using value_type = ValueT;
+    using size_type = std::size_t;
 
 private:
     struct segment_type
@@ -531,18 +533,16 @@ public:
     /**
      * Remove all segments that satisfy a predicate.
      *
-     * The predicate must take a struct value that contains @p start, @p end,
-     * and @p value data members, and must return a bool.  The @p start and @p
-     * end members hold const references to values of the type @p key_type,
-     * whereas the @p value member holds a const reference to a value of the
-     * type @p value_type.
+     * The predicate must take three parameters that are a start position, end
+     * position and a value of a segment in this order.  The first two
+     * parameters are of the same type as the key_type while the last parameter
+     * is of the same type as the value_type.
      *
      * @code{.cpp}
      * // Given int as key_type and std::string as value_type, this predicate removes
      * // all the segments that 1) contain 5 and 2) store a value of "A".
-     * auto pred = [](const auto& v)
-     * {
-     *     return v.start <= 5 && 5 < v.end && v.value == "A";
+     * auto pred = [](int start, int end, const std::string& value) {
+     *     return start <= 5 && 5 < end && value == "A";
      * };
      * @endcode
      *

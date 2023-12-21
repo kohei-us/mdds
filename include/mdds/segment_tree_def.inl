@@ -400,10 +400,11 @@ typename segment_tree<KeyT, ValueT>::size_type segment_tree<KeyT, ValueT>::erase
 
     for (size_type pos = 0; pos < m_segment_store.size(); ++pos)
     {
-        if (m_segment_store[pos] == segment_type())
+        const auto& seg = m_segment_store[pos];
+        if (seg == segment_type())
             continue; // skip deleted segments
 
-        if (!pred(m_segment_store[pos]))
+        if (!pred(seg.start, seg.end, seg.value))
             continue;
 
         remove_value_pos(pos);

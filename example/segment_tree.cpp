@@ -72,7 +72,10 @@ void erase_by_iterator(tree_type tree)
 void erase_by_predicate(tree_type tree)
 {
     //!code-start: erase-by-predicate
-    auto pred = [](const auto& v) { return v.start <= 5 && 5 < v.end; };
+    auto pred = [](long start, long end, const std::string& /*value*/)
+    {
+        return start <= 5 && 5 < end;
+    };
 
     auto n = tree.erase_if(pred);
 

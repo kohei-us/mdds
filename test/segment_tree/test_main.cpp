@@ -773,9 +773,9 @@ void st_test_equality()
         assert(db1 != db2);
         db1.insert(5, 12, &C);
         assert(db1 != db2);
-        auto n_removed = db1.erase_if([&C](const auto& v) { return v.value == &C; });
+        auto n_removed = db1.erase_if([&C](key_type, key_type, const auto& value) { return value == &C; });
         assert(n_removed == 1);
-        n_removed = db2.erase_if([&B](const auto& v) { return v.value == &B; });
+        n_removed = db2.erase_if([&B](key_type, key_type, const auto& value) { return value == &B; });
         assert(n_removed == 1);
         assert(db1 == db2);
         db1.insert(4, 20, &D);
@@ -804,7 +804,7 @@ void st_test_equality()
         assert(!db1.empty());
         assert(db2.empty());
         assert(db1 != db2);
-        db1.erase_if([](const auto& v) { return v.start == 0; });
+        db1.erase_if([](key_type start, key_type, const auto&) { return start == 0; });
         assert(db1 == db2);
         assert(db1.empty());
         assert(db2.empty());
@@ -873,7 +873,8 @@ void st_test_duplicate_insertion()
     db.insert(2, 30, &A);
     db.insert(0, 10, &B);
     assert(db.size() == 4);
-    auto n_removed = db.erase_if([&A](const auto& v) { return v.start == 0 && v.end == 10 && v.value == &A; });
+    auto n_removed = db.erase_if(
+        [&A](key_type start, key_type end, const auto& value) { return start == 0 && end == 10 && value == &A; });
     assert(n_removed == 2);
     assert(db.size() == 2);
     db.insert(2, 30, &A);
@@ -1010,7 +1011,7 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 500; ++i)
         {
             test_data* p = data_store[i].get();
-            db_copy.erase_if([p](const auto& v) { return v.value == p; });
+            db_copy.erase_if([p](key_type, key_type, const auto& value) { return value == p; });
         }
     }
     assert(db.size() == data_count);
@@ -1021,7 +1022,7 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 500; ++i)
         {
             test_data* p = data_store[data_store.size() - i - 1].get();
-            db_copy.erase_if([p](const auto& v) { return v.value == p; });
+            db_copy.erase_if([p](key_type, key_type, const auto& value) { return value == p; });
         }
     }
     assert(db.size() == data_count);
