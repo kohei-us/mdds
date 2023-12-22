@@ -642,7 +642,20 @@ void segment_tree<KeyT, ValueT>::remove_data_from_chain(value_chain_type& chain,
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::remove_value_pos(size_type pos)
 {
-    assert(pos < m_segment_store.size());
+#ifdef MDDS_SEGMENT_TREE_DEBUG
+    if (pos >= m_segment_store.size())
+    {
+        std::ostringstream os;
+        os << "specified segment position is out-of-bound: (pos=" << pos
+           << "; segment-store-count=" << m_segment_store.size() << ")";
+        throw std::runtime_error(os.str());
+    }
+#endif
+
+    m_segment_store[pos] = segment_type();
+
+    if (!m_valid_tree)
+        return;
 
     if (auto it = m_tagged_nodes_map.find(pos); it != m_tagged_nodes_map.end())
     {
@@ -652,8 +665,6 @@ void segment_tree<KeyT, ValueT>::remove_value_pos(size_type pos)
         // Remove the tags associated with this pointer from the data set.
         m_tagged_nodes_map.erase(it);
     }
-
-    m_segment_store[pos] = segment_type();
 }
 
 template<typename KeyT, typename ValueT>

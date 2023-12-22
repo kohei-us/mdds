@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * Copyright (c) 2010, 2011 Kohei Yoshida
+ * Copyright (c) 2010-2023 Kohei Yoshida
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,6 +26,7 @@
  ************************************************************************/
 
 #include "test_global.hpp" // This must be the first header to be included.
+#define MDDS_SEGMENT_TREE_DEBUG 1
 #include "mdds/segment_tree.hpp"
 
 #include <cstdlib>
@@ -1334,6 +1335,40 @@ void st_test_non_pointer_data()
     assert(results.begin()->value == 10);
 }
 
+void st_test_erase_on_invalid_tree()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using db_type = segment_tree<int, std::string>;
+
+    db_type db;
+    db.insert(0, 5, "A");
+    db.insert(-10, 2, "B");
+    db.insert(2, 10, "C");
+    db.build_tree();
+    assert(db.valid_tree());
+
+    {
+        // It should contains the "C" segment.
+        auto results = db.search(5);
+        auto it = std::find_if(results.begin(), results.end(), [](const auto& v) { return v.value == "C"; });
+        assert(it != results.end());
+    }
+
+    db.insert(3, 15, "D");
+    assert(!db.valid_tree());
+    // Remove a segment while the tree is invalid.
+    db.erase_if([](int, int, const auto& v) { return v == "C"; });
+    db.build_tree();
+
+    {
+        // It should no longer contain the "C" segment.
+        auto results = db.search(5);
+        auto it = std::find_if(results.begin(), results.end(), [](const auto& v) { return v.value == "C"; });
+        assert(it == results.end());
+    }
+}
+
 int main(int argc, char** argv)
 {
     try
@@ -1359,6 +1394,7 @@ int main(int argc, char** argv)
             st_test_search_iterator_result_check();
             st_test_empty_result_set();
             st_test_non_pointer_data();
+            st_test_erase_on_invalid_tree();
         }
 
         if (opt.test_perf)
