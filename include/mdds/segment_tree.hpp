@@ -41,6 +41,25 @@
 
 namespace mdds {
 
+/**
+ * Segment tree is a data structure designed for storing one-dimensional
+ * intervals or segments, either overlapping or non-overlapping.
+ * It is useful for detecting all the segments that contain a specific point.
+ *
+ * Each segment has start and end positions where the start position is
+ * inclusive while the end position is not. This segment tree implementation
+ * allows associating a value with each segment so that you can use it as an
+ * associative container.
+ *
+ * @tparam KeyT Key type.  The key type must be copyable.  If it's moveable
+ *         then it gets moved instead of copied where possible.  Additionally,
+ *         the key type must support the @p <, @p <= and @p == operators.
+ *         To use to_string(), the key type must support the ostream operator.
+ * @tparam ValueT Value type.  The value type does not need to be copyable but
+ *         must be at least moveable.  Additionally, the value type must
+ *         support the @p == operator.  To use to_string(), the value type
+ *         must support the ostream operator.
+ */
 template<typename KeyT, typename ValueT>
 class segment_tree
 {
