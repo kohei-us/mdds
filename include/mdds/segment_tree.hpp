@@ -212,23 +212,9 @@ private:
         using reference = value_type&;
         using difference_type = std::ptrdiff_t;
 
-        const_iterator_base()
-        {}
-
-        const_iterator_base(const const_iterator_base& r)
-            : m_segment_store(r.m_segment_store), mp_res_chains(r.mp_res_chains), m_cur_chain(r.m_cur_chain),
-              m_cur_pos_in_chain(r.m_cur_pos_in_chain), m_end_pos(r.m_end_pos)
-        {}
-
-        const_iterator_base& operator=(const const_iterator_base& r)
-        {
-            m_segment_store = r.m_segment_store;
-            mp_res_chains = r.mp_res_chains;
-            m_cur_chain = r.m_cur_chain;
-            m_cur_pos_in_chain = r.m_cur_pos_in_chain;
-            m_end_pos = r.m_end_pos;
-            return *this;
-        }
+        const_iterator_base() = default;
+        const_iterator_base(const const_iterator_base& r) = default;
+        const_iterator_base& operator=(const const_iterator_base& r) = default;
 
         value_type* operator++()
         {
