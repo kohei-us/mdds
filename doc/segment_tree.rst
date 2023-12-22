@@ -9,9 +9,10 @@ Overview
 `Segment tree <https://en.wikipedia.org/wiki/Segment_tree>`_ is a data structure
 designed for storing one-dimensional intervals or segments, either overlapping
 or non-overlapping.  It is useful for detecting all the segments that contain a
-specific point.  Each segment has start and end points where the start point is
-inclusive and the end point is not.  The version of segment tree implemented in
-mdds allows associating a value with each segment.
+specific point.  Each segment has start and end positions where the start
+position is inclusive while the end position is not.  The version of segment
+tree implemented in mdds allows associating a value with each segment so that
+you can use it as an associative container.
 
 Quickstart
 ----------
@@ -25,11 +26,11 @@ some headers:
    :start-after: //!code-start: header
    :end-before: //!code-end: header
 
-The ``mdds/segment_tree.hpp`` header defines the :cpp:class:`mdds::segment_tree`
-template class, and we'll use ``std::string`` as its value type.  We also need
-to include the ``iostream`` header so that we can print some stuff out.  The
-next step then is to define a type alias for the concrete type instance of
-:cpp:class:`~mdds::segment_tree`:
+The ``<mdds/segment_tree.hpp>`` header defines the
+:cpp:class:`mdds::segment_tree` template class, and we need to include the
+``<string>`` so that we can use ``std::string`` as its value type.  We also need
+the ``<iostream>`` header to write some outputs.  The next step is to define a
+type alias for the concrete type instance of :cpp:class:`~mdds::segment_tree`:
 
 .. literalinclude:: ../example/segment_tree.cpp
    :language: C++
@@ -37,7 +38,7 @@ next step then is to define a type alias for the concrete type instance of
    :end-before: //!code-end: type
 
 Here, we are using ``long`` as the key type and ``std::string`` as the value type.
-Let's create an instance of this and insert some values:
+Let's create an instance of this type and insert some segments with values:
 
 .. literalinclude:: ../example/segment_tree.cpp
    :language: C++
@@ -52,9 +53,9 @@ into it using the :cpp:func:`~mdds::segment_tree::insert()` method, which takes:
 * end position of the segment, and
 * the value associated with the segment
 
-as its arguments.  Note that, as mentioned earlier, the start position of a
-segment is inclusive but the end position isn't.  Once all the segment data have
-been inserted, the next step is to build the tree by simply calling the
+as its arguments.  As mentioned earlier, the start position of a segment is
+inclusive but the end position isn't.  Once all the segment data have been
+inserted, the next step is to build the tree by simply calling the
 :cpp:func:`~mdds::segment_tree::build_tree()` method:
 
 .. literalinclude:: ../example/segment_tree.cpp
@@ -63,9 +64,9 @@ been inserted, the next step is to build the tree by simply calling the
    :end-before: //!code-end: build
    :dedent: 4
 
-Hopefully this needs no explanation.  Building the tree is required before you
-can perform any queries.  Now that the tree is built, let's run some queries.
-But first we are going to define the following function:
+Building the tree is required before you can perform any queries.  Now that the
+tree is built, let's run some queries.  But first we are going to define the
+following helper function:
 
 .. literalinclude:: ../example/segment_tree.cpp
    :language: C++
@@ -74,17 +75,19 @@ But first we are going to define the following function:
 
 This helper function takes the segment tree instance and a search point,
 performs a search by calling :cpp:func:`~mdds::segment_tree::search()`, and
-prints its results.  The return value from
+iterates through and prints its results.  The return value from
 :cpp:func:`~mdds::segment_tree::search()` is of type
 :cpp:class:`~mdds::segment_tree::search_results`, which provides the
 :cpp:func:`~mdds::segment_tree::search_results::size()` method to quickly find
 the total number of the results.  It also allows you to iterate through the
 results through its :cpp:func:`~mdds::segment_tree::search_results::begin()`
-:cpp:func:`~mdds::segment_tree::search_results::end()` methods, or simply by plugging
-it into a `range-based for loop <https://en.cppreference.com/w/cpp/language/range-for>`_
-as you see in this function.
+:cpp:func:`~mdds::segment_tree::search_results::end()` methods, or simply by
+plugging it into a `range-based for loop
+<https://en.cppreference.com/w/cpp/language/range-for>`_ as you see in this
+function.
 
-With this help function in place, let's find all the segments that contain 5 by calling:
+With this help function in place, let's find all the segments that contain 5 by
+calling:
 
 .. literalinclude:: ../example/segment_tree.cpp
    :language: C++
@@ -103,12 +106,14 @@ which will print the following output:
    range: [0:10); value: A
    range: [5:22); value: D
 
-It's worth noting that the results here don't include the "C" segment, which
-extends from -2 to 5, because the end point is not inclusive.  On the other
-hand, the results *do* include the "D" segment because the start point *is*
-inclusive.
+It's worth pointing out that the results here don't include the "C" segment,
+which extends from -2 to 5, because the end point is not inclusive.  Given a
+search point of ``x``, For a segment to be included in the results, it must
+satisfy ``start <= x < end``.  On the other hand, the results *do* include the
+"D" segment because the start point *is* inclusive.
 
-Let's do another search, and this time let's find all the segments that contain 0:
+Let's do another search, and this time let's find all the segments that contain
+0:
 
 .. literalinclude:: ../example/segment_tree.cpp
    :language: C++
@@ -126,7 +131,7 @@ This will print the following output:
    range: [-2:5); value: C
    range: [0:10); value: A
 
-The results look just about right.  Note that it is entirely safe to call
+The results look just about right.  As an aside, it is entirely safe to call
 :cpp:func:`~mdds::segment_tree::search()` with points that are below the minimum
 position or above the maximum position in the tree; you will simply get empty
 results in such cases.
