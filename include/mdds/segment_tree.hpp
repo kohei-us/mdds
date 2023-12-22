@@ -147,36 +147,11 @@ private:
             : m_segment_store(r.m_segment_store), mp_res_chains(r.mp_res_chains)
         {}
 
-        bool empty() const
-        {
-            if (!mp_res_chains)
-                return true;
+        bool empty() const;
 
-            // mp_res_chains only contains non-empty chain, that is, if it's not
-            // empty, it does contain one or more results.
-            return mp_res_chains->empty();
-        }
+        size_type size() const;
 
-        size_type size() const
-        {
-            size_type combined = 0;
-            if (!mp_res_chains)
-                return combined;
-
-            for (const value_chain_type* p : *mp_res_chains)
-                combined += p->size();
-            return combined;
-        }
-
-        void push_back_chain(value_chain_type* chain)
-        {
-            if (!chain || chain->empty())
-                return;
-
-            if (!mp_res_chains)
-                mp_res_chains.reset(new res_chains_type);
-            mp_res_chains->push_back(chain);
-        }
+        void push_back_chain(value_chain_type* chain);
 
         const segment_store_type* get_segment_store() const
         {
@@ -216,82 +191,11 @@ private:
         const_iterator_base(const const_iterator_base& r) = default;
         const_iterator_base& operator=(const const_iterator_base& r) = default;
 
-        value_type* operator++()
-        {
-            // We don't check for end position flag for performance reasons.
-            // The caller is responsible for making sure not to increment past
-            // end position.
+        value_type* operator++();
+        value_type* operator--();
 
-            // When reaching the end position, the internal iterators still
-            // need to be pointing at the last item before the end position.
-            // This is why we need to make copies of the iterators, and copy
-            // them back once done.
-
-            auto cur_pos_in_chain = m_cur_pos_in_chain;
-
-            if (++cur_pos_in_chain == (*m_cur_chain)->end())
-            {
-                // End of current chain.  Inspect the next chain if exists.
-                auto cur_chain = m_cur_chain;
-                ++cur_chain;
-                if (cur_chain == mp_res_chains->end())
-                {
-                    m_end_pos = true;
-                    return nullptr;
-                }
-                m_cur_chain = cur_chain;
-                m_cur_pos_in_chain = (*m_cur_chain)->begin();
-            }
-            else
-                ++m_cur_pos_in_chain;
-
-            return operator->();
-        }
-
-        value_type* operator--()
-        {
-            if (!mp_res_chains)
-                return nullptr;
-
-            if (m_end_pos)
-            {
-                m_end_pos = false;
-                return &cur_value();
-            }
-
-            if (m_cur_pos_in_chain == (*m_cur_chain)->begin())
-            {
-                if (m_cur_chain == mp_res_chains->begin())
-                {
-                    // Already at the first data chain.  Don't move the iterator position.
-                    return nullptr;
-                }
-                --m_cur_chain;
-                m_cur_pos_in_chain = (*m_cur_chain)->end();
-            }
-            --m_cur_pos_in_chain;
-            return operator->();
-        }
-
-        bool operator==(const const_iterator_base& r) const
-        {
-            if (mp_res_chains.get())
-            {
-                // non-empty result set.
-                return mp_res_chains.get() == r.mp_res_chains.get() && m_cur_chain == r.m_cur_chain &&
-                       m_cur_pos_in_chain == r.m_cur_pos_in_chain && m_end_pos == r.m_end_pos;
-            }
-
-            // empty result set.
-            if (r.mp_res_chains.get())
-                return false;
-            return m_end_pos == r.m_end_pos;
-        }
-
-        bool operator!=(const const_iterator_base& r) const
-        {
-            return !operator==(r);
-        }
+        bool operator==(const const_iterator_base& r) const;
+        bool operator!=(const const_iterator_base& r) const;
 
         value_type& operator*()
         {
@@ -304,34 +208,8 @@ private:
         }
 
     protected:
-        void move_to_front()
-        {
-            if (!mp_res_chains)
-            {
-                // Empty data set.
-                m_end_pos = true;
-                return;
-            }
-
-            // We assume that there is at least one chain list, and no
-            // empty chain list exists.  So, skip the check.
-            m_cur_chain = mp_res_chains->begin();
-            m_cur_pos_in_chain = (*m_cur_chain)->begin();
-            m_end_pos = false;
-        }
-
-        void move_to_end()
-        {
-            m_end_pos = true;
-            if (!mp_res_chains)
-                // Empty data set.
-                return;
-
-            m_cur_chain = mp_res_chains->end();
-            --m_cur_chain;
-            m_cur_pos_in_chain = (*m_cur_chain)->end();
-            --m_cur_pos_in_chain;
-        }
+        void move_to_front();
+        void move_to_end();
 
     private:
         value_type& cur_value()
@@ -458,10 +336,7 @@ public:
      */
     bool operator==(const segment_tree& r) const;
 
-    bool operator!=(const segment_tree& r) const
-    {
-        return !operator==(r);
-    }
+    bool operator!=(const segment_tree& r) const;
 
     /**
      * Check whether or not the internal tree is in a valid state.  The tree
