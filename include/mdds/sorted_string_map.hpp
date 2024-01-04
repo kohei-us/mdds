@@ -105,8 +105,8 @@ public:
 
 private:
     const entry* m_entries;
-    value_type m_null_value;
-    size_type m_entry_size;
+    const value_type m_null_value;
+    const size_type m_entry_size;
     const entry* m_entry_end;
 };
 
