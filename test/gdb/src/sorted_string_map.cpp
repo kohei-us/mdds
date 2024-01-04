@@ -15,7 +15,6 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include <mdds/global.hpp>
 #include <mdds/sorted_string_map.hpp>
 
 void stop();
@@ -27,13 +26,12 @@ void test_sorted_string_map()
     sorted_string_map<int> empty_ssmap(nullptr, 0, 0);
 
     sorted_string_map<int>::entry entries[] = {
-        {MDDS_ASCII("aaaa"), 1},
-        {MDDS_ASCII("bbb"), 2},
-        {MDDS_ASCII("cc"), 3},
-        {MDDS_ASCII("d"), 4},
+        {"aaaa", 1},
+        {"bbb", 2},
+        {"cc", 3},
+        {"d", 4},
     };
-    size_t entry_count = sizeof(entries) / sizeof(entries[0]);
-    sorted_string_map<int> ssmap_int(entries, entry_count, 0);
+    sorted_string_map<int> ssmap_int(entries, std::size(entries), 0);
 
     stop();
 }

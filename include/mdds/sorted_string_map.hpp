@@ -62,7 +62,7 @@ struct string_view_map_entry
  * arbitrary values, provided that the keys are known at compile time and
  * are sorted in ascending order.
  */
-template<typename ValueT, template<typename, typename> class EntryT = chars_map_entry>
+template<typename ValueT, template<typename, typename> class EntryT = string_view_map_entry>
 class sorted_string_map
 {
 public:

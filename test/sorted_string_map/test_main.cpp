@@ -51,16 +51,16 @@ void ssmap_test_basic()
     typedef mdds::sorted_string_map<name_type> map_type;
 
     map_type::entry entries[] = {
-        {MDDS_ASCII("andy"), name_andy},   {MDDS_ASCII("andy1"), name_andy},      {MDDS_ASCII("andy13"), name_andy},
-        {MDDS_ASCII("bruce"), name_bruce}, {MDDS_ASCII("charlie"), name_charlie}, {MDDS_ASCII("david"), name_david},
+        {"andy", name_andy},   {"andy1", name_andy},      {"andy13", name_andy},
+        {"bruce", name_bruce}, {"charlie", name_charlie}, {"david", name_david},
     };
 
     size_t entry_count = sizeof(entries) / sizeof(entries[0]);
     map_type names(entries, entry_count, name_none);
     for (size_t i = 0; i < entry_count; ++i)
     {
-        cout << "* key = " << entries[i].key << endl;
-        bool res = names.find(entries[i].key, strlen(entries[i].key)) == entries[i].value;
+        std::cout << "* key = " << entries[i].key << std::endl;
+        bool res = names.find(entries[i].key) == entries[i].value;
         assert(res);
     }
 
@@ -76,18 +76,18 @@ void ssmap_test_mixed_case_null()
     typedef mdds::sorted_string_map<int> map_type;
 
     map_type::entry entries[] = {
-        {MDDS_ASCII("NULL"), 1},
-        {MDDS_ASCII("Null"), 2},
-        {MDDS_ASCII("null"), 3},
-        {MDDS_ASCII("~"), 4},
+        {"NULL", 1},
+        {"Null", 2},
+        {"null", 3},
+        {"~", 4},
     };
 
     size_t entry_count = sizeof(entries) / sizeof(entries[0]);
     map_type names(entries, entry_count, -1);
     for (size_t i = 0; i < entry_count; ++i)
     {
-        cout << "* key = " << entries[i].key << endl;
-        bool res = names.find(entries[i].key, strlen(entries[i].key)) == entries[i].value;
+        std::cout << "* key = " << entries[i].key << std::endl;
+        bool res = names.find(entries[i].key) == entries[i].value;
         assert(res);
     }
 
@@ -98,7 +98,7 @@ void ssmap_test_mixed_case_null()
     assert(names.find(MDDS_ASCII("hell")) == -1);
 }
 
-void ssmap_test_string_view_entry()
+void ssmap_test_find_string_view()
 {
     MDDS_TEST_FUNC_SCOPE;
 
@@ -142,33 +142,87 @@ void ssmap_test_perf()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    std::ifstream in("misc/sorted_string_data.dat");
-    typedef mdds::sorted_string_map<int> map_type;
-    std::vector<map_type::entry> data;
-    std::string line;
-    int i = 0;
-    while (std::getline(in, line))
+    std::string content;
     {
-        data.push_back(map_type::entry());
-        data.back().key_length = line.size();
-        data.back().value = i;
-        char* str = new char[line.size()];
-        data.back().key = str;
-        strcpy(str, &line[0]);
-        ++i;
+        // load the entire file content in memory
+        std::ifstream in("../../misc/sorted_string_data.dat");
+        assert(in);
+
+        std::ostringstream os;
+        os << in.rdbuf();
+        content = os.str();
     }
 
-    assert(data.size() > 1000);
-    {
-        stack_printer __stack_printer__("::ssmap_test_perf");
-        map_type names(data.data(), data.size(), -1);
+    using map_type = mdds::sorted_string_map<int>;
+    std::vector<map_type::entry> entries;
 
-        assert(names.find(MDDS_ASCII("test")) == -1);
+    {
+        // populate entries from the data file
+        int i = 0;
+        const char* p0 = nullptr;
+        const char* p = content.data();
+        const char* p_end = p + content.size();
+        for (; p != p_end; ++p)
+        {
+            if (!p0)
+                p0 = p;
+
+            if (*p == '\n')
+            {
+                std::size_t n = std::distance(p0, p);
+                entries.push_back(map_type::entry{});
+                entries.back().key = std::string_view{p0, n};
+                entries.back().value = i++;
+                p0 = nullptr;
+            }
+        }
     }
 
-    for (auto it = data.begin(), itEnd = data.end(); it != itEnd; ++it)
+    std::cout << "entry count: " << entries.size() << std::endl;
+
+    map_type names(entries.data(), entries.size(), -1);
+
+    constexpr int repeat = 1000;
     {
-        delete[] it->key;
+        // worst case performance is when the key is not found
+        stack_printer sp_find("perf-find-not-found");
+
+        for (int i = 0; i < repeat; ++i)
+        {
+            auto v = names.find("test");
+            assert(v == -1);
+        }
+    }
+
+    {
+        stack_printer sp_find("perf-find-bottom");
+
+        for (int i = 0; i < repeat; ++i)
+        {
+            auto v = names.find(entries.back().key);
+            assert(v == entries.back().value);
+        }
+    }
+
+    {
+        stack_printer sp_find("perf-find-middle");
+        const std::size_t pos = entries.size() / 2;
+
+        for (int i = 0; i < repeat; ++i)
+        {
+            auto v = names.find(entries[pos].key);
+            assert(v == entries[pos].value);
+        }
+    }
+
+    {
+        stack_printer sp_find("perf-find-top");
+
+        for (int i = 0; i < repeat; ++i)
+        {
+            auto v = names.find(entries.front().key);
+            assert(v == entries.front().value);
+        }
     }
 }
 
@@ -182,7 +236,7 @@ int main(int argc, char** argv)
     {
         ssmap_test_basic();
         ssmap_test_mixed_case_null();
-        ssmap_test_string_view_entry();
+        ssmap_test_find_string_view();
     }
 
     if (opt.test_perf)
