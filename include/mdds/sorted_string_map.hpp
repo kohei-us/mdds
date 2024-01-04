@@ -33,12 +33,16 @@
 
 namespace mdds {
 
+namespace ssmap { namespace detail {
+
 template<typename ValueT>
 struct string_view_map_entry
 {
     std::string_view key;
     ValueT value;
 };
+
+}} // namespace ssmap::detail
 
 /**
  * sorted_string_map provides an efficient way to map string keys to
@@ -56,7 +60,7 @@ public:
      * Single key-value entry type.  Caller must provide at compile time a
      * static array of these entries.
      */
-    using entry = string_view_map_entry<ValueT>;
+    using entry = ssmap::detail::string_view_map_entry<ValueT>;
 
     /**
      * Constructor.

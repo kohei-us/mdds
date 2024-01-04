@@ -33,7 +33,7 @@
 
 namespace mdds {
 
-namespace detail {
+namespace ssmap { namespace detail {
 
 template<typename ValueT, typename SizeT>
 struct entry_funcs
@@ -74,14 +74,14 @@ struct entry_funcs
     }
 };
 
-} // namespace detail
+}} // namespace ssmap::detail
 
 template<typename ValueT>
 sorted_string_map<ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value)
     : m_entries(entries), m_null_value(null_value), m_entry_size(entry_size), m_entry_end(m_entries + m_entry_size)
 {
 #ifdef MDDS_SORTED_STRING_MAP_DEBUG
-    using entry_funcs = detail::entry_funcs<value_type, size_type>;
+    using entry_funcs = ssmap::detail::entry_funcs<value_type, size_type>;
 
     if (!std::is_sorted(m_entries, m_entry_end, entry_funcs::compare))
         throw invalid_arg_error("mapped entries are not sorted");
@@ -94,7 +94,7 @@ typename sorted_string_map<ValueT>::value_type sorted_string_map<ValueT>::find(c
     if (m_entry_size == 0)
         return m_null_value;
 
-    using entry_funcs = detail::entry_funcs<value_type, size_type>;
+    using entry_funcs = ssmap::detail::entry_funcs<value_type, size_type>;
     entry ent = entry_funcs::to_entry(input, len);
 
     const entry* val = std::lower_bound(m_entries, m_entry_end, ent, entry_funcs::compare);
