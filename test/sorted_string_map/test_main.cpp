@@ -46,7 +46,7 @@ enum name_type
 
 void ssmap_test_basic()
 {
-    stack_printer __sp__(__func__);
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef mdds::sorted_string_map<name_type> map_type;
 
@@ -71,7 +71,7 @@ void ssmap_test_basic()
 
 void ssmap_test_mixed_case_null()
 {
-    stack_printer __sp__(__func__);
+    MDDS_TEST_FUNC_SCOPE;
 
     typedef mdds::sorted_string_map<int> map_type;
 
@@ -100,7 +100,7 @@ void ssmap_test_mixed_case_null()
 
 void ssmap_test_string_view_entry()
 {
-    stack_printer __sp__(__func__);
+    MDDS_TEST_FUNC_SCOPE;
 
     constexpr int cv_unknown = -1;
     constexpr int cv_days = 0;
@@ -140,7 +140,7 @@ void ssmap_test_string_view_entry()
 
 void ssmap_test_perf()
 {
-    stack_printer __sp__(__func__);
+    MDDS_TEST_FUNC_SCOPE;
 
     std::ifstream in("misc/sorted_string_data.dat");
     typedef mdds::sorted_string_map<int> map_type;
