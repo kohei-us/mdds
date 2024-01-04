@@ -33,24 +33,7 @@
 
 namespace mdds {
 
-/**
- * Single key-value entry.  Caller must provide at compile time a static array
- * of these entries.
- *
- * @param key memory address of the first character of the char buffer that
- *            stores the key.
- * @param key_length length of the char buffer.
- * @param value value associated with the key.
- */
-template<typename ValueT, typename SizeT>
-struct chars_map_entry
-{
-    const char* key;
-    SizeT key_length;
-    ValueT value;
-};
-
-template<typename ValueT, typename SizeT>
+template<typename ValueT>
 struct string_view_map_entry
 {
     std::string_view key;
@@ -62,13 +45,18 @@ struct string_view_map_entry
  * arbitrary values, provided that the keys are known at compile time and
  * are sorted in ascending order.
  */
-template<typename ValueT, template<typename, typename> class EntryT = string_view_map_entry>
+template<typename ValueT>
 class sorted_string_map
 {
 public:
     using value_type = ValueT;
-    using size_type = std::size_t;
-    using entry = EntryT<ValueT, size_type>;
+    using size_type = typename std::string_view::size_type;
+
+    /**
+     * Single key-value entry type.  Caller must provide at compile time a
+     * static array of these entries.
+     */
+    using entry = string_view_map_entry<ValueT>;
 
     /**
      * Constructor.

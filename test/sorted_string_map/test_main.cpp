@@ -112,7 +112,7 @@ void ssmap_test_find_string_view()
     constexpr int cv_seconds = 6;
     constexpr int cv_years = 7;
 
-    using map_type = mdds::sorted_string_map<int, mdds::string_view_map_entry>;
+    using map_type = mdds::sorted_string_map<int>;
 
     constexpr map_type::entry entries[] = {
         {"days", cv_days},         {"hours", cv_hours}, {"minutes", cv_minutes}, {"months", cv_months},

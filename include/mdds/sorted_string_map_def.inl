@@ -35,52 +35,10 @@ namespace mdds {
 
 namespace detail {
 
-template<typename ValueT, typename SizeT, template<typename, typename> class EntryT>
-struct entry_funcs;
-
 template<typename ValueT, typename SizeT>
-struct entry_funcs<ValueT, SizeT, chars_map_entry>
+struct entry_funcs
 {
-    using entry = chars_map_entry<ValueT, SizeT>;
-    using size_type = SizeT;
-
-    static bool compare(const entry& entry1, const entry& entry2)
-    {
-        if (entry1.key_length != entry2.key_length)
-        {
-            std::size_t key_length = std::min(entry1.key_length, entry2.key_length);
-            int ret = std::memcmp(entry1.key, entry2.key, key_length);
-            if (ret == 0)
-                return entry1.key_length < entry2.key_length;
-
-            return ret < 0;
-        }
-        else
-        {
-            return std::memcmp(entry1.key, entry2.key, entry1.key_length) < 0;
-        }
-    }
-
-    static entry to_entry(const char* input, std::size_t len)
-    {
-        return entry{input, len, ValueT{}};
-    }
-
-    static const char* get_key_ptr(const entry& e)
-    {
-        return e.key;
-    }
-
-    static size_type get_key_size(const entry& e)
-    {
-        return e.key_length;
-    }
-};
-
-template<typename ValueT, typename SizeT>
-struct entry_funcs<ValueT, SizeT, string_view_map_entry>
-{
-    using entry = string_view_map_entry<ValueT, SizeT>;
+    using entry = string_view_map_entry<ValueT>;
     using size_type = SizeT;
 
     static bool compare(const entry& entry1, const entry& entry2)
@@ -118,26 +76,25 @@ struct entry_funcs<ValueT, SizeT, string_view_map_entry>
 
 } // namespace detail
 
-template<typename ValueT, template<typename, typename> class EntryT>
-sorted_string_map<ValueT, EntryT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value)
+template<typename ValueT>
+sorted_string_map<ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value)
     : m_entries(entries), m_null_value(null_value), m_entry_size(entry_size), m_entry_end(m_entries + m_entry_size)
 {
 #ifdef MDDS_SORTED_STRING_MAP_DEBUG
-    using entry_funcs = detail::entry_funcs<value_type, size_type, EntryT>;
+    using entry_funcs = detail::entry_funcs<value_type, size_type>;
 
     if (!std::is_sorted(m_entries, m_entry_end, entry_funcs::compare))
         throw invalid_arg_error("mapped entries are not sorted");
 #endif
 }
 
-template<typename ValueT, template<typename, typename> class EntryT>
-typename sorted_string_map<ValueT, EntryT>::value_type sorted_string_map<ValueT, EntryT>::find(
-    const char* input, size_type len) const
+template<typename ValueT>
+typename sorted_string_map<ValueT>::value_type sorted_string_map<ValueT>::find(const char* input, size_type len) const
 {
     if (m_entry_size == 0)
         return m_null_value;
 
-    using entry_funcs = detail::entry_funcs<value_type, size_type, EntryT>;
+    using entry_funcs = detail::entry_funcs<value_type, size_type>;
     entry ent = entry_funcs::to_entry(input, len);
 
     const entry* val = std::lower_bound(m_entries, m_entry_end, ent, entry_funcs::compare);
@@ -149,15 +106,14 @@ typename sorted_string_map<ValueT, EntryT>::value_type sorted_string_map<ValueT,
     return val->value;
 }
 
-template<typename ValueT, template<typename, typename> class EntryT>
-typename sorted_string_map<ValueT, EntryT>::value_type sorted_string_map<ValueT, EntryT>::find(
-    std::string_view input) const
+template<typename ValueT>
+typename sorted_string_map<ValueT>::value_type sorted_string_map<ValueT>::find(std::string_view input) const
 {
     return find(input.data(), input.size());
 }
 
-template<typename ValueT, template<typename, typename> class EntryT>
-typename sorted_string_map<ValueT, EntryT>::size_type sorted_string_map<ValueT, EntryT>::size() const
+template<typename ValueT>
+typename sorted_string_map<ValueT>::size_type sorted_string_map<ValueT>::size() const
 {
     return m_entry_size;
 }
