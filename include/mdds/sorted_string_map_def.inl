@@ -33,7 +33,8 @@
 
 namespace mdds {
 
-namespace ssmap { namespace detail {
+namespace ssmap {
+namespace detail {
 
 template<typename ValueT>
 struct compare
@@ -54,12 +55,31 @@ struct compare
     }
 };
 
-}} // namespace ssmap::detail
+} // namespace detail
 
 template<typename ValueT>
-sorted_string_map<ValueT>::sorted_string_map(const entry_type* entries, size_type entry_size, value_type null_value)
+linear_key_finder<ValueT>::linear_key_finder(
+    const entry_type* entries, const entry_type* entries_end, const value_type& null_value)
+    : m_entries(entries), m_entries_end(entries_end), m_null_value(null_value)
+{}
+
+template<typename ValueT>
+std::string_view linear_key_finder<ValueT>::operator()(const value_type& v) const
+{
+    auto it = std::find_if(m_entries, m_entries_end, [&v](const auto& e) { return e.value == v; });
+    if (it == m_entries_end)
+        return {};
+
+    return it->key;
+}
+
+} // namespace ssmap
+
+template<typename ValueT, template<typename> class FuncFindKeyT>
+sorted_string_map<ValueT, FuncFindKeyT>::sorted_string_map(
+    const entry_type* entries, size_type entry_size, value_type null_value)
     : m_entries(entries), m_null_value(std::move(null_value)), m_entry_size(entry_size),
-      m_entries_end(m_entries + m_entry_size)
+      m_entries_end(m_entries + m_entry_size), m_func_find_key(m_entries, m_entries_end, m_null_value)
 {
 #ifdef MDDS_SORTED_STRING_MAP_DEBUG
     if (!std::is_sorted(m_entries, m_entries_end, ssmap::detail::compare<value_type>{}))
@@ -67,8 +87,8 @@ sorted_string_map<ValueT>::sorted_string_map(const entry_type* entries, size_typ
 #endif
 }
 
-template<typename ValueT>
-const typename sorted_string_map<ValueT>::value_type& sorted_string_map<ValueT>::find(
+template<typename ValueT, template<typename> class FuncFindKeyT>
+const typename sorted_string_map<ValueT, FuncFindKeyT>::value_type& sorted_string_map<ValueT, FuncFindKeyT>::find(
     const char* input, size_type len) const
 {
     if (m_entry_size == 0)
@@ -83,24 +103,21 @@ const typename sorted_string_map<ValueT>::value_type& sorted_string_map<ValueT>:
     return val->value;
 }
 
-template<typename ValueT>
-const typename sorted_string_map<ValueT>::value_type& sorted_string_map<ValueT>::find(std::string_view input) const
+template<typename ValueT, template<typename> class FuncFindKeyT>
+const typename sorted_string_map<ValueT, FuncFindKeyT>::value_type& sorted_string_map<ValueT, FuncFindKeyT>::find(
+    std::string_view input) const
 {
     return find(input.data(), input.size());
 }
 
-template<typename ValueT>
-std::string_view sorted_string_map<ValueT>::find_key(const value_type& v) const
+template<typename ValueT, template<typename> class FuncFindKeyT>
+std::string_view sorted_string_map<ValueT, FuncFindKeyT>::find_key(const value_type& v) const
 {
-    auto it = std::find_if(m_entries, m_entries_end, [&v](const auto& e) { return e.value == v; });
-    if (it == m_entries_end)
-        return {};
-
-    return it->key;
+    return m_func_find_key(v);
 }
 
-template<typename ValueT>
-typename sorted_string_map<ValueT>::size_type sorted_string_map<ValueT>::size() const
+template<typename ValueT, template<typename> class FuncFindKeyT>
+typename sorted_string_map<ValueT, FuncFindKeyT>::size_type sorted_string_map<ValueT, FuncFindKeyT>::size() const
 {
     return m_entry_size;
 }

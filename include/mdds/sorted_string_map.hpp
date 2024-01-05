@@ -32,7 +32,8 @@
 
 namespace mdds {
 
-namespace ssmap { namespace detail {
+namespace ssmap {
+namespace detail {
 
 template<typename ValueT>
 struct map_entry
@@ -41,7 +42,26 @@ struct map_entry
     ValueT value;
 };
 
-}} // namespace ssmap::detail
+} // namespace detail
+
+template<typename ValueT>
+class linear_key_finder
+{
+    using value_type = ValueT;
+    using size_type = typename std::string_view::size_type;
+    using entry_type = detail::map_entry<ValueT>;
+
+    const entry_type* m_entries;
+    const entry_type* m_entries_end;
+    const value_type& m_null_value;
+
+public:
+    linear_key_finder(const entry_type* entries, const entry_type* entries_end, const value_type& null_value);
+
+    std::string_view operator()(const value_type& v) const;
+};
+
+} // namespace ssmap
 
 /**
  * sorted_string_map is an immutable associative container that provides an
@@ -56,9 +76,11 @@ struct map_entry
  *
  * @tparam ValueT Type of the values associated with the string keys.
  */
-template<typename ValueT>
+template<typename ValueT, template<typename> class FuncFindKeyT = ssmap::linear_key_finder>
 class sorted_string_map
 {
+    using func_find_key_type = FuncFindKeyT<ValueT>;
+
 public:
     using value_type = ValueT;
     using size_type = typename std::string_view::size_type;
@@ -125,6 +147,8 @@ private:
     const value_type m_null_value;
     const size_type m_entry_size;
     const entry_type* m_entries_end;
+
+    func_find_key_type m_func_find_key;
 };
 
 } // namespace mdds
