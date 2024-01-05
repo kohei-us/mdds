@@ -71,7 +71,7 @@ void ssmap_test_basic()
 
     typedef mdds::sorted_string_map<name_type> map_type;
 
-    map_type::entry entries[] = {
+    map_type::entry_type entries[] = {
         {"andy", name_andy},   {"andy1", name_andy},      {"andy13", name_andy},
         {"bruce", name_bruce}, {"charlie", name_charlie}, {"david", name_david},
     };
@@ -96,7 +96,7 @@ void ssmap_test_mixed_case_null()
 
     typedef mdds::sorted_string_map<int> map_type;
 
-    map_type::entry entries[] = {
+    map_type::entry_type entries[] = {
         {"NULL", 1},
         {"Null", 2},
         {"null", 3},
@@ -135,7 +135,7 @@ void ssmap_test_find_string_view()
 
     using map_type = mdds::sorted_string_map<int>;
 
-    constexpr map_type::entry entries[] = {
+    constexpr map_type::entry_type entries[] = {
         {"days", cv_days},         {"hours", cv_hours}, {"minutes", cv_minutes}, {"months", cv_months},
         {"quarters", cv_quarters}, {"range", cv_range}, {"seconds", cv_seconds}, {"years", cv_years},
     };
@@ -169,7 +169,7 @@ void ssmap_test_move_only_value_type()
 
     using map_type = mdds::sorted_string_map<move_only_value>;
 
-    const map_type::entry entries[] = {
+    const map_type::entry_type entries[] = {
         {"0x01", {1}},
         {"0x02", {2}},
         {"0x03", {3}},
@@ -209,7 +209,7 @@ void ssmap_test_perf()
     }
 
     using map_type = mdds::sorted_string_map<int>;
-    std::vector<map_type::entry> entries;
+    std::vector<map_type::entry_type> entries;
 
     {
         // populate entries from the data file
@@ -225,7 +225,7 @@ void ssmap_test_perf()
             if (*p == '\n')
             {
                 std::size_t n = std::distance(p0, p);
-                entries.push_back(map_type::entry{});
+                entries.push_back(map_type::entry_type{});
                 entries.back().key = std::string_view{p0, n};
                 entries.back().value = i++;
                 p0 = nullptr;

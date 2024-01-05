@@ -35,7 +35,7 @@ namespace mdds {
 namespace ssmap { namespace detail {
 
 template<typename ValueT>
-struct string_view_map_entry
+struct map_entry
 {
     std::string_view key;
     ValueT value;
@@ -67,7 +67,7 @@ public:
      * Single key-value entry type.  Caller must provide at compile time a
      * static array of these entries.
      */
-    using entry = ssmap::detail::string_view_map_entry<ValueT>;
+    using entry_type = ssmap::detail::map_entry<ValueT>;
 
     /**
      * Constructor.
@@ -77,7 +77,7 @@ public:
      * @param null_value null value to return when the find method fails to
      *                   find a matching entry.
      */
-    sorted_string_map(const entry* entries, size_type entry_size, value_type null_value);
+    sorted_string_map(const entry_type* entries, size_type entry_size, value_type null_value);
 
     /**
      * Find a value associated with a specified string key.
@@ -121,10 +121,10 @@ public:
     size_type size() const;
 
 private:
-    const entry* m_entries;
+    const entry_type* m_entries;
     const value_type m_null_value;
     const size_type m_entry_size;
-    const entry* m_entries_end;
+    const entry_type* m_entries_end;
 };
 
 } // namespace mdds

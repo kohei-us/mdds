@@ -25,7 +25,7 @@ void test_sorted_string_map()
 {
     sorted_string_map<int> empty_ssmap(nullptr, 0, 0);
 
-    sorted_string_map<int>::entry entries[] = {
+    sorted_string_map<int>::entry_type entries[] = {
         {"aaaa", 1},
         {"bbb", 2},
         {"cc", 3},

@@ -38,9 +38,9 @@ namespace ssmap { namespace detail {
 template<typename ValueT>
 struct compare
 {
-    using entry = string_view_map_entry<ValueT>;
+    using entry_type = map_entry<ValueT>;
 
-    bool operator()(const entry& entry1, const entry& entry2) const
+    bool operator()(const entry_type& entry1, const entry_type& entry2) const
     {
         if (entry1.key.size() == entry2.key.size())
             return std::memcmp(entry1.key.data(), entry2.key.data(), entry1.key.size()) < 0;
@@ -57,7 +57,7 @@ struct compare
 }} // namespace ssmap::detail
 
 template<typename ValueT>
-sorted_string_map<ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value)
+sorted_string_map<ValueT>::sorted_string_map(const entry_type* entries, size_type entry_size, value_type null_value)
     : m_entries(entries), m_null_value(std::move(null_value)), m_entry_size(entry_size),
       m_entries_end(m_entries + m_entry_size)
 {
@@ -74,8 +74,8 @@ const typename sorted_string_map<ValueT>::value_type& sorted_string_map<ValueT>:
     if (m_entry_size == 0)
         return m_null_value;
 
-    const entry* val = std::lower_bound(
-        m_entries, m_entries_end, entry{{input, len}, value_type{}}, ssmap::detail::compare<value_type>{});
+    const entry_type* val = std::lower_bound(
+        m_entries, m_entries_end, entry_type{{input, len}, value_type{}}, ssmap::detail::compare<value_type>{});
 
     if (val == m_entries_end || val->key.size() != len || std::memcmp(val->key.data(), input, len))
         return m_null_value;
