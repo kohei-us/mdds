@@ -35,42 +35,22 @@ namespace mdds {
 
 namespace ssmap { namespace detail {
 
-template<typename ValueT, typename SizeT>
-struct entry_funcs
+template<typename ValueT>
+struct compare
 {
     using entry = string_view_map_entry<ValueT>;
-    using size_type = SizeT;
 
-    static bool compare(const entry& entry1, const entry& entry2)
+    bool operator()(const entry& entry1, const entry& entry2) const
     {
-        if (entry1.key.size() != entry2.key.size())
-        {
-            std::size_t key_length = std::min(entry1.key.size(), entry2.key.size());
-            int ret = std::memcmp(entry1.key.data(), entry2.key.data(), key_length);
-            if (ret == 0)
-                return entry1.key.size() < entry2.key.size();
-
-            return ret < 0;
-        }
-        else
-        {
+        if (entry1.key.size() == entry2.key.size())
             return std::memcmp(entry1.key.data(), entry2.key.data(), entry1.key.size()) < 0;
-        }
-    }
 
-    static entry to_entry(const char* input, std::size_t len)
-    {
-        return entry{{input, len}, ValueT{}};
-    }
+        std::size_t key_length = std::min(entry1.key.size(), entry2.key.size());
+        int ret = std::memcmp(entry1.key.data(), entry2.key.data(), key_length);
+        if (ret == 0)
+            return entry1.key.size() < entry2.key.size();
 
-    static const char* get_key_ptr(const entry& e)
-    {
-        return e.key.data();
-    }
-
-    static size_type get_key_size(const entry& e)
-    {
-        return e.key.size();
+        return ret < 0;
     }
 };
 
@@ -81,9 +61,7 @@ sorted_string_map<ValueT>::sorted_string_map(const entry* entries, size_type ent
     : m_entries(entries), m_null_value(null_value), m_entry_size(entry_size), m_entry_end(m_entries + m_entry_size)
 {
 #ifdef MDDS_SORTED_STRING_MAP_DEBUG
-    using entry_funcs = ssmap::detail::entry_funcs<value_type, size_type>;
-
-    if (!std::is_sorted(m_entries, m_entry_end, entry_funcs::compare))
+    if (!std::is_sorted(m_entries, m_entry_end, ssmap::detail::compare<value_type>{}))
         throw invalid_arg_error("mapped entries are not sorted");
 #endif
 }
@@ -94,13 +72,10 @@ typename sorted_string_map<ValueT>::value_type sorted_string_map<ValueT>::find(c
     if (m_entry_size == 0)
         return m_null_value;
 
-    using entry_funcs = ssmap::detail::entry_funcs<value_type, size_type>;
-    entry ent = entry_funcs::to_entry(input, len);
+    const entry* val = std::lower_bound(
+        m_entries, m_entry_end, entry{{input, len}, value_type{}}, ssmap::detail::compare<value_type>{});
 
-    const entry* val = std::lower_bound(m_entries, m_entry_end, ent, entry_funcs::compare);
-
-    if (val == m_entry_end || entry_funcs::get_key_size(*val) != len ||
-        std::memcmp(entry_funcs::get_key_ptr(*val), input, len))
+    if (val == m_entry_end || val->key.size() != len || std::memcmp(val->key.data(), input, len))
         return m_null_value;
 
     return val->value;
