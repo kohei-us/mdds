@@ -59,10 +59,10 @@ struct compare
 template<typename ValueT>
 sorted_string_map<ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value)
     : m_entries(entries), m_null_value(std::move(null_value)), m_entry_size(entry_size),
-      m_entry_end(m_entries + m_entry_size)
+      m_entries_end(m_entries + m_entry_size)
 {
 #ifdef MDDS_SORTED_STRING_MAP_DEBUG
-    if (!std::is_sorted(m_entries, m_entry_end, ssmap::detail::compare<value_type>{}))
+    if (!std::is_sorted(m_entries, m_entries_end, ssmap::detail::compare<value_type>{}))
         throw invalid_arg_error("mapped entries are not sorted");
 #endif
 }
@@ -75,9 +75,9 @@ const typename sorted_string_map<ValueT>::value_type& sorted_string_map<ValueT>:
         return m_null_value;
 
     const entry* val = std::lower_bound(
-        m_entries, m_entry_end, entry{{input, len}, value_type{}}, ssmap::detail::compare<value_type>{});
+        m_entries, m_entries_end, entry{{input, len}, value_type{}}, ssmap::detail::compare<value_type>{});
 
-    if (val == m_entry_end || val->key.size() != len || std::memcmp(val->key.data(), input, len))
+    if (val == m_entries_end || val->key.size() != len || std::memcmp(val->key.data(), input, len))
         return m_null_value;
 
     return val->value;
@@ -87,6 +87,16 @@ template<typename ValueT>
 const typename sorted_string_map<ValueT>::value_type& sorted_string_map<ValueT>::find(std::string_view input) const
 {
     return find(input.data(), input.size());
+}
+
+template<typename ValueT>
+std::string_view sorted_string_map<ValueT>::find_key(const value_type& v) const
+{
+    auto it = std::find_if(m_entries, m_entries_end, [&v](const auto& e) { return e.value == v; });
+    if (it == m_entries_end)
+        return {};
+
+    return it->key;
 }
 
 template<typename ValueT>

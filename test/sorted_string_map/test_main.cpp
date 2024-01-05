@@ -58,6 +58,11 @@ struct move_only_value
     }
 
     move_only_value(const move_only_value&) = delete;
+
+    bool operator==(const move_only_value& r) const
+    {
+        return value == r.value;
+    }
 };
 
 void ssmap_test_basic()
@@ -98,7 +103,7 @@ void ssmap_test_mixed_case_null()
         {"~", 4},
     };
 
-    size_t entry_count = sizeof(entries) / sizeof(entries[0]);
+    size_t entry_count = std::size(entries);
     map_type names(entries, entry_count, -1);
     for (size_t i = 0; i < entry_count; ++i)
     {
@@ -141,6 +146,8 @@ void ssmap_test_find_string_view()
     {
         auto v = mapping.find(entry.key);
         assert(v == entry.value);
+        auto k = mapping.find_key(entry.value);
+        assert(k == entry.key);
     }
 
     constexpr std::string_view unknown_keys[] = {
@@ -151,6 +158,8 @@ void ssmap_test_find_string_view()
     {
         auto v = mapping.find(key);
         assert(v == cv_unknown);
+        auto k = mapping.find_key(cv_unknown);
+        assert(k.empty());
     }
 }
 
@@ -173,11 +182,15 @@ void ssmap_test_move_only_value_type()
     {
         const move_only_value& v = mapping.find(e.key);
         assert(v.value == e.value.value);
+        std::string_view k = mapping.find_key(e.value);
+        assert(k == e.key);
     }
 
     // test for null value
     const auto& v = mapping.find("0x05");
     assert(v.value == 0);
+    std::string_view k = mapping.find_key({5});
+    assert(k.empty()); // not found
 }
 
 void ssmap_test_perf()

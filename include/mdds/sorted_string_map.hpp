@@ -102,6 +102,16 @@ public:
     const value_type& find(std::string_view input) const;
 
     /**
+     * Find a key associated with a specified value.
+     *
+     * @param v Value to find the associated key of.
+     *
+     * @return Key associated with the value if found, or an empty string if one
+     *         is not found.
+     */
+    std::string_view find_key(const value_type& v) const;
+
+    /**
      * Return the number of entries in the map.  Since the number of entries
      * is statically defined at compile time, this method always returns the
      * same value.
@@ -114,7 +124,7 @@ private:
     const entry* m_entries;
     const value_type m_null_value;
     const size_type m_entry_size;
-    const entry* m_entry_end;
+    const entry* m_entries_end;
 };
 
 } // namespace mdds
