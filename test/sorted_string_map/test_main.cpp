@@ -44,6 +44,22 @@ enum name_type
     name_david
 };
 
+struct move_only_value
+{
+    int value = {};
+
+    move_only_value()
+    {}
+    move_only_value(int _value) : value(_value)
+    {}
+    move_only_value(move_only_value&& r) : value(r.value)
+    {
+        r.value = {};
+    }
+
+    move_only_value(const move_only_value&) = delete;
+};
+
 void ssmap_test_basic()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -136,6 +152,32 @@ void ssmap_test_find_string_view()
         auto v = mapping.find(key);
         assert(v == cv_unknown);
     }
+}
+
+void ssmap_test_move_only_value_type()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using map_type = mdds::sorted_string_map<move_only_value>;
+
+    const map_type::entry entries[] = {
+        {"0x01", {1}},
+        {"0x02", {2}},
+        {"0x03", {3}},
+        {"0x04", {4}},
+    };
+
+    map_type mapping{entries, std::size(entries), {0}};
+
+    for (const auto& e : entries)
+    {
+        const move_only_value& v = mapping.find(e.key);
+        assert(v.value == e.value.value);
+    }
+
+    // test for null value
+    const auto& v = mapping.find("0x05");
+    assert(v.value == 0);
 }
 
 void ssmap_test_perf()
@@ -237,6 +279,7 @@ int main(int argc, char** argv)
         ssmap_test_basic();
         ssmap_test_mixed_case_null();
         ssmap_test_find_string_view();
+        ssmap_test_move_only_value_type();
     }
 
     if (opt.test_perf)
@@ -244,7 +287,6 @@ int main(int argc, char** argv)
         ssmap_test_perf();
     }
 
-    fprintf(stdout, "Test finished successfully!\n");
     return 0;
 }
 

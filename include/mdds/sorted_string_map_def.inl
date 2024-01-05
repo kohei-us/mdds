@@ -68,7 +68,8 @@ sorted_string_map<ValueT>::sorted_string_map(const entry* entries, size_type ent
 }
 
 template<typename ValueT>
-typename sorted_string_map<ValueT>::value_type sorted_string_map<ValueT>::find(const char* input, size_type len) const
+const typename sorted_string_map<ValueT>::value_type& sorted_string_map<ValueT>::find(
+    const char* input, size_type len) const
 {
     if (m_entry_size == 0)
         return m_null_value;
@@ -83,7 +84,7 @@ typename sorted_string_map<ValueT>::value_type sorted_string_map<ValueT>::find(c
 }
 
 template<typename ValueT>
-typename sorted_string_map<ValueT>::value_type sorted_string_map<ValueT>::find(std::string_view input) const
+const typename sorted_string_map<ValueT>::value_type& sorted_string_map<ValueT>::find(std::string_view input) const
 {
     return find(input.data(), input.size());
 }

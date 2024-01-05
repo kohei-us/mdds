@@ -89,7 +89,7 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    value_type find(const char* input, size_type len) const;
+    const value_type& find(const char* input, size_type len) const;
 
     /**
      * Find a value associated with a specified string key.
@@ -99,7 +99,7 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    value_type find(std::string_view input) const;
+    const value_type& find(std::string_view input) const;
 
     /**
      * Return the number of entries in the map.  Since the number of entries
