@@ -44,9 +44,17 @@ struct string_view_map_entry
 }} // namespace ssmap::detail
 
 /**
- * sorted_string_map provides an efficient way to map string keys to
- * arbitrary values, provided that the keys are known at compile time and
- * are sorted in ascending order.
+ * sorted_string_map is an immutable associative container that provides an
+ * efficient way to map string keys to values of a user-specified type.
+ * The keys must be known at compile time and must be sorted in ascending
+ * order.
+ *
+ * Besides the minimal amount of memory required to store the size and memory
+ * address of the caller-provided key-value entries and a few extra data,
+ * it does not allocate any additional memory; it simply re-uses the
+ * caller-provided key-value entries in all of its operations.
+ *
+ * @tparam ValueT Type of the values associated with the string keys.
  */
 template<typename ValueT>
 class sorted_string_map
