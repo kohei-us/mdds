@@ -58,7 +58,8 @@ struct compare
 
 template<typename ValueT>
 sorted_string_map<ValueT>::sorted_string_map(const entry* entries, size_type entry_size, value_type null_value)
-    : m_entries(entries), m_null_value(null_value), m_entry_size(entry_size), m_entry_end(m_entries + m_entry_size)
+    : m_entries(entries), m_null_value(std::move(null_value)), m_entry_size(entry_size),
+      m_entry_end(m_entries + m_entry_size)
 {
 #ifdef MDDS_SORTED_STRING_MAP_DEBUG
     if (!std::is_sorted(m_entries, m_entry_end, ssmap::detail::compare<value_type>{}))
