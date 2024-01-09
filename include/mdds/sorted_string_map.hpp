@@ -47,6 +47,10 @@ struct map_entry
 
 } // namespace detail
 
+/**
+ * Function object that iterates through the key-value entries linearly until
+ * it finds one that contains the target value.
+ */
 template<typename ValueT>
 class linear_key_finder
 {
@@ -63,6 +67,10 @@ public:
     std::string_view operator()(const value_type& v) const;
 };
 
+/**
+ * Function object that builds a hash map of values to keys during its
+ * construction, and uses it during the lookup of the keys.
+ */
 template<typename ValueT>
 class hash_key_finder
 {
@@ -95,6 +103,8 @@ public:
  * caller-provided key-value entries in all of its operations.
  *
  * @tparam ValueT Type of the values associated with the string keys.
+ * @tparam KeyFinderT Function object type for performing reverse-lookup of
+ *         keys from values.  This is used in the find_key() method.
  */
 template<typename ValueT, template<typename> class KeyFinderT = ssmap::linear_key_finder>
 class sorted_string_map
