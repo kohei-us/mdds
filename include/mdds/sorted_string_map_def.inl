@@ -74,8 +74,7 @@ std::string_view linear_key_finder<ValueT>::operator()(const value_type& v) cons
 }
 
 template<typename ValueT>
-hash_key_finder<ValueT>::hash_key_finder(const entry_type* entries, const entry_type* entries_end)
-    : m_entries(entries), m_entries_end(entries_end)
+hash_key_finder<ValueT>::hash_key_finder(const entry_type* entries, const entry_type* entries_end) : m_entries(entries)
 {
     size_type pos = 0u;
     for (const auto* e = entries; e != entries_end; ++e, ++pos)

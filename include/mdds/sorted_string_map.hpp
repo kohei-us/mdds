@@ -73,7 +73,6 @@ class hash_key_finder
         mdds::detail::cref_wrapper<value_type>, size_type, typename mdds::detail::cref_wrapper<value_type>::hash>;
 
     const entry_type* m_entries;
-    const entry_type* m_entries_end;
     keystore_type m_keys;
 
 public:
