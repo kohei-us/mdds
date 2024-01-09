@@ -36,6 +36,12 @@
 #include <fstream>
 #include <unordered_set>
 
+#define KEY_FINDER_TYPE \
+    do \
+    { \
+        std::cout << "key finder type: " << keyfinder_name<KeyFinderT>{}() << std::endl; \
+    } while (false)
+
 enum name_type
 {
     name_none = 0,
@@ -79,6 +85,19 @@ struct move_only_value
     }
 };
 
+namespace std {
+
+template<>
+struct hash<move_only_value>
+{
+    std::size_t operator()(const move_only_value& v) const
+    {
+        return std::hash<decltype(v.value)>{}(v.value);
+    }
+};
+
+} // namespace std
+
 template<template<typename> class KeyFinderT>
 struct keyfinder_name;
 
@@ -104,11 +123,11 @@ template<template<typename> class KeyFinderT>
 void ssmap_test_basic()
 {
     MDDS_TEST_FUNC_SCOPE;
-    std::cout << "key lookup type: " << keyfinder_name<KeyFinderT>{}() << std::endl;
+    KEY_FINDER_TYPE;
 
     using map_type = mdds::sorted_string_map<name_type, KeyFinderT>;
 
-    typename map_type::entry_type entries[] = {
+    const typename map_type::entry_type entries[] = {
         {"andy", name_andy},   {"andy1", name_andy},      {"andy13", name_andy},
         {"bruce", name_bruce}, {"charlie", name_charlie}, {"david", name_david},
     };
@@ -140,13 +159,15 @@ void ssmap_test_basic()
     assert(keys_andy.count(names.find_key(name_andy)) > 0);
 }
 
+template<template<typename> class KeyFinderT>
 void ssmap_test_mixed_case_null()
 {
     MDDS_TEST_FUNC_SCOPE;
+    KEY_FINDER_TYPE;
 
-    typedef mdds::sorted_string_map<int> map_type;
+    typedef mdds::sorted_string_map<int, KeyFinderT> map_type;
 
-    map_type::entry_type entries[] = {
+    const typename map_type::entry_type entries[] = {
         {"NULL", 1},
         {"Null", 2},
         {"null", 3},
@@ -167,11 +188,19 @@ void ssmap_test_mixed_case_null()
     assert(names.find(MDDS_ASCII("Oull")) == -1);
     assert(names.find(MDDS_ASCII("Mull")) == -1);
     assert(names.find(MDDS_ASCII("hell")) == -1);
+
+    // reverse lookup
+    assert(names.find_key(1) == "NULL");
+    assert(names.find_key(2) == "Null");
+    assert(names.find_key(3) == "null");
+    assert(names.find_key(4) == "~");
 }
 
+template<template<typename> class KeyFinderT>
 void ssmap_test_find_string_view()
 {
     MDDS_TEST_FUNC_SCOPE;
+    KEY_FINDER_TYPE;
 
     constexpr int cv_unknown = -1;
     constexpr int cv_days = 0;
@@ -183,9 +212,9 @@ void ssmap_test_find_string_view()
     constexpr int cv_seconds = 6;
     constexpr int cv_years = 7;
 
-    using map_type = mdds::sorted_string_map<int>;
+    using map_type = mdds::sorted_string_map<int, KeyFinderT>;
 
-    constexpr map_type::entry_type entries[] = {
+    constexpr typename map_type::entry_type entries[] = {
         {"days", cv_days},         {"hours", cv_hours}, {"minutes", cv_minutes}, {"months", cv_months},
         {"quarters", cv_quarters}, {"range", cv_range}, {"seconds", cv_seconds}, {"years", cv_years},
     };
@@ -213,13 +242,15 @@ void ssmap_test_find_string_view()
     }
 }
 
+template<template<typename> class KeyFinderT>
 void ssmap_test_move_only_value_type()
 {
     MDDS_TEST_FUNC_SCOPE;
+    KEY_FINDER_TYPE;
 
-    using map_type = mdds::sorted_string_map<move_only_value>;
+    using map_type = mdds::sorted_string_map<move_only_value, KeyFinderT>;
 
-    const map_type::entry_type entries[] = {
+    const typename map_type::entry_type entries[] = {
         {"0x01", {1}},
         {"0x02", {2}},
         {"0x03", {3}},
@@ -341,9 +372,12 @@ int main(int argc, char** argv)
     {
         ssmap_test_basic<mdds::ssmap::linear_key_finder>();
         ssmap_test_basic<mdds::ssmap::hash_key_finder>();
-        ssmap_test_mixed_case_null();
-        ssmap_test_find_string_view();
-        ssmap_test_move_only_value_type();
+        ssmap_test_mixed_case_null<mdds::ssmap::linear_key_finder>();
+        ssmap_test_mixed_case_null<mdds::ssmap::hash_key_finder>();
+        ssmap_test_find_string_view<mdds::ssmap::linear_key_finder>();
+        ssmap_test_find_string_view<mdds::ssmap::hash_key_finder>();
+        ssmap_test_move_only_value_type<mdds::ssmap::linear_key_finder>();
+        ssmap_test_move_only_value_type<mdds::ssmap::hash_key_finder>();
     }
 
     if (opt.test_perf)
