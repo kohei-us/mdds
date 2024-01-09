@@ -28,7 +28,10 @@
 
 #pragma once
 
+#include "./cref_wrapper.hpp"
+
 #include <string_view>
+#include <unordered_map>
 
 namespace mdds {
 
@@ -53,10 +56,28 @@ class linear_key_finder
 
     const entry_type* m_entries;
     const entry_type* m_entries_end;
-    const value_type& m_null_value;
 
 public:
-    linear_key_finder(const entry_type* entries, const entry_type* entries_end, const value_type& null_value);
+    linear_key_finder(const entry_type* entries, const entry_type* entries_end);
+
+    std::string_view operator()(const value_type& v) const;
+};
+
+template<typename ValueT>
+class hash_key_finder
+{
+    using value_type = ValueT;
+    using size_type = typename std::string_view::size_type;
+    using entry_type = detail::map_entry<ValueT>;
+    using keystore_type = std::unordered_map<
+        mdds::detail::cref_wrapper<value_type>, size_type, typename mdds::detail::cref_wrapper<value_type>::hash>;
+
+    const entry_type* m_entries;
+    const entry_type* m_entries_end;
+    keystore_type m_keys;
+
+public:
+    hash_key_finder(const entry_type* entries, const entry_type* entries_end);
 
     std::string_view operator()(const value_type& v) const;
 };

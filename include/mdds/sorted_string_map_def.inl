@@ -58,9 +58,8 @@ struct compare
 } // namespace detail
 
 template<typename ValueT>
-linear_key_finder<ValueT>::linear_key_finder(
-    const entry_type* entries, const entry_type* entries_end, const value_type& null_value)
-    : m_entries(entries), m_entries_end(entries_end), m_null_value(null_value)
+linear_key_finder<ValueT>::linear_key_finder(const entry_type* entries, const entry_type* entries_end)
+    : m_entries(entries), m_entries_end(entries_end)
 {}
 
 template<typename ValueT>
@@ -73,13 +72,35 @@ std::string_view linear_key_finder<ValueT>::operator()(const value_type& v) cons
     return it->key;
 }
 
+template<typename ValueT>
+hash_key_finder<ValueT>::hash_key_finder(const entry_type* entries, const entry_type* entries_end)
+    : m_entries(entries), m_entries_end(entries_end)
+{
+    size_type pos = 0u;
+    for (const auto* e = entries; e != entries_end; ++e, ++pos)
+        m_keys.insert({e->value, pos});
+
+    assert(pos == static_cast<decltype(pos)>(entries_end - entries));
+}
+
+template<typename ValueT>
+std::string_view hash_key_finder<ValueT>::operator()(const value_type& v) const
+{
+    auto it = m_keys.find(v);
+    if (it == m_keys.cend())
+        return {};
+
+    const auto* entry = m_entries + it->second;
+    return entry->key;
+}
+
 } // namespace ssmap
 
 template<typename ValueT, template<typename> class FuncFindKeyT>
 sorted_string_map<ValueT, FuncFindKeyT>::sorted_string_map(
     const entry_type* entries, size_type entry_size, value_type null_value)
     : m_entries(entries), m_null_value(std::move(null_value)), m_entry_size(entry_size),
-      m_entries_end(m_entries + m_entry_size), m_func_find_key(m_entries, m_entries_end, m_null_value)
+      m_entries_end(m_entries + m_entry_size), m_func_find_key(m_entries, m_entries_end)
 {
 #ifdef MDDS_SORTED_STRING_MAP_DEBUG
     if (!std::is_sorted(m_entries, m_entries_end, ssmap::detail::compare<value_type>{}))

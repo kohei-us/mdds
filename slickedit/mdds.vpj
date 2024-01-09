@@ -217,8 +217,6 @@
             Name="Other Files"
             Filters=""/>
     </CustomFolders>
-    <List Name="RTE">
-    </List>
     <Files AutoFolders="DirectoryView">
         <Folder Name="../include">
             <Folder Name="mdds">
@@ -246,6 +244,7 @@
                     <F N="../include/mdds/multi_type_vector/types_util.hpp"/>
                     <F N="../include/mdds/multi_type_vector/util.hpp"/>
                 </Folder>
+                <F N="../include/mdds/cref_wrapper.hpp"/>
                 <F N="../include/mdds/flat_segment_tree.hpp"/>
                 <F N="../include/mdds/flat_segment_tree_def.inl"/>
                 <F N="../include/mdds/flat_segment_tree_itr.hpp"/>
@@ -272,4 +271,6 @@
             </Folder>
         </Folder>
     </Files>
+    <List Name="RTE">
+    </List>
 </Project>
