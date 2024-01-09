@@ -97,10 +97,10 @@ public:
  *
  * @tparam ValueT Type of the values associated with the string keys.
  */
-template<typename ValueT, template<typename> class FuncFindKeyT = ssmap::linear_key_finder>
+template<typename ValueT, template<typename> class KeyFinderT = ssmap::linear_key_finder>
 class sorted_string_map
 {
-    using func_find_key_type = FuncFindKeyT<ValueT>;
+    using func_find_key_type = KeyFinderT<ValueT>;
 
 public:
     using value_type = ValueT;
@@ -147,10 +147,14 @@ public:
     /**
      * Find a key associated with a specified value.
      *
+     * @warning When multiple keys are associated with one value, this method
+     *          only returns one of the keys.  Which key gets returned for that
+     *          value is undefined.
+     *
      * @param v Value to find the associated key of.
      *
-     * @return Key associated with the value if found, or an empty string if one
-     *         is not found.
+     * @return Key associated with the value, or an empty string if no key is
+     *         found.
      */
     std::string_view find_key(const value_type& v) const;
 

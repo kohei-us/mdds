@@ -34,7 +34,8 @@
 namespace mdds { namespace detail {
 
 /**
- * Custom const reference wrapper with an equality operator.
+ * Custom const reference wrapper with an equality operator and a hash
+ * adaptor.
  */
 template<typename T>
 class cref_wrapper
@@ -64,7 +65,10 @@ public:
     {
         std::size_t operator()(const cref_wrapper& v) const
         {
-            return reinterpret_cast<std::size_t>(&v.m_value.get());
+            // NB: hash value must be based on the wrapped value, else two
+            // identical values located in different memory locations may end up
+            // in different buckets, and the lookup may fail.
+            return std::hash<T>{}(v.m_value);
         }
     };
 };

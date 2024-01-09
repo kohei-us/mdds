@@ -29,6 +29,7 @@
 #include "./global.hpp"
 
 #include <cstring>
+#include <cassert>
 #include <algorithm>
 
 namespace mdds {
@@ -78,7 +79,7 @@ hash_key_finder<ValueT>::hash_key_finder(const entry_type* entries, const entry_
 {
     size_type pos = 0u;
     for (const auto* e = entries; e != entries_end; ++e, ++pos)
-        m_keys.insert({e->value, pos});
+        m_keys.insert_or_assign(e->value, pos);
 
     assert(pos == static_cast<decltype(pos)>(entries_end - entries));
 }
@@ -96,8 +97,8 @@ std::string_view hash_key_finder<ValueT>::operator()(const value_type& v) const
 
 } // namespace ssmap
 
-template<typename ValueT, template<typename> class FuncFindKeyT>
-sorted_string_map<ValueT, FuncFindKeyT>::sorted_string_map(
+template<typename ValueT, template<typename> class KeyFinderT>
+sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(
     const entry_type* entries, size_type entry_size, value_type null_value)
     : m_entries(entries), m_null_value(std::move(null_value)), m_entry_size(entry_size),
       m_entries_end(m_entries + m_entry_size), m_func_find_key(m_entries, m_entries_end)
@@ -108,8 +109,8 @@ sorted_string_map<ValueT, FuncFindKeyT>::sorted_string_map(
 #endif
 }
 
-template<typename ValueT, template<typename> class FuncFindKeyT>
-const typename sorted_string_map<ValueT, FuncFindKeyT>::value_type& sorted_string_map<ValueT, FuncFindKeyT>::find(
+template<typename ValueT, template<typename> class KeyFinderT>
+const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_map<ValueT, KeyFinderT>::find(
     const char* input, size_type len) const
 {
     if (m_entry_size == 0)
@@ -124,21 +125,21 @@ const typename sorted_string_map<ValueT, FuncFindKeyT>::value_type& sorted_strin
     return val->value;
 }
 
-template<typename ValueT, template<typename> class FuncFindKeyT>
-const typename sorted_string_map<ValueT, FuncFindKeyT>::value_type& sorted_string_map<ValueT, FuncFindKeyT>::find(
+template<typename ValueT, template<typename> class KeyFinderT>
+const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_map<ValueT, KeyFinderT>::find(
     std::string_view input) const
 {
     return find(input.data(), input.size());
 }
 
-template<typename ValueT, template<typename> class FuncFindKeyT>
-std::string_view sorted_string_map<ValueT, FuncFindKeyT>::find_key(const value_type& v) const
+template<typename ValueT, template<typename> class KeyFinderT>
+std::string_view sorted_string_map<ValueT, KeyFinderT>::find_key(const value_type& v) const
 {
     return m_func_find_key(v);
 }
 
-template<typename ValueT, template<typename> class FuncFindKeyT>
-typename sorted_string_map<ValueT, FuncFindKeyT>::size_type sorted_string_map<ValueT, FuncFindKeyT>::size() const
+template<typename ValueT, template<typename> class KeyFinderT>
+typename sorted_string_map<ValueT, KeyFinderT>::size_type sorted_string_map<ValueT, KeyFinderT>::size() const
 {
     return m_entry_size;
 }

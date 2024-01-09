@@ -34,6 +34,7 @@
 #include <cstring>
 #include <vector>
 #include <fstream>
+#include <unordered_set>
 
 enum name_type
 {
@@ -43,6 +44,19 @@ enum name_type
     name_charlie,
     name_david
 };
+
+namespace std {
+
+template<>
+struct hash<name_type>
+{
+    std::size_t operator()(const name_type& v) const
+    {
+        return static_cast<std::size_t>(v);
+    }
+};
+
+} // namespace std
 
 struct move_only_value
 {
@@ -65,20 +79,43 @@ struct move_only_value
     }
 };
 
+template<template<typename> class KeyFinderT>
+struct keyfinder_name;
+
+template<>
+struct keyfinder_name<mdds::ssmap::linear_key_finder>
+{
+    std::string_view operator()() const
+    {
+        return "linear";
+    }
+};
+
+template<>
+struct keyfinder_name<mdds::ssmap::hash_key_finder>
+{
+    std::string_view operator()() const
+    {
+        return "hash";
+    }
+};
+
+template<template<typename> class KeyFinderT>
 void ssmap_test_basic()
 {
     MDDS_TEST_FUNC_SCOPE;
+    std::cout << "key lookup type: " << keyfinder_name<KeyFinderT>{}() << std::endl;
 
-    typedef mdds::sorted_string_map<name_type> map_type;
+    using map_type = mdds::sorted_string_map<name_type, KeyFinderT>;
 
-    map_type::entry_type entries[] = {
+    typename map_type::entry_type entries[] = {
         {"andy", name_andy},   {"andy1", name_andy},      {"andy13", name_andy},
         {"bruce", name_bruce}, {"charlie", name_charlie}, {"david", name_david},
     };
 
-    size_t entry_count = sizeof(entries) / sizeof(entries[0]);
-    map_type names(entries, entry_count, name_none);
-    for (size_t i = 0; i < entry_count; ++i)
+    constexpr auto n_entries = std::size(entries);
+    map_type names(entries, n_entries, name_none);
+    for (size_t i = 0; i < n_entries; ++i)
     {
         std::cout << "* key = " << entries[i].key << std::endl;
         bool res = names.find(entries[i].key) == entries[i].value;
@@ -88,6 +125,19 @@ void ssmap_test_basic()
     // Try invalid keys.
     assert(names.find("foo", 3) == name_none);
     assert(names.find("andy133", 7) == name_none);
+
+    // reverse lookup
+    assert(names.find_key(name_bruce) == "bruce");
+    assert(names.find_key(name_charlie) == "charlie");
+    assert(names.find_key(name_david) == "david");
+
+    // negative case
+    assert(names.find_key(name_none).empty());
+
+    // 'name_andy' is associated with three keys
+    const std::unordered_set<std::string_view> keys_andy = {"andy", "andy1", "andy13"};
+
+    assert(keys_andy.count(names.find_key(name_andy)) > 0);
 }
 
 void ssmap_test_mixed_case_null()
@@ -289,7 +339,8 @@ int main(int argc, char** argv)
 
     if (opt.test_func)
     {
-        ssmap_test_basic();
+        ssmap_test_basic<mdds::ssmap::linear_key_finder>();
+        ssmap_test_basic<mdds::ssmap::hash_key_finder>();
         ssmap_test_mixed_case_null();
         ssmap_test_find_string_view();
         ssmap_test_move_only_value_type();
