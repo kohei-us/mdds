@@ -23,7 +23,7 @@ Contents:
    point_quad_tree.rst
    multi_type_vector/index.rst
    multi_type_matrix.rst
-   sorted_string_map.rst
+   sorted_string_map/index.rst
    trie_map.rst
    rtree.rst
    api.rst

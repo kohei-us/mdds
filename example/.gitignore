@@ -12,5 +12,6 @@ rtree-medium
 rtree-medium-bulkload
 rtree-simple
 segment-tree
+sorted-string-map
 trie-map
 us-presidents.bin

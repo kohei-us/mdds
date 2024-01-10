@@ -11,6 +11,7 @@ EXTRA_PROGRAMS = \
 	packed-trie-state-int \
 	point-quad-tree \
 	segment-tree \
+	sorted-string-map \
 	trie-map \
 	rtree-simple \
 	rtree-erase \
@@ -25,6 +26,7 @@ packed_trie_state_custom_SOURCES = packed_trie_state_custom.cpp
 packed_trie_state_int_SOURCES = packed_trie_state_int.cpp
 point_quad_tree_SOURCES = point_quad_tree.cpp
 segment_tree_SOURCES = segment_tree.cpp
+sorted_string_map_SOURCES = sorted_string_map.cpp
 trie_map_SOURCES = trie_map.cpp
 rtree_simple_SOURCES = rtree_simple.cpp
 rtree_erase_SOURCES = rtree_erase.cpp
@@ -40,6 +42,7 @@ TESTS = \
 	packed-trie-state-int \
 	point-quad-tree \
 	segment-tree \
+	sorted-string-map \
 	trie-map \
 	rtree-simple \
 	rtree-erase \
