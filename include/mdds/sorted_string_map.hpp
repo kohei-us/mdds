@@ -103,6 +103,7 @@ public:
  * caller-provided key-value entries in all of its operations.
  *
  * @tparam ValueT Type of the values associated with the string keys.
+ *         This type must be either movable or copyable.
  * @tparam KeyFinderT Function object type for performing reverse-lookup of
  *         keys from values.  This is used in the find_key() method.
  */
