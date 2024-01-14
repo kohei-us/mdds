@@ -767,7 +767,7 @@ private:
             {
                 node_ptr next_node = cur_node->next;
                 disconnect_all_nodes(cur_node.get());
-                cur_node = next_node;
+                cur_node = std::move(next_node);
             }
             last_node->next = end_node;
             end_node->prev = last_node;

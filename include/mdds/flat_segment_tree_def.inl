@@ -115,7 +115,7 @@ flat_segment_tree<Key, Value>::flat_segment_tree(const flat_segment_tree& r)
         // back to the previous node.
         node_ptr old_node = dest_node;
         dest_node = dest_node->next;
-        dest_node->prev = old_node;
+        dest_node->prev = std::move(old_node);
 
         if (src_node == r.m_right_leaf.get())
         {
@@ -380,7 +380,7 @@ template<typename Key, typename Value>
 
     p = get_insertion_pos_leaf(start_key, p);
     node_ptr start_pos(const_cast<node*>(p));
-    return insert_to_pos(start_pos, start_key, end_key, val);
+    return insert_to_pos(std::move(start_pos), start_key, end_key, val);
 }
 
 template<typename Key, typename Value>
@@ -456,7 +456,7 @@ void flat_segment_tree<Key, Value>::shift_left(key_type start_key, key_type end_
         last_seg_value = node_pos->value_leaf.value;
         node_ptr next = node_pos->next;
         disconnect_all_nodes(node_pos.get());
-        node_pos = next;
+        node_pos = std::move(next);
     }
 
     start_pos->value_leaf.value = last_seg_value;
