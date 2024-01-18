@@ -194,8 +194,7 @@ void segment_tree<KeyT, ValueT>::search_results_base::push_back_chain(value_chai
 }
 
 template<typename KeyT, typename ValueT>
-typename segment_tree<KeyT, ValueT>::const_iterator_base::value_type* segment_tree<
-    KeyT, ValueT>::const_iterator_base::operator++()
+auto segment_tree<KeyT, ValueT>::const_iterator_base::operator++() -> value_type*
 {
     // We don't check for end position flag for performance reasons.
     // The caller is responsible for making sure not to increment past
@@ -228,8 +227,7 @@ typename segment_tree<KeyT, ValueT>::const_iterator_base::value_type* segment_tr
 }
 
 template<typename KeyT, typename ValueT>
-typename segment_tree<KeyT, ValueT>::const_iterator_base::value_type* segment_tree<
-    KeyT, ValueT>::const_iterator_base::operator--()
+auto segment_tree<KeyT, ValueT>::const_iterator_base::operator--() -> value_type*
 {
     if (!mp_res_chains)
         return nullptr;
