@@ -304,7 +304,7 @@ struct custom_string
     {}
 };
 
-struct custom_string_trait
+struct custom_string_traits
 {
     typedef uint16_t key_unit_type;
     typedef custom_string key_type;
@@ -340,7 +340,7 @@ struct custom_string_trait
     }
 };
 
-typedef packed_trie_map<custom_string_trait, std::string> packed_custom_str_map_type;
+typedef packed_trie_map<custom_string_traits, std::string> packed_custom_str_map_type;
 
 void trie_packed_test_custom_string()
 {
