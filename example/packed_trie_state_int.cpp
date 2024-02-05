@@ -36,7 +36,7 @@ using std::endl;
 
 int main() try
 {
-    using map_type = mdds::packed_trie_map<mdds::trie::std_string_traits, int>;
+    using map_type = mdds::packed_trie_map<std::string, int>;
 
     // List of world's largest cities and their populations. The entries must
     // be sorted by the keys.

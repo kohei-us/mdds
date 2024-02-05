@@ -100,9 +100,7 @@ protected:
     using trie_node_child_pos_type = typename mdds::detail::get_iterator_type<
         typename std::remove_const<trie_node_type>::type::children_type, _is_const>::type;
 
-    using key_traits_type = typename trie_type::key_traits_type;
-    using key_type = typename key_traits_type::key_type;
-    using key_buffer_type = typename key_traits_type::key_buffer_type;
+    using key_type = typename trie_type::key_type;
     using trie_value_type = typename mdds::detail::const_or_not<typename trie_type::value_type, _is_const>::type;
 
 public:
@@ -115,18 +113,16 @@ public:
 
 protected:
     node_stack_type m_node_stack;
-    key_buffer_type m_buffer;
+    key_type m_buffer;
     key_type m_current_key;
     trie_value_type* m_current_value_ptr;
     iterator_type m_type;
 
     static trie_node_type* push_child_node_to_stack(
-        node_stack_type& node_stack, key_buffer_type& buf, trie_node_child_pos_type& child_pos)
+        node_stack_type& node_stack, key_type& buf, trie_node_child_pos_type& child_pos)
     {
-        using ktt = key_traits_type;
-
         trie_node_type* node = &child_pos->second;
-        ktt::push_back(buf, child_pos->first);
+        buf.push_back(child_pos->first);
         node_stack.emplace_back(node, node->children.begin());
 
         return node;
@@ -136,10 +132,8 @@ protected:
      * From the current node, move to its previous child node and descend all
      * the way to the leaf node.
      */
-    static trie_node_type* descend_to_previus_leaf_node(node_stack_type& node_stack, key_buffer_type& buf)
+    static trie_node_type* descend_to_previus_leaf_node(node_stack_type& node_stack, key_type& buf)
     {
-        using ktt = key_traits_type;
-
         trie_node_type* cur_node = nullptr;
 
         do
@@ -150,7 +144,7 @@ protected:
             auto& si = node_stack.back();
 
             --si.child_pos;
-            ktt::push_back(buf, si.child_pos->first);
+            buf.push_back(si.child_pos->first);
             cur_node = &si.child_pos->second;
             node_stack.emplace_back(cur_node, cur_node->children.end());
         } while (!cur_node->children.empty());
@@ -165,10 +159,9 @@ public:
     iterator_base() : m_current_value_ptr(nullptr), m_type(iterator_type::normal)
     {}
 
-    iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type)
-        : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)),
-          m_current_key(key_traits_type::to_key(m_buffer)), m_current_value_ptr(&m_node_stack.back().node->value),
-          m_type(type)
+    iterator_base(node_stack_type&& node_stack, key_type&& buf, iterator_type type)
+        : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)), m_current_key(m_buffer),
+          m_current_value_ptr(&m_node_stack.back().node->value), m_type(type)
     {}
 
     bool operator==(const iterator_base& other) const
@@ -199,8 +192,6 @@ public:
 
     iterator_base& operator++()
     {
-        using ktt = key_traits_type;
-
         trie_node_type* cur_node = m_node_stack.back().node;
 
         do
@@ -228,7 +219,7 @@ public:
                     }
 
                     // Move up one parent and see if it has an unvisited child node.
-                    ktt::pop_back(m_buffer);
+                    m_buffer.pop_back();
                     m_node_stack.pop_back();
                     auto& si = m_node_stack.back();
                     ++si.child_pos;
@@ -249,7 +240,7 @@ public:
             }
         } while (!cur_node->has_value);
 
-        m_current_key = ktt::to_key(m_buffer);
+        m_current_key = m_buffer;
         m_current_value_ptr = &cur_node->value;
         return *this;
     }
@@ -263,7 +254,6 @@ public:
 
     iterator_base& operator--()
     {
-        using ktt = key_traits_type;
         trie_node_type* cur_node = m_node_stack.back().node;
 
         if (m_type == iterator_type::end && cur_node->has_value)
@@ -290,7 +280,7 @@ public:
             {
                 // Go up one node.
 
-                ktt::pop_back(m_buffer);
+                m_buffer.pop_back();
                 m_node_stack.pop_back();
                 auto& si = m_node_stack.back();
                 cur_node = si.node;
@@ -314,7 +304,7 @@ public:
             do
             {
                 // Go up.
-                ktt::pop_back(m_buffer);
+                m_buffer.pop_back();
                 m_node_stack.pop_back();
                 auto& si = m_node_stack.back();
                 cur_node = si.node;
@@ -329,7 +319,7 @@ public:
         }
 
         assert(cur_node->has_value);
-        m_current_key = ktt::to_key(m_buffer);
+        m_current_key = m_buffer;
         m_current_value_ptr = &cur_node->value;
         return *this;
     }
@@ -356,7 +346,7 @@ class iterator : public iterator_base<_TrieType, false>
 
     using base_type = iterator_base<trie_type, false>;
     using node_stack_type = typename base_type::node_stack_type;
-    using key_buffer_type = typename base_type::key_buffer_type;
+    using key_type = typename base_type::key_type;
 
     iterator(empty_iterator_type t) : base_type(t)
     {}
@@ -365,7 +355,7 @@ public:
     iterator() : base_type()
     {}
 
-    iterator(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type)
+    iterator(node_stack_type&& node_stack, key_type&& buf, iterator_type type)
         : base_type(std::move(node_stack), std::move(buf), type)
     {}
 };
@@ -380,7 +370,7 @@ class const_iterator : public iterator_base<_TrieType, true>
 
     using base_type = iterator_base<trie_type, true>;
     using node_stack_type = typename base_type::node_stack_type;
-    using key_buffer_type = typename base_type::key_buffer_type;
+    using key_type = typename base_type::key_type;
 
     using base_type::m_buffer;
     using base_type::m_current_key;
@@ -395,7 +385,7 @@ public:
     const_iterator() : base_type()
     {}
 
-    const_iterator(node_stack_type&& node_stack, key_buffer_type&& buf, iterator_type type)
+    const_iterator(node_stack_type&& node_stack, key_type&& buf, iterator_type type)
         : base_type(std::move(node_stack), std::move(buf), type)
     {}
 
@@ -443,16 +433,14 @@ class search_results
     using node_stack_type = typename trie_type::const_node_stack_type;
 
     using trie_node = typename trie_type::trie_node;
-    using key_traits_type = typename trie_type::key_traits_type;
-    using key_type = typename key_traits_type::key_type;
-    using key_buffer_type = typename key_traits_type::key_buffer_type;
-    using key_unit_type = typename key_traits_type::key_unit_type;
+    using key_type = typename trie_type::key_type;
+    using key_unit_type = typename key_type::value_type;
 
     const trie_node* m_node;
-    key_buffer_type m_buffer;
+    key_type m_buffer;
     node_stack_type m_node_stack;
 
-    search_results(const trie_node* node, key_buffer_type&& buf) : m_node(node), m_buffer(buf)
+    search_results(const trie_node* node, key_type&& buf) : m_node(node), m_buffer(buf)
     {}
 
 public:
@@ -465,7 +453,7 @@ public:
             return const_iterator(empty_iterator);
 
         // Push the root node.
-        key_buffer_type buf(m_buffer);
+        key_type buf(m_buffer);
         node_stack_type node_stack;
         node_stack.emplace_back(m_node, m_node->children.begin());
 
@@ -489,7 +477,7 @@ public:
 
         node_stack_type node_stack;
         node_stack.emplace_back(m_node, m_node->children.end());
-        return const_iterator(std::move(node_stack), key_buffer_type(m_buffer), iterator_type::end);
+        return const_iterator(std::move(node_stack), key_type(m_buffer), iterator_type::end);
     }
 };
 
@@ -506,10 +494,8 @@ class packed_iterator_base
     using stack_item = typename trie_type::stack_item;
     using node_stack_type = typename trie_type::node_stack_type;
 
-    using key_traits_type = typename trie_type::key_traits_type;
-    using key_type = typename key_traits_type::key_type;
-    using key_buffer_type = typename key_traits_type::key_buffer_type;
-    using key_unit_type = typename key_traits_type::key_unit_type;
+    using key_type = typename trie_type::key_type;
+    using key_unit_type = typename key_type::value_type;
 
 public:
     // iterator traits
@@ -521,7 +507,7 @@ public:
 
 private:
     node_stack_type m_node_stack;
-    key_buffer_type m_buffer;
+    key_type m_buffer;
     value_type m_current_value;
     iterator_type m_type;
 
@@ -529,14 +515,12 @@ private:
      * Given a child offset position (child_pos), jump to the actual child
      * node position and push that onto the stack as stack_item.
      */
-    static void push_child_node_to_stack(node_stack_type& node_stack, key_buffer_type& buf, const uintptr_t* child_pos)
+    static void push_child_node_to_stack(node_stack_type& node_stack, key_type& buf, const uintptr_t* child_pos)
     {
-        using ktt = key_traits_type;
-
         const uintptr_t* node_pos = node_stack.back().node_pos;
 
         key_unit_type c = static_cast<key_unit_type>(*child_pos);
-        ktt::push_back(buf, c);
+        buf.push_back(c);
         ++child_pos;
         size_t offset = static_cast<size_t>(*child_pos);
         node_pos -= offset; // Jump to the head of the child node.
@@ -551,10 +535,8 @@ private:
         node_stack.emplace_back(node_pos, child_pos, child_end);
     }
 
-    static const void descend_to_previus_leaf_node(node_stack_type& node_stack, key_buffer_type& buf)
+    static const void descend_to_previus_leaf_node(node_stack_type& node_stack, key_type& buf)
     {
-        using ktt = key_traits_type;
-
         const uintptr_t* node_pos = nullptr;
         size_t index_size = 0;
 
@@ -570,7 +552,7 @@ private:
             --si->child_pos;
             key_unit_type c = *si->child_pos;
             node_pos -= offset; // Jump to the head of the child node.
-            ktt::push_back(buf, c);
+            buf.push_back(c);
 
             const uintptr_t* p = node_pos;
             ++p;
@@ -589,12 +571,12 @@ public:
     packed_iterator_base() : m_type(iterator_type::normal)
     {}
 
-    packed_iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf, const typename trie_type::value_type& v)
-        : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)),
-          m_current_value(key_traits_type::to_key(m_buffer), v), m_type(iterator_type::normal)
+    packed_iterator_base(node_stack_type&& node_stack, key_type&& buf, const typename trie_type::value_type& v)
+        : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)), m_current_value(m_buffer, v),
+          m_type(iterator_type::normal)
     {}
 
-    packed_iterator_base(node_stack_type&& node_stack, key_buffer_type&& buf)
+    packed_iterator_base(node_stack_type&& node_stack, key_type&& buf)
         : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)), m_type(iterator_type::end)
     {}
 
@@ -626,8 +608,6 @@ public:
 
     packed_iterator_base& operator++()
     {
-        using ktt = key_traits_type;
-
         stack_item* si = &m_node_stack.back();
         const typename trie_type::value_type* pv = nullptr;
         size_t index_size = *(si->node_pos + 1);
@@ -657,7 +637,7 @@ public:
                     }
 
                     // Move up one parent and see if it has an unvisited child node.
-                    ktt::pop_back(m_buffer);
+                    m_buffer.pop_back();
                     m_node_stack.pop_back();
                     si = &m_node_stack.back();
                     std::advance(si->child_pos, 2);
@@ -682,7 +662,7 @@ public:
         } while (!pv);
 
         assert(pv);
-        m_current_value = value_type(ktt::to_key(m_buffer), *pv);
+        m_current_value = value_type(m_buffer, *pv);
 
         return *this;
     }
@@ -696,8 +676,6 @@ public:
 
     packed_iterator_base& operator--()
     {
-        using ktt = key_traits_type;
-
         stack_item* si = &m_node_stack.back();
         const typename trie_type::value_type* pv =
             reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
@@ -728,7 +706,7 @@ public:
             {
                 // Go up one node.
 
-                ktt::pop_back(m_buffer);
+                m_buffer.pop_back();
                 m_node_stack.pop_back();
                 si = &m_node_stack.back();
                 const uintptr_t* p = si->node_pos;
@@ -760,7 +738,7 @@ public:
             do
             {
                 // Go up.
-                ktt::pop_back(m_buffer);
+                m_buffer.pop_back();
                 m_node_stack.pop_back();
                 si = &m_node_stack.back();
                 pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
@@ -777,7 +755,7 @@ public:
         }
 
         assert(pv);
-        m_current_value = value_type(ktt::to_key(m_buffer), *pv);
+        m_current_value = value_type(m_buffer, *pv);
 
         return *this;
     }
@@ -797,15 +775,13 @@ class packed_search_results
     friend trie_type;
     using node_stack_type = typename trie_type::node_stack_type;
 
-    using key_traits_type = typename trie_type::key_traits_type;
-    using key_type = typename key_traits_type::key_type;
-    using key_buffer_type = typename key_traits_type::key_buffer_type;
-    using key_unit_type = typename key_traits_type::key_unit_type;
+    using key_type = typename trie_type::key_type;
+    using key_unit_type = typename key_type::value_type;
 
     const uintptr_t* m_node;
-    key_buffer_type m_buffer;
+    key_type m_buffer;
 
-    packed_search_results(const uintptr_t* node, key_buffer_type&& buf) : m_node(node), m_buffer(std::move(buf))
+    packed_search_results(const uintptr_t* node, key_type&& buf) : m_node(node), m_buffer(std::move(buf))
     {}
 
     node_stack_type get_root_node() const
@@ -857,7 +833,7 @@ public:
             return const_iterator(empty_iterator);
 
         // Push the root node.
-        key_buffer_type buf(m_buffer);
+        key_type buf(m_buffer);
         node_stack_type node_stack = get_root_node();
 
         while (!node_stack.back().has_value())
@@ -880,7 +856,7 @@ public:
         node_stack_type node_stack = get_root_node();
         auto& si = node_stack.back();
         si.child_pos = si.child_end;
-        return const_iterator(std::move(node_stack), key_buffer_type(m_buffer));
+        return const_iterator(std::move(node_stack), key_type(m_buffer));
     }
 };
 

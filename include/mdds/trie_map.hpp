@@ -41,106 +41,6 @@ namespace mdds {
 
 namespace trie {
 
-/**
- * Template for a key type implemented using a typical STL container type.
- */
-template<typename ContainerT>
-struct std_container_traits
-{
-    /** type used to store a key value. */
-    using key_type = ContainerT;
-
-    /**
-     * type used to build an intermediate key value, from which a final key
-     * value is to be created.  It is expected to be an array structure whose
-     * content is contiguous in memory.  Its elements must be of
-     * key_unit_type.
-     */
-    using key_buffer_type = key_type;
-
-    /**
-     * type that represents a single character inside a key or a key buffer
-     * object.  A key object is expected to store a series of elements of this
-     * type.
-     */
-    using key_unit_type = typename key_type::value_type;
-
-    /**
-     * Function called to create and initialize a buffer object from a given
-     * initial key value.
-     *
-     * @param str pointer to the first character of the key value.
-     * @param length length of the key value.
-     *
-     * @return buffer object containing the specified key value.
-     */
-    static key_buffer_type to_key_buffer(const key_unit_type* str, size_t length)
-    {
-        return key_buffer_type(str, length);
-    }
-
-    /**
-     * Function called to create and initialize a buffer object from a given
-     * initial key value.
-     *
-     * @param key key value
-     *
-     * @return buffer object containing the specified key value.
-     */
-    static key_buffer_type to_key_buffer(const key_type& key)
-    {
-        return key_buffer_type(key);
-    }
-
-    static const key_unit_type* buffer_data(const key_buffer_type& buf)
-    {
-        return buf.data();
-    }
-
-    static size_t buffer_size(const key_buffer_type& buf)
-    {
-        return buf.size();
-    }
-
-    /**
-     * Function called to append a single character to the end of a key
-     * buffer.
-     *
-     * @param buffer buffer object to append character to.
-     * @param c character to append to the buffer.
-     */
-    static void push_back(key_buffer_type& buffer, key_unit_type c)
-    {
-        buffer.push_back(c);
-    }
-
-    /**
-     * Function called to remove a single character from the tail of an
-     * existing key buffer.
-     *
-     * @param buffer buffer object to remove character from.
-     */
-    static void pop_back(key_buffer_type& buffer)
-    {
-        buffer.pop_back();
-    }
-
-    /**
-     * Function called to create a final string object from an existing
-     * buffer.
-     *
-     * @param buf buffer object to create a final string object from.
-     *
-     * @return string object whose content is created from the buffer object.
-     */
-    static key_type to_key(const key_buffer_type& buf)
-    {
-        return buf;
-    }
-};
-
-using std_string_traits = std_container_traits<std::string>;
-
 /** Serializer for numeric data types. */
 template<typename T>
 struct numeric_value_serializer
@@ -206,7 +106,7 @@ struct value_serializer<std::string> : variable_value_serializer<std::string>
 
 } // namespace trie
 
-template<typename KeyTraits, typename ValueT>
+template<typename KeyT, typename ValueT>
 class packed_trie_map;
 
 /**
@@ -215,10 +115,10 @@ class packed_trie_map;
  * are stored in an ordered tree structure known as trie, or sometimes
  * referred to as prefix tree.
  */
-template<typename KeyTraits, typename ValueT>
+template<typename KeyT, typename ValueT>
 class trie_map
 {
-    friend class packed_trie_map<KeyTraits, ValueT>;
+    friend class packed_trie_map<KeyT, ValueT>;
     friend class trie::detail::iterator_base<trie_map, true>;
     friend class trie::detail::iterator_base<trie_map, false>;
     friend class trie::detail::const_iterator<trie_map>;
@@ -228,11 +128,9 @@ class trie_map
     friend trie::detail::get_node_stack_type<trie_map, std::false_type>;
 
 public:
-    typedef packed_trie_map<KeyTraits, ValueT> packed_type;
-    typedef KeyTraits key_traits_type;
-    typedef typename key_traits_type::key_type key_type;
-    typedef typename key_traits_type::key_buffer_type key_buffer_type;
-    typedef typename key_traits_type::key_unit_type key_unit_type;
+    typedef packed_trie_map<KeyT, ValueT> packed_type;
+    typedef KeyT key_type;
+    typedef typename key_type::value_type key_unit_type;
     typedef ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
@@ -444,7 +342,7 @@ private:
         const key_unit_type* prefix, const key_unit_type* prefix_end) const;
 
     template<bool IsConst>
-    key_buffer_type build_key_buffer_from_node_stack(const std::vector<stack_item<IsConst>>& node_stack) const;
+    key_type build_key_buffer_from_node_stack(const std::vector<stack_item<IsConst>>& node_stack) const;
 
     void count_values(size_type& n, const trie_node& node) const;
 
@@ -462,17 +360,15 @@ private:
  * Note that, since this container is immutable, the content of the
  * container cannot be modified once constructed.
  */
-template<typename KeyTraits, typename ValueT>
+template<typename KeyT, typename ValueT>
 class packed_trie_map
 {
     friend class trie::detail::packed_iterator_base<packed_trie_map>;
     friend class trie::detail::packed_search_results<packed_trie_map>;
 
 public:
-    typedef KeyTraits key_traits_type;
-    typedef typename key_traits_type::key_type key_type;
-    typedef typename key_traits_type::key_buffer_type key_buffer_type;
-    typedef typename key_traits_type::key_unit_type key_unit_type;
+    typedef KeyT key_type;
+    typedef typename key_type::value_type key_unit_type;
     typedef ValueT value_type;
     typedef size_t size_type;
     typedef std::pair<key_type, value_type> key_value_type;
@@ -564,7 +460,7 @@ public:
      *
      * @param other mdds::trie_map instance to build content from.
      */
-    packed_trie_map(const trie_map<key_traits_type, value_type>& other);
+    packed_trie_map(const trie_map<key_type, value_type>& other);
 
     packed_trie_map(const packed_trie_map& other);
 
@@ -673,12 +569,12 @@ private:
         trie_node& root, node_pool_type& node_pool, const entry* start, const entry* end, size_type pos);
 
     size_type compact_node(const trie_node& node);
-    size_type compact_node(const typename trie_map<KeyTraits, ValueT>::trie_node& node);
+    size_type compact_node(const typename trie_map<KeyT, ValueT>::trie_node& node);
 
     void push_child_offsets(size_type offset, const child_offsets_type& child_offsets);
 
     void compact(const trie_node& root);
-    void compact(const typename trie_map<KeyTraits, ValueT>::trie_node& root);
+    void compact(const typename trie_map<KeyT, ValueT>::trie_node& root);
 
     const uintptr_t* find_prefix_node(
         const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
@@ -694,7 +590,7 @@ private:
     void traverse_buffer(_Handler hdl) const;
 
 #ifdef MDDS_TRIE_MAP_DEBUG
-    void dump_node(key_buffer_type& buffer, const trie_node& node) const;
+    void dump_node(key_type& buffer, const trie_node& node) const;
     void dump_trie(const trie_node& root) const;
     void dump_packed_trie() const;
 #endif

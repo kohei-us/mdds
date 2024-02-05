@@ -42,8 +42,8 @@
 using namespace std;
 using namespace mdds;
 
-using packed_int_map_type = packed_trie_map<trie::std_string_traits, int>;
-using packed_str_map_type = packed_trie_map<trie::std_string_traits, std::string>;
+using packed_int_map_type = packed_trie_map<std::string, int>;
+using packed_str_map_type = packed_trie_map<std::string, std::string>;
 
 bool verify_entries(const packed_int_map_type& db, const packed_int_map_type::entry* entries, size_t entry_size)
 {
@@ -259,7 +259,7 @@ std::ostream& operator<<(std::ostream& os, const value_wrapper& vw)
     return os;
 }
 
-typedef packed_trie_map<trie::std_string_traits, value_wrapper> packed_value_map_type;
+typedef packed_trie_map<std::string, value_wrapper> packed_value_map_type;
 
 void trie_packed_test_value_life_cycle()
 {
@@ -304,43 +304,47 @@ struct custom_string
     {}
 };
 
-struct custom_string_traits
+class custom_string_16
 {
-    typedef uint16_t key_unit_type;
-    typedef custom_string key_type;
-    typedef std::vector<key_unit_type> key_buffer_type;
+    using buffer_type = std::vector<std::uint16_t>;
+    buffer_type m_buffer;
 
-    static key_buffer_type to_key_buffer(const key_unit_type* str, size_t length)
+public:
+    using value_type = buffer_type::value_type;
+    using size_type = buffer_type::size_type;
+
+    custom_string_16() = default;
+
+    custom_string_16(const value_type* p, size_type n) : m_buffer(p, p + n)
+    {}
+
+    const value_type* data() const
     {
-        key_buffer_type buf;
-        const key_unit_type* str_end = str + length;
-        for (; str != str_end; ++str)
-            buf.push_back(*str);
-
-        return buf;
+        return m_buffer.data();
     }
 
-    static void push_back(key_buffer_type& buffer, key_unit_type c)
+    value_type* data()
     {
-        buffer.push_back(c);
+        return m_buffer.data();
     }
 
-    static void pop_back(key_buffer_type& buffer)
+    void push_back(value_type c)
     {
-        buffer.pop_back();
+        m_buffer.push_back(c);
     }
 
-    static key_type to_key(const key_buffer_type& buf)
+    void pop_back()
     {
-        // Cast all uint16_t chars to regular chars.
-        key_type s;
+        m_buffer.pop_back();
+    }
 
-        std::for_each(buf.begin(), buf.end(), [&](key_unit_type c) { s.data.push_back(static_cast<char>(c)); });
-        return s;
+    size_type size() const
+    {
+        return m_buffer.size();
     }
 };
 
-typedef packed_trie_map<custom_string_traits, std::string> packed_custom_str_map_type;
+using packed_custom_str_map_type = packed_trie_map<custom_string_16, std::string>;
 
 void trie_packed_test_custom_string()
 {
@@ -360,6 +364,7 @@ void trie_packed_test_custom_string()
 
     size_t n_entries = std::size(entries);
     packed_custom_str_map_type db(entries, n_entries);
+
     for (size_t i = 0; i < n_entries; ++i)
     {
         auto it = db.find(entries[i].key, entries[i].keylen);
@@ -372,10 +377,8 @@ void trie_packed_test_custom_string()
     size_t n = std::distance(results.begin(), results.end());
     assert(n == 2);
     auto it = results.begin();
-    assert(it->first.data == it->second);
     assert(it->second == "Max");
     ++it;
-    assert(it->first.data == it->second);
     assert(it->second == "Ming");
     ++it;
     assert(it == results.end());
@@ -398,7 +401,7 @@ void trie_packed_test_iterator()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using trie_map_type = trie_map<trie::std_string_traits, int>;
+    using trie_map_type = trie_map<std::string, int>;
     using packed_type = trie_map_type::packed_type;
     using kv = packed_type::key_value_type;
 
@@ -488,7 +491,7 @@ void trie_packed_test_prefix_search1()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using trie_map_type = trie_map<trie::std_string_traits, int>;
+    using trie_map_type = trie_map<std::string, int>;
     using packed_type = trie_map_type::packed_type;
 
     trie_map_type db;
@@ -534,7 +537,7 @@ void trie_packed_test_key_as_input()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     trie_map_type db;
 
     db.insert(std::string("string as key"), 1);
@@ -559,7 +562,7 @@ void trie_packed_test_copying()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using map_type = packed_trie_map<trie::std_string_traits, int>;
+    using map_type = packed_trie_map<std::string, int>;
 
     map_type::entry entries[] = {
         {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
@@ -631,7 +634,7 @@ void trie_packed_test_non_equal()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using map_type = packed_trie_map<trie::std_string_traits, int>;
+    using map_type = packed_trie_map<std::string, int>;
 
     map_type::entry entries1[] = {
         {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
@@ -1019,7 +1022,7 @@ void trie_packed_test_save_and_load_state_4()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using map_type = packed_trie_map<trie::std_string_traits, std::vector<int64_t>>;
+    using map_type = packed_trie_map<std::string, std::vector<int64_t>>;
 
     std::vector<map_type::entry> entries = {
         {MDDS_ASCII("Abby"), {65, 98, 98, 121}},
@@ -1055,7 +1058,7 @@ void trie_packed_test_save_and_load_state_5()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using map_type = packed_trie_map<trie::std_string_traits, float>;
+    using map_type = packed_trie_map<std::string, float>;
 
     std::vector<map_type::entry> entries = {
         {MDDS_ASCII("Abby"), 1.0f},  {MDDS_ASCII("Ashley"), 1.1f}, {MDDS_ASCII("Christal"), 1.2f},
@@ -1088,7 +1091,7 @@ void trie_packed_test_save_and_load_state_6()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using map_type = packed_trie_map<trie::std_string_traits, SeqT>;
+    using map_type = packed_trie_map<std::string, SeqT>;
 
     std::vector<typename map_type::entry> entries = {
         {MDDS_ASCII("Abby"), {65.0, 98.1, 98.2, 121.3}},
@@ -1124,7 +1127,7 @@ void trie_packed_test_save_and_load_state_7()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using map_type = packed_trie_map<trie::std_string_traits, _custom_variable_value>;
+    using map_type = packed_trie_map<std::string, _custom_variable_value>;
 
     std::vector<map_type::entry> entries = {
         {MDDS_ASCII("Alan"), 1.2f},        {MDDS_ASCII("Cory"), -125},   {MDDS_ASCII("Eleni"), 966},
@@ -1156,7 +1159,7 @@ void trie_packed_test_save_and_load_state_8()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using map_type = packed_trie_map<trie::std_string_traits, _custom_fixed_value>;
+    using map_type = packed_trie_map<std::string, _custom_fixed_value>;
 
     std::vector<map_type::entry> entries = {
         {MDDS_ASCII("Bernardine"), "zero"}, {MDDS_ASCII("Donny"), "two"},     {MDDS_ASCII("Julia"), "one"},
@@ -1210,8 +1213,8 @@ void trie_test1()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, custom_string> trie_map_type;
-    typedef packed_trie_map<trie::std_string_traits, custom_string> packed_trie_map_type;
+    typedef trie_map<std::string, custom_string> trie_map_type;
+    typedef packed_trie_map<std::string, custom_string> packed_trie_map_type;
 
     trie_map_type db;
     const trie_map_type& dbc = db;
@@ -1338,9 +1341,8 @@ void trie_test2()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using key_trait = trie::std_container_traits<std::vector<uint16_t>>;
-    using map_type = trie_map<key_trait, int>;
-    using key_type = map_type::key_type;
+    using key_type = std::vector<uint16_t>;
+    using map_type = trie_map<key_type, int>;
 
     auto print_key = [](const std::vector<uint16_t>& key, const char* msg) {
         cout << msg << ": ";
@@ -1377,7 +1379,7 @@ void trie_test_iterator_empty()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -1394,7 +1396,7 @@ void trie_test_iterator()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     using kv = trie_map_type::key_value_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
@@ -1496,7 +1498,7 @@ void trie_test_iterator_with_erase()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     using kv = trie_map_type::key_value_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
@@ -1571,7 +1573,7 @@ void trie_test_find_iterator()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -1673,7 +1675,7 @@ void trie_test_prefix_search()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -1740,7 +1742,7 @@ void trie_test_key_as_input()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -1765,7 +1767,7 @@ void trie_test_copying()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     trie_map_type db;
     assert(db.empty());
 
@@ -1857,7 +1859,7 @@ void trie_test_value_update_from_iterator()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    typedef trie_map<trie::std_string_traits, int> trie_map_type;
+    typedef trie_map<std::string, int> trie_map_type;
     trie_map_type db;
     db.insert("one", 1);
     db.insert("two", 2);
