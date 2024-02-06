@@ -30,15 +30,15 @@
 #include <mdds/trie_map.hpp>
 #include <iostream>
 
-using std::cout;
-using std::endl;
-
 int main()
 {
+    //!code-start: type
     using trie_map_type = mdds::packed_trie_map<std::string, int>;
+    //!code-end: type
 
     // Entries must be known prior to creating the instance, and they must be
     // sorted by the key in ascending order.
+    //!code-start: populate
     trie_map_type::entry entries[] =
     {
         { MDDS_ASCII("Apex"),           42214 },
@@ -65,47 +65,50 @@ int main()
         { MDDS_ASCII("Wilson"),         49628 },
         { MDDS_ASCII("Winston-Salem"), 236441 },
     };
+    //!code-end: populate
 
     // Cities in North Carolina and their populations in 2013.
-    trie_map_type nc_cities(entries, MDDS_N_ELEMENTS(entries));
+    //!code-start: inst
+    trie_map_type nc_cities(entries, std::size(entries));
+    //!code-end: inst
 
-    cout << "Cities that start with 'Cha' and their populations:" << endl;
+    std::cout << "Cities that start with 'Cha' and their populations:" << std::endl;
     auto results = nc_cities.prefix_search("Cha");
     for (const auto& kv : results)
     {
-        cout << "  " << kv.first << ": " << kv.second << endl;
+        std::cout << "  " << kv.first << ": " << kv.second << std::endl;
     }
 
-    cout << "Cities that start with 'W' and their populations:" << endl;
+    std::cout << "Cities that start with 'W' and their populations:" << std::endl;
     results = nc_cities.prefix_search("W");
     for (const auto& kv : results)
     {
-        cout << "  " << kv.first << ": " << kv.second << endl;
+        std::cout << "  " << kv.first << ": " << kv.second << std::endl;
     }
 
-    cout << "Cities that start with 'C' and their populations:" << endl;
+    std::cout << "Cities that start with 'C' and their populations:" << std::endl;
     results = nc_cities.prefix_search("C");
     for (const auto& kv : results)
     {
-        cout << "  " << kv.first << ": " << kv.second << endl;
+        std::cout << "  " << kv.first << ": " << kv.second << std::endl;
     }
 
     // Individual search.
     auto it = nc_cities.find("Wilmington");
-    cout << "Population of Wilmington: " << it->second << endl;
+    std::cout << "Population of Wilmington: " << it->second << std::endl;
 
     // You get an end position iterator when the container doesn't have the
     // specified key.
     it = nc_cities.find("Asheboro");
 
-    cout << "Population of Asheboro: ";
+    std::cout << "Population of Asheboro: ";
 
     if (it == nc_cities.end())
-        cout << "not found";
+        std::cout << "not found";
     else
-        cout << it->second;
+        std::cout << it->second;
 
-    cout << endl;
+    std::cout << std::endl;
 
     return EXIT_SUCCESS;
 }

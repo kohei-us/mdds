@@ -29,16 +29,18 @@
 #include <mdds/trie_map.hpp>
 #include <iostream>
 
-using std::cout;
-using std::endl;
-
 int main()
 {
+    //!code-start: type
     using trie_map_type = mdds::trie_map<std::string, int>;
+    //!code-end: type
 
+    //!code-start: inst
     // Cities in North Carolina and their populations in 2013.
     trie_map_type nc_cities;
+    //!code-end: inst
 
+    //!code-start: populate
     // Insert key-value pairs.
     nc_cities.insert("Charlotte",     792862);
     nc_cities.insert("Raleigh",       431746);
@@ -63,47 +65,59 @@ int main()
     nc_cities.insert("Apex",          42214);
     nc_cities.insert("Hickory",       40361);
     nc_cities.insert("Goldsboro",     36306);
+    //!code-end: populate
 
-    cout << "Cities that start with 'Cha' and their populations:" << endl;
+    //!code-start: search-cha
+    std::cout << "Cities that start with 'Cha' and their populations:" << std::endl;
     auto results = nc_cities.prefix_search("Cha");
     for (const auto& kv : results)
     {
-        cout << "  " << kv.first << ": " << kv.second << endl;
+        std::cout << "  " << kv.first << ": " << kv.second << std::endl;
     }
+    //!code-end: search-cha
 
-    cout << "Cities that start with 'W' and their populations:" << endl;
+    //!code-start: search-w
+    std::cout << "Cities that start with 'W' and their populations:" << std::endl;
     results = nc_cities.prefix_search("W");
     for (const auto& kv : results)
     {
-        cout << "  " << kv.first << ": " << kv.second << endl;
+        std::cout << "  " << kv.first << ": " << kv.second << std::endl;
     }
+    //!code-end: search-w
 
-    // Create a compressed version of the container.  It works nearly identically.
+    //!code-start: pack
     auto packed = nc_cities.pack();
+    //!code-end: pack
 
-    cout << "Cities that start with 'C' and their populations:" << endl;
+    //!code-start: search-c
+    std::cout << "Cities that start with 'C' and their populations:" << std::endl;
     auto packed_results = packed.prefix_search("C");
     for (const auto& kv : packed_results)
     {
-        cout << "  " << kv.first << ": " << kv.second << endl;
+        std::cout << "  " << kv.first << ": " << kv.second << std::endl;
     }
+    //!code-end: search-c
 
+    //!code-start: find-one
     // Individual search.
     auto it = packed.find("Wilmington");
-    cout << "Population of Wilmington: " << it->second << endl;
+    std::cout << "Population of Wilmington: " << it->second << std::endl;
+    //!code-end: find-one
 
+    //!code-start: find-none
     // You get an end position iterator when the container doesn't have the
     // specified key.
     it = packed.find("Asheboro");
 
-    cout << "Population of Asheboro: ";
+    std::cout << "Population of Asheboro: ";
 
     if (it == packed.end())
-        cout << "not found";
+        std::cout << "not found";
     else
-        cout << it->second;
+        std::cout << it->second;
 
-    cout << endl;
+    std::cout << std::endl;
+    //!code-end: find-none
 
     return EXIT_SUCCESS;
 }

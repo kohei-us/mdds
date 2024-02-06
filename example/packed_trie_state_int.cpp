@@ -31,18 +31,18 @@
 #include <fstream>
 #include <mdds/trie_map.hpp>
 
-using std::cout;
-using std::endl;
-
 int main() try
 {
+    //!code-start: type
     using map_type = mdds::packed_trie_map<std::string, int>;
+    //!code-end: type
 
     // List of world's largest cities and their populations. The entries must
     // be sorted by the keys.
     //
     // c.f. https://en.wikipedia.org/wiki/List_of_largest_cities#cities
 
+    //!code-start: entries
     std::vector<map_type::entry> entries =
     {
         { MDDS_ASCII("Ahmedabad"),        7681000  },
@@ -127,47 +127,63 @@ int main() try
         { MDDS_ASCII("Xi'an"),            7444000  },
         { MDDS_ASCII("Yangon"),           5157000  },
     };
+    //!code-end: entries
 
+    //!code-start: inst
     map_type cities(entries.data(), entries.size());
-    cout << "Number of cities: " << cities.size() << endl;
+    //!code-end: inst
 
-    cout << endl;
+    //!code-start: print-n-cities
+    std::cout << "Number of cities: " << cities.size() << std::endl;
+    //!code-end: print-n-cities
+
+    std::cout << std::endl;
 
     {
-        cout << "Cities that begin with 'S':" << endl;
+        //!code-start: search-s
+        std::cout << "Cities that begin with 'S':" << std::endl;
         auto results = cities.prefix_search("S");
         for (const auto& city : results)
-            cout << "  * " << city.first << ": " << city.second << endl;
+            std::cout << "  * " << city.first << ": " << city.second << std::endl;
+        //!code-end: search-s
     }
 
-    cout << endl;
+    std::cout << std::endl;
 
     {
+        //!code-start: save-state-cities
         std::ofstream outfile("cities.bin", std::ios::binary);
         cities.save_state(outfile);
+        //!code-end: save-state-cities
     }
 
+    //!code-start: load-state-cities
     map_type cities_loaded;
 
-    {
-        std::ifstream infile("cities.bin", std::ios::binary);
-        cities_loaded.load_state(infile);
-    }
+    std::ifstream infile("cities.bin", std::ios::binary);
+    cities_loaded.load_state(infile);
+    //!code-end: load-state-cities
 
-    std::ios_base::fmtflags origflags = cout.flags();
-    cout << "Equal to the original? " << std::boolalpha << (cities == cities_loaded) << endl;
-    cout.setf(origflags);
+    std::ios_base::fmtflags origflags = std::cout.flags();
+    //!code-start: check-equal
+    std::cout << "Equal to the original? " << std::boolalpha << (cities == cities_loaded) << std::endl;
+    //!code-end: check-equal
+    std::cout.setf(origflags);
 
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << "Number of cities: " << cities_loaded.size() << endl;
+    //!code-start: print-n-cities-2
+    std::cout << "Number of cities: " << cities_loaded.size() << std::endl;
+    //!code-end: print-n-cities-2
 
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << "Cities that begin with 'S':" << endl;
+    //!code-start: search-s-2
+    std::cout << "Cities that begin with 'S':" << std::endl;
     auto results = cities_loaded.prefix_search("S");
     for (const auto& city : results)
-        cout << "  * " << city.first << ": " << city.second << endl;
+        std::cout << "  * " << city.first << ": " << city.second << std::endl;
+    //!code-end: search-s-2
 
     return EXIT_SUCCESS;
 }

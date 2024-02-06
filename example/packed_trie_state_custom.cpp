@@ -26,13 +26,15 @@
  *
  ************************************************************************/
 
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+#include <cassert>
 #include <iostream>
 #include <fstream>
 #include <mdds/trie_map.hpp>
 
-using std::cout;
-using std::endl;
-
+//!code-start: value-type
 enum affiliated_party_t : uint8_t
 {
     unaffiliated = 0,
@@ -50,6 +52,7 @@ struct us_president
     uint16_t year;
     affiliated_party_t party;
 };
+//!code-end: value-type
 
 std::ostream& operator<< (std::ostream& os, affiliated_party_t v)
 {
@@ -73,6 +76,7 @@ bool operator== (const us_president& left, const us_president& right)
     return left.year == right.year && left.party == right.party;
 }
 
+//!code-start: custom-serializer
 struct us_president_serializer
 {
     union bin_buffer
@@ -83,7 +87,7 @@ struct us_president_serializer
     };
 
     static constexpr bool variable_size = false;
-    static constexpr size_t value_size = 3;
+    static constexpr std::size_t value_size = 3;
 
     static void write(std::ostream& os, const us_president& v)
     {
@@ -98,7 +102,7 @@ struct us_president_serializer
         os.write(buf.buffer, 1);
     }
 
-    static void read(std::istream& is, size_t /*n*/, us_president& v)
+    static void read(std::istream& is, std::size_t n, us_president& v)
     {
         // For a fixed-size value type, this should equal the defined value size.
         assert(n == 3);
@@ -114,16 +118,19 @@ struct us_president_serializer
         v.party = buf.party;
     }
 };
+//!code-end: custom-serializer
 
 int main() try
 {
-
+    //!code-start: trie-type
     using map_type = mdds::packed_trie_map<std::string, us_president>;
+    //!code-end: trie-type
 
     // source: https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States
     //
     // The entries must be sorted by the keys.
 
+    //!code-start: entries
     std::vector<map_type::entry> entries =
     {
         { MDDS_ASCII("Abraham Lincoln"),        { 1861, republican_national_union } },
@@ -172,34 +179,45 @@ int main() try
         { MDDS_ASCII("Woodrow Wilson"),         { 1913, democratic                } },
         { MDDS_ASCII("Zachary Taylor"),         { 1849, whig                      } },
     };
+    //!code-end: entries
 
+    //!code-start: inst
     map_type us_presidents(entries.data(), entries.size());
-    cout << "Number of entries: " << us_presidents.size() << endl;
+    //!code-end: inst
+    //!code-start: print-n-entries
+    std::cout << "Number of entries: " << us_presidents.size() << std::endl;
+    //!code-end: print-n-entries
 
-    cout << endl;
+    std::cout << std::endl;
 
     {
+        //!code-start: save-state
         std::ofstream outfile("us-presidents.bin", std::ios::binary);
         us_presidents.save_state<us_president_serializer>(outfile);
+        //!code-end: save-state
     }
 
+    //!code-start: load-state
     map_type us_presidents_loaded;
 
-    {
-        std::ifstream infile("us-presidents.bin", std::ios::binary);
-        us_presidents_loaded.load_state<us_president_serializer>(infile);
-    }
+    std::ifstream infile("us-presidents.bin", std::ios::binary);
+    us_presidents_loaded.load_state<us_president_serializer>(infile);
+    //!code-end: load-state
 
-    std::ios_base::fmtflags origflags = cout.flags();
-    cout << "Equal to the original? " << std::boolalpha << (us_presidents == us_presidents_loaded) << endl;
-    cout.setf(origflags);
+    std::ios_base::fmtflags origflags = std::cout.flags();
+    //!code-start: compare
+    std::cout << "Equal to the original? " << std::boolalpha << (us_presidents == us_presidents_loaded) << std::endl;
+    //!code-end: compare
+    std::cout.setf(origflags);
 
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << "Presidents whose first name is 'John':" << endl;
+    //!code-start: search-john
+    std::cout << "Presidents whose first name is 'John':" << std::endl;
     auto results = us_presidents_loaded.prefix_search("John");
     for (const auto& entry : results)
-        cout << "  * " << entry.first << " (" << entry.second.year << "; " << entry.second.party << ")" << endl;
+        std::cout << "  * " << entry.first << " (" << entry.second.year << "; " << entry.second.party << ")" << std::endl;
+    //!code-end: search-john
 
     return EXIT_SUCCESS;
 }
