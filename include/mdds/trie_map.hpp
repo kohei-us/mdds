@@ -186,6 +186,66 @@ private:
     using node_stack_type = std::vector<stack_item<false>>;
 
 public:
+    class const_node_type
+    {
+        friend class trie_map;
+
+        const trie_node* m_ref_node = nullptr;
+
+        const_node_type(const trie_node* ref_node);
+
+    public:
+        const_node_type();
+        const_node_type(const const_node_type& other);
+
+        const_node_type& operator=(const const_node_type& other);
+
+        /**
+         * Query whether or not the node references an existing node in a tree.
+         *
+         * @return True if the node references an existing node in a tree,
+         *         or false if the node does not reference any node in any tree.
+         */
+        bool valid() const;
+
+        /**
+         * Query whether or not the node has at least one child node.
+         *
+         * @return True if the node has at least one child node, or false if the
+         *         node has no child nodes at all.
+         */
+        bool has_child() const;
+
+        /**
+         * Query whether or not the node has a value associated with it.
+         *
+         * @return True if the node has a value, otherwise false.
+         */
+        bool has_value() const;
+
+        /**
+         * Access the value associated with the node.
+         *
+         * @return Reference to the value associated with the node.
+         *
+         * @warning The caller must ensure that the node has a value via
+         *          has_value() before calling this method to access it.
+         *          Calling this method on a node without a value is undefined.
+         */
+        const value_type& value() const;
+
+        /**
+         * Move to a child node.
+         *
+         * @param c A unit key associated with a child node relative to the
+         *          current node.
+         *
+         * @return A valid node if a child node exists for the unit key passed
+         *         to this method, otherwise an invalid node is returned.
+         */
+        const_node_type child(key_unit_type c) const;
+    };
+
     /**
      * Default constructor.
      */
@@ -206,6 +266,8 @@ public:
     trie_map& operator=(trie_map other);
 
     void swap(trie_map& other);
+
+    const_node_type root_node() const;
 
     /**
      * Insert a new key-value pair.

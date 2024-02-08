@@ -331,6 +331,68 @@ void trie_map<KeyT, ValueT>::trie_map::trie_node::swap(trie_node& other)
 }
 
 template<typename KeyT, typename ValueT>
+trie_map<KeyT, ValueT>::const_node_type::const_node_type(const trie_node* ref_node) : m_ref_node(ref_node)
+{}
+
+template<typename KeyT, typename ValueT>
+trie_map<KeyT, ValueT>::const_node_type::const_node_type()
+{}
+
+template<typename KeyT, typename ValueT>
+trie_map<KeyT, ValueT>::const_node_type::const_node_type(const const_node_type& other) : m_ref_node(other.m_ref_node)
+{}
+
+template<typename KeyT, typename ValueT>
+auto trie_map<KeyT, ValueT>::const_node_type::operator=(const const_node_type& other) -> const_node_type&
+{
+    m_ref_node = other.m_ref_node;
+    return *this;
+}
+
+template<typename KeyT, typename ValueT>
+bool trie_map<KeyT, ValueT>::const_node_type::valid() const
+{
+    return m_ref_node != nullptr;
+}
+
+template<typename KeyT, typename ValueT>
+bool trie_map<KeyT, ValueT>::const_node_type::has_child() const
+{
+    if (!m_ref_node)
+        return false;
+
+    return !m_ref_node->children.empty();
+}
+
+template<typename KeyT, typename ValueT>
+bool trie_map<KeyT, ValueT>::const_node_type::has_value() const
+{
+    if (!m_ref_node)
+        return false;
+
+    return m_ref_node->has_value;
+}
+
+template<typename KeyT, typename ValueT>
+auto trie_map<KeyT, ValueT>::const_node_type::value() const -> const value_type&
+{
+    return m_ref_node->value;
+}
+
+template<typename KeyT, typename ValueT>
+auto trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) const -> const_node_type
+{
+    if (!m_ref_node)
+        return const_node_type();
+
+    auto it = m_ref_node->children.find(c);
+    if (it == m_ref_node->children.end())
+        return const_node_type();
+
+    return const_node_type(&it->second);
+}
+
+template<typename KeyT, typename ValueT>
 trie_map<KeyT, ValueT>::trie_map()
 {}
 
@@ -426,6 +488,12 @@ template<typename KeyT, typename ValueT>
 void trie_map<KeyT, ValueT>::swap(trie_map& other)
 {
     m_root.swap(other.m_root);
+}
+
+template<typename KeyT, typename ValueT>
+auto trie_map<KeyT, ValueT>::root_node() const -> const_node_type
+{
+    return const_node_type(&m_root);
 }
 
 template<typename KeyT, typename ValueT>

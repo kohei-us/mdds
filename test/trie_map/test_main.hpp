@@ -67,4 +67,10 @@ void trie_test_key_as_input();
 void trie_test_copying();
 void trie_test_value_update_from_iterator();
 
+namespace trie_test_node {
+
+void run();
+
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

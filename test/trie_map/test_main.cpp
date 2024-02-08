@@ -1366,6 +1366,7 @@ int main()
         trie_test_key_as_input();
         trie_test_copying();
         trie_test_value_update_from_iterator();
+        trie_test_node::run();
     }
     catch (const std::exception& e)
     {

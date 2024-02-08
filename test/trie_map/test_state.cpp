@@ -30,7 +30,7 @@
 
 #include <list>
 
-#define _TEST_FUNC_SCOPE MDDS_TEST_FUNC_SCOPE_MSG("save-and-load-state")
+#define _TEST_FUNC_SCOPE MDDS_TEST_FUNC_SCOPE_NS("trie_packed_test_save_and_load_state")
 
 namespace trie_packed_test_save_and_load_state {
 

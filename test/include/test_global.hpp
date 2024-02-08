@@ -94,4 +94,9 @@ using std::endl;
     __sp_os__ << __func__ << ' ' << stream; \
     stack_printer __sp__(__sp_os__.str())
 
+#define MDDS_TEST_FUNC_SCOPE_NS(stream) \
+    std::ostringstream __sp_os__; \
+    __sp_os__ << stream << "::" << __func__; \
+    stack_printer __sp__(__sp_os__.str())
+
 #endif

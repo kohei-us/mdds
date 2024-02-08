@@ -2,6 +2,7 @@
 add_executable(trie-map-test-main EXCLUDE_FROM_ALL
     test_main.cpp
     test_state.cpp
+    test_node.cpp
 )
 
 target_link_libraries(trie-map-test-main PRIVATE test-global)
