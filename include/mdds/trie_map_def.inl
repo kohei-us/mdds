@@ -47,7 +47,9 @@ namespace mdds {
 namespace trie { namespace detail {
 
 template<typename KeyUnitT, typename SizeT>
-const uintptr_t* find_prefix_node(const uintptr_t* p, const KeyUnitT* prefix, const KeyUnitT* prefix_end)
+const uintptr_t* find_prefix_node(
+    const uintptr_t* p, const KeyUnitT* prefix, const KeyUnitT* prefix_end,
+    std::function<void(const uintptr_t*, const uintptr_t*, const uintptr_t*)> node_func)
 {
     using key_unit_type = KeyUnitT;
     using size_type = SizeT;
@@ -55,6 +57,10 @@ const uintptr_t* find_prefix_node(const uintptr_t* p, const KeyUnitT* prefix, co
     if (prefix == prefix_end)
     {
         // target node found!
+        size_t index_size = *(p + 1);
+        const uintptr_t* child_pos = p + 2;
+        const uintptr_t* child_end = child_pos + index_size;
+        node_func(p, child_pos, child_end);
         return p;
     }
 
@@ -68,8 +74,13 @@ const uintptr_t* find_prefix_node(const uintptr_t* p, const KeyUnitT* prefix, co
     ++p;
 
     if (!n)
+    {
         // This is a leaf node - no more child nodes to test
+        node_func(nullptr, nullptr, nullptr);
         return nullptr;
+    }
+
+    const uintptr_t* child_end = p + index_size;
 
     for (size_type low = 0, high = n - 1; low <= high;)
     {
@@ -83,9 +94,10 @@ const uintptr_t* find_prefix_node(const uintptr_t* p, const KeyUnitT* prefix, co
         if (*prefix == node_key)
         {
             // Match found!
+            node_func(p0, child_pos, child_end);
             const uintptr_t* p_child = p0 - offset;
             ++prefix;
-            return find_prefix_node<KeyUnitT, SizeT>(p_child, prefix, prefix_end);
+            return find_prefix_node<KeyUnitT, SizeT>(p_child, prefix, prefix_end, std::move(node_func));
         }
 
         if (low == high)
@@ -112,6 +124,7 @@ const uintptr_t* find_prefix_node(const uintptr_t* p, const KeyUnitT* prefix, co
     }
 
     // no matching node found - search failed
+    node_func(nullptr, nullptr, nullptr);
     return nullptr;
 }
 
@@ -1247,7 +1260,13 @@ typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, Val
     const uintptr_t* root = m_packed.data() + root_offset;
 
     node_stack_type node_stack;
-    find_prefix_node_with_stack(node_stack, root, input, key_end);
+
+    trie::detail::find_prefix_node<key_unit_type, size_type>(
+        root, input, key_end,
+        [&node_stack](const uintptr_t* node_pos, const uintptr_t* child_pos, const uintptr_t* child_end) {
+            node_stack.emplace_back(node_pos, child_pos, child_end);
+        });
+
     if (node_stack.empty() || !node_stack.back().node_pos)
         return end();
 
@@ -1285,7 +1304,9 @@ typename packed_trie_map<KeyT, ValueT>::search_results packed_trie_map<KeyT, Val
     assert(root_offset < m_packed.size());
     const uintptr_t* root = m_packed.data() + root_offset;
 
-    const uintptr_t* node = trie::detail::find_prefix_node<key_unit_type, size_type>(root, prefix, prefix_end);
+    const uintptr_t* node = trie::detail::find_prefix_node<key_unit_type, size_type>(
+        root, prefix, prefix_end, [](const uintptr_t*, const uintptr_t*, const uintptr_t*) {});
+
     return search_results(node, key_type(prefix, len));
 }
 
@@ -1577,81 +1598,6 @@ void packed_trie_map<KeyT, ValueT>::dump_structure() const
 
     traverse_tree(handler);
 #endif
-}
-
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::find_prefix_node_with_stack(
-    node_stack_type& node_stack, const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const
-{
-    if (prefix == prefix_end)
-    {
-        size_t index_size = *(p + 1);
-        const uintptr_t* child_pos = p + 2;
-        const uintptr_t* child_end = child_pos + index_size;
-        node_stack.emplace_back(p, child_pos, child_end);
-        return;
-    }
-
-    const uintptr_t* p0 = p; // store the head offset position of this node.
-
-    // Find the child node with a matching key character.
-
-    ++p;
-    size_t index_size = *p;
-    size_t n = index_size / 2;
-    ++p;
-
-    if (!n)
-    {
-        // This is a leaf node.
-        node_stack.emplace_back(nullptr, nullptr, nullptr);
-        return;
-    }
-
-    const uintptr_t* child_end = p + index_size;
-
-    for (size_type low = 0, high = n - 1; low <= high;)
-    {
-        size_type i = (low + high) / 2;
-
-        const uintptr_t* child_pos = p + i * 2;
-        key_unit_type node_key = *child_pos;
-        size_type offset = *(child_pos + 1);
-
-        if (*prefix == node_key)
-        {
-            // Match found!
-            node_stack.emplace_back(p0, child_pos, child_end);
-            const uintptr_t* p_child = p0 - offset;
-            ++prefix;
-            find_prefix_node_with_stack(node_stack, p_child, prefix, prefix_end);
-            return;
-        }
-
-        if (low == high)
-            // No more child node key to test. Bail out.
-            break;
-
-        if (high - low == 1)
-        {
-            // Only two more child keys left.
-            if (i == low)
-                low = high;
-            else
-            {
-                assert(i == high);
-                high = low;
-            }
-        }
-        else if (*prefix < node_key)
-            // Move on to the lower sub-group.
-            high = i;
-        else
-            // Move on to the higher sub-group.
-            low = i;
-    }
-
-    node_stack.emplace_back(nullptr, nullptr, nullptr);
 }
 
 template<typename KeyT, typename ValueT>
