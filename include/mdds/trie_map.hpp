@@ -638,9 +638,6 @@ private:
     void compact(const trie_node& root);
     void compact(const typename trie_map<KeyT, ValueT>::trie_node& root);
 
-    const uintptr_t* find_prefix_node(
-        const uintptr_t* p, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
-
     void find_prefix_node_with_stack(
         node_stack_type& node_stack, const uintptr_t* p, const key_unit_type* prefix,
         const key_unit_type* prefix_end) const;
