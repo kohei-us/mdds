@@ -44,7 +44,7 @@ using std::endl;
 
 namespace mdds {
 
-namespace detail { namespace trie {
+namespace trie { namespace detail {
 
 inline const char* value_type_size_name(bool variable_size)
 {
@@ -1243,7 +1243,7 @@ template<typename KeyT, typename ValueT>
 template<typename FuncT>
 void packed_trie_map<KeyT, ValueT>::save_state(std::ostream& os) const
 {
-    detail::trie::bin_value bv;
+    trie::detail::bin_value bv;
 
     bv.ui16 = 0x0000; // write 2-byte flags
     bv.ui16 |= (0x0001 & FuncT::variable_size);
@@ -1259,7 +1259,7 @@ void packed_trie_map<KeyT, ValueT>::save_state(std::ostream& os) const
     // Dump the stored values first.
     using value_size_type = std::bool_constant<FuncT::variable_size>;
 
-    detail::trie::write_values_to_ostream<FuncT, value_type, value_size_type> func;
+    trie::detail::write_values_to_ostream<FuncT, value_type, value_size_type> func;
     value_addrs = func(os, m_value_store);
 
     // Write 0xFF to signify the end of the value section.
@@ -1355,7 +1355,7 @@ template<typename KeyT, typename ValueT>
 template<typename FuncT>
 void packed_trie_map<KeyT, ValueT>::load_state(std::istream& is)
 {
-    detail::trie::bin_value bv;
+    trie::detail::bin_value bv;
     is.read(bv.buffer, 2);
 
     uint16_t flags = bv.ui16;
@@ -1364,8 +1364,8 @@ void packed_trie_map<KeyT, ValueT>::load_state(std::istream& is)
     if (variable_size != FuncT::variable_size)
     {
         std::ostringstream os;
-        os << "This stream is meant for a value type of " << detail::trie::value_type_size_name(variable_size)
-           << ", but the actual value type is of " << detail::trie::value_type_size_name(FuncT::variable_size) << ".";
+        os << "This stream is meant for a value type of " << trie::detail::value_type_size_name(variable_size)
+           << ", but the actual value type is of " << trie::detail::value_type_size_name(FuncT::variable_size) << ".";
         throw std::invalid_argument(os.str());
     }
 
@@ -1374,7 +1374,7 @@ void packed_trie_map<KeyT, ValueT>::load_state(std::istream& is)
     uint32_t value_count = bv.ui32;
 
     using value_size_type = std::bool_constant<FuncT::variable_size>;
-    detail::trie::read_values_from_istream<FuncT, value_type, value_size_type> func;
+    trie::detail::read_values_from_istream<FuncT, value_type, value_size_type> func;
     m_value_store = func(is, value_count);
 
     // There should be a check byte of 0xFF.
