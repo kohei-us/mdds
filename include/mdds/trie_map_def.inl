@@ -46,6 +46,33 @@ namespace mdds {
 
 namespace trie { namespace detail {
 
+template<typename PackedT>
+void verify_packed_position(const PackedT& packed, const typename PackedT::value_type* pos)
+{
+    const auto* end_pos = packed.data() + packed.size();
+
+    if (packed.data() <= pos && pos < end_pos)
+        return;
+
+    std::ostringstream os;
+    os << "stored position is outside the valid data region (pos=" << pos << "; packed-begin=" << packed.data()
+       << "; packed-end=" << end_pos;
+    throw integrity_error(os.str());
+}
+
+template<typename ValueStoreT>
+void verify_packed_value(const ValueStoreT& value_store, const typename ValueStoreT::value_type* pv)
+{
+    auto it = std::find_if(value_store.begin(), value_store.end(), [pv](const auto& v) { return &v == pv; });
+
+    if (it == value_store.end())
+    {
+        std::ostringstream os;
+        os << "no value found in the value store with a memory address of " << pv;
+        throw integrity_error(os.str());
+    }
+}
+
 template<typename KeyUnitT, typename SizeT>
 const uintptr_t* find_prefix_node(
     const uintptr_t* p, const KeyUnitT* prefix, const KeyUnitT* prefix_end,
@@ -1028,12 +1055,16 @@ void packed_trie_map<KeyT, ValueT>::compact(const typename trie_map<KeyT, ValueT
 }
 
 template<typename KeyT, typename ValueT>
-packed_trie_map<KeyT, ValueT>::const_node_type::const_node_type(const uintptr_t* p) : m_pos(p)
+packed_trie_map<KeyT, ValueT>::const_node_type::const_node_type(
+    const packed_type* packed, const value_store_type* value_store, const uintptr_t* p)
+    : m_packed(packed), m_value_store(value_store), m_pos(p)
 {}
 
 template<typename KeyT, typename ValueT>
 auto packed_trie_map<KeyT, ValueT>::const_node_type::operator=(const const_node_type& other) -> const_node_type&
 {
+    m_packed = other.m_packed;
+    m_value_store = other.m_value_store;
     m_pos = other.m_pos;
     return *this;
 }
@@ -1050,6 +1081,10 @@ bool packed_trie_map<KeyT, ValueT>::const_node_type::has_child() const
     if (!m_pos)
         return false;
 
+#ifdef MDDS_TRIE_MAP_DEBUG
+    trie::detail::verify_packed_position(*m_packed, m_pos);
+#endif
+
     size_type index_size = *(m_pos + 1);
     return index_size > 0u;
 }
@@ -1060,6 +1095,10 @@ bool packed_trie_map<KeyT, ValueT>::const_node_type::has_value() const
     if (!m_pos)
         return false;
 
+#ifdef MDDS_TRIE_MAP_DEBUG
+    trie::detail::verify_packed_position(*m_packed, m_pos);
+#endif
+
     const auto* pv = reinterpret_cast<const value_type*>(*m_pos);
     return pv != nullptr;
 }
@@ -1067,7 +1106,16 @@ bool packed_trie_map<KeyT, ValueT>::const_node_type::has_value() const
 template<typename KeyT, typename ValueT>
 auto packed_trie_map<KeyT, ValueT>::const_node_type::value() const -> const value_type&
 {
+#ifdef MDDS_TRIE_MAP_DEBUG
+    trie::detail::verify_packed_position(*m_packed, m_pos);
+#endif
+
     const auto* pv = reinterpret_cast<const value_type*>(*m_pos);
+
+#ifdef MDDS_TRIE_MAP_DEBUG
+    trie::detail::verify_packed_value(*m_value_store, pv);
+#endif
+
     return *pv;
 }
 
@@ -1098,7 +1146,7 @@ auto packed_trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) cons
         {
             // Match found!
             const uintptr_t* p_child = m_pos - offset;
-            return const_node_type(p_child);
+            return const_node_type(m_packed, m_value_store, p_child);
         }
 
         if (low == high)
@@ -1434,7 +1482,7 @@ auto packed_trie_map<KeyT, ValueT>::root_node() const -> const_node_type
 {
     assert(m_packed.size() >= 3u);
     std::size_t root_offset = m_packed[0];
-    return const_node_type(m_packed.data() + root_offset);
+    return const_node_type(&m_packed, &m_value_store, m_packed.data() + root_offset);
 }
 
 template<typename KeyT, typename ValueT>

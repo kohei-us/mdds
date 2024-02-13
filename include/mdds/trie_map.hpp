@@ -508,9 +508,11 @@ public:
     {
         friend class packed_trie_map;
 
+        const packed_type* m_packed = nullptr;
+        const value_store_type* m_value_store = nullptr;
         const uintptr_t* m_pos = nullptr;
 
-        const_node_type(const uintptr_t* p);
+        const_node_type(const packed_type* packed, const value_store_type* value_store, const uintptr_t* p);
 
     public:
         const_node_type() = default;
