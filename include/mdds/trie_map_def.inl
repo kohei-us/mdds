@@ -74,11 +74,57 @@ void verify_packed_value(const ValueStoreT& value_store, const typename ValueSto
 }
 
 template<typename KeyUnitT, typename SizeT>
+const uintptr_t* find_child_pos(const uintptr_t* first_child, SizeT n_child_nodes, KeyUnitT c)
+{
+    using size_type = SizeT;
+    using key_unit_type = KeyUnitT;
+
+    for (size_type low = 0, high = n_child_nodes - 1; low <= high;)
+    {
+        size_type i = (low + high) / 2; // take the mid position
+
+        // each slot contains the key for the child and offset to its index position
+        const uintptr_t* child_pos = first_child + i * 2;
+        const key_unit_type node_key = *child_pos;
+
+        if (c == node_key)
+        {
+            // Match found!
+            return child_pos;
+        }
+
+        if (low == high)
+            // No more child node key to test. Bail out.
+            break;
+
+        if (high - low == 1)
+        {
+            // Only two more child keys left.
+            if (i == low)
+                low = high;
+            else
+            {
+                assert(i == high);
+                high = low;
+            }
+        }
+        else if (c < node_key)
+            // Move on to the lower sub-group.
+            high = i;
+        else
+            // Move on to the higher sub-group.
+            low = i;
+    }
+
+    // no match found
+    return nullptr;
+}
+
+template<typename KeyUnitT, typename SizeT>
 const uintptr_t* find_prefix_node(
     const uintptr_t* p, const KeyUnitT* prefix, const KeyUnitT* prefix_end,
     std::function<void(const uintptr_t*, const uintptr_t*, const uintptr_t*)> node_func)
 {
-    using key_unit_type = KeyUnitT;
     using size_type = SizeT;
 
     if (prefix == prefix_end)
@@ -109,45 +155,14 @@ const uintptr_t* find_prefix_node(
 
     const uintptr_t* child_end = p + index_size;
 
-    for (size_type low = 0, high = n - 1; low <= high;)
+    if (const auto* child_pos = find_child_pos(p, n, *prefix); child_pos)
     {
-        size_type i = (low + high) / 2; // take the mid position
-
-        // each slot contains the key for the child and offset to its index position
-        const uintptr_t* child_pos = p + i * 2;
-        key_unit_type node_key = *child_pos;
+        // Match found!
         size_type offset = *(child_pos + 1);
-
-        if (*prefix == node_key)
-        {
-            // Match found!
-            node_func(p0, child_pos, child_end);
-            const uintptr_t* p_child = p0 - offset;
-            ++prefix;
-            return find_prefix_node<KeyUnitT, SizeT>(p_child, prefix, prefix_end, std::move(node_func));
-        }
-
-        if (low == high)
-            // No more child node key to test. Bail out.
-            break;
-
-        if (high - low == 1)
-        {
-            // Only two more child keys left.
-            if (i == low)
-                low = high;
-            else
-            {
-                assert(i == high);
-                high = low;
-            }
-        }
-        else if (*prefix < node_key)
-            // Move on to the lower sub-group.
-            high = i;
-        else
-            // Move on to the higher sub-group.
-            low = i;
+        node_func(p0, child_pos, child_end);
+        const uintptr_t* p_child = p0 - offset;
+        ++prefix;
+        return find_prefix_node<KeyUnitT, SizeT>(p_child, prefix, prefix_end, std::move(node_func));
     }
 
     // no matching node found - search failed
@@ -1133,43 +1148,12 @@ auto packed_trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) cons
     size_type n = index_size / 2;
     const uintptr_t* p = m_pos + 2;
 
-    for (size_type low = 0, high = n - 1; low <= high;)
+    if (const uintptr_t* child_pos = trie::detail::find_child_pos(p, n, c); child_pos)
     {
-        size_type i = (low + high) / 2; // take the mid position
-
-        // each slot contains the key for the child and offset to its index position
-        const uintptr_t* child_pos = p + i * 2;
-        key_unit_type node_key = *child_pos;
+        // Match found!
         size_type offset = *(child_pos + 1);
-
-        if (c == node_key)
-        {
-            // Match found!
-            const uintptr_t* p_child = m_pos - offset;
-            return const_node_type(m_packed, m_value_store, p_child);
-        }
-
-        if (low == high)
-            // No more child node key to test. Bail out.
-            break;
-
-        if (high - low == 1)
-        {
-            // Only two more child keys left.
-            if (i == low)
-                low = high;
-            else
-            {
-                assert(i == high);
-                high = low;
-            }
-        }
-        else if (c < node_key)
-            // Move on to the lower sub-group.
-            high = i;
-        else
-            // Move on to the higher sub-group.
-            low = i;
+        const uintptr_t* p_child = m_pos - offset;
+        return const_node_type(m_packed, m_value_store, p_child);
     }
 
     return const_node_type();
