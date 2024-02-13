@@ -1703,7 +1703,7 @@ void packed_trie_map<KeyT, ValueT>::dump_structure() const
 
         void node(const uintptr_t* node_pos, key_unit_type c, size_t depth, size_t index_size)
         {
-            uintptr_t value_ptr = *node_pos;
+            auto value_ptr = reinterpret_cast<const value_type*>(*node_pos);
             size_t offset = std::distance(m_head, node_pos);
 
             cout << "  --" << endl;
@@ -1715,8 +1715,7 @@ void packed_trie_map<KeyT, ValueT>::dump_structure() const
 
             if (value_ptr)
             {
-                auto p = reinterpret_cast<const value_type*>(value_ptr);
-                cout << "; value: " << *p;
+                cout << "; value: " << *value_ptr;
             }
 
             cout << endl;

@@ -71,6 +71,8 @@ void test_empty()
 
     auto packed = original.pack();
     verify("packed", packed);
+
+    packed.dump_structure();
 }
 
 void test_basic()
@@ -116,6 +118,8 @@ void test_basic()
 
     auto packed = original.pack();
     verify("packed", packed);
+
+    packed.dump_structure();
 }
 
 } // anonymous namespace
