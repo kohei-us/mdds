@@ -1140,6 +1140,10 @@ auto packed_trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) cons
     if (!m_pos)
         return const_node_type();
 
+#ifdef MDDS_TRIE_MAP_DEBUG
+    trie::detail::verify_packed_position(*m_packed, m_pos);
+#endif
+
     size_type index_size = *(m_pos + 1);
     if (!index_size)
         // no more child nodes
