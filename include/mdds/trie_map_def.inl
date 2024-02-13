@@ -1028,6 +1028,106 @@ void packed_trie_map<KeyT, ValueT>::compact(const typename trie_map<KeyT, ValueT
 }
 
 template<typename KeyT, typename ValueT>
+packed_trie_map<KeyT, ValueT>::const_node_type::const_node_type(const uintptr_t* p) : m_pos(p)
+{}
+
+template<typename KeyT, typename ValueT>
+auto packed_trie_map<KeyT, ValueT>::const_node_type::operator=(const const_node_type& other) -> const_node_type&
+{
+    m_pos = other.m_pos;
+    return *this;
+}
+
+template<typename KeyT, typename ValueT>
+bool packed_trie_map<KeyT, ValueT>::const_node_type::valid() const
+{
+    return m_pos != nullptr;
+}
+
+template<typename KeyT, typename ValueT>
+bool packed_trie_map<KeyT, ValueT>::const_node_type::has_child() const
+{
+    if (!m_pos)
+        return false;
+
+    size_type index_size = *(m_pos + 1);
+    return index_size > 0u;
+}
+
+template<typename KeyT, typename ValueT>
+bool packed_trie_map<KeyT, ValueT>::const_node_type::has_value() const
+{
+    if (!m_pos)
+        return false;
+
+    const auto* pv = reinterpret_cast<const value_type*>(*m_pos);
+    return pv != nullptr;
+}
+
+template<typename KeyT, typename ValueT>
+auto packed_trie_map<KeyT, ValueT>::const_node_type::value() const -> const value_type&
+{
+    const auto* pv = reinterpret_cast<const value_type*>(*m_pos);
+    return *pv;
+}
+
+template<typename KeyT, typename ValueT>
+auto packed_trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) const -> const_node_type
+{
+    if (!m_pos)
+        return const_node_type();
+
+    size_type index_size = *(m_pos + 1);
+    if (!index_size)
+        // no more child nodes
+        return const_node_type();
+
+    size_type n = index_size / 2;
+    const uintptr_t* p = m_pos + 2;
+
+    for (size_type low = 0, high = n - 1; low <= high;)
+    {
+        size_type i = (low + high) / 2; // take the mid position
+
+        // each slot contains the key for the child and offset to its index position
+        const uintptr_t* child_pos = p + i * 2;
+        key_unit_type node_key = *child_pos;
+        size_type offset = *(child_pos + 1);
+
+        if (c == node_key)
+        {
+            // Match found!
+            const uintptr_t* p_child = m_pos - offset;
+            return const_node_type(p_child);
+        }
+
+        if (low == high)
+            // No more child node key to test. Bail out.
+            break;
+
+        if (high - low == 1)
+        {
+            // Only two more child keys left.
+            if (i == low)
+                low = high;
+            else
+            {
+                assert(i == high);
+                high = low;
+            }
+        }
+        else if (c < node_key)
+            // Move on to the lower sub-group.
+            high = i;
+        else
+            // Move on to the higher sub-group.
+            low = i;
+    }
+
+    return const_node_type();
+}
+
+template<typename KeyT, typename ValueT>
 packed_trie_map<KeyT, ValueT>::packed_trie_map() : m_packed(3, 0u)
 {
     // root offset (0), root value (1), and root child count (2).
@@ -1327,6 +1427,14 @@ void packed_trie_map<KeyT, ValueT>::swap(packed_trie_map& other)
 {
     m_value_store.swap(other.m_value_store);
     m_packed.swap(other.m_packed);
+}
+
+template<typename KeyT, typename ValueT>
+auto packed_trie_map<KeyT, ValueT>::root_node() const -> const_node_type
+{
+    assert(m_packed.size() >= 3u);
+    std::size_t root_offset = m_packed[0];
+    return const_node_type(m_packed.data() + root_offset);
 }
 
 template<typename KeyT, typename ValueT>

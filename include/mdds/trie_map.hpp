@@ -504,6 +504,66 @@ private:
     typedef std::vector<std::tuple<size_t, key_unit_type>> child_offsets_type;
 
 public:
+    class const_node_type
+    {
+        friend class packed_trie_map;
+
+        const uintptr_t* m_pos = nullptr;
+
+        const_node_type(const uintptr_t* p);
+
+    public:
+        const_node_type() = default;
+        const_node_type(const const_node_type& other) = default;
+
+        const_node_type& operator=(const const_node_type& other);
+
+        /**
+         * Query whether or not the node references an existing node in a tree.
+         *
+         * @return True if the node references an existing node in a tree,
+         *         or false if the node does not reference any node in any tree.
+         */
+        bool valid() const;
+
+        /**
+         * Query whether or not the node has at least one child node.
+         *
+         * @return True if the node has at least one child node, or false if the
+         *         node has no child nodes at all.
+         */
+        bool has_child() const;
+
+        /**
+         * Query whether or not the node has a value associated with it.
+         *
+         * @return True if the node has a value, otherwise false.
+         */
+        bool has_value() const;
+
+        /**
+         * Access the value associated with the node.
+         *
+         * @return Reference to the value associated with the node.
+         *
+         * @warning The caller must ensure that the node has a value via
+         *          has_value() before calling this method to access it.
+         *          Calling this method on a node without a value is undefined.
+         */
+        const value_type& value() const;
+
+        /**
+         * Move to a child node.
+         *
+         * @param c A unit key associated with a child node relative to the
+         *          current node.
+         *
+         * @return A valid node if a child node exists for the unit key passed
+         *         to this method, otherwise an invalid node is returned.
+         */
+        const_node_type child(key_unit_type c) const;
+    };
+
     packed_trie_map();
 
     /**
@@ -599,6 +659,8 @@ public:
     bool empty() const noexcept;
 
     void swap(packed_trie_map& other);
+
+    const_node_type root_node() const;
 
     /**
      * Save the state of the instance of this class to an external buffer.

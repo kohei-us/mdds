@@ -40,56 +40,82 @@ void test_empty()
 {
     _TEST_FUNC_SCOPE;
 
-    map_type tree;
+    {
+        map_type::const_node_type node; // default constructor
+        assert(!node.valid());
+        assert(!node.has_child());
+        assert(!node.has_value());
+        assert(!node.child('c').valid());
+    }
 
-    map_type::const_node_type node; // default constructor
-    assert(!node.valid());
-    assert(!node.has_child());
-    assert(!node.has_value());
-    assert(!node.child('c').valid());
+    {
+        map_type::packed_type::const_node_type node; // default constructor
+        assert(!node.valid());
+        assert(!node.has_child());
+        assert(!node.has_value());
+        assert(!node.child('c').valid());
+    }
 
-    node = tree.root_node();
-    assert(node.valid());
-    assert(!node.has_child());
-    assert(!node.has_value());
-    assert(!node.child('d').valid());
+    auto verify = [](std::string_view name, const auto& trie) {
+        std::cout << "trie type: " << name << std::endl;
+
+        auto node = trie.root_node();
+        assert(node.valid());
+        assert(!node.has_child());
+        assert(!node.has_value());
+        assert(!node.child('d').valid());
+    };
+
+    map_type original;
+    verify("original", original);
+
+    auto packed = original.pack();
+    verify("packed", packed);
 }
 
 void test_basic()
 {
     _TEST_FUNC_SCOPE;
 
-    map_type tree;
-    tree.insert("test", 42);
+    auto verify = [](std::string_view name, const auto& trie) {
+        std::cout << "trie type: " << name << std::endl;
 
-    auto node = tree.root_node();
-    assert(node.valid());
-    assert(node.has_child());
-    assert(!node.has_value());
+        auto node = trie.root_node();
+        assert(node.valid());
+        assert(node.has_child());
+        assert(!node.has_value());
 
-    node = node.child('t');
-    assert(node.valid());
-    assert(node.has_child());
-    assert(!node.has_value());
+        node = node.child('t');
+        assert(node.valid());
+        assert(node.has_child());
+        assert(!node.has_value());
 
-    node = node.child('e');
-    assert(node.valid());
-    assert(node.has_child());
-    assert(!node.has_value());
+        node = node.child('e');
+        assert(node.valid());
+        assert(node.has_child());
+        assert(!node.has_value());
 
-    node = node.child('s');
-    assert(node.valid());
-    assert(node.has_child());
-    assert(!node.has_value());
+        node = node.child('s');
+        assert(node.valid());
+        assert(node.has_child());
+        assert(!node.has_value());
 
-    node = node.child('t');
-    assert(node.valid());
-    assert(!node.has_child());
-    assert(node.has_value());
-    assert(node.value() == 42);
+        node = node.child('t');
+        assert(node.valid());
+        assert(!node.has_child());
+        assert(node.has_value());
+        assert(node.value() == 42);
 
-    // no more child nodes
-    assert(!node.child('f').valid());
+        // no more child nodes
+        assert(!node.child('f').valid());
+    };
+
+    map_type original;
+    original.insert("test", 42);
+    verify("original", original);
+
+    auto packed = original.pack();
+    verify("packed", packed);
 }
 
 } // anonymous namespace
