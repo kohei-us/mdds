@@ -42,9 +42,68 @@ using std::cout;
 using std::endl;
 #endif
 
+#define HAS_STATIC_CONSTEXPR_MEMBER(MEMBER) \
+    template<typename T> \
+    class has_##MEMBER \
+    { \
+        using y_type = char; \
+        using n_type = long; \
+\
+        template<typename U> \
+        static y_type test(decltype(U::MEMBER)); \
+        template<typename U> \
+        static n_type test(...); \
+\
+    public: \
+        static constexpr bool value = sizeof(test<T>(0)) == sizeof(y_type); \
+    };
+
 namespace mdds {
 
 namespace trie { namespace detail {
+
+HAS_STATIC_CONSTEXPR_MEMBER(dump_packed_construction_state)
+
+template<typename TrieT, typename NodeT, typename = void>
+struct dump_packed_trie_node_tree
+{
+    void operator()(const NodeT&)
+    {}
+};
+
+template<typename TrieT, typename NodeT>
+struct dump_packed_trie_node_tree<
+    TrieT, NodeT, typename std::enable_if_t<has_dump_packed_construction_state<typename TrieT::traits_type>::value>>
+{
+    using trie_node = NodeT;
+
+    void operator()(const NodeT& root)
+    {
+        if constexpr (!TrieT::traits_type::dump_packed_construction_state)
+            return;
+
+        typename TrieT::key_type buffer;
+        traverse_node(buffer, root);
+    }
+
+private:
+    void traverse_node(typename TrieT::key_type& buffer, const NodeT& node)
+    {
+        if (node.value)
+        {
+            // This node has value.
+            std::cout << "trie-node: key='" << buffer << "'; value=" << *node.value << std::endl;
+        }
+
+        for (const trie_node* p : node.children)
+        {
+            const trie_node& this_node = *p;
+            buffer.push_back(this_node.key);
+            traverse_node(buffer, this_node);
+            buffer.pop_back();
+        }
+    }
+};
 
 template<typename PackedT>
 void verify_packed_position(const PackedT& packed, const typename PackedT::value_type* pos)
@@ -432,55 +491,56 @@ inline void variable_value_serializer<std::string>::read(std::istream& is, size_
 
 } // namespace trie
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::trie_map::trie_node::trie_node() : value(value_type()), has_value(false)
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::trie_map::trie_node::trie_node() : value(value_type()), has_value(false)
 {}
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::trie_map::trie_node::trie_node(const trie_node& other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::trie_map::trie_node::trie_node(const trie_node& other)
     : children(other.children), value(other.value), has_value(other.has_value)
 {}
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::trie_map::trie_node::trie_node(trie_node&& other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::trie_map::trie_node::trie_node(trie_node&& other)
     : children(std::move(other.children)), value(std::move(other.value)), has_value(std::move(other.has_value))
 {}
 
-template<typename KeyT, typename ValueT>
-void trie_map<KeyT, ValueT>::trie_map::trie_node::swap(trie_node& other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void trie_map<KeyT, ValueT, TraitsT>::trie_map::trie_node::swap(trie_node& other)
 {
     children.swap(other.children);
     std::swap(value, other.value);
     std::swap(has_value, other.has_value);
 }
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::const_node_type::const_node_type(const trie_node* ref_node) : m_ref_node(ref_node)
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::const_node_type::const_node_type(const trie_node* ref_node) : m_ref_node(ref_node)
 {}
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::const_node_type::const_node_type()
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::const_node_type::const_node_type()
 {}
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::const_node_type::const_node_type(const const_node_type& other) : m_ref_node(other.m_ref_node)
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::const_node_type::const_node_type(const const_node_type& other)
+    : m_ref_node(other.m_ref_node)
 {}
 
-template<typename KeyT, typename ValueT>
-auto trie_map<KeyT, ValueT>::const_node_type::operator=(const const_node_type& other) -> const_node_type&
+template<typename KeyT, typename ValueT, typename TraitsT>
+auto trie_map<KeyT, ValueT, TraitsT>::const_node_type::operator=(const const_node_type& other) -> const_node_type&
 {
     m_ref_node = other.m_ref_node;
     return *this;
 }
 
-template<typename KeyT, typename ValueT>
-bool trie_map<KeyT, ValueT>::const_node_type::valid() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::const_node_type::valid() const
 {
     return m_ref_node != nullptr;
 }
 
-template<typename KeyT, typename ValueT>
-bool trie_map<KeyT, ValueT>::const_node_type::has_child() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::const_node_type::has_child() const
 {
     if (!m_ref_node)
         return false;
@@ -488,8 +548,8 @@ bool trie_map<KeyT, ValueT>::const_node_type::has_child() const
     return !m_ref_node->children.empty();
 }
 
-template<typename KeyT, typename ValueT>
-bool trie_map<KeyT, ValueT>::const_node_type::has_value() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::const_node_type::has_value() const
 {
     if (!m_ref_node)
         return false;
@@ -497,14 +557,14 @@ bool trie_map<KeyT, ValueT>::const_node_type::has_value() const
     return m_ref_node->has_value;
 }
 
-template<typename KeyT, typename ValueT>
-auto trie_map<KeyT, ValueT>::const_node_type::value() const -> const value_type&
+template<typename KeyT, typename ValueT, typename TraitsT>
+auto trie_map<KeyT, ValueT, TraitsT>::const_node_type::value() const -> const value_type&
 {
     return m_ref_node->value;
 }
 
-template<typename KeyT, typename ValueT>
-auto trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) const -> const_node_type
+template<typename KeyT, typename ValueT, typename TraitsT>
+auto trie_map<KeyT, ValueT, TraitsT>::const_node_type::child(key_unit_type c) const -> const_node_type
 {
     if (!m_ref_node)
         return const_node_type();
@@ -516,20 +576,20 @@ auto trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) const -> co
     return const_node_type(&it->second);
 }
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::trie_map()
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::trie_map()
 {}
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::trie_map(const trie_map& other) : m_root(other.m_root)
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::trie_map(const trie_map& other) : m_root(other.m_root)
 {}
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>::trie_map(trie_map&& other) : m_root(std::move(other.m_root))
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>::trie_map(trie_map&& other) : m_root(std::move(other.m_root))
 {}
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::const_iterator trie_map<KeyT, ValueT>::begin() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::const_iterator trie_map<KeyT, ValueT, TraitsT>::begin() const
 {
     if (m_root.children.empty())
         // empty container
@@ -556,8 +616,8 @@ typename trie_map<KeyT, ValueT>::const_iterator trie_map<KeyT, ValueT>::begin() 
     return const_iterator(std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::iterator trie_map<KeyT, ValueT>::begin()
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::iterator trie_map<KeyT, ValueT, TraitsT>::begin()
 {
     if (m_root.children.empty())
         // empty container
@@ -584,44 +644,44 @@ typename trie_map<KeyT, ValueT>::iterator trie_map<KeyT, ValueT>::begin()
     return iterator(std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::const_iterator trie_map<KeyT, ValueT>::end() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::const_iterator trie_map<KeyT, ValueT, TraitsT>::end() const
 {
     const_node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.end());
     return const_iterator(std::move(node_stack), key_type(), trie::detail::iterator_type::end);
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::iterator trie_map<KeyT, ValueT>::end()
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::iterator trie_map<KeyT, ValueT, TraitsT>::end()
 {
     node_stack_type node_stack;
     node_stack.emplace_back(&m_root, m_root.children.end());
     return iterator(std::move(node_stack), key_type(), trie::detail::iterator_type::end);
 }
 
-template<typename KeyT, typename ValueT>
-trie_map<KeyT, ValueT>& trie_map<KeyT, ValueT>::operator=(trie_map other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+trie_map<KeyT, ValueT, TraitsT>& trie_map<KeyT, ValueT, TraitsT>::operator=(trie_map other)
 {
     trie_map tmp(std::move(other));
     tmp.swap(*this);
     return *this;
 }
 
-template<typename KeyT, typename ValueT>
-void trie_map<KeyT, ValueT>::swap(trie_map& other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void trie_map<KeyT, ValueT, TraitsT>::swap(trie_map& other)
 {
     m_root.swap(other.m_root);
 }
 
-template<typename KeyT, typename ValueT>
-auto trie_map<KeyT, ValueT>::root_node() const -> const_node_type
+template<typename KeyT, typename ValueT, typename TraitsT>
+auto trie_map<KeyT, ValueT, TraitsT>::root_node() const -> const_node_type
 {
     return const_node_type(&m_root);
 }
 
-template<typename KeyT, typename ValueT>
-void trie_map<KeyT, ValueT>::insert(const key_type& key, const value_type& value)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void trie_map<KeyT, ValueT, TraitsT>::insert(const key_type& key, const value_type& value)
 {
     const key_unit_type* p = key.data();
     size_t n = key.size();
@@ -629,15 +689,15 @@ void trie_map<KeyT, ValueT>::insert(const key_type& key, const value_type& value
     insert_into_tree(m_root, p, p_end, value);
 }
 
-template<typename KeyT, typename ValueT>
-void trie_map<KeyT, ValueT>::insert(const key_unit_type* key, size_type len, const value_type& value)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void trie_map<KeyT, ValueT, TraitsT>::insert(const key_unit_type* key, size_type len, const value_type& value)
 {
     const key_unit_type* key_end = key + len;
     insert_into_tree(m_root, key, key_end, value);
 }
 
-template<typename KeyT, typename ValueT>
-bool trie_map<KeyT, ValueT>::erase(const key_unit_type* key, size_type len)
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::erase(const key_unit_type* key, size_type len)
 {
     const key_unit_type* key_end = key + len;
 
@@ -667,8 +727,8 @@ bool trie_map<KeyT, ValueT>::erase(const key_unit_type* key, size_type len)
     return true;
 }
 
-template<typename KeyT, typename ValueT>
-void trie_map<KeyT, ValueT>::insert_into_tree(
+template<typename KeyT, typename ValueT, typename TraitsT>
+void trie_map<KeyT, ValueT, TraitsT>::insert_into_tree(
     trie_node& node, const key_unit_type* key, const key_unit_type* key_end, const value_type& value)
 {
     if (key == key_end)
@@ -691,8 +751,8 @@ void trie_map<KeyT, ValueT>::insert_into_tree(
     insert_into_tree(it->second, key, key_end, value);
 }
 
-template<typename KeyT, typename ValueT>
-const typename trie_map<KeyT, ValueT>::trie_node* trie_map<KeyT, ValueT>::find_prefix_node(
+template<typename KeyT, typename ValueT, typename TraitsT>
+const typename trie_map<KeyT, ValueT, TraitsT>::trie_node* trie_map<KeyT, ValueT, TraitsT>::find_prefix_node(
     const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const
 {
     if (prefix == prefix_end)
@@ -707,9 +767,9 @@ const typename trie_map<KeyT, ValueT>::trie_node* trie_map<KeyT, ValueT>::find_p
     return find_prefix_node(it->second, prefix, prefix_end);
 }
 
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT>
 template<bool IsConst>
-void trie_map<KeyT, ValueT>::find_prefix_node_with_stack(
+void trie_map<KeyT, ValueT, TraitsT>::find_prefix_node_with_stack(
     std::vector<stack_item<IsConst>>& node_stack, mdds::detail::const_t<trie_node, IsConst>& node,
     const key_unit_type* prefix, const key_unit_type* prefix_end) const
 {
@@ -730,9 +790,9 @@ void trie_map<KeyT, ValueT>::find_prefix_node_with_stack(
     find_prefix_node_with_stack(node_stack, it->second, prefix, prefix_end);
 }
 
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT>
 template<bool IsConst>
-typename trie_map<KeyT, ValueT>::key_type trie_map<KeyT, ValueT>::build_key_buffer_from_node_stack(
+typename trie_map<KeyT, ValueT, TraitsT>::key_type trie_map<KeyT, ValueT, TraitsT>::build_key_buffer_from_node_stack(
     const std::vector<stack_item<IsConst>>& node_stack) const
 {
     // Build the key value from the stack.
@@ -744,8 +804,8 @@ typename trie_map<KeyT, ValueT>::key_type trie_map<KeyT, ValueT>::build_key_buff
     return buf;
 }
 
-template<typename KeyT, typename ValueT>
-void trie_map<KeyT, ValueT>::count_values(size_type& n, const trie_node& node) const
+template<typename KeyT, typename ValueT, typename TraitsT>
+void trie_map<KeyT, ValueT, TraitsT>::count_values(size_type& n, const trie_node& node) const
 {
     if (node.has_value)
         ++n;
@@ -755,14 +815,15 @@ void trie_map<KeyT, ValueT>::count_values(size_type& n, const trie_node& node) c
         [&](const typename trie_node::children_type::value_type& v) { count_values(n, v.second); });
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::const_iterator trie_map<KeyT, ValueT>::find(const key_type& key) const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::const_iterator trie_map<KeyT, ValueT, TraitsT>::find(
+    const key_type& key) const
 {
     return find(key.data(), key.size());
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::const_iterator trie_map<KeyT, ValueT>::find(
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::const_iterator trie_map<KeyT, ValueT, TraitsT>::find(
     const key_unit_type* input, size_type len) const
 {
     const key_unit_type* input_end = input + len;
@@ -777,14 +838,15 @@ typename trie_map<KeyT, ValueT>::const_iterator trie_map<KeyT, ValueT>::find(
     return const_iterator(std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::iterator trie_map<KeyT, ValueT>::find(const key_type& key)
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::iterator trie_map<KeyT, ValueT, TraitsT>::find(const key_type& key)
 {
     return find(key.data(), key.size());
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::iterator trie_map<KeyT, ValueT>::find(const key_unit_type* input, size_type len)
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::iterator trie_map<KeyT, ValueT, TraitsT>::find(
+    const key_unit_type* input, size_type len)
 {
     const key_unit_type* input_end = input + len;
     node_stack_type node_stack;
@@ -798,14 +860,15 @@ typename trie_map<KeyT, ValueT>::iterator trie_map<KeyT, ValueT>::find(const key
     return iterator(std::move(node_stack), std::move(buf), trie::detail::iterator_type::normal);
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::search_results trie_map<KeyT, ValueT>::prefix_search(const key_type& key) const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::search_results trie_map<KeyT, ValueT, TraitsT>::prefix_search(
+    const key_type& key) const
 {
     return prefix_search(key.data(), key.size());
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::search_results trie_map<KeyT, ValueT>::prefix_search(
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::search_results trie_map<KeyT, ValueT, TraitsT>::prefix_search(
     const key_unit_type* prefix, size_type len) const
 {
     const key_unit_type* prefix_end = prefix + len;
@@ -815,63 +878,37 @@ typename trie_map<KeyT, ValueT>::search_results trie_map<KeyT, ValueT>::prefix_s
     return search_results(node, key_type(prefix, len));
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::size_type trie_map<KeyT, ValueT>::size() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::size_type trie_map<KeyT, ValueT, TraitsT>::size() const
 {
     size_type n = 0;
     count_values(n, m_root);
     return n;
 }
 
-template<typename KeyT, typename ValueT>
-bool trie_map<KeyT, ValueT>::empty() const noexcept
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::empty() const noexcept
 {
     return m_root.children.empty() && !m_root.has_value;
 }
 
-template<typename KeyT, typename ValueT>
-void trie_map<KeyT, ValueT>::clear()
+template<typename KeyT, typename ValueT, typename TraitsT>
+void trie_map<KeyT, ValueT, TraitsT>::clear()
 {
     m_root.children.clear();
     m_root.has_value = false;
 }
 
-template<typename KeyT, typename ValueT>
-typename trie_map<KeyT, ValueT>::packed_type trie_map<KeyT, ValueT>::pack() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::packed_type trie_map<KeyT, ValueT, TraitsT>::pack() const
 {
     return packed_type(*this);
 }
 
 #ifdef MDDS_TRIE_MAP_DEBUG
 
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::dump_node(key_type& buffer, const trie_node& node) const
-{
-    using namespace std;
-
-    if (node.value)
-    {
-        // This node has value.
-        cout << buffer << ":" << *static_cast<const value_type*>(node.value) << endl;
-    }
-
-    std::for_each(node.children.begin(), node.children.end(), [&](const trie_node* p) {
-        const trie_node& this_node = *p;
-        buffer.push_back(this_node.key);
-        dump_node(buffer, this_node);
-        buffer.pop_back();
-    });
-}
-
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::dump_trie(const trie_node& root) const
-{
-    key_type buffer;
-    dump_node(buffer, root);
-}
-
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::dump_packed_trie() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::dump_packed_trie() const
 {
     cout << "packed size: " << m_packed.size() << endl;
 
@@ -924,10 +961,10 @@ void packed_trie_map<KeyT, ValueT>::dump_packed_trie() const
 
 #endif
 
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::traverse_range(
-    trie_node& root, node_pool_type& node_pool, const typename packed_trie_map<KeyT, ValueT>::entry* start,
-    const typename packed_trie_map<KeyT, ValueT>::entry* end, size_type pos)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_range(
+    trie_node& root, node_pool_type& node_pool, const typename packed_trie_map<KeyT, ValueT, TraitsT>::entry* start,
+    const typename packed_trie_map<KeyT, ValueT, TraitsT>::entry* end, size_type pos)
 {
     const entry* p = start;
     const entry* range_start = start;
@@ -975,8 +1012,9 @@ void packed_trie_map<KeyT, ValueT>::traverse_range(
     }
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::size_type packed_trie_map<KeyT, ValueT>::compact_node(const trie_node& node)
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::size_type packed_trie_map<KeyT, ValueT, TraitsT>::compact_node(
+    const trie_node& node)
 {
     std::vector<std::tuple<size_t, key_unit_type>> child_offsets;
     child_offsets.reserve(node.children.size());
@@ -1002,11 +1040,11 @@ typename packed_trie_map<KeyT, ValueT>::size_type packed_trie_map<KeyT, ValueT>:
     return offset;
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::size_type packed_trie_map<KeyT, ValueT>::compact_node(
-    const typename trie_map<KeyT, ValueT>::trie_node& node)
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::size_type packed_trie_map<KeyT, ValueT, TraitsT>::compact_node(
+    const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node)
 {
-    using node_type = typename trie_map<KeyT, ValueT>::trie_node;
+    using node_type = typename trie_map<KeyT, ValueT, TraitsT>::trie_node;
 
     std::vector<std::tuple<size_t, key_unit_type>> child_offsets;
     child_offsets.reserve(node.children.size());
@@ -1034,8 +1072,9 @@ typename packed_trie_map<KeyT, ValueT>::size_type packed_trie_map<KeyT, ValueT>:
     return offset;
 }
 
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::push_child_offsets(size_type offset, const child_offsets_type& child_offsets)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::push_child_offsets(
+    size_type offset, const child_offsets_type& child_offsets)
 {
     m_packed.push_back(uintptr_t(child_offsets.size() * 2));
 
@@ -1047,8 +1086,8 @@ void packed_trie_map<KeyT, ValueT>::push_child_offsets(size_type offset, const c
     });
 }
 
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::compact(const trie_node& root)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::compact(const trie_node& root)
 {
     packed_type init(size_t(1), uintptr_t(0));
     m_packed.swap(init);
@@ -1058,8 +1097,8 @@ void packed_trie_map<KeyT, ValueT>::compact(const trie_node& root)
     m_packed[0] = root_offset;
 }
 
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::compact(const typename trie_map<KeyT, ValueT>::trie_node& root)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::compact(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root)
 {
     packed_type init(size_t(1), uintptr_t(0));
     m_packed.swap(init);
@@ -1069,14 +1108,15 @@ void packed_trie_map<KeyT, ValueT>::compact(const typename trie_map<KeyT, ValueT
     m_packed[0] = root_offset;
 }
 
-template<typename KeyT, typename ValueT>
-packed_trie_map<KeyT, ValueT>::const_node_type::const_node_type(
+template<typename KeyT, typename ValueT, typename TraitsT>
+packed_trie_map<KeyT, ValueT, TraitsT>::const_node_type::const_node_type(
     const packed_type* packed, const value_store_type* value_store, const uintptr_t* p)
     : m_packed(packed), m_value_store(value_store), m_pos(p)
 {}
 
-template<typename KeyT, typename ValueT>
-auto packed_trie_map<KeyT, ValueT>::const_node_type::operator=(const const_node_type& other) -> const_node_type&
+template<typename KeyT, typename ValueT, typename TraitsT>
+auto packed_trie_map<KeyT, ValueT, TraitsT>::const_node_type::operator=(const const_node_type& other)
+    -> const_node_type&
 {
     m_packed = other.m_packed;
     m_value_store = other.m_value_store;
@@ -1084,14 +1124,14 @@ auto packed_trie_map<KeyT, ValueT>::const_node_type::operator=(const const_node_
     return *this;
 }
 
-template<typename KeyT, typename ValueT>
-bool packed_trie_map<KeyT, ValueT>::const_node_type::valid() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool packed_trie_map<KeyT, ValueT, TraitsT>::const_node_type::valid() const
 {
     return m_pos != nullptr;
 }
 
-template<typename KeyT, typename ValueT>
-bool packed_trie_map<KeyT, ValueT>::const_node_type::has_child() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool packed_trie_map<KeyT, ValueT, TraitsT>::const_node_type::has_child() const
 {
     if (!m_pos)
         return false;
@@ -1104,8 +1144,8 @@ bool packed_trie_map<KeyT, ValueT>::const_node_type::has_child() const
     return index_size > 0u;
 }
 
-template<typename KeyT, typename ValueT>
-bool packed_trie_map<KeyT, ValueT>::const_node_type::has_value() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool packed_trie_map<KeyT, ValueT, TraitsT>::const_node_type::has_value() const
 {
     if (!m_pos)
         return false;
@@ -1118,8 +1158,8 @@ bool packed_trie_map<KeyT, ValueT>::const_node_type::has_value() const
     return pv != nullptr;
 }
 
-template<typename KeyT, typename ValueT>
-auto packed_trie_map<KeyT, ValueT>::const_node_type::value() const -> const value_type&
+template<typename KeyT, typename ValueT, typename TraitsT>
+auto packed_trie_map<KeyT, ValueT, TraitsT>::const_node_type::value() const -> const value_type&
 {
 #ifdef MDDS_TRIE_MAP_DEBUG
     trie::detail::verify_packed_position(*m_packed, m_pos);
@@ -1134,8 +1174,8 @@ auto packed_trie_map<KeyT, ValueT>::const_node_type::value() const -> const valu
     return *pv;
 }
 
-template<typename KeyT, typename ValueT>
-auto packed_trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) const -> const_node_type
+template<typename KeyT, typename ValueT, typename TraitsT>
+auto packed_trie_map<KeyT, ValueT, TraitsT>::const_node_type::child(key_unit_type c) const -> const_node_type
 {
     if (!m_pos)
         return const_node_type();
@@ -1163,15 +1203,15 @@ auto packed_trie_map<KeyT, ValueT>::const_node_type::child(key_unit_type c) cons
     return const_node_type();
 }
 
-template<typename KeyT, typename ValueT>
-packed_trie_map<KeyT, ValueT>::packed_trie_map() : m_packed(3, 0u)
+template<typename KeyT, typename ValueT, typename TraitsT>
+packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map() : m_packed(3, 0u)
 {
     // root offset (0), root value (1), and root child count (2).
     m_packed[0] = 1;
 }
 
-template<typename KeyT, typename ValueT>
-packed_trie_map<KeyT, ValueT>::packed_trie_map(const entry* entries, size_type entry_size)
+template<typename KeyT, typename ValueT, typename TraitsT>
+packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const entry* entries, size_type entry_size)
 {
     const entry* p = entries;
     const entry* p_end = p + entry_size;
@@ -1196,9 +1236,8 @@ packed_trie_map<KeyT, ValueT>::packed_trie_map(const entry* entries, size_type e
     trie_node root(0);
     node_pool_type node_pool;
     traverse_range(root, node_pool, p, p_end, 0);
-#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TRIE_MAP_DEBUG_DUMP_TRIE)
-    dump_trie(root);
-#endif
+
+    trie::detail::dump_packed_trie_node_tree<packed_trie_map, trie_node>{}(root);
 
     // Compact the trie into a packed array.
     compact(root);
@@ -1207,14 +1246,14 @@ packed_trie_map<KeyT, ValueT>::packed_trie_map(const entry* entries, size_type e
 #endif
 }
 
-template<typename KeyT, typename ValueT>
-packed_trie_map<KeyT, ValueT>::packed_trie_map(const trie_map<key_type, value_type>& other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const trie_map<key_type, value_type>& other)
 {
     compact(other.m_root);
 }
 
-template<typename KeyT, typename ValueT>
-packed_trie_map<KeyT, ValueT>::packed_trie_map(const packed_trie_map& other) : m_packed(other.m_packed)
+template<typename KeyT, typename ValueT, typename TraitsT>
+packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const packed_trie_map& other) : m_packed(other.m_packed)
 {
     struct _handler
     {
@@ -1251,8 +1290,8 @@ packed_trie_map<KeyT, ValueT>::packed_trie_map(const packed_trie_map& other) : m
     traverse_tree(handler);
 }
 
-template<typename KeyT, typename ValueT>
-packed_trie_map<KeyT, ValueT>::packed_trie_map(packed_trie_map&& other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(packed_trie_map&& other)
     : m_value_store(std::move(other.m_value_store)), m_packed(std::move(other.m_packed))
 {
     // Even the empty structure needs to have the root offset and the empty root record.
@@ -1260,16 +1299,16 @@ packed_trie_map<KeyT, ValueT>::packed_trie_map(packed_trie_map&& other)
     other.m_packed[0] = 1;
 }
 
-template<typename KeyT, typename ValueT>
-packed_trie_map<KeyT, ValueT>& packed_trie_map<KeyT, ValueT>::operator=(packed_trie_map other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+packed_trie_map<KeyT, ValueT, TraitsT>& packed_trie_map<KeyT, ValueT, TraitsT>::operator=(packed_trie_map other)
 {
     packed_trie_map tmp(std::move(other));
     tmp.swap(*this);
     return *this;
 }
 
-template<typename KeyT, typename ValueT>
-bool packed_trie_map<KeyT, ValueT>::operator==(const packed_trie_map& other) const
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool packed_trie_map<KeyT, ValueT, TraitsT>::operator==(const packed_trie_map& other) const
 {
     if (m_value_store.size() != other.m_value_store.size())
         return false;
@@ -1287,26 +1326,26 @@ bool packed_trie_map<KeyT, ValueT>::operator==(const packed_trie_map& other) con
     return true;
 }
 
-template<typename KeyT, typename ValueT>
-bool packed_trie_map<KeyT, ValueT>::operator!=(const packed_trie_map& other) const
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool packed_trie_map<KeyT, ValueT, TraitsT>::operator!=(const packed_trie_map& other) const
 {
     return !operator==(other);
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, ValueT>::begin() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<KeyT, ValueT, TraitsT>::begin() const
 {
     return cbegin();
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, ValueT>::end() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<KeyT, ValueT, TraitsT>::end() const
 {
     return cend();
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, ValueT>::cbegin() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<KeyT, ValueT, TraitsT>::cbegin() const
 {
     node_stack_type node_stack = get_root_stack();
 
@@ -1349,16 +1388,17 @@ typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, Val
     return const_iterator(std::move(node_stack), std::move(buf), *pv);
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, ValueT>::cend() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<KeyT, ValueT, TraitsT>::cend() const
 {
     node_stack_type node_stack = get_root_stack();
     node_stack.back().child_pos = node_stack.back().child_end;
     return const_iterator(std::move(node_stack), key_type());
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::node_stack_type packed_trie_map<KeyT, ValueT>::get_root_stack() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::node_stack_type packed_trie_map<
+    KeyT, ValueT, TraitsT>::get_root_stack() const
 {
     assert(!m_packed.empty());
     size_t root_offset = m_packed[0];
@@ -1377,14 +1417,15 @@ typename packed_trie_map<KeyT, ValueT>::node_stack_type packed_trie_map<KeyT, Va
     return node_stack;
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, ValueT>::find(const key_type& key) const
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<KeyT, ValueT, TraitsT>::find(
+    const key_type& key) const
 {
     return find(key.data(), key.size());
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, ValueT>::find(
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<KeyT, ValueT, TraitsT>::find(
     const key_unit_type* input, size_type len) const
 {
     if (m_value_store.empty())
@@ -1420,15 +1461,15 @@ typename packed_trie_map<KeyT, ValueT>::const_iterator packed_trie_map<KeyT, Val
     return const_iterator(std::move(node_stack), std::move(buf), *pv);
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::search_results packed_trie_map<KeyT, ValueT>::prefix_search(
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::search_results packed_trie_map<KeyT, ValueT, TraitsT>::prefix_search(
     const key_type& key) const
 {
     return prefix_search(key.data(), key.size());
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::search_results packed_trie_map<KeyT, ValueT>::prefix_search(
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::search_results packed_trie_map<KeyT, ValueT, TraitsT>::prefix_search(
     const key_unit_type* prefix, size_type len) const
 {
     if (m_value_store.empty())
@@ -1446,36 +1487,36 @@ typename packed_trie_map<KeyT, ValueT>::search_results packed_trie_map<KeyT, Val
     return search_results(node, key_type(prefix, len));
 }
 
-template<typename KeyT, typename ValueT>
-typename packed_trie_map<KeyT, ValueT>::size_type packed_trie_map<KeyT, ValueT>::size() const noexcept
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename packed_trie_map<KeyT, ValueT, TraitsT>::size_type packed_trie_map<KeyT, ValueT, TraitsT>::size() const noexcept
 {
     return m_value_store.size();
 }
 
-template<typename KeyT, typename ValueT>
-bool packed_trie_map<KeyT, ValueT>::empty() const noexcept
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool packed_trie_map<KeyT, ValueT, TraitsT>::empty() const noexcept
 {
     return m_value_store.empty();
 }
 
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::swap(packed_trie_map& other)
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::swap(packed_trie_map& other)
 {
     m_value_store.swap(other.m_value_store);
     m_packed.swap(other.m_packed);
 }
 
-template<typename KeyT, typename ValueT>
-auto packed_trie_map<KeyT, ValueT>::root_node() const -> const_node_type
+template<typename KeyT, typename ValueT, typename TraitsT>
+auto packed_trie_map<KeyT, ValueT, TraitsT>::root_node() const -> const_node_type
 {
     assert(m_packed.size() >= 3u);
     std::size_t root_offset = m_packed[0];
     return const_node_type(&m_packed, &m_value_store, m_packed.data() + root_offset);
 }
 
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT>
 template<typename FuncT>
-void packed_trie_map<KeyT, ValueT>::save_state(std::ostream& os) const
+void packed_trie_map<KeyT, ValueT, TraitsT>::save_state(std::ostream& os) const
 {
     trie::detail::bin_value bv;
 
@@ -1585,9 +1626,9 @@ void packed_trie_map<KeyT, ValueT>::save_state(std::ostream& os) const
     os.write(bv.buffer, 1);
 }
 
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT>
 template<typename FuncT>
-void packed_trie_map<KeyT, ValueT>::load_state(std::istream& is)
+void packed_trie_map<KeyT, ValueT, TraitsT>::load_state(std::istream& is)
 {
     trie::detail::bin_value bv;
     is.read(bv.buffer, 2);
@@ -1682,8 +1723,8 @@ void packed_trie_map<KeyT, ValueT>::load_state(std::istream& is)
     traverse_buffer(handler);
 }
 
-template<typename KeyT, typename ValueT>
-void packed_trie_map<KeyT, ValueT>::dump_structure() const
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::dump_structure() const
 {
 #ifdef MDDS_TRIE_MAP_DEBUG
     dump_packed_trie();
@@ -1743,9 +1784,9 @@ void packed_trie_map<KeyT, ValueT>::dump_structure() const
 #endif
 }
 
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT>
 template<typename _Handler>
-void packed_trie_map<KeyT, ValueT>::traverse_tree(_Handler hdl) const
+void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_tree(_Handler hdl) const
 {
     node_stack_type node_stack = get_root_stack();
     stack_item* si = &node_stack.back();
@@ -1818,9 +1859,9 @@ void packed_trie_map<KeyT, ValueT>::traverse_tree(_Handler hdl) const
     hdl.end();
 }
 
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT>
 template<typename _Handler>
-void packed_trie_map<KeyT, ValueT>::traverse_buffer(_Handler hdl) const
+void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_buffer(_Handler hdl) const
 {
     size_t n = m_packed.size();
     size_t i = 0;

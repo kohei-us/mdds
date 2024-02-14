@@ -26,8 +26,7 @@
  *
  ************************************************************************/
 
-//#define MDDS_TRIE_MAP_DEBUG_DUMP_TRIE 1
-//#define MDDS_TRIE_MAP_DEBUG_DUMP_PACKED 1
+#define MDDS_TRIE_MAP_DEBUG_DUMP_PACKED 1
 #include "test_main.hpp"
 
 #include <iterator>
@@ -37,14 +36,15 @@
 using namespace std;
 using namespace mdds;
 
-bool verify_entries(const packed_int_map_type& db, const packed_int_map_type::entry* entries, size_t entry_size)
+template<typename MapT>
+bool verify_entries(const MapT& db, const typename MapT::entry* entries, std::size_t entry_size)
 {
     auto results = db.prefix_search(nullptr, 0);
     for (auto it = results.begin(), ite = results.end(); it != ite; ++it)
-        cout << it->first << ": " << it->second << endl;
+        std::cout << it->first << ": " << it->second << std::endl;
 
-    const packed_int_map_type::entry* p = entries;
-    const packed_int_map_type::entry* p_end = p + entry_size;
+    const auto* p = entries;
+    const auto* p_end = p + entry_size;
     for (; p != p_end; ++p)
     {
         auto it = db.find(p->key, p->keylen);
@@ -77,7 +77,9 @@ void trie_packed_test1()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    packed_int_map_type::entry entries[] = {
+    using _map_type = mdds::packed_trie_map<std::string, int, local_debug_traits>;
+
+    _map_type::entry entries[] = {
         {MDDS_ASCII("a"), 13},
         {MDDS_ASCII("aa"), 10},
         {MDDS_ASCII("ab"), 3},
@@ -85,7 +87,7 @@ void trie_packed_test1()
     };
 
     size_t entry_size = std::size(entries);
-    packed_int_map_type db(entries, entry_size);
+    _map_type db(entries, entry_size);
     assert(db.size() == 4);
     assert(verify_entries(db, entries, entry_size));
 
@@ -136,14 +138,16 @@ void trie_packed_test2()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    packed_int_map_type::entry entries[] = {
+    using _map_type = mdds::packed_trie_map<std::string, int, local_debug_traits>;
+
+    _map_type::entry entries[] = {
         {MDDS_ASCII("aaron"), 0}, {MDDS_ASCII("al"), 1},    {MDDS_ASCII("aldi"), 2},    {MDDS_ASCII("andy"), 3},
         {MDDS_ASCII("bison"), 4}, {MDDS_ASCII("bruce"), 5}, {MDDS_ASCII("charlie"), 6}, {MDDS_ASCII("charlotte"), 7},
         {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},  {MDDS_ASCII("e"), 10},      {MDDS_ASCII("eva"), 11},
     };
 
     size_t entry_size = std::size(entries);
-    packed_int_map_type db(entries, entry_size);
+    _map_type db(entries, entry_size);
     assert(db.size() == 12);
     assert(verify_entries(db, entries, entry_size));
 
@@ -158,7 +162,9 @@ void trie_packed_test3()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    packed_int_map_type::entry entries[] = {
+    using _map_type = mdds::packed_trie_map<std::string, int, local_debug_traits>;
+
+    _map_type::entry entries[] = {
         {MDDS_ASCII("NULL"), 1},
         {MDDS_ASCII("Null"), 2},
         {MDDS_ASCII("null"), 3},
@@ -166,7 +172,7 @@ void trie_packed_test3()
     };
 
     size_t entry_size = std::size(entries);
-    packed_int_map_type db(entries, entry_size);
+    _map_type db(entries, entry_size);
     assert(db.size() == 4);
     assert(verify_entries(db, entries, entry_size));
 
@@ -190,13 +196,15 @@ void trie_packed_test4()
         name_david
     };
 
-    packed_int_map_type::entry entries[] = {
+    using _map_type = mdds::packed_trie_map<std::string, name_type, local_debug_traits>;
+
+    _map_type::entry entries[] = {
         {MDDS_ASCII("andy"), name_andy},   {MDDS_ASCII("andy1"), name_andy},      {MDDS_ASCII("andy13"), name_andy},
         {MDDS_ASCII("bruce"), name_bruce}, {MDDS_ASCII("charlie"), name_charlie}, {MDDS_ASCII("david"), name_david},
     };
 
     size_t entry_size = std::size(entries);
-    packed_int_map_type db(entries, entry_size);
+    _map_type db(entries, entry_size);
     assert(db.size() == 6);
     assert(verify_entries(db, entries, entry_size));
 
@@ -335,6 +343,12 @@ public:
         return m_buffer.size();
     }
 };
+
+std::ostream& operator<<(std::ostream& os, const custom_string_16& v)
+{
+    os << "(custom-string: size=" << v.size() << ")";
+    return os;
+}
 
 using packed_custom_str_map_type = packed_trie_map<custom_string_16, std::string>;
 

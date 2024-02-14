@@ -104,9 +104,13 @@ struct value_serializer<std::string> : variable_value_serializer<std::string>
 {
 };
 
+struct default_traits
+{
+};
+
 } // namespace trie
 
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT>
 class packed_trie_map;
 
 /**
@@ -115,10 +119,10 @@ class packed_trie_map;
  * are stored in an ordered tree structure known as trie, or sometimes
  * referred to as prefix tree.
  */
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT = trie::default_traits>
 class trie_map
 {
-    friend class packed_trie_map<KeyT, ValueT>;
+    friend class packed_trie_map<KeyT, ValueT, TraitsT>;
     friend class trie::detail::iterator_base<trie_map, true>;
     friend class trie::detail::iterator_base<trie_map, false>;
     friend class trie::detail::const_iterator<trie_map>;
@@ -128,7 +132,8 @@ class trie_map
     friend trie::detail::get_node_stack_type<trie_map, std::false_type>;
 
 public:
-    typedef packed_trie_map<KeyT, ValueT> packed_type;
+    using traits_type = TraitsT;
+    typedef packed_trie_map<KeyT, ValueT, TraitsT> packed_type;
     typedef KeyT key_type;
     typedef typename key_type::value_type key_unit_type;
     typedef ValueT value_type;
@@ -422,13 +427,14 @@ private:
  * Note that, since this container is immutable, the content of the
  * container cannot be modified once constructed.
  */
-template<typename KeyT, typename ValueT>
+template<typename KeyT, typename ValueT, typename TraitsT = trie::default_traits>
 class packed_trie_map
 {
     friend class trie::detail::packed_iterator_base<packed_trie_map>;
     friend class trie::detail::packed_search_results<packed_trie_map>;
 
 public:
+    using traits_type = TraitsT;
     typedef KeyT key_type;
     typedef typename key_type::value_type key_unit_type;
     typedef ValueT value_type;
@@ -695,12 +701,12 @@ private:
         trie_node& root, node_pool_type& node_pool, const entry* start, const entry* end, size_type pos);
 
     size_type compact_node(const trie_node& node);
-    size_type compact_node(const typename trie_map<KeyT, ValueT>::trie_node& node);
+    size_type compact_node(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
 
     void push_child_offsets(size_type offset, const child_offsets_type& child_offsets);
 
     void compact(const trie_node& root);
-    void compact(const typename trie_map<KeyT, ValueT>::trie_node& root);
+    void compact(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root);
 
     template<typename _Handler>
     void traverse_tree(_Handler hdl) const;
@@ -709,8 +715,6 @@ private:
     void traverse_buffer(_Handler hdl) const;
 
 #ifdef MDDS_TRIE_MAP_DEBUG
-    void dump_node(key_type& buffer, const trie_node& node) const;
-    void dump_trie(const trie_node& root) const;
     void dump_packed_trie() const;
 #endif
 

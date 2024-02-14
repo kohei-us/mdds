@@ -34,6 +34,11 @@
 #include <mdds/trie_map.hpp>
 #include <mdds/global.hpp>
 
+struct local_debug_traits
+{
+    static constexpr bool dump_packed_construction_state = true;
+};
+
 using packed_int_map_type = mdds::packed_trie_map<std::string, int>;
 using packed_str_map_type = mdds::packed_trie_map<std::string, std::string>;
 
