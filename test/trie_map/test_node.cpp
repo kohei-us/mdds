@@ -122,12 +122,47 @@ void test_basic()
     packed.dump_structure();
 }
 
+void test_26_child_nodes()
+{
+    _TEST_FUNC_SCOPE;
+
+    auto verify = [](std::string_view name, const auto& trie) {
+        std::cout << "trie type: " << name << std::endl;
+
+        auto node = trie.root_node();
+        assert(node.valid());
+        assert(!node.has_value());
+        assert(node.has_child());
+
+        for (char c = 'a'; c <= 'z'; ++c)
+        {
+            auto child = node.child(c);
+            assert(child.valid());
+            assert(child.has_value());
+            assert(child.value() == int(c - 'a'));
+            std::cout << "- char='" << c << "'; value=" << child.value() << std::endl;
+        }
+    };
+
+    map_type original;
+
+    for (char c = 'a'; c <= 'z'; ++c)
+        original.insert(std::string{c}, int(c - 'a'));
+
+    verify("original", original);
+    auto packed = original.pack();
+    verify("packed", packed);
+
+    packed.dump_structure();
+}
+
 } // anonymous namespace
 
 void run()
 {
     test_empty();
     test_basic();
+    test_26_child_nodes();
 }
 
 } // namespace trie_test_node
