@@ -711,13 +711,6 @@ private:
     template<typename _Handler>
     void traverse_tree(_Handler hdl) const;
 
-    template<typename _Handler>
-    void traverse_buffer(_Handler hdl) const;
-
-#ifdef MDDS_TRIE_MAP_DEBUG
-    void dump_packed_trie() const;
-#endif
-
 private:
     value_store_type m_value_store;
     packed_type m_packed;

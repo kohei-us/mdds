@@ -32,12 +32,13 @@
 #include <algorithm>
 #include <memory>
 #include <sstream>
+#include <ostream>
+#include <iostream>
+#include <iomanip>
 #include <type_traits>
 #include <cstring>
 
 #ifdef MDDS_TRIE_MAP_DEBUG
-#include <iostream>
-#include <iomanip>
 using std::cout;
 using std::endl;
 #endif
@@ -63,11 +64,12 @@ namespace mdds {
 namespace trie { namespace detail {
 
 HAS_STATIC_CONSTEXPR_MEMBER(dump_packed_construction_state)
+HAS_STATIC_CONSTEXPR_MEMBER(dump_packed_buffer)
 
 template<typename TrieT, typename NodeT, typename = void>
 struct dump_packed_trie_node_tree
 {
-    void operator()(const NodeT&)
+    void operator()(std::ostream&, const NodeT&)
     {}
 };
 
@@ -77,31 +79,137 @@ struct dump_packed_trie_node_tree<
 {
     using trie_node = NodeT;
 
-    void operator()(const NodeT& root)
+    void operator()(std::ostream& os, const NodeT& root)
     {
         if constexpr (!TrieT::traits_type::dump_packed_construction_state)
             return;
 
         typename TrieT::key_type buffer;
-        traverse_node(buffer, root);
+        traverse_node(os, buffer, root);
     }
 
 private:
-    void traverse_node(typename TrieT::key_type& buffer, const NodeT& node)
+    void traverse_node(std::ostream& os, typename TrieT::key_type& buffer, const NodeT& node)
     {
         if (node.value)
         {
             // This node has value.
-            std::cout << "trie-node: key='" << buffer << "'; value=" << *node.value << std::endl;
+            os << "trie-node: key='" << buffer << "'; value=" << *node.value << std::endl;
         }
 
         for (const trie_node* p : node.children)
         {
             const trie_node& this_node = *p;
             buffer.push_back(this_node.key);
-            traverse_node(buffer, this_node);
+            traverse_node(os, buffer, this_node);
             buffer.pop_back();
         }
+    }
+};
+
+template<typename PackedT, typename HandlerT>
+struct traverse_packed_buffer
+{
+    using packed_type = PackedT;
+
+    void operator()(const packed_type& packed, HandlerT hdl) const
+    {
+        size_t n = packed.size();
+        size_t i = 0;
+        hdl.root_offset(i, packed[i]);
+        ++i;
+
+        while (i < n)
+        {
+            hdl.node_value(i, packed[i]);
+            ++i;
+
+            hdl.node_index_size(i, packed[i]);
+            size_t index_size = packed[i];
+            ++i;
+            index_size /= 2;
+
+            for (size_t j = 0; j < index_size; ++j)
+            {
+                hdl.node_child_key(i, packed[i]);
+                ++i;
+                hdl.node_child_offset(i, packed[i]);
+                ++i;
+            }
+        }
+    }
+};
+
+template<typename TrieT, typename PackedT, typename = void>
+struct dump_packed_buffer
+{
+    using packed_type = PackedT;
+
+    void operator()(std::ostream&, const packed_type&)
+    {}
+};
+
+template<typename TrieT, typename PackedT>
+struct dump_packed_buffer<TrieT, PackedT, std::enable_if_t<has_dump_packed_buffer<typename TrieT::traits_type>::value>>
+{
+    using packed_type = PackedT;
+    using key_type = typename TrieT::key_type;
+    using key_unit_type = typename key_type::value_type;
+    using value_type = typename TrieT::value_type;
+
+    void operator()(std::ostream& os, const packed_type& packed)
+    {
+        os << "packed size: " << packed.size() << std::endl;
+
+        struct _handler
+        {
+            std::ostream& m_os;
+            std::size_t m_this_node_offset = 0;
+
+            _handler(std::ostream& _os) : m_os(_os)
+            {}
+
+            /** first element in the buffer. */
+            void root_offset(size_t i, const uintptr_t& v) const
+            {
+                m_os << std::setw(4) << i << ": root node offset: " << v << std::endl;
+            }
+
+            /** first element in each node section. */
+            void node_value(size_t i, const uintptr_t& v)
+            {
+                m_this_node_offset = i;
+                const value_type* value = reinterpret_cast<const value_type*>(v);
+                m_os << std::setw(4) << i << ": node value pointer: " << value << std::endl;
+            }
+
+            /**
+             * second element in each node section that stores the size of
+             * the child data sub-section.
+             */
+            void node_index_size(size_t i, const uintptr_t& v) const
+            {
+                m_os << std::setw(4) << i << ": index size: " << size_t(v) << std::endl;
+            }
+
+            /** element that stores the key value for child node. */
+            void node_child_key(size_t i, const uintptr_t& v) const
+            {
+                key_unit_type key = v;
+                m_os << std::setw(4) << i << ": key: " << key << std::endl;
+            }
+
+            /** element that stores the relative offset of the child node. */
+            void node_child_offset(size_t i, const uintptr_t& v) const
+            {
+                size_t offset = v;
+                m_os << std::setw(4) << i << ": offset: " << offset << " (abs: " << (m_this_node_offset - offset) << ")"
+                     << std::endl;
+            }
+
+        } handler(os);
+
+        traverse_packed_buffer<packed_type, _handler>{}(packed, handler);
     }
 };
 
@@ -905,62 +1013,6 @@ typename trie_map<KeyT, ValueT, TraitsT>::packed_type trie_map<KeyT, ValueT, Tra
     return packed_type(*this);
 }
 
-#ifdef MDDS_TRIE_MAP_DEBUG
-
-template<typename KeyT, typename ValueT, typename TraitsT>
-void packed_trie_map<KeyT, ValueT, TraitsT>::dump_packed_trie() const
-{
-    cout << "packed size: " << m_packed.size() << endl;
-
-    struct _handler
-    {
-        size_t this_node_offset = 0;
-
-        /** first element in the buffer. */
-        void root_offset(size_t i, const uintptr_t& v) const
-        {
-            cout << std::setw(4) << i << ": root node offset: " << v << endl;
-        }
-
-        /** first element in each node section. */
-        void node_value(size_t i, const uintptr_t& v)
-        {
-            this_node_offset = i;
-            const value_type* value = reinterpret_cast<const value_type*>(v);
-            cout << std::setw(4) << i << ": node value pointer: " << value << endl;
-        }
-
-        /**
-         * second element in each node section that stores the size of
-         * the child data sub-section.
-         */
-        void node_index_size(size_t i, const uintptr_t& v) const
-        {
-            cout << std::setw(4) << i << ": index size: " << size_t(v) << endl;
-        }
-
-        /** element that stores the key value for child node. */
-        void node_child_key(size_t i, const uintptr_t& v) const
-        {
-            key_unit_type key = v;
-            cout << std::setw(4) << i << ": key: " << key << endl;
-        }
-
-        /** element that stores the relative offset of the child node. */
-        void node_child_offset(size_t i, const uintptr_t& v) const
-        {
-            size_t offset = v;
-            cout << std::setw(4) << i << ": offset: " << offset << " (abs: " << (this_node_offset - offset) << ")"
-                 << endl;
-        }
-
-    } handler;
-
-    traverse_buffer(handler);
-}
-
-#endif
-
 template<typename KeyT, typename ValueT, typename TraitsT>
 void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_range(
     trie_node& root, node_pool_type& node_pool, const typename packed_trie_map<KeyT, ValueT, TraitsT>::entry* start,
@@ -1237,12 +1289,13 @@ packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const entry* entries, si
     node_pool_type node_pool;
     traverse_range(root, node_pool, p, p_end, 0);
 
-    trie::detail::dump_packed_trie_node_tree<packed_trie_map, trie_node>{}(root);
-
     // Compact the trie into a packed array.
     compact(root);
+
+    trie::detail::dump_packed_trie_node_tree<packed_trie_map, trie_node>{}(std::cout, root);
+
 #if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TRIE_MAP_DEBUG_DUMP_PACKED)
-    dump_packed_trie();
+    trie::detail::dump_packed_buffer<packed_trie_map, packed_type>{}(std::cout, m_packed);
 #endif
 }
 
@@ -1619,7 +1672,7 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::save_state(std::ostream& os) const
 
     } handler(os, value_addrs, *this);
 
-    traverse_buffer(handler);
+    trie::detail::traverse_packed_buffer<packed_type, _handler>{}(m_packed, handler);
 
     // Write 0xFF to signify the end of the packed blob.
     bv.ui8 = 0xFF;
@@ -1720,14 +1773,14 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::load_state(std::istream& is)
 
     } handler(*this);
 
-    traverse_buffer(handler);
+    trie::detail::traverse_packed_buffer<packed_type, _handler>{}(m_packed, handler);
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 void packed_trie_map<KeyT, ValueT, TraitsT>::dump_structure() const
 {
 #ifdef MDDS_TRIE_MAP_DEBUG
-    dump_packed_trie();
+    trie::detail::dump_packed_buffer<packed_trie_map, packed_type>{}(std::cout, m_packed);
 
     cout << "--" << endl;
     cout << "entry size: " << m_value_store.size() << endl;
@@ -1857,35 +1910,6 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_tree(_Handler hdl) const
     }
 
     hdl.end();
-}
-
-template<typename KeyT, typename ValueT, typename TraitsT>
-template<typename _Handler>
-void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_buffer(_Handler hdl) const
-{
-    size_t n = m_packed.size();
-    size_t i = 0;
-    hdl.root_offset(i, m_packed[i]);
-    ++i;
-
-    while (i < n)
-    {
-        hdl.node_value(i, m_packed[i]);
-        ++i;
-
-        hdl.node_index_size(i, m_packed[i]);
-        size_t index_size = m_packed[i];
-        ++i;
-        index_size /= 2;
-
-        for (size_t j = 0; j < index_size; ++j)
-        {
-            hdl.node_child_key(i, m_packed[i]);
-            ++i;
-            hdl.node_child_offset(i, m_packed[i]);
-            ++i;
-        }
-    }
 }
 
 } // namespace mdds

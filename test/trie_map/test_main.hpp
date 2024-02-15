@@ -37,6 +37,7 @@
 struct local_debug_traits
 {
     static constexpr bool dump_packed_construction_state = true;
+    static constexpr bool dump_packed_buffer = true;
 };
 
 using packed_int_map_type = mdds::packed_trie_map<std::string, int>;
