@@ -26,7 +26,6 @@
  *
  ************************************************************************/
 
-#define MDDS_TRIE_MAP_DEBUG_DUMP_PACKED 1
 #include "test_main.hpp"
 
 #include <iterator>

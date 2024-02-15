@@ -64,48 +64,6 @@ namespace mdds {
 namespace trie { namespace detail {
 
 HAS_STATIC_CONSTEXPR_MEMBER(dump_packed_construction_state)
-HAS_STATIC_CONSTEXPR_MEMBER(dump_packed_buffer)
-
-template<typename TrieT, typename NodeT, typename = void>
-struct dump_packed_trie_node_tree
-{
-    void operator()(std::ostream&, const NodeT&)
-    {}
-};
-
-template<typename TrieT, typename NodeT>
-struct dump_packed_trie_node_tree<
-    TrieT, NodeT, typename std::enable_if_t<has_dump_packed_construction_state<typename TrieT::traits_type>::value>>
-{
-    using trie_node = NodeT;
-
-    void operator()(std::ostream& os, const NodeT& root)
-    {
-        if constexpr (!TrieT::traits_type::dump_packed_construction_state)
-            return;
-
-        typename TrieT::key_type buffer;
-        traverse_node(os, buffer, root);
-    }
-
-private:
-    void traverse_node(std::ostream& os, typename TrieT::key_type& buffer, const NodeT& node)
-    {
-        if (node.value)
-        {
-            // This node has value.
-            os << "trie-node: key='" << buffer << "'; value=" << *node.value << std::endl;
-        }
-
-        for (const trie_node* p : node.children)
-        {
-            const trie_node& this_node = *p;
-            buffer.push_back(this_node.key);
-            traverse_node(os, buffer, this_node);
-            buffer.pop_back();
-        }
-    }
-};
 
 template<typename PackedT, typename HandlerT>
 struct traverse_packed_buffer
@@ -140,17 +98,8 @@ struct traverse_packed_buffer
     }
 };
 
-template<typename TrieT, typename PackedT, typename = void>
-struct dump_packed_buffer
-{
-    using packed_type = PackedT;
-
-    void operator()(std::ostream&, const packed_type&)
-    {}
-};
-
 template<typename TrieT, typename PackedT>
-struct dump_packed_buffer<TrieT, PackedT, std::enable_if_t<has_dump_packed_buffer<typename TrieT::traits_type>::value>>
+struct dump_packed_buffer
 {
     using packed_type = PackedT;
     using key_type = typename TrieT::key_type;
@@ -210,6 +159,50 @@ struct dump_packed_buffer<TrieT, PackedT, std::enable_if_t<has_dump_packed_buffe
         } handler(os);
 
         traverse_packed_buffer<packed_type, _handler>{}(packed, handler);
+    }
+};
+
+template<typename TrieT, typename PackedT, typename NodeT, typename = void>
+struct dump_packed_construction_state
+{
+    void operator()(std::ostream&, const PackedT&, const NodeT&)
+    {}
+};
+
+template<typename TrieT, typename PackedT, typename NodeT>
+struct dump_packed_construction_state<
+    TrieT, PackedT, NodeT,
+    typename std::enable_if_t<has_dump_packed_construction_state<typename TrieT::traits_type>::value>>
+{
+    using trie_node = NodeT;
+
+    void operator()(std::ostream& os, const PackedT& packed, const NodeT& root)
+    {
+        if constexpr (!TrieT::traits_type::dump_packed_construction_state)
+            return;
+
+        typename TrieT::key_type buffer;
+        traverse_node(os, buffer, root);
+
+        dump_packed_buffer<TrieT, PackedT>{}(os, packed);
+    }
+
+private:
+    void traverse_node(std::ostream& os, typename TrieT::key_type& buffer, const NodeT& node)
+    {
+        if (node.value)
+        {
+            // This node has value.
+            os << "trie-node: key='" << buffer << "'; value=" << *node.value << std::endl;
+        }
+
+        for (const trie_node* p : node.children)
+        {
+            const trie_node& this_node = *p;
+            buffer.push_back(this_node.key);
+            traverse_node(os, buffer, this_node);
+            buffer.pop_back();
+        }
     }
 };
 
@@ -1292,11 +1285,7 @@ packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const entry* entries, si
     // Compact the trie into a packed array.
     compact(root);
 
-    trie::detail::dump_packed_trie_node_tree<packed_trie_map, trie_node>{}(std::cout, root);
-
-#if defined(MDDS_TRIE_MAP_DEBUG) && defined(MDDS_TRIE_MAP_DEBUG_DUMP_PACKED)
-    trie::detail::dump_packed_buffer<packed_trie_map, packed_type>{}(std::cout, m_packed);
-#endif
+    trie::detail::dump_packed_construction_state<packed_trie_map, packed_type, trie_node>{}(std::cout, m_packed, root);
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
