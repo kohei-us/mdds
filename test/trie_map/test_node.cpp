@@ -35,6 +35,7 @@ namespace trie_test_node {
 namespace {
 
 using map_type = mdds::trie_map<std::string, int>;
+using mdds::trie::dump_structure_type;
 
 void test_empty()
 {
@@ -72,7 +73,8 @@ void test_empty()
     auto packed = original.pack();
     verify("packed", packed);
 
-    packed.dump_structure();
+    std::cout << packed.dump_structure(dump_structure_type::packed_buffer) << std::endl;
+    std::cout << packed.dump_structure(dump_structure_type::trie_traversal) << std::endl;
 }
 
 void test_basic()
@@ -119,7 +121,8 @@ void test_basic()
     auto packed = original.pack();
     verify("packed", packed);
 
-    packed.dump_structure();
+    std::cout << packed.dump_structure(dump_structure_type::packed_buffer) << std::endl;
+    std::cout << packed.dump_structure(dump_structure_type::trie_traversal) << std::endl;
 }
 
 void test_26_child_nodes()
@@ -153,7 +156,8 @@ void test_26_child_nodes()
     auto packed = original.pack();
     verify("packed", packed);
 
-    packed.dump_structure();
+    std::cout << packed.dump_structure(dump_structure_type::packed_buffer) << std::endl;
+    std::cout << packed.dump_structure(dump_structure_type::trie_traversal) << std::endl;
 }
 
 } // anonymous namespace

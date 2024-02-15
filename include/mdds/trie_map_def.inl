@@ -30,18 +30,12 @@
 
 #include <cassert>
 #include <algorithm>
-#include <memory>
 #include <sstream>
 #include <ostream>
 #include <iostream>
 #include <iomanip>
 #include <type_traits>
 #include <cstring>
-
-#ifdef MDDS_TRIE_MAP_DEBUG
-using std::cout;
-using std::endl;
-#endif
 
 #define HAS_STATIC_CONSTEXPR_MEMBER(MEMBER) \
     template<typename T> \
@@ -1766,64 +1760,83 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::load_state(std::istream& is)
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-void packed_trie_map<KeyT, ValueT, TraitsT>::dump_structure() const
+std::string packed_trie_map<KeyT, ValueT, TraitsT>::dump_structure(trie::dump_structure_type type) const
 {
-#ifdef MDDS_TRIE_MAP_DEBUG
-    trie::detail::dump_packed_buffer<packed_trie_map, packed_type>{}(std::cout, m_packed);
+    std::ostringstream os;
 
-    cout << "--" << endl;
-    cout << "entry size: " << m_value_store.size() << endl;
-    cout << "memory size: " << m_packed.size() << endl;
+    switch (type)
+    {
+        case trie::dump_structure_type::packed_buffer:
+        {
+            trie::detail::dump_packed_buffer<packed_trie_map, packed_type>{}(os, m_packed);
+            break;
+        }
+        case trie::dump_structure_type::trie_traversal:
+        {
+            dump_trie_traversal(os);
+            break;
+        }
+    }
+
+    return os.str();
+}
+
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::dump_trie_traversal(std::ostream& os) const
+{
+    os << "--" << std::endl;
+    os << "value entry count: " << m_value_store.size() << std::endl;
+    os << "packed buffer size: " << m_packed.size() << std::endl;
 
     const uintptr_t* head = m_packed.data();
 
     struct _handler
     {
+        std::ostream& m_os;
         const uintptr_t* m_head;
 
-        _handler(const uintptr_t* head) : m_head(head)
+        _handler(std::ostream& os, const uintptr_t* head) : m_os(os), m_head(head)
         {}
 
-        void node(const uintptr_t* node_pos, key_unit_type c, size_t depth, size_t index_size)
+        void node(const uintptr_t* node_pos, key_unit_type c, size_type depth, size_type index_size)
         {
             auto value_ptr = reinterpret_cast<const value_type*>(*node_pos);
-            size_t offset = std::distance(m_head, node_pos);
+            size_type offset = std::distance(m_head, node_pos);
 
-            cout << "  --" << endl;
-            cout << "  offset: " << offset << endl;
-            cout << "  key: " << c << endl;
-            cout << "  depth: " << depth << endl;
-            cout << "  child count: " << (index_size / 2) << endl;
-            cout << "  value address: " << value_ptr;
+            m_os << "  --" << std::endl;
+            m_os << "  offset: " << offset << std::endl;
+            m_os << "  key: " << c << std::endl;
+            m_os << "  depth: " << depth << std::endl;
+            m_os << "  child count: " << (index_size / 2) << std::endl;
+            m_os << "  value address: " << value_ptr;
 
             if (value_ptr)
             {
-                cout << "; value: " << *value_ptr;
+                m_os << "; value: " << *value_ptr;
             }
 
-            cout << endl;
+            m_os << std::endl;
         }
 
         void move_up(const uintptr_t* node_pos, const uintptr_t* child_pos, const uintptr_t* child_end)
         {
-            size_t offset = std::distance(m_head, node_pos);
-            size_t child_size = std::distance(child_pos, child_end) / 2;
-            cout << "  --" << endl;
-            cout << "  move up: (offset: " << offset << "; child count: " << child_size << ")" << endl;
+            size_type offset = std::distance(m_head, node_pos);
+            size_type child_size = std::distance(child_pos, child_end) / 2;
+            m_os << "  --" << std::endl;
+            m_os << "  move up: (offset: " << offset << "; child count: " << child_size << ")" << std::endl;
         }
 
         void next_child()
         {
-            cout << "  next child" << endl;
+            m_os << "  next child" << std::endl;
         }
 
         void end()
         {}
 
-    } handler(head);
+    } handler(os, head);
 
     traverse_tree(handler);
-#endif
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>

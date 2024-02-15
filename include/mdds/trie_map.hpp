@@ -108,6 +108,19 @@ struct default_traits
 {
 };
 
+enum class dump_structure_type
+{
+    /**
+     * Contiguous memory buffer that stores the packed trie content.
+     */
+    packed_buffer,
+
+    /**
+     * Traversal of the trie in depth-first order.
+     */
+    trie_traversal,
+};
+
 } // namespace trie
 
 template<typename KeyT, typename ValueT, typename TraitsT>
@@ -688,13 +701,16 @@ public:
     void load_state(std::istream& is);
 
     /**
-     * Dump the structure of the trie content for debugging.  You must define
-     * <code>MDDS_TRIE_MAP_DEBUG</code> in order for this method to generate
-     * output.
+     * Dump the structure of the trie content in a specified human-readable
+     * textural format.
+     *
+     * @param type Output format type.
      */
-    void dump_structure() const;
+    std::string dump_structure(trie::dump_structure_type type) const;
 
 private:
+    void dump_trie_traversal(std::ostream& os) const;
+
     node_stack_type get_root_stack() const;
 
     void traverse_range(
