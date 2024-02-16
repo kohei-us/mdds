@@ -38,6 +38,7 @@
 #include <iomanip>
 #include <type_traits>
 #include <cstring>
+#include <functional>
 
 #define HAS_STATIC_CONSTEXPR_MEMBER(MEMBER) \
     template<typename T> \
