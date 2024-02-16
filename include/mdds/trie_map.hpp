@@ -108,15 +108,19 @@ struct default_traits
 {
 };
 
+/**
+ * Specifies the type of human-readable output to dump.
+ */
 enum class dump_structure_type
 {
     /**
-     * Contiguous memory buffer that stores the packed trie content.
+     * Dump the in-memory buffer that stores the trie content in a linear
+     * fashion.
      */
     packed_buffer,
 
     /**
-     * Traversal of the trie in depth-first order.
+     * Dump the traversal result of the trie in depth-first order.
      */
     trie_traversal,
 };
@@ -204,6 +208,9 @@ private:
     using node_stack_type = std::vector<stack_item<false>>;
 
 public:
+    /**
+     * Represents an individual node of a trie.
+     */
     class const_node_type
     {
         friend class trie_map;
@@ -253,7 +260,7 @@ public:
         const value_type& value() const;
 
         /**
-         * Move to a child node.
+         * Move to a child node by a unit key.
          *
          * @param c A unit key associated with a child node relative to the
          *          current node.
@@ -285,6 +292,11 @@ public:
 
     void swap(trie_map& other);
 
+    /**
+     * Obtain a root node of the trie to traverse it node-by-node.
+     *
+     * @return Root node of the trie.
+     */
     const_node_type root_node() const;
 
     /**
@@ -523,6 +535,9 @@ private:
     typedef std::vector<std::tuple<size_t, key_unit_type>> child_offsets_type;
 
 public:
+    /**
+     * Represents an individual node of a trie.
+     */
     class const_node_type
     {
         friend class packed_trie_map;
@@ -574,7 +589,7 @@ public:
         const value_type& value() const;
 
         /**
-         * Move to a child node.
+         * Move to a child node by a unit key.
          *
          * @param c A unit key associated with a child node relative to the
          *          current node.
@@ -681,6 +696,11 @@ public:
 
     void swap(packed_trie_map& other);
 
+    /**
+     * Obtain a root node of the trie to traverse it node-by-node.
+     *
+     * @return Root node of the trie.
+     */
     const_node_type root_node() const;
 
     /**

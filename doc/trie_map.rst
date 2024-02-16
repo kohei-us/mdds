@@ -600,3 +600,12 @@ Value Serializers
 
 .. doxygenstruct:: mdds::trie::numeric_sequence_value_serializer
    :members:
+
+
+Other Types
+^^^^^^^^^^^
+
+.. doxygenstruct:: mdds::trie::default_traits
+   :members:
+
+.. doxygenenum:: mdds::trie::dump_structure_type
