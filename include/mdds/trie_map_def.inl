@@ -29,6 +29,7 @@
 #include "mdds/global.hpp"
 
 #include <cassert>
+#include <cmath>
 #include <algorithm>
 #include <sstream>
 #include <ostream>
@@ -102,20 +103,26 @@ struct dump_packed_buffer
 
     void operator()(std::ostream& os, const packed_type& packed)
     {
-        os << "packed size: " << packed.size() << std::endl;
+        os << std::setfill('0') << "---\n"
+           << "# packed buffer layout\n"
+           << "buffer size: " << packed.size() << "\n"
+           << "layout:" << std::endl;
+
+        int width = std::floor(std::log10(packed.size())) + 1;
 
         struct _handler
         {
             std::ostream& m_os;
+            const int m_width = 0;
             std::size_t m_this_node_offset = 0;
 
-            _handler(std::ostream& _os) : m_os(_os)
+            _handler(std::ostream& _os, int width) : m_os(_os), m_width(width)
             {}
 
             /** first element in the buffer. */
             void root_offset(size_t i, const uintptr_t& v) const
             {
-                m_os << std::setw(4) << i << ": root node offset: " << v << std::endl;
+                m_os << "  " << std::setw(m_width) << i << ": root node offset (" << v << ")" << std::endl;
             }
 
             /** first element in each node section. */
@@ -123,7 +130,7 @@ struct dump_packed_buffer
             {
                 m_this_node_offset = i;
                 const value_type* value = reinterpret_cast<const value_type*>(v);
-                m_os << std::setw(4) << i << ": node value pointer: " << value << std::endl;
+                m_os << "  " << std::setw(m_width) << i << ": node value pointer (" << value << ")" << std::endl;
             }
 
             /**
@@ -132,25 +139,25 @@ struct dump_packed_buffer
              */
             void node_index_size(size_t i, const uintptr_t& v) const
             {
-                m_os << std::setw(4) << i << ": index size: " << size_t(v) << std::endl;
+                m_os << "  " << std::setw(m_width) << i << ": index size (" << size_t(v) << ")" << std::endl;
             }
 
             /** element that stores the key value for child node. */
             void node_child_key(size_t i, const uintptr_t& v) const
             {
                 key_unit_type key = v;
-                m_os << std::setw(4) << i << ": key: " << key << std::endl;
+                m_os << "  " << std::setw(m_width) << i << ": key (" << key << ")" << std::endl;
             }
 
             /** element that stores the relative offset of the child node. */
             void node_child_offset(size_t i, const uintptr_t& v) const
             {
                 size_t offset = v;
-                m_os << std::setw(4) << i << ": offset: " << offset << " (abs: " << (m_this_node_offset - offset) << ")"
-                     << std::endl;
+                m_os << "  " << std::setw(m_width) << i << ": offset (rel=" << offset
+                     << "; abs=" << (m_this_node_offset - offset) << ")" << std::endl;
             }
 
-        } handler(os);
+        } handler(os, width);
 
         traverse_packed_buffer<packed_type, _handler>{}(packed, handler);
     }
@@ -175,6 +182,9 @@ struct dump_packed_construction_state<
         if constexpr (!TrieT::traits_type::dump_packed_construction_state)
             return;
 
+        os << "---\n"
+           << "# input entries" << std::endl;
+
         typename TrieT::key_type buffer;
         traverse_node(os, buffer, root);
 
@@ -187,7 +197,8 @@ private:
         if (node.value)
         {
             // This node has value.
-            os << "trie-node: key='" << buffer << "'; value=" << *node.value << std::endl;
+            os << "- key: " << buffer << "\n"
+               << "  value: " << *node.value << std::endl;
         }
 
         for (const trie_node* p : node.children)
