@@ -29,6 +29,7 @@
 #include "mdds/global.hpp"
 
 #include <cassert>
+#include <cctype>
 #include <cmath>
 #include <algorithm>
 #include <sstream>
@@ -1306,7 +1307,7 @@ packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const packed_trie_map& o
     {
         packed_trie_map& m_parent;
 
-        void node(const uintptr_t* node_pos, key_unit_type /*c*/, size_t /*depth*/, size_t /*index_size*/)
+        void node(const uintptr_t* node_pos, const key_unit_type*, size_type, size_type)
         {
             uintptr_t value_ptr = *node_pos;
 
@@ -1321,6 +1322,9 @@ packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const packed_trie_map& o
         }
 
         void move_up(const uintptr_t*, const uintptr_t*, const uintptr_t*)
+        {}
+
+        void move_down()
         {}
 
         void next_child()
@@ -1795,9 +1799,11 @@ std::string packed_trie_map<KeyT, ValueT, TraitsT>::dump_structure(trie::dump_st
 template<typename KeyT, typename ValueT, typename TraitsT>
 void packed_trie_map<KeyT, ValueT, TraitsT>::dump_trie_traversal(std::ostream& os) const
 {
-    os << "--" << std::endl;
-    os << "value entry count: " << m_value_store.size() << std::endl;
-    os << "packed buffer size: " << m_packed.size() << std::endl;
+    os << "---\n"
+       << "# trie traversal (depth first)\n"
+       << "value entries: " << m_value_store.size() << "\n"
+       << "packed buffer size: " << m_packed.size() << "\n"
+       << "traversal:\n";
 
     const uintptr_t* head = m_packed.data();
 
@@ -1809,22 +1815,26 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::dump_trie_traversal(std::ostream& o
         _handler(std::ostream& os, const uintptr_t* head) : m_os(os), m_head(head)
         {}
 
-        void node(const uintptr_t* node_pos, key_unit_type c, size_type depth, size_type index_size)
+        void node(const uintptr_t* node_pos, const key_unit_type* c, size_type depth, size_type index_size)
         {
             auto value_ptr = reinterpret_cast<const value_type*>(*node_pos);
             size_type offset = std::distance(m_head, node_pos);
 
-            m_os << "  --" << std::endl;
-            m_os << "  offset: " << offset << std::endl;
-            m_os << "  key: " << c << std::endl;
-            m_os << "  depth: " << depth << std::endl;
-            m_os << "  child count: " << (index_size / 2) << std::endl;
-            m_os << "  value address: " << value_ptr;
+            m_os << "  - node:\n"
+                 << "      offset: " << offset << " (abs)\n"
+                 << "      key: ";
+            if (c)
+                m_os << *c;
+            else
+                m_os << "<null>";
+
+            m_os << "\n"
+                 << "      depth: " << depth << "\n"
+                 << "      child count: " << (index_size / 2) << "\n"
+                 << "      value address: " << value_ptr;
 
             if (value_ptr)
-            {
-                m_os << "; value: " << *value_ptr;
-            }
+                m_os << " (value=" << *value_ptr << ")";
 
             m_os << std::endl;
         }
@@ -1833,17 +1843,25 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::dump_trie_traversal(std::ostream& o
         {
             size_type offset = std::distance(m_head, node_pos);
             size_type child_size = std::distance(child_pos, child_end) / 2;
-            m_os << "  --" << std::endl;
-            m_os << "  move up: (offset: " << offset << "; child count: " << child_size << ")" << std::endl;
+            m_os << "  - move up:\n"
+                 << "      offset: " << offset << " (abs)\n"
+                 << "      remaining child count: " << child_size << std::endl;
+        }
+
+        void move_down()
+        {
+            m_os << "  - move down" << std::endl;
         }
 
         void next_child()
         {
-            m_os << "  next child" << std::endl;
+            m_os << "  - next child" << std::endl;
         }
 
         void end()
-        {}
+        {
+            m_os << "  - end of traversal" << std::endl;
+        }
 
     } handler(os, head);
 
@@ -1856,6 +1874,11 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_tree(_Handler hdl) const
 {
     node_stack_type node_stack = get_root_stack();
     stack_item* si = &node_stack.back();
+
+    size_type index_size = std::distance(si->child_pos, si->child_end);
+    size_type depth = 0;
+    hdl.node(si->node_pos, nullptr, depth, index_size);
+
     if (si->child_pos == si->child_end)
         // empty container
         return;
@@ -1863,6 +1886,7 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_tree(_Handler hdl) const
     const uintptr_t* node_pos = si->node_pos;
     const uintptr_t* child_pos = si->child_pos;
     const uintptr_t* child_end = si->child_end;
+
     const uintptr_t* p = child_pos;
 
     for (bool in_tree = true; in_tree;)
@@ -1870,18 +1894,19 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_tree(_Handler hdl) const
         // Descend until the leaf node is reached by following the left-most child nodes.
         while (true)
         {
-            auto key = *p;
-            size_t depth = node_stack.size();
+            key_unit_type key = *p;
+            depth = node_stack.size();
             ++p;
-            size_t offset = *p;
+            size_type offset = *p;
 
             // jump down to the child node.
+            hdl.move_down();
             node_pos -= offset;
             p = node_pos;
             ++p;
-            size_t index_size = *p; // size of the buffer that stores child nodes' keys and offsets.
+            index_size = *p; // size of the buffer that stores child nodes' keys and offsets.
 
-            hdl.node(node_pos, key, depth, index_size);
+            hdl.node(node_pos, &key, depth, index_size);
 
             ++p;
             child_pos = p;
@@ -1902,8 +1927,10 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_tree(_Handler hdl) const
             // move up.
             node_stack.pop_back();
             si = &node_stack.back();
-            hdl.move_up(si->node_pos, si->child_pos, si->child_end);
             std::advance(si->child_pos, 2); // move to the next child node slot.
+
+            hdl.move_up(si->node_pos, si->child_pos, si->child_end);
+
             if (si->child_pos != si->child_end)
             {
                 // This is an unvisited child node. Bail out of the loop.
