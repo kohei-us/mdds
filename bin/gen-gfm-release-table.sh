@@ -11,7 +11,7 @@ echo "## Release Notes"
 echo ""
 echo "* add item"
 echo ""
-echo "## Source packages for distribution"
+echo "## Checksums for Packages"
 echo ""
 
 echo "| name | sha256sum | size |"
