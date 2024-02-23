@@ -160,6 +160,39 @@ void test_26_child_nodes()
     std::cout << packed.dump_structure(dump_structure_type::trie_traversal) << std::endl;
 }
 
+void test_packed_nodes()
+{
+    _TEST_FUNC_SCOPE;
+
+    using _map_type = mdds::packed_trie_map<std::string, bool>;
+
+    // Keys must be sorted.
+    const _map_type::entry entries[] = {
+        {MDDS_ASCII("DIV/0!"), true}, {MDDS_ASCII("N/A"), true},  {MDDS_ASCII("NAME?"), true},
+        {MDDS_ASCII("NULL!"), true},  {MDDS_ASCII("NUM!"), true}, {MDDS_ASCII("REF!"), true},
+        {MDDS_ASCII("VALUE!"), true},
+    };
+
+    _map_type errors(entries, std::size(entries));
+
+    auto it = errors.find("REF!");
+    assert(it != errors.end());
+    assert(it->second == true);
+
+    auto node = errors.root_node();
+    assert(node.valid());
+    node = node.child('R');
+    assert(node.valid());
+    node = node.child('E');
+    assert(node.valid());
+    node = node.child('F');
+    assert(node.valid());
+    node = node.child('!');
+    assert(node.valid());
+    assert(node.has_value());
+    assert(node.value() == true);
+}
+
 } // anonymous namespace
 
 void run()
@@ -167,6 +200,7 @@ void run()
     test_empty();
     test_basic();
     test_26_child_nodes();
+    test_packed_nodes();
 }
 
 } // namespace trie_test_node
