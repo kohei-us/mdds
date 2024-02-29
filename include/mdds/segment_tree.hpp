@@ -370,6 +370,9 @@ public:
 
     /**
      * Build or re-build a tree based on the current set of segments.
+     *
+     * @note Building a tree with no logical stored segments will not result in
+     *       a valid tree.
      */
     void build_tree();
 
@@ -469,6 +472,14 @@ public:
      * @return String representation of the internal state of a tree.
      */
     std::string to_string() const;
+
+    /**
+     * Create a sorted sequence of unique boundary keys.  A boundary key is a
+     * key that is either the start or the end key of a stored segment.
+     *
+     * @return A sorted sequence of unique boundary keys.
+     */
+    std::vector<key_type> boundary_keys() const;
 
     struct integrity_check_properties
     {

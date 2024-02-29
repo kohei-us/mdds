@@ -1369,6 +1369,75 @@ void st_test_erase_on_invalid_tree()
     }
 }
 
+void st_test_boundary_keys()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using db_type = segment_tree<int16_t, bool>;
+
+    db_type db;
+    auto keys = db.boundary_keys();
+    assert(keys.empty());
+
+    auto expected = keys;
+    expected = {1, 3};
+
+    db.insert(1, 3, true);
+    assert(db.size() == 1);
+    keys = db.boundary_keys();
+    assert(keys == expected);
+
+    db.insert(3, 5, true);
+    assert(db.size() == 2);
+    keys = db.boundary_keys();
+    expected = {1, 3, 5};
+    assert(keys == expected);
+
+    db.insert(7, 10, false);
+    assert(db.size() == 3);
+    keys = db.boundary_keys();
+    expected = {1, 3, 5, 7, 10};
+    assert(keys == expected);
+
+    db.insert(-5, -2, true);
+    assert(db.size() == 4);
+    keys = db.boundary_keys();
+    expected = {-5, -2, 1, 3, 5, 7, 10};
+    assert(keys == expected);
+
+    db.insert(-2, 10, true); // no new keys
+    assert(db.size() == 5);
+    keys = db.boundary_keys();
+    assert(keys == expected);
+
+    db.build_tree();
+    keys = db.boundary_keys();
+    assert(keys == expected);
+
+    // erase segments with false value i.e. 7-10.
+    db.erase_if([](int16_t, int16_t, bool value) { return !value; });
+    assert(db.size() == 4);
+    keys = db.boundary_keys();
+    expected = {-5, -2, 1, 3, 5, 10};
+    assert(keys == expected);
+
+    db.build_tree(); // purge the deleted segment
+    keys = db.boundary_keys();
+    assert(keys == expected);
+
+    // erase all the other segments
+    db.erase_if([](int16_t, int16_t, bool value) { return value; });
+    assert(db.empty());
+    keys = db.boundary_keys();
+    expected.clear();
+    assert(keys == expected);
+
+    db.build_tree(); // purge all deleted segments
+    assert(!db.valid_tree());
+    keys = db.boundary_keys();
+    assert(keys == expected);
+}
+
 int main(int argc, char** argv)
 {
     try
@@ -1395,6 +1464,7 @@ int main(int argc, char** argv)
             st_test_empty_result_set();
             st_test_non_pointer_data();
             st_test_erase_on_invalid_tree();
+            st_test_boundary_keys();
         }
 
         if (opt.test_perf)

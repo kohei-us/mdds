@@ -377,11 +377,20 @@ bool segment_tree<KeyT, ValueT>::operator!=(const segment_tree& r) const
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::build_tree()
 {
+    m_valid_tree = false;
+
     // Remove deleted entries first
     st::detail::erase_deleted_segments(m_segment_store);
 
     build_leaf_nodes();
     m_nonleaf_node_pool.clear();
+    m_root_node = nullptr;
+
+    if (!m_left_leaf)
+    {
+        assert(!m_right_leaf);
+        return;
+    }
 
     // Count the number of leaf nodes.
     size_t leaf_count = st::detail::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
@@ -478,6 +487,9 @@ void segment_tree<KeyT, ValueT>::build_leaf_nodes()
 template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::create_leaf_node_instances(std::vector<key_type> keys, node_ptr& left, node_ptr& right)
 {
+    left.reset();
+    right.reset();
+
     if (keys.empty() || keys.size() < 2)
         // We need at least two keys in order to build tree.
         return;
@@ -742,6 +754,27 @@ std::string segment_tree<KeyT, ValueT>::to_string() const
     os << "tree node count: " << node_count;
 
     return os.str();
+}
+
+template<typename KeyT, typename ValueT>
+auto segment_tree<KeyT, ValueT>::boundary_keys() const -> std::vector<key_type>
+{
+    std::vector<key_type> keys;
+
+    for (const auto& seg : m_segment_store)
+    {
+        if (seg == segment_type{})
+            continue;
+
+        keys.push_back(seg.start);
+        keys.push_back(seg.end);
+    }
+
+    std::sort(keys.begin(), keys.end());
+    auto last = std::unique(keys.begin(), keys.end());
+    keys.erase(last, keys.end());
+
+    return keys;
 }
 
 template<typename KeyT, typename ValueT>
