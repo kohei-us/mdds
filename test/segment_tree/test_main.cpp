@@ -25,9 +25,7 @@
  *
  ************************************************************************/
 
-#include "test_global.hpp" // This must be the first header to be included.
-#define MDDS_SEGMENT_TREE_DEBUG 1
-#include "mdds/segment_tree.hpp"
+#include "test_main.hpp"
 
 #include <cstdlib>
 #include <cstdio>
@@ -72,35 +70,6 @@ struct test_data
             cout << p->name << " ";
         }
     };
-};
-
-/**
- * This value is not copyable; only moveable.
- */
-struct move_data
-{
-    std::string value;
-
-    move_data() = default;
-    move_data(const move_data&) = delete;
-    move_data(move_data&&) = default;
-    move_data& operator=(const move_data&) = delete;
-    move_data& operator=(move_data&&) = default;
-
-    move_data(std::string _value) : value(std::move(_value))
-    {}
-    move_data(const char* _value) : value(_value)
-    {}
-
-    bool operator==(const move_data& r) const
-    {
-        return value == r.value;
-    }
-
-    bool operator!=(const move_data& r) const
-    {
-        return !operator==(r);
-    }
 };
 
 std::ostream& operator<<(std::ostream& os, const test_data* v)
@@ -708,52 +677,6 @@ void st_test_copy_constructor()
     db_assigned = db_copied_tree; // copy assignment
     assert(db_assigned.valid_tree() == db_copied_tree.valid_tree());
     assert(db_assigned == db_copied_tree);
-}
-
-void st_test_move_constructor()
-{
-    MDDS_TEST_FUNC_SCOPE;
-
-    using db_type = mdds::segment_tree<float, move_data>;
-
-    db_type db;
-    db.insert(-2, 10, "-2:10");
-    db.insert(5, 20, "5:20");
-    db.insert(6, 15, "6:15");
-    db.build_tree();
-
-    // Since the value type is only moveable, this must trigger the move
-    // constructor, not the copy constructor.
-    db_type db_moved(std::move(db));
-
-    {
-        assert(db_moved.valid_tree());
-        assert(db_moved.size() == 3);
-
-        auto results = db_moved.search(19);
-        assert(results.size() == 1);
-        const auto& v = *results.begin();
-        assert(v.start == 5);
-        assert(v.end == 20);
-        assert(v.value == "5:20");
-        assert(std::next(results.begin()) == results.end());
-    }
-
-    db_type db_assigned;
-    db_assigned = std::move(db_moved); // move assignment
-
-    {
-        assert(db_assigned.valid_tree());
-        assert(db_assigned.size() == 3);
-
-        auto results = db_assigned.search(19);
-        assert(results.size() == 1);
-        const auto& v = *results.begin();
-        assert(v.start == 5);
-        assert(v.end == 20);
-        assert(v.value == "5:20");
-        assert(std::next(results.begin()) == results.end());
-    }
 }
 
 void st_test_equality()

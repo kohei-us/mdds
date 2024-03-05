@@ -1,6 +1,7 @@
 
 add_executable(segment-tree-test-main EXCLUDE_FROM_ALL
     test_main.cpp
+    test_move_value.cpp
 )
 
 target_link_libraries(segment-tree-test-main PRIVATE test-global)

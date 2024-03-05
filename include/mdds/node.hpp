@@ -40,7 +40,9 @@
 namespace mdds { namespace st { namespace detail {
 
 #ifdef MDDS_DEBUG_NODE_BASE
-size_t node_instance_count = 0;
+
+inline std::size_t node_instance_count = 0;
+
 #endif
 
 struct node_base
