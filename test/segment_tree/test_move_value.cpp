@@ -52,11 +52,6 @@ struct move_data
     {
         return value == r.value;
     }
-
-    bool operator!=(const move_data& r) const
-    {
-        return !operator==(r);
-    }
 };
 
 } // anonymous namespace
