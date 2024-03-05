@@ -1374,7 +1374,6 @@ int main(int argc, char** argv)
             st_test_insert_search_removal();
             st_test_invalid_insertion();
             st_test_copy_constructor();
-            st_test_move_constructor();
             st_test_equality();
             st_test_clear();
             st_test_duplicate_insertion();
@@ -1388,6 +1387,9 @@ int main(int argc, char** argv)
             st_test_non_pointer_data();
             st_test_erase_on_invalid_tree();
             st_test_boundary_keys();
+
+            st_test_move_constructor();
+            st_test_move_equality();
         }
 
         if (opt.test_perf)

@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <limits>
 #include <iterator>
+#include <unordered_set>
 
 namespace mdds {
 
@@ -355,17 +356,33 @@ bool segment_tree<KeyT, ValueT>::operator==(const segment_tree& r) const
     if (m_valid_tree != r.m_valid_tree)
         return false;
 
-    // copy both stores, sort them, remove deleted elements, and check their equality
-    auto lhs = m_segment_store;
-    auto rhs = r.m_segment_store;
+    std::unordered_set<const segment_type*> rhs;
 
-    st::detail::erase_deleted_segments(lhs);
-    st::detail::erase_deleted_segments(rhs);
+    for (const segment_type& seg : r.m_segment_store)
+    {
+        if (seg == segment_type{})
+            continue;
 
-    std::sort(lhs.begin(), lhs.end());
-    std::sort(rhs.begin(), rhs.end());
+        rhs.insert(&seg);
+    }
 
-    return lhs == rhs;
+    std::size_t n_lhs = 0;
+
+    for (const segment_type& seg : m_segment_store)
+    {
+        if (seg == segment_type{})
+            continue;
+
+        ++n_lhs;
+        const auto* src = &seg;
+
+        auto it = std::find_if(rhs.begin(), rhs.end(), [src](const segment_type* p) { return *src == *p; });
+
+        if (it == rhs.end())
+            return false;
+    }
+
+    return n_lhs == rhs.size();
 }
 
 template<typename KeyT, typename ValueT>

@@ -107,5 +107,41 @@ void st_test_move_constructor()
     }
 }
 
-/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+void st_test_move_equality()
+{
+    MDDS_TEST_FUNC_SCOPE;
 
+    using db_type = mdds::segment_tree<float, move_data>;
+
+    db_type db1;
+    db1.insert(-2, 10, "-2:10");
+    db1.insert(5, 20, "5:20");
+    db1.insert(6, 15, "6:15");
+
+    db_type db2;
+    db2.insert(-2, 10, "-2:10");
+    db2.insert(5, 20, "5:20");
+    db2.insert(6, 15, "6:15");
+
+    assert(db1 == db2);
+
+    db2.insert(8, 22, "8:22");
+    assert(db1 != db2);
+
+    db1.insert(8, 22, "8:22");
+    assert(db1 == db2);
+
+    db1.erase_if([](float, float, const move_data& v) { return v.value == "-2:10"; });
+    assert(db1 != db2);
+
+    db2.erase_if([](float, float, const move_data& v) { return v.value == "-2:10"; });
+    assert(db1 == db2);
+
+    db1.build_tree();
+    assert(db1 != db2);
+
+    db2.build_tree();
+    assert(db1 == db2);
+}
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */
