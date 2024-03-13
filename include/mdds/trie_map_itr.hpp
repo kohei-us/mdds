@@ -535,7 +535,7 @@ private:
         node_stack.emplace_back(node_pos, child_pos, child_end);
     }
 
-    static const void descend_to_previus_leaf_node(node_stack_type& node_stack, key_type& buf)
+    static const void descend_to_previous_leaf_node(node_stack_type& node_stack, key_type& buf)
     {
         const uintptr_t* node_pos = nullptr;
         size_t index_size = 0;
@@ -691,7 +691,7 @@ public:
             // This is the end position aka root node.  Move down to the
             // right-most leaf node.
             assert(si->child_pos == si->child_end);
-            descend_to_previus_leaf_node(m_node_stack, m_buffer);
+            descend_to_previous_leaf_node(m_node_stack, m_buffer);
             si = &m_node_stack.back();
             pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
             m_type = iterator_type::normal;
@@ -719,7 +719,7 @@ public:
                 if (si->child_pos != first_child)
                 {
                     // Left and down.
-                    descend_to_previus_leaf_node(m_node_stack, m_buffer);
+                    descend_to_previous_leaf_node(m_node_stack, m_buffer);
                     si = &m_node_stack.back();
                     p = si->node_pos;
                     pv = reinterpret_cast<const typename trie_type::value_type*>(*p);
@@ -746,7 +746,7 @@ public:
                 if (m_node_stack.size() == 1)
                 {
                     // Root node reached.
-                    descend_to_previus_leaf_node(m_node_stack, m_buffer);
+                    descend_to_previous_leaf_node(m_node_stack, m_buffer);
                     si = &m_node_stack.back();
                     pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
                     assert(pv);
