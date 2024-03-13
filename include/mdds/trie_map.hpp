@@ -155,7 +155,6 @@ public:
     typedef typename key_type::value_type key_unit_type;
     typedef ValueT value_type;
     typedef size_t size_type;
-    typedef std::pair<key_type, value_type> key_value_type;
 
     using const_iterator = trie::detail::const_iterator<trie_map>;
     using iterator = trie::detail::iterator<trie_map>;
@@ -463,7 +462,6 @@ public:
     typedef typename key_type::value_type key_unit_type;
     typedef ValueT value_type;
     typedef size_t size_type;
-    typedef std::pair<key_type, value_type> key_value_type;
     typedef trie::detail::packed_iterator_base<packed_trie_map> const_iterator;
     typedef trie::detail::packed_search_results<packed_trie_map> search_results;
 

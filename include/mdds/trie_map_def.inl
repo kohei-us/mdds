@@ -980,8 +980,6 @@ typename trie_map<KeyT, ValueT, TraitsT>::search_results trie_map<KeyT, ValueT, 
     const key_unit_type* prefix, size_type len) const
 {
     const key_unit_type* prefix_end = prefix + len;
-    std::vector<key_value_type> matches;
-
     const trie_node* node = find_prefix_node(m_root, prefix, prefix_end);
     return search_results(node, key_type(prefix, len));
 }

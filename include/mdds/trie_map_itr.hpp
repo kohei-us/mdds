@@ -495,11 +495,12 @@ class packed_iterator_base
     using node_stack_type = typename trie_type::node_stack_type;
 
     using key_type = typename trie_type::key_type;
+    using trie_value_type = typename trie_type::value_type;
     using key_unit_type = typename key_type::value_type;
 
 public:
     // iterator traits
-    using value_type = typename trie_type::key_value_type;
+    using value_type = mdds::detail::ref_pair<std::add_const_t<key_type>, std::add_const_t<trie_value_type>>;
     using pointer = value_type*;
     using reference = value_type&;
     using difference_type = std::ptrdiff_t;
@@ -508,7 +509,7 @@ public:
 private:
     node_stack_type m_node_stack;
     key_type m_buffer;
-    value_type m_current_value;
+    const trie_value_type* m_current_value = nullptr;
     iterator_type m_type;
 
     /**
@@ -571,8 +572,8 @@ public:
     packed_iterator_base() : m_type(iterator_type::normal)
     {}
 
-    packed_iterator_base(node_stack_type&& node_stack, key_type&& buf, const typename trie_type::value_type& v)
-        : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)), m_current_value(m_buffer, v),
+    packed_iterator_base(node_stack_type&& node_stack, key_type&& buf, const trie_value_type& v)
+        : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)), m_current_value(&v),
           m_type(iterator_type::normal)
     {}
 
@@ -596,14 +597,14 @@ public:
         return !operator==(other);
     }
 
-    const value_type& operator*()
+    value_type operator*()
     {
-        return m_current_value;
+        return value_type(m_buffer, *m_current_value);
     }
 
-    const value_type* operator->()
+    value_type operator->()
     {
-        return &m_current_value;
+        return value_type(m_buffer, *m_current_value);
     }
 
     packed_iterator_base& operator++()
@@ -662,7 +663,7 @@ public:
         } while (!pv);
 
         assert(pv);
-        m_current_value = value_type(m_buffer, *pv);
+        m_current_value = pv;
 
         return *this;
     }
@@ -755,7 +756,7 @@ public:
         }
 
         assert(pv);
-        m_current_value = value_type(m_buffer, *pv);
+        m_current_value = pv;
 
         return *this;
     }

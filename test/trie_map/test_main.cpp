@@ -54,8 +54,8 @@ bool verify_entries(const MapT& db, const typename MapT::entry* entries, std::si
     return true;
 }
 
-template<typename T>
-bool check_equal(const T& left, const T& right)
+template<typename T1, typename T2>
+bool check_equal(const T1& left, const T2& right)
 {
     if (left.first != right.first)
     {
@@ -408,7 +408,7 @@ void trie_packed_test_iterator()
 
     using trie_map_type = trie_map<std::string, int>;
     using packed_type = trie_map_type::packed_type;
-    using kv = packed_type::key_value_type;
+    using kv = std::pair<std::string, int>;
 
     trie_map_type db;
 
@@ -865,7 +865,7 @@ void trie_test_iterator()
     MDDS_TEST_FUNC_SCOPE;
 
     typedef trie_map<std::string, int> trie_map_type;
-    using kv = trie_map_type::key_value_type;
+    using kv = std::pair<std::string, int>;
     trie_map_type db;
     const trie_map_type& dbc = db;
 
@@ -967,7 +967,7 @@ void trie_test_iterator_with_erase()
     MDDS_TEST_FUNC_SCOPE;
 
     typedef trie_map<std::string, int> trie_map_type;
-    using kv = trie_map_type::key_value_type;
+    using kv = std::pair<std::string, int>;
     trie_map_type db;
     const trie_map_type& dbc = db;
     bool check_true = false;
