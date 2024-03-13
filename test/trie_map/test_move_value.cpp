@@ -26,30 +26,63 @@
  *
  ************************************************************************/
 
-#pragma once
+#include "test_main.hpp"
+#include <type_traits>
 
-#include "test_global.hpp" // This must be the first header to be included.
-#define MDDS_SEGMENT_TREE_DEBUG 1
-#include "mdds/segment_tree.hpp"
+#define _TEST_FUNC_SCOPE MDDS_TEST_FUNC_SCOPE_NS("trie_test_move_value")
 
-void st_test_insert_search_removal();
-void st_test_invalid_insertion();
-void st_test_copy_constructor();
-void st_test_equality();
-void st_test_clear();
-void st_test_duplicate_insertion();
-void st_test_search_on_uneven_tree();
-void st_test_aggregated_search_results();
-void st_test_dense_tree_search();
-void st_test_search_on_empty_set();
-void st_test_search_iterator_basic();
-void st_test_search_iterator_result_check();
-void st_test_empty_result_set();
-void st_test_non_pointer_data();
-void st_test_erase_on_invalid_tree();
-void st_test_boundary_keys();
+namespace trie_test_move_value {
 
-void st_test_move_constructor();
-void st_test_move_equality();
+namespace {
+
+struct move_value
+{
+    std::string value;
+
+    move_value() = default;
+    move_value(std::string v) : value(std::move(v))
+    {}
+    move_value(const move_value&) = delete;
+    move_value(move_value&&) = default;
+
+    move_value& operator=(const move_value&) = delete;
+    move_value& operator=(move_value&&) = default;
+};
+
+static_assert(!std::is_copy_constructible_v<move_value>);
+static_assert(std::is_move_constructible_v<move_value>);
+
+using map_type = mdds::trie_map<std::string, move_value>;
+
+void test_basic()
+{
+    _TEST_FUNC_SCOPE;
+
+    map_type store;
+    store.insert("test", move_value("one"));
+    store.insert("test", move_value("two")); // overwrite
+
+    {
+        auto results = store.prefix_search("te");
+        auto it = results.begin();
+        assert(it != results.end());
+        assert(it->second.value == "two");
+    }
+
+    {
+        auto it = store.find("test");
+        assert(it != store.end());
+        assert(it->second.value == "two");
+    }
+}
+
+} // anonymous namespace
+
+void run()
+{
+    test_basic();
+}
+
+} // namespace trie_test_move_value
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

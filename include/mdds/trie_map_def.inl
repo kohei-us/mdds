@@ -600,7 +600,7 @@ inline void variable_value_serializer<std::string>::read(std::istream& is, size_
 } // namespace trie
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-trie_map<KeyT, ValueT, TraitsT>::trie_map::trie_node::trie_node() : value(value_type()), has_value(false)
+trie_map<KeyT, ValueT, TraitsT>::trie_map::trie_node::trie_node() : value{}, has_value(false)
 {}
 
 template<typename KeyT, typename ValueT, typename TraitsT>
@@ -789,19 +789,19 @@ auto trie_map<KeyT, ValueT, TraitsT>::root_node() const -> const_node_type
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-void trie_map<KeyT, ValueT, TraitsT>::insert(const key_type& key, const value_type& value)
+void trie_map<KeyT, ValueT, TraitsT>::insert(const key_type& key, value_type value)
 {
     const key_unit_type* p = key.data();
     size_t n = key.size();
     const key_unit_type* p_end = p + n;
-    insert_into_tree(m_root, p, p_end, value);
+    insert_into_tree(m_root, p, p_end, std::move(value));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-void trie_map<KeyT, ValueT, TraitsT>::insert(const key_unit_type* key, size_type len, const value_type& value)
+void trie_map<KeyT, ValueT, TraitsT>::insert(const key_unit_type* key, size_type len, value_type value)
 {
     const key_unit_type* key_end = key + len;
-    insert_into_tree(m_root, key, key_end, value);
+    insert_into_tree(m_root, key, key_end, std::move(value));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
@@ -837,11 +837,11 @@ bool trie_map<KeyT, ValueT, TraitsT>::erase(const key_unit_type* key, size_type 
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 void trie_map<KeyT, ValueT, TraitsT>::insert_into_tree(
-    trie_node& node, const key_unit_type* key, const key_unit_type* key_end, const value_type& value)
+    trie_node& node, const key_unit_type* key, const key_unit_type* key_end, value_type value)
 {
     if (key == key_end)
     {
-        node.value = value;
+        node.value = std::move(value);
         node.has_value = true;
         return;
     }
@@ -856,7 +856,7 @@ void trie_map<KeyT, ValueT, TraitsT>::insert_into_tree(
     }
 
     ++key;
-    insert_into_tree(it->second, key, key_end, value);
+    insert_into_tree(it->second, key, key_end, std::move(value));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>

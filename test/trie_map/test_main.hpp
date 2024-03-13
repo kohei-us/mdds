@@ -78,4 +78,10 @@ void run();
 
 }
 
+namespace trie_test_move_value {
+
+void run();
+
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

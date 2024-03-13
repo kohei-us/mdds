@@ -305,7 +305,7 @@ public:
      * @param key key value.
      * @param value value to associate with the key.
      */
-    void insert(const key_type& key, const value_type& value);
+    void insert(const key_type& key, value_type value);
 
     /**
      * Insert a new key-value pair.
@@ -315,7 +315,7 @@ public:
      * @param len length of the character array storing the key.
      * @param value value to associate with the key.
      */
-    void insert(const key_unit_type* key, size_type len, const value_type& value);
+    void insert(const key_unit_type* key, size_type len, value_type value);
 
     /**
      * Erase a key and the value associated with it.
@@ -422,8 +422,7 @@ public:
     packed_type pack() const;
 
 private:
-    void insert_into_tree(
-        trie_node& node, const key_unit_type* key, const key_unit_type* key_end, const value_type& value);
+    void insert_into_tree(trie_node& node, const key_unit_type* key, const key_unit_type* key_end, value_type value);
 
     const trie_node* find_prefix_node(
         const trie_node& node, const key_unit_type* prefix, const key_unit_type* prefix_end) const;
