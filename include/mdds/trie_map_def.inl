@@ -1296,7 +1296,7 @@ packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const entry* entries, si
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const trie_map<key_type, value_type>& other)
+packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const trie_map<KeyT, ValueT, TraitsT>& other)
 {
     compact(other.m_root);
 }

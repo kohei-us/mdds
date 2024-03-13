@@ -617,7 +617,7 @@ public:
      *
      * @param other mdds::trie_map instance to build content from.
      */
-    packed_trie_map(const trie_map<key_type, value_type>& other);
+    packed_trie_map(const trie_map<KeyT, ValueT, TraitsT>& other);
 
     packed_trie_map(const packed_trie_map& other);
 
