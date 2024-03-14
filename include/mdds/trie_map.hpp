@@ -41,6 +41,14 @@ namespace mdds {
 
 namespace trie {
 
+namespace detail {
+
+struct move_to_pack
+{
+};
+
+} // namespace detail
+
 /** Serializer for numeric data types. */
 template<typename T>
 struct numeric_value_serializer
@@ -416,9 +424,15 @@ public:
      * provides better search performance and requires much less memory
      * footprint.
      *
-     * @return an instance of mdds::packed_trie_map with the same content.
+     * @note Calling this method will move all stored values into the packed
+     *       variant.  You should make a copy of the instance first if you need
+     *       to preserve the original.
+     *
+     * @return an instance of mdds::packed_trie_map with the same content,
+     *         with all the values stored in the original instance moved into
+     *         the returned instance.
      */
-    packed_type pack() const;
+    packed_type pack();
 
 private:
     void insert_into_tree(trie_node& node, const key_unit_type* key, const key_unit_type* key_end, value_type value);
@@ -455,6 +469,7 @@ class packed_trie_map
 {
     friend class trie::detail::packed_iterator_base<packed_trie_map>;
     friend class trie::detail::packed_search_results<packed_trie_map>;
+    friend class trie_map<KeyT, ValueT, TraitsT>;
 
 public:
     using traits_type = TraitsT;
@@ -530,6 +545,8 @@ private:
     typedef std::vector<uintptr_t> packed_type;
     typedef std::deque<value_type> value_store_type;
     typedef std::vector<std::tuple<size_t, key_unit_type>> child_offsets_type;
+
+    packed_trie_map(trie::detail::move_to_pack, trie_map<KeyT, ValueT, TraitsT>& from);
 
 public:
     /**
@@ -735,11 +752,13 @@ private:
 
     size_type compact_node(const trie_node& node);
     size_type compact_node(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
+    size_type compact_node(trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
 
     void push_child_offsets(size_type offset, const child_offsets_type& child_offsets);
 
     void compact(const trie_node& root);
     void compact(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root);
+    void compact(trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root);
 
     template<typename _Handler>
     void traverse_tree(_Handler hdl) const;

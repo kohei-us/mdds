@@ -775,7 +775,8 @@ void trie_test1()
     }
 
     {
-        auto packed = dbc.pack();
+        trie_map_type copied(dbc);
+        auto packed = copied.pack();
         auto results = packed.prefix_search(MDDS_ASCII("B"));
         size_t n = std::distance(results.begin(), results.end());
         assert(n == 2);

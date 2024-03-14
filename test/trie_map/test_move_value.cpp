@@ -74,6 +74,8 @@ void test_basic()
         assert(it != store.end());
         assert(it->second.value == "two");
     }
+
+    auto packed = store.pack();
 }
 
 } // anonymous namespace
