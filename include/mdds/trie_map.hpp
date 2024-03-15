@@ -756,6 +756,7 @@ private:
 
     void push_child_offsets(size_type offset, const child_offsets_type& child_offsets);
 
+    void init_pack();
     void compact(const trie_node& root);
     void compact(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root);
     void compact(trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root);

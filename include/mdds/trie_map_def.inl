@@ -1168,12 +1168,17 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::push_child_offsets(
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-void packed_trie_map<KeyT, ValueT, TraitsT>::compact(const trie_node& root)
+void packed_trie_map<KeyT, ValueT, TraitsT>::init_pack()
 {
     packed_type init(size_t(1), uintptr_t(0));
     m_packed.swap(init);
     assert(m_packed.size() == 1);
+}
 
+template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::compact(const trie_node& root)
+{
+    init_pack();
     size_t root_offset = compact_node(root);
     m_packed[0] = root_offset;
 }
@@ -1181,10 +1186,7 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::compact(const trie_node& root)
 template<typename KeyT, typename ValueT, typename TraitsT>
 void packed_trie_map<KeyT, ValueT, TraitsT>::compact(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root)
 {
-    packed_type init(size_t(1), uintptr_t(0));
-    m_packed.swap(init);
-    assert(m_packed.size() == 1);
-
+    init_pack();
     size_t root_offset = compact_node(root);
     m_packed[0] = root_offset;
 }
@@ -1193,10 +1195,7 @@ template<typename KeyT, typename ValueT, typename TraitsT>
 void packed_trie_map<KeyT, ValueT, TraitsT>::compact(
     trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root)
 {
-    packed_type init(size_t(1), uintptr_t(0));
-    m_packed.swap(init);
-    assert(m_packed.size() == 1);
-
+    init_pack();
     size_t root_offset = compact_node(trie::detail::move_to_pack{}, root);
     m_packed[0] = root_offset;
 }
