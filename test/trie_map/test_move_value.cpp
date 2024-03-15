@@ -95,11 +95,71 @@ void test_basic()
     }
 }
 
+void test_node_traversal()
+{
+    _TEST_FUNC_SCOPE;
+
+    map_type store;
+    store.insert("one", move_value("one"));
+    store.insert("two", move_value("two"));
+
+    {
+        auto node = store.root_node();
+        assert(node.valid());
+        node = node.child('o');
+        assert(node.valid());
+        node = node.child('n');
+        assert(node.valid());
+        node = node.child('e');
+        assert(node.valid());
+        assert(node.has_value());
+        assert(node.value().value == "one");
+
+        node = store.root_node();
+        assert(node.valid());
+        node = node.child('t');
+        assert(node.valid());
+        node = node.child('w');
+        assert(node.valid());
+        node = node.child('o');
+        assert(node.valid());
+        assert(node.has_value());
+        assert(node.value().value == "two");
+    }
+
+    auto packed = store.pack();
+
+    {
+        auto node = packed.root_node();
+        assert(node.valid());
+        node = node.child('o');
+        assert(node.valid());
+        node = node.child('n');
+        assert(node.valid());
+        node = node.child('e');
+        assert(node.valid());
+        assert(node.has_value());
+        assert(node.value().value == "one");
+
+        node = packed.root_node();
+        assert(node.valid());
+        node = node.child('t');
+        assert(node.valid());
+        node = node.child('w');
+        assert(node.valid());
+        node = node.child('o');
+        assert(node.valid());
+        assert(node.has_value());
+        assert(node.value().value == "two");
+    }
+}
+
 } // anonymous namespace
 
 void run()
 {
     test_basic();
+    test_node_traversal();
 }
 
 } // namespace trie_test_move_value
