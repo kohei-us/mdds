@@ -110,6 +110,19 @@ method:
    :end-before: //!code-end: pack
    :dedent: 4
 
+When creating a :cpp:class:`~mdds::packed_trie_map` instance this way, however,
+you need to be aware that the values get moved from the original instance to the
+new instance.  As such, it is not advisable to keep the original instance around
+afterward.  If you need to keep the original instance intact, you can first
+create a copy of it and then call its :cpp:func:`~mdds::trie_map::pack` method
+to create the packed variant.
+
+.. warning::
+
+   Calling :cpp:func:`~mdds::trie_map::pack` will move all the stored values to
+   the packed variant.  Make a copy first if you need to keep the original instance
+   intact.
+
 The query methods of :cpp:class:`~mdds::packed_trie_map` are identical to those
 of :cpp:class:`~mdds::trie_map`.  For instance, performing prefix search to find
 all entries whose key begins with "C" can be done as follows:
