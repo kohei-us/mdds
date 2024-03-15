@@ -47,6 +47,11 @@ struct move_value
 
     move_value& operator=(const move_value&) = delete;
     move_value& operator=(move_value&&) = default;
+
+    bool operator==(const move_value& other) const
+    {
+        return value == other.value;
+    }
 };
 
 static_assert(!std::is_copy_constructible_v<move_value>);
@@ -154,12 +159,52 @@ void test_node_traversal()
     }
 }
 
+void test_equality()
+{
+    _TEST_FUNC_SCOPE;
+
+    map_type store1, store2;
+    store1.insert("one", move_value("one"));
+    store1.insert("two", move_value("two"));
+    store2.insert("one", move_value("one"));
+    store2.insert("two", move_value("two"));
+
+// TODO: implement operator== for trie_map
+//  assert(store1 == store2);
+
+    auto packed1 = store1.pack();
+    auto packed2 = store2.pack();
+
+    assert(packed1 == packed2);
+}
+
+void test_non_equality()
+{
+    _TEST_FUNC_SCOPE;
+
+    map_type store1, store2;
+    store1.insert("one", move_value("one"));
+    store1.insert("two", move_value("two"));
+    store2.insert("one", move_value("1"));
+    store2.insert("two", move_value("2"));
+
+// TODO: implement operator!= for trie_map
+//  assert(store1 != store2);
+
+    auto packed1 = store1.pack();
+    auto packed2 = store2.pack();
+
+    assert(packed1 != packed2);
+}
+
 } // anonymous namespace
 
 void run()
 {
     test_basic();
     test_node_traversal();
+    test_equality();
+    test_non_equality();
 }
 
 } // namespace trie_test_move_value
