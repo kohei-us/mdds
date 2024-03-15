@@ -67,15 +67,32 @@ void test_basic()
         auto it = results.begin();
         assert(it != results.end());
         assert(it->second.value == "two");
+        assert(++it == results.end());
     }
 
     {
         auto it = store.find("test");
         assert(it != store.end());
         assert(it->second.value == "two");
+        assert(++it == store.end());
     }
 
     auto packed = store.pack();
+
+    {
+        auto results = packed.prefix_search("te");
+        auto it = results.begin();
+        assert(it != results.end());
+        assert(it->second.value == "two");
+        assert(++it == results.end());
+    }
+
+    {
+        auto it = packed.find("test");
+        assert(it != packed.end());
+        assert(it->second.value == "two");
+        assert(++it == packed.end());
+    }
 }
 
 } // anonymous namespace
