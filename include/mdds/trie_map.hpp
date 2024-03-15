@@ -43,6 +43,10 @@ namespace trie {
 
 namespace detail {
 
+struct copy_to_pack
+{
+};
+
 struct move_to_pack
 {
 };
@@ -751,15 +755,21 @@ private:
         trie_node& root, node_pool_type& node_pool, const entry* start, const entry* end, size_type pos);
 
     size_type compact_node(const trie_node& node);
-    size_type compact_node(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
-    size_type compact_node(trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
+
+    template<typename ModeT, typename NodeT>
+    size_type compact_node(ModeT, NodeT& node);
+
+    void push_value_to_store(
+        trie::detail::copy_to_pack, const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
+    void push_value_to_store(trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
 
     void push_child_offsets(size_type offset, const child_offsets_type& child_offsets);
 
     void init_pack();
     void compact(const trie_node& root);
-    void compact(const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root);
-    void compact(trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& root);
+
+    template<typename ModeT, typename NodeT>
+    void compact(ModeT, NodeT& root);
 
     template<typename _Handler>
     void traverse_tree(_Handler hdl) const;
