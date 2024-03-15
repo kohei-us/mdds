@@ -197,6 +197,37 @@ void test_non_equality()
     assert(packed1 != packed2);
 }
 
+void test_move_construction()
+{
+    _TEST_FUNC_SCOPE;
+
+    map_type store;
+    store.insert("one", move_value("one"));
+    store.insert("two", move_value("two"));
+
+    map_type moved(std::move(store));
+
+    {
+        auto it = moved.find("one");
+        assert(it != moved.end());
+        assert(it->second.value == "one");
+        it = moved.find("two");
+        assert(it != moved.end());
+        assert(it->second.value == "two");
+    }
+
+    auto packed = moved.pack();
+    decltype(packed) packed_moved(std::move(packed));
+    {
+        auto it = packed_moved.find("one");
+        assert(it != packed_moved.end());
+        assert(it->second.value == "one");
+        it = packed_moved.find("two");
+        assert(it != packed_moved.end());
+        assert(it->second.value == "two");
+    }
+}
+
 } // anonymous namespace
 
 void run()
@@ -205,6 +236,7 @@ void run()
     test_node_traversal();
     test_equality();
     test_non_equality();
+    test_move_construction();
 }
 
 } // namespace trie_test_move_value
