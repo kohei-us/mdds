@@ -36,6 +36,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <limits>
 
 namespace mdds {
 
@@ -50,6 +51,9 @@ struct copy_to_pack
 struct move_to_pack
 {
 };
+
+template<typename TrieT, typename PackedT>
+struct dump_packed_buffer;
 
 } // namespace detail
 
@@ -118,6 +122,11 @@ struct value_serializer<std::string> : variable_value_serializer<std::string>
 
 struct default_traits
 {
+    /**
+     * Unit value type of a buffer used in packed_trie_map to store its content.
+     * It must be an unsigned integral type.
+     */
+    using pack_value_type = uintptr_t;
 };
 
 /**
@@ -471,9 +480,13 @@ private:
 template<typename KeyT, typename ValueT, typename TraitsT = trie::default_traits>
 class packed_trie_map
 {
+    using pack_value_type = typename TraitsT::pack_value_type;
+    using packed_type = std::vector<pack_value_type>;
+
     friend class trie::detail::packed_iterator_base<packed_trie_map>;
     friend class trie::detail::packed_search_results<packed_trie_map>;
     friend class trie_map<KeyT, ValueT, TraitsT>;
+    friend struct trie::detail::dump_packed_buffer<packed_trie_map, packed_type>;
 
 public:
     using traits_type = TraitsT;
@@ -500,6 +513,10 @@ public:
     };
 
 private:
+    using value_store_type = std::deque<value_type>;
+
+    static constexpr auto null_value = std::numeric_limits<pack_value_type>::max();
+
     struct trie_node
     {
         key_unit_type key;
@@ -513,17 +530,22 @@ private:
 
     struct stack_item
     {
-        const uintptr_t* node_pos;
-        const uintptr_t* child_pos;
-        const uintptr_t* child_end;
+        const value_store_type* value_store = nullptr;
 
-        stack_item(const uintptr_t* _node_pos, const uintptr_t* _child_pos, const uintptr_t* _child_end)
-            : node_pos(_node_pos), child_pos(_child_pos), child_end(_child_end)
+        const pack_value_type* node_pos = nullptr;
+        const pack_value_type* child_pos = nullptr;
+        const pack_value_type* child_end = nullptr;
+
+        stack_item(
+            const value_store_type* _value_store, const pack_value_type* _node_pos, const pack_value_type* _child_pos,
+            const pack_value_type* _child_end)
+            : value_store(_value_store), node_pos(_node_pos), child_pos(_child_pos), child_end(_child_end)
         {}
 
         bool operator==(const stack_item& other) const
         {
-            return node_pos == other.node_pos && child_pos == other.child_pos;
+            return value_store == other.value_store && node_pos == other.node_pos && child_pos == other.child_pos &&
+                   child_end == other.child_end;
         }
 
         bool operator!=(const stack_item& other) const
@@ -533,21 +555,17 @@ private:
 
         bool has_value() const
         {
-            const value_type* pv = reinterpret_cast<const value_type*>(*node_pos);
-            return pv;
+            return *node_pos != null_value;
         }
 
-        const value_type* get_value() const
+        pack_value_type get_value_pos() const
         {
-            return reinterpret_cast<const value_type*>(*node_pos);
+            return *node_pos;
         }
     };
 
     typedef std::vector<stack_item> node_stack_type;
-
     typedef std::deque<trie_node> node_pool_type;
-    typedef std::vector<uintptr_t> packed_type;
-    typedef std::deque<value_type> value_store_type;
     typedef std::vector<std::tuple<size_t, key_unit_type>> child_offsets_type;
 
     packed_trie_map(trie::detail::move_to_pack, trie_map<KeyT, ValueT, TraitsT>& from);
@@ -562,9 +580,9 @@ public:
 
         const packed_type* m_packed = nullptr;
         const value_store_type* m_value_store = nullptr;
-        const uintptr_t* m_pos = nullptr;
+        const pack_value_type* m_pos = nullptr;
 
-        const_node_type(const packed_type* packed, const value_store_type* value_store, const uintptr_t* p);
+        const_node_type(const packed_type* packed, const value_store_type* value_store, const pack_value_type* p);
 
     public:
         const_node_type() = default;

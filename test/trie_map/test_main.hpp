@@ -34,7 +34,7 @@
 #include <mdds/trie_map.hpp>
 #include <mdds/global.hpp>
 
-struct local_debug_traits
+struct local_debug_traits : mdds::trie::default_traits
 {
     static constexpr bool dump_packed_construction_state = true;
 };

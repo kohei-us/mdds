@@ -484,10 +484,10 @@ public:
 template<typename _TrieType>
 class packed_search_results;
 
-template<typename _TrieType>
+template<typename TrieT>
 class packed_iterator_base
 {
-    using trie_type = _TrieType;
+    using trie_type = TrieT;
     friend trie_type;
     friend packed_search_results<trie_type>;
 
@@ -496,6 +496,8 @@ class packed_iterator_base
 
     using key_type = typename trie_type::key_type;
     using trie_value_type = typename trie_type::value_type;
+    using value_store_type = typename trie_type::value_store_type;
+    using pack_value_type = typename trie_type::pack_value_type;
     using key_unit_type = typename key_type::value_type;
 
 public:
@@ -507,17 +509,20 @@ public:
     using iterator_category = std::bidirectional_iterator_tag;
 
 private:
+    const value_store_type* m_value_store = nullptr;
     node_stack_type m_node_stack;
     key_type m_buffer;
-    const trie_value_type* m_current_value = nullptr;
+    pack_value_type m_current_value = trie_type::null_value;
     iterator_type m_type;
 
     /**
      * Given a child offset position (child_pos), jump to the actual child
      * node position and push that onto the stack as stack_item.
      */
-    static void push_child_node_to_stack(node_stack_type& node_stack, key_type& buf, const uintptr_t* child_pos)
+    static void push_child_node_to_stack(
+        const value_store_type* value_store, node_stack_type& node_stack, key_type& buf, const uintptr_t* child_pos)
     {
+        assert(value_store);
         const uintptr_t* node_pos = node_stack.back().node_pos;
 
         key_unit_type c = static_cast<key_unit_type>(*child_pos);
@@ -533,7 +538,7 @@ private:
         const uintptr_t* child_end = child_pos + index_size;
 
         // Push it onto the stack.
-        node_stack.emplace_back(node_pos, child_pos, child_end);
+        node_stack.emplace_back(value_store, node_pos, child_pos, child_end);
     }
 
     static const void descend_to_previous_leaf_node(node_stack_type& node_stack, key_type& buf)
@@ -561,7 +566,7 @@ private:
             ++p;
             const uintptr_t* child_pos = p;
             const uintptr_t* child_end = child_pos + index_size;
-            node_stack.emplace_back(node_pos, child_end, child_end);
+            node_stack.emplace_back(node_stack.back().value_store, node_pos, child_end, child_end);
         } while (index_size);
     }
 
@@ -572,13 +577,15 @@ public:
     packed_iterator_base() : m_type(iterator_type::normal)
     {}
 
-    packed_iterator_base(node_stack_type&& node_stack, key_type&& buf, const trie_value_type& v)
-        : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)), m_current_value(&v),
-          m_type(iterator_type::normal)
+    packed_iterator_base(
+        const value_store_type* value_store, node_stack_type&& node_stack, key_type&& buf, pack_value_type pos)
+        : m_value_store(value_store), m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)),
+          m_current_value(pos), m_type(iterator_type::normal)
     {}
 
-    packed_iterator_base(node_stack_type&& node_stack, key_type&& buf)
-        : m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)), m_type(iterator_type::end)
+    packed_iterator_base(const value_store_type* value_store, node_stack_type&& node_stack, key_type&& buf)
+        : m_value_store(value_store), m_node_stack(std::move(node_stack)), m_buffer(std::move(buf)),
+          m_type(iterator_type::end)
     {}
 
     bool operator==(const packed_iterator_base& other) const
@@ -599,18 +606,22 @@ public:
 
     value_type operator*()
     {
-        return value_type(m_buffer, *m_current_value);
+        assert(m_value_store);
+        assert(m_current_value != trie_type::null_value);
+        return value_type(m_buffer, (*m_value_store)[m_current_value]);
     }
 
     value_type operator->()
     {
-        return value_type(m_buffer, *m_current_value);
+        assert(m_value_store);
+        assert(m_current_value != trie_type::null_value);
+        return value_type(m_buffer, (*m_value_store)[m_current_value]);
     }
 
     packed_iterator_base& operator++()
     {
         stack_item* si = &m_node_stack.back();
-        const typename trie_type::value_type* pv = nullptr;
+        pack_value_type v = trie_type::null_value;
         size_t index_size = *(si->node_pos + 1);
 
         do
@@ -646,7 +657,7 @@ public:
                     if (si->child_pos != si->child_end)
                     {
                         // Move down to this unvisited child node.
-                        push_child_node_to_stack(m_node_stack, m_buffer, si->child_pos);
+                        push_child_node_to_stack(m_value_store, m_node_stack, m_buffer, si->child_pos);
                         break;
                     }
                 }
@@ -654,16 +665,16 @@ public:
             else
             {
                 // Current node has child nodes.  Follow the first child node.
-                push_child_node_to_stack(m_node_stack, m_buffer, si->child_pos);
+                push_child_node_to_stack(m_value_store, m_node_stack, m_buffer, si->child_pos);
             }
 
             si = &m_node_stack.back();
-            pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+            v = *si->node_pos;
             index_size = *(si->node_pos + 1);
-        } while (!pv);
+        } while (v == trie_type::null_value);
 
-        assert(pv);
-        m_current_value = pv;
+        assert(v != trie_type::null_value);
+        m_current_value = v;
 
         return *this;
     }
@@ -678,11 +689,10 @@ public:
     packed_iterator_base& operator--()
     {
         stack_item* si = &m_node_stack.back();
-        const typename trie_type::value_type* pv =
-            reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+        pack_value_type v = *si->node_pos;
         size_t index_size = *(si->node_pos + 1); // index size for child nodes.
 
-        if (m_type == iterator_type::end && pv)
+        if (m_type == iterator_type::end && v != trie_type::null_value)
         {
             assert(m_node_stack.size() == 1);
             m_type = iterator_type::normal;
@@ -694,7 +704,7 @@ public:
             assert(si->child_pos == si->child_end);
             descend_to_previous_leaf_node(m_node_stack, m_buffer);
             si = &m_node_stack.back();
-            pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+            v = *si->node_pos;
             m_type = iterator_type::normal;
         }
         else if (!index_size)
@@ -711,7 +721,7 @@ public:
                 m_node_stack.pop_back();
                 si = &m_node_stack.back();
                 const uintptr_t* p = si->node_pos;
-                pv = reinterpret_cast<const typename trie_type::value_type*>(*p);
+                v = *p;
                 ++p;
                 index_size = *p;
                 ++p;
@@ -723,10 +733,10 @@ public:
                     descend_to_previous_leaf_node(m_node_stack, m_buffer);
                     si = &m_node_stack.back();
                     p = si->node_pos;
-                    pv = reinterpret_cast<const typename trie_type::value_type*>(*p);
-                    assert(pv);
+                    v = *p;
+                    assert(v != trie_type::null_value);
                 }
-            } while (!pv);
+            } while (v == trie_type::null_value);
         }
         else
         {
@@ -742,21 +752,21 @@ public:
                 m_buffer.pop_back();
                 m_node_stack.pop_back();
                 si = &m_node_stack.back();
-                pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
+                v = *si->node_pos;
 
                 if (m_node_stack.size() == 1)
                 {
                     // Root node reached.
                     descend_to_previous_leaf_node(m_node_stack, m_buffer);
                     si = &m_node_stack.back();
-                    pv = reinterpret_cast<const typename trie_type::value_type*>(*si->node_pos);
-                    assert(pv);
+                    v = *si->node_pos;
+                    assert(v != trie_type::null_value);
                 }
-            } while (!pv);
+            } while (v == trie_type::null_value);
         }
 
-        assert(pv);
-        m_current_value = pv;
+        assert(v != trie_type::null_value);
+        m_current_value = v;
 
         return *this;
     }
@@ -775,15 +785,20 @@ class packed_search_results
     using trie_type = _TrieType;
     friend trie_type;
     using node_stack_type = typename trie_type::node_stack_type;
+    using value_store_type = typename trie_type::value_store_type;
 
     using key_type = typename trie_type::key_type;
     using key_unit_type = typename key_type::value_type;
 
-    const uintptr_t* m_node;
+    const value_store_type* m_value_store = nullptr;
+    const uintptr_t* m_node = nullptr;
     key_type m_buffer;
 
-    packed_search_results(const uintptr_t* node, key_type&& buf) : m_node(node), m_buffer(std::move(buf))
-    {}
+    packed_search_results(const value_store_type* value_store, const uintptr_t* node, key_type&& buf)
+        : m_value_store(value_store), m_node(node), m_buffer(std::move(buf))
+    {
+        assert(m_value_store);
+    }
 
     node_stack_type get_root_node() const
     {
@@ -796,7 +811,7 @@ class packed_search_results
 
         // Push this child node onto the stack.
         node_stack_type node_stack;
-        node_stack.emplace_back(m_node, child_pos, child_end);
+        node_stack.emplace_back(m_value_store, m_node, child_pos, child_end);
         return node_stack;
     }
 
@@ -842,10 +857,10 @@ public:
             // There should always be at least one value node along the
             // left-most branch.
 
-            const_iterator::push_child_node_to_stack(node_stack, buf, node_stack.back().child_pos);
+            const_iterator::push_child_node_to_stack(m_value_store, node_stack, buf, node_stack.back().child_pos);
         }
 
-        return const_iterator(std::move(node_stack), std::move(buf), *node_stack.back().get_value());
+        return const_iterator(m_value_store, std::move(node_stack), std::move(buf), node_stack.back().get_value_pos());
     }
 
     const_iterator end() const
@@ -857,7 +872,7 @@ public:
         node_stack_type node_stack = get_root_node();
         auto& si = node_stack.back();
         si.child_pos = si.child_end;
-        return const_iterator(std::move(node_stack), key_type(m_buffer));
+        return const_iterator(m_value_store, std::move(node_stack), key_type(m_buffer));
     }
 };
 

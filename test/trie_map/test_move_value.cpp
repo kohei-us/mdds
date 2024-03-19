@@ -169,8 +169,8 @@ void test_equality()
     store2.insert("one", move_value("one"));
     store2.insert("two", move_value("two"));
 
-// TODO: implement operator== for trie_map
-//  assert(store1 == store2);
+    // TODO: implement operator== for trie_map
+    //  assert(store1 == store2);
 
     auto packed1 = store1.pack();
     auto packed2 = store2.pack();
@@ -188,8 +188,8 @@ void test_non_equality()
     store2.insert("one", move_value("1"));
     store2.insert("two", move_value("2"));
 
-// TODO: implement operator!= for trie_map
-//  assert(store1 != store2);
+    // TODO: implement operator!= for trie_map
+    //  assert(store1 != store2);
 
     auto packed1 = store1.pack();
     auto packed2 = store2.pack();
