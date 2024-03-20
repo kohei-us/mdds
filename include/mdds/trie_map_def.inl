@@ -352,11 +352,9 @@ using value_addrs_type = std::map<const void*, size_t>;
 template<typename FuncT, typename ValueT>
 struct write_variable_size_values_to_ostream
 {
-    value_addrs_type operator()(std::ostream& os, const std::deque<ValueT>& value_store) const
+    void operator()(std::ostream& os, const std::deque<ValueT>& value_store) const
     {
         bin_value bv;
-
-        value_addrs_type value_addrs;
 
         size_t pos = 0;
         for (const ValueT& v : value_store)
@@ -376,20 +374,17 @@ struct write_variable_size_values_to_ostream
             os.write(bv.buffer, 4);
             os.seekp(sp_end);
 
-            value_addrs.insert({&v, pos++});
+            ++pos;
         }
-
-        return value_addrs;
     }
 };
 
 template<typename FuncT, typename ValueT>
 struct write_fixed_size_values_to_ostream
 {
-    value_addrs_type operator()(std::ostream& os, const std::deque<ValueT>& value_store) const
+    void operator()(std::ostream& os, const std::deque<ValueT>& value_store) const
     {
         bin_value bv;
-        value_addrs_type value_addrs;
 
         // Write the size of constant-size values.
         bv.ui32 = FuncT::value_size;
@@ -411,10 +406,8 @@ struct write_fixed_size_values_to_ostream
                 throw size_error(msg.str());
             }
 
-            value_addrs.insert({&v, pos++});
+            ++pos;
         }
-
-        return value_addrs;
     }
 };
 
