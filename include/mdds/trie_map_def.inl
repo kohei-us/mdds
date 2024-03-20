@@ -236,8 +236,8 @@ void verify_packed_position(const PackedT& packed, const typename PackedT::value
     throw integrity_error(os.str());
 }
 
-template<typename KeyUnitT, typename SizeT>
-const uintptr_t* find_child_pos(const uintptr_t* first_child, SizeT n_child_nodes, KeyUnitT c)
+template<typename PackValueT, typename KeyUnitT, typename SizeT>
+const PackValueT* find_child_pos(const PackValueT* first_child, SizeT n_child_nodes, KeyUnitT c)
 {
     using size_type = SizeT;
     using key_unit_type = KeyUnitT;
@@ -247,7 +247,7 @@ const uintptr_t* find_child_pos(const uintptr_t* first_child, SizeT n_child_node
         size_type i = (low + high) / 2; // take the mid position
 
         // each slot contains the key for the child and offset to its index position
-        const uintptr_t* child_pos = first_child + i * 2;
+        const auto* child_pos = first_child + i * 2;
         const key_unit_type node_key = *child_pos;
 
         if (c == node_key)
@@ -283,10 +283,10 @@ const uintptr_t* find_child_pos(const uintptr_t* first_child, SizeT n_child_node
     return nullptr;
 }
 
-template<typename KeyUnitT, typename SizeT>
-const uintptr_t* find_prefix_node(
-    const uintptr_t* p, const KeyUnitT* prefix, const KeyUnitT* prefix_end,
-    std::function<void(const uintptr_t*, const uintptr_t*, const uintptr_t*)> node_func)
+template<typename PackValueT, typename KeyUnitT, typename SizeT>
+const PackValueT* find_prefix_node(
+    const PackValueT* p, const KeyUnitT* prefix, const KeyUnitT* prefix_end,
+    std::function<void(const PackValueT*, const PackValueT*, const PackValueT*)> node_func)
 {
     using size_type = SizeT;
 
@@ -294,13 +294,13 @@ const uintptr_t* find_prefix_node(
     {
         // target node found!
         size_t index_size = *(p + 1);
-        const uintptr_t* child_pos = p + 2;
-        const uintptr_t* child_end = child_pos + index_size;
+        const auto* child_pos = p + 2;
+        const auto* child_end = child_pos + index_size;
         node_func(p, child_pos, child_end);
         return p;
     }
 
-    const uintptr_t* p0 = p; // store the head offset position of this node.
+    const auto* p0 = p; // store the head offset position of this node.
 
     // Find the child node with a matching key character.
 
@@ -316,16 +316,16 @@ const uintptr_t* find_prefix_node(
         return nullptr;
     }
 
-    const uintptr_t* child_end = p + index_size;
+    const auto* child_end = p + index_size;
 
     if (const auto* child_pos = find_child_pos(p, n, *prefix); child_pos)
     {
         // Match found!
         size_type offset = *(child_pos + 1);
         node_func(p0, child_pos, child_end);
-        const uintptr_t* p_child = p0 - offset;
+        const auto* p_child = p0 - offset;
         ++prefix;
-        return find_prefix_node<KeyUnitT, SizeT>(p_child, prefix, prefix_end, std::move(node_func));
+        return find_prefix_node<PackValueT, KeyUnitT, SizeT>(p_child, prefix, prefix_end, std::move(node_func));
     }
 
     // no matching node found - search failed
@@ -1140,7 +1140,7 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::push_child_offsets(
 template<typename KeyT, typename ValueT, typename TraitsT>
 void packed_trie_map<KeyT, ValueT, TraitsT>::init_pack()
 {
-    packed_type init(size_t(1), uintptr_t(0));
+    packed_type init(size_t(1), pack_value_type(0));
     m_packed.swap(init);
     assert(m_packed.size() == 1);
 }
@@ -1239,13 +1239,13 @@ auto packed_trie_map<KeyT, ValueT, TraitsT>::const_node_type::child(key_unit_typ
         return const_node_type();
 
     size_type n = index_size / 2;
-    const uintptr_t* p = m_pos + 2;
+    const pack_value_type* p = m_pos + 2;
 
-    if (const uintptr_t* child_pos = trie::detail::find_child_pos(p, n, c); child_pos)
+    if (const auto* child_pos = trie::detail::find_child_pos(p, n, c); child_pos)
     {
         // Match found!
         size_type offset = *(child_pos + 1);
-        const uintptr_t* p_child = m_pos - offset;
+        const auto* p_child = m_pos - offset;
         return const_node_type(m_packed, m_value_store, p_child);
     }
 
@@ -1316,7 +1316,7 @@ packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const packed_trie_map& o
         packed_trie_map& m_parent;
         const packed_trie_map& m_other;
 
-        void node(const uintptr_t* node_pos, const key_unit_type*, size_type, size_type)
+        void node(const pack_value_type* node_pos, const key_unit_type*, size_type, size_type)
         {
             pack_value_type other_value_pos = *node_pos;
 
@@ -1325,13 +1325,13 @@ packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const packed_trie_map& o
                 assert(other_value_pos < m_other.m_value_store.size());
                 pack_value_type pos = m_parent.m_value_store.size();
                 m_parent.m_value_store.push_back(m_other.m_value_store[other_value_pos]); // copy the value object.
-                const uintptr_t* head = m_parent.m_packed.data();
+                const auto* head = m_parent.m_packed.data();
                 size_t offset = std::distance(head, node_pos);
                 m_parent.m_packed[offset] = pos;
             }
         }
 
-        void move_up(const uintptr_t*, const uintptr_t*, const uintptr_t*)
+        void move_up(const pack_value_type*, const pack_value_type*, const pack_value_type*)
         {}
 
         void move_down()
@@ -1415,22 +1415,22 @@ typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<
         // empty container.
         return const_iterator(&m_value_store, std::move(node_stack), key_type());
 
-    const uintptr_t* node_pos = si->node_pos;
-    const uintptr_t* child_pos = si->child_pos;
-    const uintptr_t* child_end = si->child_end;
-    const uintptr_t* p = child_pos;
+    const auto* node_pos = si->node_pos;
+    const auto* child_pos = si->child_pos;
+    const auto* child_end = si->child_end;
+    const auto* p = child_pos;
 
     // Follow the root node's left-most child.
     key_type buf;
     key_unit_type c = *p;
     buf.push_back(c);
     ++p;
-    size_t offset = *p;
+    size_type offset = *p;
 
     node_pos -= offset; // jump to the child node.
     p = node_pos;
     ++p;
-    size_t index_size = *p;
+    size_type index_size = *p;
     ++p;
     child_pos = p;
     child_end = child_pos + index_size;
@@ -1469,8 +1469,8 @@ typename packed_trie_map<KeyT, ValueT, TraitsT>::node_stack_type packed_trie_map
     ++p;
     size_t index_size = *p;
     ++p;
-    const uintptr_t* child_pos = p;
-    const uintptr_t* child_end = child_pos + index_size;
+    const auto* child_pos = p;
+    const auto* child_end = child_pos + index_size;
 
     node_stack_type node_stack;
     node_stack.emplace_back(&m_value_store, node_pos, child_pos, child_end);
@@ -1500,9 +1500,10 @@ typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<
     node_stack_type node_stack;
     const auto* vs = &m_value_store;
 
-    trie::detail::find_prefix_node<key_unit_type, size_type>(
+    trie::detail::find_prefix_node<pack_value_type, key_unit_type, size_type>(
         root, input, key_end,
-        [&node_stack, vs](const uintptr_t* node_pos, const uintptr_t* child_pos, const uintptr_t* child_end) {
+        [&node_stack,
+         vs](const pack_value_type* node_pos, const pack_value_type* child_pos, const pack_value_type* child_end) {
             node_stack.emplace_back(vs, node_pos, child_pos, child_end);
         });
 
@@ -1541,10 +1542,10 @@ typename packed_trie_map<KeyT, ValueT, TraitsT>::search_results packed_trie_map<
 
     size_type root_offset = m_packed[0];
     assert(root_offset < m_packed.size());
-    const uintptr_t* root = m_packed.data() + root_offset;
+    const auto* root = m_packed.data() + root_offset;
 
-    const uintptr_t* node = trie::detail::find_prefix_node<key_unit_type, size_type>(
-        root, prefix, prefix_end, [](const uintptr_t*, const uintptr_t*, const uintptr_t*) {});
+    const auto* node = trie::detail::find_prefix_node<pack_value_type, key_unit_type, size_type>(
+        root, prefix, prefix_end, [](const pack_value_type*, const pack_value_type*, const pack_value_type*) {});
 
     return search_results(&m_value_store, node, key_type(prefix, len));
 }
@@ -1600,8 +1601,8 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::save_state(std::ostream& os) const
     bv.ui8 = 0xFF;
     os.write(bv.buffer, 1);
 
-    // Write the size of uintptr_t.  It must be either 4 or 8.
-    bv.ui8 = sizeof(uintptr_t);
+    // Write the size of pack_value_type.
+    bv.ui8 = sizeof(pack_value_type);
     os.write(bv.buffer, 1);
 
     // Write the size of the packed blob.
@@ -1695,12 +1696,12 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::load_state(std::istream& is)
     if (bv.ui8 != 0xFF)
         throw std::invalid_argument("failed to find the check byte at the end of the value section.");
 
-    // Size of uintptr_t
+    // Size of pack_value_type
     is.read(bv.buffer, 1);
-    size_t ptr_size = bv.ui8;
+    size_type pvt_size = bv.ui8;
 
-    if (ptr_size != sizeof(uintptr_t))
-        throw std::invalid_argument("size of uintptr_t is different.");
+    if (pvt_size != sizeof(pack_value_type))
+        throw std::invalid_argument("size of pack_value_type is different.");
 
     // Size of the packed blob.
     is.read(bv.buffer, 8);
@@ -1711,8 +1712,8 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::load_state(std::istream& is)
 
     for (size_t i = 0; i < n; ++i)
     {
-        is.read(bv.buffer, sizeof(uintptr_t));
-        const uintptr_t* p = reinterpret_cast<const uintptr_t*>(bv.buffer);
+        is.read(bv.buffer, pvt_size);
+        const auto* p = reinterpret_cast<const pack_value_type*>(bv.buffer);
         packed.push_back(*p);
     }
 
@@ -1781,15 +1782,15 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::dump_trie_traversal(std::ostream& o
        << "packed buffer size: " << m_packed.size() << "\n"
        << "traversal:\n";
 
-    const uintptr_t* head = m_packed.data();
+    const auto* head = m_packed.data();
 
     struct _handler
     {
         const value_store_type& m_value_store;
         std::ostream& m_os;
-        const uintptr_t* m_head;
+        const pack_value_type* m_head = nullptr;
 
-        _handler(const value_store_type& value_store, std::ostream& os, const uintptr_t* head)
+        _handler(const value_store_type& value_store, std::ostream& os, const pack_value_type* head)
             : m_value_store(value_store), m_os(os), m_head(head)
         {}
 
@@ -1819,7 +1820,8 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::dump_trie_traversal(std::ostream& o
             m_os << std::endl;
         }
 
-        void move_up(const uintptr_t* node_pos, const uintptr_t* child_pos, const uintptr_t* child_end)
+        void move_up(
+            const pack_value_type* node_pos, const pack_value_type* child_pos, const pack_value_type* child_end)
         {
             size_type offset = std::distance(m_head, node_pos);
             size_type child_size = std::distance(child_pos, child_end) / 2;
@@ -1863,11 +1865,11 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_tree(_Handler hdl) const
         // empty container
         return;
 
-    const uintptr_t* node_pos = si->node_pos;
-    const uintptr_t* child_pos = si->child_pos;
-    const uintptr_t* child_end = si->child_end;
+    const auto* node_pos = si->node_pos;
+    const auto* child_pos = si->child_pos;
+    const auto* child_end = si->child_end;
 
-    const uintptr_t* p = child_pos;
+    const auto* p = child_pos;
 
     for (bool in_tree = true; in_tree;)
     {

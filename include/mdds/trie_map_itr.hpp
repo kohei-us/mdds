@@ -495,6 +495,7 @@ class packed_iterator_base
     using node_stack_type = typename trie_type::node_stack_type;
 
     using key_type = typename trie_type::key_type;
+    using size_type = typename trie_type::size_type;
     using trie_value_type = typename trie_type::value_type;
     using value_store_type = typename trie_type::value_store_type;
     using pack_value_type = typename trie_type::pack_value_type;
@@ -520,22 +521,23 @@ private:
      * node position and push that onto the stack as stack_item.
      */
     static void push_child_node_to_stack(
-        const value_store_type* value_store, node_stack_type& node_stack, key_type& buf, const uintptr_t* child_pos)
+        const value_store_type* value_store, node_stack_type& node_stack, key_type& buf,
+        const pack_value_type* child_pos)
     {
         assert(value_store);
-        const uintptr_t* node_pos = node_stack.back().node_pos;
+        const auto* node_pos = node_stack.back().node_pos;
 
         key_unit_type c = static_cast<key_unit_type>(*child_pos);
         buf.push_back(c);
         ++child_pos;
-        size_t offset = static_cast<size_t>(*child_pos);
+        auto offset = static_cast<size_type>(*child_pos);
         node_pos -= offset; // Jump to the head of the child node.
-        const uintptr_t* p = node_pos;
+        const auto* p = node_pos;
         ++p;
-        size_t index_size = *p;
+        size_type index_size = *p;
         ++p;
         child_pos = p;
-        const uintptr_t* child_end = child_pos + index_size;
+        const auto* child_end = child_pos + index_size;
 
         // Push it onto the stack.
         node_stack.emplace_back(value_store, node_pos, child_pos, child_end);
@@ -543,7 +545,7 @@ private:
 
     static const void descend_to_previous_leaf_node(node_stack_type& node_stack, key_type& buf)
     {
-        const uintptr_t* node_pos = nullptr;
+        const pack_value_type* node_pos = nullptr;
         size_t index_size = 0;
 
         do
@@ -560,12 +562,12 @@ private:
             node_pos -= offset; // Jump to the head of the child node.
             buf.push_back(c);
 
-            const uintptr_t* p = node_pos;
+            const auto* p = node_pos;
             ++p;
             index_size = *p;
             ++p;
-            const uintptr_t* child_pos = p;
-            const uintptr_t* child_end = child_pos + index_size;
+            const auto* child_pos = p;
+            const auto* child_end = child_pos + index_size;
             node_stack.emplace_back(node_stack.back().value_store, node_pos, child_end, child_end);
         } while (index_size);
     }
@@ -720,12 +722,12 @@ public:
                 m_buffer.pop_back();
                 m_node_stack.pop_back();
                 si = &m_node_stack.back();
-                const uintptr_t* p = si->node_pos;
+                const auto* p = si->node_pos;
                 v = *p;
                 ++p;
                 index_size = *p;
                 ++p;
-                const uintptr_t* first_child = p;
+                const auto* first_child = p;
 
                 if (si->child_pos != first_child)
                 {
@@ -786,15 +788,16 @@ class packed_search_results
     friend trie_type;
     using node_stack_type = typename trie_type::node_stack_type;
     using value_store_type = typename trie_type::value_store_type;
+    using pack_value_type = typename trie_type::pack_value_type;
 
     using key_type = typename trie_type::key_type;
     using key_unit_type = typename key_type::value_type;
 
     const value_store_type* m_value_store = nullptr;
-    const uintptr_t* m_node = nullptr;
+    const pack_value_type* m_node = nullptr;
     key_type m_buffer;
 
-    packed_search_results(const value_store_type* value_store, const uintptr_t* node, key_type&& buf)
+    packed_search_results(const value_store_type* value_store, const pack_value_type* node, key_type&& buf)
         : m_value_store(value_store), m_node(node), m_buffer(std::move(buf))
     {
         assert(m_value_store);
@@ -802,12 +805,12 @@ class packed_search_results
 
     node_stack_type get_root_node() const
     {
-        const uintptr_t* p = m_node;
+        const auto* p = m_node;
         ++p;
         size_t index_size = *p;
         ++p;
-        const uintptr_t* child_pos = p;
-        const uintptr_t* child_end = child_pos + index_size;
+        const auto* child_pos = p;
+        const auto* child_end = child_pos + index_size;
 
         // Push this child node onto the stack.
         node_stack_type node_stack;
