@@ -515,7 +515,10 @@ public:
 private:
     using value_store_type = std::deque<value_type>;
 
+    /** Special value representing a value-not-set. */
     static constexpr auto null_value = std::numeric_limits<pack_value_type>::max();
+    /** Maximum allowed index for value. */
+    static constexpr auto max_value_pos = null_value - 1u;
 
     struct trie_node
     {
@@ -776,6 +779,8 @@ private:
 
     template<typename ModeT, typename NodeT>
     size_type compact_node(ModeT, NodeT& node);
+
+    void check_value_size_or_throw() const;
 
     void push_value_to_store(
         trie::detail::copy_to_pack, const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);

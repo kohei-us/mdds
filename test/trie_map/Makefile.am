@@ -10,6 +10,7 @@ test_main_SOURCES = \
 	test_state.cpp \
 	test_node.cpp \
 	test_move_value.cpp \
+	test_pack_value_type.cpp \
 	$(top_srcdir)/test/test_global.cpp
 
 TESTS = test-main

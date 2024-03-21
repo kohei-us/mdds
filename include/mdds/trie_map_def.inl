@@ -139,7 +139,7 @@ struct dump_packed_buffer
                 if (v == null_value)
                     m_os << "null";
                 else
-                    m_os << v;
+                    m_os << +v;
 
                 m_os << ")" << std::endl;
             }
@@ -1110,9 +1110,21 @@ auto packed_trie_map<KeyT, ValueT, TraitsT>::compact_node(ModeT, NodeT& node) ->
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
+void packed_trie_map<KeyT, ValueT, TraitsT>::check_value_size_or_throw() const
+{
+    if (m_value_store.size() >= max_value_pos)
+    {
+        std::ostringstream os;
+        os << "maximum allowed number of values (" << (max_value_pos + 1) << ") exceeded";
+        throw size_error(os.str());
+    }
+}
+
+template<typename KeyT, typename ValueT, typename TraitsT>
 void packed_trie_map<KeyT, ValueT, TraitsT>::push_value_to_store(
     trie::detail::copy_to_pack, const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node)
 {
+    check_value_size_or_throw();
     m_value_store.push_back(node.value); // copy the value object
 }
 
@@ -1120,6 +1132,7 @@ template<typename KeyT, typename ValueT, typename TraitsT>
 void packed_trie_map<KeyT, ValueT, TraitsT>::push_value_to_store(
     trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node)
 {
+    check_value_size_or_throw();
     m_value_store.emplace_back(std::move(node.value)); // move the value object
 }
 

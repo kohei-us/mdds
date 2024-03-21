@@ -1382,6 +1382,7 @@ int main()
         trie_test_value_update_from_iterator();
         trie_test_node::run();
         trie_test_move_value::run();
+        trie_test_pack_value_type::run();
     }
     catch (const std::exception& e)
     {
