@@ -43,7 +43,7 @@ struct uint8_traits : mdds::trie::default_traits
 
 using uint8_map_type = mdds::trie_map<std::string, int, uint8_traits>;
 
-} // namespace
+} // anonymous namespace
 
 void test_uint8_max_value()
 {
@@ -73,6 +73,29 @@ void test_uint8_max_value()
     {
         // packed variant receives moved values
         auto packed = db.pack();
+        assert(!"size_error was expected to be thrown");
+    }
+    catch (const mdds::size_error&)
+    {
+        // expected
+    }
+
+    std::vector<std::pair<std::string, int>> entries_pool;
+
+    for (std::uint8_t i = 0; i < max_value; ++i)
+        entries_pool.emplace_back(std::to_string(i), i);
+
+    std::sort(entries_pool.begin(), entries_pool.end(), [](const auto& l, const auto& r) { return l.first < r.first; });
+
+    std::vector<uint8_map_type::packed_type::entry> entries;
+    for (const auto& [key, value] : entries_pool)
+        entries.emplace_back(key.data(), key.size(), value);
+
+    assert(entries.size() == max_value);
+
+    try
+    {
+        uint8_map_type::packed_type packed(entries.data(), entries.size());
         assert(!"size_error was expected to be thrown");
     }
     catch (const mdds::size_error&)

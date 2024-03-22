@@ -782,9 +782,8 @@ private:
 
     void check_value_size_or_throw() const;
 
-    void push_value_to_store(
-        trie::detail::copy_to_pack, const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
-    void push_value_to_store(trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node);
+    size_type push_value_to_store(trie::detail::copy_to_pack, const value_type& value);
+    size_type push_value_to_store(trie::detail::move_to_pack, value_type& value);
 
     void push_child_offsets(size_type offset, const child_offsets_type& child_offsets);
 

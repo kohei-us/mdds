@@ -1069,8 +1069,7 @@ typename packed_trie_map<KeyT, ValueT, TraitsT>::size_type packed_trie_map<KeyT,
     size_type offset = m_packed.size();
     if (node.value)
     {
-        auto pos = m_value_store.size();
-        m_value_store.push_back(*node.value); // copy the value object.
+        auto pos = push_value_to_store(trie::detail::copy_to_pack{}, *node.value);
         m_packed.push_back(pack_value_type(pos));
     }
     else
@@ -1098,8 +1097,7 @@ auto packed_trie_map<KeyT, ValueT, TraitsT>::compact_node(ModeT, NodeT& node) ->
     size_type offset = m_packed.size();
     if (node.has_value)
     {
-        auto pos = m_value_store.size();
-        push_value_to_store(ModeT{}, node);
+        auto pos = push_value_to_store(ModeT{}, node.value);
         m_packed.push_back(pack_value_type(pos));
     }
     else
@@ -1121,19 +1119,23 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::check_value_size_or_throw() const
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-void packed_trie_map<KeyT, ValueT, TraitsT>::push_value_to_store(
-    trie::detail::copy_to_pack, const typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node)
+auto packed_trie_map<KeyT, ValueT, TraitsT>::push_value_to_store(trie::detail::copy_to_pack, const value_type& value)
+    -> size_type
 {
     check_value_size_or_throw();
-    m_value_store.push_back(node.value); // copy the value object
+    auto pos = m_value_store.size();
+    m_value_store.push_back(value); // copy the value object
+    return pos;
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-void packed_trie_map<KeyT, ValueT, TraitsT>::push_value_to_store(
-    trie::detail::move_to_pack, typename trie_map<KeyT, ValueT, TraitsT>::trie_node& node)
+auto packed_trie_map<KeyT, ValueT, TraitsT>::push_value_to_store(trie::detail::move_to_pack, value_type& value)
+    -> size_type
 {
     check_value_size_or_throw();
-    m_value_store.emplace_back(std::move(node.value)); // move the value object
+    auto pos = m_value_store.size();
+    m_value_store.emplace_back(std::move(value)); // move the value object
+    return pos;
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
