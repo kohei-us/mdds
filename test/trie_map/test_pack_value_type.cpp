@@ -41,7 +41,25 @@ struct uint8_traits : mdds::trie::default_traits
     using pack_value_type = std::uint8_t;
 };
 
+struct uint16_traits : mdds::trie::default_traits
+{
+    using pack_value_type = std::uint16_t;
+};
+
+struct uint32_traits : mdds::trie::default_traits
+{
+    using pack_value_type = std::uint32_t;
+};
+
+struct uint64_traits : mdds::trie::default_traits
+{
+    using pack_value_type = std::uint64_t;
+};
+
 using uint8_map_type = mdds::trie_map<std::string, int, uint8_traits>;
+using uint16_map_type = mdds::trie_map<std::string, int, uint16_traits>;
+using uint32_map_type = mdds::trie_map<std::string, int, uint32_traits>;
+using uint64_map_type = mdds::trie_map<std::string, int, uint64_traits>;
 
 } // anonymous namespace
 
@@ -104,9 +122,46 @@ void test_uint8_max_value()
     }
 }
 
+template<typename MapT>
+std::size_t calc_state_size()
+{
+    using pack_value_type = typename MapT::traits_type::pack_value_type;
+    std::cout << "pack value size: " << sizeof(pack_value_type) << std::endl;
+
+    MapT db;
+    auto max_value = std::numeric_limits<std::uint8_t>::max();
+
+    for (std::uint8_t i = 1; i < max_value; ++i)
+        db.insert(std::to_string(i), i);
+
+    std::cout << "value count: " << db.size() << std::endl;
+
+    auto packed = db.pack();
+    std::ostringstream os;
+    packed.save_state(os);
+
+    auto bin = os.str();
+    std::cout << "state size: " << bin.size() << std::endl;
+    return bin.size();
+}
+
+void test_state_size()
+{
+    _TEST_FUNC_SCOPE;
+
+    auto i8_size = calc_state_size<uint8_map_type>();
+    auto i16_size = calc_state_size<uint16_map_type>();
+    auto i32_size = calc_state_size<uint32_map_type>();
+    auto i64_size = calc_state_size<uint64_map_type>();
+    assert(i8_size < i16_size);
+    assert(i16_size < i32_size);
+    assert(i32_size < i64_size);
+}
+
 void run()
 {
     test_uint8_max_value();
+    test_state_size();
 }
 
 } // namespace trie_test_pack_value_type
