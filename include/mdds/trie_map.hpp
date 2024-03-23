@@ -125,6 +125,11 @@ struct default_traits
     /**
      * Unit value type of a buffer used in packed_trie_map to store its content.
      * It must be an unsigned integral type.
+     *
+     * @note Maximum number of key-value pairs that can be stored in the
+     *       packed_trie_map variant is the maximum value that can be expressed
+     *       by this type minus one.  For instance, if the size of this type is
+     *       8-bits, only up to 255 key-value pairs can be stored.
      */
     using pack_value_type = uintptr_t;
 };
@@ -444,6 +449,11 @@ public:
      * @return an instance of mdds::packed_trie_map with the same content,
      *         with all the values stored in the original instance moved into
      *         the returned instance.
+     *
+     * @throws mdds::size_error When the number of entries exceeds maximum
+     *                allowed number of key-value pairs.
+     *                See trie::default_traits::pack_value_type for more
+     *                detailed explanation.
      */
     packed_type pack();
 
@@ -648,6 +658,11 @@ public:
      *
      * @param entries pointer to the array of key-value entries.
      * @param entry_size size of the key-value entry array.
+     *
+     * @throws mdds::size_error When the number of entries exceeds
+     *                maximum allowed number of key-value pairs. See
+     *                trie::default_traits::pack_value_type for more detailed
+     *                explanation.
      */
     packed_trie_map(const entry* entries, size_type entry_size);
 
@@ -656,6 +671,11 @@ public:
      * mdds::trie_map instance.
      *
      * @param other mdds::trie_map instance to build content from.
+     *
+     * @throws mdds::size_error When the number of entries exceeds
+     *                maximum allowed number of key-value pairs. See
+     *                trie::default_traits::pack_value_type for more detailed
+     *                explanation.
      */
     packed_trie_map(const trie_map<KeyT, ValueT, TraitsT>& other);
 
