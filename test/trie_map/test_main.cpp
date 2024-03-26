@@ -1351,6 +1351,47 @@ void trie_test_value_update_from_iterator()
     assert(it->second == 345);
 }
 
+void trie_test_equality()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using trie_map_type = trie_map<std::string, int>;
+
+    trie_map_type db1, db2;
+    assert(db1 == db2);
+
+    db1.insert("a", 1);
+    assert(db1 != db2);
+    db2.insert("a", 1);
+    assert(db1 == db2);
+
+    db1.insert("ab", 2);
+    assert(db1 != db2);
+    db2.insert("ab", 2);
+    assert(db1 == db2);
+
+    db1.insert("ac", 3); // different value
+    assert(db1 != db2);
+    db2.insert("ac", 4); // different value
+    assert(db1 != db2);
+
+    auto it = db1.find("ac");
+    it->second = 4; // make the value equal
+    assert(db1 == db2);
+
+    db1.clear();
+    db2.clear();
+    db1.insert("ab", 1);
+    db2.insert("a", 1);
+    assert(db1 != db2);
+
+    db1.clear();
+    db2.clear();
+    db1.insert("a", 1);
+    db2.insert("b", 1);
+    assert(db1 != db2);
+}
+
 int main()
 {
     try
@@ -1380,6 +1421,8 @@ int main()
         trie_test_key_as_input();
         trie_test_copying();
         trie_test_value_update_from_iterator();
+        trie_test_equality();
+
         trie_test_node::run();
         trie_test_move_value::run();
         trie_test_pack_value_type::run();

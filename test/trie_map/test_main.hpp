@@ -71,6 +71,7 @@ void trie_test_prefix_search();
 void trie_test_key_as_input();
 void trie_test_copying();
 void trie_test_value_update_from_iterator();
+void trie_test_equality();
 
 namespace trie_test_node {
 

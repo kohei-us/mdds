@@ -766,6 +766,18 @@ trie_map<KeyT, ValueT, TraitsT>& trie_map<KeyT, ValueT, TraitsT>::operator=(trie
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::operator==(const trie_map& other) const
+{
+    return descend_for_equality(m_root, other.m_root);
+}
+
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::operator!=(const trie_map& other) const
+{
+    return !operator==(other);
+}
+
+template<typename KeyT, typename ValueT, typename TraitsT>
 void trie_map<KeyT, ValueT, TraitsT>::swap(trie_map& other)
 {
     m_root.swap(other.m_root);
@@ -910,6 +922,32 @@ void trie_map<KeyT, ValueT, TraitsT>::count_values(size_type& n, const trie_node
     std::for_each(
         node.children.begin(), node.children.end(),
         [&](const typename trie_node::children_type::value_type& v) { count_values(n, v.second); });
+}
+
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::descend_for_equality(const trie_node& left, const trie_node& right) const
+{
+    if (left.has_value != right.has_value)
+        return false;
+
+    if (left.has_value && left.value != right.value)
+        return false;
+
+    if (left.children.size() != right.children.size())
+        return false;
+
+    auto it_lhs = left.children.cbegin();
+    auto it_rhs = right.children.cbegin();
+    for (; it_lhs != left.children.cend(); ++it_lhs, ++it_rhs)
+    {
+        if (it_lhs->first != it_rhs->first)
+            return false;
+
+        if (!descend_for_equality(it_lhs->second, it_rhs->second))
+            return false;
+    }
+
+    return true;
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>

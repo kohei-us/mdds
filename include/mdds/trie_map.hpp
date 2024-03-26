@@ -315,6 +315,9 @@ public:
 
     trie_map& operator=(trie_map other);
 
+    bool operator==(const trie_map& other) const;
+    bool operator!=(const trie_map& other) const;
+
     void swap(trie_map& other);
 
     /**
@@ -472,6 +475,8 @@ private:
     key_type build_key_buffer_from_node_stack(const std::vector<stack_item<IsConst>>& node_stack) const;
 
     void count_values(size_type& n, const trie_node& node) const;
+
+    bool descend_for_equality(const trie_node& left, const trie_node& right) const;
 
 private:
     trie_node m_root;
