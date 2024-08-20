@@ -707,7 +707,7 @@ private:
         new_node->prev = m_right_leaf->prev;
         new_node->next = m_right_leaf;
         m_right_leaf->prev->next = new_node;
-        m_right_leaf->prev = new_node;
+        m_right_leaf->prev = std::move(new_node);
         m_valid_tree = false;
     }
 
@@ -770,7 +770,7 @@ private:
                 cur_node = std::move(next_node);
             }
             last_node->next = end_node;
-            end_node->prev = last_node;
+            end_node->prev = std::move(last_node);
             return;
         }
     }

@@ -221,7 +221,7 @@ template<typename Key, typename Value>
         return ret_type(const_iterator(this, true), false);
     }
 
-    return insert_to_pos(start_pos, std::move(start_key), std::move(end_key), std::move(val));
+    return insert_to_pos(std::move(start_pos), std::move(start_key), std::move(end_key), std::move(val));
 }
 
 template<typename Key, typename Value>
@@ -258,7 +258,7 @@ template<typename Key, typename Value>
             // Update the value of the existing node.
             old_value = start_pos->value_leaf.value;
             start_pos->value_leaf.value = val;
-            new_start_node = start_pos;
+            new_start_node = std::move(start_pos);
 
             changed = (old_value != val);
         }
@@ -337,7 +337,7 @@ template<typename Key, typename Value>
         // Insert a new node before the insertion position node.
         node_ptr new_node(new node);
         new_node->key = std::move(end_key);
-        new_node->value_leaf.value = old_value;
+        new_node->value_leaf.value = std::move(old_value);
 
         // Link to the left node.
         st::detail::link_nodes<node_ptr>(new_start_node, new_node);
@@ -380,7 +380,7 @@ template<typename Key, typename Value>
 
     p = get_insertion_pos_leaf(start_key, p);
     node_ptr start_pos(const_cast<node*>(p));
-    return insert_to_pos(std::move(start_pos), start_key, end_key, val);
+    return insert_to_pos(std::move(start_pos), start_key, end_key, std::move(val));
 }
 
 template<typename Key, typename Value>
@@ -510,7 +510,7 @@ void flat_segment_tree<Key, Value>::shift_right(key_type pos, key_type size, boo
                 new_node->prev = m_left_leaf;
                 new_node->next = m_left_leaf->next;
                 m_left_leaf->next->prev = new_node;
-                m_left_leaf->next = new_node;
+                m_left_leaf->next = std::move(new_node);
             }
             else
             {
