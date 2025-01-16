@@ -66,8 +66,7 @@ EXTRA_DIST = \
 	misc/gdb/mdds/__init__.py \
 	misc/matrix_perf.cpp \
 	misc/mdds.pc.in \
-	misc/sorted_string_map_perf.cpp \
-	quickcheck/flat_segment_tree.cpp
+	misc/sorted_string_map_perf.cpp
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(docdir)
