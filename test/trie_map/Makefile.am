@@ -5,6 +5,9 @@ AM_CPPFLAGS = \
 
 check_PROGRAMS = test-main
 
+EXTRA_DIST = \
+	test_main.hpp
+
 test_main_SOURCES = \
 	test_main.cpp \
 	test_state.cpp \
