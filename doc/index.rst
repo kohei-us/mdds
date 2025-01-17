@@ -18,8 +18,8 @@ Contents:
    :maxdepth: 1
 
    global.rst
-   flat_segment_tree.rst
-   segment_tree.rst
+   flat_segment_tree/index.rst
+   segment_tree/index.rst
    point_quad_tree.rst
    multi_type_vector/index.rst
    multi_type_matrix.rst
