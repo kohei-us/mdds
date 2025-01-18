@@ -24,7 +24,7 @@ Contents:
    multi_type_vector/index.rst
    multi_type_matrix.rst
    sorted_string_map/index.rst
-   trie_map.rst
+   trie_map/index.rst
    rtree.rst
    api.rst
 
