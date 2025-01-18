@@ -43,7 +43,12 @@ EXTRA_DIST = \
 	doc/multi_type_vector/index.rst \
 	doc/point_quad_tree.rst \
 	doc/requirements.txt \
-	doc/rtree.rst \
+	doc/rtree/api.rst \
+	doc/rtree/bulkload.rst \
+	doc/rtree/index.rst \
+	doc/rtree/quickstart.rst \
+	doc/rtree/remove-value.rst \
+	doc/rtree/visualize.rst \
 	doc/segment_tree/api.rst \
 	doc/segment_tree/index.rst \
 	doc/segment_tree/perf.rst \
