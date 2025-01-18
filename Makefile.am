@@ -52,13 +52,17 @@ EXTRA_DIST = \
 	doc/sorted_string_map/api.rst \
 	doc/sorted_string_map/index.rst \
 	doc/sorted_string_map/quickstart.rst \
-	doc/trie_map.rst \
-	example/.gitignore \
+	doc/trie_map/api.rst \
+	doc/trie_map/direct-packed-trie-map.rst \
+	doc/trie_map/index.rst \
+	doc/trie_map/pack-trie-map.rst \
+	doc/trie_map/populate-trie-map.rst \
+	doc/trie_map/save-load-packed-trie-map-custom-value.rst \
+	doc/trie_map/save-load-packed-trie-map.rst \
 	example/Makefile.am \
 	example/flat_segment_tree.cpp \
 	example/flat_segment_tree_itrs.cpp \
 	example/multi_type_matrix.cpp \
-	example/multi_type_vector/.gitignore \
 	example/multi_type_vector/Makefile.am \
 	example/multi_type_vector/basic.cpp \
 	example/multi_type_vector/custom_value_types.cpp \
