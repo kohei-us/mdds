@@ -33,6 +33,7 @@
 
 int main() try
 {
+    //!code-start: remove-value
     using rt_type = mdds::rtree<int, std::string>;
 
     rt_type tree;
@@ -67,6 +68,8 @@ int main() try
 
     for (const std::string& v : results)
         std::cout << v << std::endl;
+
+    //!code-end: remove-value
 
     return EXIT_SUCCESS;
 }
