@@ -31,6 +31,7 @@
 #include <iostream>
 #include <fstream>
 
+//!code-start: tree-type
 // Make the node capacity intentionally small.
 struct tiny_traits_2d
 {
@@ -44,7 +45,9 @@ struct tiny_traits_2d
 };
 
 using rt_type = mdds::rtree<int, int, tiny_traits_2d>;
+//!code-end: tree-type
 
+//!code-start: input-data
 // 2D rectangle with the top-left position (x, y), width and height.
 struct rect
 {
@@ -108,9 +111,11 @@ std::vector<rect> rects =
     { 38209,  9254, 1908,  1781 },
     {  2269, 56497, 2289,   892 },
 };
+//!code-end: input-data
 
 void load_tree()
 {
+    //!code-start: normal-load
     rt_type tree;
 
     // Insert the rectangle objects into the tree.
@@ -122,10 +127,12 @@ void load_tree()
     std::string tree_svg = tree.export_tree(rt_type::export_tree_type::extent_as_svg);
     std::ofstream fout("bounds2.svg");
     fout << tree_svg;
+    //!code-end: normal-load
 }
 
 void bulkload_tree()
 {
+    //!code-start: bulkload
     rt_type::bulk_loader loader;
 
     // Insert the rectangle objects into the tree.
@@ -140,6 +147,7 @@ void bulkload_tree()
     std::string tree_svg = tree.export_tree(rt_type::export_tree_type::extent_as_svg);
     std::ofstream fout("bounds2-bulkload.svg");
     fout << tree_svg;
+    //!code-end: bulkload
 }
 
 int main() try
