@@ -31,6 +31,7 @@
 #include <iostream>
 #include <fstream>
 
+//!code-start: tree-type
 // Make the node capacity intentionally small.
 struct tiny_traits_2d
 {
@@ -44,9 +45,11 @@ struct tiny_traits_2d
 };
 
 using rt_type = mdds::rtree<int, int, tiny_traits_2d>;
+//!code-end: tree-type
 
 int main() try
 {
+    //!code-start: input-data
     // 2D rectangle with the top-left position (x, y), width and height.
     struct rect
     {
@@ -90,18 +93,23 @@ int main() try
         { 19778, 15394, 1356,  626 },
         { 22969, 15394,  631, 2066 },
     };
+    //!code-end: input-data
 
+    //!code-start: insert
     rt_type tree;
 
     // Insert the rectangle objects into the tree.
     int value = 0;
     for (const auto& rect : rects)
         tree.insert({{rect.x, rect.y}, {rect.x + rect.w, rect.y + rect.h}}, value++);
+    //!code-end: insert
 
+    //!code-start: export
     // Export the tree structure as a SVG for visualization.
     std::string tree_svg = tree.export_tree(rt_type::export_tree_type::extent_as_svg);
     std::ofstream fout("bounds.svg");
     fout << tree_svg;
+    //!code-end: export
 
     return EXIT_SUCCESS;
 }
