@@ -2,6 +2,42 @@
 API Incompatibility Notes
 =========================
 
+v3.0
+----
+
+trie_map & packed_trie_map
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* The template parameter for the key type has been simplified such that the user
+  can now directly specify the key type as the first template argument.  Previously,
+  one would need to specify a rather complex key traits type whose design allowed
+  an internal key buffer that is different from the external key type.  But this
+  made the API much less intuitive especially when one wants to switch between
+  different key types.
+
+* ``trie_map::pack()`` method was previously a const method and would copy the
+  stored values and put the copies into the packed variant.  In 3.0, that ``const``
+  qualifier has been removed.  This is because this method now moves all stored
+  values into the packed variant if the value supports move construction.  If
+  one wants to preserve the original values, create a copy first then call
+  ``trie_map::pack()``.
+
+sorted_string_map
+^^^^^^^^^^^^^^^^^
+
+* The ``EntryT`` template parameter, which was previously used to define the
+  key-value entry type, has been removed.  This was used mostly to allow initialization
+  of key values as ``std::string_view`` type without breaking backward compatibility.
+  In 3.0, key values are always initialized as ``std::string_view`` type.
+
+segment_tree
+^^^^^^^^^^^^
+
+* Previous implementation was still in its experimental stage, and its usability
+  and API design was not on par with the other data structures in this library.
+  In 3.0, its API has been revamped to give it proper polish and acceptable
+  usability.
+
 v2.1
 ----
 
