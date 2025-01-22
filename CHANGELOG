@@ -1,3 +1,60 @@
+mdds 3.0.0
+
+* trie_map and packed_trie_map
+
+  * implemented equal (==) and non-equal (!=) operators in trie_map.  Previously
+    only packed_trie_map implemented these operators.
+
+  * added support for storing values that are only movable but not copyable.
+    Note that when using move-only values, the copy constructors do not work.
+    Also, due to this change, the trie_map::pack() method is no longer const; it
+    now moves the stored values into the packed variant.  If you need to
+    preserve the original values stored in the non-packed variant, make a copy
+    first before calling the trie_map::pack() method.
+
+  * simplified the template parameters so that the first template parameter
+    specifies the key type.
+
+  * revised value storage in packed_trie_map so that the size of the unit value
+    type of its internal buffer would not be forced to be the size of a pointer.
+    The user can now optionally specify a different-sized unsigned integer type
+    as the value type of the internal buffer.  This will benefit mostly when the
+    number of stored values is small so that a smaller-sized integer type can
+    sufficiently store all values.  In such cases, the size of the in-memory
+    buffer as well as the size of a state file will become smaller.
+
+  * implemented a method to allow traversal of the trie structure one node at a
+    time.  This can be done by first calling the root_node() method to retrieve
+    the root node of the trie then traverse through its child nodes.
+
+  * added overview section in the documentation.
+
+* segment_tree
+
+  * significantly revised its API design to give it necessary polish in order to
+    bring its usability to an acceptable level.
+
+  * added boundary_keys() method that returns a sorted sequence of boundary
+    keys.
+
+  * re-implemented the equal and non-equal operators to work with move-only
+    values.
+
+  * added documentation with code examples.
+
+* sorted_string_map
+
+  * EntryT template parameter has been removed which was previously used to
+    optionally allow defining keys in the entry array as std::string_view.
+    After the removal of the template parameter, keys in the entry array are
+    always defined as std::string_view.
+
+  * added find_key() method to perform reverse lookup of the key from a value,
+    with two lookup algorithms to choose from - linear search and hash-based
+    search.
+
+  * added documentation with code examples.
+
 mdds 2.1.1
 
 * flat_segment_tree
