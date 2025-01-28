@@ -37,6 +37,7 @@
 #include <map>
 #include <memory>
 #include <limits>
+#include <cstdint>
 
 namespace mdds {
 
