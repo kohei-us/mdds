@@ -38,6 +38,11 @@ segment_tree
   In 3.0, its API has been revamped to give it proper polish and acceptable
   usability.
 
+flat_segment_tree
+^^^^^^^^^^^^^^^^^
+
+* ``is_tree_valid()`` method has been renamed to ``valid_tree()``.
+
 v2.1
 ----
 
