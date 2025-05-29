@@ -41,9 +41,6 @@
 #if defined(MDDS_UNIT_TEST) || defined(MDDS_MULTI_TYPE_VECTOR_DEBUG)
 #include <iostream>
 #include <sstream>
-using std::cerr;
-using std::cout;
-using std::endl;
 #endif
 
 namespace mdds { namespace mtv {
