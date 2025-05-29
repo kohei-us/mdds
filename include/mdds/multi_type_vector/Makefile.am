@@ -6,6 +6,7 @@ headers_HEADERS = \
 	block_funcs.hpp \
 	collection_def.inl \
 	collection.hpp \
+	delayed_delete_vector.hpp \
 	env.hpp \
 	iterator_node.hpp \
 	macro.hpp \
