@@ -26,8 +26,7 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_TYPES_2_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_TYPES_2_HPP
+#pragma once
 
 #include "../global.hpp"
 #include "./types_util.hpp"
@@ -803,7 +802,5 @@ typename Blk::value_type get_block_element_at(const mdds::mtv::base_element_bloc
 } // namespace detail
 
 }} // namespace mdds::mtv
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
