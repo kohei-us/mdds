@@ -848,7 +848,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
 
 template<typename Traits>
 template<typename T>
-typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_back(const T& value)
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_back(T&& value)
 {
     MDDS_MTV_TRACE_ARGS(mutator, "value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
@@ -857,7 +857,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_bac
     dump_blocks(os_prev_block);
 #endif
 
-    auto ret = push_back_impl(value);
+    auto ret = push_back_impl(std::forward<T>(value));
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     try
@@ -983,7 +983,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert(
 
 template<typename Traits>
 template<typename T>
-typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_back_impl(const T& value)
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_back_impl(T&& value)
 {
     element_category_type cat = mdds_mtv_get_element_type(value);
     element_block_type* last_data =
@@ -997,7 +997,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_bac
         size_type start_pos = m_cur_size;
 
         m_block_store.push_back(start_pos, 1, nullptr);
-        create_new_block_with_new_cell(block_index, value);
+        create_new_block_with_new_cell(block_index, std::forward<T>(value));
         ++m_cur_size;
 
         return get_iterator(block_index);
@@ -1009,7 +1009,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_bac
     // Append the new value to the last block.
     size_type block_index = m_block_store.positions.size() - 1;
 
-    mdds_mtv_append_value(*last_data, value);
+    mdds_mtv_append_value(*last_data, std::forward<T>(value));
     ++m_block_store.sizes.back();
     ++m_cur_size;
 
@@ -3870,7 +3870,7 @@ typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::get_blo
 
 template<typename Traits>
 template<typename T>
-void multi_type_vector<Traits>::create_new_block_with_new_cell(size_type block_index, const T& cell)
+void multi_type_vector<Traits>::create_new_block_with_new_cell(size_type block_index, T&& cell)
 {
     element_block_type* data = m_block_store.element_blocks[block_index];
     if (data)
@@ -3879,14 +3879,15 @@ void multi_type_vector<Traits>::create_new_block_with_new_cell(size_type block_i
         block_funcs::delete_block(data);
     }
 
-    // New cell block with size 1.
-    data = mdds_mtv_create_new_block(1, cell);
+    // create an empty block
+    data = mdds_mtv_create_new_block(0, cell);
     if (!data)
         throw general_error("Failed to create new block.");
 
-    m_hdl_event.element_block_acquired(data);
-
     m_block_store.element_blocks[block_index] = data;
+
+    m_hdl_event.element_block_acquired(data);
+    mdds_mtv_append_value(*data, std::forward<T>(cell));
 }
 
 template<typename Traits>

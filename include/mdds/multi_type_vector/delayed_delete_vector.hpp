@@ -136,6 +136,11 @@ public:
         m_vec.push_back(value);
     }
 
+    void push_back(T&& value)
+    {
+        m_vec.push_back(std::move(value));
+    }
+
     iterator insert(iterator pos, const T& value)
     {
         return m_vec.insert(pos, value);

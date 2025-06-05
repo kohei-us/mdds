@@ -75,6 +75,11 @@
         block_type::append_value(block, val); \
     } \
 \
+    inline void mdds_mtv_append_value(mdds::mtv::base_element_block& block, type&& val) \
+    { \
+        block_type::append_value(block, std::move(val)); \
+    } \
+\
     inline void mdds_mtv_prepend_value(mdds::mtv::base_element_block& block, const type& val) \
     { \
         block_type::prepend_value(block, val); \

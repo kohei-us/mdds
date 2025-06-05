@@ -659,14 +659,21 @@ public:
     /**
      * Append a new value to the end of the container.
      *
-     * @param value new value to be appended to the end of the container.
+     * This method takes the value either as an lvalue or rvalue reference and
+     * moves the passed value into the final destination block if the value is
+     * passed as an rvalue reference.  Note, however, that the value may still
+     * be copied even if it is passed as an rvalue reference if the insertion
+     * triggers reallocation of the buffer in the destination block and the
+     * value type does not have a move constructor marked as noexcept.
+     *
+     * @param value New value to be appended to the end of the container.
      *
      * @return iterator position pointing to the block where the value is
      *         appended, which in this case is always the last block of the
      *         container.
      */
     template<typename T>
-    iterator push_back(const T& value);
+    iterator push_back(T&& value);
 
     /**
      * Append a new empty element to the end of the container.
@@ -1219,7 +1226,7 @@ private:
     iterator set_whole_block_empty(size_type block_index, bool overwrite);
 
     template<typename T>
-    iterator push_back_impl(const T& value);
+    iterator push_back_impl(T&& value);
 
     template<typename T>
     iterator set_cells_impl(
@@ -1268,7 +1275,7 @@ private:
     size_type get_block_position(const typename value_type::private_data& pos_data, size_type row) const;
 
     template<typename T>
-    void create_new_block_with_new_cell(size_type block_index, const T& cell);
+    void create_new_block_with_new_cell(size_type block_index, T&& cell);
 
     template<typename T>
     void append_cell_to_block(size_type block_index, const T& cell);

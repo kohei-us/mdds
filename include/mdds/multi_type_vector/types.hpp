@@ -362,9 +362,10 @@ public:
         return get(blk).m_array[pos];
     }
 
-    static void append_value(base_element_block& blk, const ValueT& val)
+    template<typename T = ValueT>
+    static void append_value(base_element_block& blk, T&& val)
     {
-        get(blk).m_array.push_back(val);
+        get(blk).m_array.push_back(std::forward<T>(val));
     }
 
     static void prepend_value(base_element_block& blk, const ValueT& val)
