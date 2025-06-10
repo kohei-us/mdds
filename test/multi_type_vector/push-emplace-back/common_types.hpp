@@ -30,11 +30,38 @@
 
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <mdds/multi_type_vector/types.hpp>
 #include <mdds/multi_type_vector/macro.hpp>
 #include <mdds/multi_type_vector/util.hpp>
 
-struct data_block {};
+struct data_block
+{
+    std::string value;
+
+    data_block() = default;
+
+    data_block(int v)
+    {
+        std::ostringstream os;
+        os << "int: " << v;
+        value = os.str();
+    }
+
+    data_block(float v)
+    {
+        std::ostringstream os;
+        os << "float: " << v;
+        value = os.str();
+    }
+
+    data_block(short a, short b)
+    {
+        std::ostringstream os;
+        os << "short+short: " << (a + b);
+        value = os.str();
+    }
+};
 
 class user_cell
 {
@@ -72,6 +99,21 @@ public:
         std::cout << "move constructor" << std::endl;
     }
 
+    user_cell(int v) : data(std::make_unique<data_block>(v))
+    {
+        std::cout << "int constructor" << std::endl;
+    }
+
+    user_cell(float v) : data(std::make_unique<data_block>(v))
+    {
+        std::cout << "float constructor" << std::endl;
+    }
+
+    user_cell(short a, short b) : data(std::make_unique<data_block>(a, b))
+    {
+        std::cout << "short-short constructor" << std::endl;
+    }
+
     user_cell& operator=(const user_cell& other)
     {
         std::cout << "copy assignment" << std::endl;
@@ -84,6 +126,11 @@ public:
         std::cout << "move assignment" << std::endl;
         data = std::move(other.data);
         return *this;
+    }
+
+    std::string_view get_value() const
+    {
+        return data->value;
     }
 };
 

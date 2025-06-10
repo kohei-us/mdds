@@ -78,4 +78,19 @@ void test_push_back_move()
     }
 }
 
+void test_emplace_back()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    mtv_type vec;
+    vec.emplace_back<user_cell>(int(12));
+    vec.emplace_back<user_cell>(float(-42));
+    vec.push_back_empty();
+    vec.emplace_back<user_cell>(short(18), short(12));
+
+    assert(vec.get<user_cell>(0).get_value() == "int: 12");
+    assert(vec.get<user_cell>(1).get_value() == "float: -42");
+    assert(vec.get<user_cell>(3).get_value() == "short+short: 30");
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

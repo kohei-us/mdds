@@ -141,6 +141,12 @@ public:
         m_vec.push_back(std::move(value));
     }
 
+    template<typename... Args>
+    void emplace_back(Args&&... args)
+    {
+        m_vec.emplace_back(std::forward<Args>(args)...);
+    }
+
     iterator insert(iterator pos, const T& value)
     {
         return m_vec.insert(pos, value);

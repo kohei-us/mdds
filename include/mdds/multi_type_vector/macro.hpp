@@ -80,6 +80,13 @@
         block_type::append_value(block, std::move(val)); \
     } \
 \
+    template<typename... Args> \
+    inline void mdds_mtv_emplace_back_value( \
+        mdds::mtv::base_element_block& block, const type&, Args&&... args) \
+    { \
+        block_type::emplace_back_value(block, std::forward<Args>(args)...); \
+    } \
+\
     inline void mdds_mtv_prepend_value(mdds::mtv::base_element_block& block, const type& val) \
     { \
         block_type::prepend_value(block, val); \

@@ -368,6 +368,12 @@ public:
         get(blk).m_array.push_back(std::forward<T>(val));
     }
 
+    template<typename... Args>
+    static void emplace_back_value(base_element_block& blk, Args&&... args)
+    {
+        get(blk).m_array.emplace_back(std::forward<Args>(args)...);
+    }
+
     static void prepend_value(base_element_block& blk, const ValueT& val)
     {
         store_type& blk2 = get(blk).m_array;

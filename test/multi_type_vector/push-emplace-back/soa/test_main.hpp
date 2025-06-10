@@ -35,6 +35,7 @@ using mtv_type = mdds::mtv::soa::multi_type_vector<user_traits>;
 
 void test_push_back_copy();
 void test_push_back_move();
+void test_emplace_back();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
 

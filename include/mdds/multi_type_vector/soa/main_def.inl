@@ -897,6 +897,37 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_bac
 }
 
 template<typename Traits>
+template<typename T, typename... Args>
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::emplace_back(Args&&... args)
+{
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = emplace_back_impl<T>(std::forward<Args>(args)...);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in emplace_back" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert(
     size_type pos, const T& it_begin, const T& it_end)
@@ -1010,6 +1041,41 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_bac
     size_type block_index = m_block_store.positions.size() - 1;
 
     mdds_mtv_append_value(*last_data, std::forward<T>(value));
+    ++m_block_store.sizes.back();
+    ++m_cur_size;
+
+    return get_iterator(block_index);
+}
+
+template<typename Traits>
+template<typename T, typename... Args>
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::emplace_back_impl(Args&&... args)
+{
+    element_category_type cat = mdds_mtv_get_element_type(T{});
+    element_block_type* last_data =
+        m_block_store.element_blocks.empty() ? nullptr : m_block_store.element_blocks.back();
+
+    if (!last_data || cat != get_block_type(*last_data))
+    {
+        // Either there is no block, or the last block is empty or of different
+        // type.  Append a new block.
+        size_type block_index = m_block_store.positions.size();
+        size_type start_pos = m_cur_size;
+
+        m_block_store.push_back(start_pos, 1, nullptr);
+        create_new_block_with_emplace_back(block_index, T{}, std::forward<Args>(args)...);
+        ++m_cur_size;
+
+        return get_iterator(block_index);
+    }
+
+    assert(last_data);
+    assert(cat == get_block_type(*last_data));
+
+    // Append the new value to the last block.
+    size_type block_index = m_block_store.positions.size() - 1;
+
+    mdds_mtv_emplace_back_value(*last_data, T{}, std::forward<Args>(args)...);
     ++m_block_store.sizes.back();
     ++m_cur_size;
 
@@ -3888,6 +3954,29 @@ void multi_type_vector<Traits>::create_new_block_with_new_cell(size_type block_i
 
     m_hdl_event.element_block_acquired(data);
     mdds_mtv_append_value(*data, std::forward<T>(cell));
+}
+
+template<typename Traits>
+template<typename T, typename... Args>
+void multi_type_vector<Traits>::create_new_block_with_emplace_back(
+    size_type block_index, const T&, Args&&... args)
+{
+    element_block_type* data = m_block_store.element_blocks[block_index];
+    if (data)
+    {
+        m_hdl_event.element_block_released(data);
+        block_funcs::delete_block(data);
+    }
+
+    // create an empty block
+    data = mdds_mtv_create_new_block(0, T{});
+    if (!data)
+        throw general_error("Failed to create new block.");
+
+    m_block_store.element_blocks[block_index] = data;
+
+    m_hdl_event.element_block_acquired(data);
+    mdds_mtv_emplace_back_value(*data, T{}, std::forward<Args>(args)...);
 }
 
 template<typename Traits>

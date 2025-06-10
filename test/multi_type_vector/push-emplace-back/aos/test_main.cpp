@@ -35,6 +35,7 @@ int main()
     {
         test_push_back_copy();
         test_push_back_move();
+        test_emplace_back();
     }
     catch (const std::exception& e)
     {

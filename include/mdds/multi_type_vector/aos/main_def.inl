@@ -704,6 +704,37 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_bac
 }
 
 template<typename Traits>
+template<typename T, typename... Args>
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::emplace_back(Args&&... args)
+{
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    std::ostringstream os_prev_block;
+    dump_blocks(os_prev_block);
+#endif
+
+    auto ret = emplace_back_impl<T>(std::forward<Args>(args)...);
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in emplace_back" << std::endl;
+        os << "previous block state:" << std::endl;
+        os << os_prev_block.str();
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+#endif
+
+    return ret;
+}
+
+template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_back_impl(T&& value)
 {
@@ -732,6 +763,41 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_bac
     size_type block_index = m_blocks.size() - 1;
 
     mdds_mtv_append_value(*blk_last->data, std::forward<T>(value));
+    ++blk_last->size;
+    ++m_cur_size;
+
+    return get_iterator(block_index);
+}
+
+template<typename Traits>
+template<typename T, typename... Args>
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::emplace_back_impl(Args&&... args)
+{
+    element_category_type cat = mdds_mtv_get_element_type(T{});
+
+    block* blk_last = m_blocks.empty() ? nullptr : &m_blocks.back();
+    if (!blk_last || !blk_last->data || cat != get_block_type(*blk_last->data))
+    {
+        // Either there is no block, or the last block is empty or of
+        // different type.  Append a new block.
+        size_type block_index = m_blocks.size();
+        size_type start_pos = m_cur_size;
+
+        m_blocks.emplace_back(start_pos, 1);
+        create_new_block_with_emplace_back(m_blocks.back().data, T{}, std::forward<Args>(args)...);
+        ++m_cur_size;
+
+        return get_iterator(block_index);
+    }
+
+    assert(blk_last);
+    assert(blk_last->data);
+    assert(cat == get_block_type(*blk_last->data));
+
+    // Append the new value to the last block.
+    size_type block_index = m_blocks.size() - 1;
+
+    mdds_mtv_emplace_back_value(*blk_last->data, T{}, std::forward<Args>(args)...);
     ++blk_last->size;
     ++m_cur_size;
 
@@ -911,6 +977,26 @@ void multi_type_vector<Traits>::create_new_block_with_new_cell(element_block_typ
 
     m_hdl_event.element_block_acquired(data);
     mdds_mtv_append_value(*data, std::forward<T>(cell));
+}
+
+template<typename Traits>
+template<typename T, typename... Args>
+void multi_type_vector<Traits>::create_new_block_with_emplace_back(
+    element_block_type*& data, const T&, Args&&... args)
+{
+    if (data)
+    {
+        m_hdl_event.element_block_released(data);
+        block_funcs::delete_block(data);
+    }
+
+    // create an empty block
+    data = mdds_mtv_create_new_block(0, T{});
+    if (!data)
+        throw general_error("Failed to create new block.");
+
+    m_hdl_event.element_block_acquired(data);
+    mdds_mtv_emplace_back_value(*data, T{}, std::forward<Args>(args)...);
 }
 
 template<typename Traits>
@@ -4741,14 +4827,14 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empt
 template<typename Traits>
 void multi_type_vector<Traits>::dump_blocks(std::ostream& os) const
 {
-    os << "--- blocks" << endl;
+    os << "--- blocks" << std::endl;
     for (size_type i = 0, n = m_blocks.size(); i < n; ++i)
     {
         const block* blk = &m_blocks[i];
         element_category_type cat = mtv::element_type_empty;
         if (blk->data)
             cat = mtv::get_block_type(*blk->data);
-        os << "  block " << i << ": position=" << blk->position << " size=" << blk->size << " type=" << cat << endl;
+        os << "  block " << i << ": position=" << blk->position << " size=" << blk->size << " type=" << cat << std::endl;
     }
 }
 

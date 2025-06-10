@@ -501,6 +501,9 @@ public:
      */
     iterator push_back_empty();
 
+    template<typename T, typename... Args>
+    iterator emplace_back(Args&&... args);
+
     /**
      * Insert multiple values of identical type to a specified position.
      * Existing values that occur at or below the specified position will get
@@ -1091,6 +1094,9 @@ private:
     template<typename T>
     iterator push_back_impl(T&& value);
 
+    template<typename T, typename... Args>
+    iterator emplace_back_impl(Args&&... args);
+
     /**
      * Find the correct block position for a given logical row ID.
      *
@@ -1112,6 +1118,9 @@ private:
 
     template<typename T>
     void create_new_block_with_new_cell(element_block_type*& data, T&& cell);
+
+    template<typename T, typename... Args>
+    void create_new_block_with_emplace_back(element_block_type*& data, const T&, Args&&... args);
 
     template<typename T>
     iterator set_cell_to_middle_of_block(size_type block_index, size_type pos_in_block, const T& cell);

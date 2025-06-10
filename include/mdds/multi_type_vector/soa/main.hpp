@@ -684,6 +684,9 @@ public:
      */
     iterator push_back_empty();
 
+    template<typename T, typename... Args>
+    iterator emplace_back(Args&&... args);
+
     /**
      * Insert multiple values of identical type to a specified position.
      * Existing values that occur at or below the specified position will get
@@ -1228,6 +1231,9 @@ private:
     template<typename T>
     iterator push_back_impl(T&& value);
 
+    template<typename T, typename... Args>
+    iterator emplace_back_impl(Args&&... args);
+
     template<typename T>
     iterator set_cells_impl(
         size_type row, size_type end_row, size_type block_index1, const T& it_begin, const T& it_end);
@@ -1276,6 +1282,9 @@ private:
 
     template<typename T>
     void create_new_block_with_new_cell(size_type block_index, T&& cell);
+
+    template<typename T, typename... Args>
+    void create_new_block_with_emplace_back(size_type block_index, const T&, Args&&... args);
 
     template<typename T>
     void append_cell_to_block(size_type block_index, const T& cell);
