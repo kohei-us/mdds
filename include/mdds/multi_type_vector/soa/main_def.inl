@@ -1051,7 +1051,8 @@ template<typename Traits>
 template<typename T, typename... Args>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::emplace_back_impl(Args&&... args)
 {
-    element_category_type cat = mdds_mtv_get_element_type(T{});
+    T t{};
+    element_category_type cat = mdds_mtv_get_element_type(t);
     element_block_type* last_data =
         m_block_store.element_blocks.empty() ? nullptr : m_block_store.element_blocks.back();
 
@@ -1063,7 +1064,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::emplace_
         size_type start_pos = m_cur_size;
 
         m_block_store.push_back(start_pos, 1, nullptr);
-        create_new_block_with_emplace_back(block_index, T{}, std::forward<Args>(args)...);
+        create_new_block_with_emplace_back(block_index, t, std::forward<Args>(args)...);
         ++m_cur_size;
 
         return get_iterator(block_index);
@@ -1075,7 +1076,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::emplace_
     // Append the new value to the last block.
     size_type block_index = m_block_store.positions.size() - 1;
 
-    mdds_mtv_emplace_back_value(*last_data, T{}, std::forward<Args>(args)...);
+    mdds_mtv_emplace_back_value(*last_data, t, std::forward<Args>(args)...);
     ++m_block_store.sizes.back();
     ++m_cur_size;
 
@@ -3959,7 +3960,7 @@ void multi_type_vector<Traits>::create_new_block_with_new_cell(size_type block_i
 template<typename Traits>
 template<typename T, typename... Args>
 void multi_type_vector<Traits>::create_new_block_with_emplace_back(
-    size_type block_index, const T&, Args&&... args)
+    size_type block_index, const T& t, Args&&... args)
 {
     element_block_type* data = m_block_store.element_blocks[block_index];
     if (data)
@@ -3969,14 +3970,14 @@ void multi_type_vector<Traits>::create_new_block_with_emplace_back(
     }
 
     // create an empty block
-    data = mdds_mtv_create_new_block(0, T{});
+    data = mdds_mtv_create_new_block(0, t);
     if (!data)
         throw general_error("Failed to create new block.");
 
     m_block_store.element_blocks[block_index] = data;
 
     m_hdl_event.element_block_acquired(data);
-    mdds_mtv_emplace_back_value(*data, T{}, std::forward<Args>(args)...);
+    mdds_mtv_emplace_back_value(*data, t, std::forward<Args>(args)...);
 }
 
 template<typename Traits>

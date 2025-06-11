@@ -1120,7 +1120,7 @@ private:
     void create_new_block_with_new_cell(element_block_type*& data, T&& cell);
 
     template<typename T, typename... Args>
-    void create_new_block_with_emplace_back(element_block_type*& data, const T&, Args&&... args);
+    void create_new_block_with_emplace_back(element_block_type*& data, const T& t, Args&&... args);
 
     template<typename T>
     iterator set_cell_to_middle_of_block(size_type block_index, size_type pos_in_block, const T& cell);

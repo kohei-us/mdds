@@ -1284,7 +1284,7 @@ private:
     void create_new_block_with_new_cell(size_type block_index, T&& cell);
 
     template<typename T, typename... Args>
-    void create_new_block_with_emplace_back(size_type block_index, const T&, Args&&... args);
+    void create_new_block_with_emplace_back(size_type block_index, const T& t, Args&&... args);
 
     template<typename T>
     void append_cell_to_block(size_type block_index, const T& cell);
