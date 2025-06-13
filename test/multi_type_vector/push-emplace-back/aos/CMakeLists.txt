@@ -8,6 +8,7 @@ add_executable(${TARGET_NAME} EXCLUDE_FROM_ALL
 
 target_link_libraries(${TARGET_NAME} PUBLIC test-global)
 target_include_directories(${TARGET_NAME} PUBLIC
+    ..
     ../tc
     ../../../include
 )
