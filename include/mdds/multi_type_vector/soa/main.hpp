@@ -660,7 +660,7 @@ public:
      * Append a new value to the end of the container.
      *
      * This method takes the value either as an lvalue or rvalue reference and
-     * moves the passed value into the final destination block if the value is
+     * moves the passed value into the destination element block if the value is
      * passed as an rvalue reference.  Note, however, that the value may still
      * be copied even if it is passed as an rvalue reference if the insertion
      * triggers reallocation of the buffer in the destination block and the
@@ -684,6 +684,23 @@ public:
      */
     iterator push_back_empty();
 
+    /**
+     * Append a new element to the end of the container.
+     *
+     * The new element is constructed by using the `emplace_back()` method of
+     * the destination element block, and the arguments `args` are forwarded to
+     * it via `std::forward<Args>(args)...`.
+     *
+     * @param args Arguments to forward to the `emplace_back()` method of the
+     *             destination element block.
+     *
+     * @return Iterator position pointing to the block where the value is
+     *         appended, which in this case is always the last block of the
+     *         container.
+     *
+     * @note Due to the limitation of the current implementation, this method
+     *       requires the value type `T` to be default-constructible.
+     */
     template<typename T, typename... Args>
     iterator emplace_back(Args&&... args);
 
