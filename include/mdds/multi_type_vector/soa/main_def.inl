@@ -3959,8 +3959,7 @@ void multi_type_vector<Traits>::create_new_block_with_new_cell(size_type block_i
 
 template<typename Traits>
 template<typename T, typename... Args>
-void multi_type_vector<Traits>::create_new_block_with_emplace_back(
-    size_type block_index, const T& t, Args&&... args)
+void multi_type_vector<Traits>::create_new_block_with_emplace_back(size_type block_index, const T& t, Args&&... args)
 {
     element_block_type* data = m_block_store.element_blocks[block_index];
     if (data)

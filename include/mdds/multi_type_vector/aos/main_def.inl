@@ -4835,7 +4835,8 @@ void multi_type_vector<Traits>::dump_blocks(std::ostream& os) const
         element_category_type cat = mtv::element_type_empty;
         if (blk->data)
             cat = mtv::get_block_type(*blk->data);
-        os << "  block " << i << ": position=" << blk->position << " size=" << blk->size << " type=" << cat << std::endl;
+        os << "  block " << i << ": position=" << blk->position << " size=" << blk->size << " type=" << cat
+           << std::endl;
     }
 }
 

@@ -40,4 +40,3 @@ void test_push_back_move();
 void test_emplace_back();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
-

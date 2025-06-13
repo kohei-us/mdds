@@ -79,7 +79,8 @@ public:
 
     static void print_counters()
     {
-        std::cout << "user_cell: copy count=" << user_cell::copy_count << "; move count=" << user_cell::move_count << std::endl;
+        std::cout << "user_cell: copy count=" << user_cell::copy_count << "; move count=" << user_cell::move_count
+                  << std::endl;
     }
 
     user_cell() : data(std::make_unique<data_block>())
