@@ -44,6 +44,16 @@
 #include <iostream>
 #include <sstream>
 
+#define TEST_ASSERT(condition) \
+    do { \
+        if (!(condition)) { \
+            std::cerr << "Assertion failed: " << #condition \
+                      << ", file " << __FILE__ \
+                      << ", line " << __LINE__ << std::endl; \
+            std::abort(); \
+        } \
+    } while (false)
+
 struct cmd_options
 {
     bool test_func;
