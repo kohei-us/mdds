@@ -37,7 +37,9 @@ void test_push_back_copy()
     const user_cell& vref = v;
 
     // first push_back() call should trigger 1 copy and 0 moves
-    vec.push_back(vref);
+    auto it = vec.push_back(vref);
+    assert(it == std::prev(vec.end()));
+
     user_cell::print_counters();
     assert(user_cell::copy_count == 1);
     assert(!user_cell::move_count);
@@ -45,7 +47,8 @@ void test_push_back_copy()
     // second push_back() call should trigger another copy, it also may cause
     // one move due to reallocation of the buffer in the destination storage,
     // so we don't check the move counter.
-    vec.push_back(vref);
+    it = vec.push_back(vref);
+    assert(it == std::prev(vec.end()));
     user_cell::print_counters();
     assert(user_cell::copy_count == 2);
 }
@@ -60,7 +63,9 @@ void test_push_back_move()
     {
         // first push_back() call should trigger 0 copies and 1 move
         user_cell v;
-        vec.push_back(std::move(v));
+        auto it = vec.push_back(std::move(v));
+        assert(it == std::prev(vec.end()));
+
         user_cell::print_counters();
         assert(!user_cell::copy_count);
         assert(user_cell::move_count == 1);
@@ -71,7 +76,8 @@ void test_push_back_move()
         // move than 2 moves due to buffer reallocation of the destination
         // storage
         user_cell v;
-        vec.push_back(std::move(v));
+        auto it = vec.push_back(std::move(v));
+        assert(it == std::prev(vec.end()));
         user_cell::print_counters();
         assert(!user_cell::copy_count);
         assert(user_cell::move_count >= 2);
@@ -83,10 +89,16 @@ void test_emplace_back()
     MDDS_TEST_FUNC_SCOPE;
 
     mtv_type vec;
-    vec.emplace_back<user_cell>(int(12));
-    vec.emplace_back<user_cell>(float(-42));
+    auto it = vec.emplace_back<user_cell>(int(12));
+    assert(it == std::prev(vec.end()));
+
+    it = vec.emplace_back<user_cell>(float(-42));
+    assert(it == std::prev(vec.end()));
+
     vec.push_back_empty();
-    vec.emplace_back<user_cell>(short(18), short(12));
+
+    it = vec.emplace_back<user_cell>(short(18), short(12));
+    assert(it == std::prev(vec.end()));
 
     assert(vec.get<user_cell>(0).get_value() == "int: 12");
     assert(vec.get<user_cell>(1).get_value() == "float: -42");

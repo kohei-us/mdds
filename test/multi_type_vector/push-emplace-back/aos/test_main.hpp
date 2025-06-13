@@ -29,6 +29,8 @@
 #pragma once
 
 #include "common_types.hpp"
+
+#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
 #include <mdds/multi_type_vector/aos/main.hpp>
 
 using mtv_type = mdds::mtv::aos::multi_type_vector<user_traits>;
