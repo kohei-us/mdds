@@ -73,32 +73,32 @@ void st_test_move_constructor()
     db_type db_moved(std::move(db));
 
     {
-        assert(db_moved.valid_tree());
-        assert(db_moved.size() == 3);
+        TEST_ASSERT(db_moved.valid_tree());
+        TEST_ASSERT(db_moved.size() == 3);
 
         auto results = db_moved.search(19);
-        assert(results.size() == 1);
+        TEST_ASSERT(results.size() == 1);
         const auto& v = *results.begin();
-        assert(v.start == 5);
-        assert(v.end == 20);
-        assert(v.value == "5:20");
-        assert(std::next(results.begin()) == results.end());
+        TEST_ASSERT(v.start == 5);
+        TEST_ASSERT(v.end == 20);
+        TEST_ASSERT(v.value == "5:20");
+        TEST_ASSERT(std::next(results.begin()) == results.end());
     }
 
     db_type db_assigned;
     db_assigned = std::move(db_moved); // move assignment
 
     {
-        assert(db_assigned.valid_tree());
-        assert(db_assigned.size() == 3);
+        TEST_ASSERT(db_assigned.valid_tree());
+        TEST_ASSERT(db_assigned.size() == 3);
 
         auto results = db_assigned.search(19);
-        assert(results.size() == 1);
+        TEST_ASSERT(results.size() == 1);
         const auto& v = *results.begin();
-        assert(v.start == 5);
-        assert(v.end == 20);
-        assert(v.value == "5:20");
-        assert(std::next(results.begin()) == results.end());
+        TEST_ASSERT(v.start == 5);
+        TEST_ASSERT(v.end == 20);
+        TEST_ASSERT(v.value == "5:20");
+        TEST_ASSERT(std::next(results.begin()) == results.end());
     }
 }
 
@@ -118,25 +118,25 @@ void st_test_move_equality()
     db2.insert(5, 20, "5:20");
     db2.insert(6, 15, "6:15");
 
-    assert(db1 == db2);
+    TEST_ASSERT(db1 == db2);
 
     db2.insert(8, 22, "8:22");
-    assert(db1 != db2);
+    TEST_ASSERT(db1 != db2);
 
     db1.insert(8, 22, "8:22");
-    assert(db1 == db2);
+    TEST_ASSERT(db1 == db2);
 
     db1.erase_if([](float, float, const move_data& v) { return v.value == "-2:10"; });
-    assert(db1 != db2);
+    TEST_ASSERT(db1 != db2);
 
     db2.erase_if([](float, float, const move_data& v) { return v.value == "-2:10"; });
-    assert(db1 == db2);
+    TEST_ASSERT(db1 == db2);
 
     db1.build_tree();
-    assert(db1 != db2);
+    TEST_ASSERT(db1 != db2);
 
     db2.build_tree();
-    assert(db1 == db2);
+    TEST_ASSERT(db1 == db2);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

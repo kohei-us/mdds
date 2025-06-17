@@ -223,12 +223,12 @@ void st_test_insert_search_removal()
     value_type A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G");
 
     build_and_dump(db);
-    assert(db_type::node::get_instance_count() == 0);
+    TEST_ASSERT(db_type::node::get_instance_count() == 0);
 
     db.insert(0, 10, &A);
     build_and_dump(db);
     {
-        assert(db_type::node::get_instance_count() == db.leaf_size());
+        TEST_ASSERT(db_type::node::get_instance_count() == db.leaf_size());
 
         db_type::integrity_check_properties props;
         // clang-format off
@@ -239,13 +239,13 @@ void st_test_insert_search_removal()
         };
         // clang-format on
 
-        assert(check_integrity(db, props));
+        TEST_ASSERT(check_integrity(db, props));
     }
 
     db.insert(0, 5, &B);
     build_and_dump(db);
     {
-        assert(db_type::node::get_instance_count() == db.leaf_size());
+        TEST_ASSERT(db_type::node::get_instance_count() == db.leaf_size());
 
         db_type::integrity_check_properties props;
         // clang-format off
@@ -257,13 +257,13 @@ void st_test_insert_search_removal()
         };
         // clang-format on
 
-        assert(check_integrity(db, props));
+        TEST_ASSERT(check_integrity(db, props));
     }
 
     db.insert(5, 12, &C);
     build_and_dump(db);
     {
-        assert(db_type::node::get_instance_count() == db.leaf_size());
+        TEST_ASSERT(db_type::node::get_instance_count() == db.leaf_size());
 
         db_type::integrity_check_properties props;
         // clang-format off
@@ -276,13 +276,13 @@ void st_test_insert_search_removal()
         };
         // clang-format on
 
-        assert(check_integrity(db, props));
+        TEST_ASSERT(check_integrity(db, props));
     }
 
     db.insert(10, 24, &D);
     build_and_dump(db);
     {
-        assert(db_type::node::get_instance_count() == db.leaf_size());
+        TEST_ASSERT(db_type::node::get_instance_count() == db.leaf_size());
 
         db_type::integrity_check_properties props;
         // clang-format off
@@ -296,13 +296,13 @@ void st_test_insert_search_removal()
         };
         // clang-format on
 
-        assert(check_integrity(db, props));
+        TEST_ASSERT(check_integrity(db, props));
     }
 
     db.insert(4, 24, &E);
     build_and_dump(db);
     {
-        assert(db_type::node::get_instance_count() == db.leaf_size());
+        TEST_ASSERT(db_type::node::get_instance_count() == db.leaf_size());
 
         db_type::integrity_check_properties props;
         // clang-format off
@@ -317,13 +317,13 @@ void st_test_insert_search_removal()
         };
         // clang-format on
 
-        assert(check_integrity(db, props));
+        TEST_ASSERT(check_integrity(db, props));
     }
 
     db.insert(0, 26, &F);
     build_and_dump(db);
     {
-        assert(db_type::node::get_instance_count() == db.leaf_size());
+        TEST_ASSERT(db_type::node::get_instance_count() == db.leaf_size());
 
         db_type::integrity_check_properties props;
         // clang-format off
@@ -339,13 +339,13 @@ void st_test_insert_search_removal()
         };
         // clang-format on
 
-        assert(check_integrity(db, props));
+        TEST_ASSERT(check_integrity(db, props));
     }
 
     db.insert(12, 26, &G);
     build_and_dump(db);
     {
-        assert(db_type::node::get_instance_count() == db.leaf_size());
+        TEST_ASSERT(db_type::node::get_instance_count() == db.leaf_size());
 
         db_type::integrity_check_properties props;
         // clang-format off
@@ -361,7 +361,7 @@ void st_test_insert_search_removal()
         };
         // clang-format on
 
-        assert(check_integrity(db, props));
+        TEST_ASSERT(check_integrity(db, props));
     }
 
     // Search tests.  Test boundary cases.
@@ -379,55 +379,55 @@ void st_test_insert_search_removal()
     {
         key_type key = -1;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 0;
         value_type* expected[] = {&A, &B, &F, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 4;
         value_type* expected[] = {&A, &B, &E, &F, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 5;
         value_type* expected[] = {&A, &C, &E, &F, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 10;
         value_type* expected[] = {&C, &D, &E, &F, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 12;
         value_type* expected[] = {&D, &E, &F, &G, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 24;
         value_type* expected[] = {&F, &G, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 30;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 9999;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     // Remove E, F and G and check search results.
@@ -435,7 +435,7 @@ void st_test_insert_search_removal()
     {
         auto count_before = db.size();
         auto res = db.search(10);
-        assert(!res.empty());
+        TEST_ASSERT(!res.empty());
         bool erased = false;
         for (auto it = res.begin(); it != res.end(); ++it)
         {
@@ -446,14 +446,14 @@ void st_test_insert_search_removal()
                 break;
             }
         }
-        assert(erased);
-        assert(db.size() == count_before - 1);
+        TEST_ASSERT(erased);
+        TEST_ASSERT(db.size() == count_before - 1);
     }
 
     {
         auto count_before = db.size();
         auto res = db.search(10);
-        assert(!res.empty());
+        TEST_ASSERT(!res.empty());
         bool erased = false;
         for (auto it = res.begin(); it != res.end(); ++it)
         {
@@ -464,14 +464,14 @@ void st_test_insert_search_removal()
                 break;
             }
         }
-        assert(erased);
-        assert(db.size() == count_before - 1);
+        TEST_ASSERT(erased);
+        TEST_ASSERT(db.size() == count_before - 1);
     }
 
     {
         auto count_before = db.size();
         auto res = db.search(20);
-        assert(!res.empty());
+        TEST_ASSERT(!res.empty());
         bool erased = false;
         for (auto it = res.begin(); it != res.end(); ++it)
         {
@@ -482,8 +482,8 @@ void st_test_insert_search_removal()
                 break;
             }
         }
-        assert(erased);
-        assert(db.size() == count_before - 1);
+        TEST_ASSERT(erased);
+        TEST_ASSERT(db.size() == count_before - 1);
     }
 
     cout << "removed: E F G" << endl;
@@ -501,55 +501,55 @@ void st_test_insert_search_removal()
     {
         key_type key = -1;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 0;
         value_type* expected[] = {&A, &B, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 4;
         value_type* expected[] = {&A, &B, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 5;
         value_type* expected[] = {&A, &C, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 10;
         value_type* expected[] = {&C, &D, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 12;
         value_type* expected[] = {&D, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 24;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 30;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 9999;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     // Re-build the tree and check the search results once again, to make sure
@@ -561,49 +561,49 @@ void st_test_insert_search_removal()
     {
         key_type key = -1;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 0;
         value_type* expected[] = {&A, &B, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 4;
         value_type* expected[] = {&A, &B, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 5;
         value_type* expected[] = {&A, &C, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 10;
         value_type* expected[] = {&C, &D, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 12;
         value_type* expected[] = {&D, 0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 24;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 
     {
         key_type key = 30;
         value_type* expected[] = {0};
-        assert(check_search_result(db, key, expected));
+        TEST_ASSERT(check_search_result(db, key, expected));
     }
 }
 
@@ -617,7 +617,7 @@ void st_test_invalid_insertion()
     try
     {
         db.insert(2, 1, "some value");
-        assert(!"exception didn't get thrown!");
+        TEST_ASSERT(!"exception didn't get thrown!");
     }
     catch (const std::invalid_argument&)
     {
@@ -625,7 +625,7 @@ void st_test_invalid_insertion()
     }
     catch (...)
     {
-        assert(!"wrong exception caught");
+        TEST_ASSERT(!"wrong exception caught");
     }
 }
 
@@ -658,25 +658,25 @@ void st_test_copy_constructor()
     db_type db_copied(db);
     cout << "--" << endl;
     cout << db_copied.to_string() << endl;
-    assert(db.valid_tree() == db_copied.valid_tree());
-    assert(db == db_copied);
+    TEST_ASSERT(db.valid_tree() == db_copied.valid_tree());
+    TEST_ASSERT(db == db_copied);
 
     db_type db_assigned;
     db_assigned = db_copied; // copy assignment
-    assert(db_assigned.valid_tree() == db_copied.valid_tree());
-    assert(db_assigned == db_copied);
+    TEST_ASSERT(db_assigned.valid_tree() == db_copied.valid_tree());
+    TEST_ASSERT(db_assigned == db_copied);
 
     // Copy after the tree is built.
     db.build_tree();
     db_type db_copied_tree(db);
     cout << "--" << endl;
     cout << db_copied_tree.to_string() << endl;
-    assert(db.valid_tree() == db_copied_tree.valid_tree());
-    assert(db == db_copied_tree);
+    TEST_ASSERT(db.valid_tree() == db_copied_tree.valid_tree());
+    TEST_ASSERT(db == db_copied_tree);
 
     db_assigned = db_copied_tree; // copy assignment
-    assert(db_assigned.valid_tree() == db_copied_tree.valid_tree());
-    assert(db_assigned == db_copied_tree);
+    TEST_ASSERT(db_assigned.valid_tree() == db_copied_tree.valid_tree());
+    TEST_ASSERT(db_assigned == db_copied_tree);
 }
 
 void st_test_equality()
@@ -692,46 +692,46 @@ void st_test_equality()
         db_type db1, db2;
         db1.insert(0, 10, &A);
         db2.insert(0, 10, &A);
-        assert(db1 == db2);
+        TEST_ASSERT(db1 == db2);
         db2.insert(5, 12, &B);
-        assert(db1 != db2);
+        TEST_ASSERT(db1 != db2);
         db1.insert(5, 12, &C);
-        assert(db1 != db2);
+        TEST_ASSERT(db1 != db2);
         auto n_removed = db1.erase_if([&C](key_type, key_type, const auto& value) { return value == &C; });
-        assert(n_removed == 1);
+        TEST_ASSERT(n_removed == 1);
         n_removed = db2.erase_if([&B](key_type, key_type, const auto& value) { return value == &B; });
-        assert(n_removed == 1);
-        assert(db1 == db2);
+        TEST_ASSERT(n_removed == 1);
+        TEST_ASSERT(db1 == db2);
         db1.insert(4, 20, &D);
         db2.insert(4, 20, &D);
-        assert(db1 == db2);
+        TEST_ASSERT(db1 == db2);
         db1.insert(3, 12, &E);
         db2.insert(3, 15, &E);
-        assert(db1 != db2);
+        TEST_ASSERT(db1 != db2);
     }
 
     {
         // different insertion orders
         db_type db1, db2;
-        assert(db1 == db2);
+        TEST_ASSERT(db1 == db2);
         db1.insert(0, 10, &A);
         db1.insert(10, 20, &B);
         db2.insert(10, 20, &B);
         db2.insert(0, 10, &A);
-        assert(db1 == db2);
+        TEST_ASSERT(db1 == db2);
     }
 
     {
         // one contains a deleted segment
         db_type db1, db2;
         db1.insert(0, 10, &C);
-        assert(!db1.empty());
-        assert(db2.empty());
-        assert(db1 != db2);
+        TEST_ASSERT(!db1.empty());
+        TEST_ASSERT(db2.empty());
+        TEST_ASSERT(db1 != db2);
         db1.erase_if([](key_type start, key_type, const auto&) { return start == 0; });
-        assert(db1 == db2);
-        assert(db1.empty());
-        assert(db2.empty());
+        TEST_ASSERT(db1 == db2);
+        TEST_ASSERT(db1.empty());
+        TEST_ASSERT(db2.empty());
     }
 }
 
@@ -760,25 +760,25 @@ void st_test_clear()
     for (size_t i = 0; segments[i].value; ++i)
         db.insert(segments[i].begin_key, segments[i].end_key, segments[i].value);
 
-    assert(!db.empty());
-    assert(db.size() == 7);
+    TEST_ASSERT(!db.empty());
+    TEST_ASSERT(db.size() == 7);
     cout << "size of db is " << db.size() << endl;
 
     db.clear();
-    assert(db.empty());
-    assert(db.size() == 0);
+    TEST_ASSERT(db.empty());
+    TEST_ASSERT(db.size() == 0);
 
     // Insert the same data set once again, but this time build tree afterwards.
     for (size_t i = 0; segments[i].value; ++i)
         db.insert(segments[i].begin_key, segments[i].end_key, segments[i].value);
 
     db.build_tree();
-    assert(!db.empty());
-    assert(db.size() == 7);
+    TEST_ASSERT(!db.empty());
+    TEST_ASSERT(db.size() == 7);
 
     db.clear();
-    assert(db.empty());
-    assert(db.size() == 0);
+    TEST_ASSERT(db.empty());
+    TEST_ASSERT(db.size() == 0);
 }
 
 void st_test_duplicate_insertion()
@@ -796,16 +796,16 @@ void st_test_duplicate_insertion()
     db.insert(0, 10, &A); // duplicate segments are allowed
     db.insert(2, 30, &A);
     db.insert(0, 10, &B);
-    assert(db.size() == 4);
+    TEST_ASSERT(db.size() == 4);
     auto n_removed = db.erase_if(
         [&A](key_type start, key_type end, const auto& value) { return start == 0 && end == 10 && value == &A; });
-    assert(n_removed == 2);
-    assert(db.size() == 2);
+    TEST_ASSERT(n_removed == 2);
+    TEST_ASSERT(db.size() == 2);
     db.insert(2, 30, &A);
-    assert(db.size() == 3);
+    TEST_ASSERT(db.size() == 3);
     build_and_dump(db);
-    assert(db.size() == 3);
-    assert(db.leaf_size() == 4); // 0, 2, 10, 30
+    TEST_ASSERT(db.size() == 3);
+    TEST_ASSERT(db.leaf_size() == 4); // 0, 2, 10, 30
 }
 
 /**
@@ -831,7 +831,7 @@ void st_test_search_on_uneven_tree()
             os << std::hex << std::showbase << i;
             data_store.emplace_back(new test_data(os.str()));
         }
-        assert(data_store.size() == static_cast<size_t>(data_count));
+        TEST_ASSERT(data_store.size() == static_cast<size_t>(data_count));
 
         db_type db;
         for (key_type i = 0; i < data_count; ++i)
@@ -839,7 +839,7 @@ void st_test_search_on_uneven_tree()
             test_data* p = data_store[i].get();
             db.insert(0, i + 1, p);
         }
-        assert(db.size() == static_cast<size_t>(data_count));
+        TEST_ASSERT(db.size() == static_cast<size_t>(data_count));
 
         db.build_tree();
 
@@ -876,7 +876,7 @@ void st_test_perf_insertion()
             data_store.emplace_back(new test_data(os.str()));
         }
     }
-    assert(data_store.size() == data_count);
+    TEST_ASSERT(data_store.size() == data_count);
 
     db_type db;
     {
@@ -887,23 +887,23 @@ void st_test_perf_insertion()
             db.insert(0, i + 1, p);
         }
     }
-    assert(db.size() == data_count);
+    TEST_ASSERT(db.size() == data_count);
 
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: build tree");
         db.build_tree();
     }
-    assert(db.valid_tree());
+    TEST_ASSERT(db.valid_tree());
 
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: 200 searches with max results");
         for (key_type i = 0; i < 200; ++i)
         {
             auto results = db.search(0);
-            assert(results.size() == data_count);
+            TEST_ASSERT(results.size() == data_count);
             auto it = results.begin();
             ++it;
-            assert(it->value);
+            TEST_ASSERT(it->value);
         }
     }
 
@@ -912,10 +912,10 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 200; ++i)
         {
             auto results = db.search(data_count / 2);
-            assert(results.size() == data_count / 2);
+            TEST_ASSERT(results.size() == data_count / 2);
             auto it = results.begin();
             ++it;
-            assert(it->value);
+            TEST_ASSERT(it->value);
         }
     }
 
@@ -924,8 +924,8 @@ void st_test_perf_insertion()
         for (key_type i = 0; i < 200; ++i)
         {
             auto results = db.search(data_count);
-            assert(results.size() == 0);
-            assert(results.begin() == results.end());
+            TEST_ASSERT(results.size() == 0);
+            TEST_ASSERT(results.begin() == results.end());
         }
     }
 
@@ -938,7 +938,7 @@ void st_test_perf_insertion()
             db_copy.erase_if([p](key_type, key_type, const auto& value) { return value == p; });
         }
     }
-    assert(db.size() == data_count);
+    TEST_ASSERT(db.size() == data_count);
 
     {
         auto db_copy = db;
@@ -949,7 +949,7 @@ void st_test_perf_insertion()
             db_copy.erase_if([p](key_type, key_type, const auto& value) { return value == p; });
         }
     }
-    assert(db.size() == data_count);
+    TEST_ASSERT(db.size() == data_count);
 
     {
         stack_printer __stack_printer2__("::st_test_perf_insertion:: clear");
@@ -992,7 +992,7 @@ void st_test_aggregated_search_results()
             results.push_back(v.value);
 
         value_type* expected[] = {&A, &B, &F, 0};
-        assert(check_search_result_only(results, key, expected));
+        TEST_ASSERT(check_search_result_only(results, key, expected));
     }
 
     {
@@ -1003,7 +1003,7 @@ void st_test_aggregated_search_results()
 
         // Note the duplicated F's in the search result.
         value_type* expected[] = {&A, &B, &C, &D, &E, &F, &F, 0};
-        assert(check_search_result_only(results, key, expected));
+        TEST_ASSERT(check_search_result_only(results, key, expected));
     }
 
     {
@@ -1013,7 +1013,7 @@ void st_test_aggregated_search_results()
             results.push_back(v.value);
 
         value_type* expected[] = {&A, &A, &B, &C, &C, &D, &E, &E, &F, &F, &F, 0};
-        assert(check_search_result_only(results, key, expected));
+        TEST_ASSERT(check_search_result_only(results, key, expected));
     }
 
     {
@@ -1024,7 +1024,7 @@ void st_test_aggregated_search_results()
             results.push_back(v.value);
 
         value_type* expected[] = {&A, &C, &E, &F, 0};
-        assert(check_search_result_only(results, key, expected));
+        TEST_ASSERT(check_search_result_only(results, key, expected));
     }
 }
 
@@ -1052,42 +1052,42 @@ void st_test_dense_tree_search()
     {
         db_type::value_type expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         bool success = check_search_result<key_type, value_type*>(db, 0, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         db_type::value_type expected[] = {&B, &C, &D, &E, &F, &G, 0};
         bool success = check_search_result<key_type, value_type*>(db, 1, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         db_type::value_type expected[] = {&C, &D, &E, &F, &G, 0};
         bool success = check_search_result<key_type, value_type*>(db, 2, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         db_type::value_type expected[] = {&D, &E, &F, &G, 0};
         bool success = check_search_result<key_type, value_type*>(db, 3, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         db_type::value_type expected[] = {&E, &F, &G, 0};
         bool success = check_search_result<key_type, value_type*>(db, 4, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         db_type::value_type expected[] = {&F, &G, 0};
         bool success = check_search_result<key_type, value_type*>(db, 5, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         db_type::value_type expected[] = {&G, 0};
         bool success = check_search_result<key_type, value_type*>(db, 6, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         db_type::value_type expected[] = {0};
         bool success = check_search_result<key_type, value_type*>(db, 7, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
 }
 
@@ -1105,9 +1105,9 @@ void st_test_search_on_empty_set()
     // Search on an empty set should still be considered a success as long as
     // the tree is built beforehand.
     auto results = db.search(0);
-    assert(results.size() == 0);
-    assert(results.empty());
-    assert(results.begin() == results.end());
+    TEST_ASSERT(results.size() == 0);
+    TEST_ASSERT(results.empty());
+    TEST_ASSERT(results.begin() == results.end());
 }
 
 void st_test_search_iterator_basic()
@@ -1131,7 +1131,7 @@ void st_test_search_iterator_basic()
     cout << db.to_string() << endl;
 
     db_type::search_results results = db.search(0);
-    assert(results.size() == 7);
+    TEST_ASSERT(results.size() == 7);
     db_type::search_results::const_iterator itr;
     db_type::search_results::const_iterator itr_beg = results.begin();
     db_type::search_results::const_iterator itr_end = results.end();
@@ -1185,42 +1185,42 @@ void st_test_search_iterator_result_check()
     {
         value_type* expected[] = {&A, &B, &C, &D, &E, &F, &G, 0};
         bool success = check_search_result_iterator<key_type, value_type*>(db, 0, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         value_type* expected[] = {&B, &C, &D, &E, &F, &G, 0};
         bool success = check_search_result_iterator<key_type, value_type*>(db, 1, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         value_type* expected[] = {&C, &D, &E, &F, &G, 0};
         bool success = check_search_result_iterator<key_type, value_type*>(db, 2, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         value_type* expected[] = {&D, &E, &F, &G, 0};
         bool success = check_search_result_iterator<key_type, value_type*>(db, 3, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         value_type* expected[] = {&E, &F, &G, 0};
         bool success = check_search_result_iterator<key_type, value_type*>(db, 4, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         value_type* expected[] = {&F, &G, 0};
         bool success = check_search_result_iterator<key_type, value_type*>(db, 5, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         value_type* expected[] = {&G, 0};
         bool success = check_search_result_iterator<key_type, value_type*>(db, 6, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
     {
         value_type* expected[] = {0};
         bool success = check_search_result_iterator<key_type, value_type*>(db, 7, expected);
-        assert(success);
+        TEST_ASSERT(success);
     }
 }
 
@@ -1236,8 +1236,8 @@ void st_test_empty_result_set()
     db_type db;
     db_type::search_results results = db.search(0);
     cout << "size of empty result set: " << results.size() << endl;
-    assert(results.size() == 0);
-    assert(results.empty());
+    TEST_ASSERT(results.size() == 0);
+    TEST_ASSERT(results.empty());
 }
 
 void st_test_non_pointer_data()
@@ -1253,9 +1253,9 @@ void st_test_non_pointer_data()
     db.build_tree();
 
     db_type::search_results results = db.search(0);
-    assert(results.size() == 1);
-    assert(!results.empty());
-    assert(results.begin()->value == 10);
+    TEST_ASSERT(results.size() == 1);
+    TEST_ASSERT(!results.empty());
+    TEST_ASSERT(results.begin()->value == 10);
 }
 
 void st_test_erase_on_invalid_tree()
@@ -1269,17 +1269,17 @@ void st_test_erase_on_invalid_tree()
     db.insert(-10, 2, "B");
     db.insert(2, 10, "C");
     db.build_tree();
-    assert(db.valid_tree());
+    TEST_ASSERT(db.valid_tree());
 
     {
         // It should contains the "C" segment.
         auto results = db.search(5);
         auto it = std::find_if(results.begin(), results.end(), [](const auto& v) { return v.value == "C"; });
-        assert(it != results.end());
+        TEST_ASSERT(it != results.end());
     }
 
     db.insert(3, 15, "D");
-    assert(!db.valid_tree());
+    TEST_ASSERT(!db.valid_tree());
     // Remove a segment while the tree is invalid.
     db.erase_if([](int, int, const auto& v) { return v == "C"; });
     db.build_tree();
@@ -1288,7 +1288,7 @@ void st_test_erase_on_invalid_tree()
         // It should no longer contain the "C" segment.
         auto results = db.search(5);
         auto it = std::find_if(results.begin(), results.end(), [](const auto& v) { return v.value == "C"; });
-        assert(it == results.end());
+        TEST_ASSERT(it == results.end());
     }
 }
 
@@ -1300,65 +1300,65 @@ void st_test_boundary_keys()
 
     db_type db;
     auto keys = db.boundary_keys();
-    assert(keys.empty());
+    TEST_ASSERT(keys.empty());
 
     auto expected = keys;
     expected = {1, 3};
 
     db.insert(1, 3, true);
-    assert(db.size() == 1);
+    TEST_ASSERT(db.size() == 1);
     keys = db.boundary_keys();
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     db.insert(3, 5, true);
-    assert(db.size() == 2);
+    TEST_ASSERT(db.size() == 2);
     keys = db.boundary_keys();
     expected = {1, 3, 5};
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     db.insert(7, 10, false);
-    assert(db.size() == 3);
+    TEST_ASSERT(db.size() == 3);
     keys = db.boundary_keys();
     expected = {1, 3, 5, 7, 10};
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     db.insert(-5, -2, true);
-    assert(db.size() == 4);
+    TEST_ASSERT(db.size() == 4);
     keys = db.boundary_keys();
     expected = {-5, -2, 1, 3, 5, 7, 10};
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     db.insert(-2, 10, true); // no new keys
-    assert(db.size() == 5);
+    TEST_ASSERT(db.size() == 5);
     keys = db.boundary_keys();
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     db.build_tree();
     keys = db.boundary_keys();
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     // erase segments with false value i.e. 7-10.
     db.erase_if([](int16_t, int16_t, bool value) { return !value; });
-    assert(db.size() == 4);
+    TEST_ASSERT(db.size() == 4);
     keys = db.boundary_keys();
     expected = {-5, -2, 1, 3, 5, 10};
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     db.build_tree(); // purge the deleted segment
     keys = db.boundary_keys();
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     // erase all the other segments
     db.erase_if([](int16_t, int16_t, bool value) { return value; });
-    assert(db.empty());
+    TEST_ASSERT(db.empty());
     keys = db.boundary_keys();
     expected.clear();
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 
     db.build_tree(); // purge all deleted segments
-    assert(!db.valid_tree());
+    TEST_ASSERT(!db.valid_tree());
     keys = db.boundary_keys();
-    assert(keys == expected);
+    TEST_ASSERT(keys == expected);
 }
 
 int main(int argc, char** argv)
@@ -1400,7 +1400,7 @@ int main(int argc, char** argv)
         // At this point, all of the nodes created during the test run should have
         // been destroyed.  If not, we are leaking memory.
         typedef segment_tree<uint32_t, void*> db_type;
-        assert(db_type::node::get_instance_count() == 0);
+        TEST_ASSERT(db_type::node::get_instance_count() == 0);
     }
     catch (const std::exception& e)
     {
