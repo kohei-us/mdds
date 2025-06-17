@@ -25,8 +25,7 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_TEST_GLOBAL_HPP
-#define INCLUDED_TEST_GLOBAL_HPP
+#pragma once
 
 #ifdef NDEBUG
 // release build
@@ -109,5 +108,3 @@ using std::endl;
     std::ostringstream __sp_os__; \
     __sp_os__ << stream << "::" << __func__; \
     stack_printer __sp__(__sp_os__.str())
-
-#endif

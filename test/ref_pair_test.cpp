@@ -31,11 +31,9 @@
 
 #include <iostream>
 
-using namespace std;
-
 void test_basic()
 {
-    stack_printer __stack_printer__("::test_basic");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rp_type = mdds::detail::ref_pair<const int, int>;
     using pair_type = std::pair<int, int>;
@@ -46,24 +44,24 @@ void test_basic()
 
     rp.second = 34;
 
-    assert(rp == pair_type(11, 34));
-    assert(rp != pair_type(12, 34));
-    assert(rp != pair_type(11, 32));
-    assert(rp == rp);
+    TEST_ASSERT(rp == pair_type(11, 34));
+    TEST_ASSERT(rp != pair_type(12, 34));
+    TEST_ASSERT(rp != pair_type(11, 32));
+    TEST_ASSERT(rp == rp);
 
     int v3 = 23;
     int v4 = 33;
     rp_type rp2(v3, v4);
-    assert(rp != rp2);
-    assert(rp2 == pair_type(23, 33));
+    TEST_ASSERT(rp != rp2);
+    TEST_ASSERT(rp2 == pair_type(23, 33));
 
     rp_type rp3(rp);
-    assert(rp3 == rp);
+    TEST_ASSERT(rp3 == rp);
 }
 
 void test_used_in_iterator()
 {
-    stack_printer __stack_printer__("::test_used_in_iterator");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rp_type = mdds::detail::ref_pair<int, int>;
 
@@ -88,16 +86,16 @@ void test_used_in_iterator()
 
     fake_iterator it;
 
-    assert((*it).first == 222);
-    assert((*it).second == 456);
-    assert(it->first == 222);
-    assert(it->second == 456);
+    TEST_ASSERT((*it).first == 222);
+    TEST_ASSERT((*it).second == 456);
+    TEST_ASSERT(it->first == 222);
+    TEST_ASSERT(it->second == 456);
 
     // Make sure the member values can be modified.
     it->second = 897;
-    assert(it->second == 897);
+    TEST_ASSERT(it->second == 897);
     (*it).first = -23;
-    assert(it->first == -23);
+    TEST_ASSERT(it->first == -23);
 }
 
 int main()
