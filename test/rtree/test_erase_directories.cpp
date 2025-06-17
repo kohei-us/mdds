@@ -35,7 +35,8 @@ using std::endl;
 
 void rtree_test_erase_directories()
 {
-    stack_printer __stack_printer__("::rtree_test_erase_directories");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
     using search_type = rt_type::search_type;
     rt_type::integrity_check_properties check_props;
@@ -62,7 +63,7 @@ void rtree_test_erase_directories()
         }
     }
 
-    assert(tree.size() == 25);
+    TEST_ASSERT(tree.size() == 25);
     tree.check_integrity(check_props);
     cout << tree.export_tree(rt_type::export_tree_type::formatted_node_properties) << endl;
 
@@ -80,21 +81,21 @@ void rtree_test_erase_directories()
             auto res = ctree.search({x2, y2}, search_type::overlap);
             auto it = res.begin(), ite = res.end();
             size_t n = std::distance(it, ite);
-            assert(n == 1);
+            TEST_ASSERT(n == 1);
 
             tree.erase(it);
 
-            assert(tree.size() == --expected_size);
+            TEST_ASSERT(tree.size() == --expected_size);
             tree.check_integrity(check_props);
 
             res = ctree.search({x2, y2}, search_type::overlap);
             n = std::distance(res.begin(), res.end());
-            assert(n == 0);
+            TEST_ASSERT(n == 0);
         }
     }
 
-    assert(tree.empty());
-    assert(tree.size() == 0);
+    TEST_ASSERT(tree.empty());
+    TEST_ASSERT(tree.size() == 0);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

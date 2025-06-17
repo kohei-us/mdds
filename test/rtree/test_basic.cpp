@@ -35,7 +35,8 @@ using std::endl;
 
 void rtree_test_basic_search()
 {
-    stack_printer __stack_printer__("::rtree_test_basic_search");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string>;
     using search_type = rt_type::search_type;
     rt_type::integrity_check_properties check_props;
@@ -47,18 +48,18 @@ void rtree_test_basic_search()
 
     tree.insert({{0, 0}, {2, 2}}, "test");
     expected_bb = {{0, 0}, {2, 2}};
-    assert(tree.extent() == expected_bb);
-    assert(tree.size() == 1);
+    TEST_ASSERT(tree.extent() == expected_bb);
+    TEST_ASSERT(tree.size() == 1);
 
     tree.insert({{3, 3}, {5, 5}}, "test again");
     expected_bb = {{0, 0}, {5, 5}};
-    assert(tree.extent() == expected_bb);
-    assert(tree.size() == 2);
+    TEST_ASSERT(tree.extent() == expected_bb);
+    TEST_ASSERT(tree.size() == 2);
 
     tree.insert({{-2, 1}, {3, 6}}, "more test");
     expected_bb = {{-2, 0}, {5, 6}};
-    assert(tree.extent() == expected_bb);
-    assert(tree.size() == 3);
+    TEST_ASSERT(tree.extent() == expected_bb);
+    TEST_ASSERT(tree.size() == 3);
 
     tree.check_integrity(check_props);
 
@@ -69,7 +70,7 @@ void rtree_test_basic_search()
     auto it = res.cbegin(), it_end = res.cend();
 
     size_t n = std::distance(it, it_end);
-    assert(n == 2);
+    TEST_ASSERT(n == 2);
 
     std::unordered_map<std::string, rt_type::extent_type> expected_values = {
         {"test", {{0, 0}, {2, 2}}},
@@ -80,9 +81,9 @@ void rtree_test_basic_search()
     {
         cout << "bounding box: " << it.extent().to_string() << "; value: " << *it << "; depth: " << it.depth() << endl;
         auto itv = expected_values.find(*it);
-        assert(itv != expected_values.end());
-        assert(itv->second == it.extent());
-        assert(it.depth() == 1);
+        TEST_ASSERT(itv != expected_values.end());
+        TEST_ASSERT(itv->second == it.extent());
+        TEST_ASSERT(it.depth() == 1);
     }
 
     // Perform an out-of-bound search by point.
@@ -95,13 +96,14 @@ void rtree_test_basic_search()
     for (const rt_type::point_type& pt : pts)
     {
         res = ctree.search(pt, search_type::overlap);
-        assert(res.cbegin() == res.cend());
+        TEST_ASSERT(res.cbegin() == res.cend());
     }
 }
 
 void rtree_test_basic_erase()
 {
-    stack_printer __stack_printer__("::rtree_test_basic_erase");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string>;
     using search_type = rt_type::search_type;
     rt_type::integrity_check_properties check_props;
@@ -110,37 +112,37 @@ void rtree_test_basic_erase()
     rt_type tree;
     const rt_type& ctree = tree;
     tree.insert({{-2, -2}, {2, 2}}, "erase me");
-    assert(!tree.empty());
-    assert(tree.size() == 1);
+    TEST_ASSERT(!tree.empty());
+    TEST_ASSERT(tree.size() == 1);
 
     rt_type::const_search_results res = ctree.search({0, 0}, search_type::overlap);
 
     size_t n = std::distance(res.begin(), res.end());
-    assert(n == 1);
+    TEST_ASSERT(n == 1);
 
     rt_type::const_iterator it = res.begin();
-    assert(it != res.end());
+    TEST_ASSERT(it != res.end());
 
     tree.erase(it);
-    assert(tree.empty());
-    assert(tree.size() == 0);
-    assert(rt_type::extent_type() == tree.extent());
+    TEST_ASSERT(tree.empty());
+    TEST_ASSERT(tree.size() == 0);
+    TEST_ASSERT(rt_type::extent_type() == tree.extent());
 
     tree.insert({{0, 0}, {2, 2}}, "erase me");
     tree.insert({{-10, -4}, {0, 0}}, "erase me");
     rt_type::extent_type expected_bb({-10, -4}, {2, 2});
-    assert(tree.extent() == expected_bb);
-    assert(tree.size() == 2);
+    TEST_ASSERT(tree.extent() == expected_bb);
+    TEST_ASSERT(tree.size() == 2);
 
     res = ctree.search({-5, -2}, search_type::overlap);
     n = std::distance(res.begin(), res.end());
-    assert(n == 1);
+    TEST_ASSERT(n == 1);
     it = res.begin();
     tree.erase(it);
-    assert(!tree.empty()); // there should be one value stored in the tree.
-    assert(tree.size() == 1);
+    TEST_ASSERT(!tree.empty()); // there should be one value stored in the tree.
+    TEST_ASSERT(tree.size() == 1);
     expected_bb = {{0, 0}, {2, 2}};
-    assert(tree.extent() == expected_bb);
+    TEST_ASSERT(tree.extent() == expected_bb);
 
     tree.check_integrity(check_props);
 }

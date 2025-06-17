@@ -35,7 +35,7 @@ using std::endl;
 
 void rtree_test_move()
 {
-    stack_printer __stack_printer__("::rtree_test_move");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
     rt_type::integrity_check_properties check_props;
@@ -58,15 +58,15 @@ void rtree_test_move()
     }
 
     tree.check_integrity(check_props);
-    assert(tree.size() == 25);
+    TEST_ASSERT(tree.size() == 25);
 
     // moved via constructor.
     rt_type tree_moved(std::move(tree));
     tree.check_integrity(check_props);
     tree_moved.check_integrity(check_props);
-    assert(tree.empty());
-    assert(tree.size() == 0);
-    assert(tree_moved.size() == 25);
+    TEST_ASSERT(tree.empty());
+    TEST_ASSERT(tree.size() == 0);
+    TEST_ASSERT(tree_moved.size() == 25);
 
     // moved via assignment operator.
     rt_type tree_moved_2;
@@ -74,9 +74,9 @@ void rtree_test_move()
     tree_moved_2 = std::move(tree_moved);
     tree_moved.check_integrity(check_props);
     tree_moved_2.check_integrity(check_props);
-    assert(tree_moved.empty());
-    assert(tree_moved.size() == 0);
-    assert(tree_moved_2.size() == 25);
+    TEST_ASSERT(tree_moved.empty());
+    TEST_ASSERT(tree_moved.size() == 0);
+    TEST_ASSERT(tree_moved_2.size() == 25);
 }
 
 /**
@@ -85,7 +85,7 @@ void rtree_test_move()
  */
 void rtree_test_move_custom_type()
 {
-    stack_printer __stack_printer__("::rtree_test_move_custom_type");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rt_type = rtree<double, only_movable, tiny_trait_2d_forced_reinsertion>;
     using point_type = rt_type::point_type;
@@ -117,7 +117,7 @@ void rtree_test_move_custom_type()
     for (const input& i : inputs)
         tree.insert({i.start, i.end}, only_movable(i.value));
 
-    assert(tree.size() == inputs.size());
+    TEST_ASSERT(tree.size() == inputs.size());
 
     tree.check_integrity(check_props);
 
@@ -127,8 +127,8 @@ void rtree_test_move_custom_type()
     rt_type tree_moved = std::move(tree);
     tree.check_integrity(check_props);
     tree_moved.check_integrity(check_props);
-    assert(tree.empty());
-    assert(tree_moved.size() == inputs.size());
+    TEST_ASSERT(tree.empty());
+    TEST_ASSERT(tree_moved.size() == inputs.size());
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -35,7 +35,8 @@ using std::endl;
 
 void rtree_test_directory_node_split()
 {
-    stack_printer __stack_printer__("::rtree_test_directory_node_split");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
     using search_type = rt_type::search_type;
     rt_type::integrity_check_properties check_props;
@@ -62,7 +63,7 @@ void rtree_test_directory_node_split()
         }
     }
 
-    assert(tree.size() == 100);
+    TEST_ASSERT(tree.size() == 100);
 
     // All value nodes in this tree should be at depth 4 (root having the
     // depth of 0).  Just check a few of them.
@@ -77,8 +78,8 @@ void rtree_test_directory_node_split()
     {
         auto res = ctree.search(pt, search_type::overlap);
         auto it = res.cbegin();
-        assert(it != res.cend());
-        assert(it.depth() == 4);
+        TEST_ASSERT(it != res.cend());
+        TEST_ASSERT(it.depth() == 4);
     }
 }
 

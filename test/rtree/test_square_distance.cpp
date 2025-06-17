@@ -35,7 +35,8 @@ using std::endl;
 
 void rtree_test_square_distance()
 {
-    stack_printer __stack_printer__("::rtree_test_square_distance");
+    MDDS_TEST_FUNC_SCOPE;
+
     using mdds::detail::rtree::calc_square_distance;
 
     {
@@ -61,11 +62,11 @@ void rtree_test_square_distance()
             cout << "p1: " << tc.p1.to_string() << "; p2: " << tc.p2.to_string() << endl;
 
             uint16_t dist = calc_square_distance<point_type>(tc.p1, tc.p2);
-            assert(dist == tc.expected);
+            TEST_ASSERT(dist == tc.expected);
 
             // Flip the value to make sure we still get the same result.
             dist = calc_square_distance<point_type>(tc.p2, tc.p1);
-            assert(dist == tc.expected);
+            TEST_ASSERT(dist == tc.expected);
         }
     }
 
@@ -93,11 +94,11 @@ void rtree_test_square_distance()
             cout << "p1: " << tc.p1.to_string() << "; p2: " << tc.p2.to_string() << endl;
 
             uint16_t dist = calc_square_distance<point_type>(tc.p1, tc.p2);
-            assert(dist == tc.expected);
+            TEST_ASSERT(dist == tc.expected);
 
             // Flip the value to make sure we still get the same result.
             dist = calc_square_distance<point_type>(tc.p2, tc.p1);
-            assert(dist == tc.expected);
+            TEST_ASSERT(dist == tc.expected);
         }
     }
 }

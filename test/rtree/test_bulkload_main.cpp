@@ -38,7 +38,8 @@ using namespace std;
 
 void rtree_test_bl_empty()
 {
-    stack_printer __stack_printer__("::rtree_test_bl_empty");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string>;
     rt_type::integrity_check_properties check_props;
     check_props.throw_on_first_error = false;
@@ -46,13 +47,14 @@ void rtree_test_bl_empty()
     // Load nothing.
     rt_type::bulk_loader loader;
     rt_type tree = loader.pack();
-    assert(tree.empty());
+    TEST_ASSERT(tree.empty());
     tree.check_integrity(check_props);
 }
 
 void rtree_test_bl_insert_points_move()
 {
-    stack_printer __stack_printer__("::rtree_test_bl_insert_points_move");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
     using key_type = rt_type::key_type;
     rt_type::integrity_check_properties check_props;
@@ -71,14 +73,15 @@ void rtree_test_bl_insert_points_move()
     }
 
     auto tree = loader.pack();
-    assert(tree.size() == 399);
+    TEST_ASSERT(tree.size() == 399);
     tree.check_integrity(check_props);
     export_tree(tree, "rtree-test-bl-insert-points-move");
 }
 
 void rtree_test_bl_insert_points_copy()
 {
-    stack_printer __stack_printer__("::rtree_test_bl_insert_points_copy");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
     using point_type = rt_type::point_type;
     using search_type = rt_type::search_type;
@@ -99,7 +102,7 @@ void rtree_test_bl_insert_points_copy()
     // Insert less than max node size in order to test the packing
     // implementation that doesn't involve per-level packing.
     tiny_trait_2d_forced_reinsertion t;
-    assert(values.size() <= t.max_node_size);
+    TEST_ASSERT(values.size() <= t.max_node_size);
 
     for (size_t n_values = 1; n_values <= values.size(); ++n_values)
     {
@@ -112,26 +115,27 @@ void rtree_test_bl_insert_points_copy()
         // Populate and pack the tree.
         auto tree = loader.pack();
         tree.check_integrity(check_props);
-        assert(tree.size() == n_values);
+        TEST_ASSERT(tree.size() == n_values);
 
         // Make sure the inserted values are all there.
         for (size_t i = 0; i < n_values; ++i)
         {
             auto res = tree.search(values[i].point, search_type::match);
-            assert(std::distance(res.begin(), res.end()) == 1);
+            TEST_ASSERT(std::distance(res.begin(), res.end()) == 1);
             auto it = res.begin();
-            assert(*it == values[i].value);
+            TEST_ASSERT(*it == values[i].value);
 
             // The values should all be the immediate children of the root
             // directory node.
-            assert(it.depth() == 1);
+            TEST_ASSERT(it.depth() == 1);
         }
     }
 }
 
 void rtree_test_bl_insert_extents_move()
 {
-    stack_printer __stack_printer__("::rtree_test_bl_insert_extents_move");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, only_movable, tiny_trait_2d_forced_reinsertion>;
     using extent_type = rt_type::extent_type;
     using search_type = rt_type::search_type;
@@ -172,7 +176,7 @@ void rtree_test_bl_insert_extents_move()
         }
 
         auto tree = loader.pack();
-        assert(tree.size() == n_values);
+        TEST_ASSERT(tree.size() == n_values);
         tree.check_integrity(check_props);
 
         // Make sure the values are all there.
@@ -181,8 +185,8 @@ void rtree_test_bl_insert_extents_move()
             const auto& v = values[i];
             extent_type extent{{v.x, v.y}, {int16_t(v.x + v.w), int16_t(v.y + v.h)}};
             auto res = tree.search(extent, search_type::match);
-            assert(std::distance(res.begin(), res.end()) == 1);
-            assert(res.begin()->get() == v.value);
+            TEST_ASSERT(std::distance(res.begin(), res.end()) == 1);
+            TEST_ASSERT(res.begin()->get() == v.value);
         }
 
         if (n_values == values.size())
@@ -192,7 +196,8 @@ void rtree_test_bl_insert_extents_move()
 
 void rtree_test_bl_insert_extents_copy()
 {
-    stack_printer __stack_printer__("::rtree_test_bl_insert_extents_copy");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, only_copyable, tiny_trait_2d_forced_reinsertion>;
     using extent_type = rt_type::extent_type;
     using search_type = rt_type::search_type;
@@ -240,7 +245,7 @@ void rtree_test_bl_insert_extents_copy()
         }
 
         auto tree = loader.pack();
-        assert(tree.size() == n_values);
+        TEST_ASSERT(tree.size() == n_values);
         tree.check_integrity(check_props);
 
         // Make sure the values are all there.
@@ -249,8 +254,8 @@ void rtree_test_bl_insert_extents_copy()
             const auto& v = values[i];
             extent_type extent{{v.x, v.y}, {int16_t(v.x + v.w), int16_t(v.y + v.h)}};
             auto res = tree.search(extent, search_type::match);
-            assert(std::distance(res.begin(), res.end()) == 1);
-            assert(res.begin()->get() == v.value);
+            TEST_ASSERT(std::distance(res.begin(), res.end()) == 1);
+            TEST_ASSERT(res.begin()->get() == v.value);
         }
 
         if (n_values == values.size())

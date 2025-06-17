@@ -35,7 +35,8 @@ using std::endl;
 
 void rtree_test_node_split()
 {
-    stack_printer __stack_printer__("::rtree_test_node_split");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
     using search_type = rt_type::search_type;
     rt_type::integrity_check_properties check_props;
@@ -56,7 +57,7 @@ void rtree_test_node_split()
         tree.insert({{i, i}, {int16_t(i + w), int16_t(i + w)}}, os.str());
     }
 
-    assert(tree.size() == 6);
+    TEST_ASSERT(tree.size() == 6);
 
     cout << tree.export_tree(rt_type::export_tree_type::formatted_node_properties) << endl;
 
@@ -82,9 +83,9 @@ void rtree_test_node_split()
 
     tree.walk(walker);
 
-    assert(count_values == 6);
-    assert(count_leaf == 2);
-    assert(count_nonleaf == 1);
+    TEST_ASSERT(count_values == 6);
+    TEST_ASSERT(count_leaf == 2);
+    TEST_ASSERT(count_nonleaf == 1);
 
     tree.check_integrity(check_props);
 
@@ -99,7 +100,7 @@ void rtree_test_node_split()
         tree.insert({{i, i}, {int16_t(i + w), int16_t(i + w)}}, os.str());
     }
 
-    assert(tree.size() == 8);
+    TEST_ASSERT(tree.size() == 8);
     tree.check_integrity(check_props);
 
     // Count all the nodes again.
@@ -109,20 +110,20 @@ void rtree_test_node_split()
 
     tree.walk(walker);
 
-    assert(count_values == 8);
-    assert(count_leaf == 3);
-    assert(count_nonleaf == 1);
+    TEST_ASSERT(count_values == 8);
+    TEST_ASSERT(count_leaf == 3);
+    TEST_ASSERT(count_nonleaf == 1);
 
     // Erase the entry at (0, 0).  There should be only one match.  Erasing
     // this entry will cause the node to be underfilled.
 
     rt_type::const_search_results res = ctree.search({0, 0}, search_type::overlap);
     auto it = res.cbegin();
-    assert(it != res.cend());
-    assert(std::distance(it, res.cend()) == 1);
+    TEST_ASSERT(it != res.cend());
+    TEST_ASSERT(std::distance(it, res.cend()) == 1);
     tree.erase(it);
 
-    assert(tree.size() == 7);
+    TEST_ASSERT(tree.size() == 7);
     tree.check_integrity(check_props);
 
     // Count all the nodes again.
@@ -132,9 +133,9 @@ void rtree_test_node_split()
 
     tree.walk(walker);
 
-    assert(count_values == 7);
-    assert(count_leaf == 2);
-    assert(count_nonleaf == 1);
+    TEST_ASSERT(count_values == 7);
+    TEST_ASSERT(count_leaf == 2);
+    TEST_ASSERT(count_nonleaf == 1);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

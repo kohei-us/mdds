@@ -35,7 +35,8 @@ using std::endl;
 
 void rtree_test_area_enlargement()
 {
-    stack_printer __stack_printer__("::rtree_test_area_enlargement");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string>;
     using bounding_box = rt_type::extent_type;
     using mdds::detail::rtree::calc_area_enlargement;
@@ -58,13 +59,14 @@ void rtree_test_area_enlargement()
     for (const check& c : checks)
     {
         int16_t area = calc_area_enlargement(c.host, c.guest);
-        assert(area == c.expected_area);
+        TEST_ASSERT(area == c.expected_area);
     }
 }
 
 void rtree_test_center_point()
 {
-    stack_printer __stack_printer__("::rtree_test_center_point");
+    MDDS_TEST_FUNC_SCOPE;
+
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d>;
     using mdds::detail::rtree::get_center_point;
     using extent_type = rt_type::extent_type;
@@ -86,7 +88,7 @@ void rtree_test_center_point()
     {
         cout << "extent: " << tc.extent.to_string() << endl;
         auto pt = get_center_point(tc.extent);
-        assert(pt == tc.expected);
+        TEST_ASSERT(pt == tc.expected);
     }
 }
 

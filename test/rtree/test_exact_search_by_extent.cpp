@@ -35,7 +35,7 @@ using std::endl;
 
 void rtree_test_exact_search_by_extent()
 {
-    stack_printer __stack_printer__("::rtree_test_exact_search_by_extent");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using extent_type = rt_type::extent_type;
@@ -54,22 +54,22 @@ void rtree_test_exact_search_by_extent()
         // Immutable search
         rt_type::const_search_results cres = ctree.search({{1, 1}, {3, 3}}, search_type::overlap);
         size_t n = std::distance(cres.begin(), cres.end());
-        assert(n == 3);
+        TEST_ASSERT(n == 3);
 
         cres = ctree.search({{1, 1}, {3, 3}}, search_type::match);
         n = std::distance(cres.begin(), cres.end());
-        assert(n == 1);
+        TEST_ASSERT(n == 1);
         auto it = cres.cbegin();
-        assert(*it == 1.2);
-        assert(it.extent() == extent_type({{1, 1}, {3, 3}}));
-        assert(it.depth() == 1);
+        TEST_ASSERT(*it == 1.2);
+        TEST_ASSERT(it.extent() == extent_type({{1, 1}, {3, 3}}));
+        TEST_ASSERT(it.depth() == 1);
     }
 
     {
         // Mutable search
         rt_type::search_results res = tree.search({{1, 1}, {3, 3}}, search_type::overlap);
         size_t n = std::distance(res.begin(), res.end());
-        assert(n == 3);
+        TEST_ASSERT(n == 3);
 
         // Modify the values.
         for (double& v : res)
@@ -77,8 +77,8 @@ void rtree_test_exact_search_by_extent()
 
         res = tree.search({{1, 1}, {3, 3}}, search_type::match);
         n = std::distance(res.begin(), res.end());
-        assert(n == 1);
-        assert(*res.begin() == 2.2); // The value should be updated.
+        TEST_ASSERT(n == 1);
+        TEST_ASSERT(*res.begin() == 2.2); // The value should be updated.
     }
 }
 

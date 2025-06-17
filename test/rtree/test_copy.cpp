@@ -35,7 +35,7 @@ using std::endl;
 
 void rtree_test_copy()
 {
-    stack_printer __stack_printer__("::rtree_test_copy");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using point_type = rt_type::point_type;
@@ -68,14 +68,14 @@ void rtree_test_copy()
     std::string str_src = tree.export_tree(rt_type::export_tree_type::formatted_node_properties);
     std::string str_dst = tree.export_tree(rt_type::export_tree_type::formatted_node_properties);
 
-    assert(!str_src.empty() && str_src == str_dst);
+    TEST_ASSERT(!str_src.empty() && str_src == str_dst);
 
     // Test the "copy via assignment" scenario too.
     auto copied_via_assign = tree;
     copied_via_assign.check_integrity(check_props);
     str_dst = copied_via_assign.export_tree(rt_type::export_tree_type::formatted_node_properties);
 
-    assert(!str_src.empty() && str_src == str_dst);
+    TEST_ASSERT(!str_src.empty() && str_src == str_dst);
 }
 
 /**
@@ -84,7 +84,7 @@ void rtree_test_copy()
  */
 void rtree_test_only_copyable()
 {
-    stack_printer __stack_printer__("::rtree_test_only_copyable");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rt_type = rtree<float, only_copyable, tiny_trait_2d_forced_reinsertion>;
     using search_type = rt_type::search_type;
@@ -104,43 +104,43 @@ void rtree_test_only_copyable()
     {
         // Immutable search.
         auto cres = ctree.search({1, 1}, search_type::overlap);
-        assert(std::distance(cres.begin(), cres.end()) == 1);
-        assert(cres.begin()->get() == 11.2);
+        TEST_ASSERT(std::distance(cres.begin(), cres.end()) == 1);
+        TEST_ASSERT(cres.begin()->get() == 11.2);
 
         cres = ctree.search({9, 9}, search_type::overlap);
-        assert(std::distance(cres.cbegin(), cres.cend()) == 1);
-        assert(cres.cbegin()->get() == 12.5);
+        TEST_ASSERT(std::distance(cres.cbegin(), cres.cend()) == 1);
+        TEST_ASSERT(cres.cbegin()->get() == 12.5);
     }
 
     {
         // Mutable search
         auto res = tree.search({9, 9}, search_type::match);
-        assert(std::distance(res.begin(), res.end()) == 1);
-        assert(res.begin()->get() == 12.5);
+        TEST_ASSERT(std::distance(res.begin(), res.end()) == 1);
+        TEST_ASSERT(res.begin()->get() == 12.5);
         auto it = res.begin();
         (*it).set(34.5);
 
         res = tree.search({9, 9}, search_type::match);
-        assert(std::distance(res.begin(), res.end()) == 1);
-        assert(res.begin()->get() == 34.5);
+        TEST_ASSERT(std::distance(res.begin(), res.end()) == 1);
+        TEST_ASSERT(res.begin()->get() == 34.5);
     }
 
     {
         // Erase the only object via mutable iterator.
-        assert(tree.size() == 2);
+        TEST_ASSERT(tree.size() == 2);
         rt_type::search_results res = tree.search({{0, 0}, {100, 100}}, search_type::overlap);
-        assert(std::distance(res.begin(), res.end()) == 2);
+        TEST_ASSERT(std::distance(res.begin(), res.end()) == 2);
 
         res = tree.search({9, 9}, search_type::match);
-        assert(std::distance(res.begin(), res.end()) == 1);
+        TEST_ASSERT(std::distance(res.begin(), res.end()) == 1);
         tree.erase(res.begin());
 
-        assert(tree.size() == 1);
+        TEST_ASSERT(tree.size() == 1);
         res = tree.search({{0, 0}, {100, 100}}, search_type::overlap);
-        assert(std::distance(res.begin(), res.end()) == 1);
+        TEST_ASSERT(std::distance(res.begin(), res.end()) == 1);
         auto it = res.begin();
-        assert(it.extent() == extent_type({{0, 0}, {2, 5}}));
-        assert(it->get() == 11.2);
+        TEST_ASSERT(it.extent() == extent_type({{0, 0}, {2, 5}}));
+        TEST_ASSERT(it->get() == 11.2);
     }
 }
 

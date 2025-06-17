@@ -35,7 +35,7 @@ using std::endl;
 
 void rtree_test_point_objects()
 {
-    stack_printer __stack_printer__("::rtree_test_point_objects");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using key_type = rt_type::key_type;
@@ -61,17 +61,17 @@ void rtree_test_point_objects()
         for (key_type y = 0; y < 10; ++y)
         {
             auto results = tree.search({x, y}, search_type::overlap);
-            assert(std::distance(results.begin(), results.end()) == 1);
+            TEST_ASSERT(std::distance(results.begin(), results.end()) == 1);
             double expected = x * y;
             auto it = results.begin();
-            assert(expected == *it);
+            TEST_ASSERT(expected == *it);
         }
     }
 
     // Test an extent-based search on point data.
     auto results = ctree.search({{0, 0}, {3, 3}}, search_type::overlap);
     size_t n_results = std::distance(results.cbegin(), results.cend());
-    assert(n_results == 16);
+    TEST_ASSERT(n_results == 16);
 
     export_tree(tree, "rtree-test-point-objects");
 }

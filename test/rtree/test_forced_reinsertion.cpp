@@ -35,7 +35,7 @@ using std::endl;
 
 void rtree_test_forced_reinsertion()
 {
-    stack_printer __stack_printer__("::rtree_test_forced_reinsertion");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rt_type = rtree<int16_t, std::string, tiny_trait_2d_forced_reinsertion>;
     rt_type::integrity_check_properties check_props;
@@ -51,12 +51,12 @@ void rtree_test_forced_reinsertion()
         tree.insert({{i, i}, {int16_t(i + w), int16_t(i + w)}}, os.str());
     }
 
-    assert(tree.size() == 6);
+    TEST_ASSERT(tree.size() == 6);
     tree.check_integrity(check_props);
 
     tree.clear();
-    assert(tree.empty());
-    assert(tree.size() == 0);
+    TEST_ASSERT(tree.empty());
+    TEST_ASSERT(tree.size() == 0);
     tree.check_integrity(check_props);
 
     for (int16_t x = 0; x < 5; ++x)
@@ -74,7 +74,7 @@ void rtree_test_forced_reinsertion()
     }
 
     tree.check_integrity(check_props);
-    assert(tree.size() == 25);
+    TEST_ASSERT(tree.size() == 25);
 
     export_tree(tree, "rtree-test-forced-reinsertion");
 }

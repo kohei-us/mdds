@@ -35,7 +35,7 @@ using std::endl;
 
 void rtree_test_exact_search_by_point()
 {
-    stack_printer __stack_printer__("::rtree_test_exact_search_by_point");
+    MDDS_TEST_FUNC_SCOPE;
 
     using rt_type = rtree<double, double, tiny_trait_2d_forced_reinsertion>;
     using point_type = rt_type::point_type;
@@ -53,41 +53,41 @@ void rtree_test_exact_search_by_point()
 
     rt_type::const_search_results res = ctree.search({1, 1}, search_type::overlap);
     size_t n = std::distance(res.begin(), res.end());
-    assert(n == 2);
+    TEST_ASSERT(n == 2);
 
     res = ctree.search({3, 3}, search_type::overlap);
     n = std::distance(res.begin(), res.end());
-    assert(n == 2);
+    TEST_ASSERT(n == 2);
 
     res = ctree.search({2, 2}, search_type::overlap);
     n = std::distance(res.begin(), res.end());
-    assert(n == 1);
+    TEST_ASSERT(n == 1);
     rt_type::const_iterator it = res.begin();
-    assert(*it == 10.0);
-    assert(it.extent() == extent_type({{0, 0}, {4, 4}}));
+    TEST_ASSERT(*it == 10.0);
+    TEST_ASSERT(it.extent() == extent_type({{0, 0}, {4, 4}}));
 
     res = ctree.search({1, 1}, search_type::match);
     n = std::distance(res.begin(), res.end());
-    assert(n == 1);
+    TEST_ASSERT(n == 1);
     it = res.begin();
-    assert(*it == 11.0);
-    assert(it.extent().is_point());
-    assert(it.extent().start == point_type({1, 1}));
+    TEST_ASSERT(*it == 11.0);
+    TEST_ASSERT(it.extent().is_point());
+    TEST_ASSERT(it.extent().start == point_type({1, 1}));
 
     res = ctree.search({3, 3}, search_type::match);
     n = std::distance(res.begin(), res.end());
-    assert(n == 1);
+    TEST_ASSERT(n == 1);
     it = res.begin();
-    assert(*it == 33.0);
-    assert(it.extent().is_point());
-    assert(it.extent().start == point_type({3, 3}));
+    TEST_ASSERT(*it == 33.0);
+    TEST_ASSERT(it.extent().is_point());
+    TEST_ASSERT(it.extent().start == point_type({3, 3}));
 
     res = ctree.search({{0, 0}, {4, 4}}, search_type::match);
     n = std::distance(res.begin(), res.end());
-    assert(n == 1);
+    TEST_ASSERT(n == 1);
     it = res.begin();
-    assert(*it == 10.0);
-    assert(it.extent() == extent_type({{0, 0}, {4, 4}}));
+    TEST_ASSERT(*it == 10.0);
+    TEST_ASSERT(it.extent() == extent_type({{0, 0}, {4, 4}}));
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

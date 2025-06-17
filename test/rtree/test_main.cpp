@@ -29,8 +29,6 @@
 #include "test_global.hpp" // This must be the first header to be included.
 #include "test_global_rtree.hpp"
 
-using namespace std;
-
 int main()
 {
     try
@@ -55,11 +53,11 @@ int main()
     }
     catch (const std::exception& e)
     {
-        cout << "Test failed: " << e.what() << endl;
+        std::cout << "Test failed: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
-    cout << "Test finished successfully!" << endl;
+    std::cout << "Test finished successfully!" << std::endl;
 
     return EXIT_SUCCESS;
 }
