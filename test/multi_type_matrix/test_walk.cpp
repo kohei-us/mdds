@@ -34,7 +34,6 @@
 #include <memory>
 
 using namespace mdds;
-using namespace std;
 
 // Standard matrix that uses std::string as its string type.
 typedef multi_type_matrix<mtm::std_string_traits> mtx_type;
@@ -50,7 +49,7 @@ struct print_element
 {
     void operator()(const _T& v) const
     {
-        cout << v << endl;
+        std::cout << v << std::endl;
     }
 };
 
@@ -91,7 +90,7 @@ public:
             }
             break;
             case mtm::element_empty:
-                cout << "- empty block -" << endl;
+                std::cout << "- empty block -" << std::endl;
                 break;
             default:;
         }
@@ -144,9 +143,9 @@ void mtm_test_walk()
     mtx.set(3, 0, 1.2);
     mtx.set(4, 0, 1.3);
     mtx.set(5, 0, 1.4);
-    mtx.set(7, 0, string("A"));
-    mtx.set(8, 0, string("B"));
-    mtx.set(9, 0, string("C"));
+    mtx.set(7, 0, std::string("A"));
+    mtx.set(8, 0, std::string("B"));
+    mtx.set(9, 0, std::string("C"));
     mtx.set(10, 0, false);
     mtx.set(11, 0, true);
     walk_element_block func;
@@ -166,8 +165,8 @@ void mtm_test_walk_subset()
         mtx.set(1, 1, 1.1);
         mtx.set(2, 1, 1.2);
         mtx.set(3, 1, 1.3);
-        mtx.set(0, 2, string("A1"));
-        mtx.set(1, 2, string("A2"));
+        mtx.set(0, 2, std::string("A1"));
+        mtx.set(1, 2, std::string("A2"));
         mtx.set(2, 2, false);
         walk_element_block func;
         func = mtx.walk(func, mtx_type::size_pair_type(1, 1), mtx_type::size_pair_type(2, 2));
@@ -178,10 +177,10 @@ void mtm_test_walk_subset()
         mtx_type mtx(4, 4);
         mtx.set(0, 1, 1.0);
         mtx.set(1, 1, 1.1);
-        mtx.set(0, 2, string("A1"));
-        mtx.set(1, 2, string("A2"));
-        mtx.set(2, 2, string("A3"));
-        mtx.set(3, 2, string("A4"));
+        mtx.set(0, 2, std::string("A1"));
+        mtx.set(1, 2, std::string("A2"));
+        mtx.set(2, 2, std::string("A3"));
+        mtx.set(3, 2, std::string("A4"));
         walk_element_block func;
         func = mtx.walk(func, mtx_type::size_pair_type(1, 1), mtx_type::size_pair_type(2, 2));
         assert(func.get_node_count() == 3);
@@ -189,12 +188,12 @@ void mtm_test_walk_subset()
 }
 
 template<typename _Blk>
-void push_to_buffer(const mtx_type::element_block_node_type& node, std::vector<string>& buf)
+void push_to_buffer(const mtx_type::element_block_node_type& node, std::vector<std::string>& buf)
 {
     auto it = node.begin<_Blk>();
     auto ite = node.end<_Blk>();
     std::for_each(it, ite, [&](const typename _Blk::value_type& v) {
-        ostringstream os;
+        std::ostringstream os;
         os << v;
         buf.push_back(os.str());
     });
@@ -202,13 +201,13 @@ void push_to_buffer(const mtx_type::element_block_node_type& node, std::vector<s
 
 template<>
 void push_to_buffer<mtx_type::boolean_block_type>(
-    const mtx_type::element_block_node_type& node, std::vector<string>& buf)
+    const mtx_type::element_block_node_type& node, std::vector<std::string>& buf)
 {
     using blk_type = mtx_type::boolean_block_type;
     auto it = node.begin<blk_type>();
     auto ite = node.end<blk_type>();
     std::for_each(it, ite, [&](bool v) {
-        ostringstream os;
+        std::ostringstream os;
         os << (v ? "true" : "false");
         buf.push_back(os.str());
     });
@@ -216,7 +215,7 @@ void push_to_buffer<mtx_type::boolean_block_type>(
 
 class parallel_walk_element_block
 {
-    using strlist_type = std::vector<string>;
+    using strlist_type = std::vector<std::string>;
 
     std::string m_name;
     std::shared_ptr<strlist_type> m_ls;
@@ -268,9 +267,9 @@ public:
 
     void operator()(const mtx_type::element_block_node_type& left, const mtx_type::element_block_node_type& right)
     {
-        cout << "--" << endl;
-        cout << "l: " << left << endl;
-        cout << "r: " << right << endl;
+        std::cout << "--" << std::endl;
+        std::cout << "l: " << left << std::endl;
+        std::cout << "r: " << right << std::endl;
         process_node(left, *m_ls);
         process_node(right, *m_rs);
     }
@@ -283,7 +282,7 @@ public:
         auto ite = m_ls->end();
         for (; it != ite; ++it, ++it2)
         {
-            ostringstream os;
+            std::ostringstream os;
             os << *it << ":" << *it2;
             buf.push_back(os.str());
         }
@@ -308,7 +307,7 @@ public:
     }
 };
 
-bool check_concat_buffer(std::vector<string> concat, const char* expected[], size_t expected_size)
+bool check_concat_buffer(std::vector<std::string> concat, const char* expected[], size_t expected_size)
 {
     if (concat.size() != expected_size)
     {
@@ -333,15 +332,15 @@ void mtm_test_parallel_walk()
     stack_printer __stack_printer__("::mtm_test_parallel_walk");
 
     parallel_walk_element_block func("test0");
-    mtx_type left(10, 1), right(10, 1, string("'+'"));
+    mtx_type left(10, 1), right(10, 1, std::string("'+'"));
 
     right.set(2, 0, 1.2);
     right.set(8, 0, false);
     right.set(9, 0, true);
 
     left.set(0, 0, 122.0);
-    left.set(4, 0, string("A12"));
-    left.set(5, 0, string("A25"));
+    left.set(4, 0, std::string("A12"));
+    left.set(5, 0, std::string("A25"));
 
     {
         func = left.walk(func, right);
@@ -404,10 +403,10 @@ void mtm_test_parallel_walk_non_equal_size()
     left.set(1, 2, 80.0);
     left.set(2, 2, 90.0);
 
-    right.set(0, 0, string("A"));
-    right.set(1, 0, string("B"));
-    right.set(0, 1, string("C"));
-    right.set(1, 1, string("D"));
+    right.set(0, 0, std::string("A"));
+    right.set(1, 0, std::string("B"));
+    right.set(0, 1, std::string("C"));
+    right.set(1, 1, std::string("D"));
 
     {
         // Only walk the top-left 2x2 range.
@@ -456,7 +455,7 @@ void mtm_test_parallel_walk_non_equal_size()
 void mtm_test_walk_with_lambda()
 {
     stack_printer __stack_printer__("::mtm_test_walk_with_lambda");
-    vector<double> values = {1.1, 1.2, 1.3, 1.4};
+    std::vector<double> values = {1.1, 1.2, 1.3, 1.4};
     mtx_type mtx(2, 2, values.begin(), values.end());
 
     mtx.walk([](const mtx_type::element_block_node_type& node) {
@@ -501,7 +500,7 @@ void mtm_test_parallel_walk_with_lambda()
 {
     stack_printer __stack_printer__("::mtm_test_parallel_walk_with_lambda");
 
-    vector<double> values = {1.1, 1.2, 1.3, 1.4};
+    std::vector<double> values = {1.1, 1.2, 1.3, 1.4};
     mtx_type mtx1(2, 2, values.begin(), values.end());
 
     mtx_type mtx2(2, 2);
@@ -540,11 +539,11 @@ void mtm_test_parallel_walk_with_lambda()
 
     std::vector<section_pair> actual;
 
-    cout << "--" << endl;
+    std::cout << "--" << std::endl;
 
     mtx1.walk(
         [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r) {
-            cout << "left: " << l << "; right: " << r << endl;
+            std::cout << "left: " << l << "; right: " << r << std::endl;
             actual.emplace_back();
             actual.back().left.type = l.type;
             actual.back().left.offset = l.offset;
@@ -581,11 +580,11 @@ void mtm_test_parallel_walk_with_lambda()
 
     actual.clear();
 
-    cout << "--" << endl;
+    std::cout << "--" << std::endl;
 
     mtx3.walk(
         [&](const mtx_type::element_block_node_type& l, const mtx_type::element_block_node_type& r) {
-            cout << "left: " << l << "; right: " << r << endl;
+            std::cout << "left: " << l << "; right: " << r << std::endl;
             actual.emplace_back();
             actual.back().left.type = l.type;
             actual.back().left.offset = l.offset;
@@ -635,6 +634,6 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    cout << "Test finished successfully!" << endl;
+    std::cout << "Test finished successfully!" << std::endl;
     return EXIT_SUCCESS;
 }

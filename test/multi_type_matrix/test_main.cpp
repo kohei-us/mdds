@@ -34,7 +34,6 @@
 #include <functional>
 
 using namespace mdds;
-using namespace std;
 
 // Standard matrix that uses std::string as its string type.
 typedef multi_type_matrix<mtm::std_string_traits> mtx_type;
@@ -43,16 +42,16 @@ typedef multi_type_matrix<mtm::std_string_traits> mtx_type;
 
 class custom_string
 {
-    string m_val;
+    std::string m_val;
 
 public:
     custom_string()
     {}
-    custom_string(const string& val) : m_val(val)
+    custom_string(const std::string& val) : m_val(val)
     {}
     custom_string(const custom_string& r) : m_val(r.m_val)
     {}
-    const string& get() const
+    const std::string& get() const
     {
         return m_val;
     }
@@ -66,7 +65,7 @@ public:
     }
 };
 
-ostream& operator<<(ostream& os, const custom_string& str)
+std::ostream& operator<<(std::ostream& os, const custom_string& str)
 {
     os << str.get();
     return os;
@@ -97,8 +96,8 @@ void check_value(mtx_type& mtx, size_t row, size_t col, const _T& val)
 
 bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
 {
-    size_t row_count = min(mx1.size().row, mx2.size().row);
-    size_t col_count = min(mx1.size().column, mx2.size().column);
+    size_t row_count = std::min(mx1.size().row, mx2.size().row);
+    size_t col_count = std::min(mx1.size().column, mx2.size().column);
     for (size_t i = 0; i < row_count; ++i)
     {
         for (size_t j = 0; j < col_count; ++j)
@@ -129,7 +128,7 @@ bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
                 case mtm::element_string:
                     if (mx1.get<mtx_type::string_type>(i, j) != mx2.get<mtx_type::string_type>(i, j))
                     {
-                        cout << "check_copy: (row=" << i << ",column=" << j << ") different string values." << endl;
+                        std::cout << "check_copy: (row=" << i << ",column=" << j << ") different string values." << std::endl;
                         return false;
                     }
                     break;
@@ -162,7 +161,7 @@ void mtm_test_construction()
 
     {
         // construction to a specific size with default value.
-        mtx_type mtx(2, 5, string("foo"));
+        mtx_type mtx(2, 5, std::string("foo"));
         mtx_type::size_pair_type sz = mtx.size();
         assert(sz.row == 2 && sz.column == 5);
         assert(mtx.get_type(0, 0) == mtm::element_string);
@@ -173,7 +172,7 @@ void mtm_test_construction()
 
     {
         // construct with an array of data.
-        vector<double> vals;
+        std::vector<double> vals;
         vals.push_back(1.1);
         vals.push_back(1.2);
         vals.push_back(1.3);
@@ -194,26 +193,26 @@ void mtm_test_construction()
         catch (const invalid_arg_error& e)
         {
             // Good.
-            cout << "exception caught (as expected) which says: " << e.what() << endl;
+            std::cout << "exception caught (as expected) which says: " << e.what() << std::endl;
         }
 
         try
         {
             // Trying to initialize a matrix with array of unsupported data
             // type should end with an exception thrown.
-            vector<int8_t> vals_ptr(4, 22);
+            std::vector<int8_t> vals_ptr(4, 22);
             mtx_type mtx3(2, 2, vals_ptr.begin(), vals_ptr.end());
             assert(!"Construction of this matrix should have failed!");
         }
-        catch (const exception& e)
+        catch (const std::exception& e)
         {
-            cout << "exception caught (as expected) which says: " << e.what() << endl;
+            std::cout << "exception caught (as expected) which says: " << e.what() << std::endl;
         }
     }
 
     {
         // Construct with an array of custom string type.
-        vector<custom_string> vals;
+        std::vector<custom_string> vals;
         vals.push_back(custom_string("A"));
         vals.push_back(custom_string("B"));
         vals.push_back(custom_string("C"));
@@ -251,12 +250,12 @@ void mtm_test_data_insertion()
         check_value(mtx, 1, 1, 1.2);
         check_value(mtx, 2, 1, true);
         check_value(mtx, 3, 1, false);
-        check_value(mtx, 0, 2, string("foo"));
+        check_value(mtx, 0, 2, std::string("foo"));
         check_value(mtx, 1, 2, 23.4);
 
         // Overwrite
         assert(mtx.get_type(1, 1) == mtm::element_numeric);
-        check_value(mtx, 1, 1, string("baa"));
+        check_value(mtx, 1, 1, std::string("baa"));
 
         // Setting empty.
         assert(mtx.get_type(1, 1) == mtm::element_string);
@@ -277,7 +276,7 @@ void mtm_test_data_insertion_multiple()
         mtx_type mtx(3, 5);
 
         // data shorter than column length
-        vector<double> vals;
+        std::vector<double> vals;
         vals.push_back(1.1);
         vals.push_back(1.2);
         mtx.set_column(2, vals.begin(), vals.end());
@@ -361,7 +360,7 @@ void mtm_test_data_insertion_integer()
     // | double |  int   |
     // +--------+--------+
 
-    vector<mtx_type::element_block_node_type> nodes;
+    std::vector<mtx_type::element_block_node_type> nodes;
 
     std::function<void(const mtx_type::element_block_node_type&)> f =
         [&nodes](const mtx_type::element_block_node_type& node) { nodes.push_back(node); };
@@ -430,7 +429,7 @@ void mtm_test_set_empty()
 
     {
         // Set a range of elements empty.
-        mtx_type mtx(5, 3, string("A"));
+        mtx_type mtx(5, 3, std::string("A"));
         cout << "setting element (0,1) to (1,2) empty..." << endl;
         mtx.set_empty(1, 0, 6); // rows 1-4 in column 0 and rows 0-1 in column 1.
         assert(mtx.get_type(0, 0) == mtm::element_string);
@@ -489,7 +488,7 @@ void mtm_test_transpose()
     mtx.set(0, 0, 1.1);
     mtx.set(1, 0, 1.2);
     mtx.set(2, 0, 1.3);
-    mtx.set(1, 5, string("foo"));
+    mtx.set(1, 5, std::string("foo"));
     mtx.set(2, 3, true);
     mtx.transpose();
     assert(mtx.size().row == 6);
@@ -497,7 +496,7 @@ void mtm_test_transpose()
     assert(mtx.get<double>(0, 0) == 1.1);
     assert(mtx.get<double>(0, 1) == 1.2);
     assert(mtx.get<double>(0, 2) == 1.3);
-    assert(mtx.get<string>(5, 1) == "foo");
+    assert(mtx.get<std::string>(5, 1) == "foo");
     assert(mtx.get<bool>(3, 2) == true);
 }
 
@@ -518,10 +517,10 @@ void mtm_test_resize()
     assert(mtx.get_type(0, 2) == mtm::element_empty);
 
     mtx.set(0, 0, 1.1);
-    mtx.set(0, 1, string("foo"));
+    mtx.set(0, 1, std::string("foo"));
     mtx.set(0, 2, true);
     assert(mtx.get<double>(0, 0) == 1.1);
-    assert(mtx.get<string>(0, 1) == "foo");
+    assert(mtx.get<std::string>(0, 1) == "foo");
     assert(mtx.get<bool>(0, 2) == true);
 
     // This shouldn't alter the original content.
@@ -529,7 +528,7 @@ void mtm_test_resize()
     assert(mtx.size().row == 2);
     assert(mtx.size().column == 4);
     assert(mtx.get<double>(0, 0) == 1.1);
-    assert(mtx.get<string>(0, 1) == "foo");
+    assert(mtx.get<std::string>(0, 1) == "foo");
     assert(mtx.get<bool>(0, 2) == true);
     assert(mtx.get_type(1, 3) == mtm::element_empty);
 
@@ -537,7 +536,7 @@ void mtm_test_resize()
     assert(mtx.size().row == 2);
     assert(mtx.size().column == 2);
     assert(mtx.get<double>(0, 0) == 1.1);
-    assert(mtx.get<string>(0, 1) == "foo");
+    assert(mtx.get<std::string>(0, 1) == "foo");
     assert(mtx.get_type(1, 0) == mtm::element_empty);
     assert(mtx.get_type(1, 1) == mtm::element_empty);
 
@@ -572,15 +571,15 @@ void mtm_test_resize()
     assert(mtx.get<double>(1, 0) == 12.5);
 
     // Resize again with initial value of different type.
-    mtx.resize(3, 2, string("extra"));
+    mtx.resize(3, 2, std::string("extra"));
     assert(mtx.size().row == 3);
     assert(mtx.size().column == 2);
     assert(mtx.get<double>(0, 0) == 12.5);
     assert(mtx.get<double>(1, 0) == 12.5);
-    assert(mtx.get<string>(2, 1) == "extra");
-    assert(mtx.get<string>(2, 0) == "extra");
-    assert(mtx.get<string>(1, 1) == "extra");
-    assert(mtx.get<string>(0, 1) == "extra");
+    assert(mtx.get<std::string>(2, 1) == "extra");
+    assert(mtx.get<std::string>(2, 0) == "extra");
+    assert(mtx.get<std::string>(1, 1) == "extra");
+    assert(mtx.get<std::string>(0, 1) == "extra");
 }
 
 void mtm_test_copy()
@@ -591,8 +590,8 @@ void mtm_test_copy()
     mtx_type mx1(5, 5), mx2(2, 2);
     mx2.set(0, 0, 1.2);
     mx2.set(1, 1, true);
-    mx2.set(0, 1, string("test"));
-    mx2.set(1, 0, string("foo"));
+    mx2.set(0, 1, std::string("test"));
+    mx2.set(1, 0, std::string("foo"));
     mx1.copy(mx2);
 
     bool success = check_copy(mx1, mx2);
@@ -605,8 +604,8 @@ void mtm_test_copy()
     assert(success);
 
     // from a larger matrix to a smaller one.
-    mx1.set(0, 0, string("test1"));
-    mx2.set(0, 0, string("test2"));
+    mx1.set(0, 0, std::string("test1"));
+    mx2.set(0, 0, std::string("test2"));
     mx2.set(4, 4, true);
     mx2.set(7, 7, false);
     mx1.copy(mx2);
@@ -637,7 +636,7 @@ void mtm_test_copy_from_array()
 {
     stack_printer __stack_printer__("::mtm_test_copy_from_array");
 
-    vector<double> src;
+    std::vector<double> src;
     src.reserve(9);
     for (size_t i = 0; i < 9; ++i)
         src.push_back(double(i));
@@ -663,7 +662,7 @@ void mtm_test_copy_from_array()
     assert(mx.get_type(2, 3) == mtm::element_empty);
     assert(mx.get_type(3, 3) == mtm::element_empty);
 
-    vector<std::string> src2;
+    std::vector<std::string> src2;
     src2.reserve(4);
     src2.push_back("A");
     src2.push_back("B");
@@ -690,7 +689,7 @@ void mtm_test_copy_from_array()
     assert(mx.get_type(2, 3) == mtm::element_empty);
     assert(mx.get_type(3, 3) == mtm::element_empty);
 
-    vector<bool> src3;
+    std::vector<bool> src3;
     src3.push_back(true);
     src3.push_back(false);
     src3.push_back(true);
@@ -703,7 +702,7 @@ void mtm_test_copy_from_array()
     assert(mx.get<bool>(3, 0) == false);
 
     // Try to copy from an array of invalid type.
-    vector<int8_t> src_invalid;
+    std::vector<int8_t> src_invalid;
     src_invalid.push_back('a');
     src_invalid.push_back('b');
 
@@ -729,7 +728,7 @@ void mtm_test_assignment()
     assert(mx_orig == mx_copied);
 
     mx_orig.set(2, 3, true);
-    mx_orig.set(1, 1, string("foo"));
+    mx_orig.set(1, 1, std::string("foo"));
     mx_copied = mx_orig;
     assert(mx_orig == mx_copied);
 }
@@ -745,7 +744,7 @@ void mtm_test_numeric()
     assert(mtx.numeric());
 
     // String element is not.
-    mtx.set(1, 0, string("foo"));
+    mtx.set(1, 0, std::string("foo"));
     assert(!mtx.numeric());
 
     mtx.set(1, 0, 1.3);
@@ -776,7 +775,7 @@ void mtm_test_position()
     stack_printer __stack_printer__("::mtm_test_position");
     mtx_type mtx(3, 2);
     mtx.set(0, 0, 1.0);
-    mtx.set(0, 1, string("foo"));
+    mtx.set(0, 1, std::string("foo"));
     mtx.set(1, 0, 2.0);
     mtx.set(1, 1, 2.1);
     mtx.set(2, 0, true);
@@ -815,7 +814,7 @@ void mtm_test_position()
     assert(mtx.get_numeric(2, 0) == 12.3);
 
     pos = mtx.position(2, 1);
-    mtx.set(pos, string("ABC"));
+    mtx.set(pos, std::string("ABC"));
     assert(mtx.get_type(2, 1) == mtm::element_string);
     assert(mtx.get_string(2, 1) == "ABC");
 
@@ -859,7 +858,7 @@ void mtm_test_set_data_via_position()
     stack_printer __stack_printer__("::mtm_test_set_data_via_position");
     mtx_type mtx(5, 4);
     mtx_type::position_type pos = mtx.position(0, 1);
-    vector<double> data;
+    std::vector<double> data;
     data.push_back(1.1);
     data.push_back(1.2);
     data.push_back(1.3);
@@ -876,10 +875,10 @@ void mtm_test_set_data_via_position()
     assert(mtx_pos.row == 0);
     assert(mtx_pos.column == 1);
     pos = mtx.position(pos, 0, 2);
-    pos = mtx.set(pos, string("test"));
+    pos = mtx.set(pos, std::string("test"));
     pos = mtx_type::next_position(pos);
     pos = mtx.set(pos, true);
-    assert(mtx.get<string>(0, 2) == "test");
+    assert(mtx.get<std::string>(0, 2) == "test");
     assert(mtx.get<bool>(1, 2) == true);
 }
 
@@ -935,7 +934,7 @@ void mtm_perf_test_storage_set_numeric()
             mtx_type mx(rowsize, colsize, 0.0);
             for (size_t col = 0; col < colsize; ++col)
             {
-                vector<double> vals;
+                std::vector<double> vals;
                 vals.reserve(rowsize);
                 for (size_t row = 0; row < rowsize; ++row)
                     vals.push_back(1.0);
@@ -949,7 +948,7 @@ void mtm_perf_test_storage_set_numeric()
     for (size_t colsize = 1; colsize <= 5; ++colsize)
     {
         // Fill the data array before insertion.
-        vector<double> vals;
+        std::vector<double> vals;
         vals.reserve(rowsize);
         for (size_t row = 0; row < rowsize; ++row)
             vals.push_back(1.0);
@@ -973,7 +972,7 @@ void mtm_perf_test_storage_set_numeric()
             mtx_type mx(rowsize, colsize);
             for (size_t col = 0; col < colsize; ++col)
             {
-                vector<double> vals;
+                std::vector<double> vals;
                 vals.reserve(rowsize);
                 for (size_t row = 0; row < rowsize; ++row)
                     vals.push_back(1.0);
@@ -987,7 +986,7 @@ void mtm_perf_test_storage_set_numeric()
     for (size_t colsize = 1; colsize <= 5; ++colsize)
     {
         // Fill the data array before insertion.
-        vector<double> vals;
+        std::vector<double> vals;
         vals.reserve(rowsize);
         for (size_t row = 0; row < rowsize; ++row)
             vals.push_back(1.0);
