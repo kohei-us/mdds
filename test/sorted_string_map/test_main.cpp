@@ -138,25 +138,25 @@ void ssmap_test_basic()
     {
         std::cout << "* key = " << entries[i].key << std::endl;
         bool res = names.find(entries[i].key) == entries[i].value;
-        assert(res);
+        TEST_ASSERT(res);
     }
 
     // Try invalid keys.
-    assert(names.find("foo", 3) == name_none);
-    assert(names.find("andy133", 7) == name_none);
+    TEST_ASSERT(names.find("foo", 3) == name_none);
+    TEST_ASSERT(names.find("andy133", 7) == name_none);
 
     // reverse lookup
-    assert(names.find_key(name_bruce) == "bruce");
-    assert(names.find_key(name_charlie) == "charlie");
-    assert(names.find_key(name_david) == "david");
+    TEST_ASSERT(names.find_key(name_bruce) == "bruce");
+    TEST_ASSERT(names.find_key(name_charlie) == "charlie");
+    TEST_ASSERT(names.find_key(name_david) == "david");
 
     // negative case
-    assert(names.find_key(name_none).empty());
+    TEST_ASSERT(names.find_key(name_none).empty());
 
     // 'name_andy' is associated with three keys
     const std::unordered_set<std::string_view> keys_andy = {"andy", "andy1", "andy13"};
 
-    assert(keys_andy.count(names.find_key(name_andy)) > 0);
+    TEST_ASSERT(keys_andy.count(names.find_key(name_andy)) > 0);
 }
 
 template<template<typename> class KeyFinderT>
@@ -180,20 +180,20 @@ void ssmap_test_mixed_case_null()
     {
         std::cout << "* key = " << entries[i].key << std::endl;
         bool res = names.find(entries[i].key) == entries[i].value;
-        assert(res);
+        TEST_ASSERT(res);
     }
 
     // Try invalid keys.
-    assert(names.find(MDDS_ASCII("NUll")) == -1);
-    assert(names.find(MDDS_ASCII("Oull")) == -1);
-    assert(names.find(MDDS_ASCII("Mull")) == -1);
-    assert(names.find(MDDS_ASCII("hell")) == -1);
+    TEST_ASSERT(names.find(MDDS_ASCII("NUll")) == -1);
+    TEST_ASSERT(names.find(MDDS_ASCII("Oull")) == -1);
+    TEST_ASSERT(names.find(MDDS_ASCII("Mull")) == -1);
+    TEST_ASSERT(names.find(MDDS_ASCII("hell")) == -1);
 
     // reverse lookup
-    assert(names.find_key(1) == "NULL");
-    assert(names.find_key(2) == "Null");
-    assert(names.find_key(3) == "null");
-    assert(names.find_key(4) == "~");
+    TEST_ASSERT(names.find_key(1) == "NULL");
+    TEST_ASSERT(names.find_key(2) == "Null");
+    TEST_ASSERT(names.find_key(3) == "null");
+    TEST_ASSERT(names.find_key(4) == "~");
 }
 
 template<template<typename> class KeyFinderT>
@@ -224,9 +224,9 @@ void ssmap_test_find_string_view()
     for (const auto& entry : entries)
     {
         auto v = mapping.find(entry.key);
-        assert(v == entry.value);
+        TEST_ASSERT(v == entry.value);
         auto k = mapping.find_key(entry.value);
-        assert(k == entry.key);
+        TEST_ASSERT(k == entry.key);
     }
 
     constexpr std::string_view unknown_keys[] = {
@@ -236,9 +236,9 @@ void ssmap_test_find_string_view()
     for (const auto& key : unknown_keys)
     {
         auto v = mapping.find(key);
-        assert(v == cv_unknown);
+        TEST_ASSERT(v == cv_unknown);
         auto k = mapping.find_key(cv_unknown);
-        assert(k.empty());
+        TEST_ASSERT(k.empty());
     }
 }
 
@@ -262,16 +262,16 @@ void ssmap_test_move_only_value_type()
     for (const auto& e : entries)
     {
         const move_only_value& v = mapping.find(e.key);
-        assert(v.value == e.value.value);
+        TEST_ASSERT(v.value == e.value.value);
         std::string_view k = mapping.find_key(e.value);
-        assert(k == e.key);
+        TEST_ASSERT(k == e.key);
     }
 
     // test for null value
     const auto& v = mapping.find("0x05");
-    assert(v.value == 0);
+    TEST_ASSERT(v.value == 0);
     std::string_view k = mapping.find_key({5});
-    assert(k.empty()); // not found
+    TEST_ASSERT(k.empty()); // not found
 }
 
 void ssmap_test_perf()
@@ -282,7 +282,7 @@ void ssmap_test_perf()
     {
         // load the entire file content in memory
         std::ifstream in("../../misc/sorted_string_data.dat");
-        assert(in);
+        TEST_ASSERT(in);
 
         std::ostringstream os;
         os << in.rdbuf();
@@ -326,7 +326,7 @@ void ssmap_test_perf()
         for (int i = 0; i < repeat; ++i)
         {
             auto v = names.find("test");
-            assert(v == -1);
+            TEST_ASSERT(v == -1);
         }
     }
 
@@ -336,7 +336,7 @@ void ssmap_test_perf()
         for (int i = 0; i < repeat; ++i)
         {
             auto v = names.find(entries.back().key);
-            assert(v == entries.back().value);
+            TEST_ASSERT(v == entries.back().value);
         }
     }
 
@@ -347,7 +347,7 @@ void ssmap_test_perf()
         for (int i = 0; i < repeat; ++i)
         {
             auto v = names.find(entries[pos].key);
-            assert(v == entries[pos].value);
+            TEST_ASSERT(v == entries[pos].value);
         }
     }
 
@@ -357,7 +357,7 @@ void ssmap_test_perf()
         for (int i = 0; i < repeat; ++i)
         {
             auto v = names.find(entries.front().key);
-            assert(v == entries.front().value);
+            TEST_ASSERT(v == entries.front().value);
         }
     }
 }
