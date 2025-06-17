@@ -147,7 +147,7 @@ struct _custom_variable_serializer
 
     static void read(std::istream& is, size_t n, _custom_variable_value& v)
     {
-        assert(n > 0);
+        TEST_ASSERT(n > 0);
         char c;
         is.read(&c, 1);
 
@@ -163,7 +163,7 @@ struct _custom_variable_serializer
                 v.type = _custom_variable_value::v_type::int64;
                 break;
             default:
-                assert(!"invalid value type");
+                TEST_ASSERT(!"invalid value type");
         }
 
         n -= 1;
@@ -172,19 +172,19 @@ struct _custom_variable_serializer
         switch (v.type)
         {
             case _custom_variable_value::v_type::fp32:
-                assert(n == 4);
+                TEST_ASSERT(n == 4);
                 is.read(bv.buffer, 4);
                 v.value.fp32 = bv.fp32;
                 break;
             case _custom_variable_value::v_type::int64:
-                assert(n == 8);
+                TEST_ASSERT(n == 8);
                 is.read(bv.buffer, 8);
                 v.value.int64 = bv.int64;
                 break;
             case _custom_variable_value::v_type::unknown:
                 break;
             default:
-                assert(!"invalid value type");
+                TEST_ASSERT(!"invalid value type");
         }
     }
 };
@@ -238,7 +238,7 @@ struct _custom_fixed_serializer
 
     static void read(std::istream& is, size_t n, _custom_fixed_value& v)
     {
-        assert(n == 1);
+        TEST_ASSERT(n == 1);
         char bv = -1;
         is.read(&bv, 1);
 
@@ -283,7 +283,7 @@ void test_1()
         restored.load_state(state);
     }
 
-    assert(restored == empty_db);
+    TEST_ASSERT(restored == empty_db);
 }
 
 void test_2()
@@ -306,14 +306,14 @@ void test_2()
     }
 
     packed_int_map_type restored;
-    assert(restored != db);
+    TEST_ASSERT(restored != db);
 
     {
         std::istringstream state(saved_state);
         restored.load_state(state);
     }
 
-    assert(restored == db);
+    TEST_ASSERT(restored == db);
 }
 
 void test_3()
@@ -348,19 +348,19 @@ void test_3()
     // Run some search.
     auto results = db.prefix_search("Mi");
     auto it = results.begin();
-    assert(it != results.end());
-    assert(it->first == "Michiko");
-    assert(it->second == "MICHIKO");
+    TEST_ASSERT(it != results.end());
+    TEST_ASSERT(it->first == "Michiko");
+    TEST_ASSERT(it->second == "MICHIKO");
     ++it;
-    assert(it != results.end());
-    assert(it->first == "Miriam");
-    assert(it->second == "MIRIAM");
+    TEST_ASSERT(it != results.end());
+    TEST_ASSERT(it->first == "Miriam");
+    TEST_ASSERT(it->second == "MIRIAM");
     ++it;
-    assert(it != results.end());
-    assert(it->first == "Mitzi");
-    assert(it->second == "MITZI");
+    TEST_ASSERT(it != results.end());
+    TEST_ASSERT(it->first == "Mitzi");
+    TEST_ASSERT(it->second == "MITZI");
     ++it;
-    assert(it == results.end());
+    TEST_ASSERT(it == results.end());
 
     std::string saved_state;
 
@@ -377,7 +377,7 @@ void test_3()
         restored.load_state(state);
     }
 
-    assert(db == restored);
+    TEST_ASSERT(db == restored);
 }
 
 void test_4()
@@ -397,7 +397,7 @@ void test_4()
     };
 
     map_type db(entries.data(), entries.size());
-    assert(db.size() == entries.size());
+    TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
     {
@@ -413,7 +413,7 @@ void test_4()
         restored.load_state(state);
     }
 
-    assert(db == restored);
+    TEST_ASSERT(db == restored);
 }
 
 void test_5()
@@ -429,7 +429,7 @@ void test_5()
     };
 
     map_type db(entries.data(), entries.size());
-    assert(db.size() == entries.size());
+    TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
     {
@@ -445,7 +445,7 @@ void test_5()
         restored.load_state(state);
     }
 
-    assert(db == restored);
+    TEST_ASSERT(db == restored);
 }
 
 template<typename SeqT>
@@ -466,7 +466,7 @@ void test_6()
     };
 
     map_type db(entries.data(), entries.size());
-    assert(db.size() == entries.size());
+    TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
     {
@@ -482,7 +482,7 @@ void test_6()
         restored.load_state(state);
     }
 
-    assert(db == restored);
+    TEST_ASSERT(db == restored);
 }
 
 void test_7()
@@ -498,7 +498,7 @@ void test_7()
     };
 
     map_type db(entries.data(), entries.size());
-    assert(db.size() == entries.size());
+    TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
     {
@@ -514,7 +514,7 @@ void test_7()
         restored.load_state<_custom_variable_serializer>(state);
     }
 
-    assert(db == restored);
+    TEST_ASSERT(db == restored);
 }
 
 void test_8()
@@ -531,7 +531,7 @@ void test_8()
     };
 
     map_type db(entries.data(), entries.size());
-    assert(db.size() == entries.size());
+    TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
     {
@@ -547,12 +547,12 @@ void test_8()
         restored.load_state<_custom_fixed_serializer>(state);
     }
 
-    assert(db == restored);
+    TEST_ASSERT(db == restored);
 
     // Run some query to make sure it is still functional.
     auto it = restored.find("Tracie");
-    assert(it->first == "Tracie");
-    assert(it->second.value_string == "one");
+    TEST_ASSERT(it->first == "Tracie");
+    TEST_ASSERT(it->second.value_string == "one");
 }
 
 } // anonymous namespace

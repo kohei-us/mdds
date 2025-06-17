@@ -70,16 +70,16 @@ void test_basic()
     {
         auto results = store.prefix_search("te");
         auto it = results.begin();
-        assert(it != results.end());
-        assert(it->second.value == "two");
-        assert(++it == results.end());
+        TEST_ASSERT(it != results.end());
+        TEST_ASSERT(it->second.value == "two");
+        TEST_ASSERT(++it == results.end());
     }
 
     {
         auto it = store.find("test");
-        assert(it != store.end());
-        assert(it->second.value == "two");
-        assert(++it == store.end());
+        TEST_ASSERT(it != store.end());
+        TEST_ASSERT(it->second.value == "two");
+        TEST_ASSERT(++it == store.end());
     }
 
     auto packed = store.pack();
@@ -87,16 +87,16 @@ void test_basic()
     {
         auto results = packed.prefix_search("te");
         auto it = results.begin();
-        assert(it != results.end());
-        assert(it->second.value == "two");
-        assert(++it == results.end());
+        TEST_ASSERT(it != results.end());
+        TEST_ASSERT(it->second.value == "two");
+        TEST_ASSERT(++it == results.end());
     }
 
     {
         auto it = packed.find("test");
-        assert(it != packed.end());
-        assert(it->second.value == "two");
-        assert(++it == packed.end());
+        TEST_ASSERT(it != packed.end());
+        TEST_ASSERT(it->second.value == "two");
+        TEST_ASSERT(++it == packed.end());
     }
 }
 
@@ -110,52 +110,52 @@ void test_node_traversal()
 
     {
         auto node = store.root_node();
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('o');
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('n');
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('e');
-        assert(node.valid());
-        assert(node.has_value());
-        assert(node.value().value == "one");
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(node.has_value());
+        TEST_ASSERT(node.value().value == "one");
 
         node = store.root_node();
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('t');
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('w');
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('o');
-        assert(node.valid());
-        assert(node.has_value());
-        assert(node.value().value == "two");
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(node.has_value());
+        TEST_ASSERT(node.value().value == "two");
     }
 
     auto packed = store.pack();
 
     {
         auto node = packed.root_node();
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('o');
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('n');
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('e');
-        assert(node.valid());
-        assert(node.has_value());
-        assert(node.value().value == "one");
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(node.has_value());
+        TEST_ASSERT(node.value().value == "one");
 
         node = packed.root_node();
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('t');
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('w');
-        assert(node.valid());
+        TEST_ASSERT(node.valid());
         node = node.child('o');
-        assert(node.valid());
-        assert(node.has_value());
-        assert(node.value().value == "two");
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(node.has_value());
+        TEST_ASSERT(node.value().value == "two");
     }
 }
 
@@ -170,12 +170,12 @@ void test_equality()
     store2.insert("two", move_value("two"));
 
     // TODO: implement operator== for trie_map
-    //  assert(store1 == store2);
+    //  TEST_ASSERT(store1 == store2);
 
     auto packed1 = store1.pack();
     auto packed2 = store2.pack();
 
-    assert(packed1 == packed2);
+    TEST_ASSERT(packed1 == packed2);
 }
 
 void test_non_equality()
@@ -189,12 +189,12 @@ void test_non_equality()
     store2.insert("two", move_value("2"));
 
     // TODO: implement operator!= for trie_map
-    //  assert(store1 != store2);
+    //  TEST_ASSERT(store1 != store2);
 
     auto packed1 = store1.pack();
     auto packed2 = store2.pack();
 
-    assert(packed1 != packed2);
+    TEST_ASSERT(packed1 != packed2);
 }
 
 void test_move_construction()
@@ -209,22 +209,22 @@ void test_move_construction()
 
     {
         auto it = moved.find("one");
-        assert(it != moved.end());
-        assert(it->second.value == "one");
+        TEST_ASSERT(it != moved.end());
+        TEST_ASSERT(it->second.value == "one");
         it = moved.find("two");
-        assert(it != moved.end());
-        assert(it->second.value == "two");
+        TEST_ASSERT(it != moved.end());
+        TEST_ASSERT(it->second.value == "two");
     }
 
     auto packed = moved.pack();
     decltype(packed) packed_moved(std::move(packed));
     {
         auto it = packed_moved.find("one");
-        assert(it != packed_moved.end());
-        assert(it->second.value == "one");
+        TEST_ASSERT(it != packed_moved.end());
+        TEST_ASSERT(it->second.value == "one");
         it = packed_moved.find("two");
-        assert(it != packed_moved.end());
-        assert(it->second.value == "two");
+        TEST_ASSERT(it != packed_moved.end());
+        TEST_ASSERT(it->second.value == "two");
     }
 }
 

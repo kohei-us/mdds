@@ -43,28 +43,28 @@ void test_empty()
 
     {
         map_type::const_node_type node; // default constructor
-        assert(!node.valid());
-        assert(!node.has_child());
-        assert(!node.has_value());
-        assert(!node.child('c').valid());
+        TEST_ASSERT(!node.valid());
+        TEST_ASSERT(!node.has_child());
+        TEST_ASSERT(!node.has_value());
+        TEST_ASSERT(!node.child('c').valid());
     }
 
     {
         map_type::packed_type::const_node_type node; // default constructor
-        assert(!node.valid());
-        assert(!node.has_child());
-        assert(!node.has_value());
-        assert(!node.child('c').valid());
+        TEST_ASSERT(!node.valid());
+        TEST_ASSERT(!node.has_child());
+        TEST_ASSERT(!node.has_value());
+        TEST_ASSERT(!node.child('c').valid());
     }
 
     auto verify = [](std::string_view name, const auto& trie) {
         std::cout << "trie type: " << name << std::endl;
 
         auto node = trie.root_node();
-        assert(node.valid());
-        assert(!node.has_child());
-        assert(!node.has_value());
-        assert(!node.child('d').valid());
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(!node.has_child());
+        TEST_ASSERT(!node.has_value());
+        TEST_ASSERT(!node.child('d').valid());
     };
 
     map_type original;
@@ -85,33 +85,33 @@ void test_basic()
         std::cout << "trie type: " << name << std::endl;
 
         auto node = trie.root_node();
-        assert(node.valid());
-        assert(node.has_child());
-        assert(!node.has_value());
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(node.has_child());
+        TEST_ASSERT(!node.has_value());
 
         node = node.child('t');
-        assert(node.valid());
-        assert(node.has_child());
-        assert(!node.has_value());
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(node.has_child());
+        TEST_ASSERT(!node.has_value());
 
         node = node.child('e');
-        assert(node.valid());
-        assert(node.has_child());
-        assert(!node.has_value());
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(node.has_child());
+        TEST_ASSERT(!node.has_value());
 
         node = node.child('s');
-        assert(node.valid());
-        assert(node.has_child());
-        assert(!node.has_value());
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(node.has_child());
+        TEST_ASSERT(!node.has_value());
 
         node = node.child('t');
-        assert(node.valid());
-        assert(!node.has_child());
-        assert(node.has_value());
-        assert(node.value() == 42);
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(!node.has_child());
+        TEST_ASSERT(node.has_value());
+        TEST_ASSERT(node.value() == 42);
 
         // no more child nodes
-        assert(!node.child('f').valid());
+        TEST_ASSERT(!node.child('f').valid());
     };
 
     map_type original;
@@ -133,16 +133,16 @@ void test_26_child_nodes()
         std::cout << "trie type: " << name << std::endl;
 
         auto node = trie.root_node();
-        assert(node.valid());
-        assert(!node.has_value());
-        assert(node.has_child());
+        TEST_ASSERT(node.valid());
+        TEST_ASSERT(!node.has_value());
+        TEST_ASSERT(node.has_child());
 
         for (char c = 'a'; c <= 'z'; ++c)
         {
             auto child = node.child(c);
-            assert(child.valid());
-            assert(child.has_value());
-            assert(child.value() == int(c - 'a'));
+            TEST_ASSERT(child.valid());
+            TEST_ASSERT(child.has_value());
+            TEST_ASSERT(child.value() == int(c - 'a'));
             std::cout << "- char='" << c << "'; value=" << child.value() << std::endl;
         }
     };
@@ -176,21 +176,21 @@ void test_packed_nodes()
     _map_type errors(entries, std::size(entries));
 
     auto it = errors.find("REF!");
-    assert(it != errors.end());
-    assert(it->second == true);
+    TEST_ASSERT(it != errors.end());
+    TEST_ASSERT(it->second == true);
 
     auto node = errors.root_node();
-    assert(node.valid());
+    TEST_ASSERT(node.valid());
     node = node.child('R');
-    assert(node.valid());
+    TEST_ASSERT(node.valid());
     node = node.child('E');
-    assert(node.valid());
+    TEST_ASSERT(node.valid());
     node = node.child('F');
-    assert(node.valid());
+    TEST_ASSERT(node.valid());
     node = node.child('!');
-    assert(node.valid());
-    assert(node.has_value());
-    assert(node.value() == true);
+    TEST_ASSERT(node.valid());
+    TEST_ASSERT(node.has_value());
+    TEST_ASSERT(node.value() == true);
 }
 
 } // anonymous namespace

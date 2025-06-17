@@ -74,13 +74,13 @@ void test_uint8_max_value()
     for (std::uint8_t i = 0; i < max_value; ++i)
         db.insert(std::to_string(i), i);
 
-    assert(db.size() == max_value);
+    TEST_ASSERT(db.size() == max_value);
 
     try
     {
         // packed variant receives copied values
         auto packed = uint8_map_type::packed_type(db);
-        assert(!"size_error was expected to be thrown");
+        TEST_ASSERT(!"size_error was expected to be thrown");
     }
     catch (const mdds::size_error&)
     {
@@ -91,7 +91,7 @@ void test_uint8_max_value()
     {
         // packed variant receives moved values
         auto packed = db.pack();
-        assert(!"size_error was expected to be thrown");
+        TEST_ASSERT(!"size_error was expected to be thrown");
     }
     catch (const mdds::size_error&)
     {
@@ -109,12 +109,12 @@ void test_uint8_max_value()
     for (const auto& [key, value] : entries_pool)
         entries.emplace_back(key.data(), key.size(), value);
 
-    assert(entries.size() == max_value);
+    TEST_ASSERT(entries.size() == max_value);
 
     try
     {
         uint8_map_type::packed_type packed(entries.data(), entries.size());
-        assert(!"size_error was expected to be thrown");
+        TEST_ASSERT(!"size_error was expected to be thrown");
     }
     catch (const mdds::size_error&)
     {
@@ -153,9 +153,9 @@ void test_state_size()
     auto i16_size = calc_state_size<uint16_map_type>();
     auto i32_size = calc_state_size<uint32_map_type>();
     auto i64_size = calc_state_size<uint64_map_type>();
-    assert(i8_size < i16_size);
-    assert(i16_size < i32_size);
-    assert(i32_size < i64_size);
+    TEST_ASSERT(i8_size < i16_size);
+    TEST_ASSERT(i16_size < i32_size);
+    TEST_ASSERT(i32_size < i64_size);
 }
 
 void run()
