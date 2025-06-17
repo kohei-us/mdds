@@ -137,7 +137,8 @@ public:
 
 void mtm_test_walk()
 {
-    stack_printer __stack_printer__("::mtm_test_walk");
+    MDDS_TEST_FUNC_SCOPE;
+
     mtx_type mtx(12, 1); // single column matrix to make it easier.
     mtx.set(2, 0, 1.1);
     mtx.set(3, 0, 1.2);
@@ -150,17 +151,18 @@ void mtm_test_walk()
     mtx.set(11, 0, true);
     walk_element_block func;
     func = mtx.walk(func);
-    assert(func.get_node_count() == 5);
+    TEST_ASSERT(func.get_node_count() == 5);
 
     walk_element_block_move_only func_mo;
     func_mo = mtx.walk(std::move(func_mo));
-    assert(func_mo.get_node_count() == 5);
+    TEST_ASSERT(func_mo.get_node_count() == 5);
 }
 
 void mtm_test_walk_subset()
 {
     {
-        stack_printer __stack_printer__("::mtm_test_walk_subset test1");
+        MDDS_TEST_FUNC_SCOPE_MSG("test1");
+
         mtx_type mtx(4, 4);
         mtx.set(1, 1, 1.1);
         mtx.set(2, 1, 1.2);
@@ -170,10 +172,11 @@ void mtm_test_walk_subset()
         mtx.set(2, 2, false);
         walk_element_block func;
         func = mtx.walk(func, mtx_type::size_pair_type(1, 1), mtx_type::size_pair_type(2, 2));
-        assert(func.get_node_count() == 3);
+        TEST_ASSERT(func.get_node_count() == 3);
     }
     {
-        stack_printer __stack_printer__("::mtm_test_walk_subset test2");
+        MDDS_TEST_FUNC_SCOPE_MSG("test2");
+
         mtx_type mtx(4, 4);
         mtx.set(0, 1, 1.0);
         mtx.set(1, 1, 1.1);
@@ -183,7 +186,7 @@ void mtm_test_walk_subset()
         mtx.set(3, 2, std::string("A4"));
         walk_element_block func;
         func = mtx.walk(func, mtx_type::size_pair_type(1, 1), mtx_type::size_pair_type(2, 2));
-        assert(func.get_node_count() == 3);
+        TEST_ASSERT(func.get_node_count() == 3);
     }
 }
 
@@ -277,7 +280,7 @@ public:
     strlist_type get_concat_buffer() const
     {
         strlist_type buf;
-        assert(m_ls->size() == m_rs->size());
+        TEST_ASSERT(m_ls->size() == m_rs->size());
         auto it = m_ls->begin(), it2 = m_rs->begin();
         auto ite = m_ls->end();
         for (; it != ite; ++it, ++it2)
@@ -329,7 +332,7 @@ bool check_concat_buffer(std::vector<std::string> concat, const char* expected[]
 
 void mtm_test_parallel_walk()
 {
-    stack_printer __stack_printer__("::mtm_test_parallel_walk");
+    MDDS_TEST_FUNC_SCOPE;
 
     parallel_walk_element_block func("test0");
     mtx_type left(10, 1), right(10, 1, std::string("'+'"));
@@ -344,7 +347,7 @@ void mtm_test_parallel_walk()
 
     {
         func = left.walk(func, right);
-        assert(func.get_name() == "test0");
+        TEST_ASSERT(func.get_name() == "test0");
 
         const char* expected[] = {
             "122:'+'", "' ':'+'", "' ':1.2", "' ':'+'",   "A12:'+'",
@@ -352,7 +355,7 @@ void mtm_test_parallel_walk()
         };
 
         size_t n = std::size(expected);
-        assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
+        TEST_ASSERT(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 
     func.clear();
@@ -360,14 +363,14 @@ void mtm_test_parallel_walk()
     {
         func.set_name("test0-2");
         func = left.walk(func, right, mtx_type::size_pair_type(2, 0), mtx_type::size_pair_type(8, 0));
-        assert(func.get_name() == "test0-2");
+        TEST_ASSERT(func.get_name() == "test0-2");
 
         const char* expected[] = {
             "' ':1.2", "' ':'+'", "A12:'+'", "A25:'+'", "' ':'+'", "' ':'+'", "' ':false",
         };
 
         size_t n = std::size(expected);
-        assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
+        TEST_ASSERT(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 
     func.clear();
@@ -376,20 +379,20 @@ void mtm_test_parallel_walk()
         // Only one row.
         func.set_name("test0-3");
         func = left.walk(func, right, mtx_type::size_pair_type(4, 0), mtx_type::size_pair_type(4, 0));
-        assert(func.get_name() == "test0-3");
+        TEST_ASSERT(func.get_name() == "test0-3");
 
         const char* expected[] = {
             "A12:'+'",
         };
 
         size_t n = std::size(expected);
-        assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
+        TEST_ASSERT(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 }
 
 void mtm_test_parallel_walk_non_equal_size()
 {
-    stack_printer __stack_printer__("::mtm_test_parallel_walk_non_equal_size");
+    MDDS_TEST_FUNC_SCOPE;
 
     mtx_type left(3, 3), right(2, 2);
 
@@ -412,7 +415,7 @@ void mtm_test_parallel_walk_non_equal_size()
         // Only walk the top-left 2x2 range.
         parallel_walk_element_block func("test1");
         func = left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
-        assert(func.get_name() == "test1");
+        TEST_ASSERT(func.get_name() == "test1");
 
         const char* expected[] = {
             "10:A",
@@ -422,7 +425,7 @@ void mtm_test_parallel_walk_non_equal_size()
         };
 
         size_t n = std::size(expected);
-        assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
+        TEST_ASSERT(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 
     // Break up the blocks a little.
@@ -435,7 +438,7 @@ void mtm_test_parallel_walk_non_equal_size()
         // Only walk the top-left 2x2 range.
         parallel_walk_element_block func("test2");
         func = left.walk(func, right, mtx_type::size_pair_type(0, 0), mtx_type::size_pair_type(1, 1));
-        assert(func.get_name() == "test2");
+        TEST_ASSERT(func.get_name() == "test2");
 
         const char* expected[] = {
             "10:-99",
@@ -445,7 +448,7 @@ void mtm_test_parallel_walk_non_equal_size()
         };
 
         size_t n = std::size(expected);
-        assert(check_concat_buffer(func.get_concat_buffer(), expected, n));
+        TEST_ASSERT(check_concat_buffer(func.get_concat_buffer(), expected, n));
     }
 }
 
@@ -454,14 +457,15 @@ void mtm_test_parallel_walk_non_equal_size()
  */
 void mtm_test_walk_with_lambda()
 {
-    stack_printer __stack_printer__("::mtm_test_walk_with_lambda");
+    MDDS_TEST_FUNC_SCOPE;
+
     std::vector<double> values = {1.1, 1.2, 1.3, 1.4};
     mtx_type mtx(2, 2, values.begin(), values.end());
 
     mtx.walk([](const mtx_type::element_block_node_type& node) {
-        assert(node.type == mdds::mtm::element_numeric);
-        assert(node.offset == 0);
-        assert(node.size == 4);
+        TEST_ASSERT(node.type == mdds::mtm::element_numeric);
+        TEST_ASSERT(node.offset == 0);
+        TEST_ASSERT(node.size == 4);
     });
 
     struct section
@@ -493,12 +497,12 @@ void mtm_test_walk_with_lambda()
         {0, 0}, {0, 1} // (row=0, column=0) to (row=0, column=1)
     );
 
-    assert(expected == actual);
+    TEST_ASSERT(expected == actual);
 }
 
 void mtm_test_parallel_walk_with_lambda()
 {
-    stack_printer __stack_printer__("::mtm_test_parallel_walk_with_lambda");
+    MDDS_TEST_FUNC_SCOPE;
 
     std::vector<double> values = {1.1, 1.2, 1.3, 1.4};
     mtx_type mtx1(2, 2, values.begin(), values.end());
@@ -554,7 +558,7 @@ void mtm_test_parallel_walk_with_lambda()
         },
         mtx2);
 
-    assert(expected == actual);
+    TEST_ASSERT(expected == actual);
 
     mtx_type mtx3(4, 4, 1.0), mtx4(4, 4, std::string("A"));
     mtx3.set(2, 0, true);
@@ -595,14 +599,14 @@ void mtm_test_parallel_walk_with_lambda()
         },
         mtx4, {0, 0}, {2, 2});
 
-    assert(expected.size() == actual.size());
-    assert(expected[0] == actual[0]);
-    assert(expected[1] == actual[1]);
-    assert(expected[2] == actual[2]);
-    assert(expected[3] == actual[3]);
-    assert(expected[4] == actual[4]);
-    assert(expected[5] == actual[5]);
-    assert(expected[6] == actual[6]);
+    TEST_ASSERT(expected.size() == actual.size());
+    TEST_ASSERT(expected[0] == actual[0]);
+    TEST_ASSERT(expected[1] == actual[1]);
+    TEST_ASSERT(expected[2] == actual[2]);
+    TEST_ASSERT(expected[3] == actual[3]);
+    TEST_ASSERT(expected[4] == actual[4]);
+    TEST_ASSERT(expected[5] == actual[5]);
+    TEST_ASSERT(expected[6] == actual[6]);
 }
 
 int main(int argc, char** argv)

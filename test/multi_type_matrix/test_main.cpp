@@ -91,7 +91,7 @@ void check_value(mtx_type& mtx, size_t row, size_t col, const _T& val)
 {
     mtx.set(row, col, val);
     _T test = mtx.get<_T>(row, col);
-    assert(test == val);
+    TEST_ASSERT(test == val);
 }
 
 bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
@@ -144,30 +144,31 @@ bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
 
 void mtm_test_construction()
 {
-    stack_printer __stack_printer__("::mtm_test_construction");
+    MDDS_TEST_FUNC_SCOPE;
+
     {
         // default constructor.
         mtx_type mtx;
         mtx_type::size_pair_type sz = mtx.size();
-        assert(sz.row == 0 && sz.column == 0);
+        TEST_ASSERT(sz.row == 0 && sz.column == 0);
     }
 
     {
         // construction to a specific size.
         mtx_type mtx(2, 5);
         mtx_type::size_pair_type sz = mtx.size();
-        assert(sz.row == 2 && sz.column == 5);
+        TEST_ASSERT(sz.row == 2 && sz.column == 5);
     }
 
     {
         // construction to a specific size with default value.
         mtx_type mtx(2, 5, std::string("foo"));
         mtx_type::size_pair_type sz = mtx.size();
-        assert(sz.row == 2 && sz.column == 5);
-        assert(mtx.get_type(0, 0) == mtm::element_string);
-        assert(mtx.get_string(0, 0) == "foo");
-        assert(mtx.get_type(1, 4) == mtm::element_string);
-        assert(mtx.get_string(1, 4) == "foo");
+        TEST_ASSERT(sz.row == 2 && sz.column == 5);
+        TEST_ASSERT(mtx.get_type(0, 0) == mtm::element_string);
+        TEST_ASSERT(mtx.get_string(0, 0) == "foo");
+        TEST_ASSERT(mtx.get_type(1, 4) == mtm::element_string);
+        TEST_ASSERT(mtx.get_string(1, 4) == "foo");
     }
 
     {
@@ -179,16 +180,16 @@ void mtm_test_construction()
         vals.push_back(1.4);
         mtx_type mtx(2, 2, vals.begin(), vals.end());
         mtx_type::size_pair_type sz = mtx.size();
-        assert(sz.row == 2 && sz.column == 2);
-        assert(mtx.get_numeric(0, 0) == 1.1);
-        assert(mtx.get_numeric(1, 0) == 1.2);
-        assert(mtx.get_numeric(0, 1) == 1.3);
-        assert(mtx.get_numeric(1, 1) == 1.4);
+        TEST_ASSERT(sz.row == 2 && sz.column == 2);
+        TEST_ASSERT(mtx.get_numeric(0, 0) == 1.1);
+        TEST_ASSERT(mtx.get_numeric(1, 0) == 1.2);
+        TEST_ASSERT(mtx.get_numeric(0, 1) == 1.3);
+        TEST_ASSERT(mtx.get_numeric(1, 1) == 1.4);
 
         try
         {
             mtx_type mtx2(3, 2, vals.begin(), vals.end());
-            assert(!"Construction of this matrix should have failed!");
+            TEST_ASSERT(!"Construction of this matrix should have failed!");
         }
         catch (const invalid_arg_error& e)
         {
@@ -202,7 +203,7 @@ void mtm_test_construction()
             // type should end with an exception thrown.
             std::vector<int8_t> vals_ptr(4, 22);
             mtx_type mtx3(2, 2, vals_ptr.begin(), vals_ptr.end());
-            assert(!"Construction of this matrix should have failed!");
+            TEST_ASSERT(!"Construction of this matrix should have failed!");
         }
         catch (const std::exception& e)
         {
@@ -218,35 +219,35 @@ void mtm_test_construction()
         vals.push_back(custom_string("C"));
         vals.push_back(custom_string("D"));
         mtx_custom_type mtx(1, 4, vals.begin(), vals.end());
-        assert(mtx.get_string(0, 0).get() == "A");
-        assert(mtx.get_string(0, 1).get() == "B");
-        assert(mtx.get_string(0, 2).get() == "C");
-        assert(mtx.get_string(0, 3).get() == "D");
-        assert(mtx.get_type(0, 0) == mtm::element_string);
-        assert(mtx.get_type(0, 1) == mtm::element_string);
-        assert(mtx.get_type(0, 2) == mtm::element_string);
-        assert(mtx.get_type(0, 3) == mtm::element_string);
+        TEST_ASSERT(mtx.get_string(0, 0).get() == "A");
+        TEST_ASSERT(mtx.get_string(0, 1).get() == "B");
+        TEST_ASSERT(mtx.get_string(0, 2).get() == "C");
+        TEST_ASSERT(mtx.get_string(0, 3).get() == "D");
+        TEST_ASSERT(mtx.get_type(0, 0) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(0, 1) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(0, 2) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(0, 3) == mtm::element_string);
     }
 
     {
         // Construct size_pair_type from initializer list.
         mtx_type::size_pair_type sz({3, 4});
-        assert(sz.row == 3);
-        assert(sz.column == 4);
+        TEST_ASSERT(sz.row == 3);
+        TEST_ASSERT(sz.column == 4);
     }
 }
 
 void mtm_test_data_insertion()
 {
-    stack_printer __stack_printer__("::mtm_test_data_insertion");
+    MDDS_TEST_FUNC_SCOPE;
     {
         // Create with empty elements.
         mtx_type mtx(3, 4);
         mtx_type::size_pair_type sz = mtx.size();
-        assert(sz.row == 3 && sz.column == 4);
-        assert(!mtx.empty());
-        assert(mtx.get_type(0, 0) == mtm::element_empty);
-        assert(mtx.get_type(2, 3) == mtm::element_empty);
+        TEST_ASSERT(sz.row == 3 && sz.column == 4);
+        TEST_ASSERT(!mtx.empty());
+        TEST_ASSERT(mtx.get_type(0, 0) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 3) == mtm::element_empty);
         check_value(mtx, 1, 1, 1.2);
         check_value(mtx, 2, 1, true);
         check_value(mtx, 3, 1, false);
@@ -254,24 +255,25 @@ void mtm_test_data_insertion()
         check_value(mtx, 1, 2, 23.4);
 
         // Overwrite
-        assert(mtx.get_type(1, 1) == mtm::element_numeric);
+        TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_numeric);
         check_value(mtx, 1, 1, std::string("baa"));
 
         // Setting empty.
-        assert(mtx.get_type(1, 1) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_string);
         mtx.set_empty(1, 1);
-        assert(mtx.get_type(1, 1) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_empty);
 
         mtx.clear();
-        assert(mtx.size().row == 0);
-        assert(mtx.size().column == 0);
-        assert(mtx.empty());
+        TEST_ASSERT(mtx.size().row == 0);
+        TEST_ASSERT(mtx.size().column == 0);
+        TEST_ASSERT(mtx.empty());
     }
 }
 
 void mtm_test_data_insertion_multiple()
 {
-    stack_printer __stack_printer__("::mtm_test_data_insertion_multiple");
+    MDDS_TEST_FUNC_SCOPE;
+
     {
         mtx_type mtx(3, 5);
 
@@ -280,9 +282,9 @@ void mtm_test_data_insertion_multiple()
         vals.push_back(1.1);
         vals.push_back(1.2);
         mtx.set_column(2, vals.begin(), vals.end());
-        assert(mtx.get_numeric(0, 2) == 1.1);
-        assert(mtx.get_numeric(1, 2) == 1.2);
-        assert(mtx.get_type(2, 2) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_numeric(0, 2) == 1.1);
+        TEST_ASSERT(mtx.get_numeric(1, 2) == 1.2);
+        TEST_ASSERT(mtx.get_type(2, 2) == mtm::element_empty);
 
         // data exatly at column length
         vals.clear();
@@ -290,10 +292,10 @@ void mtm_test_data_insertion_multiple()
         vals.push_back(2.2);
         vals.push_back(2.3);
         mtx.set_column(2, vals.begin(), vals.end());
-        assert(mtx.get_numeric(0, 2) == 2.1);
-        assert(mtx.get_numeric(1, 2) == 2.2);
-        assert(mtx.get_numeric(2, 2) == 2.3);
-        assert(mtx.get_type(0, 3) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_numeric(0, 2) == 2.1);
+        TEST_ASSERT(mtx.get_numeric(1, 2) == 2.2);
+        TEST_ASSERT(mtx.get_numeric(2, 2) == 2.3);
+        TEST_ASSERT(mtx.get_type(0, 3) == mtm::element_empty);
 
         // data longer than column length.  The excess data should be ignored.
         vals.clear();
@@ -302,16 +304,16 @@ void mtm_test_data_insertion_multiple()
         vals.push_back(3.3);
         vals.push_back(3.4);
         mtx.set_column(2, vals.begin(), vals.end());
-        assert(mtx.get_numeric(0, 2) == 3.1);
-        assert(mtx.get_numeric(1, 2) == 3.2);
-        assert(mtx.get_numeric(2, 2) == 3.3);
-        assert(mtx.get_type(0, 3) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_numeric(0, 2) == 3.1);
+        TEST_ASSERT(mtx.get_numeric(1, 2) == 3.2);
+        TEST_ASSERT(mtx.get_numeric(2, 2) == 3.3);
+        TEST_ASSERT(mtx.get_type(0, 3) == mtm::element_empty);
     }
 }
 
 void mtm_test_data_insertion_integer()
 {
-    stack_printer __stack_printer__("::mtm_test_data_insertion_integer");
+    MDDS_TEST_FUNC_SCOPE;
 
     // +--------+--------+
     // |  int   | double |
@@ -325,34 +327,34 @@ void mtm_test_data_insertion_integer()
     mtx.set(0, 1, double(10));
     mtx.set(1, 0, double(22));
 
-    assert(mtx.get_type(0, 0) == mtm::element_integer);
-    assert(mtx.get_type(1, 1) == mtm::element_integer);
-    assert(mtx.get_type(0, 1) == mtm::element_numeric);
-    assert(mtx.get_type(1, 0) == mtm::element_numeric);
+    TEST_ASSERT(mtx.get_type(0, 0) == mtm::element_integer);
+    TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_integer);
+    TEST_ASSERT(mtx.get_type(0, 1) == mtm::element_numeric);
+    TEST_ASSERT(mtx.get_type(1, 0) == mtm::element_numeric);
 
-    assert(mtx.get_integer(0, 0) == 0);
-    assert(mtx.get_integer(1, 1) == 22);
-    assert(mtx.get_integer(0, 1) == 10);
-    assert(mtx.get_integer(1, 0) == 22);
+    TEST_ASSERT(mtx.get_integer(0, 0) == 0);
+    TEST_ASSERT(mtx.get_integer(1, 1) == 22);
+    TEST_ASSERT(mtx.get_integer(0, 1) == 10);
+    TEST_ASSERT(mtx.get_integer(1, 0) == 22);
 
-    assert(mtx.get_numeric(0, 0) == 0.0);
-    assert(mtx.get_numeric(1, 1) == 22.0);
-    assert(mtx.get_numeric(0, 1) == 10.0);
-    assert(mtx.get_numeric(1, 0) == 22.0);
+    TEST_ASSERT(mtx.get_numeric(0, 0) == 0.0);
+    TEST_ASSERT(mtx.get_numeric(1, 1) == 22.0);
+    TEST_ASSERT(mtx.get_numeric(0, 1) == 10.0);
+    TEST_ASSERT(mtx.get_numeric(1, 0) == 22.0);
 
-    assert(mtx.get_boolean(0, 0) == false);
-    assert(mtx.get_boolean(1, 1) == true);
-    assert(mtx.get_boolean(0, 1) == true);
-    assert(mtx.get_boolean(1, 0) == true);
+    TEST_ASSERT(mtx.get_boolean(0, 0) == false);
+    TEST_ASSERT(mtx.get_boolean(1, 1) == true);
+    TEST_ASSERT(mtx.get_boolean(0, 1) == true);
+    TEST_ASSERT(mtx.get_boolean(1, 0) == true);
 
-    assert(mtx.numeric()); // integers are considered numeric.
+    TEST_ASSERT(mtx.numeric()); // integers are considered numeric.
 
-    assert(mtx.get<int>(0, 0) == 0);
-    assert(mtx.get<int>(1, 1) == 22);
+    TEST_ASSERT(mtx.get<int>(0, 0) == 0);
+    TEST_ASSERT(mtx.get<int>(1, 1) == 22);
 
     mtx_type::position_type pos = mtx.position(0, 1);
     mtx.set(pos, int(987));
-    assert(mtx.get<int>(0, 1) == 987);
+    TEST_ASSERT(mtx.get<int>(0, 1) == 987);
 
     // +--------+--------+
     // |  int   |  int   |
@@ -367,42 +369,43 @@ void mtm_test_data_insertion_integer()
 
     mtx.walk(f);
 
-    assert(nodes.size() == 3);
-    assert(nodes[0].type == mtm::element_integer);
-    assert(nodes[0].size == 1);
-    assert(nodes[1].type == mtm::element_numeric);
-    assert(nodes[1].size == 1);
-    assert(nodes[2].type == mtm::element_integer);
-    assert(nodes[2].size == 2);
+    TEST_ASSERT(nodes.size() == 3);
+    TEST_ASSERT(nodes[0].type == mtm::element_integer);
+    TEST_ASSERT(nodes[0].size == 1);
+    TEST_ASSERT(nodes[1].type == mtm::element_numeric);
+    TEST_ASSERT(nodes[1].size == 1);
+    TEST_ASSERT(nodes[2].type == mtm::element_integer);
+    TEST_ASSERT(nodes[2].size == 2);
 
     {
         auto it = nodes[2].begin<mtx_type::integer_block_type>();
         auto ite = nodes[2].end<mtx_type::integer_block_type>();
-        assert(*it == 987);
+        TEST_ASSERT(*it == 987);
         ++it;
-        assert(*it == 22);
+        TEST_ASSERT(*it == 22);
         ++it;
-        assert(it == ite);
+        TEST_ASSERT(it == ite);
     }
 }
 
 void mtm_test_set_empty()
 {
-    stack_printer __stack_printer__("::mtm_test_set_empty");
+    MDDS_TEST_FUNC_SCOPE;
+
     {
         // set whole column empty.
         mtx_type mtx(3, 5, 1.2);
         cout << "setting whole column 2 empty..." << endl;
         mtx.set_column_empty(2);
-        assert(mtx.get_type(0, 1) != mtm::element_empty);
-        assert(mtx.get_type(1, 1) != mtm::element_empty);
-        assert(mtx.get_type(2, 1) != mtm::element_empty);
-        assert(mtx.get_type(0, 2) == mtm::element_empty);
-        assert(mtx.get_type(1, 2) == mtm::element_empty);
-        assert(mtx.get_type(2, 2) == mtm::element_empty);
-        assert(mtx.get_type(0, 3) != mtm::element_empty);
-        assert(mtx.get_type(1, 3) != mtm::element_empty);
-        assert(mtx.get_type(2, 3) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 1) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 1) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 1) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 2) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 2) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 2) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 3) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 3) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 3) != mtm::element_empty);
     }
 
     {
@@ -410,21 +413,21 @@ void mtm_test_set_empty()
         mtx_type mtx(3, 5, 1.2);
         cout << "setting whole row 1 empty..." << endl;
         mtx.set_row_empty(1);
-        assert(mtx.get_type(0, 0) != mtm::element_empty);
-        assert(mtx.get_type(0, 1) != mtm::element_empty);
-        assert(mtx.get_type(0, 2) != mtm::element_empty);
-        assert(mtx.get_type(0, 3) != mtm::element_empty);
-        assert(mtx.get_type(0, 4) != mtm::element_empty);
-        assert(mtx.get_type(1, 0) == mtm::element_empty);
-        assert(mtx.get_type(1, 1) == mtm::element_empty);
-        assert(mtx.get_type(1, 2) == mtm::element_empty);
-        assert(mtx.get_type(1, 3) == mtm::element_empty);
-        assert(mtx.get_type(1, 4) == mtm::element_empty);
-        assert(mtx.get_type(2, 0) != mtm::element_empty);
-        assert(mtx.get_type(2, 1) != mtm::element_empty);
-        assert(mtx.get_type(2, 2) != mtm::element_empty);
-        assert(mtx.get_type(2, 3) != mtm::element_empty);
-        assert(mtx.get_type(2, 4) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 0) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 1) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 2) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 3) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 4) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 0) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 2) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 3) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 4) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 0) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 1) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 2) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 3) != mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 4) != mtm::element_empty);
     }
 
     {
@@ -432,26 +435,26 @@ void mtm_test_set_empty()
         mtx_type mtx(5, 3, std::string("A"));
         cout << "setting element (0,1) to (1,2) empty..." << endl;
         mtx.set_empty(1, 0, 6); // rows 1-4 in column 0 and rows 0-1 in column 1.
-        assert(mtx.get_type(0, 0) == mtm::element_string);
-        assert(mtx.get_type(1, 0) == mtm::element_empty);
-        assert(mtx.get_type(2, 0) == mtm::element_empty);
-        assert(mtx.get_type(3, 0) == mtm::element_empty);
-        assert(mtx.get_type(4, 0) == mtm::element_empty);
-        assert(mtx.get_type(0, 1) == mtm::element_empty);
-        assert(mtx.get_type(1, 1) == mtm::element_empty);
-        assert(mtx.get_type(2, 1) == mtm::element_string);
-        assert(mtx.get_type(3, 1) == mtm::element_string);
-        assert(mtx.get_type(4, 1) == mtm::element_string);
-        assert(mtx.get_type(0, 2) == mtm::element_string);
-        assert(mtx.get_type(1, 2) == mtm::element_string);
-        assert(mtx.get_type(2, 2) == mtm::element_string);
-        assert(mtx.get_type(3, 2) == mtm::element_string);
-        assert(mtx.get_type(4, 2) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(0, 0) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(1, 0) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 0) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(3, 0) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(4, 0) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(0, 1) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_empty);
+        TEST_ASSERT(mtx.get_type(2, 1) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(3, 1) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(4, 1) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(0, 2) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(1, 2) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(2, 2) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(3, 2) == mtm::element_string);
+        TEST_ASSERT(mtx.get_type(4, 2) == mtm::element_string);
 
         try
         {
             mtx.set_empty(2, 2, 0);
-            assert(false);
+            TEST_ASSERT(false);
         }
         catch (const std::exception&)
         {
@@ -462,7 +465,8 @@ void mtm_test_set_empty()
 
 void mtm_test_swap()
 {
-    stack_printer __stack_printer__("::mtm_test_swap");
+    MDDS_TEST_FUNC_SCOPE;
+
     mtx_type mtx1(3, 6), mtx2(7, 2);
     mtx1.set(0, 0, 1.1);
     mtx1.set(2, 5, 1.9);
@@ -470,20 +474,21 @@ void mtm_test_swap()
     mtx2.set(6, 1, 2.9);
     mtx1.swap(mtx2);
 
-    assert(mtx1.size().row == 7);
-    assert(mtx1.size().column == 2);
-    assert(mtx1.get<double>(0, 0) == 2.1);
-    assert(mtx1.get<double>(6, 1) == 2.9);
+    TEST_ASSERT(mtx1.size().row == 7);
+    TEST_ASSERT(mtx1.size().column == 2);
+    TEST_ASSERT(mtx1.get<double>(0, 0) == 2.1);
+    TEST_ASSERT(mtx1.get<double>(6, 1) == 2.9);
 
-    assert(mtx2.size().row == 3);
-    assert(mtx2.size().column == 6);
-    assert(mtx2.get<double>(0, 0) == 1.1);
-    assert(mtx2.get<double>(2, 5) == 1.9);
+    TEST_ASSERT(mtx2.size().row == 3);
+    TEST_ASSERT(mtx2.size().column == 6);
+    TEST_ASSERT(mtx2.get<double>(0, 0) == 1.1);
+    TEST_ASSERT(mtx2.get<double>(2, 5) == 1.9);
 }
 
 void mtm_test_transpose()
 {
-    stack_printer __stack_printer__("::mtm_test_transpose");
+    MDDS_TEST_FUNC_SCOPE;
+
     mtx_type mtx(3, 6);
     mtx.set(0, 0, 1.1);
     mtx.set(1, 0, 1.2);
@@ -491,100 +496,101 @@ void mtm_test_transpose()
     mtx.set(1, 5, std::string("foo"));
     mtx.set(2, 3, true);
     mtx.transpose();
-    assert(mtx.size().row == 6);
-    assert(mtx.size().column == 3);
-    assert(mtx.get<double>(0, 0) == 1.1);
-    assert(mtx.get<double>(0, 1) == 1.2);
-    assert(mtx.get<double>(0, 2) == 1.3);
-    assert(mtx.get<std::string>(5, 1) == "foo");
-    assert(mtx.get<bool>(3, 2) == true);
+    TEST_ASSERT(mtx.size().row == 6);
+    TEST_ASSERT(mtx.size().column == 3);
+    TEST_ASSERT(mtx.get<double>(0, 0) == 1.1);
+    TEST_ASSERT(mtx.get<double>(0, 1) == 1.2);
+    TEST_ASSERT(mtx.get<double>(0, 2) == 1.3);
+    TEST_ASSERT(mtx.get<std::string>(5, 1) == "foo");
+    TEST_ASSERT(mtx.get<bool>(3, 2) == true);
 }
 
 void mtm_test_resize()
 {
-    stack_printer __stack_printer__("::mtm_test_resize");
+    MDDS_TEST_FUNC_SCOPE;
+
     mtx_type mtx(0, 0);
-    assert(mtx.size().row == 0);
-    assert(mtx.size().column == 0);
-    assert(mtx.empty());
+    TEST_ASSERT(mtx.size().row == 0);
+    TEST_ASSERT(mtx.size().column == 0);
+    TEST_ASSERT(mtx.empty());
 
     mtx.resize(1, 3);
-    assert(mtx.size().row == 1);
-    assert(mtx.size().column == 3);
-    assert(!mtx.empty());
-    assert(mtx.get_type(0, 0) == mtm::element_empty);
-    assert(mtx.get_type(0, 1) == mtm::element_empty);
-    assert(mtx.get_type(0, 2) == mtm::element_empty);
+    TEST_ASSERT(mtx.size().row == 1);
+    TEST_ASSERT(mtx.size().column == 3);
+    TEST_ASSERT(!mtx.empty());
+    TEST_ASSERT(mtx.get_type(0, 0) == mtm::element_empty);
+    TEST_ASSERT(mtx.get_type(0, 1) == mtm::element_empty);
+    TEST_ASSERT(mtx.get_type(0, 2) == mtm::element_empty);
 
     mtx.set(0, 0, 1.1);
     mtx.set(0, 1, std::string("foo"));
     mtx.set(0, 2, true);
-    assert(mtx.get<double>(0, 0) == 1.1);
-    assert(mtx.get<std::string>(0, 1) == "foo");
-    assert(mtx.get<bool>(0, 2) == true);
+    TEST_ASSERT(mtx.get<double>(0, 0) == 1.1);
+    TEST_ASSERT(mtx.get<std::string>(0, 1) == "foo");
+    TEST_ASSERT(mtx.get<bool>(0, 2) == true);
 
     // This shouldn't alter the original content.
     mtx.resize(2, 4);
-    assert(mtx.size().row == 2);
-    assert(mtx.size().column == 4);
-    assert(mtx.get<double>(0, 0) == 1.1);
-    assert(mtx.get<std::string>(0, 1) == "foo");
-    assert(mtx.get<bool>(0, 2) == true);
-    assert(mtx.get_type(1, 3) == mtm::element_empty);
+    TEST_ASSERT(mtx.size().row == 2);
+    TEST_ASSERT(mtx.size().column == 4);
+    TEST_ASSERT(mtx.get<double>(0, 0) == 1.1);
+    TEST_ASSERT(mtx.get<std::string>(0, 1) == "foo");
+    TEST_ASSERT(mtx.get<bool>(0, 2) == true);
+    TEST_ASSERT(mtx.get_type(1, 3) == mtm::element_empty);
 
     mtx.resize(2, 2);
-    assert(mtx.size().row == 2);
-    assert(mtx.size().column == 2);
-    assert(mtx.get<double>(0, 0) == 1.1);
-    assert(mtx.get<std::string>(0, 1) == "foo");
-    assert(mtx.get_type(1, 0) == mtm::element_empty);
-    assert(mtx.get_type(1, 1) == mtm::element_empty);
+    TEST_ASSERT(mtx.size().row == 2);
+    TEST_ASSERT(mtx.size().column == 2);
+    TEST_ASSERT(mtx.get<double>(0, 0) == 1.1);
+    TEST_ASSERT(mtx.get<std::string>(0, 1) == "foo");
+    TEST_ASSERT(mtx.get_type(1, 0) == mtm::element_empty);
+    TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_empty);
 
     // Three ways to resize to empty matrix.
     mtx.resize(2, 0);
-    assert(mtx.size().row == 0);
-    assert(mtx.size().column == 0);
+    TEST_ASSERT(mtx.size().row == 0);
+    TEST_ASSERT(mtx.size().column == 0);
 
     mtx.resize(2, 2);
     mtx.resize(0, 2);
-    assert(mtx.size().row == 0);
-    assert(mtx.size().column == 0);
+    TEST_ASSERT(mtx.size().row == 0);
+    TEST_ASSERT(mtx.size().column == 0);
 
     mtx.resize(2, 2);
     mtx.resize(0, 0);
-    assert(mtx.size().row == 0);
-    assert(mtx.size().column == 0);
+    TEST_ASSERT(mtx.size().row == 0);
+    TEST_ASSERT(mtx.size().column == 0);
 
     // Resize with initial value when the matrix becomes larger.
     mtx.resize(3, 2, 12.5);
-    assert(mtx.size().row == 3);
-    assert(mtx.size().column == 2);
-    assert(mtx.get<double>(2, 1) == 12.5);
-    assert(mtx.get<double>(2, 0) == 12.5);
-    assert(mtx.get<double>(0, 0) == 12.5);
-    assert(mtx.get<double>(0, 1) == 12.5);
+    TEST_ASSERT(mtx.size().row == 3);
+    TEST_ASSERT(mtx.size().column == 2);
+    TEST_ASSERT(mtx.get<double>(2, 1) == 12.5);
+    TEST_ASSERT(mtx.get<double>(2, 0) == 12.5);
+    TEST_ASSERT(mtx.get<double>(0, 0) == 12.5);
+    TEST_ASSERT(mtx.get<double>(0, 1) == 12.5);
 
     // The initial value should be ignored when shrinking.
     mtx.resize(2, 1, true);
-    assert(mtx.size().row == 2);
-    assert(mtx.size().column == 1);
-    assert(mtx.get<double>(1, 0) == 12.5);
+    TEST_ASSERT(mtx.size().row == 2);
+    TEST_ASSERT(mtx.size().column == 1);
+    TEST_ASSERT(mtx.get<double>(1, 0) == 12.5);
 
     // Resize again with initial value of different type.
     mtx.resize(3, 2, std::string("extra"));
-    assert(mtx.size().row == 3);
-    assert(mtx.size().column == 2);
-    assert(mtx.get<double>(0, 0) == 12.5);
-    assert(mtx.get<double>(1, 0) == 12.5);
-    assert(mtx.get<std::string>(2, 1) == "extra");
-    assert(mtx.get<std::string>(2, 0) == "extra");
-    assert(mtx.get<std::string>(1, 1) == "extra");
-    assert(mtx.get<std::string>(0, 1) == "extra");
+    TEST_ASSERT(mtx.size().row == 3);
+    TEST_ASSERT(mtx.size().column == 2);
+    TEST_ASSERT(mtx.get<double>(0, 0) == 12.5);
+    TEST_ASSERT(mtx.get<double>(1, 0) == 12.5);
+    TEST_ASSERT(mtx.get<std::string>(2, 1) == "extra");
+    TEST_ASSERT(mtx.get<std::string>(2, 0) == "extra");
+    TEST_ASSERT(mtx.get<std::string>(1, 1) == "extra");
+    TEST_ASSERT(mtx.get<std::string>(0, 1) == "extra");
 }
 
 void mtm_test_copy()
 {
-    stack_printer __stack_printer__("::mtm_test_copy");
+    MDDS_TEST_FUNC_SCOPE;
 
     // Assigning from a smaller matrix to a bigger one.
     mtx_type mx1(5, 5), mx2(2, 2);
@@ -595,13 +601,13 @@ void mtm_test_copy()
     mx1.copy(mx2);
 
     bool success = check_copy(mx1, mx2);
-    assert(success);
+    TEST_ASSERT(success);
 
     mx2.resize(8, 8);
     mx2.copy(mx1);
 
     success = check_copy(mx1, mx2);
-    assert(success);
+    TEST_ASSERT(success);
 
     // from a larger matrix to a smaller one.
     mx1.set(0, 0, std::string("test1"));
@@ -610,21 +616,21 @@ void mtm_test_copy()
     mx2.set(7, 7, false);
     mx1.copy(mx2);
     success = check_copy(mx1, mx2);
-    assert(success);
+    TEST_ASSERT(success);
 
     // self assignment (should be no-op).
     mx1.copy(mx1);
     success = check_copy(mx1, mx1);
-    assert(success);
+    TEST_ASSERT(success);
 
     mx2.copy(mx2);
     success = check_copy(mx2, mx2);
-    assert(success);
+    TEST_ASSERT(success);
 }
 
 void mtm_test_copy_empty_destination()
 {
-    stack_printer __stack_printer__("::mtm_test_copy_empty_destination");
+    MDDS_TEST_FUNC_SCOPE;
 
     mtx_type mx1, mx2(1, 1);
     mx1.copy(mx2); // This should not throw.
@@ -634,7 +640,7 @@ void mtm_test_copy_empty_destination()
 
 void mtm_test_copy_from_array()
 {
-    stack_printer __stack_printer__("::mtm_test_copy_from_array");
+    MDDS_TEST_FUNC_SCOPE;
 
     std::vector<double> src;
     src.reserve(9);
@@ -644,23 +650,23 @@ void mtm_test_copy_from_array()
     mtx_type mx(4, 4);
     mx.copy(3, 3, src.begin(), src.end());
 
-    assert(mx.get<double>(0, 0) == 0.0);
-    assert(mx.get<double>(1, 0) == 1.0);
-    assert(mx.get<double>(2, 0) == 2.0);
-    assert(mx.get<double>(0, 1) == 3.0);
-    assert(mx.get<double>(1, 1) == 4.0);
-    assert(mx.get<double>(2, 1) == 5.0);
-    assert(mx.get<double>(0, 2) == 6.0);
-    assert(mx.get<double>(1, 2) == 7.0);
-    assert(mx.get<double>(2, 2) == 8.0);
-    assert(mx.get_type(3, 0) == mtm::element_empty);
-    assert(mx.get_type(3, 1) == mtm::element_empty);
-    assert(mx.get_type(3, 2) == mtm::element_empty);
-    assert(mx.get_type(3, 3) == mtm::element_empty);
-    assert(mx.get_type(0, 3) == mtm::element_empty);
-    assert(mx.get_type(1, 3) == mtm::element_empty);
-    assert(mx.get_type(2, 3) == mtm::element_empty);
-    assert(mx.get_type(3, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get<double>(0, 0) == 0.0);
+    TEST_ASSERT(mx.get<double>(1, 0) == 1.0);
+    TEST_ASSERT(mx.get<double>(2, 0) == 2.0);
+    TEST_ASSERT(mx.get<double>(0, 1) == 3.0);
+    TEST_ASSERT(mx.get<double>(1, 1) == 4.0);
+    TEST_ASSERT(mx.get<double>(2, 1) == 5.0);
+    TEST_ASSERT(mx.get<double>(0, 2) == 6.0);
+    TEST_ASSERT(mx.get<double>(1, 2) == 7.0);
+    TEST_ASSERT(mx.get<double>(2, 2) == 8.0);
+    TEST_ASSERT(mx.get_type(3, 0) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(3, 1) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(3, 2) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(3, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(0, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(1, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(2, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(3, 3) == mtm::element_empty);
 
     std::vector<std::string> src2;
     src2.reserve(4);
@@ -671,23 +677,23 @@ void mtm_test_copy_from_array()
 
     mx.copy(2, 2, src2.begin(), src2.end());
 
-    assert(mx.get<std::string>(0, 0) == "A");
-    assert(mx.get<std::string>(1, 0) == "B");
-    assert(mx.get<std::string>(0, 1) == "C");
-    assert(mx.get<std::string>(1, 1) == "D");
-    assert(mx.get<double>(2, 0) == 2.0);
-    assert(mx.get<double>(2, 1) == 5.0);
-    assert(mx.get<double>(0, 2) == 6.0);
-    assert(mx.get<double>(1, 2) == 7.0);
-    assert(mx.get<double>(2, 2) == 8.0);
-    assert(mx.get_type(3, 0) == mtm::element_empty);
-    assert(mx.get_type(3, 1) == mtm::element_empty);
-    assert(mx.get_type(3, 2) == mtm::element_empty);
-    assert(mx.get_type(3, 3) == mtm::element_empty);
-    assert(mx.get_type(0, 3) == mtm::element_empty);
-    assert(mx.get_type(1, 3) == mtm::element_empty);
-    assert(mx.get_type(2, 3) == mtm::element_empty);
-    assert(mx.get_type(3, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get<std::string>(0, 0) == "A");
+    TEST_ASSERT(mx.get<std::string>(1, 0) == "B");
+    TEST_ASSERT(mx.get<std::string>(0, 1) == "C");
+    TEST_ASSERT(mx.get<std::string>(1, 1) == "D");
+    TEST_ASSERT(mx.get<double>(2, 0) == 2.0);
+    TEST_ASSERT(mx.get<double>(2, 1) == 5.0);
+    TEST_ASSERT(mx.get<double>(0, 2) == 6.0);
+    TEST_ASSERT(mx.get<double>(1, 2) == 7.0);
+    TEST_ASSERT(mx.get<double>(2, 2) == 8.0);
+    TEST_ASSERT(mx.get_type(3, 0) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(3, 1) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(3, 2) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(3, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(0, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(1, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(2, 3) == mtm::element_empty);
+    TEST_ASSERT(mx.get_type(3, 3) == mtm::element_empty);
 
     std::vector<bool> src3;
     src3.push_back(true);
@@ -696,10 +702,10 @@ void mtm_test_copy_from_array()
     src3.push_back(false);
 
     mx.copy(4, 1, src3.begin(), src3.end());
-    assert(mx.get<bool>(0, 0) == true);
-    assert(mx.get<bool>(1, 0) == false);
-    assert(mx.get<bool>(2, 0) == true);
-    assert(mx.get<bool>(3, 0) == false);
+    TEST_ASSERT(mx.get<bool>(0, 0) == true);
+    TEST_ASSERT(mx.get<bool>(1, 0) == false);
+    TEST_ASSERT(mx.get<bool>(2, 0) == true);
+    TEST_ASSERT(mx.get<bool>(3, 0) == false);
 
     // Try to copy from an array of invalid type.
     std::vector<int8_t> src_invalid;
@@ -709,7 +715,7 @@ void mtm_test_copy_from_array()
     try
     {
         mx.copy(2, 1, src_invalid.begin(), src_invalid.end());
-        assert(!"type_error did not get thrown.");
+        TEST_ASSERT(!"type_error did not get thrown.");
     }
     catch (const mdds::type_error& e)
     {
@@ -719,60 +725,65 @@ void mtm_test_copy_from_array()
 
 void mtm_test_assignment()
 {
-    stack_printer __stack_printer__("::mtm_test_assignment");
+    MDDS_TEST_FUNC_SCOPE;
+
     mtx_type mx_orig(5, 5, 1.2);
     mtx_type mx_copied = mx_orig;
-    assert(mx_orig == mx_copied);
+    TEST_ASSERT(mx_orig == mx_copied);
 
     mx_copied = mx_copied; // self assignment.
-    assert(mx_orig == mx_copied);
+    TEST_ASSERT(mx_orig == mx_copied);
 
     mx_orig.set(2, 3, true);
     mx_orig.set(1, 1, std::string("foo"));
     mx_copied = mx_orig;
-    assert(mx_orig == mx_copied);
+    TEST_ASSERT(mx_orig == mx_copied);
 }
 
 void mtm_test_numeric()
 {
+    MDDS_TEST_FUNC_SCOPE;
+
     // Numeric elements only matrix is numeric.
     mtx_type mtx(2, 2, 1.1);
-    assert(mtx.numeric());
+    TEST_ASSERT(mtx.numeric());
 
     // Boolean element is numeric.
     mtx.set(0, 0, true);
-    assert(mtx.numeric());
+    TEST_ASSERT(mtx.numeric());
 
     // String element is not.
     mtx.set(1, 0, std::string("foo"));
-    assert(!mtx.numeric());
+    TEST_ASSERT(!mtx.numeric());
 
     mtx.set(1, 0, 1.3);
-    assert(mtx.numeric());
+    TEST_ASSERT(mtx.numeric());
 
     // Empty element is not numeric.
     mtx.set_empty(1, 1);
-    assert(!mtx.numeric());
+    TEST_ASSERT(!mtx.numeric());
 
     // Empty matrix is not numeric.
     mtx.clear();
-    assert(!mtx.numeric());
+    TEST_ASSERT(!mtx.numeric());
 }
 
 void mtm_test_custom_string()
 {
-    stack_printer __stack_printer__("::mtm_test_custom_string");
+    MDDS_TEST_FUNC_SCOPE;
+
     mtx_custom_type mtx(2, 2);
     mtx.set(0, 0, custom_string("foo"));
-    assert(mtx.get_type(0, 0) == mtm::element_string);
-    assert(mtx.get<custom_string>(0, 0) == custom_string("foo"));
+    TEST_ASSERT(mtx.get_type(0, 0) == mtm::element_string);
+    TEST_ASSERT(mtx.get<custom_string>(0, 0) == custom_string("foo"));
     mtx.set(1, 1, 12.3);
-    assert(mtx.get<double>(1, 1) == 12.3);
+    TEST_ASSERT(mtx.get<double>(1, 1) == 12.3);
 }
 
 void mtm_test_position()
 {
-    stack_printer __stack_printer__("::mtm_test_position");
+    MDDS_TEST_FUNC_SCOPE;
+
     mtx_type mtx(3, 2);
     mtx.set(0, 0, 1.0);
     mtx.set(0, 1, std::string("foo"));
@@ -781,81 +792,82 @@ void mtm_test_position()
     mtx.set(2, 0, true);
     mtx.set(2, 1, false);
 
-    assert(mtx.get_type(0, 0) == mtm::element_numeric);
-    assert(mtx.get_type(0, 1) == mtm::element_string);
-    assert(mtx.get_type(1, 0) == mtm::element_numeric);
-    assert(mtx.get_type(1, 1) == mtm::element_numeric);
-    assert(mtx.get_type(2, 0) == mtm::element_boolean);
-    assert(mtx.get_type(2, 1) == mtm::element_boolean);
+    TEST_ASSERT(mtx.get_type(0, 0) == mtm::element_numeric);
+    TEST_ASSERT(mtx.get_type(0, 1) == mtm::element_string);
+    TEST_ASSERT(mtx.get_type(1, 0) == mtm::element_numeric);
+    TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_numeric);
+    TEST_ASSERT(mtx.get_type(2, 0) == mtm::element_boolean);
+    TEST_ASSERT(mtx.get_type(2, 1) == mtm::element_boolean);
 
     mtx_type::position_type pos = mtx.position(1, 1);
-    assert(mtx.get_type(pos) == mtm::element_numeric);
-    assert(mtx.get_numeric(pos) == 2.1);
+    TEST_ASSERT(mtx.get_type(pos) == mtm::element_numeric);
+    TEST_ASSERT(mtx.get_numeric(pos) == 2.1);
 
     pos = mtx.position(2, 0);
-    assert(mtx.get_type(pos) == mtm::element_boolean);
-    assert(mtx.get_boolean(pos) == true);
+    TEST_ASSERT(mtx.get_type(pos) == mtm::element_boolean);
+    TEST_ASSERT(mtx.get_boolean(pos) == true);
 
     pos = mtx.position(0, 1);
-    assert(mtx.get_type(pos) == mtm::element_string);
-    assert(mtx.get_string(pos) == "foo");
+    TEST_ASSERT(mtx.get_type(pos) == mtm::element_string);
+    TEST_ASSERT(mtx.get_string(pos) == "foo");
 
     mtx.set_empty(pos);
-    assert(mtx.get_type(0, 1) == mtm::element_empty);
+    TEST_ASSERT(mtx.get_type(0, 1) == mtm::element_empty);
 
     pos = mtx.position(1, 1);
     mtx.set(pos, false);
-    assert(mtx.get_type(1, 1) == mtm::element_boolean);
-    assert(mtx.get_boolean(1, 1) == false);
+    TEST_ASSERT(mtx.get_type(1, 1) == mtm::element_boolean);
+    TEST_ASSERT(mtx.get_boolean(1, 1) == false);
 
     pos = mtx.position(2, 0);
     mtx.set(pos, 12.3);
-    assert(mtx.get_type(2, 0) == mtm::element_numeric);
-    assert(mtx.get_numeric(2, 0) == 12.3);
+    TEST_ASSERT(mtx.get_type(2, 0) == mtm::element_numeric);
+    TEST_ASSERT(mtx.get_numeric(2, 0) == 12.3);
 
     pos = mtx.position(2, 1);
     mtx.set(pos, std::string("ABC"));
-    assert(mtx.get_type(2, 1) == mtm::element_string);
-    assert(mtx.get_string(2, 1) == "ABC");
+    TEST_ASSERT(mtx.get_type(2, 1) == mtm::element_string);
+    TEST_ASSERT(mtx.get_string(2, 1) == "ABC");
 
     // Start over, and test the traversal of position object.
     pos = mtx.position(0, 0);
     mtx_type::size_pair_type mtx_pos = mtx.matrix_position(pos);
-    assert(mtx_pos.column == 0);
-    assert(mtx_pos.row == 0);
+    TEST_ASSERT(mtx_pos.column == 0);
+    TEST_ASSERT(mtx_pos.row == 0);
 
     pos = mtx_type::next_position(pos);
     mtx_pos = mtx.matrix_position(pos);
-    assert(mtx_pos.column == 0);
-    assert(mtx_pos.row == 1);
+    TEST_ASSERT(mtx_pos.column == 0);
+    TEST_ASSERT(mtx_pos.row == 1);
 
     pos = mtx_type::next_position(pos);
     mtx_pos = mtx.matrix_position(pos);
-    assert(mtx_pos.column == 0);
-    assert(mtx_pos.row == 2);
+    TEST_ASSERT(mtx_pos.column == 0);
+    TEST_ASSERT(mtx_pos.row == 2);
 
     pos = mtx_type::next_position(pos);
     mtx_pos = mtx.matrix_position(pos);
-    assert(mtx_pos.column == 1);
-    assert(mtx_pos.row == 0);
+    TEST_ASSERT(mtx_pos.column == 1);
+    TEST_ASSERT(mtx_pos.row == 0);
 
     pos = mtx_type::next_position(pos);
     mtx_pos = mtx.matrix_position(pos);
-    assert(mtx_pos.column == 1);
-    assert(mtx_pos.row == 1);
+    TEST_ASSERT(mtx_pos.column == 1);
+    TEST_ASSERT(mtx_pos.row == 1);
 
     pos = mtx_type::next_position(pos);
     mtx_pos = mtx.matrix_position(pos);
-    assert(mtx_pos.column == 1);
-    assert(mtx_pos.row == 2);
+    TEST_ASSERT(mtx_pos.column == 1);
+    TEST_ASSERT(mtx_pos.row == 2);
 
     pos = mtx_type::next_position(pos);
-    assert(pos == mtx.end_position());
+    TEST_ASSERT(pos == mtx.end_position());
 }
 
 void mtm_test_set_data_via_position()
 {
-    stack_printer __stack_printer__("::mtm_test_set_data_via_position");
+    MDDS_TEST_FUNC_SCOPE;
+
     mtx_type mtx(5, 4);
     mtx_type::position_type pos = mtx.position(0, 1);
     std::vector<double> data;
@@ -865,21 +877,21 @@ void mtm_test_set_data_via_position()
     data.push_back(1.4);
     data.push_back(1.5);
     pos = mtx.set(pos, data.begin(), data.end());
-    assert(mtx.get<double>(0, 1) == 1.1);
-    assert(mtx.get<double>(1, 1) == 1.2);
-    assert(mtx.get<double>(2, 1) == 1.3);
-    assert(mtx.get<double>(3, 1) == 1.4);
-    assert(mtx.get<double>(4, 1) == 1.5);
+    TEST_ASSERT(mtx.get<double>(0, 1) == 1.1);
+    TEST_ASSERT(mtx.get<double>(1, 1) == 1.2);
+    TEST_ASSERT(mtx.get<double>(2, 1) == 1.3);
+    TEST_ASSERT(mtx.get<double>(3, 1) == 1.4);
+    TEST_ASSERT(mtx.get<double>(4, 1) == 1.5);
 
     mtx_type::size_pair_type mtx_pos = mtx.matrix_position(pos);
-    assert(mtx_pos.row == 0);
-    assert(mtx_pos.column == 1);
+    TEST_ASSERT(mtx_pos.row == 0);
+    TEST_ASSERT(mtx_pos.column == 1);
     pos = mtx.position(pos, 0, 2);
     pos = mtx.set(pos, std::string("test"));
     pos = mtx_type::next_position(pos);
     pos = mtx.set(pos, true);
-    assert(mtx.get<std::string>(0, 2) == "test");
-    assert(mtx.get<bool>(1, 2) == true);
+    TEST_ASSERT(mtx.get<std::string>(0, 2) == "test");
+    TEST_ASSERT(mtx.get<bool>(1, 2) == true);
 }
 
 /**
