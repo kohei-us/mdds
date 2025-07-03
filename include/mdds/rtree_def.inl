@@ -1594,19 +1594,15 @@ typename rtree<KeyT, ValueT, Traits>::search_results rtree<KeyT, ValueT, Traits>
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-void rtree<KeyT, ValueT, Traits>::erase(const const_iterator& pos)
+void rtree<KeyT, ValueT, Traits>::erase(const_iterator pos)
 {
-    const node_store* ns = pos.m_pos->ns;
-    size_t depth = pos.m_pos->depth;
-    erase_impl(ns, depth);
+    erase_impl(pos.m_pos->ns, pos.m_pos->depth);
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-void rtree<KeyT, ValueT, Traits>::erase(const iterator& pos)
+void rtree<KeyT, ValueT, Traits>::erase(iterator pos)
 {
-    const node_store* ns = pos.m_pos->ns;
-    size_t depth = pos.m_pos->depth;
-    erase_impl(ns, depth);
+    erase_impl(pos.m_pos->ns, pos.m_pos->depth);
 }
 
 template<typename KeyT, typename ValueT, typename Traits>

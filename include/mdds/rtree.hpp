@@ -683,7 +683,7 @@ public:
      *
      * @param pos iterator that refernces the value object to erase.
      */
-    void erase(const const_iterator& pos);
+    void erase(const_iterator pos);
 
     /**
      * Erase the value object referenced by the iterator passed to this
@@ -694,7 +694,7 @@ public:
      *
      * @param pos iterator that refernces the value object to erase.
      */
-    void erase(const iterator& pos);
+    void erase(iterator pos);
 
     /**
      * Get the minimum bounding extent of the root node of the tree. The
