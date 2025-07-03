@@ -55,26 +55,26 @@ struct eb_init_trait : public mdds::mtv::standard_element_blocks_traits
 
 void mtv_test_block_init()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     using mtv_type = mtv_template_type<eb_init_trait>;
 
     {
         mtv_type db(event_block_init("some name")); // pass an rvalue
-        assert(db.event_handler().name == "some name");
-        assert(db.event_handler().ctor_type == "move");
+        TEST_ASSERT(db.event_handler().name == "some name");
+        TEST_ASSERT(db.event_handler().ctor_type == "move");
 
         auto db2{db};
-        assert(db2.event_handler().name == "some name");
-        assert(db2.event_handler().ctor_type == "copy");
+        TEST_ASSERT(db2.event_handler().name == "some name");
+        TEST_ASSERT(db2.event_handler().ctor_type == "copy");
     }
 
     {
         event_block_init ebi("other name");
-        assert(ebi.ctor_type == "normal");
+        TEST_ASSERT(ebi.ctor_type == "normal");
         mtv_type db(ebi); // pass an lvalue
-        assert(db.event_handler().name == "other name");
-        assert(db.event_handler().ctor_type == "copy");
+        TEST_ASSERT(db.event_handler().name == "other name");
+        TEST_ASSERT(db.event_handler().ctor_type == "copy");
     }
 }
 

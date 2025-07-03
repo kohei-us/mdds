@@ -44,17 +44,17 @@ void mtv_test_element_blocks_range()
     auto blk = block_type(values.begin(), values.end());
     const auto& crblk = blk;
 
-    assert(block_type::size(blk) == 5u);
+    TEST_ASSERT(block_type::size(blk) == 5u);
 
     {
         auto it = block_type::begin(blk), it_end = block_type::end(blk);
-        assert(std::distance(it, it_end) == 5u);
-        assert(*it++ == 1);
-        assert(*it++ == 2);
-        assert(*it++ == 3);
-        assert(*it++ == 4);
-        assert(*it++ == 5);
-        assert(it == it_end);
+        TEST_ASSERT(std::distance(it, it_end) == 5u);
+        TEST_ASSERT(*it++ == 1);
+        TEST_ASSERT(*it++ == 2);
+        TEST_ASSERT(*it++ == 3);
+        TEST_ASSERT(*it++ == 4);
+        TEST_ASSERT(*it++ == 5);
+        TEST_ASSERT(it == it_end);
     }
 
     {
@@ -63,10 +63,10 @@ void mtv_test_element_blocks_range()
         for (auto v : block_type::range(crblk))
         {
             std::cout << "v=" << v << std::endl;
-            assert(v == *it++);
+            TEST_ASSERT(v == *it++);
         }
 
-        assert(it == block_type::end(crblk));
+        TEST_ASSERT(it == block_type::end(crblk));
     }
 
     {
@@ -75,20 +75,20 @@ void mtv_test_element_blocks_range()
         for (auto v : block_type::range(blk))
         {
             std::cout << "v=" << v << std::endl;
-            assert(v == *it);
+            TEST_ASSERT(v == *it);
             *it = v + 2;
             ++it;
         }
 
-        assert(it == block_type::end(blk));
+        TEST_ASSERT(it == block_type::end(blk));
 
         it = block_type::begin(blk);
-        assert(*it++ == 3);
-        assert(*it++ == 4);
-        assert(*it++ == 5);
-        assert(*it++ == 6);
-        assert(*it++ == 7);
-        assert(it == block_type::end(blk));
+        TEST_ASSERT(*it++ == 3);
+        TEST_ASSERT(*it++ == 4);
+        TEST_ASSERT(*it++ == 5);
+        TEST_ASSERT(*it++ == 6);
+        TEST_ASSERT(*it++ == 7);
+        TEST_ASSERT(it == block_type::end(blk));
     }
 }
 

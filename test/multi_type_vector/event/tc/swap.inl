@@ -43,24 +43,24 @@ using mtv_type = mtv_template_type<trait>;
 
 void mtv_test_swap()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     mtv_type db1(10), db2(2);
     db1.event_handler().name = "db1";
     db2.event_handler().name = "db2";
 
-    assert(db1.size() == 10);
-    assert(db2.size() == 2);
-    assert(db1.event_handler().name == "db1");
-    assert(db2.event_handler().name == "db2");
+    TEST_ASSERT(db1.size() == 10);
+    TEST_ASSERT(db2.size() == 2);
+    TEST_ASSERT(db1.event_handler().name == "db1");
+    TEST_ASSERT(db2.event_handler().name == "db2");
 
     // This should also swap the event handlers.
     db1.swap(db2);
 
-    assert(db1.size() == 2);
-    assert(db2.size() == 10);
-    assert(db1.event_handler().name == "db2");
-    assert(db2.event_handler().name == "db1");
+    TEST_ASSERT(db1.size() == 2);
+    TEST_ASSERT(db2.size() == 10);
+    TEST_ASSERT(db1.event_handler().name == "db2");
+    TEST_ASSERT(db2.event_handler().name == "db1");
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

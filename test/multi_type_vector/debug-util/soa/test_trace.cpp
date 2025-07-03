@@ -90,7 +90,7 @@ public:
         if (!std::equal(m_expected.cbegin(), m_expected.cend(), m_observed.cbegin(), compare))
         {
             std::cerr << "test failed (line=" << m_line_number << ")" << std::endl;
-            assert(false);
+            TEST_ASSERT(false);
         }
         m_observed.clear();
     }
@@ -439,11 +439,11 @@ int main()
         observed.clear();
         db = db2; // copy
         checked_method_props expected{&db, "operator=", trace_method_t::mutator};
-        assert(compare(observed.at(0), expected));
+        TEST_ASSERT(compare(observed.at(0), expected));
 
         observed.clear();
         db = std::move(db2); // move
-        assert(compare(observed.at(0), expected));
+        TEST_ASSERT(compare(observed.at(0), expected));
 
         observed.clear();
     }

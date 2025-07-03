@@ -47,15 +47,15 @@ void mtv_test_element_blocks_std_vector()
 
     auto* blk = this_block::create_block(10);
 
-    assert(mdds::mtv::get_block_type(*blk) == this_block::block_type);
-    assert(this_block::size(*blk) == 10u);
+    TEST_ASSERT(mdds::mtv::get_block_type(*blk) == this_block::block_type);
+    TEST_ASSERT(this_block::size(*blk) == 10u);
 
     auto cap = this_block::capacity(*blk);
-    assert(cap >= 10u);
+    TEST_ASSERT(cap >= 10u);
 
     this_block::reserve(*blk, 100u);
     cap = this_block::capacity(*blk);
-    assert(cap >= 100u);
+    TEST_ASSERT(cap >= 100u);
 
     this_block::shrink_to_fit(*blk);
 
@@ -74,8 +74,8 @@ void mtv_test_element_blocks_std_deque()
 
     auto* blk = this_block::create_block(10);
 
-    assert(mdds::mtv::get_block_type(*blk) == this_block::block_type);
-    assert(this_block::size(*blk) == 10u);
+    TEST_ASSERT(mdds::mtv::get_block_type(*blk) == this_block::block_type);
+    TEST_ASSERT(this_block::size(*blk) == 10u);
 
     // std::deque does not have a capacity() method, but this should still compile.
     [[maybe_unused]] auto cap = this_block::capacity(*blk);

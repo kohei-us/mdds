@@ -28,38 +28,38 @@
 
 void mtv_test_construction()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     {
         mtv_type db; // default constructor.
-        assert(db.size() == 0);
-        assert(db.empty());
-        assert(db.block_size() == 0);
+        TEST_ASSERT(db.size() == 0);
+        TEST_ASSERT(db.empty());
+        TEST_ASSERT(db.block_size() == 0);
     }
 
     {
         // Create an empty segment of size 7.
         mtv_type db(7);
-        assert(db.size() == 7);
-        assert(db.block_size() == 1);
+        TEST_ASSERT(db.size() == 7);
+        TEST_ASSERT(db.block_size() == 1);
     }
 
     {
         // Create with initial value and size.
         mtv_type db(10, 1.0);
-        assert(db.size() == 10);
-        assert(db.block_size() == 1);
-        assert(db.get<double>(0) == 1.0);
-        assert(db.get<double>(9) == 1.0);
+        TEST_ASSERT(db.size() == 10);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.get<double>(0) == 1.0);
+        TEST_ASSERT(db.get<double>(9) == 1.0);
     }
 
     {
         // Create with initial value and size.
         mtv_type db(10, std::string("foo"));
-        assert(db.size() == 10);
-        assert(db.block_size() == 1);
-        assert(db.get<std::string>(0) == "foo");
-        assert(db.get<std::string>(9) == "foo");
+        TEST_ASSERT(db.size() == 10);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.get<std::string>(0) == "foo");
+        TEST_ASSERT(db.get<std::string>(9) == "foo");
     }
 
     {
@@ -69,27 +69,27 @@ void mtv_test_construction()
         vals.push_back(1.2);
         vals.push_back(1.3);
         mtv_type db(vals.size(), vals.begin(), vals.end());
-        assert(db.size() == 3);
-        assert(db.block_size() == 1);
-        assert(db.get<double>(0) == 1.1);
-        assert(db.get<double>(1) == 1.2);
-        assert(db.get<double>(2) == 1.3);
+        TEST_ASSERT(db.size() == 3);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.get<double>(0) == 1.1);
+        TEST_ASSERT(db.get<double>(1) == 1.2);
+        TEST_ASSERT(db.get<double>(2) == 1.3);
     }
 
     {
         std::vector<std::string> vals;
         mtv_type db_empty(0, vals.begin(), vals.end());
-        assert(db_empty.size() == 0);
-        assert(db_empty.block_size() == 0);
+        TEST_ASSERT(db_empty.size() == 0);
+        TEST_ASSERT(db_empty.block_size() == 0);
 
         vals.push_back("Andy");
         vals.push_back("Bruce");
 
         mtv_type db(2, vals.begin(), vals.end());
-        assert(db.size() == 2);
-        assert(db.block_size() == 1);
-        assert(db.get<std::string>(0) == "Andy");
-        assert(db.get<std::string>(1) == "Bruce");
+        TEST_ASSERT(db.size() == 2);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.get<std::string>(0) == "Andy");
+        TEST_ASSERT(db.get<std::string>(1) == "Bruce");
     }
 
     {
@@ -97,7 +97,7 @@ void mtv_test_construction()
         try
         {
             mtv_type db(20, vals.begin(), vals.end());
-            assert(!"This construction should have failed due to incorrect initial array size.");
+            TEST_ASSERT(!"This construction should have failed due to incorrect initial array size.");
         }
         catch (const mdds::invalid_arg_error&)
         {

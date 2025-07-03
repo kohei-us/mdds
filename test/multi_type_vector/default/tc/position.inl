@@ -28,7 +28,8 @@
 
 void mtv_test_position()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
+
     mtv_type db(10, false);
     mtv_type::iterator check;
     mtv_type::const_iterator const_check;
@@ -38,16 +39,16 @@ void mtv_test_position()
     db.set(9, 1.4);
 
     mtv_type::position_type pos = db.position(0);
-    assert(pos.first == db.begin());
-    assert(pos.second == 0);
+    TEST_ASSERT(pos.first == db.begin());
+    TEST_ASSERT(pos.second == 0);
 
     pos = db.position(1);
-    assert(pos.first == db.begin());
-    assert(pos.second == 1);
+    TEST_ASSERT(pos.first == db.begin());
+    TEST_ASSERT(pos.second == 1);
 
     pos = db.position(5);
-    assert(pos.first == db.begin());
-    assert(pos.second == 5);
+    TEST_ASSERT(pos.first == db.begin());
+    TEST_ASSERT(pos.second == 5);
 
     check = db.begin();
     ++check;
@@ -55,61 +56,62 @@ void mtv_test_position()
     // These positions should be on the 2nd block.
 
     pos = db.position(6);
-    assert(pos.first == check);
-    assert(pos.second == 0);
+    TEST_ASSERT(pos.first == check);
+    TEST_ASSERT(pos.second == 0);
 
     pos = db.position(7);
-    assert(pos.first == check);
-    assert(pos.second == 1);
+    TEST_ASSERT(pos.first == check);
+    TEST_ASSERT(pos.second == 1);
 
     pos = db.position(9);
-    assert(pos.first == check);
-    assert(pos.second == 3);
+    TEST_ASSERT(pos.first == check);
+    TEST_ASSERT(pos.second == 3);
 
     {
         // Make sure you get the right element.
         mtv_type::iterator it = pos.first;
-        assert(it->type == mdds::mtv::element_type_double);
-        assert(it->data);
+        TEST_ASSERT(it->type == mdds::mtv::element_type_double);
+        TEST_ASSERT(it->data);
         mdds::mtv::double_element_block::iterator it_elem = mdds::mtv::double_element_block::begin(*it->data);
         advance(it_elem, pos.second);
-        assert(*it_elem == 1.4);
+        TEST_ASSERT(*it_elem == 1.4);
     }
 
     // Quick check for the const variant.
     const mtv_type& db_ref = db;
     mtv_type::const_position_type const_pos = db_ref.position(3);
-    assert(const_pos.first == db_ref.begin());
-    assert(const_pos.second == 3);
+    TEST_ASSERT(const_pos.first == db_ref.begin());
+    TEST_ASSERT(const_pos.second == 3);
     const_pos = db_ref.position(const_pos.first, 7);
     const_check = db_ref.begin();
     ++const_check;
-    assert(const_pos.first == const_check);
-    assert(const_pos.second == 1);
+    TEST_ASSERT(const_pos.first == const_check);
+    TEST_ASSERT(const_pos.second == 1);
 
     // Check for the variant that takes position hint.
     pos = db.position(0);
-    assert(pos.first == db.begin());
-    assert(pos.second == 0);
+    TEST_ASSERT(pos.first == db.begin());
+    TEST_ASSERT(pos.second == 0);
 
     pos = db.position(pos.first, 6);
     check = db.begin();
     ++check;
-    assert(pos.first == check);
-    assert(pos.second == 0);
+    TEST_ASSERT(pos.first == check);
+    TEST_ASSERT(pos.second == 0);
 
     pos = db.position(pos.first, 7);
-    assert(pos.first == check);
-    assert(pos.second == 1);
+    TEST_ASSERT(pos.first == check);
+    TEST_ASSERT(pos.second == 1);
 
     pos = db.position(pos.first, 9);
-    assert(pos.first == check);
-    assert(pos.second == 3);
+    TEST_ASSERT(pos.first == check);
+    TEST_ASSERT(pos.second == 3);
 }
 
 void mtv_test_position_next()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
+
     mtv_type db(10);
     db.set(2, 1.1);
     db.set(3, 1.2);
@@ -120,59 +122,60 @@ void mtv_test_position_next()
     db.set(8, false);
 
     mtv_type::position_type pos = db.position(0);
-    assert(mtv_type::logical_position(pos) == 0);
-    assert(pos.first->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 0);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_empty);
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 1);
-    assert(pos.first->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 1);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_empty);
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 2);
-    assert(pos.first->type == mdds::mtv::element_type_double);
-    assert(mtv_type::get<mdds::mtv::double_element_block>(pos) == 1.1);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 2);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(mtv_type::get<mdds::mtv::double_element_block>(pos) == 1.1);
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 3);
-    assert(pos.first->type == mdds::mtv::element_type_double);
-    assert(mtv_type::get<mdds::mtv::double_element_block>(pos) == 1.2);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 3);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(mtv_type::get<mdds::mtv::double_element_block>(pos) == 1.2);
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 4);
-    assert(pos.first->type == mdds::mtv::element_type_string);
-    assert(mtv_type::get<mdds::mtv::string_element_block>(pos) == "A");
+    TEST_ASSERT(mtv_type::logical_position(pos) == 4);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_string);
+    TEST_ASSERT(mtv_type::get<mdds::mtv::string_element_block>(pos) == "A");
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 5);
-    assert(pos.first->type == mdds::mtv::element_type_string);
-    assert(mtv_type::get<mdds::mtv::string_element_block>(pos) == "B");
+    TEST_ASSERT(mtv_type::logical_position(pos) == 5);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_string);
+    TEST_ASSERT(mtv_type::get<mdds::mtv::string_element_block>(pos) == "B");
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 6);
-    assert(pos.first->type == mdds::mtv::element_type_string);
-    assert(mtv_type::get<mdds::mtv::string_element_block>(pos) == "C");
+    TEST_ASSERT(mtv_type::logical_position(pos) == 6);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_string);
+    TEST_ASSERT(mtv_type::get<mdds::mtv::string_element_block>(pos) == "C");
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 7);
-    assert(pos.first->type == mdds::mtv::element_type_boolean);
-    assert(mtv_type::get<mdds::mtv::boolean_element_block>(pos) == true);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 7);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_boolean);
+    TEST_ASSERT(mtv_type::get<mdds::mtv::boolean_element_block>(pos) == true);
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 8);
-    assert(pos.first->type == mdds::mtv::element_type_boolean);
-    assert(mtv_type::get<mdds::mtv::boolean_element_block>(pos) == false);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 8);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_boolean);
+    TEST_ASSERT(mtv_type::get<mdds::mtv::boolean_element_block>(pos) == false);
 
     pos = mtv_type::next_position(pos);
-    assert(mtv_type::logical_position(pos) == 9);
-    assert(pos.first->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 9);
+    TEST_ASSERT(pos.first->type == mdds::mtv::element_type_empty);
 
     pos = mtv_type::next_position(pos);
-    assert(pos.first == db.end());
+    TEST_ASSERT(pos.first == db.end());
 }
 
 void mtv_test_position_advance()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
+
     mtv_type db(10);
     db.set(2, 1.1);
     db.set(3, 1.2);
@@ -181,22 +184,22 @@ void mtv_test_position_advance()
     db.set(6, std::string("C"));
 
     mtv_type::position_type pos = db.position(0);
-    assert(mtv_type::logical_position(pos) == 0);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 0);
 
     pos = mtv_type::advance_position(pos, 4);
-    assert(mtv_type::logical_position(pos) == 4);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 4);
 
     pos = mtv_type::advance_position(pos, 5);
-    assert(mtv_type::logical_position(pos) == 9);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 9);
 
     pos = mtv_type::advance_position(pos, -3);
-    assert(mtv_type::logical_position(pos) == 6);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 6);
 
     pos = mtv_type::advance_position(pos, -6);
-    assert(mtv_type::logical_position(pos) == 0);
+    TEST_ASSERT(mtv_type::logical_position(pos) == 0);
 
     pos = mtv_type::advance_position(pos, 10);
-    assert(pos.first == db.end());
+    TEST_ASSERT(pos.first == db.end());
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

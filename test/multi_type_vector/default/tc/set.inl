@@ -28,7 +28,8 @@
 
 void mtv_test_set_cells()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
+
     {
         mtv_type db(5);
 
@@ -44,9 +45,9 @@ void mtv_test_set_cells()
 
             double test;
             db.get(0, test);
-            assert(test == 1.0);
+            TEST_ASSERT(test == 1.0);
             db.get(4, test);
-            assert(test == 5.0);
+            TEST_ASSERT(test == 5.0);
         }
 
         {
@@ -63,9 +64,9 @@ void mtv_test_set_cells()
 
             std::string test;
             db.get(0, test);
-            assert(test == "1");
+            TEST_ASSERT(test == "1");
             db.get(4, test);
-            assert(test == "5");
+            TEST_ASSERT(test == "5");
         }
 
         {
@@ -75,9 +76,9 @@ void mtv_test_set_cells()
             db.set(0, p, p_end);
             double test;
             db.get(0, test);
-            assert(test == 5.0);
+            TEST_ASSERT(test == 5.0);
             db.get(4, test);
-            assert(test == 9.0);
+            TEST_ASSERT(test == 9.0);
         }
 
         {
@@ -89,18 +90,18 @@ void mtv_test_set_cells()
             db.set(0, p, p_end);
             double test;
             db.get(0, test);
-            assert(test == 5.1);
+            TEST_ASSERT(test == 5.1);
             db.get(4, test);
-            assert(test == 9.1);
+            TEST_ASSERT(test == 9.1);
 
             double vals2[] = {8.2, 9.2};
             p = &vals2[0];
             p_end = p + 2;
             db.set(3, p, p_end);
             db.get(3, test);
-            assert(test == 8.2);
+            TEST_ASSERT(test == 8.2);
             db.get(4, test);
-            assert(test == 9.2);
+            TEST_ASSERT(test == 9.2);
         }
 
         {
@@ -109,16 +110,16 @@ void mtv_test_set_cells()
             uint64_t* p = &vals[0];
             uint64_t* p_end = p + 3;
             db.set(0, p, p_end);
-            assert(db.block_size() == 2);
-            assert(db.size() == 5);
+            TEST_ASSERT(db.block_size() == 2);
+            TEST_ASSERT(db.size() == 5);
             uint64_t test;
             db.get(0, test);
-            assert(test == 1);
+            TEST_ASSERT(test == 1);
             db.get(2, test);
-            assert(test == 3);
+            TEST_ASSERT(test == 3);
             double test2;
             db.get(3, test2);
-            assert(test2 == 8.2);
+            TEST_ASSERT(test2 == 8.2);
         }
 
         {
@@ -127,13 +128,13 @@ void mtv_test_set_cells()
             uint64_t* p = &vals[0];
             uint64_t* p_end = p + 2;
             db.set(3, p, p_end);
-            assert(db.block_size() == 1);
-            assert(db.size() == 5);
+            TEST_ASSERT(db.block_size() == 1);
+            TEST_ASSERT(db.size() == 5);
             uint64_t test;
             db.get(2, test);
-            assert(test == 3);
+            TEST_ASSERT(test == 3);
             db.get(3, test);
-            assert(test == 4);
+            TEST_ASSERT(test == 4);
         }
 
         {
@@ -144,24 +145,24 @@ void mtv_test_set_cells()
 
             double val = 2.3;
             db.set(0, val);
-            assert(db.block_size() == 2);
+            TEST_ASSERT(db.block_size() == 2);
             val = 4.5;
             double* p = &val;
             double* p_end = p + 1;
             db.set(1, p, p_end);
-            assert(db.block_size() == 2);
-            assert(db.size() == 5);
+            TEST_ASSERT(db.block_size() == 2);
+            TEST_ASSERT(db.size() == 5);
             {
                 double test;
                 db.get(0, test);
-                assert(test == 2.3);
+                TEST_ASSERT(test == 2.3);
                 db.get(1, test);
-                assert(test == 4.5);
+                TEST_ASSERT(test == 4.5);
             }
 
             uint64_t test;
             db.get(2, test);
-            assert(test == prev_value);
+            TEST_ASSERT(test == prev_value);
         }
     }
 
@@ -170,8 +171,8 @@ void mtv_test_set_cells()
         for (size_t i = 0; i < 5; ++i)
             db.set(i, static_cast<double>(i + 1));
 
-        assert(db.block_size() == 1);
-        assert(db.size() == 5);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.size() == 5);
 
         {
             uint64_t vals[] = {10, 11};
@@ -179,33 +180,33 @@ void mtv_test_set_cells()
             uint64_t* p_end = p + 2;
             db.set(3, p, p_end);
 
-            assert(db.block_size() == 2);
-            assert(db.size() == 5);
+            TEST_ASSERT(db.block_size() == 2);
+            TEST_ASSERT(db.size() == 5);
 
             double test;
             db.get(2, test);
-            assert(test == 3.0);
+            TEST_ASSERT(test == 3.0);
             uint64_t test2;
             db.get(3, test2);
-            assert(test2 == 10);
+            TEST_ASSERT(test2 == 10);
             db.get(4, test2);
-            assert(test2 == 11);
+            TEST_ASSERT(test2 == 11);
 
             // Insertion into a single block but this time it needs to be
             // merged with the subsequent block.
             db.set(1, p, p_end);
 
-            assert(db.block_size() == 2);
-            assert(db.size() == 5);
+            TEST_ASSERT(db.block_size() == 2);
+            TEST_ASSERT(db.size() == 5);
 
             db.get(1, test2);
-            assert(test2 == 10);
+            TEST_ASSERT(test2 == 10);
             db.get(2, test2);
-            assert(test2 == 11);
+            TEST_ASSERT(test2 == 11);
             db.get(3, test2);
-            assert(test2 == 10);
+            TEST_ASSERT(test2 == 10);
             db.get(4, test2);
-            assert(test2 == 11);
+            TEST_ASSERT(test2 == 11);
         }
     }
 
@@ -219,43 +220,43 @@ void mtv_test_set_cells()
             double* p = &vals_d[0];
             double* p_end = p + 6;
             db.set(0, p, p_end);
-            assert(db.block_size() == 1);
-            assert(db.size() == 6);
+            TEST_ASSERT(db.block_size() == 1);
+            TEST_ASSERT(db.size() == 6);
             double test;
             db.get(0, test);
-            assert(test == 1.0);
+            TEST_ASSERT(test == 1.0);
             db.get(5, test);
-            assert(test == 1.5);
+            TEST_ASSERT(test == 1.5);
         }
 
         {
             uint64_t* p = &vals_i[0];
             uint64_t* p_end = p + 4;
             db.set(0, p, p_end);
-            assert(db.block_size() == 2);
+            TEST_ASSERT(db.block_size() == 2);
             uint64_t test;
             db.get(0, test);
-            assert(test == 12);
+            TEST_ASSERT(test == 12);
             db.get(3, test);
-            assert(test == 15);
+            TEST_ASSERT(test == 15);
         }
 
         {
             std::string* p = &vals_s[0];
             std::string* p_end = p + 2;
             db.set(2, p, p_end);
-            assert(db.block_size() == 3);
+            TEST_ASSERT(db.block_size() == 3);
             std::string test;
             db.get(2, test);
-            assert(test == "a");
+            TEST_ASSERT(test == "a");
             db.get(3, test);
-            assert(test == "b");
+            TEST_ASSERT(test == "b");
             double test_d;
             db.get(4, test_d);
-            assert(test_d == 1.4);
+            TEST_ASSERT(test_d == 1.4);
             uint64_t test_i;
             db.get(1, test_i);
-            assert(test_i == 13);
+            TEST_ASSERT(test_i == 13);
         }
     }
 
@@ -266,7 +267,7 @@ void mtv_test_set_cells()
             double* p = &vals[0];
             double* p_end = p + 3;
             db.set(0, p, p_end);
-            assert(db.block_size() == 1);
+            TEST_ASSERT(db.block_size() == 1);
         }
 
         {
@@ -274,15 +275,15 @@ void mtv_test_set_cells()
             uint64_t* p = &val_i;
             uint64_t* p_end = p + 1;
             db.set(1, p, p_end);
-            assert(db.block_size() == 3);
+            TEST_ASSERT(db.block_size() == 3);
             uint64_t test;
             db.get(1, test);
-            assert(test == 23);
+            TEST_ASSERT(test == 23);
             double test_d;
             db.get(0, test_d);
-            assert(test_d == 2.1);
+            TEST_ASSERT(test_d == 2.1);
             db.get(2, test_d);
-            assert(test_d == 2.3);
+            TEST_ASSERT(test_d == 2.3);
         }
     }
 
@@ -292,20 +293,20 @@ void mtv_test_set_cells()
         mtv_type db(2);
         db.set(0, static_cast<double>(1.1));
         db.set(1, std::string("foo"));
-        assert(db.block_size() == 2);
+        TEST_ASSERT(db.block_size() == 2);
 
         double vals[] = {2.1, 2.2};
         double* p = &vals[0];
         double* p_end = p + 2;
         db.set(0, p, p_end);
-        assert(db.block_size() == 1);
-        assert(db.size() == 2);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.size() == 2);
 
         double test;
         db.get(0, test);
-        assert(test == 2.1);
+        TEST_ASSERT(test == 2.1);
         db.get(1, test);
-        assert(test == 2.2);
+        TEST_ASSERT(test == 2.2);
     }
 
     {
@@ -320,18 +321,18 @@ void mtv_test_set_cells()
         double* p = &vals[0];
         double* p_end = p + 2;
         db.set(0, p, p_end);
-        assert(db.block_size() == 2);
-        assert(db.size() == 3);
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.size() == 3);
 
         double test_val;
         db.get(0, test_val);
-        assert(test_val == 2.1);
+        TEST_ASSERT(test_val == 2.1);
         db.get(1, test_val);
-        assert(test_val == 2.2);
+        TEST_ASSERT(test_val == 2.2);
 
         std::string test_s;
         db.get(2, test_s);
-        assert(test_s == "baa");
+        TEST_ASSERT(test_s == "baa");
     }
 
     {
@@ -339,21 +340,21 @@ void mtv_test_set_cells()
         db.set(0, static_cast<double>(3.1));
         db.set(1, static_cast<double>(3.2));
         db.set(2, std::string("foo"));
-        assert(db.block_size() == 2);
-        assert(db.size() == 3);
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.size() == 3);
 
         double vals[] = {2.1, 2.2};
         double* p = &vals[0];
         double* p_end = p + 2;
         db.set(1, p, p_end);
-        assert(db.block_size() == 1);
+        TEST_ASSERT(db.block_size() == 1);
         double test;
         db.get(0, test);
-        assert(test == 3.1);
+        TEST_ASSERT(test == 3.1);
         db.get(1, test);
-        assert(test == 2.1);
+        TEST_ASSERT(test == 2.1);
         db.get(2, test);
-        assert(test == 2.2);
+        TEST_ASSERT(test == 2.2);
     }
 
     {
@@ -363,19 +364,19 @@ void mtv_test_set_cells()
         db.set(2, std::string("foo"));
         db.set(3, 1.3);
         db.set(4, 1.4);
-        assert(db.block_size() == 3);
+        TEST_ASSERT(db.block_size() == 3);
 
         double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
         double* p_end = p + 3;
         db.set(1, p, p_end);
-        assert(db.block_size() == 1);
-        assert(db.size() == 5);
-        assert(db.get<double>(0) == 1.1);
-        assert(db.get<double>(1) == 2.1);
-        assert(db.get<double>(2) == 2.2);
-        assert(db.get<double>(3) == 2.3);
-        assert(db.get<double>(4) == 1.4);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.size() == 5);
+        TEST_ASSERT(db.get<double>(0) == 1.1);
+        TEST_ASSERT(db.get<double>(1) == 2.1);
+        TEST_ASSERT(db.get<double>(2) == 2.2);
+        TEST_ASSERT(db.get<double>(3) == 2.3);
+        TEST_ASSERT(db.get<double>(4) == 1.4);
     }
 
     {
@@ -384,16 +385,16 @@ void mtv_test_set_cells()
         db.set(1, std::string("B"));
         db.set(2, 1.1);
         db.set(3, 1.2);
-        assert(db.block_size() == 2);
+        TEST_ASSERT(db.block_size() == 2);
 
         double vals[] = {2.1, 2.2, 2.3};
         double* p = &vals[0];
         db.set(1, p, p + 3);
-        assert(db.block_size() == 2);
-        assert(db.get<std::string>(0) == std::string("A"));
-        assert(db.get<double>(1) == 2.1);
-        assert(db.get<double>(2) == 2.2);
-        assert(db.get<double>(3) == 2.3);
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.get<std::string>(0) == std::string("A"));
+        TEST_ASSERT(db.get<double>(1) == 2.1);
+        TEST_ASSERT(db.get<double>(2) == 2.2);
+        TEST_ASSERT(db.get<double>(3) == 2.3);
     }
 
     {
@@ -402,16 +403,16 @@ void mtv_test_set_cells()
         db.set(1, std::string("B"));
         db.set(2, 1.1);
         db.set(3, 1.2);
-        assert(db.block_size() == 2);
+        TEST_ASSERT(db.block_size() == 2);
 
         double vals[] = {2.1, 2.2};
         double* p = &vals[0];
         db.set(1, p, p + 2);
-        assert(db.block_size() == 2);
-        assert(db.get<std::string>(0) == std::string("A"));
-        assert(db.get<double>(1) == 2.1);
-        assert(db.get<double>(2) == 2.2);
-        assert(db.get<double>(3) == 1.2);
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.get<std::string>(0) == std::string("A"));
+        TEST_ASSERT(db.get<double>(1) == 2.1);
+        TEST_ASSERT(db.get<double>(2) == 2.2);
+        TEST_ASSERT(db.get<double>(3) == 1.2);
     }
 
     {
@@ -421,17 +422,17 @@ void mtv_test_set_cells()
         db.set(2, 1.1);
         db.set(3, 1.2);
         db.set(4, static_cast<uint64_t>(12));
-        assert(db.block_size() == 3);
+        TEST_ASSERT(db.block_size() == 3);
 
         uint64_t vals[] = {21, 22, 23};
         uint64_t* p = &vals[0];
         db.set(1, p, p + 3);
-        assert(db.block_size() == 2);
-        assert(db.get<std::string>(0) == std::string("A"));
-        assert(db.get<uint64_t>(1) == 21);
-        assert(db.get<uint64_t>(2) == 22);
-        assert(db.get<uint64_t>(3) == 23);
-        assert(db.get<uint64_t>(4) == 12);
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.get<std::string>(0) == std::string("A"));
+        TEST_ASSERT(db.get<uint64_t>(1) == 21);
+        TEST_ASSERT(db.get<uint64_t>(2) == 22);
+        TEST_ASSERT(db.get<uint64_t>(3) == 23);
+        TEST_ASSERT(db.get<uint64_t>(4) == 12);
     }
 
     {
@@ -439,15 +440,15 @@ void mtv_test_set_cells()
         db.set(0, std::string("A"));
         db.set(1, 1.1);
         db.set(2, 1.2);
-        assert(db.block_size() == 2);
+        TEST_ASSERT(db.block_size() == 2);
 
         uint64_t vals[] = {11, 12};
         uint64_t* p = &vals[0];
         db.set(0, p, p + 2);
-        assert(db.block_size() == 2);
-        assert(db.get<uint64_t>(0) == 11);
-        assert(db.get<uint64_t>(1) == 12);
-        assert(db.get<double>(2) == 1.2);
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.get<uint64_t>(0) == 11);
+        TEST_ASSERT(db.get<uint64_t>(1) == 12);
+        TEST_ASSERT(db.get<double>(2) == 1.2);
     }
 
     {
@@ -456,16 +457,16 @@ void mtv_test_set_cells()
         db.set(1, std::string("A"));
         db.set(2, 1.1);
         db.set(3, 1.2);
-        assert(db.block_size() == 3);
+        TEST_ASSERT(db.block_size() == 3);
 
         uint64_t vals[] = {11, 12};
         uint64_t* p = &vals[0];
         db.set(1, p, p + 2);
-        assert(db.block_size() == 2);
-        assert(db.get<uint64_t>(0) == 35);
-        assert(db.get<uint64_t>(1) == 11);
-        assert(db.get<uint64_t>(2) == 12);
-        assert(db.get<double>(3) == 1.2);
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.get<uint64_t>(0) == 35);
+        TEST_ASSERT(db.get<uint64_t>(1) == 11);
+        TEST_ASSERT(db.get<uint64_t>(2) == 12);
+        TEST_ASSERT(db.get<double>(3) == 1.2);
     }
 
     {
@@ -473,29 +474,29 @@ void mtv_test_set_cells()
 
         mtv_type db(2);
         db.set(1, 1.2);
-        assert(db.block_size() == 2);
+        TEST_ASSERT(db.block_size() == 2);
 
         double vals[] = {2.1, 2.2};
         double* p = &vals[0];
         db.set(0, p, p + 2);
-        assert(db.block_size() == 1);
-        assert(db.get<double>(0) == 2.1);
-        assert(db.get<double>(1) == 2.2);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.get<double>(0) == 2.1);
+        TEST_ASSERT(db.get<double>(1) == 2.2);
     }
 
     {
         mtv_type db(3);
         db.set(0, 1.1);
         db.set(2, 1.2);
-        assert(db.block_size() == 3);
+        TEST_ASSERT(db.block_size() == 3);
 
         double vals[] = {2.1, 2.2};
         double* p = &vals[0];
         db.set(1, p, p + 2);
-        assert(db.block_size() == 1);
-        assert(db.get<double>(0) == 1.1);
-        assert(db.get<double>(1) == 2.1);
-        assert(db.get<double>(2) == 2.2);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.get<double>(0) == 1.1);
+        TEST_ASSERT(db.get<double>(1) == 2.1);
+        TEST_ASSERT(db.get<double>(2) == 2.2);
     }
 
     {
@@ -503,18 +504,18 @@ void mtv_test_set_cells()
         db.set(2, std::string("A"));
         db.set(3, std::string("B"));
         db.set(4, std::string("C"));
-        assert(db.block_size() == 2);
+        TEST_ASSERT(db.block_size() == 2);
 
         double vals[] = {1.1, 1.2, 1.3};
         double* p = &vals[0];
         db.set(1, p, p + 3);
-        assert(db.block_size() == 3);
+        TEST_ASSERT(db.block_size() == 3);
 
-        assert(db.is_empty(0));
-        assert(db.get<double>(1) == 1.1);
-        assert(db.get<double>(2) == 1.2);
-        assert(db.get<double>(3) == 1.3);
-        assert(db.get<std::string>(4) == std::string("C"));
+        TEST_ASSERT(db.is_empty(0));
+        TEST_ASSERT(db.get<double>(1) == 1.1);
+        TEST_ASSERT(db.get<double>(2) == 1.2);
+        TEST_ASSERT(db.get<double>(3) == 1.3);
+        TEST_ASSERT(db.get<std::string>(4) == std::string("C"));
     }
 
     {
@@ -523,23 +524,23 @@ void mtv_test_set_cells()
         db.set(3, 1.1);
         db.set(4, 1.2);
         db.set(5, 1.3);
-        assert(db.block_size() == 3);
+        TEST_ASSERT(db.block_size() == 3);
 
         // This should replace the middle numeric block and merge with the top
         // and bottom ones.
         db.set(3, bools.begin(), bools.end());
-        assert(db.block_size() == 1);
-        assert(db.size() == 10);
-        assert(db.get<bool>(0) == true);
-        assert(db.get<bool>(1) == true);
-        assert(db.get<bool>(2) == true);
-        assert(db.get<bool>(3) == false);
-        assert(db.get<bool>(4) == false);
-        assert(db.get<bool>(5) == false);
-        assert(db.get<bool>(6) == true);
-        assert(db.get<bool>(7) == true);
-        assert(db.get<bool>(8) == true);
-        assert(db.get<bool>(9) == true);
+        TEST_ASSERT(db.block_size() == 1);
+        TEST_ASSERT(db.size() == 10);
+        TEST_ASSERT(db.get<bool>(0) == true);
+        TEST_ASSERT(db.get<bool>(1) == true);
+        TEST_ASSERT(db.get<bool>(2) == true);
+        TEST_ASSERT(db.get<bool>(3) == false);
+        TEST_ASSERT(db.get<bool>(4) == false);
+        TEST_ASSERT(db.get<bool>(5) == false);
+        TEST_ASSERT(db.get<bool>(6) == true);
+        TEST_ASSERT(db.get<bool>(7) == true);
+        TEST_ASSERT(db.get<bool>(8) == true);
+        TEST_ASSERT(db.get<bool>(9) == true);
     }
 
     {
@@ -553,21 +554,21 @@ void mtv_test_set_cells()
         db.set(6, std::string("b"));
         db.set(7, std::string("c"));
         db.set(8, std::string("d"));
-        assert(db.block_size() == 3);
+        TEST_ASSERT(db.block_size() == 3);
 
         std::vector<std::string> strings(3, std::string("foo"));
         db.set(2, strings.begin(), strings.end()); // Merge with the next block.
-        assert(db.block_size() == 2);
-        assert(db.size() == 9);
-        assert(db.get<double>(0) == 1.1);
-        assert(db.get<double>(1) == 1.2);
-        assert(db.get<std::string>(2) == "foo");
-        assert(db.get<std::string>(3) == "foo");
-        assert(db.get<std::string>(4) == "foo");
-        assert(db.get<std::string>(5) == "a");
-        assert(db.get<std::string>(6) == "b");
-        assert(db.get<std::string>(7) == "c");
-        assert(db.get<std::string>(8) == "d");
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.size() == 9);
+        TEST_ASSERT(db.get<double>(0) == 1.1);
+        TEST_ASSERT(db.get<double>(1) == 1.2);
+        TEST_ASSERT(db.get<std::string>(2) == "foo");
+        TEST_ASSERT(db.get<std::string>(3) == "foo");
+        TEST_ASSERT(db.get<std::string>(4) == "foo");
+        TEST_ASSERT(db.get<std::string>(5) == "a");
+        TEST_ASSERT(db.get<std::string>(6) == "b");
+        TEST_ASSERT(db.get<std::string>(7) == "c");
+        TEST_ASSERT(db.get<std::string>(8) == "d");
     }
 
     {
@@ -585,17 +586,17 @@ void mtv_test_set_cells()
         std::vector<int16_t> data(5, 11);
         db.set(2, data.begin(), data.end());
 
-        assert(db.block_size() == 2);
-        assert(db.size() == 9);
-        assert(db.get<int16_t>(0) == 0);
-        assert(db.get<int16_t>(1) == 1);
-        assert(db.get<int16_t>(2) == 11);
-        assert(db.get<int16_t>(3) == 11);
-        assert(db.get<int16_t>(4) == 11);
-        assert(db.get<int16_t>(5) == 11);
-        assert(db.get<int16_t>(6) == 11);
-        assert(db.is_empty(7));
-        assert(db.is_empty(8));
+        TEST_ASSERT(db.block_size() == 2);
+        TEST_ASSERT(db.size() == 9);
+        TEST_ASSERT(db.get<int16_t>(0) == 0);
+        TEST_ASSERT(db.get<int16_t>(1) == 1);
+        TEST_ASSERT(db.get<int16_t>(2) == 11);
+        TEST_ASSERT(db.get<int16_t>(3) == 11);
+        TEST_ASSERT(db.get<int16_t>(4) == 11);
+        TEST_ASSERT(db.get<int16_t>(5) == 11);
+        TEST_ASSERT(db.get<int16_t>(6) == 11);
+        TEST_ASSERT(db.is_empty(7));
+        TEST_ASSERT(db.is_empty(8));
     }
 
     {
@@ -613,14 +614,14 @@ void mtv_test_set_cells()
         std::vector<int32_t> data(3, 15);
         db.set(2, data.begin(), data.end());
 
-        assert(db.block_size() == 3);
-        assert(db.size() == 6);
-        assert(db.get<int16_t>(0) == 0);
-        assert(db.get<int16_t>(1) == 1);
-        assert(db.get<int32_t>(2) == 15);
-        assert(db.get<int32_t>(3) == 15);
-        assert(db.get<int32_t>(4) == 15);
-        assert(db.get<int64_t>(5) == 21);
+        TEST_ASSERT(db.block_size() == 3);
+        TEST_ASSERT(db.size() == 6);
+        TEST_ASSERT(db.get<int16_t>(0) == 0);
+        TEST_ASSERT(db.get<int16_t>(1) == 1);
+        TEST_ASSERT(db.get<int32_t>(2) == 15);
+        TEST_ASSERT(db.get<int32_t>(3) == 15);
+        TEST_ASSERT(db.get<int32_t>(4) == 15);
+        TEST_ASSERT(db.get<int64_t>(5) == 21);
     }
 
     {
@@ -638,14 +639,14 @@ void mtv_test_set_cells()
         std::vector<int32_t> data(3, 15);
         db.set(1, data.begin(), data.end());
 
-        assert(db.block_size() == 3);
-        assert(db.size() == 6);
-        assert(db.get<int16_t>(0) == 0);
-        assert(db.get<int32_t>(1) == 15);
-        assert(db.get<int32_t>(2) == 15);
-        assert(db.get<int32_t>(3) == 15);
-        assert(db.get<int64_t>(4) == 20);
-        assert(db.get<int64_t>(5) == 21);
+        TEST_ASSERT(db.block_size() == 3);
+        TEST_ASSERT(db.size() == 6);
+        TEST_ASSERT(db.get<int16_t>(0) == 0);
+        TEST_ASSERT(db.get<int32_t>(1) == 15);
+        TEST_ASSERT(db.get<int32_t>(2) == 15);
+        TEST_ASSERT(db.get<int32_t>(3) == 15);
+        TEST_ASSERT(db.get<int64_t>(4) == 20);
+        TEST_ASSERT(db.get<int64_t>(5) == 21);
     }
 }
 

@@ -26,6 +26,7 @@
  *
  ************************************************************************/
 
+#include "test_soa.hpp"
 #include "no_standard_blocks_defs.inl"
 
 // Settting this to 0 should make the multi_type_vector code to NOT include

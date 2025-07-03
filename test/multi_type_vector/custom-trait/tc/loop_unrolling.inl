@@ -62,35 +62,35 @@ void mtv_test_loop_unrolling()
 
 void mtv_test_loop_unrolling_0()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     mtv_test_loop_unrolling<lu_factor_t::none>();
 }
 
 void mtv_test_loop_unrolling_4()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     mtv_test_loop_unrolling<lu_factor_t::lu4>();
 }
 
 void mtv_test_loop_unrolling_8()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     mtv_test_loop_unrolling<lu_factor_t::lu8>();
 }
 
 void mtv_test_loop_unrolling_16()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     mtv_test_loop_unrolling<lu_factor_t::lu16>();
 }
 
 void mtv_test_loop_unrolling_32()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     mtv_test_loop_unrolling<lu_factor_t::lu32>();
 }

@@ -28,7 +28,8 @@
 
 void mtv_test_iterators_insert()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
+
     mtv_type::iterator it, check;
     std::vector<double> doubles;
     std::vector<bool> bools;
@@ -43,14 +44,14 @@ void mtv_test_iterators_insert()
     it = db.insert(4, doubles.begin(), doubles.end());
     check = db.begin();
     std::advance(check, 2);
-    assert(it == check);
-    assert(it->size == 5);
-    assert(it->position == 3);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->size == 5);
+    TEST_ASSERT(it->position == 3);
     ++it;
-    assert(it->type == mdds::mtv::element_type_empty);
-    assert(it->size == 6);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(it->size == 6);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Same as above, except that the values will not be appended to the previous block.
     db = mtv_type(3);
@@ -59,31 +60,31 @@ void mtv_test_iterators_insert()
     it = db.insert(1, doubles.begin(), doubles.end());
     check = db.begin();
     ++check;
-    assert(it == check);
-    assert(it->size == 5);
-    assert(it->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->size == 5);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_double);
     ++it;
-    assert(it->type == mdds::mtv::element_type_empty);
-    assert(it->size == 2);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(it->size == 2);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Insert into the middle of an empty block.
     db = mtv_type(2);
     doubles.resize(3, 1.2);
     it = db.insert(1, doubles.begin(), doubles.end());
     check = db.begin();
-    assert(check->type == mdds::mtv::element_type_empty);
-    assert(check->size == 1);
+    TEST_ASSERT(check->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(check->size == 1);
     ++check;
-    assert(check == it);
-    assert(it->type == mdds::mtv::element_type_double);
-    assert(it->size == 3);
+    TEST_ASSERT(check == it);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(it->size == 3);
     ++it;
-    assert(it->type == mdds::mtv::element_type_empty);
-    assert(it->size == 1);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(it->size == 1);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Insert into a block of the same type.
     db = mtv_type(5, false);
@@ -93,11 +94,11 @@ void mtv_test_iterators_insert()
     it = db.insert(2, bools.begin(), bools.end());
     check = db.begin();
     ++check;
-    assert(it == check);
-    assert(it->type == mdds::mtv::element_type_boolean);
-    assert(it->size == 6);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_boolean);
+    TEST_ASSERT(it->size == 6);
     std::advance(it, 2);
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Insert values which will be append to the previous block.
     db = mtv_type(5, 1.1);
@@ -108,14 +109,14 @@ void mtv_test_iterators_insert()
     it = db.insert(2, doubles.begin(), doubles.end());
     check = db.begin();
     ++check;
-    assert(it == check);
-    assert(it->type == mdds::mtv::element_type_double);
-    assert(it->size == 3);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(it->size == 3);
     ++it;
-    assert(it->type == mdds::mtv::element_type_string);
-    assert(it->size == 3);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_string);
+    TEST_ASSERT(it->size == 3);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Insert between blocks without merge.
     db = mtv_type(3);
@@ -125,19 +126,19 @@ void mtv_test_iterators_insert()
     bools.resize(4, true);
     it = db.insert(1, bools.begin(), bools.end());
     check = db.begin();
-    assert(check->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(check->type == mdds::mtv::element_type_double);
     ++check;
-    assert(it == check);
-    assert(it->type == mdds::mtv::element_type_boolean);
-    assert(it->size == 4);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_boolean);
+    TEST_ASSERT(it->size == 4);
     ++it;
-    assert(it->type == mdds::mtv::element_type_string);
-    assert(it->size == 1);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_string);
+    TEST_ASSERT(it->size == 1);
     ++it;
-    assert(it->type == mdds::mtv::element_type_int32);
-    assert(it->size == 1);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_int32);
+    TEST_ASSERT(it->size == 1);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Insert values of differing type into middle of a block.
     db = mtv_type(4, 0.01);
@@ -145,38 +146,38 @@ void mtv_test_iterators_insert()
     ints.resize(3, 55);
     it = db.insert(2, ints.begin(), ints.end());
     check = db.begin();
-    assert(check->type == mdds::mtv::element_type_string);
-    assert(check->size == 1);
+    TEST_ASSERT(check->type == mdds::mtv::element_type_string);
+    TEST_ASSERT(check->size == 1);
     ++check;
-    assert(check->type == mdds::mtv::element_type_double);
-    assert(check->size == 1);
+    TEST_ASSERT(check->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(check->size == 1);
     ++check;
-    assert(it == check);
-    assert(it->type == mdds::mtv::element_type_int32);
-    assert(it->size == 3);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_int32);
+    TEST_ASSERT(it->size == 3);
     ++it;
-    assert(it->type == mdds::mtv::element_type_double);
-    assert(it->size == 2);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(it->size == 2);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 }
 
 void mtv_test_iterators_insert_empty()
 {
-    stack_printer __stack_printer__(__FUNCTION__);
+    MDDS_TEST_FUNC_SCOPE;
 
     // Insert into an already empty spot.
     mtv_type db(2);
     db.set(1, 1.2);
     mtv_type::iterator it = db.insert_empty(0, 3);
-    assert(it == db.begin());
-    assert(it->size == 4);
-    assert(it->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(it == db.begin());
+    TEST_ASSERT(it->size == 4);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
     ++it;
-    assert(it->type == mdds::mtv::element_type_double);
-    assert(it->size == 1);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(it->size == 1);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Insert an empty range that will be tucked into the previous empty block.
     db = mtv_type(4);
@@ -186,47 +187,47 @@ void mtv_test_iterators_insert_empty()
     it = db.insert_empty(2, 2);
     mtv_type::iterator check = db.begin();
     ++check;
-    assert(it == check);
-    assert(it->type == mdds::mtv::element_type_empty);
-    assert(it->size == 3);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(it->size == 3);
     ++it;
-    assert(it->type == mdds::mtv::element_type_double);
-    assert(it->size == 2);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(it->size == 2);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Insert an empty range between non-empty blocks.
     db = mtv_type(2, false);
     db.set(0, 1.1);
     it = db.insert_empty(1, 2);
     check = db.begin();
-    assert(check->type == mdds::mtv::element_type_double);
-    assert(check->size == 1);
+    TEST_ASSERT(check->type == mdds::mtv::element_type_double);
+    TEST_ASSERT(check->size == 1);
     ++check;
-    assert(it == check);
-    assert(it->type == mdds::mtv::element_type_empty);
-    assert(it->size == 2);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(it->size == 2);
     ++it;
-    assert(it->type == mdds::mtv::element_type_boolean);
-    assert(it->size == 1);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_boolean);
+    TEST_ASSERT(it->size == 1);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 
     // Insert in the middle of a non-empty block.
     db = mtv_type(3, std::string("foo"));
     it = db.insert_empty(2, 4);
     check = db.begin();
-    assert(check->type == mdds::mtv::element_type_string);
-    assert(check->size == 2);
+    TEST_ASSERT(check->type == mdds::mtv::element_type_string);
+    TEST_ASSERT(check->size == 2);
     ++check;
-    assert(it == check);
-    assert(it->type == mdds::mtv::element_type_empty);
-    assert(it->size == 4);
+    TEST_ASSERT(it == check);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
+    TEST_ASSERT(it->size == 4);
     ++it;
-    assert(it->type == mdds::mtv::element_type_string);
-    assert(it->size == 1);
+    TEST_ASSERT(it->type == mdds::mtv::element_type_string);
+    TEST_ASSERT(it->size == 1);
     ++it;
-    assert(it == db.end());
+    TEST_ASSERT(it == db.end());
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
