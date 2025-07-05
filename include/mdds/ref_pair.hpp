@@ -26,8 +26,7 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_REF_PAIR_HPP
-#define INCLUDED_MDDS_REF_PAIR_HPP
+#pragma once
 
 #include <type_traits>
 
@@ -74,7 +73,5 @@ struct ref_pair
 };
 
 }} // namespace mdds::detail
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

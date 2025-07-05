@@ -25,8 +25,7 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_FLAT_SEGMENT_TREE_ITR_HPP
-#define INCLUDED_MDDS_FLAT_SEGMENT_TREE_ITR_HPP
+#pragma once
 
 namespace mdds { namespace fst { namespace detail {
 
@@ -99,11 +98,11 @@ public:
     typedef FstType fst_type;
 
     // iterator traits
-    typedef ::std::pair<typename fst_type::key_type, typename fst_type::value_type> value_type;
-    typedef value_type* pointer;
-    typedef value_type& reference;
-    typedef ptrdiff_t difference_type;
-    typedef ::std::bidirectional_iterator_tag iterator_category;
+    using value_type = ::std::pair<typename fst_type::key_type, typename fst_type::value_type>;
+    using pointer = value_type*;
+    using reference = value_type&;
+    using difference_type = ptrdiff_t;
+    using iterator_category = ::std::bidirectional_iterator_tag;
 
     explicit const_iterator_base(const fst_type* _db, bool _end) : m_db(_db), m_pos(nullptr), m_end_pos(_end)
     {
@@ -344,5 +343,3 @@ private:
 };
 
 }}} // namespace mdds::fst::detail
-
-#endif

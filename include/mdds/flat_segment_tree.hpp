@@ -26,17 +26,16 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_FLAT_SEGMENT_TREE_HPP
-#define INCLUDED_MDDS_FLAT_SEGMENT_TREE_HPP
+#pragma once
 
 #include <iostream>
 #include <sstream>
 #include <utility>
 #include <cassert>
 
-#include "mdds/node.hpp"
-#include "mdds/flat_segment_tree_itr.hpp"
-#include "mdds/global.hpp"
+#include "./node.hpp"
+#include "./flat_segment_tree_itr.hpp"
+#include "./global.hpp"
 
 #ifdef MDDS_UNIT_TEST
 #include <cstdio>
@@ -805,7 +804,5 @@ void swap(flat_segment_tree<Key, Value>& left, flat_segment_tree<Key, Value>& ri
 } // namespace mdds
 
 #include "flat_segment_tree_def.inl"
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
