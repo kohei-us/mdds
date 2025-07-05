@@ -28,6 +28,7 @@
 #pragma once
 
 #include "./ref_pair.hpp"
+#include <type_traits>
 
 namespace mdds { namespace fst { namespace detail {
 
@@ -100,7 +101,8 @@ public:
     typedef FstType fst_type;
 
     // iterator traits
-    using value_type = mdds::detail::ref_pair<const typename fst_type::key_type, const typename fst_type::value_type>;
+    using value_type = mdds::detail::ref_pair<
+        std::add_const_t<typename fst_type::key_type>, std::add_const_t<typename fst_type::value_type>>;
     using pointer = value_type*;
     using reference = value_type&;
     using difference_type = ptrdiff_t;
