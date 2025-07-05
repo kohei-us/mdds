@@ -128,7 +128,8 @@ bool check_copy(const mtx_type& mx1, const mtx_type& mx2)
                 case mtm::element_string:
                     if (mx1.get<mtx_type::string_type>(i, j) != mx2.get<mtx_type::string_type>(i, j))
                     {
-                        std::cout << "check_copy: (row=" << i << ",column=" << j << ") different string values." << std::endl;
+                        std::cout << "check_copy: (row=" << i << ",column=" << j << ") different string values."
+                                  << std::endl;
                         return false;
                     }
                     break;
