@@ -1145,13 +1145,6 @@ void fst_test_shift_right_all_nodes()
     }
 }
 
-template<typename key_type, typename value_type>
-struct leaf_node_functor
-{
-    void operator()(const std::pair<key_type, value_type>&) const
-    {}
-};
-
 void fst_test_const_iterator()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -1191,7 +1184,8 @@ void fst_test_const_iterator()
         }
 
         // Make sure it works with for_each.
-        std::for_each(db.begin(), db.end(), leaf_node_functor<key_type, value_type>());
+        auto func = [](const auto& v) { (void)v; };
+        std::for_each(db.begin(), db.end(), func);
     }
 
     {

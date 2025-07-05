@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "./ref_pair.hpp"
+
 namespace mdds { namespace fst { namespace detail {
 
 /**
@@ -98,13 +100,13 @@ public:
     typedef FstType fst_type;
 
     // iterator traits
-    using value_type = ::std::pair<typename fst_type::key_type, typename fst_type::value_type>;
+    using value_type = mdds::detail::ref_pair<const typename fst_type::key_type, const typename fst_type::value_type>;
     using pointer = value_type*;
     using reference = value_type&;
     using difference_type = ptrdiff_t;
     using iterator_category = ::std::bidirectional_iterator_tag;
 
-    explicit const_iterator_base(const fst_type* _db, bool _end) : m_db(_db), m_pos(nullptr), m_end_pos(_end)
+    explicit const_iterator_base(const fst_type* _db, bool _end) : m_db(_db), m_end_pos(_end)
     {
         if (!_db)
             return;
@@ -112,8 +114,7 @@ public:
         m_pos = handler_type::init_pos(_db, _end);
     }
 
-    explicit const_iterator_base(const fst_type* _db, const typename fst_type::node* pos)
-        : m_db(_db), m_pos(pos), m_end_pos(false)
+    explicit const_iterator_base(const fst_type* _db, const typename fst_type::node* pos) : m_db(_db), m_pos(pos)
     {}
 
     const_iterator_base(const const_iterator_base& r) : m_db(r.m_db), m_pos(r.m_pos), m_end_pos(r.m_end_pos)
@@ -154,14 +155,14 @@ public:
         return !operator==(r);
     }
 
-    const value_type& operator*()
+    value_type operator*()
     {
-        return get_current_node_pair();
+        return value_type(m_pos->key, m_pos->value_leaf.value);
     }
 
-    const value_type* operator->()
+    value_type operator->()
     {
-        return &get_current_node_pair();
+        return value_type(m_pos->key, m_pos->value_leaf.value);
     }
 
 protected:
@@ -181,16 +182,9 @@ protected:
     }
 
 private:
-    const value_type& get_current_node_pair()
-    {
-        m_current_pair = value_type(m_pos->key, m_pos->value_leaf.value);
-        return m_current_pair;
-    }
-
-    const fst_type* m_db;
-    const typename fst_type::node* m_pos;
-    value_type m_current_pair;
-    bool m_end_pos;
+    const fst_type* m_db = nullptr;
+    const typename fst_type::node* m_pos = nullptr;
+    bool m_end_pos = false;
 };
 
 template<typename FstType>
