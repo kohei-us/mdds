@@ -340,8 +340,7 @@ public:
      *         the inserted segment, and a boolean value indicating whether or
      *         not the insertion has modified the tree.
      */
-    std::pair<const_iterator, bool> insert(
-        const const_iterator& pos, key_type start_key, key_type end_key, value_type val);
+    std::pair<const_iterator, bool> insert(const_iterator pos, key_type start_key, key_type end_key, value_type val);
 
     /**
      * Remove a segment specified by the start and end key values, and shift
@@ -407,7 +406,7 @@ public:
      *         whether or not the search has been successful.
      */
     std::pair<const_iterator, bool> search(
-        const const_iterator& pos, key_type key, value_type& value, key_type* start_key = nullptr,
+        const_iterator pos, key_type key, value_type& value, key_type* start_key = nullptr,
         key_type* end_key = nullptr) const;
 
     /**
@@ -433,7 +432,7 @@ public:
      *         segment containing the key, or end iterator position if the
      *         search has failed.
      */
-    const_iterator search(const const_iterator& pos, key_type key) const;
+    const_iterator search(const_iterator pos, key_type key) const;
 
     /**
      * Perform tree search for a value associated with a key.  This method

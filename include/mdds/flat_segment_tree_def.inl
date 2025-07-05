@@ -355,7 +355,7 @@ template<typename Key, typename Value>
 
 template<typename Key, typename Value>
 ::std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_segment_tree<Key, Value>::insert(
-    const const_iterator& pos, key_type start_key, key_type end_key, value_type val)
+    const_iterator pos, key_type start_key, key_type end_key, value_type val)
 {
     const node* p = pos.get_pos();
     if (!p || this != pos.get_parent())
@@ -586,7 +586,7 @@ template<typename Key, typename Value>
 
 template<typename Key, typename Value>
 ::std::pair<typename flat_segment_tree<Key, Value>::const_iterator, bool> flat_segment_tree<Key, Value>::search(
-    const const_iterator& pos, key_type key, value_type& value, key_type* start_key, key_type* end_key) const
+    const_iterator pos, key_type key, value_type& value, key_type* start_key, key_type* end_key) const
 {
     typedef ::std::pair<const_iterator, bool> ret_type;
 
@@ -622,7 +622,7 @@ typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Va
 
 template<typename Key, typename Value>
 typename flat_segment_tree<Key, Value>::const_iterator flat_segment_tree<Key, Value>::search(
-    const const_iterator& pos, key_type key) const
+    const_iterator pos, key_type key) const
 {
     return search_by_key_impl(pos.get_pos(), key);
 }
