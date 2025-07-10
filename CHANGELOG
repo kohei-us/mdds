@@ -1,3 +1,28 @@
+mdds 3.1.0
+
+* multi_type_vector
+
+  * revised push_back() to also accept an rvalue reference.
+
+  * added emplace_back() to allow in-place construction of values.  However,
+    due to limitation of how the value type is determined, the type of an
+    inserted value must be default constructible, and the call incurs the
+    overhead of one default construction.
+
+* rtree
+
+  * the erase() methods to take their iterator parameter by value.
+
+* flat_segment_tree
+
+  * both insert() and search() methods to take their const_iterator parameter
+    by value.
+
+  * the size of its const_iterator type has been reduced by not caching key
+    and value as its data members.  Its size is now equal to the sum of the
+    sizes of two pointers and one boolean value.  It also now returns
+    immutable references to the stored key and value.
+
 mdds 3.0.0
 
 * trie_map and packed_trie_map
