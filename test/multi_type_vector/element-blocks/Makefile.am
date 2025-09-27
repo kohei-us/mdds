@@ -3,7 +3,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/test/include
 
-check_PROGRAMS = test test-soa test-aos
+check_PROGRAMS = test test-soa test-aos test-util
 
 test_SOURCES = \
 	test_main.cpp \
@@ -23,6 +23,10 @@ test_aos_SOURCES = \
 	test_no_standard_blocks_aos.cpp \
 	$(top_srcdir)/test/test_global.cpp
 
+test_util_SOURCES = \
+	test_util.cpp \
+	$(top_srcdir)/test/test_global.cpp
+
 EXTRA_DIST = \
 	no_standard_blocks_defs.inl \
 	no_standard_blocks_funcs.inl \
@@ -30,6 +34,6 @@ EXTRA_DIST = \
 	test_aos.hpp \
 	test_main.hpp
 
-TESTS = test test-soa test-aos
+TESTS = test test-soa test-aos test-util
 
 @VALGRIND_CHECK_RULES@

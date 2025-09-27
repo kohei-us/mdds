@@ -38,7 +38,7 @@ struct has_capacity_method
     using yes_type = char;
     using no_type = int;
 
-    template<typename U, std::size_t (U::*)() const>
+    template<typename U, typename T::size_type (U::*)() const>
     struct test_has_method
     {
     };

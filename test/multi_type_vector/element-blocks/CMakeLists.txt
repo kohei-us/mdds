@@ -21,11 +21,17 @@ add_executable(${TARGET_NAME}-soa EXCLUDE_FROM_ALL
     test_no_standard_blocks_soa.cpp
 )
 
+add_executable(${TARGET_NAME}-util EXCLUDE_FROM_ALL
+    test_util.cpp
+)
+
 target_link_libraries(${TARGET_NAME} PUBLIC test-global)
 target_link_libraries(${TARGET_NAME}-aos PUBLIC test-global)
 target_link_libraries(${TARGET_NAME}-soa PUBLIC test-global)
+target_link_libraries(${TARGET_NAME}-util PUBLIC test-global)
 
 add_test(${TEST_NAME} ${TARGET_NAME})
 add_test(${TEST_NAME}-aos ${TARGET_NAME})
 add_test(${TEST_NAME}-soa ${TARGET_NAME})
+add_test(${TEST_NAME}-util ${TARGET_NAME})
 add_dependencies(check ${TARGET_NAME})
