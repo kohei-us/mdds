@@ -62,7 +62,7 @@ bool parse_cmd_options(int argc, char** argv, cmd_options& opt)
 double get_current_time()
 {
     uint64_t usec_since_epoch =
-        std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch())
+        std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch())
             .count();
 
     return usec_since_epoch / 1000000.0;
