@@ -577,7 +577,7 @@ protected:
 public:
     using base_type::get;
 
-    static Self* clone_block(const base_element_block& blk)
+    static Self* copy_block(const base_element_block& blk)
     {
         // Use copy constructor to copy the data.
         return new Self(get(blk));
@@ -605,9 +605,9 @@ public:
     noncopyable_element_block(const noncopyable_element_block&) = delete;
     noncopyable_element_block& operator=(const noncopyable_element_block&) = delete;
 
-    static Self* clone_block(const base_element_block&)
+    static Self* copy_block(const base_element_block&)
     {
-        throw element_block_error("attempted to clone a noncopyable element block.");
+        throw element_block_error("attempted to copy a noncopyable element block.");
     }
 };
 

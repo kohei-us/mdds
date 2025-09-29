@@ -56,7 +56,7 @@ multi_type_vector<Traits>::blocks_type::blocks_type(const blocks_type& other)
     for (element_block_type*& data : element_blocks)
     {
         if (data)
-            data = block_funcs::clone_block(*data);
+            data = block_funcs::copy_block(*data);
     }
 }
 

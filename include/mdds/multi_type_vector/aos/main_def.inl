@@ -89,7 +89,7 @@ void multi_type_vector<Traits>::block::clone_to(block& other) const
     other.position = position;
     other.size = size;
     if (data)
-        other.data = block_funcs::clone_block(*data);
+        other.data = block_funcs::copy_block(*data);
     else
         other.data = nullptr;
 }
