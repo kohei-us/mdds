@@ -257,7 +257,7 @@ void mtv_test_iterators_mutable_element_block()
      */
     auto check_block_iterator = [](const mtv_type::iterator& it, mdds::mtv::element_t expected) {
         mdds::mtv::element_t actual = it->type;
-        const mtv_type::element_block_type* data = (*it).data;
+        const mdds::mtv::base_element_block* data = (*it).data;
         TEST_ASSERT(actual == expected);
         TEST_ASSERT(data != nullptr);
     };

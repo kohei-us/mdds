@@ -73,9 +73,6 @@ class multi_type_vector
 {
 public:
     using size_type = std::size_t;
-
-    using element_block_type = mdds::mtv::base_element_block;
-    using element_category_type = mdds::mtv::element_t;
     using block_funcs = typename Traits::block_funcs;
 
     /**
@@ -102,7 +99,7 @@ private:
     {
         size_type position = 0;
         size_type size = 0;
-        element_block_type* element_block = nullptr;
+        base_element_block* element_block = nullptr;
 
         block_slot_type()
         {}
@@ -114,7 +111,7 @@ private:
     {
         std::vector<size_type> positions;
         std::vector<size_type> sizes;
-        std::vector<element_block_type*> element_blocks;
+        std::vector<base_element_block*> element_blocks;
 
         blocks_type();
         blocks_type(const blocks_type& other);
@@ -127,7 +124,7 @@ private:
             element_blocks.pop_back();
         }
 
-        void push_back(size_type pos, size_type size, element_block_type* data)
+        void push_back(size_type pos, size_type size, base_element_block* data)
         {
             positions.push_back(pos);
             sizes.push_back(size);
@@ -144,7 +141,7 @@ private:
         void erase(size_type index);
         void erase(size_type index, size_type size);
         void insert(size_type index, size_type size);
-        void insert(size_type index, size_type pos, size_type size, element_block_type* data);
+        void insert(size_type index, size_type pos, size_type size, base_element_block* data);
         void insert(size_type index, const blocks_type& new_blocks);
 
         /**
@@ -181,7 +178,7 @@ private:
         using parent = multi_type_vector;
         using positions_type = std::vector<size_type>;
         using sizes_type = std::vector<size_type>;
-        using element_blocks_type = std::vector<element_block_type*>;
+        using element_blocks_type = std::vector<base_element_block*>;
 
         using positions_iterator_type = typename positions_type::iterator;
         using sizes_iterator_type = typename sizes_type::iterator;
@@ -195,7 +192,7 @@ private:
         using parent = multi_type_vector;
         using positions_type = std::vector<size_type>;
         using sizes_type = std::vector<size_type>;
-        using element_blocks_type = std::vector<element_block_type*>;
+        using element_blocks_type = std::vector<base_element_block*>;
 
         using positions_iterator_type = typename positions_type::const_iterator;
         using sizes_iterator_type = typename sizes_type::const_iterator;
@@ -209,7 +206,7 @@ private:
         using parent = multi_type_vector;
         using positions_type = std::vector<size_type>;
         using sizes_type = std::vector<size_type>;
-        using element_blocks_type = std::vector<element_block_type*>;
+        using element_blocks_type = std::vector<base_element_block*>;
 
         using positions_iterator_type = typename positions_type::reverse_iterator;
         using sizes_iterator_type = typename sizes_type::reverse_iterator;
@@ -223,7 +220,7 @@ private:
         using parent = multi_type_vector;
         using positions_type = std::vector<size_type>;
         using sizes_type = std::vector<size_type>;
-        using element_blocks_type = std::vector<element_block_type*>;
+        using element_blocks_type = std::vector<base_element_block*>;
 
         using positions_iterator_type = typename positions_type::const_reverse_iterator;
         using sizes_iterator_type = typename sizes_type::const_reverse_iterator;
@@ -234,7 +231,7 @@ private:
 
     struct element_block_deleter
     {
-        void operator()(const element_block_type* p)
+        void operator()(const base_element_block* p)
         {
             block_funcs::delete_block(p);
         }
@@ -1315,7 +1312,7 @@ private:
      */
     template<typename T>
     bool append_to_prev_block(
-        size_type block_index, element_category_type cat, size_type length, const T& it_begin, const T& it_end);
+        size_type block_index, element_t cat, size_type length, const T& it_begin, const T& it_end);
 
     template<typename T>
     void insert_cells_to_middle(size_type row, size_type block_index, const T& it_begin, const T& it_end);
@@ -1387,7 +1384,7 @@ private:
      * @return true if the previous block exists and it's of specified type,
      *         otherwise false.
      */
-    bool is_previous_block_of_type(size_type block_index, element_category_type cat) const;
+    bool is_previous_block_of_type(size_type block_index, element_t cat) const;
 
     /**
      * Check if the next block is of specified type, if exists.
@@ -1398,7 +1395,7 @@ private:
      * @return true if the next block exists and it's of specified type,
      *         otherwise false.
      */
-    bool is_next_block_of_type(size_type block_index, element_category_type cat) const;
+    bool is_next_block_of_type(size_type block_index, element_t cat) const;
 
     /**
      * Send elements from a source block to place them in a destination block.
@@ -1421,12 +1418,12 @@ private:
      *         originally in the destination block. The caller needs to manage
      *         its life cycle.
      */
-    element_block_type* exchange_elements(
-        const element_block_type& src_data, size_type src_offset, size_type dst_index, size_type dst_offset,
+    base_element_block* exchange_elements(
+        const base_element_block& src_data, size_type src_offset, size_type dst_index, size_type dst_offset,
         size_type len);
 
     void exchange_elements(
-        const element_block_type& src_blk, size_type src_offset, size_type dst_index1, size_type dst_offset1,
+        const base_element_block& src_blk, size_type src_offset, size_type dst_index1, size_type dst_offset1,
         size_type dst_index2, size_type dst_offset2, size_type len, blocks_type& new_blocks);
 
     bool append_empty(size_type len);

@@ -99,7 +99,7 @@ public:
     typedef typename store_type::position_type position_type;
     typedef typename store_type::const_position_type const_position_type;
 
-    typedef typename store_type::element_block_type element_block_type;
+    typedef typename mtv::base_element_block element_block_type;
 
     typedef typename mtv::boolean_element_block boolean_block_type;
     typedef typename mtv::double_element_block numeric_block_type;

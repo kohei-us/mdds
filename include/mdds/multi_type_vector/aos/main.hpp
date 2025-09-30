@@ -73,9 +73,6 @@ class multi_type_vector
 {
 public:
     typedef size_t size_type;
-
-    typedef mdds::mtv::base_element_block element_block_type;
-    typedef mdds::mtv::element_t element_category_type;
     using block_funcs = typename Traits::block_funcs;
 
     /**
@@ -102,11 +99,11 @@ private:
     {
         size_type position;
         size_type size;
-        element_block_type* data;
+        base_element_block* data;
 
         block();
         block(size_type _position, size_type _size);
-        block(size_type _position, size_type _size, element_block_type* _data);
+        block(size_type _position, size_type _size, base_element_block* _data);
         block(const block& other) = default;
         block(block&& other) = default;
         ~block() = default;
@@ -118,7 +115,7 @@ private:
 
     struct element_block_deleter
     {
-        void operator()(const element_block_type* p)
+        void operator()(const base_element_block* p)
         {
             block_funcs::delete_block(p);
         }
@@ -1134,10 +1131,10 @@ private:
     void resize_impl(size_type new_size);
 
     template<typename T>
-    void create_new_block_with_new_cell(element_block_type*& data, T&& cell);
+    void create_new_block_with_new_cell(base_element_block*& data, T&& cell);
 
     template<typename T, typename... Args>
-    void create_new_block_with_emplace_back(element_block_type*& data, const T& t, Args&&... args);
+    void create_new_block_with_emplace_back(base_element_block*& data, const T& t, Args&&... args);
 
     template<typename T>
     iterator set_cell_to_middle_of_block(size_type block_index, size_type pos_in_block, const T& cell);
@@ -1279,7 +1276,7 @@ private:
 
     template<typename T>
     bool append_to_prev_block(
-        size_type block_index, element_category_type cat, size_type length, const T& it_begin, const T& it_end);
+        size_type block_index, element_t cat, size_type length, const T& it_begin, const T& it_end);
 
     template<typename T>
     void insert_cells_to_middle(size_type row, size_type block_index, const T& it_begin, const T& it_end);
@@ -1299,7 +1296,7 @@ private:
      */
     block& set_new_block_to_middle(size_type block_index, size_type offset, size_type new_block_size, bool overwrite);
 
-    block* get_previous_block_of_type(size_type block_index, element_category_type cat);
+    block* get_previous_block_of_type(size_type block_index, element_t cat);
 
     /**
      * @param block_index index of the current block.
@@ -1308,7 +1305,7 @@ private:
      * @return pointer to the next block if the next block exists and it's of
      *         specified type, otherwise nullptr will be returned.
      */
-    block* get_next_block_of_type(size_type block_index, element_category_type cat);
+    block* get_next_block_of_type(size_type block_index, element_t cat);
 
     /**
      * Send elements from a source block to place them in a destination block.
@@ -1327,12 +1324,12 @@ private:
      *         originally in the destination block. The caller needs to manage
      *         its life cycle.
      */
-    element_block_type* exchange_elements(
-        const element_block_type& src_data, size_type src_offset, size_type dst_index, size_type dst_offset,
+    base_element_block* exchange_elements(
+        const base_element_block& src_data, size_type src_offset, size_type dst_index, size_type dst_offset,
         size_type len);
 
     void exchange_elements(
-        const element_block_type& src_data, size_type src_offset, size_type dst_index1, size_type dst_offset1,
+        const base_element_block& src_data, size_type src_offset, size_type dst_index1, size_type dst_offset1,
         size_type dst_index2, size_type dst_offset2, size_type len, blocks_type& new_blocks);
 
     bool append_empty(size_type len);
