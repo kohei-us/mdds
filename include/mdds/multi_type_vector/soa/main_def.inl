@@ -53,11 +53,9 @@ template<typename Traits>
 multi_type_vector<Traits>::blocks_type::blocks_type(const blocks_type& other)
     : positions(other.positions), sizes(other.sizes), element_blocks(other.element_blocks)
 {
-    for (base_element_block*& data : element_blocks)
-    {
-        if (data)
-            data = block_funcs::copy_block(*data);
-    }
+    std::transform(element_blocks.begin(), element_blocks.end(), element_blocks.begin(), [](base_element_block* data) {
+        return data ? block_funcs::copy_block(*data) : nullptr;
+    });
 }
 
 template<typename Traits>
@@ -375,6 +373,7 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
 {
     MDDS_MTV_TRACE_ARGS(constructor, "other=? (copy)");
 
+    // NB: this must be done sequentially since it involves client-side callback.
     for (const base_element_block* data : m_block_store.element_blocks)
     {
         if (data)

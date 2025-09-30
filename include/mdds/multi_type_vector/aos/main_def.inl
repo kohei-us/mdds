@@ -84,17 +84,6 @@ void multi_type_vector<Traits>::block::swap(block& other)
 }
 
 template<typename Traits>
-void multi_type_vector<Traits>::block::clone_to(block& other) const
-{
-    other.position = position;
-    other.size = size;
-    if (data)
-        other.data = block_funcs::copy_block(*data);
-    else
-        other.data = nullptr;
-}
-
-template<typename Traits>
 multi_type_vector<Traits>::blocks_to_transfer::blocks_to_transfer() : insert_index(0)
 {}
 
@@ -300,18 +289,16 @@ multi_type_vector<Traits>::multi_type_vector(size_type init_size, const T& it_be
 
 template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
-    : m_hdl_event(other.m_hdl_event), m_cur_size(other.m_cur_size)
+    : m_hdl_event(other.m_hdl_event), m_blocks(other.m_blocks), m_cur_size(other.m_cur_size)
 {
-    // Clone all the blocks.
-    m_blocks.reserve(other.m_blocks.size());
-    typename blocks_type::const_iterator it = other.m_blocks.begin(), it_end = other.m_blocks.end();
-    block tmp;
-    for (; it != it_end; ++it)
+    // Copy all element blocks.
+    for (auto& blk : m_blocks)
     {
-        it->clone_to(tmp);
-        m_blocks.emplace_back(tmp.position, tmp.size, tmp.data);
-        if (tmp.data)
-            m_hdl_event.element_block_acquired(tmp.data);
+        if (blk.data)
+        {
+            blk.data = block_funcs::copy_block(*blk.data);
+            m_hdl_event.element_block_acquired(blk.data);
+        }
     }
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG

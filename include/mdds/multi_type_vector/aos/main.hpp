@@ -105,12 +105,11 @@ private:
         block(size_type _position, size_type _size);
         block(size_type _position, size_type _size, base_element_block* _data);
         block(const block& other) = default;
-        block(block&& other) = default;
         ~block() = default;
-        void swap(block& other);
-        void clone_to(block& other) const;
 
         block& operator=(const block&) = default;
+
+        void swap(block& other);
     };
 
     struct element_block_deleter
