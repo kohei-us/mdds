@@ -288,6 +288,25 @@ multi_type_vector<Traits>::multi_type_vector(size_type init_size, const T& it_be
 }
 
 template<typename Traits>
+multi_type_vector<Traits>::multi_type_vector(mdds::mtv::detail::clone_construction_type, const multi_type_vector& other)
+    : m_hdl_event(other.m_hdl_event), m_blocks(other.m_blocks), m_cur_size(other.m_cur_size)
+{
+    // Clone all element blocks.
+    for (auto& blk : m_blocks)
+    {
+        if (blk.data)
+        {
+            blk.data = block_funcs::clone_block(*blk.data);
+            m_hdl_event.element_block_acquired(blk.data);
+        }
+    }
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    debug_check_full("clone construction");
+#endif
+}
+
+template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
     : m_hdl_event(other.m_hdl_event), m_blocks(other.m_blocks), m_cur_size(other.m_cur_size)
 {
@@ -302,18 +321,7 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
     }
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    try
-    {
-        check_block_integrity();
-    }
-    catch (const mdds::integrity_error& e)
-    {
-        std::ostringstream os;
-        os << e.what() << std::endl;
-        os << "block integrity check failed in copy construction" << std::endl;
-        std::cerr << os.str() << std::endl;
-        abort();
-    }
+    debug_check_full("copy construction");
 #endif
 }
 
@@ -322,18 +330,7 @@ multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other)
     : m_hdl_event(std::move(other.m_hdl_event)), m_blocks(std::move(other.m_blocks)), m_cur_size(other.m_cur_size)
 {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    try
-    {
-        check_block_integrity();
-    }
-    catch (const mdds::integrity_error& e)
-    {
-        std::ostringstream os;
-        os << e.what() << std::endl;
-        os << "block integrity check failed in move construction" << std::endl;
-        std::cerr << os.str() << std::endl;
-        abort();
-    }
+    debug_check_full("move construction");
 #endif
 }
 
@@ -341,6 +338,12 @@ template<typename Traits>
 multi_type_vector<Traits>::~multi_type_vector()
 {
     delete_element_blocks(m_blocks.begin(), m_blocks.end());
+}
+
+template<typename Traits>
+auto multi_type_vector<Traits>::clone() const -> multi_type_vector
+{
+    return multi_type_vector(mtv::detail::clone_construction_type{}, *this);
 }
 
 template<typename Traits>
@@ -3658,6 +3661,25 @@ bool multi_type_vector<Traits>::append_empty(size_type len)
 
     return new_block_added;
 }
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+template<typename Traits>
+void multi_type_vector<Traits>::debug_check_full(std::string_view location)
+{
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in " << location << std::endl;
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+}
+#endif
 
 template<typename Traits>
 void multi_type_vector<Traits>::exchange_elements(

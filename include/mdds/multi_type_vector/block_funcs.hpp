@@ -81,6 +81,15 @@ struct element_block_funcs
         return f(block);
     }
 
+    static base_element_block* clone_block(const base_element_block& block)
+    {
+        static const std::unordered_map<element_t, std::function<base_element_block*(const base_element_block&)>>
+            func_map{{Ts::block_type, Ts::clone_block}...};
+
+        auto& f = detail::find_func(func_map, get_block_type(block), __func__);
+        return f(block);
+    }
+
     static void delete_block(const base_element_block* p)
     {
         if (!p)

@@ -37,10 +37,10 @@
 #include <memory>
 #include <cstdint>
 #include <vector>
+#include <sstream>
 
 #if defined(MDDS_UNIT_TEST) || defined(MDDS_MULTI_TYPE_VECTOR_DEBUG)
 #include <iostream>
-#include <sstream>
 #endif
 
 namespace mdds { namespace mtv {
@@ -163,6 +163,70 @@ protected:
     {}
 };
 
+/**
+ * Base declaration with no implementation.
+ */
+template<typename ValueT>
+struct clone_value;
+
+/**
+ * Default variant which throws element_block_error.
+ *
+ *
+ * @param <BlockT> Element block type.
+ */
+template<typename BlockT, typename = void>
+struct clone_block
+{
+    using store_type = typename BlockT::store_type;
+
+    BlockT* operator()(const BlockT& blk) const
+    {
+        auto bt = get_block_type(blk);
+        std::ostringstream os;
+        os << "cloning of this block type is not implemented (type=" << bt << ")";
+        throw element_block_error(os.str());
+    }
+};
+
+/**
+ * Specialization for copyable element block type.
+ *
+ * @param <BlockT> Element block type which must be copyable.
+ */
+template<typename BlockT>
+struct clone_block<BlockT, std::enable_if_t<std::is_copy_constructible<BlockT>::value>>
+{
+    using store_type = typename BlockT::store_type;
+
+    BlockT* operator()(const BlockT& src) const
+    {
+        return new BlockT(src);
+    }
+};
+
+/**
+ * Specialization for non-copyable element block type with valid clone_value
+ * specialization for the value type of the block.
+ *
+ * @param <BlockT> Element block type which must be non-copyable.
+ */
+template<typename BlockT>
+struct clone_block<BlockT, std::void_t<decltype(clone_value<typename BlockT::value_type>{})>>
+{
+    using store_type = typename BlockT::store_type;
+
+    BlockT* operator()(const BlockT& src) const
+    {
+        auto dest_blk = std::make_unique<BlockT>();
+        auto cloned(src.store());
+        std::transform(cloned.begin(), cloned.end(), cloned.begin(), clone_value<typename BlockT::value_type>{});
+
+        dest_blk->store().swap(cloned);
+        return dest_blk.release();
+    }
+};
+
 template<typename Self, element_t TypeId, typename ValueT, template<typename, typename> class StoreT>
 class element_block : public base_element_block
 {
@@ -190,6 +254,16 @@ public:
     typedef typename store_type::const_iterator const_iterator;
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
     typedef ValueT value_type;
+
+    const store_type& store() const
+    {
+        return m_array;
+    }
+
+    store_type& store()
+    {
+        return m_array;
+    }
 
 private:
     template<bool Mutable>
@@ -582,6 +656,11 @@ public:
         // Use copy constructor to copy the data.
         return new Self(get(blk));
     }
+
+    static Self* clone_block(const base_element_block& src)
+    {
+        return mdds::mtv::clone_block<Self>{}(get(src));
+    }
 };
 
 template<typename Self, element_t TypeId, typename ValueT, template<typename, typename> class StoreT>
@@ -602,12 +681,19 @@ protected:
     {}
 
 public:
+    using base_type::get;
+
     noncopyable_element_block(const noncopyable_element_block&) = delete;
     noncopyable_element_block& operator=(const noncopyable_element_block&) = delete;
 
     static Self* copy_block(const base_element_block&)
     {
         throw element_block_error("attempted to copy a noncopyable element block.");
+    }
+
+    static Self* clone_block(const base_element_block& src)
+    {
+        return mdds::mtv::clone_block<Self>{}(get(src));
     }
 };
 

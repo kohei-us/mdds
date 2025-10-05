@@ -97,6 +97,17 @@ mdds::mtv::trace_method_properties_t
 
 .. doxygenstruct:: mdds::mtv::trace_method_properties_t
 
+mdds::mtv::clone_value
+^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenstruct:: mdds::mtv::clone_value
+
+mdds::mtv::clone_block
+^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenstruct:: mdds::mtv::clone_block
+
+.. doxygenstruct:: mdds::mtv::clone_block< BlockT, std::enable_if_t< std::is_copy_constructible< BlockT >::value > >
+
+.. doxygenstruct:: mdds::mtv::clone_block< BlockT, std::void_t< decltype(clone_value< typename BlockT::value_type >{})> >
 
 Standard Element Blocks
 -----------------------

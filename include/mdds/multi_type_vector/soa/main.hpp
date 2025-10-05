@@ -114,6 +114,7 @@ private:
         std::vector<base_element_block*> element_blocks;
 
         blocks_type();
+        blocks_type(mtv::detail::clone_construction_type, const blocks_type& other);
         blocks_type(const blocks_type& other);
         blocks_type(blocks_type&& other);
 
@@ -236,6 +237,8 @@ private:
             block_funcs::delete_block(p);
         }
     };
+
+    multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other);
 
 public:
     using iterator = detail::iterator_base<iterator_trait>;
@@ -406,6 +409,21 @@ public:
      * Destructor.  It deletes all allocated element blocks.
      */
     ~multi_type_vector();
+
+    /**
+     * Clone the entire content of container.  What this method does is very
+     * similar to what the copy constructor does except that this method allows
+     * cloning of non-copyable element blocks if specializations of
+     * mdds::mtv::clone_value template type exist for the value types stored in
+     * the element blocks being cloned.
+     *
+     * @return Brand-new instance containing the same content as the original
+     *         instance.
+     *
+     * @exception mdds::mtv::element_block_error No specialization exists for at
+     *                least one affected value type.
+     */
+    multi_type_vector clone() const;
 
     /**
      * Given the logical position of an element, get the iterator of the block
@@ -1457,6 +1475,10 @@ private:
             {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, this,
             block_index);
     }
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    void debug_check_full(std::string_view location);
+#endif
 
 private:
     using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Traits::loop_unrolling>;

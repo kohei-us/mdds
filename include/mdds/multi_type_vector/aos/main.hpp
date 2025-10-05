@@ -162,6 +162,8 @@ private:
     typedef mdds::detail::mtv::private_data_forward_update<multi_type_vector, size_type> itr_forward_update;
     typedef mdds::detail::mtv::private_data_no_update<multi_type_vector, size_type> itr_no_update;
 
+    multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other);
+
 public:
     typedef detail::iterator_base<iterator_trait, itr_forward_update> iterator;
     typedef detail::iterator_base<reverse_iterator_trait, itr_no_update> reverse_iterator;
@@ -350,6 +352,21 @@ public:
      * Destructor.  It deletes all allocated data blocks.
      */
     ~multi_type_vector();
+
+    /**
+     * Clone the entire content of container.  What this method does is very
+     * similar to what the copy constructor does except that this method allows
+     * cloning of non-copyable element blocks if specializations of
+     * mdds::mtv::clone_value template type exist for the value types stored in
+     * the element blocks being cloned.
+     *
+     * @return Brand-new instance containing the same content as the original
+     *         instance.
+     *
+     * @exception mdds::mtv::element_block_error No specialization exists for at
+     *                least one affected value type.
+     */
+    multi_type_vector clone() const;
 
     /**
      * Set a value of an arbitrary type to a specified position.  The type of
@@ -1346,6 +1363,10 @@ private:
         std::advance(block_pos, block_index);
         return const_iterator(block_pos, m_blocks.end(), this, block_index);
     }
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    void debug_check_full(std::string_view location);
+#endif
 
 private:
     using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Traits::loop_unrolling>;

@@ -50,6 +50,15 @@ multi_type_vector<Traits>::blocks_type::blocks_type()
 {}
 
 template<typename Traits>
+multi_type_vector<Traits>::blocks_type::blocks_type(mtv::detail::clone_construction_type, const blocks_type& other)
+    : positions(other.positions), sizes(other.sizes), element_blocks(other.element_blocks)
+{
+    std::transform(element_blocks.begin(), element_blocks.end(), element_blocks.begin(), [](base_element_block* data) {
+        return data ? block_funcs::clone_block(*data) : nullptr;
+    });
+}
+
+template<typename Traits>
 multi_type_vector<Traits>::blocks_type::blocks_type(const blocks_type& other)
     : positions(other.positions), sizes(other.sizes), element_blocks(other.element_blocks)
 {
@@ -368,6 +377,23 @@ multi_type_vector<Traits>::multi_type_vector(size_type init_size, const T& it_be
 }
 
 template<typename Traits>
+multi_type_vector<Traits>::multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other)
+    : m_hdl_event(other.m_hdl_event), m_block_store(mtv::detail::clone_construction_type{}, other.m_block_store),
+      m_cur_size(other.m_cur_size)
+{
+    // NB: this must be done sequentially since it involves client-side callback.
+    for (const base_element_block* data : m_block_store.element_blocks)
+    {
+        if (data)
+            m_hdl_event.element_block_acquired(data);
+    }
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    debug_check_full("clone construction");
+#endif
+}
+
+template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
     : m_hdl_event(other.m_hdl_event), m_block_store(other.m_block_store), m_cur_size(other.m_cur_size)
 {
@@ -381,18 +407,7 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
     }
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    try
-    {
-        check_block_integrity();
-    }
-    catch (const mdds::integrity_error& e)
-    {
-        std::ostringstream os;
-        os << e.what() << std::endl;
-        os << "block integrity check failed in copy construction" << std::endl;
-        std::cerr << os.str() << std::endl;
-        abort();
-    }
+    debug_check_full("copy construction");
 #endif
 }
 
@@ -404,18 +419,7 @@ multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other)
     MDDS_MTV_TRACE_ARGS(constructor, "other=? (move)");
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
-    try
-    {
-        check_block_integrity();
-    }
-    catch (const mdds::integrity_error& e)
-    {
-        std::ostringstream os;
-        os << e.what() << std::endl;
-        os << "block integrity check failed in copy construction" << std::endl;
-        std::cerr << os.str() << std::endl;
-        abort();
-    }
+    debug_check_full("move construction");
 #endif
 }
 
@@ -425,6 +429,14 @@ multi_type_vector<Traits>::~multi_type_vector()
     MDDS_MTV_TRACE(destructor);
 
     delete_element_blocks(0, m_block_store.positions.size());
+}
+
+template<typename Traits>
+auto multi_type_vector<Traits>::clone() const -> multi_type_vector
+{
+    MDDS_MTV_TRACE(accessor);
+
+    return multi_type_vector(mtv::detail::clone_construction_type{}, *this);
 }
 
 template<typename Traits>
@@ -4707,6 +4719,25 @@ bool multi_type_vector<Traits>::append_empty(size_type len)
 
     return new_block_added;
 }
+
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+template<typename Traits>
+void multi_type_vector<Traits>::debug_check_full(std::string_view location)
+{
+    try
+    {
+        check_block_integrity();
+    }
+    catch (const mdds::integrity_error& e)
+    {
+        std::ostringstream os;
+        os << e.what() << std::endl;
+        os << "block integrity check failed in " << location << std::endl;
+        std::cerr << os.str() << std::endl;
+        abort();
+    }
+}
+#endif
 
 template<typename Traits>
 void multi_type_vector<Traits>::resize(size_type new_size)

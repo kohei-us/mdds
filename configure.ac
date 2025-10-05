@@ -171,6 +171,7 @@ test/sorted_string_map/Makefile
 test/trie_map/Makefile
 tools/Makefile
 tools/runtime-env/Makefile
+misc/Makefile
 misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
 ])
 AC_OUTPUT

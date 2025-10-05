@@ -98,6 +98,11 @@ struct default_traits
 
 namespace detail {
 
+/** internal type used only to trigger clone copy construction. */
+struct clone_construction_type
+{
+};
+
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
 
 template<typename T, typename = void>
