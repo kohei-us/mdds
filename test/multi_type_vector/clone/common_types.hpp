@@ -35,6 +35,9 @@
 #include <mdds/multi_type_vector/macro.hpp>
 #include <mdds/multi_type_vector/util.hpp>
 
+/**
+ * Stored in default element block.
+ */
 struct custom_num
 {
     double value;
@@ -59,6 +62,10 @@ struct custom_num
     }
 };
 
+/**
+ * Stored in managed non-copyable block with specialized clone_block to allow
+ * cloning.
+ */
 struct custom_str1
 {
     std::string value;
@@ -79,6 +86,10 @@ struct custom_str1
     }
 };
 
+/**
+ * Stored in managed non-copyable block with specialized clone_value to allow
+ * cloning.
+ */
 struct custom_str2
 {
     std::string value;
@@ -99,17 +110,43 @@ struct custom_str2
     }
 };
 
+/**
+ * Stored in managed non-copyable block with no specialization for cloning.
+ */
+struct custom_noclone
+{
+    std::string value;
+
+    operator const char*() const
+    {
+        return value.c_str();
+    }
+
+    bool operator==(const custom_noclone& other) const
+    {
+        return value == other.value;
+    }
+
+    bool operator!=(const custom_noclone& other) const
+    {
+        return !operator==(other);
+    }
+};
+
 constexpr mdds::mtv::element_t block1_id = mdds::mtv::element_type_user_start;
 constexpr mdds::mtv::element_t block2_id = mdds::mtv::element_type_user_start + 1;
 constexpr mdds::mtv::element_t block3_id = mdds::mtv::element_type_user_start + 2;
+constexpr mdds::mtv::element_t block4_id = mdds::mtv::element_type_user_start + 3;
 
 using block1_type = mdds::mtv::default_element_block<block1_id, custom_num, std::vector>;
 using block2_type = mdds::mtv::noncopyable_managed_element_block<block2_id, custom_str1, std::vector>;
 using block3_type = mdds::mtv::noncopyable_managed_element_block<block3_id, custom_str2, std::vector>;
+using block4_type = mdds::mtv::noncopyable_managed_element_block<block4_id, custom_noclone, std::vector>;
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(custom_num, block1_id, custom_num{}, block1_type)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_str1, block2_id, nullptr, block2_type)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_str2, block3_id, nullptr, block3_type)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_noclone, block4_id, nullptr, block4_type)
 
 namespace mdds { namespace mtv {
 
@@ -141,7 +178,7 @@ struct clone_value<custom_str2*>
 
 struct user_traits : mdds::mtv::default_traits
 {
-    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type>;
+    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type, block4_type>;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

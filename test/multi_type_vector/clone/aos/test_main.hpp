@@ -36,5 +36,6 @@
 using mtv_type = mdds::mtv::aos::multi_type_vector<user_traits>;
 
 void test_clone();
+void test_noclone();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

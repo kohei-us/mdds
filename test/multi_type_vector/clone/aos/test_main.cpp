@@ -34,6 +34,7 @@ int main()
     try
     {
         test_clone();
+        test_noclone();
     }
     catch (const std::exception& e)
     {

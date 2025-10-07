@@ -49,4 +49,22 @@ void test_clone()
     TEST_ASSERT(store == cloned);
 }
 
+void test_noclone()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    mtv_type store;
+    store.push_back(new custom_noclone{"no-clone string"});
+
+    try
+    {
+        [[maybe_unused]] auto cloned = store.clone();
+        TEST_ASSERT(!"exception was not thrown as expected");
+    }
+    catch (const mdds::mtv::element_block_error&)
+    {
+        // expected
+    }
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
