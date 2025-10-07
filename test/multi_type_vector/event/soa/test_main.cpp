@@ -33,6 +33,7 @@ int main()
     try
     {
         mtv_test_block_counter();
+        mtv_test_block_counter_clone();
         mtv_test_block_init();
     }
     catch (const std::exception& e)

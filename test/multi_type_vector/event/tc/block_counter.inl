@@ -1115,4 +1115,23 @@ void mtv_test_block_counter()
     }
 }
 
+void mtv_test_block_counter_clone()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    using mtv_type = mtv_template_type<eb_counter_trait>;
+
+    mtv_type src;
+    src.emplace_back<std::string>("v1");
+    src.emplace_back<std::string>("v2");
+    src.emplace_back<std::string>("v3");
+    TEST_ASSERT(src.event_handler().block_count_string == 1);
+    src.push_back_empty();
+    src.emplace_back<std::string>("v4");
+    TEST_ASSERT(src.event_handler().block_count_string == 2);
+
+    auto cloned = src.clone();
+    TEST_ASSERT(cloned.event_handler().block_count_string == 2);
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
