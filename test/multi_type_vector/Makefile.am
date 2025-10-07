@@ -1,4 +1,5 @@
 SUBDIRS = \
+	clone \
 	collection \
 	custom \
 	custom-trait \

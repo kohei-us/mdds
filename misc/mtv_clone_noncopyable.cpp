@@ -46,6 +46,16 @@ struct custom_num
     custom_num() : value(0.0) {}
     custom_num(double v) : value(v) {}
     operator double() const { return value; }
+
+    bool operator==(const custom_num& other) const
+    {
+        return value == other.value;
+    }
+
+    bool operator!=(const custom_num& other) const
+    {
+        return !operator==(other);
+    }
 };
 
 struct custom_str1
@@ -56,6 +66,16 @@ struct custom_str1
     {
         return value.c_str();
     }
+
+    bool operator==(const custom_str1& other) const
+    {
+        return value == other.value;
+    }
+
+    bool operator!=(const custom_str1& other) const
+    {
+        return !operator==(other);
+    }
 };
 
 struct custom_str2
@@ -65,6 +85,16 @@ struct custom_str2
     operator const char*() const
     {
         return value.c_str();
+    }
+
+    bool operator==(const custom_str2& other) const
+    {
+        return value == other.value;
+    }
+
+    bool operator!=(const custom_str2& other) const
+    {
+        return !operator==(other);
     }
 };
 
@@ -193,6 +223,8 @@ void test_mtv_soa()
     std::cout << "v(1)=" << cloned.get<custom_num>(1) << std::endl;
     std::cout << "v(3)=" << *cloned.get<custom_str1*>(3) << std::endl;
     std::cout << "v(4)=" << *cloned.get<custom_str2*>(4) << std::endl;
+
+    std::cout << "store == cloned ? " << std::boolalpha << (store == cloned) << std::endl;
 }
 
 void test_mtv_aos()
@@ -212,6 +244,8 @@ void test_mtv_aos()
     std::cout << "v(1)=" << cloned.get<custom_num>(1) << std::endl;
     std::cout << "v(3)=" << *cloned.get<custom_str1*>(3) << std::endl;
     std::cout << "v(4)=" << *cloned.get<custom_str2*>(4) << std::endl;
+
+    std::cout << "store == cloned ? " << std::boolalpha << (store == cloned) << std::endl;
 }
 
 int main()

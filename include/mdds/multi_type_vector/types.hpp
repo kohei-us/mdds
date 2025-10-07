@@ -864,6 +864,19 @@ struct noncopyable_managed_element_block
         typename noncopyable_managed_element_block::store_type::iterator it_end = it + len;
         std::for_each(it, it_end, std::default_delete<ValueT>());
     }
+
+    static bool equal_block(const base_element_block& left, const base_element_block& right)
+    {
+        const auto& array1 = get(left).m_array;
+        const auto& array2 = get(right).m_array;
+
+        if (array1.size() != array2.size())
+            return false;
+
+        return std::equal(array1.begin(), array1.end(), array2.begin(), [](const ValueT* p1, const ValueT* p2) {
+            return *p1 == *p2;
+        });
+    }
 };
 
 namespace detail {
