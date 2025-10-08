@@ -38,5 +38,6 @@ install(DIRECTORY
         PATTERN "*.inl"
 )
 
+add_subdirectory(misc)
 add_subdirectory(test)
 add_subdirectory(tools)

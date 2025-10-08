@@ -32,6 +32,7 @@
 #include <string>
 #include <chrono>
 #include <execution>
+#include <functional>
 
 #include <mdds/multi_type_vector/types.hpp>
 
