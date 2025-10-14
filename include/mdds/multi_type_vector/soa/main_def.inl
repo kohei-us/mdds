@@ -68,6 +68,30 @@ struct copy_blocks<mdds::mtv::default_exec_policy, BlockOp>
     }
 };
 
+template<typename ExecPolicy, void (*BlockOp)(base_element_block&)>
+struct mutate_blocks
+{
+    void operator()(std::vector<base_element_block*>& element_blocks) const
+    {
+        std::for_each(ExecPolicy{}, element_blocks.begin(), element_blocks.end(), [](base_element_block* data) {
+            if (data)
+                BlockOp(*data);
+        });
+    }
+};
+
+template<void (*BlockOp)(base_element_block&)>
+struct mutate_blocks<mdds::mtv::default_exec_policy, BlockOp>
+{
+    void operator()(std::vector<base_element_block*>& element_blocks) const
+    {
+        std::for_each(element_blocks.begin(), element_blocks.end(), [](base_element_block* data) {
+            if (data)
+                BlockOp(*data);
+        });
+    }
+};
+
 } // namespace detail
 
 template<typename Traits>
@@ -5213,11 +5237,7 @@ void multi_type_vector<Traits>::shrink_to_fit()
 {
     MDDS_MTV_TRACE(mutator);
 
-    for (auto* data : m_block_store.element_blocks)
-    {
-        if (data)
-            block_funcs::shrink_to_fit(*data);
-    }
+    detail::mutate_blocks<typename Traits::exec_policy, block_funcs::shrink_to_fit>{}(m_block_store.element_blocks);
 }
 
 template<typename Traits>

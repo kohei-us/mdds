@@ -225,6 +225,7 @@ void test_mtv_soa()
     std::cout << "v(4)=" << *cloned.get<custom_str2*>(4) << std::endl;
 
     std::cout << "store == cloned ? " << std::boolalpha << (store == cloned) << std::endl;
+    cloned.shrink_to_fit();
 }
 
 void test_mtv_aos()
