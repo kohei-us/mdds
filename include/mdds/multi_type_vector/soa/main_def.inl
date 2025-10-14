@@ -43,6 +43,31 @@ void erase(VecT& arr, SizeT index, SizeT size)
     arr.erase(it, it + size);
 }
 
+template<typename ExecPolicy, base_element_block* (*BlockOp)(const base_element_block&)>
+struct copy_blocks
+{
+    void operator()(std::vector<base_element_block*>& element_blocks) const
+    {
+        std::transform(
+            ExecPolicy{}, element_blocks.begin(), element_blocks.end(), element_blocks.begin(),
+            [](base_element_block* data) { return data ? BlockOp(*data) : nullptr; });
+    }
+};
+
+/**
+ * Specialized for the default execution policy.
+ */
+template<base_element_block* (*BlockOp)(const base_element_block&)>
+struct copy_blocks<mdds::mtv::default_exec_policy, BlockOp>
+{
+    void operator()(std::vector<base_element_block*>& element_blocks) const
+    {
+        std::transform(
+            element_blocks.begin(), element_blocks.end(), element_blocks.begin(),
+            [](base_element_block* data) { return data ? BlockOp(*data) : nullptr; });
+    }
+};
+
 } // namespace detail
 
 template<typename Traits>
@@ -53,18 +78,14 @@ template<typename Traits>
 multi_type_vector<Traits>::blocks_type::blocks_type(mtv::detail::clone_construction_type, const blocks_type& other)
     : positions(other.positions), sizes(other.sizes), element_blocks(other.element_blocks)
 {
-    std::transform(element_blocks.begin(), element_blocks.end(), element_blocks.begin(), [](base_element_block* data) {
-        return data ? block_funcs::clone_block(*data) : nullptr;
-    });
+    detail::copy_blocks<typename Traits::exec_policy, block_funcs::clone_block>{}(element_blocks);
 }
 
 template<typename Traits>
 multi_type_vector<Traits>::blocks_type::blocks_type(const blocks_type& other)
     : positions(other.positions), sizes(other.sizes), element_blocks(other.element_blocks)
 {
-    std::transform(element_blocks.begin(), element_blocks.end(), element_blocks.begin(), [](base_element_block* data) {
-        return data ? block_funcs::copy_block(*data) : nullptr;
-    });
+    detail::copy_blocks<typename Traits::exec_policy, block_funcs::copy_block>{}(element_blocks);
 }
 
 template<typename Traits>

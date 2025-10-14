@@ -68,6 +68,10 @@ struct empty_event_func
     }
 };
 
+struct default_exec_policy
+{
+};
+
 /**
  * Default trait to be used when no custom trait is specified.
  */
@@ -84,6 +88,11 @@ struct default_traits
      * position adjustment function.  This must be a const expression.
      */
     static constexpr lu_factor_t loop_unrolling = lu_factor_t::lu16;
+
+    /**
+     * Execution policy for potentially parallelizable operations.
+     */
+    using exec_policy = default_exec_policy;
 
     /**
      * Type that contains block functions used throughout the multi_type_vector
