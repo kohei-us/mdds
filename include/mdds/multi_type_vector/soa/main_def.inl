@@ -92,6 +92,47 @@ struct mutate_blocks<mdds::mtv::default_exec_policy, BlockOp>
     }
 };
 
+template<bool (*BlockOp)(const base_element_block&, const base_element_block&)>
+bool equal_blocks_pred(const base_element_block* data1, const base_element_block* data2)
+{
+    if (data1)
+    {
+        if (!data2)
+            // left is non-empty while right is empty.
+            return false;
+    }
+    else
+    {
+        if (data2)
+            // left is empty while right is non-empty.
+            return false;
+
+        // both are empty blocks
+        return true;
+    }
+
+    assert(data1 && data2);
+    return BlockOp(*data1, *data2);
+}
+
+template<typename ExecPolicy, bool (*BlockOp)(const base_element_block&, const base_element_block&)>
+struct equal_blocks
+{
+    bool operator()(const std::vector<base_element_block*>& lhs, const std::vector<base_element_block*>& rhs) const
+    {
+        return std::equal(ExecPolicy{}, lhs.cbegin(), lhs.cend(), rhs.cbegin(), equal_blocks_pred<BlockOp>);
+    }
+};
+
+template<bool (*BlockOp)(const base_element_block&, const base_element_block&)>
+struct equal_blocks<mdds::mtv::default_exec_policy, BlockOp>
+{
+    bool operator()(const std::vector<base_element_block*>& lhs, const std::vector<base_element_block*>& rhs) const
+    {
+        return std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin(), equal_blocks_pred<BlockOp>);
+    }
+};
+
 } // namespace detail
 
 template<typename Traits>
@@ -216,38 +257,8 @@ bool multi_type_vector<Traits>::blocks_type::equals(const blocks_type& other) co
     if (element_blocks.size() != other.element_blocks.size())
         return false;
 
-    auto it2 = other.element_blocks.cbegin();
-
-    for (const base_element_block* data1 : element_blocks)
-    {
-        const base_element_block* data2 = *it2++;
-
-        if (data1)
-        {
-            if (!data2)
-                // left is non-empty while right is empty.
-                return false;
-        }
-        else
-        {
-            if (data2)
-                // left is empty while right is non-empty.
-                return false;
-        }
-
-        if (!data1)
-        {
-            // Both are empty blocks.
-            assert(!data2);
-            continue;
-        }
-
-        assert(data1 && data2);
-        if (!block_funcs::equal_block(*data1, *data2))
-            return false;
-    }
-
-    return true;
+    return detail::equal_blocks<typename Traits::exec_policy, block_funcs::equal_block>{}(
+        element_blocks, other.element_blocks);
 }
 
 template<typename Traits>
