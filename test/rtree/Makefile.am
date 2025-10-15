@@ -10,10 +10,6 @@ DISTCLEANFILES = \
 check_PROGRAMS = test-main test-bulkload
 
 test_main_SOURCES = \
-	test_main.cpp \
-	$(top_srcdir)/test/test_global.cpp
-
-test_main_SOURCES = \
 	test_basic.cpp \
 	test_copy.cpp \
 	test_directory_node_split.cpp \

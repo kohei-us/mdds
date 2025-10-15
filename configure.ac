@@ -27,6 +27,11 @@ CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
 AC_CHECK_SIZEOF([void *])
 CXXFLAGS="$CXXFLAGS -DSIZEOF_VOID_P=$ac_cv_sizeof_void_p"
 
+PKG_CHECK_EXISTS([tbb], [
+  PKG_CHECK_MODULES([TBB], [tbb])
+  AC_DEFINE(HAVE_TBB, 1, [Define if TBB is available])
+], [])
+
 AC_ARG_ENABLE(debug-stdcxx,
 [
   --enable-debug-stdcxx   Enable libstdc++ debug mode during make check.
@@ -163,6 +168,8 @@ test/multi_type_vector/event/Makefile
 test/multi_type_vector/event/aos/Makefile
 test/multi_type_vector/event/soa/Makefile
 test/multi_type_vector/event/tc/Makefile
+test/multi_type_vector/exec-policy/Makefile
+test/multi_type_vector/exec-policy/soa/Makefile
 test/multi_type_vector/perf/Makefile
 test/multi_type_vector/push-emplace-back/Makefile
 test/multi_type_vector/push-emplace-back/aos/Makefile
@@ -189,5 +196,7 @@ Build configuration:
         loop-unrolling        $enable_loop_unrolling
 
         CXXFLAGS              $CXXFLAGS
+        TBB_CFLAGS            $TBB_CFLAGS
+        TBB_LIBS              $TBB_LIBS
 ==============================================================================
 ])
