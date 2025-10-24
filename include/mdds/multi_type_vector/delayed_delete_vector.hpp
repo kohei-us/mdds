@@ -141,6 +141,11 @@ public:
         m_vec.push_back(std::move(value));
     }
 
+    void swap(delayed_delete_vector& other) noexcept
+    {
+        m_vec.swap(other.m_vec);
+    }
+
     template<typename... Args>
     void emplace_back(Args&&... args)
     {

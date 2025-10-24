@@ -7,6 +7,7 @@ check_PROGRAMS = test-main
 
 test_main_SOURCES = \
 	test_main.cpp \
+	test_clone.cpp \
 	$(top_srcdir)/test/test_global.cpp
 
 test_main_CPPFLAGS = \

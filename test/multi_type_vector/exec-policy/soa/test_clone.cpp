@@ -29,52 +29,36 @@
 #include "test_main.hpp"
 
 using mtv_type = mdds::mtv::soa::multi_type_vector<seq_policy_traits>;
+using mtv_type_noncopyable = mdds::mtv::soa::multi_type_vector<noncopyable_traits>;
 
-void test_copy_construction_and_equal()
+void test_clone()
 {
     MDDS_TEST_FUNC_SCOPE;
 
     mtv_type src;
+
     src.push_back<int32_t>(12);
     src.push_back<int32_t>(23);
     src.push_back<float>(1.0f);
     src.push_back<float>(2.0f);
     src.push_back<float>(3.0f);
-    mtv_type copied{src};
 
-    TEST_ASSERT(src == copied);
-
-    // keep the logical lengths of src and copied the same to trigger
-    // equal_blocks function
-    src.push_back<double>(1.0);
-    src.push_back<double>(2.0);
-    copied.push_back<double>(10.0);
-    copied.push_back<double>(12.0);
-
-    TEST_ASSERT(src != copied);
+    auto cloned = src.clone();
+    TEST_ASSERT(src == cloned);
 }
 
-void test_shrink_to_fit()
+void test_clone_noncopyable()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    mtv_type store;
-    store.push_back<int32_t>(12);
-    store.push_back<int32_t>(23);
-    store.push_back<float>(1.0f);
-    store.push_back<float>(2.0f);
-    store.push_back<float>(3.0f);
-    store.shrink_to_fit();
-}
+    mtv_type_noncopyable src;
 
-int main()
-{
-    test_copy_construction_and_equal();
-    test_shrink_to_fit();
-    test_clone();
-    test_clone_noncopyable();
+    src.push_back(new custom_str{"value1"});
+    src.push_back(new custom_str{"value2"});
+    src.push_back(new custom_str{"value3"});
 
-    return EXIT_SUCCESS;
+    auto cloned = src.clone();
+    TEST_ASSERT(src == cloned);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
