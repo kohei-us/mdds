@@ -56,6 +56,9 @@ void test_clone_noncopyable()
     src.push_back(new custom_str{"value1"});
     src.push_back(new custom_str{"value2"});
     src.push_back(new custom_str{"value3"});
+    src.push_back(new custom_int{12});
+    src.push_back(new custom_int{34});
+    src.push_back(new custom_int{56});
 
     auto cloned = src.clone();
     TEST_ASSERT(src == cloned);

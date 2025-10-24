@@ -215,12 +215,18 @@ template<typename BlockT>
 struct clone_block<BlockT, std::void_t<decltype(clone_value<typename BlockT::value_type>{})>>
 {
     using store_type = typename BlockT::store_type;
+    using value_type = typename BlockT::value_type;
+    using CV = clone_value<value_type>;
 
     BlockT* operator()(const BlockT& src) const
     {
         auto dest_blk = std::make_unique<BlockT>();
         auto cloned(src.store());
-        std::transform(cloned.begin(), cloned.end(), cloned.begin(), clone_value<typename BlockT::value_type>{});
+
+        if constexpr (detail::has_exec_policy<CV>::value)
+            std::transform(typename CV::exec_policy{}, cloned.begin(), cloned.end(), cloned.begin(), CV{});
+        else
+            std::transform(cloned.begin(), cloned.end(), cloned.begin(), CV{});
 
         dest_blk->store().swap(cloned);
         return dest_blk.release();

@@ -160,6 +160,16 @@ struct has_std_vector_bool_store
     using type = typename is_std_vector_bool_store<typename Blk::store_type>::type;
 };
 
+template<typename T, typename = void>
+struct has_exec_policy : std::false_type
+{
+};
+
+template<typename T>
+struct has_exec_policy<T, std::void_t<typename T::exec_policy>> : std::true_type
+{
+};
+
 }}} // namespace mdds::mtv::detail
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
