@@ -13,3 +13,4 @@ Examples
    event-handlers.rst
    pointer-to-elem.rst
    traverse-sideways.rst
+   cloning.rst

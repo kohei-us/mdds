@@ -669,6 +669,9 @@ public:
     }
 };
 
+/**
+ * Template for element block that prohibits copy construction.
+ */
 template<typename Self, element_t TypeId, typename ValueT, template<typename, typename> class StoreT>
 class noncopyable_element_block : public element_block<Self, TypeId, ValueT, StoreT>
 {
@@ -818,6 +821,11 @@ struct managed_element_block
     }
 };
 
+/**
+ * Template for element block that stores pointers to objects whose life
+ * cycles are managed by the block.  Unlike the managed_element_block variant,
+ * this variant does not allow copying of elements.
+ */
 template<element_t TypeId, typename ValueT, template<typename, typename> class StoreT = delayed_delete_vector>
 struct noncopyable_managed_element_block
     : public noncopyable_element_block<

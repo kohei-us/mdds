@@ -4,6 +4,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -DNDEBUG
 EXTRA_PROGRAMS = \
 	mtv-collection \
 	basic \
+	clone \
 	custom-value-types \
 	custom-value-types-custom-store \
 	debug-trace \
@@ -14,6 +15,7 @@ EXTRA_PROGRAMS = \
 
 mtv_collection_SOURCES = mtv_collection.cpp
 basic_SOURCES = basic.cpp
+clone_SOURCES = clone.cpp
 custom_value_types_SOURCES = custom_value_types.cpp
 custom_value_types_custom_store_SOURCES = custom_value_types_custom_store.cpp
 debug_trace_SOURCES = debug_trace.cpp
@@ -25,6 +27,7 @@ pos_hint_SOURCES = pos_hint.cpp
 TESTS = \
 	mtv-collection \
 	basic \
+	clone \
 	custom-value-types \
 	custom-value-types-custom-store \
 	debug-trace \
