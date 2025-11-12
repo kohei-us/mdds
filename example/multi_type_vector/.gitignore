@@ -4,6 +4,7 @@ clone
 debug-trace
 element-block1
 event1
+exec-policy
 pos-hint
 custom-value-types
 custom-value-types-custom-store

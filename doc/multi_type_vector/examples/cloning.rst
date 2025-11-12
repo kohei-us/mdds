@@ -1,3 +1,4 @@
+.. _mtv-example-cloning:
 
 Cloning
 =======
