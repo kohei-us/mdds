@@ -162,12 +162,13 @@ flat_segment_tree<Key, Value>& flat_segment_tree<Key, Value>::operator=(flat_seg
 }
 
 template<typename Key, typename Value>
-void flat_segment_tree<Key, Value>::swap(flat_segment_tree& other)
+void flat_segment_tree<Key, Value>::swap(flat_segment_tree& other) noexcept(
+    std::is_nothrow_swappable_v<value_type> && std::is_nothrow_swappable_v<std::vector<nonleaf_node>>)
 {
     m_nonleaf_node_pool.swap(other.m_nonleaf_node_pool);
     std::swap(m_root_node, other.m_root_node);
-    std::swap(m_left_leaf, other.m_left_leaf);
-    std::swap(m_right_leaf, other.m_right_leaf);
+    m_left_leaf.swap(other.m_left_leaf);
+    m_right_leaf.swap(other.m_right_leaf);
     std::swap(m_init_val, other.m_init_val);
     std::swap(m_valid_tree, other.m_valid_tree);
 }

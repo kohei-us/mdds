@@ -277,7 +277,8 @@ public:
      *
      * @param other instance of flat_segment_tree to swap content with.
      */
-    void swap(flat_segment_tree& other);
+    void swap(flat_segment_tree& other) noexcept(
+        std::is_nothrow_swappable_v<value_type> && std::is_nothrow_swappable_v<std::vector<nonleaf_node>>);
 
     /**
      * Remove all stored segments except for the initial segment. The minimum
