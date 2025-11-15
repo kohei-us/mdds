@@ -410,7 +410,7 @@ void segment_tree<KeyT, ValueT>::build_tree()
     }
 
     // Count the number of leaf nodes.
-    size_t leaf_count = st::detail::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    auto leaf_count = st::detail::count_leaf_nodes<size_type>(m_left_leaf.get(), m_right_leaf.get());
 
     // Determine the total number of non-leaf nodes needed to build the whole tree.
     size_t nonleaf_count = st::detail::count_needed_nonleaf_nodes(leaf_count);
@@ -636,7 +636,7 @@ bool segment_tree<KeyT, ValueT>::empty() const
 template<typename KeyT, typename ValueT>
 typename segment_tree<KeyT, ValueT>::size_type segment_tree<KeyT, ValueT>::leaf_size() const
 {
-    return st::detail::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    return st::detail::count_leaf_nodes<size_type>(m_left_leaf.get(), m_right_leaf.get());
 }
 
 template<typename KeyT, typename ValueT>

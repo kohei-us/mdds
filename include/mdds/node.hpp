@@ -391,10 +391,10 @@ void disconnect_leaf_nodes(node<KeyT, ValueT>* left_node, node<KeyT, ValueT>* ri
     disconnect_all_nodes(right_node);
 }
 
-template<typename KeyT, typename ValueT>
-size_t count_leaf_nodes(const node<KeyT, ValueT>* left_end, const node<KeyT, ValueT>* right_end)
+template<typename SizeT, typename KeyT, typename ValueT>
+SizeT count_leaf_nodes(const node<KeyT, ValueT>* left_end, const node<KeyT, ValueT>* right_end)
 {
-    size_t leaf_count = 1;
+    SizeT leaf_count = 1;
     const auto* p = left_end;
     const auto* p_end = right_end;
     for (; p != p_end; p = p->next.get(), ++leaf_count)

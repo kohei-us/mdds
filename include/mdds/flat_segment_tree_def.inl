@@ -785,7 +785,7 @@ void flat_segment_tree<Key, Value>::build_tree()
 template<typename Key, typename Value>
 typename flat_segment_tree<Key, Value>::size_type flat_segment_tree<Key, Value>::leaf_size() const
 {
-    return st::detail::count_leaf_nodes(m_left_leaf.get(), m_right_leaf.get());
+    return st::detail::count_leaf_nodes<size_type>(m_left_leaf.get(), m_right_leaf.get());
 }
 
 template<typename Key, typename Value>
