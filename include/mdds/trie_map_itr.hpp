@@ -543,7 +543,7 @@ private:
         node_stack.emplace_back(value_store, node_pos, child_pos, child_end);
     }
 
-    static const void descend_to_previous_leaf_node(node_stack_type& node_stack, key_type& buf)
+    static void descend_to_previous_leaf_node(node_stack_type& node_stack, key_type& buf)
     {
         const pack_value_type* node_pos = nullptr;
         size_t index_size = 0;

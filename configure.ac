@@ -21,7 +21,7 @@ AC_SUBST(MISCDIR)
 
 AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
 
-CPPFLAGS="$CPPFLAGS -Wall -Wshadow -g -pedantic-errors"
+CPPFLAGS="$CPPFLAGS -Wall -Wextra -Wshadow -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
 
 AC_CHECK_SIZEOF([void *])
@@ -195,6 +195,7 @@ Build configuration:
         sanitizer-coverage    $enable_sanitizer_coverage
         loop-unrolling        $enable_loop_unrolling
 
+        CPPFLAGS              $CPPFLAGS
         CXXFLAGS              $CXXFLAGS
         TBB_CFLAGS            $TBB_CFLAGS
         TBB_LIBS              $TBB_LIBS
