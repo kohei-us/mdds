@@ -392,7 +392,8 @@ void disconnect_leaf_nodes(node<KeyT, ValueT>* left_node, node<KeyT, ValueT>* ri
 }
 
 template<typename SizeT, typename KeyT, typename ValueT>
-SizeT count_leaf_nodes(const node<KeyT, ValueT>* left_end, const node<KeyT, ValueT>* right_end)
+SizeT count_leaf_nodes(const node<KeyT, ValueT>* left_end, const node<KeyT, ValueT>* right_end) noexcept(
+    noexcept(++std::declval<SizeT&>()))
 {
     SizeT leaf_count = 1;
     const auto* p = left_end;

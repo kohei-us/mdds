@@ -522,7 +522,11 @@ public:
      *
      * @return number of leaf nodes.
      */
-    size_type leaf_size() const;
+    size_type leaf_size() const
+        noexcept(noexcept(st::detail::count_leaf_nodes<size_type>(m_left_leaf.get(), m_right_leaf.get())))
+    {
+        return st::detail::count_leaf_nodes<size_type>(m_left_leaf.get(), m_right_leaf.get());
+    }
 
 #ifdef MDDS_UNIT_TEST
     const nonleaf_node* get_root_node() const
