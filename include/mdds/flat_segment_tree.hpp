@@ -502,17 +502,17 @@ public:
         return !operator==(other);
     }
 
-    key_type min_key() const
+    const key_type& min_key() const noexcept
     {
         return m_left_leaf->key;
     }
 
-    key_type max_key() const
+    const key_type& max_key() const noexcept
     {
         return m_right_leaf->key;
     }
 
-    value_type default_value() const
+    const value_type& default_value() const noexcept
     {
         return m_init_val;
     }
