@@ -2497,6 +2497,29 @@ void fst_test_custom_key_type()
     TEST_ASSERT(expected == actual);
 }
 
+struct move_may_throw
+{
+    move_may_throw(move_may_throw&&) {} // not marked noexcept
+};
+
+/**
+ * No need to call this function since this is for compile-time check only.
+ */
+[[maybe_unused]] void fst_test_noexcept()
+{
+    {
+        using test_type = mdds::flat_segment_tree<int64_t, std::string>;
+        static_assert(std::is_nothrow_move_constructible_v<test_type>);
+        static_assert(std::is_nothrow_move_assignable_v<test_type>);
+    }
+
+    {
+        using test_type = mdds::flat_segment_tree<int64_t, move_may_throw>;
+        static_assert(!std::is_nothrow_move_constructible_v<test_type>);
+        static_assert(!std::is_nothrow_move_assignable_v<test_type>);
+    }
+}
+
 int main(int argc, char** argv)
 {
     try
