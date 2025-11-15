@@ -805,7 +805,8 @@ private:
 };
 
 template<typename Key, typename Value>
-void swap(flat_segment_tree<Key, Value>& left, flat_segment_tree<Key, Value>& right)
+void swap(flat_segment_tree<Key, Value>& left, flat_segment_tree<Key, Value>& right) noexcept(
+    std::is_nothrow_swappable_v<flat_segment_tree<Key, Value>>)
 {
     left.swap(right);
 }
