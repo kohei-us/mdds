@@ -43,10 +43,10 @@ class cref_wrapper
     std::reference_wrapper<std::add_const_t<T>> m_value;
 
 public:
-    cref_wrapper(const T& v) : m_value(std::cref(v))
+    cref_wrapper(const T& v) noexcept : m_value(std::cref(v))
     {}
 
-    const T& get() const
+    const T& get() const noexcept
     {
         return m_value;
     }
@@ -63,12 +63,12 @@ public:
 
     struct hash
     {
-        std::size_t operator()(const cref_wrapper& v) const
+        std::size_t operator()(const cref_wrapper& v) const noexcept(noexcept(std::hash<T>{}(v.get())))
         {
             // NB: hash value must be based on the wrapped value, else two
             // identical values located in different memory locations may end up
             // in different buckets, and the lookup may fail.
-            return std::hash<T>{}(v.m_value);
+            return std::hash<T>{}(v.get());
         }
     };
 };

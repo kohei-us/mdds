@@ -1598,7 +1598,8 @@ typename packed_trie_map<KeyT, ValueT, TraitsT>::search_results packed_trie_map<
     const auto* root = m_packed.data() + root_offset;
 
     const auto* node = trie::detail::find_prefix_node<pack_value_type, key_unit_type, size_type>(
-        root, prefix, prefix_end, [](const pack_value_type*, const pack_value_type*, const pack_value_type*) {});
+        root, prefix, prefix_end,
+        [](const pack_value_type*, const pack_value_type*, const pack_value_type*) noexcept {});
 
     return search_results(&m_value_store, node, key_type(prefix, len));
 }
