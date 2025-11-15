@@ -252,7 +252,9 @@ public:
      * @warning The source instance will not be usable after the move
      *          construction.
      */
-    flat_segment_tree(flat_segment_tree&& other);
+    flat_segment_tree(flat_segment_tree&& other) noexcept(
+        std::is_nothrow_move_constructible_v<std::vector<nonleaf_node>> &&
+        std::is_nothrow_move_constructible_v<value_type>);
 
     ~flat_segment_tree();
 
@@ -270,7 +272,8 @@ public:
      *
      * @param other Source instance to move from.
      */
-    flat_segment_tree<Key, Value>& operator=(flat_segment_tree&& other);
+    flat_segment_tree<Key, Value>& operator=(flat_segment_tree&& other) noexcept(
+        noexcept(flat_segment_tree(std::move(other))) && noexcept(swap(other)));
 
     /**
      * Swap the content of the tree with another instance.
