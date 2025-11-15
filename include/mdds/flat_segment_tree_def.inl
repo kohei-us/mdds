@@ -789,7 +789,9 @@ typename flat_segment_tree<Key, Value>::size_type flat_segment_tree<Key, Value>:
 }
 
 template<typename Key, typename Value>
-bool flat_segment_tree<Key, Value>::operator==(const flat_segment_tree& other) const
+bool flat_segment_tree<Key, Value>::operator==(const flat_segment_tree& other) const noexcept(
+    noexcept(std::declval<key_type>() == std::declval<key_type>()) &&
+    noexcept(std::declval<leaf_value_type>() == std::declval<leaf_value_type>()))
 {
     const node* n1 = m_left_leaf.get();
     const node* n2 = other.m_left_leaf.get();
@@ -803,10 +805,10 @@ bool flat_segment_tree<Key, Value>::operator==(const flat_segment_tree& other) c
         if (!n2)
             return false;
 
-        if (n1->key != n2->key)
+        if (!(n1->key == n2->key))
             return false;
 
-        if (n1->value_leaf != n2->value_leaf)
+        if (!(n1->value_leaf == n2->value_leaf))
             return false;
 
         n1 = n1->next.get();

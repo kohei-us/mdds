@@ -60,12 +60,12 @@ public:
     {
         value_type value;
 
-        bool operator==(const leaf_value_type& r) const
+        bool operator==(const leaf_value_type& r) const noexcept(noexcept(value == r.value))
         {
             return value == r.value;
         }
 
-        bool operator!=(const leaf_value_type& r) const
+        bool operator!=(const leaf_value_type& r) const noexcept(noexcept(!operator==(r)))
         {
             return !operator==(r);
         }
@@ -493,9 +493,11 @@ public:
      * comparing the keys and the values of the leaf nodes only.  Neither the
      * non-leaf nodes nor the validity of the tree is evaluated.
      */
-    bool operator==(const flat_segment_tree& other) const;
+    bool operator==(const flat_segment_tree& other) const noexcept(
+        noexcept(std::declval<key_type>() == std::declval<key_type>()) &&
+        noexcept(std::declval<leaf_value_type>() == std::declval<leaf_value_type>()));
 
-    bool operator!=(const flat_segment_tree& other) const
+    bool operator!=(const flat_segment_tree& other) const noexcept(noexcept(!operator==(other)))
     {
         return !operator==(other);
     }
