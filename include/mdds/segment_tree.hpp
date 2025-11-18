@@ -343,7 +343,7 @@ public:
     ~segment_tree();
 
     segment_tree& operator=(const segment_tree& r);
-    segment_tree& operator=(segment_tree&& r);
+    segment_tree& operator=(segment_tree&& r) noexcept(std::is_nothrow_move_constructible_v<segment_tree>);
 
     /**
      * Check equality with another instance.

@@ -333,7 +333,8 @@ segment_tree<KeyT, ValueT>& segment_tree<KeyT, ValueT>::operator=(const segment_
 }
 
 template<typename KeyT, typename ValueT>
-segment_tree<KeyT, ValueT>& segment_tree<KeyT, ValueT>::operator=(segment_tree&& r)
+segment_tree<KeyT, ValueT>& segment_tree<KeyT, ValueT>::operator=(segment_tree&& r) noexcept(
+    std::is_nothrow_move_constructible_v<segment_tree>)
 {
     segment_tree tmp(std::move(r));
     swap(tmp);
