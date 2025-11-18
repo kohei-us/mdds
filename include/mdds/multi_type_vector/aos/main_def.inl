@@ -4378,11 +4378,12 @@ void multi_type_vector<Traits>::resize_impl(size_type new_size)
 }
 
 template<typename Traits>
-void multi_type_vector<Traits>::swap(multi_type_vector& other)
+void multi_type_vector<Traits>::swap(multi_type_vector& other) noexcept(
+    std::is_nothrow_swappable_v<event_func> && std::is_nothrow_swappable_v<size_type>)
 {
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
-    m_blocks.swap(other.m_blocks);
+    m_blocks.swap(other.m_blocks); // already noexcept
 }
 
 template<typename Traits>

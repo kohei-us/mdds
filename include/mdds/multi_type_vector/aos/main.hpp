@@ -1064,7 +1064,8 @@ public:
      *
      * @param other another container to swap content with.
      */
-    void swap(multi_type_vector& other);
+    void swap(multi_type_vector& other) noexcept(
+        std::is_nothrow_swappable_v<event_func> && std::is_nothrow_swappable_v<size_type>);
 
     /**
      * Swap a part of the content with another instance.
