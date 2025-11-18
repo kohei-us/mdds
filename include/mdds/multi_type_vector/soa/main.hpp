@@ -26,8 +26,7 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_SOA_MAIN_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_SOA_MAIN_HPP
+#pragma once
 
 #include "../../global.hpp"
 #include "../types.hpp"
@@ -1495,7 +1494,5 @@ private:
 }}} // namespace mdds::mtv::soa
 
 #include "main_def.inl"
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
