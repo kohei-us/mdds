@@ -76,13 +76,13 @@ private:
         key_type end;
         value_type value;
 
-        segment_type();
+        segment_type() noexcept = default;
         segment_type(key_type _start, key_type _end, value_type _value);
         segment_type(const segment_type&) = default;
-        segment_type(segment_type&&) = default;
+        segment_type(segment_type&&) noexcept = default;
 
         segment_type& operator=(const segment_type& r) = default;
-        segment_type& operator=(segment_type&& r) = default;
+        segment_type& operator=(segment_type&& r) noexcept = default;
         bool operator<(const segment_type& r) const;
         bool operator==(const segment_type& r) const;
         bool operator!=(const segment_type& r) const;

@@ -122,10 +122,6 @@ void erase_deleted_segments(SegStoreT& segments)
 }} // namespace st::detail
 
 template<typename KeyT, typename ValueT>
-segment_tree<KeyT, ValueT>::segment_type::segment_type() : start{}, end{}, value{}
-{}
-
-template<typename KeyT, typename ValueT>
 segment_tree<KeyT, ValueT>::segment_type::segment_type(key_type _start, key_type _end, value_type _value)
     : start(std::move(_start)), end(std::move(_end)), value(std::move(_value))
 {}
