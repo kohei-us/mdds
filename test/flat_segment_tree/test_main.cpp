@@ -2499,7 +2499,8 @@ void fst_test_custom_key_type()
 
 struct move_may_throw
 {
-    move_may_throw(move_may_throw&&) {} // not marked noexcept
+    move_may_throw(move_may_throw&&)
+    {} // not marked noexcept
 };
 
 /**
