@@ -145,7 +145,7 @@ public:
     };
 
     /**
-     * Return an iterator that points to the first leaf node that correspondes
+     * Return an iterator that points to the first leaf node that corresponds
      * with the start position of the first segment.
      *
      * @return immutable iterator that points to the first leaf node that
@@ -170,7 +170,7 @@ public:
     }
 
     /**
-     * Return an iterator that points to the last leaf node that correspondes
+     * Return an iterator that points to the last leaf node that corresponds
      * with the end position of the last segment.  This iterator moves in the
      * reverse direction of a normal iterator.
      *
@@ -380,7 +380,7 @@ public:
      * @param start_key pointer to a variable where the start key value of the
      *                  segment that contains the key gets stored upon
      *                  successful search.
-     * @param end_key pointer to a varaible where the end key value of the
+     * @param end_key pointer to a variable where the end key value of the
      *                segment that contains the key gets stored upon
      *                successful search.
      * @return a pair of const_iterator corresponding to the start position of
@@ -402,7 +402,7 @@ public:
      * @param start_key pointer to a variable where the start key value of the
      *                  segment that contains the key gets stored upon
      *                  successful search.
-     * @param end_key pointer to a varaible where the end key value of the
+     * @param end_key pointer to a variable where the end key value of the
      *                segment that contains the key gets stored upon
      *                successful search.
      * @return a pair of const_iterator corresponding to the start position of
@@ -450,7 +450,7 @@ public:
      * @param start_key pointer to a variable where the start key value of the
      *                  segment that contains the key gets stored upon
      *                  successful search.
-     * @param end_key pointer to a varaible where the end key value of the
+     * @param end_key pointer to a variable where the end key value of the
      *                segment that contains the key gets stored upon
      *                successful search.
      * @return a pair of const_iterator corresponding to the start position of
