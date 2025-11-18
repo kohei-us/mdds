@@ -328,8 +328,9 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
 }
 
 template<typename Traits>
-multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other)
-    : m_hdl_event(std::move(other.m_hdl_event)), m_blocks(std::move(other.m_blocks)), m_cur_size(other.m_cur_size)
+multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other) noexcept(nothrow_move_constructible_v)
+    : m_hdl_event(std::move(other.m_hdl_event)), m_blocks(std::move(other.m_blocks)),
+      m_cur_size(std::move(other.m_cur_size))
 {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     debug_check_full("move construction");

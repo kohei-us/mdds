@@ -164,6 +164,10 @@ private:
     typedef mdds::detail::mtv::private_data_forward_update<multi_type_vector, size_type> itr_forward_update;
     typedef mdds::detail::mtv::private_data_no_update<multi_type_vector, size_type> itr_no_update;
 
+    static constexpr bool nothrow_move_constructible_v = std::is_nothrow_move_constructible_v<event_func> &&
+                                                         std::is_nothrow_move_constructible_v<blocks_type> &&
+                                                         std::is_nothrow_move_constructible_v<size_type>;
+
     multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other);
 
 public:
@@ -348,7 +352,7 @@ public:
      *
      * @param other the other instance to move values from.
      */
-    multi_type_vector(multi_type_vector&& other);
+    multi_type_vector(multi_type_vector&& other) noexcept(nothrow_move_constructible_v);
 
     /**
      * Destructor.  It deletes all allocated data blocks.
