@@ -49,8 +49,9 @@ public:
     {}
     custom_string(const std::string& val) : m_val(val)
     {}
-    custom_string(const custom_string& r) : m_val(r.m_val)
-    {}
+    custom_string(const custom_string& r) = default;
+    custom_string& operator=(const custom_string& r) = default;
+
     const std::string& get() const
     {
         return m_val;
