@@ -319,16 +319,6 @@ segment_tree<KeyT, ValueT>::segment_tree(const segment_tree& r)
 }
 
 template<typename KeyT, typename ValueT>
-segment_tree<KeyT, ValueT>::segment_tree(segment_tree&& r)
-    : m_nonleaf_node_pool(std::move(r.m_nonleaf_node_pool)), m_segment_store(std::move(r.m_segment_store)),
-      m_tagged_nodes_map(std::move(r.m_tagged_nodes_map)), m_root_node(r.m_root_node),
-      m_left_leaf(std::move(r.m_left_leaf)), m_right_leaf(std::move(r.m_right_leaf)), m_valid_tree(r.m_valid_tree)
-{
-    r.m_root_node = nullptr;
-    r.m_valid_tree = false;
-}
-
-template<typename KeyT, typename ValueT>
 segment_tree<KeyT, ValueT>::~segment_tree()
 {
     clear_all_nodes();

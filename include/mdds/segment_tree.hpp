@@ -339,7 +339,7 @@ public:
 
     segment_tree();
     segment_tree(const segment_tree& r);
-    segment_tree(segment_tree&& r);
+    segment_tree(segment_tree&& r) noexcept = default;
     ~segment_tree();
 
     segment_tree& operator=(const segment_tree& r);
