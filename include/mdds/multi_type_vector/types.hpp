@@ -777,7 +777,7 @@ struct managed_element_block
     {}
     managed_element_block(size_t n) : base_type(n)
     {}
-    managed_element_block(const managed_element_block& r)
+    managed_element_block(const managed_element_block& r) : base_type()
     {
         detail::reserve(m_array, r.m_array.size());
         for (const auto& v : r.m_array)
