@@ -140,8 +140,7 @@ bool segment_tree<KeyT, ValueT>::segment_type::operator<(const segment_type& r) 
 }
 
 template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::segment_type::operator==(const segment_type& r) const
-    noexcept(is_nothrow_equal())
+bool segment_tree<KeyT, ValueT>::segment_type::operator==(const segment_type& r) const noexcept(is_nothrow_equal())
 {
     if (!(start == r.start))
         return false;
@@ -153,8 +152,7 @@ bool segment_tree<KeyT, ValueT>::segment_type::operator==(const segment_type& r)
 }
 
 template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::segment_type::operator!=(const segment_type& r) const
-    noexcept(is_nothrow_equal())
+bool segment_tree<KeyT, ValueT>::segment_type::operator!=(const segment_type& r) const noexcept(is_nothrow_equal())
 {
     return !operator==(r);
 }
@@ -621,12 +619,6 @@ bool segment_tree<KeyT, ValueT>::empty() const
 
     // NB: take deleted segments into account
     return size() == 0;
-}
-
-template<typename KeyT, typename ValueT>
-typename segment_tree<KeyT, ValueT>::size_type segment_tree<KeyT, ValueT>::leaf_size() const
-{
-    return st::detail::count_leaf_nodes<size_type>(m_left_leaf.get(), m_right_leaf.get());
 }
 
 template<typename KeyT, typename ValueT>
