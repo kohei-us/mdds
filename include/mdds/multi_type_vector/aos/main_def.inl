@@ -62,21 +62,23 @@ bool compare_blocks(const Blk& left, const Blk& right)
 } // namespace detail
 
 template<typename Traits>
-multi_type_vector<Traits>::block::block() : position(0), size(0), data(nullptr)
+multi_type_vector<Traits>::block::block() noexcept(std::is_fundamental_v<size_type>)
+    : position(0), size(0), data(nullptr)
 {}
 
 template<typename Traits>
-multi_type_vector<Traits>::block::block(size_type _position, size_type _size)
+multi_type_vector<Traits>::block::block(size_type _position, size_type _size) noexcept(std::is_fundamental_v<size_type>)
     : position(_position), size(_size), data(nullptr)
 {}
 
 template<typename Traits>
-multi_type_vector<Traits>::block::block(size_type _position, size_type _size, base_element_block* _data)
+multi_type_vector<Traits>::block::block(size_type _position, size_type _size, base_element_block* _data) noexcept(
+    std::is_fundamental_v<size_type>)
     : position(_position), size(_size), data(_data)
 {}
 
 template<typename Traits>
-void multi_type_vector<Traits>::block::swap(block& other)
+void multi_type_vector<Traits>::block::swap(block& other) noexcept(std::is_fundamental_v<size_type>)
 {
     std::swap(position, other.position);
     std::swap(size, other.size);

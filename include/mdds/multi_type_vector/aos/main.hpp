@@ -71,7 +71,7 @@ template<typename Traits = mdds::mtv::default_traits>
 class multi_type_vector
 {
 public:
-    typedef size_t size_type;
+    using size_type = std::size_t;
     using block_funcs = typename Traits::block_funcs;
 
     /**
@@ -100,15 +100,18 @@ private:
         size_type size;
         base_element_block* data;
 
-        block();
-        block(size_type _position, size_type _size);
-        block(size_type _position, size_type _size, base_element_block* _data);
+        block() noexcept(std::is_fundamental_v<size_type>);
+        block(size_type _position, size_type _size) noexcept(std::is_fundamental_v<size_type>);
+        block(size_type _position, size_type _size, base_element_block* _data) noexcept(
+            std::is_fundamental_v<size_type>);
         block(const block& other) = default;
+        block(block&& other) noexcept = default;
         ~block() = default;
 
         block& operator=(const block&) = default;
+        block& operator=(block&&) noexcept = default;
 
-        void swap(block& other);
+        void swap(block& other) noexcept(std::is_fundamental_v<size_type>);
     };
 
     struct element_block_deleter
