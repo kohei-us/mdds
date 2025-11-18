@@ -168,6 +168,11 @@ private:
                                                          std::is_nothrow_move_constructible_v<blocks_type> &&
                                                          std::is_nothrow_move_constructible_v<size_type>;
 
+    static constexpr bool nothrow_swappable_v =
+        std::is_nothrow_swappable_v<event_func> && std::is_nothrow_swappable_v<size_type>;
+
+    static constexpr bool nothrow_move_assignable_v = nothrow_move_constructible_v && nothrow_swappable_v;
+
     multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other);
 
 public:
@@ -1064,8 +1069,7 @@ public:
      *
      * @param other another container to swap content with.
      */
-    void swap(multi_type_vector& other) noexcept(
-        std::is_nothrow_swappable_v<event_func> && std::is_nothrow_swappable_v<size_type>);
+    void swap(multi_type_vector& other) noexcept(nothrow_swappable_v);
 
     /**
      * Swap a part of the content with another instance.
@@ -1086,7 +1090,7 @@ public:
     bool operator!=(const multi_type_vector& other) const;
 
     multi_type_vector& operator=(const multi_type_vector& other);
-    multi_type_vector& operator=(multi_type_vector&& other);
+    multi_type_vector& operator=(multi_type_vector&& other) noexcept(nothrow_move_assignable_v);
 
     /**
      * Return the numerical identifier that represents passed element.

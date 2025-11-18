@@ -4378,8 +4378,7 @@ void multi_type_vector<Traits>::resize_impl(size_type new_size)
 }
 
 template<typename Traits>
-void multi_type_vector<Traits>::swap(multi_type_vector& other) noexcept(
-    std::is_nothrow_swappable_v<event_func> && std::is_nothrow_swappable_v<size_type>)
+void multi_type_vector<Traits>::swap(multi_type_vector& other) noexcept(nothrow_swappable_v)
 {
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
@@ -4534,7 +4533,8 @@ multi_type_vector<Traits>& multi_type_vector<Traits>::operator=(const multi_type
 }
 
 template<typename Traits>
-multi_type_vector<Traits>& multi_type_vector<Traits>::operator=(multi_type_vector&& other)
+multi_type_vector<Traits>& multi_type_vector<Traits>::operator=(multi_type_vector&& other) noexcept(
+    nothrow_move_assignable_v)
 {
     multi_type_vector assigned(std::move(other));
     swap(assigned);
