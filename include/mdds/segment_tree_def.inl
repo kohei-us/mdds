@@ -128,11 +128,12 @@ segment_tree<KeyT, ValueT>::segment_type::segment_type(key_type _start, key_type
 
 template<typename KeyT, typename ValueT>
 bool segment_tree<KeyT, ValueT>::segment_type::operator<(const segment_type& r) const
+    noexcept(is_nothrow_less() && is_nothrow_equal())
 {
-    if (start != r.start)
+    if (!(start == r.start))
         return start < r.start;
 
-    if (end != r.end)
+    if (!(end == r.end))
         return end < r.end;
 
     return value < r.value;
@@ -140,11 +141,12 @@ bool segment_tree<KeyT, ValueT>::segment_type::operator<(const segment_type& r) 
 
 template<typename KeyT, typename ValueT>
 bool segment_tree<KeyT, ValueT>::segment_type::operator==(const segment_type& r) const
+    noexcept(is_nothrow_equal())
 {
-    if (start != r.start)
+    if (!(start == r.start))
         return false;
 
-    if (end != r.end)
+    if (!(end == r.end))
         return false;
 
     return value == r.value;
@@ -152,6 +154,7 @@ bool segment_tree<KeyT, ValueT>::segment_type::operator==(const segment_type& r)
 
 template<typename KeyT, typename ValueT>
 bool segment_tree<KeyT, ValueT>::segment_type::operator!=(const segment_type& r) const
+    noexcept(is_nothrow_equal())
 {
     return !operator==(r);
 }
