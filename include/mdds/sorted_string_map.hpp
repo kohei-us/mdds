@@ -62,7 +62,7 @@ class linear_key_finder
     const entry_type* m_entries_end;
 
 public:
-    linear_key_finder(const entry_type* entries, const entry_type* entries_end);
+    linear_key_finder(const entry_type* entries, const entry_type* entries_end) noexcept;
 
     std::string_view operator()(const value_type& v) const;
 };

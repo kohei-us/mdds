@@ -59,7 +59,7 @@ struct compare
 } // namespace detail
 
 template<typename ValueT>
-linear_key_finder<ValueT>::linear_key_finder(const entry_type* entries, const entry_type* entries_end)
+linear_key_finder<ValueT>::linear_key_finder(const entry_type* entries, const entry_type* entries_end) noexcept
     : m_entries(entries), m_entries_end(entries_end)
 {}
 
