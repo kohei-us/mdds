@@ -25,11 +25,10 @@
  *
  ************************************************************************/
 
-#ifndef INCLUDED_MDDS_SEGMENTTREE_HPP
-#define INCLUDED_MDDS_SEGMENTTREE_HPP
+#pragma once
 
-#include "mdds/node.hpp"
-#include "mdds/global.hpp"
+#include "./node.hpp"
+#include "./global.hpp"
 
 #include <vector>
 #include <deque>
@@ -560,5 +559,3 @@ private:
 } // namespace mdds
 
 #include "segment_tree_def.inl"
-
-#endif
