@@ -1022,7 +1022,7 @@ public:
      *
      * @return current container size.
      */
-    size_type size() const;
+    size_type size() const noexcept(std::is_nothrow_copy_constructible_v<size_type>);
 
     /**
      * Return the current number of blocks in the primary array.  Each
@@ -1041,14 +1041,14 @@ public:
      *
      * @return current number of blocks in the primary array.
      */
-    size_type block_size() const;
+    size_type block_size() const noexcept;
 
     /**
      * Return whether or not the container is empty.
      *
      * @return true if the container is empty, false otherwise.
      */
-    bool empty() const;
+    bool empty() const noexcept;
 
     /**
      * Extend or shrink the container.  When extending the container, it

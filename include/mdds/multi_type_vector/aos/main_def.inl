@@ -4281,18 +4281,19 @@ void multi_type_vector<Traits>::clear()
 
 template<typename Traits>
 typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::size() const
+    noexcept(std::is_nothrow_copy_constructible_v<size_type>)
 {
     return m_cur_size;
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::block_size() const
+typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::block_size() const noexcept
 {
     return m_blocks.size();
 }
 
 template<typename Traits>
-bool multi_type_vector<Traits>::empty() const
+bool multi_type_vector<Traits>::empty() const noexcept
 {
     return m_blocks.empty();
 }
