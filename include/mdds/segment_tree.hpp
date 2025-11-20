@@ -86,13 +86,13 @@ private:
             return noexcept(key_type{} == key_type{}) && noexcept(value_type{} == value_type{});
         }
 
-        segment_type() noexcept = default;
+        segment_type() = default;
         segment_type(key_type _start, key_type _end, value_type _value);
         segment_type(const segment_type&) = default;
-        segment_type(segment_type&&) noexcept = default;
+        segment_type(segment_type&&) = default;
 
         segment_type& operator=(const segment_type& r) = default;
-        segment_type& operator=(segment_type&& r) noexcept = default;
+        segment_type& operator=(segment_type&& r) = default;
         bool operator<(const segment_type& r) const noexcept(is_nothrow_less() && is_nothrow_equal());
         bool operator==(const segment_type& r) const noexcept(is_nothrow_equal());
         bool operator!=(const segment_type& r) const noexcept(is_nothrow_equal());
@@ -349,7 +349,7 @@ public:
 
     segment_tree();
     segment_tree(const segment_tree& r);
-    segment_tree(segment_tree&& r) noexcept = default;
+    segment_tree(segment_tree&& r) = default;
     ~segment_tree();
 
     segment_tree& operator=(const segment_tree& r);

@@ -105,11 +105,11 @@ private:
         block(size_type _position, size_type _size, base_element_block* _data) noexcept(
             std::is_fundamental_v<size_type>);
         block(const block& other) = default;
-        block(block&& other) noexcept = default;
+        block(block&& other) = default;
         ~block() = default;
 
         block& operator=(const block&) = default;
-        block& operator=(block&&) noexcept = default;
+        block& operator=(block&&) = default;
 
         void swap(block& other) noexcept(std::is_fundamental_v<size_type>);
     };
