@@ -91,6 +91,10 @@ private:
 
     static constexpr bool nothrow_move_assignable_v = nothrow_move_constructible_v && nothrow_swappable_v;
 
+    static constexpr bool nothrow_eq_comparable_v =
+        noexcept(std::declval<key_type>() == std::declval<key_type>()) &&
+        noexcept(std::declval<leaf_value_type>() == std::declval<leaf_value_type>());
+
 public:
     using const_segment_iterator = mdds::fst::detail::const_segment_iterator<flat_segment_tree>;
 
@@ -498,11 +502,9 @@ public:
      * comparing the keys and the values of the leaf nodes only.  Neither the
      * non-leaf nodes nor the validity of the tree is evaluated.
      */
-    bool operator==(const flat_segment_tree& other) const noexcept(
-        noexcept(std::declval<key_type>() == std::declval<key_type>()) &&
-        noexcept(std::declval<leaf_value_type>() == std::declval<leaf_value_type>()));
+    bool operator==(const flat_segment_tree& other) const noexcept(nothrow_eq_comparable_v);
 
-    bool operator!=(const flat_segment_tree& other) const noexcept(noexcept(!operator==(other)))
+    bool operator!=(const flat_segment_tree& other) const noexcept(nothrow_eq_comparable_v)
     {
         return !operator==(other);
     }
