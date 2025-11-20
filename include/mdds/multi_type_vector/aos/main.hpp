@@ -168,8 +168,9 @@ private:
                                                          std::is_nothrow_move_constructible_v<blocks_type> &&
                                                          std::is_nothrow_move_constructible_v<size_type>;
 
-    static constexpr bool nothrow_swappable_v =
-        std::is_nothrow_swappable_v<event_func> && std::is_nothrow_swappable_v<size_type>;
+    static constexpr bool nothrow_swappable_v = std::is_nothrow_swappable_v<event_func> &&
+                                                std::is_nothrow_swappable_v<size_type> &&
+                                                std::is_nothrow_swappable_v<blocks_type>;
 
     static constexpr bool nothrow_move_assignable_v = nothrow_move_constructible_v && nothrow_swappable_v;
 

@@ -5171,7 +5171,7 @@ void multi_type_vector<Traits>::swap(multi_type_vector& other) noexcept(nothrow_
 
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
-    m_block_store.swap(other.m_block_store); // already noexcept
+    m_block_store.swap(other.m_block_store);
 }
 
 template<typename Traits>
