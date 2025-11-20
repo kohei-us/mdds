@@ -25,8 +25,7 @@
  *
  ************************************************************************/
 
-#ifndef __MDDS_MULTI_TYPE_MATRIX_HPP__
-#define __MDDS_MULTI_TYPE_MATRIX_HPP__
+#pragma once
 
 #ifdef MDDS_MULTI_TYPE_MATRIX_DEBUG
 #ifndef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -840,5 +839,3 @@ private:
 } // namespace mdds
 
 #include "multi_type_matrix_def.inl"
-
-#endif
