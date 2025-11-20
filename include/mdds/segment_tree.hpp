@@ -76,15 +76,11 @@ private:
         key_type end;
         value_type value;
 
-        inline static constexpr bool is_nothrow_less() noexcept
-        {
-            return noexcept(key_type{} < key_type{}) && noexcept(value_type{} < value_type{});
-        }
+        static constexpr bool is_nothrow_less_v =
+            noexcept(key_type{} < key_type{}) && noexcept(value_type{} < value_type{});
 
-        inline static constexpr bool is_nothrow_equal() noexcept
-        {
-            return noexcept(key_type{} == key_type{}) && noexcept(value_type{} == value_type{});
-        }
+        static constexpr bool is_nothrow_equal_v =
+            noexcept(key_type{} == key_type{}) && noexcept(value_type{} == value_type{});
 
         segment_type() = default;
         segment_type(key_type _start, key_type _end, value_type _value);
@@ -93,9 +89,9 @@ private:
 
         segment_type& operator=(const segment_type& r) = default;
         segment_type& operator=(segment_type&& r) = default;
-        bool operator<(const segment_type& r) const noexcept(is_nothrow_less() && is_nothrow_equal());
-        bool operator==(const segment_type& r) const noexcept(is_nothrow_equal());
-        bool operator!=(const segment_type& r) const noexcept(is_nothrow_equal());
+        bool operator<(const segment_type& r) const noexcept(is_nothrow_less_v && is_nothrow_equal_v);
+        bool operator==(const segment_type& r) const noexcept(is_nothrow_equal_v);
+        bool operator!=(const segment_type& r) const noexcept(is_nothrow_equal_v);
     };
 
     using segment_store_type = std::deque<segment_type>;
