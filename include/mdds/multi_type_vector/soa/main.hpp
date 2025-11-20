@@ -113,6 +113,10 @@ private:
         std::vector<size_type> sizes;
         std::vector<base_element_block*> element_blocks;
 
+        static constexpr bool nothrow_default_constructible_v =
+            std::is_nothrow_default_constructible_v<std::vector<size_type>> &&
+            std::is_nothrow_default_constructible_v<std::vector<base_element_block*>>;
+
         static constexpr bool nothrow_move_constructible_v =
             std::is_nothrow_move_constructible_v<std::vector<size_type>> &&
             std::is_nothrow_move_constructible_v<std::vector<base_element_block*>>;
@@ -124,7 +128,7 @@ private:
         static constexpr bool nothrow_swappable_v = std::is_nothrow_swappable_v<std::vector<size_type>> &&
                                                     std::is_nothrow_swappable_v<std::vector<base_element_block*>>;
 
-        blocks_type();
+        blocks_type() noexcept(nothrow_default_constructible_v);
         blocks_type(mtv::detail::clone_construction_type, const blocks_type& other);
         blocks_type(const blocks_type& other);
         blocks_type(blocks_type&& other) noexcept(nothrow_move_constructible_v);
@@ -249,6 +253,10 @@ private:
         }
     };
 
+    static constexpr bool nothrow_default_constructible_v = std::is_nothrow_default_constructible_v<event_func> &&
+                                                            std::is_nothrow_default_constructible_v<blocks_type> &&
+                                                            std::is_nothrow_default_constructible_v<size_type>;
+
     static constexpr bool nothrow_move_constructible_v = std::is_nothrow_move_constructible_v<event_func> &&
                                                          std::is_nothrow_move_constructible_v<blocks_type> &&
                                                          std::is_nothrow_move_constructible_v<size_type>;
@@ -357,7 +365,7 @@ public:
     /**
      * Default constructor.  It initializes the container with empty size.
      */
-    multi_type_vector();
+    multi_type_vector() noexcept(nothrow_default_constructible_v);
 
     /**
      * Constructor that takes an lvalue reference to an event handler object.

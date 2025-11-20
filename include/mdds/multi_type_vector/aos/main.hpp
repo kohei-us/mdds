@@ -164,6 +164,10 @@ private:
     typedef mdds::detail::mtv::private_data_forward_update<multi_type_vector, size_type> itr_forward_update;
     typedef mdds::detail::mtv::private_data_no_update<multi_type_vector, size_type> itr_no_update;
 
+    static constexpr bool nothrow_default_constructible_v = std::is_nothrow_default_constructible_v<event_func> &&
+                                                            std::is_nothrow_default_constructible_v<blocks_type> &&
+                                                            std::is_nothrow_default_constructible_v<size_type>;
+
     static constexpr bool nothrow_move_constructible_v = std::is_nothrow_move_constructible_v<event_func> &&
                                                          std::is_nothrow_move_constructible_v<blocks_type> &&
                                                          std::is_nothrow_move_constructible_v<size_type>;
@@ -291,7 +295,7 @@ public:
     /**
      * Default constructor.  It initializes the container with empty size.
      */
-    multi_type_vector();
+    multi_type_vector() noexcept(nothrow_default_constructible_v);
 
     /**
      * Constructor that takes an lvalue reference to an event handler object.

@@ -239,7 +239,7 @@ const typename multi_type_vector<Traits>::event_func& multi_type_vector<Traits>:
 }
 
 template<typename Traits>
-multi_type_vector<Traits>::multi_type_vector() : m_cur_size(0)
+multi_type_vector<Traits>::multi_type_vector() noexcept(nothrow_default_constructible_v) : m_cur_size(0)
 {}
 
 template<typename Traits>
