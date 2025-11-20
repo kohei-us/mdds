@@ -469,9 +469,9 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
 }
 
 template<typename Traits>
-multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other)
+multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other) noexcept(nothrow_move_constructible_v)
     : m_hdl_event(std::move(other.m_hdl_event)), m_block_store(std::move(other.m_block_store)),
-      m_cur_size(other.m_cur_size)
+      m_cur_size(std::move(other.m_cur_size))
 {
     MDDS_MTV_TRACE_ARGS(constructor, "other=? (move)");
 
@@ -5165,13 +5165,13 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::transfer
 }
 
 template<typename Traits>
-void multi_type_vector<Traits>::swap(multi_type_vector& other)
+void multi_type_vector<Traits>::swap(multi_type_vector& other) noexcept(nothrow_swappable_v)
 {
     MDDS_MTV_TRACE_ARGS(mutator, "other=?");
 
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
-    m_block_store.swap(other.m_block_store);
+    m_block_store.swap(other.m_block_store); // already noexcept
 }
 
 template<typename Traits>
@@ -5287,7 +5287,8 @@ multi_type_vector<Traits>& multi_type_vector<Traits>::operator=(const multi_type
 }
 
 template<typename Traits>
-multi_type_vector<Traits>& multi_type_vector<Traits>::operator=(multi_type_vector&& other)
+multi_type_vector<Traits>& multi_type_vector<Traits>::operator=(multi_type_vector&& other) noexcept(
+    nothrow_move_assignable_v)
 {
     MDDS_MTV_TRACE_ARGS(mutator, "other=? (move)");
 
