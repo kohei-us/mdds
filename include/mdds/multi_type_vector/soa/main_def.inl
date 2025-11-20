@@ -154,7 +154,7 @@ multi_type_vector<Traits>::blocks_type::blocks_type(const blocks_type& other)
 }
 
 template<typename Traits>
-multi_type_vector<Traits>::blocks_type::blocks_type(blocks_type&& other)
+multi_type_vector<Traits>::blocks_type::blocks_type(blocks_type&& other) noexcept(nothrow_move_constructible_v)
     : positions(std::move(other.positions)), sizes(std::move(other.sizes)),
       element_blocks(std::move(other.element_blocks))
 {}
@@ -222,7 +222,8 @@ typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::blocks_
 }
 
 template<typename Traits>
-void multi_type_vector<Traits>::blocks_type::swap(size_type index1, size_type index2)
+void multi_type_vector<Traits>::blocks_type::swap(size_type index1, size_type index2) noexcept(
+    nothrow_value_swappable_v)
 {
     std::swap(positions[index1], positions[index2]);
     std::swap(sizes[index1], sizes[index2]);
@@ -230,7 +231,7 @@ void multi_type_vector<Traits>::blocks_type::swap(size_type index1, size_type in
 }
 
 template<typename Traits>
-void multi_type_vector<Traits>::blocks_type::swap(blocks_type& other)
+void multi_type_vector<Traits>::blocks_type::swap(blocks_type& other) noexcept(nothrow_swappable_v)
 {
     positions.swap(other.positions);
     sizes.swap(other.sizes);

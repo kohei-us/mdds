@@ -100,9 +100,10 @@ private:
         size_type size = 0;
         base_element_block* element_block = nullptr;
 
-        block_slot_type()
+        block_slot_type() noexcept(std::is_fundamental_v<size_type>)
         {}
-        block_slot_type(size_type _position, size_type _size) : position(_position), size(_size)
+        block_slot_type(size_type _position, size_type _size) noexcept(std::is_fundamental_v<size_type>)
+            : position(_position), size(_size)
         {}
     };
 
@@ -112,10 +113,21 @@ private:
         std::vector<size_type> sizes;
         std::vector<base_element_block*> element_blocks;
 
+        static constexpr bool nothrow_move_constructible_v =
+            std::is_nothrow_move_constructible_v<std::vector<size_type>> &&
+            std::is_nothrow_move_constructible_v<std::vector<base_element_block*>>;
+
+        static constexpr bool nothrow_value_swappable_v =
+            noexcept(std::swap(std::declval<size_type&>(), std::declval<size_type&>())) &&
+            noexcept(std::swap(std::declval<base_element_block*&>(), std::declval<base_element_block*&>()));
+
+        static constexpr bool nothrow_swappable_v = std::is_nothrow_swappable_v<std::vector<size_type>> &&
+                                                    std::is_nothrow_swappable_v<std::vector<base_element_block*>>;
+
         blocks_type();
         blocks_type(mtv::detail::clone_construction_type, const blocks_type& other);
         blocks_type(const blocks_type& other);
-        blocks_type(blocks_type&& other);
+        blocks_type(blocks_type&& other) noexcept(nothrow_move_constructible_v);
 
         void pop_back()
         {
@@ -154,9 +166,9 @@ private:
 
         size_type calc_next_block_position(size_type index);
 
-        void swap(size_type index1, size_type index2);
+        void swap(size_type index1, size_type index2) noexcept(nothrow_value_swappable_v);
 
-        void swap(blocks_type& other);
+        void swap(blocks_type& other) noexcept(nothrow_swappable_v);
 
         void reserve(size_type n);
 
