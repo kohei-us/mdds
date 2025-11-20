@@ -271,6 +271,19 @@ private:
         search_results_base& m_results;
     };
 
+    static constexpr bool nothrow_default_constructible_v =
+        std::is_nothrow_default_constructible_v<std::vector<nonleaf_node>> &&
+        std::is_nothrow_default_constructible_v<segment_store_type> &&
+        std::is_nothrow_default_constructible_v<value_to_nodes_type> &&
+        std::is_nothrow_default_constructible_v<node_ptr>;
+
+    static constexpr bool nothrow_swappable_v =
+        std::is_nothrow_swappable_v<std::vector<nonleaf_node>> && std::is_nothrow_swappable_v<segment_store_type> &&
+        std::is_nothrow_swappable_v<value_to_nodes_type> && std::is_nothrow_swappable_v<node_ptr>;
+
+    static constexpr bool nothrow_move_assignable_v =
+        std::is_nothrow_move_constructible_v<segment_tree> && nothrow_swappable_v;
+
 public:
     class search_results : public search_results_base
     {
@@ -343,13 +356,13 @@ public:
         }
     };
 
-    segment_tree();
+    segment_tree() noexcept(nothrow_default_constructible_v);
     segment_tree(const segment_tree& r);
     segment_tree(segment_tree&& r) = default;
     ~segment_tree();
 
     segment_tree& operator=(const segment_tree& r);
-    segment_tree& operator=(segment_tree&& r) noexcept(std::is_nothrow_move_constructible_v<segment_tree>);
+    segment_tree& operator=(segment_tree&& r) noexcept(nothrow_move_assignable_v);
 
     /**
      * Check equality with another instance.
@@ -447,7 +460,7 @@ public:
      *
      * @param r Another tree instance to swap the contents with.
      */
-    void swap(segment_tree& r) noexcept;
+    void swap(segment_tree& r) noexcept(nothrow_swappable_v);
 
     /**
      * Remove all segments data.

@@ -304,7 +304,8 @@ void segment_tree<KeyT, ValueT>::const_iterator_base::move_to_end()
 }
 
 template<typename KeyT, typename ValueT>
-segment_tree<KeyT, ValueT>::segment_tree() : m_root_node(nullptr), m_valid_tree(false)
+segment_tree<KeyT, ValueT>::segment_tree() noexcept(nothrow_default_constructible_v)
+    : m_root_node(nullptr), m_valid_tree(false)
 {}
 
 template<typename KeyT, typename ValueT>
@@ -330,8 +331,7 @@ segment_tree<KeyT, ValueT>& segment_tree<KeyT, ValueT>::operator=(const segment_
 }
 
 template<typename KeyT, typename ValueT>
-segment_tree<KeyT, ValueT>& segment_tree<KeyT, ValueT>::operator=(segment_tree&& r) noexcept(
-    std::is_nothrow_move_constructible_v<segment_tree>)
+segment_tree<KeyT, ValueT>& segment_tree<KeyT, ValueT>::operator=(segment_tree&& r) noexcept(nothrow_move_assignable_v)
 {
     segment_tree tmp(std::move(r));
     swap(tmp);
@@ -584,7 +584,7 @@ typename segment_tree<KeyT, ValueT>::size_type segment_tree<KeyT, ValueT>::erase
 }
 
 template<typename KeyT, typename ValueT>
-void segment_tree<KeyT, ValueT>::swap(segment_tree& r) noexcept
+void segment_tree<KeyT, ValueT>::swap(segment_tree& r) noexcept(nothrow_swappable_v)
 {
     m_nonleaf_node_pool.swap(r.m_nonleaf_node_pool);
     m_segment_store.swap(r.m_segment_store);

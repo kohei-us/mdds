@@ -50,9 +50,9 @@ struct node_base
     node_base* parent; /// parent nonleaf_node
     bool is_leaf;
 
-    node_base(bool _is_leaf) : parent(nullptr), is_leaf(_is_leaf)
+    node_base(bool _is_leaf) noexcept : parent(nullptr), is_leaf(_is_leaf)
     {}
-    node_base(const node_base& r) : parent(nullptr), is_leaf(r.is_leaf)
+    node_base(const node_base& r) noexcept : parent(nullptr), is_leaf(r.is_leaf)
     {}
 };
 
@@ -73,8 +73,15 @@ struct nonleaf_node : public node_base
     node_base* left = nullptr; /// left child nonleaf_node
     node_base* right = nullptr; /// right child nonleaf_node
 
+    static constexpr bool nothrow_default_constructible_v = std::is_nothrow_default_constructible_v<key_type> &&
+                                                            std::is_nothrow_default_constructible_v<nonleaf_value_type>;
+
+    static constexpr bool nothrow_eq_comparable_v =
+        noexcept(std::declval<key_type>() == std::declval<key_type>()) &&
+        noexcept(std::declval<nonleaf_value_type>() == std::declval<nonleaf_value_type>());
+
 public:
-    nonleaf_node() : node_base(false), value_nonleaf()
+    nonleaf_node() noexcept(nothrow_default_constructible_v) : node_base(false), value_nonleaf()
     {}
 
     /**
@@ -97,12 +104,12 @@ public:
         return *this;
     }
 
-    bool operator==(const nonleaf_node& r) const
+    bool operator==(const nonleaf_node& r) const noexcept(nothrow_eq_comparable_v)
     {
         return low == r.low && high == r.high && value_nonleaf == r.value_nonleaf;
     }
 
-    bool operator!=(const nonleaf_node& r) const
+    bool operator!=(const nonleaf_node& r) const noexcept(nothrow_eq_comparable_v)
     {
         return !operator==(r);
     }
@@ -143,8 +150,16 @@ struct node : node_base
 
     std::size_t refcount = 0;
 
+    static constexpr bool nothrow_default_constructible_v = std::is_nothrow_default_constructible_v<key_type> &&
+                                                            std::is_nothrow_default_constructible_v<leaf_value_type> &&
+                                                            std::is_nothrow_default_constructible_v<node_ptr>;
+
+    static constexpr bool nothrow_eq_comparable_v =
+        noexcept(std::declval<key_type>() == std::declval<key_type>()) &&
+        noexcept(std::declval<leaf_value_type>() == std::declval<leaf_value_type>());
+
 public:
-    node() : node_base(true)
+    node() noexcept(nothrow_default_constructible_v) : node_base(true)
     {
 #ifdef MDDS_DEBUG_NODE_BASE
         ++node_instance_count;
@@ -183,12 +198,12 @@ public:
 #endif
     }
 
-    bool operator==(const node& r) const
+    bool operator==(const node& r) const noexcept(nothrow_eq_comparable_v)
     {
         return key == r.key && value_leaf == r.value_leaf;
     }
 
-    bool operator!=(const node& r) const
+    bool operator!=(const node& r) const noexcept(nothrow_eq_comparable_v)
     {
         return !operator==(r);
     }
