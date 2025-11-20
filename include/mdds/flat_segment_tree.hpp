@@ -82,6 +82,15 @@ private:
     friend struct ::mdds::fst::detail::forward_itr_handler<flat_segment_tree>;
     friend struct ::mdds::fst::detail::reverse_itr_handler<flat_segment_tree>;
 
+    static constexpr bool nothrow_move_constructible_v =
+        std::is_nothrow_move_constructible_v<std::vector<nonleaf_node>> &&
+        std::is_nothrow_move_constructible_v<value_type>;
+
+    static constexpr bool nothrow_swappable_v =
+        std::is_nothrow_swappable_v<value_type> && std::is_nothrow_swappable_v<std::vector<nonleaf_node>>;
+
+    static constexpr bool nothrow_move_assignable_v = nothrow_move_constructible_v && nothrow_swappable_v;
+
 public:
     using const_segment_iterator = mdds::fst::detail::const_segment_iterator<flat_segment_tree>;
 
@@ -252,9 +261,7 @@ public:
      * @warning The source instance will not be usable after the move
      *          construction.
      */
-    flat_segment_tree(flat_segment_tree&& other) noexcept(
-        std::is_nothrow_move_constructible_v<std::vector<nonleaf_node>> &&
-        std::is_nothrow_move_constructible_v<value_type>);
+    flat_segment_tree(flat_segment_tree&& other) noexcept(nothrow_move_constructible_v);
 
     ~flat_segment_tree();
 
@@ -272,16 +279,14 @@ public:
      *
      * @param other Source instance to move from.
      */
-    flat_segment_tree<Key, Value>& operator=(flat_segment_tree&& other) noexcept(
-        noexcept(flat_segment_tree(std::move(other))) && noexcept(swap(other)));
+    flat_segment_tree<Key, Value>& operator=(flat_segment_tree&& other) noexcept(nothrow_move_assignable_v);
 
     /**
      * Swap the content of the tree with another instance.
      *
      * @param other instance of flat_segment_tree to swap content with.
      */
-    void swap(flat_segment_tree& other) noexcept(
-        std::is_nothrow_swappable_v<value_type> && std::is_nothrow_swappable_v<std::vector<nonleaf_node>>);
+    void swap(flat_segment_tree& other) noexcept(nothrow_swappable_v);
 
     /**
      * Remove all stored segments except for the initial segment. The minimum
