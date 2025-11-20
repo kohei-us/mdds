@@ -253,7 +253,7 @@ public:
      * @return logical position of the element that the position object
      *         references.
      */
-    static size_type logical_position(const const_position_type& pos);
+    static size_type logical_position(const const_position_type& pos) noexcept(std::is_fundamental_v<size_type>);
 
     /**
      * Get element value from a position object. The caller must specify the

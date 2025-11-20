@@ -142,7 +142,7 @@ typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits
 
 template<typename Traits>
 typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::logical_position(
-    const const_position_type& pos)
+    const const_position_type& pos) noexcept(std::is_fundamental_v<size_type>)
 {
     return pos.first->position + pos.second;
 }
