@@ -42,9 +42,9 @@ namespace mdds { namespace mtv {
 template<typename T, typename Allocator = std::allocator<T>>
 class delayed_delete_vector
 {
-    typedef std::vector<T, Allocator> store_type;
+    using store_type = std::vector<T, Allocator>;
     store_type m_vec;
-    size_t m_front_offset = 0; // number of elements removed from front of array
+    std::size_t m_front_offset = 0; // number of elements removed from front of array
 public:
     typedef typename store_type::value_type value_type;
     typedef typename store_type::size_type size_type;
@@ -58,7 +58,7 @@ public:
     typedef typename store_type::const_iterator const_iterator;
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
 
-    delayed_delete_vector() : m_vec()
+    delayed_delete_vector() noexcept(std::is_nothrow_default_constructible_v<store_type>) : m_vec()
     {}
 
     delayed_delete_vector(size_t n, const T& val) : m_vec(n, val)
@@ -141,7 +141,7 @@ public:
         m_vec.push_back(std::move(value));
     }
 
-    void swap(delayed_delete_vector& other) noexcept
+    void swap(delayed_delete_vector& other) noexcept(std::is_nothrow_swappable_v<store_type>)
     {
         m_vec.swap(other.m_vec);
     }
