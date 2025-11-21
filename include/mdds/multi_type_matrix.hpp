@@ -85,14 +85,14 @@ public:
     using size_type = std::size_t;
 
 private:
-    struct mtv_trait : public mdds::mtv::default_traits
+    struct mtv_traits : public mdds::mtv::default_traits
     {
         using block_funcs = mdds::mtv::element_block_funcs<
             mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::double_element_block,
             typename traits_type::string_element_block, typename traits_type::integer_element_block>;
     };
 
-    using store_type = mdds::multi_type_vector<mtv_trait>;
+    using store_type = mdds::multi_type_vector<mtv_traits>;
 
 public:
     using position_type = typename store_type::position_type;
@@ -107,9 +107,10 @@ public:
     {
         size_type row;
         size_type column;
-        size_pair_type() : row(0), column(0)
+        size_pair_type() noexcept(std::is_fundamental_v<size_type>) : row(0), column(0)
         {}
-        size_pair_type(size_type _row, size_type _column) : row(_row), column(_column)
+        size_pair_type(size_type _row, size_type _column) noexcept(std::is_fundamental_v<size_type>)
+            : row(_row), column(_column)
         {}
         size_pair_type(std::initializer_list<size_type> vs)
         {
@@ -123,11 +124,11 @@ public:
                 **p++ = v;
         }
 
-        bool operator==(const size_pair_type& r) const
+        bool operator==(const size_pair_type& r) const noexcept(std::is_fundamental_v<size_type>)
         {
             return row == r.row && column == r.column;
         }
-        bool operator!=(const size_pair_type& r) const
+        bool operator!=(const size_pair_type& r) const noexcept(std::is_fundamental_v<size_type>)
         {
             return !operator==(r);
         }
@@ -142,8 +143,8 @@ public:
         size_type size;
         const element_block_type* data;
 
-        element_block_node_type();
-        element_block_node_type(const element_block_node_type& other);
+        element_block_node_type() noexcept(std::is_fundamental_v<size_type>);
+        element_block_node_type(const element_block_node_type& other) noexcept(std::is_fundamental_v<size_type>);
 
         template<typename _Blk>
         typename _Blk::const_iterator begin() const;
@@ -178,7 +179,7 @@ private:
     struct walk_func
     {
         FuncT& m_func;
-        walk_func(FuncT& func) : m_func(func)
+        walk_func(FuncT& func) noexcept : m_func(func)
         {}
 
         void operator()(const typename store_type::const_iterator::value_type& mtv_node)
@@ -190,6 +191,13 @@ private:
             m_func(mtm_node);
         }
     };
+
+    static constexpr bool nothrow_default_constructible_v =
+        std::is_nothrow_default_constructible_v<store_type> && std::is_nothrow_default_constructible_v<size_pair_type>;
+
+    static constexpr bool nothrow_eq_comparable_v =
+        noexcept(std::declval<store_type>() == std::declval<store_type>()) &&
+        noexcept(std::declval<size_pair_type>() == std::declval<size_pair_type>());
 
 public:
     /**
@@ -217,7 +225,7 @@ public:
     /**
      * Default constructor.
      */
-    multi_type_matrix();
+    multi_type_matrix() noexcept(nothrow_default_constructible_v);
 
     /**
      * Construct a matrix of specified size.
@@ -256,17 +264,23 @@ public:
     /**
      * Copy constructor.
      */
-    multi_type_matrix(const multi_type_matrix& r);
+    multi_type_matrix(const multi_type_matrix& other);
+
+    /**
+     * Move constructor.
+     */
+    multi_type_matrix(multi_type_matrix&& other) = default;
 
     /**
      * Destructor.
      */
-    ~multi_type_matrix();
+    ~multi_type_matrix() = default;
 
-    bool operator==(const multi_type_matrix& other) const;
-    bool operator!=(const multi_type_matrix& other) const;
+    bool operator==(const multi_type_matrix& other) const noexcept(nothrow_eq_comparable_v);
+    bool operator!=(const multi_type_matrix& other) const noexcept(nothrow_eq_comparable_v);
 
-    multi_type_matrix& operator=(const multi_type_matrix& r);
+    multi_type_matrix& operator=(const multi_type_matrix& other) = default;
+    multi_type_matrix& operator=(multi_type_matrix&& other) = default;
 
     /**
      * Get a mutable reference of an element (position object) at specified

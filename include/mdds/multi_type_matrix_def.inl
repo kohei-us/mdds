@@ -28,12 +28,13 @@
 namespace mdds {
 
 template<typename Traits>
-multi_type_matrix<Traits>::element_block_node_type::element_block_node_type()
+multi_type_matrix<Traits>::element_block_node_type::element_block_node_type() noexcept(std::is_fundamental_v<size_type>)
     : type(mtm::element_empty), offset(0), size(0), data(nullptr)
 {}
 
 template<typename Traits>
-multi_type_matrix<Traits>::element_block_node_type::element_block_node_type(const element_block_node_type& other)
+multi_type_matrix<Traits>::element_block_node_type::element_block_node_type(
+    const element_block_node_type& other) noexcept(std::is_fundamental_v<size_type>)
     : type(other.type), offset(other.offset), size(other.size), data(other.data)
 {}
 
@@ -80,7 +81,7 @@ typename multi_type_matrix<Traits>::const_position_type multi_type_matrix<Traits
 }
 
 template<typename Traits>
-multi_type_matrix<Traits>::multi_type_matrix() : m_size(0, 0)
+multi_type_matrix<Traits>::multi_type_matrix() noexcept(nothrow_default_constructible_v)
 {}
 
 template<typename Traits>
@@ -107,35 +108,20 @@ multi_type_matrix<Traits>::multi_type_matrix(size_type rows, size_type cols, con
 }
 
 template<typename Traits>
-multi_type_matrix<Traits>::multi_type_matrix(const multi_type_matrix& r) : m_store(r.m_store), m_size(r.m_size)
+multi_type_matrix<Traits>::multi_type_matrix(const multi_type_matrix& other)
+    : m_store(other.m_store), m_size(other.m_size)
 {}
 
 template<typename Traits>
-multi_type_matrix<Traits>::~multi_type_matrix()
-{}
-
-template<typename Traits>
-bool multi_type_matrix<Traits>::operator==(const multi_type_matrix& r) const
+bool multi_type_matrix<Traits>::operator==(const multi_type_matrix& r) const noexcept(nothrow_eq_comparable_v)
 {
     return m_size == r.m_size && m_store == r.m_store;
 }
 
 template<typename Traits>
-bool multi_type_matrix<Traits>::operator!=(const multi_type_matrix& r) const
+bool multi_type_matrix<Traits>::operator!=(const multi_type_matrix& r) const noexcept(nothrow_eq_comparable_v)
 {
     return !operator==(r);
-}
-
-template<typename Traits>
-multi_type_matrix<Traits>& multi_type_matrix<Traits>::operator=(const multi_type_matrix& r)
-{
-    if (this == &r)
-        return *this;
-
-    store_type tmp(r.m_store);
-    m_store.swap(tmp);
-    m_size = r.m_size;
-    return *this;
 }
 
 template<typename Traits>
