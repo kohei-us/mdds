@@ -74,15 +74,15 @@ struct std_string_traits
 template<typename Traits>
 class multi_type_matrix
 {
-    typedef Traits traits_type;
+    using traits_type = Traits;
 
 public:
-    typedef typename traits_type::string_element_block string_block_type;
-    typedef typename traits_type::integer_element_block integer_block_type;
+    using string_block_type = typename traits_type::string_element_block;
+    using integer_block_type = typename traits_type::integer_element_block;
 
-    typedef typename string_block_type::value_type string_type;
-    typedef typename integer_block_type::value_type integer_type;
-    typedef size_t size_type;
+    using string_type = typename string_block_type::value_type;
+    using integer_type = typename integer_block_type::value_type;
+    using size_type = std::size_t;
 
 private:
     struct mtv_trait : public mdds::mtv::default_traits
@@ -95,13 +95,13 @@ private:
     using store_type = mdds::multi_type_vector<mtv_trait>;
 
 public:
-    typedef typename store_type::position_type position_type;
-    typedef typename store_type::const_position_type const_position_type;
+    using position_type = typename store_type::position_type;
+    using const_position_type = typename store_type::const_position_type;
 
-    typedef typename mtv::base_element_block element_block_type;
+    using element_block_type = typename mtv::base_element_block;
 
-    typedef typename mtv::boolean_element_block boolean_block_type;
-    typedef typename mtv::double_element_block numeric_block_type;
+    using boolean_block_type = typename mtv::boolean_element_block;
+    using numeric_block_type = typename mtv::double_element_block;
 
     struct size_pair_type
     {
