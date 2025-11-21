@@ -147,7 +147,7 @@ public:
 };
 
 class base_element_block;
-element_t get_block_type(const base_element_block&);
+element_t get_block_type(const base_element_block&) noexcept;
 
 /**
  * Non-template common base type necessary for blocks of all types to be
@@ -155,11 +155,11 @@ element_t get_block_type(const base_element_block&);
  */
 class base_element_block
 {
-    friend element_t get_block_type(const base_element_block&);
+    friend element_t get_block_type(const base_element_block&) noexcept;
 
 protected:
     element_t type;
-    base_element_block(element_t _t) : type(_t)
+    base_element_block(element_t _t) noexcept : type(_t)
     {}
 };
 
@@ -243,7 +243,7 @@ public:
 protected:
     store_type m_array;
 
-    element_block() : base_element_block(TypeId)
+    element_block() noexcept(std::is_nothrow_default_constructible_v<store_type>) : base_element_block(TypeId)
     {}
     element_block(size_t n) : base_element_block(TypeId), m_array(n)
     {}
@@ -261,12 +261,12 @@ public:
     typedef typename store_type::const_reverse_iterator const_reverse_iterator;
     typedef ValueT value_type;
 
-    const store_type& store() const
+    const store_type& store() const noexcept
     {
         return m_array;
     }
 
-    store_type& store()
+    store_type& store() noexcept
     {
         return m_array;
     }
@@ -275,13 +275,13 @@ private:
     template<bool Mutable>
     class base_range_type
     {
-        using block_type = mdds::detail::mutable_t<base_element_block, Mutable>;
-        block_type& m_blk;
+        using elem_block_type = mdds::detail::mutable_t<base_element_block, Mutable>;
+        elem_block_type& m_blk;
 
     public:
         using iter_type = std::conditional_t<Mutable, iterator, const_iterator>;
 
-        base_range_type(block_type& blk) : m_blk(blk)
+        base_range_type(elem_block_type& blk) : m_blk(blk)
         {}
 
         iter_type begin()
@@ -295,16 +295,18 @@ private:
         }
     };
 
+    static constexpr bool nothrow_eq_comparable_v = noexcept(std::declval<store_type>() == std::declval<store_type>());
+
 public:
     using range_type = base_range_type<true>;
     using const_range_type = base_range_type<false>;
 
-    bool operator==(const Self& r) const
+    bool operator==(const Self& r) const noexcept(nothrow_eq_comparable_v)
     {
         return m_array == r.m_array;
     }
 
-    bool operator!=(const Self& r) const
+    bool operator!=(const Self& r) const noexcept(nothrow_eq_comparable_v)
     {
         return !operator==(r);
     }
@@ -643,7 +645,7 @@ class copyable_element_block : public element_block<Self, TypeId, ValueT, StoreT
     using base_type = element_block<Self, TypeId, ValueT, StoreT>;
 
 protected:
-    copyable_element_block() : base_type()
+    copyable_element_block() noexcept(std::is_nothrow_default_constructible_v<base_type>) : base_type()
     {}
     copyable_element_block(size_t n) : base_type(n)
     {}
@@ -678,7 +680,7 @@ class noncopyable_element_block : public element_block<Self, TypeId, ValueT, Sto
     using base_type = element_block<Self, TypeId, ValueT, StoreT>;
 
 protected:
-    noncopyable_element_block() : base_type()
+    noncopyable_element_block() noexcept(std::is_nothrow_default_constructible_v<base_type>) : base_type()
     {}
     noncopyable_element_block(size_t n) : base_type(n)
     {}
@@ -713,7 +715,7 @@ public:
  *
  * @return numerical value representing the ID of a element block.
  */
-inline element_t get_block_type(const base_element_block& blk)
+inline element_t get_block_type(const base_element_block& blk) noexcept
 {
     return blk.type;
 }
@@ -729,7 +731,7 @@ struct default_element_block
     using self_type = default_element_block<TypeId, ValueT, StoreT>;
     using base_type = copyable_element_block<self_type, TypeId, ValueT, StoreT>;
 
-    default_element_block() : base_type()
+    default_element_block() noexcept(std::is_nothrow_default_constructible_v<base_type>) : base_type()
     {}
     default_element_block(size_t n) : base_type(n)
     {}
@@ -773,7 +775,7 @@ struct managed_element_block
     using base_type::reserve;
     using base_type::set_value;
 
-    managed_element_block() : base_type()
+    managed_element_block() noexcept(std::is_nothrow_default_constructible_v<base_type>) : base_type()
     {}
     managed_element_block(size_t n) : base_type(n)
     {}
@@ -838,7 +840,7 @@ struct noncopyable_managed_element_block
     using base_type::m_array;
     using base_type::set_value;
 
-    noncopyable_managed_element_block() : base_type()
+    noncopyable_managed_element_block() noexcept(std::is_nothrow_default_constructible_v<base_type>) : base_type()
     {}
     noncopyable_managed_element_block(size_t n) : base_type(n)
     {}
