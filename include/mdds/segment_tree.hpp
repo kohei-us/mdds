@@ -37,6 +37,8 @@
 #include <unordered_map>
 #include <memory>
 #include <sstream>
+#include <type_traits>
+#include <utility>
 
 namespace mdds {
 
@@ -76,11 +78,11 @@ private:
         key_type end;
         value_type value;
 
-        static constexpr bool is_nothrow_less_v =
-            noexcept(key_type{} < key_type{}) && noexcept(value_type{} < value_type{});
+        static constexpr bool is_nothrow_less_v = noexcept(std::declval<key_type>() < std::declval<key_type>()) &&
+                                                  noexcept(std::declval<value_type>() < std::declval<value_type>());
 
-        static constexpr bool is_nothrow_equal_v =
-            noexcept(key_type{} == key_type{}) && noexcept(value_type{} == value_type{});
+        static constexpr bool is_nothrow_equal_v = noexcept(std::declval<key_type>() == std::declval<key_type>()) &&
+                                                   noexcept(std::declval<value_type>() == std::declval<value_type>());
 
         segment_type() = default;
         segment_type(key_type _start, key_type _end, value_type _value);
@@ -277,12 +279,16 @@ private:
         std::is_nothrow_default_constructible_v<value_to_nodes_type> &&
         std::is_nothrow_default_constructible_v<node_ptr>;
 
+    static constexpr bool nothrow_move_constructible_v =
+        std::is_nothrow_move_constructible_v<std::vector<nonleaf_node>> &&
+        std::is_nothrow_move_constructible_v<segment_store_type> &&
+        std::is_nothrow_move_constructible_v<value_to_nodes_type> && std::is_nothrow_move_constructible_v<node_ptr>;
+
     static constexpr bool nothrow_swappable_v =
         std::is_nothrow_swappable_v<std::vector<nonleaf_node>> && std::is_nothrow_swappable_v<segment_store_type> &&
         std::is_nothrow_swappable_v<value_to_nodes_type> && std::is_nothrow_swappable_v<node_ptr>;
 
-    static constexpr bool nothrow_move_assignable_v =
-        std::is_nothrow_move_constructible_v<segment_tree> && nothrow_swappable_v;
+    static constexpr bool nothrow_move_assignable_v = nothrow_move_constructible_v && nothrow_swappable_v;
 
 public:
     class search_results : public search_results_base

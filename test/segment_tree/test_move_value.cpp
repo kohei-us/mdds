@@ -48,9 +48,14 @@ struct move_data
     move_data(const char* _value) : value(_value)
     {}
 
-    bool operator==(const move_data& r) const
+    bool operator==(const move_data& r) const noexcept
     {
         return value == r.value;
+    }
+
+    bool operator<(const move_data& r) const noexcept
+    {
+        return value < r.value;
     }
 };
 

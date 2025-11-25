@@ -2501,6 +2501,11 @@ struct move_may_throw
 {
     move_may_throw(move_may_throw&&)
     {} // not marked noexcept
+
+    bool operator==(const move_may_throw&) const noexcept
+    {
+        return true;
+    }
 };
 
 /**

@@ -32,6 +32,7 @@
 #include <sstream>
 #include <utility>
 #include <cassert>
+#include <type_traits>
 
 #include "./node.hpp"
 #include "./flat_segment_tree_itr.hpp"
@@ -54,13 +55,18 @@ public:
 
     struct nonleaf_value_type
     {
+        bool operator==(const nonleaf_value_type&) const noexcept
+        {
+            return true;
+        }
     };
 
     struct leaf_value_type
     {
         value_type value;
 
-        bool operator==(const leaf_value_type& r) const noexcept(noexcept(value == r.value))
+        bool operator==(const leaf_value_type& r) const
+            noexcept(noexcept(std::declval<value_type>() == std::declval<value_type>()))
         {
             return value == r.value;
         }
