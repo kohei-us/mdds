@@ -225,8 +225,8 @@ public:
     {
         friend class search_result_inserter;
 
-        typedef std::vector<const node*> res_nodes_type;
-        typedef std::shared_ptr<res_nodes_type> res_nodes_ptr;
+        using res_nodes_type = std::vector<const node*>;
+        using res_nodes_ptr = std::shared_ptr<res_nodes_type>;
 
     public:
         class const_iterator
@@ -366,10 +366,11 @@ public:
             bool m_end_pos : 1;
         };
 
-        search_results() : mp_res_nodes(static_cast<res_nodes_type*>(nullptr))
-        {}
-        search_results(const search_results& r) : mp_res_nodes(r.mp_res_nodes)
-        {}
+        search_results() = default;
+        search_results(const search_results& other) = default;
+        search_results(search_results&& other) = default;
+        search_results& operator=(const search_results& other) = default;
+        search_results& operator=(search_results&& other) = default;
 
         typename search_results::const_iterator begin()
         {
