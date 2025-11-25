@@ -1516,7 +1516,7 @@ private:
     blocks_type m_block_store;
     size_type m_cur_size;
 
-#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+#ifdef MDDS_MULTI_TYPE_VECTOR_TRACE
     mutable int m_trace_call_depth = 0;
 #endif
 };

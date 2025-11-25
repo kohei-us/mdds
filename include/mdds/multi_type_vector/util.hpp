@@ -112,7 +112,7 @@ struct clone_construction_type
 {
 };
 
-#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+#ifdef MDDS_MULTI_TYPE_VECTOR_TRACE
 
 template<typename T, typename = void>
 struct has_trace : std::false_type
@@ -250,7 +250,7 @@ T advance_position(const T& pos, int steps)
 
 }} // namespace mdds::mtv
 
-#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+#ifdef MDDS_MULTI_TYPE_VECTOR_TRACE
 
 #define MDDS_MTV_TRACE(method_type) \
     ::mdds::mtv::detail::call_trace<Traits> mdds_mtv_ct(m_trace_call_depth); \
