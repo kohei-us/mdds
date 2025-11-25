@@ -12,7 +12,7 @@ an optional trace method which gets called whenever a public method of :cpp:clas
 is called.
 
 First, you need to define a preprocessor macro named
-``MDDS_MULTI_TYPE_VECTOR_DEBUG`` before including the header for
+``MDDS_MULTI_TYPE_VECTOR_TRACE`` before including the header for
 :cpp:class:`~mdds::mtv::soa::multi_type_vector`:
 
 .. literalinclude:: ../../example/multi_type_vector/debug_trace.cpp
@@ -20,9 +20,10 @@ First, you need to define a preprocessor macro named
    :start-after: //!code-start: header
    :end-before: //!code-end: header
 
-to enable additional debug code.  In this example the value of the macro is
-set to 1, but it doesn't matter what the value of the macro is, as long as it
-is defined.  You can also define one as a compiler option as well.
+to enable additional call-tracinng code.  In this example the value of
+the macro is set to 1, but it doesn't matter what the value of the macro
+is as long as it is defined.  You can also define one as a compiler
+option as well.
 
 Once defined, the next step is to add a ``trace`` method as a static function to
 the trait type you pass as a template argument of multi_type_vector:

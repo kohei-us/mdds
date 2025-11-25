@@ -27,7 +27,7 @@
  ************************************************************************/
 
 //!code-start: header
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
+#define MDDS_MULTI_TYPE_VECTOR_TRACE 1
 #include <mdds/multi_type_vector/soa/main.hpp>
 
 #include <iostream>
