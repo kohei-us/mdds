@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_TRIE_MAP_ITR_HPP
-#define INCLUDED_MDDS_TRIE_MAP_ITR_HPP
+#pragma once
 
 #include <utility>
 #include <cassert>
@@ -857,5 +856,3 @@ public:
 };
 
 }}} // namespace mdds::trie::detail
-
-#endif

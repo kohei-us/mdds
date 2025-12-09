@@ -4,8 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_ITERATOR_NODE_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_ITERATOR_NODE_HPP
+#pragma once
 
 namespace mdds { namespace detail { namespace mtv {
 
@@ -99,7 +98,5 @@ struct private_data_forward_update
 };
 
 }}} // namespace mdds::detail::mtv
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

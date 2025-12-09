@@ -4,8 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_SOA_BLOCK_UTIL_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_SOA_BLOCK_UTIL_HPP
+#pragma once
 
 #include "mdds/global.hpp"
 #include "../types.hpp"
@@ -593,7 +592,5 @@ struct adjust_block_positions<Blks, lu_factor_t::avx2_x64_lu8>
 #endif // __AVX2__
 
 }}}} // namespace mdds::mtv::soa::detail
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

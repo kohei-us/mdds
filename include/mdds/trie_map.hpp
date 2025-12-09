@@ -4,8 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_TRIE_MAP_HPP
-#define INCLUDED_MDDS_TRIE_MAP_HPP
+#pragma once
 
 #include "trie_map_itr.hpp"
 
@@ -808,7 +807,5 @@ private:
 } // namespace mdds
 
 #include "trie_map_def.inl"
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

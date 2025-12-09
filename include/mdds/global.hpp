@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_GLOBAL_HPP
-#define INCLUDED_MDDS_GLOBAL_HPP
+#pragma once
 
 #include <exception>
 #include <string>
@@ -189,5 +188,3 @@ struct is_complete<T, std::void_t<decltype(sizeof(T) != 0)>> : std::true_type
 } // namespace detail
 
 } // namespace mdds
-
-#endif

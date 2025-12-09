@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_AOS_ITERATOR_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_AOS_ITERATOR_HPP
+#pragma once
 
 #include "../iterator_node.hpp"
 
@@ -276,5 +275,3 @@ public:
 };
 
 }}}} // namespace mdds::mtv::aos::detail
-
-#endif

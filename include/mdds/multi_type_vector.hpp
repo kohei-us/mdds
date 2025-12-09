@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_HPP
+#pragma once
 
 #include "./multi_type_vector/soa/main.hpp"
 
@@ -17,5 +16,3 @@ template<typename Traits = mtv::default_traits>
 using multi_type_vector = mtv::soa::multi_type_vector<Traits>;
 
 } // namespace mdds
-
-#endif

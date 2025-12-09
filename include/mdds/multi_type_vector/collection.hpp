@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_COLLECTION_HPP
-#define INCLUDED_MDDS_COLLECTION_HPP
+#pragma once
 
 #include "mdds/multi_type_vector/types.hpp"
 
@@ -253,5 +252,3 @@ private:
 }} // namespace mdds::mtv
 
 #include "collection_def.inl"
-
-#endif

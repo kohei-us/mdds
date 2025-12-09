@@ -4,8 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_UTIL_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_UTIL_HPP
+#pragma once
 
 #include "./block_funcs.hpp"
 
@@ -248,8 +247,6 @@ T advance_position(const T& pos, int steps)
 #define MDDS_MTV_TRACE(...)
 
 #define MDDS_MTV_TRACE_ARGS(...)
-
-#endif
 
 #endif
 

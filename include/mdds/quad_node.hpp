@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef __MDDS_QUAD_NODE_HPP__
-#define __MDDS_QUAD_NODE_HPP__
+#pragma once
 
 #include "mdds/global.hpp"
 
@@ -348,5 +347,3 @@ search_region_space_t get_search_region_space(_NodeType* p, _Key x1, _Key y1, _K
 }
 
 } // namespace mdds
-
-#endif

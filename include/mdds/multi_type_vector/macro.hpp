@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_MACRO_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_MACRO_HPP
+#pragma once
 
 /**
  * @def MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(type, type_id, empty_value,
@@ -191,5 +190,3 @@
     { \
         return block_type::create_block_with_values(it_begin, it_end); \
     }
-
-#endif

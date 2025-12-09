@@ -4,8 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_RTREE_HPP
-#define INCLUDED_MDDS_RTREE_HPP
+#pragma once
 
 #include <deque>
 #include <vector>
@@ -802,7 +801,5 @@ private:
 } // namespace mdds
 
 #include "rtree_def.inl"
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef __MDDS_NODE_HXX__
-#define __MDDS_NODE_HXX__
+#pragma once
 
 #include "mdds/global.hpp"
 
@@ -488,5 +487,3 @@ private:
 };
 
 }}} // namespace mdds::st::detail
-
-#endif

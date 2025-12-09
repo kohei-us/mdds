@@ -4,8 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_SOA_ITERATOR_HPP
-#define INCLUDED_MDDS_MULTI_TYPE_VECTOR_DIR_SOA_ITERATOR_HPP
+#pragma once
 
 #include "../iterator_node.hpp"
 
@@ -386,7 +385,5 @@ std::ostream& operator<<(std::ostream& os, const const_iterator_base<Traits, Non
 }
 
 }}}} // namespace mdds::mtv::soa::detail
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

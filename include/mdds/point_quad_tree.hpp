@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDED_MDDS_POINT_QUAD_TREE_HPP
-#define INCLUDED_MDDS_POINT_QUAD_TREE_HPP
+#pragma once
 
 #include "mdds/quad_node.hpp"
 
@@ -1550,5 +1549,3 @@ void point_quad_tree<_Key, _Value>::clear_all_nodes()
 }
 
 } // namespace mdds
-
-#endif
