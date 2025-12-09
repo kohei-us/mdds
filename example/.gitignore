@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 *.svg
 cities.bin
 flat-segment-tree
