@@ -1,3 +1,7 @@
+.. SPDX-FileCopyrightText: 2025 Kohei Yoshida
+..
+.. SPDX-License-Identifier: MIT
+
 .. mdds documentation master file, created by
    sphinx-quickstart on Tue Sep 22 20:54:14 2015.
    You can adapt this file completely to your liking, but it should at least

@@ -1,3 +1,6 @@
+.. SPDX-FileCopyrightText: 2025 Kohei Yoshida
+..
+.. SPDX-License-Identifier: MIT
 
 Traverse multiple multi_type_vector instances "sideways"
 ========================================================

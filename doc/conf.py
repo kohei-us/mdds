@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 # -*- coding: utf-8 -*-
 
 import sys

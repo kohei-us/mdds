@@ -1,3 +1,7 @@
+.. SPDX-FileCopyrightText: 2025 Kohei Yoshida
+..
+.. SPDX-License-Identifier: MIT
+
 .. _custom-value-types-custom-store:
 
 Specifying different storage type

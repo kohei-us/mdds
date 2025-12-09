@@ -1,3 +1,6 @@
+.. SPDX-FileCopyrightText: 2025 Kohei Yoshida
+..
+.. SPDX-License-Identifier: MIT
 
 Using packed_trie_map directly
 ==============================
