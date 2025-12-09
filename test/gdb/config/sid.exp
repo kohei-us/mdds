@@ -1,18 +1,8 @@
+# SPDX-FileCopyrightText: 1999 2001, 2007-2012 Free Software Foundation, Inc.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # Test Framework Driver for GDB driving an external simulator
-#   Copyright 1999, 2001, 2007-2012 Free Software Foundation, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 load_lib gdb.exp
 
@@ -25,10 +15,10 @@ proc sid_start {} {
     case [target_info multilib_flags] in {
 	{ *big-endian* *-EB* *-meb* } { set sidendian "-EB" }
 	{ *little-endian* *-EL* *-mel* } { set sidendian "-EL" }
-	default { 
+	default {
 	    if {[target_info exists sim,defaultendian]} then {
-		set sidendian [target_info sim,defaultendian] 
-	    } else { 
+		set sidendian [target_info sim,defaultendian]
+	    } else {
                 # rely on endianness settings in sid configuration defaults
                 set sidendian ""
 	    }
@@ -85,7 +75,7 @@ proc sid_start {} {
 
     # Don't do the following any more; it breaks with "runtest ... < /dev/null"
 #    expect_background {
-#	-re \[^\n\]*\n { 
+#	-re \[^\n\]*\n {
 #	    regsub "\n" $expect_out(buffer) {} msg
 #	    verbose "SID: $msg" 2
 #	}
@@ -152,7 +142,7 @@ proc gdb_target_sid { } {
 	-re "Remote debugging using.*$gdb_prompt"	{
 	    verbose "Set target to sid"
 	}
-	timeout { 
+	timeout {
 	    perror "Couldn't set target for remote simulator."
 	    cleanup
 	    gdb_exit

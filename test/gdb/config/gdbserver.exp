@@ -1,25 +1,14 @@
-# Copyright 2000, 2002-2005, 2007-2012 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
+# SPDX-FileCopyrightText: 2000 2002-2005, 2007-2012 Free Software Foundation, Inc.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 # Test framework for GDB (remote protocol) using a "gdbserver",
 # ie. a debug agent running as a native process on the same or
 # a different host.
 
 #
-# This module to be used for testing gdb with a "gdbserver" 
-# built either from libremote or from gdb/gdbserver.  
+# This module to be used for testing gdb with a "gdbserver"
+# built either from libremote or from gdb/gdbserver.
 #
 
 #
@@ -39,7 +28,7 @@
 #	At present there is no provision in the remote protocol
 #	for passing arguments.  This test framework does not
 #	address the issue, so it's best to set this variable
-#	in your baseboard configuration file.  
+#	in your baseboard configuration file.
 #	FIXME: there's no reason why the test harness couldn't
 #	pass commandline args when it spawns gdbserver.
 #
@@ -49,7 +38,7 @@
 #	'O' packet.  This means that tests involving printf will
 #	fail unles you set this varibale in your baseboard
 #	configuration file.
-#   
+#
 #   set_board_info gdb,no_hardware_watchpoints 1
 #	Unles you have a gdbserver that supports hardware watchpoints.
 #	FIXME: gdb should detect if the target doesn't support them,
@@ -61,7 +50,7 @@
 #
 #   set_board_info sockethost
 #	The name of the host computer whose socket is being used.
-#	Defaults to "localhost".  Note: old gdbserver requires 
+#	Defaults to "localhost".  Note: old gdbserver requires
 #	that you define this, but libremote/gdbserver does not.
 #
 #   set_board_info gdb,socketport
