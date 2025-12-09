@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2019 David Tardon
+#
+# SPDX-License-Identifier: MIT
+
 CXXFLAGS += -O0 -ggdb2
 
 check_PROGRAMS = test

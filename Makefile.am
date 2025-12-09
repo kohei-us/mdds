@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 SUBDIRS = include example test tools
 
 pkgconfdir = $(datarootdir)/pkgconfig

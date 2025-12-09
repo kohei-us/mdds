@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 David Tardon
+#
+# SPDX-License-Identifier: MIT
+
 ## Process this file with automake to produce Makefile.in
 
 SUBDIRS = src
