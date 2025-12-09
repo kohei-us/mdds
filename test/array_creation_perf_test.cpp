@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 Kohei Yoshida
+//
+// SPDX-License-Identifier: MIT
 
 #include <vector>
 #include <boost/pool/object_pool.hpp>
