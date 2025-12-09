@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 SUBDIRS = multi_type_vector
 
 headersdir = $(includedir)/mdds-@API_VERSION@/mdds
