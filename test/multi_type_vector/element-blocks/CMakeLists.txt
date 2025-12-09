@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 set(TEST_NAME multi-type-vector-test-element-blocks)
 set(TARGET_NAME ${TEST_NAME})
 

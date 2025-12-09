@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 set(TEST_NAME sorted-string-map-test)
 set(TARGET_NAME ${TEST_NAME})
 

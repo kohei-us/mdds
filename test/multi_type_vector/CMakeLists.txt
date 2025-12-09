@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
 
 add_subdirectory(default)
 add_subdirectory(clone)

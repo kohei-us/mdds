@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
 
 add_executable(misc-mtv-copy-blocks EXCLUDE_FROM_ALL
     mtv_copy_blocks.cpp

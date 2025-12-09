@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
 
 add_executable(rtree-test EXCLUDE_FROM_ALL
     test_basic.cpp

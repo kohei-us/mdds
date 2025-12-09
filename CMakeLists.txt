@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 cmake_minimum_required(VERSION 3.12)
 cmake_policy(SET CMP0048 NEW)
 
