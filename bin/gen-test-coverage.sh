@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 COVFILE="coverage.info"
 PROGDIR=$(dirname $0)
 TESTDIR=$(realpath "$PROGDIR/../test")

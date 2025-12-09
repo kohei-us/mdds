@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 PKG_PREFIX=mdds
 
 # Pick up version number string from configure.ac.

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2025 Kohei Yoshida
+#
+# SPDX-License-Identifier: MIT
+
 # Input file must be an svg exported from LibreOffice Draw.
 # Each line consists of x, y, width and height in this order.
 
