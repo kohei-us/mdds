@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # ===========================================================================
 #    https://www.gnu.org/software/autoconf-archive/ax_valgrind_check.html
 # ===========================================================================

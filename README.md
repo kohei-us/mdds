@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 Kohei Yoshida
+
+SPDX-License-Identifier: MIT
+-->
+
 Multi-Dimensional Data Structure (mdds)
 =======================================
 A collection of multi-dimensional data structure and indexing 

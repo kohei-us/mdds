@@ -1,3 +1,7 @@
+dnl SPDX-FileCopyrightText: 2025 Kohei Yoshida
+dnl
+dnl SPDX-License-Identifier: MIT
+
 AC_INIT(mdds, 3.1.0, kohei.yoshida@gmail.com)
 AM_INIT_AUTOMAKE([foreign dist-bzip2 dist-xz subdir-objects])
 AM_MAINTAINER_MODE
