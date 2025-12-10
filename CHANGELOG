@@ -1,3 +1,39 @@
+mdds 3.2.0
+
+* switched to using SPDX identifiers instead of having license header in
+  each and every tracked files.  The repo is now REUSE 3.0 compliant.
+
+* multi_type_vector
+
+  * introduced new macro called MDDS_MULTI_TYPE_VECTOR_DEBUG_TRACE to
+    enable call tracing instead of reusing MDDS_MULTI_TYPE_VECTOR_DEBUG,
+    because the latter macro also enables expensive debug block
+    integrity checks throughout the code.
+
+  * added support for optional use of custom execution policies in
+    the following operations:
+
+    * copy construction
+
+    * clone()
+
+    * shrink_to_fit()
+
+    * operator==()
+
+    * operator!=()
+
+* added noexcept markers to appropriate functions.  This was completed
+  on the following data structures:
+
+  * flat_segment_tree
+
+  * segment_tree
+
+  * multi_type_vector (both aos and soa variants)
+
+  * multi_type_matrix
+
 mdds 3.1.0
 
 * multi_type_vector
