@@ -5,6 +5,12 @@ mdds 3.2.0
 
 * multi_type_vector
 
+  * added clone() method that allows duplication of instance even if it
+    stores element blocks of non-copyable type.  The method requires
+    template specialization for mdds::mtv::clone_value or
+    mdds::mtv::clone_block to be provided for the value types of
+    affected element blocks.
+
   * introduced new macro called MDDS_MULTI_TYPE_VECTOR_DEBUG_TRACE to
     enable call tracing instead of reusing MDDS_MULTI_TYPE_VECTOR_DEBUG,
     because the latter macro also enables expensive debug block
