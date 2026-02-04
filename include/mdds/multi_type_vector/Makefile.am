@@ -4,7 +4,7 @@
 
 SUBDIRS = aos soa
 
-headersdir = $(includedir)/mdds-@API_VERSION@/mdds/multi_type_vector
+headersdir = $(includedir)/mdds-@MDDS_API_VERSION@/mdds/multi_type_vector
 
 headers_HEADERS = \
 	block_funcs.hpp \

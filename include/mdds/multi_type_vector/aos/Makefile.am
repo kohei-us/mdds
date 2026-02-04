@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-headersdir = $(includedir)/mdds-@API_VERSION@/mdds/multi_type_vector/aos
+headersdir = $(includedir)/mdds-@MDDS_API_VERSION@/mdds/multi_type_vector/aos
 
 headers_HEADERS = \
 	block_util.hpp \

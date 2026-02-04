@@ -4,7 +4,7 @@
 
 SUBDIRS = multi_type_vector
 
-headersdir = $(includedir)/mdds-@API_VERSION@/mdds
+headersdir = $(includedir)/mdds-@MDDS_API_VERSION@/mdds
 
 headers_HEADERS = \
 	cref_wrapper.hpp \

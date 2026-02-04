@@ -2,15 +2,39 @@ dnl SPDX-FileCopyrightText: 2025 Kohei Yoshida
 dnl
 dnl SPDX-License-Identifier: MIT
 
-AC_INIT(mdds, 3.2.0, kohei.yoshida@gmail.com)
+# ===================
+# Version information
+# ===================
+m4_define([mdds_version_major], [3])
+m4_define([mdds_version_minor], [2])
+m4_define([mdds_version_micro], [0])
+m4_define([mdds_version], [mdds_version_major.mdds_version_minor.mdds_version_micro])
+
+# ===============
+# API information
+# ===============
+m4_define([mdds_api_version_major], [3])
+m4_define([mdds_api_version_minor], [0])
+m4_define([mdds_api_version], [mdds_version_major.mdds_api_version_minor])
+
+AC_INIT([mdds], [mdds_version], [kohei.yoshida@gmail.com])
 AM_INIT_AUTOMAKE([foreign dist-bzip2 dist-xz subdir-objects])
 AM_MAINTAINER_MODE
 
-VERSION=AC_PACKAGE_VERSION
-API_VERSION=3.0
+MDDS_VERSION_MAJOR=mdds_version_major
+MDDS_VERSION_MINOR=mdds_version_minor
+MDDS_VERSION_MICRO=mdds_version_micro
+MDDS_API_VERSION=mdds_api_version
+MDDS_API_VERSION_MAJOR=mdds_api_version_major
+MDDS_API_VERSION_MINOR=mdds_api_version_minor
 
-AC_SUBST(VERSION)
-AC_SUBST(API_VERSION)
+AC_SUBST(MDDS_VERSION_MAJOR)
+AC_SUBST(MDDS_VERSION_MINOR)
+AC_SUBST(MDDS_VERSION_MICRO)
+AC_SUBST(MDDS_API_VERSION)
+AC_SUBST(MDDS_API_VERSION_MAJOR)
+AC_SUBST(MDDS_API_VERSION_MINOR)
+
 AC_CONFIG_MACRO_DIRS([m4])
 
 PACKAGE_TARNAME=AC_PACKAGE_TARNAME
@@ -133,6 +157,7 @@ AX_VALGRIND_CHECK()
 AC_CONFIG_FILES([
 Makefile
 include/Makefile
+include/mdds/version.hpp
 include/mdds/Makefile
 include/mdds/multi_type_vector/Makefile
 include/mdds/multi_type_vector/aos/Makefile
@@ -187,7 +212,7 @@ test/trie_map/Makefile
 tools/Makefile
 tools/runtime-env/Makefile
 misc/Makefile
-misc/mdds-$API_VERSION.pc:misc/mdds.pc.in
+misc/mdds-$MDDS_API_VERSION.pc:misc/mdds.pc.in
 ])
 AC_OUTPUT
 

@@ -12,10 +12,10 @@ AM_CPPFLAGS = \
 	$(CXXFLAGS_UNITTESTS)
 
 dist_doc_DATA = AUTHORS README.md
-nodist_pkgconf_DATA = misc/mdds-@API_VERSION@.pc
+nodist_pkgconf_DATA = misc/mdds-@MDDS_API_VERSION@.pc
 
 DISTCLEANFILES = \
-	misc/mdds-@API_VERSION@.pc
+	misc/mdds-@MDDS_API_VERSION@.pc
 
 EXTRA_DIST = \
 	autogen.sh \
