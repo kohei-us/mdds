@@ -20,13 +20,19 @@ AM_CPPFLAGS = \
 	$(CXXFLAGS_UNITTESTS)
 
 check_PROGRAMS = \
-	ref-pair-test
+	ref-pair-test \
+	version-test
 
 ref_pair_test_SOURCES = \
 	ref_pair_test.cpp \
 	test_global.cpp
 
+version_test_SOURCES = \
+	version_test.cpp \
+	test_global.cpp
+
 TESTS = \
-	ref-pair-test
+	ref-pair-test \
+	version-test
 
 @VALGRIND_CHECK_RULES@

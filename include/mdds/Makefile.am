@@ -30,4 +30,5 @@ headers_HEADERS = \
 	sorted_string_map.hpp \
 	trie_map_def.inl \
 	trie_map.hpp \
-	trie_map_itr.hpp
+	trie_map_itr.hpp \
+	version.hpp
