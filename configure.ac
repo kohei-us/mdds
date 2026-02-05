@@ -21,6 +21,7 @@ AC_INIT([mdds], [mdds_version], [kohei.yoshida@gmail.com])
 AM_INIT_AUTOMAKE([foreign dist-bzip2 dist-xz subdir-objects])
 AM_MAINTAINER_MODE
 
+MDDS_VERSION=mdds_version
 MDDS_VERSION_MAJOR=mdds_version_major
 MDDS_VERSION_MINOR=mdds_version_minor
 MDDS_VERSION_MICRO=mdds_version_micro
@@ -28,6 +29,7 @@ MDDS_API_VERSION=mdds_api_version
 MDDS_API_VERSION_MAJOR=mdds_api_version_major
 MDDS_API_VERSION_MINOR=mdds_api_version_minor
 
+AC_SUBST(MDDS_VERSION)
 AC_SUBST(MDDS_VERSION_MAJOR)
 AC_SUBST(MDDS_VERSION_MINOR)
 AC_SUBST(MDDS_VERSION_MICRO)
