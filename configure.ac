@@ -7,7 +7,7 @@ dnl SPDX-License-Identifier: MIT
 # ===================
 m4_define([mdds_version_major], [3])
 m4_define([mdds_version_minor], [2])
-m4_define([mdds_version_micro], [0])
+m4_define([mdds_version_micro], [1])
 m4_define([mdds_version], [mdds_version_major.mdds_version_minor.mdds_version_micro])
 
 # ===============

@@ -26,7 +26,7 @@ project = 'mdds'
 copyright = '2025, Kohei Yoshida'
 
 version = "3.2"
-release = "3.2.0"
+release = "3.2.1"
 
 exclude_patterns = ['_build']
 
