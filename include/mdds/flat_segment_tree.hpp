@@ -482,6 +482,18 @@ public:
     }
 
     /**
+     * @deprecated Use valid_tree() instead.
+     *
+     * @return true if the tree is valid, otherwise false.  The tree must be
+     *         valid before you can call the search_tree() method.
+     */
+    [[deprecated("Use valid_tree() instead")]]
+    bool is_tree_valid() const noexcept
+    {
+        return m_valid_tree;
+    }
+
+    /**
      * Equality between two flat_segment_tree instances is evaluated by
      * comparing the keys and the values of the leaf nodes only.  Neither the
      * non-leaf nodes nor the validity of the tree is evaluated.
