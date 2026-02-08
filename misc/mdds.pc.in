@@ -1,7 +1,7 @@
 prefix=@prefix@
 includedir=@includedir@
 
-Name: mdds-@API_VERSION@
+Name: mdds-@MDDS_API_VERSION@
 Description: A collection of multi-dimensional data structure and indexing algorithm
 Version: @VERSION@
-Cflags: -I${includedir}/mdds-@API_VERSION@
+Cflags: -I${includedir}/mdds-@MDDS_API_VERSION@
