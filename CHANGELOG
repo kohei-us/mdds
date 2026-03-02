@@ -1,3 +1,26 @@
+mdds 3.2.1
+
+* introduced in version.hpp the following version number macros:
+
+  * MDDS_VERSION
+
+  * MDDS_VERSION_MAJOR
+
+  * MDDS_VERSION_MINOR
+
+  * MDDS_VERSION_MICRO
+
+  * MDDS_API_VERSION
+
+  * MDDS_API_VERSION_MAJOR
+
+  * MDDS_API_VERSION_MINOR
+
+* flat_segment_tree
+
+  * re-introduced is_tree_valid() as deprecated function - it will be
+    removed in the next API version.
+
 mdds 3.2.0
 
 * switched to using SPDX identifiers instead of having license header in
