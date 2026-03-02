@@ -7,14 +7,13 @@
 PKG_PREFIX=mdds
 
 # Pick up version number string from configure.ac.
-VER=$(cat ./configure.ac | grep AC_INIT | sed -e "s/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/g")
+MAJOR_VER=$(cat ./configure.ac | grep "m4_define.*\[mdds_version_major\]" | sed -e "s/.*\[\([0-9]*\)\].*/\1/g")
+MINOR_VER=$(cat ./configure.ac | grep "m4_define.*\[mdds_version_minor\]" | sed -e "s/.*\[\([0-9]*\)\].*/\1/g")
+MICRO_VER=$(cat ./configure.ac | grep "m4_define.*\[mdds_version_micro\]" | sed -e "s/.*\[\([0-9]*\)\].*/\1/g")
+VER=$MAJOR_VER.$MINOR_VER.$MICRO_VER
 
 PKGS=$(ls $PKG_PREFIX-$VER.tar.*)
 
-echo "## Release Notes"
-echo ""
-echo "* add item"
-echo ""
 echo "## Checksums for Packages"
 echo ""
 
