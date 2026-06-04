@@ -7,14 +7,15 @@
 #pragma once
 
 #include <type_traits>
+#include <utility>
 
 namespace mdds { namespace detail {
 
 template<typename T1, typename T2>
 struct ref_pair
 {
-    using first_type = typename std::add_lvalue_reference<T1>::type;
-    using second_type = typename std::add_lvalue_reference<T2>::type;
+    using first_type = std::add_lvalue_reference_t<T1>;
+    using second_type = std::add_lvalue_reference_t<T2>;
 
     first_type first;
     second_type second;
@@ -24,24 +25,14 @@ struct ref_pair
 
     ref_pair(const ref_pair& other) = default;
 
-    bool operator==(const std::pair<typename std::decay<T1>::type, typename std::decay<T2>::type>& other) const
+    bool operator==(const std::pair<std::decay_t<T1>, std::decay_t<T2>>& other) const
     {
         return first == other.first && second == other.second;
-    }
-
-    bool operator!=(const std::pair<typename std::decay<T1>::type, typename std::decay<T2>::type>& other) const
-    {
-        return !operator==(other);
     }
 
     bool operator==(const ref_pair& other) const
     {
         return first == other.first && second == other.second;
-    }
-
-    bool operator!=(const ref_pair& other) const
-    {
-        return !operator==(other);
     }
 
     ref_pair* operator->()

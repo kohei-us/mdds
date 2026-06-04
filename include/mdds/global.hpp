@@ -32,13 +32,7 @@
  */
 #define MDDS_N_ELEMENTS(name) sizeof(name) / sizeof(name[0])
 
-#ifdef __GNUC__
-#define MDDS_DEPRECATED __attribute__((deprecated))
-#elif defined(_MSC_VER)
-#define MDDS_DEPRECATED __declspec(deprecated)
-#else
-#define MDDS_DEPRECATED
-#endif
+#define MDDS_DEPRECATED [[deprecated]]
 
 #ifndef MDDS_LOOP_UNROLLING
 #define MDDS_LOOP_UNROLLING 1
@@ -104,19 +98,7 @@ public:
 namespace detail {
 
 template<typename T>
-class has_value_type
-{
-    using y_type = char;
-    using n_type = long;
-
-    template<typename U>
-    static y_type test(typename U::value_type);
-    template<typename U>
-    static n_type test(...);
-
-public:
-    static constexpr bool value = sizeof(test<T>(0)) == sizeof(y_type);
-};
+concept has_value_type = requires { typename T::value_type; };
 
 template<typename T, typename IsConst>
 struct const_or_not;
@@ -175,15 +157,16 @@ constexpr bool invalid_static_int()
     return false;
 }
 
-template<typename T, typename = void>
-struct is_complete : std::false_type
-{
-};
-
+/**
+ * Concept satisfied when the type T is complete i.e. it has been fully
+ * defined, as opposed to merely forward-declared.
+ *
+ * @note The result is cached the first time the concept is checked for a
+ *       given type; do not use it on a type that later becomes complete in
+ *       the same translation unit.
+ */
 template<typename T>
-struct is_complete<T, std::void_t<decltype(sizeof(T) != 0)>> : std::true_type
-{
-};
+concept is_complete = requires { sizeof(T); };
 
 } // namespace detail
 

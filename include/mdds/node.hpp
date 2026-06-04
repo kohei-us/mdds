@@ -85,11 +85,6 @@ public:
         return low == r.low && high == r.high && value_nonleaf == r.value_nonleaf;
     }
 
-    bool operator!=(const nonleaf_node& r) const noexcept(nothrow_eq_comparable_v)
-    {
-        return !operator==(r);
-    }
-
     std::string to_string() const
     {
         std::ostringstream os;
@@ -177,11 +172,6 @@ public:
     bool operator==(const node& r) const noexcept(nothrow_eq_comparable_v)
     {
         return key == r.key && value_leaf == r.value_leaf;
-    }
-
-    bool operator!=(const node& r) const noexcept(nothrow_eq_comparable_v)
-    {
-        return !operator==(r);
     }
 
     std::string to_string() const

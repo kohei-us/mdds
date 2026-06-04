@@ -15,6 +15,14 @@ v4.0
   path (e.g. ``-I/usr/include/mdds-3.0``) or the pkg-config module name
   ``mdds-3.0`` must be updated to use ``mdds-4.0``.
 
+* The following utility templates in the ``mdds::detail`` namespace have been
+  redefined as C++20 concepts: ``has_value_type`` and ``is_complete``.  Code
+  that previously referenced their static ``value`` members must now use them
+  directly as boolean expressions.
+
+* The ``MDDS_DEPRECATED`` macro is now defined as the standard
+  ``[[deprecated]]`` attribute regardless of compiler.
+
 v3.0
 ----
 

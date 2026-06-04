@@ -88,7 +88,7 @@ struct value_serializer : numeric_value_serializer<T>
 };
 
 template<typename T>
-struct value_serializer<T, typename std::enable_if<mdds::detail::has_value_type<T>::value>::type>
+struct value_serializer<T, typename std::enable_if<mdds::detail::has_value_type<T>>::type>
     : numeric_sequence_value_serializer<T>
 {
 };
