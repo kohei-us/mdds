@@ -23,6 +23,11 @@ v4.0
 * The ``MDDS_DEPRECATED`` macro is now defined as the standard
   ``[[deprecated]]`` attribute regardless of compiler.
 
+* The ``ref_pair`` type, which serves as the value type of the iterators of
+  ``trie_map``, ``packed_trie_map`` and ``flat_segment_tree``, has been moved
+  out of the ``mdds::detail`` namespace and is now part of the public API as
+  ``mdds::ref_pair``.
+
 v3.0
 ----
 

@@ -9,8 +9,16 @@
 #include <type_traits>
 #include <utility>
 
-namespace mdds { namespace detail {
+namespace mdds {
 
+/**
+ * Pair of references to two existing values.  It is primarily used as the
+ * value type of an iterator that needs to reference a key-value pair stored
+ * in a container without copying it.
+ *
+ * It is comparable with a std::pair that holds the corresponding decayed
+ * value types.
+ */
 template<typename T1, typename T2>
 struct ref_pair
 {
@@ -41,6 +49,6 @@ struct ref_pair
     }
 };
 
-}} // namespace mdds::detail
+} // namespace mdds
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

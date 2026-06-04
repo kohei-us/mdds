@@ -13,7 +13,7 @@ void test_basic()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using rp_type = mdds::detail::ref_pair<const int, int>;
+    using rp_type = mdds::ref_pair<const int, int>;
     using pair_type = std::pair<int, int>;
 
     int v1 = 11;
@@ -41,7 +41,7 @@ void test_used_in_iterator()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using rp_type = mdds::detail::ref_pair<int, int>;
+    using rp_type = mdds::ref_pair<int, int>;
 
     struct fake_iterator
     {
