@@ -24,6 +24,12 @@ This library implements the following data structures:
 * packed_trie_map
 * rtree
 
+Compiler requirements
+---------------------
+
+mdds is a header-only library whose baseline C++ version is C++20; you need
+a compiler that supports C++20 in order to use this library.
+
 ### Segment Tree
 
 Segment tree is a balanced-binary-tree based data structure efficient 

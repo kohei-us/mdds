@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-image: gcc
+image: gcc:13
 
 workflow:
   rules:
@@ -28,4 +28,23 @@ build:
     - pushd tools/runtime-env
     - make runtime-env
     - popd
+    - make -j $(nproc) check
+
+build-clang:
+  stage: build
+  image: ubuntu:24.04
+  before_script:
+    - uname -a
+    - apt update
+    - apt -y install clang make autoconf automake autotools-dev libtool pkg-config git python3-dev
+    - apt -y install libboost-all-dev
+    - ldconfig
+    - clang++ --version
+  variables:
+    DEBIAN_FRONTEND: noninteractive
+    CC: clang
+    CXX: clang++
+    CXXFLAGS: -Wunused-parameter
+  script:
+    - ./autogen.sh
     - make -j $(nproc) check

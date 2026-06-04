@@ -5,6 +5,16 @@
 API Incompatibility Notes
 =========================
 
+v4.0
+----
+
+* baseline C++ version has been set to C++20.
+
+* The installed header directory and the pkg-config module have been renamed
+  from ``mdds-3.0`` to ``mdds-4.0``.  Build scripts that reference the include
+  path (e.g. ``-I/usr/include/mdds-3.0``) or the pkg-config module name
+  ``mdds-3.0`` must be updated to use ``mdds-4.0``.
+
 v3.0
 ----
 
