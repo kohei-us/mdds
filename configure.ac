@@ -49,7 +49,7 @@ AC_SUBST(OBJDIR)
 AC_SUBST(INCDIR)
 AC_SUBST(MISCDIR)
 
-AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
+AX_CXX_COMPILE_STDCXX([20], [noext], [mandatory])
 
 CPPFLAGS="$CPPFLAGS -Wall -Wextra -Wshadow -g -pedantic-errors"
 CPPFLAGS="$CPPFLAGS -I/usr/include -I/usr/local/include"
