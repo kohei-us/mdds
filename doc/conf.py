@@ -25,8 +25,8 @@ master_doc = 'index'
 project = 'mdds'
 copyright = '2025, Kohei Yoshida'
 
-version = "3.2"
-release = "3.2.1"
+version = "4.0"
+release = "4.0.0"
 
 exclude_patterns = ['_build']
 

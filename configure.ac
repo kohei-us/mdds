@@ -5,17 +5,17 @@ dnl SPDX-License-Identifier: MIT
 # ===================
 # Version information
 # ===================
-m4_define([mdds_version_major], [3])
-m4_define([mdds_version_minor], [2])
-m4_define([mdds_version_micro], [1])
+m4_define([mdds_version_major], [4])
+m4_define([mdds_version_minor], [0])
+m4_define([mdds_version_micro], [0])
 m4_define([mdds_version], [mdds_version_major.mdds_version_minor.mdds_version_micro])
 
 # ===============
 # API information
 # ===============
-m4_define([mdds_api_version_major], [3])
+m4_define([mdds_api_version_major], [4])
 m4_define([mdds_api_version_minor], [0])
-m4_define([mdds_api_version], [mdds_version_major.mdds_api_version_minor])
+m4_define([mdds_api_version], [mdds_api_version_major.mdds_api_version_minor])
 
 AC_INIT([mdds], [mdds_version], [kohei.yoshida@gmail.com])
 AM_INIT_AUTOMAKE([foreign dist-bzip2 dist-xz subdir-objects])
