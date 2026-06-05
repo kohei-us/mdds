@@ -91,15 +91,8 @@ struct clone_construction_type
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_TRACE
 
-template<typename T, typename = void>
-struct has_trace : std::false_type
-{
-};
-
 template<typename T>
-struct has_trace<T, decltype((void)T::trace)> : std::true_type
-{
-};
+concept has_trace = requires { T::trace; };
 
 template<typename Traits>
 struct call_trace
@@ -115,21 +108,18 @@ struct call_trace
         --call_depth;
     }
 
-    void call(std::false_type, const ::mdds::mtv::trace_method_properties_t&) const
-    {
-        // sink
-    }
-
-    void call(std::true_type, const ::mdds::mtv::trace_method_properties_t& props) const
-    {
-        // In case of recursive calls, only trace the first encountered method.
-        if (call_depth <= 1)
-            Traits::trace(props);
-    }
-
     void operator()(const ::mdds::mtv::trace_method_properties_t& props) const
     {
-        call(has_trace<Traits>{}, props);
+        if constexpr (has_trace<Traits>)
+        {
+            // In case of recursive calls, only trace the first encountered method.
+            if (call_depth <= 1)
+                Traits::trace(props);
+        }
+        else
+        {
+            // sink
+        }
     }
 };
 
