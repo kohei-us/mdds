@@ -8,12 +8,12 @@ namespace mdds { namespace mtv {
 
 namespace detail {
 
-template<typename _MtvT>
-side_iterator<_MtvT>::side_iterator() : m_elem_pos(0), m_elem_pos_end(0), m_index_offset(0), m_identity(0)
+template<typename MtvT>
+side_iterator<MtvT>::side_iterator() : m_elem_pos(0), m_elem_pos_end(0), m_index_offset(0), m_identity(0)
 {}
 
-template<typename _MtvT>
-side_iterator<_MtvT>::side_iterator(
+template<typename MtvT>
+side_iterator<MtvT>::side_iterator(
     std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size, size_type index_offset,
     uintptr_t identity, begin_state_type)
     : m_vectors(std::move(vectors)), m_elem_pos(elem_pos), m_elem_pos_end(elem_pos + elem_size),
@@ -32,8 +32,8 @@ side_iterator<_MtvT>::side_iterator(
     m_cur_node.position = m_elem_pos;
 }
 
-template<typename _MtvT>
-side_iterator<_MtvT>::side_iterator(
+template<typename MtvT>
+side_iterator<MtvT>::side_iterator(
     std::vector<mtv_item>&& vectors, size_type elem_pos, size_type elem_size, size_type index_offset,
     uintptr_t identity, end_state_type)
     : m_vectors(std::move(vectors)), m_elem_pos(elem_pos), m_elem_pos_end(elem_pos + elem_size),
@@ -46,8 +46,8 @@ side_iterator<_MtvT>::side_iterator(
     // position which doesn't reference an actual element.
 }
 
-template<typename _MtvT>
-side_iterator<_MtvT>& side_iterator<_MtvT>::operator++()
+template<typename MtvT>
+side_iterator<MtvT>& side_iterator<MtvT>::operator++()
 {
     ++m_cur_node.index;
     size_type pos = m_cur_node.index - m_index_offset;
@@ -75,16 +75,16 @@ side_iterator<_MtvT>& side_iterator<_MtvT>::operator++()
     return *this;
 }
 
-template<typename _MtvT>
-side_iterator<_MtvT> side_iterator<_MtvT>::operator++(int)
+template<typename MtvT>
+side_iterator<MtvT> side_iterator<MtvT>::operator++(int)
 {
     side_iterator tmp(*this);
     operator++();
     return tmp;
 }
 
-template<typename _MtvT>
-bool side_iterator<_MtvT>::operator==(const side_iterator& other) const
+template<typename MtvT>
+bool side_iterator<MtvT>::operator==(const side_iterator& other) const
 {
     if (m_identity != other.m_identity)
         return false;
@@ -98,26 +98,26 @@ bool side_iterator<_MtvT>::operator==(const side_iterator& other) const
     return m_cur_node.index == other.m_cur_node.index;
 }
 
-template<typename _MtvT>
-bool side_iterator<_MtvT>::operator!=(const side_iterator& other) const
+template<typename MtvT>
+bool side_iterator<MtvT>::operator!=(const side_iterator& other) const
 {
     return !operator==(other);
 }
 
 } // namespace detail
 
-template<typename _MtvT>
-collection<_MtvT>::collection() : m_mtv_size(0), m_identity(0)
+template<typename MtvT>
+collection<MtvT>::collection() : m_mtv_size(0), m_identity(0)
 {}
 
-template<typename _MtvT>
-template<typename _T>
-collection<_MtvT>::collection(const _T& begin, const _T& end) : m_mtv_size(0), m_identity(0)
+template<typename MtvT>
+template<typename T>
+collection<MtvT>::collection(const T& begin, const T& end) : m_mtv_size(0), m_identity(0)
 {
     size_type n = std::distance(begin, end);
     m_vectors.reserve(n);
 
-    for (_T it = begin; it != end; ++it)
+    for (T it = begin; it != end; ++it)
         init_insert_vector(*it);
 
     // Create a single value that identifies the whole collection.
@@ -139,30 +139,30 @@ collection<_MtvT>::collection(const _T& begin, const _T& end) : m_mtv_size(0), m
     m_col_range.size = n;
 }
 
-template<typename _MtvT>
-typename collection<_MtvT>::const_iterator collection<_MtvT>::begin() const
+template<typename MtvT>
+typename collection<MtvT>::const_iterator collection<MtvT>::begin() const
 {
     return const_iterator(
         build_iterator_state(), m_elem_range.start, m_elem_range.size, m_col_range.start, m_identity,
         const_iterator::begin_state);
 }
 
-template<typename _MtvT>
-typename collection<_MtvT>::const_iterator collection<_MtvT>::end() const
+template<typename MtvT>
+typename collection<MtvT>::const_iterator collection<MtvT>::end() const
 {
     return const_iterator(
         build_iterator_state(), m_elem_range.start, m_elem_range.size, m_col_range.start, m_identity,
         const_iterator::end_state);
 }
 
-template<typename _MtvT>
-typename collection<_MtvT>::size_type collection<_MtvT>::size() const
+template<typename MtvT>
+typename collection<MtvT>::size_type collection<MtvT>::size() const
 {
     return m_mtv_size;
 }
 
-template<typename _MtvT>
-void collection<_MtvT>::swap(collection& other)
+template<typename MtvT>
+void collection<MtvT>::swap(collection& other)
 {
     m_vectors.swap(other.m_vectors);
     std::swap(m_mtv_size, other.m_mtv_size);
@@ -171,24 +171,24 @@ void collection<_MtvT>::swap(collection& other)
     std::swap(m_col_range, other.m_col_range);
 }
 
-template<typename _MtvT>
-void collection<_MtvT>::set_collection_range(size_type start, size_type size)
+template<typename MtvT>
+void collection<MtvT>::set_collection_range(size_type start, size_type size)
 {
     check_collection_range(start, size);
     m_col_range.start = start;
     m_col_range.size = size;
 }
 
-template<typename _MtvT>
-void collection<_MtvT>::set_element_range(size_type start, size_type size)
+template<typename MtvT>
+void collection<MtvT>::set_element_range(size_type start, size_type size)
 {
     check_element_range(start, size);
     m_elem_range.start = start;
     m_elem_range.size = size;
 }
 
-template<typename _MtvT>
-void collection<_MtvT>::check_collection_range(size_type start, size_type size) const
+template<typename MtvT>
+void collection<MtvT>::check_collection_range(size_type start, size_type size) const
 {
     if (start >= m_vectors.size())
     {
@@ -204,8 +204,8 @@ void collection<_MtvT>::check_collection_range(size_type start, size_type size) 
         throw invalid_arg_error("size is too large.");
 }
 
-template<typename _MtvT>
-void collection<_MtvT>::check_element_range(size_type start, size_type size) const
+template<typename MtvT>
+void collection<MtvT>::check_element_range(size_type start, size_type size) const
 {
     if (start >= m_mtv_size)
     {
@@ -221,8 +221,8 @@ void collection<_MtvT>::check_element_range(size_type start, size_type size) con
         throw invalid_arg_error("size is too large.");
 }
 
-template<typename _MtvT>
-std::vector<typename collection<_MtvT>::const_iterator::mtv_item> collection<_MtvT>::build_iterator_state() const
+template<typename MtvT>
+std::vector<typename collection<MtvT>::const_iterator::mtv_item> collection<MtvT>::build_iterator_state() const
 {
     std::vector<typename const_iterator::mtv_item> cols;
     cols.reserve(m_col_range.size);
@@ -237,11 +237,11 @@ std::vector<typename collection<_MtvT>::const_iterator::mtv_item> collection<_Mt
     return cols;
 }
 
-template<typename _MtvT>
-template<typename _T>
-void collection<_MtvT>::init_insert_vector(const _T& t)
+template<typename MtvT>
+template<typename T>
+void collection<MtvT>::init_insert_vector(const T& t)
 {
-    if constexpr (std::is_pointer_v<_T>)
+    if constexpr (std::is_pointer_v<T>)
     {
         check_vector_size(*t);
         m_vectors.emplace_back(t);
@@ -253,22 +253,22 @@ void collection<_MtvT>::init_insert_vector(const _T& t)
     }
 }
 
-template<typename _MtvT>
-void collection<_MtvT>::init_insert_vector(const std::unique_ptr<mtv_type>& p)
+template<typename MtvT>
+void collection<MtvT>::init_insert_vector(const std::unique_ptr<mtv_type>& p)
 {
     check_vector_size(*p);
     m_vectors.emplace_back(p.get());
 }
 
-template<typename _MtvT>
-void collection<_MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
+template<typename MtvT>
+void collection<MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
 {
     check_vector_size(*p);
     m_vectors.emplace_back(p.get());
 }
 
-template<typename _MtvT>
-void collection<_MtvT>::check_vector_size(const mtv_type& t)
+template<typename MtvT>
+void collection<MtvT>::check_vector_size(const mtv_type& t)
 {
     if (t.empty())
         throw invalid_arg_error("Empty multi_type_vector instance is not allowed.");

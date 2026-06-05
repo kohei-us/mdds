@@ -12,15 +12,15 @@
 
 namespace mdds { namespace mtv {
 
-template<typename _MtvT>
+template<typename MtvT>
 class collection;
 
 namespace detail {
 
-template<typename _MtvT>
+template<typename MtvT>
 class side_iterator
 {
-    typedef _MtvT mtv_type;
+    typedef MtvT mtv_type;
     friend collection<mtv_type>;
 
     typedef typename mtv_type::size_type size_type;
@@ -53,10 +53,10 @@ class side_iterator
         /** logical position of the current element within the mtv.  */
         size_type position;
 
-        template<typename _Blk>
-        typename _Blk::value_type get() const
+        template<typename Blk>
+        typename Blk::value_type get() const
         {
-            return _Blk::get_value(*__position.first->data, __position.second);
+            return Blk::get_value(*__position.first->data, __position.second);
         }
 
     private:
@@ -93,8 +93,8 @@ public:
 
     side_iterator();
 
-    template<typename _T>
-    side_iterator(const _T& begin, const _T& end);
+    template<typename T>
+    side_iterator(const T& begin, const T& end);
 
     const value_type& operator*() const
     {
@@ -122,11 +122,11 @@ public:
  * the vector instances. All involved multi_type_vector instances must be of
  * the same type and length.
  */
-template<typename _MtvT>
+template<typename MtvT>
 class collection
 {
 public:
-    typedef _MtvT mtv_type;
+    typedef MtvT mtv_type;
     typedef typename mtv_type::size_type size_type;
 
 private:
@@ -160,8 +160,8 @@ public:
      * @param end iterator that references the position past the last
      *            multi_type_vector instance to place in the collection.
      */
-    template<typename _T>
-    collection(const _T& begin, const _T& end);
+    template<typename T>
+    collection(const T& begin, const T& end);
 
     /**
      * Return an iterator that references the first element in the
@@ -240,8 +240,8 @@ private:
 
     void init_insert_vector(const std::shared_ptr<mtv_type>& p);
 
-    template<typename _T>
-    void init_insert_vector(const _T& t);
+    template<typename T>
+    void init_insert_vector(const T& t);
 
     void check_vector_size(const mtv_type& t);
 };
