@@ -239,10 +239,18 @@ std::vector<typename collection<_MtvT>::const_iterator::mtv_item> collection<_Mt
 
 template<typename _MtvT>
 template<typename _T>
-void collection<_MtvT>::init_insert_vector(const _T& t, typename std::enable_if<std::is_pointer<_T>::value>::type*)
+void collection<_MtvT>::init_insert_vector(const _T& t)
 {
-    check_vector_size(*t);
-    m_vectors.emplace_back(t);
+    if constexpr (std::is_pointer_v<_T>)
+    {
+        check_vector_size(*t);
+        m_vectors.emplace_back(t);
+    }
+    else
+    {
+        check_vector_size(t);
+        m_vectors.emplace_back(&t);
+    }
 }
 
 template<typename _MtvT>
@@ -257,14 +265,6 @@ void collection<_MtvT>::init_insert_vector(const std::shared_ptr<mtv_type>& p)
 {
     check_vector_size(*p);
     m_vectors.emplace_back(p.get());
-}
-
-template<typename _MtvT>
-template<typename _T>
-void collection<_MtvT>::init_insert_vector(const _T& t, typename std::enable_if<!std::is_pointer<_T>::value>::type*)
-{
-    check_vector_size(t);
-    m_vectors.emplace_back(&t);
 }
 
 template<typename _MtvT>

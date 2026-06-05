@@ -241,10 +241,7 @@ private:
     void init_insert_vector(const std::shared_ptr<mtv_type>& p);
 
     template<typename _T>
-    void init_insert_vector(const _T& t, typename std::enable_if<std::is_pointer<_T>::value>::type* = 0);
-
-    template<typename _T>
-    void init_insert_vector(const _T& t, typename std::enable_if<!std::is_pointer<_T>::value>::type* = 0);
+    void init_insert_vector(const _T& t);
 
     void check_vector_size(const mtv_type& t);
 };
