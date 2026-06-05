@@ -74,11 +74,6 @@ protected:
                    element_block_iterator == other.element_block_iterator;
         }
 
-        bool operator!=(const grouped_iterator_type& other) const
-        {
-            return !operator==(other);
-        }
-
         grouped_iterator_type() = default;
 
         grouped_iterator_type(
@@ -170,11 +165,6 @@ public:
                 return false;
         }
         return m_pos == other.m_pos && m_end == other.m_end;
-    }
-
-    bool operator!=(const iterator_updater& other) const
-    {
-        return !operator==(other);
     }
 
     iterator_updater& operator=(const iterator_updater& other)
@@ -355,11 +345,6 @@ public:
     bool operator==(const const_iterator_base& other) const
     {
         return updater::operator==(other);
-    }
-
-    bool operator!=(const const_iterator_base& other) const
-    {
-        return updater::operator!=(other);
     }
 
     void _print_state(std::ostream& os) const

@@ -93,11 +93,6 @@ public:
         return m_pos == other.m_pos && m_end == other.m_end;
     }
 
-    bool operator!=(const iterator_common_base& other) const
-    {
-        return !operator==(other);
-    }
-
     iterator_common_base& operator=(const iterator_common_base& other)
     {
         m_cur_node = other.m_cur_node;
@@ -266,11 +261,6 @@ public:
     bool operator==(const const_iterator_base& other) const
     {
         return iterator_common_base<Traits>::operator==(other);
-    }
-
-    bool operator!=(const const_iterator_base& other) const
-    {
-        return iterator_common_base<Traits>::operator!=(other);
     }
 };
 

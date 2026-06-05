@@ -63,11 +63,6 @@ struct iterator_value_node
                __private_data.parent == other.__private_data.parent &&
                __private_data.block_index == other.__private_data.block_index;
     }
-
-    bool operator!=(const iterator_value_node& other) const
-    {
-        return !operator==(other);
-    }
 };
 
 template<typename ParentT, typename SizeT>
