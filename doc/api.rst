@@ -28,6 +28,12 @@ v4.0
   out of the ``mdds::detail`` namespace and is now part of the public API as
   ``mdds::ref_pair``.
 
+* Explicit ``operator!=`` have been removed throughout the library; inequality
+  comparisons now rely on the C++20 rewritten candidate synthesized from
+  ``operator==``.  Expressions of the form ``a != b`` remain
+  source-compatible, but any code that referenced an ``operator!=`` member
+  explicitly needs updating.
+
 v3.0
 ----
 

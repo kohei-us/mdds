@@ -96,12 +96,6 @@ bool multi_type_matrix<Traits>::operator==(const multi_type_matrix& r) const noe
 }
 
 template<typename Traits>
-bool multi_type_matrix<Traits>::operator!=(const multi_type_matrix& r) const noexcept(nothrow_eq_comparable_v)
-{
-    return !operator==(r);
-}
-
-template<typename Traits>
 typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::position(size_type row, size_type col)
 {
     return m_store.position(get_pos(row, col));

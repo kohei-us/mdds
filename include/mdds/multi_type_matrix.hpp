@@ -105,10 +105,6 @@ public:
         {
             return row == r.row && column == r.column;
         }
-        bool operator!=(const size_pair_type& r) const noexcept(std::is_fundamental_v<size_type>)
-        {
-            return !operator==(r);
-        }
     };
 
     struct element_block_node_type
@@ -254,7 +250,6 @@ public:
     ~multi_type_matrix() = default;
 
     bool operator==(const multi_type_matrix& other) const noexcept(nothrow_eq_comparable_v);
-    bool operator!=(const multi_type_matrix& other) const noexcept(nothrow_eq_comparable_v);
 
     multi_type_matrix& operator=(const multi_type_matrix& other) = default;
     multi_type_matrix& operator=(multi_type_matrix&& other) = default;
