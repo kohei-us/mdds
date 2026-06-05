@@ -56,12 +56,12 @@ class side_iterator
         template<typename Blk>
         typename Blk::value_type get() const
         {
-            return Blk::get_value(*__position.first->data, __position.second);
+            return Blk::get_value(*elem_position.first->data, elem_position.second);
         }
 
     private:
         /** position object of current element within the mtv instance.  */
-        const_position_type __position;
+        const_position_type elem_position;
     };
 
     enum begin_state_type

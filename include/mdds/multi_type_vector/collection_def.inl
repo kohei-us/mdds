@@ -26,8 +26,8 @@ side_iterator<MtvT>::side_iterator(
 
     mtv_item& col1 = m_vectors.front();
 
-    m_cur_node.__position = col1.vector->position(col1.block_pos, m_elem_pos);
-    col1.block_pos = m_cur_node.__position.first;
+    m_cur_node.elem_position = col1.vector->position(col1.block_pos, m_elem_pos);
+    col1.block_pos = m_cur_node.elem_position.first;
     m_cur_node.type = col1.block_pos->type;
     m_cur_node.position = m_elem_pos;
 }
@@ -67,9 +67,9 @@ side_iterator<MtvT>& side_iterator<MtvT>::operator++()
     mtv_item& col = m_vectors[pos];
 
     // Update the current node.
-    m_cur_node.__position = col.vector->position(col.block_pos, m_elem_pos);
+    m_cur_node.elem_position = col.vector->position(col.block_pos, m_elem_pos);
     m_cur_node.position = m_elem_pos;
-    col.block_pos = m_cur_node.__position.first;
+    col.block_pos = m_cur_node.elem_position.first;
     m_cur_node.type = col.block_pos->type;
 
     return *this;
