@@ -129,11 +129,6 @@ public:
         return (m_pos == r.m_pos) && (m_end_pos == r.m_end_pos);
     }
 
-    bool operator!=(const const_iterator_base& r) const
-    {
-        return !operator==(r);
-    }
-
     value_type operator*()
     {
         return value_type(m_pos->key, m_pos->value_leaf.value);
@@ -197,11 +192,6 @@ public:
         {
             return start == other.start && end == other.end && value == other.value;
         }
-
-        bool operator!=(const value_type& other) const
-        {
-            return !operator==(other);
-        }
     };
 
     const_segment_iterator() : m_start(nullptr), m_end(nullptr)
@@ -224,11 +214,6 @@ public:
     bool operator==(const const_segment_iterator& other) const
     {
         return m_start == other.m_start && m_end == other.m_end;
-    }
-
-    bool operator!=(const const_segment_iterator& other) const
-    {
-        return !operator==(other);
     }
 
     const_segment_iterator& operator=(const const_segment_iterator& other)

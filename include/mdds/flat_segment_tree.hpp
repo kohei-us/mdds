@@ -49,11 +49,6 @@ public:
             return value == r.value;
         }
 
-        bool operator!=(const leaf_value_type& r) const noexcept(noexcept(!operator==(r)))
-        {
-            return !operator==(r);
-        }
-
         leaf_value_type() : value{}
         {}
     };
@@ -499,11 +494,6 @@ public:
      * non-leaf nodes nor the validity of the tree is evaluated.
      */
     bool operator==(const flat_segment_tree& other) const noexcept(nothrow_eq_comparable_v);
-
-    bool operator!=(const flat_segment_tree& other) const noexcept(nothrow_eq_comparable_v)
-    {
-        return !operator==(other);
-    }
 
     const key_type& min_key() const noexcept
     {
