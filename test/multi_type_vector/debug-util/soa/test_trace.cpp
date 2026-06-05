@@ -401,7 +401,7 @@ int main()
                 {&db2, "swap", trace_method_t::mutator},
                 {&db2, "shrink_to_fit", trace_method_t::mutator},
                 {&db, "operator==", trace_method_t::accessor},
-                {&db, "operator!=", trace_method_t::accessor},
+                {&db, "operator==", trace_method_t::accessor},
                 {&db2, "~multi_type_vector", trace_method_t::destructor},
                 {&db, "~multi_type_vector", trace_method_t::destructor},
             };

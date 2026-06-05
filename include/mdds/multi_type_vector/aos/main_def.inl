@@ -4497,12 +4497,6 @@ bool multi_type_vector<Traits>::operator==(const multi_type_vector& other) const
 }
 
 template<typename Traits>
-bool multi_type_vector<Traits>::operator!=(const multi_type_vector& other) const
-{
-    return !operator==(other);
-}
-
-template<typename Traits>
 multi_type_vector<Traits>& multi_type_vector<Traits>::operator=(const multi_type_vector& other)
 {
     multi_type_vector assigned(other);

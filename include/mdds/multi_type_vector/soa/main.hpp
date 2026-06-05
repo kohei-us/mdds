@@ -1158,7 +1158,6 @@ public:
     void shrink_to_fit();
 
     bool operator==(const multi_type_vector& other) const;
-    bool operator!=(const multi_type_vector& other) const;
 
     multi_type_vector& operator=(const multi_type_vector& other);
     multi_type_vector& operator=(multi_type_vector&& other) noexcept(nothrow_move_assignable_v);
