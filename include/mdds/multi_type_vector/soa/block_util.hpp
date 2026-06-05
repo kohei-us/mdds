@@ -545,7 +545,7 @@ struct adjust_block_positions<Blks, lu_factor_t::avx2_x64_lu8>
         if (start_block_index >= n)
             return;
 
-        // Ensure that the section length is divisible by 16.
+        // Ensure that the section length is divisible by 32.
         int64_t len = n - start_block_index;
         int64_t rem = len & 31; // % 32
         len -= rem;
