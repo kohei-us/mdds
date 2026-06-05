@@ -8,6 +8,7 @@
 #include "./global.hpp"
 
 #include <vector>
+#include <compare>
 #include <deque>
 #include <iostream>
 #include <map>
@@ -55,12 +56,6 @@ private:
         key_type end;
         value_type value;
 
-        static constexpr bool is_nothrow_less_v = noexcept(std::declval<key_type>() < std::declval<key_type>()) &&
-                                                  noexcept(std::declval<value_type>() < std::declval<value_type>());
-
-        static constexpr bool is_nothrow_equal_v = noexcept(std::declval<key_type>() == std::declval<key_type>()) &&
-                                                   noexcept(std::declval<value_type>() == std::declval<value_type>());
-
         segment_type() = default;
         segment_type(key_type _start, key_type _end, value_type _value);
         segment_type(const segment_type&) = default;
@@ -68,9 +63,8 @@ private:
 
         segment_type& operator=(const segment_type& r) = default;
         segment_type& operator=(segment_type&& r) = default;
-        bool operator<(const segment_type& r) const noexcept(is_nothrow_less_v && is_nothrow_equal_v);
-        bool operator==(const segment_type& r) const noexcept(is_nothrow_equal_v);
-        bool operator!=(const segment_type& r) const noexcept(is_nothrow_equal_v);
+        std::weak_ordering operator<=>(const segment_type& r) const = default;
+        bool operator==(const segment_type& r) const = default;
     };
 
     using segment_store_type = std::deque<segment_type>;

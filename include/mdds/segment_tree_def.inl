@@ -104,37 +104,6 @@ segment_tree<KeyT, ValueT>::segment_type::segment_type(key_type _start, key_type
 {}
 
 template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::segment_type::operator<(const segment_type& r) const
-    noexcept(is_nothrow_less_v && is_nothrow_equal_v)
-{
-    if (!(start == r.start))
-        return start < r.start;
-
-    if (!(end == r.end))
-        return end < r.end;
-
-    return value < r.value;
-}
-
-template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::segment_type::operator==(const segment_type& r) const noexcept(is_nothrow_equal_v)
-{
-    if (!(start == r.start))
-        return false;
-
-    if (!(end == r.end))
-        return false;
-
-    return value == r.value;
-}
-
-template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::segment_type::operator!=(const segment_type& r) const noexcept(is_nothrow_equal_v)
-{
-    return !operator==(r);
-}
-
-template<typename KeyT, typename ValueT>
 bool segment_tree<KeyT, ValueT>::search_results_base::empty() const
 {
     if (!mp_res_chains)
