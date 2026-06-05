@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <concepts>
 #include <memory>
 #include <cstdint>
 #include <vector>
@@ -173,7 +174,8 @@ struct clone_block
  * @param <BlockT> Element block type which must be copyable.
  */
 template<typename BlockT>
-struct clone_block<BlockT, std::enable_if_t<std::is_copy_constructible<BlockT>::value>>
+    requires std::copy_constructible<BlockT>
+struct clone_block<BlockT>
 {
     using store_type = typename BlockT::store_type;
 
