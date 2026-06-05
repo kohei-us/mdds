@@ -201,7 +201,7 @@ struct clone_block<BlockT, std::void_t<decltype(clone_value<typename BlockT::val
         auto dest_blk = std::make_unique<BlockT>();
         auto cloned(src.store());
 
-        if constexpr (detail::has_exec_policy<CV>::value)
+        if constexpr (detail::has_exec_policy<CV>)
             std::transform(typename CV::exec_policy{}, cloned.begin(), cloned.end(), cloned.begin(), CV{});
         else
             std::transform(cloned.begin(), cloned.end(), cloned.begin(), CV{});

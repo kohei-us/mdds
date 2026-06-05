@@ -8,7 +8,6 @@
 #include <iostream>
 #include <vector>
 #include <deque>
-#include <type_traits>
 
 #include <mdds/multi_type_vector/types_util.hpp>
 
@@ -43,25 +42,25 @@ void test_has_method()
     MDDS_TEST_FUNC_SCOPE;
 
     using mdds::mtv::detail::has_capacity_method;
-    static_assert(std::is_same_v<has_capacity_method<std::vector<int>>::type, std::true_type>);
-    static_assert(std::is_same_v<has_capacity_method<std::deque<int>>::type, std::false_type>);
-    static_assert(std::is_same_v<has_capacity_method<capacity_size_t>::type, std::true_type>);
-    static_assert(std::is_same_v<has_capacity_method<has_reserve>::type, std::false_type>);
-    static_assert(std::is_same_v<has_capacity_method<has_shrink_to_fit>::type, std::false_type>);
+    static_assert(has_capacity_method<std::vector<int>>);
+    static_assert(!has_capacity_method<std::deque<int>>);
+    static_assert(has_capacity_method<capacity_size_t>);
+    static_assert(!has_capacity_method<has_reserve>);
+    static_assert(!has_capacity_method<has_shrink_to_fit>);
 
     using mdds::mtv::detail::has_reserve_method;
-    static_assert(std::is_same_v<has_reserve_method<std::vector<int>>::type, std::true_type>);
-    static_assert(std::is_same_v<has_reserve_method<std::deque<int>>::type, std::false_type>);
-    static_assert(std::is_same_v<has_reserve_method<capacity_size_t>::type, std::false_type>);
-    static_assert(std::is_same_v<has_reserve_method<has_reserve>::type, std::true_type>);
-    static_assert(std::is_same_v<has_reserve_method<has_shrink_to_fit>::type, std::false_type>);
+    static_assert(has_reserve_method<std::vector<int>>);
+    static_assert(!has_reserve_method<std::deque<int>>);
+    static_assert(!has_reserve_method<capacity_size_t>);
+    static_assert(has_reserve_method<has_reserve>);
+    static_assert(!has_reserve_method<has_shrink_to_fit>);
 
     using mdds::mtv::detail::has_shrink_to_fit_method;
-    static_assert(std::is_same_v<has_shrink_to_fit_method<std::vector<int>>::type, std::true_type>);
-    static_assert(std::is_same_v<has_shrink_to_fit_method<std::deque<int>>::type, std::true_type>);
-    static_assert(std::is_same_v<has_shrink_to_fit_method<capacity_size_t>::type, std::false_type>);
-    static_assert(std::is_same_v<has_shrink_to_fit_method<has_reserve>::type, std::false_type>);
-    static_assert(std::is_same_v<has_shrink_to_fit_method<has_shrink_to_fit>::type, std::true_type>);
+    static_assert(has_shrink_to_fit_method<std::vector<int>>);
+    static_assert(has_shrink_to_fit_method<std::deque<int>>);
+    static_assert(!has_shrink_to_fit_method<capacity_size_t>);
+    static_assert(!has_shrink_to_fit_method<has_reserve>);
+    static_assert(has_shrink_to_fit_method<has_shrink_to_fit>);
 }
 
 int main()
