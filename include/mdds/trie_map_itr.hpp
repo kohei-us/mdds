@@ -42,42 +42,42 @@ enum empty_iterator_type
     empty_iterator
 };
 
-template<typename _TrieType, typename _C>
+template<typename TrieType, typename C>
 struct get_node_stack_type;
 
-template<typename _TrieType>
-struct get_node_stack_type<_TrieType, std::true_type>
+template<typename TrieType>
+struct get_node_stack_type<TrieType, std::true_type>
 {
-    using type = typename _TrieType::const_node_stack_type;
+    using type = typename TrieType::const_node_stack_type;
 };
 
-template<typename _TrieType>
-struct get_node_stack_type<_TrieType, std::false_type>
+template<typename TrieType>
+struct get_node_stack_type<TrieType, std::false_type>
 {
-    using type = typename _TrieType::node_stack_type;
+    using type = typename TrieType::node_stack_type;
 };
 
-template<typename _TrieType>
+template<typename TrieType>
 class search_results;
 
-template<typename _TrieType, bool IsConst>
+template<typename TrieType, bool IsConst>
 class iterator_base
 {
 protected:
-    using trie_type = _TrieType;
+    using trie_type = TrieType;
 
-    using _is_const = std::bool_constant<IsConst>;
+    using is_const_type = std::bool_constant<IsConst>;
 
     friend trie_type;
     friend search_results<trie_type>;
 
-    using node_stack_type = typename get_node_stack_type<trie_type, _is_const>::type;
+    using node_stack_type = typename get_node_stack_type<trie_type, is_const_type>::type;
     using trie_node_type = mdds::detail::const_t<typename trie_type::trie_node, IsConst>;
     using trie_node_child_pos_type = typename mdds::detail::get_iterator_type<
-        typename std::remove_const<trie_node_type>::type::children_type, _is_const>::type;
+        typename std::remove_const<trie_node_type>::type::children_type, is_const_type>::type;
 
     using key_type = typename trie_type::key_type;
-    using trie_value_type = typename mdds::detail::const_or_not<typename trie_type::value_type, _is_const>::type;
+    using trie_value_type = typename mdds::detail::const_or_not<typename trie_type::value_type, is_const_type>::type;
 
 public:
     // iterator traits
@@ -303,13 +303,13 @@ public:
     }
 };
 
-template<typename _TrieType>
+template<typename TrieType>
 class const_iterator;
 
-template<typename _TrieType>
-class iterator : public iterator_base<_TrieType, false>
+template<typename TrieType>
+class iterator : public iterator_base<TrieType, false>
 {
-    using trie_type = _TrieType;
+    using trie_type = TrieType;
 
     friend trie_type;
     friend search_results<trie_type>;
@@ -331,10 +331,10 @@ public:
     {}
 };
 
-template<typename _TrieType>
-class const_iterator : public iterator_base<_TrieType, true>
+template<typename TrieType>
+class const_iterator : public iterator_base<TrieType, true>
 {
-    using trie_type = _TrieType;
+    using trie_type = TrieType;
 
     friend trie_type;
     friend search_results<trie_type>;
@@ -360,7 +360,7 @@ public:
         : base_type(std::move(node_stack), std::move(buf), type)
     {}
 
-    const_iterator(const iterator<_TrieType>& it) : base_type()
+    const_iterator(const iterator<TrieType>& it) : base_type()
     {
         m_buffer = it.m_buffer;
         m_current_key = it.m_current_key;
@@ -372,22 +372,22 @@ public:
     }
 };
 
-template<typename _TrieType>
-bool operator==(const iterator<_TrieType>& left, const const_iterator<_TrieType>& right)
+template<typename TrieType>
+bool operator==(const iterator<TrieType>& left, const const_iterator<TrieType>& right)
 {
-    return const_iterator<_TrieType>(left) == right;
+    return const_iterator<TrieType>(left) == right;
 }
 
-template<typename _TrieType>
-bool operator==(const const_iterator<_TrieType>& left, const iterator<_TrieType>& right)
+template<typename TrieType>
+bool operator==(const const_iterator<TrieType>& left, const iterator<TrieType>& right)
 {
-    return left == const_iterator<_TrieType>(right);
+    return left == const_iterator<TrieType>(right);
 }
 
-template<typename _TrieType>
+template<typename TrieType>
 class search_results
 {
-    using trie_type = _TrieType;
+    using trie_type = TrieType;
     friend trie_type;
     using node_stack_type = typename trie_type::const_node_stack_type;
 
@@ -440,7 +440,7 @@ public:
     }
 };
 
-template<typename _TrieType>
+template<typename TrieType>
 class packed_search_results;
 
 template<typename TrieT>
@@ -735,10 +735,10 @@ public:
     }
 };
 
-template<typename _TrieType>
+template<typename TrieType>
 class packed_search_results
 {
-    using trie_type = _TrieType;
+    using trie_type = TrieType;
     friend trie_type;
     using node_stack_type = typename trie_type::node_stack_type;
     using value_store_type = typename trie_type::value_store_type;
