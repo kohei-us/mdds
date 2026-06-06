@@ -5,6 +5,8 @@
 #include <mdds/global.hpp>
 #include <mdds/trie_map.hpp>
 
+#include <span>
+
 void stop();
 
 namespace trie = mdds::trie;
@@ -44,15 +46,15 @@ void test_trie_map()
         {MDDS_ASCII("ab"), 3},
         {MDDS_ASCII("b"), 7},
     };
-    packed_trie_map<std::string, int> empty_ptm(entries_int, 0);
-    packed_trie_map<std::string, int> ptm_int(entries_int, MDDS_N_ELEMENTS(entries_int));
+    packed_trie_map<std::string, int> empty_ptm(std::span(entries_int, 0));
+    packed_trie_map<std::string, int> ptm_int(entries_int);
     packed_trie_map<std::string, std::string>::entry entries_str[] = {
         {MDDS_ASCII("a"), "13"},
         {MDDS_ASCII("aa"), "10"},
         {MDDS_ASCII("ab"), "3"},
         {MDDS_ASCII("b"), "7"},
     };
-    packed_trie_map<std::string, std::string> ptm_str(entries_str, MDDS_N_ELEMENTS(entries_str));
+    packed_trie_map<std::string, std::string> ptm_str(entries_str);
 
     auto ptm_search_empty = ptm_int.prefix_search("foo");
     auto ptm_search_one = ptm_int.prefix_search("b");

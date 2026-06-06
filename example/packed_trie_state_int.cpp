@@ -108,7 +108,7 @@ int main() try
     //!code-end: entries
 
     //!code-start: inst
-    map_type cities(entries.data(), entries.size());
+    map_type cities(entries);
     //!code-end: inst
 
     //!code-start: print-n-cities

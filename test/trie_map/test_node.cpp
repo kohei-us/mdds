@@ -151,7 +151,7 @@ void test_packed_nodes()
         {MDDS_ASCII("VALUE!"), true},
     };
 
-    _map_type errors(entries, std::size(entries));
+    _map_type errors(entries);
 
     auto it = errors.find("REF!");
     TEST_ASSERT(it != errors.end());

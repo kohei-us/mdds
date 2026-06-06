@@ -91,7 +91,7 @@ void test_uint8_max_value()
 
     try
     {
-        uint8_map_type::packed_type packed(entries.data(), entries.size());
+        uint8_map_type::packed_type packed(entries);
         TEST_ASSERT(!"size_error was expected to be thrown");
     }
     catch (const mdds::size_error&)

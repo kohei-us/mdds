@@ -273,7 +273,7 @@ void test_2()
         {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},
     };
 
-    packed_int_map_type db(entries, std::size(entries));
+    packed_int_map_type db(entries);
 
     std::string saved_state;
 
@@ -321,7 +321,7 @@ void test_3()
         {MDDS_ASCII("Tyra"), "TYRA"},
     };
 
-    packed_str_map_type db(entries.data(), entries.size());
+    packed_str_map_type db(entries);
 
     // Run some search.
     auto results = db.prefix_search("Mi");
@@ -374,7 +374,7 @@ void test_4()
         {MDDS_ASCII("Mitzi"), {77, 105, 116, 122, 105}},
     };
 
-    map_type db(entries.data(), entries.size());
+    map_type db(entries);
     TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
@@ -406,7 +406,7 @@ void test_5()
         {MDDS_ASCII("Mitzi"), 1.6f},
     };
 
-    map_type db(entries.data(), entries.size());
+    map_type db(entries);
     TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
@@ -443,7 +443,7 @@ void test_6()
         {MDDS_ASCII("Mitzi"), {77.0, 10.5, 11.6, 1.22, 10.5}},
     };
 
-    map_type db(entries.data(), entries.size());
+    map_type db(entries);
     TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
@@ -475,7 +475,7 @@ void test_7()
         {MDDS_ASCII("Rodrick"), 34253536}, {MDDS_ASCII("Stuart"), 12},   {MDDS_ASCII("Verline"), 56},
     };
 
-    map_type db(entries.data(), entries.size());
+    map_type db(entries);
     TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;
@@ -508,7 +508,7 @@ void test_8()
         {MDDS_ASCII("Yung"), "zero"},
     };
 
-    map_type db(entries.data(), entries.size());
+    map_type db(entries);
     TEST_ASSERT(db.size() == entries.size());
 
     std::string saved_state;

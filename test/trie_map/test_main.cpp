@@ -16,7 +16,7 @@ using namespace mdds;
 template<typename MapT>
 bool verify_entries(const MapT& db, const typename MapT::entry* entries, std::size_t entry_size)
 {
-    auto results = db.prefix_search(nullptr, 0);
+    auto results = db.prefix_search({});
     for (auto it = results.begin(), ite = results.end(); it != ite; ++it)
         std::cout << it->first << ": " << it->second << std::endl;
 
@@ -24,7 +24,7 @@ bool verify_entries(const MapT& db, const typename MapT::entry* entries, std::si
     const auto* p_end = p + entry_size;
     for (; p != p_end; ++p)
     {
-        auto it = db.find(p->key, p->keylen);
+        auto it = db.find({p->key, p->keylen});
         if (it == db.end() || it->second != p->value)
             return false;
     }
@@ -64,17 +64,17 @@ void trie_packed_test1()
     };
 
     size_t entry_size = std::size(entries);
-    _map_type db(entries, entry_size);
+    _map_type db(entries);
     TEST_ASSERT(db.size() == 4);
     TEST_ASSERT(verify_entries(db, entries, entry_size));
 
     // invalid keys
-    TEST_ASSERT(db.find(MDDS_ASCII("ac")) == db.end());
-    TEST_ASSERT(db.find(MDDS_ASCII("c")) == db.end());
+    TEST_ASSERT(db.find("ac") == db.end());
+    TEST_ASSERT(db.find("c") == db.end());
 
     {
         // Get all key-value pairs.
-        auto results = db.prefix_search(nullptr, 0);
+        auto results = db.prefix_search({});
         size_t n = std::distance(results.begin(), results.end());
         TEST_ASSERT(n == 4);
         auto it = results.begin();
@@ -94,7 +94,7 @@ void trie_packed_test1()
     }
 
     {
-        auto it = db.find(MDDS_ASCII("a"));
+        auto it = db.find("a");
         TEST_ASSERT(it->first == "a");
         TEST_ASSERT(it->second == 13);
         ++it;
@@ -124,15 +124,15 @@ void trie_packed_test2()
     };
 
     size_t entry_size = std::size(entries);
-    _map_type db(entries, entry_size);
+    _map_type db(entries);
     TEST_ASSERT(db.size() == 12);
     TEST_ASSERT(verify_entries(db, entries, entry_size));
 
     // invalid keys
-    TEST_ASSERT(db.find(MDDS_ASCII("aarons")) == db.end());
-    TEST_ASSERT(db.find(MDDS_ASCII("a")) == db.end());
-    TEST_ASSERT(db.find(MDDS_ASCII("biso")) == db.end());
-    TEST_ASSERT(db.find(MDDS_ASCII("dAvid")) == db.end());
+    TEST_ASSERT(db.find("aarons") == db.end());
+    TEST_ASSERT(db.find("a") == db.end());
+    TEST_ASSERT(db.find("biso") == db.end());
+    TEST_ASSERT(db.find("dAvid") == db.end());
 }
 
 void trie_packed_test3()
@@ -149,15 +149,15 @@ void trie_packed_test3()
     };
 
     size_t entry_size = std::size(entries);
-    _map_type db(entries, entry_size);
+    _map_type db(entries);
     TEST_ASSERT(db.size() == 4);
     TEST_ASSERT(verify_entries(db, entries, entry_size));
 
     // invalid keys
-    TEST_ASSERT(db.find(MDDS_ASCII("NUll")) == db.end());
-    TEST_ASSERT(db.find(MDDS_ASCII("Oull")) == db.end());
-    TEST_ASSERT(db.find(MDDS_ASCII("Mull")) == db.end());
-    TEST_ASSERT(db.find(MDDS_ASCII("hell")) == db.end());
+    TEST_ASSERT(db.find("NUll") == db.end());
+    TEST_ASSERT(db.find("Oull") == db.end());
+    TEST_ASSERT(db.find("Mull") == db.end());
+    TEST_ASSERT(db.find("hell") == db.end());
 }
 
 void trie_packed_test4()
@@ -181,16 +181,16 @@ void trie_packed_test4()
     };
 
     size_t entry_size = std::size(entries);
-    _map_type db(entries, entry_size);
+    _map_type db(entries);
     TEST_ASSERT(db.size() == 6);
     TEST_ASSERT(verify_entries(db, entries, entry_size));
 
     // Try invalid keys.
-    TEST_ASSERT(db.find("foo", 3) == db.end());
-    TEST_ASSERT(db.find("andy133", 7) == db.end());
+    TEST_ASSERT(db.find("foo") == db.end());
+    TEST_ASSERT(db.find("andy133") == db.end());
 
     // Test prefix search on 'andy'.
-    auto results = db.prefix_search(MDDS_ASCII("andy"));
+    auto results = db.prefix_search("andy");
     size_t n = std::distance(results.begin(), results.end());
     TEST_ASSERT(n == 3);
     auto it = results.begin();
@@ -202,15 +202,15 @@ void trie_packed_test4()
     ++it;
     TEST_ASSERT(it == results.end());
 
-    results = db.prefix_search(MDDS_ASCII("andy's toy"));
+    results = db.prefix_search("andy's toy");
     n = std::distance(results.begin(), results.end());
     TEST_ASSERT(n == 0);
 
-    results = db.prefix_search(MDDS_ASCII("e"));
+    results = db.prefix_search("e");
     n = std::distance(results.begin(), results.end());
     TEST_ASSERT(n == 0);
 
-    results = db.prefix_search(MDDS_ASCII("b"));
+    results = db.prefix_search("b");
     n = std::distance(results.begin(), results.end());
     TEST_ASSERT(n == 1);
     it = results.begin();
@@ -251,23 +251,23 @@ void trie_packed_test_value_life_cycle()
     entries->push_back(entry(MDDS_ASCII("twelve"), value_wrapper(12)));
     entries->push_back(entry(MDDS_ASCII("two"), value_wrapper(2)));
 
-    packed_value_map_type db(entries->data(), entries->size());
+    packed_value_map_type db(*entries);
 
     // Delete the original entry store.
     entries.reset();
 
-    auto results = db.prefix_search(nullptr, 0);
+    auto results = db.prefix_search({});
     std::for_each(results.begin(), results.end(), [](const packed_value_map_type::const_iterator::value_type& v) {
         cout << v.first << ": " << v.second.value << endl;
     });
 
-    auto it = db.find(MDDS_ASCII("twelve"));
+    auto it = db.find("twelve");
     TEST_ASSERT(it->second.value == 12);
 
-    it = db.find(MDDS_ASCII("two"));
+    it = db.find("two");
     TEST_ASSERT(it->second.value == 2);
 
-    it = db.find(MDDS_ASCII("foo"));
+    it = db.find("foo");
     TEST_ASSERT(it == db.end());
 }
 
@@ -346,17 +346,17 @@ void trie_packed_test_custom_string()
     };
 
     size_t n_entries = std::size(entries);
-    packed_custom_str_map_type db(entries, n_entries);
+    packed_custom_str_map_type db(entries);
 
     for (size_t i = 0; i < n_entries; ++i)
     {
-        auto it = db.find(entries[i].key, entries[i].keylen);
+        auto it = db.find({entries[i].key, entries[i].keylen});
         cout << it->second << endl;
         TEST_ASSERT(it->second == entries[i].value);
     }
 
     // Find all keys that start with 'M'.
-    auto results = db.prefix_search(key_max, 1);
+    auto results = db.prefix_search({key_max, 1});
     size_t n = std::distance(results.begin(), results.end());
     TEST_ASSERT(n == 2);
     auto it = results.begin();
@@ -371,7 +371,7 @@ void trie_packed_test_iterator_empty()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    packed_int_map_type db(nullptr, 0);
+    packed_int_map_type db(std::span<const packed_int_map_type::entry>{});
 
     // empty container
     packed_int_map_type::const_iterator it = db.begin();
@@ -390,7 +390,7 @@ void trie_packed_test_iterator()
 
     trie_map_type db;
 
-    db.insert(MDDS_ASCII("a"), 1);
+    db.insert("a", 1);
     packed_type packed = db.pack();
     TEST_ASSERT(db.size() == packed.size());
     packed_type::const_iterator it = packed.begin();
@@ -399,7 +399,7 @@ void trie_packed_test_iterator()
     TEST_ASSERT(it->first == "a");
     TEST_ASSERT(it->second == 1);
 
-    db.insert(MDDS_ASCII("ab"), 2);
+    db.insert("ab", 2);
     packed = db.pack(); // this invalidates the end position.
     TEST_ASSERT(db.size() == packed.size());
 
@@ -414,11 +414,11 @@ void trie_packed_test_iterator()
     TEST_ASSERT(check_true);
     TEST_ASSERT(it == ite);
 
-    db.insert(MDDS_ASCII("aba"), 3);
-    db.insert(MDDS_ASCII("abb"), 4);
-    db.insert(MDDS_ASCII("abc"), 5);
-    db.insert(MDDS_ASCII("bc"), 6);
-    db.insert(MDDS_ASCII("bcd"), 7);
+    db.insert("aba", 3);
+    db.insert("abb", 4);
+    db.insert("abc", 5);
+    db.insert("bc", 6);
+    db.insert("bcd", 7);
 
     packed = db.pack();
     TEST_ASSERT(db.size() == packed.size());
@@ -478,12 +478,12 @@ void trie_packed_test_prefix_search1()
     using packed_type = trie_map_type::packed_type;
 
     trie_map_type db;
-    db.insert(MDDS_ASCII("andy"), 1);
-    db.insert(MDDS_ASCII("andy1"), 2);
-    db.insert(MDDS_ASCII("andy12"), 3);
+    db.insert("andy", 1);
+    db.insert("andy1", 2);
+    db.insert("andy12", 3);
 
     {
-        auto results = db.prefix_search(MDDS_ASCII("andy"));
+        auto results = db.prefix_search("andy");
         auto it = results.begin();
         TEST_ASSERT(it != results.end());
         TEST_ASSERT(it->first == "andy");
@@ -500,7 +500,7 @@ void trie_packed_test_prefix_search1()
 
     packed_type packed = db.pack();
     {
-        auto results = packed.prefix_search(MDDS_ASCII("andy"));
+        auto results = packed.prefix_search("andy");
         auto it = results.begin();
         TEST_ASSERT(it != results.end());
         TEST_ASSERT(it->first == "andy");
@@ -569,7 +569,7 @@ void trie_packed_test_copying()
         }
     };
 
-    auto db = std::make_unique<map_type>(entries, std::size(entries));
+    auto db = std::make_unique<map_type>(entries);
     auto db_copied(*db);
     TEST_ASSERT(*db == db_copied);
     TEST_ASSERT(db->size() == db_copied.size());
@@ -639,16 +639,16 @@ void trie_packed_test_non_equal()
         {MDDS_ASCII("david"), 8}, {MDDS_ASCII("dove"), 9},  {MDDS_ASCII("e"), 10},
     };
 
-    map_type db1(entries1, std::size(entries1));
-    map_type db2(entries2, std::size(entries2));
-    map_type db3(entries3, std::size(entries3));
+    map_type db1(entries1);
+    map_type db2(entries2);
+    map_type db3(entries3);
     TEST_ASSERT(db1 != db2);
     TEST_ASSERT(db1 != db3);
     TEST_ASSERT(db2 != db3);
 
-    map_type db4(entries1, std::size(entries1));
-    map_type db5(entries2, std::size(entries2));
-    map_type db6(entries3, std::size(entries3));
+    map_type db4(entries1);
+    map_type db5(entries2);
+    map_type db6(entries3);
 
     TEST_ASSERT(db1 == db4);
     TEST_ASSERT(db2 == db5);
@@ -666,33 +666,33 @@ void trie_test1()
     const trie_map_type& dbc = db;
 
     TEST_ASSERT(db.size() == 0);
-    db.insert(MDDS_ASCII("Barak"), custom_string("Obama"));
+    db.insert("Barak", custom_string("Obama"));
     TEST_ASSERT(db.size() == 1);
-    db.insert(MDDS_ASCII("Bob"), custom_string("Marley"));
+    db.insert("Bob", custom_string("Marley"));
     TEST_ASSERT(db.size() == 2);
-    db.insert(MDDS_ASCII("Hideki"), custom_string("Matsui"));
+    db.insert("Hideki", custom_string("Matsui"));
     TEST_ASSERT(db.size() == 3);
 
-    auto it = dbc.find(MDDS_ASCII("Barak"));
+    auto it = dbc.find("Barak");
     TEST_ASSERT(it->first == "Barak");
     custom_string res = it->second;
     TEST_ASSERT(res.data == "Obama");
 
-    res = dbc.find(MDDS_ASCII("Bob"))->second;
+    res = dbc.find("Bob")->second;
     TEST_ASSERT(res.data == "Marley");
-    res = dbc.find(MDDS_ASCII("Hideki"))->second;
+    res = dbc.find("Hideki")->second;
     TEST_ASSERT(res.data == "Matsui");
 
     // Non-existent key.
-    it = dbc.find(MDDS_ASCII("Von"));
+    it = dbc.find("Von");
     TEST_ASSERT(it == dbc.end());
-    it = dbc.find(MDDS_ASCII("Bar"));
+    it = dbc.find("Bar");
     TEST_ASSERT(it == dbc.end());
 
     // Perform prefix search on "B", which should return both "Barak" and "Bob".
     // The results should be sorted.
     {
-        auto matches = dbc.prefix_search(MDDS_ASCII("B"));
+        auto matches = dbc.prefix_search("B");
         size_t n = std::distance(matches.begin(), matches.end());
         TEST_ASSERT(n == 2);
         auto it2 = matches.begin();
@@ -702,7 +702,7 @@ void trie_test1()
         TEST_ASSERT(it2->first == "Bob");
         TEST_ASSERT(it2->second.data == "Marley");
 
-        matches = dbc.prefix_search(MDDS_ASCII("Hi"));
+        matches = dbc.prefix_search("Hi");
         n = std::distance(matches.begin(), matches.end());
         TEST_ASSERT(n == 1);
         it2 = matches.begin();
@@ -710,9 +710,9 @@ void trie_test1()
         TEST_ASSERT(it2->second.data == "Matsui");
 
         // Invalid prefix searches.
-        matches = dbc.prefix_search(MDDS_ASCII("Bad"));
+        matches = dbc.prefix_search("Bad");
         TEST_ASSERT(matches.begin() == matches.end());
-        matches = dbc.prefix_search(MDDS_ASCII("Foo"));
+        matches = dbc.prefix_search("Foo");
         TEST_ASSERT(matches.begin() == matches.end());
     }
 
@@ -723,7 +723,7 @@ void trie_test1()
         TEST_ASSERT(packed.size() == dbc.size());
 
         {
-            auto results = packed.prefix_search(MDDS_ASCII("B"));
+            auto results = packed.prefix_search("B");
             size_t n = std::distance(results.begin(), results.end());
             TEST_ASSERT(n == 2);
             auto it2 = results.begin();
@@ -737,7 +737,7 @@ void trie_test1()
         }
 
         {
-            auto results = dbc.prefix_search(MDDS_ASCII("Hi"));
+            auto results = dbc.prefix_search("Hi");
             size_t n = std::distance(results.begin(), results.end());
             TEST_ASSERT(n == 1);
             auto it2 = results.begin();
@@ -746,16 +746,16 @@ void trie_test1()
         }
 
         // Invalid prefix searches.
-        auto results = dbc.prefix_search(MDDS_ASCII("Bad"));
+        auto results = dbc.prefix_search("Bad");
         TEST_ASSERT(results.begin() == results.end());
-        results = dbc.prefix_search(MDDS_ASCII("Foo"));
+        results = dbc.prefix_search("Foo");
         TEST_ASSERT(results.begin() == results.end());
     }
 
     {
         trie_map_type copied(dbc);
         auto packed = copied.pack();
-        auto results = packed.prefix_search(MDDS_ASCII("B"));
+        auto results = packed.prefix_search("B");
         size_t n = std::distance(results.begin(), results.end());
         TEST_ASSERT(n == 2);
         auto it2 = results.begin();
@@ -767,15 +767,15 @@ void trie_test1()
     }
 
     // Erase an existing key.
-    bool erased = db.erase(MDDS_ASCII("Hideki"));
+    bool erased = db.erase("Hideki");
     TEST_ASSERT(erased);
     TEST_ASSERT(db.size() == 2);
 
-    it = dbc.find(MDDS_ASCII("Hideki"));
+    it = dbc.find("Hideki");
     TEST_ASSERT(it == dbc.end());
 
     // Try to erase a key that doesn't exist.
-    erased = db.erase(MDDS_ASCII("Foo"));
+    erased = db.erase("Foo");
     TEST_ASSERT(!erased);
     TEST_ASSERT(db.size() == 2);
 
@@ -862,7 +862,7 @@ void trie_test_iterator()
 
     cout << "one element" << endl;
 
-    db.insert(MDDS_ASCII("a"), 1);
+    db.insert("a", 1);
     it = dbc.begin();
     TEST_ASSERT(it != ite);
     TEST_ASSERT(*it == kv("a", 1));
@@ -871,7 +871,7 @@ void trie_test_iterator()
 
     cout << "two elements" << endl;
 
-    db.insert(MDDS_ASCII("ab"), 2);
+    db.insert("ab", 2);
     it = dbc.begin();
     TEST_ASSERT(it != ite);
     TEST_ASSERT(*it == kv("a", 1));
@@ -883,11 +883,11 @@ void trie_test_iterator()
 
     cout << "more than two elements" << endl;
 
-    db.insert(MDDS_ASCII("aba"), 3);
-    db.insert(MDDS_ASCII("abb"), 4);
-    db.insert(MDDS_ASCII("abc"), 5);
-    db.insert(MDDS_ASCII("bc"), 6);
-    db.insert(MDDS_ASCII("bcd"), 7);
+    db.insert("aba", 3);
+    db.insert("abb", 4);
+    db.insert("abc", 5);
+    db.insert("bc", 6);
+    db.insert("bcd", 7);
 
     it = dbc.begin();
     TEST_ASSERT(*it == kv("a", 1));
@@ -951,8 +951,8 @@ void trie_test_iterator_with_erase()
     const trie_map_type& dbc = db;
     bool check_true = false;
 
-    db.insert(MDDS_ASCII("Python"), 1);
-    db.insert(MDDS_ASCII("C++"), 2);
+    db.insert("Python", 1);
+    db.insert("C++", 2);
 
     auto it = dbc.begin(), ite = dbc.end();
     check_true = (*it++ == kv("C++", 2));
@@ -961,7 +961,7 @@ void trie_test_iterator_with_erase()
     TEST_ASSERT(check_true);
     TEST_ASSERT(it == ite);
 
-    db.erase(MDDS_ASCII("C++"));
+    db.erase("C++");
     it = dbc.begin();
     check_true = (*it++ == kv("Python", 1));
     TEST_ASSERT(check_true);
@@ -973,10 +973,10 @@ void trie_test_iterator_with_erase()
     db.clear();
     TEST_ASSERT(dbc.begin() == dbc.end());
 
-    db.insert(MDDS_ASCII("A"), 1);
-    db.insert(MDDS_ASCII("AB"), 2);
-    db.insert(MDDS_ASCII("ABC"), 3);
-    db.erase(MDDS_ASCII("AB"));
+    db.insert("A", 1);
+    db.insert("AB", 2);
+    db.insert("ABC", 3);
+    db.erase("AB");
 
     it = dbc.begin();
     check_true = (*it++ == kv("A", 1));
@@ -992,10 +992,10 @@ void trie_test_iterator_with_erase()
     TEST_ASSERT(it == dbc.begin());
 
     db.clear();
-    db.insert(MDDS_ASCII("A"), 1);
-    db.insert(MDDS_ASCII("AB"), 2);
-    db.insert(MDDS_ASCII("ABC"), 3);
-    db.erase(MDDS_ASCII("ABC"));
+    db.insert("A", 1);
+    db.insert("AB", 2);
+    db.insert("ABC", 3);
+    db.erase("ABC");
 
     it = dbc.begin();
     check_true = (*it++ == kv("A", 1));
@@ -1024,12 +1024,12 @@ void trie_test_find_iterator()
     trie_map_type db;
     const trie_map_type& dbc = db;
 
-    db.insert(MDDS_ASCII("a"), 1);
-    db.insert(MDDS_ASCII("aa"), 2);
-    db.insert(MDDS_ASCII("ab"), 3);
-    db.insert(MDDS_ASCII("b"), 4);
+    db.insert("a", 1);
+    db.insert("aa", 2);
+    db.insert("ab", 3);
+    db.insert("b", 4);
     {
-        auto it = dbc.find(MDDS_ASCII("a"));
+        auto it = dbc.find("a");
         TEST_ASSERT(it->first == "a");
         TEST_ASSERT(it->second == 1);
         ++it;
@@ -1044,7 +1044,7 @@ void trie_test_find_iterator()
         ++it;
         TEST_ASSERT(it == dbc.end());
 
-        it = dbc.find(MDDS_ASCII("aa"));
+        it = dbc.find("aa");
         TEST_ASSERT(it->first == "aa");
         TEST_ASSERT(it->second == 2);
         ++it;
@@ -1056,7 +1056,7 @@ void trie_test_find_iterator()
         ++it;
         TEST_ASSERT(it == dbc.end());
 
-        it = dbc.find(MDDS_ASCII("ab"));
+        it = dbc.find("ab");
         TEST_ASSERT(it->first == "ab");
         TEST_ASSERT(it->second == 3);
         ++it;
@@ -1065,7 +1065,7 @@ void trie_test_find_iterator()
         ++it;
         TEST_ASSERT(it == dbc.end());
 
-        it = dbc.find(MDDS_ASCII("b"));
+        it = dbc.find("b");
         TEST_ASSERT(it->first == "b");
         TEST_ASSERT(it->second == 4);
         ++it;
@@ -1074,7 +1074,7 @@ void trie_test_find_iterator()
 
     trie_map_type::packed_type packed = db.pack();
     {
-        auto it = packed.find(MDDS_ASCII("a"));
+        auto it = packed.find("a");
         TEST_ASSERT(it->first == "a");
         TEST_ASSERT(it->second == 1);
         ++it;
@@ -1089,7 +1089,7 @@ void trie_test_find_iterator()
         ++it;
         TEST_ASSERT(it == packed.end());
 
-        it = packed.find(MDDS_ASCII("aa"));
+        it = packed.find("aa");
         TEST_ASSERT(it->first == "aa");
         TEST_ASSERT(it->second == 2);
         ++it;
@@ -1101,7 +1101,7 @@ void trie_test_find_iterator()
         ++it;
         TEST_ASSERT(it == packed.end());
 
-        it = packed.find(MDDS_ASCII("ab"));
+        it = packed.find("ab");
         TEST_ASSERT(it->first == "ab");
         TEST_ASSERT(it->second == 3);
         ++it;
@@ -1110,7 +1110,7 @@ void trie_test_find_iterator()
         ++it;
         TEST_ASSERT(it == packed.end());
 
-        it = packed.find(MDDS_ASCII("b"));
+        it = packed.find("b");
         TEST_ASSERT(it->first == "b");
         TEST_ASSERT(it->second == 4);
         ++it;
@@ -1126,14 +1126,14 @@ void trie_test_prefix_search()
     trie_map_type db;
     const trie_map_type& dbc = db;
 
-    db.insert(MDDS_ASCII("a"), 1);
-    db.insert(MDDS_ASCII("aa"), 2);
-    db.insert(MDDS_ASCII("ab"), 3);
-    db.insert(MDDS_ASCII("b"), 4);
+    db.insert("a", 1);
+    db.insert("aa", 2);
+    db.insert("ab", 3);
+    db.insert("b", 4);
 
     cout << "Performing prefix search on 'a'..." << endl;
 
-    trie_map_type::search_results results = dbc.prefix_search(MDDS_ASCII("a"));
+    trie_map_type::search_results results = dbc.prefix_search("a");
     auto it = results.begin();
     auto ite = results.end();
     TEST_ASSERT(it != ite);
@@ -1152,7 +1152,7 @@ void trie_test_prefix_search()
 
     cout << "Performing prefix search on 'b'..." << endl;
 
-    results = dbc.prefix_search(MDDS_ASCII("b"));
+    results = dbc.prefix_search("b");
     it = results.begin();
     ite = results.end();
     TEST_ASSERT(it != ite);
@@ -1168,11 +1168,11 @@ void trie_test_prefix_search()
 
     // Only one element.
     db.clear();
-    db.insert(MDDS_ASCII("dust"), 10);
+    db.insert("dust", 10);
 
     cout << "Performing prefix search on 'du'..." << endl;
 
-    results = dbc.prefix_search(MDDS_ASCII("du"));
+    results = dbc.prefix_search("du");
     it = results.begin();
     TEST_ASSERT(it->first == "dust");
     TEST_ASSERT(it->second == 10);

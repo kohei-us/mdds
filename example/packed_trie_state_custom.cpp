@@ -160,7 +160,7 @@ int main() try
     //!code-end: entries
 
     //!code-start: inst
-    map_type us_presidents(entries.data(), entries.size());
+    map_type us_presidents(entries);
     //!code-end: inst
     //!code-start: print-n-entries
     std::cout << "Number of entries: " << us_presidents.size() << std::endl;

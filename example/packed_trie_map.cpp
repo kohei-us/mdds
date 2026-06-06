@@ -47,7 +47,7 @@ int main()
 
     // Cities in North Carolina and their populations in 2013.
     //!code-start: inst
-    trie_map_type nc_cities(entries, std::size(entries));
+    trie_map_type nc_cities(entries);
     //!code-end: inst
 
     std::cout << "Cities that start with 'Cha' and their populations:" << std::endl;

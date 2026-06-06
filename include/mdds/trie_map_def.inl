@@ -762,28 +762,27 @@ auto trie_map<KeyT, ValueT, TraitsT>::root_node() const -> const_node_type
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-void trie_map<KeyT, ValueT, TraitsT>::insert(const key_type& key, value_type value)
+void trie_map<KeyT, ValueT, TraitsT>::insert(key_view_type key, value_type value)
 {
     const key_unit_type* p = key.data();
-    size_t n = key.size();
-    const key_unit_type* p_end = p + n;
+    const key_unit_type* p_end = p + key.size();
     insert_into_tree(m_root, p, p_end, std::move(value));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 void trie_map<KeyT, ValueT, TraitsT>::insert(const key_unit_type* key, size_type len, value_type value)
 {
-    const key_unit_type* key_end = key + len;
-    insert_into_tree(m_root, key, key_end, std::move(value));
+    insert(key_view_type(key, len), std::move(value));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-bool trie_map<KeyT, ValueT, TraitsT>::erase(const key_unit_type* key, size_type len)
+bool trie_map<KeyT, ValueT, TraitsT>::erase(key_view_type key)
 {
-    const key_unit_type* key_end = key + len;
+    const key_unit_type* p = key.data();
+    const key_unit_type* key_end = p + key.size();
 
     const_node_stack_type node_stack;
-    find_prefix_node_with_stack(node_stack, m_root, key, key_end);
+    find_prefix_node_with_stack(node_stack, m_root, p, key_end);
 
     if (node_stack.empty() || !node_stack.back().node->has_value)
         // Nothing is erased.
@@ -806,6 +805,12 @@ bool trie_map<KeyT, ValueT, TraitsT>::erase(const key_unit_type* key, size_type 
     }
 
     return true;
+}
+
+template<typename KeyT, typename ValueT, typename TraitsT>
+bool trie_map<KeyT, ValueT, TraitsT>::erase(const key_unit_type* key, size_type len)
+{
+    return erase(key_view_type(key, len));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
@@ -924,16 +929,16 @@ bool trie_map<KeyT, ValueT, TraitsT>::descend_for_equality(const trie_node& left
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 typename trie_map<KeyT, ValueT, TraitsT>::const_iterator trie_map<KeyT, ValueT, TraitsT>::find(
-    const key_type& key) const
+    const key_unit_type* input, size_type len) const
 {
-    return find(key.data(), key.size());
+    return find(key_view_type(input, len));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-typename trie_map<KeyT, ValueT, TraitsT>::const_iterator trie_map<KeyT, ValueT, TraitsT>::find(
-    const key_unit_type* input, size_type len) const
+typename trie_map<KeyT, ValueT, TraitsT>::const_iterator trie_map<KeyT, ValueT, TraitsT>::find(key_view_type key) const
 {
-    const key_unit_type* input_end = input + len;
+    const key_unit_type* input = key.data();
+    const key_unit_type* input_end = input + key.size();
     const_node_stack_type node_stack;
     find_prefix_node_with_stack(node_stack, m_root, input, input_end);
     if (node_stack.empty() || !node_stack.back().node->has_value)
@@ -946,16 +951,17 @@ typename trie_map<KeyT, ValueT, TraitsT>::const_iterator trie_map<KeyT, ValueT, 
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-typename trie_map<KeyT, ValueT, TraitsT>::iterator trie_map<KeyT, ValueT, TraitsT>::find(const key_type& key)
-{
-    return find(key.data(), key.size());
-}
-
-template<typename KeyT, typename ValueT, typename TraitsT>
 typename trie_map<KeyT, ValueT, TraitsT>::iterator trie_map<KeyT, ValueT, TraitsT>::find(
     const key_unit_type* input, size_type len)
 {
-    const key_unit_type* input_end = input + len;
+    return find(key_view_type(input, len));
+}
+
+template<typename KeyT, typename ValueT, typename TraitsT>
+typename trie_map<KeyT, ValueT, TraitsT>::iterator trie_map<KeyT, ValueT, TraitsT>::find(key_view_type key)
+{
+    const key_unit_type* input = key.data();
+    const key_unit_type* input_end = input + key.size();
     node_stack_type node_stack;
     find_prefix_node_with_stack(node_stack, m_root, input, input_end);
     if (node_stack.empty() || !node_stack.back().node->has_value)
@@ -969,18 +975,19 @@ typename trie_map<KeyT, ValueT, TraitsT>::iterator trie_map<KeyT, ValueT, Traits
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 typename trie_map<KeyT, ValueT, TraitsT>::search_results trie_map<KeyT, ValueT, TraitsT>::prefix_search(
-    const key_type& key) const
+    const key_unit_type* prefix, size_type len) const
 {
-    return prefix_search(key.data(), key.size());
+    return prefix_search(key_view_type(prefix, len));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 typename trie_map<KeyT, ValueT, TraitsT>::search_results trie_map<KeyT, ValueT, TraitsT>::prefix_search(
-    const key_unit_type* prefix, size_type len) const
+    key_view_type prefix) const
 {
-    const key_unit_type* prefix_end = prefix + len;
-    const trie_node* node = find_prefix_node(m_root, prefix, prefix_end);
-    return search_results(node, key_type(prefix, len));
+    const key_unit_type* p = prefix.data();
+    const key_unit_type* p_end = p + prefix.size();
+    const trie_node* node = find_prefix_node(m_root, p, p_end);
+    return search_results(node, key_type(prefix.data(), prefix.size()));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
@@ -1296,9 +1303,14 @@ packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map() : m_packed(3, 0u)
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(const entry* entries, size_type entry_size)
+    : packed_trie_map(std::span<const entry>(entries, entry_size))
+{}
+
+template<typename KeyT, typename ValueT, typename TraitsT>
+packed_trie_map<KeyT, ValueT, TraitsT>::packed_trie_map(std::span<const entry> entries)
 {
-    const entry* p = entries;
-    const entry* p_end = p + entry_size;
+    const entry* p = entries.data();
+    const entry* p_end = p + entries.size();
 
 #if defined(MDDS_TRIE_MAP_DEBUG)
     // Make sure the entries really are sorted.
@@ -1499,19 +1511,20 @@ typename packed_trie_map<KeyT, ValueT, TraitsT>::node_stack_type packed_trie_map
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<KeyT, ValueT, TraitsT>::find(
-    const key_type& key) const
+    const key_unit_type* input, size_type len) const
 {
-    return find(key.data(), key.size());
+    return find(key_view_type(input, len));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<KeyT, ValueT, TraitsT>::find(
-    const key_unit_type* input, size_type len) const
+    key_view_type key) const
 {
     if (m_value_store.empty())
         return end();
 
-    const key_unit_type* key_end = input + len;
+    const key_unit_type* input = key.data();
+    const key_unit_type* key_end = input + key.size();
     size_type root_offset = m_packed[0];
     assert(root_offset < m_packed.size());
     const auto* root = m_packed.data() + root_offset;
@@ -1545,29 +1558,29 @@ typename packed_trie_map<KeyT, ValueT, TraitsT>::const_iterator packed_trie_map<
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 typename packed_trie_map<KeyT, ValueT, TraitsT>::search_results packed_trie_map<KeyT, ValueT, TraitsT>::prefix_search(
-    const key_type& key) const
+    const key_unit_type* prefix, size_type len) const
 {
-    return prefix_search(key.data(), key.size());
+    return prefix_search(key_view_type(prefix, len));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
 typename packed_trie_map<KeyT, ValueT, TraitsT>::search_results packed_trie_map<KeyT, ValueT, TraitsT>::prefix_search(
-    const key_unit_type* prefix, size_type len) const
+    key_view_type prefix) const
 {
     if (m_value_store.empty())
         return search_results(&m_value_store, nullptr, key_type());
 
-    const key_unit_type* prefix_end = prefix + len;
+    const key_unit_type* p = prefix.data();
+    const key_unit_type* prefix_end = p + prefix.size();
 
     size_type root_offset = m_packed[0];
     assert(root_offset < m_packed.size());
     const auto* root = m_packed.data() + root_offset;
 
     const auto* node = trie::detail::find_prefix_node<pack_value_type, key_unit_type, size_type>(
-        root, prefix, prefix_end,
-        [](const pack_value_type*, const pack_value_type*, const pack_value_type*) noexcept {});
+        root, p, prefix_end, [](const pack_value_type*, const pack_value_type*, const pack_value_type*) noexcept {});
 
-    return search_results(&m_value_store, node, key_type(prefix, len));
+    return search_results(&m_value_store, node, key_type(prefix.data(), prefix.size()));
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>

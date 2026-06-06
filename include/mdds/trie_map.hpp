@@ -10,6 +10,9 @@
 
 #include <vector>
 #include <string>
+#include <string_view>
+#include <span>
+#include <concepts>
 #include <deque>
 #include <map>
 #include <memory>
@@ -32,6 +35,30 @@ struct move_to_pack
 
 template<typename TrieT, typename PackedT>
 struct dump_packed_buffer;
+
+/** Key unit types whose keys are viewed through std::basic_string_view. */
+template<typename T>
+concept character_unit = std::same_as<T, char> || std::same_as<T, wchar_t> || std::same_as<T, char8_t> ||
+                         std::same_as<T, char16_t> || std::same_as<T, char32_t>;
+
+/**
+ * Selects the view type used to pass keys to the trie methods:
+ * std::basic_string_view for character-like key units, std::span otherwise.
+ */
+template<typename T>
+struct key_view
+{
+    using type = std::span<const T>;
+};
+
+template<character_unit T>
+struct key_view<T>
+{
+    using type = std::basic_string_view<T>;
+};
+
+template<typename T>
+using key_view_t = typename key_view<T>::type;
 
 } // namespace detail
 
@@ -153,15 +180,16 @@ class trie_map
 
 public:
     using traits_type = TraitsT;
-    typedef packed_trie_map<KeyT, ValueT, TraitsT> packed_type;
-    typedef KeyT key_type;
-    typedef typename key_type::value_type key_unit_type;
-    typedef ValueT value_type;
-    typedef size_t size_type;
+    using packed_type = packed_trie_map<KeyT, ValueT, TraitsT>;
+    using key_type = KeyT;
+    using key_unit_type = typename key_type::value_type;
+    using key_view_type = trie::detail::key_view_t<key_unit_type>;
+    using value_type = ValueT;
+    using size_type = std::size_t;
 
     using const_iterator = trie::detail::const_iterator<trie_map>;
     using iterator = trie::detail::iterator<trie_map>;
-    typedef trie::detail::search_results<trie_map> search_results;
+    using search_results = trie::detail::search_results<trie_map>;
 
 private:
     struct trie_node
@@ -304,7 +332,7 @@ public:
      * @param key key value.
      * @param value value to associate with the key.
      */
-    void insert(const key_type& key, value_type value);
+    void insert(key_view_type key, value_type value);
 
     /**
      * Insert a new key-value pair.
@@ -314,7 +342,17 @@ public:
      * @param len length of the character array storing the key.
      * @param value value to associate with the key.
      */
-    void insert(const key_unit_type* key, size_type len, value_type value);
+    [[deprecated("use the overload taking key_view_type instead")]] void insert(
+        const key_unit_type* key, size_type len, value_type value);
+
+    /**
+     * Erase a key and the value associated with it.
+     *
+     * @param key key to erase.
+     *
+     * @return true if a key is erased, false otherwise.
+     */
+    bool erase(key_view_type key);
 
     /**
      * Erase a key and the value associated with it.
@@ -325,7 +363,7 @@ public:
      *
      * @return true if a key is erased, false otherwise.
      */
-    bool erase(const key_unit_type* key, size_type len);
+    [[deprecated("use the overload taking key_view_type instead")]] bool erase(const key_unit_type* key, size_type len);
 
     /**
      * Find a value associated with a specified key.
@@ -335,7 +373,7 @@ public:
      * @return immutable iterator that references a value associated with the
      *         key, or the end position in case the key is not found.
      */
-    const_iterator find(const key_type& key) const;
+    const_iterator find(key_view_type key) const;
 
     /**
      * Find a value associated with a specified key.
@@ -347,7 +385,8 @@ public:
      * @return immutable iterator that references a value associated with the
      *         key, or the end position in case the key is not found.
      */
-    const_iterator find(const key_unit_type* input, size_type len) const;
+    [[deprecated("use the overload taking key_view_type instead")]] const_iterator find(
+        const key_unit_type* input, size_type len) const;
 
     /**
      * Find a value associated with a specified key.
@@ -357,7 +396,7 @@ public:
      * @return mutable iterator that references a value associated with the
      *         key, or the end position in case the key is not found.
      */
-    iterator find(const key_type& key);
+    iterator find(key_view_type key);
 
     /**
      * Find a value associated with a specified key.
@@ -369,19 +408,19 @@ public:
      * @return mutable iterator that references a value associated with the
      *         key, or the end position in case the key is not found.
      */
-    iterator find(const key_unit_type* input, size_type len);
+    [[deprecated("use the overload taking key_view_type instead")]] iterator find(
+        const key_unit_type* input, size_type len);
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
-     * You can also retrieve all key-value pairs by passing a null prefix and
-     * a length of zero.
+     * You can also retrieve all key-value pairs by passing an empty prefix.
      *
      * @param prefix prefix to match.
      *
      * @return results object that contains all matching key-value pairs. The
      *         results are sorted by the key in ascending order.
      */
-    search_results prefix_search(const key_type& prefix) const;
+    search_results prefix_search(key_view_type prefix) const;
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
@@ -395,7 +434,8 @@ public:
      * @return results object that contains all matching key-value pairs. The
      *         results are sorted by the key in ascending order.
      */
-    search_results prefix_search(const key_unit_type* prefix, size_type len) const;
+    [[deprecated("use the overload taking key_view_type instead")]] search_results prefix_search(
+        const key_unit_type* prefix, size_type len) const;
 
     /**
      * Return the number of entries in the map.
@@ -476,12 +516,13 @@ class packed_trie_map
 
 public:
     using traits_type = TraitsT;
-    typedef KeyT key_type;
-    typedef typename key_type::value_type key_unit_type;
-    typedef ValueT value_type;
-    typedef size_t size_type;
-    typedef trie::detail::packed_iterator_base<packed_trie_map> const_iterator;
-    typedef trie::detail::packed_search_results<packed_trie_map> search_results;
+    using key_type = KeyT;
+    using key_unit_type = typename key_type::value_type;
+    using key_view_type = trie::detail::key_view_t<key_unit_type>;
+    using value_type = ValueT;
+    using size_type = std::size_t;
+    using const_iterator = trie::detail::packed_iterator_base<packed_trie_map>;
+    using search_results = trie::detail::packed_search_results<packed_trie_map>;
 
     /**
      * Single key-value entry.  Caller must provide at compile time a static
@@ -627,6 +668,20 @@ public:
      * key-value entries.  The caller <em>must</em> ensure that the key-value
      * entries are sorted in ascending order, else the behavior is undefined.
      *
+     * @param entries array of key-value entries.
+     *
+     * @throws mdds::size_error When the number of entries exceeds
+     *                maximum allowed number of key-value pairs. See
+     *                trie::default_traits::pack_value_type for more detailed
+     *                explanation.
+     */
+    packed_trie_map(std::span<const entry> entries);
+
+    /**
+     * Constructor that initializes the content from a static list of
+     * key-value entries.  The caller <em>must</em> ensure that the key-value
+     * entries are sorted in ascending order, else the behavior is undefined.
+     *
      * @param entries pointer to the array of key-value entries.
      * @param entry_size size of the key-value entry array.
      *
@@ -635,7 +690,8 @@ public:
      *                trie::default_traits::pack_value_type for more detailed
      *                explanation.
      */
-    packed_trie_map(const entry* entries, size_type entry_size);
+    [[deprecated("use the constructor taking std::span<const entry> instead")]] packed_trie_map(
+        const entry* entries, size_type entry_size);
 
     /**
      * Constructor to allow construction of an instance from the content of a
@@ -674,7 +730,7 @@ public:
      * @return iterator that references a value associated with the key, or
      *         the end position in case the key is not found.
      */
-    const_iterator find(const key_type& key) const;
+    const_iterator find(key_view_type key) const;
 
     /**
      * Find a value associated with a specified key.
@@ -686,18 +742,18 @@ public:
      * @return iterator that references a value associated with the key, or
      *         the end position in case the key is not found.
      */
-    const_iterator find(const key_unit_type* input, size_type len) const;
+    [[deprecated("use the overload taking key_view_type instead")]] const_iterator find(
+        const key_unit_type* input, size_type len) const;
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
-     * You can also retrieve all key-value pairs by passing a null prefix and
-     * a length of zero.
+     * You can also retrieve all key-value pairs by passing an empty prefix.
      *
      * @param prefix prefix to match.
      *
      * @return results object containing all matching key-value pairs.
      */
-    search_results prefix_search(const key_type& prefix) const;
+    search_results prefix_search(key_view_type prefix) const;
 
     /**
      * Retrieve all key-value pairs whose keys start with specified prefix.
@@ -711,7 +767,8 @@ public:
      * @return results object that contains all matching key-value pairs. The
      *         results are sorted by the key in ascending order.
      */
-    search_results prefix_search(const key_unit_type* prefix, size_type len) const;
+    [[deprecated("use the overload taking key_view_type instead")]] search_results prefix_search(
+        const key_unit_type* prefix, size_type len) const;
 
     /**
      * Return the number of entries in the map.

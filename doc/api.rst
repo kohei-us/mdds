@@ -34,6 +34,21 @@ v4.0
   source-compatible, but any code that referenced an ``operator!=`` member
   explicitly needs updating.
 
+trie_map & packed_trie_map
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* The methods that take a key - ``insert()``, ``erase()``, ``find()`` and
+  ``prefix_search()`` - now take it as a single view-type argument, exposed
+  as the new ``key_view_type`` member type: ``std::basic_string_view`` of the
+  key unit type for character-based keys, or ``std::span`` otherwise.  The
+  overloads taking ``const key_type&`` have been removed; call sites passing
+  a key object or a string literal remain source-compatible via implicit
+  conversion to the view type.  The overloads taking a pointer and a length
+  are deprecated and will be removed in a future release.
+
+* ``packed_trie_map`` gained a constructor taking ``std::span<const entry>``,
+  and its constructor taking ``const entry*`` and a size is deprecated.
+
 v3.0
 ----
 
