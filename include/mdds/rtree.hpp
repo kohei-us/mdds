@@ -149,7 +149,6 @@ public:
         std::string to_string() const;
 
         bool operator==(const point_type& other) const;
-        bool operator!=(const point_type& other) const;
     };
 
     struct extent_type
@@ -165,7 +164,6 @@ public:
         bool is_point() const;
 
         bool operator==(const extent_type& other) const;
-        bool operator!=(const extent_type& other) const;
 
         /**
          * Determine whether or not the specified point lies within this
@@ -452,8 +450,7 @@ public:
         using difference_type = std::ptrdiff_t;
         using iterator_category = std::bidirectional_iterator_tag;
 
-        bool operator==(const self_iterator_type& other) const;
-        bool operator!=(const self_iterator_type& other) const;
+        bool operator==(const iterator_base& other) const;
 
         self_iterator_type& operator++();
         self_iterator_type operator++(int);

@@ -430,12 +430,6 @@ bool rtree<KeyT, ValueT, Traits>::point_type::operator==(const point_type& other
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-bool rtree<KeyT, ValueT, Traits>::point_type::operator!=(const point_type& other) const
-{
-    return !operator==(other);
-}
-
-template<typename KeyT, typename ValueT, typename Traits>
 rtree<KeyT, ValueT, Traits>::extent_type::extent_type()
 {}
 
@@ -466,12 +460,6 @@ template<typename KeyT, typename ValueT, typename Traits>
 bool rtree<KeyT, ValueT, Traits>::extent_type::operator==(const extent_type& other) const
 {
     return start == other.start && end == other.end;
-}
-
-template<typename KeyT, typename ValueT, typename Traits>
-bool rtree<KeyT, ValueT, Traits>::extent_type::operator!=(const extent_type& other) const
-{
-    return !operator==(other);
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
@@ -967,17 +955,9 @@ rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::iter
 template<typename KeyT, typename ValueT, typename Traits>
 template<typename _SelfIter, typename _StoreIter, typename _ValueT>
 bool rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator==(
-    const self_iterator_type& other) const
+    const iterator_base& other) const
 {
     return m_pos == other.m_pos;
-}
-
-template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-bool rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator!=(
-    const self_iterator_type& other) const
-{
-    return !operator==(other);
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
