@@ -213,12 +213,6 @@ bool segment_tree<KeyT, ValueT>::const_iterator_base::operator==(const const_ite
 }
 
 template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::const_iterator_base::operator!=(const const_iterator_base& r) const
-{
-    return !operator==(r);
-}
-
-template<typename KeyT, typename ValueT>
 void segment_tree<KeyT, ValueT>::const_iterator_base::move_to_front()
 {
     if (!mp_res_chains)
@@ -317,12 +311,6 @@ bool segment_tree<KeyT, ValueT>::operator==(const segment_tree& r) const
     }
 
     return n_lhs == rhs.size();
-}
-
-template<typename KeyT, typename ValueT>
-bool segment_tree<KeyT, ValueT>::operator!=(const segment_tree& r) const
-{
-    return !operator==(r);
 }
 
 template<typename KeyT, typename ValueT>

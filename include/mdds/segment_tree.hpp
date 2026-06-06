@@ -192,7 +192,6 @@ private:
         value_type* operator--();
 
         bool operator==(const const_iterator_base& r) const;
-        bool operator!=(const const_iterator_base& r) const;
 
         value_type& operator*()
         {
@@ -349,8 +348,6 @@ public:
      * structures are not compared.
      */
     bool operator==(const segment_tree& r) const;
-
-    bool operator!=(const segment_tree& r) const;
 
     /**
      * Check whether or not the internal tree is in a valid state.  The tree
