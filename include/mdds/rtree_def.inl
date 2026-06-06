@@ -342,10 +342,10 @@ struct reinsertion_bucket
     size_t src_pos;
 };
 
-template<typename _NodePtrT>
+template<typename NodePtrT>
 struct ptr_to_string
 {
-    using node_ptr_type = _NodePtrT;
+    using node_ptr_type = NodePtrT;
     using node_ptr_map_type = std::unordered_map<node_ptr_type, std::string>;
 
     node_ptr_map_type node_ptr_map;
@@ -947,32 +947,32 @@ rtree<KeyT, ValueT, Traits>::search_results_base<NS>::entry::entry(node_store_ty
 {}
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::iterator_base(store_iterator_type pos)
+template<typename SelfIter, typename StoreIter, typename IterValueT>
+rtree<KeyT, ValueT, Traits>::iterator_base<SelfIter, StoreIter, IterValueT>::iterator_base(store_iterator_type pos)
     : m_pos(std::move(pos))
 {}
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-bool rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator==(
+template<typename SelfIter, typename StoreIter, typename IterValueT>
+bool rtree<KeyT, ValueT, Traits>::iterator_base<SelfIter, StoreIter, IterValueT>::operator==(
     const iterator_base& other) const
 {
     return m_pos == other.m_pos;
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type& rtree<
-    KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator++()
+template<typename SelfIter, typename StoreIter, typename IterValueT>
+typename rtree<KeyT, ValueT, Traits>::template iterator_base<SelfIter, StoreIter, IterValueT>::self_iterator_type&
+rtree<KeyT, ValueT, Traits>::iterator_base<SelfIter, StoreIter, IterValueT>::operator++()
 {
     ++m_pos;
     return static_cast<self_iterator_type&>(*this);
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type rtree<
-    KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator++(int)
+template<typename SelfIter, typename StoreIter, typename IterValueT>
+typename rtree<KeyT, ValueT, Traits>::template iterator_base<SelfIter, StoreIter, IterValueT>::self_iterator_type rtree<
+    KeyT, ValueT, Traits>::iterator_base<SelfIter, StoreIter, IterValueT>::operator++(int)
 {
     self_iterator_type ret(m_pos);
     ++m_pos;
@@ -980,18 +980,18 @@ typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIt
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type& rtree<
-    KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator--()
+template<typename SelfIter, typename StoreIter, typename IterValueT>
+typename rtree<KeyT, ValueT, Traits>::template iterator_base<SelfIter, StoreIter, IterValueT>::self_iterator_type&
+rtree<KeyT, ValueT, Traits>::iterator_base<SelfIter, StoreIter, IterValueT>::operator--()
 {
     --m_pos;
     return static_cast<self_iterator_type&>(*this);
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIter, _ValueT>::self_iterator_type rtree<
-    KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::operator--(int)
+template<typename SelfIter, typename StoreIter, typename IterValueT>
+typename rtree<KeyT, ValueT, Traits>::template iterator_base<SelfIter, StoreIter, IterValueT>::self_iterator_type rtree<
+    KeyT, ValueT, Traits>::iterator_base<SelfIter, StoreIter, IterValueT>::operator--(int)
 {
     self_iterator_type ret(m_pos);
     --m_pos;
@@ -999,16 +999,16 @@ typename rtree<KeyT, ValueT, Traits>::template iterator_base<_SelfIter, _StoreIt
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+template<typename SelfIter, typename StoreIter, typename IterValueT>
 const typename rtree<KeyT, ValueT, Traits>::extent_type& rtree<KeyT, ValueT, Traits>::iterator_base<
-    _SelfIter, _StoreIter, _ValueT>::extent() const
+    SelfIter, StoreIter, IterValueT>::extent() const
 {
     return m_pos->ns->extent;
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _SelfIter, typename _StoreIter, typename _ValueT>
-size_t rtree<KeyT, ValueT, Traits>::iterator_base<_SelfIter, _StoreIter, _ValueT>::depth() const
+template<typename SelfIter, typename StoreIter, typename IterValueT>
+size_t rtree<KeyT, ValueT, Traits>::iterator_base<SelfIter, StoreIter, IterValueT>::depth() const
 {
     return m_pos->depth;
 }
@@ -2523,10 +2523,10 @@ void rtree<KeyT, ValueT, Traits>::descend_with_func(FuncT func) const
 }
 
 template<typename KeyT, typename ValueT, typename Traits>
-template<typename _ResT>
+template<typename ResT>
 void rtree<KeyT, ValueT, Traits>::search_descend(
     size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
-    typename _ResT::node_store_type& ns, _ResT& results) const
+    typename ResT::node_store_type& ns, ResT& results) const
 {
     switch (ns.type)
     {

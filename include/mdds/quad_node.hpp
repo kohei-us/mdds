@@ -89,12 +89,12 @@ inline node_quadrant_t opposite(node_quadrant_t quad)
     return quad_unspecified;
 }
 
-template<typename _NodePtr, typename _NodeType, typename _Key>
+template<typename NodePtr, typename NodeType, typename Key>
 struct quad_node_base
 {
-    typedef _Key key_type;
-    typedef _NodePtr node_ptr;
-    typedef _NodeType node_type;
+    typedef Key key_type;
+    typedef NodePtr node_ptr;
+    typedef NodeType node_type;
 
     size_t refcount;
 
@@ -219,28 +219,28 @@ struct quad_node_base
     }
 };
 
-template<typename _NodePtr, typename _NodeType, typename _Key>
-inline void intrusive_ptr_add_ref(::mdds::quad_node_base<_NodePtr, _NodeType, _Key>* p)
+template<typename NodePtr, typename NodeType, typename Key>
+inline void intrusive_ptr_add_ref(::mdds::quad_node_base<NodePtr, NodeType, Key>* p)
 {
     ++p->refcount;
 }
 
-template<typename _NodePtr, typename _NodeType, typename _Key>
-inline void intrusive_ptr_release(::mdds::quad_node_base<_NodePtr, _NodeType, _Key>* p)
+template<typename NodePtr, typename NodeType, typename Key>
+inline void intrusive_ptr_release(::mdds::quad_node_base<NodePtr, NodeType, Key>* p)
 {
     --p->refcount;
     if (!p->refcount)
         delete p;
 }
 
-template<typename _NodePtr>
-void disconnect_node_from_parent(_NodePtr p)
+template<typename NodePtr>
+void disconnect_node_from_parent(NodePtr p)
 {
     if (!p || !p->parent)
         // Nothing to do.
         return;
 
-    _NodePtr& parent = p->parent;
+    NodePtr& parent = p->parent;
     if (parent->northeast && parent->northeast == p)
     {
         parent->northeast.reset();
@@ -261,8 +261,8 @@ void disconnect_node_from_parent(_NodePtr p)
         throw general_error("parent node doesn't lead to the deleted node.");
 }
 
-template<typename _NodePtr>
-void disconnect_all_nodes(_NodePtr p)
+template<typename NodePtr>
+void disconnect_all_nodes(NodePtr p)
 {
     if (!p)
         return;
@@ -294,10 +294,10 @@ void disconnect_all_nodes(_NodePtr p)
     p->parent.reset();
 }
 
-template<typename _NodeType, typename _Key>
-search_region_space_t get_search_region_space(_NodeType* p, _Key x1, _Key y1, _Key x2, _Key y2)
+template<typename NodeType, typename Key>
+search_region_space_t get_search_region_space(NodeType* p, Key x1, Key y1, Key x2, Key y2)
 {
-    typedef _Key key_type;
+    typedef Key key_type;
 
     key_type x = p->x, y = p->y;
     if (x < x1)

@@ -123,7 +123,7 @@ enum class search_type
     match,
 };
 
-template<typename _NodePtrT>
+template<typename NodePtrT>
 struct ptr_to_string;
 
 }} // namespace detail::rtree
@@ -430,12 +430,12 @@ public:
         iterator end();
     };
 
-    template<typename _SelfIter, typename _StoreIter, typename _ValueT>
+    template<typename SelfIter, typename StoreIter, typename IterValueT>
     class iterator_base
     {
     public:
-        using store_iterator_type = _StoreIter;
-        using self_iterator_type = _SelfIter;
+        using store_iterator_type = StoreIter;
+        using self_iterator_type = SelfIter;
 
     protected:
         store_iterator_type m_pos;
@@ -444,7 +444,7 @@ public:
 
     public:
         // iterator traits
-        using value_type = _ValueT;
+        using value_type = IterValueT;
         using pointer = value_type*;
         using reference = value_type&;
         using difference_type = std::ptrdiff_t;
@@ -784,10 +784,10 @@ private:
 
     using search_condition_type = std::function<bool(const node_store&)>;
 
-    template<typename _ResT>
+    template<typename ResT>
     void search_descend(
         size_t depth, const search_condition_type& dir_cond, const search_condition_type& value_cond,
-        typename _ResT::node_store_type& ns, _ResT& results) const;
+        typename ResT::node_store_type& ns, ResT& results) const;
 
     void shrink_tree_upward(node_store* ns, const extent_type& bb_affected);
 
