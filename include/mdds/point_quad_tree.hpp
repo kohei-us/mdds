@@ -252,11 +252,6 @@ public:
                 return m_end_pos == r.m_end_pos;
             }
 
-            bool operator!=(const const_iterator& r) const
-            {
-                return !operator==(r);
-            }
-
             const value_type& operator*() const
             {
                 return m_cur_value;
@@ -475,11 +470,6 @@ public:
 
     bool operator==(const point_quad_tree& r) const;
 
-    bool operator!=(const point_quad_tree& r) const
-    {
-        return !operator==(r);
-    }
-
 #ifdef MDDS_UNIT_TEST
 public:
 #else
@@ -502,11 +492,6 @@ private:
         bool operator==(const node_data& r) const
         {
             return (x == r.x) && (y == r.y) && (data == r.data);
-        }
-
-        bool operator!=(const node_data& r) const
-        {
-            return !operator==(r);
         }
 
         struct sorter
