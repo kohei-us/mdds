@@ -9,6 +9,7 @@
 #include "./cref_wrapper.hpp"
 
 #include <string_view>
+#include <span>
 #include <unordered_map>
 
 namespace mdds {
@@ -103,12 +104,22 @@ public:
     /**
      * Constructor.
      *
+     * @param entries array of key-value entries.
+     * @param null_value null value to return when the find method fails to
+     *                   find a matching entry.
+     */
+    sorted_string_map(std::span<const entry_type> entries, value_type null_value);
+
+    /**
+     * Constructor.
+     *
      * @param entries pointer to the array of key-value entries.
      * @param entry_size size of the key-value entry array.
      * @param null_value null value to return when the find method fails to
      *                   find a matching entry.
      */
-    sorted_string_map(const entry_type* entries, size_type entry_size, value_type null_value);
+    [[deprecated("use the constructor taking std::span<const entry_type> instead")]] sorted_string_map(
+        const entry_type* entries, size_type entry_size, value_type null_value);
 
     /**
      * Find a value associated with a specified string key.
@@ -120,7 +131,8 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    const value_type& find(const char* input, size_type len) const;
+    [[deprecated("use the overload taking std::string_view instead")]] const value_type& find(
+        const char* input, size_type len) const;
 
     /**
      * Find a value associated with a specified string key.

@@ -49,6 +49,15 @@ trie_map & packed_trie_map
 * ``packed_trie_map`` gained a constructor taking ``std::span<const entry>``,
   and its constructor taking ``const entry*`` and a size is deprecated.
 
+sorted_string_map
+^^^^^^^^^^^^^^^^^
+
+* The constructor now takes the key-value entries as
+  ``std::span<const entry_type>``; the constructor taking ``const entry_type*``
+  and a size is deprecated.  The ``find()`` overload taking ``const char*``
+  and a length is also deprecated in favor of the existing overload taking
+  ``std::string_view``.
+
 v3.0
 ----
 

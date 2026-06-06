@@ -4,13 +4,15 @@
 
 #include <mdds/sorted_string_map.hpp>
 
+#include <span>
+
 void stop();
 
 using mdds::sorted_string_map;
 
 void test_sorted_string_map()
 {
-    sorted_string_map<int> empty_ssmap(nullptr, 0, 0);
+    sorted_string_map<int> empty_ssmap(std::span<const sorted_string_map<int>::entry_type>{}, 0);
 
     sorted_string_map<int>::entry_type entries[] = {
         {"aaaa", 1},
@@ -18,7 +20,7 @@ void test_sorted_string_map()
         {"cc", 3},
         {"d", 4},
     };
-    sorted_string_map<int> ssmap_int(entries, std::size(entries), 0);
+    sorted_string_map<int> ssmap_int(entries, 0);
 
     stop();
 }

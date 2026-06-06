@@ -75,9 +75,8 @@ std::string_view hash_key_finder<ValueT>::operator()(const value_type& v) const
 } // namespace ssmap
 
 template<typename ValueT, template<typename> class KeyFinderT>
-sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(
-    const entry_type* entries, size_type entry_size, value_type null_value)
-    : m_entries(entries), m_null_value(std::move(null_value)), m_entry_size(entry_size),
+sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(std::span<const entry_type> entries, value_type null_value)
+    : m_entries(entries.data()), m_null_value(std::move(null_value)), m_entry_size(entries.size()),
       m_entries_end(m_entries + m_entry_size), m_func_find_key(m_entries, m_entries_end)
 {
 #ifdef MDDS_SORTED_STRING_MAP_DEBUG
@@ -87,26 +86,33 @@ sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(
 }
 
 template<typename ValueT, template<typename> class KeyFinderT>
+sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(
+    const entry_type* entries, size_type entry_size, value_type null_value)
+    : sorted_string_map(std::span<const entry_type>(entries, entry_size), std::move(null_value))
+{}
+
+template<typename ValueT, template<typename> class KeyFinderT>
 const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_map<ValueT, KeyFinderT>::find(
     const char* input, size_type len) const
 {
-    if (m_entry_size == 0)
-        return m_null_value;
-
-    const entry_type* val = std::lower_bound(
-        m_entries, m_entries_end, entry_type{{input, len}, value_type{}}, ssmap::detail::compare<value_type>{});
-
-    if (val == m_entries_end || val->key.size() != len || std::memcmp(val->key.data(), input, len))
-        return m_null_value;
-
-    return val->value;
+    return find(std::string_view(input, len));
 }
 
 template<typename ValueT, template<typename> class KeyFinderT>
 const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_map<ValueT, KeyFinderT>::find(
     std::string_view input) const
 {
-    return find(input.data(), input.size());
+    if (m_entry_size == 0)
+        return m_null_value;
+
+    const entry_type* val = std::lower_bound(
+        m_entries, m_entries_end, entry_type{input, value_type{}}, ssmap::detail::compare<value_type>{});
+
+    if (val == m_entries_end || val->key.size() != input.size() ||
+        std::memcmp(val->key.data(), input.data(), input.size()))
+        return m_null_value;
+
+    return val->value;
 }
 
 template<typename ValueT, template<typename> class KeyFinderT>

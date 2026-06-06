@@ -111,7 +111,7 @@ void ssmap_test_basic()
     };
 
     constexpr auto n_entries = std::size(entries);
-    map_type names(entries, n_entries, name_none);
+    map_type names(entries, name_none);
     for (size_t i = 0; i < n_entries; ++i)
     {
         std::cout << "* key = " << entries[i].key << std::endl;
@@ -120,8 +120,8 @@ void ssmap_test_basic()
     }
 
     // Try invalid keys.
-    TEST_ASSERT(names.find("foo", 3) == name_none);
-    TEST_ASSERT(names.find("andy133", 7) == name_none);
+    TEST_ASSERT(names.find("foo") == name_none);
+    TEST_ASSERT(names.find("andy133") == name_none);
 
     // reverse lookup
     TEST_ASSERT(names.find_key(name_bruce) == "bruce");
@@ -153,7 +153,7 @@ void ssmap_test_mixed_case_null()
     };
 
     size_t entry_count = std::size(entries);
-    map_type names(entries, entry_count, -1);
+    map_type names(entries, -1);
     for (size_t i = 0; i < entry_count; ++i)
     {
         std::cout << "* key = " << entries[i].key << std::endl;
@@ -162,10 +162,10 @@ void ssmap_test_mixed_case_null()
     }
 
     // Try invalid keys.
-    TEST_ASSERT(names.find(MDDS_ASCII("NUll")) == -1);
-    TEST_ASSERT(names.find(MDDS_ASCII("Oull")) == -1);
-    TEST_ASSERT(names.find(MDDS_ASCII("Mull")) == -1);
-    TEST_ASSERT(names.find(MDDS_ASCII("hell")) == -1);
+    TEST_ASSERT(names.find("NUll") == -1);
+    TEST_ASSERT(names.find("Oull") == -1);
+    TEST_ASSERT(names.find("Mull") == -1);
+    TEST_ASSERT(names.find("hell") == -1);
 
     // reverse lookup
     TEST_ASSERT(names.find_key(1) == "NULL");
@@ -197,7 +197,7 @@ void ssmap_test_find_string_view()
         {"quarters", cv_quarters}, {"range", cv_range}, {"seconds", cv_seconds}, {"years", cv_years},
     };
 
-    map_type mapping{entries, std::size(entries), cv_unknown};
+    map_type mapping{entries, cv_unknown};
 
     for (const auto& entry : entries)
     {
@@ -235,7 +235,7 @@ void ssmap_test_move_only_value_type()
         {"0x04", {4}},
     };
 
-    map_type mapping{entries, std::size(entries), {0}};
+    map_type mapping{entries, {0}};
 
     for (const auto& e : entries)
     {
@@ -294,7 +294,7 @@ void ssmap_test_perf()
 
     std::cout << "entry count: " << entries.size() << std::endl;
 
-    map_type names(entries.data(), entries.size(), -1);
+    map_type names(entries, -1);
 
     constexpr int repeat = 1000;
     {

@@ -132,7 +132,7 @@ int main() try
     std::cout << "unknown? " << std::boolalpha << (zero == us_state_t::unknown) << std::endl;
 
     //!code-start: init
-    const us_state_map_type state_map(us_state_entries, std::size(us_state_entries), us_state_t::unknown);
+    const us_state_map_type state_map(us_state_entries, us_state_t::unknown);
     //!code-end: init
 
     //!code-start: find
