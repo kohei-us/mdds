@@ -210,12 +210,12 @@ private:
     template<bool IsConst>
     struct stack_item
     {
-        using _is_const = std::bool_constant<IsConst>;
+        using is_const_type = std::bool_constant<IsConst>;
 
         using child_pos_type =
-            typename mdds::detail::get_iterator_type<typename trie_node::children_type, _is_const>::type;
+            typename mdds::detail::get_iterator_type<typename trie_node::children_type, is_const_type>::type;
 
-        using trie_node_type = typename mdds::detail::const_or_not<trie_node, _is_const>::type;
+        using trie_node_type = typename mdds::detail::const_or_not<trie_node, is_const_type>::type;
 
         trie_node_type* node;
         child_pos_type child_pos;
