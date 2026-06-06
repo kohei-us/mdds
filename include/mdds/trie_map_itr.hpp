@@ -151,11 +151,6 @@ public:
         return m_node_stack.back() == other.m_node_stack.back();
     }
 
-    bool operator!=(const iterator_base& other) const
-    {
-        return !operator==(other);
-    }
-
     value_type operator*()
     {
         return value_type(m_current_key, *m_current_value_ptr);
@@ -384,21 +379,9 @@ bool operator==(const iterator<_TrieType>& left, const const_iterator<_TrieType>
 }
 
 template<typename _TrieType>
-bool operator!=(const iterator<_TrieType>& left, const const_iterator<_TrieType>& right)
-{
-    return const_iterator<_TrieType>(left) != right;
-}
-
-template<typename _TrieType>
 bool operator==(const const_iterator<_TrieType>& left, const iterator<_TrieType>& right)
 {
     return left == const_iterator<_TrieType>(right);
-}
-
-template<typename _TrieType>
-bool operator!=(const const_iterator<_TrieType>& left, const iterator<_TrieType>& right)
-{
-    return left != const_iterator<_TrieType>(right);
 }
 
 template<typename _TrieType>
@@ -575,11 +558,6 @@ public:
             return true;
 
         return m_node_stack.back() == other.m_node_stack.back();
-    }
-
-    bool operator!=(const packed_iterator_base& other) const
-    {
-        return !operator==(other);
     }
 
     value_type operator*()

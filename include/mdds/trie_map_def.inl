@@ -750,12 +750,6 @@ bool trie_map<KeyT, ValueT, TraitsT>::operator==(const trie_map& other) const
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>
-bool trie_map<KeyT, ValueT, TraitsT>::operator!=(const trie_map& other) const
-{
-    return !operator==(other);
-}
-
-template<typename KeyT, typename ValueT, typename TraitsT>
 void trie_map<KeyT, ValueT, TraitsT>::swap(trie_map& other)
 {
     m_root.swap(other.m_root);
@@ -1416,12 +1410,6 @@ bool packed_trie_map<KeyT, ValueT, TraitsT>::operator==(const packed_trie_map& o
     }
 
     return true;
-}
-
-template<typename KeyT, typename ValueT, typename TraitsT>
-bool packed_trie_map<KeyT, ValueT, TraitsT>::operator!=(const packed_trie_map& other) const
-{
-    return !operator==(other);
 }
 
 template<typename KeyT, typename ValueT, typename TraitsT>

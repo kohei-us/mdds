@@ -199,11 +199,6 @@ private:
         {
             return node == r.node && child_pos == r.child_pos;
         }
-
-        bool operator!=(const stack_item& r) const
-        {
-            return !operator==(r);
-        }
     };
 
     using const_node_stack_type = std::vector<stack_item<true>>;
@@ -293,7 +288,6 @@ public:
     trie_map& operator=(trie_map other);
 
     bool operator==(const trie_map& other) const;
-    bool operator!=(const trie_map& other) const;
 
     void swap(trie_map& other);
 
@@ -543,11 +537,6 @@ private:
                    child_end == other.child_end;
         }
 
-        bool operator!=(const stack_item& other) const
-        {
-            return !operator==(other);
-        }
-
         bool has_value() const
         {
             return *node_pos != null_value;
@@ -668,8 +657,6 @@ public:
     packed_trie_map& operator=(packed_trie_map other);
 
     bool operator==(const packed_trie_map& other) const;
-
-    bool operator!=(const packed_trie_map& other) const;
 
     const_iterator begin() const;
 
