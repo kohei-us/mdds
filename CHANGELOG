@@ -1,3 +1,32 @@
+mdds 4.0.0 (next target)
+
+* general
+
+  * set the baseline C++ version to C++20, and modernized the codebase
+    accordingly (concepts in place of SFINAE, defaulted operator<=> and
+    operator==, removal of explicit operator!=).
+
+  * renamed the installed header directory and the pkg-config module
+    from mdds-3.0 to mdds-4.0.
+
+  * promoted ref_pair, the value type of the trie_map, packed_trie_map
+    and flat_segment_tree iterators, out of mdds::detail into the public
+    mdds namespace.
+
+* trie_map and packed_trie_map
+
+  * the insert(), erase(), find() and prefix_search() methods now take
+    the key as a single view-type argument (std::basic_string_view for
+    character-based keys, std::span otherwise).  Call sites passing a
+    key object or a string literal remain source compatible.  The
+    pointer and length overloads are deprecated.
+
+* sorted_string_map
+
+  * the constructor now takes the entries as std::span, and find()
+    accepts std::string_view.  The pointer and length overloads are
+    deprecated.
+
 mdds 3.2.1
 
 * introduced in version.hpp the following version number macros:
