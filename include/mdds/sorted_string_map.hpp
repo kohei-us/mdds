@@ -41,9 +41,9 @@ class linear_key_finder
     const entry_type* m_entries_end;
 
 public:
-    linear_key_finder(const entry_type* entries, const entry_type* entries_end) noexcept;
+    constexpr linear_key_finder(const entry_type* entries, const entry_type* entries_end) noexcept;
 
-    std::string_view operator()(const value_type& v) const;
+    constexpr std::string_view operator()(const value_type& v) const;
 };
 
 /**
@@ -108,7 +108,7 @@ public:
      * @param null_value null value to return when the find method fails to
      *                   find a matching entry.
      */
-    sorted_string_map(std::span<const entry_type> entries, value_type null_value);
+    constexpr sorted_string_map(std::span<const entry_type> entries, value_type null_value);
 
     /**
      * Constructor.
@@ -118,7 +118,7 @@ public:
      * @param null_value null value to return when the find method fails to
      *                   find a matching entry.
      */
-    [[deprecated("use the constructor taking std::span<const entry_type> instead")]] sorted_string_map(
+    [[deprecated("use the constructor taking std::span<const entry_type> instead")]] constexpr sorted_string_map(
         const entry_type* entries, size_type entry_size, value_type null_value);
 
     /**
@@ -131,7 +131,7 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    [[deprecated("use the overload taking std::string_view instead")]] const value_type& find(
+    [[deprecated("use the overload taking std::string_view instead")]] constexpr const value_type& find(
         const char* input, size_type len) const;
 
     /**
@@ -142,7 +142,7 @@ public:
      * @return value associated with the key, or the null value in case the
      *         key is not found.
      */
-    const value_type& find(std::string_view input) const;
+    constexpr const value_type& find(std::string_view input) const;
 
     /**
      * Find a key associated with a specified value.
@@ -156,7 +156,7 @@ public:
      * @return Key associated with the value, or an empty string if no key is
      *         found.
      */
-    std::string_view find_key(const value_type& v) const;
+    constexpr std::string_view find_key(const value_type& v) const;
 
     /**
      * Return the number of entries in the map.  Since the number of entries
@@ -165,7 +165,7 @@ public:
      *
      * @return the number of entries in the map.
      */
-    size_type size() const;
+    constexpr size_type size() const;
 
 private:
     const entry_type* m_entries;

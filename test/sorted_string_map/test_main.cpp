@@ -252,6 +252,48 @@ void ssmap_test_move_only_value_type()
     TEST_ASSERT(k.empty()); // not found
 }
 
+void ssmap_test_constexpr()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    enum class color_type
+    {
+        unknown,
+        red,
+        green,
+        blue,
+    };
+
+    // The default linear_key_finder is the only key finder usable in a
+    // constant expression.
+    using map_type = mdds::sorted_string_map<color_type>;
+
+    // The entries must have static storage duration for a constexpr map to
+    // store pointers into them, and must be sorted by key in ascending order.
+    static constexpr map_type::entry_type entries[] = {
+        {"blue", color_type::blue},
+        {"green", color_type::green},
+        {"red", color_type::red},
+    };
+
+    constexpr map_type colors{entries, color_type::unknown};
+
+    static_assert(colors.size() == 3);
+
+    // find()
+    static_assert(colors.find("red") == color_type::red);
+    static_assert(colors.find("green") == color_type::green);
+    static_assert(colors.find("blue") == color_type::blue);
+
+    // non-matching keys return the null value
+    static_assert(colors.find("purple") == color_type::unknown);
+    static_assert(colors.find("re") == color_type::unknown);
+
+    // find_key() reverse lookup
+    static_assert(colors.find_key(color_type::green) == "green");
+    static_assert(colors.find_key(color_type::unknown).empty());
+}
+
 void ssmap_test_perf()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -356,6 +398,7 @@ int main(int argc, char** argv)
         ssmap_test_find_string_view<mdds::ssmap::hash_key_finder>();
         ssmap_test_move_only_value_type<mdds::ssmap::linear_key_finder>();
         ssmap_test_move_only_value_type<mdds::ssmap::hash_key_finder>();
+        ssmap_test_constexpr();
     }
 
     if (opt.test_perf)

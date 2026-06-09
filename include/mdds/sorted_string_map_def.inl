@@ -6,7 +6,6 @@
 
 #include "./global.hpp"
 
-#include <cstring>
 #include <cassert>
 #include <algorithm>
 
@@ -20,29 +19,22 @@ struct compare
 {
     using entry_type = map_entry<ValueT>;
 
-    bool operator()(const entry_type& entry1, const entry_type& entry2) const
+    constexpr bool operator()(const entry_type& entry1, const entry_type& entry2) const
     {
-        if (entry1.key.size() == entry2.key.size())
-            return std::memcmp(entry1.key.data(), entry2.key.data(), entry1.key.size()) < 0;
-
-        std::size_t key_length = std::min(entry1.key.size(), entry2.key.size());
-        int ret = std::memcmp(entry1.key.data(), entry2.key.data(), key_length);
-        if (ret == 0)
-            return entry1.key.size() < entry2.key.size();
-
-        return ret < 0;
+        return entry1.key < entry2.key;
     }
 };
 
 } // namespace detail
 
 template<typename ValueT>
-linear_key_finder<ValueT>::linear_key_finder(const entry_type* entries, const entry_type* entries_end) noexcept
+constexpr linear_key_finder<ValueT>::linear_key_finder(
+    const entry_type* entries, const entry_type* entries_end) noexcept
     : m_entries(entries), m_entries_end(entries_end)
 {}
 
 template<typename ValueT>
-std::string_view linear_key_finder<ValueT>::operator()(const value_type& v) const
+constexpr std::string_view linear_key_finder<ValueT>::operator()(const value_type& v) const
 {
     auto it = std::find_if(m_entries, m_entries_end, [&v](const auto& e) { return e.value == v; });
     if (it == m_entries_end)
@@ -75,7 +67,8 @@ std::string_view hash_key_finder<ValueT>::operator()(const value_type& v) const
 } // namespace ssmap
 
 template<typename ValueT, template<typename> class KeyFinderT>
-sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(std::span<const entry_type> entries, value_type null_value)
+constexpr sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(
+    std::span<const entry_type> entries, value_type null_value)
     : m_entries(entries.data()), m_null_value(std::move(null_value)), m_entry_size(entries.size()),
       m_entries_end(m_entries + m_entry_size), m_func_find_key(m_entries, m_entries_end)
 {
@@ -86,20 +79,20 @@ sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(std::span<const entry_t
 }
 
 template<typename ValueT, template<typename> class KeyFinderT>
-sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(
+constexpr sorted_string_map<ValueT, KeyFinderT>::sorted_string_map(
     const entry_type* entries, size_type entry_size, value_type null_value)
     : sorted_string_map(std::span<const entry_type>(entries, entry_size), std::move(null_value))
 {}
 
 template<typename ValueT, template<typename> class KeyFinderT>
-const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_map<ValueT, KeyFinderT>::find(
+constexpr const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_map<ValueT, KeyFinderT>::find(
     const char* input, size_type len) const
 {
     return find(std::string_view(input, len));
 }
 
 template<typename ValueT, template<typename> class KeyFinderT>
-const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_map<ValueT, KeyFinderT>::find(
+constexpr const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_map<ValueT, KeyFinderT>::find(
     std::string_view input) const
 {
     if (m_entry_size == 0)
@@ -108,21 +101,20 @@ const typename sorted_string_map<ValueT, KeyFinderT>::value_type& sorted_string_
     const entry_type* val = std::lower_bound(
         m_entries, m_entries_end, entry_type{input, value_type{}}, ssmap::detail::compare<value_type>{});
 
-    if (val == m_entries_end || val->key.size() != input.size() ||
-        std::memcmp(val->key.data(), input.data(), input.size()))
+    if (val == m_entries_end || val->key != input)
         return m_null_value;
 
     return val->value;
 }
 
 template<typename ValueT, template<typename> class KeyFinderT>
-std::string_view sorted_string_map<ValueT, KeyFinderT>::find_key(const value_type& v) const
+constexpr std::string_view sorted_string_map<ValueT, KeyFinderT>::find_key(const value_type& v) const
 {
     return m_func_find_key(v);
 }
 
 template<typename ValueT, template<typename> class KeyFinderT>
-typename sorted_string_map<ValueT, KeyFinderT>::size_type sorted_string_map<ValueT, KeyFinderT>::size() const
+constexpr typename sorted_string_map<ValueT, KeyFinderT>::size_type sorted_string_map<ValueT, KeyFinderT>::size() const
 {
     return m_entry_size;
 }
