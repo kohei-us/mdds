@@ -152,6 +152,18 @@ int main() try
     std::cout << "key for rhode_island: " << key << std::endl;
     //!code-end: find-key
 
+    //!code-start: constexpr
+    // Since the entries are known at compile time, the container can also be
+    // constructed and queried entirely at compile time.  This works as long as
+    // it uses the default key finder (mdds::ssmap::linear_key_finder).
+    constexpr us_state_map_type constexpr_state_map(us_state_entries, us_state_t::unknown);
+
+    static_assert(constexpr_state_map.size() == 50);
+    static_assert(constexpr_state_map.find("Oregon") == us_state_t::oregon);
+    static_assert(constexpr_state_map.find("Mars") == us_state_t::unknown);
+    static_assert(constexpr_state_map.find_key(us_state_t::texas) == "Texas");
+    //!code-end: constexpr
+
     return EXIT_SUCCESS;
 }
 catch (...)

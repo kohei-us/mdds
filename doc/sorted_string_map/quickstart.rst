@@ -135,3 +135,23 @@ type :cpp:class:`mdds::ssmap::linear_key_finder`.  In case linear search is not
 desirable, one can specify :cpp:class:`mdds::ssmap::hash_key_finder` as the
 second template argument to switch to a hash-table based lookup algorithm
 instead.
+
+Compile-time use
+----------------
+
+Since the key-value entries are known at compile time, the container itself can
+be constructed and queried entirely at compile time.  As long as the entries
+array is defined at global scope (or marked ``static``) rather than as a local
+variable, and the container uses the default
+:cpp:class:`mdds::ssmap::linear_key_finder`, you can declare the instance as
+``constexpr`` and use it in constant expressions such as ``static_assert``:
+
+.. literalinclude:: ../../example/sorted_string_map.cpp
+   :language: C++
+   :start-after: //!code-start: constexpr
+   :end-before: //!code-end: constexpr
+   :dedent: 4
+
+Note that :cpp:class:`mdds::ssmap::hash_key_finder` cannot be used in a constant
+expression because it builds an internal hash table that requires dynamic memory
+allocation, which is not permitted at compile time.
