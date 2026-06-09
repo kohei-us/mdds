@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: MIT
 
 breathe
-piccolo-theme
+sphinx-rtd-theme
