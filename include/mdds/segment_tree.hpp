@@ -63,7 +63,7 @@ private:
 
         segment_type& operator=(const segment_type& r) = default;
         segment_type& operator=(segment_type&& r) = default;
-        std::weak_ordering operator<=>(const segment_type& r) const = default;
+        auto operator<=>(const segment_type& r) const = default;
         bool operator==(const segment_type& r) const = default;
     };
 
