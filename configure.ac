@@ -187,9 +187,6 @@ test/multi_type_vector/debug-util/soa/Makefile
 test/multi_type_vector/default/Makefile
 test/multi_type_vector/element-blocks/Makefile
 test/multi_type_vector/event/Makefile
-test/multi_type_vector/event/aos/Makefile
-test/multi_type_vector/event/soa/Makefile
-test/multi_type_vector/event/tc/Makefile
 test/multi_type_vector/exec-policy/Makefile
 test/multi_type_vector/exec-policy/soa/Makefile
 test/multi_type_vector/perf/Makefile

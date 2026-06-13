@@ -4,6 +4,12 @@
 //
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
+#include <cstdint>
+#include <string>
+#include <vector>
+
 struct event_block_counter
 {
     size_t block_count; // number of element (data) blocks
@@ -121,18 +127,17 @@ struct event_block_counter
     }
 };
 
-struct eb_counter_trait : public mdds::mtv::standard_element_blocks_traits
+struct eb_counter_traits : public mdds::mtv::standard_element_blocks_traits
 {
     using event_func = event_block_counter;
 
     constexpr static mdds::mtv::lu_factor_t loop_unrolling = mdds::mtv::lu_factor_t::lu8;
 };
 
+template<typename mtv_type>
 void mtv_test_block_counter()
 {
     MDDS_TEST_FUNC_SCOPE;
-
-    using mtv_type = mtv_template_type<eb_counter_trait>;
 
     {
         // Initializing with an empty block should not create any element block.
@@ -1058,18 +1063,18 @@ void mtv_test_block_counter()
 
     {
         mtv_type db1(10);
-        db1.set<int32_t>(0, 2);
-        db1.set<int32_t>(1, 3);
-        db1.set<int32_t>(2, 4);
-        db1.set<std::string>(3, "A");
-        db1.set<std::string>(4, "B");
-        db1.set<std::string>(5, "C");
+        db1.template set<int32_t>(0, 2);
+        db1.template set<int32_t>(1, 3);
+        db1.template set<int32_t>(2, 4);
+        db1.template set<std::string>(3, "A");
+        db1.template set<std::string>(4, "B");
+        db1.template set<std::string>(5, "C");
 
         // Leave some empty range.
         mtv_type db2(10);
         for (int32_t i = 0; i < 10; ++i)
-            db2.set<int32_t>(i, 10 + i);
-        db2.set<int8_t>(5, 'Z');
+            db2.template set<int32_t>(i, 10 + i);
+        db2.template set<int8_t>(5, 'Z');
 
         TEST_ASSERT(db1.event_handler().block_count == 2);
         TEST_ASSERT(db1.event_handler().block_count_int32 == 1);
@@ -1093,19 +1098,18 @@ void mtv_test_block_counter()
     }
 }
 
+template<typename mtv_type>
 void mtv_test_block_counter_clone()
 {
     MDDS_TEST_FUNC_SCOPE;
 
-    using mtv_type = mtv_template_type<eb_counter_trait>;
-
     mtv_type src;
-    src.emplace_back<std::string>("v1");
-    src.emplace_back<std::string>("v2");
-    src.emplace_back<std::string>("v3");
+    src.template emplace_back<std::string>("v1");
+    src.template emplace_back<std::string>("v2");
+    src.template emplace_back<std::string>("v3");
     TEST_ASSERT(src.event_handler().block_count_string == 1);
     src.push_back_empty();
-    src.emplace_back<std::string>("v4");
+    src.template emplace_back<std::string>("v4");
     TEST_ASSERT(src.event_handler().block_count_string == 2);
 
     auto cloned = src.clone();

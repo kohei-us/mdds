@@ -4,6 +4,11 @@
 //
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
+#include <string>
+#include <utility>
+
 struct event_block_init
 {
     std::string name;
@@ -24,18 +29,17 @@ struct event_block_init
     {}
 };
 
-struct eb_init_trait : public mdds::mtv::standard_element_blocks_traits
+struct eb_init_traits : public mdds::mtv::standard_element_blocks_traits
 {
     using event_func = event_block_init;
 
     constexpr static mdds::mtv::lu_factor_t loop_unrolling = mdds::mtv::lu_factor_t::lu8;
 };
 
+template<typename mtv_type>
 void mtv_test_block_init()
 {
     MDDS_TEST_FUNC_SCOPE;
-
-    using mtv_type = mtv_template_type<eb_init_trait>;
 
     {
         mtv_type db(event_block_init("some name")); // pass an rvalue
