@@ -31,8 +31,8 @@ test_util_SOURCES = \
 	$(top_srcdir)/test/test_global.cpp
 
 EXTRA_DIST = \
-	no_standard_blocks_defs.inl \
-	no_standard_blocks_funcs.inl \
+	no_standard_blocks_defs.hpp \
+	no_standard_blocks_funcs.hpp \
 	test_soa.hpp \
 	test_aos.hpp \
 	test_main.hpp

@@ -5,16 +5,21 @@
 // SPDX-License-Identifier: MIT
 
 #include "test_aos.hpp"
-#include "no_standard_blocks_defs.inl"
+#include "no_standard_blocks_defs.hpp"
 
 // Settting this to 0 should make the multi_type_vector code to NOT include
 // the header for the standard element blocks.
 #define MDDS_MTV_USE_STANDARD_ELEMENT_BLOCKS 0
 #include <mdds/multi_type_vector/aos/main.hpp>
 
-template<typename... Ts>
-using mtv_type = mdds::mtv::aos::multi_type_vector<Ts...>;
+#include "no_standard_blocks_funcs.hpp"
 
-#include "no_standard_blocks_funcs.inl"
+template<typename... Ts>
+using mtv_aos = mdds::mtv::aos::multi_type_vector<Ts...>;
+
+void test_mtv_basic()
+{
+    mtv_test_no_standard_blocks_basic<mtv_aos>();
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
