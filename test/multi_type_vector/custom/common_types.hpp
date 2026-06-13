@@ -9,6 +9,9 @@
 #include <mdds/multi_type_vector/macro.hpp>
 #include <mdds/multi_type_vector/standard_element_blocks.hpp>
 
+#include <memory>
+#include <vector>
+
 /** Caller manages the life cycle of these cells. */
 struct user_cell
 {
@@ -108,7 +111,7 @@ public:
     }
 };
 
-struct user_muser_trait : public mdds::mtv::default_traits
+struct user_muser_traits : public mdds::mtv::default_traits
 {
     using block_funcs = mdds::mtv::element_block_funcs<
         mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::uint8_element_block,
@@ -118,7 +121,7 @@ struct user_muser_trait : public mdds::mtv::default_traits
         user_cell_block, muser_cell_block>;
 };
 
-struct fruit_trait : public mdds::mtv::default_traits
+struct fruit_traits : public mdds::mtv::default_traits
 {
     using block_funcs = mdds::mtv::element_block_funcs<
         mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::uint8_element_block,
@@ -127,7 +130,7 @@ struct fruit_trait : public mdds::mtv::default_traits
         mdds::mtv::float_element_block, mdds::mtv::double_element_block, mdds::mtv::string_element_block, fruit_block>;
 };
 
-struct muser_fruit_date_trait : public mdds::mtv::default_traits
+struct muser_fruit_date_traits : public mdds::mtv::default_traits
 {
     using block_funcs = mdds::mtv::element_block_funcs<
         mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::uint8_element_block,

@@ -4,6 +4,15 @@
 //
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
+#include "common_types.hpp"
+
+#include <cstdint>
+#include <iterator>
+#include <string>
+
+template<typename mtv_type>
 void mtv_test_transfer()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -29,15 +38,15 @@ void mtv_test_transfer()
 
     // Now db1 should be totally empty.
     TEST_ASSERT(db1.block_size() == 1);
-    mtv_type::iterator check = db1.begin();
+    typename mtv_type::iterator check = db1.begin();
     TEST_ASSERT(check != db1.end());
     TEST_ASSERT(check->type == mdds::mtv::element_type_empty);
     TEST_ASSERT(check->size == 3);
 
     TEST_ASSERT(db2.block_size() == 2);
-    TEST_ASSERT(db2.get<muser_cell*>(0)->value == 1.1);
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 1.2);
-    TEST_ASSERT(db2.get<muser_cell*>(2)->value == 1.3);
+    TEST_ASSERT(db2.template get<muser_cell*>(0)->value == 1.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 1.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(2)->value == 1.3);
     TEST_ASSERT(db2.is_empty(3));
 
     // Transfer back to db1. This should make db2 to be totally empty again.
@@ -49,27 +58,27 @@ void mtv_test_transfer()
     TEST_ASSERT(check->type == mdds::mtv::element_type_empty);
 
     TEST_ASSERT(db1.block_size() == 1);
-    TEST_ASSERT(db1.get<muser_cell*>(0)->value == 1.1);
-    TEST_ASSERT(db1.get<muser_cell*>(1)->value == 1.2);
-    TEST_ASSERT(db1.get<muser_cell*>(2)->value == 1.3);
+    TEST_ASSERT(db1.template get<muser_cell*>(0)->value == 1.1);
+    TEST_ASSERT(db1.template get<muser_cell*>(1)->value == 1.2);
+    TEST_ASSERT(db1.template get<muser_cell*>(2)->value == 1.3);
 
     // Now, transfer only the top 2 elements.
     db1.transfer(0, 1, db2, 0);
     TEST_ASSERT(db1.is_empty(0));
     TEST_ASSERT(db1.is_empty(1));
-    TEST_ASSERT(db1.get<muser_cell*>(2)->value == 1.3);
+    TEST_ASSERT(db1.template get<muser_cell*>(2)->value == 1.3);
 
-    TEST_ASSERT(db2.get<muser_cell*>(0)->value == 1.1);
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 1.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(0)->value == 1.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 1.2);
     TEST_ASSERT(db2.is_empty(2));
     TEST_ASSERT(db2.is_empty(3));
 
     // .. and back.
     db2.transfer(0, 1, db1, 0);
     TEST_ASSERT(db1.block_size() == 1);
-    TEST_ASSERT(db1.get<muser_cell*>(0)->value == 1.1);
-    TEST_ASSERT(db1.get<muser_cell*>(1)->value == 1.2);
-    TEST_ASSERT(db1.get<muser_cell*>(2)->value == 1.3);
+    TEST_ASSERT(db1.template get<muser_cell*>(0)->value == 1.1);
+    TEST_ASSERT(db1.template get<muser_cell*>(1)->value == 1.2);
+    TEST_ASSERT(db1.template get<muser_cell*>(2)->value == 1.3);
 
     TEST_ASSERT(db2.block_size() == 1);
     check = db2.begin();
@@ -107,11 +116,11 @@ void mtv_test_transfer()
     TEST_ASSERT(db1.is_empty(0));
     TEST_ASSERT(db1.is_empty(1));
     TEST_ASSERT(db1.is_empty(2));
-    TEST_ASSERT(db1.get<muser_cell*>(3)->value == 3.4);
+    TEST_ASSERT(db1.template get<muser_cell*>(3)->value == 3.4);
     TEST_ASSERT(db2.block_size() == 2);
-    TEST_ASSERT(db2.get<muser_cell*>(0)->value == 3.1);
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 3.2);
-    TEST_ASSERT(db2.get<muser_cell*>(2)->value == 3.3);
+    TEST_ASSERT(db2.template get<muser_cell*>(0)->value == 3.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 3.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(2)->value == 3.3);
     TEST_ASSERT(db2.is_empty(3));
 
     db1 = mtv_type(3);
@@ -127,9 +136,9 @@ void mtv_test_transfer()
     TEST_ASSERT(check->size == 3);
     TEST_ASSERT(check->type == mdds::mtv::element_type_empty);
     TEST_ASSERT(db2.block_size() == 1);
-    TEST_ASSERT(db2.get<muser_cell*>(0)->value == 4.1);
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 4.2);
-    TEST_ASSERT(db2.get<muser_cell*>(2)->value == 4.3);
+    TEST_ASSERT(db2.template get<muser_cell*>(0)->value == 4.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 4.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(2)->value == 4.3);
 
     // Transfer to middle of block.
     db1 = mtv_type(3);
@@ -144,7 +153,7 @@ void mtv_test_transfer()
     TEST_ASSERT(check->type == mdds::mtv::element_type_empty);
     TEST_ASSERT(db2.block_size() == 3);
     TEST_ASSERT(db2.is_empty(0));
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 5.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 5.2);
     TEST_ASSERT(db2.is_empty(2));
 
     db1 = mtv_type(2);
@@ -153,11 +162,11 @@ void mtv_test_transfer()
     db1.set(1, new muser_cell(11.2));
     db1.transfer(1, 1, db2, 1);
     TEST_ASSERT(db1.block_size() == 2);
-    TEST_ASSERT(db1.get<muser_cell*>(0)->value == 11.1);
+    TEST_ASSERT(db1.template get<muser_cell*>(0)->value == 11.1);
     TEST_ASSERT(db1.is_empty(1));
     TEST_ASSERT(db2.block_size() == 3);
     TEST_ASSERT(db2.is_empty(0));
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 11.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 11.2);
     TEST_ASSERT(db2.is_empty(2));
 
     // Transfer to bottom of block.
@@ -175,8 +184,8 @@ void mtv_test_transfer()
     TEST_ASSERT(db2.is_empty(0));
     TEST_ASSERT(db2.is_empty(1));
     TEST_ASSERT(db2.is_empty(2));
-    TEST_ASSERT(db2.get<muser_cell*>(3)->value == 6.1);
-    TEST_ASSERT(db2.get<muser_cell*>(4)->value == 6.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(3)->value == 6.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(4)->value == 6.2);
 
     // Transfer multiple blocks.  Very simple use case.
     db1 = mtv_type(4);
@@ -193,9 +202,9 @@ void mtv_test_transfer()
     TEST_ASSERT(check->type == mdds::mtv::element_type_empty);
 
     TEST_ASSERT(db2.block_size() == 3);
-    TEST_ASSERT(db2.get<muser_cell*>(0)->value == 10.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(0)->value == 10.1);
     TEST_ASSERT(db2.is_empty(1));
-    TEST_ASSERT(db2.get<muser_cell*>(2)->value == 10.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(2)->value == 10.2);
 
     // Multiple-block transfer that involves merging.
     db1 = mtv_type(5);
@@ -208,38 +217,38 @@ void mtv_test_transfer()
     db2.set(0, new muser_cell(1.1));
     db2.set(4, new muser_cell(1.2));
 
-    mtv_type::iterator it = db1.transfer(1, 3, db2, 1);
+    typename mtv_type::iterator it = db1.transfer(1, 3, db2, 1);
     TEST_ASSERT(db1.block_size() == 3);
-    TEST_ASSERT(db1.get<muser_cell*>(0)->value == 0.1);
+    TEST_ASSERT(db1.template get<muser_cell*>(0)->value == 0.1);
     TEST_ASSERT(db1.is_empty(1));
     TEST_ASSERT(db1.is_empty(2));
     TEST_ASSERT(db1.is_empty(3));
-    TEST_ASSERT(db1.get<muser_cell*>(4)->value == 0.4);
+    TEST_ASSERT(db1.template get<muser_cell*>(4)->value == 0.4);
 
     TEST_ASSERT(db2.block_size() == 3);
-    TEST_ASSERT(db2.get<muser_cell*>(0)->value == 1.1);
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 0.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(0)->value == 1.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 0.2);
     TEST_ASSERT(db2.is_empty(2));
-    TEST_ASSERT(db2.get<muser_cell*>(3)->value == 0.3);
-    TEST_ASSERT(db2.get<muser_cell*>(4)->value == 1.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(3)->value == 0.3);
+    TEST_ASSERT(db2.template get<muser_cell*>(4)->value == 1.2);
 
     TEST_ASSERT(it != db1.end());
     TEST_ASSERT(it->size == 3);
     TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
     it = db1.transfer(it, 4, 4, db2, 2); // Transfer single element at 4.
     TEST_ASSERT(db1.block_size() == 2);
-    TEST_ASSERT(db1.get<muser_cell*>(0)->value == 0.1);
+    TEST_ASSERT(db1.template get<muser_cell*>(0)->value == 0.1);
     TEST_ASSERT(db1.is_empty(1));
     TEST_ASSERT(db1.is_empty(2));
     TEST_ASSERT(db1.is_empty(3));
     TEST_ASSERT(db1.is_empty(4));
 
     TEST_ASSERT(db2.block_size() == 1);
-    TEST_ASSERT(db2.get<muser_cell*>(0)->value == 1.1);
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 0.2);
-    TEST_ASSERT(db2.get<muser_cell*>(2)->value == 0.4);
-    TEST_ASSERT(db2.get<muser_cell*>(3)->value == 0.3);
-    TEST_ASSERT(db2.get<muser_cell*>(4)->value == 1.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(0)->value == 1.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 0.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(2)->value == 0.4);
+    TEST_ASSERT(db2.template get<muser_cell*>(3)->value == 0.3);
+    TEST_ASSERT(db2.template get<muser_cell*>(4)->value == 1.2);
 
     TEST_ASSERT(it != db1.end());
     TEST_ASSERT(it->size == 4);
@@ -265,17 +274,17 @@ void mtv_test_transfer()
     std::advance(it, 2);
     TEST_ASSERT(it == db1.end());
     TEST_ASSERT(db1.block_size() == 3);
-    TEST_ASSERT(db1.get<muser_cell*>(0)->value == -1.1);
-    TEST_ASSERT(db1.get<muser_cell*>(1)->value == -2.1);
+    TEST_ASSERT(db1.template get<muser_cell*>(0)->value == -1.1);
+    TEST_ASSERT(db1.template get<muser_cell*>(1)->value == -2.1);
     TEST_ASSERT(db1.is_empty(2));
     TEST_ASSERT(db1.is_empty(3));
-    TEST_ASSERT(db1.get<muser_cell*>(4)->value == -5.1);
+    TEST_ASSERT(db1.template get<muser_cell*>(4)->value == -5.1);
 
     TEST_ASSERT(db2.block_size() == 5);
     TEST_ASSERT(db2.is_empty(0));
-    TEST_ASSERT(db2.get<bool>(1) == true);
-    TEST_ASSERT(db2.get<muser_cell*>(2)->value == -3.1);
-    TEST_ASSERT(db2.get<std::string>(3) == "foo");
+    TEST_ASSERT(db2.template get<bool>(1) == true);
+    TEST_ASSERT(db2.template get<muser_cell*>(2)->value == -3.1);
+    TEST_ASSERT(db2.template get<std::string>(3) == "foo");
     TEST_ASSERT(db2.is_empty(4));
 
     // Multi-block transfer to the bottom part of destination block.
@@ -303,19 +312,19 @@ void mtv_test_transfer()
     ++it;
     TEST_ASSERT(it == db1.end());
     TEST_ASSERT(db1.block_size() == 3);
-    TEST_ASSERT(db1.get<int8_t>(3) == 'b');
+    TEST_ASSERT(db1.template get<int8_t>(3) == 'b');
 
     TEST_ASSERT(db2.block_size() == 4);
-    TEST_ASSERT(db2.get<bool>(0) == true);
-    TEST_ASSERT(db2.get<bool>(1) == false);
+    TEST_ASSERT(db2.template get<bool>(0) == true);
+    TEST_ASSERT(db2.template get<bool>(1) == false);
     TEST_ASSERT(db2.is_empty(2));
     TEST_ASSERT(db2.is_empty(3));
     TEST_ASSERT(db2.is_empty(4));
     TEST_ASSERT(db2.is_empty(5));
     TEST_ASSERT(db2.is_empty(6));
-    TEST_ASSERT(db2.get<muser_cell*>(7)->value == 2.1);
-    TEST_ASSERT(db2.get<muser_cell*>(8)->value == 2.2);
-    TEST_ASSERT(db2.get<int8_t>(9) == 'a');
+    TEST_ASSERT(db2.template get<muser_cell*>(7)->value == 2.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(8)->value == 2.2);
+    TEST_ASSERT(db2.template get<int8_t>(9) == 'a');
 
     // Multi-block transfer to the middle part of destination block.
     db1 = mtv_type(10);
@@ -347,21 +356,21 @@ void mtv_test_transfer()
 
     TEST_ASSERT(db1.block_size() == 4);
     TEST_ASSERT(db1.is_empty(6));
-    TEST_ASSERT(db1.get<muser_cell*>(7)->value == 2.7);
-    TEST_ASSERT(db1.get<bool>(8) == true);
+    TEST_ASSERT(db1.template get<muser_cell*>(7)->value == 2.7);
+    TEST_ASSERT(db1.template get<bool>(8) == true);
     TEST_ASSERT(db1.is_empty(9));
 
     TEST_ASSERT(db2.block_size() == 7);
-    TEST_ASSERT(db2.get<bool>(0) == true);
+    TEST_ASSERT(db2.template get<bool>(0) == true);
     TEST_ASSERT(db2.is_empty(1));
-    TEST_ASSERT(db2.get<muser_cell*>(2)->value == 2.4);
-    TEST_ASSERT(db2.get<muser_cell*>(3)->value == 2.5);
-    TEST_ASSERT(db2.get<std::string>(4) == "abc");
-    TEST_ASSERT(db2.get<muser_cell*>(5)->value == 2.6);
+    TEST_ASSERT(db2.template get<muser_cell*>(2)->value == 2.4);
+    TEST_ASSERT(db2.template get<muser_cell*>(3)->value == 2.5);
+    TEST_ASSERT(db2.template get<std::string>(4) == "abc");
+    TEST_ASSERT(db2.template get<muser_cell*>(5)->value == 2.6);
     TEST_ASSERT(db2.is_empty(6));
     TEST_ASSERT(db2.is_empty(7));
     TEST_ASSERT(db2.is_empty(8));
-    TEST_ASSERT(db2.get<bool>(9) == true);
+    TEST_ASSERT(db2.template get<bool>(9) == true);
 
     db1 = mtv_type(10);
     db2 = mtv_type(10);
@@ -379,7 +388,7 @@ void mtv_test_transfer()
     TEST_ASSERT(db2.is_empty(0));
     TEST_ASSERT(db2.is_empty(1));
     TEST_ASSERT(db2.is_empty(2));
-    TEST_ASSERT(db2.get<bool>(3) == true);
+    TEST_ASSERT(db2.template get<bool>(3) == true);
     TEST_ASSERT(db2.is_empty(4));
     TEST_ASSERT(db2.is_empty(5));
     TEST_ASSERT(db2.is_empty(6));
@@ -399,9 +408,9 @@ void mtv_test_transfer()
     TEST_ASSERT(db1.is_empty(0));
     TEST_ASSERT(db1.is_empty(1));
     TEST_ASSERT(db1.is_empty(2));
-    TEST_ASSERT(db2.get<muser_cell*>(0)->value == 1.1);
-    TEST_ASSERT(db2.get<muser_cell*>(1)->value == 1.2);
-    TEST_ASSERT(db2.get<muser_cell*>(2)->value == 1.3);
+    TEST_ASSERT(db2.template get<muser_cell*>(0)->value == 1.1);
+    TEST_ASSERT(db2.template get<muser_cell*>(1)->value == 1.2);
+    TEST_ASSERT(db2.template get<muser_cell*>(2)->value == 1.3);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

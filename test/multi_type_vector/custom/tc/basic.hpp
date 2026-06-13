@@ -4,6 +4,14 @@
 //
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
+#include "common_types.hpp"
+
+#include <string>
+#include <vector>
+
+template<typename mtv_type>
 void mtv_test_basic()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -22,12 +30,12 @@ void mtv_test_basic()
         db.set(3, p);
         db.set(2, p);
 
-        user_cell* p2 = db.get<user_cell*>(0);
+        user_cell* p2 = db.template get<user_cell*>(0);
         TEST_ASSERT(p->value == p2->value);
 
         p = pool.construct(3.4);
         db.set(0, p);
-        p2 = db.get<user_cell*>(0);
+        p2 = db.template get<user_cell*>(0);
         TEST_ASSERT(p->value == p2->value);
         pool.clear();
     }
@@ -46,11 +54,11 @@ void mtv_test_basic()
         db.set(0, vals.begin(), vals.end());
 
         user_cell* ptest;
-        ptest = db.get<user_cell*>(0);
+        ptest = db.template get<user_cell*>(0);
         TEST_ASSERT(ptest && ptest->value == 1.1);
-        ptest = db.get<user_cell*>(1);
+        ptest = db.template get<user_cell*>(1);
         TEST_ASSERT(ptest && ptest->value == 2.2);
-        ptest = db.get<user_cell*>(2);
+        ptest = db.template get<user_cell*>(2);
         TEST_ASSERT(ptest && ptest->value == 3.3);
 
         db.resize(6);
@@ -63,64 +71,64 @@ void mtv_test_basic()
         vals.push_back(p6);
         db.set(3, vals.begin(), vals.end());
 
-        ptest = db.get<user_cell*>(0);
+        ptest = db.template get<user_cell*>(0);
         TEST_ASSERT(ptest && ptest->value == 1.1);
-        ptest = db.get<user_cell*>(1);
+        ptest = db.template get<user_cell*>(1);
         TEST_ASSERT(ptest && ptest->value == 2.2);
-        ptest = db.get<user_cell*>(2);
+        ptest = db.template get<user_cell*>(2);
         TEST_ASSERT(ptest && ptest->value == 3.3);
-        ptest = db.get<user_cell*>(3);
+        ptest = db.template get<user_cell*>(3);
         TEST_ASSERT(ptest && ptest->value == 11);
-        ptest = db.get<user_cell*>(4);
+        ptest = db.template get<user_cell*>(4);
         TEST_ASSERT(ptest && ptest->value == 22);
-        ptest = db.get<user_cell*>(5);
+        ptest = db.template get<user_cell*>(5);
         TEST_ASSERT(ptest && ptest->value == 33);
 
         // Shrink the block to erase the bottom 3 cells.
         db.resize(3);
         TEST_ASSERT(db.size() == 3);
-        ptest = db.get<user_cell*>(2);
+        ptest = db.template get<user_cell*>(2);
         TEST_ASSERT(ptest && ptest->value == 3.3);
 
         // Re-insert the values at the front.
         db.insert(0, vals.begin(), vals.end());
         TEST_ASSERT(db.size() == 6);
 
-        ptest = db.get<user_cell*>(0);
+        ptest = db.template get<user_cell*>(0);
         TEST_ASSERT(ptest && ptest->value == 11);
-        ptest = db.get<user_cell*>(1);
+        ptest = db.template get<user_cell*>(1);
         TEST_ASSERT(ptest && ptest->value == 22);
-        ptest = db.get<user_cell*>(2);
+        ptest = db.template get<user_cell*>(2);
         TEST_ASSERT(ptest && ptest->value == 33);
-        ptest = db.get<user_cell*>(3);
+        ptest = db.template get<user_cell*>(3);
         TEST_ASSERT(ptest && ptest->value == 1.1);
-        ptest = db.get<user_cell*>(4);
+        ptest = db.template get<user_cell*>(4);
         TEST_ASSERT(ptest && ptest->value == 2.2);
-        ptest = db.get<user_cell*>(5);
+        ptest = db.template get<user_cell*>(5);
         TEST_ASSERT(ptest && ptest->value == 3.3);
 
         // set_empty(), is_empty().
         db.set_empty(2, 4);
         TEST_ASSERT(db.block_size() == 3);
-        TEST_ASSERT(db.get<user_cell*>(1)->value == 22);
+        TEST_ASSERT(db.template get<user_cell*>(1)->value == 22);
         TEST_ASSERT(db.is_empty(2));
         TEST_ASSERT(db.is_empty(3));
         TEST_ASSERT(db.is_empty(4));
-        TEST_ASSERT(db.get<user_cell*>(5)->value == 3.3);
+        TEST_ASSERT(db.template get<user_cell*>(5)->value == 3.3);
 
         // erase()
         db.erase(3, 5);
         TEST_ASSERT(db.size() == 3);
-        TEST_ASSERT(db.get<user_cell*>(1)->value == 22);
+        TEST_ASSERT(db.template get<user_cell*>(1)->value == 22);
         TEST_ASSERT(db.is_empty(2));
 
         // insert_empty().
         db.insert_empty(1, 2);
         TEST_ASSERT(db.size() == 5);
-        TEST_ASSERT(db.get<user_cell*>(0)->value == 11);
+        TEST_ASSERT(db.template get<user_cell*>(0)->value == 11);
         TEST_ASSERT(db.is_empty(1));
         TEST_ASSERT(db.is_empty(2));
-        TEST_ASSERT(db.get<user_cell*>(3)->value == 22);
+        TEST_ASSERT(db.template get<user_cell*>(3)->value == 22);
         TEST_ASSERT(db.is_empty(4));
 
         pool.clear();
@@ -150,9 +158,9 @@ void mtv_test_basic()
         vals.push_back(pool.construct(2.4));
         db.set(1, vals.begin(), vals.end());
         TEST_ASSERT(db.is_empty(0));
-        TEST_ASSERT(db.get<user_cell*>(1)->value == 2.3);
-        TEST_ASSERT(db.get<user_cell*>(2)->value == 2.4);
-        TEST_ASSERT(db.get<user_cell*>(3)->value == 1.1);
+        TEST_ASSERT(db.template get<user_cell*>(1)->value == 2.3);
+        TEST_ASSERT(db.template get<user_cell*>(2)->value == 2.4);
+        TEST_ASSERT(db.template get<user_cell*>(3)->value == 1.1);
 
         pool.clear();
     }
@@ -160,11 +168,12 @@ void mtv_test_basic()
     {
         // Get empty value.
         mtv_type db(1);
-        user_cell* p = db.get<user_cell*>(0);
+        user_cell* p = db.template get<user_cell*>(0);
         TEST_ASSERT(p == nullptr);
     }
 }
 
+template<typename mtv_type>
 void mtv_test_basic_equality()
 {
     MDDS_TEST_FUNC_SCOPE;

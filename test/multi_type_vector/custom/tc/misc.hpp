@@ -4,6 +4,15 @@
 //
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
+#include "common_types.hpp"
+
+#include <cstdint>
+#include <string>
+#include <vector>
+
+template<typename mtv_type, typename mtv_fruit_type>
 void mtv_test_misc_types()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -32,6 +41,7 @@ void mtv_test_misc_types()
     TEST_ASSERT(ct == element_type_fruit_block && ct >= mdds::mtv::element_type_user_start);
 }
 
+template<typename mtv_type>
 void mtv_test_misc_block_identifier()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -42,6 +52,7 @@ void mtv_test_misc_block_identifier()
     TEST_ASSERT(date_block::block_type == element_type_date_block);
 }
 
+template<typename mtv_fruit_type>
 void mtv_test_misc_custom_block_func1()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -53,16 +64,17 @@ void mtv_test_misc_custom_block_func1()
     db.set(3, peach);
     TEST_ASSERT(db.block_size() == 2);
     TEST_ASSERT(db.get_type(0) == element_type_fruit_block);
-    TEST_ASSERT(db.get<my_fruit_type>(0) == apple);
-    TEST_ASSERT(db.get<my_fruit_type>(1) == orange);
-    TEST_ASSERT(db.get<my_fruit_type>(2) == mango);
-    TEST_ASSERT(db.get<my_fruit_type>(3) == peach);
-    db.set<int>(1, 234);
+    TEST_ASSERT(db.template get<my_fruit_type>(0) == apple);
+    TEST_ASSERT(db.template get<my_fruit_type>(1) == orange);
+    TEST_ASSERT(db.template get<my_fruit_type>(2) == mango);
+    TEST_ASSERT(db.template get<my_fruit_type>(3) == peach);
+    db.template set<int>(1, 234);
     TEST_ASSERT(db.block_size() == 4);
     db.set(1, apple);
     TEST_ASSERT(db.block_size() == 2);
 }
 
+template<typename mtv3_type>
 void mtv_test_misc_custom_block_func3()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -78,21 +90,22 @@ void mtv_test_misc_custom_block_func3()
     TEST_ASSERT(db.get_type(1) == element_type_fruit_block);
     TEST_ASSERT(db.get_type(2) == element_type_date_block);
     TEST_ASSERT(db.get_type(3) == element_type_date_block);
-    TEST_ASSERT(db.get<muser_cell*>(0)->value == 12.3);
-    TEST_ASSERT(db.get<my_fruit_type>(1) == apple);
-    TEST_ASSERT(db.get<date>(2).year == 1989);
-    TEST_ASSERT(db.get<date>(2).month == 12);
-    TEST_ASSERT(db.get<date>(2).day == 13);
-    TEST_ASSERT(db.get<date>(3).year == 2011);
-    TEST_ASSERT(db.get<date>(3).month == 8);
-    TEST_ASSERT(db.get<date>(3).day == 7);
+    TEST_ASSERT(db.template get<muser_cell*>(0)->value == 12.3);
+    TEST_ASSERT(db.template get<my_fruit_type>(1) == apple);
+    TEST_ASSERT(db.template get<date>(2).year == 1989);
+    TEST_ASSERT(db.template get<date>(2).month == 12);
+    TEST_ASSERT(db.template get<date>(2).day == 13);
+    TEST_ASSERT(db.template get<date>(3).year == 2011);
+    TEST_ASSERT(db.template get<date>(3).month == 8);
+    TEST_ASSERT(db.template get<date>(3).day == 7);
     TEST_ASSERT(db.block_size() == 4);
 
     // We should still support the primitive types.
     db.set(8, 34.56);
-    TEST_ASSERT(db.get<double>(8) == 34.56);
+    TEST_ASSERT(db.template get<double>(8) == 34.56);
 }
 
+template<typename mtv_type>
 void mtv_test_misc_release()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -115,12 +128,12 @@ void mtv_test_misc_release()
     TEST_ASSERT(db.block_size() == 1);
 
     // Release those allocated on the stack to avoid double deletion.
-    mtv_type::iterator it = db.release_range(1, 2);
+    typename mtv_type::iterator it = db.release_range(1, 2);
 
     // Check the integrity of the returned iterator.
     TEST_ASSERT(it->type == mdds::mtv::element_type_empty);
     TEST_ASSERT(it->size == 2);
-    mtv_type::iterator check = it;
+    typename mtv_type::iterator check = it;
     --check;
     TEST_ASSERT(check == db.begin());
     check = it;
@@ -131,8 +144,8 @@ void mtv_test_misc_release()
     db.push_back(new muser_cell(10.2));
     TEST_ASSERT(db.size() == 5);
 
-    muser_cell* p1 = db.get<muser_cell*>(3);
-    muser_cell* p2 = db.get<muser_cell*>(4);
+    muser_cell* p1 = db.template get<muser_cell*>(3);
+    muser_cell* p2 = db.template get<muser_cell*>(4);
     TEST_ASSERT(p1->value == 10.1);
     TEST_ASSERT(p2->value == 10.2);
 
@@ -156,6 +169,7 @@ void mtv_test_misc_release()
     delete p2;
 }
 
+template<typename mtv_type>
 void mtv_test_misc_construction_with_array()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -169,9 +183,9 @@ void mtv_test_misc_construction_with_array()
         db.set(1, 10.2); // overwrite.
         TEST_ASSERT(db.size() == 3);
         TEST_ASSERT(db.block_size() == 3);
-        TEST_ASSERT(db.get<muser_cell*>(0)->value == 2.1);
-        TEST_ASSERT(db.get<double>(1) == 10.2);
-        TEST_ASSERT(db.get<muser_cell*>(2)->value == 2.3);
+        TEST_ASSERT(db.template get<muser_cell*>(0)->value == 2.1);
+        TEST_ASSERT(db.template get<double>(1) == 10.2);
+        TEST_ASSERT(db.template get<muser_cell*>(2)->value == 2.3);
 
         // Now those heap objects are owned by the container.  Clearing the
         // array shouldn't leak.
