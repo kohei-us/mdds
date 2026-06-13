@@ -4,14 +4,19 @@
 //
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
+#include "common_types.hpp"
+
+template<typename mtv_type>
 void test_clone()
 {
     MDDS_TEST_FUNC_SCOPE;
 
     mtv_type store;
-    store.push_back<custom_num>(1.1);
-    store.push_back<custom_num>(1.2);
-    store.push_back<custom_num>(1.3);
+    store.template push_back<custom_num>(1.1);
+    store.template push_back<custom_num>(1.2);
+    store.template push_back<custom_num>(1.3);
     store.push_back_empty();
     store.push_back(new custom_str1{"custom str1 1"});
     store.push_back(new custom_str1{"custom str1 2"});
@@ -27,6 +32,7 @@ void test_clone()
     TEST_ASSERT(store == cloned);
 }
 
+template<typename mtv_type>
 void test_noclone()
 {
     MDDS_TEST_FUNC_SCOPE;

@@ -2,6 +2,36 @@
 #
 # SPDX-License-Identifier: MIT
 
-SUBDIRS = aos soa tc
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/test/include \
+	$(CXXFLAGS_UNITTESTS)
 
-EXTRA_DIST = common_types.hpp
+check_PROGRAMS = test-aos test-soa
+
+test_aos_SOURCES = \
+	test_aos.cpp \
+	$(top_srcdir)/test/test_global.cpp
+
+test_aos_CPPFLAGS = \
+	-I$(srcdir) \
+	-I$(srcdir)/tc \
+	$(AM_CPPFLAGS)
+
+test_soa_SOURCES = \
+	test_soa.cpp \
+	$(top_srcdir)/test/test_global.cpp
+
+test_soa_CPPFLAGS = \
+	-I$(srcdir) \
+	-I$(srcdir)/tc \
+	$(AM_CPPFLAGS)
+
+EXTRA_DIST = \
+	common_types.hpp \
+	tc/clone.hpp \
+	tc/run.hpp
+
+TESTS = test-aos test-soa
+
+@VALGRIND_CHECK_RULES@

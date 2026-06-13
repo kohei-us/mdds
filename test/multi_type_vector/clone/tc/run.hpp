@@ -6,14 +6,13 @@
 
 #pragma once
 
-#include "common_types.hpp"
+#include "clone.hpp"
 
-#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
-#include <mdds/multi_type_vector/aos/main.hpp>
-
-using mtv_type = mdds::mtv::aos::multi_type_vector<user_traits>;
-
-void test_clone();
-void test_noclone();
+template<typename mtv_type>
+void run_all_tests()
+{
+    test_clone<mtv_type>();
+    test_noclone<mtv_type>(); // now runs for both variants (previously aos-only)
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
