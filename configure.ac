@@ -191,9 +191,6 @@ test/multi_type_vector/custom-trait/soa/Makefile
 test/multi_type_vector/debug-util/Makefile
 test/multi_type_vector/debug-util/soa/Makefile
 test/multi_type_vector/default/Makefile
-test/multi_type_vector/default/aos/Makefile
-test/multi_type_vector/default/soa/Makefile
-test/multi_type_vector/default/tc/Makefile
 test/multi_type_vector/element-blocks/Makefile
 test/multi_type_vector/event/Makefile
 test/multi_type_vector/event/aos/Makefile
