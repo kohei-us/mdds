@@ -4,6 +4,14 @@
 //
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
+#include "common_types.hpp"
+
+#include <iterator>
+#include <utility>
+
+template<typename mtv_type>
 void test_push_back_copy()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -31,6 +39,7 @@ void test_push_back_copy()
     TEST_ASSERT(user_cell::copy_count == 2);
 }
 
+template<typename mtv_type>
 void test_push_back_move()
 {
     MDDS_TEST_FUNC_SCOPE;
@@ -62,25 +71,26 @@ void test_push_back_move()
     }
 }
 
+template<typename mtv_type>
 void test_emplace_back()
 {
     MDDS_TEST_FUNC_SCOPE;
 
     mtv_type vec;
-    auto it = vec.emplace_back<user_cell>(int(12));
+    auto it = vec.template emplace_back<user_cell>(int(12));
     TEST_ASSERT(it == std::prev(vec.end()));
 
-    it = vec.emplace_back<user_cell>(float(-42));
+    it = vec.template emplace_back<user_cell>(float(-42));
     TEST_ASSERT(it == std::prev(vec.end()));
 
     vec.push_back_empty();
 
-    it = vec.emplace_back<user_cell>(short(18), short(12));
+    it = vec.template emplace_back<user_cell>(short(18), short(12));
     TEST_ASSERT(it == std::prev(vec.end()));
 
-    TEST_ASSERT(vec.get<user_cell>(0).get_value() == "int: 12");
-    TEST_ASSERT(vec.get<user_cell>(1).get_value() == "float: -42");
-    TEST_ASSERT(vec.get<user_cell>(3).get_value() == "short+short: 30");
+    TEST_ASSERT(vec.template get<user_cell>(0).get_value() == "int: 12");
+    TEST_ASSERT(vec.template get<user_cell>(1).get_value() == "float: -42");
+    TEST_ASSERT(vec.template get<user_cell>(3).get_value() == "short+short: 30");
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

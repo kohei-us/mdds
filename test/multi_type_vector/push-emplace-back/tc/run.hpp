@@ -4,9 +4,16 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "test_global.hpp" // This must be the first header to be included.
-#include "test_main.hpp"
+#pragma once
 
-#include "push_back.inl"
+#include "push_back.hpp"
+
+template<typename mtv_type>
+void run_all_tests()
+{
+    test_push_back_copy<mtv_type>();
+    test_push_back_move<mtv_type>();
+    test_emplace_back<mtv_type>();
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

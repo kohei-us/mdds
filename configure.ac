@@ -200,9 +200,6 @@ test/multi_type_vector/exec-policy/Makefile
 test/multi_type_vector/exec-policy/soa/Makefile
 test/multi_type_vector/perf/Makefile
 test/multi_type_vector/push-emplace-back/Makefile
-test/multi_type_vector/push-emplace-back/aos/Makefile
-test/multi_type_vector/push-emplace-back/soa/Makefile
-test/multi_type_vector/push-emplace-back/tc/Makefile
 test/point_quad_tree/Makefile
 test/rtree/Makefile
 test/segment_tree/Makefile
