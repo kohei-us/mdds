@@ -6,7 +6,7 @@ SUBDIRS = \
 	clone \
 	collection \
 	custom \
-	custom-trait \
+	custom-traits \
 	debug-util \
 	default \
 	element-blocks \

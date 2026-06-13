@@ -5,25 +5,28 @@
 // SPDX-License-Identifier: MIT
 
 #include "test_global.hpp" // This must be the first header to be included.
-#include "test_main.hpp"
+
+#define MDDS_MULTI_TYPE_VECTOR_DEBUG 1
+#include <mdds/multi_type_vector/aos/main.hpp>
+
+#include "run.hpp"
+
+template<typename Traits>
+using mtv_tmpl = mdds::mtv::aos::multi_type_vector<Traits>;
 
 int main()
 {
     try
     {
-        mtv_test_loop_unrolling_0();
-        mtv_test_loop_unrolling_4();
-        mtv_test_loop_unrolling_8();
-        mtv_test_loop_unrolling_16();
-        mtv_test_loop_unrolling_32();
+        run_all_tests<mtv_tmpl>();
     }
     catch (const std::exception& e)
     {
-        cout << "Test failed: " << e.what() << endl;
+        std::cout << "Test failed: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
-    cout << "Test finished successfully!" << endl;
+    std::cout << "Test finished successfully!" << std::endl;
     return EXIT_SUCCESS;
 }
 

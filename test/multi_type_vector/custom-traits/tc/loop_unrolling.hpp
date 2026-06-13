@@ -4,7 +4,11 @@
 //
 // SPDX-License-Identifier: MIT
 
-namespace {
+#pragma once
+
+#include <cstdint>
+#include <string>
+#include <vector>
 
 using mdds::mtv::lu_factor_t;
 
@@ -16,13 +20,10 @@ struct trait_lu : public mdds::mtv::standard_element_blocks_traits
     constexpr static lu_factor_t loop_unrolling = F;
 };
 
-} // namespace
-
-template<lu_factor_t F>
+template<typename mtv_type>
 void mtv_test_loop_unrolling()
 {
-    cout << "loop unrolling factor = " << int(F) << endl;
-    using mtv_type = mtv_alias_type<trait_lu<F>>;
+    MDDS_TEST_FUNC_SCOPE;
 
     mtv_type db(5, std::string("test"));
 
@@ -36,41 +37,6 @@ void mtv_test_loop_unrolling()
         std::vector<int8_t> values(2, 89);
         db.insert(0, values.begin(), values.end());
     }
-}
-
-void mtv_test_loop_unrolling_0()
-{
-    MDDS_TEST_FUNC_SCOPE;
-
-    mtv_test_loop_unrolling<lu_factor_t::none>();
-}
-
-void mtv_test_loop_unrolling_4()
-{
-    MDDS_TEST_FUNC_SCOPE;
-
-    mtv_test_loop_unrolling<lu_factor_t::lu4>();
-}
-
-void mtv_test_loop_unrolling_8()
-{
-    MDDS_TEST_FUNC_SCOPE;
-
-    mtv_test_loop_unrolling<lu_factor_t::lu8>();
-}
-
-void mtv_test_loop_unrolling_16()
-{
-    MDDS_TEST_FUNC_SCOPE;
-
-    mtv_test_loop_unrolling<lu_factor_t::lu16>();
-}
-
-void mtv_test_loop_unrolling_32()
-{
-    MDDS_TEST_FUNC_SCOPE;
-
-    mtv_test_loop_unrolling<lu_factor_t::lu32>();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

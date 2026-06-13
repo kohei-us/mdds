@@ -179,9 +179,7 @@ test/multi_type_vector/custom/Makefile
 test/multi_type_vector/custom/aos/Makefile
 test/multi_type_vector/custom/soa/Makefile
 test/multi_type_vector/custom/tc/Makefile
-test/multi_type_vector/custom-trait/Makefile
-test/multi_type_vector/custom-trait/aos/Makefile
-test/multi_type_vector/custom-trait/soa/Makefile
+test/multi_type_vector/custom-traits/Makefile
 test/multi_type_vector/debug-util/Makefile
 test/multi_type_vector/debug-util/soa/Makefile
 test/multi_type_vector/default/Makefile
