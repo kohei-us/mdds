@@ -175,9 +175,6 @@ test/multi_type_matrix/Makefile
 test/multi_type_vector/Makefile
 test/multi_type_vector/clone/Makefile
 test/multi_type_vector/collection/Makefile
-test/multi_type_vector/collection/aos/Makefile
-test/multi_type_vector/collection/soa/Makefile
-test/multi_type_vector/collection/tc/Makefile
 test/multi_type_vector/custom/Makefile
 test/multi_type_vector/custom/aos/Makefile
 test/multi_type_vector/custom/soa/Makefile
