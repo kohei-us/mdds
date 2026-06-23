@@ -148,6 +148,16 @@ protected:
 template<typename ValueT>
 struct clone_value;
 
+namespace detail {
+
+template<typename ValueT, typename = void>
+inline constexpr bool has_clone_value = false;
+
+template<typename ValueT>
+inline constexpr bool has_clone_value<ValueT, std::void_t<decltype(clone_value<ValueT>{})>> = true;
+
+} // namespace detail
+
 /**
  * Default variant which throws element_block_error.
  *
@@ -192,6 +202,7 @@ struct clone_block<BlockT>
  * @param <BlockT> Element block type which must be non-copyable.
  */
 template<typename BlockT>
+    requires(!std::copy_constructible<BlockT>)
 struct clone_block<BlockT, std::void_t<decltype(clone_value<typename BlockT::value_type>{})>>
 {
     using store_type = typename BlockT::store_type;
@@ -623,6 +634,11 @@ template<typename Self, element_t TypeId, typename ValueT, template<typename, ty
 class copyable_element_block : public element_block<Self, TypeId, ValueT, StoreT>
 {
     using base_type = element_block<Self, TypeId, ValueT, StoreT>;
+
+    static_assert(
+        !detail::has_clone_value<ValueT>,
+        "clone_value or clone_block must not be specialized for a copyable element block's value "
+        "type; it is reserved for non-copyable blocks, which are duplicated via clone.");
 
 protected:
     copyable_element_block() noexcept(std::is_nothrow_default_constructible_v<base_type>) : base_type()
