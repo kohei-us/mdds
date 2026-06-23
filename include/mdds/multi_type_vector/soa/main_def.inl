@@ -467,6 +467,70 @@ multi_type_vector<Traits>::~multi_type_vector()
 }
 
 template<typename Traits>
+void multi_type_vector<Traits>::share() const
+{
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            // The parent store already borrows from a shared holder.
+            return;
+
+        // Transfer ownership of the blocks from the parent store to a shared
+        // COW store.
+        m_cow_store = std::make_shared<shared_element_blocks>();
+        m_cow_store->blocks = m_block_store.element_blocks;
+    }
+}
+
+template<typename Traits>
+void multi_type_vector<Traits>::detach()
+{
+    if constexpr (Traits::enable_cow)
+    {
+        if (!m_cow_store)
+            // The parent store is already the sole owner of the blocks.
+            return;
+
+        // Clone all blocks into a fresh store, committing only once every clone
+        // succeeds.
+        std::vector<base_element_block*> owned(m_block_store.element_blocks.size(), nullptr);
+
+        try
+        {
+            for (size_type i = 0; i < owned.size(); ++i)
+                if (base_element_block* p = m_block_store.element_blocks[i])
+                    owned[i] = block_funcs::clone_block(*p);
+        }
+        catch (...)
+        {
+            // clone_block has thrown, free the partial clones and rethrow;
+            // the store should still be left as if detach() was not called,
+            // without leaks.
+            for (base_element_block* c : owned)
+                if (c)
+                    block_funcs::delete_block(c);
+            throw;
+        }
+
+        // All blocks have been successfully cloned.  Transfer them to the
+        // parent store.
+        for (size_type i = 0; i < owned.size(); ++i)
+        {
+            if (owned[i])
+            {
+                m_hdl_event.element_block_released(m_block_store.element_blocks[i]);
+                m_hdl_event.element_block_acquired(owned[i]);
+                m_block_store.element_blocks[i] = owned[i];
+            }
+        }
+
+        // Leave the COW borrower state.  The original blocks will be freed once
+        // the last borrower leaves.
+        m_cow_store.reset();
+    }
+}
+
+template<typename Traits>
 auto multi_type_vector<Traits>::clone() const -> multi_type_vector
 {
     MDDS_MTV_TRACE(accessor);

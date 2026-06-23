@@ -1487,11 +1487,49 @@ private:
 #endif
 
 private:
+    /**
+     * Shared holder of borrowed element blocks under copy-on-write (COW).
+     * When a COW instance shares its storage, the block pointers are owned by
+     * one of these holders; the holder frees them exactly once when the last
+     * borrower leaves.
+     */
+    struct shared_element_blocks
+    {
+        std::vector<base_element_block*> blocks;
+
+        ~shared_element_blocks()
+        {
+            for (base_element_block* p : blocks)
+                block_funcs::delete_block(p);
+        }
+    };
+
+    /**
+     * Called by the source store when transitioning from being the sole owner
+     * to one of borrowers.
+     */
+    void share() const;
+
+    /**
+     * Called when the store needs to transition from one of borrowers to being
+     * the sole owner.
+     */
+    void detach();
+
     using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Traits::loop_unrolling>;
 
     event_func m_hdl_event;
     blocks_type m_block_store;
     size_type m_cur_size;
+
+    /**
+     * Copy-on-write store.  This is null when the parent store doesn't have COW
+     * active & it fully owns the blocks.  When this is non-null the parent
+     * store simply borrows the blocks and this COW store owns the blocks and
+     * there may be multiple borrowers.
+     */
+    [[no_unique_address]] mutable std::conditional_t<
+        Traits::enable_cow, std::shared_ptr<shared_element_blocks>, mtv::detail::empty_cow_store> m_cow_store;
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_TRACE
     mutable int m_trace_call_depth = 0;

@@ -97,6 +97,14 @@ struct clone_construction_type
 {
 };
 
+/**
+ * Empty placeholder used as the copy-on-write store member when COW is
+ * disabled.
+ */
+struct empty_cow_store
+{
+};
+
 #ifdef MDDS_MULTI_TYPE_VECTOR_TRACE
 
 template<typename T>
