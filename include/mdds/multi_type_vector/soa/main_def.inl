@@ -463,6 +463,20 @@ multi_type_vector<Traits>::~multi_type_vector()
 {
     MDDS_MTV_TRACE(destructor);
 
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+        {
+            // Borrowing: fire the logical release events but don't delete the
+            // blocks.
+            for (base_element_block* p : m_block_store.element_blocks)
+                if (p)
+                    m_hdl_event.element_block_released(p);
+            return;
+        }
+    }
+
+    // sole owner - delete blocks normally
     delete_element_blocks(0, m_block_store.positions.size());
 }
 
