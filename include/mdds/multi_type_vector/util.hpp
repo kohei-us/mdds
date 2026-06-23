@@ -67,6 +67,14 @@ struct default_traits
     static constexpr lu_factor_t loop_unrolling = lu_factor_t::lu16;
 
     /**
+     * Static value specifying whether or not to enable copy-on-write (COW)
+     * semantics for the element block storage.  When enabled, a copied or
+     * cloned instance shares the source's element blocks until the first
+     * mutation, at which point it makes its own private copy of the storage.
+     */
+    static constexpr bool enable_cow = false;
+
+    /**
      * Execution policy for potentially parallelizable operations.
      */
     using exec_policy = default_exec_policy;
