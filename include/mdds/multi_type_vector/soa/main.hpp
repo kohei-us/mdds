@@ -1165,6 +1165,23 @@ public:
      */
     void shrink_to_fit();
 
+    /**
+     * Ensure that this container is the sole owner of its element blocks.  When
+     * copy-on-write is enabled and this container is currently borrowing shared
+     * blocks, this performs the deferred duplication of the blocks so that
+     * subsequent modifications no longer affect any other sharer.
+     *
+     * <p>It is a no-op when the container already owns its blocks, and when
+     * copy-on-write is disabled.</p>
+     *
+     * @note Mutating methods detach automatically; no need to call this
+     * explicitly ahead of time.  You may need to call this explicitly prior to
+     * calling methods such as release() and release_range() especially when
+     * you need to ensure that the memory addresses of the released elements
+     * point to non-shared store.
+     */
+    void detach();
+
     bool operator==(const multi_type_vector& other) const;
 
     multi_type_vector& operator=(const multi_type_vector& other);
@@ -1524,10 +1541,9 @@ private:
     void share() const;
 
     /**
-     * Called when the store needs to transition from one of borrowers to being
-     * the sole owner.
+     * Non-tracing core of detach(), called from mutating methods.
      */
-    void detach();
+    void detach_impl();
 
     using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Traits::loop_unrolling>;
 
