@@ -695,7 +695,7 @@ public:
 
     static Self* copy_block(const base_element_block&)
     {
-        throw element_block_error("attempted to copy a noncopyable element block.");
+        throw element_block_error("attempted to copy a noncopyable element block");
     }
 
     static Self* clone_block(const base_element_block& src)

@@ -121,14 +121,32 @@ template<typename Traits>
 multi_type_vector<Traits>::blocks_type::blocks_type(mtv::detail::clone_construction_type, const blocks_type& other)
     : positions(other.positions), sizes(other.sizes), element_blocks(other.element_blocks)
 {
-    detail::copy_blocks<typename Traits::exec_policy, block_funcs::clone_block>{}(element_blocks);
+    if constexpr (Traits::enable_cow)
+    {
+        // COW enabled - the shallow element_blocks copy above is the borrow;
+        // deep clone is deffered to detach()
+    }
+    else
+    {
+        // COW disabled - deep-clone element_blocks
+        detail::copy_blocks<typename Traits::exec_policy, block_funcs::clone_block>{}(element_blocks);
+    }
 }
 
 template<typename Traits>
 multi_type_vector<Traits>::blocks_type::blocks_type(const blocks_type& other)
     : positions(other.positions), sizes(other.sizes), element_blocks(other.element_blocks)
 {
-    detail::copy_blocks<typename Traits::exec_policy, block_funcs::copy_block>{}(element_blocks);
+    if constexpr (Traits::enable_cow)
+    {
+        // COW enabled - the shallow element_blocks copy above is the borrow;
+        // deep clone is deffered to detach()
+    }
+    else
+    {
+        // COW disabled - deep-copy element_blocks
+        detail::copy_blocks<typename Traits::exec_policy, block_funcs::copy_block>{}(element_blocks);
+    }
 }
 
 template<typename Traits>
@@ -416,6 +434,14 @@ multi_type_vector<Traits>::multi_type_vector(mtv::detail::clone_construction_typ
     : m_hdl_event(other.m_hdl_event), m_block_store(mtv::detail::clone_construction_type{}, other.m_block_store),
       m_cur_size(other.m_cur_size)
 {
+    if constexpr (Traits::enable_cow)
+    {
+        // The m_block_store has been shallow-copied above; share the source's
+        // blocks and defer the clone to first write.
+        other.share();
+        m_cow_store = other.m_cow_store;
+    }
+
     // NB: this must be done sequentially since it involves client-side callback.
     for (const base_element_block* data : m_block_store.element_blocks)
     {
@@ -434,6 +460,19 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
 {
     MDDS_MTV_TRACE_ARGS(constructor, "other=? (copy)");
 
+    if constexpr (Traits::enable_cow)
+    {
+        // reject a noncopyable block early to align with the behavior of
+        // non-COW store
+        for (const base_element_block* p : m_block_store.element_blocks)
+            if (p && !block_funcs::is_copyable(*p))
+                throw element_block_error("attempted to copy a noncopyable element block");
+
+        // share the source's blocks and defer the copy to first write
+        other.share();
+        m_cow_store = other.m_cow_store;
+    }
+
     // NB: this must be done sequentially since it involves client-side callback.
     for (const base_element_block* data : m_block_store.element_blocks)
     {
@@ -449,7 +488,7 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
 template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other) noexcept(nothrow_move_constructible_v)
     : m_hdl_event(std::move(other.m_hdl_event)), m_block_store(std::move(other.m_block_store)),
-      m_cur_size(std::move(other.m_cur_size))
+      m_cur_size(std::move(other.m_cur_size)), m_cow_store(std::move(other.m_cow_store))
 {
     MDDS_MTV_TRACE_ARGS(constructor, "other=? (move)");
 
@@ -5228,6 +5267,7 @@ void multi_type_vector<Traits>::swap(multi_type_vector& other) noexcept(nothrow_
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
     m_block_store.swap(other.m_block_store);
+    std::swap(m_cow_store, other.m_cow_store);
 }
 
 template<typename Traits>

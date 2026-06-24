@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <functional>
 #include <sstream>
+#include <concepts>
 
 namespace mdds { namespace mtv {
 
@@ -66,6 +67,19 @@ struct element_block_funcs
 
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
         return f(block);
+    }
+
+    static bool is_copyable(const base_element_block& block)
+    {
+        // Compile-time copyability per block type; a plain bool map, so it does
+        // not go through detail::find_func (which is typed for std::function maps).
+        static const std::unordered_map<element_t, bool> func_map{{Ts::block_type, std::copy_constructible<Ts>}...};
+
+        auto it = func_map.find(get_block_type(block));
+        if (it == func_map.end())
+            detail::throw_unknown_block(__func__, get_block_type(block));
+
+        return it->second;
     }
 
     static void delete_block(const base_element_block* p)
