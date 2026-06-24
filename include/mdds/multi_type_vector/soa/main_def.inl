@@ -637,6 +637,7 @@ void multi_type_vector<Traits>::get_impl(size_type pos, T& value) const
 
 template<typename Traits>
 typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::position(size_type pos)
+    requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
 
@@ -644,7 +645,7 @@ typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::pos
     {
         // This is a valid end position.  Create a valid position object that
         // represents a valid end position.
-        return position_type(end(), 0);
+        return position_type(make_end(), 0);
     }
 
     size_type block_index = get_block_position(pos);
@@ -661,6 +662,7 @@ typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::pos
 template<typename Traits>
 typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::position(
     const iterator& pos_hint, size_type pos)
+    requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE_ARGS(accessor_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos);
 
@@ -668,7 +670,7 @@ typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::pos
     {
         // This is a valid end position.  Create a valid position object that
         // represents a valid end position.
-        return position_type(end(), 0);
+        return position_type(make_end(), 0);
     }
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
@@ -930,7 +932,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
     auto res = mdds::mtv::detail::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
 
     if (!res.second)
-        return end();
+        return make_end();
 
     size_type end_pos = res.first;
     size_type block_index1 = get_block_position(pos);
@@ -977,7 +979,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
 
     auto res = mdds::mtv::detail::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
     if (!res.second)
-        return end();
+        return make_end();
 
     size_type end_pos = res.first;
     size_type block_index1 = get_block_position(pos_hint->__private_data, pos);
@@ -1346,7 +1348,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert_e
 
     if (!length)
         // Nothing to insert.
-        return end();
+        return make_end();
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -1388,7 +1390,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert_e
 
     if (!length)
         // Nothing to insert.
-        return end();
+        return make_end();
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
@@ -1531,7 +1533,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_impl
         {
             // t|--x|b - This is the only block.
             set_cell_to_bottom_of_data_block(0, value);
-            iterator itr = end();
+            iterator itr = make_end();
             return --itr;
         }
 
@@ -1540,7 +1542,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_impl
         {
             // t|--x|---|b - Next block is of different type.
             set_cell_to_bottom_of_data_block(0, value);
-            iterator itr = begin();
+            iterator itr = make_begin();
             return ++itr;
         }
 
@@ -1562,7 +1564,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_impl
     {
         // t|???|--x|b - This is the last block.
         set_cell_to_bottom_of_data_block(block_index, value);
-        iterator itr = end();
+        iterator itr = make_end();
         return --itr;
     }
 
@@ -1945,7 +1947,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert_c
     size_type length = std::distance(it_begin, it_end);
     if (!length)
         // empty data array.  nothing to do.
-        return end();
+        return make_end();
 
     element_t cat = mdds_mtv_get_element_type(*it_begin);
     base_element_block* blk_data = m_block_store.element_blocks[block_index];
@@ -3196,7 +3198,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
                 // This column is allowed to have only one row!
                 assert(pos_in_block == 0);
                 create_new_block_with_new_cell(block_index, cell);
-                return begin();
+                return make_begin();
             }
 
             // block has multiple rows.
@@ -3213,7 +3215,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
                 create_new_block_with_new_cell(0, cell);
 
                 m_block_store.positions[1] = 1;
-                return begin();
+                return make_begin();
             }
 
             if (size_type& blk_size = m_block_store.sizes[block_index]; pos_in_block == blk_size - 1)
@@ -3227,7 +3229,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
                 m_block_store.element_blocks.push_back(nullptr);
 
                 create_new_block_with_new_cell(block_index + 1, cell);
-                iterator ret = end();
+                iterator ret = make_end();
                 return --ret;
             }
 
@@ -3277,7 +3279,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
                 create_new_block_with_new_cell(0, cell);
             }
 
-            return begin();
+            return make_begin();
         }
 
         if (pos_in_block == m_block_store.sizes[block_index] - 1)
@@ -3481,7 +3483,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
             m_block_store.calc_block_position(block_index + 1);
             create_new_block_with_new_cell(block_index + 1, cell);
 
-            iterator it = end();
+            iterator it = make_end();
             return --it;
         }
         else
@@ -3531,7 +3533,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
         {
             // t|x|b - This is the only block.
             create_new_block_with_new_cell(block_index, cell);
-            return begin();
+            return make_begin();
         }
 
         // There is a block below.
@@ -3540,7 +3542,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
         {
             // t|x|---|b - Next block is of different type.
             create_new_block_with_new_cell(block_index, cell);
-            return begin();
+            return make_begin();
         }
 
         // t|x|xxx|b - Delete this block and prepend the cell to the next block.
@@ -3550,7 +3552,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
         delete_element_block(block_index);
         m_block_store.erase(block_index);
 
-        return begin();
+        return make_begin();
     }
 
     assert(block_index > 0);
@@ -3573,7 +3575,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_cell
             m_block_store.erase(block_index);
         }
 
-        iterator itr = end();
+        iterator itr = make_end();
         return --itr;
     }
 
@@ -3925,24 +3927,38 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::begin()
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::make_begin()
 {
-    MDDS_MTV_TRACE(accessor);
-
     return iterator(
         {m_block_store.positions.begin(), m_block_store.sizes.begin(), m_block_store.element_blocks.begin()},
         {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this, 0);
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::end()
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::make_end()
 {
-    MDDS_MTV_TRACE(accessor);
-
     return iterator(
         {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()},
         {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this,
         m_block_store.positions.size());
+}
+
+template<typename Traits>
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::begin()
+    requires(!Traits::enable_cow)
+{
+    MDDS_MTV_TRACE(accessor);
+
+    return make_begin();
+}
+
+template<typename Traits>
+typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::end()
+    requires(!Traits::enable_cow)
+{
+    MDDS_MTV_TRACE(accessor);
+
+    return make_end();
 }
 
 template<typename Traits>
@@ -3983,23 +3999,37 @@ typename multi_type_vector<Traits>::const_iterator multi_type_vector<Traits>::ce
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::rbegin()
+typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::make_rbegin()
 {
-    MDDS_MTV_TRACE(accessor);
-
     return reverse_iterator(
         {m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin()},
         {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
 }
 
 template<typename Traits>
-typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::rend()
+typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::make_rend()
 {
-    MDDS_MTV_TRACE(accessor);
-
     return reverse_iterator(
         {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()},
         {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
+}
+
+template<typename Traits>
+typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::rbegin()
+    requires(!Traits::enable_cow)
+{
+    MDDS_MTV_TRACE(accessor);
+
+    return make_rbegin();
+}
+
+template<typename Traits>
+typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::rend()
+    requires(!Traits::enable_cow)
+{
+    MDDS_MTV_TRACE(accessor);
+
+    return make_rend();
 }
 
 template<typename Traits>

@@ -448,7 +448,8 @@ public:
      *         block where the element resides, and its offset within that
      *         block.
      */
-    position_type position(size_type pos);
+    position_type position(size_type pos)
+        requires(!Traits::enable_cow);
 
     /**
      * Given the logical position of an element, get the iterator of the block
@@ -469,7 +470,8 @@ public:
      *         block where the element resides, and its offset within that
      *         block.
      */
-    position_type position(const iterator& pos_hint, size_type pos);
+    position_type position(const iterator& pos_hint, size_type pos)
+        requires(!Traits::enable_cow);
 
     /**
      * Given the logical position of an element, get an iterator referencing
@@ -1108,8 +1110,11 @@ public:
      */
     iterator release_range(const iterator& pos_hint, size_type start_pos, size_type end_pos);
 
-    iterator begin();
-    iterator end();
+    iterator begin()
+        requires(!Traits::enable_cow);
+
+    iterator end()
+        requires(!Traits::enable_cow);
 
     const_iterator begin() const;
     const_iterator end() const;
@@ -1117,8 +1122,11 @@ public:
     const_iterator cbegin() const;
     const_iterator cend() const;
 
-    reverse_iterator rbegin();
-    reverse_iterator rend();
+    reverse_iterator rbegin()
+        requires(!Traits::enable_cow);
+
+    reverse_iterator rend()
+        requires(!Traits::enable_cow);
 
     const_reverse_iterator rbegin() const;
     const_reverse_iterator rend() const;
@@ -1179,6 +1187,11 @@ public:
 #endif
 
 private:
+    iterator make_begin();
+    iterator make_end();
+    reverse_iterator make_rbegin();
+    reverse_iterator make_rend();
+
     void delete_element_block(size_type block_index);
 
     void delete_element_blocks(size_type start, size_type end);
