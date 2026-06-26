@@ -5,6 +5,7 @@
 SUBDIRS = \
 	clone \
 	collection \
+	cow \
 	custom \
 	custom-traits \
 	debug-util \

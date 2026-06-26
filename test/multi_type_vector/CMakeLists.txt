@@ -5,6 +5,7 @@
 add_subdirectory(default)
 add_subdirectory(clone)
 add_subdirectory(collection)
+add_subdirectory(cow)
 add_subdirectory(custom)
 add_subdirectory(custom-traits)
 add_subdirectory(debug-util)
