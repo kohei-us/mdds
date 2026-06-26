@@ -247,6 +247,8 @@ private:
 
     multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other);
 
+    multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other, event_func hdl);
+
 public:
     using iterator = detail::iterator_base<iterator_trait>;
     using const_iterator = detail::const_iterator_base<const_iterator_trait, iterator>;
@@ -420,9 +422,9 @@ public:
     /**
      * Clone the entire content of container.  What this method does is very
      * similar to what the copy constructor does except that this method allows
-     * cloning of non-copyable element blocks if specializations of
-     * mdds::mtv::clone_value template type exist for the value types stored in
-     * the element blocks being cloned.
+     * cloning of non-copyable element blocks if specializations of either
+     * mdds::mtv::clone_value or mdds::mtv::clone_block exist for the value
+     * types stored in the element blocks being cloned.
      *
      * @return Brand-new instance containing the same content as the original
      *         instance.
@@ -431,6 +433,22 @@ public:
      *                least one affected value type.
      */
     multi_type_vector clone() const;
+
+    /**
+     * Clone the entire content of container, assigning a different event
+     * handler in the cloned instance.  This behaves like clone() except that
+     * the returned instance uses the supplied event handler rather than a copy
+     * of this instance's handler.
+     *
+     * @param hdl Event handler to install in the cloned instance.
+     *
+     * @return Brand-new instance containing the same content as the original
+     *         instance, using the supplied event handler.
+     *
+     * @exception mdds::mtv::element_block_error No specialization exists for at
+     *                least one affected value type.
+     */
+    multi_type_vector clone(event_func hdl) const;
 
     /**
      * Given the logical position of an element, get the iterator of the block

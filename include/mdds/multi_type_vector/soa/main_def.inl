@@ -431,7 +431,13 @@ multi_type_vector<Traits>::multi_type_vector(size_type init_size, const T& it_be
 
 template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other)
-    : m_hdl_event(other.m_hdl_event), m_block_store(mtv::detail::clone_construction_type{}, other.m_block_store),
+    : multi_type_vector(mtv::detail::clone_construction_type{}, other, other.m_hdl_event)
+{}
+
+template<typename Traits>
+multi_type_vector<Traits>::multi_type_vector(
+    mtv::detail::clone_construction_type, const multi_type_vector& other, event_func hdl)
+    : m_hdl_event(std::move(hdl)), m_block_store(mtv::detail::clone_construction_type{}, other.m_block_store),
       m_cur_size(other.m_cur_size)
 {
     if constexpr (Traits::enable_cow)
@@ -597,6 +603,14 @@ auto multi_type_vector<Traits>::clone() const -> multi_type_vector
     MDDS_MTV_TRACE(accessor);
 
     return multi_type_vector(mtv::detail::clone_construction_type{}, *this);
+}
+
+template<typename Traits>
+auto multi_type_vector<Traits>::clone(event_func hdl) const -> multi_type_vector
+{
+    MDDS_MTV_TRACE(accessor);
+
+    return multi_type_vector(mtv::detail::clone_construction_type{}, *this, std::move(hdl));
 }
 
 template<typename Traits>
