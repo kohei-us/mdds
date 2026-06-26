@@ -21,6 +21,7 @@ test_soa_CPPFLAGS = \
 EXTRA_DIST = \
 	common_types.hpp \
 	tc/share.hpp \
+	tc/detach.hpp \
 	tc/run.hpp
 
 TESTS = test-soa
