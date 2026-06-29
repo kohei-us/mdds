@@ -230,7 +230,9 @@ inline void intrusive_ptr_release(::mdds::quad_node_base<NodePtr, NodeType, Key>
 {
     --p->refcount;
     if (!p->refcount)
-        delete p;
+        // NB: Delete as the derived node type to ensure the size of the deleted
+        // object is correct.
+        delete static_cast<NodeType*>(p);
 }
 
 template<typename NodePtr>
