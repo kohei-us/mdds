@@ -29,6 +29,7 @@ build:
     - make runtime-env
     - popd
     - make -j $(nproc) check
+    - make -j $(nproc) check-valgrind-memcheck
 
 build-clang:
   stage: build
