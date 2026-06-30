@@ -9,9 +9,9 @@
 #include "common_types.hpp"
 
 /**
- * Scenario 4: destroy the source while a borrower still lives, then read and
- * mutate the borrower.  The shared blocks must stay alive until the last
- * borrower releases them, with no dangling read and no double-free.
+ * Destroy the source while a borrower still lives, then read and mutate the
+ * borrower.  The shared blocks must stay alive until the last borrower
+ * releases them, with no dangling read and no double-free.
  *
  * This needs to be run under the check-memcheck target.
  */

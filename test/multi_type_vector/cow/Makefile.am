@@ -23,6 +23,7 @@ EXTRA_DIST = \
 	tc/share.hpp \
 	tc/detach.hpp \
 	tc/lifetime.hpp \
+	tc/noncopyable.hpp \
 	tc/run.hpp
 
 TESTS = test-soa

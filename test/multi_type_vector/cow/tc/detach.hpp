@@ -9,9 +9,8 @@
 #include "common_types.hpp"
 
 /**
- * Scenario 2: the first write to a borrowing container deep-copies (detaches)
- * its store; the other sharer is left untouched; subsequent writes do not
- * re-clone.
+ * The first write to a borrowing container deep-copies (detaches) its store;
+ * the other sharer is left untouched; subsequent writes do not re-clone.
  */
 template<typename mtv_type>
 void test_cow_detach_on_write()
@@ -41,8 +40,8 @@ void test_cow_detach_on_write()
 }
 
 /**
- * Scenario 3: mutating either sharer leaves the other intact (both-side
- * independence), in both detach directions.
+ * Mutating either sharer leaves the other intact (both-side independence), in
+ * both detach directions.
  */
 template<typename mtv_type>
 void test_cow_both_side()

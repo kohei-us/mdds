@@ -9,9 +9,9 @@
 #include "common_types.hpp"
 
 /**
- * Scenario 1: a COW copy / clone / copy-assignment shares the source's element
- * blocks rather than deep-copying them.  Sharing is observed via element
- * block pointer identity right after the operation.
+ * A COW copy / clone / copy-assignment shares the source's element blocks
+ * rather than deep-copying them.  Sharing is observed via element block
+ * pointer identity right after the operation.
  */
 template<typename mtv_type>
 void test_cow_share()
