@@ -25,6 +25,7 @@ EXTRA_DIST = \
 	tc/lifetime.hpp \
 	tc/noncopyable.hpp \
 	tc/iterator_gate.hpp \
+	tc/clone_hdl.hpp \
 	tc/run.hpp
 
 TESTS = test-soa
