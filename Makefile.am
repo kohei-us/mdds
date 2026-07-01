@@ -55,6 +55,7 @@ EXTRA_DIST = \
 	doc/multi_type_vector/api-ref.rst \
 	doc/multi_type_vector/debugging.rst \
 	doc/multi_type_vector/examples/cloning.rst \
+	doc/multi_type_vector/examples/cloning-block.rst \
 	doc/multi_type_vector/examples/custom-value-types-custom-store.rst \
 	doc/multi_type_vector/examples/custom-value-types.rst \
 	doc/multi_type_vector/examples/event-handlers.rst \

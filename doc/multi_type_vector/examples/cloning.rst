@@ -126,3 +126,8 @@ The output indicates that cloning did clone all stored ``stream_store``
 instances, and all of the stored instances were properly disposed of
 when the two ``multi_type_vector`` container instances storing them were
 destroyed.
+
+Specializing ``clone_value`` clones one element at a time, which covers
+the common case where each element can be duplicated on its own.  When an
+element cannot be cloned in isolation, you can instead take control of the
+whole block as described in :ref:`mtv-example-cloning-block`.

@@ -18,4 +18,5 @@ Examples
    pointer-to-elem.rst
    traverse-sideways.rst
    cloning.rst
+   cloning-block.rst
    exec-policy.rst
