@@ -53,6 +53,7 @@ EXTRA_DIST = \
 	doc/index.rst \
 	doc/multi_type_matrix.rst \
 	doc/multi_type_vector/api-ref.rst \
+	doc/multi_type_vector/copy-on-write.rst \
 	doc/multi_type_vector/debugging.rst \
 	doc/multi_type_vector/examples/cloning/cloning-block.rst \
 	doc/multi_type_vector/examples/cloning/cloning.rst \

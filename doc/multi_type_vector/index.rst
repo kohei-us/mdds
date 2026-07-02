@@ -11,6 +11,7 @@ Multi Type Vector
    :maxdepth: 1
 
    examples/index.rst
+   copy-on-write.rst
    perf-considerations.rst
    debugging.rst
    api-ref.rst
