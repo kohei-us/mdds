@@ -54,17 +54,20 @@ EXTRA_DIST = \
 	doc/multi_type_matrix.rst \
 	doc/multi_type_vector/api-ref.rst \
 	doc/multi_type_vector/debugging.rst \
-	doc/multi_type_vector/examples/cloning.rst \
-	doc/multi_type_vector/examples/cloning-block.rst \
-	doc/multi_type_vector/examples/custom-value-types-custom-store.rst \
-	doc/multi_type_vector/examples/custom-value-types.rst \
-	doc/multi_type_vector/examples/event-handlers.rst \
-	doc/multi_type_vector/examples/exec-policy.rst \
+	doc/multi_type_vector/examples/cloning/cloning-block.rst \
+	doc/multi_type_vector/examples/cloning/cloning.rst \
+	doc/multi_type_vector/examples/cloning/index.rst \
+	doc/multi_type_vector/examples/custom-element-blocks/custom-value-types-custom-store.rst \
+	doc/multi_type_vector/examples/custom-element-blocks/custom-value-types.rst \
+	doc/multi_type_vector/examples/custom-element-blocks/index.rst \
+	doc/multi_type_vector/examples/custom-element-blocks/standard-elem-custom-store.rst \
 	doc/multi_type_vector/examples/index.rst \
-	doc/multi_type_vector/examples/pointer-to-elem.rst \
+	doc/multi_type_vector/examples/other-techniques/event-handlers.rst \
+	doc/multi_type_vector/examples/other-techniques/exec-policy.rst \
+	doc/multi_type_vector/examples/other-techniques/index.rst \
+	doc/multi_type_vector/examples/other-techniques/pointer-to-elem.rst \
+	doc/multi_type_vector/examples/other-techniques/traverse-sideways.rst \
 	doc/multi_type_vector/examples/quickstart.rst \
-	doc/multi_type_vector/examples/standard-elem-custom-store.rst \
-	doc/multi_type_vector/examples/traverse-sideways.rst \
 	doc/multi_type_vector/index.rst \
 	doc/multi_type_vector/perf-considerations.rst \
 	doc/point_quad_tree.rst \

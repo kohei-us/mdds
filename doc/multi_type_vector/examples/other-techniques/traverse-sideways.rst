@@ -18,7 +18,7 @@ where each cell in the data set is associated with row and column indices.
 Each cell may store a value of string type, integer type, numeric type, etc.
 And let's say that the data looks like the following spreadsheet data:
 
-.. figure:: ../../_static/images/mtv_collection_sheet.png
+.. figure:: ../../../_static/images/mtv_collection_sheet.png
    :align: center
 
 It consists of five columns, with each column storing 21 rows of data.  The
@@ -29,7 +29,7 @@ column thus creating five instances in total, and store them in a
 
 The declaration of the data store will look like this:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: declare
    :end-before: //!code-end: declare
@@ -45,7 +45,7 @@ the columns have been populated.
 Now, we need to populate the columns with values.  First, we are setting the
 header row:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: header-row
    :end-before: //!code-end: header-row
@@ -54,7 +54,7 @@ header row:
 We are then filling each column individually from column 1 through column 5.
 First up is column 1:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-1
    :end-before: //!code-end: column-1
@@ -64,7 +64,7 @@ Hopefully this code is straight-forward.  It initializes an array of values
 and push them to the column one at a time via
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::push_back`.  Next up is column 2:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-2
    :end-before: //!code-end: column-2
@@ -77,7 +77,7 @@ array of string literals which implicitly becomes an initializer list of type
 
 The code for column 3 is very similar to this:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-3
    :end-before: //!code-end: column-3
@@ -87,7 +87,7 @@ Populating column 4 needs slight pre-processing.  We are inserting a string
 value of "unknown" in lieu of an integer value of -1.  Therefore the following
 code will do:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-4
    :end-before: //!code-end: column-4
@@ -96,7 +96,7 @@ code will do:
 Finally, the last column to fill, which uses the same logic as for columns 2
 and 3:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: column-5
    :end-before: //!code-end: column-5
@@ -106,7 +106,7 @@ At this point, the content we've put into the ``columns`` variable roughly
 reflects the tabular data shown at the beginning of this section.  Now we can
 use the collection type we've declared earlier to wrap the columns:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: wrap
    :end-before: //!code-end: wrap
@@ -145,7 +145,7 @@ not change for the duration of its use.
 
 Finally, here is the code that does the traversing:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: traverse-row
    :end-before: //!code-end: traverse-row
@@ -209,7 +209,7 @@ Let's see how this works in the current example.  Here, we are going to limit
 the iteration range to only columns 2 and 3, and rows 2 through 11.  The following
 code will set this limit:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: limit-range
    :end-before: //!code-end: limit-range
@@ -217,7 +217,7 @@ code will set this limit:
 
 Then iterate through the collection once again:
 
-.. literalinclude:: ../../../example/multi_type_vector/mtv_collection.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/mtv_collection.cpp
    :language: C++
    :start-after: //!code-start: traverse-row-range
    :end-before: //!code-end: traverse-row-range

@@ -26,7 +26,7 @@ of elements stored in an block whose type is
 
 First, let's define a value type that we don't want to allow copying of:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone.cpp
    :language: C++
    :start-after: //!code-start: stream-store
    :end-before: //!code-end: stream-store
@@ -36,7 +36,7 @@ potentially very large that we don't want to allow copying to avoid
 potential performance bottleneck.  So we'll store them as pointers in a
 block of type :cpp:class:`~mdds::mtv::noncopyable_managed_element_block`:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone.cpp
    :language: C++
    :start-after: //!code-start: elem-block-def
    :end-before: //!code-end: elem-block-def
@@ -44,7 +44,7 @@ block of type :cpp:class:`~mdds::mtv::noncopyable_managed_element_block`:
 Once the element block type is defined, plug it into the traits type and
 define the actual ``multi_type_vector`` type:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone.cpp
    :language: C++
    :start-after: //!code-start: mtv-def
    :end-before: //!code-end: mtv-def
@@ -52,7 +52,7 @@ define the actual ``multi_type_vector`` type:
 We'll also define a fictional function that fetches a stream of potentially
 large data from an external location:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone.cpp
    :language: C++
    :start-after: //!code-start: fetch-buffer
    :end-before: //!code-end: fetch-buffer
@@ -64,7 +64,7 @@ Next, we'll define a template specialization for cloning a ``stream_store``
 instance.  Since we are storing its instances as pointers, we need to
 specialize for the ``stream_store*`` type:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone.cpp
    :language: C++
    :start-after: //!code-start: clone-value-ts
    :end-before: //!code-end: clone-value-ts
@@ -77,7 +77,7 @@ specialized for.
 Since we have all necessary pieces defined, let's instantiate our
 ``multi_type_vector`` instance and populate it:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone.cpp
    :language: C++
    :start-after: //!code-start: populate-store
    :end-before: //!code-end: populate-store
@@ -87,7 +87,7 @@ We are storing heap-allocated instances directly in the container, which
 will manage their life cycles.  Let's clone this instance by calling the
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::clone()` method:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone.cpp
    :language: C++
    :start-after: //!code-start: clone-store
    :end-before: //!code-end: clone-store

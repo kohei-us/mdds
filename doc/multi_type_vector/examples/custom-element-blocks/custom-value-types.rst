@@ -12,7 +12,7 @@ That is what we are going to talk about in this section.
 
 First, let's include the header:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: header
    :end-before: //!code-end: header
@@ -20,7 +20,7 @@ First, let's include the header:
 then proceed to define some constant values to use as element types. We are going
 to define three custom value types, so we need three element types defined:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: element-types
    :end-before: //!code-end: element-types
@@ -34,7 +34,7 @@ in the future.
 
 Now, let's define the first two custom value types, and their respective block types:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: custom-values
    :end-before: //!code-end: custom-values
@@ -52,7 +52,7 @@ Once the block types are defined, it's time to define callback functions for the
 This should be as simple as using the :c:macro:`MDDS_MTV_DEFINE_ELEMENT_CALLBACKS` with
 all necessary parameters provided:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: custom-values-macro
    :end-before: //!code-end: custom-values-macro
@@ -65,7 +65,7 @@ during overload resolution.  This means that you must place the macro that defin
 the callback functions in the same namespace as the namespace that encompasses the
 original value type:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: custom-value-ns
    :end-before: //!code-end: custom-value-ns
@@ -82,7 +82,7 @@ and overwrite the :cpp:type:`~mdds::mtv::default_traits::block_funcs` static mem
 type with an instance of :cpp:type:`mdds::mtv::element_block_funcs` with one or
 more block types specified as its template arguments:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: trait
    :end-before: //!code-end: trait
@@ -90,14 +90,14 @@ more block types specified as its template arguments:
 Now we are ready to define the final :cpp:class:`~mdds::mtv::multi_type_vector` type
 with the trait we just defined:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: mtv-type
    :end-before: //!code-end: mtv-type
 
 And that's it!  With this in place, you can write a code like the following:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types.cpp
    :language: C++
    :start-after: //!code-start: main
    :end-before: //!code-end: main

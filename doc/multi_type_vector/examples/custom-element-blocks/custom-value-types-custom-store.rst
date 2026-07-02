@@ -16,7 +16,7 @@ versions of the library, you can specify your own storage type as the third temp
 Let's tweak the previous example to specify :cpp:class:`std::vector` and :cpp:class:`std::deque` as the
 storage types for ``custom_value1_block`` and ``custom_value2_block``, respectively:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types_custom_store.cpp
    :language: C++
    :start-after: //!code-start: blocks-1-2
    :end-before: //!code-end: blocks-1-2
@@ -24,7 +24,7 @@ storage types for ``custom_value1_block`` and ``custom_value2_block``, respectiv
 For ``custom_value3_block``, we will leave it as the default storage type, namely,
 :cpp:class:`mdds::mtv::delayed_delete_vector`:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types_custom_store.cpp
    :language: C++
    :start-after: //!code-start: block-3
    :end-before: //!code-end: block-3
@@ -35,7 +35,7 @@ consistent performance characteristics.
 
 With this now in place, let's run the following code:
 
-.. literalinclude:: ../../../example/multi_type_vector/custom_value_types_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/custom_value_types_custom_store.cpp
    :language: C++
    :start-after: //!code-start: main
    :end-before: //!code-end: main

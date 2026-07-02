@@ -28,7 +28,7 @@ the ``clone_value`` specialization path.
 
 First, let's define the shared pool and the value type that references it:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone_block.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone_block.cpp
    :language: C++
    :start-after: //!code-start: pooled-string
    :end-before: //!code-end: pooled-string
@@ -37,7 +37,7 @@ Since ``pooled_string`` is non-copyable, we'll store its instances as
 pointers in a block of type
 :cpp:class:`~mdds::mtv::noncopyable_managed_element_block`:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone_block.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone_block.cpp
    :language: C++
    :start-after: //!code-start: elem-block-def
    :end-before: //!code-end: elem-block-def
@@ -45,7 +45,7 @@ pointers in a block of type
 Once the element block type is defined, plug it into the traits type and
 define the actual ``multi_type_vector`` type:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone_block.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone_block.cpp
    :language: C++
    :start-after: //!code-start: mtv-def
    :end-before: //!code-end: mtv-def
@@ -53,7 +53,7 @@ define the actual ``multi_type_vector`` type:
 Next, we'll define a template specialization for cloning a whole
 ``pooled_string_block_type`` instance:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone_block.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone_block.cpp
    :language: C++
    :start-after: //!code-start: clone-block-ts
    :end-before: //!code-end: clone-block-ts
@@ -69,7 +69,7 @@ Since we have all necessary pieces defined, let's instantiate our
 ``multi_type_vector`` instance and populate it with elements that all share
 one pool:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone_block.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone_block.cpp
    :language: C++
    :start-after: //!code-start: populate-store
    :end-before: //!code-end: populate-store
@@ -78,7 +78,7 @@ one pool:
 Let's clone this instance by calling the
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::clone()` method:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone_block.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone_block.cpp
    :language: C++
    :start-after: //!code-start: clone-store
    :end-before: //!code-end: clone-store
@@ -89,7 +89,7 @@ earlier.  Finally, let's inspect both containers to confirm that each
 element was cloned and that the original and the clone reference separate
 pools:
 
-.. literalinclude:: ../../../example/multi_type_vector/clone_block.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/clone_block.cpp
    :language: C++
    :start-after: //!code-start: inspect-store
    :end-before: //!code-end: inspect-store

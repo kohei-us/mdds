@@ -40,7 +40,7 @@ specify the parallel execution policy.  All you need to do is to simply add
 an ``exec_policy`` type alias in your traits struct that points to the
 ``std::execution::parallel_policy`` type:
 
-.. literalinclude:: ../../../example/multi_type_vector/exec_policy.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/exec_policy.cpp
    :language: C++
    :start-after: //!code-start: mtv-traits
    :end-before: //!code-end: mtv-traits
@@ -52,7 +52,7 @@ policy for the cloning of the individual values within each element block.
 All you need to do is to add an ``exec_policy`` type alias to the `clone_value`
 specialization struct, and have it point to the desired policy type:
 
-.. literalinclude:: ../../../example/multi_type_vector/exec_policy.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/exec_policy.cpp
    :language: C++
    :start-after: //!code-start: clone-value-ts
    :end-before: //!code-end: clone-value-ts

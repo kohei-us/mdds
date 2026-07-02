@@ -26,7 +26,7 @@ block types for user-defined value types.
 
 Let's do this step-by-step.  First, include the necessary headers:
 
-.. literalinclude:: ../../../example/multi_type_vector/standard_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/standard_custom_store.cpp
    :language: C++
    :start-after: //!code-start: header
    :end-before: //!code-end: header
@@ -38,7 +38,7 @@ that we can use :cpp:class:`std::deque` as storage types in our block types.
 
 Next, let's define the element and block types as well as their callback functions:
 
-.. literalinclude:: ../../../example/multi_type_vector/standard_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/standard_custom_store.cpp
    :language: C++
    :start-after: //!code-start: block-defs
    :end-before: //!code-end: block-defs
@@ -51,7 +51,7 @@ types will no longer be included.
 
 Let's proceed to include the multi_type_vector header:
 
-.. literalinclude:: ../../../example/multi_type_vector/standard_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/standard_custom_store.cpp
    :language: C++
    :start-after: //!code-start: mtv-header
    :end-before: //!code-end: mtv-header
@@ -64,7 +64,7 @@ are including the ``mdds/multi_type_vector/soa/main.hpp`` header directly instea
 Lastly, let's define the trait type to specify the block types to use, and instantiate the final
 multi_type_vector type:
 
-.. literalinclude:: ../../../example/multi_type_vector/standard_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/standard_custom_store.cpp
    :language: C++
    :start-after: //!code-start: mtv-def
    :end-before: //!code-end: mtv-def
@@ -72,7 +72,7 @@ multi_type_vector type:
 Now that the concrete multi_type_vector is defined, we can use it to store some values of the
 specified types:
 
-.. literalinclude:: ../../../example/multi_type_vector/standard_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/standard_custom_store.cpp
    :language: C++
    :start-after: //!code-start: main
    :end-before: //!code-end: main
@@ -80,7 +80,7 @@ specified types:
 
 If you inspect the storage types of the element blocks like the following:
 
-.. literalinclude:: ../../../example/multi_type_vector/standard_custom_store.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/standard_custom_store.cpp
    :language: C++
    :start-after: //!code-start: main-block-type
    :end-before: //!code-end: main-block-type

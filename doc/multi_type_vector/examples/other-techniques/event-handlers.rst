@@ -19,7 +19,7 @@ for the detail on when each event handler method gets triggered.
 
 The following code example demonstrates how this all works:
 
-.. literalinclude:: ../../../example/multi_type_vector/event1.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/event1.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end

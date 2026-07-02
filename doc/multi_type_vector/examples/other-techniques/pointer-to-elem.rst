@@ -18,7 +18,7 @@ The following code demonstrates this by exposing raw array pointers to the
 internal arrays of numeric and string element blocks, and printing their
 element values directly from these array pointers.
 
-.. literalinclude:: ../../../example/multi_type_vector/element_block1.cpp
+.. literalinclude:: ../../../../example/multi_type_vector/element_block1.cpp
    :language: C++
    :start-after: //!code-start
    :end-before: //!code-end
