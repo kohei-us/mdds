@@ -169,6 +169,8 @@ Exceptions
 
 .. doxygenclass:: mdds::mtv::element_block_error
 
+.. doxygenclass:: mdds::mtv::shared_block_error
+
 
 Macros
 ------

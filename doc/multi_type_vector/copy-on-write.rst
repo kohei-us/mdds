@@ -113,16 +113,16 @@ however, those released elements - for a managed block, pointers to objects it
 owns - would still point into storage shared with other containers.  Any
 modification made to those "released" elements would therefore affect the
 shared storage and all its borrowers - not the expected behavior.  This is why
-the container throws an exception when attempting to release elements while it
-is still borrowing.
+the container throws :cpp:class:`~mdds::mtv::shared_block_error` when attempting
+to release elements while it is still borrowing.
 
 .. warning::
 
    :cpp:func:`~mdds::mtv::soa::multi_type_vector::release` and
    :cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range` require the
    container to be the sole owner of its blocks.  Called while the container is
-   still borrowing, they throw an exception.  Call
-   :cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()` first.
+   still borrowing, they throw :cpp:class:`~mdds::mtv::shared_block_error`.
+   Call :cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()` first.
 
 Iterators under copy-on-write
 -----------------------------

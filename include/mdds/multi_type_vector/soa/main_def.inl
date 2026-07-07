@@ -3820,8 +3820,10 @@ T multi_type_vector<Traits>::release(size_type pos)
     MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos);
 
     if constexpr (Traits::enable_cow)
+    {
         if (m_cow_store)
-            throw general_error("multi_type_vector::release: requires sole ownership; call detach() first");
+            throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
+    }
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -3863,8 +3865,10 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
     MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
     if constexpr (Traits::enable_cow)
+    {
         if (m_cow_store)
-            throw general_error("multi_type_vector::release: requires sole ownership; call detach() first");
+            throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
+    }
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -3908,8 +3912,10 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
         "pos_hint=" << pos_hint << "; pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
     if constexpr (Traits::enable_cow)
+    {
         if (m_cow_store)
-            throw general_error("multi_type_vector::release: requires sole ownership; call detach() first");
+            throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
+    }
 
     size_type block_index = get_block_position(pos_hint->__private_data, pos);
     if (block_index == m_block_store.positions.size())
@@ -3949,8 +3955,10 @@ void multi_type_vector<Traits>::release()
     MDDS_MTV_TRACE(mutator);
 
     if constexpr (Traits::enable_cow)
+    {
         if (m_cow_store)
-            throw general_error("multi_type_vector::release: requires sole ownership; call detach() first");
+            throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
+    }
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -3995,8 +4003,10 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
     MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     if constexpr (Traits::enable_cow)
+    {
         if (m_cow_store)
-            throw general_error("multi_type_vector::release_range: requires sole ownership; call detach() first");
+            throw shared_block_error("multi_type_vector::release_range: requires sole ownership; call detach() first");
+    }
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -4014,8 +4024,10 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     if constexpr (Traits::enable_cow)
+    {
         if (m_cow_store)
-            throw general_error("multi_type_vector::release_range: requires sole ownership; call detach() first");
+            throw shared_block_error("multi_type_vector::release_range: requires sole ownership; call detach() first");
+    }
 
     size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
     if (block_index1 == m_block_store.positions.size())

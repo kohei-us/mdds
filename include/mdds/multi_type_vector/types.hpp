@@ -125,6 +125,18 @@ public:
     {}
 };
 
+/**
+ * Exception thrown when an operation requires the container to be the sole
+ * owner of its element blocks but it is still borrowing blocks shared under
+ * copy-on-write.
+ */
+class shared_block_error : public mdds::general_error
+{
+public:
+    shared_block_error(const std::string& msg) : mdds::general_error(msg)
+    {}
+};
+
 class base_element_block;
 element_t get_block_type(const base_element_block&) noexcept;
 
