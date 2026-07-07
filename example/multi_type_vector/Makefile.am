@@ -9,6 +9,7 @@ EXTRA_PROGRAMS = \
 	basic \
 	clone \
 	clone-block \
+	cow \
 	custom-value-types \
 	custom-value-types-custom-store \
 	debug-trace \
@@ -22,6 +23,7 @@ mtv_collection_SOURCES = mtv_collection.cpp
 basic_SOURCES = basic.cpp
 clone_SOURCES = clone.cpp
 clone_block_SOURCES = clone_block.cpp
+cow_SOURCES = cow.cpp
 custom_value_types_SOURCES = custom_value_types.cpp
 custom_value_types_custom_store_SOURCES = custom_value_types_custom_store.cpp
 debug_trace_SOURCES = debug_trace.cpp
@@ -42,6 +44,7 @@ TESTS = \
 	basic \
 	clone \
 	clone-block \
+	cow \
 	custom-value-types \
 	custom-value-types-custom-store \
 	debug-trace \

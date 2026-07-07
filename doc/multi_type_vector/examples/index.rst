@@ -13,4 +13,5 @@ Examples
    quickstart.rst
    custom-element-blocks/index.rst
    cloning/index.rst
+   copy-on-write/index.rst
    other-techniques/index.rst
