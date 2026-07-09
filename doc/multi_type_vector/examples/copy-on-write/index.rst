@@ -15,3 +15,4 @@ write.  See :ref:`mtv-copy-on-write` for the concept and its caveats.
    :maxdepth: 1
 
    cow-basics.rst
+   cow-noncopyable.rst

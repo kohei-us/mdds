@@ -80,7 +80,9 @@ The practical consequence is that a container of non-copyable blocks can use
 copy-on-write as long as those blocks provide a ``clone_value`` or
 ``clone_block`` specialization.  These are exactly the specializations covered
 by the :ref:`cloning <mtv-example-cloning>` and
-:ref:`block-level cloning <mtv-example-cloning-block>` examples.
+:ref:`block-level cloning <mtv-example-cloning-block>` examples; the
+:ref:`mtv-example-cow-noncopyable` example puts one to work under
+copy-on-write.
 
 There is one restriction.  A value type stored in a copyable block must not
 also specialize ``clone_value`` or ``clone_block``; a ``static_assert`` rejects
