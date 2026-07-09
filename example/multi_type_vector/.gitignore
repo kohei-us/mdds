@@ -8,6 +8,7 @@ clone
 clone-block
 cow
 cow-noncopyable
+cow-detach
 debug-trace
 element-block1
 event1

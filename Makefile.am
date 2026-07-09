@@ -59,6 +59,7 @@ EXTRA_DIST = \
 	doc/multi_type_vector/examples/cloning/cloning.rst \
 	doc/multi_type_vector/examples/cloning/index.rst \
 	doc/multi_type_vector/examples/copy-on-write/cow-basics.rst \
+	doc/multi_type_vector/examples/copy-on-write/cow-detach.rst \
 	doc/multi_type_vector/examples/copy-on-write/cow-noncopyable.rst \
 	doc/multi_type_vector/examples/copy-on-write/index.rst \
 	doc/multi_type_vector/examples/custom-element-blocks/custom-value-types-custom-store.rst \

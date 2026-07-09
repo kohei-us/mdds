@@ -16,3 +16,4 @@ write.  See :ref:`mtv-copy-on-write` for the concept and its caveats.
 
    cow-basics.rst
    cow-noncopyable.rst
+   cow-detach.rst

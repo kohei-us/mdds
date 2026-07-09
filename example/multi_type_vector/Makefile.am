@@ -11,6 +11,7 @@ EXTRA_PROGRAMS = \
 	clone-block \
 	cow \
 	cow-noncopyable \
+	cow-detach \
 	custom-value-types \
 	custom-value-types-custom-store \
 	debug-trace \
@@ -26,6 +27,7 @@ clone_SOURCES = clone.cpp
 clone_block_SOURCES = clone_block.cpp
 cow_SOURCES = cow.cpp
 cow_noncopyable_SOURCES = cow_noncopyable.cpp
+cow_detach_SOURCES = cow_detach.cpp
 custom_value_types_SOURCES = custom_value_types.cpp
 custom_value_types_custom_store_SOURCES = custom_value_types_custom_store.cpp
 debug_trace_SOURCES = debug_trace.cpp
@@ -48,6 +50,7 @@ TESTS = \
 	clone-block \
 	cow \
 	cow-noncopyable \
+	cow-detach \
 	custom-value-types \
 	custom-value-types-custom-store \
 	debug-trace \

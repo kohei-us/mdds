@@ -116,7 +116,9 @@ owns - would still point into storage shared with other containers.  Any
 modification made to those "released" elements would therefore affect the
 shared storage and all its borrowers - not the expected behavior.  This is why
 the container throws :cpp:class:`~mdds::mtv::shared_block_error` when attempting
-to release elements while it is still borrowing.
+to release elements while it is still borrowing.  The
+:ref:`mtv-example-cow-detach` example walks through this precondition and how
+``detach()`` satisfies it.
 
 .. warning::
 
