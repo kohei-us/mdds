@@ -9,6 +9,7 @@ EXTRA_PROGRAMS = \
 	basic \
 	clone \
 	clone-block \
+	clone-event-handler \
 	cow \
 	cow-noncopyable \
 	cow-detach \
@@ -25,6 +26,7 @@ mtv_collection_SOURCES = mtv_collection.cpp
 basic_SOURCES = basic.cpp
 clone_SOURCES = clone.cpp
 clone_block_SOURCES = clone_block.cpp
+clone_event_handler_SOURCES = clone_event_handler.cpp
 cow_SOURCES = cow.cpp
 cow_noncopyable_SOURCES = cow_noncopyable.cpp
 cow_detach_SOURCES = cow_detach.cpp
@@ -48,6 +50,7 @@ TESTS = \
 	basic \
 	clone \
 	clone-block \
+	clone-event-handler \
 	cow \
 	cow-noncopyable \
 	cow-detach \

@@ -6,6 +6,7 @@ mtv-collection
 basic
 clone
 clone-block
+clone-event-handler
 cow
 cow-noncopyable
 cow-detach

@@ -15,3 +15,4 @@ instance, including how to make user-defined element blocks cloneable.
 
    cloning.rst
    cloning-block.rst
+   cloning-event-handler.rst

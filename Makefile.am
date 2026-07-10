@@ -56,6 +56,7 @@ EXTRA_DIST = \
 	doc/multi_type_vector/copy-on-write.rst \
 	doc/multi_type_vector/debugging.rst \
 	doc/multi_type_vector/examples/cloning/cloning-block.rst \
+	doc/multi_type_vector/examples/cloning/cloning-event-handler.rst \
 	doc/multi_type_vector/examples/cloning/cloning.rst \
 	doc/multi_type_vector/examples/cloning/index.rst \
 	doc/multi_type_vector/examples/copy-on-write/cow-basics.rst \
