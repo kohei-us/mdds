@@ -13,6 +13,18 @@ mdds 4.0.0 (next target)
     and flat_segment_tree iterators, out of mdds::detail into the public
     mdds namespace.
 
+* multi_type_vector
+
+  * added opt-in copy-on-write (COW) support to the soa variant,
+    enabled via the enable_cow trait.  A copied or cloned instance
+    shares the source's element blocks until the first modification, at
+    which point it makes its own private copy.  The new public detach()
+    method forces this copy up front, and clone() gained an overload
+    that takes a caller-supplied event handler.
+
+  * added new code examples in the documentation covering copy-on-write
+    and cloning with a custom event handler.
+
 * trie_map and packed_trie_map
 
   * the insert(), erase(), find() and prefix_search() methods now take
