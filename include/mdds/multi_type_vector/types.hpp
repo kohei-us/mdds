@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <vector>
 #include <sstream>
+#include <type_traits>
 
 #if defined(MDDS_UNIT_TEST) || defined(MDDS_MULTI_TYPE_VECTOR_DEBUG)
 #include <iostream>
@@ -155,7 +156,21 @@ protected:
 };
 
 /**
- * Base declaration with no implementation.
+ * Base declaration with no implementation.  A specialization provides an
+ * operator() which receives a source value and returns its clone, to enable
+ * cloning of a non-copyable element block storing values of that type.
+ *
+ * By default, each block clone uses exactly one instance of this function
+ * object and applies it to the elements strictly in the same order as they
+ * are stored in the source. The operator() may therefore be non-const,
+ * to let the function object carry state across the elements of a block
+ * during cloning.
+ *
+ * If a specialization declares an optional @p exec_policy type, the values
+ * are cloned via std::transform with that execution policy instead; the order
+ * of cloning of the element values is unspecified and the function object may
+ * get copied, so the operator() must be const and the function object must be
+ * stateless.
  */
 template<typename ValueT>
 struct clone_value;
@@ -211,6 +226,12 @@ struct clone_block<BlockT>
  * Specialization for non-copyable element block type with valid clone_value
  * specialization for the value type of the block.
  *
+ * Unless the clone_value specialization declares an exec_policy, the values
+ * are cloned by a single function object instance strictly in the same order
+ * as they are stored in the source, and an exception thrown mid-way destroys
+ * the partially built destination block, which for managed blocks also
+ * deletes the values cloned so far.
+ *
  * @param <BlockT> Element block type which must be non-copyable.
  */
 template<typename BlockT>
@@ -223,16 +244,35 @@ struct clone_block<BlockT, std::void_t<decltype(clone_value<typename BlockT::val
 
     BlockT* operator()(const BlockT& src) const
     {
-        auto dest_blk = std::make_unique<BlockT>();
-        auto cloned(src.store());
-
         if constexpr (detail::has_exec_policy<CV>)
-            std::transform(typename CV::exec_policy{}, cloned.begin(), cloned.end(), cloned.begin(), CV{});
-        else
-            std::transform(cloned.begin(), cloned.end(), cloned.begin(), CV{});
+        {
+            // NB: Stateful-ness is inferred from operator() being non-const;
+            // it's possible that the user can still declare operator() const
+            // and mutate its state by marking a data member mutable.
+            static_assert(
+                std::is_invocable_r_v<value_type, const CV&, const value_type&>,
+                "a clone_value with an exec_policy must be stateless (const-invocable)");
 
-        dest_blk->store().swap(cloned);
-        return dest_blk.release();
+            auto dest_blk = std::make_unique<BlockT>(src.store().size());
+            std::transform(
+                typename CV::exec_policy{}, src.store().begin(), src.store().end(), dest_blk->store().begin(), CV{});
+
+            return dest_blk.release();
+        }
+        else
+        {
+            auto dest_blk = std::make_unique<BlockT>();
+            auto& dest_store = dest_blk->store();
+            detail::reserve(dest_store, src.store().size());
+
+            // One cloner cloning the stored values in order, so that it may
+            // carry state across the elements of the block.
+            CV cloner;
+            for (const auto& v : src.store())
+                dest_store.push_back(cloner(v));
+
+            return dest_blk.release();
+        }
     }
 };
 
