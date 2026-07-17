@@ -25,6 +25,18 @@ mdds 4.0.0 (next target)
   * added new code examples in the documentation covering copy-on-write
     and cloning with a custom event handler.
 
+  * a clone_value specialization may now be stateful: unless it declares
+    an exec_policy, clone() uses exactly one instance of the function
+    object per block and applies it to the values in their stored order,
+    so its operator() no longer needs to be const.  A new code example
+    on stateful cloning has been added to the documentation.
+
+  * fixed memory leaks in clone() and copy construction: if cloning or
+    copying of an element block threw part-way, the elements cloned so
+    far within that block as well as any fully cloned preceding blocks
+    were leaked.  All partial clones are now freed before the
+    exception propagates.
+
 * trie_map and packed_trie_map
 
   * the insert(), erase(), find() and prefix_search() methods now take
