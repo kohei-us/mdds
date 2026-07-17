@@ -21,10 +21,14 @@ through a block, the partially built copy of the block gets destroyed,
 which in turn destroys the values cloned up to that point.  Thanks to the
 first two guarantees, the ``operator()`` of a specialization may be
 non-const, which allows the cloner to carry state across the elements of a
-block while cloning.  Note, however, that these guarantees do not apply
-when the specialization declares an ``exec_policy`` type; refer to the
-:ref:`mtv-example-exec-policy` section for how such a specialization
-behaves.
+block while cloning.
+
+.. warning::
+
+   These guarantees, including the exception and memory leak safety, only
+   apply when the ``clone_value`` specialization does not declare an
+   ``exec_policy`` type.  Refer to the :ref:`mtv-example-exec-policy`
+   section for how a specialization with an ``exec_policy`` behaves.
 
 To see how a stateful cloner can be useful, consider a scenario where each
 element references a string stored in a pool shared by all elements in the
