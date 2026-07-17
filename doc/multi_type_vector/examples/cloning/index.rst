@@ -14,5 +14,6 @@ instance, including how to make user-defined element blocks cloneable.
    :maxdepth: 1
 
    cloning.rst
+   cloning-stateful.rst
    cloning-block.rst
    cloning-event-handler.rst

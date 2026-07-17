@@ -7,24 +7,25 @@
 Block-level Cloning
 ===================
 
-The :ref:`previous section <mtv-example-cloning>` showed how to make a
-non-copyable block cloneable by specializing
-:cpp:class:`~mdds::mtv::clone_value` for its value type.  That approach
-clones one element at a time, which is all you need when each element can
-be duplicated on its own.
+The previous sections showed how to make a non-copyable block cloneable
+by specializing :cpp:class:`~mdds::mtv::clone_value` for its value type,
+either with a :ref:`stateless cloner <mtv-example-cloning>` that clones
+each element on its own, or with a :ref:`stateful cloner
+<mtv-example-cloning-stateful>` that carries state across the elements of
+a block.
 
-Sometimes, however, an element cannot be cloned in isolation because it
-shares state with the other elements in the same block.  In that case you
-can specialize :cpp:class:`~mdds::mtv::clone_block` instead, which hands
-you the whole block and lets you decide how to reconstruct it.  In fact,
-the per-element ``clone_value`` path is just a convenience layer built on
-top of ``clone_block``; specializing ``clone_block`` directly gives you
-full control over the cloning of an entire block.
+While a stateful ``clone_value`` covers most cases where the elements of a
+block share common state, you can also drop down one more level and
+specialize :cpp:class:`~mdds::mtv::clone_block` instead, which hands you
+the whole source block and lets you take full control over how the entire
+destination block gets constructed.
 
-In the example below, every element references a string in a pool that is
-shared across the entire block.  We want to clone that shared pool exactly
-once per block rather than once per element, which cannot be done through
-the ``clone_value`` specialization path.
+In the example below, we are going to solve the same shared-pool scenario
+from the :ref:`mtv-example-cloning-stateful` section, this time by
+specializing ``clone_block``, to show the two approaches side by side.
+Every element references a string in a pool shared across the entire
+block, and the pool should be cloned exactly once per block rather than
+once per element.
 
 First, let's define the shared pool and the value type that references it:
 
@@ -64,6 +65,14 @@ operator()(const BlockT&) const`` where ``BlockT`` is the block type that
 it is specialized for.  Because the whole block is passed in, we can clone
 the shared pool a single time and have every cloned element point to the
 new pool.
+
+Note that, unlike the ``clone_value`` path, a ``clone_block``
+specialization is itself responsible for ensuring that no cloned elements
+get leaked when cloning throws mid-way.  The specialization above gets
+this for free by building the clones incrementally into a destination
+block owned by a ``std::unique_ptr``: should an exception be thrown, the
+destructor of the managed block deletes the elements cloned up to that
+point.
 
 Since we have all necessary pieces defined, let's instantiate our
 ``multi_type_vector`` instance and populate it with elements that all share

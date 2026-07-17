@@ -71,8 +71,11 @@ specialize for the ``stream_store*`` type:
 
 The specialization must be a struct, must be in the ``mdds::mtv``
 namespace, and must have a public method whose signature is ``T
-operator()(const T) const`` where the ``T`` is the type that it is
-specialized for.
+operator()(const T)`` where the ``T`` is the type that it is
+specialized for.  The method does not have to be ``const``; as
+illustrated in :ref:`mtv-example-cloning-stateful`, a non-const
+``operator()`` allows the cloner to carry state while cloning the
+elements of a block.
 
 Since we have all necessary pieces defined, let's instantiate our
 ``multi_type_vector`` instance and populate it:
@@ -94,8 +97,8 @@ will manage their life cycles.  Let's clone this instance by calling the
    :dedent: 4
 
 This will internally call the ``clone_value`` specialization we defined
-earlier to perform cloning.  You will see output similar to the following
-when executing this code:
+earlier on each stored element to perform cloning.  You will see output
+similar to the following when executing this code:
 
 .. code-block:: none
 
@@ -128,6 +131,7 @@ when the two ``multi_type_vector`` container instances storing them were
 destroyed.
 
 Specializing ``clone_value`` clones one element at a time, which covers
-the common case where each element can be duplicated on its own.  When an
-element cannot be cloned in isolation, you can instead take control of the
-whole block as described in :ref:`mtv-example-cloning-block`.
+the common case where each element can be duplicated on its own.  When
+the elements of a block share common state, the cloner itself can carry
+state across the elements, as described in
+:ref:`mtv-example-cloning-stateful`.

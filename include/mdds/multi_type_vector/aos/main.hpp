@@ -350,9 +350,14 @@ public:
     /**
      * Clone the entire content of container.  What this method does is very
      * similar to what the copy constructor does except that this method allows
-     * cloning of non-copyable element blocks if specializations of
-     * mdds::mtv::clone_value template type exist for the value types stored in
-     * the element blocks being cloned.
+     * cloning of non-copyable element blocks if specializations of either
+     * mdds::mtv::clone_value or mdds::mtv::clone_block exist for the value
+     * types stored in the element blocks being cloned.
+     *
+     * When a block is cloned via a mdds::mtv::clone_value specialization with
+     * no exec_policy declared, exactly one instance of the function object is
+     * used per block and applied to the values in their stored order, which
+     * permits the function object to be stateful.
      *
      * @return Brand-new instance containing the same content as the original
      *         instance.

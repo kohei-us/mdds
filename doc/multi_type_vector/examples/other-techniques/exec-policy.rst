@@ -2,6 +2,8 @@
 ..
 .. SPDX-License-Identifier: MIT
 
+.. _mtv-example-exec-policy:
+
 Execution Policy
 ================
 
@@ -56,6 +58,16 @@ specialization struct, and have it point to the desired policy type:
    :language: C++
    :start-after: //!code-start: clone-value-ts
    :end-before: //!code-end: clone-value-ts
+
+A ``clone_value`` specialization that declares an ``exec_policy`` type
+must be stateless: the values of a block get cloned via ``std::transform``
+with the specified policy, which may copy the function object and apply it
+to the values in no deterministic order.  Its ``operator()`` must
+therefore be ``const``, which is enforced at compile time; the
+:ref:`stateful cloning <mtv-example-cloning-stateful>` mode is only
+available without an ``exec_policy``.  Also keep in mind that, when an
+exception escapes a function object invoked with an execution policy,
+``std::terminate`` gets called as mandated by the C++ standard.
 
 However, it's important to benchmark your specific use case since using the
 parallel execution policy may not always yield better performance due to
