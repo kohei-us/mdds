@@ -66,13 +66,14 @@ it is specialized for.  Because the whole block is passed in, we can clone
 the shared pool a single time and have every cloned element point to the
 new pool.
 
-Note that, unlike the ``clone_value`` path, a ``clone_block``
-specialization is itself responsible for ensuring that no cloned elements
-get leaked when cloning throws mid-way.  The specialization above gets
-this for free by building the clones incrementally into a destination
-block owned by a ``std::unique_ptr``: should an exception be thrown, the
-destructor of the managed block deletes the elements cloned up to that
-point.
+.. warning::
+
+   Unlike the ``clone_value`` path, a ``clone_block`` specialization is
+   itself responsible for ensuring that no cloned elements get leaked when
+   cloning throws mid-way.  The specialization above gets this for free by
+   building the clones incrementally into a destination block owned by a
+   ``std::unique_ptr``: should an exception be thrown, the destructor of
+   the managed block deletes the elements cloned up to that point.
 
 Since we have all necessary pieces defined, let's instantiate our
 ``multi_type_vector`` instance and populate it with elements that all share

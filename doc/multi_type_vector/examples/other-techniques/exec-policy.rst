@@ -65,9 +65,13 @@ with the specified policy, which may copy the function object and apply it
 to the values in no deterministic order.  Its ``operator()`` must
 therefore be ``const``, which is enforced at compile time; the
 :ref:`stateful cloning <mtv-example-cloning-stateful>` mode is only
-available without an ``exec_policy``.  Also keep in mind that, when an
-exception escapes a function object invoked with an execution policy,
-``std::terminate`` gets called as mandated by the C++ standard.
+available without an ``exec_policy``.
+
+.. warning::
+
+   When an exception escapes a function object invoked with an execution
+   policy, ``std::terminate`` gets called as mandated by the C++ standard.
+   Make sure the cloner cannot throw when it declares an ``exec_policy``.
 
 However, it's important to benchmark your specific use case since using the
 parallel execution policy may not always yield better performance due to
