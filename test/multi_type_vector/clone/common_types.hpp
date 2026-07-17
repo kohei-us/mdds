@@ -133,12 +133,14 @@ struct clone_block<block2_type>
 {
     block2_type* operator()(const block2_type& src) const
     {
+        // Build incrementally into the destination block so that partially
+        // cloned elements get freed if a clone throws mid-way.
         std::unique_ptr<block2_type> cloned_blk = std::make_unique<block2_type>();
-        auto cloned(src.store());
-        std::transform(
-            cloned.begin(), cloned.end(), cloned.begin(), [](const custom_str1* p) { return new custom_str1(*p); });
+        auto& cloned = cloned_blk->store();
+        cloned.reserve(src.store().size());
+        for (const custom_str1* p : src.store())
+            cloned.push_back(new custom_str1(*p));
 
-        cloned_blk->store().swap(cloned);
         return cloned_blk.release();
     }
 };
