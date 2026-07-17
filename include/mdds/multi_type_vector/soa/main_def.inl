@@ -21,11 +21,15 @@ void erase(VecT& arr, SizeT index, SizeT size)
     arr.erase(it, it + size);
 }
 
-template<typename ExecPolicy, base_element_block* (*BlockOp)(const base_element_block&)>
+template<
+    typename ExecPolicy, base_element_block* (*BlockOp)(const base_element_block&),
+    void (*DeleteOp)(const base_element_block*)>
 struct copy_blocks
 {
     void operator()(std::vector<base_element_block*>& element_blocks) const
     {
+        // No cleanup on exception here; an exception leaving BlockOp under an
+        // execution policy calls std::terminate.
         std::transform(
             ExecPolicy{}, element_blocks.begin(), element_blocks.end(), element_blocks.begin(),
             [](base_element_block* data) { return data ? BlockOp(*data) : nullptr; });
@@ -35,14 +39,31 @@ struct copy_blocks
 /**
  * Specialized for the default execution policy.
  */
-template<base_element_block* (*BlockOp)(const base_element_block&)>
-struct copy_blocks<mdds::mtv::default_exec_policy, BlockOp>
+template<base_element_block* (*BlockOp)(const base_element_block&), void (*DeleteOp)(const base_element_block*)>
+struct copy_blocks<mdds::mtv::default_exec_policy, BlockOp, DeleteOp>
 {
     void operator()(std::vector<base_element_block*>& element_blocks) const
     {
-        std::transform(
-            element_blocks.begin(), element_blocks.end(), element_blocks.begin(),
-            [](base_element_block* data) { return data ? BlockOp(*data) : nullptr; });
+        // Copy into a separate store and commit it only once every block copy
+        // succeeds, so that a copy throwing mid-way doesn't leak the blocks
+        // copied so far.
+        std::vector<base_element_block*> owned(element_blocks.size(), nullptr);
+
+        try
+        {
+            std::transform(element_blocks.begin(), element_blocks.end(), owned.begin(), [](base_element_block* data) {
+                return data ? BlockOp(*data) : nullptr;
+            });
+        }
+        catch (...)
+        {
+            for (const base_element_block* p : owned)
+                if (p)
+                    DeleteOp(p);
+            throw;
+        }
+
+        element_blocks.swap(owned);
     }
 };
 
@@ -129,7 +150,8 @@ multi_type_vector<Traits>::blocks_type::blocks_type(mtv::detail::clone_construct
     else
     {
         // COW disabled - deep-clone element_blocks
-        detail::copy_blocks<typename Traits::exec_policy, block_funcs::clone_block>{}(element_blocks);
+        detail::copy_blocks<typename Traits::exec_policy, block_funcs::clone_block, block_funcs::delete_block>{}(
+            element_blocks);
     }
 }
 
@@ -145,7 +167,8 @@ multi_type_vector<Traits>::blocks_type::blocks_type(const blocks_type& other)
     else
     {
         // COW disabled - deep-copy element_blocks
-        detail::copy_blocks<typename Traits::exec_policy, block_funcs::copy_block>{}(element_blocks);
+        detail::copy_blocks<typename Traits::exec_policy, block_funcs::copy_block, block_funcs::delete_block>{}(
+            element_blocks);
     }
 }
 

@@ -18,7 +18,9 @@ block, it creates exactly one instance of the ``clone_value``
 specialization for that block, and applies it to the elements strictly in
 the order they are stored in the block.  If an exception is thrown mid-way
 through a block, the partially built copy of the block gets destroyed,
-which in turn destroys the values cloned up to that point.  Thanks to the
+which in turn destroys the values cloned up to that point; any preceding
+blocks that have already been cloned get destroyed as well, leaving no
+leaked values.  Thanks to the
 first two guarantees, the ``operator()`` of a specialization may be
 non-const, which allows the cloner to carry state across the elements of a
 block while cloning.

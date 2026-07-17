@@ -129,8 +129,9 @@ void test_clone_throw_mid_block()
     mtv_type store;
     store.push_back(new custom_counted{"one"});
     store.push_back(new custom_counted{"two"});
-    store.push_back(new custom_counted{"three", true}); // the cloner throws on this one
-    store.push_back(new custom_counted{"four"});
+    store.push_back_empty();
+    store.push_back(new custom_counted{"three"});
+    store.push_back(new custom_counted{"four", true}); // the cloner throws on this one
     store.push_back(new custom_counted{"five"});
 
     const int baseline = custom_counted::instances;
@@ -146,29 +147,31 @@ void test_clone_throw_mid_block()
         // expected
     }
 
-    // The two elements cloned before the throw must have been freed along
-    // with the partially built destination block...
+    // The first block was cloned in whole and the second block in part
+    // before the throw; all of those clones must have been freed...
     TEST_ASSERT(custom_counted::instances == baseline);
 
     // ...and the source must remain intact.
-    TEST_ASSERT(store.size() == 5);
+    TEST_ASSERT(store.size() == 6);
     TEST_ASSERT(store.template get<custom_counted*>(0)->value == "one");
     TEST_ASSERT(store.template get<custom_counted*>(1)->value == "two");
-    TEST_ASSERT(store.template get<custom_counted*>(2)->value == "three");
-    TEST_ASSERT(store.template get<custom_counted*>(3)->value == "four");
-    TEST_ASSERT(store.template get<custom_counted*>(4)->value == "five");
+    TEST_ASSERT(store.is_empty(2));
+    TEST_ASSERT(store.template get<custom_counted*>(3)->value == "three");
+    TEST_ASSERT(store.template get<custom_counted*>(4)->value == "four");
+    TEST_ASSERT(store.template get<custom_counted*>(5)->value == "five");
 
     // Disarm the flagged element; cloning now succeeds.
-    store.template get<custom_counted*>(2)->throw_on_clone = false;
+    store.template get<custom_counted*>(4)->throw_on_clone = false;
 
     {
         auto cloned = store.clone();
         TEST_ASSERT(custom_counted::instances == baseline * 2);
         TEST_ASSERT(cloned.template get<custom_counted*>(0)->value == "one");
         TEST_ASSERT(cloned.template get<custom_counted*>(1)->value == "two");
-        TEST_ASSERT(cloned.template get<custom_counted*>(2)->value == "three");
-        TEST_ASSERT(cloned.template get<custom_counted*>(3)->value == "four");
-        TEST_ASSERT(cloned.template get<custom_counted*>(4)->value == "five");
+        TEST_ASSERT(cloned.is_empty(2));
+        TEST_ASSERT(cloned.template get<custom_counted*>(3)->value == "three");
+        TEST_ASSERT(cloned.template get<custom_counted*>(4)->value == "four");
+        TEST_ASSERT(cloned.template get<custom_counted*>(5)->value == "five");
     }
 
     // The clone went out of scope and released its elements.

@@ -271,13 +271,31 @@ template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector(mdds::mtv::detail::clone_construction_type, const multi_type_vector& other)
     : m_hdl_event(other.m_hdl_event), m_blocks(other.m_blocks), m_cur_size(other.m_cur_size)
 {
-    // Clone all element blocks.
-    for (auto& blk : m_blocks)
+    // Clone all element blocks into a temporary store, committing them only
+    // once every clone succeeds, so that a clone throwing mid-way doesn't
+    // leak the blocks cloned so far.
+    std::vector<base_element_block*> owned(m_blocks.size(), nullptr);
+
+    try
     {
-        if (blk.data)
+        for (std::size_t i = 0; i < m_blocks.size(); ++i)
+            if (m_blocks[i].data)
+                owned[i] = block_funcs::clone_block(*m_blocks[i].data);
+    }
+    catch (...)
+    {
+        for (const base_element_block* p : owned)
+            if (p)
+                block_funcs::delete_block(p);
+        throw;
+    }
+
+    for (std::size_t i = 0; i < m_blocks.size(); ++i)
+    {
+        if (owned[i])
         {
-            blk.data = block_funcs::clone_block(*blk.data);
-            m_hdl_event.element_block_acquired(blk.data);
+            m_blocks[i].data = owned[i];
+            m_hdl_event.element_block_acquired(owned[i]);
         }
     }
 

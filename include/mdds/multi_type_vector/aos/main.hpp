@@ -357,7 +357,9 @@ public:
      * When a block is cloned via a mdds::mtv::clone_value specialization with
      * no exec_policy declared, exactly one instance of the function object is
      * used per block and applied to the values in their stored order, which
-     * permits the function object to be stateful.
+     * permits the function object to be stateful.  Should cloning throw
+     * mid-way, the blocks cloned up to that point are freed before the
+     * exception propagates.
      *
      * @return Brand-new instance containing the same content as the original
      *         instance.
