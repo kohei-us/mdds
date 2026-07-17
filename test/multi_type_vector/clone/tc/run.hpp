@@ -12,6 +12,9 @@ template<typename mtv_type>
 void run_all_tests()
 {
     test_clone<mtv_type>();
+    test_clone_stateful<mtv_type>();
+    test_clone_group_payload<mtv_type>();
+    test_clone_throw_mid_block<mtv_type>();
     test_noclone<mtv_type>(); // now runs for both variants (previously aos-only)
 }
 
