@@ -7,6 +7,7 @@ basic
 clone
 clone-block
 clone-event-handler
+clone-stateful
 cow
 cow-noncopyable
 cow-detach

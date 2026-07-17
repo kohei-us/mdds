@@ -10,6 +10,7 @@ EXTRA_PROGRAMS = \
 	clone \
 	clone-block \
 	clone-event-handler \
+	clone-stateful \
 	cow \
 	cow-noncopyable \
 	cow-detach \
@@ -27,6 +28,7 @@ basic_SOURCES = basic.cpp
 clone_SOURCES = clone.cpp
 clone_block_SOURCES = clone_block.cpp
 clone_event_handler_SOURCES = clone_event_handler.cpp
+clone_stateful_SOURCES = clone_stateful.cpp
 cow_SOURCES = cow.cpp
 cow_noncopyable_SOURCES = cow_noncopyable.cpp
 cow_detach_SOURCES = cow_detach.cpp
@@ -51,6 +53,7 @@ TESTS = \
 	clone \
 	clone-block \
 	clone-event-handler \
+	clone-stateful \
 	cow \
 	cow-noncopyable \
 	cow-detach \
