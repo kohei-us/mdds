@@ -384,9 +384,9 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(size
 template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
-    const iterator& pos_hint, size_type pos, const T& value)
+    position_hint pos_hint, size_type pos, const T& value)
 {
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set", __LINE__, pos, block_size(), size());
@@ -649,7 +649,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
 template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
-    const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
+    position_hint pos_hint, size_type pos, const T& it_begin, const T& it_end)
 {
     auto res = mdds::mtv::detail::calc_input_end_position(it_begin, it_end, pos, m_cur_size);
     if (!res.second)
@@ -657,7 +657,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
 
     size_type end_pos = res.first;
 
-    size_type block_index1 = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index1 = get_block_position(pos_hint, pos);
     return set_cells_impl(pos, end_pos, block_index1, it_begin, it_end);
 }
 
@@ -854,9 +854,9 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert(
 template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert(
-    const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
+    position_hint pos_hint, size_type pos, const T& it_begin, const T& it_end)
 {
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::insert", __LINE__, pos, block_size(), size());
@@ -917,34 +917,43 @@ typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::get_blo
 
 template<typename Traits>
 typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::get_block_position(
-    const typename value_type::private_data& pos_data, size_type row) const
+    const position_hint& pos_hint, size_type row) const
 {
-    size_type block_index = 0;
-    if (pos_data.parent == this && pos_data.block_index < m_blocks.size())
-        block_index = pos_data.block_index;
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (pos_hint.container_id && pos_hint.container_id != m_id)
+        std::cerr << "multi_type_vector::get_block_position: hint from another container (hint container_id="
+                  << pos_hint.container_id << "; this container_id=" << m_id << ")" << std::endl;
+#endif
 
-    size_type start_row = m_blocks[block_index].position;
-    if (row < start_row)
+    size_type block_index = 0;
+    if (pos_hint.container_id && pos_hint.container_id == m_id && pos_hint.block_index < m_blocks.size())
+        block_index = pos_hint.block_index;
+
+    if (block_index > 0)
     {
-        // Position hint is past the insertion position.
-        // Walk back if that seems efficient.
-        if (row > start_row / 2)
+        size_type start_row = m_blocks[block_index].position;
+        if (row < start_row)
         {
-            for (size_type i = block_index; i > 0;)
+            // Position hint is past the insertion position.
+            // Walk back if that seems efficient.
+            if (row > start_row / 2)
             {
-                --i;
-                start_row = m_blocks[i].position;
-                if (row >= start_row)
+                for (size_type i = block_index; i > 0;)
                 {
-                    // Row is in this block.
-                    return i;
+                    --i;
+                    start_row = m_blocks[i].position;
+                    if (row >= start_row)
+                    {
+                        // Row is in this block.
+                        return i;
+                    }
+                    // Specified row is not in this block.
                 }
-                // Specified row is not in this block.
+                assert(start_row == 0);
             }
-            assert(start_row == 0);
+            // Otherwise reset.
+            block_index = 0;
         }
-        // Otherwise reset.
-        block_index = 0;
     }
 
     return get_block_position(row, block_index);
@@ -1618,9 +1627,9 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
 template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
-    const iterator& pos_hint, size_type pos, T& value)
+    position_hint pos_hint, size_type pos, T& value)
 {
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
@@ -1661,9 +1670,9 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_range(
-    const iterator& pos_hint, size_type start_pos, size_type end_pos)
+    position_hint pos_hint, size_type start_pos, size_type end_pos)
 {
-    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
@@ -1694,7 +1703,7 @@ typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::pos
 
 template<typename Traits>
 typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::position(
-    const iterator& pos_hint, size_type pos)
+    position_hint pos_hint, size_type pos)
 {
     if (pos == m_cur_size)
     {
@@ -1703,7 +1712,7 @@ typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::pos
         return position_type(end(), 0);
     }
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -1738,7 +1747,7 @@ typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits
 
 template<typename Traits>
 typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits>::position(
-    const const_iterator& pos_hint, size_type pos) const
+    position_hint pos_hint, size_type pos) const
 {
     if (pos == m_cur_size)
     {
@@ -1747,7 +1756,7 @@ typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits
         return const_position_type(cend(), 0);
     }
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -1812,9 +1821,9 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::transfer
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::transfer(
-    const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
+    position_hint pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
 {
-    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
@@ -1900,9 +1909,9 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empt
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empty(
-    const iterator& pos_hint, size_type start_pos, size_type end_pos)
+    position_hint pos_hint, size_type start_pos, size_type end_pos)
 {
-    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
@@ -3058,13 +3067,13 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert_e
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert_empty(
-    const iterator& pos_hint, size_type pos, size_type length)
+    position_hint pos_hint, size_type pos, size_type length)
 {
     if (!length)
         // Nothing to insert.
         return end();
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_blocks.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
