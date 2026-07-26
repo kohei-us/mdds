@@ -87,13 +87,13 @@ protected:
     grouped_iterator_type m_pos;
     grouped_iterator_type m_end;
 
-    iterator_updater() : m_cur_node(nullptr, 0)
+    iterator_updater() : m_cur_node(nullptr, 0, 0)
     {}
 
     iterator_updater(
         const grouped_iterator_type& pos, const grouped_iterator_type& end, const parent_type* parent,
-        size_type block_index)
-        : m_cur_node(parent, block_index), m_pos(pos), m_end(end)
+        size_type block_index, container_id_t container_id)
+        : m_cur_node(parent, block_index, container_id), m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
@@ -103,8 +103,9 @@ protected:
         const positions_iterator_type& positions_pos, const sizes_iterator_type& sizes_pos,
         const element_blocks_iterator_type& eb_pos, const positions_iterator_type& positions_end,
         const sizes_iterator_type& sizes_end, const element_blocks_iterator_type& eb_end, const parent_type* parent,
-        size_type block_index)
-        : iterator_updater({positions_pos, sizes_pos, eb_pos}, {positions_end, sizes_end, eb_end}, parent, block_index)
+        size_type block_index, container_id_t container_id)
+        : iterator_updater(
+              {positions_pos, sizes_pos, eb_pos}, {positions_end, sizes_end, eb_end}, parent, block_index, container_id)
     {}
 
     iterator_updater(const iterator_updater& other)
@@ -226,8 +227,8 @@ public:
     {}
     iterator_base(
         const grouped_iterator_type& pos, const grouped_iterator_type& end, const parent_type* parent,
-        size_type block_index)
-        : updater(pos, end, parent, block_index)
+        size_type block_index, container_id_t container_id)
+        : updater(pos, end, parent, block_index, container_id)
     {}
 
     value_type& operator*()
@@ -304,8 +305,8 @@ public:
     {}
     const_iterator_base(
         const grouped_iterator_type& pos, const grouped_iterator_type& end, const parent_type* parent,
-        size_type block_index)
-        : updater(pos, end, parent, block_index)
+        size_type block_index, container_id_t container_id)
+        : updater(pos, end, parent, block_index, container_id)
     {}
 
     /**
@@ -315,7 +316,8 @@ public:
         : updater(
               other.get_pos().position_iterator, other.get_pos().size_iterator, other.get_pos().element_block_iterator,
               other.get_end().position_iterator, other.get_end().size_iterator, other.get_end().element_block_iterator,
-              other.get_node().__private_data.parent, other.get_node().__private_data.block_index)
+              other.get_node().__private_data.parent, other.get_node().__private_data.block_index,
+              other.get_node().__private_data.container_id)
     {}
 
     const value_type& operator*() const

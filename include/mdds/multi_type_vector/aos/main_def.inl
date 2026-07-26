@@ -135,13 +135,13 @@ typename Blk::value_type multi_type_vector<Traits>::get(const const_position_typ
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::begin()
 {
-    return iterator(m_blocks.begin(), m_blocks.end(), this, 0);
+    return iterator(m_blocks.begin(), m_blocks.end(), this, 0, m_id);
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::end()
 {
-    return iterator(m_blocks.end(), m_blocks.end(), this, m_blocks.size());
+    return iterator(m_blocks.end(), m_blocks.end(), this, m_blocks.size(), m_id);
 }
 
 template<typename Traits>
@@ -159,49 +159,49 @@ typename multi_type_vector<Traits>::const_iterator multi_type_vector<Traits>::en
 template<typename Traits>
 typename multi_type_vector<Traits>::const_iterator multi_type_vector<Traits>::cbegin() const
 {
-    return const_iterator(m_blocks.cbegin(), m_blocks.cend(), this, 0);
+    return const_iterator(m_blocks.cbegin(), m_blocks.cend(), this, 0, m_id);
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::const_iterator multi_type_vector<Traits>::cend() const
 {
-    return const_iterator(m_blocks.end(), m_blocks.end(), this, m_blocks.size());
+    return const_iterator(m_blocks.end(), m_blocks.end(), this, m_blocks.size(), m_id);
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::rbegin()
 {
-    return reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), this, 0);
+    return reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), this, 0, m_id);
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::rend()
 {
-    return reverse_iterator(m_blocks.rend(), m_blocks.rend(), this, 0);
+    return reverse_iterator(m_blocks.rend(), m_blocks.rend(), this, 0, m_id);
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::const_reverse_iterator multi_type_vector<Traits>::rbegin() const
 {
-    return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), this, 0);
+    return const_reverse_iterator(m_blocks.rbegin(), m_blocks.rend(), this, 0, m_id);
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::const_reverse_iterator multi_type_vector<Traits>::rend() const
 {
-    return const_reverse_iterator(m_blocks.rend(), m_blocks.rend(), this, 0);
+    return const_reverse_iterator(m_blocks.rend(), m_blocks.rend(), this, 0, m_id);
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::const_reverse_iterator multi_type_vector<Traits>::crbegin() const
 {
-    return const_reverse_iterator(m_blocks.crbegin(), m_blocks.crend(), this, 0);
+    return const_reverse_iterator(m_blocks.crbegin(), m_blocks.crend(), this, 0, m_id);
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::const_reverse_iterator multi_type_vector<Traits>::crend() const
 {
-    return const_reverse_iterator(m_blocks.crend(), m_blocks.crend(), this, 0);
+    return const_reverse_iterator(m_blocks.crend(), m_blocks.crend(), this, 0, m_id);
 }
 
 template<typename Traits>
@@ -326,7 +326,7 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
 template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other) noexcept(nothrow_move_constructible_v)
     : m_hdl_event(std::move(other.m_hdl_event)), m_blocks(std::move(other.m_blocks)),
-      m_cur_size(std::move(other.m_cur_size))
+      m_cur_size(std::move(other.m_cur_size)), m_id(std::exchange(other.m_id, 0))
 {
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     debug_check_full("move construction");
@@ -469,7 +469,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_impl
         size_type i = pos - start_row;
         block_funcs::overwrite_values(*blk->data, i, 1);
         mdds_mtv_set_value(*blk->data, i, value);
-        return iterator(block_pos, m_blocks.end(), this, block_index);
+        return iterator(block_pos, m_blocks.end(), this, block_index, m_id);
     }
 
     assert(blk_cat != cat);
@@ -809,7 +809,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::push_bac
     typename blocks_type::iterator block_pos = m_blocks.end();
     --block_pos;
 
-    return iterator(block_pos, m_blocks.end(), this, block_index);
+    return iterator(block_pos, m_blocks.end(), this, block_index, m_id);
 }
 
 template<typename Traits>
@@ -1732,7 +1732,7 @@ typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits
 
     typename blocks_type::const_iterator block_pos = m_blocks.begin();
     std::advance(block_pos, block_index);
-    const_iterator it = const_iterator(block_pos, m_blocks.end(), this, block_index);
+    const_iterator it = const_iterator(block_pos, m_blocks.end(), this, block_index, m_id);
     return const_position_type(it, pos - start_row);
 }
 
@@ -4378,6 +4378,7 @@ void multi_type_vector<Traits>::swap(multi_type_vector& other) noexcept(nothrow_
 {
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
+    std::swap(m_id, other.m_id);
     m_blocks.swap(other.m_blocks);
 }
 

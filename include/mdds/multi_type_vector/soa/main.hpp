@@ -1519,7 +1519,7 @@ private:
         return iterator(
             {iter_pos, iter_size, iter_elem},
             {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this,
-            block_index);
+            block_index, m_id);
     }
 
     inline const_iterator get_const_iterator(size_type block_index) const
@@ -1534,7 +1534,7 @@ private:
         return const_iterator(
             {iter_pos, iter_size, iter_elem},
             {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, this,
-            block_index);
+            block_index, m_id);
     }
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -1575,6 +1575,8 @@ private:
     event_func m_hdl_event;
     blocks_type m_block_store;
     size_type m_cur_size;
+
+    container_id_t m_id = mtv::detail::next_container_id();
 
     /**
      * Copy-on-write store.  This is null when the parent store doesn't have COW

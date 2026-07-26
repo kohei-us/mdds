@@ -11,9 +11,11 @@
 #include "./delayed_delete_vector.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <cassert>
 #include <concepts>
 #include <memory>
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 #include <sstream>
@@ -135,6 +137,77 @@ class shared_block_error : public mdds::general_error
 {
 public:
     shared_block_error(const std::string& msg) : mdds::general_error(msg)
+    {}
+};
+
+/**
+ * Integer type that stores the unique identity of a multi_type_vector
+ * instance, used to validate position hints.  The value 0 is reserved to
+ * mean "no identity".  This is fixed at 64 bits on all platforms by design,
+ * to keep the identity values from wrapping in a long-lived process.
+ *
+ * A container's identity is associated with its block data: move
+ * construction and move assignment transfer it to the destination (leaving
+ * the moved-from instance with the "no identity" value of 0), swap()
+ * exchanges it, while copies and clones each get a new identity.
+ */
+using container_id_t = std::uint64_t;
+
+namespace detail {
+
+/**
+ * Return a new unique container identifier.  The value 0 is reserved as the
+ * "no identity" sentinel and never gets returned from this function.
+ */
+inline container_id_t next_container_id() noexcept
+{
+    static std::atomic<container_id_t> counter{1}; // start with value 1
+    return counter.fetch_add(1, std::memory_order_relaxed);
+}
+
+/**
+ * Whether T is an iterator of multi_type_vector that carries the position
+ * hint data, i.e. the identity of the originating container and a block
+ * index, in its node.
+ */
+template<typename T>
+concept has_position_hint_data = requires(const T& it) {
+    { it.get_node().__private_data.container_id } -> std::convertible_to<container_id_t>;
+    { it.get_node().__private_data.block_index } -> std::convertible_to<std::size_t>;
+};
+
+} // namespace detail
+
+/**
+ * Hint used in multi_type_vector to speed up block position lookup.  It
+ * stores the identifier of the container instance it originates from, and
+ * the index of a block to start the lookup from.
+ *
+ * A default-constructed instance represents "no hint", and any hint value is
+ * safe to pass to any container instance; a hint that does not originate
+ * from the receiving container simply gets ignored, and the lookup falls
+ * back to an unhinted search.
+ *
+ * An instance of this type is implicitly constructible from an iterator or a
+ * const iterator of multi_type_vector, which enables the common feed-back
+ * pattern of storing the iterator return value of a mutator method as a hint
+ * for the next call.
+ */
+struct position_hint
+{
+    container_id_t container_id = 0;
+    std::size_t block_index = 0;
+
+    position_hint() noexcept = default;
+
+    /**
+     * Implicitly construct a hint from a block iterator of multi_type_vector.
+     * Only the container identity and the block index stored in the iterator
+     * get copied; the resulting hint carries no pointers into the container.
+     */
+    template<detail::has_position_hint_data Iter>
+    position_hint(const Iter& it) noexcept
+        : container_id(it.get_node().__private_data.container_id), block_index(it.get_node().__private_data.block_index)
     {}
 };
 

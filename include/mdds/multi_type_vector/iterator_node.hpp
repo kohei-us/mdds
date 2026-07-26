@@ -25,8 +25,9 @@ struct iterator_value_node
     size_type size;
     mdds::mtv::base_element_block* data;
 
-    iterator_value_node(const parent_type* parent, size_type block_index)
-        : type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr), __private_data(parent, block_index)
+    iterator_value_node(const parent_type* parent, size_type block_index, mdds::mtv::container_id_t container_id)
+        : type(mdds::mtv::element_type_empty), position(0), size(0), data(nullptr),
+          __private_data(parent, block_index, container_id)
     {}
 
     void swap(iterator_value_node& other)
@@ -43,16 +44,19 @@ struct iterator_value_node
     {
         const parent_type* parent;
         size_type block_index;
+        mdds::mtv::container_id_t container_id;
 
-        private_data() : parent(nullptr), block_index(0)
+        private_data() : parent(nullptr), block_index(0), container_id(0)
         {}
-        private_data(const parent_type* _parent, size_type _block_index) : parent(_parent), block_index(_block_index)
+        private_data(const parent_type* _parent, size_type _block_index, mdds::mtv::container_id_t _container_id)
+            : parent(_parent), block_index(_block_index), container_id(_container_id)
         {}
 
         void swap(private_data& other)
         {
             std::swap(parent, other.parent);
             std::swap(block_index, other.block_index);
+            std::swap(container_id, other.container_id);
         }
     };
     private_data __private_data;

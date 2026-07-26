@@ -517,7 +517,8 @@ multi_type_vector<Traits>::multi_type_vector(const multi_type_vector& other)
 template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector(multi_type_vector&& other) noexcept(nothrow_move_constructible_v)
     : m_hdl_event(std::move(other.m_hdl_event)), m_block_store(std::move(other.m_block_store)),
-      m_cur_size(std::move(other.m_cur_size)), m_cow_store(std::move(other.m_cow_store))
+      m_cur_size(std::move(other.m_cur_size)), m_id(std::exchange(other.m_id, 0)),
+      m_cow_store(std::move(other.m_cow_store))
 {
     MDDS_MTV_TRACE_ARGS(constructor, "other=? (move)");
 
@@ -4065,7 +4066,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::make_beg
 {
     return iterator(
         {m_block_store.positions.begin(), m_block_store.sizes.begin(), m_block_store.element_blocks.begin()},
-        {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this, 0);
+        {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this, 0, m_id);
 }
 
 template<typename Traits>
@@ -4074,7 +4075,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::make_end
     return iterator(
         {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()},
         {m_block_store.positions.end(), m_block_store.sizes.end(), m_block_store.element_blocks.end()}, this,
-        m_block_store.positions.size());
+        m_block_store.positions.size(), m_id);
 }
 
 template<typename Traits>
@@ -4118,7 +4119,8 @@ typename multi_type_vector<Traits>::const_iterator multi_type_vector<Traits>::cb
 
     return const_iterator(
         {m_block_store.positions.cbegin(), m_block_store.sizes.cbegin(), m_block_store.element_blocks.cbegin()},
-        {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, this, 0);
+        {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, this, 0,
+        m_id);
 }
 
 template<typename Traits>
@@ -4129,7 +4131,7 @@ typename multi_type_vector<Traits>::const_iterator multi_type_vector<Traits>::ce
     return const_iterator(
         {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()},
         {m_block_store.positions.cend(), m_block_store.sizes.cend(), m_block_store.element_blocks.cend()}, this,
-        m_block_store.positions.size());
+        m_block_store.positions.size(), m_id);
 }
 
 template<typename Traits>
@@ -4137,7 +4139,8 @@ typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::
 {
     return reverse_iterator(
         {m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin()},
-        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
+        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0,
+        m_id);
 }
 
 template<typename Traits>
@@ -4145,7 +4148,8 @@ typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::
 {
     return reverse_iterator(
         {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()},
-        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
+        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0,
+        m_id);
 }
 
 template<typename Traits>
@@ -4189,7 +4193,8 @@ typename multi_type_vector<Traits>::const_reverse_iterator multi_type_vector<Tra
 
     return const_reverse_iterator(
         {m_block_store.positions.rbegin(), m_block_store.sizes.rbegin(), m_block_store.element_blocks.rbegin()},
-        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
+        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0,
+        m_id);
 }
 
 template<typename Traits>
@@ -4199,7 +4204,8 @@ typename multi_type_vector<Traits>::const_reverse_iterator multi_type_vector<Tra
 
     return const_reverse_iterator(
         {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()},
-        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0);
+        {m_block_store.positions.rend(), m_block_store.sizes.rend(), m_block_store.element_blocks.rend()}, this, 0,
+        m_id);
 }
 
 template<typename Traits>
@@ -5432,6 +5438,7 @@ void multi_type_vector<Traits>::swap(multi_type_vector& other) noexcept(nothrow_
 
     std::swap(m_hdl_event, other.m_hdl_event);
     std::swap(m_cur_size, other.m_cur_size);
+    std::swap(m_id, other.m_id);
     m_block_store.swap(other.m_block_store);
     std::swap(m_cow_store, other.m_cow_store);
 }

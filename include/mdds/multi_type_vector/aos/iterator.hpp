@@ -26,12 +26,13 @@ protected:
     typedef typename parent_type::size_type size_type;
     typedef mdds::detail::mtv::iterator_value_node<parent_type, size_type> node;
 
-    iterator_common_base() : m_cur_node(nullptr, 0)
+    iterator_common_base() : m_cur_node(nullptr, 0, 0)
     {}
 
     iterator_common_base(
-        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index)
-        : m_cur_node(parent, block_index), m_pos(pos), m_end(end)
+        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index,
+        container_id_t container_id)
+        : m_cur_node(parent, block_index, container_id), m_pos(pos), m_end(end)
     {
         if (m_pos != m_end)
             update_node();
@@ -151,8 +152,9 @@ public:
     iterator_base()
     {}
     iterator_base(
-        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index)
-        : common_base(pos, end, parent, block_index)
+        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index,
+        container_id_t container_id)
+        : common_base(pos, end, parent, block_index, container_id)
     {}
 
     value_type& operator*()
@@ -221,8 +223,9 @@ public:
     const_iterator_base() : common_base()
     {}
     const_iterator_base(
-        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index)
-        : common_base(pos, end, parent, block_index)
+        const base_iterator_type& pos, const base_iterator_type& end, const parent_type* parent, size_type block_index,
+        container_id_t container_id)
+        : common_base(pos, end, parent, block_index, container_id)
     {}
 
     /**
@@ -231,7 +234,7 @@ public:
     const_iterator_base(const iterator_base& other)
         : common_base(
               other.get_pos(), other.get_end(), other.get_node().__private_data.parent,
-              other.get_node().__private_data.block_index)
+              other.get_node().__private_data.block_index, other.get_node().__private_data.container_id)
     {}
 
     const value_type& operator*() const

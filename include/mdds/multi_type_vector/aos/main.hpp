@@ -1354,14 +1354,14 @@ private:
     {
         typename blocks_type::iterator block_pos = m_blocks.begin();
         std::advance(block_pos, block_index);
-        return iterator(block_pos, m_blocks.end(), this, block_index);
+        return iterator(block_pos, m_blocks.end(), this, block_index, m_id);
     }
 
     inline const_iterator get_const_iterator(size_type block_index) const
     {
         typename blocks_type::const_iterator block_pos = m_blocks.begin();
         std::advance(block_pos, block_index);
-        return const_iterator(block_pos, m_blocks.end(), this, block_index);
+        return const_iterator(block_pos, m_blocks.end(), this, block_index, m_id);
     }
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
@@ -1374,6 +1374,8 @@ private:
     event_func m_hdl_event;
     blocks_type m_blocks;
     size_type m_cur_size;
+
+    container_id_t m_id = mtv::detail::next_container_id();
 };
 
 }}} // namespace mdds::mtv::aos
