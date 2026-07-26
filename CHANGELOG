@@ -37,6 +37,25 @@ mdds 4.0.0 (next target)
     were leaked.  All partial clones are now freed before the
     exception propagates.
 
+  * the hinted position and mutator methods now take the new
+    mdds::mtv::position_hint type in place of an iterator.  A hint is a
+    small, trivially copyable value carrying no pointers, so any hint
+    value is safe to pass to any instance: an empty, stale, or foreign
+    hint is detected and ignored, and the lookup falls back to an
+    unhinted search instead of causing undefined behavior.  A
+    default-constructed hint means "no hint", so hint seeding no longer
+    requires iterator access, which also makes hinted mutation usable
+    under copy-on-write.  The iterator a mutator returns implicitly
+    converts to a hint, keeping the common feed-back pattern of
+    hint = db.set(hint, pos, value); source compatible.
+
+  * hint validation is based on a new per-instance container identity
+    (a unique 64-bit value exposed via the identity() method) instead
+    of the container's memory address.  The identity travels with the
+    block data: moves transfer it to the destination and leave the
+    moved-from instance with no identity, swap() exchanges it, while
+    copies and clones each get a new identity.
+
 * trie_map and packed_trie_map
 
   * the insert(), erase(), find() and prefix_search() methods now take

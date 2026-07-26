@@ -139,6 +139,13 @@ mutable iterator would let you edit shared blocks directly and skip the private
 copy that is meant to happen on the first write.  Modify a container through its
 own methods instead, which detach automatically as needed.
 
+Note that this does not get in the way of using position hints with the hinted
+mutator methods: a default-constructed :cpp:struct:`~mdds::mtv::position_hint`
+requires no iterator access to seed, and the iterator a mutator returns converts
+back into a hint on assignment.  The usual feed-back pattern of ``hint =
+v.set(hint, pos, value);`` therefore works unchanged under copy-on-write.  See
+:ref:`mtv-perf-considerations-pos-hint` for how position hints work.
+
 Copying a const source is not read-only
 ---------------------------------------
 

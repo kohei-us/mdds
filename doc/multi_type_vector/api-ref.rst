@@ -39,6 +39,17 @@ mdds::mtv::default_traits
 .. doxygenstruct:: mdds::mtv::default_traits
    :members:
 
+mdds::mtv::position_hint
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenstruct:: mdds::mtv::position_hint
+   :members:
+
+mdds::mtv::container_id_t
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygentypedef:: mdds::mtv::container_id_t
+
 Element Stores
 --------------
 

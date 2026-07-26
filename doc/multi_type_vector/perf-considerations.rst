@@ -24,6 +24,8 @@ reason not to.
 Also note that both variants are API compatibile with each other.
 
 
+.. _mtv-perf-considerations-pos-hint:
+
 Use of position hints to avoid the cost of block position lookup
 ----------------------------------------------------------------
 
@@ -56,18 +58,22 @@ demonstrates:
 Compiling and executing this code should take only a fraction of a second.
 
 The only difference between the second example and the first one is that the
-second one uses an interator as a position hint to keep track of the position of
-the last modified block.  Each
+second one uses a :cpp:struct:`~mdds::mtv::position_hint` object to keep track
+of the position of the last modified block.  Each
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::set` method call returns an
-iterator which can then be passed to the next
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::set` call as the position hint.
-Because an iterator object internally stores the location of the block the value
-was inserted to, this lets the method to start the block position lookup process
-from the last modified block, which in this example is always one block behind
-the one the new value needs to go.  Using the big-O notation, the use of the
-position hint essentially turns the complexity of O(n^2) in the first example
-into O(1) in the second one if you are using an older version of mdds where the
-block position lookup had a linear complexity.
+iterator, and assigning it to a position hint records the location of the
+block the value was inserted to.  Passing that hint to the next
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::set` call lets the method start
+the block position lookup process from the last modified block, which in this
+example is always one block behind the one the new value needs to go.  Using
+the big-O notation, the use of the position hint essentially turns the
+complexity of O(n^2) in the first example into O(1) in the second one if you
+are using an older version of mdds where the block position lookup had a
+linear complexity.
+
+Note also that a default-constructed position hint represents "no hint", which
+is why the second example requires no extra step to seed the initial hint
+value.
 
 This strategy should work with any methods in :cpp:type:`~mdds::multi_type_vector`
 that take a position hint as the first argument.
@@ -84,19 +90,25 @@ binary search in performing the lookup.
    your specific use case and decide whether the use of position hints is worth
    it.
 
-One important thing to note is that, as a user, you must ensure that the position
-hint you pass stays valid between the calls.  A position hint becomes invalid when
-the content of the container changes.  A good strategy to maintain a valid position
-hint is to always receive the iterator returned from the mutator method you called
-to which you passed the previous position hint, which is what the code above does.
-Passing an invalid position hint to a method that takes one may result in invalid
-memory access or otherwise in some sort of undefined behavior.
+A position hint is a small, trivially copyable value that stores the identity
+of the container it originates from along with a block index; it carries no
+pointers into the container.  This makes it cheap to store long-term, for
+instance one hint per container instance in an application that manages many
+of them, without worrying about its life cycle.
 
-.. warning::
+Any hint value is safe to pass to any container instance.  When a hint is
+empty, stale, or originates from a different container, the receiving method
+detects and ignores it, and the block lookup simply falls back to an unhinted
+search.  In other words, a wrong hint only costs you the performance benefit;
+it never leads to incorrect behavior.  To keep the hint fresh, always receive
+the iterator returned from the mutator method to which you passed the previous
+hint, which is what the code above does.
 
-   You must ensure that the position hint you pass stays valid. Passing an invalid
-   position hint to a method that takes one may result in invalid memory access
-   or otherwise in some sort of undefined behavior.
+.. note::
+
+   Prior to version 4.0, position hints were iterators, and passing an
+   invalidated iterator as a hint resulted in undefined behavior.  The
+   position hint type introduced in 4.0 removes that hazard by design.
 
 
 Block shifting performance and loop-unrolling factor

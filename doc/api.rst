@@ -34,6 +34,26 @@ v4.0
   source-compatible, but any code that referenced an ``operator!=`` member
   explicitly needs updating.
 
+multi_type_vector
+^^^^^^^^^^^^^^^^^
+
+* The hinted overloads of ``position()``, ``transfer()``, ``set()``,
+  ``insert()``, ``set_empty()``, ``insert_empty()``, ``release()`` and
+  ``release_range()`` now take the new ``mdds::mtv::position_hint`` type by
+  value in place of ``const iterator&`` or ``const const_iterator&``.  Both
+  iterator types implicitly convert to ``position_hint``, so typical call
+  sites - including the common feed-back pattern of storing the iterator
+  returned from a mutator and passing it back as the hint for the next
+  call - remain source-compatible.  Code that referenced the old parameter
+  types explicitly, for instance through member function pointers or in
+  ``decltype`` expressions, needs updating.
+
+* The contract of the hinted methods has changed accordingly: passing an
+  invalid hint no longer results in undefined behavior.  Any hint value is
+  safe to pass; a hint that is empty, stale, or originating from a different
+  container gets detected and ignored, and the block lookup falls back to an
+  unhinted search.
+
 trie_map & packed_trie_map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
