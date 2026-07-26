@@ -217,6 +217,12 @@ const typename multi_type_vector<Traits>::event_func& multi_type_vector<Traits>:
 }
 
 template<typename Traits>
+container_id_t multi_type_vector<Traits>::identity() const noexcept
+{
+    return m_id;
+}
+
+template<typename Traits>
 multi_type_vector<Traits>::multi_type_vector() noexcept(nothrow_default_constructible_v) : m_cur_size(0)
 {}
 

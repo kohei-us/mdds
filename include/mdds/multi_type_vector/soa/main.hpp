@@ -343,6 +343,17 @@ public:
     const event_func& event_handler() const;
 
     /**
+     * Return the unique identity of this container instance, which is what
+     * the container compares a position hint against when validating it.
+     * See mdds::mtv::container_id_t for how the identity travels across
+     * move, swap and copy operations.
+     *
+     * @return Unique identity of this container instance, or 0 when the
+     *         instance has been moved from.
+     */
+    container_id_t identity() const noexcept;
+
+    /**
      * Default constructor.  It initializes the container with empty size.
      */
     multi_type_vector() noexcept(nothrow_default_constructible_v);

@@ -22,6 +22,7 @@ EXTRA_DIST = \
 	common_types.hpp \
 	tc/share.hpp \
 	tc/detach.hpp \
+	tc/hints.hpp \
 	tc/lifetime.hpp \
 	tc/noncopyable.hpp \
 	tc/iterator_gate.hpp \

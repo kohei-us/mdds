@@ -58,6 +58,11 @@ void run_all_tests()
     mtv_test_hints_insert_cells<mtv_type>();
     mtv_test_hints_set_empty<mtv_type>();
     mtv_test_hints_insert_empty<mtv_type>();
+    mtv_test_hints_default<mtv_type>();
+    mtv_test_hints_from_other_container<mtv_type>();
+    mtv_test_hints_stale_block_index<mtv_type>();
+    mtv_test_hints_container_identity<mtv_type>();
+    mtv_test_hints_iterator_conversion<mtv_type>();
     mtv_test_position<mtv_type>();
     mtv_test_position_next<mtv_type>();
     mtv_test_position_advance<mtv_type>();

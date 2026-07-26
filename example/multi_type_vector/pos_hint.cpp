@@ -82,7 +82,7 @@ void run_with_position_hint()
 
     // Initialize the container with one empty block of size 50000.
     mtv_type db(size);
-    mtv_type::iterator pos = db.begin();
+    mdds::mtv::position_hint pos;
 
     // Set non-empty value at every other logical position from top down.
     for (size_t i = 0; i < size; ++i)

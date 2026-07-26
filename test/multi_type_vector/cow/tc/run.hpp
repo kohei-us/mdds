@@ -8,6 +8,7 @@
 
 #include "share.hpp"
 #include "detach.hpp"
+#include "hints.hpp"
 #include "lifetime.hpp"
 #include "noncopyable.hpp"
 #include "iterator_gate.hpp"
@@ -21,6 +22,7 @@ void run_all_tests()
     test_cow_both_side<cow_mtv_type>();
     test_cow_release_requires_sole_ownership<cow_mtv_type>();
     test_cow_release_pos_hint_requires_sole_ownership<cow_mtv_type>();
+    test_cow_hinted_mutation<cow_mtv_type>();
     test_cow_lifetime<cow_mtv_type>();
     test_cow_noncopyable<cow_mtv_type>();
     test_cow_iterator_gate<cow_mtv_type, non_cow_mtv_type>();

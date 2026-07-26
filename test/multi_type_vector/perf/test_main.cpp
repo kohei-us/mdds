@@ -40,11 +40,12 @@ void mtv_perf_test_block_position_lookup()
     }
 
     {
-        // As a solution for this, we can use an iterator to specify the start
-        // position, which eliminates the above scalability problem nicely.
+        // As a solution for this, we can use a position hint to specify the
+        // start position, which eliminates the above scalability problem
+        // nicely.
 
         mtv_type db(n * 2);
-        mtv_type::iterator pos_hint = db.begin();
+        mdds::mtv::position_hint pos_hint;
         double val1 = 1.1;
         int val2 = 23;
         stack_printer __stack_printer__("::mtv_perf_test_block_position_lookup::insertion with position hint");
@@ -63,20 +64,20 @@ void mtv_perf_test_insert_via_position_object()
     mtv_type db(data_size);
     {
         stack_printer __stack_printer__("::mtv_perf_test_insert_via_position_object initialize mtv.");
-        mtv_type::iterator it = db.begin();
+        mdds::mtv::position_hint hint;
         for (size_t i = 0, n = db.size() / 2; i < n; ++i)
         {
-            it = db.set(it, i * 2, 1.1);
+            hint = db.set(hint, i * 2, 1.1);
         }
     }
 
     mtv_type db2 = db;
     {
         stack_printer __stack_printer__("::mtv_perf_test_insert_via_position_object insert with position hint.");
-        mtv_type::iterator it = db2.begin();
+        mdds::mtv::position_hint hint;
         for (size_t i = 0, n = db2.size(); i < n; ++i)
         {
-            it = db2.set(it, i, string("foo"));
+            hint = db2.set(hint, i, string("foo"));
         }
     }
 
