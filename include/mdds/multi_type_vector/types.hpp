@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+#include <ostream>
 #include <sstream>
 #include <type_traits>
 
@@ -210,6 +211,12 @@ struct position_hint
         : container_id(it.get_node().__private_data.container_id), block_index(it.get_node().__private_data.block_index)
     {}
 };
+
+inline std::ostream& operator<<(std::ostream& os, const position_hint& hint)
+{
+    os << "{position-hint: container-id=" << hint.container_id << "; block-index=" << hint.block_index << "}";
+    return os;
+}
 
 class base_element_block;
 element_t get_block_type(const base_element_block&) noexcept;

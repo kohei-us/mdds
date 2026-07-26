@@ -707,7 +707,7 @@ typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::pos
 
 template<typename Traits>
 typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::position(
-    const iterator& pos_hint, size_type pos)
+    position_hint pos_hint, size_type pos)
     requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE_ARGS(accessor_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos);
@@ -719,7 +719,7 @@ typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::pos
         return position_type(make_end(), 0);
     }
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -754,7 +754,7 @@ typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits
 
 template<typename Traits>
 typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits>::position(
-    const const_iterator& pos_hint, size_type pos) const
+    position_hint pos_hint, size_type pos) const
 {
     MDDS_MTV_TRACE_ARGS(accessor_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos);
 
@@ -765,7 +765,7 @@ typename multi_type_vector<Traits>::const_position_type multi_type_vector<Traits
         return const_position_type(cend(), 0);
     }
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::position", __LINE__, pos, block_size(), size());
@@ -837,7 +837,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::transfer
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::transfer(
-    const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
+    position_hint pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos)
 {
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos
@@ -850,7 +850,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::transfer
     detach_impl();
     dest.detach_impl();
 
-    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::transfer", __LINE__, start_pos, block_size(), size());
@@ -939,7 +939,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(size
 template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
-    const iterator& pos_hint, size_type pos, const T& value)
+    position_hint pos_hint, size_type pos, const T& value)
 {
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint,
@@ -947,7 +947,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
 
     detach_impl();
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set", __LINE__, pos, block_size(), size());
@@ -1031,7 +1031,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
 template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
-    const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
+    position_hint pos_hint, size_type pos, const T& it_begin, const T& it_end)
 {
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos << "; it_begin=?; it_end=? (length="
@@ -1044,7 +1044,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set(
     detach_impl();
 
     size_type end_pos = res.first;
-    size_type block_index1 = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index1 = get_block_position(pos_hint, pos);
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -1207,7 +1207,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert(
 template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert(
-    const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end)
+    position_hint pos_hint, size_type pos, const T& it_begin, const T& it_end)
 {
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos << "; it_begin=?; it_end=? (length="
@@ -1215,7 +1215,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert(
 
     detach_impl();
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::insert", __LINE__, pos, block_size(), size());
@@ -1368,14 +1368,14 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empt
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::set_empty(
-    const iterator& pos_hint, size_type start_pos, size_type end_pos)
+    position_hint pos_hint, size_type start_pos, size_type end_pos)
 {
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
     detach_impl();
 
-    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::set_empty", __LINE__, start_pos, block_size(), size());
@@ -1464,7 +1464,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert_e
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert_empty(
-    const iterator& pos_hint, size_type pos, size_type length)
+    position_hint pos_hint, size_type pos, size_type length)
 {
     MDDS_MTV_TRACE_ARGS(mutator_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos << "; length=" << length);
 
@@ -1474,7 +1474,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::insert_e
 
     detach_impl();
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::insert_empty", __LINE__, pos, block_size(), size());
@@ -3929,7 +3929,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
 template<typename Traits>
 template<typename T>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
-    const iterator& pos_hint, size_type pos, T& value)
+    position_hint pos_hint, size_type pos, T& value)
 {
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint,
@@ -3941,7 +3941,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
             throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
     }
 
-    size_type block_index = get_block_position(pos_hint->__private_data, pos);
+    size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release", __LINE__, pos, block_size(), size());
@@ -4042,7 +4042,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_range(
-    const iterator& pos_hint, size_type start_pos, size_type end_pos)
+    position_hint pos_hint, size_type start_pos, size_type end_pos)
 {
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
@@ -4053,7 +4053,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
             throw shared_block_error("multi_type_vector::release_range: requires sole ownership; call detach() first");
     }
 
-    size_type block_index1 = get_block_position(pos_hint->__private_data, start_pos);
+    size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())
         mdds::mtv::detail::throw_block_position_not_found(
             "multi_type_vector::release_range", __LINE__, start_pos, block_size(), size());
@@ -4235,35 +4235,44 @@ typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::get_blo
 
 template<typename Traits>
 typename multi_type_vector<Traits>::size_type multi_type_vector<Traits>::get_block_position(
-    const typename value_type::private_data& pos_data, size_type row) const
+    const position_hint& pos_hint, size_type row) const
 {
+#ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
+    if (pos_hint.container_id && pos_hint.container_id != m_id)
+        std::cerr << "multi_type_vector::get_block_position: hint from another container (hint container_id="
+                  << pos_hint.container_id << "; this container_id=" << m_id << ")" << std::endl;
+#endif
+
     size_type block_index = 0;
-    if (pos_data.parent == this && pos_data.block_index < m_block_store.positions.size())
-        block_index = pos_data.block_index;
+    if (pos_hint.container_id && pos_hint.container_id == m_id && pos_hint.block_index < m_block_store.positions.size())
+        block_index = pos_hint.block_index;
 
-    size_type start_row = m_block_store.positions[block_index];
-
-    if (row < start_row)
+    if (block_index > 0)
     {
-        // Position hint is past the insertion position.
-        // Walk back if that seems efficient.
-        if (row > start_row / 2)
+        size_type start_row = m_block_store.positions[block_index];
+
+        if (row < start_row)
         {
-            for (size_type i = block_index; i > 0;)
+            // Position hint is past the insertion position.
+            // Walk back if that seems efficient.
+            if (row > start_row / 2)
             {
-                --i;
-                start_row = m_block_store.positions[i];
-                if (row >= start_row)
+                for (size_type i = block_index; i > 0;)
                 {
-                    // Row is in this block.
-                    return i;
+                    --i;
+                    start_row = m_block_store.positions[i];
+                    if (row >= start_row)
+                    {
+                        // Row is in this block.
+                        return i;
+                    }
+                    // Specified row is not in this block.
                 }
-                // Specified row is not in this block.
+                assert(start_row == 0);
             }
-            assert(start_row == 0);
+            // Otherwise reset.
+            block_index = 0;
         }
-        // Otherwise reset.
-        block_index = 0;
     }
     return get_block_position(row, block_index);
 }

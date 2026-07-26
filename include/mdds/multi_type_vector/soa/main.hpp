@@ -487,15 +487,19 @@ public:
      * valid position, it will return a valid position object representing
      * the end position.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the element
-     *                 position.
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
+     *
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the element position.
      * @param pos logical position of the element.
      * @return position object that stores an iterator referencing the element
      *         block where the element resides, and its offset within that
      *         block.
      */
-    position_type position(const iterator& pos_hint, size_type pos)
+    position_type position(position_hint pos_hint, size_type pos)
         requires(!Traits::enable_cow);
 
     /**
@@ -521,15 +525,19 @@ public:
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the element
-     *                 position.
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
+     *
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the element position.
      * @param pos logical position of the element.
      * @return position object that stores an iterator referencing the element
      *         block where the element resides, and its offset within the
      *         block.
      */
-    const_position_type position(const const_iterator& pos_hint, size_type pos) const;
+    const_position_type position(position_hint pos_hint, size_type pos) const;
 
     /**
      * Move elements from one container to another. After the move, the
@@ -571,9 +579,14 @@ public:
      * the source container size, or the destination container is not large
      * enough to accommodate the transferred elements.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the blocks
-     *                 where the elements to be transferred reside.
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
+     *
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the blocks where the elements to be
+     *                 transferred reside.
      * @param start_pos starting position
      * @param end_pos ending position, inclusive.
      * @param dest destination container to which the elements are to be
@@ -585,7 +598,7 @@ public:
      *         prior to the transfer.
      */
     iterator transfer(
-        const iterator& pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
+        position_hint pos_hint, size_type start_pos, size_type end_pos, multi_type_vector& dest, size_type dest_pos);
 
     /**
      * Set a value of an arbitrary type to a specified position.  The type of
@@ -612,34 +625,38 @@ public:
      * value will overwrite an existing value at the specified position
      * position if any.
      *
-     * <p>This variant takes an iterator as an additional parameter, which is
-     * used as a block position hint to speed up the lookup of the
-     * right block to insert the value into.  The other variant that doesn't
-     * take an iterator always starts the block lookup from the first block,
-     * which does not scale well as the block size grows.</p>
+     * <p>This variant takes a position hint as an additional parameter, and
+     * uses it to speed up the lookup of the right block to insert the value
+     * into.  The other variant that doesn't take a hint always starts the
+     * block lookup from the first block, which does not scale well as the
+     * block size grows.  A hint is typically obtained by assigning the
+     * iterator returned from an earlier call to this or another hinted
+     * method on the same container, as in
+     * <code>hint = db.set(hint, pos, value);</code>.</p>
      *
-     * <p>This position hint iterator must <b>precede</b> the insertion
-     * position to yield any performance benefit.</p>
+     * <p>The hinted block must <b>precede</b> the insertion position to
+     * yield any performance benefit.</p>
      *
-     * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iterator is
-     * undefined.</p>
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception
      * if the specified position is outside the current container range.</p>
      *
      * <p>Calling this method will not change the size of the container.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the right block
-     *                 to insert the value into.
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the right block to insert the value
+     *                 into.
      * @param pos position to insert the value to.
      * @param value value to insert.
      * @return iterator position pointing to the block where the value is
      *         inserted.
      */
     template<typename T>
-    iterator set(const iterator& pos_hint, size_type pos, const T& value);
+    iterator set(position_hint pos_hint, size_type pos, const T& value);
 
     /**
      * Set multiple values of identical type to a range of elements starting
@@ -670,18 +687,22 @@ public:
      * at specified position.  Any existing values will be overwritten by the
      * new values.
      *
-     * <p>This variant takes an iterator as an additional parameter, which is
-     * used as a block position hint to speed up the lookup of the first
-     * insertion block.  The other variant that doesn't take an iterator
-     * always starts the block lookup from the first block, which does not
-     * scale well as the block size grows.</p>
+     * <p>This variant takes a position hint as an additional parameter, and
+     * uses it to speed up the lookup of the first insertion block.  The
+     * other variant that doesn't take a hint always starts the block lookup
+     * from the first block, which does not scale well as the block size
+     * grows.  A hint is typically obtained by assigning the iterator
+     * returned from an earlier call to this or another hinted method on the
+     * same container, as in
+     * <code>hint = db.set(hint, pos, it_begin, it_end);</code>.</p>
      *
-     * <p>This position hint iterator must <b>precede</b> the insertion
-     * position to yield any performance benefit.</p>
+     * <p>The hinted block must <b>precede</b> the insertion position to
+     * yield any performance benefit.</p>
      *
-     * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iterator is
-     * undefined.</p>
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the range of new values would fall outside the current container
@@ -689,9 +710,9 @@ public:
      *
      * <p>Calling this method will not change the size of the container.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the right block
-     *                 to insert the value into.
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the right block to insert the value
+     *                 into.
      * @param pos position of the first value of the series of new values
      *            being inserted.
      * @param it_begin iterator that points to the begin position of the
@@ -703,7 +724,7 @@ public:
      *         is empty, the end iterator position is returned.
      */
     template<typename T>
-    iterator set(const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end);
+    iterator set(position_hint pos_hint, size_type pos, const T& it_begin, const T& it_end);
 
     /**
      * Append a new value to the end of the container.
@@ -783,18 +804,22 @@ public:
      * shifted after the insertion.  No existing values will be overwritten by
      * the inserted values.
      *
-     * <p>This variant takes an iterator as an additional parameter, which is
-     * used as a block position hint to speed up the lookup of the first
-     * insertion block.  The other variant that doesn't take an iterator
-     * always starts the block lookup from the first block, which does not
-     * scale well as the block size grows.</p>
+     * <p>This variant takes a position hint as an additional parameter, and
+     * uses it to speed up the lookup of the first insertion block.  The
+     * other variant that doesn't take a hint always starts the block lookup
+     * from the first block, which does not scale well as the block size
+     * grows.  A hint is typically obtained by assigning the iterator
+     * returned from an earlier call to this or another hinted method on the
+     * same container, as in
+     * <code>hint = db.insert(hint, pos, it_begin, it_end);</code>.</p>
      *
-     * <p>This position hint iterator must <b>precede</b> the insertion
-     * position to yield any performance benefit.</p>
+     * <p>The hinted block must <b>precede</b> the insertion position to
+     * yield any performance benefit.</p>
      *
-     * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iterator is
-     * undefined.</p>
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception
      * if the specified position is outside the current container range.</p>
@@ -802,9 +827,9 @@ public:
      * <p>Calling this method will increase the size of the container by
      * the length of the new values inserted.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the right block
-     *                 to insert the value into.
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the right block to insert the value
+     *                 into.
      * @param pos position at which the new values are to be inserted.
      * @param it_begin iterator that points to the begin position of the
      *                 values being inserted.
@@ -815,7 +840,7 @@ public:
      *         is empty, the end iterator position is returned.
      */
     template<typename T>
-    iterator insert(const iterator& pos_hint, size_type pos, const T& it_begin, const T& it_end);
+    iterator insert(position_hint pos_hint, size_type pos, const T& it_begin, const T& it_end);
 
     /**
      * Get the type of an element at specified position.
@@ -858,32 +883,34 @@ public:
      * Set specified range of elements to be empty.  Any existing values will
      * be overwritten.
      *
-     * <p>This variant takes an iterator as an additional parameter, which is
-     * used as a block position hint to speed up the lookup of the first block
-     * to empty.  The other variant that doesn't take an iterator always
-     * starts the block lookup from the first block, which does not
-     * scale well as the block size grows.</p>
+     * <p>This variant takes a position hint as an additional parameter, and
+     * uses it to speed up the lookup of the first block to empty.  The other
+     * variant that doesn't take a hint always starts the block lookup from
+     * the first block, which does not scale well as the block size grows.  A
+     * hint is typically obtained by assigning the iterator returned from an
+     * earlier call to this or another hinted method on the same container,
+     * as in <code>hint = db.set_empty(hint, start_pos, end_pos);</code>.</p>
      *
-     * <p>This position hint iterator must <b>precede</b> the start
-     * position to yield any performance benefit.</p>
+     * <p>The hinted block must <b>precede</b> the start position to yield
+     * any performance benefit.</p>
      *
-     * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iterator is
-     * undefined.</p>
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * either the starting or the ending position is outside the current
      * container size.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the right
-     *                 blocks to empty.
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the right blocks to empty.
      * @param start_pos starting position
      * @param end_pos ending position, inclusive.
      * @return iterator position pointing to the block where the elements are
      *         emptied.
      */
-    iterator set_empty(const iterator& pos_hint, size_type start_pos, size_type end_pos);
+    iterator set_empty(position_hint pos_hint, size_type start_pos, size_type end_pos);
 
     /**
      * Erase elements located between specified start and end positions. The
@@ -927,18 +954,22 @@ public:
      * originally located after the insertion position will get shifted down
      * after the insertion.
      *
-     * <p>This variant takes an iterator as an additional parameter, which is
-     * used as a block position hint to speed up the lookup of the block in
-     * which to insert the new empty segment.  The other variant that doesn't
-     * take an iterator always starts the block lookup from the first block,
-     * which does not scale well as the block size grows.</p>
+     * <p>This variant takes a position hint as an additional parameter, and
+     * uses it to speed up the lookup of the block in which to insert the new
+     * empty segment.  The other variant that doesn't take a hint always
+     * starts the block lookup from the first block, which does not scale
+     * well as the block size grows.  A hint is typically obtained by
+     * assigning the iterator returned from an earlier call to this or
+     * another hinted method on the same container, as in
+     * <code>hint = db.insert_empty(hint, pos, length);</code>.</p>
      *
-     * <p>This position hint iterator must <b>precede</b> the start
-     * position to yield any performance benefit.</p>
+     * <p>The hinted block must <b>precede</b> the start position to yield
+     * any performance benefit.</p>
      *
-     * <p>The caller is responsible for ensuring that the passed iterator is
-     * valid.  The behavior of this method when passing an invalid iterator is
-     * undefined.</p>
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * either the specified position is outside the current container
@@ -947,16 +978,16 @@ public:
      * <p>Calling this method will increase the size of the container by
      * the length of the inserted empty elements.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the right block
-     *                 in which to insert the empty segment.
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the right block in which to insert the
+     *                 empty segment.
      * @param pos position at which to insert a range of empty elements.
      * @param length number of empty elements to insert.
      * @return iterator position pointing to the block where the empty range
      *         is inserted. When no insertion occurs because the length is
      *         zero, the end iterator position is returned.
      */
-    iterator insert_empty(const iterator& pos_hint, size_type pos, size_type length);
+    iterator insert_empty(position_hint pos_hint, size_type pos, size_type length);
 
     /**
      * Clear the content of the container.  The size of the container will
@@ -1070,9 +1101,13 @@ public:
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the block where
-     *                 the element resides.
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
+     *
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the block where the element resides.
      * @param pos position of the element to release.
      * @param value element value.
      *
@@ -1080,7 +1115,7 @@ public:
      *         released element is.
      */
     template<typename T>
-    iterator release(const iterator& pos_hint, size_type pos, T& value);
+    iterator release(position_hint pos_hint, size_type pos, T& value);
 
     /**
      * Release all its elements, and empties its content.  Calling this method
@@ -1115,25 +1150,32 @@ public:
      * element blocks within the range will be released and the container will
      * no longer manage their life cycles after the call.
      *
-     * <p>This variant takes an iterator as an additional parameter, which is
-     * used as a block position hint to speed up the lookup of the first block
-     * to empty.  The other variant that doesn't take an iterator always
-     * starts the block lookup from the first block, which does not
-     * scale well as the block size grows.</p>
+     * <p>This variant takes a position hint as an additional parameter, and
+     * uses it to speed up the lookup of the first block to empty.  The other
+     * variant that doesn't take a hint always starts the block lookup from
+     * the first block, which does not scale well as the block size grows.  A
+     * hint is typically obtained by assigning the iterator returned from an
+     * earlier call to this or another hinted method on the same container,
+     * as in <code>hint = db.release_range(hint, start_pos, end_pos);</code>.</p>
+     *
+     * <p>Any hint value is safe to pass; a hint that is empty, stale, or
+     * originating from a different container gets detected and ignored, in
+     * which case the block lookup falls back to an unhinted search and still
+     * yields a correct result.</p>
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * either the starting or the ending position is outside the current
      * container size.</p>
      *
-     * @param pos_hint iterator used as a block position hint, to specify
-     *                 which block to start when searching for the right
-     *                 blocks in which elements are to be released.
+     * @param pos_hint Position hint to specify which block to start when
+     *                 searching for the right blocks in which elements are
+     *                 to be released.
      * @param start_pos starting position
      * @param end_pos ending position, inclusive.
      * @return iterator position pointing to the block where the elements are
      *         released.
      */
-    iterator release_range(const iterator& pos_hint, size_type start_pos, size_type end_pos);
+    iterator release_range(position_hint pos_hint, size_type start_pos, size_type end_pos);
 
     iterator begin()
         requires(!Traits::enable_cow);
@@ -1368,10 +1410,11 @@ private:
     size_type get_block_position(size_type row, size_type start_block_index = 0) const;
 
     /**
-     * Same as above, but try to infer block position from the private position
-     * data stored in the iterator first before trying full search.
+     * Same as above, but try to infer block position from the position hint
+     * first before trying full search.  The hint is used only when it
+     * originates from this container and its block index is within bounds.
      */
-    size_type get_block_position(const typename value_type::private_data& pos_data, size_type row) const;
+    size_type get_block_position(const position_hint& pos_hint, size_type row) const;
 
     template<typename T>
     void create_new_block_with_new_cell(size_type block_index, T&& cell);
