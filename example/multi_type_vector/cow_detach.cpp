@@ -83,46 +83,46 @@ int main() try
     album.push_back(new image("sunset.jpg", std::vector<unsigned char>(8192)));
     album.push_back(new image("forest.jpg", std::vector<unsigned char>(2048)));
 
-    // Snapshot the album for undo.  A noncopyable block can't be copied, so we
-    // clone(); under COW that is cheap: the snapshot borrows the same blocks
-    // instead of duplicating every image.
+    // Snapshot the album for undo; the snapshot borrows the album's blocks.
     auto snapshot = album.clone();
     //!code-end: setup
 
-    //!code-start: release-throws
-    // We now want to pull the first two images out of the album to hand them
-    // off elsewhere.  release_range() refuses, because the album is still
-    // sharing its blocks with the snapshot.
+    //!code-start: edit-throws
+    // Rename the first image in place; the non-const position() throws while
+    // the album is sharing its blocks.
     try
     {
-        album.release_range(0, 1);
+        auto pos = album.position(0);
+        image_block::at(*pos.first->data, pos.second)->set_name("beach_edited.jpg");
     }
     catch (const mdds::mtv::shared_block_error& e)
     {
-        std::cout << "release failed: " << e.what() << std::endl;
+        std::cout << "mutable access failed: " << e.what() << std::endl;
     }
-    //!code-end: release-throws
+    //!code-end: edit-throws
 
-    //!code-start: detach-then-release
-    // Take sole ownership first.  detach() gives the album its own private
-    // copies of the images while the snapshot keeps the originals, after which
-    // release_range() succeeds.
+    //!code-start: detach-then-edit
+    // Detach to take sole ownership; the same edit now succeeds.
     album.detach();
 
-    image* first = album.get<image*>(0);
-    image* second = album.get<image*>(1);
-    album.release_range(0, 1);
+    auto pos = album.position(0);
+    image_block::at(*pos.first->data, pos.second)->set_name("beach_edited.jpg");
 
-    // We own these two images now.  Rename one to show it is a distinct object
-    // from the snapshot's: the snapshot's copy keeps its original name.
-    first->set_name("beach_edited.jpg");
-
-    std::cout << "extracted and renamed: " << first->name() << " and " << second->name() << std::endl;
+    std::cout << "album now has: " << album.get<image*>(0)->name() << std::endl;
     std::cout << "snapshot still has: " << snapshot.get<image*>(0)->name() << std::endl;
+    //!code-end: detach-then-edit
 
-    delete first;
-    delete second;
-    //!code-end: detach-then-release
+    //!code-start: release-clone
+    // Pull an image out of the album to hand it off elsewhere. This internally
+    // detaches.
+    image* extracted = album.release<image*>(1);
+
+    std::cout << std::boolalpha;
+    std::cout << "extracted: " << extracted->name() << std::endl;
+    std::cout << "extracted is the snapshot's object: " << (extracted == snapshot.get<image*>(1)) << std::endl;
+
+    delete extracted;
+    //!code-end: release-clone
 
     return EXIT_SUCCESS;
 }

@@ -572,6 +572,17 @@ void multi_type_vector<Traits>::share() const
 }
 
 template<typename Traits>
+bool multi_type_vector<Traits>::is_shared() const noexcept
+{
+    MDDS_MTV_TRACE(accessor);
+
+    if constexpr (Traits::enable_cow)
+        return static_cast<bool>(m_cow_store);
+    else
+        return false;
+}
+
+template<typename Traits>
 void multi_type_vector<Traits>::detach()
 {
     MDDS_MTV_TRACE(mutator);
@@ -689,9 +700,14 @@ void multi_type_vector<Traits>::get_impl(size_type pos, T& value) const
 
 template<typename Traits>
 typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::position(size_type pos)
-    requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE_ARGS(accessor, "pos=" << pos);
+
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::position: container is shared; call detach() first");
+    }
 
     if (pos == m_cur_size)
     {
@@ -714,9 +730,14 @@ typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::pos
 template<typename Traits>
 typename multi_type_vector<Traits>::position_type multi_type_vector<Traits>::position(
     position_hint pos_hint, size_type pos)
-    requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE_ARGS(accessor_with_pos_hint, "pos_hint=" << pos_hint << "; pos=" << pos);
+
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::position: container is shared; call detach() first");
+    }
 
     if (pos == m_cur_size)
     {
@@ -3849,11 +3870,7 @@ T multi_type_vector<Traits>::release(size_type pos)
 {
     MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos);
 
-    if constexpr (Traits::enable_cow)
-    {
-        if (m_cow_store)
-            throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
-    }
+    detach_impl();
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -3894,11 +3911,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
 {
     MDDS_MTV_TRACE_ARGS(mutator, "pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
-    if constexpr (Traits::enable_cow)
-    {
-        if (m_cow_store)
-            throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
-    }
+    detach_impl();
 
     size_type block_index = get_block_position(pos);
     if (block_index == m_block_store.positions.size())
@@ -3941,11 +3954,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release(
         mutator_with_pos_hint,
         "pos_hint=" << pos_hint << "; pos=" << pos << "; value=? (type=" << mdds_mtv_get_element_type(value) << ")");
 
-    if constexpr (Traits::enable_cow)
-    {
-        if (m_cow_store)
-            throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
-    }
+    detach_impl();
 
     size_type block_index = get_block_position(pos_hint, pos);
     if (block_index == m_block_store.positions.size())
@@ -3984,11 +3993,7 @@ void multi_type_vector<Traits>::release()
 {
     MDDS_MTV_TRACE(mutator);
 
-    if constexpr (Traits::enable_cow)
-    {
-        if (m_cow_store)
-            throw shared_block_error("multi_type_vector::release: requires sole ownership; call detach() first");
-    }
+    detach_impl();
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -4032,11 +4037,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
 {
     MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
 
-    if constexpr (Traits::enable_cow)
-    {
-        if (m_cow_store)
-            throw shared_block_error("multi_type_vector::release_range: requires sole ownership; call detach() first");
-    }
+    detach_impl();
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -4053,11 +4054,7 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
-    if constexpr (Traits::enable_cow)
-    {
-        if (m_cow_store)
-            throw shared_block_error("multi_type_vector::release_range: requires sole ownership; call detach() first");
-    }
+    detach_impl();
 
     size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -4086,18 +4083,28 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::make_end
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::begin()
-    requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE(accessor);
+
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::begin: container is shared; call detach() first");
+    }
 
     return make_begin();
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::end()
-    requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE(accessor);
+
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::end: container is shared; call detach() first");
+    }
 
     return make_end();
 }
@@ -4160,18 +4167,28 @@ typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::
 
 template<typename Traits>
 typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::rbegin()
-    requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE(accessor);
+
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::rbegin: container is shared; call detach() first");
+    }
 
     return make_rbegin();
 }
 
 template<typename Traits>
 typename multi_type_vector<Traits>::reverse_iterator multi_type_vector<Traits>::rend()
-    requires(!Traits::enable_cow)
 {
     MDDS_MTV_TRACE(accessor);
+
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::rend: container is shared; call detach() first");
+    }
 
     return make_rend();
 }

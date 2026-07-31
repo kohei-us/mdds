@@ -479,13 +479,23 @@ public:
      * valid position, it will return a valid position object representing
      * the end position.</p>
      *
+     * <p>Unlike the const overload, when copy-on-write is enabled this
+     * overload requires the container to be the sole owner of its element
+     * blocks, and throws mdds::mtv::shared_block_error while the container is
+     * borrowing shared blocks.  Call detach() first to become the sole owner.
+     * The exception is thrown before any state change.  Note that detaching
+     * invalidates previously obtained iterators and position objects, but
+     * position hint values remain valid.</p>
+     *
      * @param pos logical position of the element.
      * @return position object that stores an iterator referencing the element
      *         block where the element resides, and its offset within that
      *         block.
+     *
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
      */
-    position_type position(size_type pos)
-        requires(!Traits::enable_cow);
+    position_type position(size_type pos);
 
     /**
      * Given the logical position of an element, get the iterator of the block
@@ -503,15 +513,25 @@ public:
      * which case the block lookup falls back to an unhinted search and still
      * yields a correct result.</p>
      *
+     * <p>Unlike the const overload, when copy-on-write is enabled this
+     * overload requires the container to be the sole owner of its element
+     * blocks, and throws mdds::mtv::shared_block_error while the container is
+     * borrowing shared blocks.  Call detach() first to become the sole owner.
+     * The exception is thrown before any state change.  Note that detaching
+     * invalidates previously obtained iterators and position objects, but
+     * position hint values remain valid.</p>
+     *
      * @param pos_hint Position hint to specify which block to start when
      *                 searching for the element position.
      * @param pos logical position of the element.
      * @return position object that stores an iterator referencing the element
      *         block where the element resides, and its offset within that
      *         block.
+     *
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
      */
-    position_type position(position_hint pos_hint, size_type pos)
-        requires(!Traits::enable_cow);
+    position_type position(position_hint pos_hint, size_type pos);
 
     /**
      * Given the logical position of an element, get an iterator referencing
@@ -1076,6 +1096,12 @@ public:
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
      *
+     * <p>When copy-on-write is enabled and this container is currently
+     * borrowing shared blocks, this method detaches first, like any other
+     * mutating method.  For a managed element block this means the caller
+     * receives the post-detach clone rather than the originally stored
+     * object, which remains co-owned by the other sharers.</p>
+     *
      * @param pos position of the element to release.
      *
      * @return element value.
@@ -1092,6 +1118,12 @@ public:
      *
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * the specified position is outside the current container range.</p>
+     *
+     * <p>When copy-on-write is enabled and this container is currently
+     * borrowing shared blocks, this method detaches first, like any other
+     * mutating method.  For a managed element block this means the caller
+     * receives the post-detach clone rather than the originally stored
+     * object, which remains co-owned by the other sharers.</p>
      *
      * @param pos position of the element to release.
      * @param value element value.
@@ -1117,6 +1149,12 @@ public:
      * which case the block lookup falls back to an unhinted search and still
      * yields a correct result.</p>
      *
+     * <p>When copy-on-write is enabled and this container is currently
+     * borrowing shared blocks, this method detaches first, like any other
+     * mutating method.  For a managed element block this means the caller
+     * receives the post-detach clone rather than the originally stored
+     * object, which remains co-owned by the other sharers.</p>
+     *
      * @param pos_hint Position hint to specify which block to start when
      *                 searching for the block where the element resides.
      * @param pos position of the element to release.
@@ -1135,6 +1173,15 @@ public:
      *
      * <p>This call is equivalent of clear() if the container consists of no
      * managed element blocks.</p>
+     *
+     * <p>When copy-on-write is enabled and this container is currently
+     * borrowing shared blocks, this method detaches first, like any other
+     * mutating method.  The elements released are then the post-detach
+     * clones; the originally stored objects remain co-owned by the other
+     * sharers.</p>
+     *
+     * @warning Any element pointers obtained before the sharing began keep
+     *          referencing those originals, not the released clones.
      */
     void release();
 
@@ -1147,6 +1194,15 @@ public:
      * <p>The method will throw an <code>std::out_of_range</code> exception if
      * either the starting or the ending position is outside the current
      * container size.</p>
+     *
+     * <p>When copy-on-write is enabled and this container is currently
+     * borrowing shared blocks, this method detaches first, like any other
+     * mutating method.  The elements released are then the post-detach
+     * clones; the originally stored objects remain co-owned by the other
+     * sharers.</p>
+     *
+     * @warning Any element pointers obtained before the sharing began keep
+     *          referencing those originals, not the released clones.
      *
      * @param start_pos starting position
      * @param end_pos ending position, inclusive.
@@ -1178,6 +1234,15 @@ public:
      * either the starting or the ending position is outside the current
      * container size.</p>
      *
+     * <p>When copy-on-write is enabled and this container is currently
+     * borrowing shared blocks, this method detaches first, like any other
+     * mutating method.  The elements released are then the post-detach
+     * clones; the originally stored objects remain co-owned by the other
+     * sharers.</p>
+     *
+     * @warning Any element pointers obtained before the sharing began keep
+     *          referencing those originals, not the released clones.
+     *
      * @param pos_hint Position hint to specify which block to start when
      *                 searching for the right blocks in which elements are
      *                 to be released.
@@ -1188,11 +1253,36 @@ public:
      */
     iterator release_range(position_hint pos_hint, size_type start_pos, size_type end_pos);
 
-    iterator begin()
-        requires(!Traits::enable_cow);
+    /**
+     * Return an iterator that points to the first element block.
+     *
+     * <p>Unlike the const overload, when copy-on-write is enabled this
+     * overload requires the container to be the sole owner of its element
+     * blocks, and throws mdds::mtv::shared_block_error while the container is
+     * borrowing shared blocks.  Call detach() first to become the sole owner.
+     * Note that detaching invalidates previously obtained iterators and
+     * position objects, but position hint values remain valid.</p>
+     *
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
+     */
+    iterator begin();
 
-    iterator end()
-        requires(!Traits::enable_cow);
+    /**
+     * Return an iterator that points to the position after the last element
+     * block.
+     *
+     * <p>Unlike the const overload, when copy-on-write is enabled this
+     * overload requires the container to be the sole owner of its element
+     * blocks, and throws mdds::mtv::shared_block_error while the container is
+     * borrowing shared blocks.  Call detach() first to become the sole owner.
+     * Note that detaching invalidates previously obtained iterators and
+     * position objects, but position hint values remain valid.</p>
+     *
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
+     */
+    iterator end();
 
     const_iterator begin() const;
     const_iterator end() const;
@@ -1200,11 +1290,36 @@ public:
     const_iterator cbegin() const;
     const_iterator cend() const;
 
-    reverse_iterator rbegin()
-        requires(!Traits::enable_cow);
+    /**
+     * Return a reverse iterator that points to the last element block.
+     *
+     * <p>Unlike the const overload, when copy-on-write is enabled this
+     * overload requires the container to be the sole owner of its element
+     * blocks, and throws mdds::mtv::shared_block_error while the container is
+     * borrowing shared blocks.  Call detach() first to become the sole owner.
+     * Note that detaching invalidates previously obtained iterators and
+     * position objects, but position hint values remain valid.</p>
+     *
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
+     */
+    reverse_iterator rbegin();
 
-    reverse_iterator rend()
-        requires(!Traits::enable_cow);
+    /**
+     * Return a reverse iterator that points to the position before the first
+     * element block.
+     *
+     * <p>Unlike the const overload, when copy-on-write is enabled this
+     * overload requires the container to be the sole owner of its element
+     * blocks, and throws mdds::mtv::shared_block_error while the container is
+     * borrowing shared blocks.  Call detach() first to become the sole owner.
+     * Note that detaching invalidates previously obtained iterators and
+     * position objects, but position hint values remain valid.</p>
+     *
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
+     */
+    reverse_iterator rend();
 
     const_reverse_iterator rbegin() const;
     const_reverse_iterator rend() const;
@@ -1244,6 +1359,22 @@ public:
     void shrink_to_fit();
 
     /**
+     * Query whether this container currently references a shared block store,
+     * i.e. its element blocks may be co-owned by other containers under
+     * copy-on-write.
+     *
+     * <p>Note that this may keep returning <code>true</code> after every
+     * other sharer has detached; it flips to <code>false</code> only when
+     * this container itself detaches, either explicitly via detach() or
+     * implicitly via a mutating method.  It always returns
+     * <code>false</code> when copy-on-write is disabled.</p>
+     *
+     * @return True when this container currently references a shared block
+     *         store, false otherwise.
+     */
+    bool is_shared() const noexcept;
+
+    /**
      * Ensure that this container is the sole owner of its element blocks.  When
      * copy-on-write is enabled and this container is currently borrowing shared
      * blocks, this performs the deferred duplication of the blocks so that
@@ -1252,11 +1383,19 @@ public:
      * <p>It is a no-op when the container already owns its blocks, and when
      * copy-on-write is disabled.</p>
      *
+     * <p>Detaching invalidates previously obtained iterators and position
+     * objects, but position hint values remain valid.</p>
+     *
      * @note Mutating methods detach automatically; no need to call this
-     * explicitly ahead of time.  You may need to call this explicitly prior to
-     * calling methods such as release() and release_range() especially when
-     * you need to ensure that the memory addresses of the released elements
-     * point to non-shared store.
+     * explicitly ahead of time.  You do need to call this before using the
+     * non-const overloads of position(), begin(), end(), rbegin() and rend(),
+     * which throw mdds::mtv::shared_block_error while the container is
+     * borrowing shared blocks.  Calling this explicitly can also be useful
+     * when you want control over when the detach occurs; for instance, the
+     * automatic detach a mutating method performs is not thread-safe, so you
+     * may want to detach up front before making the container accessible to
+     * multiple threads, instead of letting a later mutation trigger the
+     * detach there.
      */
     void detach();
 

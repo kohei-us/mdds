@@ -32,7 +32,7 @@ int main() try
     mtv_type copied(original);
 
     std::cout << std::boolalpha;
-    std::cout << "blocks shared right after copy: " << (original.begin()->data == copied.begin()->data) << std::endl;
+    std::cout << "blocks shared right after copy: " << (original.cbegin()->data == copied.cbegin()->data) << std::endl;
     //!code-end: copy-shares
 
     //!code-start: detach-on-write
@@ -40,7 +40,7 @@ int main() try
     // the block, so the two containers no longer share it.
     copied.set(0, 9.9);
 
-    std::cout << "blocks shared after the write: " << (original.begin()->data == copied.begin()->data) << std::endl;
+    std::cout << "blocks shared after the write: " << (original.cbegin()->data == copied.cbegin()->data) << std::endl;
     //!code-end: detach-on-write
 
     //!code-start: original-intact

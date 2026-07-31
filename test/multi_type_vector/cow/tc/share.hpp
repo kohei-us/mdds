@@ -49,4 +49,50 @@ void test_cow_share()
     }
 }
 
+/**
+ * is_shared() lifecycle: false on a fresh container, true on both sharers
+ * after a COW copy or clone, and back to false only when the queried
+ * container itself detaches.
+ */
+template<typename cow_mtv_type, typename non_cow_mtv_type>
+void test_cow_is_shared()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    cow_mtv_type src;
+    TEST_ASSERT(!src.is_shared()); // fresh container
+
+    src.template push_back<custom_num>(1.1);
+    TEST_ASSERT(!src.is_shared()); // still the sole owner
+
+    {
+        cow_mtv_type copied(src);
+        TEST_ASSERT(src.is_shared());
+        TEST_ASSERT(copied.is_shared());
+
+        auto cloned = src.clone();
+        TEST_ASSERT(cloned.is_shared());
+
+        // Detaching one sharer flips only that sharer's state.
+        copied.detach();
+        TEST_ASSERT(!copied.is_shared());
+        TEST_ASSERT(src.is_shared());
+        TEST_ASSERT(cloned.is_shared());
+    }
+
+    // Every other sharer is gone by now, yet this container keeps
+    // referencing the shared store until it detaches itself.
+    TEST_ASSERT(src.is_shared());
+    src.detach();
+    TEST_ASSERT(!src.is_shared());
+
+    // The member is available with copy-on-write disabled, and always
+    // returns false.
+    non_cow_mtv_type non_cow;
+    non_cow.template push_back<custom_num>(1.1);
+    non_cow_mtv_type non_cow_copied(non_cow);
+    TEST_ASSERT(!non_cow.is_shared());
+    TEST_ASSERT(!non_cow_copied.is_shared());
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -104,14 +104,14 @@ int main() try
     auto cloned = store.clone();
 
     std::cout << std::boolalpha;
-    std::cout << "blocks shared after clone: " << (store.begin()->data == cloned.begin()->data) << std::endl;
+    std::cout << "blocks shared after clone: " << (store.cbegin()->data == cloned.cbegin()->data) << std::endl;
     //!code-end: clone-shares
 
     //!code-start: detach-clones
     // Write a pentagon to position 0 to overwrite it.
     cloned.set(0, new shape({{0.0, 0.0}, {2.0, 1.0}, {4.0, 0.0}, {4.0, 3.0}, {0.0, 3.0}}));
 
-    std::cout << "blocks shared after write: " << (store.begin()->data == cloned.begin()->data) << std::endl;
+    std::cout << "blocks shared after write: " << (store.cbegin()->data == cloned.cbegin()->data) << std::endl;
     std::cout << "source[0] vertices: " << store.get<shape*>(0)->vertices().size() << std::endl;
     std::cout << "clone[0] vertices: " << cloned.get<shape*>(0)->vertices().size() << std::endl;
     //!code-end: detach-clones

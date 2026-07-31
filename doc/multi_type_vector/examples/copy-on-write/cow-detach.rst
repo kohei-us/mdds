@@ -4,16 +4,31 @@
 
 .. _mtv-example-cow-detach:
 
-Detaching before releasing elements
-===================================
+Detaching before mutable access
+===============================
 
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release` and
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range` hand ownership of
-stored elements back to the caller.  They require the container to be the sole
-owner of its blocks, so calling either one while the container is still
-borrowing throws :cpp:class:`~mdds::mtv::shared_block_error`.  This example
-shows why, and how :cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()`
+The non-const overloads of
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::position`,
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::begin`,
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::end`,
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::rbegin` and
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::rend` provide mutable access to
+the container's element blocks.  Calling any of them while the container is
+still borrowing shared blocks throws
+:cpp:class:`~mdds::mtv::shared_block_error`.  This example shows the reason
+behind it, and how :cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()`
 resolves it.
+
+This example also covers
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::release()`.  Being a mutator,
+it follows the same rule as every other mutator under copy-on-write: on a
+sharing container it detaches automatically rather than throwing, since its
+name alone states the intent to mutate and there is no const overload to
+confuse it with.  It still warrants a closer look here, because it is the one
+mutator that hands stored objects back to the caller, and that makes the
+automatic detach observable: the object the caller receives is from the
+container's private post-detach clone, not from the shared block prior to
+the call.
 
 We reuse the noncopyable managed-block pattern from the :ref:`previous
 example <mtv-example-cow-noncopyable>`: but instead of using a
@@ -47,55 +62,76 @@ image:
    :end-before: //!code-end: setup
    :dedent: 4
 
-Suppose we now want to pull the first two images out of the album to hand them
-off elsewhere.  Because the album is still sharing its blocks with the
-snapshot, ``release_range`` refuses and throws:
+Suppose we now want to rename the first image in place, editing it through a
+mutable position object.  Because the album is still sharing its blocks with
+the snapshot, the non-const ``position()`` refuses and throws:
 
 .. literalinclude:: ../../../../example/multi_type_vector/cow_detach.cpp
    :language: C++
-   :start-after: //!code-start: release-throws
-   :end-before: //!code-end: release-throws
+   :start-after: //!code-start: edit-throws
+   :end-before: //!code-end: edit-throws
    :dedent: 4
 
 This code prints:
 
 .. code-block:: none
 
-   release failed: multi_type_vector::release_range: requires sole ownership; call detach() first
+   mutable access failed: multi_type_vector::position: container is shared; call detach() first
 
-The refusal is deliberate.  While the album is borrowing, its images
-*are* the snapshot's images - the same objects.  Handing them to the
-caller via
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range()` would
-give the caller the appearance of exclusive ownership of them when in
-fact the snapshot is still borrowing them.  If the caller then frees the
-images, it would leave the snapshot pointing at deleted objects, and if
-the caller edits them it would change the images the snapshot still
-holds access to.
+The refusal is intentional.  While the album is borrowing, its images
+*are* the snapshot's images - the same objects.  Editing an image
+through a mutable position object would change the image the snapshot
+still holds access to, silently corrupting the undo state it exists to
+preserve.
 
 Calling :cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()` first
 breaks the sharing: the album makes its own private copies of the images
 while the snapshot keeps the originals.  With the album now the sole
-owner of its blocks,
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range()`
-succeeds.  To show the released images really are the album's own
-copies, we rename one of them and then read the snapshot's image at the
-same position:
+owner of its blocks, the same mutable access succeeds, and the edit
+stays private to the album:
 
 .. literalinclude:: ../../../../example/multi_type_vector/cow_detach.cpp
    :language: C++
-   :start-after: //!code-start: detach-then-release
-   :end-before: //!code-end: detach-then-release
+   :start-after: //!code-start: detach-then-edit
+   :end-before: //!code-end: detach-then-edit
    :dedent: 4
 
 giving:
 
 .. code-block:: none
 
-   extracted and renamed: beach_edited.jpg and sunset.jpg
+   album now has: beach_edited.jpg
    snapshot still has: beach.jpg
 
-The last line confirms the two are independent: renaming the released image did
-not touch the snapshot's copy, which still carries the original name.
+Finally we pull an image out of the album with
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::release` to hand it off
+elsewhere.  Unlike the accessors above, it never requires an explicit detach:
+even if the album were still sharing, it would detach automatically like any
+other mutating method.  In our flow the
+album has already detached, so the call simply succeeds.  The point to observe
+is which object comes back: the extracted image is the album's private copy
+created by that detach, while the snapshot still holds the originally stored
+object:
 
-See :ref:`mtv-copy-on-write` for the release precondition in general.
+.. literalinclude:: ../../../../example/multi_type_vector/cow_detach.cpp
+   :language: C++
+   :start-after: //!code-start: release-clone
+   :end-before: //!code-end: release-clone
+   :dedent: 4
+
+giving:
+
+.. code-block:: none
+
+   extracted: sunset.jpg
+   extracted is the snapshot's object: false
+
+The last line confirms the extracted image is a distinct object from the one
+the snapshot holds at the same position.
+
+Although not used in this example,
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range()` also detaches
+automatically just like
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::release()`.
+
+See :ref:`mtv-copy-on-write` for the mutable-access rules in general.

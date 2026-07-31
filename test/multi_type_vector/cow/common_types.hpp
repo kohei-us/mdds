@@ -162,6 +162,24 @@ struct non_cow_traits : mdds::mtv::default_traits
 };
 
 /**
+ * Assert that invoking @p call throws mdds::mtv::shared_block_error.
+ */
+template<typename Func>
+void assert_shared_block_error(Func&& call)
+{
+    bool threw = false;
+    try
+    {
+        call();
+    }
+    catch (const mdds::mtv::shared_block_error&)
+    {
+        threw = true;
+    }
+    TEST_ASSERT(threw);
+}
+
+/**
  * Compare the element-block pointers of two containers slot by slot.  Under COW
  * a borrowing container shares the source's pointers, so this returns true right
  * after a copy/clone and false once one side has detached.

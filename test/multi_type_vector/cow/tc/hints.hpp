@@ -9,10 +9,9 @@
 #include "common_types.hpp"
 
 /**
- * Under COW the non-const iterator accessors are gated, but a position hint
- * requires no iterator access to seed: a default-constructed hint combined
- * with the feed-back pattern makes the hinted mutators fully usable.  A
- * hinted write on a borrower detaches it like any other write.
+ * A default-constructed hint combined with the feed-back pattern makes the
+ * hinted mutators fully usable even under COW.  A hinted write on a borrower
+ * detaches it like any other write.
  */
 template<typename mtv_type>
 void test_cow_hinted_mutation()
@@ -27,7 +26,7 @@ void test_cow_hinted_mutation()
     mtv_type borrower(src);
     TEST_ASSERT(same_block_pointers(src, borrower)); // both borrow the shared blocks
 
-    mdds::mtv::position_hint hint;
+    mdds::mtv::position_hint hint; // default construction -> no hint
     hint = borrower.template set<custom_num>(hint, 0, 2.1);
     TEST_ASSERT(!same_block_pointers(src, borrower)); // the hinted write detached the borrower
 

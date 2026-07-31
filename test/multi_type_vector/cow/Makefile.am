@@ -25,7 +25,7 @@ EXTRA_DIST = \
 	tc/hints.hpp \
 	tc/lifetime.hpp \
 	tc/noncopyable.hpp \
-	tc/iterator_gate.hpp \
+	tc/mutable_access.hpp \
 	tc/clone_hdl.hpp \
 	tc/run.hpp
 
