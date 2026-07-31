@@ -26,6 +26,7 @@ EXTRA_DIST = \
 	tc/lifetime.hpp \
 	tc/noncopyable.hpp \
 	tc/mutable_access.hpp \
+	tc/reclaim.hpp \
 	tc/clone_hdl.hpp \
 	tc/run.hpp
 

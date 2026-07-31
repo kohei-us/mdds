@@ -599,6 +599,16 @@ void multi_type_vector<Traits>::detach_impl()
             // The parent store is already the sole owner of the blocks.
             return;
 
+        if (m_cow_store.use_count() == 1)
+        {
+            // This store is the last sharer: reclaim the blocks instead of
+            // cloning them.  The block pointers this store references never
+            // change, so no events fire on this path.
+            m_cow_store->blocks.clear(); // the holder must not delete them
+            m_cow_store.reset();
+            return;
+        }
+
         // Clone all blocks into a fresh store, committing only once every clone
         // succeeds.
         std::vector<base_element_block*> owned(m_block_store.element_blocks.size(), nullptr);

@@ -40,8 +40,8 @@ void test_cow_lifetime()
         // and nothing has been released on it yet.
         TEST_ASSERT(borrower.event_handler().live() == static_cast<int>(borrower.block_size()));
 
-        // Mutating now detaches from the holder (the borrower is its sole
-        // referrer), which frees the originals exactly once.
+        // Mutating now detaches from the holder; being the last sharer, the
+        // borrower reclaims the blocks and mutates them in place.
         borrower.template set<custom_num>(0, 9.9);
         TEST_ASSERT(borrower.template get<custom_num>(0).value == 9.9);
         TEST_ASSERT(borrower.template get<custom_num>(1).value == 1.2);
@@ -66,8 +66,8 @@ void test_cow_lifetime()
         TEST_ASSERT(borrower.template get<custom_str1*>(1)->value == "str1");
         TEST_ASSERT(borrower.template get<custom_str2*>(2)->value == "str2");
 
-        // First write detaches: the managed pointees are deep-cloned and the
-        // borrowed originals are freed once by the holder.
+        // First write detaches; being the last sharer, the borrower reclaims
+        // the managed blocks instead of deep-cloning them.
         borrower.template set<custom_num>(0, 5.5);
         TEST_ASSERT(borrower.template get<custom_num>(0).value == 5.5);
         TEST_ASSERT(borrower.template get<custom_str1*>(1)->value == "str1");
